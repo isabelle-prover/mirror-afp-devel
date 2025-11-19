@@ -17,9 +17,9 @@ end
 lemma annotate_assn: "x \<equiv> ASSN_ANNOT A x" by simp
 
 subsection \<open>Shortcuts\<close>
-abbreviation "nat_assn \<equiv> (id_assn::nat \<Rightarrow> _)"
-abbreviation "int_assn \<equiv> (id_assn::int \<Rightarrow> _)"
-abbreviation "bool_assn \<equiv> (id_assn::bool \<Rightarrow> _)"
+abbreviation (input) "nat_assn \<equiv> (id_assn::nat \<Rightarrow> _)"
+abbreviation (input) "int_assn \<equiv> (id_assn::int \<Rightarrow> _)"
+abbreviation (input) "bool_assn \<equiv> (id_assn::bool \<Rightarrow> _)"
 
 subsection \<open>Identity Relations\<close>
 definition "IS_ID R \<equiv> R=Id"

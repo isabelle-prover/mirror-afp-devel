@@ -1498,7 +1498,7 @@ lemma inj_mirror_point: "inj (mirror_point (x::'a::real_vector))"
 lemma
   distinct_map_mirror_point_eq:
   "distinct (map (mirror_point (x::'a::real_vector)) xs) = distinct xs"
-  by (auto simp: distinct_map intro!: subset_inj_on[OF inj_mirror_point])
+  by (auto simp: distinct_map intro!: inj_on_subset[OF inj_mirror_point])
 
 lemma eq_self_mirror_iff: fixes x::"'a::real_vector" shows "x = mirror_point y x \<longleftrightarrow> x = y"
   by (auto simp: mirror_point_def algebra_simps scaleR_2[symmetric])

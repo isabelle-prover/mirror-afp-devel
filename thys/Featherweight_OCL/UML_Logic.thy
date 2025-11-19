@@ -65,13 +65,12 @@ where     "false \<equiv>  \<lambda> \<tau>. \<lfloor>\<lfloor>False\<rfloor>\<r
 
 lemma bool_split_0: "X \<tau> = invalid \<tau> \<or> X \<tau> = null \<tau> \<or>
                    X \<tau> = true \<tau>    \<or> X \<tau> = false \<tau>"
-apply(simp add: invalid_def null_def true_def false_def)
+apply(simp add: invalid_def true_def false_def)
 apply(case_tac "X \<tau>",simp_all add: null_fun_def null_option_def bot_option_def)
 apply(case_tac "a",simp)
 apply(case_tac "aa",simp)
 apply auto
 done
-
 
 
 lemma [simp]: "false (a, b) = \<lfloor>\<lfloor>False\<rfloor>\<rfloor>"
@@ -136,10 +135,10 @@ text\<open>The generalized definitions of invalid and definedness have the same
 properties as the old ones :\<close>
 lemma defined1[simp]: "\<delta> invalid = false"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def
-                        null_def invalid_def true_def false_def)
+                        invalid_def true_def false_def)
 lemma defined2[simp]: "\<delta> null = false"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def
-                        null_def null_option_def null_fun_def invalid_def true_def false_def)
+                        null_option_def null_fun_def invalid_def true_def false_def)
 lemma defined3[simp]: "\<delta> true = true"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def null_is_valid null_option_def
                         null_fun_def invalid_def true_def false_def)
@@ -325,7 +324,7 @@ subsubsection\<open>Fundamental Predicates on Strong Equality\<close>
 text\<open>Equality reasoning in OCL is not humpty dumpty. While strong equality
 is clearly an equivalence:\<close>
 lemma StrongEq_refl [simp]: "(X \<triangleq> X) = true"
-by(rule ext, simp add: null_def invalid_def true_def false_def StrongEq_def)
+by(rule ext, simp add: invalid_def true_def false_def StrongEq_def)
 
 lemma StrongEq_sym: "(X \<triangleq> Y) = (Y \<triangleq> X)"
 by(rule ext, simp add: eq_sym_conv invalid_def true_def false_def StrongEq_def)
@@ -335,7 +334,7 @@ lemma StrongEq_trans_strong [simp]:
   and     B: "(Y \<triangleq> Z) = true"
   shows   "(X \<triangleq> Z) = true"
   apply(insert A B) apply(rule ext)
-  apply(simp add: null_def invalid_def true_def false_def StrongEq_def)
+  apply(simp add: invalid_def true_def false_def StrongEq_def)
   apply(drule_tac x=x in fun_cong)+
   by auto
 
@@ -357,7 +356,7 @@ lemma StrongEq_subst :
   and     eq: "(X \<triangleq> Y)\<tau> = true \<tau>"
   shows   "(P X \<triangleq> P Y)\<tau> = true \<tau>"
   apply(insert cp eq)
-  apply(simp add: null_def invalid_def true_def false_def StrongEq_def)
+  apply(simp add: invalid_def true_def false_def StrongEq_def)
   apply(subst cp[of X])
   apply(subst cp[of Y])
   by simp
@@ -412,21 +411,21 @@ lemma cp_OclNot: "(not X)\<tau> = (not (\<lambda> _. X \<tau>)) \<tau>"
 by(simp add: OclNot_def)
 
 lemma OclNot1[simp]: "not invalid = invalid"
-  by(rule ext,simp add: OclNot_def null_def invalid_def true_def false_def bot_option_def)
+  by(rule ext,simp add: OclNot_def invalid_def true_def false_def bot_option_def)
 
 lemma OclNot2[simp]: "not null = null"
-  by(rule ext,simp add: OclNot_def null_def invalid_def true_def false_def
+  by(rule ext,simp add: OclNot_def invalid_def true_def false_def
                         bot_option_def null_fun_def null_option_def )
 
 lemma OclNot3[simp]: "not true = false"
-  by(rule ext,simp add: OclNot_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclNot_def invalid_def true_def false_def)
 
 lemma OclNot4[simp]: "not false = true"
-  by(rule ext,simp add: OclNot_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclNot_def invalid_def true_def false_def)
 
 
 lemma OclNot_not[simp]: "not (not X) = X"
-  apply(rule ext,simp add: OclNot_def null_def invalid_def true_def false_def)
+  apply(rule ext,simp add: OclNot_def invalid_def true_def false_def)
   apply(case_tac "X x", simp_all)
   apply(case_tac "a", simp_all)
   done
@@ -504,50 +503,50 @@ apply(subst cp_OclOr[of "not (\<lambda>_. X \<tau>)" "(\<lambda>_. Y \<tau>)"])
 by(simp add: cp_OclNot[symmetric] cp_OclOr[symmetric] )
 
 lemma OclAnd1[simp]: "(invalid and true) = invalid"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def)
 lemma OclAnd2[simp]: "(invalid and false) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def)
 lemma OclAnd3[simp]: "(invalid and null) = invalid"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 lemma OclAnd4[simp]: "(invalid and invalid) = invalid"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def)
 
 lemma OclAnd5[simp]: "(null and true) = null"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 lemma OclAnd6[simp]: "(null and false) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 lemma OclAnd7[simp]: "(null and null) = null"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 lemma OclAnd8[simp]: "(null and invalid) = invalid"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 
 lemma OclAnd9[simp]: "(false and true) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
 lemma OclAnd10[simp]: "(false and false) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
 lemma OclAnd11[simp]: "(false and null) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
 lemma OclAnd12[simp]: "(false and invalid) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
 
 lemma OclAnd13[simp]: "(true and true) = true"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
 lemma OclAnd14[simp]: "(true and false) = false"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
 lemma OclAnd15[simp]: "(true and null) = null"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 lemma OclAnd16[simp]: "(true and invalid) = invalid"
-  by(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def bot_option_def
+  by(rule ext,simp add: OclAnd_def invalid_def true_def false_def bot_option_def
                         null_fun_def null_option_def)
 
 lemma OclAnd_idem[simp]: "(X and X) = X"
-  apply(rule ext,simp add: OclAnd_def null_def invalid_def true_def false_def)
+  apply(rule ext,simp add: OclAnd_def invalid_def true_def false_def)
   apply(case_tac "X x", simp_all)
   apply(case_tac "a", simp_all)
   apply(case_tac "aa", simp_all)
@@ -596,38 +595,38 @@ done
 lemma OclAnd_null2[simp]: "\<And>\<tau>. X \<tau> \<noteq> false \<tau> \<Longrightarrow> X \<tau> \<noteq> bot \<tau> \<Longrightarrow> (X and null) \<tau> = null \<tau>"
   by(simp add: OclAnd_commute)
 
-lemma OclAnd_assoc: "(X and (Y and Z)) = (X and Y and Z)"
-  apply(rule ext, simp add: OclAnd_def)
-  apply(auto simp:true_def false_def null_def invalid_def
-             split: option.split option.split_asm
-                    bool.split bool.split_asm)
-done
-
+lemma OclAnd_assoc: "(X and (Y and Z)) = (X and Y and Z)"  (is \<open>?lhs = ?rhs\<close>)
+proof (rule ext)
+  fix p
+  show \<open>?lhs p = ?rhs p\<close>
+    by (cases \<open>X p\<close> rule: Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases; cases \<open>Y p\<close> rule: Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases; cases \<open>Z p\<close> rule: Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases)
+      (simp_all add: OclAnd_def)
+qed
 
 lemma OclOr1[simp]: "(invalid or true) = true"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def)
 lemma OclOr2[simp]: "(invalid or false) = invalid"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def)
 lemma OclOr3[simp]: "(invalid or null) = invalid"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 lemma OclOr4[simp]: "(invalid or invalid) = invalid"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def)
 
 lemma OclOr5[simp]: "(null or true) = true"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 lemma OclOr6[simp]: "(null or false) = null"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 lemma OclOr7[simp]: "(null or null) = null"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 lemma OclOr8[simp]: "(null or invalid) = invalid"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 
 lemma OclOr_idem[simp]: "(X or X) = X"
@@ -738,25 +737,25 @@ lemma foundation3[simp]: "\<not>(\<tau> \<Turnstile> invalid)"
 by(auto simp: OclValid_def true_def false_def invalid_def bot_option_def)
 
 lemma foundation4[simp]: "\<not>(\<tau> \<Turnstile> null)"
-by(auto simp: OclValid_def true_def false_def null_def null_fun_def null_option_def bot_option_def)
+by(auto simp: OclValid_def true_def false_def null_fun_def null_option_def bot_option_def)
 
 lemma bool_split[simp]:
 "(\<tau> \<Turnstile> (x \<triangleq> invalid)) \<or> (\<tau> \<Turnstile> (x \<triangleq> null)) \<or> (\<tau> \<Turnstile> (x \<triangleq> true)) \<or> (\<tau> \<Turnstile> (x \<triangleq> false))"
 apply(insert bool_split_0[of x \<tau>], auto)
-apply(simp_all add: OclValid_def StrongEq_def true_def null_def invalid_def)
+apply(simp_all add: OclValid_def StrongEq_def true_def invalid_def)
 done
 
 lemma defined_split:
 "(\<tau> \<Turnstile> \<delta> x) = ((\<not>(\<tau> \<Turnstile> (x \<triangleq> invalid))) \<and> (\<not> (\<tau> \<Turnstile> (x \<triangleq> null))))"
-by(simp add:defined_def true_def false_def invalid_def null_def
+by(simp add:defined_def true_def false_def invalid_def
                StrongEq_def OclValid_def bot_fun_def null_fun_def)
 
 lemma valid_bool_split: "(\<tau> \<Turnstile> \<upsilon> A) = ((\<tau> \<Turnstile> A \<triangleq> null) \<or> (\<tau> \<Turnstile> A) \<or>  (\<tau> \<Turnstile> not A)) "
-by(auto simp:valid_def true_def false_def invalid_def null_def OclNot_def
+by(auto simp:valid_def true_def false_def invalid_def OclNot_def
              StrongEq_def OclValid_def bot_fun_def bot_option_def null_option_def null_fun_def)
 
 lemma defined_bool_split: "(\<tau> \<Turnstile> \<delta> A) = ((\<tau> \<Turnstile> A) \<or> (\<tau> \<Turnstile> not A))"
-by(auto simp:defined_def true_def false_def invalid_def null_def OclNot_def
+by(auto simp:defined_def true_def false_def invalid_def OclNot_def
              StrongEq_def OclValid_def bot_fun_def bot_option_def null_option_def null_fun_def)
 
 
@@ -806,7 +805,7 @@ lemma foundation9:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow> (\<tau> \<Turnstile> not x) = (\<not> (\<tau> \<Turnstile> x))"
 apply(simp add: defined_split )
 by(auto simp: OclNot_def null_fun_def null_option_def bot_option_def
-                 OclValid_def invalid_def true_def null_def StrongEq_def)
+                 OclValid_def invalid_def true_def StrongEq_def)
 
 lemma foundation9':
 "\<tau> \<Turnstile> not x \<Longrightarrow> \<not> (\<tau> \<Turnstile> x)"
@@ -820,7 +819,7 @@ lemma foundation10:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow> \<tau> \<Turnstile> \<delta> y \<Longrightarrow> (\<tau> \<Turnstile> (x and y)) = ( (\<tau> \<Turnstile> x) \<and> (\<tau> \<Turnstile> y))"
 apply(simp add: defined_split)
 by(auto simp: OclAnd_def OclValid_def invalid_def
-              true_def null_def StrongEq_def null_fun_def null_option_def bot_option_def
+              true_def StrongEq_def null_fun_def null_option_def bot_option_def
         split:bool.split_asm)
 
 lemma foundation10': "(\<tau> \<Turnstile> (A and B)) = ((\<tau> \<Turnstile> A) \<and> (\<tau> \<Turnstile> B))" (* stronger than foundation !*)
@@ -830,7 +829,7 @@ lemma foundation11:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow>  \<tau> \<Turnstile> \<delta> y \<Longrightarrow> (\<tau> \<Turnstile> (x or y)) = ( (\<tau> \<Turnstile> x) \<or> (\<tau> \<Turnstile> y))"
 apply(simp add: defined_split)
 by(auto simp: OclNot_def OclOr_def OclAnd_def OclValid_def invalid_def
-              true_def null_def StrongEq_def null_fun_def null_option_def bot_option_def
+              true_def StrongEq_def null_fun_def null_option_def bot_option_def
         split:bool.split_asm bool.split)
 
 
@@ -839,19 +838,19 @@ lemma foundation12:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow> (\<tau> \<Turnstile> (x implies y)) = ( (\<tau> \<Turnstile> x) \<longrightarrow> (\<tau> \<Turnstile> y))"
 apply(simp add: defined_split)
 by(auto simp: OclNot_def OclOr_def OclAnd_def OclImplies_def bot_option_def
-              OclValid_def invalid_def true_def null_def StrongEq_def null_fun_def null_option_def
+              OclValid_def invalid_def true_def StrongEq_def null_fun_def null_option_def
         split:bool.split_asm bool.split option.split_asm)
 
 lemma foundation13:"(\<tau> \<Turnstile> A \<triangleq> true)    = (\<tau> \<Turnstile> A)"
-by(auto simp: OclNot_def  OclValid_def invalid_def true_def null_def StrongEq_def
+by(auto simp: OclNot_def  OclValid_def invalid_def true_def StrongEq_def
               split:bool.split_asm bool.split)
 
 lemma foundation14:"(\<tau> \<Turnstile> A \<triangleq> false)   = (\<tau> \<Turnstile> not A)"
-by(auto simp: OclNot_def  OclValid_def invalid_def false_def true_def null_def StrongEq_def
+by(auto simp: OclNot_def  OclValid_def invalid_def false_def true_def StrongEq_def
         split:bool.split_asm bool.split option.split)
 
 lemma foundation15:"(\<tau> \<Turnstile> A \<triangleq> invalid) = (\<tau> \<Turnstile> not(\<upsilon> A))"
-by(auto simp: OclNot_def OclValid_def valid_def invalid_def false_def true_def null_def
+by(auto simp: OclNot_def OclValid_def valid_def invalid_def false_def true_def
               StrongEq_def bot_option_def null_fun_def null_option_def bot_option_def bot_fun_def
         split:bool.split_asm bool.split option.split)
 
@@ -867,7 +866,7 @@ by(auto simp:defined_def false_def true_def  bot_fun_def null_fun_def OclValid_d
 
 (* correcter rule; the previous is deprecated *)
 lemma foundation16': "(\<tau> \<Turnstile> (\<delta> X)) = (X \<tau> \<noteq> invalid \<tau> \<and> X \<tau> \<noteq> null \<tau>)"
-apply(simp add:invalid_def null_def null_fun_def)
+apply(simp add:invalid_def null_fun_def)
 by(auto simp: OclValid_def defined_def false_def true_def  bot_fun_def null_fun_def
         split:if_split_asm)
 
@@ -924,24 +923,24 @@ lemma foundation27: "\<tau> \<Turnstile> A \<Longrightarrow> (\<tau> \<Turnstile
 by (simp add: foundation12 foundation6)
 
 lemma defined_not_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (not x)"
-  by(auto simp: OclNot_def null_def invalid_def defined_def valid_def OclValid_def
+  by(auto simp: OclNot_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
              split: option.split_asm HOL.if_split_asm)
 
 lemma valid_not_I : "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> (not x)"
-  by(auto simp: OclNot_def null_def invalid_def defined_def valid_def OclValid_def
+  by(auto simp: OclNot_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
           split: option.split_asm option.split HOL.if_split_asm)
 
 lemma defined_and_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<delta> (y) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (x and y)"
-  apply(simp add: OclAnd_def null_def invalid_def defined_def valid_def OclValid_def
+  apply(simp add: OclAnd_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
              split: option.split_asm HOL.if_split_asm)
   apply(auto simp: null_option_def split: bool.split)
   by(case_tac "ya",simp_all)
 
 lemma valid_and_I :   "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<upsilon> (y) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> (x and y)"
-  apply(simp add: OclAnd_def null_def invalid_def defined_def valid_def OclValid_def
+  apply(simp add: OclAnd_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
              split: option.split_asm HOL.if_split_asm)
   by(auto simp: null_option_def split: option.split bool.split)

@@ -1,0 +1,25 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+% this should be the last package used
+\usepackage{pdfsetup}
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+\begin{document}
+\title{A Modular Splitting Framework for Saturation Theorem Proving}
+\author{Ghilain Bergeron, Florent Krasnopol and Sophie Tourret}
+\maketitle
+\begin{abstract}
+  We formalize in Isabelle/HOL a framework for splitting \cite{EbnerBT21}, a theorem proving technique that extends saturation-based calculi with branching abilities. 
+  The framework preserves the completeness of the original calculus.
+  We focus here on the simplest splitting model described in details in the first three sections of "Unifying Splitting" by Gabriel Ebner, Jasmin Blanchette and Sophie Tourret \cite{EbnerBT23} and provide an extension of the ordered resolution calculus with a variant of splitting called Lightweight AVATAR.
+  A paper describing the present formalization has been accepted at ITP'25 \cite{BergeronKT25}.
+\end{abstract}
+\tableofcontents
+% include generated text of all theories
+\input{session}
+\bibliographystyle{abbrv}
+\bibliography{root}
+\end{document}

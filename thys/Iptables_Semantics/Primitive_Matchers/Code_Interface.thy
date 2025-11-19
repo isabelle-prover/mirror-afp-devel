@@ -10,9 +10,8 @@ imports
   Simple_Firewall.Service_Matrix
   "../Semantics_Ternary/Optimizing" (*do we use this?*)
   "../Semantics_Goto"
-  "HOL-Library.Code_Target_Nat"
-  "HOL-Library.Code_Target_Int"
-  Native_Word.Code_Target_Int_Bit
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 (*Note: common_primitive_match_expr_ipv4_toString can be really slow*)

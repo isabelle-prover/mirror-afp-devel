@@ -1,0 +1,1 @@
+{"automata":[{"initial":8,"nodes":[{"id":9,"name":"N","invariant":""},{"id":8,"name":"M","invariant":""}],"edges":[{"source":8,"target":9,"guard":"","label":"","update":""},{"source":9,"guard":"","label":"","update":""}]}]}

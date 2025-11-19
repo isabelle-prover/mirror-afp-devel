@@ -169,8 +169,8 @@ begin
       interpret mkCone_\<chi>: cone J.comp C map \<open>C.dom (\<chi> J.FF)\<close> \<open>mkCone (\<chi> J.FF) (\<chi> J.TT)\<close>
         using assms is_rendered_commutative_by_cone cone_mkCone by blast
       show ?thesis
-        using mkCone_def \<chi>.is_extensional J.ide_char mkCone_def
-              NaturalTransformation.eqI [of J.comp C]
+        using mkCone_def \<chi>.extensionality  J.ide_char mkCone_def
+              natural_transformation_eqI [of J.comp C]
               \<chi>.natural_transformation_axioms mkCone_\<chi>.natural_transformation_axioms
         by fastforce
     qed
@@ -354,7 +354,7 @@ begin
               fix j
               show "D.cones_map h (D.mkCone p q) j = \<chi>' j"
                 using h 1 3 4 D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.FF" "\<chi>' J.TT"]
-                      \<chi>.cone_axioms J.is_discrete \<chi>'.is_extensional
+                      \<chi>.cone_axioms J.is_discrete \<chi>'.extensionality 
                       D.mkCone_def binary_product_shape.ide_char
                 apply (cases "J.ide j")
                 by (metis (no_types, lifting))+
@@ -1240,9 +1240,7 @@ begin
       show "\<not> CCC.arr f \<Longrightarrow> \<alpha> f = null"
         by (metis CC.arr_char CCC.arr_char ext prod_def seqE tuple_ext)
       assume f: "CCC.arr f"
-      show "dom (\<alpha> f) = T.ToTC (CCC.dom f)"
-        using f by auto
-      show "cod (\<alpha> f) = T.ToCT (CCC.cod f)"
+      show "arr (\<alpha> f)"
         using f by auto
       show "T.ToCT f \<cdot> \<alpha> (CCC.dom f) = \<alpha> f"
         using f T.ToCT_def T.ToTC_def comp_assoc
@@ -1259,7 +1257,7 @@ begin
         by (metis assoc_simps(1-2) ideD(3))
     qed
 
-    lemma \<alpha>_is_natural_isomorphism:
+    lemma \<alpha>_naturalityisomorphism:
     shows "natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha>"
       ..
 
@@ -1320,7 +1318,7 @@ begin
        apply metis
       using prod_tuple by simp
 
-    lemma \<sigma>_is_natural_transformation:
+    lemma \<sigma>_naturalitytransformation:
     shows "natural_transformation CC.comp C Prod Prod' \<sigma>"
       ..
 
@@ -1344,11 +1342,11 @@ begin
       using pr_naturality comp_arr_dom comp_cod_arr
       by unfold_locales auto
 
-    lemma \<pi>_is_natural_transformation:
+    lemma \<pi>_naturalitytransformation:
     shows "natural_transformation CC.comp CC.comp \<Delta>o\<Pi>.map CC.map \<pi>"
     proof -
       have "\<pi>.map = \<pi>"
-        using \<pi>.map_def ext \<Pi>.is_extensional comp_arr_dom comp_cod_arr by auto
+        using \<pi>.map_def ext \<Pi>.extensionality  comp_arr_dom comp_cod_arr by auto
       thus "natural_transformation CC.comp CC.comp \<Delta>o\<Pi>.map CC.map \<pi>"
         using \<pi>.natural_transformation_axioms by simp
     qed
@@ -1357,7 +1355,7 @@ begin
       using dup_naturality comp_arr_dom comp_cod_arr prod_tuple tuple_ext
       by unfold_locales auto
 
-    lemma dup_is_natural_transformation:
+    lemma dup_naturalitytransformation:
     shows "natural_transformation C C map \<Pi>o\<Delta>.map dup"
       ..
 
@@ -1410,7 +1408,7 @@ begin
       proof
         fix f
         have "\<not> arr f \<Longrightarrow> \<Delta>o\<delta>_\<pi>o\<Delta>.map f = Diag f"
-          by (simp add: \<Delta>o\<delta>_\<pi>o\<Delta>.is_extensional)
+          by (simp add: \<Delta>o\<delta>_\<pi>o\<Delta>.extensionality )
         moreover have "arr f \<Longrightarrow> \<Delta>o\<delta>_\<pi>o\<Delta>.map f = Diag f"
           using comp_cod_arr comp_assoc \<Delta>o\<delta>_\<pi>o\<Delta>.map_def by auto
         ultimately show "\<Delta>o\<delta>_\<pi>o\<Delta>.map f = Diag f" by blast
@@ -1421,13 +1419,13 @@ begin
         show "\<Pi>o\<pi>_\<delta>o\<Pi>.map fg = Prod fg"
         proof -
           have "\<not> CC.arr fg \<Longrightarrow> ?thesis"
-            by (simp add: \<Pi>.is_extensional \<Pi>o\<pi>_\<delta>o\<Pi>.is_extensional)
+            by (simp add: \<Pi>.extensionality  \<Pi>o\<pi>_\<delta>o\<Pi>.extensionality )
           moreover have "CC.arr fg \<Longrightarrow> ?thesis"
           proof -
             assume fg: "CC.arr fg"
             have 1: "dup (Prod fg) = \<langle>cod (fst fg) \<otimes> cod (snd fg), cod (fst fg) \<otimes> cod (snd fg)\<rangle> \<cdot>
                                         (fst fg \<otimes> snd fg)"
-              using fg \<delta>.is_natural_2
+              using fg \<delta>.naturality2
               apply simp
               by (metis (no_types, lifting) prod_simps(1) prod_simps(3))
             have "\<Pi>o\<pi>_\<delta>o\<Pi>.map fg =
@@ -1444,7 +1442,7 @@ begin
                              (fst fg \<otimes> snd fg)"
               using fg prod_tuple by simp
             also have "... = Prod fg"
-              using fg comp_arr_dom \<Pi>.as_nat_trans.is_natural_2 by auto
+              using fg comp_arr_dom \<Pi>.as_nat_trans.naturality2 by auto
             finally show ?thesis by simp
           qed
           ultimately show ?thesis by blast
@@ -1587,8 +1585,6 @@ begin
   proof
     interpret elementary_category_with_terminal_object C \<open>\<one>\<^sup>?\<close> \<open>\<lambda>a. \<t>\<^sup>?[a]\<close>
       using extends_to_elementary_category_with_terminal_object by blast
-    show "cospan \<t>\<^sup>?[a] \<t>\<^sup>?[b]"
-      using assms by fastforce
     show "commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] p q"
       using assms trm_naturality by fastforce
     show "\<And>h k. commutative_square \<t>\<^sup>?[a] \<t>\<^sup>?[b] h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
@@ -2215,7 +2211,7 @@ subsection "Exponentials"
             ultimately show ?thesis
               using D.mkCone_def \<pi>.natural_transformation_axioms
                     D.cone_mkCone [of "\<pi> J.FF" "\<pi> J.TT"]
-                    NaturalTransformation.eqI
+                    natural_transformation_eqI
                       [of "J.comp" C \<pi>.A.map "D.map" \<pi> "D.mkCone (\<pi> J.FF) (\<pi> J.TT)"]
                     cone_def [of J.comp C D.map a "D.mkCone (\<pi> J.FF) (\<pi> J.TT)"] J.ide_char
               by blast
@@ -2346,18 +2342,14 @@ subsection "Exponentials"
           using D0.is_discrete by auto
         have \<pi>1j: "J1.arr j \<Longrightarrow> \<guillemotleft>\<pi>1 j : a1 \<rightarrow> D1 j\<guillemotright>"
           using D1.is_discrete by auto
-        show "dom (?\<pi> j) = A.map (J.dom j)"
-          using j J.arr_char p0 p1 \<pi>0j \<pi>1j
-          by fastforce
-        show "cod (?\<pi> j) = ?D (J.cod j)"
-          using j J.arr_char p0 p1 \<pi>0j \<pi>1j
-          by fastforce
+        show "arr (?\<pi> j)"
+          using j J.arr_char p0 p1 \<pi>0j \<pi>1j by fastforce
         show "?D j \<cdot> ?\<pi> (J.dom j) = ?\<pi> j"
         proof -
           have 0: "J0.arr j \<Longrightarrow> D0 j \<cdot> \<pi>0 j \<cdot> p0 = \<pi>0 j \<cdot> p0"
-            by (metis D0.is_discrete J0.ide_char \<pi>0.is_natural_1 comp_assoc)
+            by (metis D0.is_discrete J0.ide_char \<pi>0.naturality1 comp_assoc)
           have 1: "J1.arr j \<Longrightarrow> D1 j \<cdot> \<pi>1 j \<cdot> p1 = \<pi>1 j \<cdot> p1"
-            by (metis D1.is_discrete J1.ide_char \<pi>1.is_natural_1 comp_assoc)
+            by (metis D1.is_discrete J1.ide_char \<pi>1.naturality1 comp_assoc)
           show ?thesis
             using 0 1 by auto
         qed
@@ -2391,9 +2383,11 @@ subsection "Exponentials"
               show "\<not> J0.arr j \<Longrightarrow> (if j \<in> Collect J0.arr then \<chi>' j else null) = null"
                 by simp
               assume j: "J0.arr j"
-              show 0: "dom (?\<chi>0' j) = A0'.map (J0.dom j)"
+              show "arr (?\<chi>0' j)"
                 using j by simp
-              show 1: "cod (?\<chi>0' j) = D0 (J0.cod j)"
+              have 0: "dom (?\<chi>0' j) = A0'.map (J0.dom j)"
+                using j by simp
+              have 1: "cod (?\<chi>0' j) = D0 (J0.cod j)"
                 using j J.arr_char J.cod_char D0.is_discrete by simp
               show "D0 j \<cdot> (?\<chi>0' (J0.dom j)) = ?\<chi>0' j"
                 using 1 j J.arr_char D0.is_discrete comp_cod_arr by simp
@@ -2406,9 +2400,11 @@ subsection "Exponentials"
               show "\<not> J1.arr j \<Longrightarrow> (if j \<in> Collect J1.arr then \<chi>' j else null) = null"
                 by simp
               assume j: "J1.arr j"
-              show 0: "dom (?\<chi>1' j) = A1'.map (J1.dom j)"
+              show "arr (?\<chi>1' j)"
                 using j by simp
-              show 1: "cod (?\<chi>1' j) = D1 (J1.cod j)"
+              have 0: "dom (?\<chi>1' j) = A1'.map (J1.dom j)"
+                using j by simp
+              have 1: "cod (?\<chi>1' j) = D1 (J1.cod j)"
                 using assms(4) j J.arr_char J.cod_char D1.is_discrete by auto
               show "D1 j \<cdot> (?\<chi>1' (J1.dom j)) = ?\<chi>1' j"
                 using 1 j J.arr_char D1.is_discrete comp_cod_arr by simp
@@ -2477,7 +2473,7 @@ subsection "Exponentials"
                 show "\<not> J0.arr j \<Longrightarrow> D.cones_map f ?\<pi> j = \<chi>' j"
                 proof (cases "J1.arr j")
                   show "\<lbrakk>\<not> J0.arr j; \<not> J1.arr j\<rbrakk> \<Longrightarrow> D.cones_map f ?\<pi> j = \<chi>' j"
-                    using f \<pi>.cone_axioms \<chi>'.is_extensional by auto
+                    using f \<pi>.cone_axioms \<chi>'.extensionality  by auto
                   show "\<lbrakk>\<not> J0.arr j; J1.arr j\<rbrakk> \<Longrightarrow> D.cones_map f ?\<pi> j = \<chi>' j"
                   proof -
                     assume J0: "\<not> J0.arr j" and J1: "J1.arr j"
@@ -2688,7 +2684,7 @@ subsection "Exponentials"
                     show "D j = (if j \<in> Collect J0.arr then D0.map j
                                  else if j \<in> Collect J1.arr then D1.map j
                                  else null)"
-                      using 1 D0.map_def D1.map_def D.is_extensional D J0.arr_char J1.arr_char
+                      using 1 D0.map_def D1.map_def D.extensionality  D J0.arr_char J1.arr_char
                       by auto
                   qed
                   moreover have "J = J0uJ1.comp"

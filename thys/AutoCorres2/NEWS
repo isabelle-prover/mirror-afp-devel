@@ -3,12 +3,27 @@ AutoCorres / C-Parser NEWS -- history of user-relevant changes
 
 (Note: Isabelle/jEdit shows a tree-view of the NEWS file in Sidekick.)
 
-New in Repository Version
--------------------------
+
+New in Version for Isabelle2025
+
+*** CParser ***
+* Support for post increment / decrement expressions on local variables
+  in assignment and while condition, eg:
+  tests/proof-tests/side_effect_assignment.thy
+* Support for anonymous structs / unions, eg:
+  tests/proof-tests/anonymous_nested_struct.thy
+* Support for function decay, and array decay in function pointers, eg:
+  tests/proof-tests/function_decay.thy,
+  tests/proof-tests/function_pointer_array_decay.thy
+* Support for flexible array members in struct, eg:
+  tests/proof-tests/flexible_array_member.thy,
+
+New in Version for Isabelle2024
+-------------------------------
 
 *** AutoCorres ***
 * Replaced former ('s, 'a) nondet_monad by more canonical
-  ('e::default, 'a, 's) spec_monad with instances 
+  ('e::default, 'a, 's) spec_monad with instances
   ('a, 's) res_monad, for calculations without exceptions and
   ('e, 'a, 's) exn_monad, for calculations with exceptions.
 
@@ -18,7 +33,7 @@ New in Repository Version
   c.f.: autocorres/tests/proof-tests/union_ac.thy
 
 * Support for pointers to local variables. When an address of a local
-  variable is used the variable is allocated 
+  variable is used the variable is allocated
   on the heap. c.f.:
   autocorres/tests/proof-tests/pointes_to_locals.thy.
 
@@ -37,20 +52,20 @@ New in Repository Version
   return variables). This analysis happens during the local-variable
   extraction phase (L2) after introducing nested error-types
   (c.f. section on exit below).
- 
+
 * Support for 'wellbehaved' goto statements, i.e. gotos that jump
-  forward or out of a block (like exceptions) but not inside a block 
+  forward or out of a block (like exceptions) but not inside a block
   or backwards.
 
     Supported:
-     
+
       {
-        ... 
+        ...
         goto l;
         ...
       }
       l: ...
-      
+
               ---------------
       ...
       goto l
@@ -60,18 +75,18 @@ New in Repository Version
 
     Not supported:
 
-      { ... 
+      { ...
         l: ...
       }
       goto l;
-             
+
               ---------------
 
      l: ...
      ...
      goto l;
-   
-  
+
+
 * Added support of C-exit function 'void exit(int)', which exits the
   program with an exit status, aka. global termination with status.
   INCOMPATIBILITY: the C-Parser as well as autocorres faithfully
@@ -79,15 +94,15 @@ New in Repository Version
   exit status is stored within 'global_exn_var' within the new
   variant 'Global status' of 'c_exntype'. After autocorres the
   status will be returned in the error monad result 'Inl status'.
-  We introduce a uniform treatment of abrupt termination 
-  (Break, Continue, Return and exit) as nested sum-type in the error-monad 
-  (c.f. monadic functions "try" and "finally"). The nesting level of the 
+  We introduce a uniform treatment of abrupt termination
+  (Break, Continue, Return and exit) as nested sum-type in the error-monad
+  (c.f. monadic functions "try" and "finally"). The nesting level of the
   sum-type, reflects the static nesting of the try, resp. finally blocks.
-  Programs that do not use "exit" at all will still reside in the "nondet" 
-  monad as before, however their shape might be slightly changed due to 
-  the nested sum-type for exceptions instead to the single 
+  Programs that do not use "exit" at all will still reside in the "nondet"
+  monad as before, however their shape might be slightly changed due to
+  the nested sum-type for exceptions instead to the single
   layer sum-type before. e.g.
-   
+
     int foo() {
       ...
       while (1) {
@@ -102,7 +117,7 @@ New in Repository Version
 
 
 * Removed option "force_heap_abs". Heap abstraction (split heap) is
-  always tried. Functions can explicitly be excluded by option 
+  always tried. Functions can explicitly be excluded by option
   "no_heap_abs".
 
 * added option unfold_constructor_bind (Selectors | Always | Never) to
@@ -115,33 +130,33 @@ New in Repository Version
   functions are processed yet.
 
 * (Mutually) recursive functions are now implemented without an
-  explicit measure parameter but constructed as a CCPO fixpoint 
+  explicit measure parameter but constructed as a CCPO fixpoint
   (command: fixed_point)
 
 * Support for function-pointers (with parameters):
     * Constant function pointer parameters
     * Dispatching of function pointers via global static variable.
-      (e.g. array of class like structs), including indirect 
+      (e.g. array of class like structs), including indirect
       (mutual) recursion through these function pointers.
     * C-style objects (structs) with pointer parameter fields
   Examples: autocorres/tests/proof-tests/fnptr.thy
-  Limitations: 
+  Limitations:
     * higher-order function pointer parameters unsupported, meaning
-      the function pointer parameter itself may not have another 
-      funtion pointer parameter. (This is not a conceptual limitation 
+      the function pointer parameter itself may not have another
+      funtion pointer parameter. (This is not a conceptual limitation
       but merely a result of the current implementation avoiding
       to deal with nested correspondence assumptions).
 
-* Refined tracing / profiling via various options: 
-    verbose_timing / verbose_timing_threshold 
+* Refined tracing / profiling via various options:
+    verbose_timing / verbose_timing_threshold
     verbose / verbose_indent
     autocorres_profile_conversion_enbaled /
     autocorres_profile_conversion_verbosity
-  cf. tests/proof-tests/profile_conversion.thy 
+  cf. tests/proof-tests/profile_conversion.thy
       tests/examples/TraceDemo.thy
 
   Discontinued autocorres_options: trace_heap_lift / trace_word_abs
-      
+
 
 * Discontinued option "c_locale" to define a custom locale, as the
   locale setup is now much more involved due to the switch to
@@ -149,7 +164,7 @@ New in Repository Version
 
 * Added option "preservation_cache_mode" to experiment with different
   caching strategies for the variable preservation proofs in the
-  L2 phase. These preservation proofs are interweaved with the 
+  L2 phase. These preservation proofs are interweaved with the
   process of introducing lambda abstractions for local variables and
   the correspondence proofs.
 
@@ -158,23 +173,23 @@ New in Repository Version
        first the L1-terms and then by the list
        of variables that are preserved by executing the term.
        Theorems are built buttom up following the L1-term structure,
-       * first proving preservation of a single variable 
+       * first proving preservation of a single variable
          for each atomic statement in the leaves
        * then combining these theorems for the set of
          variables that should be preserved
        * then propagating these results to compound statements.
-    1: Derive the preservation theorem from an already existing 
+    1: Derive the preservation theorem from an already existing
        theorem for a superset of variables (instead of building it
        from scratch)
     2: Combine existing theorems to form preservation of
        a superset of variables before doing the step as in mode = 1.
-    
 
- 
+
+
 * Renovated parallel processing of functions in C-File. By default
   tasks are split on a function as well as autocorres-phase basis.
   Call-graph as well as autocorres-phase dependencies are respected:
- 
+
   - Removed command option "generate_theories"
   - added option "single_threaded" to disable parallel processing.
 
@@ -184,12 +199,12 @@ New in Repository Version
   L1_opt = RAW | PEEP (default)
   L2_opt = RAW | PEEP (default)
   HL_opt = RAW | PEEP (default)
-  WA_opt = RAW | PEEP (default) 
+  WA_opt = RAW | PEEP (default)
 
 * Added some profiling for autocorres conversions. Options
 
   autocorres_profile_conversion_enabled = true | false (default)
-  autocorres_profile_conversion_verbosity = 0 (default) | 1 
+  autocorres_profile_conversion_verbosity = 0 (default) | 1
 
 * Added configuration option autocorres_timing_threshold (default 3)
   Specifies the threshold (in milliseconds) for which timing output
@@ -200,30 +215,37 @@ autocorres will process the functions. This allows incremental
 processing of phases.
 
 * New command "init-autocorres" to initialise autocorres for a C-file
-in order to process it in multiple subsequent theories in parallel. 
-The theory with the init-autocorres is the base theory for subsequent 
+in order to process it in multiple subsequent theories in parallel.
+The theory with the init-autocorres is the base theory for subsequent
 autocorres invocations. The theory files should be organized respecting
-the call-graph dependencies. By specifying "scope" and "phase" accordingly 
-processing can be split into multiple theories for better utilization 
-of CPU cores. Instead, when processing all functions and phases within a single 
-autocorres-command, evaluation is basically linearized due to the 
-linear nature of the definition stages in each phase. 
+the call-graph dependencies. By specifying "scope" and "phase" accordingly
+processing can be split into multiple theories for better utilization
+of CPU cores. Instead, when processing all functions and phases within a single
+autocorres-command, evaluation is basically linearized due to the
+linear nature of the definition stages in each phase.
 
   Command option "generate_theories" will generate theories reflecting
 incremental processing of the call-graph and the phases to utilize
 maximal parallel execution. The final theory that combines all results
 is named "autocorres_final_<name of c file without suffix>.thy".
 
-  By default files will be generated in the same directory as the theory 
+  By default files will be generated in the same directory as the theory
 that invoces the command. This directory can be extended by specifying
 command option "generate_theories_path = <subdirectory>".
 
-* Configuration option "verbose" (default 0), for some 
+* Configuration option "verbose" (default 0), for some
 more verbose tracing. Larger numbers mean more information.
 
 *** C-Parser ***
 
-* Support compiler directives 
+* Add option: `[[arithmetic_right_shift]]` defines the behaviour of right shift to
+  be arithmetic, i.e. a negative value is sign extended. This is implementation-defined
+  behavior in the C standard.
+
+  Also renamed the option `[[anal_integer_conversion]]` to `[[guarded_integer_conveersion]]`,
+  a similar option specifying implementation-defined bahavior.
+
+* Support compiler directives
     - typeof(<expr>)
     - offsetof(<type>, <field-name>)
   cf. ex.c / CTranslationInfrastructure.thy
@@ -251,26 +273,26 @@ more verbose tracing. Larger numbers mean more information.
      install_C_file <main-file>
 
 * Uniform error reporting for C-files (with PIDE conform positions)
- 
-* Uniform handling of options after filename (including 'memsafe', 
+
+* Uniform handling of options after filename (including 'memsafe',
   'c_types', 'c_defs' which were before the filename).
 
      install_C_file <filename> <options>
 
-* Feedback reference variable replaced by configuration options: 
+* Feedback reference variable replaced by configuration options:
    'level': (default 0): 1,2,... will trigger more output
-   'verbose': (default false): false = prefer short notifications 
-     (e.g. for internal proofs, hints on proof-step but not the 
+   'verbose': (default false): false = prefer short notifications
+     (e.g. for internal proofs, hints on proof-step but not the
      actual goal)
-  
+
 * new option 'prune_types' (default true) for command install_C_file,
   prunes all unused types, e.g. resulting from unused variants of
   a union declaration.
 
-* Use standard file provider to read C-files. Dependency on C-file is 
-tracked, and changes are automatically propagated. 
+* Use standard file provider to read C-files. Dependency on C-file is
+tracked, and changes are automatically propagated.
 Caveat: indirect imports (via #include) in C-files are not tracked.
-Minor INCOMPATIBILITY: When installing a file via some path like 
+Minor INCOMPATIBILITY: When installing a file via some path like
 
   install_C_file "foo/bar.c"
 
@@ -287,13 +309,13 @@ then use only the plain base name in subsequent autocorres:
 * Command "lazy_named_theorems" providing collections of theorems
   with a declaration (instead of an attribute) postponing application
   of the morphism. This speeds up entering locales as the optimisations
-  for lazy-facts / lazy-notes are only effective for theorems without 
+  for lazy-facts / lazy-notes are only effective for theorems without
   attributes.
 
 * Changed the representation of local variables in SIMPL from a
   record to a function (from names to values) making use of the
-  statespace package. This enabled to implement a uniform calling 
-  convention for function pointers with parameters. As statespaces are 
+  statespace package. This enabled to implement a uniform calling
+  convention for function pointers with parameters. As statespaces are
   based on locales, the change resulted in a major refactoring of
   both the C-Parser and AutoCorres to work properly within locales.
 
@@ -303,7 +325,7 @@ then use only the plain base name in subsequent autocorres:
 *** ML ***
 
 * Antiquotation "infer_instantiate" (extending "instantiate") which
-  infers type instantiations from term instantiations 
+  infers type instantiations from term instantiations
   (like Thm.infer_instantiate).
 
 * Antiquotation "match" to match on cterms, cf.:

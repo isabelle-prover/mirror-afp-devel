@@ -168,7 +168,7 @@ proof -
     from \<open>m $$ k = None\<close> have "\<And>k'. k' \<in> fmdom' m \<Longrightarrow> m(k $$:= v) $$! k' = m $$! k'"
       using fmdom'_notI by force
     moreover from \<open>m $$ k = None\<close> have "k \<notin> set (sorted_list_of_fset (fmdom m))"
-      using fmdom'_alt_def and fmdom'_notI and in_set_member by force
+      using fmdom'_alt_def and fmdom'_notI by force
     ultimately show ?thesis
       by (metis (mono_tags, lifting) fmdom'_alt_def map_eq_conv sorted_list_of_fset_simps(1))
   qed
@@ -198,7 +198,7 @@ lemma map_inj_pair_non_membership:
   assumes "k \<notin> set (map fst ps)"
   and "inj f"
   shows "f k \<notin> set (map fst (map (\<lambda>(k, v). (f k, v)) ps))"
-  using assms by (induction ps) (simp add: member_rec(2), fastforce simp add: injD)
+  using assms by (induction ps) (simp, fastforce simp add: injD)
 
 lemma map_insort_key_fst:
   assumes "distinct (map fst ps)"
@@ -243,7 +243,7 @@ next
       using False and \<open>inj f\<close> by (fastforce dest: injD)
     also from Cons.IH and Cons.prems(1,2) and assms(3,4) have "\<dots> =
       ?f_p # (map ?g (insort_key fst (k, v) ps))"
-      by (fastforce simp add: member_rec(1))
+      by simp
     also have "\<dots> = map ?g (p # insort_key fst (k, v) ps)"
       by (simp add: case_prod_beta)
     finally show ?thesis
@@ -298,7 +298,7 @@ next
     also have "\<dots> = (fmap_of_list (insort_key fst (k, v) ps))(fst p $$:= snd p)"
       by (metis fmap_of_list_simps(2) prod.collapse)
     also from Cons.prems(1,2) and Cons.IH have "\<dots> = (fmap_of_list ps)(k $$:= v)(fst p $$:= snd p)"
-      by (fastforce simp add: member_rec(1))
+      by simp
     finally show ?thesis
     proof -
       assume *: "fmap_of_list (insort_key fst (k, v) (p # ps)) =
@@ -306,7 +306,7 @@ next
       from Cons.prems(2) have "k \<notin> set (fst p # map fst ps)"
         by simp
       then have **: "{k $$:= v} $$ (fst p) = None"
-        by (fastforce simp add: member_rec(1))
+        by simp
       have "fmap_of_list (p # ps) = (fmap_of_list ps)(fst p $$:= snd p)"
         by (metis fmap_of_list_simps(2) prod.collapse)
       with * and ** show ?thesis

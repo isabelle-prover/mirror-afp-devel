@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Thomas Holme Surlykke</title>
+    <link>https://isa-afp.org/authors/surlykke/</link>
+    <description>AFP entries of Thomas Holme Surlykke</description><item>
+  <title>Impossibility of the Dissection of a Cube</title>
+  <link>https://isa-afp.org/entries/Cube_Dissection.html</link>
+  <pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate>
+  <description>Impossibility of the Dissection of a Cube in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+
+  </channel>
+</rss>

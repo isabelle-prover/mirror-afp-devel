@@ -1,59 +1,51 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>noschinski on Archive of Formal Proofs
-    </title>
-    <link>/authors/noschinski/</link>
-    <description>
-        Recent content in noschinski 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 11 Nov 2015 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/noschinski/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Planarity Certificates</title>
-          <link>/entries/Planarity_Certificates.html</link>
-          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Planarity_Certificates.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Generating Cases from Labeled Subgoals</title>
-          <link>/entries/Case_Labeling.html</link>
-          <pubDate>Tue, 21 Jul 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Case_Labeling.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Lehmer&#39;s Theorem</title>
-          <link>/entries/Lehmer.html</link>
-          <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Lehmer.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Pratt&#39;s Primality Certificates</title>
-          <link>/entries/Pratt_Certificate.html</link>
-          <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Pratt_Certificate.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Graph Theory</title>
-          <link>/entries/Graph_Theory.html</link>
-          <pubDate>Sun, 28 Apr 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Graph_Theory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Probabilistic Proof of the Girth-Chromatic Number Theorem</title>
-          <link>/entries/Girth_Chromatic.html</link>
-          <pubDate>Mon, 06 Feb 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Girth_Chromatic.html</guid>
-          <description></description>
-        </item>
+    <title>Lars Noschinski</title>
+    <link>https://isa-afp.org/authors/noschinski/</link>
+    <description>AFP entries of Lars Noschinski</description><item>
+  <title>Planarity Certificates</title>
+  <link>https://isa-afp.org/entries/Planarity_Certificates.html</link>
+  <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+  <description>Planarity Certificates in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Generating Cases from Labeled Subgoals</title>
+  <link>https://isa-afp.org/entries/Case_Labeling.html</link>
+  <pubDate>Tue, 21 Jul 2015 00:00:00 +0000</pubDate>
+  <description>Generating Cases from Labeled Subgoals in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Programming languages/Misc</category>
+</item>
+<item>
+  <title>Pratt&#39;s Primality Certificates</title>
+  <link>https://isa-afp.org/entries/Pratt_Certificate.html</link>
+  <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+  <description>Pratt&#39;s Primality Certificates in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Lehmer&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Lehmer.html</link>
+  <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+  <description>Lehmer&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Graph Theory</title>
+  <link>https://isa-afp.org/entries/Graph_Theory.html</link>
+  <pubDate>Sun, 28 Apr 2013 00:00:00 +0000</pubDate>
+  <description>Graph Theory in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>A Probabilistic Proof of the Girth-Chromatic Number Theorem</title>
+  <link>https://isa-afp.org/entries/Girth_Chromatic.html</link>
+  <pubDate>Mon, 06 Feb 2012 00:00:00 +0000</pubDate>
+  <description>A Probabilistic Proof of the Girth-Chromatic Number Theorem in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+
   </channel>
 </rss>

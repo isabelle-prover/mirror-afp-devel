@@ -134,7 +134,7 @@ proof -
   next
     case False
     with \<open>(a, b) \<notin>\<^sub>p set (ps -- qs)\<close> have "(a, b) \<notin>\<^sub>p set ps"
-      by (auto simp: set_diff_list in_pair_iff)
+      by (auto simp: in_pair_iff)
     with \<open>a \<in> set xs\<close> \<open>b \<in> set xs\<close> have "processed (a, b) xs ps"
       by (rule processedI)
     thus ?thesis by (rule a2)
@@ -487,7 +487,7 @@ proof
   with assms(1) show "(p, q) \<in> set (ab gs bs hs data) \<times> (set gs \<union> set (ab gs bs hs data))"
   proof (rule ap_spec_inE)
     assume "(p, q) \<in> set (ps -- sps)"
-    hence "(p, q) \<in> set ps" by (simp add: set_diff_list)
+    hence "(p, q) \<in> set ps" by (simp)
     from this assms(3) have "(p, q) \<in> set bs \<times> (set gs \<union> set bs)" ..
     hence "p \<in> set bs" and "q \<in> set gs \<union> set bs" by blast+
     thus ?thesis by (auto simp add: ab_specD1[OF assms(2)])
@@ -537,7 +537,7 @@ proof
   also have "... \<subseteq> fst ` ?r"
   proof (rule image_mono)
     have "set gs \<union> set bs \<union> fst ` set (ps -- sps) \<union> snd ` set (ps -- sps) \<union> set hs \<subseteq>
-            set gs \<union> set bs \<union> fst ` set ps \<union> snd ` set ps \<union> set hs" by (auto simp: set_diff_list)
+            set gs \<union> set bs \<union> fst ` set ps \<union> snd ` set ps \<union> set hs" by (auto)
     also from assms(3) have "... \<subseteq> ?r" by fastforce
     finally show "set gs \<union> set bs \<union> fst ` set (ps -- sps) \<union> snd ` set (ps -- sps) \<union> set hs \<subseteq> ?r" .
   qed
@@ -956,10 +956,10 @@ proof -
       by (rule dgrad_p_set_le_subset, auto simp add: args_to_set_def)
   next
     show "dgrad_p_set_le d (fst ` fst ` set (ps -- sps)) (args_to_set (gs, bs, ps))"
-      by (rule dgrad_p_set_le_subset, auto simp add: args_to_set_def set_diff_list)
+      by (rule dgrad_p_set_le_subset, auto simp add: args_to_set_def)
   next
     show "dgrad_p_set_le d (fst ` snd ` set (ps -- sps)) (args_to_set (gs, bs, ps))"
-      by (rule dgrad_p_set_le_subset, auto simp add: args_to_set_def set_diff_list)
+      by (rule dgrad_p_set_le_subset, auto simp add: args_to_set_def)
   next
     from assms(4, 1, 5, 6) show "dgrad_p_set_le d (fst ` set hs) (args_to_set (gs, bs, ps))"
       unfolding assms(7) fst_set_add_indices by (rule compl_structD1)
@@ -996,10 +996,10 @@ proof -
       by (rule image_mono, rule Keys_mono, auto simp add: args_to_set_def)
   next
     show "component_of_term ` Keys (fst ` fst ` set (ps -- sps)) \<subseteq> component_of_term ` Keys (args_to_set (gs, bs, ps))"
-      by (rule image_mono, rule Keys_mono, auto simp add: set_diff_list args_to_set_def)
+      by (rule image_mono, rule Keys_mono, auto simp add: args_to_set_def)
   next
     show "component_of_term ` Keys (fst ` snd ` set (ps -- sps)) \<subseteq> component_of_term ` Keys (args_to_set (gs, bs, ps))"
-      by (rule image_mono, rule Keys_mono, auto simp add: args_to_set_def set_diff_list)
+      by (rule image_mono, rule Keys_mono, auto simp add: args_to_set_def)
   next
     from assms(3, 4, 5) show "component_of_term ` Keys (fst ` set hs) \<subseteq> component_of_term ` Keys (args_to_set (gs, bs, ps))"
       unfolding assms(6) fst_set_add_indices by (rule compl_structD2)
@@ -1274,7 +1274,7 @@ qed
 
 lemma discarded_subset:
   assumes "ab_spec ab"
-    and "D' = D \<union> (set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps) -\<^sub>p set (ap gs bs (ps -- sps) hs data'))"
+    and "D' = D \<union> (set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps) -\<^sub>p set (ap gs bs (ps -- sps) hs data'))"
     and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)" and "D \<subseteq> (set gs \<union> set bs) \<times> (set gs \<union> set bs)"
   shows "D' \<subseteq> (set gs \<union> set (ab gs bs hs data')) \<times> (set gs \<union> set (ab gs bs hs data'))"
 proof -
@@ -1283,19 +1283,19 @@ proof -
   moreover have "set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps) -\<^sub>p set (ap gs bs (ps -- sps) hs data') \<subseteq>
                   (set gs \<union> (set bs \<union> set hs)) \<times> (set gs \<union> (set bs \<union> set hs))" (is "?l \<subseteq> ?r")
   proof (rule subset_trans)
-    show "?l \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps)"
+    show "?l \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps)"
       by (simp add: minus_pairs_def)
   next
     have "set hs \<times> (set gs \<union> set bs \<union> set hs) \<subseteq> ?r" by fastforce
     moreover have "set (ps -- sps) \<subseteq> ?r"
     proof (rule subset_trans)
-      show "set (ps -- sps) \<subseteq> set ps" by (auto simp: set_diff_list)
+      show "set (ps -- sps) \<subseteq> set ps" by (auto)
     next
       from assms(3) show "set ps \<subseteq> ?r" by fastforce
     qed
-    ultimately show "set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps) \<subseteq> ?r" by (rule Un_least)
+    ultimately show "set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps) \<subseteq> ?r" by simp
   qed
-  ultimately show ?thesis unfolding eq assms(2) by (rule Un_least)
+  ultimately show ?thesis unfolding eq assms(2) by simp
 qed
 
 lemma compl_struct_disjoint:
@@ -1336,7 +1336,7 @@ function (domintros) gb_schema_dummy :: "nat \<times> nat \<times> 'd \<Rightarr
             else
               let (hs, data') = add_indices aux (snd data) in
                 gb_schema_dummy (remcomps, data')
-                  (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps)) -\<^sub>p set (ap gs bs ps0 hs data')))
+                  (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps)) -\<^sub>p set (ap gs bs ps0 hs data')))
                   (ab gs bs hs data') (ap gs bs ps0 hs data')
             )
           )
@@ -1369,7 +1369,7 @@ proof -
       define sps where "sps = sel gs bs ps (n0, data0)"
       define data' where "data' = (n1, data1)"
       define D' where "D' = D \<union>
-         (set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps) -\<^sub>p
+         (set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps) -\<^sub>p
           set (ap gs bs (ps -- sps) hs data'))"
       define rc where "rc = rc0 - count_const_lt_components (fst (compl gs bs (ps -- sel gs bs ps (n0, data0))
                                                                   (sel gs bs ps (n0, data0)) (n0, data0)))"
@@ -1389,7 +1389,7 @@ proof -
               unfolding sps_def by (rule sel_specD1, rule sel_specD2)
             moreover from sel_specD1[OF sel \<open>ps \<noteq> []\<close>] have "set sps \<noteq> {}" by (simp add: sps_def)
             ultimately have "set ps \<inter> set sps \<noteq> {}" by (simp add: inf.absorb_iff2)
-            hence "set (ps -- sps) \<subset> set ps" unfolding set_diff_list by fastforce
+            hence "set (ps -- sps) \<subset> set ps" by auto
             hence "card (set (ps -- sps)) < card (set ps)" by (simp add: psubset_card_mono)
             moreover have "card (set (ap gs bs (ps -- sps) [] data')) \<le> card (set (ps -- sps))"
               by (rule card_mono, fact finite_set, rule ap_spec_Nil_subset, fact ap)
@@ -1431,7 +1431,7 @@ lemma gb_schema_dummy_not_Nil:
             else
               let (hs, data') = add_indices aux (snd data) in
                 gb_schema_dummy (remcomps, data')
-                  (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps)) -\<^sub>p set (ap gs bs ps0 hs data')))
+                  (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps)) -\<^sub>p set (ap gs bs ps0 hs data')))
                   (ab gs bs hs data') (ap gs bs ps0 hs data')
             )
           )"
@@ -1446,7 +1446,7 @@ lemma gb_schema_dummy_induct [consumes 1, case_names base rec1 rec2]:
     and rec2: "\<And>bs ps sps aux hs rc data data' D D'. ps \<noteq> [] \<Longrightarrow> sps = sel gs bs ps (snd data) \<Longrightarrow>
                 aux = compl gs bs (ps -- sps) sps (snd data) \<Longrightarrow> (hs, data') = add_indices aux (snd data) \<Longrightarrow>
                 rc = fst data - count_const_lt_components (fst aux) \<Longrightarrow> 0 < rc \<Longrightarrow>
-                D' = (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps)) -\<^sub>p set (ap gs bs (ps -- sps) hs data'))) \<Longrightarrow>
+                D' = (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps)) -\<^sub>p set (ap gs bs (ps -- sps) hs data'))) \<Longrightarrow>
                 P (rc, data') D' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data')
                   (gb_schema_dummy (rc, data') D' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data')) \<Longrightarrow>
                 P data D bs ps (gb_schema_dummy (rc, data') D' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data'))"
@@ -1475,7 +1475,7 @@ proof -
         define hs where "hs = fst (add_indices aux (snd data))"
         define data' where "data' = snd (add_indices aux (snd data))"
         define rc where "rc = fst data - count_const_lt_components (fst aux)"
-        define D' where "D' = (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps)) -\<^sub>p set (ap gs bs (ps -- sps) hs data')))"
+        define D' where "D' = (D \<union> ((set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps)) -\<^sub>p set (ap gs bs (ps -- sps) hs data')))"
         have eq: "add_indices aux (snd data) = (hs, data')" by (simp add: hs_def data'_def)
         assume "rc \<noteq> 0"
         hence "0 < rc" by simp
@@ -1483,7 +1483,7 @@ proof -
            (case add_indices aux (snd data) of
             (hs, data') \<Rightarrow>
               gb_schema_dummy (rc, data')
-               (D \<union> (set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps) -\<^sub>p set (ap gs bs (ps -- sps) hs data')))
+               (D \<union> (set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> (set ps - set sps) -\<^sub>p set (ap gs bs (ps -- sps) hs data')))
                (ab gs bs hs data') (ap gs bs (ps -- sps) hs data'))"
           unfolding eq prod.case D'_def[symmetric] using False sps_def aux_def eq[symmetric] rc_def \<open>0 < rc\<close> D'_def
         proof (rule rec2)
@@ -1816,7 +1816,7 @@ next
       next
         case False
         with \<open>(p, q) \<notin>\<^sub>p set (ps -- sps)\<close> have "(p, q) \<notin>\<^sub>p set ps"
-          by (auto simp: in_pair_iff set_diff_list)
+          by (auto simp: in_pair_iff)
         with \<open>p \<in> set gs \<union> set bs\<close> \<open>q \<in> set gs \<union> set bs\<close> have "processed (p, q) (gs @ bs) ps"
           by (simp add: processed_alt)
         from this \<open>(p, q) \<notin>\<^sub>p D\<close> \<open>fst p \<noteq> 0\<close> \<open>fst q \<noteq> 0\<close>
@@ -1900,7 +1900,7 @@ next
     thus "(x, y) \<in> {}" unfolding in_pair_Un
     proof
       assume "(x, y) \<in>\<^sub>p set (ps -- sps)"
-      also have "... \<subseteq> set ps" by (auto simp: set_diff_list)
+      also have "... \<subseteq> set ps" by (auto)
       finally have "(x, y) \<in>\<^sub>p set ps \<inter>\<^sub>p D" using \<open>(x, y) \<in>\<^sub>p D\<close> by simp
       also have "... = {}" by (fact rec2.prems(4))
       finally show ?thesis by (simp add: in_pair_iff)
@@ -1960,7 +1960,7 @@ next
                      crit_pair_cbelow_on d m (fst ` B) (fst x) (fst y)"
 
     from rec2.prems(2) have ps_sps_sub: "set (ps -- sps) \<subseteq> set bs \<times> (set gs \<union> set bs)"
-      by (auto simp: set_diff_list)
+      by (auto)
     from uid have uid': "unique_idx (gs @ bs @ hs) data'" by (simp add: unique_idx_def ab_specD1[OF ab])
 
     have a: "crit_pair_cbelow_on d m (fst ` B) (fst x) (fst y)"
@@ -1968,7 +1968,7 @@ next
     proof (cases "x = y")
       case True
       from xy_in rec2.prems(2) have "y \<in> set gs \<union> set bs"
-        unfolding in_pair_minus_pairs unfolding True in_pair_iff set_diff_list by auto
+        unfolding in_pair_minus_pairs unfolding True in_pair_iff by auto
       hence "fst y \<in> fst ` set gs \<union> fst ` set bs" by fastforce
       from this assms(4) rec2.prems(1) have "fst y \<in> dgrad_p_set d m" by blast
       with assms(3) show ?thesis unfolding True by (rule crit_pair_cbelow_same)
@@ -2036,7 +2036,7 @@ next
       show ?thesis
       proof (cases "a = b")
         case True
-        from ab_in' rec2.prems(2) have "b \<in> set hs" unfolding True in_pair_iff set_diff_list by auto
+        from ab_in' rec2.prems(2) have "b \<in> set hs" unfolding True in_pair_iff by auto
         hence "fst b \<in> fst ` set hs" by fastforce
         from this hs_sub have "fst b \<in> dgrad_p_set d m" ..
         with assms(3) show ?thesis unfolding True by (rule crit_pair_cbelow_same)
@@ -2332,7 +2332,7 @@ proof -
       show "crit_pair_cbelow_on d m (fst ` B) (fst a) (fst b)"
       proof (cases "a = b")
         case True
-        from ab_in have "b \<in> set gs \<union> set bs" unfolding True in_pair_iff set_diff_list by auto
+        from ab_in have "b \<in> set gs \<union> set bs" unfolding True in_pair_iff by auto
         hence "fst b \<in> fst ` (set gs \<union> set bs)" by fastforce
         from this gs_bs_sub have "fst b \<in> dgrad_p_set d m" ..
         with dg show ?thesis unfolding True by (rule crit_pair_cbelow_same)
@@ -2448,7 +2448,7 @@ proof -
               unfolding sps_def by (rule sel_specD1, rule sel_specD2)
             moreover from sel_specD1[OF sel \<open>ps \<noteq> []\<close>] have "set sps \<noteq> {}" by (simp add: sps_def)
             ultimately have "set ps \<inter> set sps \<noteq> {}" by (simp add: inf.absorb_iff2)
-            hence "set (ps -- sps) \<subset> set ps" unfolding set_diff_list by fastforce
+            hence "set (ps -- sps) \<subset> set ps" by auto
             hence "card (set (ps -- sps)) < card (set ps)" by (simp add: psubset_card_mono)
             moreover have "card (set (ap gs bs (ps -- sps) [] data')) \<le> card (set (ps -- sps))"
               by (rule card_mono, fact finite_set, rule ap_spec_Nil_subset, fact ap)
@@ -3069,7 +3069,7 @@ proof -
     "\<exists>r \<in> set gs \<union> set bs \<union> set hs. let k = fst (snd r) in
           k \<noteq> ?i \<and> k \<noteq> ?j \<and> lt (fst r) adds\<^sub>t ?l \<and> pair_in_list ps ?i k \<and>
          ((r \<in> set gs \<union> set bs \<and> q_in_bs) \<or> pair_in_list ps ?j k) \<and> fst r \<noteq> 0"
-    by (smt UnI1 chain_ncrit_def sup_commute)
+    by (smt (verit) Un_iff chain_ncrit_def)
 
   then obtain r where r_in: "r \<in> set gs \<union> set bs \<union> set hs" and "fst r \<noteq> 0" and rp: "fst (snd r) \<noteq> ?i"
     and rq: "fst (snd r) \<noteq> ?j" and "lt (fst r) adds\<^sub>t ?l"
@@ -4365,7 +4365,7 @@ next
   case False
   have eq: "(\<exists>b\<in>set [b\<leftarrow>bs . fst b \<noteq> 0]. punit.const_lt_component (fst b) = Some ()) =
             (\<exists>b\<in>set bs. fst b \<noteq> 0 \<and> punit.const_lt_component (fst b) = Some ())"
-    by (metis (mono_tags, lifting) filter_set member_filter)
+    by auto (metis split_pairs2) 
   show ?thesis
     by (simp only: False punit.count_rem_components_def eq if_False
         remdups_map_component_of_term_punit count_const_lt_components_punit punit_component_of_term, simp)

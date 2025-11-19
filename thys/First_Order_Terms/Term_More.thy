@@ -20,7 +20,22 @@ theory Term_More
     Position
     Subterm_and_Context
     Polynomial_Factorization.Missing_List
+    Unification
+    Fun_More2
 begin
+
+lemma fun_merge_is_partition:
+  assumes "is_partition as"
+    and "i < length as"
+    and "a \<in> as ! i"
+  shows "fun_merge fs as a = (fs ! i) a"
+  by (intro fun_merge_part assms, insert assms(1), auto simp: is_partition_alt is_partition_alt_def)
+
+lemma fun_merge_is_part:
+  assumes "is_partition as"
+  shows "\<exists>\<sigma>. \<forall>i<length as. \<forall>x\<in> as ! i. \<sigma> x = \<tau> i x"
+  by (rule fun_merge, insert assms(1), auto simp: is_partition_alt is_partition_alt_def)
+
 
 text \<open>@{text "showl"}-Instance for Terms\<close>
 
@@ -221,7 +236,7 @@ text \<open>
 
 text \<open>The position of the hole in a context is uniquely determined.\<close>
 fun
-  hole_pos :: "('f, 'v) ctxt \<Rightarrow> pos"
+  hole_pos :: "('f, 'v) actxt \<Rightarrow> pos"
   where
     "hole_pos \<box> = []" |
     "hole_pos (More f ss D ts) = length ss # hole_pos D"
@@ -337,6 +352,14 @@ next
     qed (insert More Cons, auto simp: nth_append)
   qed auto
 qed
+
+lemma subst_at_ctxt_at_eq_termI:
+  assumes "p \<in> poss s" "p \<in> poss t"
+    and "s |_p = t |_ p"
+    and "ctxt_of_pos_term p s = ctxt_of_pos_term p t"
+  shows "s = t" using assms 
+  by (metis ctxt_supt_id)
+
 
 text \<open>Conversions between contexts and proper subterms.\<close>
 
@@ -534,6 +557,10 @@ lemma subt_at_Cons_distr [simp]:
   assumes "i # p \<in> poss t" and "p \<noteq> []" (*avoid simplifier loop*)
   shows "t |_ (i # p) = (t |_ [i]) |_ p"
   using assms by (induct t) auto
+
+lemma subt_at_Cons_comp:
+  "i # p \<in> poss s \<Longrightarrow> (s |_ [i]) |_ p = s |_ (i # p)"
+  by (metis subt_at_Cons_distr subt_at.simps(1))
 
 lemma subt_at_append [simp]:
   "p \<in> poss t \<Longrightarrow> t |_ (p @ q) = (t |_ p) |_ q"
@@ -1639,6 +1666,11 @@ lemma map_vars_term_ctxt_commute:
   "map_vars_term m (c\<langle>t\<rangle>) = (map_vars_ctxt m c)\<langle>map_vars_term m t\<rangle>"
   by (induct c) auto
 
+lemma hole_pos_map_vars [simp]:
+  "hole_pos (map_vars_ctxt f C) = hole_pos C"
+  by (induct C) auto
+
+
 lemma map_vars_term_inj_compose:
   assumes inj: "\<And> x. n (m x) = x"
   shows "map_vars_term n (map_vars_term m t) = t"
@@ -1693,6 +1725,11 @@ proof (cases p)
       , unfolded id] have False by simp
   then show ?thesis by auto
 qed simp
+
+lemma subt_at_subterm [intro!]:
+  "p \<in> poss t \<Longrightarrow> p \<noteq> [] \<Longrightarrow>  t \<rhd> t |_ p"
+  using subt_at_id_imp_eps subt_at_imp_supteq subterm.order.not_eq_order_implies_strict by blast
+
 
 lemma pos_into_subst:
   assumes t: "t \<cdot> \<sigma> = s" and p: "p \<in> poss s" and nt: "\<not> (p \<in> poss t \<and> is_Fun (t |_ p))"
@@ -2614,6 +2651,11 @@ lemma ground_vars_term_ms_empty:
   unfolding set_mset_vars_term_ms [symmetric]
   by (simp del: set_mset_vars_term_ms)
 
+lemma ground_map_term [simp]:
+  "ground (map_term f h t) = ground t"
+  by (induct t) auto
+
+
 lemma vars_term_ms_map_funs_term [simp]:
   "vars_term_ms (map_funs_term fg t) = vars_term_ms t"
 proof (induct t)
@@ -2879,6 +2921,28 @@ lemma ground_ctxt_apply[simp]: "ground (C\<langle>t\<rangle>) = (ground_ctxt C \
 lemma ground_ctxt_compose[simp]: "ground_ctxt (C \<circ>\<^sub>c D) = (ground_ctxt C \<and> ground_ctxt D)"
   by (induct C, auto)
 
+lemma ground_ctxt_comp [intro]:
+  "ground_ctxt C \<Longrightarrow> ground_ctxt D \<Longrightarrow> ground_ctxt (C \<circ>\<^sub>c D)"
+  by simp
+
+lemma ctxt_comp_n_pres_ground [intro]:
+  "ground_ctxt C \<Longrightarrow> ground_ctxt (C^n)"
+  by (induct n arbitrary: C) auto
+
+lemma subterm_eq_pres_ground:
+  assumes "ground s" and "s \<unrhd> t"
+  shows "ground t" using assms(2,1)
+  by fastforce
+
+lemma ground_substD:
+  "ground (l \<cdot> \<sigma>) \<Longrightarrow> x \<in> vars_term l \<Longrightarrow> ground (\<sigma> x)"
+  by simp
+
+lemma ground_substI:
+  "(\<And> x. x \<in> vars_term s \<Longrightarrow> ground (\<sigma> x)) \<Longrightarrow> ground (s \<cdot> \<sigma>)"
+  by simp
+
+
 text \<open>Linearity of a term\<close>
 
 fun linear_term :: "('f, 'v) term \<Rightarrow> bool"
@@ -2894,7 +2958,7 @@ proof -
   let ?\<sigma> = "fun_merge ?\<tau> (map vars_term ts)"
   show ?thesis
     by (rule exI[of _ ?\<sigma>], intro allI impI ballI,
-        insert fun_merge_part[OF part, of _ _ ?\<tau>], auto)
+        insert fun_merge_is_partition[OF part, of _ _ ?\<tau>], auto)
 qed
 
 text \<open>Matching for linear terms\<close>
@@ -3067,7 +3131,7 @@ proof (induct l)
   { fix l
     assume l:"l \<in> set ls"
     then have "vars_term l \<subseteq> vars_term (Fun g ls)" by auto
-    then have "inj_on f (vars_term l)" using Fun(3) subset_inj_on by blast
+    then have "inj_on f (vars_term l)" using Fun(3) inj_on_subset by blast
     with Fun(1,2) l have "linear_term (map_vars_term f l)" by auto
   }
   moreover have "is_partition (map (vars_term \<circ> map_vars_term f) ls)"
@@ -3179,6 +3243,89 @@ qed simp
 
 lemma ground_imp_linear_term [simp]: "ground t \<Longrightarrow> linear_term t"
   by (induct t) (auto simp add: is_partition_def ground_vars_term_empty)
+
+lemma linear_vars_term_list:
+  assumes "linear_term t"
+  shows "length (filter ((=) x) (vars_term_list t)) \<le> 1"
+using assms
+proof (induct t)
+  case (Var y)
+  show ?case by (auto simp: vars_term_list.simps)
+next
+  case (Fun f ss)
+  show ?case 
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    from this [unfolded vars_term_list.simps]
+    have len: "2 \<le> length (filter ((=) x) (concat (map vars_term_list ss)))" (is "_ \<le> length ?xs") by auto
+    from len obtain y ys where xs: "?xs = y # ys" by (cases ?xs, auto)
+    from len[unfolded xs] obtain z zs where ys: "ys = z # zs" by (cases ys, auto)
+    from xs[unfolded ys] have "{y,z} \<subseteq> set ?xs" by auto
+    from this[unfolded set_filter] have "y = x" and "z = x" by auto
+    from xs[unfolded ys this] have xs: "?xs = x # x # zs" by auto
+    {
+      fix s
+      assume s: "s \<in> set ss"
+      with Fun(2)[unfolded linear_term.simps]
+      have "linear_term s" by auto
+      note Fun(1)[OF s this]
+    }
+    from this Fun(2)[unfolded linear_term.simps] xs
+    show False
+    proof (induct ss)
+      case Nil then show ?case by simp
+    next
+      case (Cons s ss) note oCons = this
+      from Cons(3) have part: "is_partition (map vars_term ss) \<and> (\<forall> s \<in> set ss. linear_term s)" and lin: "linear_term s"  using is_partition_Cons by auto
+      from Cons(1)[OF _ part] Cons(2) 
+      have ind: "filter ((=) x) (concat (map vars_term_list ss)) \<noteq> x # x # zs" by auto
+      show ?case 
+      proof (cases "filter ((=) x) (vars_term_list s)")
+        case Nil
+        with Cons(4) ind show False by auto
+      next
+        case (Cons y ys)
+        let ?s = "filter ((=) x) (vars_term_list s)"
+        let ?ss = "filter ((=) x) (concat (map vars_term_list ss))"
+        from Cons oCons(4) have "?s = x # ys" by auto
+        with oCons(2)[of s] have sx: "?s = [x]"
+          by auto
+        with oCons(4) have ssx: "?ss = x # zs" by auto
+        from sx have "x \<in> set ?s" by auto
+        from this[unfolded set_filter set_vars_term_list]
+        have sx: "x \<in> vars_term s" by auto
+        from ssx have "x \<in> set ?ss" by auto
+        from this[unfolded set_filter set_vars_term_list]
+        obtain t where tx: "x \<in> vars_term t" and t: "t \<in> set ss" by auto
+        from t[unfolded set_conv_nth] obtain i where i: "i < length ss" and
+          t: "t = ss ! i" by auto
+        from oCons(3)[THEN conjunct1, unfolded is_partition_def, THEN spec[of _ "Suc i"], THEN mp, THEN spec[of _ 0]] i tx[unfolded t] sx
+        show False by auto
+      qed
+    qed  
+  qed
+qed
+
+lemma distinct_alt:
+  assumes "\<forall> x. length (filter ((=) x) xs) \<le> 1"
+  shows "distinct xs"
+  using assms proof(induct xs)
+  case (Cons x xs)
+  then have IH:"distinct xs"
+    by (metis dual_order.trans filter.simps(2) impossible_Cons nle_le) 
+  from Cons(2) have "length (filter ((=) x) xs) = 0"
+    by (metis (mono_tags) One_nat_def add.right_neutral add_Suc_right filter.simps(2) le_less length_0_conv less_Suc0 list.simps(3) list.size(4) nat.inject)
+  then have "x \<notin> set (xs)"
+    by (metis (full_types) filter_empty_conv length_0_conv) 
+  with IH show ?case
+    by simp
+qed simp
+
+lemma linear_term_distinct_vars:
+  assumes "linear_term t"
+  shows "distinct (vars_term_list t)"
+  using distinct_alt linear_vars_term_list[OF assms] by blast
+
 
 text \<open>exhaustively apply several maps on function symbols\<close>
 fun map_funs_term_enum :: "('f \<Rightarrow> 'g list) \<Rightarrow> ('f, 'v) term \<Rightarrow> ('g, 'v) term list"
@@ -3304,5 +3451,90 @@ next
 qed
 
 declare map_funs_term_enum.simps[simp del]
+
+lemma supt_imp_not_unifiable:
+  assumes "s \<rhd> t"
+  shows "\<not> unifiable {(t, s)}"
+proof
+  assume "unifiable {(t, s)}"
+  then obtain \<sigma> where "\<sigma> \<in> unifiers {(t, s)}"
+    by (auto simp: unifiable_def)
+  then have "t \<cdot> \<sigma> = s \<cdot> \<sigma>" by (auto)
+  moreover have "s \<cdot> \<sigma> \<rhd> t \<cdot> \<sigma>"
+    using assms by (metis instance_no_supt_imp_no_supt)
+  ultimately show False by auto
+qed
+
+lemma imgu_linear_var_disjoint:
+  assumes "is_imgu \<sigma> {(l2 |_ p, l1)}"
+    and "p \<in> poss l2"
+    and "linear_term l2"
+    and "vars_term l1 \<inter> vars_term l2 = {}"
+    and "q \<in> poss l2"
+    and "parallel_pos p q"
+  shows "l2 |_ q = l2 |_ q \<cdot> \<sigma>"
+  using assms
+proof (induct p arbitrary: q l2)
+  case (Cons i p)
+  from this(3) obtain f ls where 
+    l2[simp]: "l2 = Fun f ls" and 
+    i: "i < length ls" and 
+    p: "p \<in> poss (ls ! i)"
+    by (cases l2) (auto)
+  then have l2i: "l2 |_ ((i # p)) = ls ! i |_ p" by auto
+  have "linear_term (ls ! i)" using Cons(4) l2 i by simp
+  moreover have "vars_term l1 \<inter> vars_term (ls ! i) = {}" using Cons(5) l2 i by force
+  ultimately have IH: "\<And>q. q \<in> poss (ls ! i) \<Longrightarrow> p \<bottom> q \<Longrightarrow> ls ! i |_ q = ls ! i |_ q \<cdot> \<sigma>" 
+    using Cons(1)[OF Cons(2)[unfolded l2i] p] by blast
+  from Cons(7) obtain j q' where q: "q = j # q'" by (cases q) auto
+  show ?case
+  proof (cases "j = i") 
+    case True with Cons(6,7) IH q show ?thesis by simp
+  next
+    case False
+    from Cons(6) q have j: "j < length ls" by simp 
+    { fix y
+      assume y: "y \<in> vars_term (l2 |_ q)"
+      let ?\<tau> = "\<lambda>x. if x = y then Var y else \<sigma> x"
+      from y Cons(6) q j have yj:"y \<in> vars_term (ls ! j)" 
+        by simp (meson subt_at_imp_supteq subteq_Var_imp_in_vars_term supteq_Var supteq_trans)
+      { fix i j
+        assume j:"j < length ls" and i:"i < length ls" and neq: "i \<noteq> j"
+        from j Cons(4) have "\<forall>i < j. vars_term (ls ! i) \<inter> vars_term (ls ! j) = {}"
+          by (auto simp : is_partition_def)
+        moreover from i Cons(4) have "\<forall>j < i. vars_term (ls ! i) \<inter> vars_term (ls ! j) = {}"
+          by (auto simp : is_partition_def)
+        ultimately have "vars_term (ls ! i) \<inter> vars_term (ls ! j) = {}" 
+          using neq by (cases "i < j") auto
+      }
+      from this[OF i j False] have "y \<notin> vars_term (ls ! i)" using yj by auto
+      then have "y \<notin> vars_term (l2 |_ ((i # p)))"
+        by (metis l2i p subt_at_imp_supteq subteq_Var_imp_in_vars_term supteq_Var supteq_trans)
+      then have "\<forall>x \<in> vars_term (l2 |_ ((i # p))). ?\<tau> x = \<sigma> x" by auto
+      then have l2\<tau>\<sigma>: "l2 |_ ((i # p)) \<cdot> ?\<tau> = l2 |_ ((i # p)) \<cdot> \<sigma>" using term_subst_eq[of _ \<sigma> ?\<tau>] by simp
+      from Cons(5) have "y \<notin> vars_term l1" using y Cons(6) vars_term_subt_at by fastforce
+      then have "\<forall>x \<in> vars_term l1. ?\<tau> x = \<sigma> x" by auto
+      then have l1\<tau>\<sigma>:"l1 \<cdot> ?\<tau> = l1 \<cdot> \<sigma>" using term_subst_eq[of _ \<sigma> ?\<tau>] by simp
+      have "l1 \<cdot> \<sigma> = l2 |_ (i # p) \<cdot> \<sigma>" using Cons(2) unfolding is_imgu_def by auto
+      then have "l1 \<cdot> ?\<tau> = l2 |_ (i # p) \<cdot> ?\<tau>"  using l1\<tau>\<sigma> l2\<tau>\<sigma> by simp
+      then have "?\<tau> \<in> unifiers {(l2 |_ (i # p), l1)}" unfolding unifiers_def by simp
+      with Cons(2) have \<tau>\<sigma>:"?\<tau> = \<sigma> \<circ>\<^sub>s ?\<tau>" unfolding is_imgu_def by blast
+      have "Var y = Var y \<cdot> \<sigma>"
+      proof (rule ccontr)
+        let ?x = "Var y \<cdot> \<sigma>"
+        assume *:"Var y \<noteq> ?x"
+        have "Var y = Var y \<cdot> ?\<tau>" by auto
+        also have "... = (Var y \<cdot> \<sigma>) \<cdot> ?\<tau>" using \<tau>\<sigma> subst_subst by metis 
+        finally have xy:"?x \<cdot> \<sigma> = Var y" using * by (cases "\<sigma> y") auto 
+        have "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma>" using Cons(2) unfolding is_imgu_def by auto
+        then have "?x \<cdot> (\<sigma> \<circ>\<^sub>s \<sigma>) = Var y" using xy by auto
+        moreover have "?x \<cdot> \<sigma> \<cdot> \<sigma> = ?x" using xy by auto
+        ultimately show False using * by auto
+      qed
+    }
+    then show ?thesis by (simp add: term_subst_eq)
+  qed
+qed auto
+
 
 end

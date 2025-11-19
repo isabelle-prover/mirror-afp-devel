@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>trelat on Archive of Formal Proofs
-    </title>
-    <link>/authors/trelat/</link>
-    <description>
-        Recent content in trelat 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 25 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/trelat/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Substitutions for Lambda-Free Higher-Order Terms</title>
-          <link>/entries/Substitutions_Lambda_Free.html</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Substitutions_Lambda_Free.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
-          <link>/entries/SCC_Bloemen_Sequential.html</link>
-          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/SCC_Bloemen_Sequential.html</guid>
-          <description></description>
-        </item>
+    <title>Vincent Trélat</title>
+    <link>https://isa-afp.org/authors/trelat/</link>
+    <description>AFP entries of Vincent Trélat</description><item>
+  <title>Substitutions for Lambda-Free Higher-Order Terms</title>
+  <link>https://isa-afp.org/entries/Substitutions_Lambda_Free.html</link>
+  <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+  <description>Substitutions for Lambda-Free Higher-Order Terms in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
+  <link>https://isa-afp.org/entries/SCC_Bloemen_Sequential.html</link>
+  <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+  <description>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+
   </channel>
 </rss>

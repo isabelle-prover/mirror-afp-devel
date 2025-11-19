@@ -55,8 +55,11 @@ qed
 
 lemma (in encoding) indRelRPO_is_preorder:
   shows "preorder indRelRPO"
-    unfolding preorder_on_def
-proof
+  unfolding preorder_on_def
+proof (intro conjI)
+  show "indRelRPO \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
   show "refl indRelRPO"
     by (rule indRelRPO_refl)
 next
@@ -546,8 +549,11 @@ qed
 
 lemma (in encoding) indRelLPO_is_preorder:
   shows "preorder indRelLPO"
-    unfolding preorder_on_def
-proof
+  unfolding preorder_on_def
+proof (intro conjI)
+  show "indRelLPO \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
   show "refl indRelLPO"
     by (rule indRelLPO_refl)
 next
@@ -1053,8 +1059,11 @@ qed
 
 lemma (in encoding) indRelEQ_is_preorder:
   shows "preorder indRelEQ"
-    unfolding preorder_on_def
-proof
+  unfolding preorder_on_def
+proof (intro conjI)
+  show "indRelEQ \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
   show "refl indRelEQ"
     by (rule indRelEQ_refl)
 next
@@ -1476,8 +1485,11 @@ lemma (in encoding) indRelRTPO_is_preorder:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
   shows "preorder (indRelRTPO TRel)"
-    unfolding preorder_on_def
-proof
+  unfolding preorder_on_def
+proof (intro conjI)
+  show "indRelRTPO TRel \<subseteq> UNIV \<times> UNIV"
+    by simp
+next
   from reflT show "refl (indRelRTPO TRel)"
     by (rule indRelRTPO_refl)
 next
@@ -1487,7 +1499,7 @@ next
     fix P Q R
     assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q" and "Q \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> R"
     thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> R"
-        using indRelRTPO.trans
+      using indRelRTPO.trans
       by blast
   qed
 qed

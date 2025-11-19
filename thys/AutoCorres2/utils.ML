@@ -123,6 +123,9 @@ fun export_prop {closed} inner outer prop =
     |> Thm.cprop_of
   end
 
+fun export_prop_term {closed} inner outer prop =
+  prop |> Thm.cterm_of inner |> export_prop {closed=closed} inner outer |> Thm.term_of
+
 (*** evaluate function in locale, preserving slots ***)
 
 fun transfer_slots slots from to =
@@ -794,10 +797,9 @@ fun chain_preds stateT [] = Abs ("s", stateT, @{term "HOL.True"})
  *)
 fun concrete_abs' ctxt t =
 let
-  fun get_lambda_name (Abs (n, _, _)) = n
-    | get_lambda_name _ = "x"
+  val lambda_name = (case t of Abs (n, _, _) => n | _ => "x")
   val first_argT = domain_type (fastype_of t)
-  val [(n', _)] = Variable.variant_frees ctxt [t] [(get_lambda_name t, ())]
+  val (n', _) = Name.variant lambda_name (Variable.names_of (Variable.declare_names t ctxt))
   val free = Free (n', first_argT)
 in
   ((betapply (t, free)), free, n')
@@ -933,8 +935,8 @@ fun subst_conv ctxt thm =
   (Thm.eta_conversion
       then_conv subst_conv_raw ctxt (Drule.eta_contraction_rule thm))
 
-fun eta_conv ctxt = Conv.bottom_conv (K (Thm.eta_conversion)) ctxt
-fun eta_norm ctxt thm = Conv.fconv_rule (eta_conv ctxt) thm
+val eta_conv = Thm.eta_conversion
+val eta_norm = Conv.fconv_rule eta_conv
 
 (* A conversion to wade through any Isabelle/Pure or Isabelle/HOL
  * logical gunf. *)
@@ -978,7 +980,7 @@ fun THM_non_critical keep_going msg n thm =
 fun trace_rule ctxt goal rule =
   if Config.get ctxt Method.rule_trace then
   let
-    val _ = Goal_Display.string_of_goal ctxt goal |> tracing
+    val _ = Goal_Display.print_goal ctxt "" goal |> tracing
     val _ = (case guess_thm_name ctxt rule of
         SOME x => Pretty.str x
       | NONE => Thm.pretty_thm_item ctxt rule)
@@ -1060,17 +1062,6 @@ fun symtab_merge_with merge (tab1, tab2) =
                         | (NONE, SOME x2) => x2
                         (* (NONE, NONE) impossible *)))
   |> Symtab.make
-
-fun buckets eq xs =
-  let
-    fun bucks done [] = done
-      | bucks done (x::xs) = 
-         let 
-           val (same, rest) = split_filter (fn y => eq (x, y)) (x::xs)
-         in bucks (same::done) rest end
-  in
-   bucks [] xs
-  end
 
 fun app_snds f ps = 
   let 

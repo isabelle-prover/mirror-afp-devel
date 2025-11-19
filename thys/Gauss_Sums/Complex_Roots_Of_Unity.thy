@@ -108,6 +108,9 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma unity_root_nonzero [simp]: "unity_root n k \<noteq> 0"
+  by (auto simp: unity_root_def)
+
 lemma unity_root_pow: "unity_root k n ^ m = unity_root k (n * m)"
   using unity_root_def
   by (simp add: Complex.DeMoivre mult.commute algebra_split_simps(6))
@@ -281,6 +284,104 @@ next
   then have "unity_root_sum k r = k" 
     using assms(1) unity_root_sum by blast
   then show "unity_root_sum k r \<noteq> 0" using assms(1) by simp
+qed
+
+lemma cyclotomic_poly_conv_prod_unity_root:
+  fixes n :: nat
+  assumes n: "n > 0"
+  defines "w \<equiv> (\<lambda>k. unity_root n (int k))"
+  shows   "Polynomial.monom 1 n - 1 = (\<Prod>k<n. [:-w k, 1:])" (is "?lhs = ?rhs")
+proof (rule ccontr)
+  assume neq: "?lhs \<noteq> ?rhs"
+  have "?lhs = Polynomial.monom 1 n + (-1)"
+    by simp
+  also have "degree \<dots> = n"
+    by (subst degree_add_eq_left) (use n in \<open>auto simp: degree_monom_eq\<close>)
+  finally have deg1: "degree ?lhs = n" .
+
+  have "poly.coeff (?lhs - ?rhs) n = 0"
+  proof -
+    have "poly.coeff ?rhs n = lead_coeff ?rhs"
+      by (simp add: degree_prod_sum_eq)
+    also have "\<dots> = 1"
+      by (subst lead_coeff_prod) auto
+    finally show ?thesis
+      using n by simp
+  qed
+  moreover have "?lhs - ?rhs \<noteq> 0"
+    using neq by simp
+  ultimately have "degree (?lhs - ?rhs) \<noteq> n"
+    by (metis leading_coeff_0_iff)
+  moreover have "degree (?lhs - ?rhs) \<le> n"
+    by (rule degree_diff_le) (use deg1 in \<open>auto simp: degree_prod_sum_eq\<close>)
+  ultimately have "degree (?lhs - ?rhs) < n"
+    by linarith
+
+  have root1: "poly ?lhs (w k) = 0" for k
+    using \<open>n > 0\<close> by (simp add: w_def poly_monom unity_root_pow)
+  have root2: "poly ?rhs (w k) = 0" if "k < n" for k
+    using that by (auto simp: poly_prod)
+
+  have "inj_on w {..<n}"
+    using n by (auto simp: inj_on_def w_def dest!: unity_root_eqD)
+  hence "card {..<n} = card (w ` {..<n})"
+    by (subst card_image) auto
+  also have "card (w ` {..<n}) \<le> card {z. poly (?lhs - ?rhs) z = 0}"
+    by (intro card_mono poly_roots_finite) (use neq root1 root2 in auto)
+  also have "card {z. poly (?lhs - ?rhs) z = 0} \<le> degree (?lhs - ?rhs)"
+    by (rule card_poly_roots_bound) (use neq in auto)
+  also have "\<dots> < n"
+    by fact
+  finally show False
+    by simp
+qed
+
+lemma cyclotomic_poly_conv_prod_unity_root':
+  fixes n :: nat
+  assumes n: "n > 0"
+  defines "w \<equiv> (\<lambda>k. unity_root n (int k))"
+  shows   "1 - Polynomial.monom 1 n = (\<Prod>k<n. [:1, -w k:])" (is "?lhs = ?rhs")
+proof -
+  define A where "A = insert 0 (w ` {..<n})"
+  have card_A: "card A = Suc n"
+  proof -
+    have "card A = Suc (card (w ` {..<n}))"
+      unfolding A_def by (subst card.insert) (auto simp: w_def)
+    also have "card (w ` {..<n}) = n"
+      by (subst card_image) (use n in \<open>auto simp: inj_on_def w_def dest!: unity_root_eqD\<close>)
+    finally show ?thesis .
+  qed
+
+  show ?thesis
+  proof (rule poly_eqI_degree)
+    have "degree (1 - Polynomial.monom 1 n :: complex poly) \<le> n"
+      by (intro degree_diff_le) (auto simp: degree_monom_eq)
+    thus "degree (1 - Polynomial.monom 1 n :: complex poly) < card A"
+      by (simp add: card_A)
+  next
+    have "degree (\<Prod>k<n. [:1, - w k:]) \<le> n"
+      by (rule order.trans[OF degree_prod_sum_le]) (auto simp: w_def)
+    thus "degree (\<Prod>k<n. [:1, - w k:]) < card A"
+      by (simp add: card_A)
+  next
+    fix x assume x: "x \<in> A"
+    have "poly (1 - Polynomial.monom 1 n) (w k) = 0" for k
+      by (simp add: poly_monom w_def unity_root_pow)
+    moreover have "poly (1 - Polynomial.monom 1 n :: complex poly) 0 = 1"
+      using n by (simp add: poly_monom power_0_left)
+    moreover have "poly (\<Prod>k<n. [:1, -w k:]) (w k) = 0" if k: "k < n" for k
+    proof -
+      define k' where "k' = (if k = 0 then 0 else n - k)"
+      have "w k * w k' = 1" "k' < n" using n k
+        by (auto simp: k'_def w_def simp flip: unity_root_add intro!: unity_root_eq_1)
+      thus ?thesis
+        using that by (auto simp: poly_prod )
+    qed
+    moreover have "poly (\<Prod>k<n. [:1, -w k:]) 0 = 1"
+      by (simp add: poly_prod)
+    ultimately show "poly (1 - Polynomial.monom 1 n) x = poly (\<Prod>k<n. [:1, - w k:]) x"
+      using x by (auto simp: A_def)
+  qed
 qed
 
 end

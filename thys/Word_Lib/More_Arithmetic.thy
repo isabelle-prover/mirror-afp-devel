@@ -2,7 +2,6 @@
  * Copyright Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 section \<open>Arithmetic lemmas\<close>
@@ -109,7 +108,7 @@ lemma nat_mult_power_less_eq:
   "b > 0 \<Longrightarrow> (a * b ^ n < (b :: nat) ^ m) = (a < b ^ (m - n))"
   using mult_less_cancel2[where m = a and k = "b ^ n" and n="b ^ (m - n)"]
         mult_less_cancel2[where m="a * b ^ (n - m)" and k="b ^ m" and n=1]
-  by (smt (verit,del_insts) diff_is_0_eq leI le_add_diff_inverse2 less_one 
+  by (smt (verit,del_insts) diff_is_0_eq leI le_add_diff_inverse2 less_one
       mult.assoc mult_eq_0_iff not_less_iff_gr_or_eq power_0 power_add zero_less_power)
 
 lemma diff_diff_less:

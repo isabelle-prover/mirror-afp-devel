@@ -85,8 +85,9 @@ ML_file \<open>ceq_generator.ML\<close>
 subsection \<open>Type class instances for HOL types\<close>
 
 derive (eq) ceq unit
+declare [[code drop: \<open>CEQ(unit)\<close>]]
 lemma [code]: "CEQ(unit) = Some (\<lambda>_ _. True)"
-  unfolding ceq_unit_def by (simp, intro ext, auto)
+  by (simp add: fun_eq_iff ceq_unit_def)
 derive (eq) ceq
   bool
   nat
@@ -106,13 +107,12 @@ derive (no) ceq "fun"
 lemma is_ceq_fun [simp]: "\<not> is_ceq TYPE('a \<Rightarrow> 'b)"
   by(simp add: is_ceq_def ceq_fun_def ID_None) 
 
-definition set_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" 
-where [code del]: "set_eq = (=)"
+definition set_eq :: \<open>'a set \<Rightarrow> 'a set \<Rightarrow> bool\<close>
+  where [simp, code_abbrev]: \<open>set_eq = (=)\<close>
 
-lemma set_eq_code:
-  shows [code]: "set_eq A B \<longleftrightarrow> A \<subseteq> B \<and> B \<subseteq> A"
-  and [code_unfold]: "(=) = set_eq"
-unfolding set_eq_def by blast+
+lemma set_eq_code [code]:
+  \<open>set_eq A B \<longleftrightarrow> A \<subseteq> B \<and> B \<subseteq> A\<close>
+  by auto
 
 instantiation set :: (ceq) ceq begin
 definition "CEQ('a set) = (case ID CEQ('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some set_eq)"

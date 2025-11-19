@@ -809,14 +809,11 @@ lemma execute_parallel_plan_precondition_cons_i:
         fix v
         have "list_all (\<lambda>v'. \<not>v = v') (delete_effects_of op)
           = (\<forall>v' \<in> set (delete_effects_of op). \<not>v = v')"
-          using list_all_iff [where P="\<lambda>v'. \<not>v = v'" and x="delete_effects_of op"]
-          .
+          by (simp add: list_all_iff)
       }
       ultimately have "\<forall>v \<in> set (precondition_of op'). \<forall>v' \<in> set (delete_effects_of op). \<not>v = v'"
-        using \<beta> list_all_iff[
-          where P="\<lambda>v. list_all (\<lambda>v'. \<not>v = v') (delete_effects_of op)"
-            and x="precondition_of op'"]
-        by presburger
+        using \<beta> 
+        by (simp add: list_all_iff)
       then have "v \<notin> set (delete_effects_of op)"
         using \<alpha>
         by fast
@@ -831,8 +828,7 @@ lemma execute_parallel_plan_precondition_cons_i:
           STRIPS_Representation.is_operator_applicable_in_def
         by presburger
       then have "\<forall>v \<in> set (precondition_of op'). s v = Some True"
-        using list_all_iff[where P="\<lambda>v. s v = Some True" and x="precondition_of op'"]
-        by blast
+        by (simp add: list_all_iff)
       then have "s v = Some True"
         using a
         by blast
@@ -867,8 +863,7 @@ lemma execute_parallel_plan_precondition_cons_i:
       qed
     }
     then have "list_all (\<lambda>v. ?s' v = Some True) (precondition_of op')"
-      using list_all_iff[where P="\<lambda>v. ?s' v = Some True" and x="precondition_of op'"]
-      by blast
+      by (simp add: list_all_iff)
     then show ?thesis
       unfolding is_operator_applicable_in_def
         STRIPS_Representation.is_operator_applicable_in_def

@@ -1,0 +1,14 @@
+chapter AFP
+
+session "Shallow_Expressions" = "Optics" +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories 
+    Shallow_Expressions
+    Expressions_Tests
+    Shallow_Expressions_Examples
+  document_files
+    "root.bib"
+    "root.tex"
+    "document.sty"

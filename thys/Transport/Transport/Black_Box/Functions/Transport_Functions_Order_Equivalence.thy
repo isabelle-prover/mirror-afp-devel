@@ -680,7 +680,7 @@ lemma inflationary_on_unitI:
   and "inflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
-  using assms by (intro tpdfr.inflationary_on_unitI
+  using assms by (intro tmdfr.inflationary_on_unitI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
   simp_all
 
@@ -695,7 +695,7 @@ lemma deflationary_on_counitI:
   and "deflationary_on (in_dom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>) \<epsilon>\<^sub>2"
   and "transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "deflationary_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>) \<epsilon>"
-  using assms by (intro tpdfr.deflationary_on_counitI
+  using assms by (intro tmdfr.deflationary_on_counitI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
   simp_all
 
@@ -709,7 +709,7 @@ lemma rel_equivalence_on_unitI:
   and "rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "rel_equivalence_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
-  using assms by (intro tpdfr.rel_equivalence_on_unitI
+  using assms by (intro tmdfr.rel_equivalence_on_unitI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
   simp_all
 
@@ -717,7 +717,7 @@ lemma order_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro tpdfr.order_equivalenceI
+  using assms by (intro tmdfr.order_equivalenceI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
   (auto elim!: tdfrs.t1.preorder_equivalence_order_equivalenceE
     tdfrs.t2.preorder_equivalence_order_equivalenceE)

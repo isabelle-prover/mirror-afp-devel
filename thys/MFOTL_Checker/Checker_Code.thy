@@ -26,7 +26,6 @@ lemma finite_coset: "finite (List.coset (xs :: 'a list)) = (case universe of Non
 
 end
 
-declare [[code drop: finite]]
 declare finite_set[THEN eqTrueI, code] finite_coset[code]
 
 instantiation bool :: universe begin
@@ -128,7 +127,7 @@ end
 
 subsection \<open>Progress\<close>
 
-primrec progress :: "('n, 'd) trace \<Rightarrow> ('n, 'd) Formula.formula \<Rightarrow> nat \<Rightarrow> nat" where
+fun progress :: "('n, 'd) trace \<Rightarrow> ('n, 'd) Formula.formula \<Rightarrow> nat \<Rightarrow> nat" where
   "progress \<sigma> Formula.TT j = j"
 | "progress \<sigma> Formula.FF j = j"
 | "progress \<sigma> (Formula.Eq_Const _ _) j = j"
@@ -151,13 +150,15 @@ primrec progress :: "('n, 'd) trace \<Rightarrow> ('n, 'd) Formula.formula \<Rig
 | "progress \<sigma> (Formula.Since \<phi> I \<psi>) j = min (progress \<sigma> \<phi> j) (progress \<sigma> \<psi> j)"
 | "progress \<sigma> (Formula.Until \<phi> I \<psi>) j =
     Inf {i. \<forall>k. k < j \<and> k \<le> min (progress \<sigma> \<phi> j) (progress \<sigma> \<psi> j) \<longrightarrow> (\<tau> \<sigma> k - \<tau> \<sigma> i) \<le> right I}"
+| "progress \<sigma> (Formula.MatchP I r) j = min_regex_default (progress \<sigma>) r j"
+| "progress \<sigma> (Formula.MatchF I r) j = Inf {i. \<forall>k. k < j \<and> k \<le> min_regex_default (progress \<sigma>) r j \<longrightarrow> \<tau> \<sigma> i + right I \<ge> \<tau> \<sigma> k}"
 
 lemma Inf_Min:
   fixes P :: "nat \<Rightarrow> bool"
   assumes "P j"
   shows "Inf (Collect P) = Min (Set.filter P {..j})"
   using Min_in[where ?A="Set.filter P {..j}"] assms
-  by (auto simp: Set.filter_def intro: cInf_lower intro!: antisym[OF _ Min_le])
+  by (auto simp: intro: cInf_lower intro!: antisym[OF _ Min_le])
     (metis Inf_nat_def1 empty_iff mem_Collect_eq)
 
 lemma progress_Eventually_code: "progress \<sigma> (Formula.Eventually I \<phi>) j =
@@ -589,6 +590,8 @@ proof -
     by simp
 qed
 
+declare v_check_exec_simps [code] s_check_exec_simps [code]
+
 lemma v_check_exec_Once_code[code]: "v_check_exec \<sigma> vs (Formula.Once I \<phi>) vp = (case vp of
   VOnce i li vps \<Rightarrow>
     (case right I of \<infinity> \<Rightarrow> li = 0 | enat b \<Rightarrow> ((li = 0 \<or> b < \<delta> \<sigma> i (li - 1)) \<and> \<delta> \<sigma> i li \<le> b)) 
@@ -807,16 +810,20 @@ lemma map_part_code[code]: "Rep_part (map_part f xs) = map (map_prod id f) (Rep_
   using Rep_part[of xs]
   by (auto simp: map_part_def intro!: Abs_part_inverse)
 
+declare subset_code [code]
+
 lemma coset_subset_set_code[code]:
   "(List.coset (xs :: _ :: universe list) \<subseteq> set ys) = (case universe of None \<Rightarrow> False
   | Some zs \<Rightarrow> \<forall>z \<in> set zs. z \<in> set xs \<or> z \<in> set ys)"
   using finite_compl finite_subset
   by (auto split: option.splits dest!: infinite finite)
 
+declare is_empty_set [code]
+
 lemma is_empty_coset[code]: "Set.is_empty (List.coset (xs :: _ :: universe list)) =
   (case universe of None \<Rightarrow> False
   | Some zs \<Rightarrow> \<forall>z \<in> set zs. z \<in> set xs)"
-  using coset_subset_set_code[of xs] by (auto simp: Set.is_empty_def split: option.splits dest: infinite finite)
+  using coset_subset_set_code[of xs] by (auto simp: split: option.splits dest: infinite finite)
 
 subsection \<open>Exported functions\<close>
 
@@ -857,8 +864,11 @@ lift_definition abs_part :: "(event_data set \<times> 'a) list \<Rightarrow> (ev
    \<or> (\<Union>D \<in> set Ds. D) \<noteq> UNIV then [(UNIV, undefined)] else xs"
   by (auto simp: partition_on_def disjoint_def)
 
+lemma rm_code[code_unfold]: "rm S = Set.filter (\<lambda>(i,j). i < j) S"
+  by auto
+
 export_code interval enat nat_of_integer integer_of_nat
-  STT Formula.TT Inl EInt Formula.Var Leaf set part_hd sum_nat sub_nat subsvals
+  STT SSkip VSkip Formula.TT Regex.Skip Inl EInt Formula.Var Leaf set part_hd sum_nat sub_nat subsvals
   check trace_of_list_specialized specialized_set ed_set abs_part 
   collect_paths_specialized
   in OCaml module_name Checker file_prefix "checker"

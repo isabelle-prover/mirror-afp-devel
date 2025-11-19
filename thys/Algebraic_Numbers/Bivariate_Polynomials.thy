@@ -23,6 +23,9 @@ begin
 
 subsubsection \<open>Evaluation of Bivariate Polynomials\<close>
 
+definition map_poly2 :: "('a :: zero \<Rightarrow> 'b :: zero) \<Rightarrow> 'a poly poly \<Rightarrow> 'b poly poly"
+  where "map_poly2 f = map_poly (map_poly f)"
+
 definition poly2 :: "'a::comm_semiring_1 poly poly \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "poly2 p x y = poly (poly p [: y :]) x"
 

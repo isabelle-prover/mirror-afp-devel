@@ -396,9 +396,6 @@ subsection \<open>Updated Code Equations\<close>
 
 subsubsection \<open>New Code Equations for @{text "remove_proper_prefixes"}\<close>
 
-declare [[code drop: remove_proper_prefixes]]
-
-
 lemma remove_proper_prefixes_refined[code] :
   fixes t :: "('a :: ccompare) list set_rbt" 
 shows "remove_proper_prefixes (RBT_set t) = (case ID CCOMPARE(('a list)) of
@@ -626,7 +623,6 @@ qed
 
 subsubsection \<open>New Code Equations for @{text "h"}\<close>
 
-declare [[code drop: h]]
 lemma h_refined[code] : "h M (q,x) 
   = (let m = set_as_map_image (transitions M) (\<lambda>(q,x,y,q') . ((q,x),y,q')) 
       in (case m (q,x) of Some yqs \<Rightarrow> yqs | None \<Rightarrow> {}))"
@@ -709,7 +705,6 @@ next
     by (metis (no_types, lifting) last_ConsR last_map list.map_disc_iff target'.elims) 
 qed
 
-declare [[code drop: prefix_pair_tests]]
 lemma prefix_pair_tests_refined[code] :
 fixes t :: "(('a ::ccompare,'b::ccompare,'c::ccompare) traversal_path \<times> ('a set \<times> 'a set)) set_rbt" 
 shows "prefix_pair_tests q (RBT_set t) = (case ID CCOMPARE((('a,'b,'c) traversal_path \<times> ('a set \<times> 'a set))) of
@@ -791,7 +786,6 @@ qed
 
 subsubsection \<open>New Code Equations for @{text "preamble_prefix_tests"}\<close>
 
-declare [[code drop: preamble_prefix_tests]]
 lemma preamble_prefix_tests_refined[code] :
   fixes t1 :: "(('a ::ccompare,'b::ccompare,'c::ccompare) traversal_path \<times> ('a set \<times> 'a set)) set_rbt"  
   and   t2 :: "'a set_rbt"

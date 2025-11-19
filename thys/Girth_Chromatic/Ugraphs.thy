@@ -166,7 +166,7 @@ proof -
     by (auto simp: all_edges_def intro!: in_mk_uedge_img)
   then have "card ?L = card ?R" by simp
   also have "\<dots> = card {(a,b). a \<in> A \<and> b \<in> A \<and> a < b}"
-    using inj_on_mk_uedge by (blast intro: card_image subset_inj_on)
+    using inj_on_mk_uedge by (blast intro: card_image inj_on_subset)
   also have "\<dots> = (card A * (card A - 1)) div 2"
     using card_left_less_pair using assms by simp
   also have "\<dots> = (card A choose 2)"

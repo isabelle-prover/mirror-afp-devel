@@ -784,8 +784,6 @@ done
 lemma ChiRel_HARoot:
  "\<lbrakk> (x,y) \<in> ChiRel A \<rbrakk> \<Longrightarrow> y \<notin> States (HARoot A)"
 apply (unfold ChiRel_def Chi_def)
-apply auto 
-apply (unfold restrict_def)
 apply auto
 apply (rename_tac SA)
 apply (frule HAStates_HARoot_CompFun)

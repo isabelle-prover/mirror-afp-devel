@@ -1,0 +1,34 @@
+title = "Mission-time Linear Temporal Logic"
+date = 2025-01-24
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/General logic/Temporal logic",
+]
+abstract = "We formalize the syntax, semantics, and some useful properties of Mission-time Linear Temporal Logic (MLTL), following the literature. MLTL is a variant of Linear Temporal Logic, which has already been formalized in Isabelle/HOL. In contrast to LTL, MLTL includes finite discrete time bounds on the temporal operators. We do not directly build on the LTL AFP entry, but aim to mirror its style; in particular, we found it useful when defining our syntactic sugar binding precedences. Another closely related AFP entry is the formalization of MFOTL."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[authors.wangz]
+email = "wangz_email"
+
+[authors.sloan]
+email = "sloan_email"
+
+[contributors]
+
+[notify]
+wangz = "wangz_email"
+cordwell = "cordwell_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

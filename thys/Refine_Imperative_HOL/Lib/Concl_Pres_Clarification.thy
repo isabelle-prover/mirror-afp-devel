@@ -8,8 +8,6 @@ begin
 
   ML \<open>
     local 
-      open Classical
-
       fun is_cp_brl (is_elim,thm) = let
         val prems = Thm.prems_of thm
         val nprems = length prems
@@ -30,19 +28,17 @@ begin
       fun eq_assume_contr_tac ctxt = eq_assume_tac ORELSE' eq_contr_tac ctxt;
 
       fun cp_bimatch_from_nets_tac ctxt =
-        biresolution_from_nets_tac ctxt (order_list o filter (is_cp_brl o snd)) true;
+        Bires.biresolution_from_nets_tac ctxt Bires.tag_ord (SOME is_cp_brl) true;
 
 
     in
       fun cp_clarify_step_tac ctxt =
-        let val {safep_netpair, ...} = (rep_cs o claset_of) ctxt in
-          appSWrappers ctxt
-           (FIRST'
-             [eq_assume_contr_tac ctxt,
-              FIRST' (map (fn tac => tac ctxt) hyp_subst_tacs),
-              cp_bimatch_from_nets_tac ctxt safep_netpair
-              ])
-        end;
+        appSWrappers ctxt
+         (FIRST'
+           [eq_assume_contr_tac ctxt,
+            FIRST' (map (fn tac => tac ctxt) hyp_subst_tacs),
+            cp_bimatch_from_nets_tac ctxt (Classical.safep_netpair_of ctxt)
+            ]);
       
         fun cp_clarify_tac ctxt = SELECT_GOAL (REPEAT_DETERM (cp_clarify_step_tac ctxt 1));
 

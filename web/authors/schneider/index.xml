@@ -1,59 +1,57 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>schneider on Archive of Formal Proofs
-    </title>
-    <link>/authors/schneider/</link>
-    <description>
-        Recent content in schneider 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 10 Apr 2020 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schneider/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
-          <link>/entries/Sliding_Window_Algorithm.html</link>
-          <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Sliding_Window_Algorithm.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
-          <link>/entries/MFODL_Monitor_Optimized.html</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/MFODL_Monitor_Optimized.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Monitor.html</link>
-          <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Monitor.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Bounded Natural Functors with Covariance and Contravariance</title>
-          <link>/entries/BNF_CC.html</link>
-          <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/BNF_CC.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Monad normalisation</title>
-          <link>/entries/Monad_Normalisation.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Monad_Normalisation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Applicative Lifting</title>
-          <link>/entries/Applicative_Lifting.html</link>
-          <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Applicative_Lifting.html</guid>
-          <description></description>
-        </item>
+    <title>Joshua Schneider</title>
+    <link>https://isa-afp.org/authors/schneider/</link>
+    <description>AFP entries of Joshua Schneider</description><item>
+  <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
+  <link>https://isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
+  <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+  <link>https://isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
+  <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+  <link>https://isa-afp.org/entries/MFOTL_Monitor.html</link>
+  <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
+  <description>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Temporal logic</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Bounded Natural Functors with Covariance and Contravariance</title>
+  <link>https://isa-afp.org/entries/BNF_CC.html</link>
+  <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
+  <description>Bounded Natural Functors with Covariance and Contravariance in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Monad normalisation</title>
+  <link>https://isa-afp.org/entries/Monad_Normalisation.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Monad normalisation in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Applicative Lifting</title>
+  <link>https://isa-afp.org/entries/Applicative_Lifting.html</link>
+  <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Applicative Lifting in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+
   </channel>
 </rss>

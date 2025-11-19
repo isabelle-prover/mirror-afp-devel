@@ -163,12 +163,8 @@ begin
       show "a b \<congruent> c d" by simp
   qed
 
-  lemmas SC_refl = th2_1 [simplified]
-
-  lemma SC_rel_refl: "refl_on segments SC_rel"
+  lemma SC_rel_subset: "SC_rel \<subseteq> segments \<times> segments"
   proof -
-    note refl_on_def [of segments SC_rel]
-    moreover
     { fix Z
       assume "Z \<in> SC_rel"
       with SC_rel_def obtain X Y where "Z = (X, Y)" and "SC X Y" by auto
@@ -178,7 +174,14 @@ begin
         have "is_segment X" and "is_segment Y" by auto
       with segments_def have "X \<in> segments" and "Y \<in> segments" by auto
       with \<open>Z = (X, Y)\<close> have "Z \<in> segments \<times> segments" by simp }
-    hence "SC_rel \<subseteq> segments \<times> segments" by auto
+    thus "SC_rel \<subseteq> segments \<times> segments" by auto
+  qed
+
+  lemmas SC_refl = th2_1 [simplified]
+
+  lemma SC_rel_refl: "refl_on segments SC_rel"
+  proof -
+    note refl_on_def [of segments SC_rel]
     moreover
     { fix X
       assume "X \<in> segments"
@@ -256,7 +259,7 @@ begin
   qed
   
   lemma equiv_segments_SC_rel: "equiv segments SC_rel"
-    by (simp add: equiv_def SC_rel_refl SC_rel_sym SC_rel_trans)
+    by (simp add: SC_rel_subset equiv_def SC_rel_refl SC_rel_sym SC_rel_trans)
     
 end
 

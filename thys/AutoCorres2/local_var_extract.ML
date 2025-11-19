@@ -65,14 +65,14 @@ fun setup_l2_ss base_ss ctxt =
     val state_simps = Named_Theorems.get ctxt @{named_theorems "state_simp"}
     val state_simprocs = @{code_simprocs "state_simp"}
   in
-    (put_simpset base_ss (Context_Position.set_visible false ctxt))
-      addsimps (@{thms
+    put_simpset base_ss (Context_Position.set_visible false ctxt)
+    |> Simplifier.add_simps (@{thms
         globals_surj ucast_id pred_conj_def
         Hoare.Collect_False
         Set.mem_Collect_eq Set.Int_iff Set.empty_iff
         simp_thms HOL.implies_True_equals prod.sel
         Pure.triv_forall_equality comp_def K_eq_cong} @ state_simps)
-      addsimprocs ([Record.simproc,
+    |> fold Simplifier.add_proc ([Record.simproc,
         @{simproc arg_cong}, @{simproc fun_cong} (* To trigger state_simprocs on nested arguments, e.g. heap updates*)] @
         state_simprocs)
   end
@@ -186,7 +186,7 @@ fun extract_pair_of_globals pat ctxt prog_info term =
      *   {(s, t). f s t} \<union> {(s, t). g s t} ...
      * We blithely rewrite them here.
      *)
-    val term = Raw_Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
+    val term = Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
         (map safe_mk_meta_eq @{thms Collect_prod_inter Collect_prod_union}) [] term
 
     (* Apply a dummy old and new state variable to the term. *)
@@ -198,7 +198,7 @@ fun extract_pair_of_globals pat ctxt prog_info term =
 
     (* Pull apart the "split" at the beginning of the term, then apply
      * to our dummy variables *)
-    val t = Raw_Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
+    val t = Simplifier.rewrite_term (Proof_Context.theory_of ctxt)
         (map mk_meta_eq @{thms split_def fst_conv snd_conv mem_Collect_eq}) [] t
 
     (*
@@ -1090,7 +1090,7 @@ fun string_of_terms ctxt ts =
 
 fun l2_prog_env ctxt prog_info rec_funs rec_ptrs (retT, argTs) =
  let
-   val (_, P as Const (Pname, T)) = AutoCorresData.get_progenv_for_sig ctxt prog_info "" FunctionInfo.L2 (retT, argTs) |> the
+   val (_, P as Const (Pname, T)) = AutoCorresData.get_progenv_for_sig ctxt prog_info {ts_monad_name=""} FunctionInfo.L2 (retT, argTs) |> the
    val (ptrT::argTs, retT) = strip_type T
    val funT = argTs ---> retT
    fun mk_fun_ptr fname = HP_TermsTypes.mk_fun_ptr ctxt (ProgramInfo.get_prog_name prog_info) fname
@@ -1808,7 +1808,7 @@ in
 end
 
 fun mk_fn_ptr_infos ctxt prog_info fn_args info =
-  AutoCorresData.mk_fn_ptr_infos ctxt prog_info "" fn_args info
+  AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} fn_args info
 
 fun get_l2_corres_prop skips prog_info fn_ptr_infos l1_infos ctxt assume fn_name fn_free fn_args  =
 let
@@ -2075,9 +2075,9 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   fun corres_prog_conv conv = Conv.fconv_rule (Utils.remove_meta_conv (fn ctxt =>
      Utils.nth_arg_conv 5 (conv ctxt)) ctxt)
   val new_thm = new_thm |> corres_prog_conv (fn ctxt =>
-    Raw_Simplifier.rewrite ctxt false @{thms L2_remove_scaffolding_1}
+    Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_1}
     then_conv
-    Raw_Simplifier.rewrite ctxt false @{thms L2_remove_scaffolding_2})
+    Simplifier.rewrite_wrt ctxt false @{thms L2_remove_scaffolding_2})
 
 
   (* Cleanup. *)
@@ -2089,7 +2089,7 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   val ctxt = ctxt |> AutoCorresTrace.put_trace_info fn_name FunctionInfo.L2 FunctionInfo.PEEP;
   val new_thm = timeit_msg 1 ctxt (fn _ => "Simplification (L2opt): " ^ fn_name) (fn _ =>
     L2Opt.cleanup_thm_tagged (ctxt delsimps cleanup_del) fn_ptr_guard_simps [] new_thm
-    L2_opt 5 trace_opt "L2")
+    L2_opt 5 trace_opt FunctionInfo.L2)
   val _ = verbose_msg 1 ctxt (fn _ => "L2 (L2opt) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt new_thm)
 
   (* Introduce nested exceptions *)

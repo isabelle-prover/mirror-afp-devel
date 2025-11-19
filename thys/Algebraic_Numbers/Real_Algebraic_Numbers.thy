@@ -481,7 +481,7 @@ proof
 next
   assume "degree p = 1"
   from degree1_coeffs[OF this]
-  obtain a b where p: "p = [:a,b:]" and b: "b \<noteq> 0" by auto
+  obtain a b where p: "p = [:a,b:]" and b: "b \<noteq> 0" by metis
   from rt[unfolded p hom_distribs] have "of_int a + x * of_int b = 0" by auto
   from arg_cong[OF this, of "\<lambda> x. (x - of_int a) / of_int b"]
   have "x = - of_rat (of_int a) / of_rat (of_int b)" using b by auto
@@ -3376,26 +3376,7 @@ lemmas real_alg_code_eqns =
 
 code_datatype real_of
 
-declare [[code drop:
-  "plus :: real \<Rightarrow> real \<Rightarrow> real"
-  "uminus :: real \<Rightarrow> real"
-  "minus :: real \<Rightarrow> real \<Rightarrow> real"
-  "times :: real \<Rightarrow> real \<Rightarrow> real"
-  "inverse :: real \<Rightarrow> real"
-  "divide :: real \<Rightarrow> real \<Rightarrow> real"
-  "floor :: real \<Rightarrow> int"
-  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
-  "compare :: real \<Rightarrow> real \<Rightarrow> order"
-  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool"
-  "less :: real \<Rightarrow> real \<Rightarrow> bool"
-  "0 :: real"
-  "1 :: real"
-  "sgn :: real \<Rightarrow> real"
-  "abs :: real \<Rightarrow> real"
-  min_int_poly_real
-  root]]
-
-declare real_alg_code_eqns [code equation]
+declare real_alg_code_eqns [code]
 
 lemma Ratreal_code[code]:
   "Ratreal = real_of \<circ> of_rat_real_alg"

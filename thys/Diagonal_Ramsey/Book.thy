@@ -9,48 +9,7 @@ begin
 
 hide_const Bseq
 
-subsection \<open>Locale for the parameters of the construction\<close>
-
-text \<open>The epsilon of the paper, outside the locale\<close>
-definition eps :: "nat \<Rightarrow> real"
-  where "eps \<equiv> \<lambda>k. real k powr (-1/4)"
-
-lemma eps_eq_sqrt: "eps k = 1 / sqrt (sqrt (real k))"
-  by (simp add: eps_def powr_minus_divide powr_powr flip: powr_half_sqrt)
-
-lemma eps_ge0: "eps k \<ge> 0"
-  by (simp add: eps_def)
-
-lemma eps_gt0: "k>0 \<Longrightarrow> eps k > 0"
-  by (simp add: eps_def)
-
-lemma eps_le1:
-  assumes "k>0" shows "eps k \<le> 1"
-proof -
-  have "eps 1 = 1"
-    by (simp add: eps_def)
-  moreover have "eps n \<le> eps m" if "0<m" "m \<le> n" for m n
-    using that by (simp add: eps_def powr_minus powr_mono2 divide_simps)
-  ultimately show ?thesis
-    using assms by (metis less_one nat_neq_iff not_le)
-qed
-
-lemma eps_less1:
-  assumes "k>1" shows "eps k < 1"
-  by (smt (verit) assms eps_def less_imp_of_nat_less of_nat_1 powr_less_one zero_le_divide_iff)
-
-definition qfun_base :: "[nat, nat] \<Rightarrow> real"
-  where "qfun_base \<equiv> \<lambda>k h. ((1 + eps k)^h - 1) / k"
-
-definition "hgt_maximum \<equiv> \<lambda>k. 2 * ln (real k) / eps k"
-
-text \<open>The first of many "bigness assumptions"\<close>
-definition "Big_height_upper_bound \<equiv> \<lambda>k. qfun_base k (nat \<lfloor>hgt_maximum k\<rfloor>) > 1"
-
-lemma Big_height_upper_bound:
-  shows "\<forall>\<^sup>\<infinity>k. Big_height_upper_bound k"
-  unfolding Big_height_upper_bound_def hgt_maximum_def eps_def qfun_base_def
-  by real_asymp
+subsection \<open>Locales for the parameters of the construction\<close>
 
 type_synonym 'a config = "'a set \<times> 'a set \<times> 'a set \<times> 'a set"
 
@@ -104,9 +63,12 @@ proof -
     using \<phi> \<theta>_def bij_betw_inv_into by blast
   have emap: "bij_betw (\<lambda>e. \<phi>`e) (nsets {..<nV} 2) E"
     by (metis \<phi> bij_betw_nsets complete nsets2_eq_all_edges)
-
   define Red  where "Red \<equiv>  (\<lambda>e. \<phi>`e) ` ((f -` {0}) \<inter> nsets {..<nV} 2)"
   define Blue where "Blue \<equiv> (\<lambda>e. \<phi>`e) ` ((f -` {1}) \<inter> nsets {..<nV} 2)"
+  have f0: "f (\<theta>`e) = 0" if "e \<in> Red" for e
+    using that \<phi> by (auto simp add: Red_def image_iff \<theta>_def bij_betw_def nsets_def)
+  have f1: "f (\<theta>`e) = 1" if "e \<in> Blue" for e
+    using that \<phi> by (auto simp add: Blue_def image_iff \<theta>_def bij_betw_def nsets_def)
   have "Red \<subseteq> E"
     using bij_betw_imp_surj_on[OF emap] by (auto simp: Red_def)
   have "Blue = E-Red"
@@ -114,43 +76,27 @@ proof -
     by (auto simp: Red_def Blue_def bij_betw_def inj_on_eq_iff image_iff Pi_iff)
   have no_Red_K: False if "size_clique k K Red" for K
   proof -
-    have KR: "clique K Red" and Kk: "card K = k" and "K\<subseteq>V"
+    have "clique K Red" and Kk: "card K = k" and "K\<subseteq>V"
       using that by (auto simp: size_clique_def)
-    have "f {\<theta> v, \<theta> w} = 0"
-      if eq: "\<theta> v \<noteq> \<theta> w" and "v \<in> K" "w \<in> K" for v w
-    proof -
-      have "\<exists>e\<in>f -` {0} \<inter> [{..<nV}]\<^bsup>2\<^esup>. {v, w} = \<phi> ` e"
-        using that KR by (fastforce simp: clique_def Red_def)
-      then show ?thesis
-        using bij_betw_inv_into_left [OF \<phi>]
-        by (auto simp: \<theta>_def doubleton_eq_iff insert_commute elim!: nsets2_E)
-    qed
-    then have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {0}" by (auto elim!: nsets2_E)
+    with f0 have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {0}"
+      unfolding clique_def image_subset_iff
+      by (force simp: elim!: nsets2_E)
     moreover have "\<theta>`K \<in> [{..<nV}]\<^bsup>card K\<^esup>"
-      by (smt (verit) \<open>K\<subseteq>V\<close> \<theta> bij_betwE bij_betw_nsets finV mem_Collect_eq nsets_def finite_subset)
+      using \<open>K\<subseteq>V\<close> \<theta> 
+      by (auto simp add: nsets_def bij_betw_def card_image finite_nat_iff_bounded inj_on_subset)
     ultimately show False
-      using noclique [of 0] Kk
-      by (simp add: size_clique_def monochromatic_def)
+      using noclique [of 0] Kk by (simp add: size_clique_def monochromatic_def)
   qed
   have no_Blue_K: False if "size_clique l K Blue" for K
   proof -
-    have KB: "clique K Blue" and Kl: "card K = l" and "K\<subseteq>V"
+    have "clique K Blue" and Kl: "card K = l" and "K\<subseteq>V"
       using that by (auto simp: size_clique_def)
-    have "f {\<theta> v, \<theta> w} = 1"
-      if eq: "\<theta> v \<noteq> \<theta> w" and "v \<in> K" "w \<in> K" for v w
-    proof -
-      have "\<exists>e\<in>f -` {1} \<inter> [{..<nV}]\<^bsup>2\<^esup>. {v, w} = \<phi> ` e"
-        using that KB by (fastforce simp: clique_def Blue_def)
-      then show ?thesis
-        using bij_betw_inv_into_left [OF \<phi>]
-        by (auto simp: \<theta>_def doubleton_eq_iff insert_commute elim!: nsets2_E)
-    qed
-    then have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {1}" by (auto elim!: nsets2_E)
+    with f1 have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {1}"
+      by (force simp: clique_def nsets_def card_2_iff)
     moreover have "\<theta>`K \<in> [{..<nV}]\<^bsup>card K\<^esup>"
-      by (smt (verit) \<open>K\<subseteq>V\<close> \<theta> bij_betwE bij_betw_nsets finV mem_Collect_eq nsets_def finite_subset)
+      using bij_betw_nsets [OF \<theta>] \<open>K \<subseteq> V\<close> bij_betwE finV infinite_super nsets_def by fastforce
     ultimately show False
-      using noclique [of 1] Kl
-      by (simp add: size_clique_def monochromatic_def)
+      using noclique [of 1] Kl by (simp add: size_clique_def monochromatic_def)
   qed
   show thesis
     using \<open>Blue = E \<setminus> Red\<close> \<open>Red \<subseteq> E\<close> no_Blue_K no_Red_K that by presburger
@@ -158,7 +104,7 @@ qed
 
 end
 
-locale No_Cliques = Book_Basis + P0_min +
+locale No_Cliques = Book_Basis +
   fixes Red Blue :: "'a set set"
   assumes Red_E: "Red \<subseteq> E"
   assumes Blue_def: "Blue = E-Red"
@@ -183,14 +129,48 @@ locale Book' = Book_Basis + No_Cliques +
   assumes XY0: "disjnt X0 Y0" "X0 \<subseteq> V" "Y0 \<subseteq> V"
   assumes density_ge_p0_min: "gen_density Red X0 Y0 \<ge> p0_min"
 
+definition "eps \<equiv> \<lambda>k. real k powr (-1/4)"
+
+definition qfun_base :: "[nat, nat] \<Rightarrow> real"
+  where "qfun_base \<equiv> \<lambda>k h. ((1 + eps k)^h - 1) / k"
+
+definition "hgt_maximum \<equiv> \<lambda>k. 2 * ln (real k) / eps k"
+
+text \<open>The first of many "bigness assumptions"\<close>
+definition "Big_height_upper_bound \<equiv> \<lambda>k. qfun_base k (nat \<lfloor>hgt_maximum k\<rfloor>) > 1"
+
+lemma Big_height_upper_bound:
+  shows "\<forall>\<^sup>\<infinity>k. Big_height_upper_bound k"
+  unfolding Big_height_upper_bound_def hgt_maximum_def eps_def qfun_base_def
+  by real_asymp
+
 context No_Cliques
 begin
+
+abbreviation "\<epsilon> \<equiv> eps k"
+
+lemma eps_eq_sqrt: "\<epsilon> = 1 / sqrt (sqrt (real k))"
+  by (simp add: eps_def powr_minus_divide powr_powr flip: powr_half_sqrt)
+
+lemma eps_ge0: "\<epsilon> \<ge> 0"
+  by (simp add: eps_def)
 
 lemma ln0: "l>0"
   using no_Blue_clique by (force simp: size_clique_def clique_def)
 
 lemma kn0: "k > 0"
   using  l_le_k ln0 by auto
+
+lemma eps_gt0: "\<epsilon> > 0"
+  by (simp add: eps_def kn0)
+
+lemma eps_le1: "\<epsilon> \<le> 1"
+  using kn0 ge_one_powr_ge_zero
+  by (simp add: eps_def powr_minus powr_mono2 divide_simps)
+
+lemma eps_less1:
+  assumes "k>1" shows "\<epsilon> < 1"
+  using assms powr_less_one by (auto simp: eps_def)
 
 lemma Blue_E: "Blue \<subseteq> E"
   by (simp add: Blue_def) 
@@ -271,7 +251,7 @@ definition Weight :: "['a set, 'a set, 'a, 'a] \<Rightarrow> real" where
                       - red_density X Y * card (Neighbours Red x \<inter> Y))"
 
 definition weight :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> real" where
-  "weight \<equiv> \<lambda>X Y x. \<Sum>y \<in> X-{x}. Weight X Y x y"
+  "weight \<equiv> \<lambda>X Y x. \<Sum>y \<in> X\<setminus>{x}. Weight X Y x y"
 
 definition p0 :: "real"
   where "p0 \<equiv> red_density X0 Y0"
@@ -279,8 +259,8 @@ definition p0 :: "real"
 definition qfun :: "nat \<Rightarrow> real"
   where "qfun \<equiv> \<lambda>h. p0 + qfun_base k h"
 
-lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + eps k)^h - 1) / k"
-  by (simp add: qfun_def qfun_base_def)
+lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + \<epsilon>)^h - 1) / k"
+  by (simp add: qfun_def qfun_base_def eps_def)
 
 definition hgt :: "real \<Rightarrow> nat"
   where "hgt \<equiv> \<lambda>p. LEAST h. p \<le> qfun h \<and> h>0"
@@ -319,26 +299,25 @@ lemma qfun_strict_mono: "h'<h \<Longrightarrow> qfun h' < qfun h"
 lemma qfun_mono: "h'\<le>h \<Longrightarrow> qfun h' \<le> qfun h"
   by (metis less_eq_real_def nat_less_le qfun_strict_mono)
 
-lemma q_Suc_diff: "qfun (Suc h) - qfun h = eps k * (1 + eps k)^h / k"
+lemma q_Suc_diff: "qfun (Suc h) - qfun h = \<epsilon> * (1 + \<epsilon>)^h / k"
   by (simp add: qfun_eq field_split_simps)
 
 lemma height_exists':
   obtains h where "p \<le> qfun_base k h \<and> h>0"
 proof -
-  have 1: "1 + eps k \<ge> 1"
+  have 1: "1 + \<epsilon> \<ge> 1"
     by (auto simp: eps_def)
-  have "\<forall>\<^sup>\<infinity>h. p \<le> real h * eps k / real k"
+  have "\<forall>\<^sup>\<infinity>h. p \<le> real h * \<epsilon> / real k"
     using p0_01 kn0 unfolding eps_def by real_asymp
-  then obtain h where "p \<le> real h * eps k / real k"
-    by (meson eventually_sequentially order.refl)
-  also have "\<dots> \<le> ((1 + eps k) ^ h - 1) / real k"
-    using linear_plus_1_le_power [of "eps k" h]
-    by (intro divide_right_mono add_mono) (auto simp: eps_def add_ac)
-  also have "\<dots> \<le> ((1 + eps k) ^ Suc h - 1) / real k"
-    using power_increasing [OF le_SucI [OF order_refl] 1]
-    by (simp add: divide_right_mono)
+  then obtain h where "k * p \<le> real h * \<epsilon>"
+    using kn0 by (force simp add: eventually_sequentially field_simps)
+  also have "\<dots> \<le> ((1 + \<epsilon>) ^ h - 1)"
+    using linear_plus_1_le_power [of "\<epsilon>" h]
+    by (auto simp: eps_def add_ac)
+  also have "\<dots> \<le> ((1 + \<epsilon>) ^ Suc h - 1)"
+    using power_increasing [OF le_SucI [OF order_refl] 1] by simp
   finally have "p \<le> qfun_base k (Suc h)"
-    unfolding qfun_base_def using p0_01 by blast
+    using kn0 by (simp add: qfun_base_def eps_def field_simps)
   then show thesis
     using that by blast 
 qed
@@ -346,17 +325,12 @@ qed
 
 lemma height_exists:
   obtains h where "p \<le> qfun h" "h>0"
-proof -
-  obtain h' where "p \<le> qfun_base k h' \<and> h'>0"
-    using height_exists' by blast
-  then show thesis
-    using p0_01 qfun_def that
-    by (metis add_strict_increasing less_eq_real_def)
-qed
+  using height_exists' [of p] p0_01
+  by (metis add.commute add_increasing2 less_eq_real_def qfun_def)
 
 lemma hgt_gt0: "hgt p > 0"
-  unfolding hgt_def
-  by (smt (verit, best) LeastI height_exists kn0)
+  unfolding hgt_def height_exists kn0
+  by (metis (no_types, lifting) LeastI_ex height_exists)
 
 lemma hgt_works: "p \<le> qfun (hgt p)"
   by (metis (no_types, lifting) LeastI height_exists hgt_def)
@@ -402,38 +376,43 @@ text \<open>The upper bound of the height $h(p)$ appears just below (5) on page 
   we need to exhibit a specific $o(k)$ function.\<close>
 lemma height_upper_bound:
   assumes "p \<le> 1" and big: "Big_height_upper_bound k"
-  shows "hgt p \<le> 2 * ln k / eps k"
-  using assms real_hgt_Least big nat_floor_neg not_gr0 of_nat_floor
-  unfolding Big_height_upper_bound_def hgt_maximum_def
-  by (smt (verit, ccfv_SIG) p0_01(1) power.simps(1) qfun_def qfun_eq zero_less_divide_iff) 
+  shows "hgt p \<le> 2 * ln k / \<epsilon>"
+proof (intro real_hgt_Least [where h = "nat (floor (hgt_maximum k))"])
+  show "real (nat \<lfloor>hgt_maximum k\<rfloor>) \<le> 2 * ln (real k) / \<epsilon>"
+    by (simp add: hgt_maximum_def eps_def floor_divide_lower divide_simps)
+  show "0 < nat \<lfloor>hgt_maximum k\<rfloor>"
+    using big qfun0 not_le by (force simp: Big_height_upper_bound_def qfun_def)
+  show "p \<le> qfun (nat \<lfloor>hgt_maximum k\<rfloor>)"
+    using assms p0_01 by (auto simp: Big_height_upper_bound_def qfun_def)
+qed
 
 definition alpha :: "nat \<Rightarrow> real" where "alpha \<equiv> \<lambda>h. qfun h - qfun (h-1)"
 
 lemma alpha_ge0: "alpha h \<ge> 0"
   by (simp add: alpha_def qfun_eq divide_le_cancel eps_gt0)
 
-lemma alpha_Suc_ge: "alpha (Suc h) \<ge> eps k / k"
+lemma alpha_Suc_ge: "alpha (Suc h) \<ge> \<epsilon> / k"
 proof -
-  have "(1 + eps k) ^ h \<ge> 1"
+  have "(1 + \<epsilon>) ^ h \<ge> 1"
     by (simp add: eps_def)
   then show ?thesis
     by (simp add: alpha_def qfun_eq eps_gt0 field_split_simps)
 qed
 
-lemma alpha_ge: "h>0 \<Longrightarrow> alpha h \<ge> eps k / k"
+lemma alpha_ge: "h>0 \<Longrightarrow> alpha h \<ge> \<epsilon> / k"
   by (metis Suc_pred alpha_Suc_ge)
 
 lemma alpha_gt0: "h>0 \<Longrightarrow> alpha h > 0"
-  by (metis alpha_ge alpha_ge0 eps_gt0 kn0 nle_le not_le of_nat_0_less_iff zero_less_divide_iff)
+  by (meson alpha_ge less_le_trans divide_pos_pos eps_gt0 kn0 of_nat_0_less_iff)
 
-lemma alpha_Suc_eq: "alpha (Suc h) = eps k * (1 + eps k) ^ h / k"
+lemma alpha_Suc_eq: "alpha (Suc h) = \<epsilon> * (1 + \<epsilon>) ^ h / k"
   by (simp add: alpha_def q_Suc_diff)
 
 lemma alpha_eq: 
-  assumes "h>0" shows "alpha h = eps k * (1 + eps k) ^ (h-1) / k"
+  assumes "h>0" shows "alpha h = \<epsilon> * (1 + \<epsilon>) ^ (h-1) / k"
   by (metis Suc_pred' alpha_Suc_eq assms)
 
-lemma alpha_hgt_eq: "alpha (hgt p) = eps k * (1 + eps k) ^ (hgt p -1) / k"
+lemma alpha_hgt_eq: "alpha (hgt p) = \<epsilon> * (1 + \<epsilon>) ^ (hgt p -1) / k"
   using alpha_eq hgt_gt0 by presburger
 
 lemma alpha_mono: "\<lbrakk>h' \<le> h; 0 < h'\<rbrakk> \<Longrightarrow> alpha h' \<le> alpha h"
@@ -490,7 +469,7 @@ lemma B_less_l:
 
 subsection \<open>Degree regularisation\<close>
 
-definition "red_dense \<equiv> \<lambda>Y p x. card (Neighbours Red x \<inter> Y) \<ge> (p - eps k powr (-1/2) * alpha (hgt p)) * card Y"
+definition "red_dense \<equiv> \<lambda>Y p x. card (Neighbours Red x \<inter> Y) \<ge> (p - \<epsilon> powr (-1/2) * alpha (hgt p)) * card Y"
 
 definition "X_degree_reg \<equiv> \<lambda>X Y. {x \<in> X. red_dense Y (red_density X Y) x}"
 
@@ -506,8 +485,8 @@ lemma degree_reg_disjoint_state: "disjoint_state U \<Longrightarrow> disjoint_st
   by (auto simp: degree_reg_def X_degree_reg_def disjoint_state_def disjnt_iff)
 
 lemma degree_reg_RB_state: "RB_state U \<Longrightarrow> RB_state (degree_reg U)"
-  apply (simp add: degree_reg_def RB_state_def all_edges_betw_un_Un2 split: prod.split prod.split_asm)
-  by (meson X_degree_reg_subset all_edges_betw_un_mono2 order.trans)
+  using all_edges_betw_un_mono2 [OF X_degree_reg_subset]
+  by (force simp add: degree_reg_def RB_state_def all_edges_betw_un_Un2)
 
 lemma degree_reg_valid_state: "valid_state U \<Longrightarrow> valid_state (degree_reg U)"
   by (simp add: degree_reg_RB_state degree_reg_V_state degree_reg_disjoint_state valid_state_def)
@@ -606,7 +585,7 @@ definition best_blue_book_card :: "'a set \<Rightarrow> nat" where
 
 lemma best_blue_book_is_best: "\<lbrakk>good_blue_book X (S,T); finite X\<rbrakk> \<Longrightarrow> card S \<le> best_blue_book_card X"
   unfolding best_blue_book_card_def
-  by (smt (verit) Greatest_le_nat bounded_good_blue_book)
+  by (smt (verit) Greatest_le_nat bounded_good_blue_book [of X])
 
 lemma ex_best_blue_book: "finite X \<Longrightarrow> \<exists>S T. good_blue_book X (S,T) \<and> card S = best_blue_book_card X"
   unfolding best_blue_book_card_def
@@ -634,7 +613,8 @@ lemma big_blue_V_state: "\<lbrakk>big_blue U U'; V_state U\<rbrakk> \<Longrighta
   by (force simp: good_blue_book_def V_state_def elim!: big_blue.cases)
 
 lemma big_blue_disjoint_state: "\<lbrakk>big_blue U U'; disjoint_state U\<rbrakk> \<Longrightarrow> disjoint_state U'"
-  by (force simp: book_def disjnt_iff good_blue_book_def disjoint_state_def elim!: big_blue.cases)
+  by (elim big_blue.cases) (auto simp: book_def disjnt_iff good_blue_book_def disjoint_state_def)
+
 
 lemma big_blue_RB_state: "\<lbrakk>big_blue U U'; RB_state U\<rbrakk> \<Longrightarrow> RB_state U'"
   apply (clarsimp simp add: good_blue_book_def book_def RB_state_def all_edges_betw_un_Un1 all_edges_betw_un_Un2 elim!: big_blue.cases)
@@ -805,7 +785,7 @@ proof -
   moreover
   have "all_edges_betw_un (insert x B) (insert x B) \<subseteq> Blue"
     if "all_edges_betw_un B (B \<union> X) \<subseteq> Blue"
-    using that \<open>x \<in> X\<close> by (auto simp: subset_iff set_eq_iff all_edges_betw_un_def)
+    using that \<open>x \<in> X\<close> by (fastforce simp add: all_edges_betw_un_def)
   moreover
   have "all_edges_betw_un (insert x B) (Neighbours Blue x \<inter> X) \<subseteq> Blue"
     if "all_edges_betw_un B (B \<union> X) \<subseteq> Blue"
@@ -836,9 +816,11 @@ lemma next_state_valid:
   shows "valid_state (next_state (X,Y,A,B))"
 proof (cases "many_bluish X")
   case True
-  with finX have "big_blue (X,Y,A,B) (next_state (X,Y,A,B))"
-    apply (simp add: next_state_def split: prod.split)
-    by (metis assms(1) big_blue.intros choose_blue_book_works valid_state_def)
+  with assms finX have "\<And>S T. \<lbrakk>choose_blue_book (X, Y, A, B) = (S, T)\<rbrakk>
+       \<Longrightarrow> big_blue (X, Y, A, B) (T, Y, A, B \<union> S)"
+    by (metis big_blue.intros choose_blue_book_works valid_state_def)
+  with True have "big_blue (X,Y,A,B) (next_state (X,Y,A,B))"
+    by (auto simp: next_state_def split: prod.split)
   then show ?thesis
     using assms big_blue_valid_state by blast
 next
@@ -876,7 +858,7 @@ lemma next_state_subset:
   assumes "next_state (X,Y,A,B) = (X',Y',A',B')" "finite X"
   shows "X' \<subseteq> X \<and> Y' \<subseteq> Y"
   using assms choose_blue_book_subset
-  apply (clarsimp simp: next_state_def valid_state_def Let_def split: if_split_asm prod.split_asm)
+  apply (clarsimp simp: next_state_def valid_state_def Let_def split: if_split_asm prod.splits)
   by (smt (verit) choose_blue_book_subset subset_eq)
 
 lemma valid_state0: "valid_state (X0, Y0, {}, {})"
@@ -920,9 +902,7 @@ definition "Xseq \<equiv> (\<lambda>(X,Y,A,B). X) \<circ> stepper"
 definition "Yseq \<equiv> (\<lambda>(X,Y,A,B). Y) \<circ> stepper"
 definition "Aseq \<equiv> (\<lambda>(X,Y,A,B). A) \<circ> stepper"
 definition "Bseq \<equiv> (\<lambda>(X,Y,A,B). B) \<circ> stepper"
-definition "pseq \<equiv> \<lambda>n. red_density (Xseq n) (Yseq n)"
-
-definition "pee \<equiv> \<lambda>i. red_density (Xseq i) (Yseq i)"
+definition "pseq \<equiv> \<lambda>i. red_density (Xseq i) (Yseq i)"
 
 lemma Xseq_0 [simp]: "Xseq 0 = X0"
   by (simp add: Xseq_def)
@@ -953,11 +933,13 @@ lemma finite_Yseq: "finite (Yseq i)"
   by (meson Yseq_subset_V finV finite_subset)
 
 lemma Xseq_Yseq_disjnt: "disjnt (Xseq i) (Yseq i)"
-  by (metis XY0(1) Xseq_0 Xseq_antimono Yseq_0 Yseq_antimono disjnt_subset1 disjnt_sym zero_le)
+  using XY0(1)
+  unfolding disjnt_iff
+  by (metis Xseq_0 Xseq_antimono Yseq_0 Yseq_antimono in_mono zero_le)
 
 lemma edge_card_eq_pee: 
-  "edge_card Red (Xseq i) (Yseq i) = pee i * card (Xseq i) * card (Yseq i)"
-  by (simp add: pee_def gen_density_def finite_Xseq finite_Yseq)
+  "edge_card Red (Xseq i) (Yseq i) = pseq i * card (Xseq i) * card (Yseq i)"
+  by (simp add: pseq_def gen_density_def finite_Xseq finite_Yseq)
 
 lemma valid_state_seq: "valid_state(Xseq i, Yseq i, Aseq i, Bseq i)"
   using valid_state_stepper[of i]
@@ -992,14 +974,14 @@ lemma Bseq_less_l: "card (Bseq i) < l"
 lemma Bseq_0 [simp]: "Bseq 0 = {}"
   by (simp add: Bseq_def)
 
-lemma pee_eq_p0: "pee 0 = p0"
-  by (simp add: pee_def p0_def)
+lemma pee_eq_p0: "pseq 0 = p0"
+  by (simp add: pseq_def p0_def)
 
-lemma pee_ge0: "pee i \<ge> 0"
-  by (simp add: gen_density_ge0 pee_def)
+lemma pee_ge0: "pseq i \<ge> 0"
+  by (simp add: gen_density_ge0 pseq_def)
 
-lemma pee_le1: "pee i \<le> 1"
-  using gen_density_le1 pee_def by presburger
+lemma pee_le1: "pseq i \<le> 1"
+  using gen_density_le1 pseq_def by presburger
 
 lemma pseq_0: "p0 = pseq 0"
   by (simp add: p0_def pseq_def Xseq_def Yseq_def)
@@ -1082,23 +1064,23 @@ lemma Step_class_not_halted: "\<lbrakk>i \<notin> Step_class {halted}; i\<ge>j\<
 
 lemma
   assumes "i \<notin> Step_class {halted}" 
-  shows not_halted_pee_gt: "pee i > 1/k"
+  shows not_halted_pee_gt: "pseq i > 1/k"
     and Xseq_gt0: "card (Xseq i) > 0"
     and Xseq_gt_RN: "card (Xseq i) > RN k (nat \<lceil>real l powr (3/4)\<rceil>)"
     and not_termination_condition: "\<not> termination_condition (Xseq i) (Yseq i)"
   using assms
-  by (auto simp: step_kind_defs termination_condition_def pee_def split: if_split_asm prod.split_asm)
+  by (auto simp: step_kind_defs termination_condition_def pseq_def split: if_split_asm prod.split_asm)
 
 lemma not_halted_pee_gt0:
   assumes "i \<notin> Step_class {halted}" 
-  shows "pee i > 0" 
+  shows "pseq i > 0" 
   using not_halted_pee_gt [OF assms] linorder_not_le order_less_le_trans by fastforce
 
 lemma Yseq_gt0:
   assumes "i \<notin> Step_class {halted}"
   shows "card (Yseq i) > 0"
   using not_halted_pee_gt [OF assms]
-  using card_gt_0_iff finite_Yseq pee_def by fastforce 
+  using card_gt_0_iff finite_Yseq pseq_def by fastforce 
 
 lemma step_odd: "i \<in> Step_class {red_step,bblue_step,dboost_step} \<Longrightarrow> odd i" 
   by (auto simp: Step_class_def stepper_kind_def split: if_split_asm prod.split_asm)
@@ -1216,9 +1198,10 @@ lemma ex_nonempty_blue_book:
 proof -
   have "RN k (nat \<lceil>real l powr (2 / 3)\<rceil>) > 0"
     by (metis kn0 ln0 RN_eq_0_iff gr0I of_nat_ceiling of_nat_eq_0_iff powr_nonneg_iff)
+  then have "{x \<in> X. bluish X x} \<noteq> {}"
+    using mb by (force simp: many_bluish_def)
   then obtain x where "x\<in>X" and x: "bluish X x"
-    using mb unfolding many_bluish_def
-    by (smt (verit) card_eq_0_iff empty_iff equalityI less_le_not_le mem_Collect_eq subset_iff)
+    by auto
   have "book {x} (Neighbours Blue x \<inter> X) Blue"
     by (force simp: book_def all_edges_betw_un_def in_Neighbours_iff)
   with x show ?thesis
@@ -1238,7 +1221,7 @@ proof -
   then have "S \<noteq> {}"
     by (metis \<open>finite X\<close> ST choose_blue_book_works card.empty)
   with \<open>finite X\<close> ST show ?thesis
-    by (metis (no_types, opaque_lifting) choose_blue_book_subset disjnt_iff empty_subsetI equalityI subset_eq)
+    by (metis Int_absorb2 choose_blue_book_subset disjnt_def)
 qed
 
 lemma next_state_smaller:
@@ -1298,7 +1281,7 @@ next
   have "Xseq (Suc (Suc (2*i))) \<subset> Xseq (Suc (2*i))"
     by (meson "2" finite_Xseq assms next_state_smaller nt)
   then have "card (Xseq (Suc (Suc (Suc (2*i))))) < card (Xseq (Suc (2*i)))"
-    by (smt (verit, best) Xseq_Suc_subset card_seteq order.trans finite_Xseq leD not_le)
+    by (meson Xseq_Suc_subset le_less_trans finite_Xseq psubset_card_mono)
   moreover have "card (Xseq (Suc (2*i))) + i \<le> card X0"
     using Suc dreg_before_step step_before_dreg by force
   ultimately show ?case by auto

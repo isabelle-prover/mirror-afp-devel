@@ -115,7 +115,7 @@ qed
 
 subsection \<open>Membership\<close>
 
-fun in_interval :: "'a :: order \<Rightarrow> 'a interval \<Rightarrow> bool" (\<open>(_/ \<in>\<^sub>i _)\<close> [51, 51] 50) where
+fun in_interval :: "'a :: order \<Rightarrow> 'a interval \<Rightarrow> bool" (\<open>(\<open>notation=\<open>infix \<in>\<^sub>i\<close>\<close>_/ \<in>\<^sub>i _)\<close> [51, 51] 50) where
   "y \<in>\<^sub>i Interval lx ux = (lx \<le> y \<and> y \<le> ux)" 
 
 lemma in_interval_to_interval[intro!]: "a \<in>\<^sub>i to_interval a"

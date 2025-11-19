@@ -22,7 +22,7 @@ definition
 definition observations :: "int list" where
   "observations = [0, 1, 2, 3]"
 
-definition
+definition kernel where
   "kernel =
     [
       (''start'', [(''hot'',0.8 :: real), (''cold'',0.2)]),

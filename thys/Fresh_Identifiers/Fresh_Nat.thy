@@ -39,6 +39,16 @@ instance by standard (use fresh2_notIn fresh2_eq in \<open>auto simp add: fresh_
 
 end (* instantiation *)
 
+instantiation nat :: fresh0
+begin
+
+definition fresh0_default_nat :: nat where
+"fresh0_default_nat \<equiv> 0"
+
+instance ..
+
+end (* instantiation *)
+
 text \<open>Code generation\<close>
 
 lemma fresh2_list[code]:

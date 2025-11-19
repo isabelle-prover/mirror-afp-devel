@@ -171,7 +171,7 @@ definition matrix_vector_mult_iarray :: "'a::{semiring_1} iarray iarray => 'a ia
   where "A *iv x = IArray.of_fun (\<lambda>i. sum (\<lambda>j. ((A!!i)!!j) * (x!!j)) {0..<IArray.length x}) (nrows_iarray A)"
 
 definition vector_matrix_mult_iarray :: "'a::{semiring_1} iarray => 'a iarray iarray => 'a iarray" (infixl \<open>v*i\<close> 70)
-  where "x v*i A = IArray.of_fun (\<lambda>j. sum (\<lambda>i. ((A!!i)!!j) * (x!!i)) {0..<IArray.length x}) (ncols_iarray A)"
+  where "x v*i A = IArray.of_fun (\<lambda>j. sum (\<lambda>i. (x!!i) * ((A!!i)!!j)) {0..<IArray.length x}) (ncols_iarray A)"
 
 definition mat_iarray :: "'a::{zero} => nat => 'a iarray iarray"
   where "mat_iarray k n = tabulate2 n n (\<lambda> i j. if i = j then k else 0)"
@@ -336,7 +336,7 @@ lemma vec_to_iarray_vector_matrix_mult[code_unfold]:
 proof (auto)
   fix xa
   have "(UNIV::'n set) = from_nat `{0..<CARD('n)}"  using bij_from_nat[where ?'a='n] unfolding bij_betw_def by fast
-  show "(\<Sum>i\<in>UNIV. A $ i $ from_nat xa * x $ i) = (\<Sum>i = 0..<CARD('n). A $ from_nat i $ from_nat xa * x $ from_nat i)"
+  show "(\<Sum>i\<in>UNIV. x $ i * A $ i $ from_nat xa) = (\<Sum>i = 0..<CARD('n). x$ from_nat i * A $ from_nat i $ from_nat xa)"
   using sum.reindex[of "from_nat::nat=>'n"]  using bij_from_nat[where ?'a='n] unfolding bij_betw_def by force
 qed
 

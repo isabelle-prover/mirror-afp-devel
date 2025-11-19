@@ -100,7 +100,7 @@ in
 
 fun Mset ctxt prop =
   let
-    val [(Mset, _), (P, _)] = Variable.variant_frees ctxt [] [("Mset", ()), ("P", ())];
+    val [Mset, P] = Name.variants (Variable.names_of ctxt) ["Mset", "P"];
 
     val vars = get_vars prop;
     val varsT = fastype_of (mk_bodyC vars);
@@ -130,7 +130,7 @@ end;
 (**Simp_tacs**)
 
 fun before_set2pred_simp_tac ctxt =
-  simp_tac (put_simpset HOL_basic_ss ctxt addsimps [Collect_conj_eq RS sym, @{thm Compl_Collect}]);
+  simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm Collect_conj_eq} RS sym, @{thm Compl_Collect}]);
 
 fun split_simp_tac ctxt =
   simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]);
@@ -150,12 +150,12 @@ fun split_simp_tac ctxt =
 fun set_to_pred_tac ctxt var_names = SUBGOAL (fn (_, i) =>
   before_set2pred_simp_tac ctxt i THEN_MAYBE
   EVERY [
-    resolve_tac ctxt [subsetI] i,
-    resolve_tac ctxt [CollectI] i,
-    dresolve_tac ctxt [CollectD] i,
+    resolve_tac ctxt @{thms subsetI} i,
+    resolve_tac ctxt @{thms CollectI} i,
+    dresolve_tac ctxt @{thms CollectD} i,
     TRY (split_all_tac ctxt i) THEN_MAYBE
      (rename_tac var_names i THEN
-      full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]) i)]);
+      full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms split_conv}) i)]);
 
 (*******************************************************************************)
 (** basic_simp_tac is called to simplify all verification conditions. It does **)
@@ -166,13 +166,14 @@ fun set_to_pred_tac ctxt var_names = SUBGOAL (fn (_, i) =>
 (*******************************************************************************)
 
 fun max_simp_tac ctxt var_names tac =
-  FIRST' [resolve_tac ctxt [subset_refl], set_to_pred_tac ctxt var_names THEN_MAYBE' tac];
+  FIRST' [resolve_tac ctxt @{thms subset_refl}, set_to_pred_tac ctxt var_names THEN_MAYBE' tac];
 
 fun basic_simp_tac ctxt var_names tac =
   wrap_label_tac ctxt (
     simp_tac
       (put_simpset HOL_basic_ss ctxt
-        addsimps [mem_Collect_eq, @{thm split_conv}] addsimprocs [Record.simproc])
+        |> Simplifier.add_simps @{thms mem_Collect_eq split_conv}
+        |> Simplifier.add_proc Record.simproc)
     THEN_MAYBE' max_simp_tac ctxt var_names tac
   );
 
@@ -204,7 +205,7 @@ fun hoare_rule_tac ctxt (vars, Mlem) tac =
             rule_tac true (i + 1)]]
          THEN
           (if pre_cond then basic_simp_tac ctxt var_names tac i
-           else wrap_label_tac ctxt (resolve_tac ctxt [subset_refl]) i)
+           else wrap_label_tac ctxt (resolve_tac ctxt @{thms subset_refl}) i)
         )
       );
   in rule_tac end;

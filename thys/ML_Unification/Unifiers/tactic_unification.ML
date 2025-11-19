@@ -42,7 +42,7 @@ fun unify normt tac binders ctxt (tp as (lhs, rhs)) env = Seq.make (fn _ =>
     handle TYPE _ => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Types of terms ",
         Unification_Util.pretty_terms ctxt [lhs, rhs],
-        Pretty.str " not equal"
+        Pretty.str " are not equal."
       ] |> Pretty.string_of);
       NONE)
   end)

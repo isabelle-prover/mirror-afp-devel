@@ -11,11 +11,6 @@ begin
 
 install_C_file "struct_consecutive_init.c"
 
-ML\<open>
-val t1 = @{term "a_C ((a_C_update (\<lambda>v. 1)) (POINT_C ret__int 1))"}
-val t2 = Value_Command.value @{context} t1
-\<close>
-term "a_C ((a_C_update (\<lambda>v. 1)) (POINT_C ret__int 1))"
 
 text \<open>Capture C-Ideom to initialize a struct value by a sequence of assignments.
 Even when executed within a while loop the dependency of the the initial (unspecified)
@@ -30,9 +25,8 @@ Note that it also works for nested structs. But not for partial initialisation. 
 require a liveness analysis on the level of struct components and not only on the complete struct.
  \<close>
 
-declare [[verbose=0, ML_print_depth=1000]]
 
-autocorres "struct_consecutive_init.c"
+autocorres [] "struct_consecutive_init.c"
 
 context l1_corres_in_loop
 begin
@@ -98,4 +92,113 @@ thm nested'_def
 thm nested_partial'_def
 
 end
+
+context ts_definition_crosswise_init
+begin
+thm ts_def
+lemma "crosswise_init' \<equiv> do {
+  i \<leftarrow> owhile (\<lambda>i s. i \<le> (2::32 word)) (\<lambda>i. oreturn (i + 1)) 0;
+  oreturn ()
+}"
+  unfolding crosswise_init'_def .
+
+end
+
+context ts_definition_cond_init
+begin
+thm ts_def [no_vars]
+lemma "cond_init' i \<equiv> if i < 0x2A then POINT_C 0x21 0x2C else POINT_C 0x21 0x2A"
+  unfolding ts_def .
+end
+
+context ts_definition_cond_init1
+begin
+thm ts_def [no_vars]
+lemma "cond_init1' i \<equiv> if i < 0x2A then POINT_C 0x21 0x2C else POINT_C 0x21 0x2A"
+  unfolding ts_def .
+end
+
+context ts_definition_cond_init_while
+begin
+thm ts_def [no_vars]
+lemma "cond_init_while' i \<equiv> do {
+  (i, y) \<leftarrow>
+    owhile (\<lambda>(i, x) s. i < 0x64)
+     (\<lambda>(i, x).
+         oreturn
+          (case if i < 0x2A
+                then (POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 3) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 2) (UCAST(32 \<rightarrow> 32 signed) i))
+                else (POINT_C (UCAST(32 \<rightarrow> 32 signed) x + 2) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 3) (UCAST(32 \<rightarrow> 32 signed) i)) of
+           (dst, src) \<Rightarrow>
+             (i + 1,
+              x + i + SCAST(32 signed \<rightarrow> 32) (a_C src) + SCAST(32 signed \<rightarrow> 32) (b_C dst) + SCAST(32 signed \<rightarrow> 32) (b_C src) +
+              SCAST(32 signed \<rightarrow> 32) (a_C dst))))
+     (i, 0);
+  oreturn y
+}"
+  unfolding ts_def .
+end
+
+context ts_definition_cond_init_while4
+begin
+thm ts_def [no_vars]
+lemma "cond_init_while4' i \<equiv> do {
+  (i, y) \<leftarrow>
+    owhile (\<lambda>(i, x) s. i < 0x64)
+     (\<lambda>(i, x).
+         oreturn
+          (case if i < 0x2A
+                then (POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 6) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 4) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 3) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 2) (UCAST(32 \<rightarrow> 32 signed) i))
+                else (POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 7) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 5) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) x + 2) (UCAST(32 \<rightarrow> 32 signed) i),
+                      POINT_C (UCAST(32 \<rightarrow> 32 signed) i + 3) (UCAST(32 \<rightarrow> 32 signed) i)) of
+           (four, three, dst, src) \<Rightarrow>
+             (i + 1,
+              x + i + SCAST(32 signed \<rightarrow> 32) (a_C src) + SCAST(32 signed \<rightarrow> 32) (b_C dst) +
+              SCAST(32 signed \<rightarrow> 32) (b_C src) +
+              SCAST(32 signed \<rightarrow> 32) (a_C dst) +
+              SCAST(32 signed \<rightarrow> 32) (a_C three) +
+              SCAST(32 signed \<rightarrow> 32) (b_C three) +
+              SCAST(32 signed \<rightarrow> 32) (a_C four) +
+              SCAST(32 signed \<rightarrow> 32) (b_C four))))
+     (i, 0);
+  oreturn y
+}"
+  unfolding ts_def .
+end
+
+context ts_definition_cond_init_while_nested
+begin
+thm ts_def [no_vars]
+lemma "cond_init_while_nested' i \<equiv> do {
+  (i, y) \<leftarrow>
+    owhile (\<lambda>(i, x) s. i < 0x64)
+     (\<lambda>(i, x).
+         oreturn
+          (case if i < 0x2A
+                then (i + 1,
+                      x + i + SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i + 2) + SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i + 3) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i + 4) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i))
+                else (i + 1,
+                      x + i + SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i + 3) + SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i + 4) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i + 5) +
+                      SCAST(32 signed \<rightarrow> 32) (UCAST(32 \<rightarrow> 32 signed) i)) of
+           (x, xa) \<Rightarrow> (x, xa)))
+     (i, 0);
+  oreturn y
+}"
+  unfolding ts_def .
+end
+
 end

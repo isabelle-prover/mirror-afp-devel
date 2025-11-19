@@ -8,24 +8,22 @@ begin
 
 paragraph \<open>Summary\<close>
 text \<open>Setup and local setup with result commands\<close>
-
 ML\<open>
   let
-    fun setup_result finish (name, (source, pos)) =
+    fun setup_result (name, (source, pos)) =
       ML_Context.expression pos
         (ML_Lex.read "val" @ name @ ML_Lex.read "= Context.>>> (" @ source @ ML_Lex.read ")")
-      |> finish
     val parse = Parse.embedded_ml
       -- ((\<^keyword>\<open>=\<close> || \<^keyword>\<open>\<equiv>\<close>)
       |-- Parse.position Parse.embedded_ml)
   in
     Outer_Syntax.command \<^command_keyword>\<open>setup_result\<close>
       "ML setup with result for global theory"
-      (parse >> (Toplevel.theory o setup_result Context.theory_map));
+      (parse >> (setup_result #> Context.theory_map #> Toplevel.theory));
     Outer_Syntax.local_theory \<^command_keyword>\<open>local_setup_result\<close>
       "ML setup with result for local theory"
-      (parse >> (setup_result
-        (Local_Theory.declaration {pos = \<^here>, syntax = false, pervasive = false} o K)))
+      (parse >> (setup_result #> K #>
+        Local_Theory.declaration {pos = \<^here>, syntax = false, pervasive = false}))
   end
 \<close>
 

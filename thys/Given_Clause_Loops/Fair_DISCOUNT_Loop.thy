@@ -56,7 +56,7 @@ locale fair_discount_loop =
   fixes
     Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
-    wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
+    wfp_Prec_S: "wfp (\<prec>S)" and
     transp_Prec_S: "transp (\<prec>S)" and
     finite_Inf_between: "finite A \<Longrightarrow> finite (no_labels.Inf_between A {C})"
 begin
@@ -65,7 +65,7 @@ lemma trans_Prec_S: "trans {(x, y). x \<prec>S y}"
   using transp_Prec_S transp_trans by blast
 
 lemma irreflp_Prec_S: "irreflp (\<prec>S)"
-  using minimal_element.wf wfp_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
+  by (simp add: wfp_Prec_S wfp_imp_irreflp)
 
 lemma irrefl_Prec_S: "irrefl {(x, y). x \<prec>S y}"
   by (metis CollectD case_prod_conv irrefl_def irreflp_Prec_S irreflp_def)
@@ -468,7 +468,7 @@ abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> 
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
-  using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
+  by (simp add: wfp_Prec_S wfp_multp)
 
 definition Less_state :: "('p, 'f) DLf_state \<Rightarrow> ('p, 'f) DLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50) where
   "St' \<sqsubset> St \<longleftrightarrow>
@@ -738,15 +738,17 @@ lemma fair_DL_Liminf_passive_formulas_empty:
     init: "is_initial_DLf_state (lhd Sts)"
   shows "Liminf_llist (lmap (passive_formulas_of \<circ> passive_of) Sts) = {}"
 proof -
-  have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_formula \<circ> elems \<circ> passive_of) Sts) = {}"
-    using fair_DL_Liminf_passive_empty Liminf_llist_subset
-    by (metis (no_types) empty_iff full init len llength_lmap llist.map_comp lnth_lmap member_filter
-        subsetI subset_antisym)
-
+  have \<open>Liminf_llist (lmap (elems \<circ> passive_of) Sts) = {}\<close>  (is \<open>?A = _\<close>)
+    using fair_DL_Liminf_passive_empty [of Sts] full init len by simp
+  moreover have \<open>Liminf_llist (lmap (Set.filter is_passive_formula \<circ> elems \<circ> passive_of) Sts) \<subseteq> ?A\<close>  (is \<open>?B \<subseteq> _\<close>)
+    by (rule Liminf_llist_subset) simp_all
+  ultimately have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_formula \<circ> elems \<circ> passive_of) Sts) = {}"
+    by simp
+    
   let ?g = "Set.filter is_passive_formula \<circ> elems \<circ> passive_of"
 
   have "inj_on passive_formula (Set.filter is_passive_formula (UNIV :: 'f passive_elem set))"
-    unfolding inj_on_def by (metis member_filter passive_elem.collapse(2))
+    by (auto simp add: inj_on_def) (metis passive_elem.collapse(2))
   moreover have "Sup_llist (lmap ?g Sts) \<subseteq> Set.filter is_passive_formula UNIV"
     unfolding Sup_llist_def by auto
   ultimately have inj_pi: "inj_on passive_formula (Sup_llist (lmap ?g Sts))"
@@ -769,15 +771,17 @@ lemma fair_DL_Liminf_passive_inferences_empty:
     init: "is_initial_DLf_state (lhd Sts)"
   shows "Liminf_llist (lmap (passive_inferences_of \<circ> passive_of) Sts) = {}"
 proof -
-  have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_inference \<circ> elems \<circ> passive_of) Sts) = {}"
-    using fair_DL_Liminf_passive_empty Liminf_llist_subset
-    by (metis (no_types) empty_iff full init len llength_lmap llist.map_comp lnth_lmap member_filter
-        subsetI subset_antisym)
+  have \<open>Liminf_llist (lmap (elems \<circ> passive_of) Sts) = {}\<close>  (is \<open>?A = _\<close>)
+    using fair_DL_Liminf_passive_empty [of Sts] full init len by simp
+  moreover have \<open>Liminf_llist (lmap (Set.filter is_passive_inference \<circ> elems \<circ> passive_of) Sts) \<subseteq> ?A\<close>  (is \<open>?B \<subseteq> _\<close>)
+    by (rule Liminf_llist_subset) simp_all
+  ultimately have lim_filt: "Liminf_llist (lmap (Set.filter is_passive_inference \<circ> elems \<circ> passive_of) Sts) = {}"
+    by simp
 
   let ?g = "Set.filter is_passive_inference \<circ> elems \<circ> passive_of"
 
   have "inj_on passive_inference (Set.filter is_passive_inference (UNIV :: 'f passive_elem set))"
-    unfolding inj_on_def by (metis member_filter passive_elem.collapse(1))
+    by (auto simp add: inj_on_def) (metis passive_elem.collapse(1))
   moreover have "Sup_llist (lmap ?g Sts) \<subseteq> Set.filter is_passive_inference UNIV"
     unfolding Sup_llist_def by auto
   ultimately have inj_pi: "inj_on passive_inference (Sup_llist (lmap ?g Sts))"
@@ -923,7 +927,7 @@ locale fifo_discount_loop =
   fixes
     Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
-    wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
+    wfp_Prec_S: "wfp (\<prec>S)" and
     transp_Prec_S: "transp (\<prec>S)" and
     finite_Inf_between: "finite A \<Longrightarrow> finite (no_labels.Inf_between A {C})"
 begin
@@ -934,11 +938,8 @@ sublocale fifo_prover_queue
 sublocale fair_discount_loop Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q
   Equiv_F Prec_F "[]" hd "\<lambda>y xs. if y \<in> set xs then xs else xs @ [y]" removeAll fset_of_list Prec_S
 proof
-  show "po_on (\<prec>S) UNIV"
-    using wf_Prec_S minimal_element.po by blast
-next
-  show "wfp_on (\<prec>S) UNIV"
-    using wf_Prec_S minimal_element.wf by blast
+  show "wfp (\<prec>S)"
+    using wfp_Prec_S .
 next
   show "transp (\<prec>S)"
     by (rule transp_Prec_S)

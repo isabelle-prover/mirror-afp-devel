@@ -5,7 +5,8 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780.  In Spanish 
+   Last modified: 29 Sep, 2025 *)
 
 (*<*)
 theory FormulaEnumeration
@@ -15,8 +16,8 @@ begin
 
  
 fun formulaP_from_tree_b :: "(nat \<Rightarrow> 'b) \<Rightarrow> tree_b \<Rightarrow> 'b formula" where
-  "formulaP_from_tree_b g (Leaf 0) = FF"
-| "formulaP_from_tree_b g (Leaf (Suc 0)) = TT"
+  "formulaP_from_tree_b g (Leaf 0) = \<bottom>."
+| "formulaP_from_tree_b g (Leaf (Suc 0)) = \<top>."
 | "formulaP_from_tree_b g (Leaf (Suc (Suc n))) = (atom (g n))"
 | "formulaP_from_tree_b g (Tree (Leaf (Suc 0)) (Tree T1 T2)) =
    ((formulaP_from_tree_b g T1) \<and>. (formulaP_from_tree_b g T2))"
@@ -28,7 +29,7 @@ fun formulaP_from_tree_b :: "(nat \<Rightarrow> 'b) \<Rightarrow> tree_b \<Right
    (\<not>. (formulaP_from_tree_b g T))"
 (*<*)
 
-lemma "formulaP_from_tree_b  (\<lambda>n. n) (Leaf  0) = FF"
+lemma "formulaP_from_tree_b  (\<lambda>n. n) (Leaf  0) = \<bottom>."
 by simp
 (*
 normal_form 
@@ -36,7 +37,7 @@ normal_form
 *)
 lemma 
   "formulaP_from_tree_b 
-   (\<lambda>n. n) (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0))) = FF \<and>. FF" 
+   (\<lambda>n. n) (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0))) = \<bottom>. \<and>. \<bottom>." 
 by simp 
 (*
 normal_form 
@@ -44,10 +45,10 @@ normal_form
 *)
 lemma 
   "formulaP_from_tree_b g (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0))) 
-   = FF \<and>. FF" 
+   = \<bottom>. \<and>. \<bottom>." 
 by simp
 (*
-normal_form  "formulaP_from_tree_b (\<lambda>n. n) (Leaf  0) = FF"
+normal_form  "formulaP_from_tree_b (\<lambda>n. n) (Leaf  0) = \<bottom>."
 normal_form  "formulaP_from_tree_b (\<lambda>n. n) (Leaf  0)"
 normal_form 
   "formulaP_from_tree_b  
@@ -55,14 +56,14 @@ normal_form
 *)
 lemma 
   "formulaP_from_tree_b 
-  (\<lambda>n. n) (Tree (Leaf (Suc (Suc (Suc (Suc 0))))) (Leaf 0)) = (\<not>. FF)"
+  (\<lambda>n. n) (Tree (Leaf (Suc (Suc (Suc (Suc 0))))) (Leaf 0)) = (\<not>. \<bottom>.)"
 by simp
 (*>*)
 
 
 primrec tree_b_from_formulaP :: "('b \<Rightarrow> nat) \<Rightarrow>  'b formula \<Rightarrow> tree_b" where
-  "tree_b_from_formulaP  g FF = Leaf 0"
-| "tree_b_from_formulaP g TT = Leaf (Suc 0)"
+  "tree_b_from_formulaP  g \<bottom>. = Leaf 0"
+| "tree_b_from_formulaP g \<top>. = Leaf (Suc 0)"
 | "tree_b_from_formulaP g (atom P) = Leaf (Suc (Suc (g P)))"
 | "tree_b_from_formulaP g (F \<and>. G) = Tree (Leaf (Suc 0))
    (Tree (tree_b_from_formulaP g F) (tree_b_from_formulaP g G))"
@@ -105,8 +106,6 @@ proof (rule allI)
   thus "\<exists>n. F = \<Delta>P g n"
     by blast
 qed
-
-
 
 corollary EnumerationFormulasP1:
   assumes "enumeration (g:: nat \<Rightarrow> 'b)"

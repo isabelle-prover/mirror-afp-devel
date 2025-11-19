@@ -206,14 +206,14 @@ using 1 2 3 proof(induct "length trv1 + length trv2" arbitrary: sv1 sv2 trv1 trv
     using `Van.validFromS sv1 (trv1 @ [trn1])` `never isIntV trv1` 
     by (metis Simple_Transition_System.validFromS_Cons_iff Simple_Transition_System.validFromS_def 
        Simple_Transition_System.validS_append1 
-      Simple_Transition_System.validS_validTrans hd_append2 list_all_simps(1) neq_Nil_conv snoc_eq_iff_butlast)
+      Simple_Transition_System.validS_validTrans hd_append2 list_all_Cons_iff neq_Nil_conv snoc_eq_iff_butlast)
     have trv2ne: "trv2 \<noteq> []" using isv12 "1.prems"(6) "22" by force
     then obtain sv2' trv2' where trv2: "trv2 = sv2 # trv2'" "validTransV (sv2,sv2')" 
     "Van.validFromS sv2' trv2'" "never isIntV trv2'" 
     using `Van.validFromS sv2 (trv2 @ [trn2])` `never isIntV trv2` 
     by (metis Simple_Transition_System.validFromS_Cons_iff Simple_Transition_System.validFromS_def 
        Simple_Transition_System.validS_append1 
-      Simple_Transition_System.validS_validTrans hd_append2 list_all_simps(1) neq_Nil_conv snoc_eq_iff_butlast)
+      Simple_Transition_System.validS_validTrans hd_append2 list_all_Cons_iff neq_Nil_conv snoc_eq_iff_butlast)
 
     show ?thesis 
     proof(cases "length trv1 = Suc 0 \<and> length trv2 = Suc 0") 

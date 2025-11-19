@@ -1,0 +1,10 @@
+chapter AFP
+
+(* Author: Benoît Ballenghien, Université Paris-Saclay, CNRS, ENS Paris-Saclay, LMF
+   Author: Benjamin Puyobro, Université Paris-Saclay, IRT SystemX, CNRS, ENS Paris-Saclay, LMF
+   Author: Burkhart Wolff, Université Paris-Saclay, CNRS, ENS Paris-Saclay, LMF *)
+
+session Elementary_Ultrametric_Spaces = "HOL-Analysis" +
+  options [timeout = 300]
+  theories Elementary_Ultrametric_Spaces (global)
+  document_files "root.tex"

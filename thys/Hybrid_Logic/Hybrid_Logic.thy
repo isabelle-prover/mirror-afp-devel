@@ -3623,8 +3623,22 @@ lemma hequiv_sym_rel: \<open>Hintikka A H \<Longrightarrow> sym (hequiv_rel A H)
 lemma hequiv_trans_rel: \<open>Hintikka B A \<Longrightarrow> trans (hequiv_rel B A)\<close>
   unfolding trans_def using hequiv_trans by fast
 
-lemma hequiv_rel: \<open>Hintikka A H \<Longrightarrow> equiv (names H \<inter> A) (hequiv_rel A H)\<close>
-  using hequiv_refl_rel hequiv_sym_rel hequiv_trans_rel by (rule equivI)
+lemma hequiv_rel:
+  assumes "Hintikka A H"
+  shows \<open>equiv (names H \<inter> A) (hequiv_rel A H)\<close>
+proof (rule equivI)
+  show "hequiv_rel A H \<subseteq> (names H \<inter> A) \<times> (names H \<inter> A)"
+    using hequiv_names_rel[OF \<open>Hintikka A H\<close>] by blast
+next
+  show "refl_on (names H \<inter> A) (hequiv_rel A H)"
+    using hequiv_refl_rel[OF \<open>Hintikka A H\<close>] .
+next
+  show "sym (hequiv_rel A H)"
+    using hequiv_sym_rel[OF \<open>Hintikka A H\<close>] .
+next
+  show "trans (hequiv_rel A H)"
+    using hequiv_trans_rel[OF \<open>Hintikka A H\<close>] .
+qed
 
 lemma nominal_in_names:
   assumes \<open>Hintikka A H\<close> \<open>\<exists>block \<in> H. i \<in> block_nominals block\<close>

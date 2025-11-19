@@ -313,7 +313,7 @@ definition rank_iarray :: "'a::{field} iarray iarray => nat"
 subsubsection\<open>Proving the equivalence between @{term "rank"} and @{term "rank_iarray"}.\<close>
 
 text\<open>First of all, some code equations are removed to allow the execution of Gauss-Jordan algorithm using iarrays\<close>
-lemmas card'_code(2)[code del]
+
 lemmas rank_Gauss_Jordan_code[code del]
 
 

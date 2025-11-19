@@ -44,7 +44,7 @@ proof (rule QuotientI)
     assume ?rhs
     with assms have "\<eta> x \<le>\<^bsub>L\<^esub> \<eta> x'" by fastforce
     moreover from \<open>?rhs\<close> assms have "x \<le>\<^bsub>L\<^esub> \<eta> x" "\<eta> x' \<le>\<^bsub>L\<^esub> x'"
-      by (blast elim: t.preorder_equivalence_order_equivalenceE)+
+      by (auto 0 4 elim!: t.preorder_equivalence_order_equivalenceE)
     moreover from assms have "transitive (\<le>\<^bsub>L\<^esub>)" by blast
     ultimately show "x \<le>\<^bsub>L\<^esub> x'" by blast
   next

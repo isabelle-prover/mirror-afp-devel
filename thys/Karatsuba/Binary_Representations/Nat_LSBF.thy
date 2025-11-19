@@ -768,8 +768,10 @@ proof (intro iffD1[OF concat_eq_concat_iff])
     assume a: "z \<in> set (zip (subdivide n (concat xs)) xs)"
     then obtain x y where "z = (x, y)" by fastforce
     from a obtain i where "i < length xs" "z = zip (subdivide n (concat xs)) xs ! i"
+      apply (simp add: in_set_conv_nth)
       using \<open>length (subdivide n (concat xs)) = length xs\<close>
-      by (metis (no_types, lifting) gen_length_def in_set_conv_nth length_code length_zip min_0R min_add_distrib_left)
+      apply blast
+      done
     then have "subdivide n (concat xs) ! i = x" "xs ! i = y"
       using \<open>z = (x, y)\<close> \<open>length (subdivide n (concat xs)) = length xs\<close> by simp_all
     then have "length x = n" using \<open>i < length xs\<close> \<open>length (subdivide n (concat xs)) = length xs\<close>

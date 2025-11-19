@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>aissat on Archive of Formal Proofs
-    </title>
-    <link>/authors/aissat/</link>
-    <description>
-        Recent content in aissat 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 18 Aug 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/aissat/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
-          <link>/entries/InfPathElimination.html</link>
-          <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/InfPathElimination.html</guid>
-          <description></description>
-        </item>
+    <title>Romain Aissat</title>
+    <link>https://isa-afp.org/authors/aissat/</link>
+    <description>AFP entries of Romain Aissat</description><item>
+  <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
+  <link>https://isa-afp.org/entries/InfPathElimination.html</link>
+  <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
+  <description>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths in the AFP</description>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+
   </channel>
 </rss>

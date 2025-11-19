@@ -668,10 +668,13 @@ proof (induct G)
     by simp
 next
   case (Cons a G)
+  then obtain m where \<open>\<forall>g\<in>set G. closed m g\<close>
+    by (auto simp add: list_all_def)
+  moreover from ex_closed [of a] obtain n where \<open>closed n a\<close> ..
+  ultimately have \<open>\<forall>g\<in>set (a # G). closed (max m n) g\<close>
+    by (auto intro: closed_mono [of n] closed_mono [of m])
   then show ?case
-    unfolding list_all_def
-    using ex_closed closed_mono
-    by (metis Ball_set list_all_simps(1) nat_le_linear)
+    by (auto simp add: list_all_def)
 qed
 
 primrec sub_consts :: \<open>'a list \<Rightarrow> ('a, 'b) form \<Rightarrow> ('a, 'b) form\<close> where

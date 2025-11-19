@@ -1,45 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>haslbeckm on Archive of Formal Proofs
-    </title>
-    <link>/authors/haslbeckm/</link>
-    <description>
-        Recent content in haslbeckm 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/haslbeckm/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>NREST: Nondeterministc RESult monad with Time</title>
-          <link>/entries/NREST.html</link>
-          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/NREST.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-          <link>/entries/Kruskal.html</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Kruskal.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hoare Logics for Time Bounds</title>
-          <link>/entries/Hoare_Time.html</link>
-          <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Hoare_Time.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
+    <title>Maximilian P. L. Haslbeck</title>
+    <link>https://isa-afp.org/authors/haslbeckm/</link>
+    <description>AFP entries of Maximilian P. L. Haslbeck</description><item>
+  <title>NREST: Nondeterministc RESult monad with Time</title>
+  <link>https://isa-afp.org/entries/NREST.html</link>
+  <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+  <description>NREST: Nondeterministc RESult monad with Time in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+  <link>https://isa-afp.org/entries/Kruskal.html</link>
+  <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Kruskal&#39;s Algorithm for Minimum Spanning Forest in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Hoare Logics for Time Bounds</title>
+  <link>https://isa-afp.org/entries/Hoare_Time.html</link>
+  <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+  <description>Hoare Logics for Time Bounds in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Analysis of List Update Algorithms</title>
+  <link>https://isa-afp.org/entries/List_Update.html</link>
+  <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+  <description>Analysis of List Update Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Online</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
   </channel>
 </rss>

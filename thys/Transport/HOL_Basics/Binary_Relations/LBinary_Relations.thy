@@ -9,6 +9,7 @@ theory LBinary_Relations
     Binary_Relation_Functions
     Binary_Relations_Agree
     Binary_Relations_Extend
+    Binary_Relations_Graph
     Binary_Relations_Lattice
     Binary_Relations_Least
     Binary_Relations_Reflexive_Closure

@@ -209,7 +209,7 @@ begin
     lemma cod_determines_component:
     assumes "J.arr j"
     shows "\<chi> j = \<chi> (J.cod j)"
-      using assms is_natural_2 A.map_simp C.comp_arr_ide ide_apex preserves_reflects_arr
+      using assms naturality2 A.map_simp C.comp_arr_ide ide_apex preserves_reflects_arr
       by metis
 
   end
@@ -266,12 +266,7 @@ begin
       interpret Fa: constant_functor J B \<open>F a\<close>
         using \<chi>.ide_apex by unfold_locales auto
       have 1: "F o \<chi>.A.map = Fa.map"
-      proof
-        fix f
-        show "(F \<circ> \<chi>.A.map) f = Fa.map f"
-          using is_extensional Fa.is_extensional \<chi>.A.is_extensional
-          by (cases "\<chi>.J.arr f", simp_all)
-      qed
+        using Fa.map_def extensionality by fastforce
       interpret \<chi>': natural_transformation J B Fa.map \<open>F o D\<close> \<open>F o \<chi>\<close>
         using 1 horizontal_composite \<chi>.natural_transformation_axioms
               as_nat_trans.natural_transformation_axioms
@@ -314,12 +309,10 @@ begin
         interpret B: constant_functor J C \<open>C.dom f\<close>
           using assms by unfold_locales auto
         have "cone (C.dom f) (\<lambda>j. if J.arr j then \<chi> j \<cdot> f else C.null)"
-          using assms B.value_is_ide \<chi>.is_natural_1 \<chi>.is_natural_2
-          apply (unfold_locales, auto)
-          using \<chi>.is_natural_1
-           apply (metis C.comp_assoc)
-          using \<chi>.is_natural_2 C.comp_arr_dom
-          by (metis J.arr_cod_iff_arr J.cod_cod C.comp_assoc)
+          using assms B.value_is_ide
+          apply (unfold_locales, simp_all)
+           apply (metis C.comp_assoc \<chi>.naturality1)
+          by (metis C.comp_arr_dom \<chi>.cod_determines_component C.comp_assoc)
         thus "(\<lambda>j. if J.arr j then \<chi> j \<cdot> f else C.null) \<in> cones (C.dom f)" by auto
       qed
     qed
@@ -330,12 +323,8 @@ begin
     proof -
       interpret \<chi>: cone J C D a \<chi> using assms by auto
       show ?thesis
-      proof
-        fix j
-        show "cones_map a \<chi> j = \<chi> j"
-          using assms \<chi>.A.value_is_ide \<chi>.preserves_hom C.comp_arr_dom \<chi>.is_extensional
-          by (cases "J.arr j", auto)
-      qed
+        using assms \<chi>.A.value_is_ide \<chi>.preserves_hom C.comp_arr_dom \<chi>.extensionality
+        by auto
     qed
 
     lemma cones_map_comp:
@@ -397,7 +386,7 @@ begin
       using f \<tau>o\<chi>.cone_axioms D'.cones_map_mapsto [of f] by blast
     write C (infixr \<open>\<cdot>\<close> 55)
     show "D'.cones_map f \<tau>o\<chi>.map = \<tau>o\<chi>f.map"
-    proof (intro NaturalTransformation.eqI)
+    proof (intro natural_transformation_eqI)
       show "natural_transformation J C \<chi>f.A.map D' (D'.cones_map f \<tau>o\<chi>.map)" ..
       show "natural_transformation J C \<chi>f.A.map D' \<tau>o\<chi>f.map" ..
       show "\<And>j. D.J.ide j \<Longrightarrow> D'.cones_map f \<tau>o\<chi>.map j = \<tau>o\<chi>f.map j"
@@ -405,7 +394,7 @@ begin
         fix j
         assume j: "D.J.ide j"
         have "D'.cones_map f \<tau>o\<chi>.map j = \<tau>o\<chi>.map j \<cdot> f"
-          using f \<tau>o\<chi>.cone_axioms \<tau>o\<chi>.map_simp_2 \<tau>o\<chi>.is_extensional by auto
+          using f \<tau>o\<chi>.cone_axioms \<tau>o\<chi>.map_simp_2 \<tau>o\<chi>.extensionality by auto
         also have "... = (\<tau> j \<cdot> \<chi> (D.J.dom j)) \<cdot> f"
           using j \<tau>o\<chi>.map_simp_2 by simp
         also have "... = \<tau> j \<cdot> \<chi> (D.J.dom j) \<cdot> f"
@@ -522,7 +511,7 @@ begin
   sublocale cones_functor \<subseteq> "functor" Cop.comp S map using is_functor by auto
   sublocale cones_functor \<subseteq> set_valued_functor Cop.comp S \<open>\<lambda>A. A \<subseteq> S.Univ\<close> map ..
 
-  section Limits
+  section "Limits"
 
   subsection "Limit Cones"
 
@@ -544,6 +533,10 @@ begin
   and \<chi> :: "'j \<Rightarrow> 'c" +
   assumes is_universal: "cone J C D a' \<chi>' \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<chi>'"
   begin
+
+    lemma is_cone [simp]:
+    shows "\<chi> \<in> D.cones a"
+      using cone_axioms by simp
 
     definition induced_arrow :: "'c \<Rightarrow> ('j \<Rightarrow> 'c) \<Rightarrow> 'c"
     where "induced_arrow a' \<chi>' = (THE f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<chi>')"
@@ -643,10 +636,10 @@ begin
     where "has_as_limit a \<equiv> (\<exists>\<chi>. limit_cone a \<chi>)"
 
     abbreviation has_limit
-    where "has_limit \<equiv> (\<exists>a \<chi>. limit_cone a \<chi>)"
+    where "has_limit \<equiv> (\<exists>a. has_as_limit a)"
 
     definition some_limit :: 'c
-    where "some_limit = (SOME a. \<exists>\<chi>. limit_cone a \<chi>)"
+    where "some_limit = (SOME a. has_as_limit a)"
 
     definition some_limit_cone :: "'j \<Rightarrow> 'c"
     where "some_limit_cone = (SOME \<chi>. limit_cone some_limit \<chi>)"
@@ -663,8 +656,8 @@ begin
         by simp
     qed
 
-    lemma ex_limitE:
-    assumes "\<exists>a. has_as_limit a"
+    lemma has_limitE:
+    assumes has_limit
     obtains a \<chi> where "limit_cone a \<chi>"
       using assms someI_ex by blast
 
@@ -796,10 +789,6 @@ begin
                            (\<phi> (C.dom g, a) o Cop.comp g o \<psi> (C.cod g, a))"
       using ide_apex g Y.Y_ide_arr [of a g "C.dom g" "C.cod g"] by auto
 
-    lemma is_cone [simp]:
-    shows "\<chi> \<in> D.cones a"
-      using cone_axioms by simp
-    
     text\<open>
       For each object @{term a'} of @{term[source=true] C} we have a function mapping
       @{term "C.hom a' a"} to the set of cones over @{term D} with apex @{term a'},
@@ -1179,7 +1168,7 @@ begin
                 = S.Fun (\<Phi> a' \<cdot>\<^sub>S Y a (\<psi> (a', a) x)) (\<phi> (a, a) a)"
           using \<psi>x a' \<phi>a Ya.ide_a Ya.map_simp Hom.set_map by (elim C.in_homE, auto)
         also have "... = S.Fun (S (Cones.map (\<psi> (a', a) x)) (\<Phi> a)) (\<phi> (a, a) a)"
-          using \<psi>x is_natural_1 [of "\<psi> (a', a) x"] is_natural_2 [of "\<psi> (a', a) x"] by auto
+          using \<psi>x naturality1 [of "\<psi> (a', a) x"] naturality2 [of "\<psi> (a', a) x"] by auto
         also have "... = (Cones.FUN (\<psi> (a', a) x) o \<Phi>.FUN a) (\<phi> (a, a) a)"
         proof -
           have "S.seq (Cones.map (\<psi> (a', a) x)) (\<Phi> a)"
@@ -1431,7 +1420,7 @@ begin
                 have "D'.cones_map ?f (\<chi> o \<psi>) j' = null"
                   using j' f_in_hom \<chi>o\<psi> by fastforce
                 thus ?thesis
-                  using j' \<chi>'.is_extensional by simp
+                  using j' \<chi>'.extensionality by simp
               qed
               moreover have "J'.arr j' \<Longrightarrow> D'.cones_map ?f (\<chi> o \<psi>) j' = \<chi>' j'"
               proof -
@@ -1453,7 +1442,7 @@ begin
             proof
               fix j
               have "\<not>J.arr j \<Longrightarrow> D.cones_map f' \<chi> j = (\<chi>' o \<phi>) j"
-                using f' \<chi> \<chi>'o\<phi>.is_extensional \<chi>.is_cone mem_Collect_eq restrict_apply by auto
+                using f' \<chi> \<chi>'o\<phi>.extensionality \<chi>.is_cone mem_Collect_eq restrict_apply by auto
               moreover have "J.arr j \<Longrightarrow> D.cones_map f' \<chi> j = (\<chi>' o \<phi>) j"
               proof -
                 assume j: "J.arr j"
@@ -1558,7 +1547,7 @@ begin
         using g by unfold_locales auto
       interpret Fun_g: natural_transformation J C Cod_f.map Cod_g.map Fun_g.map
         apply unfold_locales
-        using f g C.seqE [of g f] C.comp_arr_dom C.comp_cod_arr Fun_g.is_extensional by auto
+        using f g C.seqE [of g f] C.comp_arr_dom C.comp_cod_arr Fun_g.extensionality by auto
       interpret Fun_fg: vertical_composite
                           J C Dom_f.map Cod_f.map Cod_g.map Fun_f.map Fun_g.map ..
       have 1: "J_C.arr (map f)"
@@ -1585,7 +1574,7 @@ begin
             by blast
           also have "... = J_C.MkArr Dom_f.map Cod_g.map
                                      (\<lambda>j. if J.arr j then g \<cdot> f else C.null)"
-            using Fun_fg.is_extensional Fun_fg.map_simp_2 by auto
+            using Fun_fg.extensionality Fun_fg.map_simp_2 by auto
           finally show ?thesis by auto
         qed
         also have "... = map g \<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] map f"
@@ -1762,13 +1751,13 @@ begin
           interpret g: constant_transformation J C g
             apply unfold_locales using assms(1) by auto
           interpret \<chi>og: vertical_composite J C A'.map \<chi>.A.map D g.map \<chi>
-            using assms(1) C.comp_arr_dom C.comp_cod_arr A'.is_extensional g.is_extensional
+            using assms(1) C.comp_arr_dom C.comp_cod_arr A'.extensionality g.extensionality
             apply (unfold_locales, auto)
             by (elim J.seqE, auto)
           have "J_C.Map (?x \<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] map g) = \<chi>og.map"
             using assms(1) 2 J_C.comp_char map_def by auto
           also have "... = J_C.Map ?x'"
-            using x' \<chi>og.map_def J_C.arr_char [of ?x'] natural_transformation.is_extensional
+            using x' \<chi>og.map_def J_C.arr_char [of ?x'] natural_transformation.extensionality
                   assms(1) cone_\<chi> \<chi>og.map_simp_2
             by fastforce
           finally show ?thesis by auto
@@ -1804,7 +1793,7 @@ begin
       interpret \<gamma>: constant_transformation J C g
         using g \<chi>.ide_apex by (unfold_locales, auto)
       interpret \<chi>og: vertical_composite J C A'.map \<chi>.A.map ?D \<gamma>.map ?\<chi>
-        using g C.comp_arr_dom C.comp_cod_arr \<gamma>.is_extensional by (unfold_locales, auto)
+        using g C.comp_arr_dom C.comp_cod_arr \<gamma>.extensionality by (unfold_locales, auto)
       show ?thesis
       proof
         assume 0: "x.is_coext a' x' g"
@@ -1847,7 +1836,7 @@ begin
           have 2: "vertical_composite.map J C (J_C.Map (map g)) ?\<chi> = \<chi>og.map"
             by (simp add: map_def \<gamma>.value_is_arr \<gamma>.natural_transformation_axioms)
           have 3: "... = D.cones_map g ?\<chi>"
-            using g \<chi>og.map_simp_2 \<chi>.cone_axioms \<chi>og.is_extensional by auto
+            using g \<chi>og.map_simp_2 \<chi>.cone_axioms \<chi>og.extensionality by auto
           have "J_C.MkArr A'.map ?D ?\<chi>' = J_C.comp x (map g)"
           proof -
             have f1: "A'.map = J_C.Dom (map g)"
@@ -1990,7 +1979,7 @@ begin
             show "D.cones_map (g \<cdot> f) \<chi> j = \<chi> j"
             proof (cases "J.arr j")
               show "\<not> J.arr j \<Longrightarrow> ?thesis"
-                using f g \<chi>.cone_axioms \<chi>.is_extensional by fastforce
+                using f g \<chi>.cone_axioms \<chi>.extensionality by fastforce
               assume j: "J.arr j"
               have "D.cone (dom g) (D.cones_map g \<chi>)"
                 using g D.cones_map_mapsto \<chi>.cone_axioms by blast
@@ -2021,7 +2010,7 @@ begin
             show "D.cones_map (f \<cdot> g) \<chi>' j = \<chi>' j"
             proof (cases "J.arr j")
               show "\<not> J.arr j \<Longrightarrow> ?thesis"
-                using f g \<chi>'.cone_axioms \<chi>'.is_extensional by fastforce
+                using f g \<chi>'.cone_axioms \<chi>'.extensionality by fastforce
               assume j: "J.arr j"
               have "D.cone (dom f) (D.cones_map f \<chi>')"
                 using f D.cones_map_mapsto \<chi>'.cone_axioms by blast
@@ -2158,7 +2147,7 @@ begin
                           using G \<Delta>.map_def J_C.Map_comp' [of ?x "\<Delta>.map g"] by auto
                       qed
                       also have "... = D.cones_map g \<chi>"
-                        using G cone_\<chi> \<chi>'.map_def map_g.map_def \<chi>.is_natural_2 \<chi>'.map_simp_2
+                        using G cone_\<chi> \<chi>'.map_def map_g.map_def \<chi>.naturality2 \<chi>'.map_simp_2
                         by auto
                       finally show ?thesis by blast
                     qed
@@ -2236,8 +2225,7 @@ begin
           show "\<And>j. \<not>J.arr j \<Longrightarrow> ?\<chi>' j = C.null" by simp
           fix j
           assume j: "J.arr j"
-          show "C.dom (?\<chi>' j) = Fb.map (J.dom j)" using j \<psi>_in_hom by simp
-          show "C.cod (?\<chi>' j) = E (J.cod j)" using j \<psi>_in_hom by simp
+          show "C.arr (?\<chi>' j)" using j \<psi>_in_hom by simp
           show "E j \<cdot>\<^sub>C ?\<chi>' (J.dom j) = ?\<chi>' j"
           proof -
             have "E j \<cdot>\<^sub>C ?\<chi>' (J.dom j) = (E j \<cdot>\<^sub>C Adj.\<epsilon> (E (J.dom j))) \<cdot>\<^sub>C F (\<kappa> (J.dom j))"
@@ -2254,7 +2242,7 @@ begin
                 have "Adj.FG.map (E j) \<cdot>\<^sub>C F (\<kappa> (J.dom j)) = F (GE.map j \<cdot>\<^sub>D \<kappa> (J.dom j))"
                   using j by simp
                 hence "Adj.FG.map (E j) \<cdot>\<^sub>C F (\<kappa> (J.dom j)) = F (\<kappa> j)"
-                  using j \<kappa>.is_natural_1 by metis
+                  using j \<kappa>.naturality1 by metis
                 thus ?thesis using j by simp
               qed
               finally show ?thesis by auto
@@ -2270,7 +2258,7 @@ begin
                     C.comp_assoc
               by simp
             also have "... = Adj.\<epsilon> (E (J.cod j)) \<cdot>\<^sub>C F (\<kappa> j)"
-              using j \<kappa>.is_natural_1 \<kappa>.is_natural_2 Adj.\<epsilon>.naturality J.arr_cod_iff_arr
+              using j \<kappa>.naturality1 \<kappa>.naturality2 Adj.\<epsilon>.naturality J.arr_cod_iff_arr
               by (metis J.cod_cod \<kappa>.A.map_simp)
             also have "... = ?\<chi>' j" using j by simp
             finally show ?thesis by auto
@@ -2293,7 +2281,7 @@ begin
         proof
           fix j
           have "\<not>J.arr j \<Longrightarrow> GE.cones_map ?g ?G\<chi> j = \<kappa> j"
-            using 1 G\<chi>.cone_axioms \<kappa>.is_extensional by auto
+            using 1 G\<chi>.cone_axioms \<kappa>.extensionality by auto
           moreover have "J.arr j \<Longrightarrow> GE.cones_map ?g ?G\<chi> j = \<kappa> j"
           proof -
             fix j
@@ -2311,14 +2299,14 @@ begin
                   have "E.cone (C.cod f) \<chi>"
                     using f \<chi>.cone_axioms by blast
                   thus ?thesis
-                    using \<chi>.is_extensional by simp
+                    using \<chi>.extensionality by simp
                 qed
                 also have "... = Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (\<kappa> j)"
                   using j f by simp
                 finally show ?thesis by blast
               qed
               thus ?thesis
-                using f mem_Collect_eq restrict_apply Adj.F.is_extensional by simp
+                using f mem_Collect_eq restrict_apply Adj.F.extensionality by simp
             qed
             also have "... = (G (Adj.\<epsilon> (C.cod (E j))) \<cdot>\<^sub>D Adj.\<eta> (D.cod (GE.map j))) \<cdot>\<^sub>D \<kappa> j"
               using j f Adj.\<eta>.naturality [of "\<kappa> j"] D.comp_assoc by auto
@@ -2356,7 +2344,7 @@ begin
               fix j
               assume j: "J.arr j"
               have "E.cones_map (\<psi> a g') \<chi> j = \<chi> j \<cdot>\<^sub>C \<psi> a g'"
-                using 1 \<chi>.cone_axioms \<chi>.is_extensional by auto
+                using 1 \<chi>.cone_axioms \<chi>.extensionality by auto
               also have "... = (\<chi> j \<cdot>\<^sub>C Adj.\<epsilon> a) \<cdot>\<^sub>C F g'"
                 using j a g' Adj.\<psi>_in_terms_of_\<epsilon> C.comp_assoc Adj.\<epsilon>_def by auto
               also have "... = (Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (G (\<chi> j))) \<cdot>\<^sub>C F g'"
@@ -2375,7 +2363,7 @@ begin
               using 1 2 by simp
             ultimately show ?thesis
               using ex1E [of "\<lambda>f. \<guillemotleft>f : F b \<rightarrow>\<^sub>C a\<guillemotright> \<and> E.cones_map f \<chi> = ?\<chi>'" "\<psi> a g' = f"]
-              using 1 2 Adj.\<epsilon>.is_extensional C.null_is_zero(2) C.ex_un_null \<chi>.cone_axioms f
+              using 1 2 Adj.\<epsilon>.extensionality C.null_is_zero(2) C.ex_un_null \<chi>.cone_axioms f
                     mem_Collect_eq restrict_apply
               by blast
           qed
@@ -2420,7 +2408,7 @@ begin
         interpret \<chi>: limit_cone J C D a \<chi> using \<chi> by auto
         have cone_\<chi>: "cone a \<chi>" ..
         show "C.ide a" using \<chi>.ide_apex by auto
-        have 1: "\<chi> = (\<lambda>j. C.null)" using is_empty \<chi>.is_extensional by auto
+        have 1: "\<chi> = (\<lambda>j. C.null)" using is_empty \<chi>.extensionality by auto
         show "\<And>a'. C.ide a' \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright>"
         proof -
           fix a'
@@ -2454,7 +2442,7 @@ begin
           assume \<chi>': "cone a' \<chi>'"
           interpret \<chi>': cone J C D a' \<chi>' using \<chi>' by auto
           show "\<chi>' = (\<lambda>j. C.null)"
-            using is_empty \<chi>'.is_extensional by metis
+            using is_empty \<chi>'.extensionality by metis
         qed
         have "limit_cone a ?\<chi>"
         proof
@@ -2512,7 +2500,7 @@ begin
     proof -
       interpret \<pi>: cone J C D a \<pi>
         using assms by auto
-      show "mkCone \<pi> = \<pi>" using \<pi>.is_extensional by auto
+      show "mkCone \<pi> = \<pi>" using \<pi>.extensionality by auto
     qed
 
   end
@@ -2603,7 +2591,7 @@ begin
           next
           assume 1: "\<forall>j. J.arr j \<longrightarrow> \<pi> j \<cdot> f = F j"
           show "D.cones_map f \<pi> = ?\<chi>"
-            using 1 f is_cone \<chi>.is_extensional D.is_discrete is_cone cone_\<chi> by auto
+            using 1 f is_cone \<chi>.extensionality D.is_discrete is_cone cone_\<chi> by auto
         qed
       qed
       ultimately show ?thesis by blast
@@ -2626,7 +2614,7 @@ begin
       fix j
       assume j: "J.arr j"
       have "\<pi> j \<cdot> induced_arrow' b F = D.cones_map (induced_arrow' b F) \<pi> j"
-        using induced_arrowI(1) cone_\<chi> is_cone is_extensional by force
+        using induced_arrowI(1) cone_\<chi> is_cone extensionality by force
       also have "... = F j"
         using j 1 by auto
       finally show "\<pi> j \<cdot> induced_arrow' b F = F j"
@@ -2650,6 +2638,9 @@ begin
 
     definition has_as_product
     where "has_as_product J D a \<equiv> (\<exists>\<pi>. product_cone J C D a \<pi>)"
+
+    abbreviation has_product
+    where "has_product J D \<equiv> \<exists>a. has_as_product J D a"
 
     lemma product_is_ide:
     assumes "has_as_product J D a"
@@ -2678,10 +2669,10 @@ begin
              (\<forall>J D. discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I
                       \<longrightarrow> (\<exists>a. has_as_product J D a))"
 
-    lemma ex_productE:
-    assumes "\<exists>a. has_as_product J D a"
+    lemma has_productE:
+    assumes "\<exists>a. has_product J D"
     obtains a \<pi> where "product_cone J C D a \<pi>"
-      using assms has_as_product_def someI_ex [of "\<lambda>a. has_as_product J D a"] by metis
+      using assms has_as_product_def by metis
 
     lemma has_products_if_has_limits:
     assumes "has_limits (undefined :: 'j)" and "I \<noteq> (UNIV :: 'j set)"
@@ -2774,7 +2765,7 @@ begin
         interpret \<pi>': natural_transformation J' C A.map D' ?\<pi>'
         proof -
           have "\<pi>.A.map \<circ> ?\<phi>' = A.map"
-            using \<phi> A.map_def \<phi>'.preserves_arr \<pi>.A.is_extensional J.not_arr_null by auto
+            using \<phi> A.map_def \<phi>'.preserves_arr \<pi>.A.extensionality J.not_arr_null by auto
           moreover have "D.map \<circ> ?\<phi>' = D'"
           proof
             fix j'
@@ -2791,7 +2782,7 @@ begin
                 using 2 3 D.map_def \<phi>'.preserves_arr f_the_inv_into_f by fastforce
             qed
             moreover have "\<not> J'.arr j' \<Longrightarrow> (D.map \<circ> ?\<phi>') j' = D' j'"
-              using D.is_extensional D'.is_extensional
+              using D.extensionality D'.extensionality
               by (simp add: J.Null_not_in_Obj J.null_char)
             ultimately show "(D.map \<circ> ?\<phi>') j' = D' j'" by blast
           qed
@@ -2815,9 +2806,9 @@ begin
             interpret \<chi>: natural_transformation J.comp C A'.map D.map ?\<chi>
             proof -
               have "\<chi>'.A.map \<circ> ?\<phi> = A'.map"
-                using \<phi> \<phi>.preserves_arr A'.map_def \<chi>'.A.is_extensional by auto
+                using \<phi> \<phi>.preserves_arr A'.map_def \<chi>'.A.extensionality by auto
               moreover have "D' \<circ> ?\<phi> = D.map"
-                using \<phi> D.map_def D'.is_extensional by auto
+                using \<phi> D.map_def D'.extensionality by auto
               ultimately show "natural_transformation J.comp C A'.map D.map ?\<chi>"
                 using \<chi>'.natural_transformation_axioms
                       \<phi>.as_nat_trans.natural_transformation_axioms
@@ -2840,7 +2831,7 @@ begin
                   proof (cases "J'.arr j'")
                     assume j': "\<not> J'.arr j'"
                     show "D'.cones_map f ?\<pi>' j' = \<chi>' j'"
-                      using f j' \<chi>'.is_extensional \<pi>'.cone_axioms by auto
+                      using f j' \<chi>'.extensionality \<pi>'.cone_axioms by auto
                     next
                     assume j': "J'.arr j'"
                     show "D'.cones_map f ?\<pi>' j' = \<chi>' j'"
@@ -2879,7 +2870,7 @@ begin
                   proof
                     fix j
                     have "\<not> J.arr j \<Longrightarrow> D.cones_map f \<pi> j = (\<chi>' \<circ> ?\<phi>) j"
-                      using f f\<chi>' \<pi>.cone_axioms \<chi>.is_extensional by auto
+                      using f f\<chi>' \<pi>.cone_axioms \<chi>.extensionality by auto
                     moreover have "J.arr j \<Longrightarrow> D.cones_map f \<pi> j = (\<chi>' \<circ> ?\<phi>) j"
                     proof -
                       assume j: "J.arr j"
@@ -2898,7 +2889,7 @@ begin
                   proof
                     fix j
                     have "\<not> J.arr j \<Longrightarrow> D.cones_map f' \<pi> j = (\<chi>' \<circ> ?\<phi>) j"
-                      using f' f\<chi>' \<pi>.cone_axioms \<chi>.is_extensional by auto
+                      using f' f\<chi>' \<pi>.cone_axioms \<chi>.extensionality by auto
                     moreover have "J.arr j \<Longrightarrow> D.cones_map f' \<pi> j = (\<chi>' \<circ> ?\<phi>) j"
                     proof -
                       assume j: "J.arr j"
@@ -2976,7 +2967,7 @@ begin
                   using J.arr_char J.dom_char J.cod_char J.ide_char \<pi>.cone_axioms comp_cod_arr
                   apply (cases "j = m")
                    apply simp
-                  using \<chi>'.is_extensional by simp
+                  using \<chi>'.extensionality by simp
               qed
             qed
             show "\<And>f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f ?\<pi> = \<chi>' \<Longrightarrow> f = \<chi>' m"
@@ -3029,7 +3020,7 @@ begin
               proof
                 fix j
                 show "D j = (if j = 1 then D 1 else null)"
-                  using D D.is_extensional by auto
+                  using D D.extensionality by auto
               qed
               ultimately show ?thesis by simp
             qed
@@ -3143,30 +3134,21 @@ begin
     shows "cone (C.dom e) (mkCone e)"
     proof -
       interpret E: constant_functor J.comp C \<open>C.dom e\<close>
-        apply unfold_locales using assms by auto
+        using assms by unfold_locales auto
       show "cone (C.dom e) (mkCone e)"
-        using assms mkCone_def apply unfold_locales
-            apply auto[2]
-        using C.dom_comp C.seqE C.cod_comp J.Zero_not_eq_One J.arr_char' J.cod_char map_def
-          apply (metis (no_types, lifting) C.not_arr_null parallel_pair.cod_simp(1) preserves_arr)
-      proof -
+      proof (unfold_locales)
+        show "\<And>j. \<not> J.arr j \<Longrightarrow> mkCone e j = C.null"
+          using assms mkCone_def by auto
+        show "\<And>j. J.arr j \<Longrightarrow> C.arr (mkCone e j)"
+          using assms mkCone_def by auto
         show "\<And>j. J.arr j \<Longrightarrow> map j \<cdot> mkCone e (J.dom j) = mkCone e j"
-        proof -
-          fix j
-          assume j: "J.arr j"
-          have 1: "j = J.Zero \<or> map j \<cdot> mkCone e (J.dom j) = mkCone e j"
-            using assms j mkCone_def C.cod_comp
-            by (metis (no_types, lifting) C.comp_cod_arr J.arr_char J.dom_char map_def
-                J.dom_simp(2))
-          show "map j \<cdot> mkCone e (J.dom j) = mkCone e j"
-            by (metis (no_types, lifting) 1 C.comp_cod_arr C.seqE assms j map_simp(1)
-                  mkCone_def J.dom_simp(1))
-        qed
-        next
+          using assms mkCone_def C.comp_cod_arr extensionality map_def is_parallel
+          apply auto
+          using parallel_pair.arr_char by auto
         show "\<And>j. J.arr j \<Longrightarrow> mkCone e (J.cod j) \<cdot> E.map j = mkCone e j"
-          by (metis (no_types, lifting) C.comp_arr_dom C.comp_assoc C.seqE
-              J.arr_cod_iff_arr J.seqI J.seq_char assms E.map_simp mkCone_def
-              J.cod_simp(1) J.dom_simp(1))
+          using assms mkCone_def C.comp_arr_dom
+          apply auto[1]
+          by (metis (lifting) J.comp_cod_arr J.seq_char J.Zero_not_eq_One)
       qed
     qed
 
@@ -3177,9 +3159,9 @@ begin
       interpret \<chi>: cone J.comp C map a \<chi>
         using assms by auto
       show ?thesis
-        by (metis (no_types, lifting) J.arr_char J.cod_char cone_def
-            \<chi>.component_in_hom \<chi>.is_natural_1 \<chi>.naturality assms C.in_homE
-            constant_functor.map_simp J.dom_simp(3-4) map_simp(3-4))
+        by (metis \<chi>.cod_determines_component \<chi>.naturality1 \<chi>.preserves_cod
+            C.arr_cod_iff_arr is_parallel map_simp(2-4) J.cod_simp(3,4)
+            J.dom_simp(3-4) preserves_reflects_arr)
     qed
 
     lemma mkCone_cone:
@@ -3194,15 +3176,15 @@ begin
       proof
         fix j
         have "j = J.Zero \<Longrightarrow> mkCone (\<chi> J.Zero) j = \<chi> j"
-          using mkCone_def \<chi>.is_extensional by simp
+          using mkCone_def \<chi>.extensionality by simp
         moreover have "j = J.One \<or> j = J.j0 \<or> j = J.j1 \<Longrightarrow> mkCone (\<chi> J.Zero) j = \<chi> j"
           using J.arr_char J.cod_char J.dom_char J.seq_char mkCone_def
-                \<chi>.is_natural_1 \<chi>.is_natural_2 \<chi>.A.map_simp map_def
+                \<chi>.naturality1 \<chi>.naturality2 \<chi>.A.map_simp map_def
           by (metis (no_types, lifting) J.Zero_not_eq_j0 J.dom_simp(2))
         ultimately have "J.arr j \<Longrightarrow> mkCone (\<chi> J.Zero) j = \<chi> j"
           using J.arr_char by auto
         thus "mkCone (\<chi> J.Zero) j = \<chi> j"
-          using mkCone_def \<chi>.is_extensional by fastforce
+          using mkCone_def \<chi>.extensionality by fastforce
       qed
     qed
 
@@ -3344,42 +3326,39 @@ begin
           assume \<chi>': "D.cone a' \<chi>'"
           interpret \<chi>': cone J.comp C D.map a' \<chi>'
             using \<chi>' by blast
-          have "seq f (\<chi>' J.Zero)"
+          have 0: "seq f (\<chi>' J.Zero)"
             using J.ide_char J.arr_char \<chi>'.preserves_hom
-            by (metis (no_types, lifting) D.map_simp(3) \<chi>'.is_natural_1
-              \<chi>'.natural_transformation_axioms natural_transformation.preserves_reflects_arr
-              parallel_pair.dom_simp(3))
-          moreover have "f \<cdot> (\<chi>' J.Zero) = g \<cdot> (\<chi>' J.Zero)"
-            using \<chi>' D.is_equalized_by_cone by blast
-          ultimately have 1: "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
-            using assms by blast
+            by (meson D.is_equalized_by_cone \<chi>')
+          have 1: "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
+            using assms 0 \<chi>' D.is_equalized_by_cone by blast
           obtain h where h: "e \<cdot> h = \<chi>' J.Zero"
             using 1 by blast
           have 2: "D.is_equalized_by e"
           using assms(2-3) by blast
-          have "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+          have "\<exists>h. \<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
           proof
-            show 3: "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright>"
-              using h \<chi>'.preserves_dom
-              by (metis (no_types, lifting) \<chi>'.component_in_hom \<open>seq f (\<chi>' J.Zero)\<close>
-                category.has_codomain_iff_arr category.seqE category_axioms cod_in_codomains
-                domains_comp in_hom_def parallel_pair.arr_char)
-            show "D.cones_map h (D.mkCone e) = \<chi>'"
+            show "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
             proof
-              fix j
-              have "D.cone (cod h) (D.mkCone e)"
-                using 2 3 D.cone_mkCone by auto
-              thus "D.cones_map h (D.mkCone e) j = \<chi>' j"
-                using h 2 3 D.cone_mkCone [of e] J.arr_char D.mkCone_def comp_assoc
-                apply (cases "J.arr j")
-                 apply simp_all
-                 apply (metis (no_types, lifting) D.mkCone_cone \<chi>')
-                using \<chi>'.is_extensional
-                by presburger
+              show 3: "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright>"
+                using h \<chi>'.preserves_dom
+                by (metis (no_types, lifting) \<chi>'.component_in_hom \<open>seq f (\<chi>' J.Zero)\<close>
+                  category.has_codomain_iff_arr category.seqE category_axioms cod_in_codomains
+                  domains_comp in_hom_def parallel_pair.arr_char)
+              show "D.cones_map h (D.mkCone e) = \<chi>'"
+              proof
+                fix j
+                have "D.cone (cod h) (D.mkCone e)"
+                  using 2 3 D.cone_mkCone by auto
+                thus "D.cones_map h (D.mkCone e) j = \<chi>' j"
+                  using h 2 3 D.cone_mkCone [of e] J.arr_char D.mkCone_def comp_assoc
+                  apply (cases "J.arr j")
+                   apply simp_all
+                   apply (metis (no_types, lifting) D.mkCone_cone \<chi>')
+                  using \<chi>'.extensionality
+                  by presburger
+              qed
             qed
           qed
-          hence "\<exists>h. \<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
-            by blast
           moreover have "\<And>h'. \<guillemotleft>h' : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h' (D.mkCone e) = \<chi>' \<Longrightarrow> h' = h"
           proof (elim conjE)
             fix h'
@@ -3387,7 +3366,7 @@ begin
             assume eq: "D.cones_map h' (D.mkCone e) = \<chi>'"
             have "e \<cdot> h' = \<chi>' J.Zero"
               using eq D.cone_mkCone D.mkCone_def \<chi>'.preserves_reflects_arr \<chi>.cone_axioms
-                    \<open>seq f (\<chi>' J.Zero)\<close> eq h' in_homE mem_Collect_eq restrict_apply seqE
+                    0 eq h' in_homE mem_Collect_eq restrict_apply seqE
               apply simp
               by fastforce
             moreover have "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
@@ -3401,6 +3380,24 @@ begin
         show "D.has_as_equalizer e"
           using assms \<chi>.limit_cone_axioms by blast
       qed
+    qed
+
+    lemma has_as_equalizerE [elim]:
+    assumes "has_as_equalizer f g e"
+    and "\<lbrakk>seq f e; f \<cdot> e = g \<cdot> e; \<And>e'. \<lbrakk>seq f e'; f \<cdot> e' = g \<cdot> e'\<rbrakk> \<Longrightarrow> \<exists>!h. e \<cdot> h = e'\<rbrakk> \<Longrightarrow> T"
+    shows T
+    proof -
+      interpret D: parallel_pair_diagram C f g
+        using assms
+        by (simp add: category_axioms has_as_equalizer_def parallel_pair_diagram.intro
+            parallel_pair_diagram_axioms_def)
+      have "D.has_as_equalizer e"
+        using assms has_as_equalizer_def by blast
+      interpret equalizer_cone C f g e
+        by (simp add: \<open>D.has_as_equalizer e\<close> category_axioms equalizer_cone_def
+            D.parallel_pair_diagram_axioms)
+      show T
+        by (metis arr_iff_in_hom assms(2) dom_comp equalizes is_universal' seqE)
     qed
 
   end
@@ -3450,7 +3447,7 @@ begin
           using assms(2) \<Delta>o.diagram_axioms has_products_def Obj.arr_char
           by (metis (no_types, lifting) Collect_cong \<Delta>o.discrete_diagram_axioms mem_Collect_eq)
         from this obtain \<Pi>o \<pi>o where \<pi>o: "product_cone Obj.comp C \<Delta>o.map \<Pi>o \<pi>o"
-           using ex_productE [of Obj.comp \<Delta>o.map] by auto
+           using has_productE [of Obj.comp \<Delta>o.map] by auto
         interpret \<pi>o: product_cone Obj.comp C \<Delta>o.map \<Pi>o \<pi>o using \<pi>o by auto
         have \<pi>o_in_hom: "\<And>j. Obj.arr j \<Longrightarrow> \<guillemotleft>\<pi>o j : \<Pi>o \<rightarrow> D j\<guillemotright>"
           using \<pi>o.preserves_dom \<pi>o.preserves_cod \<Delta>o.map_def by auto
@@ -3463,7 +3460,7 @@ begin
           using assms(3) has_products_def [of "Collect J.arr"] \<Delta>a.discrete_diagram_axioms
           by blast
         from this obtain \<Pi>a \<pi>a where \<pi>a: "product_cone Arr.comp C \<Delta>a.map \<Pi>a \<pi>a"
-          using ex_productE [of Arr.comp \<Delta>a.map] by auto
+          using has_productE [of Arr.comp \<Delta>a.map] by auto
         interpret \<pi>a: product_cone Arr.comp C \<Delta>a.map \<Pi>a \<pi>a using \<pi>a by auto
         have \<pi>a_in_hom: "\<And>j. Arr.arr j \<Longrightarrow> \<guillemotleft>\<pi>a j : \<Pi>a \<rightarrow> D (J.cod j)\<guillemotright>"
           using \<pi>a.preserves_cod \<pi>a.preserves_dom \<Delta>a.map_def by auto
@@ -3476,7 +3473,7 @@ begin
           using \<pi>o.ide_apex by (unfold_locales, auto)
         let ?\<chi> = "\<lambda>j. if Arr.arr j then \<pi>o (J.cod j) else null"
         interpret \<chi>: cone Arr.comp C \<Delta>a.map \<Pi>o ?\<chi>
-          using \<pi>o.ide_apex \<pi>o_in_hom \<Delta>a.map_def \<Delta>o.map_def \<Delta>o.is_discrete \<pi>o.is_natural_2
+          using \<pi>o.ide_apex \<pi>o_in_hom \<Delta>a.map_def \<Delta>o.map_def \<Delta>o.is_discrete \<pi>o.naturality2
                 comp_cod_arr
           by (unfold_locales, auto)
 
@@ -3630,7 +3627,7 @@ begin
           using \<mu> comp_cod_arr e_in_hom e_map E'
             apply unfold_locales
                apply auto
-          by (metis D.as_nat_trans.is_natural_1 comp_assoc)
+          by (metis D.as_nat_trans.naturality1 comp_assoc)
         text\<open>
           If @{term \<tau>} is any cone over @{term D} then @{term \<tau>} restricts to a cone over
           @{term \<Delta>o} for which the induced arrow to @{term \<Pi>o} equalizes @{term f} and @{term g}.
@@ -3726,7 +3723,7 @@ begin
             proof
               fix j
               have "\<not>J.arr j \<Longrightarrow> D.cones_map ?h ?\<mu> j = \<tau> j"
-                using h_in_hom \<mu>.cone_axioms cone_\<tau> \<tau>.is_extensional by force
+                using h_in_hom \<mu>.cone_axioms cone_\<tau> \<tau>.extensionality by force
               moreover have "J.arr j \<Longrightarrow> D.cones_map ?h ?\<mu> j = \<tau> j"
               proof -
                 fix j
@@ -3754,7 +3751,7 @@ begin
                   thus ?thesis by simp
                 qed
                 also have "... = \<tau> j"
-                  using j \<tau>.is_natural_1 by simp
+                  using j \<tau>.naturality1 by simp
                 finally show "D.cones_map ?h ?\<mu> j = \<tau> j" by auto
               qed
               ultimately show "D.cones_map ?h ?\<mu> j = \<tau> j" by auto
@@ -3933,8 +3930,7 @@ begin
             fix j
             assume j: "J.arr j"
             have 0: "\<guillemotleft>?\<chi> f j : S.dom f \<rightarrow> S.cod (D j)\<guillemotright>" using f j \<chi> by simp
-            show "S.dom (?\<chi> f j) = B.map (J.dom j)" using f j \<chi> by auto
-            show "S.cod (?\<chi> f j) = D (J.cod j)" using f j \<chi> by auto
+            show "S.arr (?\<chi> f j)" using f j \<chi> by auto
             have par2: "S.par (?\<chi> f (J.cod j) \<cdot> B.map j) (?\<chi> f j)"
               using f j 0 \<chi> [of f "J.cod j"] by (elim S.in_homE, auto)
             have nat: "\<And>y. \<guillemotleft>y : S.unity \<rightarrow> S.dom f\<guillemotright> \<Longrightarrow>
@@ -3953,17 +3949,17 @@ begin
                 interpret \<chi>: cone J S D S.unity \<open>\<phi> (f \<cdot> y)\<close>
                   using 1 by simp
                 show "(D j \<cdot> ?\<chi> f (J.dom j)) \<cdot> y = ?\<chi> f j \<cdot> y"
-                  using J.arr_dom S.comp_assoc \<chi> \<chi>.is_natural_1 f j y by presburger
+                  using J.arr_dom S.comp_assoc \<chi> \<chi>.naturality1 f j y by presburger
                 have "(?\<chi> f (J.cod j) \<cdot> B.map j) \<cdot> y = ?\<chi> f (J.cod j) \<cdot> y"
                   using j B.map_simp par2 B.value_is_ide S.comp_arr_ide
                   by (metis (no_types, lifting))
                 also have "... = \<phi> (f \<cdot> y) (J.cod j)"
-                  using f y \<chi> \<chi>.is_extensional by simp
+                  using f y \<chi> \<chi>.extensionality by simp
                 also have "... = \<phi> (f \<cdot> y) j"
-                  using j \<chi>.is_natural_2
+                  using j \<chi>.naturality2
                   by (metis J.arr_cod \<chi>.A.map_simp J.cod_cod)
                 also have "... = ?\<chi> f j \<cdot> y"
-                  using f y \<chi> \<chi>.is_extensional by simp
+                  using f y \<chi> \<chi>.extensionality by simp
                 finally show "(?\<chi> f (J.cod j) \<cdot> B.map j) \<cdot> y = ?\<chi> f j \<cdot> y" by auto
               qed
             qed
@@ -4036,7 +4032,7 @@ begin
               proof
                 fix j
                 have "\<not>J.arr j \<Longrightarrow> cones_map ?f (?\<chi> a) j = \<chi>' j"
-                  using 1 \<chi>'.is_extensional f\<chi>a.is_extensional by presburger
+                  using 1 \<chi>'.extensionality f\<chi>a.extensionality by presburger
                 moreover have "J.arr j \<Longrightarrow> cones_map ?f (?\<chi> a) j = \<chi>' j"
                 proof -
                   assume j: "J.arr j"
@@ -4109,7 +4105,7 @@ begin
                       by auto
                     interpret \<chi>'': cone J S D S.unity \<open>\<phi> (f' \<cdot> y')\<close> using 2 by auto
                     have "\<not>J.arr j \<Longrightarrow> \<phi> (f' \<cdot> y') j = cones_map y' \<chi>' j"
-                      using f' y' cone_\<chi>' \<chi>''.is_extensional mem_Collect_eq restrict_apply
+                      using f' y' cone_\<chi>' \<chi>''.extensionality mem_Collect_eq restrict_apply
                       by (elim S.in_homE, auto)
                     moreover have "J.arr j \<Longrightarrow> \<phi> (f' \<cdot> y') j = cones_map y' \<chi>' j"
                     proof -
@@ -4422,15 +4418,12 @@ begin
         moreover have "... \<in> S.hom S.unity (D j)"
           using F j is_discrete S.img_mkPoint(1) [of "D j"] by force
         ultimately have 2: "funToCone F j \<in> S.hom S.unity (D j)" by auto
-        show 3: "S.dom (funToCone F j) = U.map (J.dom j)"
-          using 2 j U.map_simp by auto
-        show 4: "S.cod (funToCone F j) = D (J.cod j)"
-          using 2 j is_discrete by auto
+        show "S.arr (funToCone F j)"
+          using 2 j by auto
         show "D j \<cdot> funToCone F (J.dom j) = funToCone F j"
           using 2 j is_discrete S.comp_cod_arr by auto
         show "funToCone F (J.cod j) \<cdot> (U.map j) = funToCone F j"
-          using 3 j is_discrete U.map_simp S.arr_dom_iff_arr S.comp_arr_dom U.preserves_arr
-          by (metis J.ide_char)
+          using "2" S.comp_arr_dom is_discrete j by auto
       qed
       thus "funToCone F \<in> cones S.unity" by auto
     qed
@@ -4458,7 +4451,7 @@ begin
       interpret \<chi>: cone J S D S.unity \<chi> using assms by auto
       fix j
       have "\<not>J.arr j \<Longrightarrow> funToCone (coneToFun \<chi>) j = \<chi> j"
-        using funToCone_def \<chi>.is_extensional by simp
+        using funToCone_def \<chi>.extensionality by simp
       moreover have "J.arr j \<Longrightarrow> funToCone (coneToFun \<chi>) j = \<chi> j"
         using funToCone_def coneToFun_def S.mkPoint_img(2) is_discrete \<chi>.component_in_hom
         by auto
@@ -4529,7 +4522,7 @@ begin
       moreover have "inj_on \<pi> (PiE' I' (\<lambda>_. Univ))"
       proof -
         have 1: "\<And>F A A'. inj_on F A \<and> A' \<subseteq> A \<Longrightarrow> inj_on F A'"
-          using subset_inj_on by blast
+          using inj_on_subset by blast
         moreover have "PiE' I' (\<lambda>_. Univ) \<subseteq> PiE' I (\<lambda>_. Univ)"
           using assms(2) extensional'_def [of I'] terminal_unity\<^sub>S\<^sub>C by auto
         ultimately show ?thesis using \<pi> assms(2) by blast
@@ -4614,9 +4607,9 @@ begin
       interpret D: discrete_diagram_in_set_category J.comp S \<open>\<lambda>A. A \<subseteq> Univ\<close> D.map ..
       have "discrete_diagram J.comp S D.map" ..
       from this obtain \<Pi>D \<chi> where \<chi>: "product_cone J.comp S D.map \<Pi>D \<chi>"
-        using has_products has_products_def [of I] ex_productE [of "J.comp" D.map]
+        using has_products has_products_def [of I] has_productE [of "J.comp" D.map]
               D.diagram_axioms
-        by blast
+        by (metis (mono_tags, lifting) J.arr_char mem_Collect_eq subsetI subset_antisym)
       interpret \<chi>: product_cone J.comp S D.map \<Pi>D \<chi>
         using \<chi> by auto
       have "D.has_as_limit \<Pi>D"
@@ -4722,7 +4715,7 @@ begin
               using setp_set_ide elem_set_implies_incl_in elem_set_implies_set_eq_singleton
                     incl_in_def PiE'_mono comp_apply subsetI
               by (metis (no_types, lifting))
-            thus ?thesis using \<pi> subset_inj_on set_\<Pi>D Pi_I' imageI by fastforce
+            thus ?thesis using \<pi> inj_on_subset set_\<Pi>D Pi_I' imageI by fastforce
           qed
           have 2: "inv_into (PiE' I (set o D)) \<pi> \<in> set ?\<Pi>D \<rightarrow> PiE' I (set o D)"
           proof
@@ -5161,7 +5154,7 @@ begin
       interpret Xa: constant_functor J B \<open>A_B.Map x a\<close>
         using a Fun_x.preserves_ide by unfold_locales simp
       show "at a \<chi>.A.map = Xa.map"
-        using a x Curry.uncurry_def E.map_def Xa.is_extensional by auto
+        using a x Curry.uncurry_def E.map_def Xa.extensionality by auto
     qed
 
     lemma at_ide_is_diagram:
@@ -5207,7 +5200,7 @@ begin
                           \<open>at (a' \<cdot>\<^sub>A a) D\<close>
         using assms functor_at_arr_is_transformation [of D "a' \<cdot>\<^sub>A a"] functor_axioms by simp
       show "at (a' \<cdot>\<^sub>A a) D = Da'oDa.map"
-      proof (intro NaturalTransformation.eqI)
+      proof (intro natural_transformation_eqI)
         show "natural_transformation J B (at (A.dom a) D) (at (A.cod a') D) Da'oDa.map" ..
         show "natural_transformation J B (at (A.dom a) D) (at (A.cod a') D) (at (a' \<cdot>\<^sub>A a) D)" ..
         show "\<And>j. J.ide j \<Longrightarrow> at (a' \<cdot>\<^sub>A a) D j = Da'oDa.map j"
@@ -5260,7 +5253,7 @@ begin
           proof
             fix j
             have "\<not>J.arr j \<Longrightarrow> Da.cones_map (A_B.Map f a) (at a \<chi>) j = at a \<chi>' j"
-              using \<chi>'a.is_extensional \<chi>fa.is_extensional [of j] by simp
+              using \<chi>'a.extensionality \<chi>fa.extensionality [of j] by simp
             moreover have "J.arr j \<Longrightarrow> Da.cones_map (A_B.Map f a) (at a \<chi>) j = at a \<chi>' j"
               using a f 1 \<chi>.cone_axioms \<chi>a.cone_axioms at_simp
               apply simp
@@ -5278,7 +5271,7 @@ begin
         assume A:
             "\<forall>a. A.ide a \<longrightarrow> diagram.cones_map J B (at a D) (A_B.Map f a) (at a \<chi>) = at a \<chi>'"
         show "cones_map f \<chi> = \<chi>'"
-        proof (intro NaturalTransformation.eqI)
+        proof (intro natural_transformation_eqI)
           show "natural_transformation J A_B.comp \<chi>'.A.map D (cones_map f \<chi>)" ..
           show "natural_transformation J A_B.comp \<chi>'.A.map D \<chi>'" ..
           show "\<And>j. J.ide j \<Longrightarrow> cones_map f \<chi> j = \<chi>' j"
@@ -5301,7 +5294,7 @@ begin
               using j A_B.Map_cod [of "\<chi>' j"] \<chi>'.preserves_hom by simp
             finally show "A_B.Cod (cones_map f \<chi> j) = A_B.Cod (\<chi>' j)" by auto
             show "A_B.Map (cones_map f \<chi> j) = A_B.Map (\<chi>' j)"
-            proof (intro NaturalTransformation.eqI)
+            proof (intro natural_transformation_eqI)
               interpret \<chi>fj: natural_transformation A B \<open>A_B.Map x'\<close> \<open>A_B.Map (D (J.cod j))\<close>
                                                     \<open>A_B.Map (cones_map f \<chi> j)\<close>
                 using j \<chi>f.preserves_reflects_arr A_B.arr_char [of "cones_map f \<chi> j"]
@@ -5331,7 +5324,7 @@ begin
                 have "A_B.Map (cones_map f \<chi> j) a = Da.cones_map (A_B.Map f a) (at a \<chi>) j"
                 proof -
                   have "A_B.Map (cones_map f \<chi> j) a = A_B.Map (A_B.comp (\<chi> j) f) a"
-                    using assms(1) f \<chi>.is_extensional by auto
+                    using assms(1) f \<chi>.extensionality by auto
                   also have "... = B (A_B.Map (\<chi> j) a) (A_B.Map f a)"
                     using f j a \<chi>.preserves_hom A.ide_in_hom J.ide_in_hom A_B.Map_comp
                           \<chi>.A.map_simp
@@ -5343,7 +5336,7 @@ begin
                 qed
                 also have "... = at a \<chi>' j" using j a A by simp
                 also have "... = A_B.Map (\<chi>' j) a"
-                  using j Curry.uncurry_def E.map_simp \<chi>'j.is_extensional by simp
+                  using j Curry.uncurry_def E.map_simp \<chi>'j.extensionality by simp
                 finally show "A_B.Map (cones_map f \<chi> j) a = A_B.Map (\<chi>' j) a" by auto
               qed
             qed
@@ -5504,7 +5497,7 @@ $$\xymatrix{
             proof
               fix j
               have "\<not>J.arr j \<Longrightarrow> Dao\<chi>_dom_a.map j = D_cod_a.cones_map ?x_a (at (A.cod a) \<chi>) j"
-                using Dao\<chi>_dom_a.is_extensional \<chi>_cod_a.cone_axioms x_a by force
+                using Dao\<chi>_dom_a.extensionality \<chi>_cod_a.cone_axioms x_a by force
               moreover have
                    "J.arr j \<Longrightarrow> Dao\<chi>_dom_a.map j = D_cod_a.cones_map ?x_a (at (A.cod a) \<chi>) j"
               proof -
@@ -5515,18 +5508,18 @@ $$\xymatrix{
                   using a j at_simp by simp
                 also have "... = A_B.Map (A_B.comp (D j) (\<chi> (J.dom j))) a"
                   using a j A_B.Map_comp
-                  by (metis (no_types, lifting) A.comp_arr_dom \<chi>.is_natural_1
+                  by (metis (no_types, lifting) A.comp_arr_dom \<chi>.naturality1
                       \<chi>.preserves_reflects_arr)
                 also have "... = A_B.Map (A_B.comp (\<chi> (J.cod j)) (\<chi>.A.map j)) a"
                   using a j \<chi>.naturality by simp
                 also have "... = A_B.Map (\<chi> (J.cod j)) (A.cod a) \<cdot>\<^sub>B A_B.Map x a"
                   using a j x A_B.Map_comp
-                  by (metis (no_types, lifting) A.comp_cod_arr \<chi>.A.map_simp \<chi>.is_natural_2
+                  by (metis (no_types, lifting) A.comp_cod_arr \<chi>.A.map_simp \<chi>.naturality2
                             \<chi>.preserves_reflects_arr)
                 also have "... = at (A.cod a) \<chi> (J.cod j) \<cdot>\<^sub>B A_B.Map x a"
                   using a j at_simp by simp
                 also have "... = at (A.cod a) \<chi> j \<cdot>\<^sub>B A_B.Map x a"
-                  using a j \<chi>_cod_a.is_natural_2 \<chi>_cod_a.A.map_simp
+                  using a j \<chi>_cod_a.naturality2 \<chi>_cod_a.A.map_simp
                   by (metis J.arr_cod_iff_arr J.cod_cod)
                 also have "... = D_cod_a.cones_map ?x_a (at (A.cod a) \<chi>) j"
                   using a j x \<chi>_cod_a.cone_axioms preserves_cod by simp
@@ -5540,7 +5533,7 @@ $$\xymatrix{
               fix j
               have "\<not>J.arr j \<Longrightarrow>
                       Dao\<chi>'_dom_a.map j = D_cod_a.cones_map ?x'_a (at (A.cod a) \<chi>') j"
-                using Dao\<chi>'_dom_a.is_extensional \<chi>'_cod_a.cone_axioms x'_a by force
+                using Dao\<chi>'_dom_a.extensionality \<chi>'_cod_a.cone_axioms x'_a by force
               moreover have
                   "J.arr j \<Longrightarrow> Dao\<chi>'_dom_a.map j = D_cod_a.cones_map ?x'_a (at (A.cod a) \<chi>') j"
               proof -
@@ -5551,18 +5544,18 @@ $$\xymatrix{
                   using a j at_simp by simp
                 also have "... = A_B.Map (A_B.comp (D j) (\<chi>' (J.dom j))) a"
                   using a j A_B.Map_comp
-                  by (metis (no_types, lifting) A.comp_arr_dom \<chi>'.is_natural_1
+                  by (metis (no_types, lifting) A.comp_arr_dom \<chi>'.naturality1
                       \<chi>'.preserves_reflects_arr)
                 also have "... = A_B.Map (A_B.comp (\<chi>' (J.cod j)) (\<chi>'.A.map j)) a"
                   using a j \<chi>'.naturality by simp
                 also have "... = A_B.Map (\<chi>' (J.cod j)) (A.cod a) \<cdot>\<^sub>B A_B.Map x' a"
                   using a j x' A_B.Map_comp
-                  by (metis (no_types, lifting) A.comp_cod_arr \<chi>'.A.map_simp \<chi>'.is_natural_2
+                  by (metis (no_types, lifting) A.comp_cod_arr \<chi>'.A.map_simp \<chi>'.naturality2
                             \<chi>'.preserves_reflects_arr)
                 also have "... = at (A.cod a) \<chi>' (J.cod j) \<cdot>\<^sub>B A_B.Map x' a"
                   using a j at_simp by simp
                 also have "... = at (A.cod a) \<chi>' j \<cdot>\<^sub>B A_B.Map x' a"
-                  using a j \<chi>'_cod_a.is_natural_2 \<chi>'_cod_a.A.map_simp
+                  using a j \<chi>'_cod_a.naturality2 \<chi>'_cod_a.A.map_simp
                   by (metis J.arr_cod_iff_arr J.cod_cod)
                 also have "... = D_cod_a.cones_map ?x'_a (at (A.cod a) \<chi>') j"
                   using a j x' \<chi>'_cod_a.cone_axioms preserves_cod by simp
@@ -5578,7 +5571,7 @@ $$\xymatrix{
               \<open>Dao\<chi>_dom_a\<close> into \<open>Dao\<chi>'_dom_a\<close>.
 \<close>
             have C: "D_cod_a.cones_map ?f_dom_a Dao\<chi>_dom_a.map = Dao\<chi>'_dom_a.map"
-            proof (intro NaturalTransformation.eqI)
+            proof (intro natural_transformation_eqI)
               show "natural_transformation
                       J B \<chi>'_dom_a.A.map (at (A.cod a) D) Dao\<chi>'_dom_a.map" ..
               show "natural_transformation J B \<chi>'_dom_a.A.map (at (A.cod a) D)
@@ -5723,7 +5716,7 @@ $$\xymatrix{
               show 1: "A_B.Dom f' = A_B.Map x'" using f' A_B.Map_dom by auto
               show 2: "A_B.Cod f' = A_B.Map x" using f' A_B.Map_cod by auto
               show "A_B.Map f' = \<phi>.map"
-              proof (intro NaturalTransformation.eqI)
+              proof (intro natural_transformation_eqI)
                 show "natural_transformation A B (A_B.Map x') (A_B.Map x) \<phi>.map" ..
                 show "natural_transformation A B (A_B.Map x') (A_B.Map x) (A_B.Map f')"
                   using f' 1 2 A_B.arr_char [of f'] by auto
@@ -5885,7 +5878,7 @@ $$\xymatrix{
             also have "... = (D.at ?a D (J.cod ?j) \<cdot>\<^sub>B D.at (A.dom ?a) D ?j) \<cdot>\<^sub>B ?\<chi>' (JxA.dom ja)"
               using j ja B.comp_assoc by presburger
             also have "... = B (D.at ?a D ?j) (?\<chi>' (JxA.dom ja))"
-              using a j ja Map_comp A.comp_arr_dom D.as_nat_trans.is_natural_2 by simp
+              using a j ja Map_comp A.comp_arr_dom D.as_nat_trans.naturality2 by simp
            also have "... = Curry.uncurry D ja \<cdot>\<^sub>B ?\<chi>' (JxA.dom ja)"
              using Curry.uncurry_def by simp
            finally show ?thesis by auto
@@ -5903,7 +5896,7 @@ $$\xymatrix{
        proof
          fix j
          have "\<not>J.arr j \<Longrightarrow> constL.map j = Curry.curry ?L' ?L' ?L' j"
-           using Curry.curry_def constL.is_extensional by simp
+           using Curry.curry_def constL.extensionality by simp
          moreover have "J.arr j \<Longrightarrow> constL.map j = Curry.curry ?L' ?L' ?L' j"
            using Curry.curry_def constL.value_is_ide in_homE ide_in_hom by auto
          ultimately show "constL.map j = Curry.curry ?L' ?L' ?L' j" by blast
@@ -5937,7 +5930,7 @@ $$\xymatrix{
          moreover have "... = (\<lambda>j. \<chi>'.map (j, a))"
            using a Curry.uncurry_curry \<chi>'.natural_transformation_axioms by simp
          moreover have "... = ?\<chi> a"
-         proof (intro NaturalTransformation.eqI)
+         proof (intro natural_transformation_eqI)
            interpret \<chi>a: limit_cone J B \<open>D.at a D\<close> \<open>?l a\<close> \<open>?\<chi> a\<close> using a l\<chi> by simp
            interpret \<chi>': binary_functor_transformation J A B ?L' \<open>Curry.uncurry D\<close> \<chi>'.map ..
            show "natural_transformation J B \<chi>a.A.map (D.at a D) (?\<chi> a)" ..
@@ -6098,8 +6091,8 @@ $$\xymatrix{
                   also have "... = S.Fun (Y (D j) a' \<cdot>\<^sub>S \<sigma> (J.dom j)) e"
                     using a' e j Y_arr_ide(1) S.in_homE \<sigma>j eval_at_ide S.Fun_comp by force
                   also have "... = S.Fun (\<sigma> (J.cod j)) e"
-                    using a' j x \<sigma>.is_natural_2 \<sigma>.A.map_simp S.comp_arr_dom J.arr_cod_iff_arr
-                          J.cod_cod YoD.preserves_arr \<sigma>.is_natural_1 YoD.at_simp
+                    using a' j x \<sigma>.naturality2 \<sigma>.A.map_simp S.comp_arr_dom J.arr_cod_iff_arr
+                          J.cod_cod YoD.preserves_arr \<sigma>.naturality1 YoD.at_simp
                     by auto
                   finally have
                       "S.Fun (Y (D j) a') (S.Fun (\<sigma> (J.dom j)) e) = S.Fun (\<sigma> (J.cod j)) e"
@@ -6195,7 +6188,7 @@ $$\xymatrix{
               by simp
           qed
           have "YoD_a'.cones_map ?f (YoD.at a' (map o \<chi>)) = \<sigma>"
-          proof (intro NaturalTransformation.eqI)
+          proof (intro natural_transformation_eqI)
             show "natural_transformation J S \<sigma>.A.map (YoD.at a' (map o D)) \<sigma>"
               using \<sigma>.natural_transformation_axioms by auto
             have 1: "S.cod ?f = Cop_S.Map (map a) a'"

@@ -293,30 +293,30 @@ proof (simp add: line_integral_def)
 qed
 
 lemma content_box_cases:
-  "content (box a b) = (if \<forall>i\<in>Basis. a\<bullet>i \<le> b\<bullet>i then prod (\<lambda>i. b\<bullet>i - a\<bullet>i) Basis else 0)"
+  "measure lborel (box a b) = (if \<forall>i\<in>Basis. a\<bullet>i \<le> b\<bullet>i then prod (\<lambda>i. b\<bullet>i - a\<bullet>i) Basis else 0)"
   by (simp add: measure_lborel_box_eq inner_diff)
 
 lemma content_box_cbox:
-  shows "content (box a b) = content (cbox a b)"
+  shows "measure lborel (box a b) = measure lborel (cbox a b)"
   by (simp add: content_box_cases content_cbox_cases)
 
-lemma content_eq_0: "content (box a b) = 0 \<longleftrightarrow> (\<exists>i\<in>Basis. b\<bullet>i \<le> a\<bullet>i)"
+lemma content_eq_0: "measure lborel (box a b) = 0 \<longleftrightarrow> (\<exists>i\<in>Basis. b\<bullet>i \<le> a\<bullet>i)"
   by (auto simp: content_box_cases not_le intro: less_imp_le antisym eq_refl)
 
-lemma content_pos_lt_eq: "0 < content (cbox a (b::'a::euclidean_space)) \<longleftrightarrow> (\<forall>i\<in>Basis. a\<bullet>i < b\<bullet>i)"
+lemma content_pos_lt_eq: "0 < measure lborel (cbox a (b::'a::euclidean_space)) \<longleftrightarrow> (\<forall>i\<in>Basis. a\<bullet>i < b\<bullet>i)"
   by (auto simp add: content_cbox_cases less_le prod_nonneg)
 
-lemma content_lt_nz: "0 < content (box a b) \<longleftrightarrow> content (box a b) \<noteq> 0"
+lemma content_lt_nz: "0 < measure lborel (box a b) \<longleftrightarrow> measure lborel (box a b) \<noteq> 0"
   using Paths.content_eq_0 zero_less_measure_iff by blast
 
-lemma content_subset: "cbox a b \<subseteq> box c d \<Longrightarrow> content (cbox a b) \<le> content (box c d)"
+lemma content_subset: "cbox a b \<subseteq> box c d \<Longrightarrow> measure lborel (cbox a b) \<le> measure lborel (box c d)"
   unfolding measure_def
   by (intro enn2real_mono emeasure_mono) (auto simp: emeasure_lborel_cbox_eq emeasure_lborel_box_eq)
 
 lemma sum_content_null:
-  assumes "content (box a b) = 0"
+  assumes "measure lborel (box a b) = 0"
     and "p tagged_division_of (box a b)"
-  shows "sum (\<lambda>(x,k). content k *\<^sub>R f x) p = (0::'a::real_normed_vector)"
+  shows "sum (\<lambda>(x,k). measure lborel k *\<^sub>R f x) p = (0::'a::real_normed_vector)"
 proof (rule sum.neutral, rule)
   fix y
   assume y: "y \<in> p"
@@ -324,17 +324,17 @@ proof (rule sum.neutral, rule)
     using surj_pair[of y] by blast
   note assm = tagged_division_ofD(3-4)[OF assms(2) y[unfolded xk]]
   from this(2) obtain c d where k: "k = cbox c d" by blast
-  have "(\<lambda>(x, k). content k *\<^sub>R f x) y = content k *\<^sub>R f x"
+  have "(\<lambda>(x, k). measure lborel k *\<^sub>R f x) y = measure lborel k *\<^sub>R f x"
     unfolding xk by auto
   also have "\<dots> = 0"
     using content_subset[OF assm(1)[unfolded k]] content_pos_le[of "cbox c d"]
     unfolding assms(1) k
     by auto
-  finally show "(\<lambda>(x, k). content k *\<^sub>R f x) y = 0" .
+  finally show "(\<lambda>(x, k). measure lborel k *\<^sub>R f x) y = 0" .
 qed
 
 
-lemma has_integral_null [intro]: "content(box a b) = 0 \<Longrightarrow> (f has_integral 0) (box a b)"
+lemma has_integral_null [intro]: "measure lborel(box a b) = 0 \<Longrightarrow> (f has_integral 0) (box a b)"
   by (simp add: content_box_cbox content_eq_0_interior)
 
 lemma line_integral_distrib:

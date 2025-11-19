@@ -764,8 +764,8 @@ lemma emb_step_under_args_num_args:
   using assms 
 proof(induction p arbitrary:t)
   case Nil
-  then show ?case 
-    using list_all_simps(2) by blast
+  then show ?case
+    by simp
 next
   case (Cons a p)
   then show ?case 

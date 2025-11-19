@@ -432,8 +432,8 @@ proof -
         using p by auto
       show "xa \<circ> Hilbert_Choice.inv \<pi> \<in> F"
         unfolding o_def F
-        using F PiE p xa
-        by (auto, smt atLeastLessThan_iff permutes_def permutes_less(3))
+        using F PiE p xa permutes_def permutes_inv 
+        by (smt (verit) Pi_def mem_Collect_eq permutes_inverses(1))
     qed
   qed
   have prod_rw: "(\<Prod>i = 0..<n. B $$ (f i, i)) = (\<Prod>i = 0..<n. B $$ (f (\<pi> i), \<pi> i))" if "f\<in>F" for f
@@ -503,19 +503,17 @@ proof -
   qed
   have hF: "?h` F = F"
     unfolding image_def
-  proof auto
-    fix xa assume xa: "xa \<in> F" show "xa \<circ> ?inv_pi \<in> F"
+  proof safe
+    fix u assume u: "u \<in> F" show "u \<circ> ?inv_pi \<in> F"
       unfolding o_def F
-      using F PiE p xa
-      by (auto, smt atLeastLessThan_iff permutes_def permutes_less(3))
-    show "\<exists>x\<in>F. xa = x \<circ> ?inv_pi"
-    proof (rule bexI[of _ "xa \<circ> \<pi>"])
-      show "xa = xa \<circ> \<pi> \<circ> Hilbert_Choice.inv \<pi> "
+      using F PiE p u permutes_inv permutes_def
+      by (smt (verit) Pi_I' mem_Collect_eq permutes_inverses(1))
+    show "\<exists>x\<in>F. u = x \<circ> ?inv_pi"
+    proof (rule bexI[of _ "u \<circ> \<pi>"])
+      show "u = u \<circ> \<pi> \<circ> Hilbert_Choice.inv \<pi> "
         using p by auto
-      show "xa \<circ> \<pi> \<in> F"
-        unfolding o_def F
-        using F PiE p xa
-        by (auto, smt atLeastLessThan_iff permutes_def permutes_less(3))
+      show "u \<circ> \<pi> \<in> F"
+        using F p u by (simp add: Pi_iff permutes_def)
     qed
   qed
   let ?g = "\<lambda>f. signof \<pi> * (\<Prod>i = 0..<n. B $$ (f (\<pi> i), \<pi> i) * A $$ (i, f (\<pi> i)))"
@@ -555,8 +553,9 @@ proof -
     fix x assume x: "x permutes {0..<n}"
     have "(\<Prod>i = 0..<n. col A (f i) $v x i) = (\<Prod>i = 0..<n. A $$ (x i, f i))"
     proof (rule prod.cong)
-      fix xa assume xa: "xa \<in> {0..<n}" show "col A (f xa) $v x xa = A $$ (x xa, f  xa)"
-        by (metis A atLeastLessThan_iff carrier_matD(1) col_def index_vec permutes_less(1) x xa)
+      fix i assume "i \<in> {0..<n}" 
+      then show "col A (f i) $v x i = A $$ (x i, f  i)"
+        using A f x by auto
     qed (auto)
     then show "signof x * (\<Prod>i = 0..<n. col A (f i) $v x i)
       = signof x * (\<Prod>i = 0..<n. A $$ (x i, f i))" by auto

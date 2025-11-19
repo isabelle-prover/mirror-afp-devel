@@ -1,100 +1,56 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Mathematics/Measure and integration on Archive of Formal Proofs
-    </title>
-    <link>/topics/mathematics/measure-and-integration/</link>
-    <description>
-        Recent content in Mathematics/Measure and integration 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/mathematics/measure-and-integration/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Coproduct Measure</title>
-          <link>/entries/Coproduct_Measure.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coproduct_Measure.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Coproduct Measure</title>
-          <link>/entries/Coproduct_Measure.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Coproduct_Measure.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Lévy-Prokhorov Metric</title>
-          <link>/entries/Levy_Prokhorov_Metric.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Levy_Prokhorov_Metric.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Lévy-Prokhorov Metric</title>
-          <link>/entries/Levy_Prokhorov_Metric.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Levy_Prokhorov_Metric.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Riesz Representation Theorem</title>
-          <link>/entries/Riesz_Representation.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Riesz_Representation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Riesz Representation Theorem</title>
-          <link>/entries/Riesz_Representation.html</link>
-          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Riesz_Representation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Disintegration Theorem</title>
-          <link>/entries/Disintegration.html</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Disintegration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Disintegration Theorem</title>
-          <link>/entries/Disintegration.html</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Disintegration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
-          <link>/entries/S_Finite_Measure_Monad.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/S_Finite_Measure_Monad.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
-          <link>/entries/S_Finite_Measure_Monad.html</link>
-          <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/S_Finite_Measure_Monad.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Hahn and Jordan Decomposition Theorems</title>
-          <link>/entries/Hahn_Jordan_Decomposition.html</link>
-          <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Hahn_Jordan_Decomposition.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Hahn and Jordan Decomposition Theorems</title>
-          <link>/entries/Hahn_Jordan_Decomposition.html</link>
-          <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Hahn_Jordan_Decomposition.html</guid>
-          <description></description>
-        </item>
+    <title>Mathematics/Measure and integration</title>
+    <link>https://isa-afp.org/topics/mathematics/measure-and-integration/</link>
+    <description>AFP entries in Measure and integration</description><item>
+  <title>The Riesz Representation Theorem</title>
+  <link>https://isa-afp.org/entries/Riesz_Representation.html</link>
+  <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+  <description>The Riesz Representation Theorem in the AFP</description>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Measure and integration</category>
+</item>
+<item>
+  <title>The Lévy-Prokhorov Metric</title>
+  <link>https://isa-afp.org/entries/Levy_Prokhorov_Metric.html</link>
+  <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+  <description>The Lévy-Prokhorov Metric in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Coproduct Measure</title>
+  <link>https://isa-afp.org/entries/Coproduct_Measure.html</link>
+  <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+  <description>Coproduct Measure in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+</item>
+<item>
+  <title>Disintegration Theorem</title>
+  <link>https://isa-afp.org/entries/Disintegration.html</link>
+  <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Disintegration Theorem in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>S-Finite Measure Monad on Quasi-Borel Spaces</title>
+  <link>https://isa-afp.org/entries/S_Finite_Measure_Monad.html</link>
+  <pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate>
+  <description>S-Finite Measure Monad on Quasi-Borel Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Measure and integration</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>The Hahn and Jordan Decomposition Theorems</title>
+  <link>https://isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
+  <pubDate>Fri, 19 Nov 2021 00:00:00 +0000</pubDate>
+  <description>The Hahn and Jordan Decomposition Theorems in the AFP</description>
+    <category>Mathematics/Measure and integration</category>
+</item>
+
   </channel>
 </rss>

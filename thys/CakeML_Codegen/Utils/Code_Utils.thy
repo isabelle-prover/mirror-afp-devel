@@ -23,6 +23,11 @@ ML_file "dynamic_unfold.ML"
 simproc_setup dynamic_unfold ("x") = \<open>Dynamic_Unfold.simproc\<close>
 declare [[simproc del: dynamic_unfold]]
 
-setup \<open>Code_Preproc.map_pre (fn ctxt => ctxt addsimprocs [@{simproc dynamic_unfold}])\<close>
+lemma [code]: \<comment> \<open>TODO: work-around non-well-behaved simproc\<close>
+  \<open>m < 0 \<longleftrightarrow> False\<close>
+  \<open>m < Suc n \<longleftrightarrow> m \<le> n\<close>
+  by auto
+
+setup \<open>Code_Preproc.map_pre (Simplifier.add_proc @{simproc dynamic_unfold})\<close>
 
 end

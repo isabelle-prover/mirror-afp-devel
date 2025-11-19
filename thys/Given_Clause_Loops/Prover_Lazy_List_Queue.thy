@@ -675,13 +675,10 @@ proof
               using not_rem_step add_Suc_right i'_ge trans_le_add1 by presburger
             ultimately have ees_ni: "LCons e es \<notin> set ess"
               by blast
-
             obtain ps' :: "('e \<times> 'e llist) list" where
               snd_q: "snd Q = (e, es) # ps'"
-              using ih by (metis (no_types, opaque_lifting) One_nat_def fst_eqD in_set_member
-                  in_set_takeD length_pos_if_in_set list.exhaust_sel
-                  lqueue_step_fold_remove_llistI(1) member_rec(1) member_rec(2) nth_Cons_0 take0
-                  take_Suc_conv_app_nth)
+              using ih local.lqueue_step_fold_remove_llistI(1)
+              by (cases \<open>snd (fst (lnth QDs (i' + l)))\<close>) simp_all
 
             obtain num_nils' :: nat where
               q: "Q = (num_nils', (e, es) # ps')"

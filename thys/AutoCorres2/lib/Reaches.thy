@@ -43,6 +43,12 @@ lemma outcomes_Sup[simp]: "Failure \<notin> F \<Longrightarrow> outcomes (Sup F)
   by (auto simp: Sup_post_state_def)
     (metis outcomes.simps(2) post_state.exhaust vimage_eq)
 
+lemma mem_outcomes_iff: "x \<in> outcomes p \<longleftrightarrow> (\<exists>X. p = Success X \<and> x \<in> X)"
+  by (cases p) auto
+
+lemma outcomes_Sup_eq_if:
+  "outcomes (Sup X) = (if Failure \<in> X then {} else \<Union>x\<in>X. outcomes x)"
+  by (auto simp: Sup_post_state_def mem_outcomes_iff Bex_def)
 
 (* TODO: remove: *)
 lemmas runs_to_holds_def = runs_to.rep_eq

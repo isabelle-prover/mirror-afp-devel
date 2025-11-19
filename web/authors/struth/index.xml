@@ -1,136 +1,139 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>struth on Archive of Formal Proofs
-    </title>
-    <link>/authors/struth/</link>
-    <description>
-        Recent content in struth 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 24 Jan 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/struth/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Cubical Categories</title>
-          <link>/entries/CubicalCategories.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/CubicalCategories.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Higher Globular Catoids and Quantales</title>
-          <link>/entries/OmegaCatoidsQuantales.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/OmegaCatoidsQuantales.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Catoids, Categories, Groupoids</title>
-          <link>/entries/Catoids.html</link>
-          <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Catoids.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
-          <link>/entries/Quantales_Converse.html</link>
-          <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Quantales_Converse.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Inner Structure, Determinism and Modal Algebra of Multirelations</title>
-          <link>/entries/Multirelations_Heterogeneous.html</link>
-          <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Multirelations_Heterogeneous.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Properties of Orderings and Lattices</title>
-          <link>/entries/Order_Lattice_Props.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Order_Lattice_Props.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Quantales</title>
-          <link>/entries/Quantales.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Quantales.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Transformer Semantics</title>
-          <link>/entries/Transformer_Semantics.html</link>
-          <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Transformer_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Partial Semigroups and Convolution Algebras</title>
-          <link>/entries/PSemigroupsConvolution.html</link>
-          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/PSemigroupsConvolution.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Program Construction and Verification Components Based on Kleene Algebra</title>
-          <link>/entries/Algebraic_VCs.html</link>
-          <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Algebraic_VCs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kleene Algebras with Domain</title>
-          <link>/entries/KAD.html</link>
-          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/KAD.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Binary Multirelations</title>
-          <link>/entries/Multirelations.html</link>
-          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Multirelations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Lattices</title>
-          <link>/entries/Residuated_Lattices.html</link>
-          <pubDate>Wed, 15 Apr 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Residuated_Lattices.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Regular Algebras</title>
-          <link>/entries/Regular_Algebras.html</link>
-          <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Regular_Algebras.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relation Algebra</title>
-          <link>/entries/Relation_Algebra.html</link>
-          <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Relation_Algebra.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
-          <link>/entries/KAT_and_DRA.html</link>
-          <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/KAT_and_DRA.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kleene Algebra</title>
-          <link>/entries/Kleene_Algebra.html</link>
-          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Kleene_Algebra.html</guid>
-          <description></description>
-        </item>
+    <title>Georg Struth</title>
+    <link>https://isa-afp.org/authors/struth/</link>
+    <description>AFP entries of Georg Struth</description><item>
+  <title>Higher Globular Catoids and Quantales</title>
+  <link>https://isa-afp.org/entries/OmegaCatoidsQuantales.html</link>
+  <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Higher Globular Catoids and Quantales in the AFP</description>
+    <category>Mathematics/Category theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Cubical Categories</title>
+  <link>https://isa-afp.org/entries/CubicalCategories.html</link>
+  <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
+  <description>Cubical Categories in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Catoids, Categories, Groupoids</title>
+  <link>https://isa-afp.org/entries/Catoids.html</link>
+  <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Catoids, Categories, Groupoids in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Modal quantales, involutive quantales, Dedekind Quantales</title>
+  <link>https://isa-afp.org/entries/Quantales_Converse.html</link>
+  <pubDate>Tue, 25 Jul 2023 00:00:00 +0000</pubDate>
+  <description>Modal quantales, involutive quantales, Dedekind Quantales in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Inner Structure, Determinism and Modal Algebra of Multirelations</title>
+  <link>https://isa-afp.org/entries/Multirelations_Heterogeneous.html</link>
+  <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
+  <description>Inner Structure, Determinism and Modal Algebra of Multirelations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Transformer Semantics</title>
+  <link>https://isa-afp.org/entries/Transformer_Semantics.html</link>
+  <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Transformer Semantics in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Quantales</title>
+  <link>https://isa-afp.org/entries/Quantales.html</link>
+  <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Quantales in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Properties of Orderings and Lattices</title>
+  <link>https://isa-afp.org/entries/Order_Lattice_Props.html</link>
+  <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Properties of Orderings and Lattices in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
+  <title>Partial Semigroups and Convolution Algebras</title>
+  <link>https://isa-afp.org/entries/PSemigroupsConvolution.html</link>
+  <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Partial Semigroups and Convolution Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Program Construction and Verification Components Based on Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Algebraic_VCs.html</link>
+  <pubDate>Sat, 18 Jun 2016 00:00:00 +0000</pubDate>
+  <description>Program Construction and Verification Components Based on Kleene Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebras with Domain</title>
+  <link>https://isa-afp.org/entries/KAD.html</link>
+  <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+  <description>Kleene Algebras with Domain in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Binary Multirelations</title>
+  <link>https://isa-afp.org/entries/Multirelations.html</link>
+  <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+  <description>Binary Multirelations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Residuated Lattices</title>
+  <link>https://isa-afp.org/entries/Residuated_Lattices.html</link>
+  <pubDate>Wed, 15 Apr 2015 00:00:00 +0000</pubDate>
+  <description>Residuated Lattices in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Regular Algebras</title>
+  <link>https://isa-afp.org/entries/Regular_Algebras.html</link>
+  <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
+  <description>Regular Algebras in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Relation Algebra</title>
+  <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
+  <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Relation Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra with Tests and Demonic Refinement Algebras</title>
+  <link>https://isa-afp.org/entries/KAT_and_DRA.html</link>
+  <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra with Tests and Demonic Refinement Algebras in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
+  <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+
   </channel>
 </rss>

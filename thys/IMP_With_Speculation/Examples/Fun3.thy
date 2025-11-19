@@ -8,7 +8,6 @@ begin
 subsection "Function definition and Boilerplate"
 no_notation bot (\<open>\<bottom>\<close>)
 
-
 consts NN::"nat"
 
 lemma NN:"int NN \<ge> 0" by auto
@@ -88,8 +87,7 @@ by (auto simp: prog_def)
 
 (* *)
 
-fun resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" where
-  "resolve p pc = (if (pc = [4,7]) then True else False)"
+consts resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" 
 
 
 
@@ -519,9 +517,11 @@ using not_is_getTrustedInput not_is_Output
   subgoal for vst avst hh p apply(cases vst, cases avst, cases hh)
   subgoal for vs as h apply(cases "last cfgs")
   subgoal for pcs ss apply(cases ss)
-  subgoal for vsts avsts hhs ps apply(cases vsts, cases avsts, cases hhs, simp)
+    subgoal for vsts avsts hhs ps apply(cases vsts, cases avsts, cases hhs, simp)
+      apply(cases "resolve pstate (pcOf cfg # map pcOf cfgs)")
+    subgoal unfolding finalS_defs using spec_resolve by (metis list.size(3) n_not_Suc_n)
     subgoal for vss ass hs apply(elim disjE, elim conjE, elim disjE, simp) 
-      unfolding finalS_defs 
+      unfolding finalS_defs
       subgoal apply(rule notI, 
       erule allE[of _ "(pstate,Config 7 (State (Vstore vs) (Avstore as) (Heap h) p),
                         [Config 5 (State (Vstore (vss(vv := hs (array_loc aa1 (nat (vss xx)) avsts)))) avsts hhs ps)],
@@ -531,11 +531,12 @@ using not_is_getTrustedInput not_is_Output
       
       subgoal apply(rule notI, 
       erule allE[of _ "(pstate,Config 7 (State (Vstore vs) (Avstore as) (Heap h) p),[],ibT,ibUT,ls)"])
-        apply(erule notE) by(rule spec_Fence, auto)
+        using spec_Fence by (metis Zero_not_Suc config.sel(1) is_Fence length_0_conv)
 
       subgoal apply(rule notI, 
       erule allE[of _ "(update pstate (4 # map pcOf cfgs),Config 4 (State (Vstore vs) (Avstore as) (Heap h) p),
                        [],ibT,ibUT,ls)"])
-        by(erule notE, rule spec_resolve, auto)
+        using spec_resolve 
+        by (metis config.sel(1) is_Output length_1_butlast length_greater_0_conv less_Suc0)
       . . . . . . . 
 end

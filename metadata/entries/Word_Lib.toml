@@ -43,5 +43,7 @@ klein = "klein_email"
 [history]
 
 [extra]
+contributions = "Multiple contributions and maintainance by Florian Haftmann since 2016"
+sep-2024 = "Some proofs tidied by Lawrence C. Paulson"
 
 [related]

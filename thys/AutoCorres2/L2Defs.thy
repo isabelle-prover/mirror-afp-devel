@@ -53,8 +53,11 @@ definition "L2_modifycall x m emb ns \<equiv> L2_seq (L2_call x emb ns) (\<lambd
 definition "L2_returncall x f emb ns \<equiv> L2_seq (L2_call x emb ns) (\<lambda>ret. L2_folded_gets (f ret) []) :: ('s, 'a, 'e) L2_monad"
 
 
+(* Syntax variants to emulate congprocs with simprocs *)
 definition "L2_seq_guard P A \<equiv> L2_seq (L2_guard P) A"
 definition "L2_seq_gets c n A \<equiv> L2_seq (L2_gets (\<lambda>_. c) n) A" 
+definition "L2_seq_unknown ns A \<equiv> L2_seq (L2_unknown ns) A"
+definition "L2_seq_condition c L R X \<equiv> L2_seq (L2_condition c L R) X"
 
 definition "SANITIZE_NAMES prj ns ns' = True"
 
@@ -543,7 +546,28 @@ lemma L2_split_fixup_1:
 lemma L2_split_fixup_2:
   "(L2_seq (case y of (a, b) \<Rightarrow> B a b) A) =
            (case y of (a, b) \<Rightarrow> L2_seq (B a b) A)"
-       by (auto simp: split_def)
+  by (auto simp: split_def)
+
+lemma L2_split_L2_seq_fixup_both:
+  "(L2_seq (case y of (a,b) \<Rightarrow> A a b) (case y of (a, b) \<Rightarrow> B a b)) =
+           (case y of (a, b) \<Rightarrow> L2_seq (A a b) (B a b))"
+  by (auto simp: split_def)
+
+lemma L2_split_L2_seq_gets_fixup_1:
+  "(L2_seq_gets (case y of (a,b) \<Rightarrow> A a b) n (case y of (a, b) \<Rightarrow> B a b)) =
+           (case y of (a, b) \<Rightarrow> L2_seq_gets (A a b) n (B a b))"
+  by (auto simp: split_def)
+(*
+lemma L2_split_L2_seq_gets_fixup_1:
+  "(L2_seq_gets A n (\<lambda>x. case y of (a, b) \<Rightarrow> B a b x)) =
+           (case y of (a, b) \<Rightarrow> L2_seq_gets A n (\<lambda>x. B a b x))"
+  by (auto simp: split_def)
+
+lemma L2_split_L2_seq_gets_fixup_2:
+  "(L2_seq_gets (case y of (a, b) \<Rightarrow> B a b) n A) =
+           (case y of (a, b) \<Rightarrow> L2_seq_gets (B a b) n  A)"
+  by (auto simp: split_def)
+*)
 lemma L2_split_fixup_3:
   "(case (x, y) of (a, b) \<Rightarrow> P a b) = P x y"
        by (auto simp: split_def)
@@ -567,19 +591,64 @@ lemma finally_fixup: "(\<lambda>x. finally (case x of (a, b) \<Rightarrow> f a b
 lemma try_fixup: "(\<lambda>x. try (case x of (a, b) \<Rightarrow> f a b)) = (\<lambda>(a,b). try (f a b))"
   by (simp add: fun_eq_iff split: prod.splits)
 
+lemma L2_gets_const_split_fixup: "L2_gets (\<lambda>_. case y of (a, b) \<Rightarrow> G a b) = (case y of (a, b) \<Rightarrow> L2_gets (\<lambda>_. G a b))"
+  by (simp add: fun_eq_iff split: prod.splits)
 
-lemmas L2_split_fixups =
-  L2_split_fixup_1
-  L2_split_fixup_2
+definition STOP :: "'a::{} \<Rightarrow> 'a"  
+  where "STOP P  \<equiv> P"
+
+lemma STOP_cong: "STOP P \<equiv> STOP P"
+  by simp
+
+lemma do_STOP: "P \<equiv> STOP P"
+  by (simp add: STOP_def)
+
+definition STOP_UNBIND :: "'a::{} \<Rightarrow> 'a"  
+  where "STOP_UNBIND P  \<equiv> P"
+
+lemma STOP_UNBIND_cong: "STOP_UNBIND P \<equiv> STOP_UNBIND P"
+  by simp
+
+lemma do_STOP_UNBIND: "P \<equiv> STOP_UNBIND P"
+  by (simp add: STOP_UNBIND_def)
+
+definition FUSE :: "'a::{} \<Rightarrow> 'a"  
+  where "FUSE P  \<equiv> P"
+
+lemma FUSE_cong: "FUSE P \<equiv> FUSE P"
+  by simp
+
+lemma do_FUSE: "P \<equiv> FUSE P"
+  by (simp add: FUSE_def)
+
+lemma FUSE_STOP: "X \<equiv> X' \<Longrightarrow> FUSE X \<equiv> STOP X'"
+  by (simp add: FUSE_def STOP_def)
+
+lemma fixup_accumulate: 
+  "(\<lambda>(x, a). (case a of (x1, x2) \<Rightarrow> C x1 x2) x) = (\<lambda>(x, x1, x2). C x1 x2 x)"
+  by (auto simp: split_def)
+
+lemma case_prod_apply_distrib: 
+  "(case x of (a, b) \<Rightarrow> f a b) n =  (case x of (a, b) \<Rightarrow> f a b n )"
+  by (auto simp add: split_def)
+
+lemma L2_guard_fixup1: "L2_guard (\<lambda>s. case y of (a, b) \<Rightarrow> G a b s) = (case y of (a, b) \<Rightarrow> L2_guard (G a b))"
+  by (auto simp: split_def)
+
+lemmas L2_split_fixups_base = 
+
   L2_split_fixup_3
   L2_split_fixup_4
   liftE_fixup
   finally_fixup
   try_fixup
 
+  L2_guard_fixup1
   L2_split_fixup_f [where f=L2_guard]
   L2_split_fixup_f [where f=L2_gets]
   L2_split_fixup_f [where f=L2_modify]
+
+  L2_gets_const_split_fixup
 
   L2_split_fixup_g [where P="\<lambda>a b. L2_gets (P a b) n" for P n]
   L2_split_fixup_g [where P="\<lambda>a b. L2_guard (P a b)" for P]
@@ -597,6 +666,21 @@ lemmas L2_split_fixups =
   L2_split_fixup_g [where P="\<lambda>a b. liftE (M a b)" for M]
   L2_split_fixup_g [where P="\<lambda>a b. finally (M a b)" for M]
   L2_split_fixup_g [where P="\<lambda>a b. try (M a b)" for M]
+
+lemmas L2_split_fixups =
+  L2_split_fixup_1
+  L2_split_fixup_2
+  L2_split_fixups_base
+
+lemmas L2_split_fixups' =
+  L2_split_L2_seq_fixup_both
+  L2_split_L2_seq_gets_fixup_1
+  L2_split_fixup_g [where P="\<lambda>a b. L2_seq_gets (L a b) (R a b)" for L R]
+  fixup_accumulate
+  L2_split_fixups_base
+  L2_split_fixup_f [where f=STOP]
+  case_prod_apply_distrib
+
 lemmas L2_split_fixups_congs =
   prod.case_cong
 
@@ -2029,5 +2113,30 @@ lemmas rel_sum_Inr = rel_sum.intros(2)
 lemma rel_sum_eq: "rel_sum (=) (=) x x"
   by (auto simp add: rel_sum.simps)
 
+
+definition (in heap_state)  
+  IO_modify_heap_padding::"'a::mem_type ptr \<Rightarrow> ('s \<Rightarrow> 'a) \<Rightarrow> ('b::default, unit, 's) spec_monad" where
+ "IO_modify_heap_padding p v = 
+    state_select {(s, t). \<exists>bs. length bs = size_of (TYPE('a)) \<and> t = hmem_upd (heap_update_padding p (v s) bs) s}"
+
+lemma (in heap_state) liftE_IO_modify_heap_padding: "liftE (IO_modify_heap_padding p v) = (IO_modify_heap_padding p v)"
+  unfolding IO_modify_heap_padding_def
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+abbreviation (in heap_state) IO_modify_heap_paddingE:: 
+    "'a::mem_type ptr \<Rightarrow> ('s \<Rightarrow> 'a) \<Rightarrow> ('b, unit, 's) exn_monad" where
+    "IO_modify_heap_paddingE p v \<equiv> liftE (IO_modify_heap_padding p v)"
+
+lemma (in heap_state) no_fail_IO_modify_padding[simp]:  "succeeds (IO_modify_heap_padding p v) s"
+  unfolding IO_modify_heap_padding_def
+  apply (simp)
+  using length_to_bytes_p by blast
+
+lemma (in heap_state) no_fail_IO_modify_paddingE[simp]:  "succeeds (IO_modify_heap_paddingE p v) s"
+  unfolding IO_modify_heap_padding_def
+  apply (simp)
+  using length_to_bytes_p by blast
 
 end

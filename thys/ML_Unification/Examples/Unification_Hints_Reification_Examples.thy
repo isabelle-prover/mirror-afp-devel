@@ -19,33 +19,34 @@ subsection \<open>Setup\<close>
 text \<open>One-time setup to obtain a unifier with unification hints for the purpose of reification.\<close>
 
 ML\<open>
-  @{functor_instance struct_name = Reification_Unification_Hints
-    and functor_name = Term_Index_Unification_Hints
-    and id = \<open>"reify"\<close>
-    and more_args = \<open>
-      structure TI = Discrimination_Tree
-      val init_args = {
-        concl_unifier = NONE, (*will be set later*)
-        prems_unifier = NONE, (*will be set later*)
-        normalisers = SOME Higher_Order_Pattern_Unification.norms_unify,
-        (*only retrieve hints based on hints' left-hand side*)
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym
-          (Term_Index_Unification_Hints_Args.retrieve_left TI.unifiables) TI.norm_term),
-        hint_preprocessor = SOME (Standard_Unification_Hints.get_hint_preprocessor
-          (Context.the_generic_context ()))
-      }\<close>}
-  val reify_unify = Unification_Combinator.add_fallback_unifier
-    (fn unif_theory =>
-      Higher_Order_Pattern_Unification.e_unify Unification_Util.unify_types unif_theory unif_theory
-      |> Type_Unification.e_unify Unification_Util.unify_types)
-    (Reification_Unification_Hints.try_hints
-      |> Unification_Combinator.norm_unifier
-        (Unification_Util.inst_norm_term' Higher_Order_Pattern_Unification.norms_unify))
+\<^functor_instance>\<open>struct_name: Reification_Unification_Hints
+  functor_name: Term_Index_Unification_Hints
+  id: \<open>"reify"\<close>
+  more_args: \<open>
+    structure TI = Discrimination_Tree
+    structure Args = Term_Index_Unification_Hints_Args
+    val init_args = {
+      concl_unifier = NONE, (*will be set later*)
+      prems_unifier = NONE, (*will be set later*)
+      normalisers = SOME Higher_Order_Pattern_Unification.norms_unify,
+      (*only retrieve hints based on hints' left-hand sides*)
+      retrieval = SOME (Args.mk_retrieval_sym
+        (Library.K TI.unifiables |> Args.retrieve_transfer |> Args.retrieve_left) TI.norm_term),
+      hint_preprocessor = SOME (Standard_Unification_Hints.get_hint_preprocessor
+        (Context.the_generic_context ()))}\<close>\<close>
+
+val reify_unify = Unification_Combinator.add_fallback_unifier
+  (fn unif_theory =>
+    Higher_Order_Pattern_Unification.e_unify Unification_Util.unify_types unif_theory unif_theory
+    |> Type_Unification.e_unify Unification_Util.unify_types)
+  (Reification_Unification_Hints.try_hints
+    |> Unification_Combinator.norm_unifier
+      (Unification_Util.inst_norm_term' Higher_Order_Pattern_Unification.norms_unify))
 \<close>
 local_setup \<open>Reification_Unification_Hints.setup_attribute NONE\<close>
 
 text \<open>Premises of hints should again be unified by the reification unifier.\<close>
-declare [[reify_uhint where prems_unifier = reify_unify]]
+declare [[reify_uhint config prems_unifier: reify_unify]]
 
 subsection \<open>Formulas with Quantifiers and Environment\<close>
 
@@ -80,7 +81,7 @@ experiment
 begin
 
 text \<open>Hints for list lookup.\<close>
-declare List.nth_Cons_Suc[reify_uhint where prio = Prio.LOW]
+declare List.nth_Cons_Suc[reify_uhint prio: Prio.LOW]
   and List.nth_Cons_0[reify_uhint]
 
 text \<open>Hints to reify formulas of type @{type bool} into formulas of type @{type form}.\<close>
@@ -88,14 +89,14 @@ declare interp.simps[reify_uhint]
 
 text \<open>We have to allow the hint unifier to recursively look for hints during unification of
 the hint's conclusion.\<close>
-declare [[reify_uhint where concl_unifier = reify_unify]]
+declare [[reify_uhint config concl_unifier: reify_unify]]
 
 (*uncomment the following to see the hint unification process*)
 (* declare [[ML_map_context \<open>Logger.set_log_levels Unification_Base.logger Logger.DEBUG\<close>]] *)
 
 schematic_goal
   "interp ?f (?vs :: ('a :: ord) list) = (\<exists>(x :: 'a). x < y \<and> \<not>(\<exists>(z :: 'a). v < z \<or> \<not>False))"
-  by (ufact refl where unifier = reify_unify)
+  by (ufact refl unifier: reify_unify)
 
 text \<open>While this all works nicely if set up correctly, it can be rather difficult to
 understand and debug the recursive unification process for a hint's conclusion.
@@ -109,10 +110,12 @@ paragraph \<open>Reification with matching without recursion for conclusion\<clo
 
 text \<open>We disallow the hint unifier to recursively look for hints while unifying the conclusion;
 instead, we only allow the hint unifier to match the hint's conclusion against the disagreement terms.\<close>
-declare [[reify_uhint where concl_unifier =
+declare [[reify_uhint config concl_unifier:
   \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>
-and retrieval = \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
-  (Term_Index_Unification_Hints_Args.retrieve_left Reification_Unification_Hints.TI.unifiables)
+  retrieval: \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
+  (K Reification_Unification_Hints.TI.generalisations
+    |> Term_Index_Unification_Hints_Args.retrieve_transfer
+    |> Term_Index_Unification_Hints_Args.retrieve_left)
   Reification_Unification_Hints.TI.norm_term\<close>]]
 
 text \<open>However, this also means that we now have to write our hints such that the hint's
@@ -124,7 +127,7 @@ these meta variables.\<close>
 experiment
 begin
 
-lemma [reify_uhint where prio = Prio.LOW]:
+lemma [reify_uhint prio: Prio.LOW]:
   "n \<equiv> Suc n' \<Longrightarrow> vs \<equiv> v # vs' \<Longrightarrow> vs' ! n' \<equiv> x \<Longrightarrow> vs ! n \<equiv> x"
   by simp
 
@@ -143,7 +146,7 @@ lemma [reify_uhint]:
 
 schematic_goal
   "interp ?f (?vs :: ('a :: ord) list) = (\<exists>(x :: 'a). x < y \<and> \<not>(\<exists>(z :: 'a). v < z \<or> \<not>False))"
-  by (urule refl where unifier = reify_unify)
+  by (urule refl unifier: reify_unify)
 
 end
 
@@ -157,7 +160,7 @@ fun eval_add_expr :: "add_expr \<Rightarrow> int" where
   "eval_add_expr (Var i) = i"
 | "eval_add_expr (Add ex1 ex2) = eval_add_expr ex1 + eval_add_expr ex2"
 
-lemma eval_add_expr_Var [reify_uhint where prio = Prio.LOW]:
+lemma eval_add_expr_Var [reify_uhint prio: Prio.LOW]:
   "e \<equiv> Var i \<Longrightarrow> eval_add_expr e \<equiv> i" by simp
 
 lemma eval_add_expr_add [reify_uhint]:
@@ -171,7 +174,7 @@ ML_command\<open>
 \<close>
 
 schematic_goal "eval_add_expr ?e = (1 + (2 + 7) :: int)"
-  by (urule refl where unifier = reify_unify)
+  by (urule refl unifier: reify_unify)
 
 
 subsection \<open>Arithmetic with Environment\<close>
@@ -189,12 +192,12 @@ fun eval_mul_expr :: "mul_expr \<times> rat list \<Rightarrow> rat" where
 | "eval_mul_expr (Inv e, \<Gamma>) = inverse (eval_mul_expr (e, \<Gamma>))"
 
 text \<open>Split @{term e} into an expression and an environment.\<close>
-lemma [reify_uhint where prio = Prio.VERY_LOW]:
+lemma [reify_uhint prio: Prio.VERY_LOW]:
   "e \<equiv> (e1, \<Gamma>) \<Longrightarrow> eval_mul_expr (e1, \<Gamma>) \<equiv> n \<Longrightarrow> eval_mul_expr e \<equiv> n"
   by simp
 
 text \<open>Hints for environment lookup.\<close>
-lemma [reify_uhint where prio = Prio.LOW]:
+lemma [reify_uhint prio: Prio.LOW]:
   "e \<equiv> Var (Suc p) \<Longrightarrow> \<Gamma> \<equiv> s # \<Delta> \<Longrightarrow> n \<equiv> eval_mul_expr (Var p, \<Delta>) \<Longrightarrow> eval_mul_expr (e, \<Gamma>) \<equiv> n"
   by simp
 
@@ -215,6 +218,6 @@ ML_command\<open>
 \<close>
 
 schematic_goal "eval_mul_expr ?e = (1 * inverse 3 * 5 :: rat)"
-  by (ufact refl where unifier = reify_unify)
+  by (ufact refl unifier: reify_unify)
 
 end

@@ -1,0 +1,39 @@
+title = "Farey Sequences and Ford Circles"
+date = 2025-05-15
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+The sequence $F_n$ of Farey fractions of order $n$ 
+has the form 
+$$\\frac{0}{1}, \\frac{1}{n}, \\frac{1}{n-1}, \\ldots, \\frac{n-1}{n}, \\frac{1}{1}$$
+where the fractions appear in numerical order and have denominators at most $n$.
+The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of 
+the sequence~$F_n$, using an operation called the mediant.
+Adjacent (reduced) fractions $(a/b) < (c/d)$ satisfy the unimodular
+relation $bc - ad = 1$ and their mediant is $\\frac{a+c}{b+d}$.
+A Ford circle is specified by a rational number, and interesting consequences follow
+in the case of Ford circles obtained from some Farey sequence~$F_n$.
+The formalised material is drawn from Apostol's Modular Functions and Dirichlet Series in Number Theory."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Modular Functions and Dirichlet Series in Number Theory",
+]

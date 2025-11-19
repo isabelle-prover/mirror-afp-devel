@@ -190,6 +190,21 @@ definition Gauss_Jordan_column_k_det_P where "Gauss_Jordan_column_k_det_P A' k =
  in if (\<forall>m\<ge>from_nat_i. A $ m $ from_nat_k = 0) \<or> i = nrows A then (det_P, i, A)
     else let gauss = Gauss_Jordan_in_ij_det_P A (from_nat_i) (from_nat_k) in (fst gauss * det_P, i + 1, snd gauss))"
 
+lemma Gauss_Jordan_column_k_det_P_code [code]:
+  \<open>Gauss_Jordan_column_k_det_P (det_P, i, A) k = (
+    let
+      a = from_nat i;
+      b = from_nat k
+    in
+      if (\<forall>n\<in>{to_nat a..<nrows A}. A $ from_nat n $ b = 0) \<or> i = nrows A
+      then (det_P, i, A)
+      else
+        let
+          (det_P', B) = Gauss_Jordan_in_ij_det_P A a b
+        in (det_P' * det_P, i + 1, B)
+  )\<close>
+  by (simp add: Let_def Gauss_Jordan_column_k_det_P_def forall_mod_type_greater_eq_iff split_def nrows_def)
+
 definition Gauss_Jordan_upt_k_det_P 
   where "Gauss_Jordan_upt_k_det_P A k = (let foldl = foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc k] in (fst foldl, snd (snd foldl)))"
 definition Gauss_Jordan_det_P 

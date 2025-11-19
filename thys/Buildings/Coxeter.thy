@@ -750,7 +750,7 @@ proof (induct ss)
   show ?case
   proof (cases "distinct (lconjseq ss)")
     case True with Cons(2,3) show ?thesis
-      using subset_inj_on[OF lconjby_inj, of "set (lconjseq ss)" s]
+      using inj_on_subset[OF lconjby_inj, of "set (lconjseq ss)" s]
             distinct_map[of "lconjby s"]
             genset_order2_add order2_hd_in_lconjseq_deletion[of s ss]
       by    (force simp add: algebra_simps)

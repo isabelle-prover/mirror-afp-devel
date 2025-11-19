@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ito on Archive of Formal Proofs
-    </title>
-    <link>/authors/ito/</link>
-    <description>
-        Recent content in ito 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 07 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ito/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Actuarial Mathematics</title>
-          <link>/entries/Actuarial_Mathematics.html</link>
-          <pubDate>Sun, 07 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Actuarial_Mathematics.html</guid>
-          <description></description>
-        </item>
+    <title>Yosuke Ito</title>
+    <link>https://isa-afp.org/authors/ito/</link>
+    <description>AFP entries of Yosuke Ito</description><item>
+  <title>Actuarial Mathematics</title>
+  <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
+  <pubDate>Sun, 07 Apr 2024 00:00:00 +0000</pubDate>
+  <description>Actuarial Mathematics in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+
   </channel>
 </rss>

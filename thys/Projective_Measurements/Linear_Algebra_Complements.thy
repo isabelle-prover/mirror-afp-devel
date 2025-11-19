@@ -1691,7 +1691,7 @@ proof -
         using assms fc_mats_carrier by auto
   qed
   also have "... = P * B * ((Complex_Matrix.adjoint P) * P) *\<^sub>v (unit_vec dimR i)" using assms dim_eq
-    by (smt fc_mats_carrier mat_assoc_test(1) similar_mat_witD2(6) similar_mat_wit_sym)  
+    by (smt (verit) fc_mats_carrier mat_assoc_test(1) similar_mat_witD2(6) similar_mat_wit_sym)  
   also have "... = P * B *\<^sub>v (unit_vec dimR i)"
   proof -
     have "(Complex_Matrix.adjoint P) * P = 1\<^sub>m dimR" using assms dim_eq unfolding similar_mat_wit_def

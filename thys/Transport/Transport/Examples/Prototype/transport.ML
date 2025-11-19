@@ -33,8 +33,8 @@ fun simp_transported_def ctxt simps y_def =
 (* resolution setup *)
 
 val any_unify_trp_hints_resolve_tac = Unify_Resolve_Base.unify_resolve_any_tac
-  Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
-  Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+  Transport_Mixed_Comb_Unification.norms_first_higherp_comb_unify
+  Transport_Mixed_Comb_Unification.first_higherp_comb_unify
 
 fun get_theorems_tac f get_theorems ctxt = f (get_theorems ctxt) ctxt
 val get_theorems_resolve_tac = get_theorems_tac any_unify_trp_hints_resolve_tac
@@ -131,7 +131,7 @@ fun transport_relator_rewrite ctxt thm =
     val ctxt = (clear_simpset ctxt) addsimps transport_relator_rewrites
   in
     Local_Defs.fold ctxt transport_defs thm
-    |> Raw_Simplifier.rewrite_thm (false, false, false) per_simp_prover ctxt
+    |> Simplifier.rewrite_thm (false, false, false) per_simp_prover ctxt
   end
 fun transport_relator_rewrite_tac ctxt =
   EqSubst.eqsubst_tac ctxt [0] (Transport_Relator_Rewrites.get ctxt)
@@ -151,8 +151,11 @@ val _ = Theory.setup (
 val parse_cmd_entries =
   let
     val parse_value = PA.parse_entry Parse.term Parse.term Parse.term Parse.term
-    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key Parse_Util.eq parse_value
-  in PA.parse_entries_required Parse.and_list1 [PA.key PA.x] parse_entry (PA.empty_entries ()) end
+    val parse_entry = Parse_Key_Value.parse_entry PA.parse_key (K Parse_Util.eq) parse_value
+    val required_keys = [PA.key PA.x]
+  in
+    PA.parse_entries_required Parse.and_list1 true required_keys parse_entry (PA.empty_entries ())
+  end
 
 (*some utilities to destruct terms*)
 val transport_per_start_thm = @{thm "transport.transport_per_start"}
@@ -176,9 +179,9 @@ val binding_related_rewritten = \<^binding>\<open>related'\<close>
 val binding_def_simplified = \<^binding>\<open>eq\<close>
 val binding_def_eta_expanded_simplified = \<^binding>\<open>app_eq\<close>
 
-fun note_facts (binding, mixfix) ctxt related_thm y binding_thms_attribs =
+fun note_facts attrs (binding, mixfix) ctxt related_thm y binding_thms_attribs =
   let
-    val ((_, (_, y_def)), ctxt) = Util.create_local_theory_def (binding, mixfix) [] y ctxt
+    val ((_, (_, y_def)), ctxt) = Util.create_local_theory_def (binding, mixfix) attrs y ctxt
     (*create simplified definition theorems*)
     val transport_defs = Transport_Defs.get ctxt
     val (y_def_simplified, y_def_eta_expanded_simplified) =
@@ -206,7 +209,7 @@ fun note_facts (binding, mixfix) ctxt related_thm y binding_thms_attribs =
   in Local_Theory.notes facts ctxt end
 
 (*black-box transport as described in the Transport paper*)
-fun after_qed_blackbox (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
+fun after_qed_blackbox attrs (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
   let
     val transport_per_thm = List.foldl (op INCR_COMP) transport_per_start_thm thms
     (*fix possibly occurring meta type variables*)
@@ -220,15 +223,15 @@ fun after_qed_blackbox (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
         (binding_in_dom, in_dom_thm,
           [Util.attrib_to_src (Binding.pos_of binding) Transport_in_dom.add])
       ]
-  in note_facts (binding, mixfix) ctxt related_thm y binding_thms end
+  in note_facts attrs (binding, mixfix) ctxt related_thm y binding_thms end
 
 (*experimental white-box transport support*)
-fun after_qed_whitebox (binding, mixfix) [[related_thm]] ctxt =
+fun after_qed_whitebox attrs (binding, mixfix) [[related_thm]] ctxt =
   let
     (*fix possibly occurring meta type variables*)
     val ((_, [related_thm]), ctxt) = Variable.importT [related_thm] ctxt
     val y = Util.real_thm_concl related_thm |> dest_hom_Galois_y
-  in note_facts (binding, mixfix) ctxt related_thm y [] end
+  in note_facts attrs (binding, mixfix) ctxt related_thm y [] end
 
 fun setup_goals_blackbox ctxt (L, R, cx) maxidx =
   let
@@ -289,9 +292,9 @@ fun setup_proof ((((binding, opt_yT, mixfix), params), unfolds), whitebox) lthy 
       [PA.get_L_safe params, PA.get_R_safe params, PA.get_y_safe params] ctxt cx yT
     (*initialise goals and callback*)
     val (goals, after_qed) = if whitebox
-      then (setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx, snd ooo after_qed_whitebox)
+      then (setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx, snd ooo after_qed_whitebox [])
       (*TODO: consider y in blackbox proofs*)
-      else (setup_goals_blackbox ctxt (L, R, cx) maxidx, snd ooo after_qed_blackbox)
+      else (setup_goals_blackbox ctxt (L, R, cx) maxidx, snd ooo after_qed_blackbox [])
   in
     Proof.theorem NONE (after_qed (binding, mixfix)) [map (rpair []) goals] ctxt
     |> Proof.refine_singleton Util.split_conjunctions
@@ -315,12 +318,10 @@ val _ =
 (* experimental white-box prover *)
 
 val any_match_resolve_related_tac =
-  let fun unif binders =
-    (Higher_Order_Pattern_Unification.e_match Unification_Util.match_types
-    (Higher_Order_Pattern_Decomp_Unification.e_match unif Unification_Combinator.fail_match)
-    Unification_Combinator.fail_match
-    |> Type_Unification.e_match Unification_Util.match_types) binders
-  in Unify_Resolve_Base.unify_resolve_any_tac Higher_Order_Pattern_Unification.norms_match unif end
+  let
+    val norms = Mixed_Unification.norms_first_higherp_match
+    val match = Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match
+  in Unify_Resolve_Base.unify_resolve_any_tac norms match end
 
 val related_comb_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_combI}
 val related_lambda_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_lambdaI}

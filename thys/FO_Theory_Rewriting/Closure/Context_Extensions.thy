@@ -465,7 +465,7 @@ proof
         have "(fill_gholes ?D1 (butlast ss), fill_gholes ?D1 (butlast ts)) \<in> (gctxtex_onp Q \<R>)\<^sup>+"
           by (auto simp del: gctxt_of_gmctxt.simps fill_gholes_gmctxt.simps fill_gholes.simps
             simp: \<T>\<^sub>G_equivalent_def)
-            (smt Suc.prems(1) Suc.prems(4) diff_Suc_1 last_conv_nth length_butlast
+            (smt (verit) Suc.prems(1) Suc.prems(4) diff_Suc_1 last_conv_nth length_butlast
            length_greater_0_conv lessI less_SucI mem_Sigma_iff nth_butlast sig(2) subset_iff \<T>\<^sub>G_funas_gterm_conv)
         then have "(fill_gholes ?D1 (butlast ss), fill_gholes ?D2 [last ts]) \<in> (gctxtex_onp Q \<R>)\<^sup>+"
           using mem unfolding trans
@@ -543,7 +543,7 @@ lemma gctxtex_onp_substep_rtrancl:
   assumes "gctxtex_onp P \<R> \<subseteq> \<R>"
   shows "gctxtex_onp P (\<R>\<^sup>*) \<subseteq> \<R>\<^sup>*"
   using gctxtex_onp_substep_trancl[OF assms]
-  by (smt gctxtex_onpE gctxtex_onpI rtrancl_eq_or_trancl subrelI subset_eq)
+  by (smt (verit) gctxtex_onpE gctxtex_onpI rtrancl_eq_or_trancl subrelI subset_eq)
 
 lemma gctxtex_onp_substep_trancl_diff_pred [intro]:
   assumes "\<And> C D. P C \<Longrightarrow> Q D \<Longrightarrow> Q (D \<circ>\<^sub>G\<^sub>c C)"
@@ -818,27 +818,27 @@ lemma function_closedD: "function_closed \<F> \<R> \<Longrightarrow>
   (GFun f ss, GFun f ts) \<in> \<R>"
   unfolding function_closed_def by blast
 
-lemma all_ctxt_closed_imp_function_closed:
-  "all_ctxt_closed \<F> \<R> \<Longrightarrow> function_closed \<F> \<R>"
-  unfolding all_ctxt_closed_def function_closed_def
+lemma all_ctxt_closed_gterm_imp_function_closed:
+  "all_ctxt_closed_gterm \<F> \<R> \<Longrightarrow> function_closed \<F> \<R>"
+  unfolding all_ctxt_closed_gterm_def function_closed_def
   by auto
 
-lemma all_ctxt_closed_imp_reflx_on_sig:
-  assumes "all_ctxt_closed \<F> \<R>"
+lemma all_ctxt_closed_gterm_imp_reflx_on_sig:
+  assumes "all_ctxt_closed_gterm \<F> \<R>"
   shows "Restr Id (\<T>\<^sub>G \<F>) \<subseteq> \<R>"
 proof -
   {fix s assume "(s, s) \<in> Restr Id (\<T>\<^sub>G \<F>)" then have "(s, s) \<in> \<R>"
     proof (induction s)
       case (GFun f ts)
-      then show ?case using all_ctxt_closedD[OF assms]
+      then show ?case using all_ctxt_closed_gtermD[OF assms]
         by (auto simp: \<T>\<^sub>G_equivalent_def UN_subset_iff)
     qed}
   then show ?thesis by auto
 qed
 
 lemma function_closed_un_id_all_ctxt_closed:
-  "function_closed \<F> \<R> \<Longrightarrow> Restr Id (\<T>\<^sub>G \<F>) \<subseteq> \<R> \<Longrightarrow> all_ctxt_closed \<F> \<R>"
-  unfolding all_ctxt_closed_def
+  "function_closed \<F> \<R> \<Longrightarrow> Restr Id (\<T>\<^sub>G \<F>) \<subseteq> \<R> \<Longrightarrow> all_ctxt_closed_gterm \<F> \<R>"
+  unfolding all_ctxt_closed_gterm_def
   by (auto dest: function_closedD simp: subsetD)
 
 lemma gctxtex_onp_in_signature [intro]:
@@ -897,18 +897,18 @@ declare subsetI[rule del]
 lemma gmctxtex_onp_sig_closed [intro]:
   assumes "\<And> f n. (f, n) \<in> \<F> \<Longrightarrow> P (GMFun f (replicate n GMHole))"
     and  "\<And> C Ds. num_gholes C = length Ds \<Longrightarrow> P C \<Longrightarrow> \<forall> D \<in> set Ds. P D \<Longrightarrow> P (fill_gholes_gmctxt C Ds)"
-  shows "all_ctxt_closed \<F> (gmctxtex_onp P \<R>)" using assms
+  shows "all_ctxt_closed_gterm \<F> (gmctxtex_onp P \<R>)" using assms
   by (intro function_closed_un_id_all_ctxt_closed) auto
 declare subsetI[intro!]
 
 lemma gmctxt_cl_gmctxtex_onp_conv:
   "gmctxt_cl \<F> \<R> = gmctxtex_onp (\<lambda> C. funas_gmctxt C \<subseteq> \<F>) \<R>" (is "?Ls = ?Rs")
 proof -
-  have sig_cl: "all_ctxt_closed \<F> (?Rs)" by (intro gmctxtex_onp_sig_closed) auto
+  have sig_cl: "all_ctxt_closed_gterm \<F> (?Rs)" by (intro gmctxtex_onp_sig_closed) auto
   {fix s t assume "(s, t) \<in> ?Ls" then have "(s, t) \<in> ?Rs"
     proof induct
       case (step ss ts f)
-      then show ?case using all_ctxt_closedD[OF sig_cl]
+      then show ?case using all_ctxt_closed_gtermD[OF sig_cl]
         by force
     qed (intro subsetD[OF gmctxtex_onp_arg_monoI], auto)}
   moreover
@@ -924,7 +924,7 @@ proof -
     next
       case (GMFun f Ds)
       show ?case using GMFun(2-) unfolding partition_holes_fill_gholes_conv'
-        by (intro all_ctxt_closedD[OF gmctxt_cl_is_all_ctxt_closed[of \<F> \<R>]])
+        by (intro all_ctxt_closed_gtermD[OF gmctxt_cl_is_all_ctxt_closed_gterm[of \<F> \<R>]])
            (auto simp: partition_by_nth_nth SUP_le_iff length_partition_gholes_nth intro!: GMFun(1))
     qed}
   ultimately show ?thesis by auto

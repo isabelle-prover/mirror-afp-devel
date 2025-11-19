@@ -20,15 +20,15 @@ lemma deriv_left_inverse:
 proof -
   have "deriv f w * deriv g (f w) = deriv g (f w) * deriv f w"
     by (simp add: algebra_simps)
-  also have "... = deriv (g o f) w"
+  also have "\<dots> = deriv (g o f) w"
     using assms
     by (metis analytic_on_imp_differentiable_at analytic_on_open deriv_chain image_subset_iff)
-  also have "... = deriv id w"
+  also have "\<dots> = deriv id w"
     apply (rule complex_derivative_transform_within_open [where s=S])
     apply (rule assms holomorphic_on_compose_gen holomorphic_intros)+
     apply simp
     done
-  also have "... = 1"
+  also have "\<dots> = 1"
     using higher_deriv_id [of 1] by simp
   finally show ?thesis .
 qed
@@ -50,7 +50,7 @@ proof -
     done
   have "(deriv ^^ n) f z = (deriv ^^ n) (\<lambda>w. f w) z - (deriv ^^ n) (\<lambda>w. y) z"
     using \<open>0 < n\<close> by simp
-  also have "... = (deriv ^^ n) (\<lambda>w. f w - y) z"
+  also have "\<dots> = (deriv ^^ n) (\<lambda>w. f w - y) z"
     by (rule higher_deriv_diff [OF holf, symmetric]) (auto simp: \<open>0 < r\<close> holomorphic_on_const)
   finally have "(deriv ^^ n) f z = (deriv ^^ n) (\<lambda>w. f w - y) z" .
   have contf': "continuous_on (cball z r) (\<lambda>u. f u - y)"
@@ -106,10 +106,10 @@ next
     apply (rule deriv_chain)
     using holf Suc.prems fst apply (auto simp: holomorphic_on_imp_differentiable_at s t)
     done
-  also have "... = (\<Sum>j=0..i. of_nat(i choose j) * (deriv ^^ j) (\<lambda>w. deriv g (f w)) z * (deriv ^^ (i - j)) (deriv f) z)"
+  also have "\<dots> = (\<Sum>j=0..i. of_nat(i choose j) * (deriv ^^ j) (\<lambda>w. deriv g (f w)) z * (deriv ^^ (i - j)) (deriv f) z)"
     apply (rule higher_deriv_mult [OF dgf [unfolded o_def] _ s \<open>z \<in> s\<close>])
     by (simp add: holf holomorphic_deriv s)
-  also have "... = (\<Sum>j=i..i. of_nat(i choose j) * (deriv ^^ j) (\<lambda>w. deriv g (f w)) z * (deriv ^^ Suc (i - j)) f z)"
+  also have "\<dots> = (\<Sum>j=i..i. of_nat(i choose j) * (deriv ^^ j) (\<lambda>w. deriv g (f w)) z * (deriv ^^ Suc (i - j)) f z)"
   proof -
     have *: "(deriv ^^ j) (\<lambda>w. deriv g (f w)) z = 0"  if "j < i" and nz: "(deriv ^^ (i - j)) (deriv f) z \<noteq> 0" for j
     proof -
@@ -122,7 +122,7 @@ next
       apply (rule comm_monoid_add_class.sum.mono_neutral_right, auto)
       done
   qed
-  also have "... = (deriv ^^ i) (deriv g) (f z)"
+  also have "\<dots> = (deriv ^^ i) (deriv g) (f z)"
     using Suc.IH [OF _ dg] Suc.prems by (simp add: dfz)
   finally show ?case
     by (simp only: funpow_Suc_right o_def)
@@ -149,7 +149,7 @@ proof -
     case (Suc m)
     have "(deriv ^^ i) (f ^^ m \<circ> f) z = (deriv ^^ i) (f ^^ m) (f z)"
       using Suc.prems holfm \<open>z \<in> s\<close> dfz fss higher_deriv_comp_lemma holf s zero by blast
-    also have "... = (deriv ^^ i) f z"
+    also have "\<dots> = (deriv ^^ i) f z"
       by (simp add: Suc)
     finally show ?case
       by (simp only: funpow_Suc_right)
@@ -214,11 +214,11 @@ next
     ultimately have "(deriv ^^ n) (deriv (f ^^ m \<circ> f)) z = (deriv ^^ n) (\<lambda>w. deriv f ((f ^^ m) w) * deriv (f ^^ m) w) z"
       apply (rule higher_deriv_transform_within_open [OF _ _ s \<open>z \<in> s\<close>])
       by (metis comp_funpow deriv_chain f_cd_mw f_cd_w fms_sb funpow_swap1 image_subset_iff o_id)
-    also have "... =
+    also have "\<dots> =
           (\<Sum>i=0..n. of_nat(n choose i) * (deriv ^^ i) (\<lambda>w. deriv f ((f ^^ m) w)) z *
                      (deriv ^^ (n - i)) (deriv (f ^^ m)) z)"
       by (rule higher_deriv_mult [OF holdffm holdfm s \<open>z \<in> s\<close>])
-    also have "... = (\<Sum>i \<in> {0,n}. of_nat(n choose i) * (deriv ^^ i) (\<lambda>w. deriv f ((f ^^ m) w)) z *
+    also have "\<dots> = (\<Sum>i \<in> {0,n}. of_nat(n choose i) * (deriv ^^ i) (\<lambda>w. deriv f ((f ^^ m) w)) z *
                      (deriv ^^ (n - i)) (deriv (f ^^ m)) z)"
     proof -
       have *: "(deriv ^^ i) (\<lambda>w. deriv f ((f ^^ m) w)) z = 0"  if "i \<le> n" "0 < i" "i \<noteq> n" and nz: "(deriv ^^ (n - i)) (deriv (f ^^ m)) z \<noteq> 0" for i
@@ -228,7 +228,7 @@ next
         have "(deriv ^^ (Suc (n - i))) (f ^^ m) z = (deriv ^^(Suc (n - i))) f z"
           apply (rule higher_deriv_comp_iter_lemma [OF s holf fss \<open>z \<in> s\<close> \<open>f z = z\<close> le dfz])
           by simp
-        also have "... = 0"
+        also have "\<dots> = 0"
           using n_Suc(3) less le le_imp_less_Suc by blast
         finally have "(deriv ^^ (Suc (n - i))) (f ^^ m) z = 0" .
         then show ?thesis by (simp add: funpow_swap1 nz)
@@ -236,7 +236,7 @@ next
       show ?thesis
         by (rule comm_monoid_add_class.sum.mono_neutral_right) (auto simp: *)
     qed
-    also have "... = of_nat (Suc m) * (deriv ^^ n) (deriv f) z"
+    also have "\<dots> = of_nat (Suc m) * (deriv ^^ n) (deriv f) z"
       apply (subst Groups_Big.comm_monoid_add_class.sum.insert)
       apply (simp_all add: deriv_nffm [unfolded o_def] of_nat_Suc [of 0] del: of_nat_Suc)
       using n_Suc(2) Suc
@@ -295,11 +295,11 @@ proof -
             using \<open>cball z r \<subseteq> s\<close> holfm holomorphic_on_imp_continuous_on holomorphic_on_subset by blast
           have "real m * cmod ((deriv ^^ n) f z) = cmod (real m * (deriv ^^ n) f z)"
             by (simp add: norm_mult)
-          also have "... = cmod ((deriv ^^ n) (f ^^ m) z)"
+          also have "\<dots> = cmod ((deriv ^^ n) (f ^^ m) z)"
             apply (subst higher_deriv_iter_top_lemma [OF \<open>open s\<close> holf fss \<open>z \<in> s\<close> \<open>f z = z\<close> dfz])
             using less apply auto
             done
-          also have "... \<le> fact n * c / r ^ n"
+          also have "\<dots> \<le> fact n * c / r ^ n"
             apply (rule Cauchy_higher_deriv_bound [OF holfm' contfm' \<open>0 < r\<close>, where y=z])
             using less.prems apply linarith
             using fms_sb c r ball_subset_cball
@@ -308,12 +308,10 @@ proof -
           finally show ?thesis .
         qed
         have "cmod ((deriv ^^ n) f z) = 0"
-          apply (rule real_archimedian_rdiv_eq_0 [where c = "(fact n) * c / r ^ n"])
-          apply simp
-          using \<open>0 < r\<close> \<open>0 < c\<close>
-          apply (simp add: divide_simps)
-          apply (blast intro: le)
-          done
+        proof (rule real_archimedian_rdiv_eq_0)
+          show "\<And>m. 0 < m \<Longrightarrow> real m * cmod ((deriv ^^ n) f z) \<le> fact n * c / r ^ n"
+            using \<open>0 < r\<close> \<open>0 < c\<close> le by (simp add: divide_simps)
+        qed auto
         then show ?case by simp
       qed
       with n1 show ?thesis by simp
@@ -322,7 +320,7 @@ proof -
   have "f w = id w"
     by (rule holomorphic_fun_eq_on_connected
                  [OF holf holomorphic_on_id \<open>open s\<close> \<open>connected s\<close> * \<open>z \<in> s\<close> \<open>w \<in> s\<close>])
-  also have "... = w" by simp
+  also have "\<dots> = w" by simp
   finally show ?thesis .
 qed
 
@@ -357,7 +355,7 @@ proof -
         apply (rule complex_derivative_transform_within_open [OF hol_d_fuw])
         apply (auto intro!: holomorphic_higher_deriv holomorphic_intros assms Suc)
         done
-      also have "... = u * deriv ((deriv ^^ n) f) z"
+      also have "\<dots> = u * deriv ((deriv ^^ n) f) z"
         apply (rule deriv_cmult)
         using Suc \<open>open s\<close> holf holomorphic_higher_deriv holomorphic_on_imp_differentiable_at by blast
       finally show ?case by simp
@@ -472,7 +470,7 @@ proof -
       done
     have "f(u * g z) = u * z"
       by (metis \<open>u \<noteq> 0\<close> fugeq nonzero_mult_div_cancel_left z times_divide_eq_right)
-    also have "... = f (g (u * z))"
+    also have "\<dots> = f (g (u * z))"
       by (metis (no_types, lifting) fg mem_ball_0 mult_cancel_right2 norm_mult nou z)
     finally have "f(u * g z) = f (g (u * z))" .
     then have "g (f (u * g z)) = g (f (g (u * z)))"
@@ -508,20 +506,15 @@ proof -
       then show ?thesis
         using gf \<open>0 \<le> x\<close> by force
     qed
-    then show ?thesis
-      apply (rule ssubst)
-      apply (subst c)
-      apply (rule ballf)
-      using ballf [of x] that
-      apply (auto simp: norm_mult dist_0_norm)
-      done
+    moreover have "f (complex_of_real x) \<in> ball 0 r"
+      using ballf that by auto
+    ultimately show ?thesis
+      by (metis \<open>0 < cmod c\<close> c mem_ball_0 mult.commute mult_less_cancel_left_pos norm_mult)
   qed
   have 11: "1 / norm c \<le> 1"
-    apply (rule c_le_1)
-    using xless apply (auto simp: divide_simps)
-    done
+    using xless by (intro c_le_1) (auto simp: divide_simps)
   have "\<lbrakk>0 \<le> x; x < r\<rbrakk> \<Longrightarrow> cmod c * x < r" for x
-    using c [of x] ballg [of x] by (auto simp: norm_mult dist_0_norm)
+    using c [of x] ballg [of x] by (auto simp: norm_mult)
     then have "norm c \<le> 1"
     by (force intro: c_le_1)
   moreover have "1 \<le> norm c"

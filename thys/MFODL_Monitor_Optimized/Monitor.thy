@@ -2508,7 +2508,7 @@ lemma mem_restr_lift_envs'_append[simp]:
   by (auto simp: list_all2_append list.rel_map intro!: exI[where x="map the xs"] list.rel_refl)
 
 lemma nth_list_update_alt: "xs[i := x] ! j = (if i < length xs \<and> i = j then x else xs ! j)"
-  by auto
+  by (simp add: linorder_not_less list_update_beyond)
 
 lemma wf_tuple_upd_None: "wf_tuple n A xs \<Longrightarrow> A - {i} = B \<Longrightarrow> wf_tuple n B (xs[i:=None])"
   unfolding wf_tuple_def
@@ -2698,7 +2698,7 @@ proof -
       qed
       show ?thesis
         unfolding M_def M'_def
-        by (auto simp: non_default_case Let_def image_def Set.filter_def 1 3, metis "2")
+        by (auto simp: non_default_case Let_def image_def 1 3, metis "2")
     qed
     have drop_lift: "mem_restr (lift_envs' b R) x" if "x \<in> rel" "mem_restr R ((drop b x)[y:=z])" for x z
     proof -
@@ -4797,7 +4797,7 @@ next
   from MAndRel.prems show ?case
     by (cases rule: wf_mformula.cases)
       (auto simp: progress_constraint progress_le list.rel_map fv_formula_of_constraint
-        Un_absorb2 wf_mformula_wf_set[unfolded wf_set_def] split: prod.splits
+        Un_absorb2 wf_mformula_wf_set[unfolded wf_set_def] simp del: Set.filter_eq split: prod.splits
         dest!: MAndRel.IH[where db=db and P=P and P'=P'] eval_constraint_sat_eq[THEN iffD2]
         intro!: wf_mformula.AndRel
         elim!: list.rel_mono_strong qtable_filter eval_constraint_sat_eq[THEN iffD1])

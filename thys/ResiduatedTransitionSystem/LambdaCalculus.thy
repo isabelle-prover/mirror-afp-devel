@@ -20,7 +20,7 @@ chapter "The Lambda Calculus"
     of zero or more redexes; a parallel reduction of zero redexes representing an identity.
     We have syntactic constructors for variables, \<open>\<lambda>\<close>-abstractions, and applications.
     An additional constructor represents a \<open>\<beta>\<close>-redex that has been marked for contraction.
-    This is a slightly different approach that that taken by other authors
+    This is a slightly different approach than that taken by other authors
     (\emph{e.g.}~\<^cite>\<open>"barendregt"\<close> or \<^cite>\<open>"huet-residual-theory"\<close>), in which it is the
     application constructor that is marked to indicate a redex to be contracted,
     but it seems more natural in the present setting in which a single syntax is used to
@@ -1698,36 +1698,51 @@ begin
     lemma Beta_is_transformation:
     shows "transformation \<Lambda>x\<Lambda>.resid resid App_o_Lam_Id.map subst\<^sub>e\<^sub>x\<^sub>t Beta\<^sub>e\<^sub>x\<^sub>t"
     proof
+      show "\<And>a a'. \<lbrakk>\<Lambda>x\<Lambda>.ide a; \<Lambda>x\<Lambda>.cong a a'\<rbrakk> \<Longrightarrow> Beta\<^sub>e\<^sub>x\<^sub>t a = Beta\<^sub>e\<^sub>x\<^sub>t a'"
+        using \<Lambda>x\<Lambda>.ide_backward_stable \<Lambda>x\<Lambda>.weak_extensionality by blast
       show "\<And>f. \<not> \<Lambda>x\<Lambda>.arr f \<Longrightarrow> Beta\<^sub>e\<^sub>x\<^sub>t f = null"
         by simp
       show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> src (Beta\<^sub>e\<^sub>x\<^sub>t f) = App_o_Lam_Id.map f"
         using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.src_ide Lam_Id.map_def by force
       show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> trg (Beta\<^sub>e\<^sub>x\<^sub>t f) = subst\<^sub>e\<^sub>x\<^sub>t f"
         using \<Lambda>x\<Lambda>.trg_char \<Lambda>x\<Lambda>.trg_ide by force
-      show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow>
-                  Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f = Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
-          using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Arr_Trg Arr_not_Nil Lam_Id.map_def by simp
-      show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow> App_o_Lam_Id.map f \\ Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) = subst\<^sub>e\<^sub>x\<^sub>t f"
-          using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Lam_Id.map_def by auto
-      show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow> join_of (Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f)) (App_o_Lam_Id.map f) (Beta\<^sub>e\<^sub>x\<^sub>t f)"
+      show "\<And>a f. a \<in> \<Lambda>x\<Lambda>.sources f \<Longrightarrow>
+                  Beta\<^sub>e\<^sub>x\<^sub>t a \\ App_o_Lam_Id.map f = Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.resid a f)"
       proof -
-        fix f
-        assume f: "\<Lambda>x\<Lambda>.arr f"
-        show "join_of (Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f)) (App_o_Lam_Id.map f) (Beta\<^sub>e\<^sub>x\<^sub>t f)"
+        fix a f
+        assume "a \<in> \<Lambda>x\<Lambda>.sources f"
+        hence f: "\<Lambda>x\<Lambda>.arr f \<and> a = \<Lambda>x\<Lambda>.src f"
+          using \<Lambda>x\<Lambda>.sources_char\<^sub>W\<^sub>E by simp
+        have "Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f = Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
+          using f \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Arr_Trg Arr_not_Nil Lam_Id.map_def by simp
+        thus "Beta\<^sub>e\<^sub>x\<^sub>t a \\ App_o_Lam_Id.map f = Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.resid a f)"
+          using f by auto
+      qed
+      show "\<And>a f. a \<in> \<Lambda>x\<Lambda>.sources f \<Longrightarrow> App_o_Lam_Id.map f \\ Beta\<^sub>e\<^sub>x\<^sub>t a = subst\<^sub>e\<^sub>x\<^sub>t f"
+          using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Lam_Id.map_def \<Lambda>x\<Lambda>.sources_char by auto
+      show "\<And>a f. a \<in> \<Lambda>x\<Lambda>.sources f \<Longrightarrow> join_of (Beta\<^sub>e\<^sub>x\<^sub>t a) (App_o_Lam_Id.map f) (Beta\<^sub>e\<^sub>x\<^sub>t f)"
+      proof -
+        fix a f
+        assume "a \<in> \<Lambda>x\<Lambda>.sources f"
+        hence f: "\<Lambda>x\<Lambda>.arr f \<and> a = \<Lambda>x\<Lambda>.src f"
+          using \<Lambda>x\<Lambda>.sources_char\<^sub>W\<^sub>E by auto
+        show "join_of (Beta\<^sub>e\<^sub>x\<^sub>t a) (App_o_Lam_Id.map f) (Beta\<^sub>e\<^sub>x\<^sub>t f)"
         proof (intro join_ofI composite_ofI)
           show "App_o_Lam_Id.map f \<lesssim> Beta\<^sub>e\<^sub>x\<^sub>t f"
-            using f Lam_Id.map_def Ide_Subst arr_char prfx_char prfx_reflexive by auto
-          show "Beta\<^sub>e\<^sub>x\<^sub>t f \\ Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \<sim> App_o_Lam_Id.map f \\ Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f)"
-            using f Lam_Id.map_def \<Lambda>x\<Lambda>.src_char trg_char trg_def
+            using f Lam_Id.map_def Ide_Subst arr_char prfx_char prfx_reflexive
+            by auto
+          show "Beta\<^sub>e\<^sub>x\<^sub>t f \\ Beta\<^sub>e\<^sub>x\<^sub>t a \<sim> App_o_Lam_Id.map f \\ Beta\<^sub>e\<^sub>x\<^sub>t a"
+            using f Lam_Id.map_def \<Lambda>x\<Lambda>.src_char trg_char trg_def \<Lambda>x\<Lambda>.sources_char
             apply auto
             by (metis Arr_Subst Ide_Trg)
-          show 1: "Beta\<^sub>e\<^sub>x\<^sub>t f \\ App_o_Lam_Id.map f \<sim> Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f"
+          show 1: "Beta\<^sub>e\<^sub>x\<^sub>t f \\ App_o_Lam_Id.map f \<sim> Beta\<^sub>e\<^sub>x\<^sub>t a \\ App_o_Lam_Id.map f"
             using f Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char Ide_Trg Arr_resid Coinitial_iff_Con
                   resid_Arr_self
             apply simp
             by metis
-          show "Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \<lesssim> Beta\<^sub>e\<^sub>x\<^sub>t f"
-            using f 1 Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char resid_Arr_self by auto
+          show "Beta\<^sub>e\<^sub>x\<^sub>t a \<lesssim> Beta\<^sub>e\<^sub>x\<^sub>t f"
+            using f 1 Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char resid_Arr_self \<Lambda>x\<Lambda>.sources_char
+            by auto
         qed
       qed
     qed
@@ -2251,7 +2266,7 @@ begin
         by (metis (mono_tags, lifting))
     qed
 
-    interpretation \<Lambda>\<^sub>L\<^sub>a\<^sub>m: sub_rts \<Lambda>.resid \<open>\<lambda>t. \<Lambda>.Arr t \<and> \<Lambda>.is_Lam t\<close>
+    interpretation \<Lambda>\<^sub>L\<^sub>a\<^sub>m: source_replete_sub_rts \<Lambda>.resid \<open>\<lambda>t. \<Lambda>.Arr t \<and> \<Lambda>.is_Lam t\<close>
     proof
      show "\<And>t. \<Lambda>.Arr t \<and> \<Lambda>.is_Lam t \<Longrightarrow> \<Lambda>.arr t"
        by blast
@@ -2273,9 +2288,9 @@ begin
       show "\<And>t. \<not> \<Lambda>\<^sub>L\<^sub>a\<^sub>m.arr t \<Longrightarrow> ?un_Lam t = \<Lambda>.null"
         by auto
       show "\<And>t u. \<Lambda>\<^sub>L\<^sub>a\<^sub>m.con t u \<Longrightarrow> \<Lambda>.con (?un_Lam t) (?un_Lam u)"
-        by auto
+        by (auto simp add: \<Lambda>\<^sub>L\<^sub>a\<^sub>m.con_char)
       show "\<And>t u. \<Lambda>\<^sub>L\<^sub>a\<^sub>m.con t u \<Longrightarrow> ?un_Lam (\<Lambda>\<^sub>L\<^sub>a\<^sub>m.resid t u) = ?un_Lam t \\ ?un_Lam u"
-        using \<Lambda>\<^sub>L\<^sub>a\<^sub>m.resid_closed \<Lambda>\<^sub>L\<^sub>a\<^sub>m.resid_def by auto
+        using \<Lambda>\<^sub>L\<^sub>a\<^sub>m.resid_closed \<Lambda>\<^sub>L\<^sub>a\<^sub>m.resid_def by (auto simp add: \<Lambda>\<^sub>L\<^sub>a\<^sub>m.con_char)
     qed
 
     lemma Arr_map_un_Lam:
@@ -2283,14 +2298,14 @@ begin
     shows "Arr (map \<Lambda>.un_Lam T)"
     proof -
       have "map (\<lambda>t. if \<Lambda>\<^sub>L\<^sub>a\<^sub>m.arr t then \<Lambda>.un_Lam t else \<^bold>\<sharp>) T = map \<Lambda>.un_Lam T"
-        using assms set_Arr_subset_arr by auto
+        using assms set_Arr_subset_arr by (auto simp add: \<Lambda>\<^sub>L\<^sub>a\<^sub>m.arr_char)
       thus ?thesis
         using assms
         by (metis (no_types, lifting) \<Lambda>\<^sub>L\<^sub>a\<^sub>m.path_reflection \<Lambda>.arr_char mem_Collect_eq
             set_Arr_subset_arr subset_code(1) un_Lam.preserves_paths)
     qed
 
-    interpretation \<Lambda>\<^sub>A\<^sub>p\<^sub>p: sub_rts \<Lambda>.resid \<open>\<lambda>t. \<Lambda>.Arr t \<and> \<Lambda>.is_App t\<close>
+    interpretation \<Lambda>\<^sub>A\<^sub>p\<^sub>p: source_replete_sub_rts \<Lambda>.resid \<open>\<lambda>t. \<Lambda>.Arr t \<and> \<Lambda>.is_App t\<close>
     proof
       show "\<And>t. \<Lambda>.Arr t \<and> \<Lambda>.is_App t \<Longrightarrow> \<Lambda>.arr t"
         by blast
@@ -2310,11 +2325,11 @@ begin
       show "\<And>t. \<not> \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t \<Longrightarrow> ?un_App1 t = \<Lambda>.null"
         by auto
       show "\<And>t u. \<Lambda>\<^sub>A\<^sub>p\<^sub>p.con t u \<Longrightarrow> \<Lambda>.con (?un_App1 t) (?un_App1 u)"
-        by auto
+        by (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.con_char)
       show "\<Lambda>\<^sub>A\<^sub>p\<^sub>p.con t u \<Longrightarrow> ?un_App1 (\<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid t u) = ?un_App1 t \\ ?un_App1 u"
               for t u
         using \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid_def \<Lambda>.Arr_resid
-        by (cases t; cases u) auto
+        by (cases t; cases u) (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.con_char)
     qed
 
     interpretation un_App2: simulation \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid \<Lambda>.resid 
@@ -2324,11 +2339,11 @@ begin
       show "\<And>t. \<not> \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t \<Longrightarrow> ?un_App2 t = \<Lambda>.null"
         by auto
       show "\<And>t u. \<Lambda>\<^sub>A\<^sub>p\<^sub>p.con t u \<Longrightarrow> \<Lambda>.con (?un_App2 t) (?un_App2 u)"
-        by auto
+        by (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.con_char)
       show "\<Lambda>\<^sub>A\<^sub>p\<^sub>p.con t u \<Longrightarrow> ?un_App2 (\<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid t u) = ?un_App2 t \\ ?un_App2 u"
               for t u
         using \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid_def \<Lambda>.Arr_resid
-        by (cases t; cases u) auto
+        by (cases t; cases u) (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.con_char)
     qed
 
     lemma Arr_map_un_App1:
@@ -2343,7 +2358,7 @@ begin
                                else []\<close>
         using un_App1.lifts_to_paths by simp
       have 1: "map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App1 t else \<^bold>\<sharp>) T = map \<Lambda>.un_App1 T"
-        using assms set_Arr_subset_arr by auto
+        using assms set_Arr_subset_arr by (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr_char)
       have 2: "P\<^sub>A\<^sub>p\<^sub>p.Arr T"
         using assms set_Arr_subset_arr \<Lambda>\<^sub>A\<^sub>p\<^sub>p.path_reflection [of T] by blast
       hence "arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App1 t else \<^bold>\<sharp>) T else [])"
@@ -2368,7 +2383,7 @@ begin
                                 else []\<close>
         using un_App2.lifts_to_paths by simp
       have 1: "map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App2 t else \<^bold>\<sharp>) T = map \<Lambda>.un_App2 T"
-        using assms set_Arr_subset_arr by auto
+        using assms set_Arr_subset_arr by (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr_char)
       have 2: "P\<^sub>A\<^sub>p\<^sub>p.Arr T"
         using assms set_Arr_subset_arr \<Lambda>\<^sub>A\<^sub>p\<^sub>p.path_reflection [of T] by blast
       hence "arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App2 t else \<^bold>\<sharp>) T else [])"
@@ -2519,21 +2534,23 @@ begin
           using t uU orthogonal_App_single_single by simp
         assume U: "U \<noteq> []"
         have 2: "coinitial ([\<Lambda>.Src t \<^bold>\<circ> u] @ map (\<Lambda>.App (\<Lambda>.Src t)) U) [t \<^bold>\<circ> \<Lambda>.Src u]"
-        proof
+        proof (intro coinitialI')
           show 3: "arr ([\<Lambda>.Src t \<^bold>\<circ> u] @ map (\<Lambda>.App (\<Lambda>.Src t)) U)"
             using t uU
-            by (metis Arr_iff_Con_self Arr_map_App2 Con_rec(1) append_Cons append_Nil arr_char
-                \<Lambda>.Con_implies_Arr2 \<Lambda>.Ide_Src \<Lambda>.con_char list.simps(9))
-          show "sources ([\<Lambda>.Src t \<^bold>\<circ> u] @ map (\<Lambda>.App (\<Lambda>.Src t)) U) = sources [t \<^bold>\<circ> \<Lambda>.Src u]"
+            by (metis Arr_iff_Con_self Arr_map_App2 Con_rec(1) append_Cons append_Nil
+                \<Lambda>.Con_implies_Arr2 \<Lambda>.Ide_Src \<Lambda>.con_char list.simps(9) arr_char)
+          show "src ([\<Lambda>.Src t \<^bold>\<circ> u] @ map (\<Lambda>.App (\<Lambda>.Src t)) U) \<sim> src [t \<^bold>\<circ> \<Lambda>.Src u]"
           proof -
             have "seq [\<Lambda>.Src t \<^bold>\<circ> u] (map (\<Lambda>.App (\<Lambda>.Src t)) U)"
               using U 3 arr_append_imp_seq by force
-            thus ?thesis
+            hence "sources ([\<Lambda>.Src t \<^bold>\<circ> u] @ map (\<Lambda>.App (\<Lambda>.Src t)) U) = sources [t \<^bold>\<circ> \<Lambda>.Src u]"
               using sources_append [of "[\<Lambda>.Src t \<^bold>\<circ> u]" "map (\<Lambda>.App (\<Lambda>.Src t)) U"]
                     sources_single_Src [of "\<Lambda>.Src t \<^bold>\<circ> u"]
                     sources_single_Src [of "t \<^bold>\<circ> \<Lambda>.Src u"]
               using arr_char t
               by (simp add: seq_char)
+            thus ?thesis
+              using "3" coinitial_iff' by blast
           qed
         qed
         show ?thesis
@@ -8551,9 +8568,11 @@ begin
                                (stdz_insert M (filter notIde (map \<Lambda>.un_App1 (u # U)))) @
                            map (\<Lambda>.App (\<Lambda>.Trg (\<Lambda>.un_App1 (last (u # U)))))
                                (stdz_insert N (filter notIde (map \<Lambda>.un_App2 (u # U))))"
-                    using MN 1 2 3 5 * ** \<open>\<Lambda>.is_App u \<or> \<Lambda>.is_Beta u\<close>
-                    apply (cases "U = []"; cases M; cases u)
-                                        apply simp_all
+                    using u MN 1 2 3 5 * ** \<open>\<Lambda>.is_App u \<or> \<Lambda>.is_Beta u\<close>
+                    apply (cases u)
+                        apply simp_all
+                    apply (cases "U = []")
+                     apply simp_all
                     by blast+
                   have ***: "set U \<subseteq> Collect \<Lambda>.is_App"
                     using u 5 Std seq_App_Std_implies by blast
@@ -9179,7 +9198,8 @@ begin
                                               finally show ?thesis by blast
                                             qed
                                           qed
-                                          thus ?thesis by fastforce
+                                          thus ?thesis
+                                            by (metis Arr.simps(1) last_appendR seq_char)
                                         qed
                                         also have "... = \<Lambda>.Trg (last (map \<Lambda>.un_App1 (u # U)))"
                                         proof -

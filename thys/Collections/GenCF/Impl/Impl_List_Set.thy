@@ -18,11 +18,11 @@ begin
     unfolding glist_member_def
     by (parametricity)
 
-  lemma list_member_alt: "List.member = (\<lambda>l x. glist_member (=) x l)"
-  proof (intro ext)
+lemma list_member_alt: "List.member = (\<lambda>l x. glist_member (=) x l)"
+  proof (rule ext)+
     fix x l
     show "List.member l x = glist_member (=) x l"
-      by (induct l) (auto simp: List.member_rec)
+      by (induct l) simp_all
   qed
 
   thm List.insert_def
@@ -365,8 +365,7 @@ end
       apply (induction yl')
       apply simp
       apply auto []
-      apply (metis (lifting) concat_map_maps distinct.simps(2) 
-        distinct_singleton maps_simps(2))
+      apply (metis distinct_product product_concat_map)
       done
     finally (relcompI) 
     show "([ (x,y). x\<leftarrow>xl, y\<leftarrow>yl ], op_set_cart xs ys) \<in> \<langle>Rx \<times>\<^sub>r Ry\<rangle>list_set_rel"

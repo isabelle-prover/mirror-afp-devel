@@ -38,6 +38,8 @@ sig
   val filter_cut' : ('a -> bool) -> ('a -> Context.generic * Token.T list -> string) ->
     'a context_parser -> 'a context_parser
 
+  val parens' : 'a context_parser -> 'a context_parser
+
   val nonempty_list : ('b -> string) -> ('a, 'b, 'c list) istate -> ('a, 'b, 'c list) istate
   val distinct_list : ('a * 'a -> bool) -> ('a list -> 'c -> string) -> ('b, 'c, 'a list) istate ->
     ('b, 'c, 'a list) istate
@@ -49,9 +51,13 @@ sig
 
   val bool : bool parser
   val eq : string parser
-  val parenths : 'a parser -> 'a parser
-  val parenths' : 'a context_parser -> 'a context_parser
 
+  (*parse value or NONE*)
+  val option_value : string -> 'a parser -> ('a option) parser
+  val option_value' : string -> 'a context_parser -> ('a option) context_parser
+
+  val term : term context_parser
+  val term_pattern : term context_parser
   val thm : thm context_parser
   val multi_thm : (thm list) context_parser
   val thms : (thm list) context_parser
@@ -60,6 +66,9 @@ sig
   (*the following structure may be ignored; it is needed for below ML_int parser*)
   structure Internal_Int_Data : GENERIC_DATA
   val ML_int : (Token.T list -> string) -> int context_parser
+
+  structure Internal_String_Data : GENERIC_DATA
+  val ML_string : (Token.T list -> string) -> string context_parser
 end
 
 structure Parse_Util : PARSE_UTIL =
@@ -98,6 +107,8 @@ fun gen_filter_cut abort p msg_of = filter p (abort o msg_of)
 fun filter_cut p = gen_filter_cut abort p
 fun filter_cut' p = gen_filter_cut abort' p
 
+fun parens' scan = Scan.lift (Parse.$$$ "(") |-- scan --| Scan.lift (Parse.$$$ ")")
+
 fun nonempty_list msg_of = filter (not o null) (K (fail msg_of))
 fun distinct_list eq msg_of = filter (not o has_duplicates eq) (fail o msg_of)
 fun nonempty_name msg_of = filter (curry (op <>) "") (K (fail msg_of)) Args.name
@@ -110,10 +121,18 @@ val bool = Scan.recover (Args.name >> Value.parse_bool)
 
 val eq = Parse.$$$ "\<equiv>" || Parse.$$$ "=" || fail (K "expected \"=\" or \"\<equiv>\"")
 
-fun parenths scan = Parse.$$$ "(" |-- scan --| Parse.$$$ ")"
-fun parenths' scan = (Scan.lift (Parse.$$$ "(")) |-- scan --| (Scan.lift (Parse.$$$ ")"))
+val none_string = "NONE"
+fun none ts = (Parse.$$$ none_string >> K NONE) ts
+
+fun gen_option_value none value_descr scan = scan >> SOME
+  || none
+  || fail (K ("expected " ^ value_descr ^ " or \"" ^ none_string ^ "\""))
+fun option_value value_descr = gen_option_value none value_descr
+fun option_value' value_descr = gen_option_value (Scan.lift none) value_descr
 
 (*for better error messages than Attrib.thm and friends*)
+val term = Scan.recover Args.term (fail (prefix "Could not parse term: "))
+val term_pattern = Scan.recover Args.term_pattern (fail (prefix "Could not parse term pattern: "))
 fun thm x = Attrib.thm x handle ERROR m => fail (K m) ()
 fun multi_thm x = Attrib.multi_thm x handle ERROR m => fail (K m) ()
 val thms = Scan.repeats multi_thm
@@ -134,4 +153,21 @@ fun ML_int empty_msg_of =
     Scan.lift Parse.int
     || ((Scan.lift (nonempty_code empty_msg_of) -- Args.context |> position') >> int_from_code)
   end
+
+structure Internal_String_Data = Generic_Data(type T = string; val empty = ""; val merge = fst)
+
+fun ML_string empty_msg_of =
+  let fun string_from_code ((code, ctxt), pos) =
+    let val put_string_code = ML_Code_Util.read "Parse_Util.Internal_String_Data.put"
+      @ ML_Code_Util.atomic code
+    in
+      Context.Proof ctxt
+      |> ML_Attribute_Util.attribute_map_context (ML_Attribute.run_map_context (put_string_code, pos))
+      |> Internal_String_Data.get
+    end
+  in
+    Scan.lift Parse.string
+    || ((Scan.lift (nonempty_code empty_msg_of) -- Args.context |> position') >> string_from_code)
+  end
+
 end

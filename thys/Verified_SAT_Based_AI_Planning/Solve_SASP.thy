@@ -572,12 +572,6 @@ section \<open>Code Generation\<close>
 text \<open>We now generate SML code equivalent to the functions that encode a problem as a CNF formula
       and that decode the model of the given encodings into a plan.\<close>
 
-lemma [code]:
-   "dimacs_model ls cs \<equiv> (list_all (\<lambda>c. list_ex (\<lambda>l. ListMem l c ) ls) cs) \<and>
-                               distinct (map dimacs_lit_to_var ls)"
-  unfolding dimacs_model_def
-  by (auto simp: list.pred_set ListMem_iff list_ex_iff )
-
 definition 
 "SASP_to_DIMACS h prob \<equiv>
    cnf_to_dimacs
@@ -833,17 +827,17 @@ lemma decode_complete:
   by (auto split: if_splits simp: list.pred_set)
 
 lemma [code]:
-  "ListMem x' []= False"
-  "ListMem x' (x#xs) = (x' = x \<or> ListMem x' xs)"
-  by (simp add: ListMem_iff)+
+  \<open>ListMem x xs \<longleftrightarrow> List.member xs x\<close>
+  by (simp add: ListMem_iff)
 
-lemmas [code] = SASP_to_DIMACS_def ast_problem.abs_prob_def
-                ast_problem.abs_ast_variable_section_def ast_problem.abs_ast_operator_section_def
-                ast_problem.abs_ast_initial_state_def ast_problem.abs_range_map_def
-                ast_problem.abs_ast_goal_def cnf_to_dimacs.var_to_dimacs.simps
-                ast_problem.ast\<delta>_def ast_problem.astDom_def ast_problem.abs_ast_operator_def
-                ast_problem.astI_def ast_problem.astG_def ast_problem.lookup_action_def
-                ast_problem.I_def execute_operator_sas_plus_def ast_problem.decode_abs_plan_def
+lemmas [code] = ast_problem.abs_prob_def
+  ast_problem.abs_ast_variable_section_def ast_problem.abs_ast_operator_section_def
+  ast_problem.abs_ast_initial_state_def ast_problem.abs_range_map_def
+  ast_problem.abs_ast_goal_def
+  ast_problem.ast\<delta>_def ast_problem.astDom_def ast_problem.abs_ast_operator_def
+  ast_problem.astI_def ast_problem.astG_def ast_problem.lookup_action_def
+  ast_problem.I_def execute_operator_sas_plus_def ast_problem.decode_abs_plan_def
+lemmas [code] = cnf_to_dimacs.var_to_dimacs.simps
 
 definition nat_opt_of_integer :: "integer \<Rightarrow> nat option" where
        "nat_opt_of_integer i = (if (i \<ge> 0) then Some (nat_of_integer i) else None)"

@@ -80,7 +80,7 @@ lemma connectedE [elim]:
   assumes "connected R"
   and "x \<noteq> y"
   obtains "R x y" | "R y x"
-  using assms by (urule (e) connected_onE where chained = insert) auto
+  using assms by (urule (e) connected_onE chained: insert) auto
 
 lemma connected_on_if_connected:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

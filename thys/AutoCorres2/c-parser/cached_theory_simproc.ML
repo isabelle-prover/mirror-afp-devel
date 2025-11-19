@@ -76,7 +76,7 @@ fun is_reset_css ((ss, tmp_ss):cache_simpset) =
   pointer_eq (ss, Synchronized.value tmp_ss)  (* FIXME fragile pointer_eq *)
 fun merge_css (((ss1, _):cache_simpset), ((ss2, _):cache_simpset)) : cache_simpset  = 
   let
-    val ss = Raw_Simplifier.merge_ss (ss1, ss2)
+    val ss = Simplifier.merge_ss (ss1, ss2)
   in init_css ss end
 
 
@@ -275,12 +275,12 @@ fun add_ss ctxt thms ss =
   let 
     val _ = Utils.verbose_msg 3 ctxt (fn _ => "caching: " ^ string_of_thms ctxt thms)
   in
-    (Raw_Simplifier.put_simpset ss ctxt) addsimps thms |> Raw_Simplifier.simpset_of 
+    (Simplifier.put_simpset ss ctxt) addsimps thms |> Simplifier.simpset_of 
   end
 
 fun add_cache ctxt thms = (change_cache_ss (add_ss ctxt thms) ctxt; thms) 
 
-fun cache_ctxt ctxt = ctxt |> Raw_Simplifier.put_simpset (get_cache_ss ctxt)
+fun cache_ctxt ctxt = ctxt |> Simplifier.put_simpset (get_cache_ss ctxt)
 
 fun not_simplified eq = op aconv (apply2 Thm.term_of (Thm.dest_equals (Thm.cprop_of eq)))
 
@@ -300,23 +300,23 @@ val simple_prover =
      val _ = Utils.verbose_msg 5 ctxt (fn _ => "simple_prover prems: " ^ string_of_thms ctxt prems) 
      in prems end)));
 
-val rewrite = Raw_Simplifier.rewrite_cterm (false, false, false) simple_prover
+val rewrite = Simplifier.rewrite_cterm (false, false, false) simple_prover
 
 fun solve_all_tac solvers ctxt =
   let
-    val subgoal_tac = Raw_Simplifier.subgoal_tac (Raw_Simplifier.set_solvers solvers ctxt);
+    val subgoal_tac = Simplifier.subgoal_tac (Simplifier.set_solvers solvers ctxt);
     val solve_tac = subgoal_tac THEN_ALL_NEW (K no_tac);
   in DEPTH_SOLVE (solve_tac 1) end;
 
 fun rewrite_prover ctxt =
   let
-    val (unsafe_solvers, _) = Raw_Simplifier.solvers ctxt;
+    val (unsafe_solvers, _) = Simplifier.solvers ctxt;
     val tacf = solve_all_tac (rev unsafe_solvers);
     fun prover ctxt th = (Utils.verbose_msg 5 ctxt (fn _ => "rewrite_prover invoked on: " ^ Thm.string_of_thm ctxt th);
          Option.map #1 (Seq.pull (tacf ctxt th)));
   in prover end;
 
-fun rewrite' ctxt = Raw_Simplifier.rewrite_cterm (false, false, false) (rewrite_prover ctxt) ctxt
+fun rewrite' ctxt = Simplifier.rewrite_cterm (false, false, false) (rewrite_prover ctxt) ctxt
 
 fun assume_addsimps derive asms goal ctxt =
   let 
@@ -402,8 +402,8 @@ fun gen_rewrite_solve solver ctxt ct =
 
 fun unsafe_solver_tac ctxt = 
   let
-    val (unsafe_solvers, _) = Raw_Simplifier.solvers ctxt;
-    val solve_tac = FIRST' (map (Raw_Simplifier.solver ctxt) (rev unsafe_solvers));
+    val (unsafe_solvers, _) = Simplifier.solvers ctxt;
+    val solve_tac = FIRST' (map (Simplifier.solver ctxt) (rev unsafe_solvers));
   in
     solve_tac
   end

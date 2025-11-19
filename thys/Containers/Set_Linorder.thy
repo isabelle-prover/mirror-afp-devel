@@ -437,7 +437,7 @@ by(rule set_less_eq_aux''_spec)(rule linear_order)
 
 lemma set_less_eq_aux''_refl [iff]: "A \<sqsubseteq>''' A \<longleftrightarrow> A \<in> infinite_complement_partition"
 using set_less_eq_aux''_linear_order
-by(auto simp add: linear_order_on_def partial_order_on_def preorder_on_def dest: refl_onD refl_onD1)
+by(auto simp add: linear_order_on_def partial_order_on_def preorder_on_def dest: refl_onD)
 
 lemma set_less_eq_aux'_into_set_less_eq_aux'':
   assumes "A \<sqsubseteq>'' B" 
@@ -967,7 +967,8 @@ subsection \<open>Implementation of proper intervals for sets\<close>
 definition length_last :: "'a list \<Rightarrow> nat \<times> 'a"
 where "length_last xs = (length xs, last xs)"
 
-lemma length_last_Nil [code]: "length_last [] = (0, undefined)"
+lemma length_last_Nil [code]:
+  "length_last [] = (0, undefined)"
 by(simp add: length_last_def last_def)
 
 lemma length_last_Cons_code [symmetric, code]:

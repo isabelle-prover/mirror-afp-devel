@@ -40,14 +40,14 @@ definition fields :: "'a::c_type itself \<Rightarrow> qualified_field_name set" 
 
 definition
   mfs_sep_map :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> qualified_field_name set \<Rightarrow> 'a \<Rightarrow> heap_assert"
-  (\<open>_ \<mapsto>\<^bsub>_\<^esub>\<^bsup>_\<^esup> _\<close> [56,0,0,51] 56)
+    (\<open>(\<open>open_block notation=\<open>mixfix mfs_sep_map\<close>\<close>_ \<mapsto>\<^bsub>_\<^esub>\<^bsup>_\<^esup> _)\<close> [56,0,0,51] 56)
 where
   "p \<mapsto>\<^bsub>g\<^esub>\<^bsup>F\<^esup> v \<equiv> \<lambda>s. lift_typ_heap g (singleton_t p v ++ s) p = Some v \<and>
       F \<subseteq> fields TYPE('a) \<and>
       dom s = s_footprint p - fs_footprint p F \<and> wf_heap_val s"
 
 notation (input)
-  mfs_sep_map (\<open>_ \<mapsto>\<^sub>_\<^sup>_ _\<close> [56,0,1000,51] 56)
+  mfs_sep_map (\<open>(\<open>open_block notation=\<open>mixfix mfs_sep_map\<close>\<close>_ \<mapsto>\<^sub>_\<^sup>_ _)\<close> [56,0,1000,51] 56)
 
 definition
   disjoint_fn :: "qualified_field_name \<Rightarrow> qualified_field_name set \<Rightarrow> bool"

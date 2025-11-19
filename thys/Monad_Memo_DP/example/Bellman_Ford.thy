@@ -401,8 +401,6 @@ end
 text \<open>Correspondence Proof\<close>
 memoize_correct
   by memoize_prover
-print_theorems
-lemmas [code] = bf\<^sub>m.memoized_correct
 
 interpretation iterator
   "\<lambda> (x, y). x \<le> n \<and> y \<le> n"

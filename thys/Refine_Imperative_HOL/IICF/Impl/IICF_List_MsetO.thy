@@ -18,7 +18,7 @@ begin
   *)  
 
   lemma lmso_is_empty_aref: "(RETURN o List.null, RETURN o op_mset_is_empty) \<in> br mset (\<lambda>_. True) \<rightarrow>\<^sub>f \<langle>bool_rel\<rangle>nres_rel"  
-    by (auto intro!: frefI nres_relI simp: in_br_conv List.null_def split: list.split)
+    by (auto intro!: frefI nres_relI simp: in_br_conv split: list.split)
 
 
   lemma lmso_insert_aref: "(uncurry (RETURN oo (#) ), uncurry (RETURN oo op_mset_insert)) \<in> (Id \<times>\<^sub>r br mset (\<lambda>_. True)) \<rightarrow>\<^sub>f \<langle>br mset (\<lambda>_. True)\<rangle>nres_rel"  
@@ -68,7 +68,7 @@ begin
 
   lemma list_null_hnr: "(return o List.null,RETURN o List.null) \<in> (list_assn A)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
     apply sepref_to_hoare
-    subgoal for l li by (cases l; cases li; sep_auto simp: List.null_def)
+    subgoal for l li by (cases l; cases li; sep_auto)
     done
 
   sepref_decl_impl lmso_is_empty: list_null_hnr uses lmso_is_empty_aref .

@@ -39,8 +39,6 @@ fun gen_verbose_msg_tac tac level ctxt f st = (verbose_msg level ctxt f; tac st)
 val verbose_msg_tac = gen_verbose_msg_tac all_tac
 val verbose_msg_no_tac = gen_verbose_msg_tac no_tac
 
-
-
 (* timing *)
 
 val timing = Attrib.setup_config_int \<^binding>\<open>verbose_timing\<close> (K 0);
@@ -105,7 +103,7 @@ fun gen_tactic_message prep trace_subgoals ctxt msg info =
           else if trace_subgoals > 0 then 
             st' |> Thm.prop_of |> (fn t => Logic.get_goal t trace_subgoals) 
             |> Syntax.pretty_term ctxt |> Pretty.string_of
-          else Goal_Display.string_of_goal ctxt st'
+          else Goal_Display.print_goal ctxt "" st'
       in
         cat_lines' [message, status, state]
       end
@@ -245,6 +243,13 @@ fun print_conv msg (ct:cterm) =
   let
     val _ = tracing (msg ^ ": " ^ @{make_string} ct);
   in Conv.all_conv ct end
+
+fun verbose_conv level ctxt msg conv ct =
+  let
+    val eq = conv ct
+    val _ = if level <= Config.get ctxt verbose then 
+      tracing (msg level ^ ": " ^ Syntax.string_of_term ctxt (Thm.term_of (Thm.rhs_of eq))) else ()
+  in eq end
 
 fun gen_fix_variant_frees strict ts ctxt =
   let
@@ -392,6 +397,17 @@ fun split_map_filter f [] = ([], [])
         | NONE => (somes, x :: nones)
       end
 
+fun buckets eq xs =
+  let
+    fun bucks done [] = done
+      | bucks done (x::xs) = 
+         let 
+           val (same, rest) = split_filter (fn y => eq (x, y)) (x::xs)
+         in bucks (same::done) rest end
+  in
+   bucks [] xs
+  end
+
 fun OFs asms thms =
   let
     fun maybe_OF thm = the_default thm (try (fn thm => thm OF asms) thm)
@@ -418,7 +434,7 @@ fun simple_prove ctxt term tac =
 
 fun check_finished check ctxt th =
   if check th then th
-  else raise THM ("Proof failed.\n" ^ Goal_Display.string_of_goal ctxt th, 0, [th]);
+  else raise THM (Goal_Display.print_goal ctxt "Proof failed." th, 0, [th]);
 
 fun check_simple_cprove check ctxt st tac =
     case SINGLE tac st of 

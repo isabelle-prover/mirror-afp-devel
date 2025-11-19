@@ -1204,18 +1204,18 @@ proof -
   moreover have "... \<le>
       measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (T (mstar-3) \<union> L (mstar-2) \<union> L (mstar-1))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L mstar \<union> U mstar)"
-    by (auto intro!: measure_pmf.finite_measure_subadditive)
+    by (simp add: measure_Un_le)
   moreover have "... \<le>
       measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (T (mstar-3) \<union> L (mstar-2))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L (mstar-1))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L mstar \<union> U mstar)"
-    by (auto intro!: measure_pmf.finite_measure_subadditive)
+    by (simp add: measure_Un_le)
   moreover have "... \<le>
       measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (T (mstar-3))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L (mstar-2))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L (mstar-1))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L mstar \<union> U mstar)"
-    by (auto intro!: measure_pmf.finite_measure_subadditive)
+    by (simp add: measure_Un_le)
   moreover have "... \<le> 1/62.5 + 1/20.68 + 1/10.84 + 1/4.92"
     using analysis_2_1[OF p ind \<epsilon>_up]
     using analysis_2_2[OF p ind]
@@ -1247,18 +1247,18 @@ proof -
   moreover have "... \<le>
       measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (T (mstar-3) \<union> L (mstar-2) \<union> L (mstar-1))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L mstar \<union> U mstar)"
-    by (auto intro!: measure_pmf.finite_measure_subadditive)
+    by (simp add: measure_Un_le)
   moreover have "... \<le>
       measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (T (mstar-3) \<union> L (mstar-2))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L (mstar-1))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L mstar \<union> U mstar)"
-    by (auto intro!: measure_pmf.finite_measure_subadditive)
+    by (simp add: measure_Un_le)
   moreover have "... \<le>
       measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (T (mstar-3))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L (mstar-2))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L (mstar-1))
     + measure_pmf.prob (map_pmf (\<lambda>s w. H w s) p) (L mstar \<union> U mstar)"
-    by (auto intro!: measure_pmf.finite_measure_subadditive)
+    by (simp add: measure_Un_le)
   moreover have "... \<le> 1/10.84 + 1/20.68 + 1/10.84 + 1/4.92"
     using analysis_2_1'[OF p ind]
     using analysis_2_2[OF p ind]

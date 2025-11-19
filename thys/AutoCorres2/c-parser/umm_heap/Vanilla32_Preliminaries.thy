@@ -22,7 +22,7 @@ definition typ_info_unit[simp]:
             (\<lparr>field_access = (\<lambda>v bs. [0]), field_update = (\<lambda>bs v. ()), field_sz = 1\<rparr>)) 
           ''unit'' 
            :: unit xtyp_info"
-instance by intro_classes (simp add: typ_name_itself_unit_def)
+instance by intro_classes simp
 end
 
 lemma typ_name_unit[simp]: 
@@ -78,6 +78,9 @@ lemma lx32' [simp]: "len_exp (x::32 itself) = 2"
 by (simp add: len_exp_def bogus_log2lessthree_def)
 
 lemma lx64' [simp]: "len_exp (x::64 itself) = 3"
+by (simp add: len_exp_def bogus_log2lessthree_def)
+
+lemma lx128' [simp]: "len_exp (x::128 itself) = 4"
 by (simp add: len_exp_def bogus_log2lessthree_def)
 
 lemma lx_signed' [simp]: "len_exp (x::('a::len) signed itself) = len_exp (TYPE('a))"

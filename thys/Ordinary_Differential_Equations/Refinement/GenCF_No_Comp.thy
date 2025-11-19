@@ -14,7 +14,6 @@ imports
   Collections.Gen_Map
   Collections.Gen_Map2Set
   Collections.Gen_Hash
-  Collections.Code_Target_ICF
   Automatic_Refinement.Refine_Lib
   "HOL-Analysis.Analysis"
 begin

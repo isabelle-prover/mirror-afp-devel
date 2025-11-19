@@ -335,8 +335,8 @@ text %visible \<open>\hrulefill ~~ Part 2 ~~ \hrulefill\<close>
   have "charpoly A *\<^sub>S 1 = X *\<^sub>S adjugate (\<^bold>X - \<^bold>C A) - \<^bold>C A * adjugate (\<^bold>X - \<^bold>C A)" 
     by %invisible (simp add: smult_one charpoly_def mult_adjugate_det[symmetric] field_simps diag_mult)
   also have "\<dots> = (\<Sum>i\<le>n. X^(i + 1) *\<^sub>S \<^bold>C (B i)) - (\<Sum>i\<le>n. X^i *\<^sub>S \<^bold>C (A * B i))"
-    unfolding %invisible A_eq_B by %invisible (simp add: sum_distrib_left smult_mult2[symmetric]
-      map_sq_matrix_mult[symmetric] C_linear smult_sum[symmetric] smult_smult)
+    unfolding %invisible A_eq_B 
+    by %invisible (simp add: sum_distrib_left C_linear smult_smult flip: map_sq_matrix_mult smult_mult2 Square_Matrix.smult_sum)
   also have "(\<Sum>i\<le>n. X^(i + 1) *\<^sub>S \<^bold>C (B i)) =
       (\<Sum>i<n. X^(i + 1) *\<^sub>S \<^bold>C (B i)) + X^(n + 1) *\<^sub>S \<^bold>C (B n)"
     by %invisible (simp add: lessThan_Suc_atMost[symmetric])

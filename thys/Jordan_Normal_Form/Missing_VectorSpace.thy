@@ -1023,7 +1023,7 @@ shows "W.basis (T`B)"
 proof (rule W.dim_li_is_basis)
   have lm: "linear_map K V W T" by intro_locales
   have inj_TB: "inj_on T B"
-    by (meson basis_B inj_T subset_inj_on V.basis_def)
+    by (meson basis_B inj_T inj_on_subset V.basis_def)
   show "W.fin_dim" by (rule surj_fin_dim[OF fin_dim_V surj])  
   show "finite (T ` B)"
   proof (rule finite_imageI, rule V.fin[OF fin_dim_V])

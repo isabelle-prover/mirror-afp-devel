@@ -827,34 +827,34 @@ proof(cases "n < length cl")
     hence "c \<in> insert c' (set cl)" using set_update_subset_insert by fastforce
     thus "discr c" using assms by (cases "c = c'") auto
   qed
-qed (insert cl, auto)
+qed (use cl in \<open>auto simp: list_update_beyond\<close>)
 
-text\<open>Coinduction for discreetness:\<close>
+text\<open>Coinduction for discreteness:\<close>
 
 lemma discr_coind[consumes 1, case_names Hyp, induct pred: discr]:
 assumes *: "phi c" and
 **: "\<And> c s i. \<lbrakk> phi c ; i < brn c\<rbrakk>
        \<Longrightarrow> s \<approx> eff c s i \<and> (phi (cont c s i) \<or> discr (cont c s i))"
 shows "discr c"
-using * apply(induct rule: discr.coinduct) using ** by auto
+  by (metis assms discr.coinduct)
 
 lemma discr_raw_coind[consumes 1, case_names Hyp]:
 assumes *: "phi c" and
 **: "\<And> c s i. \<lbrakk>i < brn c; phi c\<rbrakk> \<Longrightarrow> s \<approx> eff c s i \<and> phi (cont c s i)"
 shows "discr c"
-using * apply(induct) using ** by blast
+  by (metis assms discr_coind)
 
 text\<open>Discreetness versus transition:\<close>
 
 lemma discr_cont[simp]:
 assumes *: "discr c" and **: "i < brn c"
 shows "discr (cont c s i)"
-using * apply(cases rule: discr.cases) using ** by blast
+  by (meson assms discr.cases)
 
 lemma discr_eff_indis[simp]:
 assumes *: "discr c" and **: "i < brn c"
 shows "s \<approx> eff c s i"
-using * apply(cases rule: discr.cases) using ** by blast
+  by (meson assms discr.cases)
 
 
 subsection\<open>Self-isomorphism\<close>
@@ -891,7 +891,7 @@ proof(cases "n < length cl")
     hence "c \<in> insert c' (set cl)" using set_update_subset_insert by fastforce
     thus "siso c" using assms by (cases "c = c'") auto
   qed
-qed (insert cl, auto)
+qed (use cl in \<open>auto simp: list_update_beyond\<close>)
 
 text\<open>Coinduction for self-isomorphism:\<close>
 
@@ -909,19 +909,19 @@ assumes *: "phi c" and
                   eff c s i \<approx> eff c t i \<and> wt c s i = wt c t i \<and> cont c s i = cont c t i" and
 **: "\<And> c s i. \<lbrakk>i < brn c; phi c\<rbrakk> \<Longrightarrow> phi (cont c s i)"
 shows "siso c"
-using * apply induct using ** *** by blast+
+  using assms siso_coind by auto
 
 text\<open>Self-Isomorphism versus transition:\<close>
 
 lemma siso_cont[simp]:
 assumes *: "siso c" and **: "i < brn c"
 shows "siso (cont c s i)"
-using * apply(cases rule: siso.cases) using ** by blast
+  by (meson assms siso.cases)
 
 lemma siso_cont_indis[simp]:
 assumes *: "siso c" and **: "s \<approx> t" "i < brn c"
 shows "eff c s i \<approx> eff c t i \<and> wt c s i = wt c t i \<and> cont c s i = cont c t i"
-using * apply(cases rule: siso.cases) using ** by blast
+  by (meson assms siso.cases)
 
 
 subsection\<open>Notions of bisimilarity\<close>
@@ -1474,7 +1474,7 @@ next
   unfolding mC_ZOC_wt_def proof(intro conjI ballI impI)
     fix J assume "J \<in> F ` P - {F I0}" and le_1: "sum (wt d t) (F I0) < 1 \<and> sum (wt c s) (inv_into P F (F I0)) < 1"
     then obtain I where I: "I \<in> P - {I0}" and J: "J = F I"
-      by (metis image_iff member_remove remove_def)
+      by auto
     have 2: "inv_into P F J = I" unfolding J using 0 I by simp
     have 3: "inv_into P F (F I0) = I0" using 0 by simp
     show
@@ -1489,7 +1489,7 @@ next
     fix i j J
     assume "J \<in> F ` P - {F I0}" and j: "j \<in> J" and i: "i \<in> inv_into P F J"
     then obtain I where J: "J = F I" and I: "I \<in> P - {I0}"
-      by (metis image_iff member_remove remove_def)
+      by auto
     hence "i \<in> I" using assms i unfolding mC_ZOC_def by auto
     hence "eff c s i \<approx> eff d t j \<and> (cont c s i, cont d t j) \<in> theta"
     using assms I j unfolding mC_ZOC_def mC_ZOC_eff_cont_def J by auto
@@ -1561,28 +1561,18 @@ proof(cases "n < length cl")
   show ?thesis proof
     fix m assume m: "m < length ?cl'" "m < length ?dl'"
     thus "?cl' ! m \<approx>s ?dl' ! m" using assms by (cases "m = n") auto
-  qed (insert cldl, simp)
-qed (insert cldl, simp)
+  qed (use cldl in simp)
+qed (use cldl in \<open>simp add: list_update_beyond\<close>)
 
 lemma SbisL_update_L[simp]:
 assumes "SbisL cl dl" and "c' \<approx>s dl!n"
 shows "SbisL (cl[n := c']) dl"
-proof-
-  let ?d' = "dl!n"
-  have "SbisL (cl[n := c']) (dl[n := ?d'])"
-  apply(rule SbisL_update) using assms by auto
-  thus ?thesis by simp
-qed
+  by (metis SbisL_update assms list_update_id)
 
 lemma SbisL_update_R[simp]:
 assumes "SbisL cl dl" and "cl!n \<approx>s d'"
 shows "SbisL cl (dl[n := d'])"
-proof-
-  let ?c' = "cl!n"
-  have "SbisL (cl[n := ?c']) (dl[n := d'])"
-  apply(rule SbisL_update) using assms by auto
-  thus ?thesis by simp
-qed
+  by (metis SbisL_update assms list_update_id)
 
 (* For ZObis: *)
 
@@ -1614,28 +1604,18 @@ proof(cases "n < length cl")
   show ?thesis proof
     fix m assume m: "m < length ?cl'" "m < length ?dl'"
     thus "?cl' ! m \<approx>01 ?dl' ! m" using assms by (cases "m = n") auto
-  qed (insert cldl, simp)
-qed (insert cldl, simp)
+  qed (use cldl in simp)
+qed (use cldl in \<open>simp add: list_update_beyond\<close>)
 
 lemma ZObisL_update_L[simp]:
 assumes "ZObisL cl dl" and "c' \<approx>01 dl!n"
 shows "ZObisL (cl[n := c']) dl"
-proof-
-  let ?d' = "dl!n"
-  have "ZObisL (cl[n := c']) (dl[n := ?d'])"
-  apply(rule ZObisL_update) using assms by auto
-  thus ?thesis by simp
-qed
+  by (metis ZObisL_update assms list_update_id)
 
 lemma ZObisL_update_R[simp]:
 assumes "ZObisL cl dl" and "cl!n \<approx>01 d'"
 shows "ZObisL cl (dl[n := d'])"
-proof-
-  let ?c' = "cl!n"
-  have "ZObisL (cl[n := ?c']) (dl[n := d'])"
-  apply(rule ZObisL_update) using assms by auto
-  thus ?thesis by simp
-qed
+  by (metis ZObisL_update assms list_update_id)
 
 
 subsection\<open>Discreetness for configurations\<close>
@@ -1668,12 +1648,12 @@ text\<open>Discreetness versus transition:\<close>
 lemma discrCf_cont[simp]:
 assumes *: "discrCf cf" and **: "i < brn (fst cf)"
 shows "discrCf (cont_eff cf i)"
-using * apply(cases rule: discrCf.cases) using ** by blast
+  by (meson assms discrCf.cases)
 
 lemma discrCf_eff_indis[simp]:
 assumes *: "discrCf cf" and **: "i < brn (fst cf)"
 shows "snd cf \<approx> snd (cont_eff cf i)"
-using * apply(cases rule: discrCf.cases) using ** by blast
+  by (meson assms discrCf.cases)
 
 lemma discr_discrCf:
 assumes "discr c"

@@ -8,6 +8,7 @@ session Expander_Graphs = "HOL-Probability" +
     Commuting_Hermitian
     Weighted_Arithmetic_Geometric_Mean
     Universal_Hash_Families
+    Negative_Association
   theories
     Constructive_Chernoff_Bound
     Expander_Graphs_Algebra

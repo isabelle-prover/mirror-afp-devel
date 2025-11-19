@@ -101,47 +101,47 @@ qed
 
 subsubsection \<open>Signature closed property\<close>
 
-definition all_ctxt_closed :: "('f \<times> nat) set \<Rightarrow> 'f gterm rel \<Rightarrow> bool" where
-  "all_ctxt_closed F r \<longleftrightarrow> (\<forall> f ts ss. (f, length ss) \<in> F \<longrightarrow> length ss = length ts \<longrightarrow>
+definition all_ctxt_closed_gterm :: "('f \<times> nat) set \<Rightarrow> 'f gterm rel \<Rightarrow> bool" where
+  "all_ctxt_closed_gterm F r \<longleftrightarrow> (\<forall> f ts ss. (f, length ss) \<in> F \<longrightarrow> length ss = length ts \<longrightarrow>
     (\<forall>i. i < length ts \<longrightarrow> (ss ! i, ts ! i) \<in> r) \<longrightarrow>
     (GFun f ss, GFun f ts) \<in> r)"
 
-lemma all_ctxt_closedI:
+lemma all_ctxt_closed_gtermI:
   assumes "\<And> f ss ts. (f, length ss) \<in> \<F> \<Longrightarrow> length ss = length ts \<Longrightarrow>
      (\<forall> i < length ts. (ss ! i, ts ! i) \<in> r) \<Longrightarrow> (GFun f ss, GFun f ts) \<in> r"
-  shows "all_ctxt_closed \<F> r" using assms
-  unfolding all_ctxt_closed_def by auto
+  shows "all_ctxt_closed_gterm \<F> r" using assms
+  unfolding all_ctxt_closed_gterm_def by auto
 
-lemma all_ctxt_closedD:
-  "all_ctxt_closed F r \<Longrightarrow> (f, length ss) \<in> F \<Longrightarrow> length ss = length ts \<Longrightarrow>
+lemma all_ctxt_closed_gtermD:
+  "all_ctxt_closed_gterm F r \<Longrightarrow> (f, length ss) \<in> F \<Longrightarrow> length ss = length ts \<Longrightarrow>
     (\<forall> i < length ts. (ss ! i, ts ! i) \<in> r) \<Longrightarrow> (GFun f ss, GFun f ts) \<in> r"
-  by (auto simp: all_ctxt_closed_def)
+  by (auto simp: all_ctxt_closed_gterm_def)
 
-lemma all_ctxt_closed_refl_on:
-  assumes "all_ctxt_closed \<F> r" "s \<in> \<T>\<^sub>G \<F>"
+lemma all_ctxt_closed_gterm_refl_on:
+  assumes "all_ctxt_closed_gterm \<F> r" "s \<in> \<T>\<^sub>G \<F>"
   shows "(s, s) \<in> r" using assms(2)
-  by (induct) (auto simp: all_ctxt_closedD[OF assms(1)])
+  by (induct) (auto simp: all_ctxt_closed_gtermD[OF assms(1)])
 
-lemma gmctxt_cl_is_all_ctxt_closed [simp]:
-  "all_ctxt_closed \<F> (gmctxt_cl \<F> \<R>)"
-  unfolding all_ctxt_closed_def
+lemma gmctxt_cl_is_all_ctxt_closed_gterm [simp]:
+  "all_ctxt_closed_gterm \<F> (gmctxt_cl \<F> \<R>)"
+  unfolding all_ctxt_closed_gterm_def
   by auto
 
-lemma all_ctxt_closed_gmctxt_cl_idem [simp]:
-  assumes "all_ctxt_closed \<F> \<R>"
+lemma all_ctxt_closed_gterm_gmctxt_cl_idem [simp]:
+  assumes "all_ctxt_closed_gterm \<F> \<R>"
   shows "gmctxt_cl \<F> \<R> = \<R>"
 proof -
   {fix s t assume "(s, t) \<in> gmctxt_cl \<F> \<R>" then have "(s, t) \<in> \<R>"
     proof (induct)
       case (step ss ts f)
-      show ?case using step(2) all_ctxt_closedD[OF assms step(3, 1)]
+      show ?case using step(2) all_ctxt_closed_gtermD[OF assms step(3, 1)]
         by auto
     qed auto}
   then show ?thesis by auto
 qed
 
 
-subsubsection \<open>Transitive closure preserves @{const all_ctxt_closed}\<close>
+subsubsection \<open>Transitive closure preserves @{const all_ctxt_closed_gterm}\<close>
 
 text \<open>induction scheme for transitive closures of lists\<close>
 
@@ -220,28 +220,28 @@ case (step xs ys i z)
        (auto simp: nth_list_update)
 qed (auto simp: base)
 
-lemma all_ctxt_closed_trancl:
-  assumes  "all_ctxt_closed \<F> \<R>" "\<R> \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
-  shows "all_ctxt_closed \<F> (\<R>\<^sup>+)"
+lemma all_ctxt_closed_gterm_trancl:
+  assumes  "all_ctxt_closed_gterm \<F> \<R>" "\<R> \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+  shows "all_ctxt_closed_gterm \<F> (\<R>\<^sup>+)"
 proof -
   {fix f ss ts assume sig: "(f, length ss) \<in> \<F>" and
       steps: "length ss = length ts" "\<forall>i<length ts. (ss ! i, ts ! i) \<in> \<R>\<^sup>+"
     have "(GFun f ss, GFun f ts) \<in> \<R>\<^sup>+" using steps sig
     proof (induct rule: trancl_list_induct)
       case (base ss ts)
-      then show ?case using all_ctxt_closedD[OF assms(1) base(3, 1, 2)]
+      then show ?case using all_ctxt_closed_gtermD[OF assms(1) base(3, 1, 2)]
         by auto
     next
       case (step ss ts i t')
       from step(2) have "j < length ts \<Longrightarrow> ts ! j \<in> \<T>\<^sub>G \<F>" for j using assms(2)
         by (metis (no_types, lifting) SigmaD2 subset_iff trancl.simps)
-      from this[THEN all_ctxt_closed_refl_on[OF assms(1)]]
+      from this[THEN all_ctxt_closed_gterm_refl_on[OF assms(1)]]
       have "(GFun f ts, GFun f (ts[i := t'])) \<in> \<R>" using step(1, 4-)
-        by (intro all_ctxt_closedD[OF assms(1)]) (auto simp: nth_list_update)
+        by (intro all_ctxt_closed_gtermD[OF assms(1)]) (auto simp: nth_list_update)
       then show ?case using step(3, 6)
         by auto
     qed}
-  then show ?thesis by (intro all_ctxt_closedI)
+  then show ?thesis by (intro all_ctxt_closed_gtermI)
 qed
 
 end

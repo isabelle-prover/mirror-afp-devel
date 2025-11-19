@@ -1106,9 +1106,9 @@ definition parallel :: "(sequential, 's, unit) spec \<Rightarrow> (sequential, '
   "parallel P Q = spec.Parallel UNIV (\<lambda>a::bool. if a then P else Q)"
 
 adhoc_overloading
-  Parallel spec.Parallel
+  Parallel \<rightleftharpoons> spec.Parallel
 adhoc_overloading
-  parallel spec.parallel
+  parallel \<rightleftharpoons> spec.parallel
 
 lemma parallel_alt_def:
   shows "spec.parallel P Q = spec.toSequential (spec.toConcurrent True P \<sqinter> spec.toConcurrent False Q)"

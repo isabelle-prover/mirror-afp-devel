@@ -145,7 +145,7 @@ proof -
   let ?Q = "(reciprocal_poly p P) \<circ>\<^sub>p [:1, 1:]"
   have hQ: "?Q \<noteq> 0" 
     using assms 
-    by (simp add: Missing_Polynomial.pcompose_eq_0 reciprocal_0_iff)
+    by (simp add: pcompose_eq_0_iff reciprocal_0_iff)
 
   hence 1: "changes (coeffs ?Q) \<ge> proots_count ?Q {x. 0 < x} \<and> 
         even (changes (coeffs ?Q) - proots_count ?Q {x. 0 < x})"
@@ -184,15 +184,15 @@ proof -
     assume "poly (map_poly of_real (smult (inverse (lead_coeff ?Q)) ?Q)) x = 0"
     hence h2:"poly (map_poly of_real ?Q) x = 0" by fastforce 
     hence "order x (map_poly complex_of_real (reciprocal_poly p P \<circ>\<^sub>p [:1, 1:])) > 0" 
-      using assms by (fastforce simp: order_root pcompose_eq_0 reciprocal_0_iff)
+      using assms by (fastforce simp: order_root pcompose_eq_0_iff reciprocal_0_iff)
     hence "proots_count (map_poly of_real ?Q) {x. 0 < Re x} \<noteq> 0"
     proof -
       have h3: "finite {x. poly (map_poly complex_of_real 
                 (reciprocal_poly p P \<circ>\<^sub>p [:1, 1:])) x = 0}" 
         apply (rule poly_roots_finite)
-        using assms by (fastforce simp: order_root pcompose_eq_0 reciprocal_0_iff)
+        using assms by (fastforce simp: order_root pcompose_eq_0_iff reciprocal_0_iff)
       have "0 < order x (map_poly complex_of_real (reciprocal_poly p P \<circ>\<^sub>p [:1, 1:]))"
-        using h2 assms by (fastforce simp: order_root pcompose_eq_0 reciprocal_0_iff)
+        using h2 assms by (fastforce simp: order_root pcompose_eq_0_iff reciprocal_0_iff)
       also have "... \<le> (\<Sum>r\<in>{x. 0 < Re x \<and>
                   poly (map_poly complex_of_real (reciprocal_poly p P \<circ>\<^sub>p [:1, 1:])) x =
                   0}.
@@ -212,7 +212,7 @@ proof -
   qed
   hence "\<And>i. coeff (smult (inverse (lead_coeff ?Q)) ?Q) i \<ge> 0"
     apply (frule descartes_sign_zero)
-    using assms by (fastforce simp: pcompose_eq_0 reciprocal_0_iff)
+    using assms by (fastforce simp: pcompose_eq_0_iff reciprocal_0_iff)
   hence "changes (coeffs (smult (inverse (lead_coeff ?Q)) ?Q)) = 0"
     by (subst changes_all_nonneg, auto simp: nth_default_coeffs_eq)
   hence "changes (coeffs ?Q) = 0"
@@ -304,8 +304,7 @@ proof (subst Bernstein_changes_eq_rescale)
           circle_01_diam"
       apply (subst of_real_hom.map_poly_pcompose)
       apply (subst proots_pcompose)
-        apply (metis assms(3) degree_eq_zeroE of_real_poly_eq_0_iff
-          pCons_eq_iff pCons_one pcompose_eq_0 zero_neq_one)
+      using \<open>P \<circ>\<^sub>p [:l, 1:] \<circ>\<^sub>p [:0, r - l:] \<noteq> 0\<close> apply force
       using assms(1) apply fastforce
       apply (subst of_real_hom.map_poly_pcompose)
       apply (subst proots_pcompose)
@@ -476,7 +475,7 @@ shows "Bernstein_changes_01 p P = 1"
 proof (subst Bernstein_changes_01_eq_changes[OF hP])
   let ?Q = "reciprocal_poly p P \<circ>\<^sub>p [:1, 1:]"
   have hQ0: "?Q \<noteq> 0" using hP0
-    by (simp add: pcompose_eq_0 hP reciprocal_0_iff)
+    by (simp add: pcompose_eq_0_iff hP reciprocal_0_iff)
 
   from h obtain x' where hroot': "poly (map_poly of_real P) x' = 0"
     and hx':"x' \<in> upper_circle_01 \<union> lower_circle_01"
@@ -652,7 +651,7 @@ proof (subst Bernstein_changes_01_eq_changes[OF hP])
           using hp0 hP hP0 
            apply (auto simp: map_poly_reciprocal degree_pcompose
                   degree_reciprocal of_real_hom.map_poly_pcompose
-                  reciprocal_0_iff degree_map_poly pcompose_eq_0)[1]
+                  reciprocal_0_iff degree_map_poly pcompose_eq_0_iff)[1]
           apply (subst map_poly_monom, fastforce) 
           apply (subst of_real_1, subst proots_count_monom)
            apply (auto simp: cmod_def power2_eq_square real_sqrt_divide
@@ -738,12 +737,12 @@ proof -
      (upper_circle_01 \<union> lower_circle_01) = 1"
     using assms
     by (auto simp: upper_circle_rescale lower_circle_rescale proots_pcompose image_Un
-        of_real_hom.map_poly_pcompose pcompose_eq_0 image_image algebra_simps)
+        of_real_hom.map_poly_pcompose pcompose_eq_0_iff image_image algebra_simps)
   thus ?thesis
     apply (subst 1)
     apply (rule two_circles_01)
     using hP apply (force simp: degree_pcompose)
-    using hP0 hlr apply (fastforce simp: pcompose_eq_0)
+    using hP0 hlr apply (fastforce simp: pcompose_eq_0_iff)
     using hp0 apply blast
     by blast
 qed

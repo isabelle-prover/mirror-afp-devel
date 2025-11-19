@@ -4,11 +4,11 @@ chapter AFP
 \<comment>\<open> ******************************************************************** 
  * Project         : HOL-CSP_OpSem - Operational semantics for HOL-CSP
  *
- * Author          : Benoît Ballenghien, Burkhart Wolff
+ * Author          : Benoît Ballenghien, Burkhart Wolff.
  *
  * This file       : ROOT file
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -43,37 +43,25 @@ chapter AFP
 (*>*)
 
 session "HOL-CSP_OpSem" = "HOL-CSPM" +
-  options [timeout = 1200]
+  options [timeout = 1200] 
   theories
     Introduction
 
-    Sliding
-    Throw
-    Interrupt
-  
-    ReadySet
-    After
-    AfterExt
-    AfterTrace
+    Initials
+    After_Operator
+    After_Ext_Operator
+    After_Trace_Operator
 
     Motivations
-    OpSemGeneric
-    OpSemFD
-    OpSemDT
-
-    AfterExtBis
-    AfterTraceBis
-    OpSemGenericBis
-    OpSemFDBis
-    OpSemDTBis
-    OpSemFBis
-    OpSemTBis
-
-    NewLaws
+    Operational_Semantics_Laws
+    Recovered_Laws
+    Comparison_He_Hoare
+    
+    OpSem_Deadlock_Results
+    CSP_New_Laws
 
     Conclusion
-    
+         
   document_files
     "root.tex"
     "root.bib"
-    "figures/session_graph.pdf"

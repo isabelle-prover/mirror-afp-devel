@@ -1,0 +1,49 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+\begin{document}
+
+\title{Greibach Normal Form}
+\author{Alexander Haberl and Tobias Nipkow and Akihisa Yamada}
+\maketitle
+
+\begin{abstract}
+  This theory formalizes Hopcroft and Ullman's algorithm
+  \cite{HopcroftU79} to transform a set of productions into Greibach
+  Normal Form (GNF) \cite{Greibach}. We concentrate on the essential
+  property of the GNF: every production starts with a terminal; the
+  tail of a rhs may contain further terminals.  The complexity of the
+  algorithm can be exponential.
+\end{abstract}
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,52 +1,59 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>bordg on Archive of Formal Proofs
-    </title>
-    <link>/authors/bordg/</link>
-    <description>
-        Recent content in bordg 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sat, 14 Jan 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bordg/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Strict Omega Categories</title>
-          <link>/entries/StrictOmegaCategories.html</link>
-          <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/StrictOmegaCategories.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
-          <link>/entries/Grothendieck_Schemes.html</link>
-          <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Grothendieck_Schemes.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
-          <link>/entries/Isabelle_Marries_Dirac.html</link>
-          <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Isabelle_Marries_Dirac.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Projective Geometry</title>
-          <link>/entries/Projective_Geometry.html</link>
-          <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Projective_Geometry.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Localization of a Commutative Ring</title>
-          <link>/entries/Localization_Ring.html</link>
-          <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Localization_Ring.html</guid>
-          <description></description>
-        </item>
+    <title>Anthony Bordg</title>
+    <link>https://isa-afp.org/authors/bordg/</link>
+    <description>AFP entries of Anthony Bordg</description><item>
+  <title>Complex Lattices, Elliptic Functions, and the Modular Group</title>
+  <link>https://isa-afp.org/entries/Elliptic_Functions.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Complex Lattices, Elliptic Functions, and the Modular Group in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Dedekind Sums</title>
+  <link>https://isa-afp.org/entries/Dedekind_Sums.html</link>
+  <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Dedekind Sums in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Strict Omega Categories</title>
+  <link>https://isa-afp.org/entries/StrictOmegaCategories.html</link>
+  <pubDate>Sat, 14 Jan 2023 00:00:00 +0000</pubDate>
+  <description>Strict Omega Categories in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+  <link>https://isa-afp.org/entries/Grothendieck_Schemes.html</link>
+  <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+  <description>Grothendieck&#39;s Schemes in Algebraic Geometry in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+  <link>https://isa-afp.org/entries/Isabelle_Marries_Dirac.html</link>
+  <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+  <description>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Projective Geometry</title>
+  <link>https://isa-afp.org/entries/Projective_Geometry.html</link>
+  <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
+  <description>Projective Geometry in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>The Localization of a Commutative Ring</title>
+  <link>https://isa-afp.org/entries/Localization_Ring.html</link>
+  <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
+  <description>The Localization of a Commutative Ring in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+
   </channel>
 </rss>

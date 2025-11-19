@@ -39,6 +39,22 @@ where "Gauss_Jordan_column_k_PA A' k =
          if (\<forall>m\<ge>from_nat_i. A $ m $ from_nat_k = 0) \<or> i = nrows A then (P, i, A)
          else (let Gauss = Gauss_Jordan_in_ij_PA (P,A) (from_nat_i) (from_nat_k) in (fst Gauss, i + 1, snd Gauss)))"
 
+lemma Gauss_Jordan_column_k_PA_code [code]:
+  \<open>Gauss_Jordan_column_k_PA (P, i, A) k = (
+    let
+      a = from_nat i;
+      b = from_nat k
+    in 
+      if (\<forall>n\<in>{to_nat a..<nrows A}. A $ from_nat n $ b = 0) \<or> i = nrows A
+      then (P, i, A)
+      else (
+        let (Q, B) = Gauss_Jordan_in_ij_PA (P, A) a b
+        in (Q, i + 1, B)
+      )
+    )
+  \<close>
+  by (simp add: Let_def Gauss_Jordan_column_k_PA_def forall_mod_type_greater_eq_iff split_def nrows_def)
+
 definition "Gauss_Jordan_upt_k_PA A k = (let foldl=(foldl Gauss_Jordan_column_k_PA (mat 1,0, A) [0..<Suc k]) in (fst foldl, snd (snd foldl)))"
 definition "Gauss_Jordan_PA A = Gauss_Jordan_upt_k_PA A (ncols A - 1)"
 

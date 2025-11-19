@@ -544,6 +544,12 @@ lemma op_hm_empty_sz_hnr[sepref_fr_rules]:
 subsection \<open>Manual fine-tuning of code-lemmas\<close>
 (* TODO: Integrate into Sepref-tool optimization phase! *)
 
+declare [[code drop: hm_change_key_op_impl]]
+
+declare [[code drop: hm_upd_op_impl]]
+
+declare [[code drop: hm_pop_min_op_impl]]
+
 context
 notes [simp del] = CNV_def efficient_nat_div2
 begin
@@ -609,10 +615,12 @@ private lemmas inlines = hm_append_op_impl_def ial_append_def
     it_case_ppp it_case_pppp bind_case bind_case_mvup nested_case if_case_mvup
     it_case_pp
 
+declare [[code drop: hm_insert_op_impl]]
+
 schematic_goal [code]: "hm_insert_op_impl maxsize prio hm k v = ?f"
   unfolding hm_insert_op_impl_def
   apply (rule CNV_eqD)
-  apply (simp add: inlines  cong: if_cong)
+  apply (simp add: inlines cong: if_cong)
   by (rule CNV_I)
   
 
@@ -625,7 +633,7 @@ schematic_goal "hm_swim_op_impl prio hm i \<equiv> ?f"
   by (rule CNV_I)
 
 
-lemma hm_swim_op_impl_code[code]: "hm_swim_op_impl prio hm i \<equiv> ccpo.fixp (fun_lub Heap_lub) (fun_ord Heap_ord)
+lemma hm_swim_op_impl_code: "hm_swim_op_impl prio hm i \<equiv> ccpo.fixp (fun_lub Heap_lub) (fun_ord Heap_ord)
        (\<lambda>cf (a1, a2).
            case a1 of
            ((a1b, a2b), a2a) \<Rightarrow>
@@ -655,7 +663,7 @@ lemma hm_swim_op_impl_code[code]: "hm_swim_op_impl prio hm i \<equiv> ccpo.fixp 
 
 prepare_code_thms hm_swim_op_impl_code
 
-schematic_goal hm_sink_opt_impl_code[code]: "hm_sink_op_impl prio hm i \<equiv> ?f"
+schematic_goal hm_sink_opt_impl_code: "hm_sink_op_impl prio hm i \<equiv> ?f"
   unfolding hm_sink_op_impl_def 
   apply (rule eq_reflection)
   apply (rule CNV_eqD)
@@ -666,18 +674,6 @@ schematic_goal hm_sink_opt_impl_code[code]: "hm_sink_op_impl prio hm i \<equiv> 
 prepare_code_thms hm_sink_opt_impl_code
 
 export_code hm_swim_op_impl in SML_imp module_name Test
-
-
-schematic_goal hm_change_key_opt_impl_code[code]: "
-  hm_change_key_op_impl prio k v hm \<equiv> ?f"
-  unfolding hm_change_key_op_impl_def 
-  apply (rule eq_reflection)
-  apply (rule CNV_eqD)
-  apply (simp add: inlines hm_contains_key_impl_def ial_contains_def
-    hm_change_key_op_impl_def hm_index_op_impl_def hm_update_op_impl_def
-    ial_index_def
-    cong: if_cong split: prod.splits)
-  oops
 
 
 schematic_goal hm_change_key_opt_impl_code[code]: "
@@ -695,7 +691,6 @@ schematic_goal hm_change_key_opt_impl_code[code]: "
     ial_index_def
     cong: if_cong split: prod.splits)
   done
-
 
 schematic_goal hm_set_opt_impl_code[code]: "hm_upd_op_impl maxsize prio hm k v \<equiv> ?f"
   unfolding hm_upd_op_impl_def 

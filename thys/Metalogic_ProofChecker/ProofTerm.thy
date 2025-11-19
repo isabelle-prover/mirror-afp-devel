@@ -186,8 +186,7 @@ lemma typ_ok_subst_typ:
 proof (induction insts T rule: subst_typ.induct)
   case (1 insts n Ts)
   have "typ_ok thy x" if "x\<in>set Ts" for x
-    by (metis (full_types) "1.prems"(1) in_set_conv_decomp_first list_all_append list_all_simps(1)
-      that typ_ok_Ty)
+    using that "1.prems" by (simp split: option.splits add: list_all_iff)
   hence "typ_ok thy (subst_typ insts x)" if "x\<in>set Ts" for x
     using that 1 by simp
   then show ?case 

@@ -679,10 +679,10 @@ begin
   definition "cond g \<equiv> \<lambda>(u,p). uninst.redundant (uses(g:=u)) (phis(g:=p)) g"
   definition "step g \<equiv> \<lambda>(u,p). (uninst.uses' (uses(g:=u)) (phis(g:=p)) g,
                                 uninst.phis' (uses(g:=u)) (phis(g:=p)) g)"
-  definition[code]: "substAll g \<equiv> while (cond g) (step g) (uses g,phis g)"
+  definition "substAll g \<equiv> while (cond g) (step g) (uses g,phis g)"
 
-  definition[code]: "uses'_all g \<equiv> fst (substAll g)"
-  definition[code]: "phis'_all g \<equiv> snd (substAll g)"
+  definition "uses'_all g \<equiv> fst (substAll g)"
+  definition "phis'_all g \<equiv> snd (substAll g)"
 
   lemma uninst_allVars_simps [simp]:
     "uninst.allVars u (\<lambda>_. p g) g = uninst.allVars u p g"

@@ -67,6 +67,31 @@ lemma lambert_cmult': "lambert (\<lambda>n. a n * c) q = lambert a q * c"
 lemma lambert_uminus: "lambert (\<lambda>n. -a n) q = -lambert a q"
   using lambert_cmult[of "-1" a q] by simp
 
+lemma lambert_of_real:
+  "lambert (\<lambda>n. of_real (c n)) (of_real q) = 
+     (of_real (lambert c q) :: 'a :: {real_normed_field,banach,real_inner})"
+proof -
+  define f where "f = (\<lambda>n. c (Suc n) * of_real q ^ Suc n / (1 - of_real q ^ Suc n))"
+  show ?thesis
+  proof (cases "summable f")
+    case True
+    hence "summable (\<lambda>n. of_real (f n) :: 'a)"
+      unfolding summable_of_real_iff by auto
+    thus ?thesis using True
+      using suminf_of_real[OF True, where ?'a = 'a] unfolding lambert_def f_def by simp
+  next
+    case False
+    hence "lambert c q = 0"
+      by (simp add: lambert_def f_def)
+    moreover from False have "\<not>summable (\<lambda>n. of_real (f n) :: 'a)"
+      unfolding summable_of_real_iff by auto
+    hence "lambert (\<lambda>n. of_real (c n)) (of_real q :: 'a) = 0"
+      unfolding f_def lambert_def by simp
+    ultimately show ?thesis
+      by simp
+  qed
+qed
+
 
 text \<open>
   We will later see that if $\sum_{n=1}^\infty a(n)$ exists then the Lambert series converges
@@ -91,6 +116,12 @@ proof
   thus "summable a"
     by blast
 qed (auto simp: lambert_conv_radius_def)
+
+lemma lambert_conv_radius_of_real:
+  "lambert_conv_radius (\<lambda>n. of_real (f n) :: 'a :: {real_normed_field,real_inner,banach}) = 
+   lambert_conv_radius f"
+  unfolding lambert_conv_radius_def conv_radius_def by (simp add: summable_of_real_iff)
+
 
 
 subsection \<open>Uniform convergence, continuity, holomorphicity\<close>
@@ -952,6 +983,41 @@ proof (rule sums_lambert_powser)
   finally show "dirichlet_prod a (\<lambda>_. 1) = b" ..
 qed
 
+lemma lambert_conv_radius_power_of_nat: "lambert_conv_radius (\<lambda>n. of_nat n ^ k) = 1"
+  by (simp add: lambert_conv_radius_def not_summable_power_of_nat conv_radius_power_of_nat)
+
+lemma lambert_conv_radius_powr_real:
+  "lambert_conv_radius (\<lambda>n. real n powr c) = (if c < -1 then \<infinity> else 1)"
+proof -
+  have "summable (\<lambda>n. real n powr c) \<longleftrightarrow> c < -1"
+    by (subst summable_real_powr_iff) auto
+  moreover have "conv_radius (\<lambda>n. real n powr c) = 1"
+    by (rule conv_radius_powr_real)
+  ultimately show ?thesis
+    by (auto simp: lambert_conv_radius_def)
+qed
+    
+lemma lambert_conv_radius_power_int:
+  "lambert_conv_radius (\<lambda>n. of_nat n powi c :: 'a :: {real_normed_field,real_inner,banach}) = 
+     (if c < -1 then \<infinity> else 1)"
+proof -
+  have "lambert_conv_radius (\<lambda>n. of_nat n powi c :: 'a) =
+        lambert_conv_radius (\<lambda>n. of_real (real n powi c) :: 'a)"
+    by simp
+  also have "\<dots> = lambert_conv_radius (\<lambda>n. real n powi c)"
+    by (rule lambert_conv_radius_of_real)
+  also have "\<dots> = (if c < -1 then \<infinity> else 1)"
+  proof -
+    have "summable (\<lambda>n. real n powi c) \<longleftrightarrow> c < -1"
+      by (subst summable_power_int_real_iff) auto
+    moreover have "conv_radius (\<lambda>n. real n powi c) = 1"
+      using conv_radius_polylog[of c] by (simp add: conv_radius_def norm_power_int)
+    ultimately show ?thesis
+      by (auto simp: lambert_conv_radius_def)
+  qed
+  finally show ?thesis .
+qed
+
 
 subsubsection \<open>Divisor \<open>\<sigma>\<close> function\<close>
 
@@ -1475,7 +1541,7 @@ text \<open>
   will -- just like is typically in textbooks -- ignore this in our informal explanations
   and write $\ln \varphi(q)$.
 \<close>
-theorem euler_phi_conv_lambert:
+theorem euler_phi_conv_lambert_complex:
   fixes q :: complex
   assumes q: "norm q < 1"
   shows "(\<lambda>n. 1 - q ^ Suc n) has_prod exp (-lambert (\<lambda>n. 1 / of_nat n) q)"
@@ -1492,6 +1558,24 @@ proof -
   thus ?thesis
     using q by (simp del: power_Suc add: exp_minus)
 qed
+
+lemma euler_phi_conv_lambert_real:
+  fixes q :: real
+  assumes q: "\<bar>q\<bar> < 1"
+  shows "(\<lambda>n. 1 - q ^ Suc n) has_prod exp (-lambert (\<lambda>n. 1 / real n) q)"
+proof -
+  have "(\<lambda>n. 1 - complex_of_real q ^ Suc n) has_prod exp (-lambert (\<lambda>n. 1 / of_nat n) (of_real q))"
+    by (rule euler_phi_conv_lambert_complex) (use q in auto)
+  also have "(\<lambda>n. 1 - complex_of_real q ^ Suc n) = (\<lambda>n. of_real (1 - q ^ Suc n))"
+    by simp
+  also have "lambert (\<lambda>n. 1 / of_nat n) (of_real q) = complex_of_real (lambert (\<lambda>n. 1 / real n) q)"
+    by (subst lambert_of_real [symmetric]) auto
+  also have "exp (-\<dots>) = of_real (exp (-lambert (\<lambda>n. 1 / real n) q))"
+    by (simp flip: exp_of_real)
+  finally show ?thesis
+    unfolding has_prod_of_real_iff .
+qed
+
 
 text \<open>
   With our general results on Lambert series, we also know that $\ln \varphi(q)$ has the power

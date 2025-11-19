@@ -55,7 +55,7 @@ lemma "do {x \<leftarrow> B; z \<leftarrow> C x; d \<leftarrow> E z x; a \<lefta
 by (simp)
 
 
-no_adhoc_overloading Monad_Syntax.bind bind_pmf
+no_adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 context
   fixes \<A>1 :: "'a \<Rightarrow> (('a \<times> 'a) \<times> 'b) spmf"

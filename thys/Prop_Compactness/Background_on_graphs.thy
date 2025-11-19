@@ -1,3 +1,15 @@
+(* Hall's Theorem - Graphs' version
+   Fabian Fernando Serrano Suárez  UNAL Manizales
+   Thaynara Arielly de Lima        Universidade Federal de Goiáis 
+   Mauricio Ayala-Rincón           Universidade de Brasília
+
+   This theory is only imported by the theory Hall_Theorem_Graphs.
+   It includes a minimum minimorum on graphs to avoid calling big
+   Isabelle theories on graphs. 
+
+   Last modified: 29 Sep, 2025
+*)
+
 theory Background_on_graphs
 
 imports Main
@@ -47,7 +59,7 @@ definition bipartite_digraph:: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Right
 definition dir_bipartite_digraph:: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" 
   where
   "dir_bipartite_digraph G X Y  \<equiv> (bipartite_digraph G X Y) \<and> 
-   ((tails G = X) \<and>  (\<forall> e1 \<in> arcs G. \<forall> e2 \<in> arcs G. e1 = e2 \<longleftrightarrow> head G e1 = head G e2 \<and> tail G e1 = tail G e2))"  
+   ((tails G \<subseteq> X) \<and>  (\<forall> e1 \<in> arcs G. \<forall> e2 \<in> arcs G. e1 = e2 \<longleftrightarrow> head G e1 = head G e2 \<and> tail G e1 = tail G e2))"  
 
 (* Directed bipartite digraph with finite neighbourhoods of its tails *)
 definition K_E_bipartite_digraph:: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" 

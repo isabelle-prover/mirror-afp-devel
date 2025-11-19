@@ -12,7 +12,6 @@ theory Distributed_Distinct_Elements_Accuracy_Without_Cutoff
     Distributed_Distinct_Elements_Balls_and_Bins
 begin
 
-hide_fact (open) Discrete.log_mono
 no_notation Polynomials.var (\<open>X\<index>\<close>)
 
 locale inner_algorithm_fix_A = inner_algorithm +

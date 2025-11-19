@@ -130,6 +130,11 @@ oops
 strategy testCut = Thens [Repeat (Cut 10 (Dynamic (Rule))), IsSolved]
 lemma "True \<and> True"
 find_proof testCut
-oops
+  oops
+
+lemma assumes "fooo" and "bar"
+  shows "fooo \<and> bar"
+  find_proof Hammer
+  oops
 
 end

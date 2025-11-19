@@ -290,8 +290,8 @@ sublocale intruder_model arity public Ana
 apply unfold_locales
 by (metis assm1, metis assm2, rule Ana.simps, metis assm4, metis assm5)
 
-adhoc_overloading INTRUDER_SYNTH intruder_synth
-adhoc_overloading INTRUDER_DEDUCT intruder_deduct
+adhoc_overloading INTRUDER_SYNTH \<rightleftharpoons> intruder_synth
+adhoc_overloading INTRUDER_DEDUCT \<rightleftharpoons> intruder_deduct
 
 lemma assm6: "arity c = 0 \<Longrightarrow> \<exists>a. \<forall>X. \<Gamma> (Fun c X) = TAtom a" by (cases c) auto
 
@@ -7475,7 +7475,7 @@ begin
 
 subsubsection \<open>Intermediate Step: Equivalence to a Ground Protocol Model with Renaming\<close>
 
-private definition "consts_of X = {t. t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t X \<and> (\<exists>c. t = Fun c [])}"
+private definition "priv_consts_of X = {t. t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t X \<and> (\<exists>c. t = Fun c [] \<and> \<not>public c \<and> arity c = 0)}"
 
 private fun mk_symb where
   "mk_symb (\<xi>, \<sigma>, I, T, \<alpha>) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t((transaction_strand T) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>)"
@@ -8585,24 +8585,25 @@ where
     interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t I;
     wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range I)
    \<rbrakk> \<Longrightarrow> (IK \<union> ((ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) \<cdot>\<^sub>s\<^sub>e\<^sub>t I), dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel A) I DB,
-          consts \<union> {t. t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<and> (\<exists>c. t = Fun c [])}) \<in> ground_protocol_states P"
+          consts \<union> {t. t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<and> (\<exists>c. t = Fun c [] \<and> \<not>public c \<and> arity c = 0)}) 
+         \<in> ground_protocol_states P"
 
 
-private lemma transaction_fresh_subst_consts_of_iff:
-  "transaction_fresh_subst \<sigma> T (consts_of trms) \<longleftrightarrow> transaction_fresh_subst \<sigma> T trms"
-proof (cases "transaction_fresh_subst \<sigma> T (consts_of trms) \<or> transaction_fresh_subst \<sigma> T trms")
+private lemma transaction_fresh_subst_priv_consts_of_iff:
+  "transaction_fresh_subst \<sigma> T (priv_consts_of trms) \<longleftrightarrow> transaction_fresh_subst \<sigma> T trms"
+proof (cases "transaction_fresh_subst \<sigma> T (priv_consts_of trms) \<or> transaction_fresh_subst \<sigma> T trms")
   case True
-  then have "\<forall>t \<in> subst_range \<sigma>. \<exists>c. t = Fun c []"
+  then have "\<forall>t \<in> subst_range \<sigma>. \<exists>c. t = Fun c [] \<and> \<not> public c \<and> arity c = 0"
     unfolding transaction_fresh_subst_def by auto
-  have "(\<forall>t \<in> subst_range \<sigma>. t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (consts_of trms) \<longleftrightarrow> t \<in> subterms\<^sub>s\<^sub>e\<^sub>t trms)"
+  have "(\<forall>t \<in> subst_range \<sigma>. t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (priv_consts_of trms) \<longleftrightarrow> t \<in> subterms\<^sub>s\<^sub>e\<^sub>t trms)"
   proof 
     fix t
     assume "t \<in> subst_range \<sigma>"
-    then obtain c where c_p: "t = Fun c []"
-      using \<open>\<forall>t\<in>subst_range \<sigma>. \<exists>c. t = Fun c []\<close> by blast
-    have "Fun c [] \<in> subterms\<^sub>s\<^sub>e\<^sub>t (consts_of trms) \<longleftrightarrow> Fun c [] \<in> subterms\<^sub>s\<^sub>e\<^sub>t trms"
-      unfolding consts_of_def by auto
-    then show "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (consts_of trms) \<longleftrightarrow> t \<in> subterms\<^sub>s\<^sub>e\<^sub>t trms"
+    then obtain c where c_p: "t = Fun c [] \<and> \<not> public c \<and> arity c = 0"
+      using \<open>\<forall>t\<in>subst_range \<sigma>. \<exists>c. t = Fun c [] \<and> \<not> public c \<and> arity c = 0\<close> by blast
+    then have "Fun c [] \<in> subterms\<^sub>s\<^sub>e\<^sub>t (priv_consts_of trms) \<longleftrightarrow> Fun c [] \<in> subterms\<^sub>s\<^sub>e\<^sub>t trms"
+      unfolding priv_consts_of_def by auto
+    then show "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (priv_consts_of trms) \<longleftrightarrow> t \<in> subterms\<^sub>s\<^sub>e\<^sub>t trms"
       using c_p by auto
   qed
   then show ?thesis
@@ -8618,9 +8619,9 @@ private lemma transaction_renaming_subst_inv:
 using var_rename_inv_comp transaction_renaming_subst_def assms subst_apply_term_empty subst_term_eqI
 by (metis var_rename_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_range(2))  
 
-private lemma consts_of_union_distr: 
-  "consts_of (trms1 \<union> trms2) = consts_of trms1 \<union> consts_of trms2"
-unfolding consts_of_def by auto
+private lemma priv_consts_of_union_distr: 
+  "priv_consts_of (trms1 \<union> trms2) = priv_consts_of trms1 \<union> priv_consts_of trms2"
+unfolding priv_consts_of_def by auto
 
 private lemma ground_protocol_states_aux_finite_vars:
   assumes "(IK,DB,trms,vars,w) \<in> ground_protocol_states_aux P"
@@ -8653,31 +8654,31 @@ next
     by auto
 qed
 
-private lemma subst_Var_consts_of:
+private lemma subst_Var_priv_consts_of:
   assumes "subst_range \<alpha> \<subseteq> range Var"
-  shows "consts_of T = consts_of (T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<alpha>)"
+  shows "priv_consts_of T = priv_consts_of (T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<alpha>)"
 proof (rule antisym; rule subsetI)
   fix x
-  assume "x \<in> consts_of T"
-  then obtain t c where t_c_p: "t \<in> T \<and> x \<sqsubseteq> t \<and> x = Fun c []"
-    unfolding consts_of_def by auto
+  assume "x \<in> priv_consts_of T"
+  then obtain t c where t_c_p: "t \<in> T \<and> x \<sqsubseteq> t \<and> x = Fun c [] \<and> \<not> public c \<and> arity c = 0"
+    unfolding priv_consts_of_def by auto
   moreover
   have "x \<sqsubseteq> t \<cdot> \<alpha>"
     using t_c_p by (meson assms subst_Var_const_subterm_subst)
   ultimately
-  show "x \<in> consts_of (T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<alpha>)"
-    unfolding consts_of_def by auto 
+  show "x \<in> priv_consts_of (T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<alpha>)"
+    unfolding priv_consts_of_def by auto 
 next
   fix x
-  assume "x \<in> consts_of (T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<alpha>)"
-  then obtain t c where t_c_p: "t \<in> T \<and> x \<sqsubseteq> t \<cdot> \<alpha> \<and> x = Fun c []"
-    unfolding consts_of_def by auto
+  assume "x \<in> priv_consts_of (T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<alpha>)"
+  then obtain t c where t_c_p: "t \<in> T \<and> x \<sqsubseteq> t \<cdot> \<alpha> \<and> x = Fun c [] \<and> \<not> public c \<and> arity c = 0"
+    unfolding priv_consts_of_def by auto
   moreover
   have "x \<sqsubseteq> t"
     using t_c_p by (meson assms subst_Var_const_subterm_subst)
   ultimately
-  show "x \<in> consts_of T"
-    unfolding consts_of_def by auto
+  show "x \<in> priv_consts_of T"
+    unfolding priv_consts_of_def by auto
 qed
 
 private lemma fst_set_subst_apply_set:
@@ -8692,109 +8693,109 @@ private lemma trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_fst_snd:
   "trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F = fst ` set F \<union> snd ` set F"
 by (auto simp add: rev_image_eqI)
 
-private lemma consts_of_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_range_Var:
+private lemma priv_consts_of_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_range_Var:
   assumes "subst_range \<alpha> \<subseteq> range Var"
-  shows "consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) = consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<alpha>))"
+  shows "priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<alpha>))"
   using assms
 proof (induction a)
   case (NegChecks X F F')
   have \<alpha>_subs_rng_Var: "subst_range (rm_vars (set X) \<alpha>) \<subseteq> range Var"
     using assms by auto
 
-  have "consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) = consts_of (fst ` set F \<union> snd ` set F)"
+  have "priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) = priv_consts_of (fst ` set F \<union> snd ` set F)"
     using trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_fst_snd by metis
   also
-  have "... = consts_of (fst ` set F) \<union> consts_of (snd ` set F)"
-    using consts_of_union_distr by blast
+  have "... = priv_consts_of (fst ` set F) \<union> priv_consts_of (snd ` set F)"
+    using priv_consts_of_union_distr by blast
   also
-  have "... = consts_of ((fst ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
-                consts_of ((snd ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>)"
-    using \<alpha>_subs_rng_Var subst_Var_consts_of[of "rm_vars (set X) \<alpha>" "fst ` set F"] 
-            subst_Var_consts_of[of "rm_vars (set X) \<alpha>" "snd ` set F"] 
+  have "... = priv_consts_of ((fst ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
+                priv_consts_of ((snd ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>)"
+    using \<alpha>_subs_rng_Var subst_Var_priv_consts_of[of "rm_vars (set X) \<alpha>" "fst ` set F"] 
+            subst_Var_priv_consts_of[of "rm_vars (set X) \<alpha>" "snd ` set F"] 
     by auto
   also
-  have "... = consts_of (((fst ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
+  have "... = priv_consts_of (((fst ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
                 ((snd ` set F) \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>))"
-    using consts_of_union_distr by auto
+    using priv_consts_of_union_distr by auto
   also
-  have "... = consts_of (fst ` set (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>) \<union>
+  have "... = priv_consts_of (fst ` set (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>) \<union>
                 snd ` set (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
     unfolding subst_apply_pairs_def fst_set_subst_apply_set snd_set_subst_apply_set by simp 
   also
-  have "... = consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
+  have "... = priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
     using trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_fst_snd[of "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>"] 
     by metis
   finally 
-  have 1: "consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) = consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
+  have 1: "priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) = priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
     by auto
 
-  have "consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F') = consts_of (fst ` set F' \<union> snd ` set F')"
+  have "priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F') = priv_consts_of (fst ` set F' \<union> snd ` set F')"
     using trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_fst_snd by metis
   also
-  have "... = consts_of (fst ` set F') \<union> consts_of (snd ` set F')"
-    using consts_of_union_distr by blast
+  have "... = priv_consts_of (fst ` set F') \<union> priv_consts_of (snd ` set F')"
+    using priv_consts_of_union_distr by blast
   also
-  have "... = consts_of ((fst ` set F') \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
-                consts_of ((snd ` set F') \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>)"
-    using subst_Var_consts_of[of "rm_vars (set X) \<alpha>" "fst ` set F'"] \<alpha>_subs_rng_Var
-            subst_Var_consts_of[of "rm_vars (set X) \<alpha>" "snd ` set F'"]
+  have "... = priv_consts_of ((fst ` set F') \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
+                priv_consts_of ((snd ` set F') \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>)"
+    using subst_Var_priv_consts_of[of "rm_vars (set X) \<alpha>" "fst ` set F'"] \<alpha>_subs_rng_Var
+            subst_Var_priv_consts_of[of "rm_vars (set X) \<alpha>" "snd ` set F'"]
     by auto
   also
-  have "... = consts_of ((fst ` set F' \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
+  have "... = priv_consts_of ((fst ` set F' \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>) \<union>
                 (snd ` set F' \<cdot>\<^sub>s\<^sub>e\<^sub>t rm_vars (set X) \<alpha>))"
-    using consts_of_union_distr by auto
+    using priv_consts_of_union_distr by auto
   also
-  have "... = consts_of (fst ` set (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>) \<union> 
+  have "... = priv_consts_of (fst ` set (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>) \<union> 
                 snd ` set (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
     unfolding subst_apply_pairs_def fst_set_subst_apply_set snd_set_subst_apply_set by simp 
   also
-  have "... = consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
+  have "... = priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
     using trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_fst_snd[of "F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>"] 
     by metis
-  finally have 2: "consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F') = consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
+  finally have 2: "priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F') = priv_consts_of (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<alpha>))"
     by auto
 
   show ?case 
-    using 1 2 by (simp add: consts_of_union_distr)
-qed (use subst_Var_consts_of[of _ "{_, _}", OF assms] subst_Var_consts_of[OF assms] in auto)
+    using 1 2 by (simp add: priv_consts_of_union_distr)
+qed (use subst_Var_priv_consts_of[of _ "{_, _}", OF assms] subst_Var_priv_consts_of[OF assms] in auto)
 
-private lemma consts_of_trms\<^sub>s\<^sub>s\<^sub>t_range_Var:
+private lemma priv_consts_of_trms\<^sub>s\<^sub>s\<^sub>t_range_Var:
   assumes "subst_range \<alpha> \<subseteq> range Var"
-  shows "consts_of (trms\<^sub>s\<^sub>s\<^sub>t T) = consts_of (trms\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
+  shows "priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t T) = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
 proof (induction T)
   case Nil
   then show ?case by auto
 next
   case (Cons a T)
-  have "consts_of (trms\<^sub>s\<^sub>s\<^sub>t (a # T)) = consts_of (trms\<^sub>s\<^sub>s\<^sub>t [a] \<union> trms\<^sub>s\<^sub>s\<^sub>t T)"
+  have "priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t (a # T)) = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t [a] \<union> trms\<^sub>s\<^sub>s\<^sub>t T)"
     by simp
   also
-  have "... = consts_of (trms\<^sub>s\<^sub>s\<^sub>t [a]) \<union> consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
-    using consts_of_union_distr by simp
+  have "... = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t [a]) \<union> priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
+    using priv_consts_of_union_distr by simp
   also 
-  have "... = consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) \<union> consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
+  have "... = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) \<union> priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
     by simp
   also
-  have "... = consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<alpha>)) \<union> consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
-    using consts_of_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_range_Var[OF assms] by simp
+  have "... = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<alpha>)) \<union> priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
+    using priv_consts_of_trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p_range_Var[OF assms] by simp
   also 
-  have "... = consts_of (trms\<^sub>s\<^sub>s\<^sub>t ([a] \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>)) \<union> consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
+  have "... = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t ([a] \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>)) \<union> priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t T)"
     by (simp add: subst_apply_stateful_strand_def)
   also
-  have "... = consts_of (trms\<^sub>s\<^sub>s\<^sub>t ([a] \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>)) \<union> consts_of (trms\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
+  have "... = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t ([a] \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>)) \<union> priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
     using local.Cons by simp
   also
-  have "... = consts_of (trms\<^sub>s\<^sub>s\<^sub>t (a # T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
-    by (simp add: consts_of_union_distr subst_sst_cons)
+  have "... = priv_consts_of (trms\<^sub>s\<^sub>s\<^sub>t (a # T \<cdot>\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
+    by (simp add: priv_consts_of_union_distr subst_sst_cons)
   finally
   show ?case
     by simp
 qed
 
-private lemma consts_of_trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t_range_Var:
+private lemma priv_consts_of_trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t_range_Var:
   assumes "subst_range \<alpha> \<subseteq> range Var"
-  shows "consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T) = consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
-using consts_of_trms\<^sub>s\<^sub>s\<^sub>t_range_Var[of \<alpha> "unlabel T"]
+  shows "priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t T) = priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
+using priv_consts_of_trms\<^sub>s\<^sub>s\<^sub>t_range_Var[of \<alpha> "unlabel T"]
 by (metis assms unlabel_subst)
 
 private lemma transaction_renaming_subst_range:
@@ -8804,12 +8805,12 @@ using assms unfolding transaction_renaming_subst_def var_rename_def by auto
 
 private lemma protocol_models_equiv3':
   assumes "(IK,DB,trms,vars,w) \<in> ground_protocol_states_aux P"
-  shows "(IK,DB, consts_of trms) \<in> ground_protocol_states P"
+  shows "(IK,DB, priv_consts_of trms) \<in> ground_protocol_states P"
   using assms 
 proof (induction rule: ground_protocol_states_aux.induct)
   case init
   then show ?case
-    using ground_protocol_states.init unfolding consts_of_def by force
+    using ground_protocol_states.init unfolding priv_consts_of_def by force
 next
   case (step IK DB trms vars w T \<xi> \<sigma> \<alpha> A I)
 
@@ -8825,7 +8826,7 @@ next
   define I' where "I' = \<alpha> \<circ>\<^sub>s I"
   define A' where "A' = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma>)"
 
-  have "(IK, DB, consts_of trms) \<in> ground_protocol_states P"
+  have "(IK, DB, priv_consts_of trms) \<in> ground_protocol_states P"
     using step by force
   moreover
   have T_in_P: "T \<in> set P"
@@ -8834,8 +8835,8 @@ next
   have "transaction_decl_subst \<xi> T"
      using step by force
   moreover
-  have "transaction_fresh_subst \<sigma> T (consts_of trms)"
-     using step transaction_fresh_subst_consts_of_iff by force
+  have "transaction_fresh_subst \<sigma> T (priv_consts_of trms)"
+     using step transaction_fresh_subst_priv_consts_of_iff by force
   moreover
   have "A' = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<xi> \<circ>\<^sub>s \<sigma>)"
     using A'_def .
@@ -8854,9 +8855,9 @@ next
    using step.hyps(5) transaction_renaming_subst_range_wf_trms wf_trms_subst_compose by blast 
   ultimately
   have "(IK \<union> (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A' \<cdot>\<^sub>s\<^sub>e\<^sub>t I'), dbupd\<^sub>s\<^sub>s\<^sub>t (unlabel A') I' DB, 
-           consts_of trms \<union> consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A')) \<in> ground_protocol_states P"
-    using ground_protocol_states.step[of IK DB "consts_of trms" P T \<xi> \<sigma> A' I']
-    unfolding consts_of_def by blast
+           priv_consts_of trms \<union> priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A')) \<in> ground_protocol_states P"
+    using ground_protocol_states.step[of IK DB "priv_consts_of trms" P T \<xi> \<sigma> A' I']
+    unfolding priv_consts_of_def by blast
   moreover
   have "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A' \<cdot>\<^sub>s\<^sub>e\<^sub>t I' = ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I"
   proof - 
@@ -8896,18 +8897,18 @@ next
       by auto
   qed
   moreover
-  have "consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A') = consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
-    by (metis (no_types, lifting) A'_def \<alpha>_Var consts_of_trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t_range_Var ground_\<xi>\<sigma> 
+  have "priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A') = priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
+    by (metis (no_types, lifting) A'_def \<alpha>_Var priv_consts_of_trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t_range_Var ground_\<xi>\<sigma> 
          labelled_stateful_strand_ground_subst_comp step.hyps(6) trms\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq)
   ultimately
   show ?case
-    using consts_of_union_distr by metis
+    using priv_consts_of_union_distr by metis
 qed
 
 private lemma protocol_models_equiv4':
   assumes "(IK, DB, csts) \<in> ground_protocol_states P"
   shows "\<exists>trms w vars. (IK,DB,trms,vars,w) \<in> ground_protocol_states_aux P 
-                  \<and> csts = consts_of trms
+                  \<and> csts = priv_consts_of trms
                   \<and> vars = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (T_symb w)"
   using assms 
 proof (induction rule: ground_protocol_states.induct)
@@ -8915,8 +8916,8 @@ proof (induction rule: ground_protocol_states.induct)
   have "({}, {}, {}, {}, []) \<in> ground_protocol_states_aux P"
     using ground_protocol_states_aux.init by blast
   moreover
-  have "{} = consts_of {}"
-    unfolding consts_of_def by auto
+  have "{} = priv_consts_of {}"
+    unfolding priv_consts_of_def by auto
   moreover
   have "{} = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (T_symb [])"
     by auto
@@ -8927,7 +8928,7 @@ next
   case (step IK DB "consts" T \<xi> \<sigma> A I)
   then obtain trms w vars where trms_w_vars_p:
     "(IK, DB, trms, vars, w) \<in> ground_protocol_states_aux P"
-    "consts = consts_of trms"
+    "consts = priv_consts_of trms"
     "vars = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (T_symb w)"
     by auto
 
@@ -8961,7 +8962,7 @@ next
     moreover
     have fresh_\<sigma>: "transaction_fresh_subst \<sigma> T trms"
       using step(4) trms_w_vars_p(2)
-      using transaction_fresh_subst_consts_of_iff by auto
+      using transaction_fresh_subst_priv_consts_of_iff by auto
     moreover
     have "transaction_renaming_subst \<alpha> P vars"
       using \<alpha>_p .
@@ -9019,7 +9020,7 @@ next
       unfolding trms'_def vars'_def w'_def IK'_def DB'_def by auto
   qed
   moreover
-  have "consts \<union> consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) = consts_of trms'"
+  have "consts \<union> priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) = priv_consts_of trms'"
   proof -
     have \<alpha>_Var: "subst_range \<alpha> \<subseteq> range Var"
       using \<alpha>_p transaction_renaming_subst_range by blast
@@ -9027,21 +9028,21 @@ next
     have ground_\<xi>\<sigma>: "ground (subst_range (\<xi> \<circ>\<^sub>s \<sigma>))"
       using fresh_transaction_decl_subst_ground_subst_range using step.hyps(3) step.hyps(4) by blast
 
-    have "consts \<union> consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) = (consts_of trms) \<union> consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
+    have "consts \<union> priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) = (priv_consts_of trms) \<union> priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
       using trms_w_vars_p(2) by blast
     also
-    have "... = (consts_of trms) \<union> consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
-      using consts_of_trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t_range_Var[of \<alpha>, OF \<alpha>_Var, of A] by auto
+    have "... = (priv_consts_of trms) \<union> priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<alpha>))"
+      using priv_consts_of_trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t_range_Var[of \<alpha>, OF \<alpha>_Var, of A] by auto
     also
-    have "... = (consts_of trms) \<union> consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A')"
+    have "... = (priv_consts_of trms) \<union> priv_consts_of (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A')"
       using step(5) A'_def ground_\<xi>\<sigma>
       using labelled_stateful_strand_ground_subst_comp[of _ "(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (transaction_strand T))"]
       by (simp add: dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst)
     also
-    have "... = consts_of (trms \<union> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A')"
-      using consts_of_union_distr by blast
+    have "... = priv_consts_of (trms \<union> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t A')"
+      using priv_consts_of_union_distr by blast
     also
-    have "... = consts_of trms'"
+    have "... = priv_consts_of trms'"
       unfolding trms'_def by auto
     finally
     show "?thesis"
@@ -9052,7 +9053,7 @@ next
     using P_state reachable_constraints_if_ground_protocol_states_aux by auto
   ultimately
   show ?case
-    unfolding DB'_def IK'_def consts_of_def[symmetric] by metis
+    unfolding DB'_def IK'_def priv_consts_of_def[symmetric] by metis
 qed
 
 private lemma protocol_model_equivalence_aux2:

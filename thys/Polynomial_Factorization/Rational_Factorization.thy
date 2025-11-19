@@ -254,7 +254,8 @@ lemma degree_1_dvd_root: assumes q: "degree (q :: 'a :: field poly) = 1"
   and rt: "\<And> x. poly p x \<noteq> 0"
   shows "\<not> q dvd p"
 proof -
-  from degree1_coeffs[OF q] obtain a b where q: "q = [: b, a :]" and a: "a \<noteq> 0" by auto
+  from degree1_coeffs[OF q] obtain a b where q: "q = [: b, a :]" and a: "a \<noteq> 0"
+    by metis
   have q: "q = smult a [: - (- b / a), 1 :]" unfolding q 
     by (rule poly_eqI, unfold coeff_smult, insert a, auto simp: field_simps coeff_pCons
       split: nat.splits)

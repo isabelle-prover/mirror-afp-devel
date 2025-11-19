@@ -1,59 +1,56 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>weber on Archive of Formal Proofs
-    </title>
-    <link>/authors/weber/</link>
-    <description>
-        Recent content in weber 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 27 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/weber/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Broadcast Psi-calculi</title>
-          <link>/entries/Broadcast_Psi.html</link>
-          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Broadcast_Psi.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified QBF Solving</title>
-          <link>/entries/QBF_Solver_Verification.html</link>
-          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/QBF_Solver_Verification.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Modal Logics for Nominal Transition Systems</title>
-          <link>/entries/Modal_Logics_for_NTS.html</link>
-          <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Modal_Logics_for_NTS.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kleene Algebras with Domain</title>
-          <link>/entries/KAD.html</link>
-          <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/KAD.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relation Algebra</title>
-          <link>/entries/Relation_Algebra.html</link>
-          <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Relation_Algebra.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kleene Algebra</title>
-          <link>/entries/Kleene_Algebra.html</link>
-          <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Kleene_Algebra.html</guid>
-          <description></description>
-        </item>
+    <title>Tjark Weber</title>
+    <link>https://isa-afp.org/authors/weber/</link>
+    <description>AFP entries of Tjark Weber</description><item>
+  <title>Broadcast Psi-calculi</title>
+  <link>https://isa-afp.org/entries/Broadcast_Psi.html</link>
+  <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Broadcast Psi-calculi in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Verified QBF Solving</title>
+  <link>https://isa-afp.org/entries/QBF_Solver_Verification.html</link>
+  <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Verified QBF Solving in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Classical propositional logic</category>
+</item>
+<item>
+  <title>Modal Logics for Nominal Transition Systems</title>
+  <link>https://isa-afp.org/entries/Modal_Logics_for_NTS.html</link>
+  <pubDate>Tue, 25 Oct 2016 00:00:00 +0000</pubDate>
+  <description>Modal Logics for Nominal Transition Systems in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Kleene Algebras with Domain</title>
+  <link>https://isa-afp.org/entries/KAD.html</link>
+  <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+  <description>Kleene Algebras with Domain in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Relation Algebra</title>
+  <link>https://isa-afp.org/entries/Relation_Algebra.html</link>
+  <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Relation Algebra in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Kleene Algebra</title>
+  <link>https://isa-afp.org/entries/Kleene_Algebra.html</link>
+  <pubDate>Tue, 15 Jan 2013 00:00:00 +0000</pubDate>
+  <description>Kleene Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Mathematics/Algebra</category>
+</item>
+
   </channel>
 </rss>

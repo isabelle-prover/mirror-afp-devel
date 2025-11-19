@@ -430,7 +430,7 @@ proof -
   then have s: "subs = [([], []),([0], []),([], [0])]" unfolding base_case_info_R_def
     by auto
   have "(n \<in> set Is1 \<or> n \<in> set Is2)" using assms(3)
-    by (simp add: in_set_member)
+    by (simp add:)
   thus ?thesis using assms(2) unfolding s by auto
 qed
 
@@ -450,7 +450,7 @@ proof -
   then have s: "subs = [([], []),([0], []),([], [0])]" unfolding base_case_info_R_def
     by auto
   have "(n \<in> set Is1 \<or> n \<in> set Is2)" using assms(3)
-    by (simp add: in_set_member)
+    by (simp add:)
   thus ?thesis using assms(2) unfolding s by auto
 qed
 
@@ -622,7 +622,7 @@ proof -
   have welldef_var: "\<forall>x. x \<in> set subs \<longrightarrow>
         list_constr (fst x) (length q) \<and> list_constr (snd x) (length q)"
     using welldef  unfolding all_list_constr_R_def
-    by (simp add: in_set_member)
+    by (simp add:)
   have "(Is1, Is2) \<in> set subs"
     using inset by auto 
   then have "(\<forall>x\<in>set Is1. x < length q) \<and> (\<forall>x\<in>set Is2. x < length q)"
@@ -743,7 +743,7 @@ proof (induct "length qs" arbitrary: val p mat_eq assumps qs rule: less_induct)
     then have "(assumps, mat_eq) \<in> set (concat (map (reduce_system_single_M p qs) (snd ?comb)))"
       by (metis reduce_system_M.simps)
     then have "\<exists>sys. sys \<in> set (snd ?comb) \<and> (assumps, mat_eq) \<in> set(reduce_system_single_M p qs sys)"
-      using concat_map_in_set in_set_member
+      using concat_map_in_set
       by (metis nth_mem) 
     then obtain a_pre me_pre  where reduce_prop: "(a_pre, me_pre) \<in> set (snd ?comb)"
       "(assumps, mat_eq) \<in> set(reduce_system_single_M p qs (a_pre, me_pre))"
@@ -1000,7 +1000,7 @@ proof (induct "length qs" arbitrary: val p mat_eq assumps qs rule: less_induct)
     then have "(assumps, mat_eq) \<in> set (concat (map (reduce_system_single_M p qs) (snd ?comb)))"
       by (metis reduce_system_M.simps)
     then have "\<exists>sys. sys \<in> set (snd ?comb) \<and> (assumps, mat_eq) \<in> set(reduce_system_single_M p qs sys)"
-      using concat_map_in_set in_set_member
+      using concat_map_in_set
       by (metis nth_mem) 
     then obtain a_pre me_pre  where reduce_prop: "(a_pre, me_pre) \<in> set (snd ?comb)"
       "(assumps, mat_eq) \<in> set(reduce_system_single_M p qs (a_pre, me_pre))"

@@ -3,436 +3,247 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780.In Spanish; 
+   Last modified: 11 Aug, 2025
+ *)
 
 
 (*<*)
 theory  HintikkaTheory
   imports MaximalSet 
-
-
 begin 
 (*>*)
 section   \<open> Hintikka Theorem  \<close>
 
 text \<open>
-The formalization of Hintikka's lemma is by induction on the structure of the formulas in a Hintikka set $H$ by applying the technical theorem {\tt hintikkaP\_model\_aux}. This theorem applies a series of lemmas to address the evaluation of all possible cases of formulas in $H$. Indeed,   considering the Boolean evaluation $IH$ that maps all propositional letters in $H$ to true and all other letters to false, the most interesting cases of the inductive proof are those related to implicational formulas in $H$ and the negation of arbitrary formulas in $H$. These cases are not straightforward since implicational and negation formulas are not considered in the definition of Hintikka sets. For an implicational formula, say $F_1 \longrightarrow F_2$, it is necessary to prove that if it belongs to $H$, its evaluation by $IH$ is true. Also, whenever  $\neg(F_1 \longrightarrow F_2)$ belongs to $H$ its evaluation is false. The proof is obtained by relating such formulas, respectively, with $\beta$ and $\alpha$ formulas (case P6). The second interesting case is the one related to arbitrary negations. In this case, it is proved that if $\neg F$ belongs to $H$, its evaluation by $IH$ is true, and in the case that $\neg\neg F$ belongs to $H$, its evaluation by $IH$ is also true (Case P7).
+The formalization of Hintikka's lemma is by induction on the structure of the formulas in a Hintikka
+set $H$ by applying the technical theorem {\tt HintikkaP\_model\_aux}. This theorem applies a series 
+of lemmas to address the evaluation of all possible cases of formulas in $H$. Indeed,   considering
+the Boolean evaluation $IH$ that maps all propositional letters in $H$ to true and all other letters 
+to false, the most interesting cases of the inductive proof are those related to implicational 
+formulas in $H$ and the negation of arbitrary formulas in $H$. These cases are not straightforward 
+since implicational and negation formulas are not considered in the definition of Hintikka sets. 
+For an implicational formula, say $F_1 \longrightarrow F_2$, it is necessary to prove that if it 
+belongs to $H$, its evaluation by $IH$ is true. Also, whenever  
+$\neg(F_1 \longrightarrow F_2)$ belongs to $H$ its evaluation is false. The proof is obtained by 
+relating such formulas, respectively, with $\beta$ and $\alpha$ formulas (case P6). 
+The second interesting case is the one related to arbitrary negations. In this case, it is proved 
+that if $\neg F$ belongs to $H$, its evaluation by $IH$ is true, and in the case that 
+$\neg\neg F$ belongs to $H$, its evaluation by $IH$ is also true (Case P7).
 \<close>
 
+locale HintikkaProp =
+  fixes H :: "'b formula set"
+assumes "ClosedPredicate H
+        (\<lambda> H G . G \<in> H) 
+        (\<lambda> H G . G \<in> H)
+        (\<lambda> H F G . F \<in> H \<and> G \<in> H)
+        (\<lambda> H F G . F \<in> H \<or> G \<in> H)" 
+
+fun IH :: "'b formula set  \<Rightarrow> 'b \<Rightarrow> bool" where
+  "IH H P = (if atom P \<in> H then True else False)"
+
+(*
+d. You claim to follow Fitting's book, but your proof that every Hintikka set is
+satisfiable is more complicated than needed. Here is an alternative method that
+use the suggestion in the book to proceed by structural induction in formulas
+(your strengthening is needed for negation and implication).
 
 
+ - First prove that a Hintikka set ``realises'' the canonical version of each
+ formula. For instance, if "\<not>. (F \<and>. G) \<in> H", then "\<not>. F \<in> H \<or> \<not>.G \<in> H".
+*)
 
-definition hintikkaP :: "'b formula set \<Rightarrow> bool" where 
-  "hintikkaP H = ((\<forall>P. \<not> (atom P \<in> H \<and> (\<not>.atom P) \<in> H)) \<and>
-                 FF \<notin> H \<and> (\<not>.TT) \<notin> H \<and>
-                 (\<forall>F. (\<not>.\<not>.F) \<in> H \<longrightarrow> F \<in> H) \<and>
-                 (\<forall>F. ((FormulaAlfa F) \<and> F \<in> H) \<longrightarrow> 
-                      ((Comp1 F) \<in> H \<and> (Comp2 F) \<in> H)) \<and>
-                 (\<forall>F. ((FormulaBeta F) \<and> F \<in> H) \<longrightarrow> 
-                      ((Comp1 F) \<in> H \<or> (Comp2 F) \<in> H)))"
-    
-
-fun IH :: "'b formula set  \<Rightarrow> 'b \<Rightarrow> v_truth" where
-  "IH H P = (if atom P \<in> H then Ttrue else Ffalse)"
-
-
-(*<*)
-primrec f_size :: "'b formula \<Rightarrow> nat" where
-  "f_size FF = 1"
-| "f_size TT = 1"
-| "f_size (atom P) = 1" 
-| "f_size (\<not>. F) = (f_size F) + 1" 
-| "f_size (F \<and>. G) = (f_size F) + (f_size G) + 1"
-| "f_size (F \<or>. G) = (f_size F) + (f_size G) + 1"             
-| "f_size (F \<rightarrow>. G) = (f_size F) + (f_size G) + 1"
-
-lemma pf_size: "0 < f_size F"
-by (induct F) auto
-(*>*)
-
-
-(*<*)
-
-(*>*)
-
-lemma case_P1:
-assumes hip1: "hintikkaP H" and
-hip2: "\<forall>G. (G, FF) \<in> measure f_size \<longrightarrow>
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G)= Ttrue)"
-shows "(FF \<in> H \<longrightarrow> t_v_evaluation (IH H) FF = Ttrue) \<and> ((\<not>.FF) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.FF)=Ttrue)" 
-(*<*)          
-proof(rule conjI)
-  show "(FF \<in> H \<longrightarrow>  t_v_evaluation (IH H) FF = Ttrue)"
-  proof -
-    have "FF \<notin> H" using hip1 by (unfold hintikkaP_def) auto
-    thus "FF \<in> H \<longrightarrow> t_v_evaluation (IH H) FF = Ttrue" by simp 
-  qed 
-  next  
-  show "(\<not>.FF) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.FF)=Ttrue" 
-  proof -
-    have "t_v_evaluation (IH H) (\<not>.FF)= Ttrue" by(simp add: v_negation_def)
-    thus ?thesis by simp
-  qed
-qed 
-(*>*)
-text\<open> \<close>  
-lemma case_P2:
-assumes hip1: "hintikkaP H" and
-hip2: "\<forall>G. (G, TT) \<in> measure f_size \<longrightarrow>
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G)= Ttrue)"                 
-shows 
-"(TT \<in> H \<longrightarrow> t_v_evaluation (IH H) TT = Ttrue) \<and> ((\<not>.TT) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.TT)=Ttrue)"
-(*<*)  
-proof(rule conjI)
-  show "TT \<in> H \<longrightarrow> t_v_evaluation (IH H) TT = Ttrue"
-  by simp
-  next
-  show "(\<not>.TT) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.TT)=Ttrue" 
-  proof -         
-    have "(\<not>.TT) \<notin> H" using hip1 by (unfold hintikkaP_def) auto
-    thus "(\<not>.TT) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.TT)=Ttrue" 
-    by simp
-  qed
+lemma (in HintikkaProp) HintikkaConj:
+  assumes "(F \<and>. G) \<in> H"
+  shows "F \<in> H \<and> G \<in> H"
+proof-
+  have "FormulaAlpha  (F \<and>. G)" by auto
+  have 1: "Comp1 (F \<and>. G) = F"
+    by (simp add: Comp1_def)
+  have "Comp2  (F \<and>. G) = G"
+    by (simp add: Comp2_def)
+  thus ?thesis using 1 assms  AlphaPredicate_def ClosedPredicate_def HintikkaProp_def
+    by (metis (no_types, lifting) FormulaAlpha.simps(1) HintikkaProp_axioms) 
 qed
-(*>*)
-text\<open> \<close>
-lemma case_P3:
-assumes hip1: "hintikkaP H" and
-hip2: "\<forall>G. (G, atom P) \<in> measure f_size \<longrightarrow>
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G)= Ttrue)"     
-shows "(atom P \<in> H  \<longrightarrow> t_v_evaluation (IH H) (atom P) = Ttrue) \<and>
-((\<not>.atom P) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.atom P) = Ttrue)"
-(*<*)
-proof(rule conjI)
-  show "(atom P)  \<in> H \<longrightarrow> t_v_evaluation (IH H) (atom P) = Ttrue" by simp
-  next
-  show "(\<not>.atom P) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.atom P) = Ttrue" 
-  proof(rule conjI impI)
-    assume h1: "\<not>.atom P \<in> H"
-    show "t_v_evaluation (IH H) (\<not>.atom P) = Ttrue"    
-    proof -
-      have "\<forall>p. \<not> (atom p \<in> H \<and> (\<not>.atom p) \<in> H)"
-      using hip1 conjunct1 by(unfold hintikkaP_def)
-      hence "atom P \<notin> H" using h1 by auto
-      hence "t_v_evaluation (IH H) (atom P) = Ffalse" by simp
-      thus ?thesis by(simp add: v_negation_def)
-    qed
-  qed
-qed
-(*>*)
-text\<open> \<close>
-lemma case_P4:
-assumes hip1: "hintikkaP H" and
-hip2: "\<forall>G. (G, F1 \<and>. F2) \<in> measure f_size \<longrightarrow> 
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G) = Ttrue)"   
-shows "((F1 \<and>. F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (F1 \<and>. F2) = Ttrue) \<and>
-((\<not>.(F1 \<and>. F2)) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.(F1 \<and>. F2)) = Ttrue)"
-(*<*)
-proof(rule conjI)                               
-  show "((F1 \<and>. F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (F1 \<and>. F2) = Ttrue)"    
-  proof(rule conjI impI)
-    assume h2: "(F1 \<and>. F2) \<in> H" 
-    show  "t_v_evaluation (IH H) (F1 \<and>. F2) = Ttrue"
-    proof - 
-      have "FormulaAlfa (F1 \<and>. F2)" by simp 
-      hence "Comp1 (F1 \<and>. F2) \<in> H \<and> Comp2 (F1 \<and>. F2) \<in> H"
-      using hip1 h2 by(auto simp add: hintikkaP_def)         
-      hence "F1 \<in> H" and "F2 \<in> H" by(unfold Comp1_def, unfold Comp2_def, auto)
-      moreover     
-      have "(F1, F1 \<and>. F2) \<in> measure f_size" and
-      "(F2, F1 \<and>. F2) \<in> measure f_size"
-      by auto
-      hence "(F1 \<in> H \<longrightarrow> t_v_evaluation (IH H) F1 = Ttrue)" and
-      "(F2 \<in> H \<longrightarrow> t_v_evaluation (IH H) F2 = Ttrue)" 
-      using hip2 by auto      
-      ultimately
-      have "t_v_evaluation (IH H) F1 = Ttrue" and "t_v_evaluation (IH H) F2 = Ttrue"
-      by auto
-      thus ?thesis by (simp add: v_conjunction_def)      
-    qed 
-  qed
-  next
-  show "\<not>.(F1 \<and>. F2) \<in> H \<longrightarrow> t_v_evaluation (IH H)  (\<not>.(F1 \<and>. F2)) = Ttrue" 
-  proof(rule impI)
-    assume h2: "(\<not>.(F1 \<and>. F2)) \<in> H" 
-    show "t_v_evaluation (IH H) (\<not>.(F1 \<and>. F2)) = Ttrue"
-    proof - 
-      have "FormulaBeta (\<not>.(F1 \<and>. F2))" by simp 
-      hence "Comp1 (\<not>.(F1 \<and>. F2)) \<in> H \<or> Comp2 (\<not>.(F1 \<and>. F2)) \<in> H"
-      using hip1 h2 by(auto simp add: hintikkaP_def)              
-      hence "(\<not>.F1) \<in> H \<or> (\<not>.F2) \<in> H" by(unfold Comp1_def, unfold Comp2_def, auto)
-      thus ?thesis
-      proof(rule disjE)
-        assume "(\<not>.F1) \<in> H"
-        moreover        
-        have "(\<not>.F1, (F1 \<and>. F2)) \<in> measure f_size" using pf_size by simp         
-        hence "(\<not>.F1) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F1) = Ttrue" 
-        using hip2 by simp    
-        ultimately 
-        have 1: "t_v_evaluation (IH H) (\<not>.F1) = Ttrue" by simp       
-        hence "t_v_evaluation (IH H) F1 = Ffalse" using NegationValues2 by auto                  
-        thus "t_v_evaluation (IH H) (\<not>.(F1 \<and>. F2)) = Ttrue" 
-        by (simp add: v_negation_def, simp add: v_conjunction_def)          next  
-        assume "(\<not>.F2) \<in> H"
-        moreover 
-        have "(\<not>.F2, (F1 \<and>. F2)) \<in> measure f_size" using pf_size by simp
-        hence " (\<not>.F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F2)= Ttrue" 
-        using hip2 by simp    
-        ultimately 
-        have 1: "t_v_evaluation (IH H) (\<not>.F2) = Ttrue" by simp
-        hence "t_v_evaluation (IH H) F2 = Ffalse" using NegationValues2 by auto          
-        thus "t_v_evaluation (IH H) (\<not>.(F1 \<and>. F2)) = Ttrue"
-        by (simp add: v_negation_def, simp add: v_conjunction_def)                
-      qed 
-    qed
-  qed
-qed
-(*>*)
-text\<open> \<close>      
-lemma case_P5:
-assumes hip1: "hintikkaP H" and
-hip2: "\<forall>G. (G, F1 \<or>. F2) \<in> measure f_size \<longrightarrow>
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G) = Ttrue)"             
-shows "((F1 \<or>. F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (F1 \<or>. F2) = Ttrue) \<and>
-((\<not>.(F1 \<or>. F2)) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.(F1 \<or>. F2)) = Ttrue)"
-(*<*)
-proof(rule conjI) 
-  show "(F1 \<or>. F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (F1 \<or>. F2) = Ttrue"
-  proof(rule conjI impI)
-    assume h2: "(F1  \<or>. F2) \<in> H" 
-    show "t_v_evaluation (IH H) (F1 \<or>. F2) = Ttrue"
-    proof -     
-      have "FormulaBeta (F1 \<or>.F2)" by simp 
-      hence "Comp1 (F1 \<or>.F2) \<in> H \<or> Comp2 (F1 \<or>.F2) \<in> H"
-      using hip1 h2 by(auto simp add: hintikkaP_def)              
-      hence "F1 \<in> H \<or> F2 \<in> H" by(unfold Comp1_def, unfold Comp2_def, auto)     
-      thus ?thesis
-      proof(rule disjE)
-        assume "F1 \<in> H"
-        moreover         
-        have "(F1, F1 \<or>. F2) \<in> measure f_size" by simp
-        hence "(F1 \<in> H \<longrightarrow>  t_v_evaluation (IH H) F1 = Ttrue)" 
-        using hip2 by simp    
-        ultimately 
-        have "t_v_evaluation (IH H) F1 = Ttrue" by simp
-        thus "t_v_evaluation (IH H) (F1 \<or>. F2) = Ttrue" by (simp add: v_disjunction_def)   
-        next  
-        assume "F2 \<in> H"
-        moreover        
-        have "(F2, (F1 \<or>. F2)) \<in> measure f_size" by simp
-        hence "F2 \<in> H \<longrightarrow>  t_v_evaluation (IH H) F2 =Ttrue" 
-        using hip2 by simp    
-        ultimately 
-        have "t_v_evaluation (IH H) F2 = Ttrue" by simp
-        thus "t_v_evaluation (IH H) (F1 \<or>. F2) = Ttrue" by (simp add: v_disjunction_def)            
-      qed 
-    qed
-  qed
-  next
-  show "(\<not>.(F1 \<or>. F2)) \<in> H \<longrightarrow>
-  t_v_evaluation (IH H) (\<not>.(F1 \<or>. F2)) = Ttrue"
-  proof(rule impI)
-    assume h2: "(\<not>.(F1  \<or>. F2)) \<in> H" 
-    show "t_v_evaluation (IH H) (\<not>.(F1  \<or>. F2)) = Ttrue"
-    proof -
-      have "FormulaAlfa(\<not>.(F1 \<or>. F2))" by simp 
-      hence "Comp1 (\<not>.(F1 \<or>. F2)) \<in> H \<and> Comp2 (\<not>.(F1 \<or>. F2)) \<in> H"
-      using hip1 h2 by(auto simp add: hintikkaP_def)              
-      hence "\<not>.F1 \<in> H \<and> \<not>.F2 \<in> H" by(unfold Comp1_def, unfold Comp2_def, auto) 
-      hence "(\<not>.F1) \<in> H" and "(\<not>.F2) \<in> H" by auto
-      moreover     
-      have "(\<not>.F1, F1 \<or>. F2) \<in> measure f_size" and
-     "(\<not>.F2, F1 \<or>. F2) \<in> measure f_size" using pf_size
-      by auto
-      hence "((\<not>.F1) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F1) = Ttrue)" and
-           "((\<not>.F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F2) = Ttrue)" 
-      using hip2 by auto      
-      ultimately
-      have 1: "t_v_evaluation (IH H) (\<not>.F1) = Ttrue" and
-           2: "t_v_evaluation (IH H) (\<not>.F2) = Ttrue" by auto
-      have "t_v_evaluation (IH H) F1 = Ffalse" using 1 NegationValues2 by auto              
-      moreover
-      have "t_v_evaluation (IH H) F2 = Ffalse" using 2 NegationValues2 by auto      
-      ultimately   
-      show  "t_v_evaluation (IH H) (\<not>.(F1 \<or>. F2)) = Ttrue"
-      by (simp add: v_disjunction_def, simp add: v_negation_def)      
-    qed 
-  qed
-qed
-(*>*)
-text\<open> \<close>
-lemma case_P6:
-assumes hip1: "hintikkaP H" and 
-hip2: "\<forall>G. (G, F1  \<rightarrow>. F2) \<in> measure f_size \<longrightarrow>
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G) = Ttrue)"           
-shows "((F1  \<rightarrow>. F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (F1  \<rightarrow>. F2) = Ttrue) \<and>
-((\<not>.(F1  \<rightarrow>. F2)) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.(F1  \<rightarrow>. F2)) = Ttrue)"
-(*<*)
-proof(rule conjI impI)+
-  assume h2: "(F1 \<rightarrow>.F2) \<in> H"
-  show " t_v_evaluation (IH H) (F1 \<rightarrow>. F2) = Ttrue"
-  proof -    
-    have "FormulaBeta (F1 \<rightarrow>. F2)" by simp  
-    hence "Comp1(F1 \<rightarrow>. F2) \<in> H \<or> Comp2 (F1 \<rightarrow>. F2)\<in> H" 
-    using hip1 h2 by(auto simp add: hintikkaP_def) 
-    hence "(\<not>.F1) \<in> H \<or> F2 \<in> H" by(unfold Comp1_def, unfold Comp2_def, auto) 
-    thus " t_v_evaluation (IH H) (F1 \<rightarrow>. F2) = Ttrue"
-    proof(rule disjE)           
-      assume "(\<not>.F1) \<in> H"             
-      moreover
-      have "(\<not>.F1, F1  \<rightarrow>. F2) \<in> measure f_size" using pf_size by auto 
-      hence " (\<not>.F1) \<in> H \<longrightarrow>  t_v_evaluation (IH H) (\<not>.F1) = Ttrue" 
-      using hip2 by simp
-      ultimately
-      have 1: "t_v_evaluation (IH H) (\<not>.F1) = Ttrue" by simp
-      hence "t_v_evaluation (IH H) F1 = Ffalse" using NegationValues2 by auto       
-      thus "t_v_evaluation (IH H) (F1 \<rightarrow>. F2) = Ttrue"  by(simp add: v_implication_def)
-      next
-      assume "F2 \<in> H"
-      moreover       
-      have "(F2, F1  \<rightarrow>. F2) \<in> measure f_size" by simp
-      hence "(F2 \<in> H \<longrightarrow>  t_v_evaluation (IH H) F2 = Ttrue)" 
-      using hip2 by simp    
-      ultimately 
-      have "t_v_evaluation (IH H) F2 = Ttrue" by simp
-      thus "t_v_evaluation (IH H) (F1 \<rightarrow>. F2) = Ttrue" by(simp add: v_implication_def)
-    qed
-  qed
-  next
-  show "(\<not>.(F1 \<rightarrow>. F2)) \<in> H \<longrightarrow>        
-        t_v_evaluation (IH H) (\<not>.(F1 \<rightarrow>. F2)) = Ttrue"
-  proof(rule impI)
-    assume h2: "(\<not>.(F1 \<rightarrow>. F2)) \<in> H"
-    show "t_v_evaluation (IH H) (\<not>.(F1 \<rightarrow>. F2)) = Ttrue"
-    proof -                      
-      have "FormulaAlfa (\<not>.(F1 \<rightarrow>. F2))" by auto
-      hence "Comp1(\<not>.(F1 \<rightarrow>. F2)) \<in> H \<and> Comp2(\<not>.(F1 \<rightarrow>. F2))\<in> H"
-      using hip1 h2 by (auto simp add: hintikkaP_def)   
-      hence "F1 \<in> H \<and> (\<not>.F2) \<in> H" by(unfold Comp1_def, unfold Comp2_def, auto)                        
-      moreover
-      have "(F1, F1  \<rightarrow>. F2) \<in> measure f_size" and
-      "(\<not>.F2, F1  \<rightarrow>. F2) \<in> measure f_size" using pf_size
-      by auto
-      hence "F1 \<in> H \<longrightarrow> t_v_evaluation (IH H) F1 = Ttrue"
-      and "(\<not>.F2) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F2) = Ttrue"
-      using hip2 by auto   
-      ultimately
-      have "t_v_evaluation (IH H) F1 = Ttrue" 
-      and
-     "t_v_evaluation (IH H) (\<not>.F2) = Ttrue"  by auto 
-      thus       
-     "t_v_evaluation (IH H) (\<not>.(F1 \<rightarrow>. F2)) = Ttrue" by(simp add: v_implication_def)
-    qed
-  qed
-qed
-(*>*)
-text\<open> \<close>
-lemma case_P7:
-assumes hip1: "hintikkaP H" and
-hip2: "\<forall>G. (G, (\<not>.form)) \<in> measure f_size \<longrightarrow> 
-(G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and> ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G) = Ttrue)"            
-shows "((\<not>.form) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.form) = Ttrue) \<and>
-((\<not>.(\<not>.form)) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.(\<not>.form)) = Ttrue)"
-(*<*)
-proof(intro conjI)       
-  show  "\<not>.form \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.form) = Ttrue"
-  proof(rule impI)
-    assume h1: "(\<not>.form) \<in> H"     
-    moreover
-    have "(form, (\<not>.form)) \<in> measure f_size" by simp
-    hence "((\<not>.form) \<in> H \<longrightarrow>
-           t_v_evaluation (IH H) (\<not>.form)= Ttrue)" 
-    using hip2 by simp
-    ultimately
-    show "t_v_evaluation (IH H) (\<not>.form) = Ttrue" using h1 by simp
-  qed
-  next     
-  show "(\<not>.\<not>.form) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.\<not>.form) = Ttrue" 
-  proof(rule impI)
-    assume h2: "(\<not>.\<not>.form) \<in> H"         
-    have "\<forall>Z. (\<not>.\<not>.Z) \<in> H \<longrightarrow> Z \<in> H" using hip1 
-    by(unfold hintikkaP_def) blast
-    hence "(\<not>.\<not>.form) \<in> H \<longrightarrow> form \<in> H" by simp    
-    hence "form \<in> H" using h2 by simp   
-    moreover
-    have "(form, (\<not>.form)) \<in> measure f_size" by simp
-    hence "form \<in> H \<longrightarrow> t_v_evaluation (IH H) form = Ttrue" 
-    using hip2 by simp
-    ultimately
-    have "t_v_evaluation (IH H) form = Ttrue" by simp
-    thus  "t_v_evaluation (IH H) (\<not>.\<not>.form) = Ttrue" using h2 by (simp add: v_negation_def)
-  qed
-qed
-(*>*)
 
-theorem hintikkaP_model_aux: 
-  assumes hip: "hintikkaP H"
-  shows "(F \<in> H \<longrightarrow>  t_v_evaluation (IH H) F = Ttrue) \<and> 
-                    ((\<not>.F) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F) = Ttrue)" 
-proof (rule wf_induct [where r="measure f_size" and a=F])    
-  show "wf(measure f_size)" by simp
+lemma (in HintikkaProp) HintikkaNegConj:
+  assumes  "\<not>.(F \<and>. G) \<in> H"
+  shows "\<not>.F \<in> H \<or> \<not>.G \<in> H"
+proof-
+  have 1: "FormulaBeta (\<not>. (F \<and>. G))" by auto
+  have 2: "Comp1 (\<not>. (F \<and>. G)) = \<not>.F"
+    by (simp add: Comp1_def)
+  have "Comp2 (\<not>. (F \<and>. G)) = \<not>.G"
+    by (simp add: Comp2_def)
+  thus ?thesis using "1" "2" assms BetaPredicate_def ClosedPredicate_def
+                     HintikkaProp_def
+    by (metis (lifting) HintikkaProp_axioms)
+qed
+
+lemma (in HintikkaProp) HintikkaDisj:
+  assumes  "(F \<or>. G) \<in> H"
+  shows "F \<in> H \<or> G \<in> H"
+proof-
+  have 1: "FormulaBeta (F \<or>. G)" by auto
+  have 2: "Comp1 (F \<or>. G) = F"
+    by (simp add: Comp1_def)
+  have "Comp2 (F \<or>. G) = G"
+    by (simp add: Comp2_def)
+  thus ?thesis using  "1" "2" BetaPredicate_def ClosedPredicate_def HintikkaProp_axioms
+    HintikkaProp_def assms
+    by (metis (lifting)) 
+qed
+
+lemma (in HintikkaProp) HintikkaNegDisj:
+  assumes "\<not>.(F \<or>. G) \<in> H"
+  shows "\<not>.F \<in> H \<and> \<not>.G \<in> H"
+proof-
+  have 1: "FormulaAlpha (\<not>.(F \<or>. G))" by auto
+  have 2: "Comp1 (\<not>.(F \<or>. G)) = \<not>.F"
+    by (simp add: Comp1_def)
+  have   "Comp2 (\<not>. (F \<or>. G)) = \<not>.G"
+    by (simp add: Comp2_def)
+  thus ?thesis using  "1" "2"  AlphaPredicate_def ClosedPredicate_def  HintikkaProp_axioms
+    HintikkaProp_def assms
+    by (metis (no_types, lifting)) 
+qed
+
+lemma  (in HintikkaProp) HintikkaImp:
+  assumes  "(F1 \<rightarrow>. F2) \<in> H"
+  shows  "\<not>.F1 \<in> H \<or> F2 \<in> H" 
+proof-
+  have 1: "FormulaBeta (F1 \<rightarrow>. F2)" by auto
+  have 2: "Comp1 (F1 \<rightarrow>. F2) = \<not>.F1"
+    by (simp add: Comp1_def)
+  have "Comp2 (F1 \<rightarrow>. F2) = F2" 
+    by (simp add: Comp2_def) 
+  thus ?thesis
+    by (metis (no_types, lifting) "1" "2" BetaPredicate_def ClosedPredicate_def HintikkaProp_axioms
+        HintikkaProp_def assms)  
+qed
+
+lemma  (in HintikkaProp) HintikkaNegImp:
+  assumes "\<not>.(F1 \<rightarrow>. F2) \<in> H"
+  shows   "F1 \<in> H \<and> \<not>.F2\<in>H"  
+proof-
+  have 1: "FormulaAlpha (\<not>.(F1 \<rightarrow>. F2))" by auto
+  have 2: "Comp1 (\<not>.(F1 \<rightarrow>. F2)) = F1"
+    by (simp add: Comp1_def)
+  have  "Comp2 (\<not>.(F1 \<rightarrow>. F2)) = \<not>.F2" 
+    by (simp add: Comp2_def) 
+  thus ?thesis
+    by (metis (lifting) "1" "2" AlphaPredicate_def ClosedPredicate_def HintikkaProp_axioms HintikkaProp_def assms) 
+qed
+
+lemma (in HintikkaProp) HintikkaP_model_aux:
+  shows "(F \<in> H \<longrightarrow> t_v_evaluation (IH H) F) \<and> (\<not>. F \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>. F))"
+proof(induction F)
+  case FF
+  then show ?case
+    using HintikkaProp_axioms HintikkaProp_def ClosedPredicate_def ConstPredicate_def
+    by fastforce  
 next
-  fix F  
-  assume hip1: "\<forall>G. (G, F) \<in> measure f_size \<longrightarrow>
-                    (G \<in> H \<longrightarrow> t_v_evaluation (IH H) G = Ttrue) \<and>
-                    ((\<not>.G) \<in> H  \<longrightarrow> t_v_evaluation (IH H) (\<not>.G) = Ttrue)"         
-  show "(F \<in> H \<longrightarrow> t_v_evaluation (IH H) F = Ttrue) \<and>
-        ((\<not>.F) \<in> H \<longrightarrow> t_v_evaluation (IH H) (\<not>.F) = Ttrue)"
-  proof (cases F)    
-    assume "F=FF"   
-    thus ?thesis using case_P1 hip hip1 by simp
-  next 
-    assume "F=TT" 
-    thus ?thesis using case_P2 hip hip1 by auto
-  next
-    fix P 
-    assume "F = atom P"
-    thus ?thesis using hip hip1 case_P3[of H P] by simp
-  next
-    fix F1  F2
-    assume "F= (F1 \<and>. F2)"
-    thus ?thesis using hip hip1 case_P4[of H F1 F2] by simp
-  next
-    fix F1 F2
-    assume "F= (F1 \<or>. F2)"
-    thus ?thesis using hip hip1 case_P5[of H F1 F2] by simp
-  next
-    fix F1 F2
-    assume "F= (F1 \<rightarrow>. F2)"
-    thus ?thesis using hip hip1 case_P6[of H F1 F2] by simp
-  next
-    fix F1
-    assume "F=(\<not>.F1)"
-    thus ?thesis using hip hip1 case_P7[of H F1] by simp    
-  qed
+  case TT
+  then show ?case
+    using HintikkaProp_axioms HintikkaProp_def ClosedPredicate_def ConstPredicate_def t_v_evaluation.simps(2)
+    by (metis (no_types, lifting)) 
+next
+  case (atom x)
+  then show ?case
+    using HintikkaProp_axioms HintikkaProp_def AtomPredicate_def ClosedPredicate_def IH.elims(1)  t_v_evaluation.simps(3,4)
+    by (metis (no_types, lifting))
+next
+  case (Negation F)
+  then show ?case 
+    using  HintikkaProp_axioms HintikkaProp_def ClosedPredicate_def DNegPredicate_def
+        t_v_evaluation.simps(4)
+    by (metis (lifting)) 
+next
+  case (Conjunction F1 F2)
+  then show ?case
+    by (metis HintikkaConj HintikkaNegConj t_v_evaluation.simps(4,5)) 
+next
+  case (Disjunction F1 F2)
+  then show ?case
+    by (metis HintikkaDisj HintikkaNegDisj t_v_evaluation.simps(4,6)) 
+next
+  case (Implication F1 F2)
+  then show ?case
+    by (metis HintikkaImp HintikkaNegImp t_v_evaluation.simps(4,7)) 
 qed
 
+corollary (in HintikkaProp) ModelHintikkaPa: 
+  assumes  "F \<in> H"  
+  shows "t_v_evaluation (IH H) F"
+  using assms HintikkaP_model_aux by auto 
 
-corollary ModeloHintikkaPa: 
-  assumes "hintikkaP H" and "F \<in> H"  
-  shows "t_v_evaluation (IH H) F = Ttrue"
-  using assms hintikkaP_model_aux by auto 
-
-
-corollary ModeloHintikkaP: 
-  assumes "hintikkaP H"
+corollary (in HintikkaProp) ModelHintikkaP:
   shows "(IH H) model H"
 proof (unfold model_def)
-  show "\<forall>F\<in>H. t_v_evaluation (IH H) F = Ttrue"
+  show "\<forall>F\<in>H. t_v_evaluation (IH H) F"
   proof (rule ballI)
     fix F
     assume "F \<in> H"
-    thus "t_v_evaluation (IH H) F = Ttrue" using assms ModeloHintikkaPa  by auto
+    thus "t_v_evaluation (IH H) F" using ModelHintikkaPa by auto
   qed 
 qed 
 
-
-corollary Hintikkasatisfiable:
-  assumes "hintikkaP H"
+corollary  (in HintikkaProp) HintikkaSatisfiable:
   shows "satisfiable H"
-using assms ModeloHintikkaP
+using ModelHintikkaP
 by (unfold satisfiable_def, auto)
- 
+
+definition HintikkaP :: "'b formula set \<Rightarrow> bool" where 
+  "HintikkaP H = ((\<forall>P. \<not> (atom P \<in> H \<and> (\<not>.atom P) \<in> H)) \<and>
+                 \<bottom>. \<notin> H \<and> (\<not>.\<top>.) \<notin> H \<and>
+                 (\<forall>F. (\<not>.\<not>.F) \<in> H \<longrightarrow> F \<in> H) \<and>
+                 (\<forall>F. ((FormulaAlpha F) \<and> F \<in> H) \<longrightarrow> 
+                      ((Comp1 F) \<in> H \<and> (Comp2 F) \<in> H)) \<and>
+                 (\<forall>F. ((FormulaBeta F) \<and> F \<in> H) \<longrightarrow> 
+                      ((Comp1 F) \<in> H \<or> (Comp2 F) \<in> H)))"    
+
+lemma HintikkaEq :  "HintikkaP H = HintikkaProp H" 
+    unfolding HintikkaP_def HintikkaProp_def AtomPredicate_def ConstPredicate_def
+    DNegPredicate_def AlphaPredicate_def BetaPredicate_def ClosedPredicate_def
+    by simp
+
+(*
+lemma consistenceEq : "consistenceP' C = consistenceP C"
+    unfolding consistenceP'_def consistenceP_def ClosedPredicate_def
+    AtomPredicate_def ConstPredicate_def DNegPredicate_def AlphaPredicate_def
+    BetaPredicate_def by simp
+
+
+Why bother to do this? Because now is clearer that you are doing almost the same
+thing in several theories: in HintikkaTheory, in Closedness, in
+FinitenessClosedCharProp, in MaximalHintikka, and in PropCompactness.
+
+
+Let us say that, at least, the names of each of the properties would become more
+significant.
+
+
+f. You might use locales, for example in FinitenessClosedCharProp to assume
+the consistent set \<C>.
+
+
+g. You use finite_character both to name a property and for a lemma; I find this
+a bit confusing.
+
+
+h. I understand that you want to keep your formalization self-contained but
+it would be ok to import HOL.Relation.
+
+
+i. I would rename nodes_formulas to atoms and put it in SyntaxAndSemantics.
+
+
+Minor issues:
+-------------
+
+*)
+
 (*<*)
 end
 (*>*)

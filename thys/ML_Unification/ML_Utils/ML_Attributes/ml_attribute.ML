@@ -52,9 +52,9 @@ fun run_declaration_attribute (code, pos) =
   let val code = U.read "Thm.declaration_attribute" @ U.atomic code
   in run_attribute (code, pos) end
 
-fun run_map_context (code, pos) (context, _) =
-  let val code = U.read "Thm.declaration_attribute" @ (U.atomic (U.read "K" @ U.atomic code))
-  in run_attribute (code, pos) (context, Drule.dummy_thm) end
+fun run_map_context (code, pos) =
+  let val code = U.read "Thm.declaration_attribute" @ (U.atomic (U.read "fn _ =>" @ U.atomic code))
+  in run_attribute (code, pos) end
 
 fun run_rule_attribute (code, pos) =
   let val code = U.read "Thm.rule_attribute []" @ U.atomic code
@@ -62,7 +62,7 @@ fun run_rule_attribute (code, pos) =
 
 fun run_Krule_attribute (code, pos) =
   let val code =
-    U.read "Thm.rule_attribute []" @ (U.atomic (U.read "K" @ U.atomic code))
+    U.read "Thm.rule_attribute []" @ (U.atomic (U.read "fn _ => " @ U.atomic code))
   in run_attribute (code, pos) end
 
 val parse_code_pos = Scan.lift (Parse.position U.parse_code)

@@ -66,7 +66,7 @@ where
 
 (* Enable "do { .. }" syntax *)
 adhoc_overloading
-  Monad_Syntax.bind obind
+  Monad_Syntax.bind \<rightleftharpoons> obind
 
 definition
   "ofail = K None"

@@ -3,7 +3,9 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780.  In Spanish 
+   Last modified: 29 Sep, 2025
+ *)
 
 (*<*)
 theory MaximalSet
@@ -14,7 +16,6 @@ begin
 definition maximal :: "'a set \<Rightarrow> 'a set set \<Rightarrow> bool" where
   "maximal S \<C> = (\<forall>S'\<in> \<C>. S \<subseteq> S' \<longrightarrow> S = S')"
 
-
 primrec sucP :: "'b formula set \<Rightarrow> 'b formula set set \<Rightarrow> (nat \<Rightarrow> 'b formula) \<Rightarrow> nat \<Rightarrow> 'b formula set"
 where
   "sucP S \<C> f 0 = S"
@@ -23,17 +24,9 @@ where
      then sucP S \<C> f n \<union> {f n}
      else sucP S \<C> f n)" 
 
-
 definition MsucP :: "'b formula set \<Rightarrow> 'b formula set set \<Rightarrow> (nat \<Rightarrow> 'b formula) \<Rightarrow> 'b formula set" 
 where 
 "MsucP S \<C> f = (\<Union>n. sucP S \<C> f n)"
-
-
-
-(*<*)
-
-(*>*)
-
 
 theorem Max_subsetuntoP: "S \<subseteq> MsucP S \<C> f"
 (*<*)
@@ -46,16 +39,9 @@ proof (rule subsetI)
 qed 
 (*>*)
 
-
 definition chain :: "(nat \<Rightarrow> 'a set) \<Rightarrow> bool" where
   "chain S = (\<forall>n. S n \<subseteq> S (Suc n))"
 
-
-(*<*)
-
-(*>*)
-
-(*<*) 
 lemma chainD:
   assumes "chain S" and "x \<in> S m"
   shows "x \<in> S (m + n)"
@@ -112,16 +98,15 @@ proof (induct rule: finite_induct)
 qed
 (*>*)
 
-
 theorem chain_union_closed:
-  assumes hip1: "finite_character \<C>" 
+  assumes hip1: "finite_character_property \<C>" 
   and hip2:"chain S" 
   and hip3: "\<forall>n. S n \<in> \<C>"
   shows "(\<Union>n. S n) \<in> \<C>"
 (*<*)
 proof -
   have "\<forall>S. (S \<in> \<C>) = (\<forall>T. finite T \<longrightarrow> T \<subseteq> S \<longrightarrow> T \<in> \<C>)" 
-  using hip1 by (unfold finite_character_def)
+  using hip1 by (unfold finite_character_property_def)
   hence 1: "(\<Union>n. S n) \<in> \<C> = (\<forall>T. finite T \<longrightarrow> T \<subseteq> (\<Union>n. S n) \<longrightarrow> T \<in> \<C>)" 
   by (rule allE)
   thus "(\<Union>n. S n) \<in> \<C>"
@@ -140,17 +125,12 @@ proof -
     thus "(\<Union>n. S n) \<in> \<C>" using 1 by simp
   qed
 qed    
-(*>*)
-
-
-(*>*)
 
 lemma chain_suc: "chain (sucP S \<C> f)"
 by (simp add: chain_def) blast
 
-
 theorem MaxP_in_C:
-  assumes hip1: "finite_character \<C>" and hip2: "S \<in> \<C>" 
+  assumes hip1: "finite_character_property \<C>" and hip2: "S \<in> \<C>" 
   shows  "MsucP S \<C> f \<in> \<C>"
 proof (unfold MsucP_def) 
   have "chain (sucP S \<C> f)" by (rule chain_suc)
@@ -165,10 +145,8 @@ proof (unfold MsucP_def)
   show "(\<Union> n. sucP S \<C> f n) \<in> \<C>" by (rule chain_union_closed[OF hip1]) 
 qed 
 
-
 definition enumeration :: "(nat \<Rightarrow>'b) \<Rightarrow> bool" where
   "enumeration f = (\<forall>y.\<exists>n. y = (f n))"
-
 
 lemma enum_nat: "\<exists>g. enumeration (g:: nat \<Rightarrow> nat)"
 proof -
@@ -176,7 +154,6 @@ proof -
   hence "enumeration (\<lambda>n. n)" by (unfold enumeration_def)
   thus ?thesis by auto
 qed
-
 
 theorem suc_maximalP: 
   assumes hip1: "enumeration f" and hip2: "subset_closed \<C>"  
@@ -215,7 +192,7 @@ proof -  (* (simp add: maximal_def MsucP_def) *)
 qed
 
 corollary ConsistentExtensionP:
-  assumes hip1: "finite_character \<C>" 
+  assumes hip1: "finite_character_property \<C>" 
   and hip2: "S \<in> \<C>" 
   and hip3:  "enumeration f" 
   shows "S \<subseteq> MsucP S \<C> f" 

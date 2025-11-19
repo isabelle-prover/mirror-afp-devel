@@ -115,7 +115,7 @@ lemma all_edges_alt_pairs: "all_edges S = mk_edge ` {uv \<in> S \<times> S. fst 
   unfolding all_edges_alt
 proof (intro subset_antisym)
   have img: "mk_edge ` {uv \<in> S \<times> S. fst uv \<noteq> snd uv} = {mk_edge (u, v) | u v. (u, v) \<in> S \<times> S \<and> u \<noteq>v}"
-    by (smt (z3) Collect_cong fst_conv prod.collapse setcompr_eq_image snd_conv)
+    by (smt (verit) Collect_cong fst_conv prod.collapse setcompr_eq_image snd_conv)
   then show " mk_edge ` {uv \<in> S \<times> S. fst uv \<noteq> snd uv} \<subseteq> {{x, y} |x y. x \<in> S \<and> y \<in> S \<and> x \<noteq> y}"
     by auto
   show  "{{x, y} |x y. x \<in> S \<and> y \<in> S \<and> x \<noteq> y} \<subseteq> mk_edge ` {uv \<in> S \<times> S. fst uv \<noteq> snd uv}" 

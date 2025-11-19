@@ -1,52 +1,68 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>unruh on Archive of Formal Proofs
-    </title>
-    <link>/authors/unruh/</link>
-    <description>
-        Recent content in unruh 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 30 Aug 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/unruh/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Without Loss of Generality</title>
-          <link>/entries/Wlog.html</link>
-          <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Wlog.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>With-Type – Poor man&#39;s dependent types</title>
-          <link>/entries/With_Type.html</link>
-          <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/With_Type.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Quantum and Classical Registers</title>
-          <link>/entries/Registers.html</link>
-          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Registers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Complex Bounded Operators</title>
-          <link>/entries/Complex_Bounded_Operators.html</link>
-          <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Complex_Bounded_Operators.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Banach-Steinhaus Theorem</title>
-          <link>/entries/Banach_Steinhaus.html</link>
-          <pubDate>Sat, 02 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Banach_Steinhaus.html</guid>
-          <description></description>
-        </item>
+    <title>Dominique Unruh</title>
+    <link>https://isa-afp.org/authors/unruh/</link>
+    <description>AFP entries of Dominique Unruh</description><item>
+  <title>The Oneway to Hiding Theorem</title>
+  <link>https://isa-afp.org/entries/Oneway2Hiding.html</link>
+  <pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate>
+  <description>The Oneway to Hiding Theorem in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Kraus Maps</title>
+  <link>https://isa-afp.org/entries/Kraus_Maps.html</link>
+  <pubDate>Thu, 26 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Kraus Maps in the AFP</description>
+    <category>Mathematics/Physics/Quantum information</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Tensor Product on Hilbert Spaces</title>
+  <link>https://isa-afp.org/entries/Hilbert_Space_Tensor_Product.html</link>
+  <pubDate>Tue, 10 Sep 2024 00:00:00 +0000</pubDate>
+  <description>The Tensor Product on Hilbert Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Without Loss of Generality</title>
+  <link>https://isa-afp.org/entries/Wlog.html</link>
+  <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
+  <description>Without Loss of Generality in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>With-Type – Poor man&#39;s dependent types</title>
+  <link>https://isa-afp.org/entries/With_Type.html</link>
+  <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
+  <description>With-Type – Poor man&#39;s dependent types in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Quantum and Classical Registers</title>
+  <link>https://isa-afp.org/entries/Registers.html</link>
+  <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+  <description>Quantum and Classical Registers in the AFP</description>
+    <category>Computer science/Algorithms/Quantum computing</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Complex Bounded Operators</title>
+  <link>https://isa-afp.org/entries/Complex_Bounded_Operators.html</link>
+  <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+  <description>Complex Bounded Operators in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Banach-Steinhaus Theorem</title>
+  <link>https://isa-afp.org/entries/Banach_Steinhaus.html</link>
+  <pubDate>Sat, 02 May 2020 00:00:00 +0000</pubDate>
+  <description>Banach-Steinhaus Theorem in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+
   </channel>
 </rss>

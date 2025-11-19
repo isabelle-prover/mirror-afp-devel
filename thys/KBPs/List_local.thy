@@ -89,7 +89,8 @@ where
 
 lemma equiv_subseteq_in_sym:
   "\<lbrakk> r `` X \<subseteq> X;  (x, y) \<in> r; y \<in> X; equiv Y r; X \<subseteq> Y \<rbrakk> \<Longrightarrow> x \<in> X"
-  unfolding equiv_def by (auto dest: symD)
+  unfolding equiv_def
+  by (meson ImageI subsetD symE)
 
 lemma FIXME_refl_on_insert_absorb[simp]:
   "\<lbrakk> refl_on A r; x \<in> A \<rbrakk> \<Longrightarrow> insert x (r `` {x}) = r `` {x}"
@@ -159,7 +160,7 @@ proof -
     moreover
     have "?P3 (?c s)"
     proof -
-      from b s obtain x where x: "x \<in> set A" by (cases A) (auto iff: null_def)
+      from b s obtain x where x: "x \<in> set A" by (cases A) auto
       with XZ equiv P b s x
       show ?thesis
       
@@ -231,11 +232,7 @@ proof -
   next
     fix s assume P: "?P s" and b: "\<not> (?b s)"
     from b have F: "fst s = []"
-      apply (cases s)
-      apply simp
-      apply (case_tac a)
-      apply (simp_all add: List.null_def)
-      done
+      by simp
     from equiv P F have S: "set ` set (snd s) = (set xs // ?r' (set xs))"
       apply (cases s)
       unfolding Image_def
@@ -254,7 +251,7 @@ proof -
       unfolding partition_aux_body_def
       apply clarsimp
       apply (case_tac a)
-       apply (simp add: List.null_def)
+       apply simp
       apply simp
       apply (case_tac "partition_split r aa list")
       apply (simp add: partition_split')
@@ -288,8 +285,6 @@ where
 | "odlist_equal xs [] = False"
 | "odlist_equal (x # xs) (y # ys) = (x = y \<and> odlist_equal xs ys)"
 
-declare odlist_equal.simps [code]
-
 lemma equal_odlist_equal[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> odlist_equal xs ys \<longleftrightarrow> (xs = ys)"
@@ -304,8 +299,6 @@ where
      (if x = y then difference xs ys
                else if x < y then x # difference xs (y # ys)
                              else difference (x # xs) ys)"
-
-declare difference.simps [code]
 
 lemma set_difference[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
@@ -327,8 +320,6 @@ where
                else if x < y then intersection xs (y # ys)
                              else intersection (x # xs) ys)"
 
-declare intersection.simps [code]
-
 lemma set_intersection[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> set (intersection xs ys) = set xs \<inter> set ys"
@@ -349,8 +340,6 @@ where
      (if x = z then y # image rs (z # zs)
                else if x < z then image rs (z # zs)
                              else image ((x, y) # rs) zs)"
-
-declare image.simps [code]
 
 lemma set_image[simp]:
   "\<lbrakk> distinct R; distinct xs; sorted R; sorted xs \<rbrakk>

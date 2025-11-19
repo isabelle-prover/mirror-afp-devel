@@ -21,7 +21,8 @@ record 'a pseudorandom_object =
   pro_select :: "nat \<Rightarrow> 'a"
 
 definition pro_size where "pro_size S = pro_last S + 1"
-definition sample_pro where "sample_pro S = map_pmf (pro_select S) (pmf_of_set {0..pro_last S})"
+definition sample_pro :: "'a pseudorandom_object \<Rightarrow> 'a pmf"
+  where "sample_pro S = map_pmf (pro_select S) (pmf_of_set {0..pro_last S})"
 
 declare [[coercion sample_pro]]
 

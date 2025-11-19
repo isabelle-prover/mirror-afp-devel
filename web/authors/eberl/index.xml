@@ -1,528 +1,605 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>eberl on Archive of Formal Proofs
-    </title>
-    <link>/authors/eberl/</link>
-    <description>
-        Recent content in eberl 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 17 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/eberl/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Parallel Shear Sort</title>
-          <link>/entries/Parallel_Shear_Sort.html</link>
-          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Parallel_Shear_Sort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A simple proof that π is irrational</title>
-          <link>/entries/Pi_Irrational.html</link>
-          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Pi_Irrational.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Concrete bounds for Chebyshev’s prime counting functions</title>
-          <link>/entries/Chebyshev_Prime_Bounds.html</link>
-          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Chebyshev_Prime_Bounds.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Continued Fractions</title>
-          <link>/entries/Continued_Fractions.html</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Continued_Fractions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kummer&#39;s congruence</title>
-          <link>/entries/Kummer_Congruence.html</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Kummer_Congruence.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Lambert Series</title>
-          <link>/entries/Lambert_Series.html</link>
-          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Lambert_Series.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Cardinality of the Continuum</title>
-          <link>/entries/Cardinality_Continuum.html</link>
-          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Cardinality_Continuum.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Polylogarithm Function</title>
-          <link>/entries/Polylog.html</link>
-          <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polylog.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
-          <link>/entries/Polynomial_Crit_Geometry.html</link>
-          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomial_Crit_Geometry.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Chebyshev Polynomials</title>
-          <link>/entries/Chebyshev_Polynomials.html</link>
-          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Chebyshev_Polynomials.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Elimination of Repeated Factors Algorithm</title>
-          <link>/entries/Elimination_Of_Repeated_Factors.html</link>
-          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Elimination_Of_Repeated_Factors.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Perfect Fields</title>
-          <link>/entries/Perfect_Fields.html</link>
-          <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Perfect_Fields.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Randomized Algorithms</title>
-          <link>/entries/Executable_Randomized_Algorithms.html</link>
-          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
-          <link>/entries/PAPP_Impossibility.html</link>
-          <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/PAPP_Impossibility.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Hales–Jewett Theorem</title>
-          <link>/entries/Hales_Jewett.html</link>
-          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Hales_Jewett.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
-          <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
-          <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Weighted_Arithmetic_Geometric_Mean.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sophomore&#39;s Dream</title>
-          <link>/entries/Sophomores_Dream.html</link>
-          <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Sophomores_Dream.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
-          <link>/entries/Cotangent_PFD_Formula.html</link>
-          <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Cotangent_PFD_Formula.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Factorization of Polynomials with Algebraic Coefficients</title>
-          <link>/entries/Factor_Algebraic_Polynomial.html</link>
-          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Finitely Generated Abelian Groups</title>
-          <link>/entries/Finitely_Generated_Abelian_Groups.html</link>
-          <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Finitely_Generated_Abelian_Groups.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Van der Waerden&#39;s Theorem</title>
-          <link>/entries/Van_der_Waerden.html</link>
-          <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Van_der_Waerden.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
-          <link>/entries/Hermite_Lindemann.html</link>
-          <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Hermite_Lindemann.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formal Puiseux Series</title>
-          <link>/entries/Formal_Puiseux_Series.html</link>
-          <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Formal_Puiseux_Series.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Laws of Large Numbers</title>
-          <link>/entries/Laws_of_Large_Numbers.html</link>
-          <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Laws_of_Large_Numbers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gaussian Integers</title>
-          <link>/entries/Gaussian_Integers.html</link>
-          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Gaussian_Integers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Power Sum Polynomials</title>
-          <link>/entries/Power_Sum_Polynomials.html</link>
-          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Power_Sum_Polynomials.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Lambert W Function on the Reals</title>
-          <link>/entries/Lambert_W.html</link>
-          <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Lambert_W.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Furstenberg&#39;s topology and his proof of the infinitude of primes</title>
-          <link>/entries/Furstenberg_Topology.html</link>
-          <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Furstenberg_Topology.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Mersenne primes and the Lucas–Lehmer test</title>
-          <link>/entries/Mersenne_Primes.html</link>
-          <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Mersenne_Primes.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Skip Lists</title>
-          <link>/entries/Skip_Lists.html</link>
-          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Skip_Lists.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Irrationality of ζ(3)</title>
-          <link>/entries/Zeta_3_Irrational.html</link>
-          <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Zeta_3_Irrational.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
-          <link>/entries/Gauss_Sums.html</link>
-          <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Gauss_Sums.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Selected Problems from the International Mathematical Olympiad 2019</title>
-          <link>/entries/IMO2019.html</link>
-          <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/IMO2019.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Elementary Facts About the Distribution of Primes</title>
-          <link>/entries/Prime_Distribution_Elementary.html</link>
-          <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Prime_Distribution_Elementary.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic Primality Testing</title>
-          <link>/entries/Probabilistic_Prime_Tests.html</link>
-          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_Prime_Tests.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Inversions of a List</title>
-          <link>/entries/List_Inversions.html</link>
-          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Inversions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Randomised Binary Search Trees</title>
-          <link>/entries/Randomised_BSTs.html</link>
-          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Transcendence of π</title>
-          <link>/entries/Pi_Transcendental.html</link>
-          <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Pi_Transcendental.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Symmetric Polynomials</title>
-          <link>/entries/Symmetric_Polynomials.html</link>
-          <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Symmetric_Polynomials.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Prime Number Theorem</title>
-          <link>/entries/Prime_Number_Theorem.html</link>
-          <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Prime_Number_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Pell&#39;s Equation</title>
-          <link>/entries/Pell.html</link>
-          <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Pell.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
-          <link>/entries/Fishburn_Impossibility.html</link>
-          <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Fishburn_Impossibility.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Error Function</title>
-          <link>/entries/Error_Function.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Error_Function.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Treaps</title>
-          <link>/entries/Treaps.html</link>
-          <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Treaps.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
-          <link>/entries/Dirichlet_L.html</link>
-          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Dirichlet_L.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Mason–Stothers Theorem</title>
-          <link>/entries/Mason_Stothers.html</link>
-          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Mason_Stothers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Median-of-Medians Selection Algorithm</title>
-          <link>/entries/Median_Of_Medians_Selection.html</link>
-          <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Median_Of_Medians_Selection.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Dirichlet Series</title>
-          <link>/entries/Dirichlet_Series.html</link>
-          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Dirichlet_Series.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Linear Recurrences</title>
-          <link>/entries/Linear_Recurrences.html</link>
-          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Linear_Recurrences.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Hurwitz and Riemann ζ Functions</title>
-          <link>/entries/Zeta_Function.html</link>
-          <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Zeta_Function.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Minkowski&#39;s Theorem</title>
-          <link>/entries/Minkowskis_Theorem.html</link>
-          <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Minkowskis_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Buffon&#39;s Needle Problem</title>
-          <link>/entries/Buffons_Needle.html</link>
-          <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Buffons_Needle.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Monad normalisation</title>
-          <link>/entries/Monad_Normalisation.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Monad_Normalisation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expected Shape of Random Binary Search Trees</title>
-          <link>/entries/Random_BSTs.html</link>
-          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Random_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Lower bound on comparison-based sorting algorithms</title>
-          <link>/entries/Comparison_Sort_Lower_Bound.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The number of comparisons in QuickSort</title>
-          <link>/entries/Quick_Sort_Cost.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Quick_Sort_Cost.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Euler–MacLaurin Formula</title>
-          <link>/entries/Euler_MacLaurin.html</link>
-          <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Euler_MacLaurin.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Bernoulli Numbers</title>
-          <link>/entries/Bernoulli.html</link>
-          <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Bernoulli.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Bertrand&#39;s postulate</title>
-          <link>/entries/Bertrands_Postulate.html</link>
-          <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Bertrands_Postulate.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Transcendence of e</title>
-          <link>/entries/E_Transcendental.html</link>
-          <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/E_Transcendental.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fisher–Yates shuffle</title>
-          <link>/entries/Fisher_Yates.html</link>
-          <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Fisher_Yates.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Stirling&#39;s formula</title>
-          <link>/entries/Stirling_Formula.html</link>
-          <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Stirling_Formula.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Catalan Numbers</title>
-          <link>/entries/Catalan_Numbers.html</link>
-          <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Catalan_Numbers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Randomised Social Choice Theory</title>
-          <link>/entries/Randomised_Social_Choice.html</link>
-          <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_Social_Choice.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
-          <link>/entries/SDS_Impossibility.html</link>
-          <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/SDS_Impossibility.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Basic Geometric Properties of Triangles</title>
-          <link>/entries/Triangle.html</link>
-          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Triangle.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Descartes&#39; Rule of Signs</title>
-          <link>/entries/Descartes_Sign_Rule.html</link>
-          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Descartes_Sign_Rule.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Liouville numbers</title>
-          <link>/entries/Liouville_Numbers.html</link>
-          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Liouville_Numbers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Divergence of the Prime Harmonic Series</title>
-          <link>/entries/Prime_Harmonic_Series.html</link>
-          <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Prime_Harmonic_Series.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Landau Symbols</title>
-          <link>/entries/Landau_Symbols.html</link>
-          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Landau_Symbols.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Akra-Bazzi theorem and the Master theorem</title>
-          <link>/entries/Akra_Bazzi.html</link>
-          <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Akra_Bazzi.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Compiler for Probability Density Functions</title>
-          <link>/entries/Density_Compiler.html</link>
-          <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Density_Compiler.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Sturm&#39;s Theorem</title>
-          <link>/entries/Sturm_Sequences.html</link>
-          <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Sturm_Sequences.html</guid>
-          <description></description>
-        </item>
+    <title>Manuel Eberl</title>
+    <link>https://isa-afp.org/authors/eberl/</link>
+    <description>AFP entries of Manuel Eberl</description><item>
+  <title>Path Equivalence and Automation for Integration Contours</title>
+  <link>https://isa-afp.org/entries/Path_Automation.html</link>
+  <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Path Equivalence and Automation for Integration Contours in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Complex Lattices, Elliptic Functions, and the Modular Group</title>
+  <link>https://isa-afp.org/entries/Elliptic_Functions.html</link>
+  <pubDate>Thu, 22 May 2025 00:00:00 +0000</pubDate>
+  <description>Complex Lattices, Elliptic Functions, and the Modular Group in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Partition Function and the Pentagonal Number Theorem</title>
+  <link>https://isa-afp.org/entries/Pentagonal_Number_Theorem.html</link>
+  <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
+  <description>The Partition Function and the Pentagonal Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Dedekind Sums</title>
+  <link>https://isa-afp.org/entries/Dedekind_Sums.html</link>
+  <pubDate>Wed, 23 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Dedekind Sums in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Theta Functions</title>
+  <link>https://isa-afp.org/entries/Theta_Functions.html</link>
+  <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+  <description>Theta Functions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Rogers–Ramanujan Identities</title>
+  <link>https://isa-afp.org/entries/Rogers_Ramanujan.html</link>
+  <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+  <description>The Rogers–Ramanujan Identities in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Combinatorial q-Analogues</title>
+  <link>https://isa-afp.org/entries/Combinatorial_Q_Analogues.html</link>
+  <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+  <description>Combinatorial q-Analogues in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
+  <link>https://isa-afp.org/entries/Sum_Of_Squares_Count.html</link>
+  <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+  <description>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences</title>
+  <link>https://isa-afp.org/entries/Boustrophedon_Transform.html</link>
+  <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+  <description>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Karatsuba Square Root Algorithm</title>
+  <link>https://isa-afp.org/entries/Karatsuba_Sqrt.html</link>
+  <pubDate>Wed, 18 Sep 2024 00:00:00 +0000</pubDate>
+  <description>The Karatsuba Square Root Algorithm in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Parallel Shear Sort</title>
+  <link>https://isa-afp.org/entries/Parallel_Shear_Sort.html</link>
+  <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Parallel Shear Sort in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>A simple proof that π is irrational</title>
+  <link>https://isa-afp.org/entries/Pi_Irrational.html</link>
+  <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+  <description>A simple proof that π is irrational in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Concrete bounds for Chebyshev’s prime counting functions</title>
+  <link>https://isa-afp.org/entries/Chebyshev_Prime_Bounds.html</link>
+  <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Concrete bounds for Chebyshev’s prime counting functions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Kummer&#39;s congruence</title>
+  <link>https://isa-afp.org/entries/Kummer_Congruence.html</link>
+  <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Kummer&#39;s congruence in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Continued Fractions</title>
+  <link>https://isa-afp.org/entries/Continued_Fractions.html</link>
+  <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Continued Fractions in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Lambert Series</title>
+  <link>https://isa-afp.org/entries/Lambert_Series.html</link>
+  <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Lambert Series in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Polylogarithm Function</title>
+  <link>https://isa-afp.org/entries/Polylog.html</link>
+  <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+  <description>The Polylogarithm Function in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Cardinality of the Continuum</title>
+  <link>https://isa-afp.org/entries/Cardinality_Continuum.html</link>
+  <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
+  <description>The Cardinality of the Continuum in the AFP</description>
+    <category>Logic/Set theory</category>
+</item>
+<item>
+  <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
+  <link>https://isa-afp.org/entries/Polynomial_Crit_Geometry.html</link>
+  <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Two theorems about the geometry of the critical points of a complex polynomial in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Chebyshev Polynomials</title>
+  <link>https://isa-afp.org/entries/Chebyshev_Polynomials.html</link>
+  <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Chebyshev Polynomials in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Perfect Fields</title>
+  <link>https://isa-afp.org/entries/Perfect_Fields.html</link>
+  <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Perfect Fields in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Elimination of Repeated Factors Algorithm</title>
+  <link>https://isa-afp.org/entries/Elimination_Of_Repeated_Factors.html</link>
+  <pubDate>Mon, 06 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Elimination of Repeated Factors Algorithm in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Executable Randomized Algorithms</title>
+  <link>https://isa-afp.org/entries/Executable_Randomized_Algorithms.html</link>
+  <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+  <description>Executable Randomized Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+  <link>https://isa-afp.org/entries/PAPP_Impossibility.html</link>
+  <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+  <description>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>The Hales–Jewett Theorem</title>
+  <link>https://isa-afp.org/entries/Hales_Jewett.html</link>
+  <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+  <description>The Hales–Jewett Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
+  <link>https://isa-afp.org/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
+  <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
+  <description>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Sophomore&#39;s Dream</title>
+  <link>https://isa-afp.org/entries/Sophomores_Dream.html</link>
+  <pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate>
+  <description>The Sophomore&#39;s Dream in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
+  <link>https://isa-afp.org/entries/Cotangent_PFD_Formula.html</link>
+  <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
+  <description>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Factorization of Polynomials with Algebraic Coefficients</title>
+  <link>https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
+  <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+  <description>Factorization of Polynomials with Algebraic Coefficients in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Finitely Generated Abelian Groups</title>
+  <link>https://isa-afp.org/entries/Finitely_Generated_Abelian_Groups.html</link>
+  <pubDate>Wed, 07 Jul 2021 00:00:00 +0000</pubDate>
+  <description>Finitely Generated Abelian Groups in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Van der Waerden&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Van_der_Waerden.html</link>
+  <pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate>
+  <description>Van der Waerden&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Hermite–Lindemann–Weierstraß Transcendence Theorem</title>
+  <link>https://isa-afp.org/entries/Hermite_Lindemann.html</link>
+  <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+  <description>The Hermite–Lindemann–Weierstraß Transcendence Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Formal Puiseux Series</title>
+  <link>https://isa-afp.org/entries/Formal_Puiseux_Series.html</link>
+  <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
+  <description>Formal Puiseux Series in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Laws of Large Numbers</title>
+  <link>https://isa-afp.org/entries/Laws_of_Large_Numbers.html</link>
+  <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+  <description>The Laws of Large Numbers in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Power Sum Polynomials</title>
+  <link>https://isa-afp.org/entries/Power_Sum_Polynomials.html</link>
+  <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Power Sum Polynomials in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Lambert W Function on the Reals</title>
+  <link>https://isa-afp.org/entries/Lambert_W.html</link>
+  <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+  <description>The Lambert W Function on the Reals in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Gaussian Integers</title>
+  <link>https://isa-afp.org/entries/Gaussian_Integers.html</link>
+  <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Gaussian Integers in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Furstenberg&#39;s topology and his proof of the infinitude of primes</title>
+  <link>https://isa-afp.org/entries/Furstenberg_Topology.html</link>
+  <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Furstenberg&#39;s topology and his proof of the infinitude of primes in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Mersenne primes and the Lucas–Lehmer test</title>
+  <link>https://isa-afp.org/entries/Mersenne_Primes.html</link>
+  <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Mersenne primes and the Lucas–Lehmer test in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Skip Lists</title>
+  <link>https://isa-afp.org/entries/Skip_Lists.html</link>
+  <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Skip Lists in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The Irrationality of ζ(3)</title>
+  <link>https://isa-afp.org/entries/Zeta_3_Irrational.html</link>
+  <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+  <description>The Irrationality of ζ(3) in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+  <link>https://isa-afp.org/entries/Gauss_Sums.html</link>
+  <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
+  <description>Gauss Sums and the Pólya–Vinogradov Inequality in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Selected Problems from the International Mathematical Olympiad 2019</title>
+  <link>https://isa-afp.org/entries/IMO2019.html</link>
+  <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Selected Problems from the International Mathematical Olympiad 2019 in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Elementary Facts About the Distribution of Primes</title>
+  <link>https://isa-afp.org/entries/Prime_Distribution_Elementary.html</link>
+  <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Elementary Facts About the Distribution of Primes in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Probabilistic Primality Testing</title>
+  <link>https://isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
+  <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Probabilistic Primality Testing in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Inversions of a List</title>
+  <link>https://isa-afp.org/entries/List_Inversions.html</link>
+  <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+  <description>The Inversions of a List in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Randomised Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Randomised_BSTs.html</link>
+  <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Randomised Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The Transcendence of π</title>
+  <link>https://isa-afp.org/entries/Pi_Transcendental.html</link>
+  <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
+  <description>The Transcendence of π in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Symmetric Polynomials</title>
+  <link>https://isa-afp.org/entries/Symmetric_Polynomials.html</link>
+  <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Symmetric Polynomials in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Prime Number Theorem</title>
+  <link>https://isa-afp.org/entries/Prime_Number_Theorem.html</link>
+  <pubDate>Wed, 19 Sep 2018 00:00:00 +0000</pubDate>
+  <description>The Prime Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Pell&#39;s Equation</title>
+  <link>https://isa-afp.org/entries/Pell.html</link>
+  <pubDate>Sat, 23 Jun 2018 00:00:00 +0000</pubDate>
+  <description>Pell&#39;s Equation in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
+  <link>https://isa-afp.org/entries/Fishburn_Impossibility.html</link>
+  <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+  <description>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Treaps</title>
+  <link>https://isa-afp.org/entries/Treaps.html</link>
+  <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+  <description>Treaps in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>The Error Function</title>
+  <link>https://isa-afp.org/entries/Error_Function.html</link>
+  <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+  <description>The Error Function in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Median-of-Medians Selection Algorithm</title>
+  <link>https://isa-afp.org/entries/Median_Of_Medians_Selection.html</link>
+  <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+  <description>The Median-of-Medians Selection Algorithm in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>The Mason–Stothers Theorem</title>
+  <link>https://isa-afp.org/entries/Mason_Stothers.html</link>
+  <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+  <description>The Mason–Stothers Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Dirichlet L-Functions and Dirichlet&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dirichlet_L.html</link>
+  <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+  <description>Dirichlet L-Functions and Dirichlet&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Hurwitz and Riemann ζ Functions</title>
+  <link>https://isa-afp.org/entries/Zeta_Function.html</link>
+  <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+  <description>The Hurwitz and Riemann ζ Functions in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Linear Recurrences</title>
+  <link>https://isa-afp.org/entries/Linear_Recurrences.html</link>
+  <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+  <description>Linear Recurrences in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Dirichlet Series</title>
+  <link>https://isa-afp.org/entries/Dirichlet_Series.html</link>
+  <pubDate>Thu, 12 Oct 2017 00:00:00 +0000</pubDate>
+  <description>Dirichlet Series in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Minkowski&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Minkowskis_Theorem.html</link>
+  <pubDate>Thu, 13 Jul 2017 00:00:00 +0000</pubDate>
+  <description>Minkowski&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Buffon&#39;s Needle Problem</title>
+  <link>https://isa-afp.org/entries/Buffons_Needle.html</link>
+  <pubDate>Tue, 06 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Buffon&#39;s Needle Problem in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Monad normalisation</title>
+  <link>https://isa-afp.org/entries/Monad_Normalisation.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Monad normalisation in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Expected Shape of Random Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Random_BSTs.html</link>
+  <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+  <description>Expected Shape of Random Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The number of comparisons in QuickSort</title>
+  <link>https://isa-afp.org/entries/Quick_Sort_Cost.html</link>
+  <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+  <description>The number of comparisons in QuickSort in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Lower bound on comparison-based sorting algorithms</title>
+  <link>https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html</link>
+  <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+  <description>Lower bound on comparison-based sorting algorithms in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>The Euler–MacLaurin Formula</title>
+  <link>https://isa-afp.org/entries/Euler_MacLaurin.html</link>
+  <pubDate>Fri, 10 Mar 2017 00:00:00 +0000</pubDate>
+  <description>The Euler–MacLaurin Formula in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Bernoulli Numbers</title>
+  <link>https://isa-afp.org/entries/Bernoulli.html</link>
+  <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
+  <description>Bernoulli Numbers in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Bertrand&#39;s postulate</title>
+  <link>https://isa-afp.org/entries/Bertrands_Postulate.html</link>
+  <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+  <description>Bertrand&#39;s postulate in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Transcendence of e</title>
+  <link>https://isa-afp.org/entries/E_Transcendental.html</link>
+  <pubDate>Thu, 12 Jan 2017 00:00:00 +0000</pubDate>
+  <description>The Transcendence of e in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Fisher–Yates shuffle</title>
+  <link>https://isa-afp.org/entries/Fisher_Yates.html</link>
+  <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Fisher–Yates shuffle in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Stirling&#39;s formula</title>
+  <link>https://isa-afp.org/entries/Stirling_Formula.html</link>
+  <pubDate>Thu, 01 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Stirling&#39;s formula in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Catalan Numbers</title>
+  <link>https://isa-afp.org/entries/Catalan_Numbers.html</link>
+  <pubDate>Tue, 21 Jun 2016 00:00:00 +0000</pubDate>
+  <description>Catalan Numbers in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Randomised Social Choice Theory</title>
+  <link>https://isa-afp.org/entries/Randomised_Social_Choice.html</link>
+  <pubDate>Thu, 05 May 2016 00:00:00 +0000</pubDate>
+  <description>Randomised Social Choice Theory in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</title>
+  <link>https://isa-afp.org/entries/SDS_Impossibility.html</link>
+  <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
+  <description>The Incompatibility of SD-Efficiency and SD-Strategy-Proofness in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Basic Geometric Properties of Triangles</title>
+  <link>https://isa-afp.org/entries/Triangle.html</link>
+  <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Basic Geometric Properties of Triangles in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>The Divergence of the Prime Harmonic Series</title>
+  <link>https://isa-afp.org/entries/Prime_Harmonic_Series.html</link>
+  <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+  <description>The Divergence of the Prime Harmonic Series in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Liouville numbers</title>
+  <link>https://isa-afp.org/entries/Liouville_Numbers.html</link>
+  <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Liouville numbers in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Descartes&#39; Rule of Signs</title>
+  <link>https://isa-afp.org/entries/Descartes_Sign_Rule.html</link>
+  <pubDate>Mon, 28 Dec 2015 00:00:00 +0000</pubDate>
+  <description>Descartes&#39; Rule of Signs in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Landau Symbols</title>
+  <link>https://isa-afp.org/entries/Landau_Symbols.html</link>
+  <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+  <description>Landau Symbols in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Akra-Bazzi theorem and the Master theorem</title>
+  <link>https://isa-afp.org/entries/Akra_Bazzi.html</link>
+  <pubDate>Tue, 14 Jul 2015 00:00:00 +0000</pubDate>
+  <description>The Akra-Bazzi theorem and the Master theorem in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>A Verified Compiler for Probability Density Functions</title>
+  <link>https://isa-afp.org/entries/Density_Compiler.html</link>
+  <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>
+  <description>A Verified Compiler for Probability Density Functions in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
+<item>
+  <title>Sturm&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Sturm_Sequences.html</link>
+  <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Sturm&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+
   </channel>
 </rss>

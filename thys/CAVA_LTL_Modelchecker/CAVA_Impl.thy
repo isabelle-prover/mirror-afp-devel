@@ -419,7 +419,7 @@ begin
     \<comment> \<open>Very specific optimization used in the next refinement\<close>
     apply -
     apply (induction l2) 
-    apply (auto simp: List.maps_def) [2]
+    apply (auto) [2]
 
     apply auto []
     done
@@ -752,7 +752,7 @@ lemma promela_to_sa_impl_refine:
   apply (auto simp: list_set_rel_def br_def ls.correct) []
 
   apply (auto simp: list_set_rel_def br_def) []
-  apply (auto simp: fun_set_rel_def br_def in_set_member promela_props_ltl_def) []
+  apply (auto simp: fun_set_rel_def br_def promela_props_ltl_def) []
   done
 
 definition "cava_promela cfg ast \<phi> \<equiv> 
@@ -1564,7 +1564,7 @@ export_code (* Cava MC *)
 
             (* String *)
             String.explode String.implode
-  in SML
+  in SML module_name CAVA_Export
   file \<open>code/CAVA_Export.sml\<close>
 
 end

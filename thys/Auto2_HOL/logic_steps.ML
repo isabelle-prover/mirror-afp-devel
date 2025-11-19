@@ -426,7 +426,7 @@ fun abstract_eq ctxt var eq =
 fun replace_disj_vars ctxt (vars, disjs) =
     let
       val vars' = vars |> map Term.dest_Free
-                       |> Variable.variant_frees ctxt []
+                       |> Variable.variant_names ctxt
                        |> map Free
       val subst = vars ~~ vars'
     in

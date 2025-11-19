@@ -464,7 +464,7 @@ lemma list_map_autoref_isEmpty[autoref_rules]:
   shows "(list_map_isEmpty, op_map_isEmpty) \<in>
              \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> bool_rel"
 unfolding list_map_isEmpty_def op_map_isEmpty_def[abs_def]
-    list_map_rel_def br_def List.null_def[abs_def] by force
+    list_map_rel_def br_def by force
 
 lemma param_list_map_isSng[param]:
   assumes "(l,l') \<in> \<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel"

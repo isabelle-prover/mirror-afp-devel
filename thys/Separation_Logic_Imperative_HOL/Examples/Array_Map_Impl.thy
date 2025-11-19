@@ -1,5 +1,5 @@
 theory Array_Map_Impl
-imports 
+imports
   "../Sep_Main" Imp_Map_Spec Array_Blit
   "HOL-Library.Code_Target_Numeral"
 begin

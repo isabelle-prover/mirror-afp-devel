@@ -37,7 +37,7 @@ fun push_outer_params ctxt th =
       |> Simplifier.add_simp Drule.norm_hhf_eq;
   in
     Conv.fconv_rule
-      (Raw_Simplifier.rewrite_cterm (true, false, false) (K (K NONE)) ctxt') th
+      (Simplifier.rewrite_cterm (true, false, false) (K (K NONE)) ctxt') th
   end;
 
 fun fix_schematics ctxt raw_st =
@@ -129,11 +129,11 @@ fun fold_subgoals ctxt prefix raw_st =
 fun distinct_subgoals ctxt raw_st =
   let
     val (st, inner_ctxt) = fix_schematics ctxt raw_st;
-    val subgoals = Drule.cprems_of st;
+    val subgoals = Thm.cprems_of st;
     val atomize = Conv.fconv_rule (Object_Logic.atomize_prems inner_ctxt);
 
     val rules =
-      map (atomize o Raw_Simplifier.norm_hhf inner_ctxt o Thm.assume) subgoals
+      map (atomize o Simplifier.norm_hhf inner_ctxt o Thm.assume) subgoals
       |> sort (int_ord o apply2 Thm.nprems_of);
 
     val st' = st
@@ -184,7 +184,7 @@ val adhoc_conjunction_tac = REPEAT_ALL_NEW
 
 fun unfold_subgoals_tac ctxt =
   TRY (adhoc_conjunction_tac 1)
-  THEN (PRIMITIVE (Raw_Simplifier.norm_hhf ctxt));
+  THEN (PRIMITIVE (Simplifier.norm_hhf ctxt));
 
 val _ =
   Theory.setup

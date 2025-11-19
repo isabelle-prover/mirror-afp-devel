@@ -142,7 +142,6 @@ proof (induct qs arbitrary: q init_assumps branch_poly_list branch_assms)
   then have "(branch_assms, branch_poly_list) \<in> set [(init_assumps, [])]"
     using lc_assump_generation_list.simps by auto
   then have "branch_poly_list = []"
-    using in_set_member
     by simp 
   then show ?case 
     using Nil.prems(1)
@@ -260,7 +259,7 @@ proof -
         then have "eval_mpoly_poly val (prod_list_var_gen (a # branch_poly_list)) =
        prod_list_var_gen (map (eval_mpoly_poly val) (a # branch_poly_list))"
           using Cons.hyps Cons.prems h1 h2
-          by (simp add: member_rec(1)) 
+          by simp 
       }
       moreover { assume *: "a \<noteq> 0"
         then have h1: "eval_mpoly_poly val (prod_list_var_gen (a # branch_poly_list)) = 
@@ -275,7 +274,7 @@ proof -
         have "eval_mpoly_poly val (prod_list_var_gen (a # branch_poly_list)) =
           prod_list_var_gen (map (eval_mpoly_poly val) (a # branch_poly_list))"
           using Cons.hyps Cons.prems h1 h2
-          by (simp add: member_rec(1)) 
+          by simp
       }
       ultimately show ?case 
         by auto 
@@ -320,18 +319,20 @@ lemma calc_data_to_signs_and_extract_signs:
 
 lemma branch_poly_eval:
   assumes "(a, q) \<in> set (lc_assump_generation init_q init_assumps)"
-  assumes "\<And>p n. (p,n) \<in> set a \<Longrightarrow> satisfies_evaluation val p n"
-  shows "(eval_mpoly_poly val) q = (eval_mpoly_poly val) init_q"
+  assumes "\<And>p n. (p, n) \<in> set a \<Longrightarrow> satisfies_evaluation val p n"
+  shows "eval_mpoly_poly val q = eval_mpoly_poly val init_q"
   using assms 
-proof (induct init_q init_assumps arbitrary: q a rule: lc_assump_generation_induct )
+proof (induct init_q init_assumps arbitrary: q a rule: lc_assump_generation_induct)
   case (Base init_q init_assumps)
   then show ?case
-    by (simp add: lc_assump_generation.simps) 
+    by (simp add: lc_assump_generation.simps)
 next
   case (Rec init_q init_assumps)
-  then show ?case using lc_assump_generation.simps
-      basic_trans_rules(31) eval_mpoly_poly_one_less_degree in_set_member lc_assump_generation_subset member_rec(1) option.case(1) prod.inject
-    by (smt (verit, best))
+  from Rec.prems(1) Rec.hyps(1-2) Rec.prems(2) Rec.hyps(3) [of a q]
+  show ?case
+    using eval_mpoly_poly_one_less_degree [of val init_q]
+      lc_assump_generation_subset [of a q \<open>one_less_degree init_q\<close> \<open>(Polynomial.lead_coeff init_q, 0) # init_assumps\<close>] lc_assump_generation.simps [of init_q init_assumps]
+    by auto
 next
   case (Lookup0 init_q init_assumps)
   then show ?case 
@@ -355,7 +356,6 @@ proof (induct qs arbitrary: branch_assms branch_poly_list init_assumps val)
   then have "(branch_assms, branch_poly_list) \<in> set [(init_assumps, [])]"
     using lc_assump_generation_list.simps by auto
   then have "branch_poly_list = []"
-    using in_set_member
     by simp
   then show ?case
     by simp
@@ -407,7 +407,6 @@ proof (induct qs arbitrary: branch_assms branch_poly_list init_assumps)
   then have "(branch_assms, branch_poly_list) \<in> set [(init_assumps, [])]"
     using lc_assump_generation_list.simps by auto
   then have "branch_poly_list = []"
-    using in_set_member
     by simp 
   then show ?case 
     using Nil.prems(1)
@@ -484,7 +483,6 @@ proof (induct qs arbitrary: branch_assms branch_poly_list init_assumps)
     using lc_assump_generation_list.simps
     by auto
   then have "branch_poly_list = []"
-    using in_set_member
     by simp 
   then show ?case
     by simp 
@@ -619,7 +617,7 @@ next
 next
   case (LookupN0 init_q init_assumps r)
   then have match: "(a, q) = (init_assumps, init_q)"
-    using lc_assump_generation.simps in_set_member by auto 
+    using lc_assump_generation.simps by auto 
   then obtain i where i_prop: "i \<noteq> 0"
     "lookup_assump_aux (Polynomial.lead_coeff init_q) init_assumps = Some i"
     "(Polynomial.lead_coeff init_q, i) \<in> set init_assumps"
@@ -682,7 +680,6 @@ proof (induct qs arbitrary: pos_limit_branch neg_limit_branch branch_assms branc
     using lc_assump_generation_list.simps
     by auto
   then have "branch_poly_list = []"
-    using in_set_member
     by simp 
   then show ?case using Nil.prems 
     unfolding eval_mpoly_poly_def sgn_pos_inf_rat_list_def
@@ -824,7 +821,6 @@ proof (induct qs arbitrary: pos_limit_branch neg_limit_branch branch_assms branc
     using lc_assump_generation_list.simps
     by auto
   then have "branch_poly_list = []"
-    using in_set_member
     by simp 
   then show ?case using Nil.prems 
     unfolding eval_mpoly_poly_def sgn_neg_inf_rat_list_def
@@ -1085,7 +1081,7 @@ proof -
   obtain calc_a calc_signs where calc_prop:
     "(calc_a, calc_signs) \<in> set calculate_data_branch"
     "(assumps, signs) = (calc_a, pos_limit_branch#neg_limit_branch#calc_signs)"
-    using in_set_member branch_prop_expanded(5)
+    using branch_prop_expanded(5)
     by auto
   then have branch_assms_subset: "set branch_assms \<subseteq> set assumps" 
     using branch_prop_expanded(3) extract_signs_M_subset
@@ -2012,7 +2008,7 @@ next
       by (metis lookup_assump_aux_eo option.simps(3) option.simps(4))
     have i_is: "(x1, i) \<in> set (zip qs1 signs1) "
       using i_prop lookup_assump_means_inset[of x1 "(zip qs1 signs1)" i]
-        in_set_member[of "(x1, i)" "(zip qs1 signs1)" ] by auto
+      by auto
     then have "(x1, i) \<in> set (zip qs signs)"
       using subset by auto
     then obtain i1 where "lookup_assump_aux x1 (zip qs signs) = Some i1"
@@ -2020,7 +2016,7 @@ next
       by meson 
     then have i1_is: "(x1, i1) \<in> set (zip qs signs)"
       using lookup_assump_means_inset[of x1 "(zip qs signs)" i1]
-        in_set_member[of "(x1, i1)" "(zip qs signs)"] by auto
+      by auto
     have "\<And>b. signs1 = map (mpoly_sign val) qs1 \<Longrightarrow>
          zip qs1 (map (mpoly_sign val) qs1) =
          map2 (\<lambda>x y. (x, mpoly_sign val y)) qs1 qs1 \<Longrightarrow>
@@ -2051,14 +2047,14 @@ next
       by (metis lookup_assump_aux_eo option.simps(3) option.simps(4))
     have i_is: "(x1, i) \<in> set (zip qs1 signs1) "
       using i_prop lookup_assump_means_inset[of x1 "(zip qs1 signs1)" i]
-        in_set_member[of "(x1, i)" "(zip qs1 signs1)" ] by auto
+      by auto
     then have "(x1, i) \<in> set (zip qs signs)"
       using subset by auto
     then obtain i1 where "lookup_assump_aux x1 (zip qs signs) = Some i1"
       by (meson inset_means_lookup_assump_some) 
     then have i1_is: "(x1, i1) \<in> set (zip qs signs)"
       using lookup_assump_means_inset[of x1 "(zip qs signs)" i1]
-        in_set_member[of "(x1, i1)" "(zip qs signs)"] by auto
+      by auto
     have "\<And>b. signs1 = map (mpoly_sign val) qs1 \<Longrightarrow>
          zip qs1 (map (mpoly_sign val) qs1) =
          map2 (\<lambda>x y. (x, mpoly_sign val y)) qs1 qs1 \<Longrightarrow>
@@ -2089,14 +2085,14 @@ next
       by (metis lookup_assump_aux_eo option.simps(3) option.simps(4))
     have i_is: "(x1, i) \<in> set (zip qs1 signs1) "
       using i_prop lookup_assump_means_inset[of x1 "(zip qs1 signs1)" i]
-        in_set_member[of "(x1, i)" "(zip qs1 signs1)" ] by auto
+      by auto
     then have "(x1, i) \<in> set (zip qs signs)"
       using subset by auto
     then obtain i1 where "lookup_assump_aux x1 (zip qs signs) = Some i1"
       by (meson inset_means_lookup_assump_some)
     then have i1_is: "(x1, i1) \<in> set (zip qs signs)"
       using lookup_assump_means_inset[of x1 "(zip qs signs)" i1]
-        in_set_member[of "(x1, i1)" "(zip qs signs)"] by auto
+      by auto
     have "\<And>b. signs1 = map (mpoly_sign val) qs1 \<Longrightarrow>
          zip qs1 (map (mpoly_sign val) qs1) =
          map2 (\<lambda>x y. (x, mpoly_sign val y)) qs1 qs1 \<Longrightarrow>
@@ -2127,14 +2123,14 @@ next
       by (metis lookup_assump_aux_eo option.simps(3) option.simps(4))
     have i_is: "(x1, i) \<in> set (zip qs1 signs1) "
       using i_prop lookup_assump_means_inset[of x1 "(zip qs1 signs1)" i]
-        in_set_member[of "(x1, i)" "(zip qs1 signs1)" ] by auto
+      by auto
     then have "(x1, i) \<in> set (zip qs signs)"
       using subset by auto
     then obtain i1 where "lookup_assump_aux x1 (zip qs signs) = Some i1"
       by (meson inset_means_lookup_assump_some) 
     then have i1_is: "(x1, i1) \<in> set (zip qs signs)"
       using lookup_assump_means_inset[of x1 "(zip qs signs)" i1]
-        in_set_member[of "(x1, i1)" "(zip qs signs)"] by auto
+      by auto
     have "\<And>b. signs1 = map (mpoly_sign val) qs1 \<Longrightarrow>
          zip qs1 (map (mpoly_sign val) qs1) =
          map2 (\<lambda>x y. (x, mpoly_sign val y)) qs1 qs1 \<Longrightarrow>

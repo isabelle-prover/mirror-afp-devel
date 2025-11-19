@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>stuewe on Archive of Formal Proofs
-    </title>
-    <link>/authors/stuewe/</link>
-    <description>
-        Recent content in stuewe 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 11 Feb 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/stuewe/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Probabilistic Primality Testing</title>
-          <link>/entries/Probabilistic_Prime_Tests.html</link>
-          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_Prime_Tests.html</guid>
-          <description></description>
-        </item>
+    <title>Daniel Stüwe</title>
+    <link>https://isa-afp.org/authors/stuewe/</link>
+    <description>AFP entries of Daniel Stüwe</description><item>
+  <title>Probabilistic Primality Testing</title>
+  <link>https://isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
+  <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Probabilistic Primality Testing in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Number theory</category>
+</item>
+
   </channel>
 </rss>

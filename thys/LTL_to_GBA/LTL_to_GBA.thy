@@ -35,7 +35,7 @@ code_printing
       val _ = Statistics.register_stat ("Gerth LTL_to_GBA",is_active,to_string)
     end
 \<close>
-code_reserved SML Gerth_Statistics
+code_reserved (SML) Gerth_Statistics
 
 consts
   stat_set_data_int :: "integer \<Rightarrow> integer \<Rightarrow> integer \<Rightarrow> unit"

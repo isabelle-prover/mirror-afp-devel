@@ -195,7 +195,7 @@ proof -
     apply (rule_tac x="to_nat_list \<circ> flist_arb" in exI)
     apply (rule comp_inj_on)
      apply (metis flist_arb_inv inj_on_def)
-    apply (simp add: flist_arb_lists subset_inj_on)
+    apply (simp add: flist_arb_lists inj_on_subset)
     done
 qed
 

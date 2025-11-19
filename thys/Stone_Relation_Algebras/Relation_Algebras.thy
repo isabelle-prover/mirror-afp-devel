@@ -763,6 +763,10 @@ lemma comp_inf_covector:
   "x * (y \<sqinter> top * z) = x * y \<sqinter> top * z"
   by (simp add: covector_comp_inf covector_mult_closed)
 
+lemma transitive_mapping_idempotent:
+  "transitive x \<Longrightarrow> mapping x \<Longrightarrow> idempotent x"
+  by (smt (verit, ccfv_threshold) conv_dist_comp conv_involutive epm_3 inf.order_iff top_greatest total_conv_surjective transitive_conv_closed mult_assoc)
+
 text \<open>
 Well-known distributivity properties of univalent and injective relations over meet continue to hold.
 \<close>
@@ -1182,6 +1186,35 @@ lemma comp_pp_semi_commute:
   using conv_complement_sub_leq schroeder_3_p by fastforce
 
 text \<open>
+Composition commutes, relative to the diversity relation.
+\<close>
+
+lemma comp_commute_below_diversity:
+  "x * y \<le> -1 \<longleftrightarrow> y * x \<le> -1"
+  by (metis comp_right_one conv_dist_comp conv_one schroeder_3_p schroeder_4_p)
+
+text \<open>
+The following result shows how to apply the Schr\"oder equivalence to the middle factor in a composition of three relations.
+Again the elements on the right-hand side need to be pseudocomplemented.
+\<close>
+
+lemma triple_schroeder_p:
+  "x * y * z \<le> -w \<longleftrightarrow> x\<^sup>T * w * z\<^sup>T \<le> -y"
+  using mult_assoc p_antitone_iff schroeder_3_p schroeder_4_p by auto
+
+text \<open>
+The rotation versions of the Schr\"oder equivalences continue to hold, again with pseudocomplemented elements on the right-hand side.
+\<close>
+
+lemma schroeder_5_p:
+  "x * y \<le> -z \<longleftrightarrow> y * z\<^sup>T \<le> -x\<^sup>T"
+  using schroeder_3_p schroeder_4_p by auto
+
+lemma schroeder_6_p:
+  "x * y \<le> -z \<longleftrightarrow> z\<^sup>T * x \<le> -y\<^sup>T"
+  using schroeder_3_p schroeder_4_p by auto
+
+text \<open>
 The following result looks similar to a property of (anti)domain.
 \<close>
 
@@ -1227,6 +1260,10 @@ lemma covector_complement_closed:
 lemma covector_vector_comp:
   "vector v \<Longrightarrow> -v\<^sup>T * v = bot"
   by (metis conv_bot conv_complement conv_complement_sub_inf conv_dist_comp conv_involutive inf_top.right_neutral)
+
+lemma vector_conv_compl:
+  "vector v \<Longrightarrow> top * -v\<^sup>T = -v\<^sup>T"
+  by (simp add: covector_complement_closed vector_conv_covector)
 
 lemma irreflexive_bot_closed:
   "irreflexive bot"
@@ -1318,6 +1355,42 @@ lemma strict_order_order:
   apply simp
   apply (simp add: mult_left_dist_sup mult_right_dist_sup sup.absorb2)
   using conv_dist_sup coreflexive_bot_closed sup.absorb2 sup_inf_distrib2 by fastforce
+
+lemma strict_order_irreflexive:
+  "irreflexive (x \<sqinter> -1)"
+  by simp
+
+lemma strict_order_transitive_1:
+  "antisymmetric x \<Longrightarrow> transitive x \<Longrightarrow> x * (x \<sqinter> -1) \<le> x \<sqinter> -1"
+  by (smt (verit, best) bot_unique inf.order_trans inf.semilattice_order_axioms mult.monoid_axioms p_shunting_swap schroeder_5_p semiring.add_decreasing2 semiring.mult_left_mono sup.bounded_iff symmetric_one_closed monoid.right_neutral semilattice_order.boundedI semilattice_order.cobounded1 semilattice_order.cobounded2)
+
+lemma strict_order_transitive_2:
+  "antisymmetric x \<Longrightarrow> transitive x \<Longrightarrow> (x \<sqinter> -1) * x \<le> x \<sqinter> -1"
+  by (smt (verit, ccfv_SIG) comp_commute_below_diversity dual_order.eq_iff inf.boundedE inf.order_iff inf.sup_monoid.add_assoc mult_left_isotone strict_order_transitive_1)
+
+lemma strict_order_transitive:
+  "antisymmetric x \<Longrightarrow> transitive x \<Longrightarrow> (x \<sqinter> -1) * (x \<sqinter> -1) \<le> x \<sqinter> -1"
+  using comp_isotone inf.cobounded1 inf.order_lesseq_imp strict_order_transitive_2 by blast
+
+lemma strict_order_transitive_eq_1:
+  "order x \<Longrightarrow> (x \<sqinter> -1) * x = x \<sqinter> -1"
+  by (metis comp_right_one dual_order.antisym mult_right_isotone strict_order_transitive_2)
+
+lemma strict_order_transitive_eq_2:
+  "order x \<Longrightarrow> x * (x \<sqinter> -1) = x \<sqinter> -1"
+  by (metis dual_order.antisym mult_1_left mult_left_isotone strict_order_transitive_1)
+
+lemma strict_order_transitive_eq:
+  "order x \<Longrightarrow> (x \<sqinter> -1) * x = x * (x \<sqinter> -1)"
+  by (simp add: strict_order_transitive_eq_1 strict_order_transitive_eq_2)
+
+lemma antisymmetric_inf_diversity:
+  "antisymmetric x \<Longrightarrow> x \<sqinter> -1 = x \<sqinter> -x\<^sup>T"
+  by (smt (verit, del_insts) inf.orderE inf.sup_monoid.add_assoc inf.sup_monoid.add_commute inf_import_p one_inf_conv)
+
+lemma strict_order_asymmetric:
+  "antisymmetric x \<Longrightarrow> asymmetric (x \<sqinter> -1)"
+  by (metis antisymmetric_inf_closed antisymmetric_inf_diversity inf.order_iff inf.right_idem pseudo_complement)
 
 lemma linear_strict_order_conv_closed:
   "linear_strict_order x \<Longrightarrow> linear_strict_order (x\<^sup>T)"
@@ -1595,39 +1668,6 @@ next
     .
 qed
 
-text \<open>
-The following result shows how to apply the Schr\"oder equivalence to the middle factor in a composition of three relations.
-Again the elements on the right-hand side need to be pseudocomplemented.
-\<close>
-
-lemma triple_schroeder_p:
-  "x * y * z \<le> -w \<longleftrightarrow> x\<^sup>T * w * z\<^sup>T \<le> -y"
-  using mult_assoc p_antitone_iff schroeder_3_p schroeder_4_p by auto
-
-text \<open>
-The rotation versions of the Schr\"oder equivalences continue to hold, again with pseudocomplemented elements on the right-hand side.
-\<close>
-
-lemma schroeder_5_p:
-  "x * y \<le> -z \<longleftrightarrow> y * z\<^sup>T \<le> -x\<^sup>T"
-  using schroeder_3_p schroeder_4_p by auto
-
-lemma schroeder_6_p:
-  "x * y \<le> -z \<longleftrightarrow> z\<^sup>T * x \<le> -y\<^sup>T"
-  using schroeder_3_p schroeder_4_p by auto
-
-lemma vector_conv_compl:
-  "vector v \<Longrightarrow> top * -v\<^sup>T = -v\<^sup>T"
-  by (simp add: covector_complement_closed vector_conv_covector)
-
-text \<open>
-Composition commutes, relative to the diversity relation.
-\<close>
-
-lemma comp_commute_below_diversity:
-  "x * y \<le> -1 \<longleftrightarrow> y * x \<le> -1"
-  by (metis comp_right_one conv_dist_comp conv_one schroeder_3_p schroeder_4_p)
-
 lemma comp_injective_below_complement:
   "injective y \<Longrightarrow> -x * y \<le> -(x * y)"
   by (metis p_antitone_iff comp_associative comp_right_isotone comp_right_one schroeder_4_p)
@@ -1635,6 +1675,20 @@ lemma comp_injective_below_complement:
 lemma comp_univalent_below_complement:
   "univalent x \<Longrightarrow> x * -y \<le> -(x * y)"
   by (metis p_inf pseudo_complement semiring.mult_zero_right univalent_comp_left_dist_inf)
+
+lemma comp_univalent_complement:
+  assumes "univalent x"
+    shows "x * -y = x * top \<sqinter> -(x * y)"
+proof (rule order.antisym)
+  show "x * -y \<le> x * top \<sqinter> -(x * y)"
+    by (simp add: assms comp_isotone comp_univalent_below_complement)
+  show "x * top \<sqinter> -(x * y) \<le> x * -y"
+    by (metis inf.sup_left_divisibility inf_top.left_neutral theorem24xxiii)
+qed
+
+lemma comp_injective_complement:
+  "injective x \<Longrightarrow> -y * x = top * x \<sqinter> -(y * x)"
+  by (smt (verit, ccfv_threshold) antisym_conv comp_injective_below_complement complement_conv_sub dedekind_2 inf.bounded_iff mult_left_isotone order_lesseq_imp top.extremum)
 
 text \<open>
 Bijective relations and mappings can be exported from a pseudocomplement.
@@ -1763,10 +1817,6 @@ proof -
   finally show "?f \<le> --(-?h \<sqinter> g)"
     using inf_pp_semi_commute order_lesseq_imp by blast
 qed
-
-lemma antisymmetric_inf_diversity:
-  "antisymmetric x \<Longrightarrow> x \<sqinter> -1 = x \<sqinter> -x\<^sup>T"
-  by (smt (verit, del_insts) inf.orderE inf.sup_monoid.add_assoc inf.sup_monoid.add_commute inf_import_p one_inf_conv)
 
 end
 
@@ -2296,6 +2346,12 @@ lemma regular_injective_vector_point_xor_bot:
 end
 
 class relation_algebra_tarski_consistent = relation_algebra + stone_relation_algebra_tarski_consistent
+begin
+
+subclass relation_algebra_tarski ..
+subclass relation_algebra_consistent ..
+
+end
 
 end
 

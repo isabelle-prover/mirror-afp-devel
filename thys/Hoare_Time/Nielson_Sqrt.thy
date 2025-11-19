@@ -1,5 +1,5 @@
 theory Nielson_Sqrt
-imports Nielson_VCGi "HOL-Library.Discrete"
+imports Nielson_VCGi "HOL-Library.Discrete_Functions"
 begin
      
 subsection \<open>Example: discrete square root in Nielson's logic\<close>  
@@ -23,28 +23,28 @@ text \<open>In this theory we will show that its running time is in the order of
   
 text \<open>a little lemma we need later for bounding the running time:\<close>
   
-lemma absch: "\<And>s k. 1 + s ''x'' = 2 ^ k \<Longrightarrow> 5 * k \<le> 96 + 100 * Discrete.log (nat (s ''x''))"  
+lemma absch: "\<And>s k. 1 + s ''x'' = 2 ^ k \<Longrightarrow> 5 * k \<le> 96 + 100 * floor_log (nat (s ''x''))"  
 proof -
   fix s :: state and  k :: nat 
   assume F: " 1 + s ''x'' = 2 ^ k " 
   then have i: "nat (1 + s ''x'') =  2 ^ k" and nn: "s ''x''\<ge> 0"  apply (auto simp: nat_power_eq)
     by (smt one_le_power)          
   have F: "1 + nat (s ''x'') = 2 ^k" unfolding i[symmetric] using nn by auto
-  show "5 * k \<le> 96 + 100 * Discrete.log (nat (s ''x''))"
+  show "5 * k \<le> 96 + 100 * floor_log (nat (s ''x''))"
   proof (cases "s ''x'' \<ge> 1")
     case True
-    have "5 * k = 5 * (Discrete.log (2^k))"     by auto
-    also have "\<dots> = 5 * Discrete.log (1 + nat (s ''x''))" by(simp only: F[symmetric])
-    also have "\<dots> \<le> 5 * Discrete.log (nat (s ''x'' + s ''x''))" using True
-      apply auto apply(rule monoD[OF log_mono]) by auto
-    also have "\<dots> = 5 *  Discrete.log (2 * nat (s ''x''))" by (auto simp: nat_mult_distrib) 
-    also have "\<dots> = 5 + 5 * (Discrete.log (nat (s ''x'')))" using True by auto
-    also have "\<dots> \<le> 96 + 100 * Discrete.log (nat (s ''x''))" by simp
+    have "5 * k = 5 * (floor_log (2^k))"     by auto
+    also have "\<dots> = 5 * floor_log (1 + nat (s ''x''))" by(simp only: F[symmetric])
+    also have "\<dots> \<le> 5 * floor_log (nat (s ''x'' + s ''x''))" using True
+      apply auto apply(rule monoD[OF floor_log_mono]) by auto
+    also have "\<dots> = 5 *  floor_log (2 * nat (s ''x''))" by (auto simp: nat_mult_distrib) 
+    also have "\<dots> = 5 + 5 * (floor_log (nat (s ''x'')))" using True by auto
+    also have "\<dots> \<le> 96 + 100 * floor_log (nat (s ''x''))" by simp
     finally show ?thesis .
   next
     case False
     with nn have gt1: "s ''x'' = 0" by auto
-    from F[unfolded gt1] have "2 ^ k = (1::int)" using log_Suc_zero by auto 
+    from F[unfolded gt1] have "2 ^ k = (1::int)" using floor_log_Suc_zero by auto 
     then have "k=0"
       by (metis One_nat_def add.right_neutral gt1 i n_not_Suc_n nat_numeral nat_power_eq_Suc_0_iff numeral_2_eq_2 numeral_One) 
     then show ?thesis by(simp add: gt1)
@@ -61,7 +61,7 @@ text \<open>For simplicity we assume, that during the process all segments betwe
   
 lemma 
   assumes P: "P  = (\<lambda>l s.  (\<exists>k. 1 + s ''x''  = 2 ^ k) )"
-      and e : "e  = (\<lambda>s. Discrete.log (nat (s ''x'')) + 1)" and
+      and e : "e  = (\<lambda>s. floor_log (nat (s ''x'')) + 1)" and
       Q[simp]: "Q = (\<lambda>l s. True)" 
   shows " \<turnstile>\<^sub>1 {P} c { e \<Down> Q}"
 proof -
@@ -77,7 +77,7 @@ proof -
   define I :: assn2 where "I \<equiv> (\<lambda>l s. (\<exists>k. s ''r'' - s ''l'' = 2 ^ k ) \<and> s ''l'' \<ge> 0 )"
     
   \<comment> \<open>and an time bound annotation for the loop\<close>  
-  define E :: tbd where "E \<equiv> %s. 1 + 5 * Discrete.log (nat(s ''r'' - s ''l''))"
+  define E :: tbd where "E \<equiv> %s. 1 + 5 * floor_log (nat(s ''r'' - s ''l''))"
   define S :: "state \<Rightarrow> state" where "S \<equiv> %s. s"
   define Es :: "vname \<Rightarrow> vname set" where "Es  = (%x. {x})"
     

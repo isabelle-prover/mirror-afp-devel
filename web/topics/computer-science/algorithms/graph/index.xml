@@ -1,436 +1,171 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Algorithms/Graph on Archive of Formal Proofs
-    </title>
-    <link>/topics/computer-science/algorithms/graph/</link>
-    <description>
-        Recent content in Computer science/Algorithms/Graph 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/computer-science/algorithms/graph/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Difference Bound Matrices</title>
-          <link>/entries/Difference_Bound_Matrices.html</link>
-          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Difference_Bound_Matrices.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Difference Bound Matrices</title>
-          <link>/entries/Difference_Bound_Matrices.html</link>
-          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Difference_Bound_Matrices.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Difference Bound Matrices</title>
-          <link>/entries/Difference_Bound_Matrices.html</link>
-          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Difference_Bound_Matrices.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Worklist Algorithms</title>
-          <link>/entries/Worklist_Algorithms.html</link>
-          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Worklist_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Worklist Algorithms</title>
-          <link>/entries/Worklist_Algorithms.html</link>
-          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Worklist_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Worklist Algorithms</title>
-          <link>/entries/Worklist_Algorithms.html</link>
-          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Worklist_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Tree Enumeration</title>
-          <link>/entries/Tree_Enumeration.html</link>
-          <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Tree_Enumeration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Tree Enumeration</title>
-          <link>/entries/Tree_Enumeration.html</link>
-          <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Tree_Enumeration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Tree Enumeration</title>
-          <link>/entries/Tree_Enumeration.html</link>
-          <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Tree_Enumeration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
-          <link>/entries/SCC_Bloemen_Sequential.html</link>
-          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/SCC_Bloemen_Sequential.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
-          <link>/entries/SCC_Bloemen_Sequential.html</link>
-          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/SCC_Bloemen_Sequential.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
-          <link>/entries/SCC_Bloemen_Sequential.html</link>
-          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/SCC_Bloemen_Sequential.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relational Minimum Spanning Tree Algorithms</title>
-          <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
-          <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relational Minimum Spanning Tree Algorithms</title>
-          <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
-          <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relational Minimum Spanning Tree Algorithms</title>
-          <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
-          <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-          <link>/entries/Prim_Dijkstra_Simple.html</link>
-          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Prim_Dijkstra_Simple.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-          <link>/entries/Prim_Dijkstra_Simple.html</link>
-          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Prim_Dijkstra_Simple.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-          <link>/entries/Prim_Dijkstra_Simple.html</link>
-          <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Prim_Dijkstra_Simple.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-          <link>/entries/Kruskal.html</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Kruskal.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-          <link>/entries/Kruskal.html</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Kruskal.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
-          <link>/entries/Kruskal.html</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Kruskal.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing Push-Relabel Algorithms</title>
-          <link>/entries/Prpu_Maxflow.html</link>
-          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Prpu_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing Push-Relabel Algorithms</title>
-          <link>/entries/Prpu_Maxflow.html</link>
-          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Prpu_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing Push-Relabel Algorithms</title>
-          <link>/entries/Prpu_Maxflow.html</link>
-          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Prpu_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
-          <link>/entries/Floyd_Warshall.html</link>
-          <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Floyd_Warshall.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
-          <link>/entries/Floyd_Warshall.html</link>
-          <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Floyd_Warshall.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
-          <link>/entries/Floyd_Warshall.html</link>
-          <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Floyd_Warshall.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing the Edmonds-Karp Algorithm</title>
-          <link>/entries/EdmondsKarp_Maxflow.html</link>
-          <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/EdmondsKarp_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing the Edmonds-Karp Algorithm</title>
-          <link>/entries/EdmondsKarp_Maxflow.html</link>
-          <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/EdmondsKarp_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing the Edmonds-Karp Algorithm</title>
-          <link>/entries/EdmondsKarp_Maxflow.html</link>
-          <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/EdmondsKarp_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Framework for Verifying Depth-First Search Algorithms</title>
-          <link>/entries/DFS_Framework.html</link>
-          <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/DFS_Framework.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Framework for Verifying Depth-First Search Algorithms</title>
-          <link>/entries/DFS_Framework.html</link>
-          <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/DFS_Framework.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Framework for Verifying Depth-First Search Algorithms</title>
-          <link>/entries/DFS_Framework.html</link>
-          <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/DFS_Framework.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
-          <link>/entries/Gabow_SCC.html</link>
-          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Gabow_SCC.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
-          <link>/entries/Gabow_SCC.html</link>
-          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Gabow_SCC.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
-          <link>/entries/Gabow_SCC.html</link>
-          <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Gabow_SCC.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Transitive closure according to Roy-Floyd-Warshall</title>
-          <link>/entries/Roy_Floyd_Warshall.html</link>
-          <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Roy_Floyd_Warshall.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Transitive closure according to Roy-Floyd-Warshall</title>
-          <link>/entries/Roy_Floyd_Warshall.html</link>
-          <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Roy_Floyd_Warshall.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Transitive closure according to Roy-Floyd-Warshall</title>
-          <link>/entries/Roy_Floyd_Warshall.html</link>
-          <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Roy_Floyd_Warshall.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Transitive Closures</title>
-          <link>/entries/Transitive-Closure-II.html</link>
-          <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure-II.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Transitive Closures</title>
-          <link>/entries/Transitive-Closure-II.html</link>
-          <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure-II.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Transitive Closures</title>
-          <link>/entries/Transitive-Closure-II.html</link>
-          <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure-II.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Dijkstra&#39;s Shortest Path Algorithm</title>
-          <link>/entries/Dijkstra_Shortest_Path.html</link>
-          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Dijkstra_Shortest_Path.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Dijkstra&#39;s Shortest Path Algorithm</title>
-          <link>/entries/Dijkstra_Shortest_Path.html</link>
-          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Dijkstra_Shortest_Path.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Dijkstra&#39;s Shortest Path Algorithm</title>
-          <link>/entries/Dijkstra_Shortest_Path.html</link>
-          <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Dijkstra_Shortest_Path.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Transitive Closures of Finite Relations</title>
-          <link>/entries/Transitive-Closure.html</link>
-          <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Transitive Closures of Finite Relations</title>
-          <link>/entries/Transitive-Closure.html</link>
-          <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Transitive Closures of Finite Relations</title>
-          <link>/entries/Transitive-Closure.html</link>
-          <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Transitive-Closure.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
-          <link>/entries/GraphMarkingIBP.html</link>
-          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/GraphMarkingIBP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
-          <link>/entries/GraphMarkingIBP.html</link>
-          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/GraphMarkingIBP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
-          <link>/entries/GraphMarkingIBP.html</link>
-          <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/GraphMarkingIBP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Depth First Search</title>
-          <link>/entries/Depth-First-Search.html</link>
-          <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Depth-First-Search.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Depth First Search</title>
-          <link>/entries/Depth-First-Search.html</link>
-          <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Depth-First-Search.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Depth First Search</title>
-          <link>/entries/Depth-First-Search.html</link>
-          <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Depth-First-Search.html</guid>
-          <description></description>
-        </item>
+    <title>Computer science/Algorithms/Graph</title>
+    <link>https://isa-afp.org/topics/computer-science/algorithms/graph/</link>
+    <description>AFP entries in Graph</description><item>
+  <title>Galois Energy Games</title>
+  <link>https://isa-afp.org/entries/Galois_Energy_Games.html</link>
+  <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>
+  <description>Galois Energy Games in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Elementary Graph Traversal Algorithms</title>
+  <link>https://isa-afp.org/entries/Graph_Algorithms.html</link>
+  <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Elementary Graph Traversal Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Difference Bound Matrices</title>
+  <link>https://isa-afp.org/entries/Difference_Bound_Matrices.html</link>
+  <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
+  <description>Difference Bound Matrices in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Worklist Algorithms</title>
+  <link>https://isa-afp.org/entries/Worklist_Algorithms.html</link>
+  <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+  <description>Worklist Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Derandomization with Conditional Expectations</title>
+  <link>https://isa-afp.org/entries/Derandomization_Conditional_Expectations.html</link>
+  <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Derandomization with Conditional Expectations in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Tree Enumeration</title>
+  <link>https://isa-afp.org/entries/Tree_Enumeration.html</link>
+  <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+  <description>Tree Enumeration in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Graph theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Expander Graphs</title>
+  <link>https://isa-afp.org/entries/Expander_Graphs.html</link>
+  <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+  <description>Expander Graphs in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
+  <link>https://isa-afp.org/entries/SCC_Bloemen_Sequential.html</link>
+  <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+  <description>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Relational Minimum Spanning Tree Algorithms</title>
+  <link>https://isa-afp.org/entries/Relational_Minimum_Spanning_Trees.html</link>
+  <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+  <description>Relational Minimum Spanning Tree Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+  <link>https://isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
+  <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+  <link>https://isa-afp.org/entries/Kruskal.html</link>
+  <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Kruskal&#39;s Algorithm for Minimum Spanning Forest in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Formalizing Push-Relabel Algorithms</title>
+  <link>https://isa-afp.org/entries/Prpu_Maxflow.html</link>
+  <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Formalizing Push-Relabel Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+  <link>https://isa-afp.org/entries/Floyd_Warshall.html</link>
+  <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
+  <description>The Floyd-Warshall Algorithm for Shortest Paths in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Formalizing the Edmonds-Karp Algorithm</title>
+  <link>https://isa-afp.org/entries/EdmondsKarp_Maxflow.html</link>
+  <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
+  <description>Formalizing the Edmonds-Karp Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>A Framework for Verifying Depth-First Search Algorithms</title>
+  <link>https://isa-afp.org/entries/DFS_Framework.html</link>
+  <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
+  <description>A Framework for Verifying Depth-First Search Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
+  <link>https://isa-afp.org/entries/Gabow_SCC.html</link>
+  <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+  <description>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Transitive closure according to Roy-Floyd-Warshall</title>
+  <link>https://isa-afp.org/entries/Roy_Floyd_Warshall.html</link>
+  <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+  <description>Transitive closure according to Roy-Floyd-Warshall in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Executable Transitive Closures</title>
+  <link>https://isa-afp.org/entries/Transitive-Closure-II.html</link>
+  <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
+  <description>Executable Transitive Closures in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Dijkstra&#39;s Shortest Path Algorithm</title>
+  <link>https://isa-afp.org/entries/Dijkstra_Shortest_Path.html</link>
+  <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+  <description>Dijkstra&#39;s Shortest Path Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Executable Transitive Closures of Finite Relations</title>
+  <link>https://isa-afp.org/entries/Transitive-Closure.html</link>
+  <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
+  <description>Executable Transitive Closures of Finite Relations in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
+  <link>https://isa-afp.org/entries/GraphMarkingIBP.html</link>
+  <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+  <description>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Depth First Search</title>
+  <link>https://isa-afp.org/entries/Depth-First-Search.html</link>
+  <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
+  <description>Depth First Search in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+
   </channel>
 </rss>

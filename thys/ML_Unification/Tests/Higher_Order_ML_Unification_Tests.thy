@@ -12,7 +12,7 @@ ML\<open>
   structure Prop = SpecCheck_Property
   open Unification_Tests_Base
   structure Unif = Higher_Order_Unification
-  val unify = Unif.unify []
+  val unify = (Unif.unify |> Type_Unification.e_unify Unification_Util.unify_types) []
 \<close>
 
 subsubsection \<open>Unification\<close>

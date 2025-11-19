@@ -289,13 +289,9 @@ text \<open>
         show "\<not> J.arr f \<Longrightarrow> mkCone p0 p1 f = C.null"
           using mkCone_def J.arr_char by simp
         assume f: "J.arr f"
-        show "C.dom (mkCone p0 p1 f) = E.map (J.dom f)"
-          using assms f mkCone_def J.arr_char J.dom_char
-          apply (cases f, simp_all)
-          by (metis C.dom_comp)+
-        show "C.cod (mkCone p0 p1 f) = map (J.cod f)"
-          using assms f mkCone_def J.arr_char J.cod_char is_cospan
-          by (cases f, auto)
+        show "C.arr (mkCone p0 p1 f)"
+          using assms f mkCone_def J.arr_char
+          by (cases f, simp_all) blast+
         show "map f \<cdot> mkCone p0 p1 (J.dom f) = mkCone p0 p1 f"
           using assms f mkCone_def J.arr_char J.dom_char C.comp_ide_arr is_cospan
           by (cases f, auto)
@@ -337,18 +333,18 @@ text \<open>
       show ?thesis
       proof -
         have "\<And>j. j = J.AA \<Longrightarrow> mkCone (\<chi> J.AA) (\<chi> J.BB) j = \<chi> j"
-          using mkCone_def \<chi>.is_extensional by simp
+          using mkCone_def \<chi>.extensionality by simp
         moreover have "\<And>j. j = J.BB \<Longrightarrow> mkCone (\<chi> J.AA) (\<chi> J.BB) j = \<chi> j"
-          using mkCone_def \<chi>.is_extensional by simp
+          using mkCone_def \<chi>.extensionality by simp
         moreover have "\<And>j. j = J.TT \<Longrightarrow> mkCone (\<chi> J.AA) (\<chi> J.BB) j = \<chi> j"
-          using 1 mkCone_def \<chi>.is_extensional \<chi>.A.map_simp \<chi>.preserves_comp_1
-                cospan_shape.seq_char \<chi>.is_natural_2
+          using 1 mkCone_def \<chi>.extensionality \<chi>.A.map_simp \<chi>.preserves_comp_1
+                cospan_shape.seq_char \<chi>.naturality2
           apply simp
           by (metis J.seqE J.comp.simps(5) map.simps(5))
         ultimately have "\<And>j. J.ide j \<Longrightarrow> mkCone (\<chi> J.AA) (\<chi> J.BB) j = \<chi> j"
           using J.ide_char by auto
         thus "mkCone (\<chi> J.AA) (\<chi> J.BB) = \<chi>"
-          using mkCone_def NaturalTransformation.eqI [of J.comp C]
+          using mkCone_def natural_transformation_eqI [of J.comp C]
                 \<chi>.natural_transformation_axioms mkCone_\<chi>.natural_transformation_axioms
                 J.ide_char
           by simp
@@ -518,15 +514,17 @@ text \<open>
     where "has_pullbacks = (\<forall>f0 f1. cospan f0 f1 \<longrightarrow> (\<exists>p0 p1. has_as_pullback f0 f1 p0 p1))"
 
     lemma has_as_pullbackI [intro]:
-    assumes "cospan f g" and "commutative_square f g p q"
+    assumes "commutative_square f g p q"
     and "\<And>h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
     shows "has_as_pullback f g p q"
     proof (unfold has_as_pullback_def, intro conjI)
       show "arr f" and "arr g" and "cod f = cod g"
         using assms(1) by auto
+      hence 0: "cospan f g"
+        by auto
       interpret J: cospan_shape .
       interpret D: cospan_diagram C f g
-        using assms(1-2) by unfold_locales auto
+        using 0 by unfold_locales auto
       show "D.has_as_pullback p q"
       proof -
         have 1: "D.is_rendered_commutative_by p q"
@@ -544,12 +542,12 @@ text \<open>
           have 2: "D.is_rendered_commutative_by (\<chi>' J.AA) (\<chi>' J.BB)"
             using \<chi>' D.is_rendered_commutative_by_cone [of x \<chi>'] by blast
           have 3: "\<exists>!l. p \<cdot> l = \<chi>' J.AA \<and> q \<cdot> l = \<chi>' J.BB"
-            using assms(1,3) 2 \<chi>'.preserves_hom J.arr_char J.ide_char by simp
+            using assms(2) 0 2 \<chi>'.preserves_hom J.arr_char J.ide_char by simp
           obtain l where l: "p \<cdot> l = \<chi>' J.AA \<and> q \<cdot> l = \<chi>' J.BB"
             using 3 by blast
           have "\<guillemotleft>l : x \<rightarrow> ?a\<guillemotright>"
             using l 2 \<chi>'.preserves_hom J.arr_char J.ide_char \<chi>'.component_in_hom
-                  \<chi>'.is_extensional \<chi>'.preserves_reflects_arr comp_in_homE null_is_zero(2) in_homE
+                  \<chi>'.extensionality \<chi>'.preserves_reflects_arr comp_in_homE null_is_zero(2) in_homE
             by metis
           moreover have "D.cones_map l (D.mkCone p q) = \<chi>'"
             using l D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.AA" "\<chi>' J.BB" l]
@@ -791,7 +789,7 @@ text \<open>
         by (metis seqE)
     qed
 
-    lemma tuple_is_extensional:
+    lemma tuple_extensionality:
     assumes "\<not> commutative_square f g h k"
     shows "\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = null"
       unfolding tuple_def
@@ -1030,7 +1028,7 @@ text \<open>
         using assms pullback_commutes [of f f]
         by (metis commutative_squareE mono_implies_arr)
       thus ?thesis
-        using assms monoE [of f "\<p>\<^sub>1[f, f]" "\<p>\<^sub>0[f, f]"]
+        using assms mono_cancel [of f "\<p>\<^sub>1[f, f]" "\<p>\<^sub>0[f, f]"]
         by (metis mono_implies_arr prj0_simps(1,3) seqI)
     qed
 

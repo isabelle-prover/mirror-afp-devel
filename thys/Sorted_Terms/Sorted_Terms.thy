@@ -8,11 +8,11 @@ subsection \<open>Overloaded Notations\<close>
 
 consts vars :: "'a \<Rightarrow> 'b set"
 
-adhoc_overloading vars vars_term
+adhoc_overloading vars \<rightleftharpoons> vars_term
 
 consts map_vars :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow> 'd"
 
-adhoc_overloading map_vars "map_term (\<lambda>x. x)"
+adhoc_overloading map_vars \<rightleftharpoons> "map_term (\<lambda>x. x)"
 
 lemma map_term_eq_Var: "map_term F V s = Var y \<longleftrightarrow> (\<exists>x. s = Var x \<and> y = V x)"
   by (cases s, auto)
@@ -193,11 +193,14 @@ next
   show ?case by (auto simp: list_all2_conv_all_nth)
 qed
 
+lemma hastype_in_Term_imp_vars_subset: "s : \<sigma> in \<T>(F,V) \<Longrightarrow> vars s \<subseteq> dom V" 
+  by (auto dest!: hastype_in_Term_imp_vars)
+
 lemma in_dom_Term_imp_vars: "s \<in> dom \<T>(F,V) \<Longrightarrow> v \<in> vars s \<Longrightarrow> v \<in> dom V"
   by (auto elim!: in_dom_hastypeE simp: hastype_in_Term_imp_vars)
 
-lemma hastype_in_Term_imp_vars_subset: "t : s in \<T>(F,V) \<Longrightarrow> vars t \<subseteq> dom V" 
-  by (auto dest: hastype_in_Term_imp_vars)
+lemma in_dom_Term_vars_subset: "s \<in> dom \<T>(F,V) \<Longrightarrow> vars s \<subseteq> dom V"
+  by (auto dest!: in_dom_Term_imp_vars)
 
 interpretation Var: sorted_map Var V "\<T>(F,V)" for F V by (auto intro!: sorted_mapI)
 
@@ -239,6 +242,19 @@ lemmas eval_hastype_vars =
 lemmas eval_has_same_type_vars =
   eval_has_same_type[OF _ hastype_in_Term_restrict_vars[THEN iffD2]]
 
+lemma eval_subst_sorted_map:
+  assumes \<theta>: "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,V)" and \<alpha>: "\<alpha> :\<^sub>s V \<rightarrow> A"
+  shows "I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha> :\<^sub>s X \<rightarrow> A"
+proof
+  fix x \<sigma> assume "x : \<sigma> in X"
+  from sorted_mapD[OF \<theta> this]
+  show "(I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>) x : \<sigma> in A" by (auto simp: eval_subst_def intro!: eval_hastype[OF \<alpha>])
+qed
+
+lemmas eval_Term_empty_hastype = eval_hastype[OF sorted_map_empty]
+lemmas map_eval_Term_empty_hastype = map_eval_hastype[OF sorted_map_empty]
+lemmas eval_Term_empty_sorted_map = eval_sorted_map[OF sorted_map_empty]
+
 end
 
 lemma sorted_algebra_cong:
@@ -261,6 +277,10 @@ text \<open>Sorted substitution preserves type:\<close>
 lemma subst_hastype: "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,V) \<Longrightarrow> s : \<sigma> in \<T>(F,X) \<Longrightarrow> s\<cdot>\<theta> : \<sigma> in \<T>(F,V)"
   using term.eval_hastype.
 
+lemma subst_compose_sorted_map:
+  "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,Y) \<Longrightarrow> \<rho> :\<^sub>s Y \<rightarrow> \<T>(F,Z) \<Longrightarrow> \<theta> \<circ>\<^sub>s \<rho> :\<^sub>s X \<rightarrow> \<T>(F,Z)"
+  using term.eval_subst_sorted_map.
+
 lemmas subst_hastype_imp_dom_iff = term.dom_iff_hastype
 lemmas subst_hastype_vars = term.eval_hastype_vars
 lemmas subst_has_same_type = term.eval_has_same_type
@@ -269,11 +289,6 @@ lemmas subst_map_vars = eval_map_vars[of Fun]
 lemmas subst_o = eval_o[of Fun]
 lemmas subst_sorted_map = term.eval_sorted_map
 lemmas map_subst_hastype = term.map_eval_hastype
-
-lemma subst_compose_sorted_map:
-  assumes "\<theta> :\<^sub>s X \<rightarrow> \<T>(F,Y)" and "\<rho> :\<^sub>s Y \<rightarrow> \<T>(F,Z)"
-  shows "\<theta> \<circ>\<^sub>s \<rho> :\<^sub>s X \<rightarrow> \<T>(F,Z)"
-  using assms by (simp add: sorted_map_def subst_compose subst_hastype)
 
 lemma subst_hastype_iff_vars:
   assumes "\<forall>x\<in>vars s. \<forall>\<sigma>. \<theta> x : \<sigma> in \<T>(F,W) \<longleftrightarrow> x : \<sigma> in V"
@@ -744,9 +759,9 @@ end
 
 text \<open>By `unsorted' we mean the situation where any element has the unique type @{term "()"}.\<close>
 
-lemma Term_UNIV[simp]: "\<TT>(UNIV,UNIV) = UNIV"
+lemma Term_UNIV[simp]: "\<TT>(UNIV,UNIV) = UNIV" (is "?l = _")
 proof-
-  have "s \<in> \<TT>(UNIV,UNIV)" for s by (induct s, auto)
+  have "s \<in> ?l" for s by (induct s, auto)
   then show ?thesis by auto
 qed
 
@@ -774,9 +789,7 @@ lemma subst_eval: "I\<lbrakk>s\<cdot>\<theta>\<rbrakk>\<alpha> = I\<lbrakk>s\<rb
   using unsorted.eval.distrib_eval[of _ UNIV, unfolded o_def]
   by auto
 
-lemmas subst_subst = subst_eval[of Fun]
-
-subsubsection \<open>Collecting Variables via Evaluation\<close>
+subsection \<open>Collecting Variables via Evaluation\<close>
 
 definition "var_list_term t \<equiv> (\<lambda>f. concat)\<lbrakk>t\<rbrakk>(\<lambda>v. [v])"
 
@@ -804,21 +817,202 @@ next
   finally show ?case by simp
 qed
 
-subsubsection \<open>Ground terms\<close>
+subsection \<open>Ground Terms\<close>
 
-lemma hastype_in_Term_empty_imp_vars: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars s = {}" 
+lemma Term_empty_vars: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars s = {}" 
   by (auto dest: hastype_in_Term_imp_vars_subset)
 
-lemma hastype_in_Term_empty_imp_vars_subst: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars (s\<cdot>\<theta>) = {}"
-  by (auto simp: vars_term_subst_apply_term hastype_in_Term_empty_imp_vars)
+lemma Term_empty_vars_subst: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars (s\<cdot>\<theta>) = {}"
+  by (auto simp: vars_term_subst_apply_term Term_empty_vars)
 
-lemma ground_Term_iff: "s : \<sigma> in \<T>(F,V) \<and> ground s \<longleftrightarrow> s : \<sigma> in \<T>(F,\<emptyset>)"
+lemma Term_empty_iff: "s : \<sigma> in \<T>(F,V) \<and> ground s \<longleftrightarrow> s : \<sigma> in \<T>(F,\<emptyset>)"
   using hastype_in_Term_restrict_vars[of s \<sigma> F V]
-  by (auto simp: hastype_in_Term_empty_imp_vars ground_vars_term_empty)
+  by (auto simp: Term_empty_vars ground_vars_term_empty)
 
-lemma hastype_in_Term_empty_imp_subst:
-  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> : \<sigma> in \<T>(F,V)"
-  by (rule subst_hastype, auto)
+lemma Term_empty_imp_ground: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> ground s"
+  using Term_empty_iff[of s \<sigma>] by auto
+
+lemmas subst_Term_empty_hastype = term.eval_Term_empty_hastype
+
+lemma in_dom_Term_empty_imp_subst:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> \<in> dom \<T>(F,V)"
+proof (elim in_dom_hastypeE)
+  fix \<sigma> assume "s : \<sigma> in \<T>(F,\<emptyset>)"
+  from subst_Term_empty_hastype[OF this, of \<theta> V]
+  show "s\<cdot>\<theta> \<in> dom \<T>(F,V)" by auto
+qed
+
+lemma eval_ground_eq: "ground s \<Longrightarrow> I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk>\<alpha>'"
+  apply (induct rule: ground.induct)
+  by (auto cong: map_cong)
+
+lemmas eval_Term_empty_eq = eval_ground_eq[OF Term_empty_imp_ground]
+
+lemmas subst_Term_empty_eq = eval_Term_empty_eq[where I=Fun]
+
+lemma subst_Term_empty_id:
+  assumes s: "s : \<sigma> in \<T>(F,\<emptyset>)" shows "s\<cdot>\<theta> = s"
+  using subst_Term_empty_eq[OF s, of Var] by simp
+
+lemma subst_subst_Term_empty:
+  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta>\<cdot>\<rho> = s\<cdot>undefined"
+  apply (unfold subst_subst)
+  using subst_Term_empty_eq.
+
+lemma in_dom_Term_empty_subst_id:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> = s"
+  by (auto elim: in_dom_hastypeE simp: subst_Term_empty_id)
+
+lemma in_dom_Term_empty_subst_subst:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta>\<cdot>\<rho> = s\<cdot>undefined"
+  apply (elim in_dom_hastypeE)
+  using subst_subst_Term_empty.
+
+lemma map_eval_Term_empty_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss] = [I\<lbrakk>s\<rbrakk>\<alpha>'. s \<leftarrow> ss]"
+  by (auto 0 3 simp: in_set_conv_nth list_all2_conv_all_nth eval_Term_empty_eq)
+
+lemma map_subst_Term_empty_eq: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>. s \<leftarrow> ss] = [s\<cdot>\<rho>. s \<leftarrow> ss]"
+  using map_eval_Term_empty_eq.
+
+lemma map_subst_Term_empty_id: "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>. s \<leftarrow> ss] = ss"
+  using map_subst_Term_empty_eq[of _ _ _ _ Var] by simp
+
+lemma map_subst_subst_Term_empty:
+  "ss :\<^sub>l \<sigma>s in \<T>(F,\<emptyset>) \<Longrightarrow> [s\<cdot>\<theta>\<cdot>\<rho>. s \<leftarrow> ss] = [s\<cdot>undefined. s \<leftarrow> ss]"
+  apply (unfold subst_subst)
+  using map_subst_Term_empty_eq.
+
+context fixes \<theta> :: "'v \<Rightarrow> ('f,'w) term" begin
+
+interpretation sorted_bijection "\<lambda>s. s\<cdot>\<theta>" "\<T>(F,\<emptyset>)" "\<T>(F,\<emptyset>)"
+proof
+  show "bij_betw (\<lambda>s. s \<cdot> \<theta>) (dom \<T>(F,\<emptyset>)) (dom \<T>(F,\<emptyset>))"
+  proof (intro bij_betwI)
+    show "(\<lambda>s. s\<cdot>undefined) : dom \<T>(F,\<emptyset>) \<rightarrow> dom \<T>(F,\<emptyset>)"
+      by (auto simp: in_dom_Term_empty_imp_subst)
+  qed (auto simp del: subst_subst_compose
+      simp: subst_subst subst_Term_empty_id in_dom_Term_empty_subst_id
+      in_dom_Term_empty_imp_subst)
+qed (auto simp: subst_Term_empty_hastype)
+
+lemmas sorted_bijection_Term_empty = sorted_bijection_axioms
+
+lemmas bij_betw_dom_Term_empty = bij
+
+lemmas bij_betw_sort_Term_empty = bij_betw_sort
+
+lemma all_Term_empty_subst_iff:
+  "(\<forall>s : \<sigma> in \<T>(F,\<emptyset>). P (s\<cdot>\<theta>)) \<longleftrightarrow> (\<forall>s : \<sigma> in \<T>(F,\<emptyset>). P s)"
+  by (simp add: all_in_target_iff)
+
+end
+
+text \<open>Canonically, let us use unit as the type of variables for ground terms.\<close>
+
+abbreviation gTerm (\<open>\<T>'(_')\<close>) where "\<T>(F) \<equiv> \<T>(F, \<lambda>x::unit. None)"
+
+subsubsection \<open>Cardinality of Sorts\<close>
+
+text \<open>The emptiness, finiteness, and cardinality of a sort w.r.t. a signature is
+  those of the set of ground terms of that sort.\<close>
+
+definition empty_sort where
+  "empty_sort F \<sigma> \<longleftrightarrow> {s. s : \<sigma> in \<T>(F)} = {}"
+
+definition finite_sort where
+  "finite_sort F \<sigma> \<longleftrightarrow> finite {s. s : \<sigma> in \<T>(F)}"
+
+definition card_of_sort where
+  "card_of_sort F \<sigma> = card {s. s : \<sigma> in \<T>(F)}"
+
+text \<open>The definitions fix the type of the variables (that never occur) to unit.
+We prove that the choice of the type is irrelevant.\<close>
+
+lemma finite_sort: "finite {s. s : \<sigma> in \<T>(F,\<emptyset>)} \<longleftrightarrow> finite_sort F \<sigma>"
+  apply (unfold finite_sort_def)
+  using bij_betw_finite[OF bij_betw_sort_Term_empty].
+
+lemma card_of_sort: "card {s. s : \<sigma> in \<T>(F,\<emptyset>)} = card_of_sort F \<sigma>"
+  apply (unfold card_of_sort_def)
+  using bij_betw_same_card[OF bij_betw_sort_Term_empty].
+
+lemma empty_sort: "{s. s : \<sigma> in \<T>(F,\<emptyset>)} = {} \<longleftrightarrow> empty_sort F \<sigma>"
+  apply (unfold empty_sort_def)
+  by (metis card_eq_0_iff card_of_sort finite.emptyI finite_sort)
+
+lemma empty_sortD[simp]: "empty_sort F \<sigma> \<Longrightarrow> \<not> s : \<sigma> in \<T>(F,\<emptyset>)"
+  using empty_sort[of \<sigma> F] by auto
+
+lemma empty_sort_imp_card[simp]: "empty_sort F \<sigma> \<Longrightarrow> card_of_sort F \<sigma> = 0"
+  by (auto simp: card_of_sort_def)
+
+lemma empty_sort_imp_finite[simp]: "empty_sort F \<sigma> \<Longrightarrow> finite_sort F \<sigma>"
+  by (auto simp: finite_sort_def)
+
+lemma empty_sortI: "(\<And>s. \<not>s : \<sigma> in \<T>(F,\<emptyset>)) \<Longrightarrow> empty_sort F \<sigma>"
+  using empty_sort[of \<sigma> F] by auto
+
+lemma not_empty_sortE: "\<not>empty_sort F \<sigma> \<Longrightarrow> (\<And>s. s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
+  using empty_sort[of \<sigma> F] by auto
+
+lemma finite_sort_bij:
+  assumes fin: "finite_sort F \<sigma>"
+  shows "\<exists>f. bij_betw f {s. s : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>}"
+proof-
+  from ex_bij_betw_finite_nat[OF fin[unfolded finite_sort_def]]
+  obtain h where
+    "bij_betw h {t. t : \<sigma> in \<T>(F)} {0..<card_of_sort F \<sigma>}"
+    by (auto simp add: card_of_sort)
+  from bij_betw_trans[OF bij_betw_sort_Term_empty this]
+  show ?thesis by auto
+qed
+
+subsubsection \<open>Enumerating Ground Terms\<close>
+
+definition "index_of_term F =
+  (SOME f. \<forall>\<sigma>. finite_sort F \<sigma> \<longrightarrow> bij_betw f {t. t : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>})"
+
+definition "term_of_index F \<sigma> = inv_into {t. t : \<sigma> in \<T>(F,\<emptyset>)} (index_of_term F)"
+
+lemma index_of_term_bij:
+  assumes fin: "finite_sort F \<sigma>"
+  shows "bij_betw (index_of_term F) {t. t : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>}"
+    (is "bij_betw _ (?T \<sigma>) (?I \<sigma>)")
+proof-
+  have "\<forall>\<sigma> \<in> Collect (finite_sort F). \<exists>f. bij_betw f (?T \<sigma>) (?I \<sigma>)"
+    by (auto intro!: finite_sort_bij)
+  from bchoice[OF this]
+  obtain f where f: "\<And>\<sigma>. finite_sort F \<sigma> \<Longrightarrow> bij_betw (f \<sigma>) (?T \<sigma>) (?I \<sigma>)"
+    by auto
+  define g where "g = (\<lambda>t. f (the (\<T>(F,\<emptyset>) t)) t)"
+  have "\<forall>\<sigma>. finite_sort F \<sigma> \<longrightarrow> bij_betw g (?T \<sigma>) (?I \<sigma>)"
+    by (auto simp: g_def intro!: bij_betw_cong[THEN iffD1, OF _ f])
+  then have "\<exists>g. \<forall>\<sigma>. finite_sort F \<sigma> \<longrightarrow> bij_betw g (?T \<sigma>) (?I \<sigma>)"
+    by auto
+  from someI_ex[OF this, folded index_of_term_def] fin
+  show ?thesis by auto
+qed
+
+lemma term_of_index_of_term:
+  assumes t: "t : \<sigma> in \<T>(F,\<emptyset>)" and fin: "finite_sort F \<sigma>"
+  shows "term_of_index F \<sigma> (index_of_term F t) = t"
+  apply (unfold term_of_index_def)
+  apply (rule bij_betw_inv_into_left[OF index_of_term_bij])
+  using assms by auto
+
+lemma index_of_term_of_index:
+  assumes fin: "finite_sort F \<sigma>" and "n < card_of_sort F \<sigma>"
+  shows "index_of_term F (term_of_index F \<sigma> n) = n"
+  apply (unfold term_of_index_def)
+  apply (rule bij_betw_inv_into_right[OF index_of_term_bij])
+  using assms by auto
+
+lemma term_of_index_bij:
+  assumes fin: "finite_sort F \<sigma>"
+  shows "bij_betw (term_of_index F \<sigma>) {0..<card_of_sort F \<sigma>} {t. t : \<sigma> in \<T>(F,\<emptyset>)}"
+  by (simp add: bij_betw_inv_into fin index_of_term_bij term_of_index_def)
+
+subsection \<open>Subsignatures\<close>
 
 locale subsignature = fixes F G :: "('f,'s) ssig" assumes subssig: "F \<subseteq>\<^sub>m G"
 begin
@@ -869,22 +1063,6 @@ lemma term_subalgebra:
   shows "subalgebra F \<T>(F,V) Fun G \<T>(G,W) Fun"
   apply unfold_locales
   using FG VW Term_mono[OF FG VW] by auto
-
-
-text \<open> An algebra where every element has a representation: \<close>
-locale sorted_algebra_constant = sorted_algebra_syntax +
-  fixes const
-  assumes vars_const[simp]: "\<And>d. vars (const d) = {}"
-  assumes eval_const[simp]: "\<And>d \<alpha>. I\<lbrakk>const d\<rbrakk>\<alpha> = d"
-begin
-
-lemma eval_subst_const[simp]: "I\<lbrakk>e\<cdot>(const\<circ>\<alpha>)\<rbrakk>\<beta> = I\<lbrakk>e\<rbrakk>\<alpha>"
-  by (induct e, auto simp:o_def intro!:arg_cong[of _ _ "I _"])
-
-lemma eval_upd_as_subst: "I\<lbrakk>e\<rbrakk>\<alpha>(x:=a) = I\<lbrakk>e \<cdot> Var(x:=const a)\<rbrakk>\<alpha>"
-  by (induct e, auto simp: o_def intro: arg_cong[of _ _ "I _"])
-
-end
 
 context sorted_algebra_syntax begin
 

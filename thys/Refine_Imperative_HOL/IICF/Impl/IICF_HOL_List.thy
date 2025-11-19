@@ -16,12 +16,11 @@ private lemma id_take_nth_drop_rl:
   apply (simp add: assms(1))
   done
 
-
 private lemma list_set_entails_aux: 
   shows "list_assn A l li * A x xi \<Longrightarrow>\<^sub>A list_assn A (l[i := x]) (li[i := xi]) * true"
   apply (rule entails_preI)
   apply (clarsimp)
-  apply (cases "i < length l"; cases "i < length li"; (sep_auto dest!: list_assn_aux_eqlen_simp;fail)?)
+  apply (cases "i < length l"; cases "i < length li"; (sep_auto simp: list_update_beyond dest!: list_assn_aux_eqlen_simp;fail)?)
   apply (erule id_take_nth_drop_rl)
   apply (erule id_take_nth_drop_rl)
   apply (sep_auto simp add: list_update_append)

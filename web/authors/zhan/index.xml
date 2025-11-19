@@ -1,45 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>zhan on Archive of Formal Proofs
-    </title>
-    <link>/authors/zhan/</link>
-    <description>
-        Recent content in zhan 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/zhan/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Quantum Hoare Logic</title>
-          <link>/entries/QHLProver.html</link>
-          <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/QHLProver.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verifying Imperative Programs using Auto2</title>
-          <link>/entries/Auto2_Imperative_HOL.html</link>
-          <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Auto2_Imperative_HOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Auto2 Prover</title>
-          <link>/entries/Auto2_HOL.html</link>
-          <pubDate>Tue, 20 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Auto2_HOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Smooth Manifolds</title>
-          <link>/entries/Smooth_Manifolds.html</link>
-          <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Smooth_Manifolds.html</guid>
-          <description></description>
-        </item>
+    <title>Bohua Zhan</title>
+    <link>https://isa-afp.org/authors/zhan/</link>
+    <description>AFP entries of Bohua Zhan</description><item>
+  <title>Quantum Hoare Logic</title>
+  <link>https://isa-afp.org/entries/QHLProver.html</link>
+  <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+  <description>Quantum Hoare Logic in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Verifying Imperative Programs using Auto2</title>
+  <link>https://isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
+  <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Verifying Imperative Programs using Auto2 in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Auto2 Prover</title>
+  <link>https://isa-afp.org/entries/Auto2_HOL.html</link>
+  <pubDate>Tue, 20 Nov 2018 00:00:00 +0000</pubDate>
+  <description>Auto2 Prover in the AFP</description>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Smooth Manifolds</title>
+  <link>https://isa-afp.org/entries/Smooth_Manifolds.html</link>
+  <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Smooth Manifolds in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+</item>
+
   </channel>
 </rss>

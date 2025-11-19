@@ -6,11 +6,10 @@ theory Tree_Automata_Class_Instances_Impl
    Containers.Collection_Enum
    Containers.Set_Impl
    Containers.Mapping_Impl
+   First_Order_Terms.Term_Impl
 begin
 
 derive linorder ta_rule
-derive linorder "term"
-derive compare "term"
 derive (compare) ccompare "term"
 derive ceq ta_rule
 derive (eq) ceq fset

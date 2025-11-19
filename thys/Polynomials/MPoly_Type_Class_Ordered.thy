@@ -2157,7 +2157,7 @@ proof -
   qed
 qed
 
-lemma ord_strict_p_rec [code]:
+lemma ord_strict_p_rec:
   "p \<prec>\<^sub>p q =
   (q \<noteq> 0 \<and>
     (p = 0 \<or>

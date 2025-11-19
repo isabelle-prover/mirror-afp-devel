@@ -180,7 +180,7 @@ lemma valid_mdp_rpD:
     and "\<And>ds. ds \<in> set (distrs mdp !! i) \<Longrightarrow> sum_list (map snd ds) = 1"
     and "\<And>ds. ds \<in> set (distrs mdp !! i) \<Longrightarrow> distinct (map fst ds)"
     and "distrs mdp !! i \<noteq> []"
-  using assms by (auto simp: valid_mdp_rp_def list_all_iff List.null_def elim!: allE[of _ i])
+  using assms by (auto simp: valid_mdp_rp_def list_all_iff elim!: allE[of _ i])
 
 lemma valid_mdp_rp_sparse_mult:
   assumes "valid_mdp_rp mdp" "i < state_count mdp" "ds \<in> set (distrs mdp !! i)"

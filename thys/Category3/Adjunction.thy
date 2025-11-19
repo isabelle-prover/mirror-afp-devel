@@ -737,7 +737,7 @@ begin
             D.comp_cod_arr [of "D (\<phi> y (F y)) g" "G (F y)"]
             \<phi>_naturality [of "F y" "F y" "F y" g y' y "F y"]
       by (metis C.ide_in_hom D.arr_cod_iff_arr D.arr_dom D.cod_cod D.cod_dom D.comp_ide_arr
-          D.comp_ide_self D.ide_cod D.in_homE F.as_nat_trans.is_natural_2 F.functor_axioms
+          D.comp_ide_self D.ide_cod D.in_homE F.as_nat_trans.naturality2 F.functor_axioms
           F.preserves_section_retraction \<phi>_in_hom functor.preserves_hom)
 
     interpretation \<eta>: transformation_by_components D D D.map GF.map \<eta>o
@@ -787,7 +787,7 @@ begin
       have 0: "C.ide x \<and> C.ide x'" using assms by auto
       thus "\<psi> x' (G f) = f \<cdot>\<^sub>C \<psi> x (G x)"
         using 0 assms \<psi>_naturality \<psi>_in_hom [of x "G x" "G x"] G.preserves_hom \<epsilon>o_def
-              \<psi>_in_terms_of_\<epsilon>o G.as_nat_trans.is_natural_1 C.ide_in_hom
+              \<psi>_in_terms_of_\<epsilon>o G.as_nat_trans.naturality1 C.ide_in_hom
         by (metis C.arrI C.in_homE)
     qed
 
@@ -849,11 +849,11 @@ begin
       show "\<epsilon>FoF\<eta>.map = F"
         using \<epsilon>FoF\<eta>.is_natural_transformation \<epsilon>FoF\<eta>.map_simp_ide unit_counit_F
               F.as_nat_trans.natural_transformation_axioms
-        by (intro NaturalTransformation.eqI) auto
+        by (intro natural_transformation_eqI) auto
       show "G\<epsilon>o\<eta>G.map = G"
         using G\<epsilon>o\<eta>G.is_natural_transformation G\<epsilon>o\<eta>G.map_simp_ide unit_counit_G
               G.as_nat_trans.natural_transformation_axioms
-        by (intro NaturalTransformation.eqI) auto
+        by (intro natural_transformation_eqI) auto
     qed
 
     definition \<eta> :: "'d \<Rightarrow> 'd" where "\<eta> \<equiv> \<eta>.map"
@@ -864,11 +864,11 @@ begin
       unfolding \<eta>_def \<epsilon>_def
       using induces_unit_counit_adjunction' by simp
 
-    lemma \<eta>_is_natural_transformation:
+    lemma \<eta>_naturalitytransformation:
     shows "natural_transformation D D D.map GF.map \<eta>"
       unfolding \<eta>_def ..
 
-    lemma \<epsilon>_is_natural_transformation:
+    lemma \<epsilon>_naturalitytransformation:
     shows "natural_transformation C C FG.map C.map \<epsilon>"
       unfolding \<epsilon>_def ..
 
@@ -2473,7 +2473,7 @@ begin
           proof -
             have
               "S (Hom_DopxG.map (g, f)) (\<Phi> (y, x)) = S (\<Phi> (y', x')) (Hom_FopxC.map (g, f))"
-              using f g \<Phi>.is_natural_1 \<Phi>.is_natural_2 by fastforce
+              using f g \<Phi>.naturality1 \<Phi>.naturality2 by fastforce
             moreover have "Hom_DopxG.map (g, f)
                              = S.mkArr (HomD.set (y, G x)) (HomD.set (y', G x'))
                                        (\<phi>D (y', G x') o (\<lambda>h. G f \<cdot>\<^sub>D h \<cdot>\<^sub>D g) o \<psi>D (y, G x))"
@@ -2818,7 +2818,7 @@ begin
 
     lemma \<eta>_char:
     shows "meta_adjunction.\<eta> B F (\<lambda>x. G) = identity_functor.map B"
-    proof (intro eqI)
+    proof (intro natural_transformation_eqI)
       interpret meta_adjunction A B F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close>
         using inverse_functors_induce_meta_adjunction inverse_functors_axioms by auto
       interpret S: replete_setcat .
@@ -2834,7 +2834,7 @@ begin
 
     lemma \<epsilon>_char:
     shows "meta_adjunction.\<epsilon> A F G (\<lambda>y. F) = identity_functor.map A"
-    proof (intro eqI)
+    proof (intro natural_transformation_eqI)
       interpret meta_adjunction A B F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close>
         using inverse_functors_induce_meta_adjunction inverse_functors_axioms by auto
       interpret S: replete_setcat .
@@ -2921,7 +2921,7 @@ begin
                           \<open>G' o FG.\<eta> o F'\<close>
     proof -
       interpret \<eta>F': natural_transformation C B F' \<open>(G o F) o F'\<close> \<open>FG.\<eta> o F'\<close>
-        using FG.\<eta>_is_natural_transformation F'.as_nat_trans.natural_transformation_axioms
+        using FG.\<eta>_naturalitytransformation F'.as_nat_trans.natural_transformation_axioms
               horizontal_composite
         by fastforce
       interpret G'\<eta>F': natural_transformation C C \<open>G' o F'\<close> \<open>G' o (G o F o F')\<close>
@@ -2962,10 +2962,10 @@ begin
 
     lemma \<eta>_char:
     shows "\<eta> = G'\<eta>F'o\<eta>'.map"
-    proof (intro NaturalTransformation.eqI)
+    proof (intro natural_transformation_eqI)
       show "natural_transformation C C C.map (G' o G o F o F') G'\<eta>F'o\<eta>'.map" ..
       show "natural_transformation C C C.map (G' o G o F o F') \<eta>"
-        by (metis (no_types, lifting) \<eta>_is_natural_transformation o_assoc)
+        by (metis (no_types, lifting) \<eta>_naturalitytransformation o_assoc)
       fix a
       assume a: "C.ide a"
       show "\<eta> a = G'\<eta>F'o\<eta>'.map a"
@@ -2978,9 +2978,9 @@ begin
 
     lemma \<epsilon>_char:
     shows "\<epsilon> = \<epsilon>oF\<epsilon>'G.map"
-    proof (intro NaturalTransformation.eqI)
+    proof (intro natural_transformation_eqI)
       show "natural_transformation A A (F o F' o G' o G) A.map \<epsilon>"
-        by (metis (no_types, lifting) \<epsilon>_is_natural_transformation o_assoc)
+        by (metis (no_types, lifting) \<epsilon>_naturalitytransformation o_assoc)
       show "natural_transformation A A (F \<circ> F' \<circ> G' \<circ> G) A.map \<epsilon>oF\<epsilon>'G.map" ..
       fix a
       assume a: "A.ide a"

@@ -759,7 +759,7 @@ next
   case False
   thus ?thesis
     using inf_or_of_complex[of z]
-    by (smt complex_sqrt_1 of_complex_zero_iff reciprocal_inf_iff reciprocal_of_complex to_complex_of_complex)
+    by (smt (verit) complex_sqrt_1 of_complex_zero_iff reciprocal_inf_iff reciprocal_of_complex to_complex_of_complex)
 qed
 
 

@@ -2,7 +2,6 @@
  * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 section "Enumeration extensions and alternative definition"
@@ -177,8 +176,6 @@ lemma enum_if_enum:
            y < length e \<Longrightarrow> x = y"
   by (simp add: e_def split: if_split_asm flip: nth_eq_iff_index_eq [where xs=e])
 
-declare [[show_consts]]
-
 instance enumeration_both < enumeration_alt
   apply (intro_classes)
     apply (simp_all add: enum_alt_rel alt_from_ord_def enum_if_enum split: if_split_asm)
@@ -203,8 +200,9 @@ definition
  "fromEnumAlt x \<equiv> THE n. enum_alt n = Some x"
 
 definition
-  upto_enum :: "('a :: enumeration_alt) \<Rightarrow> 'a \<Rightarrow> 'a list" (\<open>(1[_ .e. _])\<close>) where
- "upto_enum n m \<equiv> map toEnumAlt [fromEnumAlt n ..< Suc (fromEnumAlt m)]"
+  upto_enum :: "('a :: enumeration_alt) \<Rightarrow> 'a \<Rightarrow> 'a list"
+    (\<open>(\<open>indent=1 notation=\<open>mixfix upto_enum\<close>\<close>[_ .e. _])\<close>)
+  where "[n .e. m] \<equiv> map toEnumAlt [fromEnumAlt n ..< Suc (fromEnumAlt m)]"
 
 lemma fromEnum_alt_red[simp]:
   "fromEnumAlt = (fromEnum :: ('a :: enumeration_both) \<Rightarrow> nat)"
@@ -220,7 +218,7 @@ lemma toEnum_alt_red[simp]:
   "toEnumAlt = (toEnum :: nat \<Rightarrow> 'a :: enumeration_both)"
   by (rule ext) (simp add: enum_alt_rel alt_from_ord_def toEnum_def toEnumAlt_def)
 
-lemma upto_enum_red:               
+lemma upto_enum_red:
   "[(n :: ('a :: enumeration_both)) .e. m] = map toEnum [fromEnum n ..< Suc (fromEnum m)]"
   unfolding upto_enum_def by simp
 

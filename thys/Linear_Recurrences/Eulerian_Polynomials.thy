@@ -23,6 +23,12 @@ primrec eulerian_poly :: "nat \<Rightarrow> 'a :: idom poly" where
 
 lemmas eulerian_poly_Suc [simp del] = eulerian_poly.simps(2)
 
+lemma poly_eulerian_poly_0 [simp]: "poly (eulerian_poly n) 0 = 1"
+  by (induction n) (auto simp: eulerian_poly.simps(2) Let_def)
+
+lemma eulerian_poly_at_1 [simp]: "poly (eulerian_poly n) 1 = fact n"
+  by (induction n) (auto simp: eulerian_poly.simps(2) Let_def algebra_simps)
+
 lemma eulerian_poly:
   "fps_of_poly (eulerian_poly k :: 'a :: field poly) = 
      Abs_fps (\<lambda>n. of_nat (n+1) ^ k) * (1 - fps_X) ^ (k + 1)"

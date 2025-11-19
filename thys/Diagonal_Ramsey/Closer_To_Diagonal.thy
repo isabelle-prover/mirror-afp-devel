@@ -195,7 +195,7 @@ proof -
     by auto
   with 52 have "(k-t+l choose l) \<le> card (Yseq halted_point)" by linarith
   then show False
-    using Far_9_2_conclusion by (simp flip: \<R>_def t_def)
+    using Off_diagonal_conclusion by (simp flip: \<R>_def t_def)
 qed
 
 text \<open>Material that needs to be proved \textbf{outside} the book locales\<close>
@@ -214,7 +214,7 @@ proof -
     and X0_def: "X0 = V \<setminus> Y0" and "Y0\<subseteq>V" 
     and gd_le: "graph_density Red \<le> gen_density Red X0 Y0"
     and "Book' V E p0_min Red Blue l k \<gamma> X0 Y0"
-    using Basis_imp_Book' assms order.trans ln0 by blast
+    using to_Book' assms order.trans ln0 by blast
   then interpret Book' V E p0_min Red Blue l k \<gamma> X0 Y0
     by blast 
   show False

@@ -89,10 +89,7 @@ proof -
     unfolding x_def norm_insert_def norm_fold by simp
 qed
  
-declare list_dfs_def [code del]
-declare norm_insert_def [code_unfold]
-
-lemma list_dfs_norm_insert [code]: 
+lemma list_dfs_norm_insert [code]:
   "list_dfs succ S [] = S"
   "list_dfs succ S (x # xs) = (let (memb, S') = norm_insert x S in list_dfs succ S' (if memb then xs else succ x @ xs))"
   unfolding list_dfs_def Let_def norm_insert by simp+ 
@@ -108,7 +105,7 @@ proof -
     by (transfer; simp add: map_ran_def)
 qed
 
-lemmas ltl_to_rabin_base_code_export [code, code_unfold] =
+lemmas ltl_to_rabin_base_code_export [code] =
   ltl_to_rabin_base_code_def.ltl_to_generalized_rabin\<^sub>C.simps
   ltl_to_rabin_base_code_def.reachable_transitions\<^sub>C_def 
   ltl_to_rabin_base_code_def.mappings\<^sub>C_code 

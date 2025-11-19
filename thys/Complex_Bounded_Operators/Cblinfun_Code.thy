@@ -359,14 +359,13 @@ lemma bot_as_span[code]:
   \<comment> \<open>Code equation for \<^term>\<open>bot\<close>, the subspace containing everything.
       Top is represented as the span of the standard basis vectors.\<close>
   "(bot::'a::onb_enum ccsubspace) = SPAN []"
-  unfolding SPAN_def by (auto simp: Set.filter_def)
+  unfolding SPAN_def by (auto simp:)
 
 
 lemma sup_spans[code]:
   \<comment> \<open>Code equation for the join (lub) of two subspaces (union of the generating lists)\<close>
   "SPAN A \<squnion> SPAN B = SPAN (A @ B)"
-  unfolding SPAN_def 
-  by (auto simp: ccspan_union image_Un filter_Un Let_def)
+  by (simp add: SPAN_def ccspan_union image_Un filter_Un Let_def del: Set.filter_eq)
 
 text \<open>We do not need an equation for \<^term>\<open>(+)\<close> because \<^term>\<open>(+)\<close>
 is defined in terms of \<^term>\<open>(\<squnion>)\<close> (for \<^type>\<open>ccsubspace\<close>), thus the code generation automatically
@@ -379,10 +378,12 @@ definition [code del,code_abbrev]: "Span_code (S::'a::enum ell2 set) = (ccspan S
 lemma span_Set_Monad[code]: "Span_code (Set_Monad l) = (SPAN (map vec_of_ell2 l))"
   \<comment> \<open>Code equation for the span of a finite set. (\<^term>\<open>Set_Monad\<close> is a datatype
      constructor that represents sets as lists in the computation.)\<close>
-  apply (simp add: Span_code_def SPAN_def Let_def)
-  apply (subst Set_filter_unchanged)
-   apply (auto simp add: vec_of_ell2_def)[1]
-  by (metis (no_types, lifting) ell2_of_vec_def image_image map_idI set_map vec_of_ell2_inverse)
+  apply (simp add: Span_code_def SPAN_def Let_def flip: ell2_of_vec_def)
+  apply (rule arg_cong [of _ _ ccspan])
+  apply (auto simp add: vec_of_ell2_inverse)
+  apply (metis (mono_tags, lifting) carrier_vecD imageI mem_Collect_eq vec_of_ell2_carrier_vec
+      vec_of_ell2_inverse)
+  done
 
 text \<open>This instantiation defines a code equation for equality tests for \<^type>\<open>ccsubspace\<close>.
       The actual code for equality tests is given below (lemma \<open>equal_ccsubspace_code\<close>).\<close>
@@ -650,7 +651,6 @@ lemma uniformity_ell2_code[code]: "(uniformity :: ('a ell2 * _) filter) = Filter
 text \<open>Code equation for \<^term>\<open>UNIV\<close>. 
   It is now implemented via type class \<^class>\<open>enum\<close> 
   (which provides a list of all values).\<close>
-declare [[code drop: UNIV]]
 declare enum_class.UNIV_enum[code]
 
 text \<open>Setup for code generation involving sets of \<^type>\<open>ell2\<close>/\<^type>\<open>ccsubspace\<close>.

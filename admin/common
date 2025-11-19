@@ -38,7 +38,7 @@ default_isabelle_tool()
 {
   if [ ! -x "$ISABELLE_TOOL" ]; then
     if [[ "$VERSION" == devel ]]; then
-      ISABELLE_TOOL="$(which isabelle)"
+      ISABELLE_TOOL="$(which isabelle || echo '')"
     else
       [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
       ISABELLE_VERSION="Isabelle$VERSION"

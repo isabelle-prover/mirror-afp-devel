@@ -1,0 +1,29 @@
+{{- define "main" }}
+  {{- range .Pages }}
+    {{- if .Params.root }}
+      <h2><a href="{{ .RelPermalink }}">{{ .Params.name }} ({{ .Params.count }})</a></h2>
+      <ul>
+        {{- range .Params.subtopics }}
+          {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+          <li>
+            <h3>
+              <a href="{{ $topic.RelPermalink }}">
+                {{- $topic.Params.name }} ({{ $topic.Params.count }})
+              </a>
+            </h3>
+          </li>
+          <ul>
+            {{- range $topic.Params.subtopics }}
+              {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+              <li>
+                <a href="{{ $topic.RelPermalink }}">
+                  {{- $topic.Params.name }} ({{ $topic.Params.count }})
+                </a>
+              </li>
+            {{- end }}
+          </ul>
+        {{- end }}
+      </ul>
+    {{- end }}
+  {{- end }}
+{{- end }}

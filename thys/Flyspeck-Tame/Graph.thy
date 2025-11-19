@@ -268,8 +268,7 @@ definition directedLength :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<R
 subsection \<open>Code generator setup\<close>
 
 definition final_face :: "face \<Rightarrow> bool" where
-  final_face_code_def: "final_face = final"
-declare final_face_code_def [symmetric, code_unfold]
+  final_face_code_def [code_abbrev]: "final_face = final"
 
 lemma final_face_code [code]:
   "final_face (Face vs Final) \<longleftrightarrow> True"
@@ -277,22 +276,19 @@ lemma final_face_code [code]:
   by (simp_all add: final_face_code_def)
 
 definition final_graph :: "graph \<Rightarrow> bool" where
-  final_graph_code_def: "final_graph = final"
-declare final_graph_code_def [symmetric, code_unfold]
+  final_graph_code_def [code_abbrev]: "final_graph = final"
 
 lemma final_graph_code [code]: "final_graph g = List.null (nonFinals g)"
-  unfolding final_graph_code_def finalGraph_def null_def ..
+  by (simp add: final_graph_code_def finalGraph_def)
 
 definition vertices_face :: "face \<Rightarrow> vertex list" where
-  vertices_face_code_def: "vertices_face = vertices"
-declare vertices_face_code_def [symmetric, code_unfold]
+  vertices_face_code_def [code_abbrev]: "vertices_face = vertices"
 
 lemma vertices_face_code [code]: "vertices_face (Face vs f) = vs"
   unfolding vertices_face_code_def by simp
 
 definition vertices_graph :: "graph \<Rightarrow> vertex list" where
-  vertices_graph_code_def: "vertices_graph = vertices"
-declare vertices_graph_code_def [symmetric, code_unfold]
+  vertices_graph_code_def [code_abbrev]: "vertices_graph = vertices"
 
 lemma vertices_graph_code [code]:
   "vertices_graph (Graph fs n f h) = [0 ..< n]"

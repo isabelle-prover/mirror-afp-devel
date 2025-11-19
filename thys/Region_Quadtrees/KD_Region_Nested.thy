@@ -48,14 +48,20 @@ termination
   by(relation "{} <*lex*> measure (size_kdt (\<lambda>_. 1))")
     (auto simp add: wf_lex_prod kdt_tree1_term)
 
-definition bits :: "nat \<Rightarrow> bool list set" where
-  "bits n = nlists n UNIV"
+definition bits :: \<open>nat \<Rightarrow> bool list set\<close>
+  where \<open>bits n = nlists n UNIV\<close>
 
-lemma bits_0[code]: "bits 0 = {[]}"
-  by (auto simp: bits_def)
+lemma bits_0_eq [simp]:
+  \<open>bits 0 = {[]}\<close>
+  by (simp add: bits_def)
 
-lemma bits_Suc[code]: "bits (Suc n) = (let B = bits n in (#) True ` B \<union> (#) False ` B)"
-  unfolding bits_def nlists_Suc UN_bool_eq by metis
+lemma bits_Suc_eq [simp]:
+  \<open>bits (Suc n) = (#) False ` nlists n UNIV \<union> (#) True ` nlists n UNIV\<close>
+  by (auto simp add: bits_def nlists_Suc)
+
+lemma bits_code [code]:
+  \<open>bits n = nlists n {False, True}\<close>
+  by (simp add: bits_def UNIV_bool)
 
 fun leaf :: "'a tree1 \<Rightarrow> bool list \<Rightarrow> 'a" where
   "leaf (Lf x) _ = x" |
@@ -93,15 +99,21 @@ lemma Union_bits_le:
   using leaf_take apply (force)
   by auto (metis Ex_list_of_length order.refl le_add_diff_inverse leaf_append length_append)
 
+lemma image_leaf_bits_greater_eq:
+  \<open>leaf t ` bits n = leaf t ` bits (h_tree1 t)\<close> if \<open>h_tree1 t \<le> n\<close>
+  using Union_bits_le [of t n] that by auto
+
 lemma set_tree1_leafs:
-  "set_tree1 t = (\<Union>bs \<in> bits (h_tree1 t). {leaf t bs})"
-proof(induction t)
+  \<open>set_tree1 t = leaf t ` bits (h_tree1 t)\<close>
+proof (induction t)
   case (Lf x)
-  then show ?case by (simp add: bits_nonempty)
+  then show ?case
+    by simp
 next
   case (Br t1 t2)
-  then show ?case using Union_bits_le[of t1 "h_tree1 t2"] Union_bits_le[of t2 "h_tree1 t1"]
-    by (auto simp add: Let_def bits_Suc max_def)
+  then show ?case
+    using image_leaf_bits_greater_eq [of t1 \<open>h_tree1 t2\<close>] image_leaf_bits_greater_eq [of t2 \<open>h_tree1 t1\<close>]
+    by (simp add: image_Un image_image max_def flip: bits_def)
 qed
 
 lemma points_subset: "inv_kdt k t \<Longrightarrow> h_kdt t \<le> n \<Longrightarrow> points k n t \<subseteq> nlists k {0..<2^n}"
@@ -155,11 +167,11 @@ apply (auto simp: Suc_le_length_iff split: if_splits)
 done
 
 lemma leaf_in_set_tree1: "\<lbrakk> length bs \<ge> h_tree1 t \<rbrakk> \<Longrightarrow> leaf t bs \<in> set_tree1 t"
-apply(auto simp add: set_tree1_leafs bits_def intro: nlistsI)
-by (metis leaf_take length_take min.absorb2 nlistsI subset_UNIV)
-(* which one is used? both? *)
+  using leaf_take [of t bs]
+  by (auto simp add: set_tree1_leafs bits_def image_iff intro!: nlistsI)
+
 lemma leaf_in_set_tree2: "\<lbrakk>x \<in> nlists k UNIV; h_tree1 t1 \<le> k\<rbrakk> \<Longrightarrow> leaf t1 x \<in> set_tree1 t1"
-by (metis leaf_in_set_tree1 leaf_take length_take min.absorb2 nlistsE_length)
+  by (metis leaf_in_set_tree1 leaf_take length_take min.absorb2 nlistsE_length)
 
 lemma points_union:
   "\<lbrakk> inv_kdt k t1; inv_kdt k t2; n \<ge> max (h_kdt t1) (h_kdt t2) \<rbrakk> \<Longrightarrow>

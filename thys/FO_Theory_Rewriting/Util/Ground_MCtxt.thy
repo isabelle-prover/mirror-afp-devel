@@ -1,8 +1,9 @@
 theory Ground_MCtxt
   imports
-   Multihole_Context
+   Multihole_Context_More
    Regular_Tree_Relations.Ground_Terms
    Regular_Tree_Relations.Ground_Ctxt
+   Utils
 begin
 
 subsection \<open>Ground multihole context\<close>
@@ -964,7 +965,7 @@ lemma factor_ghole_pos_by_prefix:
   obtains q where "q \<le>\<^sub>p p" "q \<in> ghole_poss C"
   using assms
   by (induct C D arbitrary: p thesis rule: less_eq_gmctxt_induct)
-     (auto, metis position_less_eq_Cons)
+   (auto, metis less_eq_pos_simps)
 
 lemma prefix_and_fewer_gholes_implies_equal_gmctxt:
   "C \<le> D \<Longrightarrow> ghole_poss C \<subseteq> ghole_poss D \<Longrightarrow> C = D"

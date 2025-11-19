@@ -36,7 +36,7 @@ unfolding basis_col_space_def basis_row_space_def ..
 
 subsection\<open>Code equations\<close>
 
-text\<open>Code equations to make more efficient the computations.\<close>
+text\<open>Code equations to make more efficient computations.\<close>
 lemma basis_null_space_code[code]: "basis_null_space A = (let GJ = Gauss_Jordan_PA (transpose A); 
                                                                rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ) \<noteq> 0) + 1) 
                                                                in {row i (fst GJ) | i. to_nat i \<ge> rank_A})"

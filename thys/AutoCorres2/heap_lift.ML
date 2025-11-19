@@ -84,7 +84,7 @@ in
 end
 
 fun mk_fn_ptr_infos ctxt prog_info fn_args info =
-  AutoCorresData.mk_fn_ptr_infos ctxt prog_info "" fn_args info
+  AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} fn_args info
 
 (* Get the expected proposition that will be generated about a function. *)
 fun get_hl_corres_prop skips prog_info fn_ptr_infos l2_infos (heap_info : HeapLiftBase.heap_info)
@@ -95,7 +95,7 @@ let
   val (l2_fun, hl_fun, l2_props, is_lifted) = case AList.lookup (op =) fn_ptr_infos fn_name of
         SOME info => 
           let
-            val l2_info = info FunctionInfo.L2
+            val l2_info = info (FunctionInfo.prev_phase skips FunctionInfo.HL)
             val hl_info = info FunctionInfo.HL
             val P_l2 = #prog_env l2_info 
             val P_hl = #prog_env hl_info 
@@ -605,14 +605,14 @@ let
     val thm = timeit_msg 1 lthy (fn _ => "Simplification HL (opt) - " ^ f) (fn _ =>
        L2Opt.cleanup_thm_tagged 
          (lthy'' |> AutoCorresTrace.put_trace_info f FunctionInfo.HL FunctionInfo.RAW)
-         [] (#pointwise_to_heapwide_thms heap_info) thm HL_opt 2 trace_opt "HL");
+         [] (#pointwise_to_heapwide_thms heap_info) thm HL_opt 2 trace_opt FunctionInfo.HL);
     val _ = verbose_msg 1 lthy'' (fn _ => "HL (opt) - " ^ f ^ ": " ^ Thm.string_of_thm lthy'' thm);
 
     (* If we created extra heap wrappers, apply them now.
      * Our simp rules don't seem to be enough for L2Opt,
      * so we cannot change the program before that. *)
     val thm = if not heap_abs_syntax then thm else
-                Raw_Simplifier.rewrite_rule lthy'' (#heap_syntax_rewrs HL_setup) thm
+                Simplifier.rewrite_rule lthy'' (#heap_syntax_rewrs HL_setup) thm
     val f_body = dest_L2Tcorres_term_abs (HOLogic.dest_Trueprop (Thm.concl_of thm));
     (* Get actual recursive callees *)
     val rec_callees = AutoCorresUtil.get_rec_callees callee_terms f_body;

@@ -168,7 +168,7 @@ proof (rule ccontr)
   hence "(2 ^ b - 1) dvd (2 ^ (a*b) - 1 :: int)"
     by simp
   hence "int (2 ^ b - 1) dvd int (2 ^ (a * b) - 1)"
-    by (subst of_nat_diff) (auto simp: of_nat_diff)
+    by (subst of_nat_diff) simp_all
   hence "(2 ^ b - 1) dvd (2 ^ (a * b) - 1 :: nat)"
     by (subst (asm) int_dvd_int_iff)
   with prime have "2 ^ b - 1 = (1 :: nat) \<or> 2 ^ b - 1 = (2 ^ p - 1 :: nat)"
@@ -206,7 +206,7 @@ proof -
   hence "[2 ^ p - 1 = 0 - 1] (mod (8 :: int))"
     by (intro cong_diff) (auto simp: cong_def)
   also have "2 ^ p - 1 = int M"
-    by (simp add: M_def of_nat_diff)
+    by (simp add: M_def)
   finally have "int M mod int 8 = 7"
     by (simp add: cong_def)
   thus "[M = 7] (mod 8)"
@@ -244,8 +244,10 @@ lemma gen_lucas_lehmer_sequence_Suc':
   "gen_lucas_lehmer_sequence a (Suc n) = gen_lucas_lehmer_sequence (a ^ 2 - 2) n"
   by (induction n arbitrary: a) auto
 
-lemmas gen_lucas_lehmer_code [code] =
-  gen_lucas_lehmer_sequence.simps(1) gen_lucas_lehmer_sequence_Suc'
+lemma gen_lucas_lehmer_code [code]:
+  "gen_lucas_lehmer_sequence a 0 = a"
+  "gen_lucas_lehmer_sequence a (Suc n) = gen_lucas_lehmer_sequence (a ^ 2 - 2) n"
+  by (fact gen_lucas_lehmer_sequence.simps gen_lucas_lehmer_sequence_Suc')+
 
 text \<open>
   For $a_0 = 4$, the recurrence has the closed form $a_{4,n} = \omega^{2^n} + \bar\omega^{2^n}$
@@ -893,7 +895,7 @@ proof (rule ccontr)
     have "int q dvd int (2 ^ p - 1)"
       by (subst int_dvd_int_iff) (use q in auto)
     also have "int (2 ^ p - 1) = 2 ^ p - 1"
-      by (simp add: of_nat_diff)
+      by simp
     finally have "\<phi> (k * (2 ^ p - 1), 0) = \<zero>\<^bsub>S\<^esub>"
       by (simp add: \<phi>_def lucas_lehmer_hom_def S_def lucas_lehmer_ring_mod_def)
   }

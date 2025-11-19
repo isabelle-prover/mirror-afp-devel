@@ -11,16 +11,12 @@ text \<open>In this theory we implement matrices as arrays of arrays.
   matrix addition, multiplication, etc.~should all have their 
   standard complexity. 
 
-  There might be room for optimizations. 
-
-  To implement the infinite carrier set, we use A.\ Lochbihler's container framework
-  \<^cite>\<open>"Containers-AFP"\<close>.\<close>
+  There might be room for optimizations.\<close>
 
 theory Matrix_IArray_Impl
 imports
   Matrix
   "HOL-Library.IArray"
-  Containers.Set_Impl
 begin
 
 typedef 'a vec_impl = "{(n,v :: 'a iarray). IArray.length v = n}" by auto
@@ -162,6 +158,59 @@ lemma dim_row_code[code]: "dim_row (mat_impl m) = dim_row_impl m"
 lemma dim_col_code[code]: "dim_col (mat_impl m) = dim_col_impl m"
   by (transfer, auto)
 
+context
+begin
+
+private lemma aux:
+  \<open>length (IArray.list_of xs) = m\<close>
+    if len: \<open>\<And>xs. xs \<in> set (IArray.list_of ys) \<Longrightarrow> length (IArray.list_of xs) = m\<close>
+      and upd: \<open>xs \<in> set ((IArray.list_of ys) [n := IArray (map2 f [0..<m] (IArray.list_of (IArray.list_of ys ! n)))])\<close>
+    for xs ys and f :: \<open>nat \<Rightarrow> 'a \<Rightarrow> 'a\<close> and m n
+proof (cases \<open>n < length (IArray.list_of ys)\<close>)
+  case False
+  with len upd show ?thesis
+    by (simp add: list_update_beyond)
+next
+  case True
+  moreover have *: \<open>xs \<in> set (IArray.list_of ys) \<longleftrightarrow>
+    xs \<in> set (take n (IArray.list_of ys) @ IArray.list_of ys ! n # drop (Suc n) (IArray.list_of ys))\<close>
+    for xs
+    using \<open>n < length (IArray.list_of ys)\<close> by (simp flip: id_take_nth_drop)
+  ultimately show ?thesis
+    using len upd by (auto simp add: set_list_update *)
+qed
+
+lift_definition change_row_impl :: "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a mat_impl \<Rightarrow> 'a mat_impl" is
+  "\<lambda>k f (nr, nc, A). let Ak = IArray.sub A k; Arows = IArray.list_of A;
+     Ak' = IArray.IArray (map (\<lambda> (i,c). f i c) (zip [0 ..< nc] (IArray.list_of Ak)));
+     A' = IArray.IArray (Arows [k := Ak'])
+     in (nr, nc, A')"
+  by (auto intro: aux)
+
+end
+
+lemma change_row_code [code]:
+  "change_row k f (mat_impl A) = (if k < dim_row_impl A
+  then mat_impl (change_row_impl k f A)
+  else Code.abort (STR ''index out of bounds in change_row'') (\<lambda> _. change_row k f (mat_impl A)))"
+  (is "?lhs = ?rhs")
+proof (cases \<open>k < dim_row_impl A\<close>)
+  case False
+  then show ?thesis
+    by simp
+next
+  case True
+  have \<open>?lhs = mat (dim_row (mat_impl A)) (dim_col (mat_impl A))
+     (\<lambda>(i, j).
+         if i = k then f j (mat_impl A $$ (k, j))
+         else mat_impl A $$ (i, j))\<close>
+    by (simp add: change_row_def)
+  also have \<open>\<dots> = mat_impl (change_row_impl k f A)\<close>
+    by (rule eq_matI; transfer) (auto simp add: mk_mat_def)
+  finally show ?thesis
+    by simp
+qed
+
 instantiation vec :: (type)equal
 begin
   definition "(equal_vec :: ('a vec \<Rightarrow> 'a vec \<Rightarrow> bool)) = (=)"
@@ -223,17 +272,6 @@ proof -
       qed
     qed
   qed
-qed  
-
-declare prod.set_conv_list[code del, code_unfold]
-
-derive (eq) ceq mat vec
-derive (no) ccompare mat vec
-derive (dlist) set_impl mat vec
-derive (no) cenum mat vec
-
-lemma carrier_mat_code[code]: "carrier_mat nr nc = Collect_set (\<lambda> A. dim_row A = nr \<and> dim_col A = nc)" by auto
-lemma carrier_vec_code[code]: "carrier_vec n = Collect_set (\<lambda> v. dim_vec v = n)" 
-  unfolding carrier_vec_def by auto
+qed
 
 end

@@ -1,4 +1,4 @@
-(*  Title: Term_Index/discrimination_tree.ML
+(*  Title:      Term_Index/discrimination_tree.ML
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory,
                 Sebastian Willenbrink, Kevin Kappelmann, TU Munich
 

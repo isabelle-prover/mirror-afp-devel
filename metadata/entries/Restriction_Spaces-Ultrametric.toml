@@ -1,0 +1,47 @@
+title = "Ultrametric Structure for Restriction Spaces"
+date = 2025-05-07
+topics = [
+  "Mathematics/Analysis",
+  "Mathematics/Topology",
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+In this entry, we explore the relationship
+  between restriction spaces and usual metric
+  structures by instantiating the former as ultrametric spaces.
+  This is classically captured by defining the distance as
+  $$\\mathrm{dist} \\ x \\ y = \\inf_{x \\downarrow n \\ = \\ y \\downarrow n} \\left(\\frac{1}{2}\\right)^ n$$
+  but we actually generalize this perspective by introducing a hierarchy of increasingly
+  refined type classes to systematically relate ultrametric and restriction-based notions.
+  This layered approach enables a precise comparison of structural and topological properties.
+  In the end, our main result establishes that completeness in the sense of restriction spaces
+  coincides with standard metric completeness, thus bridging the gap between
+  our framework and Banach's fixed-point theorem established in HOL-Analysis."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.puyobro]
+email = "puyobro_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+puyobro = "puyobro_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -8,9 +8,9 @@ based on the @{text "mod_type"} class\<close>
 
 theory Mod_Type_Connect
   imports 
-          Perron_Frobenius.HMA_Connect
-          Rank_Nullity_Theorem.Mod_Type
-          Gauss_Jordan.Elementary_Operations
+    Perron_Frobenius.HMA_Connect
+    Rank_Nullity_Theorem.Mod_Type
+    Gauss_Jordan.Elementary_Operations
 begin
 
 text \<open>Some lemmas on @{text "Mod_Type.to_nat"} and @{text "Mod_Type.from_nat"} are added to have 
@@ -336,7 +336,7 @@ proof -
       have "sign p = sign ?q \<and> p permutes ?zn"
       using p fin proof (induction rule: permutes_induct)
         case id
-        show ?case by (auto simp: sign_id[unfolded id_def] permutes_id[unfolded id_def])
+        show ?case by (auto simp: permutes_id[unfolded id_def])
       next
         case (swap a b p)
         then have \<open>permutation p\<close>
@@ -345,7 +345,7 @@ proof -
         let ?sfab = "Transposition.transpose (?fn a) (?fn b)"
         have p_sab: "permutation ?sab" by (rule permutation_swap_id)
         have p_sfab: "permutation ?sfab" by (rule permutation_swap_id)
-        from swap(4) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
+        from swap(5) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
         have sab_perm: "?sab permutes ?zn" using swap(1-2) by (rule permutes_swap_id)
         from permutes_compose[OF IH1 this] have perm1: "?sab o p permutes ?zn" .
         from IH1 have p_p1: "p \<in> ?p1" by simp

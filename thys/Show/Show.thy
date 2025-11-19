@@ -269,6 +269,6 @@ text \<open>
   Don't use Haskell's existing "Show" class for code-generation, since it is not compatible to the
   formalized class.
 \<close>
-code_reserved Haskell "Show"
+code_reserved (Haskell) Show
 
 end

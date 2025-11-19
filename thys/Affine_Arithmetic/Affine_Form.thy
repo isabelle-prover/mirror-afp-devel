@@ -1150,7 +1150,7 @@ lemma pdevs_val_inj_sumI:
 proof -
   have [simp]: "inj_on (the_inv_into K g) (pdevs_domain x)"
     using assms
-    by (auto simp: intro!: subset_inj_on[OF inj_on_the_inv_into])
+    by (auto simp: intro!: inj_on_subset[OF inj_on_the_inv_into])
   {
     fix y assume y: "y \<in> pdevs_domain x"
     have g_inv: "g (the_inv_into K g y) = y"

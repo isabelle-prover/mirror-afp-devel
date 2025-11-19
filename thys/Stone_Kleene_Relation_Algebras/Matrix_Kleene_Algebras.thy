@@ -35,7 +35,7 @@ The restriction of a matrix to specific row and column indices is implemented by
 \<close>
 
 definition restrict_matrix :: "'a list \<Rightarrow> ('a,'b::bot) square \<Rightarrow> 'a list \<Rightarrow> ('a,'b) square" (\<open>_ \<langle>_\<rangle> _\<close> [90,41,90] 91)
-  where "restrict_matrix as f bs = (\<lambda>(i,j) . if List.member as i \<and> List.member bs j then f (i,j) else bot)"
+  where "restrict_matrix as f bs = (\<lambda>(i,j) . if i \<in> set as \<and> j \<in> set bs then f (i,j) else bot)"
 
 text \<open>
 The following function captures Conway's automata-based construction of the Kleene star of a matrix.
@@ -76,33 +76,33 @@ The following lemmas deconstruct matrices with non-empty restrictions.
 
 lemma restrict_empty_left:
   "[]\<langle>f\<rangle>ls = mbot"
-  by (unfold restrict_matrix_def List.member_def bot_matrix_def) auto
+  by (unfold restrict_matrix_def bot_matrix_def) auto
 
 lemma restrict_empty_right:
   "ks\<langle>f\<rangle>[] = mbot"
-  by (unfold restrict_matrix_def List.member_def bot_matrix_def) auto
+  by (unfold restrict_matrix_def bot_matrix_def) auto
 
 lemma restrict_nonempty_left:
   fixes f :: "('a,'b::bounded_semilattice_sup_bot) square"
   shows "(k#ks)\<langle>f\<rangle>ls = [k]\<langle>f\<rangle>ls \<oplus> ks\<langle>f\<rangle>ls"
-  by (unfold restrict_matrix_def List.member_def sup_matrix_def) auto
+  by (unfold restrict_matrix_def sup_matrix_def) auto
 
 lemma restrict_nonempty_right:
   fixes f :: "('a,'b::bounded_semilattice_sup_bot) square"
   shows "ks\<langle>f\<rangle>(l#ls) = ks\<langle>f\<rangle>[l] \<oplus> ks\<langle>f\<rangle>ls"
-  by (unfold restrict_matrix_def List.member_def sup_matrix_def) auto
+  by (unfold restrict_matrix_def sup_matrix_def) auto
 
 lemma restrict_nonempty:
   fixes f :: "('a,'b::bounded_semilattice_sup_bot) square"
   shows "(k#ks)\<langle>f\<rangle>(l#ls) = [k]\<langle>f\<rangle>[l] \<oplus> [k]\<langle>f\<rangle>ls \<oplus> ks\<langle>f\<rangle>[l] \<oplus> ks\<langle>f\<rangle>ls"
-  by (unfold restrict_matrix_def List.member_def sup_matrix_def) auto
+  by (unfold restrict_matrix_def sup_matrix_def) auto
 
 text \<open>
 The following predicate captures that two index sets are disjoint.
 This has consequences for composition and the unit matrix.
 \<close>
 
-abbreviation "disjoint ks ls \<equiv> \<not>(\<exists>x . List.member ks x \<and> List.member ls x)"
+abbreviation "disjoint ks ls \<equiv> \<not> (\<exists>x . x \<in> set ks \<and> x \<in> set ls)"
 
 lemma times_disjoint:
   fixes f g :: "('a,'b::idempotent_semiring) square"
@@ -112,9 +112,11 @@ proof (rule ext, rule prod_cases)
   fix i j
   have "(ks\<langle>f\<rangle>ls \<odot> ms\<langle>g\<rangle>ns) (i,j) = (\<Squnion>\<^sub>k (ks\<langle>f\<rangle>ls) (i,k) * (ms\<langle>g\<rangle>ns) (k,j))"
     by (simp add: times_matrix_def)
-  also have "... = (\<Squnion>\<^sub>k (if List.member ks i \<and> List.member ls k then f (i,k) else bot) * (if List.member ms k \<and> List.member ns j then g (k,j) else bot))"
+  also have "... = (\<Squnion>\<^sub>k (if i \<in> set ks \<and> k \<in> set ls then f (i,k) else bot)
+    * (if k \<in> set ms \<and> j \<in> set ns then g (k,j) else bot))"
     by (simp add: restrict_matrix_def)
-  also have "... = (\<Squnion>\<^sub>k if List.member ms k \<and> List.member ns j then bot * g (k,j) else (if List.member ks i \<and> List.member ls k then f (i,k) else bot) * bot)"
+  also have "... = (\<Squnion>\<^sub>k if k \<in> set ms \<and> j \<in> set ns then bot * g (k,j)
+    else (if i \<in> set ks \<and> k \<in> set ls then f (i,k) else bot) * bot)"
     using assms by (auto intro: sup_monoid.sum.cong)
   also have "... = (\<Squnion>\<^sub>(k::'a) bot)"
     by (simp add: sup_monoid.sum.neutral)
@@ -132,7 +134,7 @@ lemma one_disjoint:
 proof (rule ext, rule prod_cases)
   let ?o = "mone::('a,'b) square"
   fix i j
-  have "(ks\<langle>?o\<rangle>ls) (i,j) = (if List.member ks i \<and> List.member ls j then if i = j then 1 else bot else bot)"
+  have "(ks\<langle>?o\<rangle>ls) (i,j) = (if i \<in> set ks \<and> j \<in> set ls then if i = j then 1 else bot else bot)"
     by (simp add: restrict_matrix_def one_matrix_def)
   also have "... = bot"
     using assms by auto
@@ -147,7 +149,7 @@ The following predicate captures that an index set is a subset of another index 
 This has consequences for repeated restrictions.
 \<close>
 
-abbreviation "is_sublist ks ls \<equiv> \<forall>x . List.member ks x \<longrightarrow> List.member ls x"
+abbreviation "is_sublist ks ls \<equiv> set ks \<subseteq> set ls"
 
 lemma restrict_sublist:
   assumes "is_sublist ls ks"
@@ -156,12 +158,14 @@ lemma restrict_sublist:
 proof (rule ext, rule prod_cases)
   fix i j
   show "(ls\<langle>ks\<langle>f\<rangle>ns\<rangle>ms) (i,j) = (ls\<langle>f\<rangle>ms) (i,j)"
-  proof (cases "List.member ls i \<and> List.member ms j")
-    case True thus ?thesis
-      by (simp add: assms restrict_matrix_def)
+  proof (cases "i \<in> set ls \<and> j \<in> set ms")
+    case True
+    with assms show ?thesis
+      by (auto simp add: restrict_matrix_def)
   next
-    case False thus ?thesis
-      by (unfold restrict_matrix_def) auto
+    case False
+    with assms show ?thesis
+      by (auto simp add: restrict_matrix_def)
   qed
 qed
 
@@ -172,12 +176,14 @@ lemma restrict_superlist:
 proof (rule ext, rule prod_cases)
   fix i j
   show "(ks\<langle>ls\<langle>f\<rangle>ms\<rangle>ns) (i,j) = (ls\<langle>f\<rangle>ms) (i,j)"
-  proof (cases "List.member ls i \<and> List.member ms j")
-    case True thus ?thesis
-      by (simp add: assms restrict_matrix_def)
+  proof (cases "i \<in> set ls \<and> j \<in> set ms")
+    case True
+    with assms show ?thesis
+      by (auto simp add: restrict_matrix_def)
   next
-    case False thus ?thesis
-      by (unfold restrict_matrix_def) auto
+    case False
+    with assms show ?thesis
+      by (auto simp add: restrict_matrix_def)
   qed
 qed
 
@@ -195,15 +201,15 @@ lemma restrict_times:
   shows "ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms = ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms"
 proof (rule ext, rule prod_cases)
   fix i j
-  have "(ks\<langle>(ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)\<rangle>ms) (i,j) = (if List.member ks i \<and> List.member ms j then (\<Squnion>\<^sub>k (ks\<langle>f\<rangle>ls) (i,k) * (ls\<langle>g\<rangle>ms) (k,j)) else bot)"
+  have "(ks\<langle>(ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)\<rangle>ms) (i,j) = (if i \<in> set ks \<and> j \<in> set ms then (\<Squnion>\<^sub>k (ks\<langle>f\<rangle>ls) (i,k) * (ls\<langle>g\<rangle>ms) (k,j)) else bot)"
     by (simp add: times_matrix_def restrict_matrix_def)
-  also have "... = (if List.member ks i \<and> List.member ms j then (\<Squnion>\<^sub>k (if List.member ks i \<and> List.member ls k then f (i,k) else bot) * (if List.member ls k \<and> List.member ms j then g (k,j) else bot)) else bot)"
+  also have "... = (if i \<in> set ks \<and> j \<in> set ms then (\<Squnion>\<^sub>k (if i \<in> set ks \<and> k \<in> set ls then f (i,k) else bot) * (if k \<in> set ls \<and> j \<in> set ms then g (k,j) else bot)) else bot)"
     by (simp add: restrict_matrix_def)
-  also have "... = (if List.member ks i \<and> List.member ms j then (\<Squnion>\<^sub>k if List.member ls k then f (i,k) * g (k,j) else bot) else bot)"
+  also have "... = (if i \<in> set ks \<and> j \<in> set ms then (\<Squnion>\<^sub>k if k \<in> set ls then f (i,k) * g (k,j) else bot) else bot)"
     by (auto intro: sup_monoid.sum.cong)
-  also have "... = (\<Squnion>\<^sub>k if List.member ks i \<and> List.member ms j then (if List.member ls k then f (i,k) * g (k,j) else bot) else bot)"
+  also have "... = (\<Squnion>\<^sub>k if i \<in> set ks \<and> j \<in> set ms then (if k \<in> set ls then f (i,k) * g (k,j) else bot) else bot)"
     by auto
-  also have "... = (\<Squnion>\<^sub>k (if List.member ks i \<and> List.member ls k then f (i,k) else bot) * (if List.member ls k \<and> List.member ms j then g (k,j) else bot))"
+  also have "... = (\<Squnion>\<^sub>k (if i \<in> set ks \<and> k \<in> set ls then f (i,k) else bot) * (if k \<in> set ls \<and> j \<in> set ms then g (k,j) else bot))"
     by (auto intro: sup_monoid.sum.cong)
   also have "... = (\<Squnion>\<^sub>k (ks\<langle>f\<rangle>ls) (i,k) * (ls\<langle>g\<rangle>ms) (k,j))"
     by (simp add: restrict_matrix_def)
@@ -223,8 +229,9 @@ next
   case (Cons k s)
   let ?t = "k#s"
   assume "\<And>g::('a,'b) square . s\<langle>star_matrix' s g\<rangle>s = star_matrix' s g"
-  hence 1: "\<And>g::('a,'b) square . ?t\<langle>star_matrix' s g\<rangle>?t = star_matrix' s g"
-    by (metis member_rec(1) restrict_superlist)
+  then have 1: "?t\<langle>star_matrix' s g\<rangle>?t = star_matrix' s g" for g :: \<open>('a, 'b) square\<close>
+    using restrict_superlist [of s \<open>k # s\<close> s \<open>k # s\<close> \<open>star_matrix' s g\<close>]
+    by auto
   show "?t\<langle>star_matrix' ?t g\<rangle>?t = star_matrix' ?t g"
   proof -
     let ?r = "[k]"
@@ -239,7 +246,7 @@ next
     let ?f = "?d \<oplus> ?c \<odot> ?as \<odot> ?b"
     let ?fs = "star_matrix' s ?f"
     have 2: "?t\<langle>?as\<rangle>?t = ?as \<and> ?t\<langle>?b\<rangle>?t = ?b \<and> ?t\<langle>?c\<rangle>?t = ?c \<and> ?t\<langle>?es\<rangle>?t = ?es"
-      by (simp add: restrict_superlist member_def)
+      by (simp add: restrict_superlist subset_eq)
     have 3: "?t\<langle>?ds\<rangle>?t = ?ds \<and> ?t\<langle>?fs\<rangle>?t = ?fs"
       using 1 by simp
     have 4: "?t\<langle>?t\<langle>?as\<rangle>?t \<odot> ?t\<langle>?b\<rangle>?t \<odot> ?t\<langle>?fs\<rangle>?t\<rangle>?t = ?t\<langle>?as\<rangle>?t \<odot> ?t\<langle>?b\<rangle>?t \<odot> ?t\<langle>?fs\<rangle>?t"
@@ -260,9 +267,9 @@ next
 qed
 
 lemma restrict_one:
-  assumes "\<not> List.member ks k"
+  assumes "\<not> k \<in> set ks"
     shows "(k#ks)\<langle>(mone::('a,'b::idempotent_semiring) square)\<rangle>(k#ks) = [k]\<langle>mone\<rangle>[k] \<oplus> ks\<langle>mone\<rangle>ks"
-  by (subst restrict_nonempty) (simp add: assms member_rec one_disjoint)
+  by (subst restrict_nonempty) (simp add: assms one_disjoint)
 
 lemma restrict_one_left_unit:
   "ks\<langle>(mone::('a::finite,'b::idempotent_semiring) square)\<rangle>ks \<odot> ks\<langle>f\<rangle>ls = ks\<langle>f\<rangle>ls"
@@ -271,17 +278,17 @@ proof (rule ext, rule prod_cases)
   fix i j
   have "(ks\<langle>?o\<rangle>ks \<odot> ks\<langle>f\<rangle>ls) (i,j) = (\<Squnion>\<^sub>k (ks\<langle>?o\<rangle>ks) (i,k) * (ks\<langle>f\<rangle>ls) (k,j))"
     by (simp add: times_matrix_def)
-  also have "... = (\<Squnion>\<^sub>k (if List.member ks i \<and> List.member ks k then ?o (i,k) else bot) * (if List.member ks k \<and> List.member ls j then f (k,j) else bot))"
+  also have "... = (\<Squnion>\<^sub>k (if i \<in> set ks \<and> k \<in> set ks then ?o (i,k) else bot) * (if k \<in> set ks \<and> j \<in> set ls then f (k,j) else bot))"
     by (simp add: restrict_matrix_def)
-  also have "... = (\<Squnion>\<^sub>k (if List.member ks i \<and> List.member ks k then (if i = k then 1 else bot) else bot) * (if List.member ks k \<and> List.member ls j then f (k,j) else bot))"
+  also have "... = (\<Squnion>\<^sub>k (if i \<in> set ks \<and> k \<in> set ks then (if i = k then 1 else bot) else bot) * (if k \<in> set ks \<and> j \<in> set ls then f (k,j) else bot))"
     by (unfold one_matrix_def) auto
-  also have "... = (\<Squnion>\<^sub>k (if i = k then (if List.member ks i then 1 else bot) else bot) * (if List.member ks k \<and> List.member ls j then f (k,j) else bot))"
+  also have "... = (\<Squnion>\<^sub>k (if i = k then (if i \<in> set ks then 1 else bot) else bot) * (if k \<in> set ks \<and> j \<in> set ls then f (k,j) else bot))"
     by (auto intro: sup_monoid.sum.cong)
-  also have "... = (\<Squnion>\<^sub>k if i = k then (if List.member ks i then 1 else bot) * (if List.member ks i \<and> List.member ls j then f (i,j) else bot) else bot)"
+  also have "... = (\<Squnion>\<^sub>k if i = k then (if i \<in> set ks then 1 else bot) * (if i \<in> set ks \<and> j \<in> set ls then f (i,j) else bot) else bot)"
     by (rule sup_monoid.sum.cong) simp_all
-  also have "... = (if List.member ks i then 1 else bot) * (if List.member ks i \<and> List.member ls j then f (i,j) else bot)"
+  also have "... = (if i \<in> set ks then 1 else bot) * (if i \<in> set ks \<and> j \<in> set ls then f (i,j) else bot)"
     by simp
-  also have "... = (if List.member ks i \<and> List.member ls j then f (i,j) else bot)"
+  also have "... = (if i \<in> set ks \<and> j \<in> set ls then f (i,j) else bot)"
     by simp
   also have "... = (ks\<langle>f\<rangle>ls) (i,j)"
     by (simp add: restrict_matrix_def)
@@ -295,15 +302,15 @@ The following lemmas consider restrictions to singleton index sets.
 
 lemma restrict_singleton:
   "([k]\<langle>f\<rangle>[l]) (i,j) = (if i = k \<and> j = l then f (i,j) else bot)"
-  by (simp add: restrict_matrix_def List.member_def)
+  by (simp add: restrict_matrix_def)
 
 lemma restrict_singleton_list:
-  "([k]\<langle>f\<rangle>ls) (i,j) = (if i = k \<and> List.member ls j then f (i,j) else bot)"
-  by (simp add: restrict_matrix_def List.member_def)
+  "([k]\<langle>f\<rangle>ls) (i,j) = (if i = k \<and> j \<in> set ls then f (i,j) else bot)"
+  by (simp add: restrict_matrix_def)
 
 lemma restrict_list_singleton:
-  "(ks\<langle>f\<rangle>[l]) (i,j) = (if List.member ks i \<and> j = l then f (i,j) else bot)"
-  by (simp add: restrict_matrix_def List.member_def)
+  "(ks\<langle>f\<rangle>[l]) (i,j) = (if i \<in> set ks \<and> j = l then f (i,j) else bot)"
+  by (simp add: restrict_matrix_def)
 
 lemma restrict_singleton_product:
   fixes f g :: "('a::finite,'b::kleene_algebra) square"
@@ -356,7 +363,7 @@ qed
 
 lemma restrict_all:
   "enum_class.enum\<langle>f\<rangle>enum_class.enum = f"
-  by (simp add: restrict_matrix_def List.member_def enum_UNIV)
+  by (simp add: restrict_matrix_def enum_UNIV)
 
 text \<open>
 The following shows the various components of a matrix product.
@@ -365,7 +372,7 @@ It is essentially a recursive implementation of the product.
 
 lemma restrict_nonempty_product:
   fixes f g :: "('a::finite,'b::idempotent_semiring) square"
-  assumes "\<not> List.member ls l"
+  assumes "\<not> l \<in> set ls"
     shows "(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms) = ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)"
 proof -
   have "(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms) = ([k]\<langle>f\<rangle>[l] \<oplus> [k]\<langle>f\<rangle>ls \<oplus> ks\<langle>f\<rangle>[l] \<oplus> ks\<langle>f\<rangle>ls) \<odot> ([l]\<langle>g\<rangle>[m] \<oplus> [l]\<langle>g\<rangle>ms \<oplus> ls\<langle>g\<rangle>[m] \<oplus> ls\<langle>g\<rangle>ms)"
@@ -375,7 +382,7 @@ proof -
   also have "... = ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>[l] \<odot> ls\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>[l] \<odot> ls\<langle>g\<rangle>ms) \<oplus> ([k]\<langle>f\<rangle>ls \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>[l] \<odot> ls\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>[l] \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>ls \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)"
     by (simp add: matrix_idempotent_semiring.mult_left_dist_sup)
   also have "... = ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms) \<oplus> ([k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)"
-    using assms by (simp add: List.member_def times_disjoint)
+    using assms by (simp add: times_disjoint)
   also have "... = ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)"
     by (simp add: matrix_bounded_semilattice_sup_bot.sup_monoid.add_assoc matrix_semilattice_sup.sup_left_commute)
   finally show ?thesis
@@ -391,7 +398,7 @@ lemma restrict_nonempty_eq:
 proof
   assume 1: "(k#ks)\<langle>f\<rangle>(l#ls) = (k#ks)\<langle>g\<rangle>(l#ls)"
   have 2: "is_sublist [k] (k#ks) \<and> is_sublist ks (k#ks) \<and> is_sublist [l] (l#ls) \<and> is_sublist ls (l#ls)"
-    by (simp add: member_rec)
+    by auto
   hence "[k]\<langle>f\<rangle>[l] = [k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls)\<rangle>[l] \<and> [k]\<langle>f\<rangle>ls = [k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls)\<rangle>ls \<and> ks\<langle>f\<rangle>[l] = ks\<langle>(k#ks)\<langle>f\<rangle>(l#ls)\<rangle>[l] \<and> ks\<langle>f\<rangle>ls = ks\<langle>(k#ks)\<langle>f\<rangle>(l#ls)\<rangle>ls"
     by (simp add: restrict_sublist)
   thus "[k]\<langle>f\<rangle>[l] = [k]\<langle>g\<rangle>[l] \<and> [k]\<langle>f\<rangle>ls = [k]\<langle>g\<rangle>ls \<and> ks\<langle>f\<rangle>[l] = ks\<langle>g\<rangle>[l] \<and> ks\<langle>f\<rangle>ls = ks\<langle>g\<rangle>ls"
@@ -403,24 +410,24 @@ next
     fix i j
     have 4: "f (k,l) = g (k,l)"
       using 3 by (metis restrict_singleton)
-    have 5: "List.member ls j \<Longrightarrow> f (k,j) = g (k,j)"
+    have 5: "j \<in> set ls \<Longrightarrow> f (k,j) = g (k,j)"
       using 3 by (metis restrict_singleton_list)
-    have 6: "List.member ks i \<Longrightarrow> f (i,l) = g (i,l)"
+    have 6: "i \<in> set ks \<Longrightarrow> f (i,l) = g (i,l)"
       using 3 by (metis restrict_list_singleton)
     have "(ks\<langle>f\<rangle>ls) (i,j) = (ks\<langle>g\<rangle>ls) (i,j)"
       using 3 by simp
-    hence 7: "List.member ks i \<Longrightarrow> List.member ls j \<Longrightarrow> f (i,j) = g (i,j)"
+    hence 7: "i \<in> set ks \<Longrightarrow> j \<in> set ls \<Longrightarrow> f (i,j) = g (i,j)"
       by (simp add: restrict_matrix_def)
-    have "((k#ks)\<langle>f\<rangle>(l#ls)) (i,j) = (if (i = k \<or> List.member ks i) \<and> (j = l \<or> List.member ls j) then f (i,j) else bot)"
-      by (simp add: restrict_matrix_def List.member_def)
-    also have "... = (if i = k \<and> j = l then f (i,j) else if i = k \<and> List.member ls j then f (i,j) else if List.member ks i \<and> j = l then f (i,j) else if List.member ks i \<and> List.member ls j then f (i,j) else bot)"
+    have "((k#ks)\<langle>f\<rangle>(l#ls)) (i,j) = (if (i = k \<or> i \<in> set ks) \<and> (j = l \<or> j \<in> set ls) then f (i,j) else bot)"
+      by (simp add: restrict_matrix_def)
+    also have "... = (if i = k \<and> j = l then f (i,j) else if i = k \<and> j \<in> set ls then f (i,j) else if i \<in> set ks \<and> j = l then f (i,j) else if i \<in> set ks \<and> j \<in> set ls then f (i,j) else bot)"
       by auto
-    also have "... = (if i = k \<and> j = l then g (i,j) else if i = k \<and> List.member ls j then g (i,j) else if List.member ks i \<and> j = l then g (i,j) else if List.member ks i \<and> List.member ls j then g (i,j) else bot)"
+    also have "... = (if i = k \<and> j = l then g (i,j) else if i = k \<and> j \<in> set ls then g (i,j) else if i \<in> set ks \<and> j = l then g (i,j) else if i \<in> set ks \<and> j \<in> set ls then g (i,j) else bot)"
       using 4 5 6 7 by simp
-    also have "... = (if (i = k \<or> List.member ks i) \<and> (j = l \<or> List.member ls j) then g (i,j) else bot)"
+    also have "... = (if (i = k \<or> i \<in> set ks) \<and> (j = l \<or> j \<in> set ls) then g (i,j) else bot)"
       by auto
     also have "... = ((k#ks)\<langle>g\<rangle>(l#ls)) (i,j)"
-      by (simp add: restrict_matrix_def List.member_def)
+      by (simp add: restrict_matrix_def)
     finally show "((k#ks)\<langle>f\<rangle>(l#ls)) (i,j) = ((k#ks)\<langle>g\<rangle>(l#ls)) (i,j)"
       .
   qed
@@ -444,8 +451,8 @@ lemma restrict_disjoint_left:
     shows "ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns = mbot"
 proof (rule ext, rule prod_cases)
   fix i j
-  have "(ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns) (i,j) = (if List.member ms i \<and> List.member ns j then if List.member ks i \<and> List.member ls j then f (i,j) else bot else bot)"
-    by (simp add: restrict_matrix_def)
+  have "(ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns) (i,j) = (if i \<in> set ms \<and> j \<in> set ns then if i \<in> set ks \<and> j \<in> set ls then f (i,j) else bot else bot)"
+    by (auto simp add: restrict_matrix_def)
   thus "(ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns) (i,j) = mbot (i,j)"
     using assms by (simp add: bot_matrix_def)
 qed
@@ -455,7 +462,7 @@ lemma restrict_disjoint_right:
     shows "ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns = mbot"
 proof (rule ext, rule prod_cases)
   fix i j
-  have "(ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns) (i,j) = (if List.member ms i \<and> List.member ns j then if List.member ks i \<and> List.member ls j then f (i,j) else bot else bot)"
+  have "(ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns) (i,j) = (if i \<in> set ms \<and> j \<in> set ns then if i \<in> set ks \<and> j \<in> set ls then f (i,j) else bot else bot)"
     by (simp add: restrict_matrix_def)
   thus "(ms\<langle>ks\<langle>f\<rangle>ls\<rangle>ns) (i,j) = mbot (i,j)"
     using assms by (simp add: bot_matrix_def)
@@ -467,17 +474,17 @@ The following lemma expresses the equality of a matrix and a product of two matr
 
 lemma restrict_nonempty_product_eq:
   fixes f g h :: "('a::finite,'b::idempotent_semiring) square"
-  assumes "\<not> List.member ks k"
-      and "\<not> List.member ls l"
-      and "\<not> List.member ms m"
+  assumes "\<not> k \<in> set ks"
+      and "\<not> l \<in> set ls"
+      and "\<not> m \<in> set ms"
     shows "(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms) = (k#ks)\<langle>h\<rangle>(m#ms) \<longleftrightarrow> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] = [k]\<langle>h\<rangle>[m] \<and> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms = [k]\<langle>h\<rangle>ms \<and> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] = ks\<langle>h\<rangle>[m] \<and> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms = ks\<langle>h\<rangle>ms"
 proof -
   have 1: "disjoint [k] ks \<and> disjoint [m] ms"
-    by (simp add: assms(1,3) member_rec)
+    by (auto simp add: assms(1,3))
   have 2: "[k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>[m] = [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]"
   proof -
     have "[k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>[m] = [k]\<langle>([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)\<rangle>[m]"
-      by (simp add: assms(2) restrict_nonempty_product)
+      by (metis assms(2) restrict_nonempty_product)
     also have "... = [k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> [k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> [k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>[m] \<oplus> [k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>[m]"
       by (simp add: matrix_bounded_semilattice_sup_bot.sup_monoid.add_assoc restrict_sup)
     also have "... = [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<oplus> [k]\<langle>[k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m] \<oplus> [k]\<langle>[k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m] \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m]"
@@ -490,7 +497,7 @@ proof -
   have 3: "[k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>ms = [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms"
   proof -
     have "[k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>ms = [k]\<langle>([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)\<rangle>ms"
-      by (simp add: assms(2) restrict_nonempty_product)
+      by (metis assms(2) restrict_nonempty_product)
     also have "... = [k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms \<oplus> [k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms \<oplus> [k]\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms \<oplus> [k]\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms"
       by (simp add: matrix_bounded_semilattice_sup_bot.sup_monoid.add_assoc restrict_sup)
     also have "... = [k]\<langle>[k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>[k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms\<rangle>ms \<oplus> [k]\<langle>ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms\<rangle>ms"
@@ -503,7 +510,7 @@ proof -
   have 4: "ks\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>[m] = ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]"
   proof -
     have "ks\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>[m] = ks\<langle>([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)\<rangle>[m]"
-      by (simp add: assms(2) restrict_nonempty_product)
+      by (metis assms(2) restrict_nonempty_product)
     also have "... = ks\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> ks\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> ks\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>[m] \<oplus> ks\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>[m] \<oplus> ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m] \<oplus> ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>[m] \<oplus> ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>[m]"
       by (simp add: matrix_bounded_semilattice_sup_bot.sup_monoid.add_assoc restrict_sup)
     also have "... = ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>[m] \<oplus> ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>[m] \<oplus> ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m] \<oplus> ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m] \<oplus> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<oplus> ks\<langle>ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m] \<oplus> ks\<langle>ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms\<rangle>[m]"
@@ -516,7 +523,7 @@ proof -
   have 5: "ks\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>ms = ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms"
   proof -
     have "ks\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>ms = ks\<langle>([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> ([k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]) \<oplus> (ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms)\<rangle>ms"
-      by (simp add: assms(2) restrict_nonempty_product)
+      by (metis assms(2) restrict_nonempty_product)
     also have "... = ks\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms \<oplus> ks\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms \<oplus> ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms \<oplus> ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms"
       by (simp add: matrix_bounded_semilattice_sup_bot.sup_monoid.add_assoc restrict_sup)
     also have "... = ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms\<rangle>ms\<rangle>ms \<oplus> ks\<langle>[k]\<langle>[k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms\<rangle>ms\<rangle>ms \<oplus> ks\<langle>ks\<langle>ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>ks\<langle>ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]\<rangle>[m]\<rangle>ms \<oplus> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms"
@@ -542,9 +549,9 @@ The following lemma gives a componentwise characterisation of the inequality of 
 
 lemma restrict_nonempty_product_less_eq:
   fixes f g h :: "('a::finite,'b::idempotent_semiring) square"
-  assumes "\<not> List.member ks k"
-      and "\<not> List.member ls l"
-      and "\<not> List.member ms m"
+  assumes "\<not> k \<in> set ks"
+      and "\<not> l \<in> set ls"
+      and "\<not> m \<in> set ms"
     shows "(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms) \<preceq> (k#ks)\<langle>h\<rangle>(m#ms) \<longleftrightarrow> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<preceq> [k]\<langle>h\<rangle>[m] \<and> [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms \<preceq> [k]\<langle>h\<rangle>ms \<and> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m] \<preceq> ks\<langle>h\<rangle>[m] \<and> ks\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<oplus> ks\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>ms \<preceq> ks\<langle>h\<rangle>ms"
 proof -
   have 1: "[k]\<langle>(k#ks)\<langle>f\<rangle>(l#ls) \<odot> (l#ls)\<langle>g\<rangle>(m#ms)\<rangle>[m] = [k]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<oplus> [k]\<langle>f\<rangle>ls \<odot> ls\<langle>g\<rangle>[m]"
@@ -582,7 +589,9 @@ next
   assume 2: "distinct (m#ms)"
   assume 3: "[l]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>(m#ms) \<preceq> [l]\<langle>g\<rangle>(m#ms)"
   have 4: "[l]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>[m] \<preceq> [l]\<langle>g\<rangle>[m] \<and> [l]\<langle>f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<preceq> [l]\<langle>g\<rangle>ms"
-    using 2 3 by (metis distinct.simps(2) matrix_semilattice_sup.sup.bounded_iff member_def member_rec(2) restrict_nonempty_product_less_eq)
+    using 2 3
+    by (metis distinct.simps(2) distinct_singleton matrix_semilattice_sup.le_sup_iff
+        restrict_nonempty_product_less_eq)
   hence 5: "[l]\<langle>star o f\<rangle>[l] \<odot> [l]\<langle>g\<rangle>ms \<preceq> [l]\<langle>g\<rangle>ms"
     using 1 2 by simp
   have "f (l,l) * g (l,m) \<le> g (l,m)"
@@ -623,7 +632,9 @@ next
   assume 2: "distinct (m#ms)"
   assume 3: "(m#ms)\<langle>g\<rangle>[l] \<odot> [l]\<langle>f\<rangle>[l] \<preceq> (m#ms)\<langle>g\<rangle>[l]"
   have 4: "[m]\<langle>g\<rangle>[l] \<odot> [l]\<langle>f\<rangle>[l] \<preceq> [m]\<langle>g\<rangle>[l] \<and> ms\<langle>g\<rangle>[l] \<odot> [l]\<langle>f\<rangle>[l] \<preceq> ms\<langle>g\<rangle>[l]"
-    using 2 3 by (metis distinct.simps(2) matrix_semilattice_sup.sup.bounded_iff member_def member_rec(2) restrict_nonempty_product_less_eq)
+    using 2 3
+    by (metis distinct.simps(2) distinct_singleton matrix_semilattice_sup.le_sup_iff
+        restrict_nonempty_product_less_eq) 
   hence 5: "ms\<langle>g\<rangle>[l] \<odot> [l]\<langle>star o f\<rangle>[l] \<preceq> ms\<langle>g\<rangle>[l]"
     using 1 2  by simp
   have "g (m,l) * f (l,l) \<le> g (m,l)"
@@ -649,7 +660,9 @@ next
       .
   qed
   thus "(m#ms)\<langle>g\<rangle>[l] \<odot> [l]\<langle>star o f\<rangle>[l] \<preceq> (m#ms)\<langle>g\<rangle>[l]"
-    using 2 5 by (metis (no_types, opaque_lifting) matrix_idempotent_semiring.mult_right_dist_sup matrix_semilattice_sup.sup.mono restrict_nonempty_left)
+    using 2 5
+    by (metis matrix_idempotent_semiring.mult_right_dist_sup
+        matrix_idempotent_semiring.semiring.add_mono restrict_nonempty_left) 
 qed
 
 lemma restrict_pp:
@@ -703,9 +716,9 @@ proof
       hence 3: "?r\<langle>?e\<rangle>?r = ?e \<and> s\<langle>?f\<rangle>s = ?f"
         by (metis (no_types, lifting) restrict_one_left_unit restrict_sup restrict_times)
       have 4: "disjoint s ?r \<and> disjoint ?r s"
-        using 2 by (simp add: in_set_member member_rec)
+        using 2 by simp
       hence 5: "?t\<langle>?o\<rangle>?t = ?r\<langle>?o\<rangle>?r \<oplus> s\<langle>?o\<rangle>s"
-        by (meson member_rec(1) restrict_one)
+        by (auto intro: restrict_one)
       have 6: "?t\<langle>g\<rangle>?t \<odot> ?es = ?a \<odot> ?es \<oplus> ?c \<odot> ?es"
       proof -
         have "?t\<langle>g\<rangle>?t \<odot> ?es = (?a \<oplus> ?b \<oplus> ?c \<oplus> ?d) \<odot> ?es"
@@ -765,7 +778,8 @@ proof
       also have "... = (?r\<langle>?o\<rangle>?r \<oplus> ?e \<odot> ?es) \<oplus> ((?r\<langle>?o\<rangle>?r \<oplus> ?a \<odot> ?as) \<odot> ?b \<odot> ?fs) \<oplus> ((s\<langle>?o\<rangle>s \<oplus> ?d \<odot> ?ds) \<odot> ?c \<odot> ?es) \<oplus> ?fs"
         using 1 2 3 by (metis distinct.simps(2))
       also have "... = (?r\<langle>?o\<rangle>?r \<oplus> ?e \<odot> ?es) \<oplus> ((?r\<langle>?o\<rangle>?r \<oplus> ?a \<odot> ?as) \<odot> ?b \<odot> ?fs) \<oplus> (?ds \<odot> ?c \<odot> ?es) \<oplus> ?fs"
-        using 1 2 by (metis (no_types, lifting) distinct.simps(2) restrict_superlist)
+        using 1 2
+        by (metis distinct.simps(2) restrict_one_left_unit restrict_times) 
       also have "... = ?es \<oplus> ((?r\<langle>?o\<rangle>?r \<oplus> ?a \<odot> ?as) \<odot> ?b \<odot> ?fs) \<oplus> (?ds \<odot> ?c \<odot> ?es) \<oplus> ?fs"
         using 3 by (metis restrict_star_unfold)
       also have "... = ?es \<oplus> ?as \<odot> ?b \<odot> ?fs \<oplus> ?ds \<odot> ?c \<odot> ?es \<oplus> ?fs"
@@ -803,8 +817,8 @@ next
         proof (intro impI)
           let ?y = "[y]"
           assume 3: "distinct ?t \<and> distinct zs"
-          hence 4: "distinct s \<and> distinct ys \<and> \<not> List.member s k \<and> \<not> List.member ys y"
-            using 2 by (simp add: List.member_def)
+          hence 4: "distinct s \<and> distinct ys \<and> \<not> k \<in> set s \<and> \<not> y \<in> set ys"
+            using 2 by simp
           let ?r = "[k]"
           let ?a = "?r\<langle>g\<rangle>?r"
           let ?b = "?r\<langle>g\<rangle>s"
@@ -822,13 +836,14 @@ next
           let ?hd = "s\<langle>h\<rangle>ys"
           assume "?t\<langle>g\<rangle>?t \<odot> ?t\<langle>h\<rangle>zs \<preceq> ?t\<langle>h\<rangle>zs"
           hence 5: "?a \<odot> ?ha \<oplus> ?b \<odot> ?hc \<preceq> ?ha \<and> ?a \<odot> ?hb \<oplus> ?b \<odot> ?hd \<preceq> ?hb \<and> ?c \<odot> ?ha \<oplus> ?d \<odot> ?hc \<preceq> ?hc \<and> ?c \<odot> ?hb \<oplus> ?d \<odot> ?hd \<preceq> ?hd"
-            using 2 3 4 by (simp add: restrict_nonempty_product_less_eq)
+            using 2 3 4 by simp
+              (meson matrix_semilattice_sup.le_sup_iff restrict_nonempty_product_less_eq) 
           have 6: "s\<langle>?ds\<rangle>s = ?ds \<and> s\<langle>?fs\<rangle>s = ?fs"
             by (simp add: restrict_star)
           hence 7: "?r\<langle>?e\<rangle>?r = ?e \<and> s\<langle>?f\<rangle>s = ?f"
             by (metis (no_types, lifting) restrict_one_left_unit restrict_sup restrict_times)
           have 8: "disjoint s ?r \<and> disjoint ?r s"
-            using 3 by (simp add: in_set_member member_rec(1) member_rec(2))
+            using 3 by simp
           have 9: "?es \<odot> ?t\<langle>h\<rangle>zs = ?es \<odot> ?ha \<oplus> ?es \<odot> ?hb"
           proof -
             have "?es \<odot> ?t\<langle>h\<rangle>zs = ?es \<odot> (?ha \<oplus> ?hb \<oplus> ?hc \<oplus> ?hd)"
@@ -886,7 +901,7 @@ next
             have "?b \<odot> ?ds \<odot> ?c \<odot> ?ha \<preceq> ?b \<odot> ?ds \<odot> ?hc"
               using 5 by (simp add: matrix_idempotent_semiring.mult_right_isotone matrix_monoid.mult_assoc)
             also have "... \<preceq> ?b \<odot> ?hc"
-              using 1 3 5 by (simp add: matrix_idempotent_semiring.mult_right_isotone matrix_monoid.mult_assoc member_rec(2) restrict_sublist)
+              using 1 3 5 by (simp add: matrix_idempotent_semiring.mult_right_isotone matrix_monoid.mult_assoc restrict_sublist)
             also have "... \<preceq> ?ha"
               using 5 by simp
             finally have "?e \<odot> ?ha \<preceq> ?ha"
@@ -1032,8 +1047,8 @@ next
         proof (intro impI)
           let ?y = "[y]"
           assume 3: "distinct ?t \<and> distinct zs"
-          hence 4: "distinct s \<and> distinct ys \<and> \<not> List.member s k \<and> \<not> List.member ys y"
-            using 2 by (simp add: List.member_def)
+          hence 4: "distinct s \<and> distinct ys \<and> \<not> k \<in> set s \<and> \<not> y \<in> set ys"
+            using 2 by simp
           let ?r = "[k]"
           let ?a = "?r\<langle>g\<rangle>?r"
           let ?b = "?r\<langle>g\<rangle>s"
@@ -1051,13 +1066,14 @@ next
           let ?hd = "ys\<langle>h\<rangle>s"
           assume "zs\<langle>h\<rangle>?t \<odot> ?t\<langle>g\<rangle>?t \<preceq> zs\<langle>h\<rangle>?t"
           hence 5: "?ha \<odot> ?a \<oplus> ?hb \<odot> ?c \<preceq> ?ha \<and> ?ha \<odot> ?b \<oplus> ?hb \<odot> ?d \<preceq> ?hb \<and> ?hc \<odot> ?a \<oplus> ?hd \<odot> ?c \<preceq> ?hc \<and> ?hc \<odot> ?b \<oplus> ?hd \<odot> ?d \<preceq> ?hd"
-            using 2 3 4 by (simp add: restrict_nonempty_product_less_eq)
+            using 2 3 4
+            using restrict_nonempty_product_less_eq by blast 
           have 6: "s\<langle>?ds\<rangle>s = ?ds \<and> s\<langle>?fs\<rangle>s = ?fs"
             by (simp add: restrict_star)
           hence 7: "?r\<langle>?e\<rangle>?r = ?e \<and> s\<langle>?f\<rangle>s = ?f"
             by (metis (no_types, lifting) restrict_one_left_unit restrict_sup restrict_times)
           have 8: "disjoint s ?r \<and> disjoint ?r s"
-            using 3 by (simp add: in_set_member member_rec)
+            using 3 by simp
           have 9: "zs\<langle>h\<rangle>?t \<odot> ?es = ?ha \<odot> ?es \<oplus> ?hc \<odot> ?es"
           proof -
             have "zs\<langle>h\<rangle>?t \<odot> ?es = (?ha \<oplus> ?hb \<oplus> ?hc \<oplus> ?hd) \<odot> ?es"

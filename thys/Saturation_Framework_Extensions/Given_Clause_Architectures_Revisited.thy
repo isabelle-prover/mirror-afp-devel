@@ -130,8 +130,7 @@ proof cases
           using F\<iota>_inff unfolding no_labels.Inf_from_def no_labels.Inf_between_def by auto
         then have "\<iota> \<in> Inf_from (active_subset N)"
           using \<iota>_inf l_pas unfolding to_F_def Inf_from_def no_labels.Inf_from_def
-          by clarsimp (smt \<iota>_inff[unfolded Inf_from_def] active_subset_def imageE image_subset_iff
-              in_mono mem_Collect_eq prod.collapse)
+          by clarsimp (smt (verit, ccfv_SIG) Inf_from_def \<iota>_inff active_subset_def fst_eqD image_iff mem_Collect_eq prod.collapse subset_iff)
         then show ?thesis
           using invar l_pas unfolding gc_invar_def lim_i ni by auto
       qed
@@ -368,7 +367,7 @@ proof cases
           unfolding no_labels.Inf_from_def no_labels.Inf_between_def by auto
         then have "\<iota> \<in> Inf_from (active_subset N)"
           using \<iota>_inf unfolding to_F_def no_labels.Inf_from_def
-          by clarsimp (smt Inf_from_def Un_insert_right \<iota>_inff active_subset_def
+          by clarsimp (smt (verit) Inf_from_def Un_insert_right \<iota>_inff active_subset_def
             boolean_algebra_cancel.sup0 imageE image_subset_iff insert_iff mem_Collect_eq
             prod.collapse snd_conv subset_iff)
         then have "\<iota> \<in> \<Union> (from_F ` (T1 \<union> T')) \<union> ?Sup_Red_i"

@@ -417,7 +417,7 @@ proof -
         let ?sfab = "Transposition.transpose (?fn a) (?fn b)"
         have p_sab: "permutation ?sab" by (rule permutation_swap_id)
         have p_sfab: "permutation ?sfab" by (rule permutation_swap_id)
-        from swap(4) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
+        from swap(5) have IH1: "p permutes ?zn" and IH2: "sign p = sign (?ft p)" by auto
         have sab_perm: "?sab permutes ?zn" using swap(1-2) by (rule permutes_swap_id)
         from permutes_compose[OF IH1 this] have perm1: "?sab o p permutes ?zn" .
         from IH1 have p_p1: "p \<in> ?p1" by simp

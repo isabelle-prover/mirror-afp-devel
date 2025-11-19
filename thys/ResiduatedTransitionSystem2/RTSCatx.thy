@@ -36,7 +36,7 @@ begin
                    B \<in> Collect extensional_rts \<inter> Collect small_rts\<rbrakk>
                       \<Longrightarrow> extensional_rts (exponential_rts.resid A B)"
         by (metis CollectD Int_Collect exponential_rts.intro
-            exponential_rts.is_extensional_rts extensional_rts.extensional
+            exponential_rts.is_extensional_rts extensional_rts.extensionality
             small_rts.axioms(1) weakly_extensional_rts.intro
             weakly_extensional_rts_axioms.intro)
       show "\<And>A. A \<in> Collect extensional_rts \<inter> Collect small_rts \<Longrightarrow>
@@ -82,7 +82,7 @@ begin
           moreover have "AB.Cod t \<circ> AA.Cod (AA.MkIde (I A)) = AB.Cod t"
             using t.G.simulation_axioms comp_simulation_identity by auto
           moreover have "AB.Map t \<circ> AA.Map (AA.MkIde (I A)) = AB.Map t"
-            using t.extensional by auto
+            using t.extensionality by auto
           ultimately show ?thesis
             using t Cmp_AAB.map_eq AB.MkArr_Map AB.arr_char
                   IA.transformation_axioms
@@ -105,7 +105,7 @@ begin
           proof
             fix x
             show "(BB.Map (BB.MkIde (I B)) \<circ> AB.Map u) x = AB.Map u x"
-              using u.extensional u.preserves_arr by auto metis
+              using u.extensionality u.preserves_arr by auto metis
           qed
           ultimately show ?thesis
             using u Cmp_ABB.map_eq AB.MkArr_Map AB.arr_char
@@ -143,14 +143,14 @@ begin
                 (AC.Dom u \<circ> AC.Dom v) (AC.Cod u \<circ> AC.Cod v)
                 (AC.Map u \<circ> AC.Map v)"
           using t u v Preliminaries.horizontal_composite
-          by (metis A.extensional_rts_axioms AB.arrE B.extensional_rts_axioms
+          by (metis A.rts_axioms AB.arrE B.extensional_rts_axioms
               BC.arrE C.extensional_rts_axioms)
         moreover
         have "transformation B D
                 (BD.Dom t \<circ> BD.Dom u) (BD.Cod t \<circ> BD.Cod u)
                 (BD.Map t \<circ> BD.Map u)"
           using t u v Preliminaries.horizontal_composite
-          by (metis B.extensional_rts_axioms BC.arrE C.extensional_rts_axioms
+          by (metis B.rts_axioms BC.arrE C.extensional_rts_axioms
               CD.arrE D.extensional_rts_axioms)
         ultimately
         show "COMP.map A B D (COMP.map B C D (t, u), v) =
@@ -281,8 +281,18 @@ begin
       using assms arr_mkarr dom_char cod_char apply auto[4]
       by (metis (no_types, lifting) Cod_mkarr CollectD Dom_mkarr Int_Collect
           Trn.simps(1) arrE exponential_rts.arr_MkArr exponential_rts.intro
-          extensional_rts.axioms(1) extensional_rts.extensional mkarr_def
+          extensional_rts.axioms(1) extensional_rts.extensionality mkarr_def
           weakly_extensional_rts.intro weakly_extensional_rts_axioms.intro)+
+
+    lemma mkarr_in_hom [intro]:
+    assumes "obj a" and "obj b"
+    and "A = Dom a" and "B = Dom b"
+    and "simulation A B F"
+    and "simulation A B G"
+    and "transformation A B F G \<tau>"
+    shows "\<guillemotleft>mkarr A B F G \<tau> : a \<rightarrow> b\<guillemotright>"
+      using assms arr_mkarr(1) H.ideD(1) H.in_homI arr_char bij_mkobj(4)
+      by force
 
     lemma sta_mksta [intro]:
     assumes "small_rts A" and "extensional_rts A"
@@ -322,7 +332,7 @@ begin
       using assms
       by (metis (mono_tags, lifting) Int_Collect Trn.simps(1) arrE comp_apply
           exponential_rts.Dom.simps(1) exponential_rts.intro
-          extensional_rts.axioms(1) extensional_rts.extensional mem_Collect_eq
+          extensional_rts.axioms(1) extensional_rts.extensionality mem_Collect_eq
           mkarr_def weakly_extensional_rts.intro
           weakly_extensional_rts_axioms.intro)
 
@@ -332,7 +342,17 @@ begin
       using assms
       by (metis (mono_tags, lifting) Int_Collect Trn.simps(1) arrE comp_apply
           exponential_rts.Cod.simps(1) exponential_rts.intro
-          extensional_rts.axioms(1) extensional_rts.extensional mem_Collect_eq
+          extensional_rts.axioms(1) extensional_rts.extensionality mem_Collect_eq
+          mkarr_def weakly_extensional_rts.intro
+          weakly_extensional_rts_axioms.intro)
+
+    lemma Map_mkarr [simp]:
+    assumes "arr (mkarr A B F G \<sigma>)"
+    shows "Map (mkarr A B F G \<sigma>) = \<sigma>"
+      using assms
+      by (metis (mono_tags, lifting) Int_Collect Trn.simps(1) arrE comp_apply
+          exponential_rts.Map.simps(1) exponential_rts.intro
+          extensional_rts.axioms(1) extensional_rts.extensionality mem_Collect_eq
           mkarr_def weakly_extensional_rts.intro
           weakly_extensional_rts_axioms.intro)
 
@@ -536,7 +556,7 @@ begin
         using assms \<sigma>\<tau>.con con_char AB.con_char mkarr_def
         by (simp add: \<sigma>\<tau>.\<sigma>.transformation_axioms \<sigma>\<tau>.\<tau>.transformation_axioms)
       show "mkarr A B H \<sigma>\<tau>.apex \<sigma>\<tau>.resid =
-            mkarr A B F G \<sigma> \\ mkarr A B F H \<tau>"
+            resid (mkarr A B F G \<sigma>) (mkarr A B F H \<tau>)"
         unfolding mkarr_def
         using assms Trn_resid AB.resid_def AB.Apex_def AB.con_char
               \<sigma>\<tau>.\<sigma>.transformation_axioms \<sigma>\<tau>.\<tau>.transformation_axioms
@@ -544,20 +564,46 @@ begin
         by (intro arr_eqI) auto
     qed
 
+    lemma Dom_hcomp\<^sub>X:
+    assumes "H.seq t u"
+    shows "Dom (t \<star> u) = Dom u"
+      using assms H_seq_char by auto
+
+    lemma Cod_hcomp\<^sub>X:
+    assumes "H.seq t u"
+    shows "Cod (t \<star> u) = Cod t"
+      using assms H_seq_char Cod_hcomp by auto
+
     lemma Map_hcomp:
     assumes "H.seq t u"
     shows "Map (t \<star> u) = Map t \<circ> Map u"
     proof -
       interpret COMP \<open>Dom u\<close> \<open>Cod u\<close> \<open>Cod t\<close>
         using assms arr_char COMP.intro H_seq_char by auto
-      have t: "arr t" and u: "arr u"
-        using assms by fastforce+
+      have t: "arr t"
+        using assms by (elim H.seqE) auto
+      have u: "arr u"
+        using assms by (elim H.seqE) auto
       have tu: "Dom t = Cod u"
         using assms H_seq_char by blast
       show ?thesis
         unfolding hcomp_def
         using assms tu t u map_eq H.ext arr_char by auto
     qed
+
+    lemma Src_hcomp:
+    assumes "H.seq t u"
+    shows "Src (t \<star> u) = Src t \<circ> Src u"
+      using assms
+      by (metis (no_types, lifting) H_composable_char Map_hcomp Map_simps(3)
+          arrE arr_hcomp src.as_nat_trans.preserves_comp_2 src.preserves_seq)
+
+    lemma Trg_hcomp:
+    assumes "H.seq t u"
+    shows "Trg (t \<star> u) = Trg t \<circ> Trg u"
+      using assms
+      by (metis (no_types, lifting) H_composable_char Map_hcomp Map_simps(4)
+          arrE arr_hcomp trg.as_nat_trans.preserves_comp_2 trg.preserves_seq)
 
     lemma Map_resid:
     assumes "V.con t u"
@@ -599,18 +645,83 @@ begin
         using assms con_char AB.con_char  AB.Map_resid by auto
     qed
 
-    lemma simulation_Map_sta:
+    lemma Src_resid:
+    assumes "V.con t u"
+    shows "Src (t \\ u) = Trg u"
+      using assms
+      by (metis Map_simps(3) Map_simps(4) V.arr_resid_iff_con V.con_implies_arr(2)
+          V.src_resid\<^sub>W\<^sub>E)
+
+    lemma Trg_resid:
+    assumes "V.con t u"
+    shows "Trg (t \\ u) = consistent_transformations.apex (Dom t) (Cod t)
+                            (Trg u) (Map t) (Map u)"
+    proof -
+      interpret A: extensional_rts \<open>Dom t\<close>
+        using assms by (simp add: con_char)
+      interpret B: extensional_rts \<open>Cod t\<close>
+        using assms by (simp add: con_char)
+      interpret AB: exponential_rts \<open>Dom t\<close> \<open>Cod t\<close> ..
+      interpret T: transformation \<open>Dom t\<close> \<open>Cod t\<close> \<open>Src t\<close> \<open>Trg t\<close> \<open>Map t\<close>
+        by (meson Map_resid(1) assms consistent_transformations.axioms(6))
+      interpret U: transformation \<open>Dom t\<close> \<open>Cod t\<close> \<open>Src t\<close> \<open>Trg u\<close> \<open>Map u\<close>
+        by (meson Map_resid(1) assms consistent_transformations_def)
+      interpret TU: consistent_transformations \<open>Dom t\<close> \<open>Cod t\<close>
+                      \<open>Src t\<close> \<open>Trg t\<close> \<open>Trg u\<close> \<open>Map t\<close> \<open>Map u\<close>
+        using assms con_char AB.con_char
+        by unfold_locales force
+      show ?thesis
+      proof
+        fix x
+        show "Trg (t \\ u) x = TU.apex x"
+          by (metis AB.Apex_def AB.Cod_resid Trn_resid assms comp_eq_dest_lhs con_char)
+      qed
+    qed
+
+    lemma simulation_Map:
     assumes "sta f"
     shows "simulation (Dom f) (Cod f) (Map f)"
       by (metis Map_resid(1) Map_simps(3) V.ideE V.ide_implies_arr
           V.src_ide assms consistent_transformations.axioms(6)
           transformation.axioms(3))
 
-    lemma transformation_Map_arr:
+    lemma transformation_Map:
     assumes "arr t"
     shows "transformation (Dom t) (Cod t) (Src t) (Trg t) (Map t)"
       by (meson Map_resid(1) V.arrE assms
           consistent_transformations.axioms(6))
+
+    lemma arr_eqI':
+    assumes "arr t" and "arr u"
+    and "Dom t = Dom u" and "Cod t = Cod u"
+    and "Src t = Src u" and "Trg t = Trg u"
+    and "\<And>a. residuation.ide (Dom t) a \<Longrightarrow> Map t a = Map u a"
+    shows "t = u"
+    proof (intro arr_eqI)
+      show "t \<noteq> Null"
+        using assms(1) arr_char by blast
+      show "u \<noteq> Null"
+        using assms(2) arr_char by blast
+      show "Dom t = Dom u" and "Cod t = Cod u" by fact+
+      show "Trn t = Trn u"
+      proof (intro exponential_rts.arr_eqI)
+        interpret AB: exponential_rts \<open>Dom t\<close> \<open>Cod t\<close>
+          by (metis Cod_dom IntD1 arrE assms(1) dom.preserves_reflects_arr
+              exponential_rts.intro mem_Collect_eq transformation_Map
+              transformation_def)
+        show "exponential_rts (Dom t) (Cod t)" ..
+        show "AB.arr (Trn t)"
+          using assms(1) by blast
+        show "AB.arr (Trn u)"
+          using assms(2-4) by auto
+        show "AB.Dom (Trn t) = AB.Dom (Trn u)"
+          using assms(5) by auto
+        show "AB.Cod (Trn t) = AB.Cod (Trn u)"
+          using assms(6) by auto
+        show "\<And>a. AB.A.ide a \<Longrightarrow> AB.Map (Trn t) a = AB.Map (Trn u) a"
+          using assms(7) by fastforce
+      qed
+    qed
 
     lemma iso_char:
     shows "H.iso t \<longleftrightarrow> arr t \<and> Src t = Map t \<and> Trg t = Map t \<and>
@@ -763,6 +874,142 @@ begin
       qed
     qed
 
+    lemma inverse_arrows_char:
+    shows "H.inverse_arrows t u \<longleftrightarrow>
+           sta t \<and> sta u \<and> H.antipar t u \<and>
+           inverse_simulations (Dom t) (Dom u) (Map u) (Map t)"
+    proof
+      assume tu: "H.inverse_arrows t u"
+      show "sta t \<and> sta u \<and> H.antipar t u \<and>
+            inverse_simulations (Dom t) (Dom u) (Map u) (Map t)"
+      proof (intro conjI)
+        show "sta t"
+          using tu by (metis H.isoI iso_implies_sta)
+        show "sta u"
+          using tu by (metis H.inverse_arrows_sym H.isoI iso_implies_sta)
+        show "H.seq t u"
+          using tu by blast
+        show "H.seq u t"
+          using tu by blast
+        show "inverse_simulations (Dom t) (Dom u) (Map u) (Map t)"
+        proof -
+          interpret T: simulation \<open>Dom t\<close> \<open>Dom u\<close> \<open>Map t\<close>
+            using tu H_seq_char \<open>H.seq u t\<close> \<open>sta t\<close> simulation_Map by force
+          interpret U: simulation \<open>Dom u\<close> \<open>Dom t\<close> \<open>Map u\<close>
+            using tu H_composable_char \<open>H.seq t u\<close> \<open>sta u\<close> simulation_Map by auto
+          show ?thesis
+          proof
+            show "Map t \<circ> Map u = I (Dom u)"
+              by (metis (no_types, lifting) H.comp_inv_arr H.inverse_arrows_sym
+                  Map_hcomp Map_simps(1) V.ide_implies_arr \<open>H.seq t u\<close> \<open>sta u\<close> tu)
+            show "Map u \<circ> Map t = I (Dom t)"
+              by (metis (no_types, lifting) H.comp_inv_arr Map_hcomp Map_simps(1)
+                  V.ide_implies_arr \<open>H.seq u t\<close> \<open>sta t\<close> tu)
+          qed
+        qed
+      qed
+      next
+      have "\<And>t u. sta t \<and> sta u \<and> H.antipar t u \<and>
+                   inverse_simulations (Dom t) (Dom u) (Map u) (Map t)
+                     \<Longrightarrow> obj (t \<star> u)"
+      proof -
+        fix t u
+        assume tu: "sta t \<and> sta u \<and> H.antipar t u \<and>
+                    inverse_simulations (Dom t) (Dom u) (Map u) (Map t)"
+        interpret TU: inverse_simulations \<open>Dom t\<close> \<open>Dom u\<close> \<open>Map u\<close> \<open>Map t\<close>
+          using tu by blast
+        interpret Dom: extensional_rts \<open>Dom (t \<star> u)\<close>
+          using tu by auto
+        interpret Dom_Dom: exponential_rts \<open>Dom (t \<star> u)\<close> \<open>Dom (t \<star> u)\<close> ..
+        show "obj (t \<star> u)"
+        proof
+          show "t \<star> u \<noteq> null"
+            using tu by auto
+          show 1: "Dom (t \<star> u) \<in> Collect extensional_rts \<inter> Collect small_rts"
+            using tu arr_char by blast
+          show 2: "Cod (t \<star> u) = Dom (t \<star> u)"
+            using tu H_seq_char by auto
+          show "Trn (t \<star> u) = Dom_Dom.MkIde (I (Dom (t \<star> u)))"
+          proof (intro Dom_Dom.arr_eqI)
+            show "Dom_Dom.arr (Trn (t \<star> u))"
+              using tu H_arr_char \<open>Cod (t \<star> u) = Dom (t \<star> u)\<close> by force
+            show "Dom_Dom.arr (Dom_Dom.MkIde (I (Dom (t \<star> u))))"
+              using tu 1 Dom_Dom.ide_implies_arr ide_Id
+              by presburger
+            show 3: "Dom_Dom.Dom (Trn (t \<star> u)) =
+                     Dom_Dom.Dom (Dom_Dom.MkIde (I (Dom (t \<star> u))))"
+            proof -
+              have "Dom_Dom.Dom (Trn (t \<star> u)) = Src (t \<star> u)"
+                by simp
+              also have "... = Src t \<circ> Src u"
+                using Src_hcomp tu by blast
+              also have "... = Map t \<circ> Map u"
+                using tu
+                by (metis (no_types, lifting) H.seqE H_arr_char Map_simps(3)
+                    V.extensionality V.ide_iff_src_cong_self arr_char)
+              also have "... = I (Dom u)"
+                using TU.inv by blast
+              also have "... = I (Dom (t \<star> u))"
+                using H_seq_char tu by force
+              also have "... = Dom_Dom.Dom (Dom_Dom.MkIde (I (Dom (t \<star> u))))"
+                using Dom_Dom.Dom.simps(1) by simp
+              finally show ?thesis by blast
+            qed
+            show "Dom_Dom.Cod (Trn (t \<star> u)) =
+                  Dom_Dom.Cod (Dom_Dom.MkIde (I (Dom (t \<star> u))))"
+            proof -
+              have "\<lbrakk>sta t \<and> sta u \<and> arr (u \<star> t) \<and> arr (t \<star> u) \<and>
+                     inverse_simulations (Dom t) (Dom u)
+                       (Dom_Dom.Map (Trn u)) (Dom_Dom.Map (Trn t));
+                     Dom_Dom.Dom (Trn (t \<star> u)) = I (Dom (t \<star> u))\<rbrakk>
+                        \<Longrightarrow> Dom_Dom.Cod (Trn (t \<star> u)) = I (Dom (t \<star> u))"
+                by (metis (no_types, lifting) 2 Dom_Dom.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
+                    sta_char sta_hcomp tu)
+              thus ?thesis
+                using tu 3 by simp
+            qed
+            show "\<And>a. Dom.ide a \<Longrightarrow>
+                         Dom_Dom.Map (Trn (t \<star> u)) a =
+                         Dom_Dom.Map (Dom_Dom.MkIde (I (Dom (t \<star> u)))) a"
+              using tu 2 3
+              by (metis (no_types, lifting) Dom_Dom.Dom.simps(1) Dom_Dom.Map.simps(1)
+                  Dom_Dom.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S sta_char sta_hcomp)
+          qed
+        qed
+      qed
+      thus "sta t \<and> sta u \<and> H.antipar t u \<and>
+            inverse_simulations (Dom t) (Dom u) (Map u) (Map t)
+               \<Longrightarrow> H.inverse_arrows t u"
+        by (simp add: H.inverse_arrowsI inverse_simulations_sym)
+    qed
+
+    lemma inv_char:
+    assumes "H.iso t"
+    shows "H.inv t = mksta (Cod t) (Dom t)
+                       (inverse_simulation.map (Dom t) (Cod t) (Map t))"
+    proof -
+      interpret T: invertible_simulation \<open>Dom t\<close> \<open>Cod t\<close> \<open>Map t\<close>
+        using assms iso_char [of t] by blast
+      interpret T': inverse_simulation \<open>Dom t\<close> \<open>Cod t\<close> \<open>Map t\<close> ..
+      have "H.inverse_arrows t
+              (mksta (Cod t) (Dom t) (inverse_simulation.map (Dom t) (Cod t) (Map t)))"
+      proof (unfold inverse_arrows_char, intro conjI)
+        show "sta t"
+          using assms iso_implies_sta by blast
+        show 1: "sta (mksta (Cod t) (Dom t) T'.map)"
+          using assms sta_mksta T'.simulation_axioms \<open>sta t\<close> by auto
+        show "H.seq (mksta (Cod t) (Dom t) T'.map) t"
+          using 1 arr_hcomp\<^sub>C\<^sub>R\<^sub>C assms iso_char by auto
+        show "H.seq t (mksta (Cod t) (Dom t) T'.map)"
+          using H_seqI \<open>sta (mksta (Cod t) (Dom t) T'.map)\<close> \<open>sta t\<close> by auto
+        show "inverse_simulations (Dom t) (Dom (mksta (Cod t) (Dom t) T'.map))
+                (Map (mksta (Cod t) (Dom t) T'.map)) (Map t)"
+          using 1 Map_mkarr T'.inverse_simulations_axioms by auto
+      qed
+      thus ?thesis
+        using H.inverse_unique by blast
+    qed
+
   end
 
   subsection "Terminal Object"
@@ -814,51 +1061,49 @@ begin
         using trm_def by auto
       show 1: "\<guillemotleft>trm a : a \<rightarrow> \<^bold>\<one>\<guillemotright>"
       proof -
-        have a: "mksta (Dom a) (Dom a) (I (Dom a)) = a"
+        have "mksta (Dom a) (Dom a) (I (Dom a)) = a"
           using assms bij_mkobj(4) [of a] mkobj_def mkarr_def by auto
-        have t: "arr (trm a)"
+        moreover have "arr (trm a)"
           using assms obj_char arr_char One.is_extensional_rts One.small_rts_axioms
                 A_One.ide_MkIde A_One.ide_implies_arr Trm.transformation_axioms
           by (unfold trm_def, intro arr_MkArr) auto
-        show ?thesis
-          using a t dom_char cod_char Dom_trm Cod_trm mkobj_def mkarr_def
+        ultimately show ?thesis
+          using dom_char cod_char Dom_trm Cod_trm mkobj_def mkarr_def
           by (intro H.in_homI) auto
       qed
       show "\<And>t. \<guillemotleft>t : a \<rightarrow> \<^bold>\<one>\<guillemotright> \<Longrightarrow> t = trm a"
-      proof (intro arr_eqI)
+      proof (intro arr_eqI')
         fix t
         assume t: "\<guillemotleft>t : a \<rightarrow> \<^bold>\<one>\<guillemotright>"
-        show "t \<noteq> Null"
-          using t arr_char [of t] by auto
-        show "trm a \<noteq> Null"
-          using 1 arr_char [of "trm a"] by auto
+        show "arr t"
+          using t by auto
+        show "arr (trm a)"
+          using 1 by auto
         show "Dom t = Dom (trm a)"
           using t 1 trm_def dom_char by auto
         show "Cod t = Cod (trm a)"
           using t 1 cod_char mkobj_def
           by (metis (no_types, lifting) Cod.simps(1) H.in_homE)
-        show "Trn t = Trn (trm a)"
-        proof (intro A_One.arr_eqI)
-          have 2: "\<And>F G. \<lbrakk>simulation (Dom a) One.resid F;
-                          simulation (Dom a) One.resid G\<rbrakk>
-                            \<Longrightarrow> F = G"
-            using A.rts_axioms One.universality by blast
-          show 3: "A_One.arr (Trn t)"
-            using assms t arr_char mkobj_def
-            by (metis (no_types, lifting) H.ideD(1-2) H.in_homE
+        have 2: "\<And>F G. \<lbrakk>simulation (Dom a) One.resid F;
+                         simulation (Dom a) One.resid G\<rbrakk>
+                           \<Longrightarrow> F = G"
+          using A.rts_axioms One.universality by blast
+        have 3: "A_One.arr (Trn t)"
+           using assms t arr_char mkobj_def
+           by (metis (no_types, lifting) H.ideD(1-2) H.in_homE
                 H_arr_char cod_char dom_char arr.simps(1))
-          show 4: "A_One.arr (Trn (trm a))"
-            using 1 trm_def H.in_homE H_arr_char by auto
-          show "A_One.Dom (Trn t) = A_One.Dom (Trn (trm a))"
-            using 2 3 4 trm_def A_One.ide_MkIde A_One.ide_src A_One.src_simp
-            by metis
-          show "A_One.Cod (Trn t) = A_One.Cod (Trn (trm a))"
-            using 2 3 4 trm_def A_One.arr_char transformation.axioms(4)
-            by metis
-          show "\<And>x. A.ide x \<Longrightarrow>
-                       A_One.Map (Trn t) x = A_One.Map (Trn (trm a)) x"
-            using 3 trm_def A_One.con_char One.arr_char One.con_char by force
-        qed
+        have 4: "A_One.arr (Trn (trm a))"
+           using 1 trm_def H.in_homE H_arr_char by auto
+        show "Src t = Src (trm a)"
+           using 2 3 4 trm_def A_One.ide_MkIde A_One.ide_src A_One.src_simp
+           by (metis comp_apply)
+        show "Trg t = Trg (trm a)"
+           using 2 3 4 trm_def A_One.arr_char transformation.axioms(4)
+           by (metis comp_apply)
+        show "\<And>x. residuation.ide (Dom t) x \<Longrightarrow> Map t x = Map (trm a) x"
+           using 3 trm_def A_One.con_char One.arr_char One.con_char
+                 \<open>Dom t = Dom (trm a)\<close>
+           by auto
       qed
       thus "\<exists>!t. \<guillemotleft>t : a \<rightarrow> \<^bold>\<one>\<guillemotright>"
         using 1 by blast
@@ -1203,7 +1448,7 @@ begin
               transformation_whisker_right
                 [of ?A ?B "Src t" "Trg t" "Map t" HOM_1a.resid "DN\<^sub>r\<^sub>t\<^sub>s ?a"]
               UP_DN_a.F.simulation_axioms T.transformation_axioms
-              HOM_1a.weakly_extensional_rts_axioms DN_a
+              HOM_1a.rts_axioms DN_a
         by auto
       show 1: "DN\<^sub>r\<^sub>t\<^sub>s ?b \<circ> cov_HOM \<^bold>\<one> t = Map t \<circ> DN\<^sub>r\<^sub>t\<^sub>s ?a"
       proof
@@ -1211,7 +1456,7 @@ begin
         show "(DN\<^sub>r\<^sub>t\<^sub>s ?b \<circ> cov_HOM \<^bold>\<one> t) x = (Map t \<circ> DN\<^sub>r\<^sub>t\<^sub>s ?a) x"
         proof (cases "HOM_1a.arr x")
           show "\<not> HOM_1a.arr x \<Longrightarrow> ?thesis"
-            using LHS.extensional RHS.extensional by auto
+            using LHS.extensionality RHS.extensionality by auto
           assume x: "HOM_1a.arr x"
           have Trn_x: "OneA.arr (Trn x)"
             using Trn_MkArr_a.F.preserves_reflects_arr x by presburger
@@ -1331,61 +1576,49 @@ begin
       show "u = v \<Longrightarrow> \<forall>t. \<guillemotleft>t : \<^bold>\<one> \<rightarrow> a\<guillemotright> \<longrightarrow> u \<star> t = v \<star> t"
         by blast
       show "\<forall>t. \<guillemotleft>t : one \<rightarrow> a\<guillemotright> \<longrightarrow> u \<star> t = v \<star> t \<Longrightarrow> u = v"
-      proof (intro arr_eqI)
+      proof (intro arr_eqI')
         assume 1: "\<forall>t. \<guillemotleft>t : \<^bold>\<one> \<rightarrow> a\<guillemotright> \<longrightarrow> u \<star> t = v \<star> t"
-        show "u \<noteq> Null"
-          using assms(1) arr_char by fastforce
-        show "v \<noteq> Null"
-          using assms(2) arr_char by fastforce
+        show "arr u"
+          using assms(1) by auto
+        show "arr v"
+          using assms(2) by auto
         show "Dom u = Dom v"
           using \<open>Dom u = Dom a\<close> \<open>Dom v = Dom a\<close> by auto
         show "Cod u = Cod v"
           using \<open>Cod u = Dom b\<close> \<open>Cod v = Dom b\<close> by presburger
-        show "Trn u = Trn v"
-        proof (intro AB.arr_eqI)
-          show "AB.arr (Trn u)"
-            using assms(1) arr_char [of u] \<open>Dom u = Dom a\<close> \<open>Cod u = Dom b\<close>
-            by auto
-          show "AB.arr (Trn v)"
-            using assms(2) arr_char [of v] \<open>Dom v = Dom a\<close> \<open>Cod v = Dom b\<close>
-            by auto
-          show "AB.Dom (Trn u) = AB.Dom (Trn v)"
-            using assms(3) arr_char arr_char \<open>Map (src u) = Src u\<close>
-                  \<open>Map (src v) = Src v\<close>
-            by auto
-          show "AB.Cod (Trn u) = AB.Cod (Trn v)"
-            using assms(4) arr_char arr_char \<open>Map (trg u) = Trg u\<close>
-                  \<open>Map (trg v) = Trg v\<close>
-            by auto
-          have "Map u = Map v"
-          proof -
-            have "\<And>Q R T. transformation One.resid (Dom a) Q R T
-                             \<Longrightarrow> Map u \<circ> T = Map v \<circ> T"
-            proof -
-              fix Q R T
-              assume 2: "transformation One.resid (Dom a) Q R T"
-              interpret T: transformation One.resid \<open>Dom a\<close> Q R T
-                using 2 by blast
-              let ?t = "mkarr One.resid (Dom a) Q R T"
-              have t: "\<guillemotleft>?t : \<^bold>\<one> \<rightarrow> a\<guillemotright>"
-                by (metis (no_types, lifting) "2" A H.ideD(2) H.ideD(3) H.ide_in_hom
-                    H.in_homI One.is_extensional_rts One.small_rts_axioms Trm.obj_one
-                    Trm.one_universality(2) a arr_coincidence arr_mkarr(1) arr_mkarr(5)
-                    mkarr_simps(1) mkobj_Dom trm_def trm_simps(3))
-              show "Map u \<circ> T = Map v \<circ> T"
-                by (metis (no_types, lifting) "1" AB.Map.simps(1) H.seqI' mkarr_def
-                    Map_hcomp Trn.simps(1) assms(1) comp_def t)
-            qed
-            thus "Map u = Map v"
-              using assms(3-4)
-                    One.eq_transformation_iff U.transformation_axioms V.transformation_axioms
-                    A.weakly_extensional_rts_axioms B.weakly_extensional_rts_axioms
-                    \<open>Map (src u) = Src u\<close> \<open>Map (trg u) = Trg u\<close>
-                    \<open>Map (src v) = Src v\<close> \<open>Map (trg v) = Trg v\<close>
-              by metis
-          qed
-          thus "\<And>a. A.ide a \<Longrightarrow> AB.Map (Trn u) a = AB.Map (Trn v) a" by simp
+        show "Src u = Src v"
+          using assms(3) arr_char arr_char \<open>Map (src u) = Src u\<close>
+                \<open>Map (src v) = Src v\<close>
+          by auto
+        show "Trg u = Trg v"
+          using assms(4) arr_char arr_char \<open>Map (trg u) = Trg u\<close>
+                \<open>Map (trg v) = Trg v\<close>
+          by auto
+        have "\<And>Q R T. transformation One.resid (Dom a) Q R T
+                         \<Longrightarrow> Map u \<circ> T = Map v \<circ> T"
+        proof -
+          fix Q R T
+          assume 2: "transformation One.resid (Dom a) Q R T"
+          interpret T: transformation One.resid \<open>Dom a\<close> Q R T
+            using 2 by blast
+          let ?t = "mkarr One.resid (Dom a) Q R T"
+          have t: "\<guillemotleft>?t : \<^bold>\<one> \<rightarrow> a\<guillemotright>"
+            by (metis (no_types, lifting) "2" A H.ideD(3) H.ide_in_hom
+                H.in_homI One.is_extensional_rts One.small_rts_axioms Trm.obj_one
+                Trm.one_universality(2) a arr_coincidence arr_mkarr(1) arr_mkarr(5)
+                mkarr_simps(1) mkobj_Dom trm_def trm_simps(3))
+          show "Map u \<circ> T = Map v \<circ> T"
+            by (metis (no_types, lifting) "1" AB.Map.simps(1) H.seqI' mkarr_def
+                Map_hcomp Trn.simps(1) assms(1) comp_def t)
         qed
+        thus "\<And>a. residuation.ide (Dom u) a \<Longrightarrow> Map u a = Map v a"
+            using assms(3-4)
+                  One.eq_transformation_iff U.transformation_axioms
+                  V.transformation_axioms A.weakly_extensional_rts_axioms
+                  B.weakly_extensional_rts_axioms
+                  \<open>Map (src u) = Src u\<close> \<open>Map (trg u) = Trg u\<close>
+                  \<open>Map (src v) = Src v\<close> \<open>Map (trg v) = Trg v\<close>
+            by metis
       qed
     qed
 
@@ -1429,7 +1662,7 @@ begin
             using 2 by blast
           let ?t = "mkarr One.resid (Dom a) Q R T"
           have t: "\<guillemotleft>?t : \<^bold>\<one> \<rightarrow> a\<guillemotright>"
-            by (metis (no_types, lifting) "2" A H.ideD(2) H.ideD(3) H.ide_in_hom
+            by (metis (no_types, lifting) "2" A H.ideD(3) H.ide_in_hom
                 H.in_homI One.is_extensional_rts One.small_rts_axioms Trm.obj_one
                 Trm.one_universality(2) a arr_coincidence arr_mkarr(1) arr_mkarr(5)
                 mkarr_simps(1) mkobj_Dom trm_def trm_simps(3))
@@ -1527,7 +1760,7 @@ begin
               using f g gf
               by (metis (no_types, lifting) Cod_mkarr Dom_mkarr Int_Collect
                   Src_mkarr Trg_mkarr V.ide_implies_arr assms(1-2) bij_mksta(3)
-                  inf_idem mkarr_comp objE transformation_Map_arr)
+                  inf_idem mkarr_comp objE transformation_Map)
             also have "... = mksta (Dom a) (Dom a) (Map ?g \<circ> Map ?f)"
               using gf H.arrI Map_hcomp by force
             also have "... = mksta (Dom a) (Dom a) (G \<circ> F)"
@@ -1555,7 +1788,7 @@ begin
               using f g fg
               by (metis (no_types, lifting) Cod_mkarr Dom_mkarr Int_Collect
                   Src_mkarr Trg_mkarr V.ide_implies_arr assms(1-2) bij_mksta(3)
-                  inf_idem mkarr_comp objE transformation_Map_arr)
+                  inf_idem mkarr_comp objE transformation_Map)
             also have "... = mksta (Dom b) (Dom b) (Map ?f \<circ> Map ?g)"
               using fg H.arrI Map_hcomp by force
             also have "... = mksta (Dom b) (Dom b) (F \<circ> G)"
@@ -1598,8 +1831,8 @@ begin
   locale product_in_rtscat =
     rtscatx arr_type
   for arr_type :: "'A itself"
-  and a
-  and b +
+  and a :: "'A rtscatx.arr"
+  and b :: "'A rtscatx.arr" +
   assumes obj_a: "obj a"
   and obj_b: "obj b"
   begin
@@ -1629,7 +1862,7 @@ begin
       by unfold_locales (simp add: small_rts.small)
     sublocale Prod: extensional_rts Prod.resid
       using PROD.extensional_rts_axioms Prod.preserves_extensional_rts
-      by unfold_locales (simp add: extensional_rts.extensional)
+      by unfold_locales (simp add: extensional_rts.extensionality)
 
     text\<open>
       The injective image construction on RTS's gives us invertible simulations between
@@ -1742,7 +1975,7 @@ begin
       interpret H: transformation \<open>Dom x\<close> \<open>Dom a\<close>
                      \<open>Map (src h)\<close> \<open>Map (trg h)\<close> \<open>Map h\<close>
         using "*" Map_simps(3) Map_simps(4) XA.arr_char arr_char assms(1)
-        by (metis H.arrI H_arr_char transformation_Map_arr)
+        by (metis H.arrI H_arr_char transformation_Map)
       interpret K: transformation \<open>Dom x\<close> \<open>Dom b\<close>
                      \<open>Map (src k)\<close> \<open>Map (trg k)\<close> \<open>Map k\<close>
         using "*" Map_simps(3) Map_simps(4) XB.arr_char arr_char assms(2)
@@ -1856,7 +2089,7 @@ begin
                             \<langle>\<langle>C.BC.Map (Trn h), C.BC.Map (Trn k)\<rangle>\<rangle>)"
             proof -
               have "P\<^sub>1.map \<circ> Pack = PROD.P\<^sub>1"
-                using PROD.P\<^sub>1.extensional Prod.map_null Prod.null_char by auto
+                using PROD.P\<^sub>1.extensionality Prod.map_null Prod.null_char by auto
               thus ?thesis by simp
             qed
             also have "... = C.BC.MkArr
@@ -1914,7 +2147,7 @@ begin
                             \<langle>\<langle>C.BC.Map (Trn h), C.BC.Map (Trn k)\<rangle>\<rangle>)"
             proof -
               have "P\<^sub>0.map \<circ> Pack = PROD.P\<^sub>0"
-                using PROD.P\<^sub>0.extensional Prod.map_null Prod.null_char by auto
+                using PROD.P\<^sub>0.extensionality Prod.map_null Prod.null_char by auto
               thus ?thesis by simp
             qed
             also have "... = C.BC.MkArr
@@ -1954,413 +2187,392 @@ begin
               Prod.Map'.simulation_axioms transformation_whisker_left
         by fastforce
       show "m = ?hk"
-      proof (intro arr_eqI)
-        show "m \<noteq> Null"
-          using assms m null_char by fastforce
-        show "?hk \<noteq> Null"
-          using hk mkarr_def by auto
+      proof (intro arr_eqI')
+        show "arr m" by fact
+        show "arr ?hk"
+          using hk by auto
         show 2: "Dom m = Dom ?hk"
           using assms m hk cod_char "*" Dom.simps(1) Dom_m mkarr_def
           by presburger
         show 3: "Cod m = Cod ?hk"
           using assms m hk cod_char mkarr_def
           by (simp add: Cod_m)
-        show "Trn m = Trn ?hk"
-        proof (intro X_Prod.arr_eqI)
-          interpret COMPa: COMP \<open>Dom x\<close> Prod.resid \<open>Dom a\<close> ..
-          interpret COMPb: COMP \<open>Dom x\<close> Prod.resid \<open>Dom b\<close> ..
-          show 4: "X_Prod.arr (Trn m)"
-            using assms arr_m Dom_m Cod_m arr_char by simp
-          show 5: "X_Prod.arr (Trn ?hk)"
-            using "2" Dom_m H_arr_char hk mkarr_def by force
-          show 6: "X_Prod.Dom (Trn m) = X_Prod.Dom (Trn ?hk)"
+        interpret COMPa: COMP \<open>Dom x\<close> Prod.resid \<open>Dom a\<close> ..
+        interpret COMPb: COMP \<open>Dom x\<close> Prod.resid \<open>Dom b\<close> ..
+        have 4: "X_Prod.arr (Trn m)"
+          using assms arr_m Dom_m Cod_m arr_char by simp
+        have 5: "X_Prod.arr (Trn ?hk)"
+          using "2" Dom_m H_arr_char hk mkarr_def by force
+        show "Src m = Src ?hk"
+        proof -
+          have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> Src ?hk) = PROD.P\<^sub>1 \<circ> (Unpack \<circ> Src m)"
           proof -
-            have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Dom (Trn ?hk)) =
-                  PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Dom (Trn m))"
-            proof -
-              have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Dom (Trn ?hk)) =
-                    PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
-                      \<langle>\<langle>COMPa.BC.Map (Trn (src h)),
-                        COMPa.BC.Map (Trn (src k))\<rangle>\<rangle>"
-                using mkarr_def by auto
-              also have "... = COMPa.BC.Map (Trn (src h))"
-              proof
-                fix x
-                show "(PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
-                         \<langle>\<langle>COMPa.BC.Map (Trn (src h)),
-                           COMPa.BC.Map (Trn (src k))\<rangle>\<rangle>) x =
-                      COMPa.BC.Map (Trn (src h)) x"
-                  using PROD.P\<^sub>1_def
-                  apply (auto simp add: pointwise_tuple_def)[1]
-                     apply (metis A.not_arr_null PROD.null_char
-                      Prod.null_char first_conv)
-                    apply (metis (no_types, opaque_lifting) H\<^sub>0.extensional
-                      H\<^sub>0.simulation_axioms comp_apply
-                      simulation.preserves_reflects_arr)
-                   apply (metis B.not_arr_null PROD.null_char Prod.null_char
-                      second_conv)
-                 by (metis (no_types, opaque_lifting) A.not_arr_null
-                     H\<^sub>0.extensional P\<^sub>1oHK\<^sub>0.preserves_reflects_arr comp_def
-                     pointwise_tuple_def)
-              qed
-              also have "... = COMPa.BC.Map (Trn (src (p\<^sub>1 \<star> m)))"
-                using m by blast
-              also have "... = COMPa.BC.Map (Trn (p\<^sub>1 \<star> src m))"
-                using assms m by auto
-              also have "... =
-                         COMPa.BC.Map (COMPa.map (Trn p\<^sub>1, Trn (src m)))"
-                using arr_m Dom_m Cod_m Trn_hcomp by simp
-              also have "... =
-                         COMPa.BC.Map (Trn p\<^sub>1) \<circ> COMPa.BC.Map (Trn (src m))"
-              proof -
-                have "COMPa.BCxAB.arr (COMPa.BC.MkIde P\<^sub>1.map, Trn m)"
-                  using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>1_simps(1)
-                        P\<^sub>1.transformation_axioms
-                  by auto
-                thus ?thesis
-                  unfolding COMPa.map_eq
-                  using assms m arr_m Dom_m Cod_m arr_char [of "src m"] by simp
-              qed
-              also have "... =
-                         (PROD.P\<^sub>1 \<circ> Unpack) \<circ> COMPa.BC.Map (Trn (src m))"
-                by simp
-              also have "... = PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Dom (Trn m))"
-                by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
-              finally show ?thesis by blast
+            have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> Src ?hk) =
+                  PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
+                    \<langle>\<langle>COMPa.BC.Map (Trn (src h)),
+                      COMPa.BC.Map (Trn (src k))\<rangle>\<rangle>"
+              using mkarr_def by auto
+            also have "... = COMPa.BC.Map (Trn (src h))"
+            proof
+              fix x
+              show "(PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
+                       \<langle>\<langle>COMPa.BC.Map (Trn (src h)),
+                         COMPa.BC.Map (Trn (src k))\<rangle>\<rangle>) x =
+                    COMPa.BC.Map (Trn (src h)) x"
+                using PROD.P\<^sub>1_def
+                apply (auto simp add: pointwise_tuple_def)[1]
+                   apply (metis A.not_arr_null PROD.null_char
+                    Prod.null_char first_conv)
+                  apply (metis (no_types, opaque_lifting) H\<^sub>0.extensionality
+                    H\<^sub>0.simulation_axioms comp_apply
+                    simulation.preserves_reflects_arr)
+                 apply (metis B.not_arr_null PROD.null_char Prod.null_char
+                    second_conv)
+               by (metis (no_types, opaque_lifting) A.not_arr_null
+                   H\<^sub>0.extensionality P\<^sub>1oHK\<^sub>0.preserves_reflects_arr comp_def
+                   pointwise_tuple_def)
             qed
-            moreover have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Dom (Trn ?hk)) =
-                           PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Dom (Trn m))"
+            also have "... = COMPa.BC.Map (Trn (p\<^sub>1 \<star> src m))"
+              using assms m by auto
+            also have "... =
+                       COMPa.BC.Map (COMPa.map (Trn p\<^sub>1, Trn (src m)))"
+              using arr_m Dom_m Cod_m Trn_hcomp by simp
+            also have "... = COMPa.BC.Map (Trn p\<^sub>1) \<circ> COMPa.BC.Map (Trn (src m))"
             proof -
-              have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Dom (Trn ?hk)) =
-                    PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
-                    \<langle>\<langle>COMPb.BC.Map (Trn (src h)),
-                      COMPb.BC.Map (Trn (src k))\<rangle>\<rangle>"
-                using mkarr_def by auto
-              also have "... = COMPb.BC.Map (Trn (src k))"
-              proof
-                fix x
-                show "(PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
-                         \<langle>\<langle>COMPb.BC.Map (Trn (src h)),
-                           COMPb.BC.Map (Trn (src k))\<rangle>\<rangle>) x =
-                      COMPb.BC.Map (Trn (src k)) x"
-                  using PROD.P\<^sub>0_def H\<^sub>0.preserves_reflects_arr K\<^sub>0.extensional
-                        PROD.null_char Prod.null_char
-                  apply (auto simp add: pointwise_tuple_def)[1]
-                    apply (metis second_conv)
-                   apply (metis A.not_arr_null PROD.null_char first_conv)
-                 by (metis (no_types, opaque_lifting) B.not_arr_null
-                     P\<^sub>0oHK\<^sub>0.preserves_reflects_arr comp_def pointwise_tuple_def)
-              qed
-              also have "... = COMPb.BC.Map (Trn (src (p\<^sub>0 \<star> m)))"
-                using m by blast
-              also have "... = COMPb.BC.Map (Trn (p\<^sub>0 \<star> src m))"
-                using assms m by auto
-              also have "... = COMPb.BC.Map (COMPb.map (Trn p\<^sub>0, Trn (src m)))"
-                using arr_m Dom_m Cod_m Trn_hcomp by simp
-              also have "... = COMPb.BC.Map (Trn p\<^sub>0) \<circ>
-                                 COMPb.BC.Map (Trn (src m))"
-              proof -
-                have "COMPb.BCxAB.arr (COMPb.BC.MkIde P\<^sub>0.map, Trn m)"
-                  using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>0_simps(1)
-                        P\<^sub>0.transformation_axioms
-                  by auto
-                thus ?thesis
-                  unfolding COMPb.map_eq
-                  using assms m arr_m Dom_m Cod_m arr_char [of "src m"]
-                  by simp
-              qed
-              also have "... =
-                         (PROD.P\<^sub>0 \<circ> Unpack) \<circ> COMPb.BC.Map (Trn (src m))"
-                by simp
-              also have "... = PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Dom (Trn m))"
-                by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
-              finally show ?thesis by blast
+              have "COMPa.BCxAB.arr (COMPa.BC.MkIde P\<^sub>1.map, Trn m)"
+                using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>1_simps(1)
+                      P\<^sub>1.transformation_axioms
+                by auto
+              thus ?thesis
+                unfolding COMPa.map_eq
+                using assms m arr_m Dom_m Cod_m arr_char [of "src m"] by simp
             qed
-            moreover have "simulation (Dom x) PROD.resid
-                             (Unpack \<circ> X_Prod.Dom (Trn ?hk))"
-              using hk arr_char 2 Pack_o_HK.F.simulation_axioms Dom_m
-                    Prod.Map'.simulation_axioms simulation_comp mkarr_def
-              by auto
-            moreover have "simulation (Dom x) PROD.resid
-                             (Unpack \<circ> X_Prod.Dom (Trn m))"
-              using 4 X_Prod.ide_src Prod.Map'.simulation_axioms
-                    simulation_comp
-              by auto
-            ultimately have "Unpack \<circ> X_Prod.Dom (Trn ?hk) =
-                             Unpack \<circ> X_Prod.Dom (Trn m)"
-              using PROD.proj_joint_monic by blast
-            moreover have "simulation (Dom x) Prod.resid (X_Prod.Dom (Trn ?hk))"
-              using hk arr_char X_Prod.ide_src "2" Pack_o_HK.F.simulation_axioms
-                    Dom_m mkarr_def
-              by fastforce
-            moreover have "simulation (Dom x) Prod.resid (X_Prod.Dom (Trn m))"
-              using 4 X_Prod.ide_src by auto
-            ultimately show ?thesis
-              using invertible_simulation_cancel_left
-              by (metis (no_types, lifting) Prod.invertible_simulation_map')
+            also have "... = (PROD.P\<^sub>1 \<circ> Unpack) \<circ> COMPa.BC.Map (Trn (src m))"
+              by simp
+            also have "... = PROD.P\<^sub>1 \<circ> (Unpack \<circ> Src m)"
+              by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
+            finally show ?thesis by blast
           qed
-          show 7: "X_Prod.Cod (Trn m) = X_Prod.Cod (Trn ?hk)"
+          moreover have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> Src ?hk) = PROD.P\<^sub>0 \<circ> (Unpack \<circ> Src m)"
+          proof -
+            have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> Src ?hk) =
+                  PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
+                  \<langle>\<langle>COMPb.BC.Map (Trn (src h)),
+                    COMPb.BC.Map (Trn (src k))\<rangle>\<rangle>"
+              using mkarr_def by auto
+            also have "... = COMPb.BC.Map (Trn (src k))"
+            proof
+              fix x
+              show "(PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
+                       \<langle>\<langle>COMPb.BC.Map (Trn (src h)),
+                         COMPb.BC.Map (Trn (src k))\<rangle>\<rangle>) x =
+                    COMPb.BC.Map (Trn (src k)) x"
+                using PROD.P\<^sub>0_def H\<^sub>0.preserves_reflects_arr K\<^sub>0.extensionality
+                      PROD.null_char Prod.null_char
+                apply (auto simp add: pointwise_tuple_def)[1]
+                  apply (metis second_conv)
+                 apply (metis A.not_arr_null PROD.null_char first_conv)
+               by (metis (no_types, opaque_lifting) B.not_arr_null
+                   P\<^sub>0oHK\<^sub>0.preserves_reflects_arr comp_def pointwise_tuple_def)
+            qed
+            also have "... = COMPb.BC.Map (Trn (src (p\<^sub>0 \<star> m)))"
+              using m by blast
+            also have "... = COMPb.BC.Map (Trn (p\<^sub>0 \<star> src m))"
+              using assms m by auto
+            also have "... = COMPb.BC.Map (COMPb.map (Trn p\<^sub>0, Trn (src m)))"
+              using arr_m Dom_m Cod_m Trn_hcomp by simp
+            also have "... = COMPb.BC.Map (Trn p\<^sub>0) \<circ>
+                               COMPb.BC.Map (Trn (src m))"
+            proof -
+              have "COMPb.BCxAB.arr (COMPb.BC.MkIde P\<^sub>0.map, Trn m)"
+                using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>0_simps(1)
+                      P\<^sub>0.transformation_axioms
+                by auto
+              thus ?thesis
+                unfolding COMPb.map_eq
+                using assms m arr_m Dom_m Cod_m arr_char [of "src m"]
+                by simp
+            qed
+            also have "... =
+                       (PROD.P\<^sub>0 \<circ> Unpack) \<circ> COMPb.BC.Map (Trn (src m))"
+              by simp
+            also have "... = PROD.P\<^sub>0 \<circ> (Unpack \<circ> Src m)"
+              by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
+            finally show ?thesis by blast
+          qed
+          moreover have "simulation (Dom x) PROD.resid
+                         (Unpack \<circ> X_Prod.Dom (Trn ?hk))"
+            using hk arr_char 2 Pack_o_HK.F.simulation_axioms Dom_m
+                  Prod.Map'.simulation_axioms simulation_comp mkarr_def
+            by auto
+          moreover have "simulation (Dom x) PROD.resid
+                           (Unpack \<circ> X_Prod.Dom (Trn m))"
+            using 4 X_Prod.ide_src Prod.Map'.simulation_axioms
+                  simulation_comp
+            by auto
+          ultimately have "Unpack \<circ> Src ?hk = Unpack \<circ> Src m"
+            using PROD.proj_joint_monic by simp
+          moreover have "simulation (Dom x) Prod.resid (X_Prod.Dom (Trn ?hk))"
+            using hk arr_char X_Prod.ide_src "2" Pack_o_HK.F.simulation_axioms
+                  Dom_m mkarr_def
+            by fastforce
+          moreover have "simulation (Dom x) Prod.resid (X_Prod.Dom (Trn m))"
+            using 4 X_Prod.ide_src by auto
+          ultimately show ?thesis
+            using invertible_simulation_cancel_left
+            by (metis (no_types, lifting) Prod.invertible_simulation_map'
+                comp_eq_dest_lhs)
+        qed
+        show "Trg m = Trg ?hk"
+        proof -
+          have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> Trg ?hk) =
+                PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Cod (Trn m))"
           proof -
             have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Cod (Trn ?hk)) =
-                  PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Cod (Trn m))"
-            proof -
-              have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Cod (Trn ?hk)) =
-                    PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
-                      \<langle>\<langle>COMPa.BC.Map (Trn (trg h)),
-                        COMPa.BC.Map (Trn (trg k))\<rangle>\<rangle>"
-                using mkarr_def by auto
-              also have "... = COMPa.BC.Map (Trn (trg h))"
-              proof
-                fix x
-                show "(PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
-                         \<langle>\<langle>COMPa.BC.Map (Trn (trg h)),
-                           COMPa.BC.Map (Trn (trg k))\<rangle>\<rangle>) x =
-                      COMPa.BC.Map (Trn (trg h)) x"
-                  using PROD.P\<^sub>1_def
-                  apply (auto simp add: pointwise_tuple_def)[1]
-                  subgoal by (metis A.not_arr_null PROD.null_char Prod.null_char
-                      first_conv)
-                  subgoal using H\<^sub>1.extensional H\<^sub>1.preserves_reflects_arr by auto
-                  subgoal by (metis B.not_arr_null PROD.null_char Prod.null_char
-                      second_conv)
-                  subgoal by (metis (mono_tags, lifting) H\<^sub>1.simulation_axioms
-                      K\<^sub>1.simulation_axioms comp_def simulation.extensional
-                      simulation.preserves_reflects_arr)
-                  done
-              qed
-              also have "... = COMPa.BC.Map (Trn (trg (p\<^sub>1 \<star> m)))"
-                using m by blast
-              also have "... = COMPa.BC.Map (Trn (p\<^sub>1 \<star> trg m))"
-                using assms m by auto
-              also have "... = COMPa.BC.Map (COMPa.map (Trn p\<^sub>1, Trn (trg m)))"
-                using arr_m Dom_m Cod_m by simp
-              also have "... =
-                         COMPa.BC.Map (Trn p\<^sub>1) \<circ> COMPa.BC.Map (Trn (trg m))"
-              proof -
-                have "COMPa.BCxAB.arr (COMPa.BC.MkIde P\<^sub>1.map, Trn m)"
-                  using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>1_simps(1)
-                        P\<^sub>1.transformation_axioms
-                  by auto
-                thus ?thesis
-                  unfolding COMPa.map_eq
-                  using assms m arr_m Dom_m Cod_m arr_char [of "trg m"] by simp
-              qed
-              also have "... =
-                         (PROD.P\<^sub>1 \<circ> Unpack) \<circ> COMPa.BC.Map (Trn (trg m))"
-                by simp
-              also have "... = PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Cod (Trn m))"
-                by (auto simp add: 4 Cod_m Dom_m arr_m trg_char)
-              finally show ?thesis by blast
-            qed
-            moreover have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Cod (Trn ?hk)) =
-                           PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Cod (Trn m))"
-            proof -
-              have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Cod (Trn ?hk)) =
-                    PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
-                      \<langle>\<langle>COMPb.BC.Map (Trn (trg h)),
-                        COMPb.BC.Map (Trn (trg k))\<rangle>\<rangle>"
-                using mkarr_def by auto
-              also have "... = COMPb.BC.Map (Trn (trg k))"
-              proof
-                fix x
-                show "(PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
-                         \<langle>\<langle>COMPb.BC.Map (Trn (trg h)),
-                          COMPb.BC.Map (Trn (trg k))\<rangle>\<rangle>) x =
-                      COMPb.BC.Map (Trn (trg k)) x"
-                  using PROD.P\<^sub>0_def H\<^sub>0.preserves_reflects_arr K\<^sub>0.extensional
-                         K\<^sub>1.extensional PROD.null_char Prod.null_char
-                         H\<^sub>1.preserves_reflects_arr second_conv
-                  apply (auto simp add: pointwise_tuple_def)[1]
-                     apply metis
-                   apply (metis B.not_arr_null)
-                  using K\<^sub>1.extensional K\<^sub>1.preserves_reflects_arr by fastforce
-              qed
-              also have "... = COMPb.BC.Map (Trn (trg (p\<^sub>0 \<star> m)))"
-                using m by blast
-              also have "... = COMPb.BC.Map (Trn (p\<^sub>0 \<star> trg m))"
-                using assms m by auto
-              also have "... =
-                         COMPb.BC.Map (COMPb.map (Trn p\<^sub>0, Trn (trg m)))"
-                using arr_m Dom_m Cod_m by simp
-              also have "... =
-                         COMPb.BC.Map (Trn p\<^sub>0) \<circ> COMPb.BC.Map (Trn (trg m))"
-              proof -
-                have "COMPb.BCxAB.arr (COMPb.BC.MkIde P\<^sub>0.map, Trn m)"
-                  using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>0_simps(1)
-                        P\<^sub>0.transformation_axioms
-                  by auto
-                thus ?thesis
-                  unfolding COMPb.map_eq
-                  using assms m arr_m Dom_m Cod_m arr_char [of "trg m"]
-                  by simp
-              qed
-              also have "... = (PROD.P\<^sub>0 \<circ> Unpack) \<circ> COMPb.BC.Map (Trn (trg m))"
-                by simp
-              also have "... = PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Cod (Trn m))"
-                by (auto simp add: 4 Cod_m Dom_m arr_m trg_char)
-              finally show ?thesis by blast
-            qed
-            moreover have "simulation (Dom x) PROD.resid
-                             (Unpack \<circ> X_Prod.Cod (Trn ?hk))"
-              using hk arr_char 2 Pack_o_HK.G.simulation_axioms Dom_m
-                    Prod.Map'.simulation_axioms simulation_comp
+                  PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
+                    \<langle>\<langle>COMPa.BC.Map (Trn (trg h)),
+                      COMPa.BC.Map (Trn (trg k))\<rangle>\<rangle>"
               using mkarr_def by auto
-            moreover have "simulation (Dom x) PROD.resid
-                             (Unpack \<circ> X_Prod.Cod (Trn m))"
-              using X_Prod.ide_trg \<open>X_Prod.arr (Trn m)\<close>
-                    Prod.Map'.simulation_axioms simulation_comp
-              by auto
-            ultimately have "Unpack \<circ> X_Prod.Cod (Trn ?hk) =
-                             Unpack \<circ> X_Prod.Cod (Trn m)"
-              using PROD.proj_joint_monic by blast
-            moreover have "simulation (Dom x) Prod.resid
-                             (X_Prod.Cod (Trn ?hk))"
-              using hk 2 arr_char X_Prod.ide_trg Dom_m mkarr_def
-                    Pack_o_HK.F.simulation_axioms Pack_o_HK.G.simulation_axioms
-              by force
-            moreover have "simulation (Dom x) Prod.resid
-                             (X_Prod.Cod (Trn m))"
-              using 4 X_Prod.ide_trg by auto
-            ultimately show ?thesis
-              using invertible_simulation_cancel_left
-              by (metis (no_types, lifting) Prod.invertible_simulation_map')
-          qed
-          show "\<And>x. X.ide x \<Longrightarrow> X_Prod.Map (Trn m) x = X_Prod.Map (Trn ?hk) x"
-          proof -
-            have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Map (Trn ?hk)) =
-                  PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Map (Trn m))"
-            proof -
-              have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Map (Trn ?hk)) =
-                    PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
-                      \<langle>\<langle>COMPa.BC.Map (Trn h), COMPa.BC.Map (Trn k)\<rangle>\<rangle>"
-                using mkarr_def by auto
-              also have "... = COMPa.BC.Map (Trn h)"
-              proof
-                fix x
-                show "(PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ> 
-                        \<langle>\<langle>COMPa.BC.Map (Trn h),
-                          COMPa.BC.Map (Trn k)\<rangle>\<rangle>) x =
-                      COMPa.BC.Map (Trn h) x"
-                  using PROD.P\<^sub>1_def
-                  apply (auto simp add: pointwise_tuple_def)[1]
-                     apply (metis A.not_arr_null PROD.null_char Prod.null_char
-                      first_conv)
-                    apply (metis (mono_tags, lifting) H.transformation_axioms
-                      K.transformation_axioms PROD.P\<^sub>1.extensional
-                      PROD.P\<^sub>1.preserves_arr PROD.proj_tuple2(1) comp_apply)
-                   apply (metis B.not_arr_null PROD.null_char Prod.null_char
-                      second_conv)
-                  by (metis H.extensional K.preserves_arr comp_apply)
-              qed
-              also have "... = COMPa.BC.Map (Trn (p\<^sub>1 \<star> m))"
-                using m by blast
-              also have "... = COMPa.BC.Map (COMPa.map (Trn p\<^sub>1, Trn m))"
-                using arr_m Dom_m Cod_m Trn_hcomp by simp
-              also have "... = COMPa.BC.Map (Trn p\<^sub>1) \<circ> COMPa.BC.Map (Trn m)"
-              proof -
-                have "COMPa.BCxAB.arr (COMPa.BC.MkIde P\<^sub>1.map, Trn m)"
-                  using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>1_simps(1)
-                        P\<^sub>1.transformation_axioms
-                  by auto
-                thus ?thesis
-                  unfolding COMPa.map_eq
-                  using assms m arr_m Dom_m Cod_m by simp
-              qed
-              also have "... = (PROD.P\<^sub>1 \<circ> Unpack) \<circ> COMPa.BC.Map (Trn m)"
-                by simp
-              also have "... = PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Map (Trn m))"
-                by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
-              finally show ?thesis by blast
+            also have "... = COMPa.BC.Map (Trn (trg h))"
+            proof
+              fix x
+              show "(PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
+                       \<langle>\<langle>COMPa.BC.Map (Trn (trg h)),
+                         COMPa.BC.Map (Trn (trg k))\<rangle>\<rangle>) x =
+                    COMPa.BC.Map (Trn (trg h)) x"
+                using PROD.P\<^sub>1_def
+                apply (auto simp add: pointwise_tuple_def)[1]
+                subgoal by (metis A.not_arr_null PROD.null_char Prod.null_char
+                    first_conv)
+                subgoal using H\<^sub>1.extensionality H\<^sub>1.preserves_reflects_arr by auto
+                subgoal by (metis B.not_arr_null PROD.null_char Prod.null_char
+                    second_conv)
+                subgoal by (metis (mono_tags, lifting) H\<^sub>1.simulation_axioms
+                    K\<^sub>1.simulation_axioms comp_def simulation.extensionality
+                    simulation.preserves_reflects_arr)
+                done
             qed
-            moreover have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Map (Trn ?hk)) =
-                           PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Map (Trn m))"
+            also have "... = COMPa.BC.Map (Trn (trg (p\<^sub>1 \<star> m)))"
+              using m by blast
+            also have "... = COMPa.BC.Map (Trn (p\<^sub>1 \<star> trg m))"
+              using assms m by auto
+            also have "... = COMPa.BC.Map (COMPa.map (Trn p\<^sub>1, Trn (trg m)))"
+              using arr_m Dom_m Cod_m by simp
+            also have "... =
+                       COMPa.BC.Map (Trn p\<^sub>1) \<circ> COMPa.BC.Map (Trn (trg m))"
             proof -
-              have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Map (Trn ?hk)) =
-                    PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
-                      \<langle>\<langle>COMPb.BC.Map (Trn h),
-                        COMPb.BC.Map (Trn k)\<rangle>\<rangle>"
-                using mkarr_def by auto
-              also have "... = COMPb.BC.Map (Trn k)"
-              proof
-                fix x
-                show "(PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
-                         \<langle>\<langle>COMPb.BC.Map (Trn h), COMPb.BC.Map (Trn k)\<rangle>\<rangle>) x =
-                      COMPb.BC.Map (Trn k) x"
-                  using PROD.P\<^sub>0_def H\<^sub>0.preserves_reflects_arr K\<^sub>0.extensional
-                        PROD.null_char Prod.null_char
-                  apply (auto simp add: pointwise_tuple_def)[1]
-                     apply (metis B.not_arr_null second_conv)
-                    apply (metis H.preserves_arr K.extensional comp_apply)
-                   apply (metis A.not_arr_null PROD.null_char first_conv)
-                  by (metis K.extensional K.preserves_arr comp_apply)
-              qed
-              also have "... = COMPb.BC.Map (Trn (p\<^sub>0 \<star> m))"
-                using m by blast
-              also have "... = COMPb.BC.Map (COMPb.map (Trn p\<^sub>0, Trn m))"
-                using arr_m Dom_m Cod_m Trn_hcomp by simp
-              also have "... =
-                         COMPb.BC.Map (Trn p\<^sub>0) \<circ> COMPb.BC.Map (Trn m)"
-              proof -
-                have "COMPb.BCxAB.arr (COMPb.BC.MkIde P\<^sub>0.map, Trn m)"
-                  using assms arr_m Dom_m Cod_m arr_char p\<^sub>0_simps(1)
-                        P\<^sub>0.transformation_axioms
-                  by auto
-                thus ?thesis
-                  unfolding COMPb.map_eq
-                  using assms m arr_m Dom_m Cod_m by simp
-              qed
-              also have "... =
-                         (PROD.P\<^sub>0 \<circ> Unpack) \<circ> COMPb.BC.Map (Trn m)"
-                by simp
-              also have "... = PROD.P\<^sub>0 \<circ> (Unpack \<circ> X_Prod.Map (Trn m))"
-                by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
-              finally show ?thesis by blast
-            qed
-            moreover have "transformation (Dom x) PROD.resid
-                             (Unpack \<circ> Map (src m)) (Unpack \<circ> Map (trg m))
-                             (Unpack \<circ> X_Prod.Map (Trn m))"
-              by (metis "*" UnpackoM.transformation_axioms comp_def)
-            moreover have "transformation (Dom x) PROD.resid
-                             (Unpack \<circ> Map (src m)) (Unpack \<circ> Map (trg m))
-                             (Unpack \<circ> X_Prod.Map (Trn ?hk))"
-            proof -
-              have "Map (src m) = X_Prod.Dom (Trn m) \<and> Map (trg m) = X_Prod.Cod (Trn m)"
-                by (metis Map_simps(3-4) arr_m comp_def)
-              hence "Map (src m) = X_Prod.Dom (Trn ?hk) \<and> Map (trg m) = X_Prod.Cod (Trn ?hk)"
-                using 6 7 by simp
+              have "COMPa.BCxAB.arr (COMPa.BC.MkIde P\<^sub>1.map, Trn m)"
+                using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>1_simps(1)
+                      P\<^sub>1.transformation_axioms
+                by auto
               thus ?thesis
-                using 5 Prod.Map'.simulation_axioms X_Prod.arr_char [of "Trn ?hk"]
-                      PROD.weakly_extensional_rts_axioms
-                      transformation_whisker_left
-                        [of "Dom x" Prod.resid "Map (src m)" "Map (trg m)"
-                            "X_Prod.Map (Trn ?hk)" PROD.resid Unpack]
-                by metis
+                unfolding COMPa.map_eq
+                using assms m arr_m Dom_m Cod_m arr_char [of "trg m"] by simp
             qed
-            ultimately have "Unpack \<circ> X_Prod.Map (Trn ?hk) =
-                             Unpack \<circ> X_Prod.Map (Trn m)"
-              using 4 5 X_Prod.arr_char
-                    PROD.proj_joint_monic2
-                      [of "Dom x" "Unpack \<circ> Map (src m)" "Unpack \<circ> Map (trg m)"
-                          "Unpack \<circ> X_Prod.Map (Trn ?hk)" "Unpack \<circ> X_Prod.Map (Trn m)"]
-              by metis
-            moreover have "Pack \<circ> \<langle>\<langle>Map (src h), Map (src k)\<rangle>\<rangle> = Map (src m)"
-              by (simp add: 4 Cod_m Dom_m
-                  \<open>COMPb.BC.Dom (Trn m) = COMPb.BC.Dom (Trn ?hk)\<close>
-                  arr_m src_char mkarr_def)
-            moreover have "Pack \<circ> \<langle>\<langle>Map (trg h), Map (trg k)\<rangle>\<rangle> = Map (trg m)"
-              by (simp add: 4 Cod_m Dom_m
-                  \<open>COMPb.BC.Cod (Trn m) = COMPb.BC.Cod (Trn ?hk)\<close>
-                  arr_m trg_char mkarr_def)
-            ultimately have "X_Prod.Map (Trn ?hk) = X_Prod.Map (Trn m)"
-              using assms 2 Dom_m Prod.invertible_simulation_map'
-                    invertible_simulation_cancel_left'
-                    M.transformation_axioms Pack_o_HK.transformation_axioms
-                    mkarr_def
+            also have "... =
+                       (PROD.P\<^sub>1 \<circ> Unpack) \<circ> COMPa.BC.Map (Trn (trg m))"
               by simp
-            thus "\<And>x. X.ide x \<Longrightarrow>
-                         X_Prod.Map (Trn m) x = X_Prod.Map (Trn ?hk) x"
-              by simp
+            also have "... = PROD.P\<^sub>1 \<circ> (Unpack \<circ> Trg m)"
+              by (auto simp add: 4 Cod_m Dom_m arr_m trg_char)
+            finally show ?thesis by simp
           qed
+          moreover have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> Trg ?hk) = PROD.P\<^sub>0 \<circ> (Unpack \<circ> Trg m)"
+          proof -
+            have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> Trg ?hk) =
+                  PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
+                    \<langle>\<langle>COMPb.BC.Map (Trn (trg h)),
+                      COMPb.BC.Map (Trn (trg k))\<rangle>\<rangle>"
+              using mkarr_def by auto
+            also have "... = COMPb.BC.Map (Trn (trg k))"
+            proof
+              fix x
+              show "(PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
+                       \<langle>\<langle>COMPb.BC.Map (Trn (trg h)),
+                        COMPb.BC.Map (Trn (trg k))\<rangle>\<rangle>) x =
+                    COMPb.BC.Map (Trn (trg k)) x"
+                using PROD.P\<^sub>0_def H\<^sub>0.preserves_reflects_arr K\<^sub>0.extensionality
+                      K\<^sub>1.extensionality PROD.null_char Prod.null_char
+                      H\<^sub>1.preserves_reflects_arr second_conv
+                apply (auto simp add: pointwise_tuple_def)[1]
+                   apply metis
+                 apply (metis B.not_arr_null)
+                using K\<^sub>1.extensionality K\<^sub>1.preserves_reflects_arr by fastforce
+            qed
+            also have "... = COMPb.BC.Map (Trn (trg (p\<^sub>0 \<star> m)))"
+              using m by blast
+            also have "... = COMPb.BC.Map (Trn (p\<^sub>0 \<star> trg m))"
+              using assms m by auto
+            also have "... =
+                       COMPb.BC.Map (COMPb.map (Trn p\<^sub>0, Trn (trg m)))"
+              using arr_m Dom_m Cod_m by simp
+            also have "... =
+                       COMPb.BC.Map (Trn p\<^sub>0) \<circ> COMPb.BC.Map (Trn (trg m))"
+            proof -
+              have "COMPb.BCxAB.arr (COMPb.BC.MkIde P\<^sub>0.map, Trn m)"
+                using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>0_simps(1)
+                      P\<^sub>0.transformation_axioms
+                by auto
+              thus ?thesis
+                unfolding COMPb.map_eq
+                using assms m arr_m Dom_m Cod_m arr_char [of "trg m"]
+                by simp
+            qed
+            also have "... = (PROD.P\<^sub>0 \<circ> Unpack) \<circ> COMPb.BC.Map (Trn (trg m))"
+              by simp
+            also have "... = PROD.P\<^sub>0 \<circ> (Unpack \<circ> Trg m)"
+              by (auto simp add: 4 Cod_m Dom_m arr_m trg_char)
+            finally show ?thesis by blast
+          qed
+          moreover have "simulation (Dom x) PROD.resid
+                           (Unpack \<circ> X_Prod.Cod (Trn ?hk))"
+            using hk arr_char 2 Pack_o_HK.G.simulation_axioms Dom_m
+                  Prod.Map'.simulation_axioms simulation_comp
+            using mkarr_def by auto
+          moreover have "simulation (Dom x) PROD.resid
+                           (Unpack \<circ> X_Prod.Cod (Trn m))"
+            using X_Prod.ide_trg \<open>X_Prod.arr (Trn m)\<close>
+                  Prod.Map'.simulation_axioms simulation_comp
+            by auto
+          ultimately have "Unpack \<circ> X_Prod.Cod (Trn ?hk) =
+                           Unpack \<circ> X_Prod.Cod (Trn m)"
+            using PROD.proj_joint_monic by simp
+          moreover have "simulation (Dom x) Prod.resid
+                           (X_Prod.Cod (Trn ?hk))"
+            using hk 2 arr_char X_Prod.ide_trg Dom_m mkarr_def
+                  Pack_o_HK.F.simulation_axioms Pack_o_HK.G.simulation_axioms
+            by force
+          moreover have "simulation (Dom x) Prod.resid
+                           (X_Prod.Cod (Trn m))"
+            using 4 X_Prod.ide_trg by auto
+          ultimately show ?thesis
+            using invertible_simulation_cancel_left
+            by (metis (no_types, lifting) Prod.invertible_simulation_map' comp_eq_dest_lhs)
+        qed
+        show "\<And>x. residuation.ide (Dom m) x \<Longrightarrow> Map m x = Map ?hk x"
+        proof -
+          have "PROD.P\<^sub>1 \<circ> (Unpack \<circ> Map ?hk) =
+                PROD.P\<^sub>1 \<circ> (Unpack \<circ> X_Prod.Map (Trn m))"
+          proof -
+            have "PROD.P\<^sub>1 \<circ> (Unpack \<circ>  Map ?hk) =
+                  PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
+                    \<langle>\<langle>COMPa.BC.Map (Trn h), COMPa.BC.Map (Trn k)\<rangle>\<rangle>"
+              using mkarr_def by auto
+            also have "... = COMPa.BC.Map (Trn h)"
+            proof
+              fix x
+              show "(PROD.P\<^sub>1 \<circ> (Unpack \<circ> Pack) \<circ>
+                      \<langle>\<langle>COMPa.BC.Map (Trn h),
+                        COMPa.BC.Map (Trn k)\<rangle>\<rangle>) x =
+                    COMPa.BC.Map (Trn h) x"
+                using PROD.P\<^sub>1_def
+                apply (auto simp add: pointwise_tuple_def)[1]
+                   apply (metis A.not_arr_null PROD.null_char Prod.null_char
+                    first_conv)
+                  apply (metis (mono_tags, lifting) H.transformation_axioms
+                    K.transformation_axioms PROD.P\<^sub>1.extensionality
+                    PROD.P\<^sub>1.preserves_arr PROD.proj_tuple2(1) comp_apply)
+                 apply (metis B.not_arr_null PROD.null_char Prod.null_char
+                    second_conv)
+                by (metis H.extensionality K.preserves_arr comp_apply)
+            qed
+            also have "... = COMPa.BC.Map (Trn (p\<^sub>1 \<star> m))"
+              using m by blast
+            also have "... = COMPa.BC.Map (COMPa.map (Trn p\<^sub>1, Trn m))"
+              using arr_m Dom_m Cod_m Trn_hcomp by simp
+            also have "... = COMPa.BC.Map (Trn p\<^sub>1) \<circ> COMPa.BC.Map (Trn m)"
+            proof -
+              have "COMPa.BCxAB.arr (COMPa.BC.MkIde P\<^sub>1.map, Trn m)"
+                using assms arr_m Dom_m Cod_m arr_char arr_char p\<^sub>1_simps(1)
+                      P\<^sub>1.transformation_axioms
+                by auto
+              thus ?thesis
+                unfolding COMPa.map_eq
+                using assms m arr_m Dom_m Cod_m by simp
+            qed
+            also have "... = (PROD.P\<^sub>1 \<circ> Unpack) \<circ> COMPa.BC.Map (Trn m)"
+              by simp
+            also have "... = PROD.P\<^sub>1 \<circ> (Unpack \<circ> Map m)"
+              by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
+            finally show ?thesis by simp
+          qed
+          moreover have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> Map ?hk) = PROD.P\<^sub>0 \<circ> (Unpack \<circ> Map m)"
+          proof -
+            have "PROD.P\<^sub>0 \<circ> (Unpack \<circ> Map ?hk) =
+                  PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
+                    \<langle>\<langle>COMPb.BC.Map (Trn h),
+                      COMPb.BC.Map (Trn k)\<rangle>\<rangle>"
+              using mkarr_def by auto
+            also have "... = COMPb.BC.Map (Trn k)"
+            proof
+              fix x
+              show "(PROD.P\<^sub>0 \<circ> (Unpack \<circ> Pack) \<circ>
+                       \<langle>\<langle>COMPb.BC.Map (Trn h), COMPb.BC.Map (Trn k)\<rangle>\<rangle>) x =
+                    COMPb.BC.Map (Trn k) x"
+                using PROD.P\<^sub>0_def H\<^sub>0.preserves_reflects_arr K\<^sub>0.extensionality
+                      PROD.null_char Prod.null_char
+                apply (auto simp add: pointwise_tuple_def)[1]
+                   apply (metis B.not_arr_null second_conv)
+                  apply (metis H.preserves_arr K.extensionality comp_apply)
+                 apply (metis A.not_arr_null PROD.null_char first_conv)
+                by (metis K.extensionality K.preserves_arr comp_apply)
+            qed
+            also have "... = COMPb.BC.Map (Trn (p\<^sub>0 \<star> m))"
+              using m by blast
+            also have "... = COMPb.BC.Map (COMPb.map (Trn p\<^sub>0, Trn m))"
+              using arr_m Dom_m Cod_m Trn_hcomp by simp
+            also have "... =
+                       COMPb.BC.Map (Trn p\<^sub>0) \<circ> COMPb.BC.Map (Trn m)"
+            proof -
+              have "COMPb.BCxAB.arr (COMPb.BC.MkIde P\<^sub>0.map, Trn m)"
+                using assms arr_m Dom_m Cod_m arr_char p\<^sub>0_simps(1)
+                      P\<^sub>0.transformation_axioms
+                by auto
+              thus ?thesis
+                unfolding COMPb.map_eq
+                using assms m arr_m Dom_m Cod_m by simp
+            qed
+            also have "... =
+                       (PROD.P\<^sub>0 \<circ> Unpack) \<circ> COMPb.BC.Map (Trn m)"
+              by simp
+            also have "... = PROD.P\<^sub>0 \<circ> (Unpack \<circ> Map m)"
+              by (auto simp add: 4 Cod_m Dom_m arr_m src_char)
+            finally show ?thesis by blast
+          qed
+          moreover have "transformation (Dom x) PROD.resid
+                           (Unpack \<circ> Map (src m)) (Unpack \<circ> Map (trg m))
+                           (Unpack \<circ> Map m)"
+            by (metis "*" UnpackoM.transformation_axioms comp_def)
+          moreover have "transformation (Dom x) PROD.resid
+                           (Unpack \<circ> Map (src m)) (Unpack \<circ> Map (trg m))
+                           (Unpack \<circ> Map ?hk)"
+              using 5 Prod.Map'.simulation_axioms X_Prod.arr_char [of "Trn ?hk"]
+                    PROD.weakly_extensional_rts_axioms
+                    transformation_whisker_left
+                      [of "Dom x" Prod.resid "Map (src m)" "Map (trg m)"
+                          "Map ?hk" PROD.resid Unpack]
+              by (metis (no_types, lifting) "*" Map_mkarr Map_simps(3-4)
+                  Pack_o_HK.transformation_axioms Src_mkarr Trg_mkarr
+                  \<open>Src m = Src ?hk\<close> \<open>Trg m = Trg ?hk\<close> \<open>arr ?hk\<close> arr_m)
+          ultimately have "Unpack \<circ> Map ?hk = Unpack \<circ> Map m"
+            using 4 5 X_Prod.arr_char
+                  PROD.proj_joint_monic2
+                    [of "Dom x" "Unpack \<circ> Map (src m)" "Unpack \<circ> Map (trg m)"
+                        "Unpack \<circ> Map ?hk" "Unpack \<circ> Map m"]
+            by fastforce
+          moreover have "Pack \<circ> \<langle>\<langle>Map (src h), Map (src k)\<rangle>\<rangle> = Map (src m)"
+            using Map_simps(3) Src_mkarr \<open>Src m = Src ?hk\<close> \<open>arr ?hk\<close> arr_m
+            by simp
+          moreover have "Pack \<circ> \<langle>\<langle>Map (trg h), Map (trg k)\<rangle>\<rangle> = Map (trg m)"
+            using Map_simps(4) Trg_mkarr \<open>Trg m = Trg ?hk\<close> \<open>arr ?hk\<close> arr_m
+            by simp
+          ultimately have "X_Prod.Map (Trn ?hk) = X_Prod.Map (Trn m)"
+            using assms 2 Dom_m Prod.invertible_simulation_map'
+                  invertible_simulation_cancel_left'
+                  M.transformation_axioms Pack_o_HK.transformation_axioms
+                  mkarr_def
+            by simp
+          thus "\<And>x. Map m x = Map ?hk x"
+            by simp
         qed
       qed
     qed
@@ -2450,7 +2662,7 @@ begin
             assms(1-2) p\<^sub>1_simps(4) tuple_props(4))
       have 4: "COMP\<^sub>1.BCxAB.arr (Trn p\<^sub>1, Trn (tuple t u))"
         by (metis (no_types, lifting) "*" "1" "2" "3"
-            COMP\<^sub>1.extensional H.in_homE H_arr_char Trn_hcomp
+            COMP\<^sub>1.extensionality H.in_homE H_arr_char Trn_hcomp
             V.ide_implies_arr XA.not_arr_null assms(1-2)
             p\<^sub>1_simps(1) p\<^sub>1_simps(4) p\<^sub>1_simps(5) tuple_props(4))
       interpret P\<^sub>1: simulation_as_transformation Prod.resid \<open>Dom a\<close> P\<^sub>1.map ..
@@ -2528,22 +2740,22 @@ begin
           product_in_rtscat_axioms.intro product_in_rtscat_def
           rtscatx.intro universe_axioms)
 
-    lemma has_binary_products:
+    lemma has_binary_products\<^sub>X:
     assumes "obj a" and "obj b"
     shows "H.has_as_binary_product a b (p\<^sub>1 a b) (p\<^sub>0 a b)"
       by (simp add: assms(1-2) p\<^sub>0_def p\<^sub>1_def
           product_in_rtscat.has_as_binary_product product_in_rtscat_axioms_def
           product_in_rtscat_def rtscatx.intro universe_axioms)
 
-    interpretation category_with_binary_products hcomp
-      using H.has_binary_products_def has_binary_products
+    sublocale category_with_binary_products hcomp
+      using H.has_binary_products_def has_binary_products\<^sub>X
       by unfold_locales auto
 
-    proposition is_category_with_binary_products:
+    proposition is_category_with_binary_products\<^sub>X:
     shows "category_with_binary_products hcomp"
       ..
 
-    lemma extends_to_elementary_category_with_binary_products:
+    lemma extends_to_elementary_category_with_binary_products\<^sub>X:
     shows "elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1"
     proof
       fix a b
@@ -2565,8 +2777,8 @@ begin
         using tu axb.universality by blast
     qed
 
-    interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
-      using extends_to_elementary_category_with_binary_products by blast
+    sublocale elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
+      using extends_to_elementary_category_with_binary_products\<^sub>X by blast
 
     (* TODO: Why don't these get pulled in automatically? *)
     notation p\<^sub>0      (\<open>\<pp>\<^sub>0[_, _]\<close>)
@@ -2619,39 +2831,96 @@ begin
         using assms sta_tuple by blast
     qed
 
-    definition Pack :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A \<times> 'A \<Rightarrow> 'A"
-    where "Pack \<equiv> product_in_rtscat.Pack"
+    text\<open>
+      The ``product constraints'' \<open>Pack a b\<close> and \<open>Unpack a b\<close> were originally derived
+      from the arbitrarily chosen ``type-reducing injection'' @{term pairing.some_pair}.
+      However, now that the existence of products has been shown, we can express
+      these constraints in terms of @{term Map} and the projections.  We use this for
+      the final definitions of \<open>Pack a b\<close> and \<open>Unpack a b\<close> to emphasize the significance
+      of the chosen product structure over the \emph{ad hoc} function
+      @{term pairing.some_pair} used to show its existence.
+    \<close>
 
     definition Unpack :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A \<Rightarrow> 'A \<times> 'A"
-    where "Unpack \<equiv> product_in_rtscat.Unpack"
+    where "Unpack a b \<equiv> \<langle>\<langle>Map (p\<^sub>1 a b), Map (p\<^sub>0 a b)\<rangle>\<rangle>"
 
-    lemma inverse_simulations_Pack_Unpack:
+    definition Pack :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A \<times> 'A \<Rightarrow> 'A"
+    where "Pack a b \<equiv> inverse_simulation.map (Dom (a \<otimes> b)) (Dom a \<Otimes> Dom b)
+                         (Unpack a b)"
+
+    lemma Map_p\<^sub>0:
     assumes "obj a" and "obj b"
-    shows "inverse_simulations (Dom (a \<otimes> b)) (product_rts.resid (Dom a) (Dom b))
-             (Pack a b) (Unpack a b)"
+    shows "Map \<pp>\<^sub>0[a, b] = product_rts.P\<^sub>0 (Dom a) (Dom b) \<circ> Unpack a b"
     proof -
       interpret axb: product_in_rtscat arr_type a b
         using assms by unfold_locales auto
       show ?thesis
-        unfolding Pack_def Unpack_def
-        using p\<^sub>0_def p\<^sub>1_def
-        by (metis (no_types, lifting) axb.Dom_prod
-            axb.Prod.inverse_simulations_axioms axb.obj_a axb.obj_b
-            axb.p\<^sub>0_simps(2) pr_simps(2))
+        unfolding Unpack_def p\<^sub>0_def
+        using axb.Map_p\<^sub>0
+        by (metis (no_types, lifting) axb.Map_p\<^sub>1 axb.PROD.tuple_proj
+            axb.Prod.Map'.simulation_axioms p\<^sub>1_def)
     qed
+
+    lemma Map_p\<^sub>1:
+    assumes "obj a" and "obj b"
+    shows "Map \<pp>\<^sub>1[a, b] = product_rts.P\<^sub>1 (Dom a) (Dom b) \<circ> Unpack a b"
+    proof -
+      interpret axb: product_in_rtscat arr_type a b
+        using assms by unfold_locales auto
+      show ?thesis
+        unfolding Unpack_def p\<^sub>1_def
+        using axb.Map_p\<^sub>1
+        by (metis (no_types, lifting) axb.Map_p\<^sub>0 axb.PROD.tuple_proj
+            axb.Prod.Map'.simulation_axioms p\<^sub>0_def)
+    qed
+
+    lemma Unpack_eq:
+    assumes "obj a" and "obj b"
+    shows "Unpack a b = product_in_rtscat.Unpack a b"
+    proof -
+      interpret axb: product_in_rtscat arr_type a b
+        using assms by unfold_locales auto
+      show ?thesis
+        unfolding Unpack_def
+        using assms comp_pointwise_tuple product_rts.tuple_proj
+              Map_p\<^sub>0 Map_p\<^sub>1 inverse_simulations_DN_UP(1) inverse_simulations_def
+              product_rts_def axb.Map_p\<^sub>0 axb.Map_p\<^sub>1 axb.Prod.Map'.simulation_axioms
+              p\<^sub>0_def p\<^sub>1_def
+        by (metis (no_types, lifting))
+    qed
+
+    lemma invertible_simulation_Unpack:
+    assumes "obj a" and "obj b"
+    shows "invertible_simulation (Dom (a \<otimes> b)) (Dom a \<Otimes> Dom b)
+             \<langle>\<langle>Map (p\<^sub>1 a b), Map (p\<^sub>0 a b)\<rangle>\<rangle>"
+    proof -
+      interpret axb: product_in_rtscat arr_type a b
+        using assms by unfold_locales auto
+      show ?thesis
+        by (metis (no_types, lifting) assms axb.Map_p\<^sub>0 axb.Map_p\<^sub>1
+            axb.PROD.product_rts_axioms axb.Prod.G.invertible_simulation_axioms
+            axb.Prod.Map'.simulation_axioms mkobj_simps(1) p\<^sub>0_def p\<^sub>1_def
+            prod_eq product_rts.tuple_proj)
+    qed
+
+    lemma inverse_simulations_Pack_Unpack:
+    assumes "obj a" and "obj b"
+    shows "inverse_simulations (Dom (a \<otimes> b)) (Dom a \<Otimes> Dom b)
+             (Pack a b) (Unpack a b)"
+      unfolding Pack_def Unpack_def
+      using assms invertible_simulation_Unpack
+      by (metis inverse_simulations.inverse_eq invertible_simulation.invertible)
 
     lemma simulation_Pack:
     assumes "obj a" and "obj b"
-    shows "simulation (product_rts.resid (Dom a) (Dom b)) (Dom (a \<otimes> b)) 
-             (Pack a b)"
+    shows "simulation (Dom a \<Otimes> Dom b) (Dom (a \<otimes> b)) (Pack a b)"
       using assms inverse_simulations_Pack_Unpack [of a b]
             inverse_simulations_def
       by fast
 
     lemma simulation_Unpack:
     assumes "obj a" and "obj b"
-    shows "simulation (Dom (a \<otimes> b)) (product_rts.resid (Dom a) (Dom b))
-             (Unpack a b)"
+    shows "simulation (Dom (a \<otimes> b)) (Dom a \<Otimes> Dom b) (Unpack a b)"
       using assms inverse_simulations_Pack_Unpack [of a b]
             inverse_simulations_def
       by fast
@@ -2660,8 +2929,7 @@ begin
     assumes "obj a" and "obj b"
     shows "Pack a b \<circ> Unpack a b = I (Dom (a \<otimes> b))"
     proof -
-      interpret PU: inverse_simulations
-                      \<open>Dom (a \<otimes> b)\<close> \<open>product_rts.resid (Dom a) (Dom b)\<close>
+      interpret PU: inverse_simulations \<open>Dom (a \<otimes> b)\<close> \<open>Dom a \<Otimes> Dom b\<close>
                       \<open>Pack a b\<close> \<open>Unpack a b\<close>
         using assms inverse_simulations_Pack_Unpack by blast
       show ?thesis
@@ -2670,10 +2938,10 @@ begin
 
     lemma Unpack_o_Pack:
     assumes "obj a" and "obj b"
-    shows "Unpack a b \<circ> Pack a b = I (product_rts.resid (Dom a) (Dom b))"
+    shows "Unpack a b \<circ> Pack a b = I (Dom a \<Otimes> Dom b)"
     proof -
       interpret PU: inverse_simulations
-                      \<open>Dom (a \<otimes> b)\<close> \<open>product_rts.resid (Dom a) (Dom b)\<close>
+                      \<open>Dom (a \<otimes> b)\<close> \<open>Dom a \<Otimes> Dom b\<close>
                       \<open>Pack a b\<close> \<open>Unpack a b\<close>
         using assms inverse_simulations_Pack_Unpack by blast
       show ?thesis
@@ -2689,7 +2957,7 @@ begin
 
     lemma Unpack_Pack [simp]:
     assumes "obj a" and "obj b"
-    and "residuation.arr (product_rts.resid (Dom a) (Dom b)) t"
+    and "residuation.arr (Dom a \<Otimes> Dom b) t"
     shows "Unpack a b (Pack a b t) = t"
       by (metis (no_types, lifting) Unpack_o_Pack assms(1-3) o_apply)
 
@@ -2709,38 +2977,117 @@ begin
             trg_hcomp [of "p\<^sub>1 (cod t) (cod u)" "tuple t u"]
       by (intro tuple_eqI) auto
 
-    lemma Map_p\<^sub>0:
-    assumes "obj a" and "obj b"
-    shows "Map \<pp>\<^sub>0[a, b] = product_rts.P\<^sub>0 (Dom a) (Dom b) \<circ> Unpack a b"
-    proof -
-      interpret axb: product_in_rtscat arr_type a b
-        using assms by unfold_locales auto
-      show ?thesis
-        unfolding Unpack_def p\<^sub>0_def
-        using axb.Map_p\<^sub>0 by blast
-    qed
-
-    lemma Map_p\<^sub>1:
-    assumes "obj a" and "obj b"
-    shows "Map \<pp>\<^sub>1[a, b] = product_rts.P\<^sub>1 (Dom a) (Dom b) \<circ> Unpack a b"
-    proof -
-      interpret axb: product_in_rtscat arr_type a b
-        using assms by unfold_locales auto
-      show ?thesis
-        unfolding Unpack_def p\<^sub>1_def
-        using axb.Map_p\<^sub>1 by blast
-    qed
-
     lemma Map_tuple:
     assumes "\<guillemotleft>t : x \<rightarrow> a\<guillemotright>" and "\<guillemotleft>u : x \<rightarrow> b\<guillemotright>"
     shows "Map \<langle>t, u\<rangle> = Pack a b \<circ> \<langle>\<langle>Map t, Map u\<rangle>\<rangle>"
     proof -
       interpret axb: product_in_rtscat arr_type a b
         using assms by unfold_locales auto
-      show ?thesis
-        unfolding Pack_def
-        using assms axb.Map_tuple [of t x u] p\<^sub>0_def p\<^sub>1_def
-        by (metis (no_types, lifting) H.in_homE axb.tuple_props(6) pr_tuple(1-2))
+      have "Map \<langle>t, u\<rangle> = I (Dom (a \<otimes> b)) \<circ> Map \<langle>t, u\<rangle>"
+        using assms tuple_in_hom [of t x a u b]
+              comp_identity_transformation
+                [of "Dom x" "Dom (a \<otimes> b)" _ _ "Map \<langle>t, u\<rangle>"]
+        by (metis (no_types, lifting) Dom_cod Dom_hcomp\<^sub>X H.comp_arr_dom H.in_homE
+            arr_coincidence\<^sub>C\<^sub>R\<^sub>C transformation_Map)
+      also have "... = Pack a b \<circ> Unpack a b \<circ> Map \<langle>t, u\<rangle>"
+        by (simp add: axb.obj_a axb.obj_b Pack_o_Unpack)
+      also have "... = Pack a b \<circ> (Unpack a b \<circ> Map \<langle>t, u\<rangle>)"
+        by auto
+      also have "... = Pack a b \<circ> \<langle>\<langle>Map t, Map u\<rangle>\<rangle>"
+      proof -
+        have "Unpack a b \<circ> Map \<langle>t, u\<rangle> = \<langle>\<langle>Map \<pp>\<^sub>1[a, b], Map \<pp>\<^sub>0[a, b]\<rangle>\<rangle> \<circ> Map \<langle>t, u\<rangle>"
+          unfolding Unpack_def by blast
+        also have "... = \<langle>\<langle>Map \<pp>\<^sub>1[a, b] \<circ> Map \<langle>t, u\<rangle>, Map \<pp>\<^sub>0[a, b] \<circ> Map \<langle>t, u\<rangle> \<rangle>\<rangle>"
+          using comp_pointwise_tuple by blast
+        also have "... = \<langle>\<langle>Map t, Map u\<rangle>\<rangle>"
+          by (metis (no_types, lifting) H.in_homE Map_hcomp assms pr_tuple(1-2))
+        finally show ?thesis by simp
+      qed
+      finally show ?thesis by blast
+    qed
+
+    lemma Map_prod:
+    assumes "\<guillemotleft>t : x \<rightarrow> a\<guillemotright>" and "\<guillemotleft>u : y \<rightarrow> b\<guillemotright>"
+    shows "Map (t \<otimes> u) =
+           Pack a b \<circ>
+             product_transformation.map
+                  (Dom t) (Dom u) (Cod t) (Cod u) (Src t) (Src u) (Map t) (Map u) \<circ>
+               Unpack x y"
+    proof -
+      have "Map (t \<otimes> u) = Map \<langle>t \<star> \<pp>\<^sub>1[x, y], u \<star> \<pp>\<^sub>0[x, y]\<rangle>"
+        using assms prod_def by auto
+      also have "... = Pack a b \<circ> \<langle>\<langle>Map (t \<star> \<pp>\<^sub>1[x, y]), Map (u \<star> \<pp>\<^sub>0[x, y])\<rangle>\<rangle>"
+      proof -
+        have "\<guillemotleft>t \<star> \<pp>\<^sub>1[x, y] : x \<otimes> y \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>u \<star> \<pp>\<^sub>0[x, y] : x \<otimes> y \<rightarrow> b\<guillemotright>"
+          using assms pr_in_hom
+          by (elim H.in_homE, intro conjI H.comp_in_homI) auto
+        thus ?thesis
+          using Map_tuple [of "t \<star> \<pp>\<^sub>1[x, y]" "x \<otimes> y" a "u \<star> \<pp>\<^sub>0[x, y]" b] by simp
+      qed
+      also have "... = Pack a b \<circ> \<langle>\<langle>Map t \<circ> Map \<pp>\<^sub>1[x, y], Map u \<circ> Map \<pp>\<^sub>0[x, y]\<rangle>\<rangle>"
+        by (metis (no_types, lifting) H.cod_comp H.ide_dom H.in_homE H.seqI
+            Map_hcomp assms cod_pr0 pr_simps(1,4) prj_sym(1))
+      also have "... = Pack a b \<circ>
+                         (product_transformation.map
+                            (Dom t) (Dom u) (Cod t) (Cod u)
+                            (Src t) (Src u) (Map t) (Map u) \<circ>
+                            \<langle>\<langle>Map \<pp>\<^sub>1[x, y], Map \<pp>\<^sub>0[x, y]\<rangle>\<rangle>)"
+      proof -
+        have "transformation_to_extensional_rts
+                (Dom t) (Cod t) (Src t) (Trg t) (Map t)"
+          using assms arr_char H.arrI transformation_Map
+          by (simp add: transformation_to_extensional_rts.intro)
+        moreover have "transformation_to_extensional_rts
+                         (Dom u) (Cod u) (Src u) (Trg u) (Map u)"
+          using assms arr_char H.arrI transformation_Map
+            by (simp add: transformation_to_extensional_rts.intro)
+        moreover have "simulation (Dom \<pp>\<^sub>0[x, y]) (Dom x) (Map \<pp>\<^sub>1[x, y])"
+          by (metis (no_types, lifting) Dom_dom H.ide_dom H.in_homE H_seq_char
+              V.ide_implies_arr assms category.seqI is_category
+              pr_simps(2,4-6) simulation_Map sta_p\<^sub>0 sta_p\<^sub>1)
+        moreover have "simulation (Dom \<pp>\<^sub>0[x, y]) (Dom y) (Map \<pp>\<^sub>0[x, y])"
+          by (metis (no_types, lifting) Dom_cod H.ide_dom H.in_homE
+              V.ide_implies_arr assms cod_pr0 simulation_Map sta_p\<^sub>0)
+        ultimately show ?thesis
+          using assms
+          by (metis (no_types, lifting) Dom_dom H.in_homE arr_coincidence\<^sub>C\<^sub>R\<^sub>C
+              comp_product_transformation_tuple)
+      qed
+      also have "... = Pack a b \<circ>
+                         (product_transformation.map
+                            (Dom t) (Dom u) (Cod t) (Cod u) (Src t) (Src u)
+                            (Map t) (Map u) \<circ>
+                            Unpack x y)"
+      proof -
+        have "\<langle>\<langle>Map \<pp>\<^sub>1[x, y], Map \<pp>\<^sub>0[x, y]\<rangle>\<rangle> =
+              (Unpack x y \<circ> Pack x y) \<circ> \<langle>\<langle>Map \<pp>\<^sub>1[x, y], Map \<pp>\<^sub>0[x, y]\<rangle>\<rangle>"
+          using assms Unpack_o_Pack
+                comp_identity_simulation
+                  [of "Dom (x \<otimes> y)" "Dom x \<Otimes> Dom y" "\<langle>\<langle>Map \<pp>\<^sub>1[x, y], Map \<pp>\<^sub>0[x, y]\<rangle>\<rangle>"]
+          by (metis (no_types, lifting) H.ide_dom H.in_homE Unpack_def simulation_Unpack)
+        also have "... = Unpack x y \<circ> Map \<langle>\<pp>\<^sub>1[x, y], \<pp>\<^sub>0[x, y]\<rangle>"
+          using assms Map_tuple Fun.comp_assoc
+          by (metis (no_types, lifting) H.ide_dom H.in_homE pr_in_hom(1-2))
+        also have "... = Unpack x y \<circ> Map (x \<otimes> y)"
+          using tuple_pr
+          by (metis (no_types, lifting) H.ide_dom H.in_homE assms)
+        also have "... = Unpack x y \<circ> I (Dom (x \<otimes> y))"
+        proof -
+          have "\<And>x. obj x \<Longrightarrow> Map x = I (Dom x)"
+            by (metis (no_types, lifting) H.ide_char Map_simps(2) obj_char obj_simps(1))
+          moreover have "obj (x \<otimes> y)"
+            using H.ide_dom assms by blast
+          ultimately show ?thesis
+            by force
+        qed
+        also have "... = Unpack x y"
+          using assms simulation_Unpack [of x y] comp_simulation_identity H.ide_dom
+          by blast
+        finally have "\<langle>\<langle>Map \<pp>\<^sub>1[x, y], Map \<pp>\<^sub>0[x, y]\<rangle>\<rangle> = Unpack x y"
+          by blast
+        thus ?thesis by simp
+      qed
+      finally show ?thesis by auto
     qed
 
     lemma assoc_expansion:
@@ -2872,7 +3219,7 @@ begin
   begin
 
     sublocale elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
-      using extends_to_elementary_category_with_binary_products by blast
+      using extends_to_elementary_category_with_binary_products\<^sub>X by blast
 
     notation hcomp  (infixr \<open>\<star>\<close> 53)
     notation p\<^sub>0      (\<open>\<pp>\<^sub>0[_, _]\<close>)
@@ -2925,11 +3272,20 @@ begin
     shows "small_rts Exp.resid"
       ..
 
-    abbreviation Func :: "'A \<Rightarrow> ('A, 'A) EXP.arr"
-    where "Func \<equiv> Exp.map'\<^sub>e\<^sub>x\<^sub>t"
+    (*
+     * TODO: There is an odd "multiply defined" clash at the point where
+     * locale currying_in_rtscat is introduced, unless I here give Func and Unfunc
+     * different names than the versions defined later in context rtscatx.
+     * I don't see the reason for this.  As far as I can see, I am doing it
+     * exactly the same way as I did for products.  The only difference is
+     * another level of sublocale (currying_in_rtscat \<subseteq> exponential_in_rtscat).
+     *)
 
-    abbreviation Unfunc :: "('A, 'A) EXP.arr \<Rightarrow> 'A"
-    where "Unfunc \<equiv> Exp.map\<^sub>e\<^sub>x\<^sub>t"
+    abbreviation Func' :: "'A \<Rightarrow> ('A, 'A) EXP.arr"
+    where "Func' \<equiv> Exp.map'\<^sub>e\<^sub>x\<^sub>t"
+
+    abbreviation Unfunc' :: "('A, 'A) EXP.arr \<Rightarrow> 'A"
+    where "Unfunc' \<equiv> Exp.map\<^sub>e\<^sub>x\<^sub>t"
 
     text \<open>
       We define \<open>exp\<close> to be the object of the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> having \<open>Exp\<close> as its
@@ -2960,9 +3316,9 @@ begin
     sublocale B: transformation_to_extensional_rts
                    \<open>Dom b\<close> \<open>Dom b\<close> B.map B.map B.map ..
     sublocale UnfuncxB: product_simulation
-                   EXP.resid \<open>Dom b\<close> Exp.resid \<open>Dom b\<close> Unfunc B.map ..
+                   EXP.resid \<open>Dom b\<close> Exp.resid \<open>Dom b\<close> Unfunc' B.map ..
     sublocale FuncxB: product_simulation
-                   Exp.resid \<open>Dom b\<close> EXP.resid \<open>Dom b\<close> Func B.map ..
+                   Exp.resid \<open>Dom b\<close> EXP.resid \<open>Dom b\<close> Func' B.map ..
 
     sublocale inverse_simulations EXPxB.resid ExpxB.resid
                 FuncxB.map UnfuncxB.map
@@ -2986,7 +3342,7 @@ begin
                                  \<open>Dom (exp \<otimes> b)\<close> ExpxB.resid EXPxB.resid
                                  \<open>Unpack exp b\<close> FuncxB.map
     proof -
-      have "product_rts.resid (Dom exp) (Dom b) = ExpxB.resid"
+      have "Dom exp \<Otimes> Dom b = ExpxB.resid"
         by simp
       thus "composite_simulation (Dom (exp \<otimes> b)) ExpxB.resid EXPxB.resid
               (Unpack exp b) FuncxB.map"
@@ -3057,6 +3413,12 @@ begin
     shows "Map eval = Eval.map \<circ> (FuncxB.map \<circ> Unpack exp b)"
       unfolding eval_def mkarr_def by simp
 
+    lemma inverse_simulations_Func_Unfunc:
+    assumes "obj b" and "obj c"
+    shows "inverse_simulations
+             (exponential_rts.resid (Dom b) (Dom c)) (Dom exp) Func' Unfunc'"
+      using Exp.inverse_simulations_axioms inverse_simulations_sym by auto
+
   end
 
   text\<open>
@@ -3067,7 +3429,7 @@ begin
   begin
 
     interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
-      using extends_to_elementary_category_with_binary_products by blast
+      using extends_to_elementary_category_with_binary_products\<^sub>X by blast
 
     notation prod    (infixr \<open>\<otimes>\<close> 51)
 
@@ -3108,29 +3470,224 @@ begin
     shows "\<guillemotleft>eval b c : exp b c \<otimes> b \<rightarrow> c\<guillemotright>"
       using assms eval_simps by auto
 
-    (*
-     * TODO: I wanted 'A here instead of 'a (for documentation reasons), but if I do that,
-     * it triggers a multiply defined error below when processing \<open>currying_in_rtscat\<close>.
-     *)
-    definition Func :: "'a arr \<Rightarrow> 'a arr \<Rightarrow> 'a \<Rightarrow> ('a, 'a) exponential_rts.arr"
-    where "Func \<equiv> exponential_in_rtscat.Func"
+    text\<open>
+      As we did for \<open>Pack a b\<close> and \<open>Unpack a b\<close>, we now express the final definition
+      of the ``exponential constraints'' \<open>Func b c\<close> and \<open>Unfunc b c\<close> in terms of
+      the product and exponential structure.
+    \<close>
 
-    definition Unfunc :: "'a arr \<Rightarrow> 'a arr \<Rightarrow> ('a, 'a) exponential_rts.arr \<Rightarrow> 'a"
-    where "Unfunc \<equiv> exponential_in_rtscat.Unfunc"
+    definition Func :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A \<Rightarrow> ('A, 'A) exponential_rts.arr"
+    where "Func b c \<equiv> Currying.Curry3 (Dom (exp b c)) (Dom b) (Dom c)
+                        (Map (eval b c) \<circ> Pack (exp b c) b)"
+
+    definition Unfunc :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> ('A, 'A) exponential_rts.arr \<Rightarrow> 'A"
+    where "Unfunc b c \<equiv> inverse_simulation.map
+                          (Dom (exp b c)) (exponential_rts.resid (Dom b) (Dom c))
+                          (Func b c)"
+
+    lemma Func_eq:
+    assumes "obj b" and "obj c"
+    shows "simulation (Dom (exp b c)) (exponential_rts.resid (Dom b) (Dom c))
+             (Func b c)"
+    and "Func b c = exponential_in_rtscat.Func' b c"
+    proof (unfold Func_def)
+      interpret B: extensional_rts \<open>Dom b\<close>
+        using assms(1) by blast
+      interpret C: extensional_rts \<open>Dom c\<close>
+        using assms(2) by blast
+      interpret bc: exponential_in_rtscat arr_type b c
+        using assms by unfold_locales auto
+      interpret Currying: Currying \<open>Dom (exp b c)\<close> \<open>Dom b\<close> \<open>Dom c\<close>
+        by (metis Currying_def bc.Dom_exp bc.Eval.evaluation_map_axioms
+            bc.Exp.weakly_extensional_rts_axioms evaluation_map_def exp_def)
+      interpret Eval: simulation \<open>Dom (exp b c \<otimes> b)\<close> \<open>Dom c\<close> \<open>Map (eval b c)\<close>
+        using assms
+        by (simp add: bc.Eval_o_FuncxB_o_Unpack.is_simulation exp_def eval_def)
+      interpret Pack: simulation \<open>Dom (exp b c) \<Otimes> Dom b\<close> \<open>Dom (exp b c \<otimes> b)\<close>
+                        \<open>Pack (exp b c) b\<close>
+        using assms simulation_Pack obj_exp by auto
+      interpret Eval_o_Pack: composite_simulation
+                               \<open>Dom (exp b c) \<Otimes> Dom b\<close> \<open>Dom (exp b c \<otimes> b)\<close> \<open>Dom c\<close>
+                               \<open>Pack (exp b c) b\<close> \<open>Map (eval b c)\<close>
+        ..
+      interpret Func: simulation \<open>Dom (exp b c)\<close> bc.EXP.resid \<open>Func b c\<close>
+        using Eval_o_Pack.simulation_axioms Func_def by auto
+      show "simulation (Dom (exp b c)) bc.EXP.resid
+              (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b))"
+        using Func.simulation_axioms Func_def by simp
+      have "bc.Func' = Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b)"
+      proof
+        fix f
+        show "bc.Func' f = Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f"
+        proof (cases "bc.Exp.arr f")
+          show "\<not> bc.Exp.arr f \<Longrightarrow> ?thesis"
+            by (metis Func.extensionality bc.Dom_exp bc.Exp.arr_char exp_def Func_def)
+          assume f: "bc.Exp.arr f"
+          show "?thesis"
+          proof (intro bc.EXP.arr_eqI)
+            show "bc.EXP.arr (bc.Func' f)"
+              by (simp add: exp_def f)
+            show 1: "bc.EXP.arr (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f)"
+              by (metis Func.preserves_reflects_arr bc.Dom_exp exp_def f Func_def)
+            show "bc.EXP.Dom (bc.Func' f) =
+                  bc.EXP.Dom (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f)"
+            proof
+              fix x
+              show "bc.EXP.Dom (bc.Func' f) x =
+                    bc.EXP.Dom (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x"
+              proof (cases "B.arr x")
+                assume x: "\<not> B.arr x"
+                have "bc.EXP.Dom (bc.Func' f) x = C.null"
+                  using x bc.EXP.extensionality bc.EXP.arr_char apply auto[1]
+                   apply (meson simulation.extensionality transformation_def)
+                  by (meson bc.Exp.inj_image_rts_axioms f inj_image_rts.arr_char)
+                also have "... = bc.EXP.Dom
+                                   (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x"
+                proof -
+                  have "simulation (Dom b) (Dom c)
+                          (bc.EXP.Dom (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f))"
+                    using 1 \<open>bc.EXP.arr (bc.Func' f)\<close> bc.EXP.ide_src by auto
+                  thus ?thesis
+                    using simulation.extensionality x by force
+                qed
+                finally show ?thesis by blast
+                next
+                assume x: "B.arr x"
+                have "bc.EXP.Dom
+                        (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x =
+                      bc.EXP.Map
+                        (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) (bc.Exp.src f)) x"
+                  by (metis bc.Exp.arr_src_if_arr bc.Dom_exp exp_def f Currying.Dom_Curry
+                      Currying.Map_Curry)
+                also have "... = Map (eval b c) (Pack (exp b c) b (bc.Exp.src f, x))"
+                  using assms f x Currying.Uncurry_Curry Currying.Curry_def
+                  by (simp add: exp_def)
+                also have "... = bc.Eval.map (bc.FuncxB.map (bc.Exp.src f, x))"
+                  unfolding eval_def
+                  using assms f x bc.obj_exp exp_def
+                   apply (auto simp add: bc.Exp.arr_char exp_def)
+                  by (metis (no_types, lifting) Pack.extensionality Unpack_Pack bc.Dom_exp
+                      bc.ExpxB.not_arr_null bc.FuncxB.extensionality
+                      bc.FuncxB_o_Unpack.F.A.not_arr_null bc.FuncxB_o_Unpack.F.extensionality
+                      exp_def)
+                also have "... = bc.Eval.map (bc.Func' (bc.Exp.src f), x)"
+                  using f x by auto
+                also have "... = bc.EXP.Map (bc.Func' (bc.Exp.src f)) x"
+                  using assms f x bc.Eval.map_simp
+                  by (metis bc.Exp.arr_src_if_arr bc.Dom_exp bc.EXPxB.arr_char
+                      bc.Exp.Map'.preserves_reflects_arr fst_conv snd_conv)
+                also have "... = bc.EXP.Dom (bc.Func' f) x"
+                  using assms f x
+                  by (metis (no_types, lifting) bc.EXP.con_char bc.EXP.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
+                      bc.Exp.Map'.preserves_con bc.Exp.Map'.preserves_ide
+                      bc.Exp.con_arr_src(2) bc.Exp.ide_src)
+                finally show ?thesis by simp
+              qed
+            qed
+            show "bc.EXP.Cod (bc.Func' f) =
+                  bc.EXP.Cod (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f)"
+            proof
+              fix x
+              show "bc.EXP.Cod (bc.Func' f) x =
+                    bc.EXP.Cod (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x"
+              proof (cases "B.arr x")
+                assume x: "\<not> B.arr x"
+                have "bc.EXP.Cod (bc.Func' f) x = C.null"
+                  using x bc.EXP.extensionality bc.EXP.arr_char apply auto[1]
+                   apply (meson simulation.extensionality transformation_def)
+                  by (meson bc.Exp.inj_image_rts_axioms f inj_image_rts.arr_char)
+                also have "... = bc.EXP.Cod
+                                   (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x"
+                proof -
+                  have "simulation (Dom b) (Dom c)
+                          (bc.EXP.Cod (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f))"
+                    using 1 \<open>bc.EXP.arr (bc.Func' f)\<close> bc.EXP.ide_trg by auto
+                  thus ?thesis
+                    using simulation.extensionality x by force
+                qed
+                finally show ?thesis by blast
+                next
+                assume x: "B.arr x"
+                have "bc.EXP.Cod
+                        (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x =
+                      bc.EXP.Map
+                        (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) (bc.Exp.trg f)) x"
+                  by (metis bc.Exp.arr_trg_iff_arr bc.Dom_exp exp_def f Currying.Cod_Curry
+                      Currying.Map_Curry)
+                also have "... = Map (eval b c) (Pack (exp b c) b (bc.Exp.trg f, x))"
+                  using assms f x Currying.Uncurry_Curry Currying.Curry_def
+                  by (simp add: exp_def)
+                also have "... = bc.Eval.map (bc.FuncxB.map (bc.Exp.trg f, x))"
+                  unfolding eval_def
+                  using assms f x bc.obj_exp exp_def
+                   apply (auto simp add: bc.Exp.arr_char exp_def)
+                  by (metis (no_types, lifting) Pack.extensionality Unpack_Pack bc.Dom_exp
+                      bc.ExpxB.not_arr_null bc.FuncxB.extensionality
+                      bc.FuncxB_o_Unpack.F.A.not_arr_null bc.FuncxB_o_Unpack.F.extensionality
+                      exp_def)
+                also have "... = bc.Eval.map (bc.Func' (bc.Exp.trg f), x)"
+                  using f x by auto
+                also have "... = bc.EXP.Map (bc.Func' (bc.Exp.trg f)) x"
+                  using assms f x bc.Eval.map_simp
+                  by (metis bc.Exp.arr_trg_iff_arr bc.Dom_exp bc.EXPxB.arr_char
+                      bc.Exp.Map'.preserves_reflects_arr fst_conv snd_conv)
+                also have "... = bc.EXP.Map (bc.EXP.trg (bc.Func' f)) x"
+                  using bc.Exp.Map'.preserves_trg f by force
+                also have "... = bc.EXP.Cod (bc.Func' f) x"
+                  using \<open>bc.EXP.arr (bc.Func' f)\<close> bc.EXP.Map_trg by metis
+                finally show ?thesis by simp
+              qed
+            qed
+            fix x
+            assume x: "B.ide x"
+            show "bc.EXP.Map (bc.Func' f) x =
+                  bc.EXP.Map (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x"
+            proof -
+              have "bc.EXP.Map
+                      (Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) f) x =
+                     Map (eval b c) (Pack (exp b c) b (f, x))"
+                using assms f x Currying.Uncurry_Curry Currying.Curry_def
+                by (simp add: exp_def)
+              also have "... = bc.Eval.map (bc.FuncxB.map (f, x))"
+                unfolding eval_def
+                using assms f x bc.obj_exp exp_def
+                by (auto simp add: bc.Exp.arr_char exp_def)
+              also have "... = bc.Eval.map (bc.Func' f, x)"
+                using f x by auto
+              also have "... = bc.EXP.Map (bc.Func' f) x"
+                using assms f x bc.Eval.map_simp by simp
+              finally show ?thesis by simp
+            qed
+          qed
+        qed
+      qed
+      thus "Currying.Curry3 (Map (eval b c) \<circ> Pack (exp b c) b) = bc.Func'" by simp
+    qed
 
     lemma inverse_simulations_Func_Unfunc:
     assumes "obj b" and "obj c"
-    shows "inverse_simulations
-             (exponential_rts.resid (Dom b) (Dom c)) (Dom (exp b c))
-             (Func b c) (Unfunc b c)"
+    shows "invertible_simulation
+             (Dom (exp b c)) (exponential_rts.resid (Dom b) (Dom c)) (Func b c)"
+    and "inverse_simulations
+           (exponential_rts.resid (Dom b) (Dom c)) (Dom (exp b c))
+           (Func b c) (Unfunc b c)"
     proof -
       interpret bc: exponential_in_rtscat arr_type b c
         using assms by unfold_locales blast
       have "bc.Exp.resid = Dom (exp b c)"
         using assms exp_def bc.Dom_exp by metis
-      thus ?thesis
-        unfolding Func_def Unfunc_def
-        using bc.Exp.inverse_simulations_axioms inverse_simulations_sym by auto
+      show 1: "invertible_simulation (Dom (exp b c)) bc.EXP.resid (Func b c)"
+        using bc.Exp.inverse_simulations_axioms inverse_simulations_sym Func_eq
+              \<open>bc.Exp.resid = Dom (exp b c)\<close> assms(1) assms(2)
+              bc.Exp.G.invertible_simulation_axioms
+        by presburger
+      show "inverse_simulations
+              (exponential_rts.resid (Dom b) (Dom c)) (Dom (exp b c))
+              (Func b c) (Unfunc b c)"
+        unfolding Unfunc_def
+        using 1
+        by (metis inverse_simulations.inverse_eq inverse_simulations_sym
+            invertible_simulation_def')
     qed
 
     lemma simulation_Func:
@@ -3148,6 +3705,31 @@ begin
       using assms inverse_simulations_Func_Unfunc [of b c]
             inverse_simulations_def
       by fast
+
+    lemma invertible_simulation_Func:
+    assumes "obj b" and "obj c"
+    shows "invertible_simulation (Dom (exp b c)) (exponential_rts.resid (Dom b) (Dom c))
+             (Currying.Curry3 (Dom (exp b c)) (Dom b) (Dom c)
+                (Map (eval b c) \<circ> Pack (exp b c) b))"
+      using assms Func_def inverse_simulations_Func_Unfunc(1) by presburger
+
+    lemma Unfunc_eq:
+    assumes "obj b" and "obj c"
+    shows "Unfunc b c = exponential_in_rtscat.Unfunc' b c"
+    proof -
+      have "inverse_simulations (exponential_rts.resid (Dom b) (Dom c)) (Dom (exp b c))
+              (Func b c) (Unfunc b c)"
+        using assms inverse_simulations_Func_Unfunc by blast
+      moreover have "inverse_simulations
+                       (exponential_rts.resid (Dom b) (Dom c)) (Dom (exp b c))
+                       (Func b c) (exponential_in_rtscat.Unfunc' b c)"
+        using assms Unfunc_def [of b c] Func_eq [of b c]
+              exponential_in_rtscat.inverse_simulations_Func_Unfunc [of b c]
+        by (simp add: exp_def exponential_in_rtscat.intro exponential_in_rtscat_axioms.intro
+            rtscatx_axioms)
+      ultimately show ?thesis
+        using inverse_simulation_unique inverse_simulations_sym by blast
+    qed
 
     lemma Func_o_Unfunc:
     assumes "obj b" and "obj c"
@@ -3188,7 +3770,7 @@ begin
       have "Unfunc b c (Func b c t) = (Unfunc b c \<circ> Func b c) t"
         using assms by simp
       also have "... = t"
-        using assms Unfunc_o_Func [of b c] by auto
+        using assms Unfunc_o_Func by auto
       finally show ?thesis by auto
     qed
 
@@ -3206,8 +3788,8 @@ begin
         using assms bc.Map_eval comp_assoc exp_def local.eval_def
         by (simp add: exp_def eval_def)
       thus ?thesis
-        unfolding Func_def
-        by (simp add: exp_def)
+        using Func_eq exp_def
+        by (metis (no_types, lifting) bc.Dom_exp bc.obj_b bc.obj_c)
     qed
 
   end
@@ -3248,11 +3830,11 @@ begin
      *)
     definition curry :: "'A arr \<Rightarrow> 'A arr"
     where "curry f = mkarr (Dom a) Exp.resid
-                       (Unfunc \<circ> Curry3 (aXb_C.Dom (Trn f) \<circ> Pack a b))
-                       (Unfunc \<circ> Curry3 (aXb_C.Cod (Trn f) \<circ> Pack a b))
-                       (Unfunc \<circ> Curry (aXb_C.Dom (Trn f) \<circ> Pack a b)
-                                       (aXb_C.Cod (Trn f) \<circ> Pack a b)
-                                       (aXb_C.Map (Trn f) \<circ> Pack a b))"
+                       (Unfunc' \<circ> Curry3 (aXb_C.Dom (Trn f) \<circ> Pack a b))
+                       (Unfunc' \<circ> Curry3 (aXb_C.Cod (Trn f) \<circ> Pack a b))
+                       (Unfunc' \<circ> Curry (aXb_C.Dom (Trn f) \<circ> Pack a b)
+                                        (aXb_C.Cod (Trn f) \<circ> Pack a b)
+                                        (aXb_C.Map (Trn f) \<circ> Pack a b))"
 
     lemma curry_in_hom [intro]:
     assumes "\<guillemotleft>f : a \<otimes> b \<rightarrow> c\<guillemotright>"
@@ -3267,11 +3849,11 @@ begin
         using assms arr_char aXb_C.arr_char dom_char cod_char H.in_homE Dom
         by auto
 
-      let ?Src = "Unfunc \<circ> Curry3 (aXb_C.Dom (Trn f) \<circ> Pack a b)"
-      let ?Trg = "Unfunc \<circ> Curry3 (aXb_C.Cod (Trn f) \<circ> Pack a b)"
-      let ?Map = "Unfunc \<circ> Curry (aXb_C.Dom (Trn f) \<circ> Pack a b)
-                                 (aXb_C.Cod (Trn f) \<circ> Pack a b)
-                                 (aXb_C.Map (Trn f) \<circ> Pack a b)"
+      let ?Src = "Unfunc' \<circ> Curry3 (aXb_C.Dom (Trn f) \<circ> Pack a b)"
+      let ?Trg = "Unfunc' \<circ> Curry3 (aXb_C.Cod (Trn f) \<circ> Pack a b)"
+      let ?Map = "Unfunc' \<circ> Curry (aXb_C.Dom (Trn f) \<circ> Pack a b)
+                                  (aXb_C.Cod (Trn f) \<circ> Pack a b)
+                                  (aXb_C.Map (Trn f) \<circ> Pack a b)"
 
       interpret Src: simulation \<open>Dom a\<close> Exp.resid ?Src
         using obj_a obj_b simulation_Pack F.F.simulation_axioms
@@ -3292,7 +3874,7 @@ begin
                   [of "Dom (a \<otimes> b)" "Dom c"
                       "aXb_C.Dom (Trn f)" "aXb_C.Cod (Trn f)"
                       "aXb_C.Map (Trn f)" AxB.resid "Pack a b"]
-                AxB.weakly_extensional_rts_axioms
+                AxB.rts_axioms
           by blast
         have "transformation (Dom a) EXP.resid
                 (Eval.coext (Dom a) (aXb_C.Dom (Trn f) \<circ> Pack a b))
@@ -3319,15 +3901,15 @@ begin
     and "Dom (curry t) = Dom a" and "Cod (curry t) = Exp.resid"
     and "src (curry t) = curry (src t)" and "trg (curry t) = curry (trg t)"
     and "Map (curry t) =
-         (Unfunc \<circ> Curry (aXb_C.Dom (Trn t) \<circ> Pack a b)
-                         (aXb_C.Cod (Trn t) \<circ> Pack a b)
-                         (aXb_C.Map (Trn t) \<circ> Pack a b))"
+         (Unfunc' \<circ> Curry (aXb_C.Dom (Trn t) \<circ> Pack a b)
+                          (aXb_C.Cod (Trn t) \<circ> Pack a b)
+                          (aXb_C.Map (Trn t) \<circ> Pack a b))"
     proof -
-      let ?Src = "Unfunc \<circ> Curry3 (aXb_C.Dom (Trn t) \<circ> Pack a b)"
-      let ?Trg = "Unfunc \<circ> Curry3 (aXb_C.Cod (Trn t) \<circ> Pack a b)"
-      let ?Map = "Unfunc \<circ> Curry (aXb_C.Dom (Trn t) \<circ> Pack a b)
-                                 (aXb_C.Cod (Trn t) \<circ> Pack a b)
-                                 (aXb_C.Map (Trn t) \<circ> Pack a b)"
+      let ?Src = "Unfunc' \<circ> Curry3 (aXb_C.Dom (Trn t) \<circ> Pack a b)"
+      let ?Trg = "Unfunc' \<circ> Curry3 (aXb_C.Cod (Trn t) \<circ> Pack a b)"
+      let ?Map = "Unfunc' \<circ> Curry (aXb_C.Dom (Trn t) \<circ> Pack a b)
+                                  (aXb_C.Cod (Trn t) \<circ> Pack a b)
+                                  (aXb_C.Map (Trn t) \<circ> Pack a b)"
       show "arr (curry t)" and "dom (curry t) = a" and "cod (curry t) = exp"
       and "Dom (curry t) = Dom a" and "Cod (curry t) = Exp.resid"
       and "Map (curry t) = ?Map"
@@ -3387,7 +3969,7 @@ begin
           moreover have "aXb_C.Dom (Trn (trg t)) = aXb_C.Map (Trn (trg t)) \<and>
                          aXb_C.Cod (Trn (trg t)) = aXb_C.Map (Trn (trg t))"
             by (metis (no_types, lifting) Cod_trg Dom_cod Dom_dom Dom_trg
-                H.in_homE aXb_C.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S assms calculation ide_trg staE)
+                H.in_homE aXb_C.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S assms calculation V.ide_trg staE)
           moreover have "aXb_C.Cod (Trn t) =
                          aXb_C.Map
                            (residuation.trg
@@ -3409,9 +3991,9 @@ begin
 
     definition uncurry :: "'A arr \<Rightarrow> 'A arr"
     where "uncurry g = mkarr (Dom (a \<otimes> b)) (Dom c)
-                         (Uncurry (Func \<circ> exponential_rts.Dom (Trn g)) \<circ> Unpack a b)
-                         (Uncurry (Func \<circ> exponential_rts.Cod (Trn g)) \<circ> Unpack a b)
-                         (Uncurry (Func \<circ> exponential_rts.Map (Trn g)) \<circ> Unpack a b)"
+                         (Uncurry (Func' \<circ> exponential_rts.Dom (Trn g)) \<circ> Unpack a b)
+                         (Uncurry (Func' \<circ> exponential_rts.Cod (Trn g)) \<circ> Unpack a b)
+                         (Uncurry (Func' \<circ> exponential_rts.Map (Trn g)) \<circ> Unpack a b)"
 
     lemma uncurry_in_hom [intro]:
     assumes "\<guillemotleft>g : a \<rightarrow> exp\<guillemotright>"
@@ -3423,24 +4005,24 @@ begin
         by (metis (no_types, lifting) H.in_homE H_arr_char
             mkobj_simps(2) obj_a obj_char)
       interpret Cmp'oG: transformation \<open>Dom a\<close> EXP.resid
-                          \<open>Func \<circ> A_Exp.Dom (Trn g)\<close>
-                          \<open>Func \<circ> A_Exp.Cod (Trn g)\<close>
-                          \<open>Func \<circ> A_Exp.Map (Trn g)\<close>
+                          \<open>Func' \<circ> A_Exp.Dom (Trn g)\<close>
+                          \<open>Func' \<circ> A_Exp.Cod (Trn g)\<close>
+                          \<open>Func' \<circ> A_Exp.Map (Trn g)\<close>
         using Exp.Map'.simulation_axioms G.transformation_axioms
               EXP.weakly_extensional_rts_axioms transformation_whisker_left
         by simp
       have "transformation AxB.resid (Dom c)
-              (Uncurry (Func \<circ> A_Exp.Dom (Trn g)))
-              (Uncurry (Func \<circ> A_Exp.Cod (Trn g)))
-              (Uncurry (Func \<circ> A_Exp.Map (Trn g)))"
+              (Uncurry (Func' \<circ> A_Exp.Dom (Trn g)))
+              (Uncurry (Func' \<circ> A_Exp.Cod (Trn g)))
+              (Uncurry (Func' \<circ> A_Exp.Map (Trn g)))"
         using Cmp'oG.transformation_axioms Uncurry_preserves_transformations
         by blast
       hence "transformation (Dom (a \<otimes> b)) (Dom c)
-               (Uncurry (Func \<circ> A_Exp.Dom (Trn g)) \<circ> Unpack a b)
-               (Uncurry (Func \<circ> A_Exp.Cod (Trn g)) \<circ> Unpack a b)
-               (Uncurry (Func \<circ> A_Exp.Map (Trn g)) \<circ> Unpack a b)"
+               (Uncurry (Func' \<circ> A_Exp.Dom (Trn g)) \<circ> Unpack a b)
+               (Uncurry (Func' \<circ> A_Exp.Cod (Trn g)) \<circ> Unpack a b)
+               (Uncurry (Func' \<circ> A_Exp.Map (Trn g)) \<circ> Unpack a b)"
         using obj_a obj_b simulation_Unpack [of a b]
-              aXb.weakly_extensional_rts_axioms transformation_whisker_right
+              aXb.rts_axioms transformation_whisker_right
         by auto
       thus ?thesis
         unfolding uncurry_def
@@ -3457,7 +4039,7 @@ begin
     and "dom (uncurry u) = a \<otimes> b" and "cod (uncurry u) = c"
     and "Dom (uncurry u) = Dom (a \<otimes> b)" and "Cod (uncurry u) = Dom c"
     and "Map (uncurry u) =
-         Uncurry (Func \<circ> exponential_rts.Map (Trn u)) \<circ> Unpack a b"
+         Uncurry (Func' \<circ> exponential_rts.Map (Trn u)) \<circ> Unpack a b"
     and "src (uncurry u) = uncurry (src u)"
     and "trg (uncurry u) = uncurry (trg u)"         
     proof -
@@ -3468,12 +4050,12 @@ begin
         using 0 \<open>dom (uncurry u) = a \<otimes> b\<close> \<open>cod (uncurry u) = c\<close>
         by (metis Dom_dom Dom_cod)+
       show "Map (uncurry u) =
-            Uncurry (Func \<circ> exponential_rts.Map (Trn u)) \<circ> Unpack a b"
+            Uncurry (Func' \<circ> exponential_rts.Map (Trn u)) \<circ> Unpack a b"
         unfolding uncurry_def mkarr_def by simp
       have 1: "transformation (Dom (a \<otimes> b)) (Dom c)
-                 (Uncurry (Func \<circ> aXb_C.Dom (Trn u)) \<circ> Unpack a b)
-                 (Uncurry (Func \<circ> aXb_C.Cod (Trn u)) \<circ> Unpack a b)
-                 (Uncurry (Func \<circ> aXb_C.Map (Trn u)) \<circ> Unpack a b)"
+                 (Uncurry (Func' \<circ> aXb_C.Dom (Trn u)) \<circ> Unpack a b)
+                 (Uncurry (Func' \<circ> aXb_C.Cod (Trn u)) \<circ> Unpack a b)
+                 (Uncurry (Func' \<circ> aXb_C.Map (Trn u)) \<circ> Unpack a b)"
         using 0 A_Exp.src_char uncurry_def uncurry_in_hom arr_char mkarr_def
         by simp
       show "src (uncurry u) = uncurry (src u)"
@@ -3530,18 +4112,18 @@ begin
     proof -
       have "mkarr (Dom (a \<otimes> b)) (Dom c)
               (Uncurry
-                 (Func \<circ>
-                    (Unfunc \<circ>
+                 (Func' \<circ>
+                    (Unfunc' \<circ>
                        Curry3 (aXb_C.Dom (Trn t) \<circ> Pack a b))) \<circ>
                     Unpack a b)
               (Uncurry
-                 (Func \<circ>
-                    (Unfunc \<circ>
+                 (Func' \<circ>
+                    (Unfunc' \<circ>
                         Curry3 (aXb_C.Cod (Trn t) \<circ> Pack a b))) \<circ>
                    Unpack a b)
               (Uncurry
-                 (Func \<circ>
-                    (Unfunc \<circ>
+                 (Func' \<circ>
+                    (Unfunc' \<circ>
                        Curry (aXb_C.Dom (Trn t) \<circ> Pack a b)
                              (aXb_C.Cod (Trn t) \<circ> Pack a b)
                              (aXb_C.Map (Trn t) \<circ> Pack a b))) \<circ>
@@ -3580,8 +4162,7 @@ begin
         interpret T_o_Pack: transformation AxB.resid \<open>Dom c\<close>
                               Dom_o_Pack.map Cod_o_Pack.map
                               \<open>aXb_C.Map (Trn t) \<circ> Pack a b\<close>
-          using obj_a obj_b T.transformation_axioms simulation_Pack
-               AxB.weakly_extensional_rts_axioms
+          using obj_a obj_b T.transformation_axioms simulation_Pack AxB.rts_axioms
                 transformation_whisker_right
                   [of "Dom (a \<otimes> b)" "Dom c" "aXb_C.Dom (Trn t)"
                       "aXb_C.Cod (Trn t)" "aXb_C.Map (Trn t)"
@@ -3600,7 +4181,7 @@ begin
         proof -
           have "?Src =
                 Uncurry
-                  ((Func \<circ> Unfunc) \<circ>
+                  ((Func' \<circ> Unfunc') \<circ>
                         Curry3 (aXb_C.Dom (Trn t) \<circ> Pack a b)) \<circ>
                      Unpack a b"
             using comp_assoc by metis
@@ -3626,7 +4207,7 @@ begin
         proof -
           have "?Trg =
                 Uncurry
-                  ((Func \<circ> Exp.map\<^sub>e\<^sub>x\<^sub>t) \<circ>
+                  ((Func' \<circ> Exp.map\<^sub>e\<^sub>x\<^sub>t) \<circ>
                         Curry3 (aXb_C.Cod (Trn t) \<circ> Pack a b)) \<circ>
                      Unpack a b"
             using comp_assoc by metis
@@ -3653,7 +4234,7 @@ begin
         proof -
           have "?Map =
                 Uncurry
-                  ((Func \<circ> Unfunc) \<circ>
+                  ((Func' \<circ> Unfunc') \<circ>
                         Curry (aXb_C.Dom (Trn t) \<circ> Pack a b)
                               (aXb_C.Cod (Trn t) \<circ> Pack a b)
                               (aXb_C.Map (Trn t) \<circ> Pack a b)) \<circ>
@@ -3700,15 +4281,15 @@ begin
       have "mkarr (Dom a) Exp.resid
               (Exp.map\<^sub>e\<^sub>x\<^sub>t \<circ>
                  Curry3
-                   ((Uncurry (Func \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ> Pack a b))
+                   ((Uncurry (Func' \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ> Pack a b))
               (Exp.map\<^sub>e\<^sub>x\<^sub>t \<circ>
                  Curry3
-                   ((Uncurry (Func \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b))
+                   ((Uncurry (Func' \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b))
               (Exp.map\<^sub>e\<^sub>x\<^sub>t \<circ>
                  Curry
-                   ((Uncurry (Func \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ> Pack a b)
-                   ((Uncurry (Func \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b)
-                   ((Uncurry (Func \<circ> A_Exp.Map (Trn u)) \<circ> Unpack a b) \<circ> Pack a b))
+                   ((Uncurry (Func' \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ> Pack a b)
+                   ((Uncurry (Func' \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b)
+                   ((Uncurry (Func' \<circ> A_Exp.Map (Trn u)) \<circ> Unpack a b) \<circ> Pack a b))
                = u"
         (is "?LHS = u")
       proof -
@@ -3726,63 +4307,63 @@ begin
           by (metis (no_types, lifting) Dom_cod Dom_dom Dom_exp arr_coincidence)
         interpret FuncoDom: composite_simulation
                               \<open>Dom a\<close> Exp.resid EXP.resid
-                              \<open>A_Exp.Dom (Trn u)\<close> Func
+                              \<open>A_Exp.Dom (Trn u)\<close> Func'
           ..
         interpret FuncoDom: simulation_as_transformation
-                              \<open>Dom a\<close> EXP.resid \<open>Func \<circ> A_Exp.Dom (Trn u)\<close>
+                              \<open>Dom a\<close> EXP.resid \<open>Func' \<circ> A_Exp.Dom (Trn u)\<close>
           ..
         interpret FuncoCod: composite_simulation
                               \<open>Dom a\<close> Exp.resid EXP.resid
-                              \<open>A_Exp.Cod (Trn u)\<close> Func
+                              \<open>A_Exp.Cod (Trn u)\<close> Func'
           ..
         interpret FuncoCod: simulation_as_transformation
-                              \<open>Dom a\<close> EXP.resid \<open>Func \<circ> A_Exp.Cod (Trn u)\<close>
+                              \<open>Dom a\<close> EXP.resid \<open>Func' \<circ> A_Exp.Cod (Trn u)\<close>
           ..
         interpret FuncoU: transformation \<open>Dom a\<close> EXP.resid
                             FuncoDom.map FuncoCod.map
-                            \<open>Func \<circ> A_Exp.Map (Trn u)\<close>
+                            \<open>Func' \<circ> A_Exp.Map (Trn u)\<close>
           using U.transformation_axioms Exp.Map'.simulation_axioms
                 EXP.weakly_extensional_rts_axioms transformation_whisker_left
           by blast
         have 1: "transformation AxB.resid (Dom c)
                    (Uncurry FuncoDom.map) (Uncurry FuncoCod.map)
-                   (Uncurry (Func \<circ> aXb_C.Map (Trn u)))"
+                   (Uncurry (Func' \<circ> aXb_C.Map (Trn u)))"
           using Uncurry_preserves_transformations FuncoU.transformation_axioms
           by simp
-        have 2: "(Uncurry (Func \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ>
+        have 2: "(Uncurry (Func' \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ>
                     Pack a b =
-                 Uncurry (Func \<circ> A_Exp.Dom (Trn u))"
+                 Uncurry (Func' \<circ> A_Exp.Dom (Trn u))"
         proof -
-          have "(Uncurry (Func \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
-                Uncurry (Func \<circ> A_Exp.Dom (Trn u)) \<circ> (Unpack a b \<circ> Pack a b)"
+          have "(Uncurry (Func' \<circ> A_Exp.Dom (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
+                Uncurry (Func' \<circ> A_Exp.Dom (Trn u)) \<circ> (Unpack a b \<circ> Pack a b)"
             using comp_assoc by metis
-          also have "... = Uncurry (Func \<circ> A_Exp.Dom (Trn u)) \<circ> I AxB.resid"
+          also have "... = Uncurry (Func' \<circ> A_Exp.Dom (Trn u)) \<circ> I AxB.resid"
             using obj_a obj_b Unpack_o_Pack by auto
-          also have "... = Uncurry (Func \<circ> A_Exp.Dom (Trn u))"
+          also have "... = Uncurry (Func' \<circ> A_Exp.Dom (Trn u))"
             using 1 transformation_def comp_simulation_identity by blast
           finally show ?thesis by simp
         qed
-        have 3: "(Uncurry (Func \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
-                 Uncurry (Func \<circ> A_Exp.Cod (Trn u))"
+        have 3: "(Uncurry (Func' \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
+                 Uncurry (Func' \<circ> A_Exp.Cod (Trn u))"
         proof -
-          have "(Uncurry (Func \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
-                Uncurry (Func \<circ> A_Exp.Cod (Trn u)) \<circ> (Unpack a b \<circ> Pack a b)"
+          have "(Uncurry (Func' \<circ> A_Exp.Cod (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
+                Uncurry (Func' \<circ> A_Exp.Cod (Trn u)) \<circ> (Unpack a b \<circ> Pack a b)"
             using comp_assoc by metis
-          also have "... = Uncurry (Func \<circ> A_Exp.Cod (Trn u)) \<circ> I AxB.resid"
+          also have "... = Uncurry (Func' \<circ> A_Exp.Cod (Trn u)) \<circ> I AxB.resid"
             using obj_a obj_b Unpack_o_Pack by auto
-          also have "... = Uncurry (Func \<circ> A_Exp.Cod (Trn u))"
+          also have "... = Uncurry (Func' \<circ> A_Exp.Cod (Trn u))"
             using 1 transformation_def comp_simulation_identity by blast
           finally show ?thesis by simp
         qed
-        have 4: "(Uncurry (Func \<circ> A_Exp.Map (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
-                 Uncurry (Func \<circ> A_Exp.Map (Trn u))"
+        have 4: "(Uncurry (Func' \<circ> A_Exp.Map (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
+                 Uncurry (Func' \<circ> A_Exp.Map (Trn u))"
         proof -
-          have "(Uncurry (Func \<circ> A_Exp.Map (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
-                Uncurry (Func \<circ> A_Exp.Map (Trn u)) \<circ> (Unpack a b \<circ> Pack a b)"
+          have "(Uncurry (Func' \<circ> A_Exp.Map (Trn u)) \<circ> Unpack a b) \<circ> Pack a b =
+                Uncurry (Func' \<circ> A_Exp.Map (Trn u)) \<circ> (Unpack a b \<circ> Pack a b)"
             using comp_assoc by metis
-          also have "... = Uncurry (Func \<circ> A_Exp.Map (Trn u)) \<circ> I AxB.resid"
+          also have "... = Uncurry (Func' \<circ> A_Exp.Map (Trn u)) \<circ> I AxB.resid"
             using obj_a obj_b Unpack_o_Pack by auto
-          also have "... = Uncurry (Func \<circ> A_Exp.Map (Trn u))"
+          also have "... = Uncurry (Func' \<circ> A_Exp.Map (Trn u))"
             using 1 transformation_def comp_transformation_identity by blast
           finally show ?thesis by simp
         qed
@@ -3839,7 +4420,7 @@ begin
     lemma uncurry_expansion:
     assumes "\<guillemotleft>u : a \<rightarrow> exp\<guillemotright>"
     shows "uncurry u = eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI')
       interpret AxB: identity_simulation AxB.resid ..
       interpret P\<^sub>0: simulation_as_transformation AxB.resid \<open>Dom b\<close> AxB.P\<^sub>0 ..
       interpret P\<^sub>1: simulation_as_transformation AxB.resid \<open>Dom a\<close> AxB.P\<^sub>1 ..
@@ -3851,504 +4432,455 @@ begin
         using assms H.ide_dom by blast
       have src_u: "\<guillemotleft>src u : a \<rightarrow>\<^sub>s\<^sub>t\<^sub>a exp\<guillemotright>"
         using assms by fastforce
-      have 0: "\<guillemotleft>eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle> : a \<otimes> b \<rightarrow> c\<guillemotright>"
+      have 1: "\<guillemotleft>eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle> : a \<otimes> b \<rightarrow> c\<guillemotright>"
         using assms obj_a obj_b by auto
-      have 00: "\<guillemotleft>eval \<star> \<langle>src u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle> : a \<otimes> b \<rightarrow> c\<guillemotright>"
-        using src_u obj_a obj_b by auto
       have Dom: "Dom (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>) = Dom (a \<otimes> b)"
-        using 0 Dom_dom [of "eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"] by auto
+        using 1 Dom_dom [of "eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"] by auto
       have Cod: "Cod (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>) = Dom c"
-        using 0 Cod_dom [of "eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"]
+        using 1 Cod_dom [of "eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"]
         by (metis (no_types, lifting) Dom_cod H.in_homE H_arr_char arr_char)
-      show "uncurry u \<noteq> Null"
-        using assms uncurry_simps(1) V.not_arr_null null_char by metis
-      show "eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle> \<noteq> Null"
-        using assms eval_in_hom null_char tuple_in_hom pr_in_hom
-        by (metis (no_types, lifting) H.comp_in_homI H.seqI' V.not_arr_null
-            arr_coincidence obj_a obj_b)
-      show 1: "Dom (uncurry u) = Dom (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+      show "arr (uncurry u)"
+        by (simp add: assms)
+      show "arr (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+        using 1 by blast
+      show "Dom (uncurry u) = Dom (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
         by (simp add: Dom assms)
-      show 2: "Cod (uncurry u) = Cod (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+      show "Cod (uncurry u) = Cod (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
         by (simp add: Cod assms)
-      show "Trn (uncurry u) = Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
-      proof (intro aXb_C.arr_eqI)
-        show "aXb_C.arr (Trn (uncurry u))"
-          using assms arr_char [of "uncurry u"] by auto
-        show "aXb_C.arr (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
-          using assms(1) 0 1 2 arr_char [of "eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"]
-                Dom_dom Dom_cod
+      show "Src (uncurry u) = Src (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+      proof -
+        have "Src (uncurry u) = aXb_C.Map (aXb_C.src (Trn (uncurry u)))"
+          using arr_char assms uncurry_simps(1) by force
+        also have "... = Map (src (uncurry u))"
+          using assms(1) src_char by force
+        also have "... = Map (uncurry (src u))"
+          using assms(1) uncurry_simps by simp
+        also have "... = Uncurry (Func' \<circ> Map (src u)) \<circ> Unpack a b"
+          unfolding uncurry_def mkarr_def by simp
+        also have "... = Eval.map \<circ>
+                           product_simulation.map (Dom a) (Dom b)
+                             (Func' \<circ> Map (src u)) B.map \<circ>
+                             Unpack a b"
+        proof -
+          have "simulation (Dom a) EXP.resid (Func' \<circ> A_Exp.Map (Trn (src u)))"
+            using assms Exp.Map'.simulation_axioms sta_char A_Exp.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
+                  simulation_comp
+                    [of "Dom a" Exp.resid "A_Exp.Map (Trn (src u))"
+                        EXP.resid Func']
+            by (metis (no_types, lifting) Cod_src Dom_cod Dom_exp Dom_src
+                H.in_homE H.seqI H_seq_char cod_pr1 V.ide_src obj_a pr_simps(4))
+          thus ?thesis
+            using Eval.Uncurry_simulation_expansion
+                    [of "Dom a" "Exp.map'\<^sub>e\<^sub>x\<^sub>t \<circ> A_Exp.Map (Trn (src u))"]
+                  A.weakly_extensional_rts_axioms
+            by auto
+        qed
+        also have "... = Eval.map \<circ>
+                           product_simulation.map (Dom a) (Dom b)
+                             (Func' \<circ> Map (src u)) B.map \<circ>
+                               (\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> \<circ> Unpack a b)"
+          by (metis (no_types, lifting) AxB.tuple_proj
+              comp_pointwise_tuple obj_a obj_b simulation_Unpack)
+        also have "... = Eval.map \<circ>
+                           (product_simulation.map (Dom a) (Dom b)
+                              (Func' \<circ> Map (src u)) B.map \<circ>
+                                 \<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                              Unpack a b"
           by auto
-        show "aXb_C.Dom (Trn (uncurry u)) =
-              aXb_C.Dom (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
+        also have "... = Eval.map \<circ>
+                           \<langle>\<langle>Func' \<circ> Map (src u) \<circ> AxB.P\<^sub>1, B.map \<circ> AxB.P\<^sub>0\<rangle>\<rangle> \<circ>
+                             Unpack a b"
         proof -
-          have 4: "arr (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
-            using 0 by blast
-          have 5: "sta \<langle>src u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
-            using assms 00 sta_tuple sta_p\<^sub>0 sta_p\<^sub>1
-            by (metis (no_types, lifting) H.dom_comp H.in_homE
-                H.seqI cod_pr1 obj_a obj_b pr_simps(1-2,4-5)
-                src_u sta_hcomp)
-          have "aXb_C.Dom (Trn (uncurry u)) =
-                Eval.map \<circ>
-                  product_simulation.map (Dom a) (Dom b)
-                    (Func \<circ> Map (src u)) B.map \<circ>
-                  Unpack a b"
-          proof -
-            have "aXb_C.Dom (Trn (uncurry u)) =
-                  aXb_C.Map (aXb_C.src (Trn (uncurry u)))"
-              by (simp add: \<open>aXb_C.arr (Trn (uncurry u))\<close>)
-            also have "... = Map (src (uncurry u))"
-              using assms(1) src_char by force
-            also have "... = Map (uncurry (src u))"
-              using assms(1) uncurry_simps by simp
-            also have "... = Uncurry (Func \<circ> Map (src u)) \<circ> Unpack a b"
-              unfolding uncurry_def mkarr_def by simp
-            also have "... = Eval.map \<circ>
-                               product_simulation.map (Dom a) (Dom b)
-                                 (Func \<circ> Map (src u)) B.map \<circ>
-                                 Unpack a b"
-            proof -
-              have "simulation (Dom a) EXP.resid (Func \<circ> A_Exp.Map (Trn (src u)))"
-                using assms Exp.Map'.simulation_axioms sta_char
-                      A_Exp.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S simulation_comp
-                by (metis (no_types, lifting) Cod_src Dom_cod Dom_dom
-                    Dom_exp Dom_src H.in_homE V.ide_src arr_coincidence)
-              thus ?thesis
-                using Eval.Uncurry_simulation_expansion
-                        [of "Dom a" "Exp.map'\<^sub>e\<^sub>x\<^sub>t \<circ> A_Exp.Map (Trn (src u))"]
-                      A.weakly_extensional_rts_axioms
-                by auto
-            qed
-            finally show ?thesis by simp
-          qed
-          moreover
-          have "aXb_C.Dom (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)) =
-                Eval.map \<circ>
-                   product_simulation.map (Dom a) (Dom b)
-                     (Func \<circ> Map (src u)) B.map \<circ>
-                   Unpack a b"
-          proof -
-            have "aXb_C.Dom (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)) =
-                  aXb_C.Map (aXb_C.src (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)))"
-              using assms(1) 0 4 Dom Cod arr_char by auto
-            also have "... = aXb_C.Map (Trn (src (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)))"
-              using 4 src_char Cod Dom Trn.simps(1) by presburger
-            also have "... = Map (eval \<star> \<langle>src u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
-            proof -
-              have "H.seq eval \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
-                by (simp add: 4)
-              moreover have "H.span (u \<star> \<pp>\<^sub>1[a, b]) \<pp>\<^sub>0[a, b]"
-                by (metis (no_types, lifting) H.not_arr_null H_seq_char
-                    arr_coincidence calculation tuple_ext)
-              ultimately show ?thesis
-                using obj_a obj_b sta_p\<^sub>0 sta_p\<^sub>1 by auto
-            qed
-            also have "... = Map eval \<circ> Map \<langle>src u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
-              using "00" Map_hcomp by blast
-            also have "... = Map eval \<circ>
-                               (Pack exp b \<circ>
-                                  \<langle>\<langle>Map (src u \<star> \<pp>\<^sub>1[a, b]), AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
-              using assms(1) obj_a obj_b Map_p\<^sub>0
-                    Map_tuple [of "src u \<star> \<pp>\<^sub>1[a, b]" "a \<otimes> b" exp "\<pp>\<^sub>0[a, b]" b]
-              by (metis (no_types, lifting) H.comp_in_homI pr_in_hom(1-2) src_u)
-            also have "... = Map eval \<circ>
-                               (Pack exp b \<circ>
-                                  \<langle>\<langle>Map (src u) \<circ> (AxB.P\<^sub>1 \<circ> Unpack a b),
-                                    AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
-              using H.seqI Map_hcomp Map_p\<^sub>1 assms obj_b pr_simps(4) by auto
-            also have "... = Map eval \<circ>
-                               Pack exp b \<circ>
-                                 \<langle>\<langle>Map (src u) \<circ> (AxB.P\<^sub>1 \<circ> Unpack a b),
-                                   AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>"
-              using comp_assoc by metis
-            also have "... = (Eval.map \<circ>
-                                (FuncxB.map \<circ>
-                                   (Unpack exp b \<circ> Pack exp b)) \<circ>
-                                     \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                     Unpack a b"
-              using Map_eval
-                    comp_pointwise_tuple
-                      [of "Map (src u) \<circ> AxB.P\<^sub>1" AxB.P\<^sub>0 "Unpack a b"]
-              by (simp add: comp_assoc)
-            also have "... = (Eval.map \<circ>
-                                FuncxB.map \<circ>
-                                  \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                  Unpack a b"
-              using obj_b obj_exp Unpack_o_Pack Dom_exp
-                    FuncxB.simulation_axioms comp_simulation_identity
-                      [of ExpxB.resid EXPxB.resid FuncxB.map]
-              by presburger
-            also have "... = Eval.map \<circ>
-                                (FuncxB.map \<circ>
-                                   \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                 Unpack a b"
-              by auto
-            also have "... = Eval.map \<circ>
-                               \<langle>\<langle>Func \<circ> Map (src u) \<circ> AxB.P\<^sub>1,
-                                 B.map \<circ> AxB.P\<^sub>0\<rangle>\<rangle> \<circ>
-                                 Unpack a b"
-            proof -
-              have 1: "Src u = Map (src u)"
-                using assms Map_simps(3) by fastforce
-              interpret src_uoP\<^sub>1: simulation AxB.resid Exp.resid
-                                    \<open>Map (src u) \<circ> AxB.P\<^sub>1\<close>
-                using 1 AxB.P\<^sub>1.simulation_axioms U.F.simulation_axioms
-                      simulation_comp
-                by auto
-              interpret src_uoP\<^sub>1: simulation_as_transformation
-                                    AxB.resid Exp.resid
-                                    \<open>Map (src u) \<circ> AxB.P\<^sub>1\<close>
-                ..
-              show ?thesis
-                using src_uoP\<^sub>1.transformation_axioms B.simulation_axioms
-                      Exp.Map'.simulation_axioms P\<^sub>0.transformation_axioms
-                      comp_product_simulation_tuple2
-                        [of Exp.resid EXP.resid Func "Dom b" "Dom b" B.map
-                            AxB.resid _ _ "Map (src u) \<circ> AxB.P\<^sub>1" _ _ AxB.P\<^sub>0]
-                by (simp add: comp_assoc)
-            qed
-            also have "... = Eval.map \<circ>
-                               (product_simulation.map (Dom a) (Dom b)
-                                  (Func \<circ> Map (src u)) B.map \<circ>
-                                     \<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                  Unpack a b"
-            proof -
-              have "simulation (Dom a) EXP.resid (Func \<circ> Map (src u))"
-                using Exp.Map'.simulation_axioms U.F.simulation_axioms
-                      simulation_comp Dom_exp H.arrI Map_simps(3) assms
-                by auto
-              thus ?thesis
-                using B.simulation_axioms P\<^sub>0.transformation_axioms
-                      P\<^sub>1.transformation_axioms
-                      comp_product_simulation_tuple2
-                        [of "Dom a" EXP.resid "Func \<circ> Map (src u)"
-                            "Dom b" "Dom b" B.map AxB.resid
-                            AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>0 AxB.P\<^sub>0 AxB.P\<^sub>0]
-                      simulation_as_transformation.intro
-                      AxB.weakly_extensional_rts_axioms
-                      A.weakly_extensional_rts_axioms
-                      B.weakly_extensional_rts_axioms
-                by simp
-            qed
-            also have "... = Eval.map \<circ>
-                               product_simulation.map (Dom a) (Dom b)
-                                 (Func \<circ> Map (src u)) B.map \<circ>
-                                 (\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> \<circ> Unpack a b)"
-              by auto
-            also have "... = Eval.map \<circ>
-                               (product_simulation.map (Dom a) (Dom b)
-                                  (Func \<circ> Map (src u)) B.map) \<circ>
-                               Unpack a b"
-            proof -
-              interpret AxB: identity_simulation AxB.resid ..
-              have "\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> = I AxB.resid"
-                using AxB.tuple_proj [of AxB.resid "I AxB.resid"]
-                      AxB.simulation_axioms
-                      comp_simulation_identity [of AxB.resid "Dom b" AxB.P\<^sub>0]
-                      comp_simulation_identity [of AxB.resid "Dom a" AxB.P\<^sub>1]
-                      AxB.P\<^sub>0.simulation_axioms AxB.P\<^sub>1.simulation_axioms
-                by simp
-              thus ?thesis
-                using obj_a obj_b simulation_Unpack
-                      comp_identity_simulation
-                        [of "Dom (a \<otimes> b)" AxB.resid "Unpack a b"]
-                by auto
-            qed
-            finally show ?thesis by blast
-          qed
-          ultimately show ?thesis by simp
-        qed
-        show "aXb_C.Cod (Trn (uncurry u)) =
-              aXb_C.Cod (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
-        proof -
-          have "aXb_C.Cod (Trn (uncurry u)) =
-                aXb_C.Map (aXb_C.trg (Trn (uncurry u)))"
-            by (simp add: \<open>aXb_C.arr (Trn (uncurry u))\<close>)
-          also have "... = Map (trg (uncurry u))"
-            using assms(1) trg_char by force
-          also have "... = Map (uncurry (trg u))"
-            using assms(1) uncurry_simps by simp
-          also have "... = Uncurry (Func \<circ> Map (trg u)) \<circ> Unpack a b"
-            unfolding uncurry_def mkarr_def by simp
-          also have "... = Eval.map \<circ>
-                             product_simulation.map (Dom a) (Dom b)
-                               (Func \<circ> Map (trg u)) B.map \<circ>
-                               Unpack a b"
-          proof -
-            have "simulation (Dom a) EXP.resid (Func \<circ> A_Exp.Map (Trn (trg u)))"
-              using assms Exp.Map'.simulation_axioms sta_char A_Exp.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
-                    simulation_comp
-                      [of "Dom a" Exp.resid "A_Exp.Map (Trn (trg u))"
-                          EXP.resid Func]
-              by (metis (no_types, lifting) Cod_trg Dom_cod Dom_exp Dom_trg
-                  H.in_homE H.seqI H_seq_char cod_pr1 ide_trg obj_a pr_simps(4))
-            thus ?thesis
-              using Eval.Uncurry_simulation_expansion
-                      [of "Dom a" "Exp.map'\<^sub>e\<^sub>x\<^sub>t \<circ> A_Exp.Map (Trn (trg u))"]
-                    A.weakly_extensional_rts_axioms
-              by auto
-          qed
-          also have "... = Eval.map \<circ>
-                             product_simulation.map (Dom a) (Dom b)
-                               (Func \<circ> Map (trg u)) B.map \<circ>
-                                 (\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> \<circ> Unpack a b)"
-            by (metis (no_types, lifting) AxB.tuple_proj
-                comp_pointwise_tuple obj_a obj_b simulation_Unpack)
-          also have "... = Eval.map \<circ>
-                             (product_simulation.map (Dom a) (Dom b)
-                                (Func \<circ> Map (trg u)) B.map \<circ>
-                                   \<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                Unpack a b"
+          have "simulation (Dom a) EXP.resid (Func' \<circ> Map (src u))"
+            using Exp.Map'.simulation_axioms U.F.simulation_axioms
+                  simulation_comp Dom_exp H.arrI Map_simps(3) assms
             by auto
-          also have "... = Eval.map \<circ>
-                             \<langle>\<langle>Func \<circ> Map (trg u) \<circ> AxB.P\<^sub>1, B.map \<circ> AxB.P\<^sub>0\<rangle>\<rangle> \<circ>
-                               Unpack a b"
-          proof -
-            have "simulation (Dom a) EXP.resid (Func \<circ> Map (trg u))"
-              using Exp.Map'.simulation_axioms U.G.simulation_axioms
-                    simulation_comp Dom_exp H.arrI Map_simps(4) assms
-              by auto
-            thus ?thesis
-              using B.simulation_axioms P\<^sub>0.transformation_axioms
-                    P\<^sub>1.transformation_axioms
-                    comp_product_simulation_tuple2
-                      [of "Dom a" EXP.resid "Func \<circ> Map (trg u)"
-                           "Dom b" "Dom b" B.map
-                           AxB.resid AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>0 AxB.P\<^sub>0 AxB.P\<^sub>0]
-              by (simp add: comp_assoc)
-          qed
-          also have "... = Eval.map \<circ>
-                              (FuncxB.map \<circ>
+          thus ?thesis
+            using B.simulation_axioms P\<^sub>0.transformation_axioms
+                  P\<^sub>1.transformation_axioms
+                  comp_product_simulation_tuple2
+                    [of "Dom a" EXP.resid "Func' \<circ> Map (src u)"
+                         "Dom b" "Dom b" B.map
+                         AxB.resid AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>0 AxB.P\<^sub>0 AxB.P\<^sub>0]
+            by (simp add: comp_assoc)
+        qed
+        also have "... = Eval.map \<circ>
+                            (FuncxB.map \<circ>
+                               \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                             Unpack a b"
+        proof -
+          have 1: "Src u = Map (src u)"
+            using assms Map_simps(3) by fastforce
+          interpret src_uoP\<^sub>1: simulation AxB.resid Exp.resid
+                                \<open>Map (src u) \<circ> AxB.P\<^sub>1\<close>
+            using 1 AxB.P\<^sub>1.simulation_axioms U.F.simulation_axioms
+                  simulation_comp
+            by auto
+          interpret src_uoP\<^sub>1: simulation_as_transformation AxB.resid Exp.resid
+                                \<open>Map (src u) \<circ> AxB.P\<^sub>1\<close>
+            ..
+          interpret P\<^sub>0: simulation_as_transformation AxB.resid \<open>Dom b\<close> AxB.P\<^sub>0
+            ..
+          show ?thesis
+            using src_uoP\<^sub>1.transformation_axioms B.simulation_axioms
+                  Exp.Map'.simulation_axioms P\<^sub>0.transformation_axioms
+                  comp_product_simulation_tuple2
+                    [of Exp.resid EXP.resid Func' "Dom b" "Dom b" B.map
+                        AxB.resid _ _ "Map (src u) \<circ> AxB.P\<^sub>1" _ _ AxB.P\<^sub>0]
+            by (simp add: comp_assoc)
+        qed
+        also have "... = (Eval.map \<circ>
+                            FuncxB.map \<circ>
+                              \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                              Unpack a b"
+          by auto
+        also have "... = (Eval.map \<circ>
+                            (FuncxB.map \<circ>
+                               (Unpack exp b \<circ> Pack exp b)) \<circ>
+                                 \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                                 Unpack a b"
+          using obj_b obj_exp Unpack_o_Pack Dom_exp FuncxB.simulation_axioms
+                comp_simulation_identity [of ExpxB.resid EXPxB.resid FuncxB.map]
+          by presburger
+        also have "... = Map eval \<circ>
+                           Pack exp b \<circ>
+                             \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
+                               AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>"
+          using Map_eval
+                comp_pointwise_tuple
+                  [of "Map (src u) \<circ> AxB.P\<^sub>1" AxB.P\<^sub>0 "Unpack a b"]
+          by (simp add: comp_assoc)
+        also have "... = Map eval \<circ>
+                           (Pack exp b \<circ>
+                              \<langle>\<langle>Map (src u) \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
+                                AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
+          using comp_assoc by metis
+        also have "... = Map eval \<circ>
+                           (Pack exp b \<circ>
+                              \<langle>\<langle>Map (src u \<star> p\<^sub>1 a b),
+                                AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
+          by (metis (no_types, lifting) H.in_homE H.seqI Map_hcomp
+              Map_p\<^sub>1 assms cod_pr1 comp_assoc dom_src obj_a obj_b
+              pr_simps(4) src.preserves_arr)
+        also have "... = Map eval \<circ> Map \<langle>src u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
+        proof -
+          have "\<guillemotleft>src u \<star> \<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> exp\<guillemotright>"
+            using assms(1) obj_a obj_b sta_p\<^sub>0 [of a b] sta_p\<^sub>1 [of a b] H.seqI
+            by auto
+          moreover have "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>"
+            using obj_a obj_b by blast
+          ultimately show ?thesis
+            using assms(1) obj_a obj_b Map_p\<^sub>0
+                  Map_tuple [of "src u \<star> \<pp>\<^sub>1[a, b]" "a \<otimes> b" exp "\<pp>\<^sub>0[a, b]" b]
+            by auto
+        qed
+        also have "... = Map (eval \<star> \<langle>src u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+          using assms 1 Map_eval Map_hcomp H.cod_comp H.dom_comp H.seqI
+                cod_pr0 cod_pr1 cod_src cod_tuple dom_src eval_in_hom
+                obj_a obj_b pr_simps(1-2,4-5) src.preserves_arr tuple_simps(1)
+            by (elim H.in_homE) presburger
+        also have "... = Map (src (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
+        proof -
+          have "H.seq eval \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
+            using 1 by blast
+          moreover have "H.span (u \<star> \<pp>\<^sub>1[a, b]) \<pp>\<^sub>0[a, b]"
+            by (metis (no_types, lifting) H.not_arr_null H_seq_char
+                arr_coincidence calculation tuple_ext)
+          ultimately show ?thesis
+            using obj_a obj_b sta_p\<^sub>0 sta_p\<^sub>1 by auto
+        qed
+        also have "... = Src (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+          using 1 src_char Cod Dom Trn.simps(1) H.arrI Map_simps(3) by blast
+        also have "... = aXb_C.Dom (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
+          by simp
+        finally show ?thesis by simp
+      qed
+      show "Trg (uncurry u) = Trg (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+      proof -
+        have "Trg (uncurry u) = aXb_C.Map (aXb_C.trg (Trn (uncurry u)))"
+          using arr_char assms uncurry_simps(1) by force
+        also have "... = Map (trg (uncurry u))"
+          using assms(1) trg_char by force
+        also have "... = Map (uncurry (trg u))"
+          using assms(1) uncurry_simps by simp
+        also have "... = Uncurry (Func' \<circ> Map (trg u)) \<circ> Unpack a b"
+          unfolding uncurry_def mkarr_def by simp
+        also have "... = Eval.map \<circ>
+                           product_simulation.map (Dom a) (Dom b)
+                             (Func' \<circ> Map (trg u)) B.map \<circ>
+                             Unpack a b"
+        proof -
+          have "simulation (Dom a) EXP.resid (Func' \<circ> A_Exp.Map (Trn (trg u)))"
+            using assms Exp.Map'.simulation_axioms sta_char A_Exp.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
+                  simulation_comp
+                    [of "Dom a" Exp.resid "A_Exp.Map (Trn (trg u))"
+                        EXP.resid Func']
+            by (metis (no_types, lifting) Cod_trg Dom_cod Dom_exp Dom_trg
+                H.in_homE H.seqI H_seq_char cod_pr1 V.ide_trg obj_a pr_simps(4))
+          thus ?thesis
+            using Eval.Uncurry_simulation_expansion
+                    [of "Dom a" "Exp.map'\<^sub>e\<^sub>x\<^sub>t \<circ> A_Exp.Map (Trn (trg u))"]
+                  A.weakly_extensional_rts_axioms
+            by auto
+        qed
+        also have "... = Eval.map \<circ>
+                           product_simulation.map (Dom a) (Dom b)
+                             (Func' \<circ> Map (trg u)) B.map \<circ>
+                               (\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> \<circ> Unpack a b)"
+          by (metis (no_types, lifting) AxB.tuple_proj
+              comp_pointwise_tuple obj_a obj_b simulation_Unpack)
+        also have "... = Eval.map \<circ>
+                           (product_simulation.map (Dom a) (Dom b)
+                              (Func' \<circ> Map (trg u)) B.map \<circ>
+                                 \<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                              Unpack a b"
+          by auto
+        also have "... = Eval.map \<circ>
+                           \<langle>\<langle>Func' \<circ> Map (trg u) \<circ> AxB.P\<^sub>1, B.map \<circ> AxB.P\<^sub>0\<rangle>\<rangle> \<circ>
+                             Unpack a b"
+        proof -
+          have "simulation (Dom a) EXP.resid (Func' \<circ> Map (trg u))"
+            using Exp.Map'.simulation_axioms U.G.simulation_axioms
+                  simulation_comp Dom_exp H.arrI Map_simps(4) assms
+            by auto
+          thus ?thesis
+            using B.simulation_axioms P\<^sub>0.transformation_axioms
+                  P\<^sub>1.transformation_axioms
+                  comp_product_simulation_tuple2
+                    [of "Dom a" EXP.resid "Func' \<circ> Map (trg u)"
+                         "Dom b" "Dom b" B.map
+                         AxB.resid AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>1 AxB.P\<^sub>0 AxB.P\<^sub>0 AxB.P\<^sub>0]
+            by (simp add: comp_assoc)
+        qed
+        also have "... = Eval.map \<circ>
+                            (FuncxB.map \<circ>
+                               \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                             Unpack a b"
+        proof -
+          have 1: "Trg u = Map (trg u)"
+            using assms Map_simps(4) by fastforce
+          interpret trg_uoP\<^sub>1: simulation AxB.resid Exp.resid
+                                \<open>Map (trg u) \<circ> AxB.P\<^sub>1\<close>
+            using 1 AxB.P\<^sub>1.simulation_axioms U.G.simulation_axioms
+                  simulation_comp
+            by auto
+          interpret src_uoP\<^sub>1: simulation_as_transformation AxB.resid Exp.resid
+                                \<open>Map (trg u) \<circ> AxB.P\<^sub>1\<close>
+            ..
+          interpret P\<^sub>0: simulation_as_transformation AxB.resid \<open>Dom b\<close> AxB.P\<^sub>0
+            ..
+          show ?thesis
+            using src_uoP\<^sub>1.transformation_axioms B.simulation_axioms
+                  Exp.Map'.simulation_axioms P\<^sub>0.transformation_axioms
+                  comp_product_simulation_tuple2
+                    [of Exp.resid EXP.resid Func' "Dom b" "Dom b" B.map
+                        AxB.resid _ _ "Map (trg u) \<circ> AxB.P\<^sub>1" _ _ AxB.P\<^sub>0]
+            by (simp add: comp_assoc)
+        qed
+        also have "... = (Eval.map \<circ>
+                            FuncxB.map \<circ>
+                              \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                              Unpack a b"
+          by auto
+        also have "... = (Eval.map \<circ>
+                            (FuncxB.map \<circ>
+                               (Unpack exp b \<circ> Pack exp b)) \<circ>
                                  \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                               Unpack a b"
-          proof -
-            have 1: "Trg u = Map (trg u)"
-              using assms Map_simps(4) by fastforce
-            interpret trg_uoP\<^sub>1: simulation AxB.resid Exp.resid
-                                  \<open>Map (trg u) \<circ> AxB.P\<^sub>1\<close>
-              using 1 AxB.P\<^sub>1.simulation_axioms U.G.simulation_axioms
-                    simulation_comp
-              by auto
-            interpret src_uoP\<^sub>1: simulation_as_transformation AxB.resid Exp.resid
-                                  \<open>Map (trg u) \<circ> AxB.P\<^sub>1\<close>
-              ..
-            interpret P\<^sub>0: simulation_as_transformation AxB.resid \<open>Dom b\<close> AxB.P\<^sub>0
-              ..
-            show ?thesis
-              using src_uoP\<^sub>1.transformation_axioms B.simulation_axioms
-                    Exp.Map'.simulation_axioms P\<^sub>0.transformation_axioms
-                    comp_product_simulation_tuple2
-                      [of Exp.resid EXP.resid Func "Dom b" "Dom b" B.map
-                          AxB.resid _ _ "Map (trg u) \<circ> AxB.P\<^sub>1" _ _ AxB.P\<^sub>0]
-              by (simp add: comp_assoc)
-          qed
-          also have "... = (Eval.map \<circ>
-                              FuncxB.map \<circ>
-                                \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                Unpack a b"
-            by auto
-          also have "... = (Eval.map \<circ>
-                              (FuncxB.map \<circ>
-                                 (Unpack exp b \<circ> Pack exp b)) \<circ>
-                                   \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                   Unpack a b"
-            using obj_b obj_exp Unpack_o_Pack Dom_exp FuncxB.simulation_axioms
-                  comp_simulation_identity [of ExpxB.resid EXPxB.resid FuncxB.map]
-            by presburger
-          also have "... = Map eval \<circ>
-                             Pack exp b \<circ>
-                               \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
-                                 AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>"
-            using Map_eval
-                  comp_pointwise_tuple
-                    [of "Map (trg u) \<circ> AxB.P\<^sub>1" AxB.P\<^sub>0 "Unpack a b"]
-            by (simp add: comp_assoc)
-          also have "... = Map eval \<circ>
-                             (Pack exp b \<circ>
-                                \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
-                                  AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
-            using comp_assoc by metis
-          also have "... = Map eval \<circ>
-                             (Pack exp b \<circ>
-                                \<langle>\<langle>Map (trg u \<star> p\<^sub>1 a b),
-                                  AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
-            by (metis (no_types, lifting) H.in_homE H.seqI Map_hcomp
-                Map_p\<^sub>1 assms cod_pr1 comp_assoc dom_trg obj_a obj_b
-                pr_simps(4) trg.preserves_arr)
-          also have "... = Map eval \<circ> Map \<langle>trg u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
-          proof -
-            have "\<guillemotleft>trg u \<star> \<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> exp\<guillemotright>"
-              using assms(1) obj_a obj_b sta_p\<^sub>0 [of a b] sta_p\<^sub>1 [of a b] H.seqI
-              by auto
-            moreover have "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>"
-              using obj_a obj_b by blast
-            ultimately show ?thesis
-              using assms(1) obj_a obj_b Map_p\<^sub>0
-                    Map_tuple [of "trg u \<star> \<pp>\<^sub>1[a, b]" "a \<otimes> b" exp "\<pp>\<^sub>0[a, b]" b]
-              by auto
-          qed
-          also have "... = Map (eval \<star> \<langle>trg u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
-            using assms 0 Map_eval Map_hcomp H.cod_comp H.dom_comp H.seqI
-                  cod_pr0 cod_pr1 cod_trg cod_tuple dom_trg eval_in_hom
-                  obj_a obj_b pr_simps(1-2,4-5) trg.preserves_arr tuple_simps(1)
-              by (elim H.in_homE) presburger
-          also have "... = Map (trg (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
-          proof -
-            have "H.seq eval \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
-              using 0 by blast
-            moreover have "H.span (u \<star> \<pp>\<^sub>1[a, b]) \<pp>\<^sub>0[a, b]"
-              by (metis (no_types, lifting) H.not_arr_null H_seq_char
-                  arr_coincidence calculation tuple_ext)
-            ultimately show ?thesis
-              using obj_a obj_b sta_p\<^sub>0 sta_p\<^sub>1 by auto
-          qed
-          also have "... = Trg (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
-            using 0 trg_char Cod Dom Trn.simps(1) H.arrI Map_simps(4) by blast
-          also have "... = aXb_C.Cod (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
-            by simp
-          finally show ?thesis by simp
-        qed
-        fix x
-        assume x: "aXb.ide x"
-        show "aXb_C.Map (Trn (uncurry u)) x =
-              aXb_C.Map (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)) x"
+                                 Unpack a b"
+          using obj_b obj_exp Unpack_o_Pack Dom_exp FuncxB.simulation_axioms
+                comp_simulation_identity [of ExpxB.resid EXPxB.resid FuncxB.map]
+          by presburger
+        also have "... = Map eval \<circ>
+                           Pack exp b \<circ>
+                             \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
+                               AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>"
+          using Map_eval
+                comp_pointwise_tuple
+                  [of "Map (trg u) \<circ> AxB.P\<^sub>1" AxB.P\<^sub>0 "Unpack a b"]
+          by (simp add: comp_assoc)
+        also have "... = Map eval \<circ>
+                           (Pack exp b \<circ>
+                              \<langle>\<langle>Map (trg u) \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
+                                AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
+          using comp_assoc by metis
+        also have "... = Map eval \<circ>
+                           (Pack exp b \<circ>
+                              \<langle>\<langle>Map (trg u \<star> p\<^sub>1 a b),
+                                AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)"
+          by (metis (no_types, lifting) H.in_homE H.seqI Map_hcomp
+              Map_p\<^sub>1 assms cod_pr1 comp_assoc dom_trg obj_a obj_b
+              pr_simps(4) trg.preserves_arr)
+        also have "... = Map eval \<circ> Map \<langle>trg u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
         proof -
-          have "aXb_C.Map (Trn (uncurry u)) x =
-                (Uncurry (Func \<circ> Map u) \<circ> Unpack a b) x"
-            unfolding uncurry_def mkarr_def by simp
-          also have "... = (Eval.map \<circ>
-                              product_transformation.map (Dom a) (Dom b)
-                                EXP.resid (Dom b)
-                                (Func \<circ> A_Exp.Dom (Trn u)) B.map
-                                (Func \<circ> A_Exp.Map (Trn u)) B.map \<circ>
-                                Unpack a b) x"
-          proof -
-            have "transformation (Dom a) EXP.resid
-                     (Func \<circ> A_Exp.Dom (Trn u)) (Func \<circ> A_Exp.Cod (Trn u))
-                     (Func \<circ> A_Exp.Map (Trn u))"
-              using assms Exp.Map'.simulation_axioms arr_char A_Exp.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
-                    EXP.weakly_extensional_rts_axioms Dom_exp
-                    U.transformation_axioms transformation_whisker_left
-              by simp
-            thus ?thesis
-              using Eval.Uncurry_transformation_expansion
-                      [of "Dom a" "Func \<circ> A_Exp.Dom (Trn u)"
-                          "Func \<circ> A_Exp.Cod (Trn u)" "Func \<circ> A_Exp.Map (Trn u)"]
-                    A.weakly_extensional_rts_axioms
-              by auto
-          qed
-          also have "... = (Eval.map \<circ>
-                              product_transformation.map (Dom a) (Dom b)
-                                EXP.resid (Dom b)
-                                (Func \<circ> A_Exp.Dom (Trn u)) B.map
-                                (Func \<circ> Map u) B.map \<circ>
-                                (\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> \<circ> Unpack a b)) x"
-          proof -
-            have "pointwise_tuple AxB.P\<^sub>1 AxB.P\<^sub>0 = I AxB.resid"
-              using AxB.tuple_proj [of AxB.resid "I AxB.resid"]
-                    comp_simulation_identity [of AxB.resid "Dom b" AxB.P\<^sub>0]
-                    comp_simulation_identity [of AxB.resid "Dom a" AxB.P\<^sub>1]
-                    AxB.P\<^sub>0.simulation_axioms AxB.P\<^sub>1.simulation_axioms
-                    AxB.simulation_axioms
-              by simp
-            thus ?thesis
-              using obj_a obj_b simulation_Unpack
-                    comp_identity_simulation
-                      [of "Dom (a \<otimes> b)" AxB.resid "Unpack a b"]
-              by auto
-          qed
-          also have "... = (Eval.map \<circ>
-                              ((product_transformation.map (Dom a) (Dom b)
-                                 EXP.resid (Dom b)
-                                 (Func \<circ> Src u) B.map
-                                 (Func \<circ> Map u) B.map \<circ>
-                                    \<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                 Unpack a b)) x"
+          have "\<guillemotleft>trg u \<star> \<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> exp\<guillemotright>"
+            using assms(1) obj_a obj_b sta_p\<^sub>0 [of a b] sta_p\<^sub>1 [of a b] H.seqI
             by auto
-          also have "... = (Eval.map \<circ>
-                              (\<langle>\<langle>Func \<circ> (Map u \<circ> AxB.P\<^sub>1), B.map \<circ> AxB.P\<^sub>0\<rangle>\<rangle> \<circ>
-                                Unpack a b)) x"
-          proof -
-            have "transformation (Dom a) EXP.resid
-                    (Func \<circ> Src u) (Func \<circ> Trg u) (Func \<circ> Map u)"
-              using assms Exp.Map'.simulation_axioms U.transformation_axioms
-                    EXP.weakly_extensional_rts_axioms Dom_exp H.arrI
-                    Map_simps(4) transformation_whisker_left
-              by auto
-            hence "transformation_to_extensional_rts (Dom a) EXP.resid
-                    (Func \<circ> Src u) (Func \<circ> Trg u) (Func \<circ> Map u)"
-              using EXP.extensional_rts_axioms
-                    transformation_to_extensional_rts.intro
-              by blast
-            thus ?thesis
-              using B.simulation_axioms AxB.P\<^sub>0_is_simulation
-                    AxB.P\<^sub>1_is_simulation
-                    B.transformation_to_extensional_rts_axioms
-                    comp_product_transformation_tuple
-                      [of "Dom a" EXP.resid
-                          "Func \<circ> Src u" "Func \<circ> Trg u" "Func \<circ> Map u"
-                          "Dom b" "Dom b" B.map B.map B.map
-                          AxB.resid AxB.P\<^sub>1 AxB.P\<^sub>0]
-              by (simp add: comp_assoc)
-          qed
-          also have "... = (Eval.map \<circ>
-                              (FuncxB.map \<circ>
-                                 \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                               Unpack a b) x"
-          proof -
-            have "transformation (\\\<^sub>A\<^sub>x\<^sub>B) Exp.resid
-                    (Src u \<circ> AxB.P\<^sub>1) (Trg u \<circ> AxB.P\<^sub>1) (Map u \<circ> AxB.P\<^sub>1)"
-              using transformation_whisker_right AxB.P\<^sub>1.simulation_axioms
-                    U.transformation_axioms Dom_exp
-                    AxB.weakly_extensional_rts_axioms
-              by auto
-            thus ?thesis
-              using B.simulation_axioms Exp.Map'.simulation_axioms
-                    P\<^sub>0.transformation_axioms P\<^sub>1.transformation_axioms
-                    comp_product_simulation_tuple2
-                      [of Exp.resid EXP.resid Func "Dom b" "Dom b" B.map
-                          AxB.resid _ _ "Map u \<circ> AxB.P\<^sub>1" _ _ AxB.P\<^sub>0]
-              by simp
-          qed
-          also have "... = ((Eval.map \<circ>
-                               FuncxB.map \<circ>
-                                 \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                 Unpack a b) x"
+          moreover have "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>"
+            using obj_a obj_b by blast
+          ultimately show ?thesis
+            using assms(1) obj_a obj_b Map_p\<^sub>0
+                  Map_tuple [of "trg u \<star> \<pp>\<^sub>1[a, b]" "a \<otimes> b" exp "\<pp>\<^sub>0[a, b]" b]
             by auto
-          also have "... = ((Eval.map \<circ>
-                               (FuncxB.map \<circ>
-                                  (Unpack exp b \<circ> Pack exp b)) \<circ>
-                                    \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
-                                    Unpack a b) x"
-            using obj_b obj_exp Unpack_o_Pack Dom_exp FuncxB.simulation_axioms
-                  comp_simulation_identity
-                    [of ExpxB.resid EXPxB.resid FuncxB.map]
-            by presburger
-          also have "... = (Map eval \<circ>
-                              Pack exp b \<circ>
-                                \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
-                                  AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>) x"
-            using Map_eval
-                  comp_pointwise_tuple [of "Map u \<circ> AxB.P\<^sub>1" AxB.P\<^sub>0 "Unpack a b"]
-            by (simp add: comp_assoc)
-          also have "... = (Map eval \<circ>
-                              (Pack exp b \<circ>
-                                 \<langle>\<langle>Map u \<circ> (AxB.P\<^sub>1 \<circ> Unpack a b),
-                                   AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)) x"
-            using comp_assoc by metis
-          also have "... = (Map eval \<circ>
-                              (Pack exp b \<circ>
-                                 \<langle>\<langle>Map (u \<star> p\<^sub>1 a b),
-                                   AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)) x"
-            by (metis (no_types, lifting) H.seqI' Map_p\<^sub>1
-                Map_hcomp arr_coincidence assms obj_a obj_b pr_in_hom(2))
-          also have "... = (Map eval \<circ> Map \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>) x"
-            by (metis (mono_tags, lifting) H.comp_in_homI Map_p\<^sub>0 Map_tuple
-                assms obj_a obj_b pr_in_hom(1) pr_in_hom(2))
-          also have "... = (aXb_C.Map (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))) x"
-            using 0 Map_eval Map_hcomp by auto
-          finally show ?thesis by simp
         qed
+        also have "... = Map (eval \<star> \<langle>trg u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+          using assms 1 Map_eval Map_hcomp H.cod_comp H.dom_comp H.seqI
+                cod_pr0 cod_pr1 cod_trg cod_tuple dom_trg eval_in_hom
+                obj_a obj_b pr_simps(1-2,4-5) trg.preserves_arr tuple_simps(1)
+            by (elim H.in_homE) presburger
+        also have "... = Map (trg (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
+        proof -
+          have "H.seq eval \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>"
+            using 1 by blast
+          moreover have "H.span (u \<star> \<pp>\<^sub>1[a, b]) \<pp>\<^sub>0[a, b]"
+            by (metis (no_types, lifting) H.not_arr_null H_seq_char
+                arr_coincidence calculation tuple_ext)
+          ultimately show ?thesis
+            using obj_a obj_b sta_p\<^sub>0 sta_p\<^sub>1 by auto
+        qed
+        also have "... = Trg (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>)"
+          using 1 trg_char Cod Dom Trn.simps(1) H.arrI Map_simps(4) by blast
+        also have "... = aXb_C.Cod (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))"
+          by simp
+        finally show ?thesis by simp
+      qed
+      fix x
+      assume x: "residuation.ide (Dom (uncurry u)) x"
+      show "Map (uncurry u) x = Map (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>) x"
+      proof -
+        have "aXb_C.Map (Trn (uncurry u)) x =
+              (Uncurry (Func' \<circ> Map u) \<circ> Unpack a b) x"
+          unfolding uncurry_def mkarr_def by simp
+        also have "... = (Eval.map \<circ>
+                            product_transformation.map (Dom a) (Dom b)
+                              EXP.resid (Dom b)
+                              (Func' \<circ> A_Exp.Dom (Trn u)) B.map
+                              (Func' \<circ> A_Exp.Map (Trn u)) B.map \<circ>
+                              Unpack a b) x"
+        proof -
+          have "transformation (Dom a) EXP.resid
+                   (Func' \<circ> A_Exp.Dom (Trn u)) (Func' \<circ> A_Exp.Cod (Trn u))
+                   (Func' \<circ> A_Exp.Map (Trn u))"
+            using assms Exp.Map'.simulation_axioms arr_char A_Exp.ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S
+                  EXP.weakly_extensional_rts_axioms Dom_exp
+                  U.transformation_axioms transformation_whisker_left
+            by simp
+          thus ?thesis
+            using Eval.Uncurry_transformation_expansion
+                    [of "Dom a" "Func' \<circ> A_Exp.Dom (Trn u)"
+                        "Func' \<circ> A_Exp.Cod (Trn u)" "Func' \<circ> A_Exp.Map (Trn u)"]
+                  A.weakly_extensional_rts_axioms
+            by auto
+        qed
+        also have "... = (Eval.map \<circ>
+                            product_transformation.map (Dom a) (Dom b)
+                              EXP.resid (Dom b)
+                              (Func' \<circ> A_Exp.Dom (Trn u)) B.map
+                              (Func' \<circ> Map u) B.map \<circ>
+                              (\<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle> \<circ> Unpack a b)) x"
+        proof -
+          have "pointwise_tuple AxB.P\<^sub>1 AxB.P\<^sub>0 = I AxB.resid"
+            using AxB.tuple_proj [of AxB.resid "I AxB.resid"]
+                  comp_simulation_identity [of AxB.resid "Dom b" AxB.P\<^sub>0]
+                  comp_simulation_identity [of AxB.resid "Dom a" AxB.P\<^sub>1]
+                  AxB.P\<^sub>0.simulation_axioms AxB.P\<^sub>1.simulation_axioms
+                  AxB.simulation_axioms
+            by simp
+          thus ?thesis
+            using obj_a obj_b simulation_Unpack
+                  comp_identity_simulation
+                    [of "Dom (a \<otimes> b)" AxB.resid "Unpack a b"]
+            by auto
+        qed
+        also have "... = (Eval.map \<circ>
+                            ((product_transformation.map (Dom a) (Dom b)
+                               EXP.resid (Dom b)
+                               (Func' \<circ> Src u) B.map
+                               (Func' \<circ> Map u) B.map \<circ>
+                                  \<langle>\<langle>AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                               Unpack a b)) x"
+          by auto
+        also have "... = (Eval.map \<circ>
+                            (\<langle>\<langle>Func' \<circ> (Map u \<circ> AxB.P\<^sub>1), B.map \<circ> AxB.P\<^sub>0\<rangle>\<rangle> \<circ>
+                              Unpack a b)) x"
+        proof -
+          have "transformation (Dom a) EXP.resid
+                  (Func' \<circ> Src u) (Func' \<circ> Trg u) (Func' \<circ> Map u)"
+            using assms Exp.Map'.simulation_axioms U.transformation_axioms
+                  EXP.weakly_extensional_rts_axioms Dom_exp H.arrI
+                  Map_simps(4) transformation_whisker_left
+            by auto
+          hence "transformation_to_extensional_rts (Dom a) EXP.resid
+                  (Func' \<circ> Src u) (Func' \<circ> Trg u) (Func' \<circ> Map u)"
+            using EXP.extensional_rts_axioms
+                  transformation_to_extensional_rts.intro
+            by blast
+          thus ?thesis
+            using B.simulation_axioms AxB.P\<^sub>0_is_simulation
+                  AxB.P\<^sub>1_is_simulation
+                  B.transformation_to_extensional_rts_axioms
+                  comp_product_transformation_tuple
+                    [of "Dom a" EXP.resid
+                        "Func' \<circ> Src u" "Func' \<circ> Trg u" "Func' \<circ> Map u"
+                        "Dom b" "Dom b" B.map B.map B.map
+                        AxB.resid AxB.P\<^sub>1 AxB.P\<^sub>0]
+            by (simp add: comp_assoc)
+        qed
+        also have "... = (Eval.map \<circ>
+                            (FuncxB.map \<circ>
+                               \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                             Unpack a b) x"
+        proof -
+          have "transformation (\\\<^sub>A\<^sub>x\<^sub>B) Exp.resid
+                  (Src u \<circ> AxB.P\<^sub>1) (Trg u \<circ> AxB.P\<^sub>1) (Map u \<circ> AxB.P\<^sub>1)"
+            using transformation_whisker_right AxB.P\<^sub>1.simulation_axioms
+                  U.transformation_axioms Dom_exp AxB.rts_axioms
+            by auto
+          thus ?thesis
+            using B.simulation_axioms Exp.Map'.simulation_axioms
+                  P\<^sub>0.transformation_axioms P\<^sub>1.transformation_axioms
+                  comp_product_simulation_tuple2
+                    [of Exp.resid EXP.resid Func' "Dom b" "Dom b" B.map
+                        AxB.resid _ _ "Map u \<circ> AxB.P\<^sub>1" _ _ AxB.P\<^sub>0]
+            by simp
+        qed
+        also have "... = ((Eval.map \<circ>
+                             FuncxB.map \<circ>
+                               \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                               Unpack a b) x"
+          by auto
+        also have "... = ((Eval.map \<circ>
+                             (FuncxB.map \<circ>
+                                (Unpack exp b \<circ> Pack exp b)) \<circ>
+                                  \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1, AxB.P\<^sub>0\<rangle>\<rangle>) \<circ>
+                                  Unpack a b) x"
+          using obj_b obj_exp Unpack_o_Pack Dom_exp FuncxB.simulation_axioms
+                comp_simulation_identity
+                  [of ExpxB.resid EXPxB.resid FuncxB.map]
+          by presburger
+        also have "... = (Map eval \<circ>
+                            Pack exp b \<circ>
+                              \<langle>\<langle>Map u \<circ> AxB.P\<^sub>1 \<circ> Unpack a b,
+                                AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>) x"
+          using Map_eval
+                comp_pointwise_tuple [of "Map u \<circ> AxB.P\<^sub>1" AxB.P\<^sub>0 "Unpack a b"]
+          by (simp add: comp_assoc)
+        also have "... = (Map eval \<circ>
+                            (Pack exp b \<circ>
+                               \<langle>\<langle>Map u \<circ> (AxB.P\<^sub>1 \<circ> Unpack a b),
+                                 AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)) x"
+          using comp_assoc by metis
+        also have "... = (Map eval \<circ>
+                            (Pack exp b \<circ>
+                               \<langle>\<langle>Map (u \<star> p\<^sub>1 a b),
+                                 AxB.P\<^sub>0 \<circ> Unpack a b\<rangle>\<rangle>)) x"
+          by (metis (no_types, lifting) H.seqI' Map_p\<^sub>1
+              Map_hcomp arr_coincidence assms obj_a obj_b pr_in_hom(2))
+        also have "... = (Map eval \<circ> Map \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>) x"
+          by (metis (mono_tags, lifting) H.comp_in_homI Map_p\<^sub>0 Map_tuple
+              assms obj_a obj_b pr_in_hom(1) pr_in_hom(2))
+        also have "... = (aXb_C.Map (Trn (eval \<star> \<langle>u \<star> \<pp>\<^sub>1[a, b], \<pp>\<^sub>0[a, b]\<rangle>))) x"
+          using 1 Map_eval Map_hcomp by auto
+        finally show ?thesis by simp
       qed
     qed
 
@@ -4362,7 +4894,7 @@ begin
   begin
 
     interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
-      using extends_to_elementary_category_with_binary_products by blast
+      using extends_to_elementary_category_with_binary_products\<^sub>X by blast
 
     notation hcomp  (infixr \<open>\<star>\<close> 53)
     notation p\<^sub>0      (\<open>\<pp>\<^sub>0[_, _]\<close>)
@@ -4522,8 +5054,12 @@ begin
     proof -
       interpret Currying: currying_in_rtscat arr_type a b c
         using assms by unfold_locales auto
-      show ?thesis
-        unfolding curry_def Currying.curry_def Unfunc_def mkarr_def by simp
+      have "Currying.Unfunc' =
+            inverse_simulation.map (Dom (exp b c)) Currying.EXP.resid (Func b c)"
+        using assms Unfunc_def [of b c] Unfunc_eq [of b c] by simp
+      thus ?thesis
+        unfolding curry_def Currying.curry_def mkarr_def
+        using Unfunc_def by auto
     qed
 
     lemma Map_uncurry:
@@ -4535,7 +5071,8 @@ begin
       interpret Currying: currying_in_rtscat arr_type a b c
         using assms by unfold_locales auto
       show ?thesis
-        unfolding uncurry_def Currying.uncurry_def Func_def mkarr_def by simp
+        unfolding uncurry_def Currying.uncurry_def mkarr_def
+        using assms Func_eq by auto
     qed
 
   end
@@ -4550,7 +5087,7 @@ begin
   begin
 
     interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
-      using extends_to_elementary_category_with_binary_products by blast
+      using extends_to_elementary_category_with_binary_products\<^sub>X by blast
 
     notation prod    (infixr \<open>\<otimes>\<close> 51)
 
@@ -4837,7 +5374,7 @@ begin
           using T by blast
         let ?t = "mkarr One.resid (Dom a) Q R T"
         have t: "\<guillemotleft>?t : \<^bold>\<one> \<rightarrow> a\<guillemotright>"
-        proof
+        proof (intro H.in_homI)
           show "H.arr ?t"
             using A.extensional_rts_axioms A.small_rts_axioms One.is_extensional_rts
                   One.small_rts_axioms T
@@ -4913,7 +5450,7 @@ begin
           using X by blast
         let ?x = "mkarr One.resid ?A Q R X"
         have x: "\<guillemotleft>?x : \<^bold>\<one> \<rightarrow> ?a\<guillemotright>"
-        proof
+        proof (intro H.in_homI)
           show 1: "H.arr (mkarr (\\\<^sub>1) (Dom t) Q R X)"
             using X arr_mkarr(1) [of One.resid ?A Q R X]
                   One.small_rts_axioms One.extensional_rts_axioms
@@ -5101,26 +5638,12 @@ begin
         using a sub_rts_HOM by blast
       interpret HOM_1a: sub_rts_of_extensional_rts resid \<open>\<lambda>t. \<guillemotleft>t: \<^bold>\<one> \<rightarrow> ?a\<guillemotright>\<close> ..
       interpret HOM_1a: small_rts \<open>HOM \<^bold>\<one> ?a\<close>
-      proof -
-        have "Collect HOM_1a.arr \<subseteq> H.hom \<^bold>\<one> ?a"
-          using HOM_1a.arr_char by blast
-        thus "small_rts (HOM \<^bold>\<one> ?a)"
-          using assms obj_one H.terminal_def small_homs [of "\<^bold>\<one>" ?a]
-                smaller_than_small
-          by unfold_locales auto
-      qed
+        using a HOM_is_small_extensional_rts by force
       interpret HOM_1b: sub_rts resid \<open>\<lambda>t. \<guillemotleft>t: \<^bold>\<one> \<rightarrow> ?b\<guillemotright>\<close>
         using b sub_rts_HOM by blast
       interpret HOM_1b: sub_rts_of_extensional_rts resid \<open>\<lambda>t. \<guillemotleft>t: \<^bold>\<one> \<rightarrow> ?b\<guillemotright>\<close> ..
       interpret HOM_1b: small_rts \<open>HOM \<^bold>\<one> ?b\<close>
-      proof -
-        have "Collect HOM_1b.arr \<subseteq> H.hom \<^bold>\<one> ?b"
-          using HOM_1b.arr_char by blast
-        thus "small_rts (HOM \<^bold>\<one> ?b)"
-          using assms obj_one H.terminal_def small_homs [of "\<^bold>\<one>" ?b]
-                smaller_than_small
-          by unfold_locales auto
-      qed
+        using b HOM_is_small_extensional_rts by force
       interpret UP_DN_a: inverse_simulations
                            ?A HOM_1a.resid \<open>DN\<^sub>r\<^sub>t\<^sub>s ?a\<close> \<open>UP\<^sub>r\<^sub>t\<^sub>s ?a\<close>
         using assms a inverse_simulations_DN_UP [of ?a] dom_char one_def
@@ -5154,7 +5677,7 @@ begin
         using UP_DN_a.G.simulation_axioms UP_DN_b.F.simulation_axioms
               T.transformation_axioms DN_T.transformation_axioms
               DN_T.F.simulation_axioms DN_T.G.simulation_axioms
-              transformation_whisker_right A.weakly_extensional_rts_axioms
+              transformation_whisker_right A.rts_axioms
         by fastforce
       define t
         where t_def: "t = mkarr ?A ?B
@@ -5162,23 +5685,12 @@ begin
                             (DN\<^sub>r\<^sub>t\<^sub>s ?b \<circ> cov_HOM \<^bold>\<one> g \<circ> UP\<^sub>r\<^sub>t\<^sub>s ?a)
                             (DN\<^sub>r\<^sub>t\<^sub>s ?b \<circ> T \<circ> UP\<^sub>r\<^sub>t\<^sub>s ?a)"
       have t: "\<guillemotleft>t : ?a \<rightarrow> ?b\<guillemotright>"
-      proof
-        show t: "H.arr t"
-        proof -
-          have "V.arr t"
-            unfolding t_def
-            using arr_mkarr(1) T'.transformation_axioms
-                  F'.simulation_axioms G'.simulation_axioms
-                  A.small_rts_axioms A.extensional_rts_axioms
-                  B.small_rts_axioms B.extensional_rts_axioms
-            by blast
-          thus ?thesis by auto
-        qed
-        show "dom t = ?a"
-          using assms(3) a t f dom_char t_def by auto
-        show "cod t = ?b"
-          using assms(3) b t f cod_char t_def by auto
-      qed
+        unfolding t_def
+        using a f assms(3) dom_char cod_char arr_mkarr(1) T'.transformation_axioms
+              F'.simulation_axioms G'.simulation_axioms
+              A.small_rts_axioms A.extensional_rts_axioms
+              B.small_rts_axioms B.extensional_rts_axioms
+        by auto
       have 1: "arr t"
         using t by auto
       moreover have "src t = f"
@@ -5328,8 +5840,7 @@ begin
         also have "... = UP\<^sub>r\<^sub>t\<^sub>s ?b \<circ> (DN\<^sub>r\<^sub>t\<^sub>s ?b \<circ> T \<circ> UP\<^sub>r\<^sub>t\<^sub>s ?a) \<circ> DN\<^sub>r\<^sub>t\<^sub>s ?a"
           unfolding t_def mkarr_def by simp
         also have "... = (UP\<^sub>r\<^sub>t\<^sub>s ?b \<circ> DN\<^sub>r\<^sub>t\<^sub>s ?b) \<circ> T \<circ> (UP\<^sub>r\<^sub>t\<^sub>s ?a \<circ> DN\<^sub>r\<^sub>t\<^sub>s ?a)"
-          (* using comp_assoc by (metis (no_types, lifting)) (* 7 sec *) *)
-          using comp_assoc by smt
+          by (simp add: comp_assoc)
         also have "... = T \<circ> (UP\<^sub>r\<^sub>t\<^sub>s ?a \<circ> DN\<^sub>r\<^sub>t\<^sub>s ?a)"
           using comp_identity_transformation
                   [of HOM_1a.resid HOM_1b.resid _ _ T]

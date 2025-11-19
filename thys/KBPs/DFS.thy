@@ -34,7 +34,7 @@ partial_function (tailrec) gen_dfs where
        if memb x S then gen_dfs succs ins memb S xs
        else gen_dfs succs ins memb (ins x S) (succs x @ xs))"
 (*<*)
-lemma gen_dfs_simps[code, simp]:
+lemma gen_dfs_simps [simp, code]:
   "gen_dfs succs ins memb S [] = S"
   "gen_dfs succs ins memb S (x # xs) =
     (if memb x S then gen_dfs succs ins memb S xs

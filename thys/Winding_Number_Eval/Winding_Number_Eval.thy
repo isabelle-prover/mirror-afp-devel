@@ -153,24 +153,26 @@ proof -
           using assms False by (auto intro:path_offset)
         moreover have "jumpF h12 (at_right (1/2)) = 0"
           unfolding h12_def 
-          apply (intro jumpF_im_divide_Re_0)
-          subgoal using assms by (auto intro:path_offset)
-          subgoal using assms(5-6) False unfolding joinpaths_def pathfinish_def pathstart_def by auto
-          by auto
+        proof (intro jumpF_im_divide_Re_0)
+          show "path (\<lambda>t. (g1 +++ g2) t - z)"
+            using assms by (auto intro: path_offset)
+          show "Re ((g1 +++ g2) (1 / 2) - z) \<noteq> 0"
+            using assms False unfolding joinpaths_def pathfinish_def pathstart_def by auto
+        qed auto    
         moreover have "jumpF h12 (at_left (1/2)) = 0"
           unfolding h12_def 
-          apply (intro jumpF_im_divide_Re_0)
-          subgoal using assms by (auto intro:path_offset)
-          subgoal using assms(5-6) False unfolding joinpaths_def pathfinish_def pathstart_def by auto
-          by auto    
+        proof (intro jumpF_im_divide_Re_0)
+          show "path (\<lambda>t. (g1 +++ g2) t - z)"
+            using assms by (auto intro: path_offset)
+          show "Re ((g1 +++ g2) (1 / 2) - z) \<noteq> 0"
+            using assms False unfolding joinpaths_def pathfinish_def pathstart_def by auto
+        qed auto    
         ultimately show ?thesis by auto
       next
         case True
         then have "Im ((g1 +++ g2) (1 / 2) - z) \<noteq> 0"
           using assms(5,6)
-          by (metis (no_types, opaque_lifting) Re_divide_numeral complex_Re_numeral complex_eq 
-              divide_self_if joinpaths_def  minus_complex.simps mult.commute mult.left_neutral
-              numeral_One pathfinish_def pathstart_def right_minus_eq times_divide_eq_left zero_neq_numeral)
+          by (simp add: complex_eq_iff joinpaths_def pathfinish_def)
         show ?thesis
         proof (rule jump_jumpF[of _ h12 "sgnx h12 (at_left (1/2))" "sgnx h12 (at_right (1/2))"])
           define g where "g=(\<lambda>t. (g1 +++ g2) t - z)"
@@ -713,18 +715,12 @@ proof -
       proof (cases " jumpF h (at_left u) = 0")
         case True
         then have "left = {}"
-          unfolding left_def 
-          apply safe
-          apply (case_tac "x=u")
-          using jumpF_nz \<open>0<u\<close> \<open>u<1\<close> by auto
+          unfolding left_def using jumpF_nz by (auto simp: order_le_less)
         then show ?thesis using True by auto
       next
         case False
         then have "left = {u}"
-          unfolding left_def 
-          apply safe
-            apply (case_tac "x=u")
-          using jumpF_nz \<open>0<u\<close> \<open>u<1\<close> by auto
+          unfolding left_def using jumpF_nz \<open>0<u\<close> \<open>u<1\<close> by (auto simp: order_le_less)
         then show ?thesis by auto
       qed
       ultimately show ?thesis by auto

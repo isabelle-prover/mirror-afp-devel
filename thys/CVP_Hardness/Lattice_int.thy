@@ -897,9 +897,9 @@ next
 
     next
       case 2
-      then show ?case 
-      by (smt (verit, best) cols_dim cols_mat_of_cols filter_set insert_iff list.set(2) 
-        member_filter subsetI subset_trans)
+      then show ?case by auto
+        (metis (mono_tags, lifting) cols_dim cols_mat_of_cols filter_is_subset mem_Collect_eq set_filter
+            subset_trans) 
     qed
   next
     case 4
@@ -1075,9 +1075,9 @@ proof (subst in_span_insert[of a "delete_col T b" b], goal_cases)
     then show ?thesis by (metis assms(1) assms(2) delete_not_in_set_cols)
   qed 
   case 4
-  then show ?case 
-  by (smt (verit) cols_dim cols_mat_of_cols delete_col dual_order.trans filter_is_subset 
-    filter_set member_filter set_cols)
+  then show ?case apply simp
+    by (smt (verit, ccfv_SIG) cols_dim cols_mat_of_cols delete_col filter_is_subset mem_Collect_eq order_trans
+        set_filter)  
 next
   case 5
   then show ?case 
@@ -1179,16 +1179,16 @@ using Lattice_int.span_redundant assms by blast
 
 text \<open>More on inserting, deleting and the set of columns.\<close>
 lemma delet_col_not_in_set_cols:
-assumes "dim_vec b = dim_row T"
-shows "b \<notin> set_cols (delete_col T b)"
-unfolding delete_col 
-by (metis (mono_tags, lifting) cols_dim cols_mat_of_cols dual_order.trans filter_is_subset 
-filter_set member_filter set_cols)
+  assumes "dim_vec b = dim_row T"
+  shows "b \<notin> set_cols (delete_col T b)"
+  using assms by (auto simp add: delete_col)
+    (metis (mono_tags, lifting) cols_dim cols_mat_of_cols filter_is_subset mem_Collect_eq set_filter
+      subset_trans)
 
 lemma dim_col_distinct:
-assumes "distinct (cols S)" 
-shows "card (set_cols S) = dim_col S"
-by (simp add: assms distinct_card)
+  assumes "distinct (cols S)" 
+  shows "card (set_cols S) = dim_col S"
+  by (simp add: assms distinct_card)
 
 lemma set_cols_mono:
 assumes "set_cols S \<subseteq> set_cols T" "distinct (cols S)" "distinct (cols T)"

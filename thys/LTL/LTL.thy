@@ -293,7 +293,7 @@ proof -
   have INJ_the_dom: "inj_on (the o f) (dom f)"
     using assms
     by (auto simp: inj_on_def domIff)
-  note 2 = subset_inj_on[OF this DOM]
+  note 2 = inj_on_subset[OF this DOM]
 
   have 3: "(\<lambda>i. (the o f) ` ?\<xi>r' i) = map_props f o \<xi>" using DOM INJ
     apply (auto intro!: ext simp: map_props_def domIff image_iff)

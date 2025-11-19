@@ -1,331 +1,143 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/General logic/Mechanization of proofs on Archive of Formal Proofs
-    </title>
-    <link>/topics/logic/general-logic/mechanization-of-proofs/</link>
-    <description>
-        Recent content in Logic/General logic/Mechanization of proofs 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/logic/general-logic/mechanization-of-proofs/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Countable Sums and Discrete (Sub)Distributions</title>
-          <link>/entries/Countable_Sums_and_Discrete_Distributions.html</link>
-          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Countable_Sums_and_Discrete_Distributions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Countable Sums and Discrete (Sub)Distributions</title>
-          <link>/entries/Countable_Sums_and_Discrete_Distributions.html</link>
-          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Countable_Sums_and_Discrete_Distributions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Countable Sums and Discrete (Sub)Distributions</title>
-          <link>/entries/Countable_Sums_and_Discrete_Distributions.html</link>
-          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Countable_Sums_and_Discrete_Distributions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-          <link>/entries/Simple_Clause_Learning.html</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Clause_Learning.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-          <link>/entries/Simple_Clause_Learning.html</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Clause_Learning.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
-          <link>/entries/Simple_Clause_Learning.html</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Simple_Clause_Learning.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
-          <link>/entries/Saturation_Framework_Extensions.html</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Saturation_Framework_Extensions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
-          <link>/entries/Saturation_Framework_Extensions.html</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Saturation_Framework_Extensions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
-          <link>/entries/Saturation_Framework_Extensions.html</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Saturation_Framework_Extensions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-          <link>/entries/Saturation_Framework.html</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Saturation_Framework.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-          <link>/entries/Saturation_Framework.html</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Saturation_Framework.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Comprehensive Framework for Saturation Theorem Proving</title>
-          <link>/entries/Saturation_Framework.html</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Saturation_Framework.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A General Theory of Syntax with Bindings</title>
-          <link>/entries/Binding_Syntax_Theory.html</link>
-          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Binding_Syntax_Theory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A General Theory of Syntax with Bindings</title>
-          <link>/entries/Binding_Syntax_Theory.html</link>
-          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Binding_Syntax_Theory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A General Theory of Syntax with Bindings</title>
-          <link>/entries/Binding_Syntax_Theory.html</link>
-          <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Binding_Syntax_Theory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
-          <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Ordered_Resolution_Prover.html</link>
-          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordered_Resolution_Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Ordered_Resolution_Prover.html</link>
-          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordered_Resolution_Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
-          <link>/entries/Ordered_Resolution_Prover.html</link>
-          <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordered_Resolution_Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Logic According to Harrison</title>
-          <link>/entries/FOL_Harrison.html</link>
-          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Harrison.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Logic According to Harrison</title>
-          <link>/entries/FOL_Harrison.html</link>
-          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Harrison.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First-Order Logic According to Harrison</title>
-          <link>/entries/FOL_Harrison.html</link>
-          <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Harrison.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Resolution Calculus for First-Order Logic</title>
-          <link>/entries/Resolution_FOL.html</link>
-          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Resolution_FOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Resolution Calculus for First-Order Logic</title>
-          <link>/entries/Resolution_FOL.html</link>
-          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Resolution_FOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Resolution Calculus for First-Order Logic</title>
-          <link>/entries/Resolution_FOL.html</link>
-          <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Resolution_FOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Propositional Resolution and Prime Implicates Generation</title>
-          <link>/entries/PropResPI.html</link>
-          <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/PropResPI.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Propositional Resolution and Prime Implicates Generation</title>
-          <link>/entries/PropResPI.html</link>
-          <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/PropResPI.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Propositional Resolution and Prime Implicates Generation</title>
-          <link>/entries/PropResPI.html</link>
-          <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/PropResPI.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Boolean Expression Checkers</title>
-          <link>/entries/Boolean_Expression_Checkers.html</link>
-          <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolean_Expression_Checkers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Boolean Expression Checkers</title>
-          <link>/entries/Boolean_Expression_Checkers.html</link>
-          <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolean_Expression_Checkers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Boolean Expression Checkers</title>
-          <link>/entries/Boolean_Expression_Checkers.html</link>
-          <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolean_Expression_Checkers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Sound and Complete Sort Encodings for First-Order Logic</title>
-          <link>/entries/Sort_Encodings.html</link>
-          <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Sort_Encodings.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Sound and Complete Sort Encodings for First-Order Logic</title>
-          <link>/entries/Sort_Encodings.html</link>
-          <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Sort_Encodings.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Sound and Complete Sort Encodings for First-Order Logic</title>
-          <link>/entries/Sort_Encodings.html</link>
-          <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Sort_Encodings.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
-          <link>/entries/Verified-Prover.html</link>
-          <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Verified-Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
-          <link>/entries/Verified-Prover.html</link>
-          <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Verified-Prover.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
-          <link>/entries/Verified-Prover.html</link>
-          <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
-          <guid>/entries/Verified-Prover.html</guid>
-          <description></description>
-        </item>
+    <title>Logic/General logic/Mechanization of proofs</title>
+    <link>https://isa-afp.org/topics/logic/general-logic/mechanization-of-proofs/</link>
+    <description>AFP entries in Mechanization of proofs</description><item>
+  <title>A Modular Splitting Framework for Saturation Theorem Proving</title>
+  <link>https://isa-afp.org/entries/Splitting_Framework.html</link>
+  <pubDate>Wed, 18 Jun 2025 00:00:00 +0000</pubDate>
+  <description>A Modular Splitting Framework for Saturation Theorem Proving in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Typed Ordered Resolution</title>
+  <link>https://isa-afp.org/entries/Typed_Ordered_Resolution.html</link>
+  <pubDate>Wed, 11 Jun 2025 00:00:00 +0000</pubDate>
+  <description>Typed Ordered Resolution in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Modular Formalization of Superposition</title>
+  <link>https://isa-afp.org/entries/Superposition_Calculus.html</link>
+  <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+  <description>A Modular Formalization of Superposition in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Countable Sums and Discrete (Sub)Distributions</title>
+  <link>https://isa-afp.org/entries/Countable_Sums_and_Discrete_Distributions.html</link>
+  <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+  <description>Countable Sums and Discrete (Sub)Distributions in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Mathematics/Probability theory</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/Simple_Clause_Learning.html</link>
+  <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+  <description>A Formalization of the SCL(FOL) Calculus: Simple Clause Learning for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Naive Prover for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/FOL_Seq_Calc3.html</link>
+  <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+  <description>A Naive Prover for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+  <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
+  <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+  <description>A Sequent Calculus Prover for First-Order Logic with Functions in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
+  <link>https://isa-afp.org/entries/Saturation_Framework_Extensions.html</link>
+  <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+  <description>Extensions to the Comprehensive Framework for Saturation Theorem Proving in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Comprehensive Framework for Saturation Theorem Proving</title>
+  <link>https://isa-afp.org/entries/Saturation_Framework.html</link>
+  <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+  <description>A Comprehensive Framework for Saturation Theorem Proving in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A General Theory of Syntax with Bindings</title>
+  <link>https://isa-afp.org/entries/Binding_Syntax_Theory.html</link>
+  <pubDate>Sat, 06 Apr 2019 00:00:00 +0000</pubDate>
+  <description>A General Theory of Syntax with Bindings in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Functional programming</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+  <link>https://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
+  <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+  <description>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+  <link>https://isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
+  <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+  <description>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>First-Order Logic According to Harrison</title>
+  <link>https://isa-afp.org/entries/FOL_Harrison.html</link>
+  <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+  <description>First-Order Logic According to Harrison in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>The Resolution Calculus for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/Resolution_FOL.html</link>
+  <pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate>
+  <description>The Resolution Calculus for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Propositional Resolution and Prime Implicates Generation</title>
+  <link>https://isa-afp.org/entries/PropResPI.html</link>
+  <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
+  <description>Propositional Resolution and Prime Implicates Generation in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Boolean Expression Checkers</title>
+  <link>https://isa-afp.org/entries/Boolean_Expression_Checkers.html</link>
+  <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
+  <description>Boolean Expression Checkers in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Sound and Complete Sort Encodings for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/Sort_Encodings.html</link>
+  <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
+  <description>Sound and Complete Sort Encodings for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</title>
+  <link>https://isa-afp.org/entries/Verified-Prover.html</link>
+  <pubDate>Tue, 28 Sep 2004 00:00:00 +0000</pubDate>
+  <description>A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+
   </channel>
 </rss>

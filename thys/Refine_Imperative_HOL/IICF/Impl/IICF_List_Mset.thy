@@ -34,17 +34,8 @@ subsection \<open>Abstract Operations\<close>
   lemma lms_contains_aref: "(list_contains, op_mset_contains) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> bool_rel"  
     unfolding list_mset_rel_def list_contains_def[abs_def]
     by (auto simp: in_br_conv list_ex_iff in_multiset_in_set)
-    
-  fun list_remove1 :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-    "list_remove1 x [] = []"
-  | "list_remove1 x (y#ys) = (if x=y then ys else y#list_remove1 x ys)"
 
-  lemma mset_list_remove1[simp]: "mset (list_remove1 x l) = mset l - {#x#}"
-    apply (induction l) 
-    applyS simp
-    by (clarsimp simp: algebra_simps)
-    
-  lemma lms_remove_aref: "(list_remove1, op_mset_delete) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"  
+  lemma lms_remove_aref: "(remove1, op_mset_delete) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"  
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
     
   fun list_count :: "'a \<Rightarrow> 'a list \<Rightarrow> nat" where
@@ -57,14 +48,7 @@ subsection \<open>Abstract Operations\<close>
   lemma lms_count_aref: "(list_count, op_mset_count) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> nat_rel"  
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
 
-
-  definition list_remove_all :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-    "list_remove_all xs ys \<equiv> fold list_remove1 ys xs"
-  lemma list_remove_all_mset[simp]: "mset (list_remove_all xs ys) = mset xs - mset ys"  
-    unfolding list_remove_all_def
-    by (induction ys arbitrary: xs) (auto simp: algebra_simps)
-
-  lemma lms_minus_aref: "(list_remove_all,op_mset_minus) \<in> list_mset_rel \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"
+  lemma lms_minus_aref: "(minus_list_mset,op_mset_minus) \<in> list_mset_rel \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
     
 subsection \<open>Declaration of Implementations\<close>

@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>kadzioka on Archive of Formal Proofs
-    </title>
-    <link>/authors/kadzioka/</link>
-    <description>
-        Recent content in kadzioka 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 27 Apr 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/kadzioka/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Lifting the Exponent</title>
-          <link>/entries/Lifting_the_Exponent.html</link>
-          <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Lifting_the_Exponent.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Solution to the xkcd Blue Eyes puzzle</title>
-          <link>/entries/Blue_Eyes.html</link>
-          <pubDate>Sat, 30 Jan 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Blue_Eyes.html</guid>
-          <description></description>
-        </item>
+    <title>Maya Kądziołka</title>
+    <link>https://isa-afp.org/authors/kadzioka/</link>
+    <description>AFP entries of Maya Kądziołka</description><item>
+  <title>Lifting the Exponent</title>
+  <link>https://isa-afp.org/entries/Lifting_the_Exponent.html</link>
+  <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Lifting the Exponent in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Solution to the xkcd Blue Eyes puzzle</title>
+  <link>https://isa-afp.org/entries/Blue_Eyes.html</link>
+  <pubDate>Sat, 30 Jan 2021 00:00:00 +0000</pubDate>
+  <description>Solution to the xkcd Blue Eyes puzzle in the AFP</description>
+    <category>Logic/General logic/Logics of knowledge and belief</category>
+</item>
+
   </channel>
 </rss>

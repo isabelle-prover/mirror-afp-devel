@@ -177,7 +177,7 @@ proof-
       have "maxs < 2^m" 
         by (metis "4"(2) \<open>Some maxs = vebt_maxt summary\<close> maxt_member member_bound)
       have "invar_vebt (treeList ! maxs) n"
-        by (metis "4"(1) "4"(3) \<open>maxs < 2 ^ m\<close> inthall member_def)
+        using "4"(1) "4"(3) \<open>maxs < 2 ^ m\<close> by simp
       hence "x < 2^n"
         using \<open>vebt_member (treeList ! maxs) x\<close> member_bound by auto
       let ?X =  "2^n*maxs + x"
@@ -217,7 +217,7 @@ next
       have "maxs < 2^m" 
         by (metis "5"(2) \<open>Some maxs = vebt_maxt summary\<close> maxt_member member_bound)
       have "invar_vebt (treeList ! maxs) n"
-        by (metis "5"(1) "5"(3) \<open>maxs < 2 ^ m\<close> inthall member_def)
+        using "5"(1) "5"(3) \<open>maxs < 2 ^ m\<close> by simp
       hence "x < 2^n"
         using \<open>vebt_member (treeList ! maxs) x\<close> member_bound by auto
       let ?X =  "2^n*maxs + x"

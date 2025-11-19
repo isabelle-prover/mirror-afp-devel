@@ -2,6 +2,7 @@
    Fabian Fernando Serrano Suárez  UNAL Manizales
    Thaynara Arielly de Lima        Universidade Federal de Goiáis 
    Mauricio Ayala-Rincón           Universidade de Brasília
+   Last modified: 29 Sep, 2025
 *)
 theory Hall_Theorem_Graphs
   imports
@@ -58,8 +59,6 @@ proof(rule impI)
     by (unfold system_representatives_def, auto)
   qed
 qed
-
-
 
 lemma marriage_necessary_graph:
   assumes "(dirBD_perfect_matching G X Y E)" and "\<forall>i\<in>X. finite (neighbourhood G i)"
@@ -278,9 +277,9 @@ locale sdr = set_family +
   assumes inj_repr: "inj_on repr I" and repr_X: "x \<in> I \<Longrightarrow> repr x \<in> X x"
 
 (* Bipartite digraph *)
-locale bipartite_digraph =
+locale bipartite_digraph_loc =
   fixes X :: "'a set" and Y :: "'b set" and E :: "('a \<times> 'b) set"
-  assumes E_subset: "E \<subseteq> X \<times> Y"
+  assumes E_subset: "E \<subseteq> X \<times> Y" 
 
 (* Our specification in the spirit of locales following the reviewer's
 suggestion of a bipartite digraph with a countable set of left-hand 
@@ -293,7 +292,7 @@ locale Count_Nbhdfin_bipartite_digraph =
   assumes Nbhd_Tail_finite: "\<forall>x \<in> X. finite {y. (x, y) \<in> E}"
 
 (* Matching in a bipartite digraph *)
-locale matching = bipartite_digraph +
+locale matching = bipartite_digraph_loc +
   fixes M :: "('a \<times> 'b) set"
   assumes M_subset: "M \<subseteq> E"
   assumes M_right_unique: "(x, y) \<in> M \<Longrightarrow> (x, y') \<in> M \<Longrightarrow> y = y'"
@@ -391,7 +390,7 @@ proof(unfold_locales, rule impI)
           proof fix x
             assume "x \<in> (\<Union>x\<in>Xs. {y. (x, y) \<in> E})" 
             thus "x \<in> Ys" 
-              using Es_def Ms UN_iff bipartite_digraph.E_subset 
+              using Es_def Ms UN_iff bipartite_digraph_loc.E_subset 
               case_prodI matching_def mem_Collect_eq mem_Sigma_iff 
               perfect_matching_def by fastforce 
             qed
@@ -437,9 +436,9 @@ proof(unfold_locales, rule impI)
     hence PM2: "perfect_matching X Y E M" 
       using Count_Nbhdfin_bipartite_digraph_axioms unfolding  matching_def perfect_matching_def
     proof -
-      assume "(bipartite_digraph X (\<Union>i\<in>X. {y. (i, y) \<in> E}) E \<and> matching_axioms E M) \<and> perfect_matching_axioms X M"
-      then show "(bipartite_digraph X Y E \<and> matching_axioms E M) \<and> perfect_matching_axioms X M"
-        using E_subset bipartite_digraph.intro by blast
+      assume "(bipartite_digraph_loc X (\<Union>i\<in>X. {y. (i, y) \<in> E}) E \<and> matching_axioms E M) \<and> perfect_matching_axioms X M"
+      then show "(bipartite_digraph_loc X Y E \<and> matching_axioms E M) \<and> perfect_matching_axioms X M"
+        using E_subset bipartite_digraph_loc.intro by blast
     qed 
     thus PM : "\<exists>M. perfect_matching X Y E M" using PM2 by auto
   qed

@@ -25,7 +25,7 @@ begin
 subsection "Mispredicting Step"
 text "stepM simply goes the other way than stepB at branches"
 inductive
-stepM :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>M\<close> 55)
+stepM :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>M" 55)
 where
 IfTrue[intro]: 
 "pc < endPC \<Longrightarrow> prog!pc = IfJump b pc1 pc2 \<Longrightarrow> 
@@ -148,7 +148,7 @@ text \<open>The speculative semantics is more involved than both the normal and 
 \item Spec Resolve: If the resolve predicate is true, resolution occurs for one speculation level. In contrast to Fences, resolve does not necessarily kill all speculation levels, but allows resolution one level at a time
 \end{itemize}\<close>
 inductive
-stepS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix \<open>\<rightarrow>S\<close> 55)
+stepS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix "\<rightarrow>S" 55)
 where 
 nonspec_normal: 
 "cfgs = [] \<Longrightarrow>  
@@ -207,7 +207,7 @@ spec_Fence:
 |
 spec_resolve: 
 "cfgs \<noteq> [] \<Longrightarrow> 
- resolve pstate (pcOf cfg # map pcOf cfgs) \<Longrightarrow>  
+ resolve pstate (pcOf cfg # map pcOf cfgs) \<or> is_Output (prog!(pcOf (last cfgs))) \<or> is_getInput (prog!(pcOf (last cfgs))) \<Longrightarrow>  
  pstate' = update pstate (pcOf cfg # map pcOf cfgs) \<Longrightarrow>
  cfg' = cfg \<Longrightarrow> cfgs' = butlast cfgs \<Longrightarrow> 
  ibT = ibT' \<Longrightarrow> ibUT = ibUT' \<Longrightarrow> ls' = ls 
@@ -253,14 +253,14 @@ apply(subst stepS.simps) by auto
 lemma stepS_spec_normal_iff[simp]: 
 "cfgs \<noteq> [] \<Longrightarrow> 
  \<not> resolve pstate (pcOf cfg # map pcOf cfgs)  \<Longrightarrow> 
+ \<not> is_getInput (prog!(pcOf (last cfgs))) \<Longrightarrow>
+ \<not> is_Output (prog!(pcOf (last cfgs))) \<Longrightarrow>
  \<not> is_IfJump (prog!(pcOf (last cfgs))) \<or> \<not> mispred pstate (pcOf cfg # map pcOf cfgs) \<Longrightarrow> 
  prog!(pcOf (last cfgs)) \<noteq> Fence 
  \<Longrightarrow> 
  (pstate, cfg, cfgs, ibT, ibUT, ls) \<rightarrow>S (pstate', cfg', cfgs', ibT', ibUT', ls')
  \<longleftrightarrow>
  (\<exists>cfg1'. pstate' = pstate \<and> 
-    \<not> is_getInput (prog!(pcOf (last cfgs))) \<and>
-    \<not> is_getInput (prog!(pcOf (last cfgs))) \<and> \<not> is_Output (prog!(pcOf (last cfgs))) \<and> 
     \<not> finalB (last cfgs, ibT, ibUT) \<and> (cfg1',ibT',ibUT') = nextB (last cfgs, ibT, ibUT) \<and>  
     cfg' = cfg \<and> cfgs' = butlast cfgs @ [cfg1'] \<and> ls' = ls \<union> readLocs (last cfgs))"
 apply(subst stepS.simps) by auto
@@ -304,7 +304,7 @@ apply(subst stepS.simps) by auto
 lemma stepS_cases[cases pred: stepS, 
  consumes 1, 
  case_names nonspec_normal nonspec_mispred 
-            spec_normal spec_mispred spec_Fence spec_resolve]:
+            spec_normal spec_mispred spec_Fence spec_resolve spec_resolveI spec_resolveO]:
 assumes "(pstate, cfg, cfgs, ibT, ibUT, ls) \<rightarrow>S (pstate', cfg', cfgs', ibT', ibUT', ls')"
 obtains 
 (* nonspec_normal: *)
@@ -372,6 +372,26 @@ obtains
    "ls' = ls"
    "ibT' = ibT" 
    "ibUT' = ibUT" 
+|
+(* spec_resolve: *)
+"cfgs \<noteq> []"   
+   "is_getInput (prog!(pcOf (last cfgs)))"
+   "pstate' = update pstate (pcOf cfg # map pcOf cfgs)"
+   "cfg' = cfg"
+   "cfgs' = butlast cfgs"
+   "ls' = ls"
+   "ibT' = ibT" 
+   "ibUT' = ibUT" 
+|
+(* spec_resolve: *)
+"cfgs \<noteq> []"   
+   "is_Output (prog!(pcOf (last cfgs)))"
+   "pstate' = update pstate (pcOf cfg # map pcOf cfgs)"
+   "cfg' = cfg"
+   "cfgs' = butlast cfgs"
+   "ls' = ls"
+   "ibT' = ibT" 
+   "ibUT' = ibUT" 
   using assms by (cases rule: stepS.cases, metis+) 
 (* *)
 lemma stepS_endPC: "pcOf cfg = endPC \<Longrightarrow> \<not> (pstate, cfg, [], ibT, ibUT, ls) \<rightarrow>S ss'"
@@ -382,11 +402,27 @@ apply safe apply(cases rule: stepS_cases, auto)
   using finalB_endPC finalB_imp_finalM by blast
 
 abbreviation
-  stepsS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix \<open>\<rightarrow>S*\<close> 55)
+  stepsS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix "\<rightarrow>S*" 55)
   where "x \<rightarrow>S* y \<equiv> star stepS x y"
 
 definition "finalS = final stepS"
 lemmas finalS_defs  = final_def finalS_def
+
+lemma stepS_determ:
+"cfg_ib \<rightarrow>S cfg_ib' \<Longrightarrow> cfg_ib \<rightarrow>S cfg_ib'' \<Longrightarrow> cfg_ib'' = cfg_ib'"
+  apply(induction arbitrary: cfg_ib'' rule: stepS.induct)
+  subgoal for cfgs cfg pstate pstate' ibT ibUT
+    by(cases "nextB (cfg, ibT, ibUT)", auto elim: stepS.cases)
+  subgoal for cfgs cfg pstate pstate' ibT ibUT
+    apply(cases "nextB (cfg, ibT, ibUT)",cases "nextM (cfg, ibT, ibUT)")
+    by(auto elim: stepS.cases)
+  subgoal for cfgs pstate cfg pstate' ibT ibUT
+    by(cases "nextB (last cfgs, ibT, ibUT)", auto elim: stepS.cases)
+  subgoal for cfgs cfg pstate pstate' ibT ibUT
+    apply(cases "nextB (last cfgs, ibT, ibUT)",cases "nextM (last cfgs, ibT, ibUT)")
+    by(auto elim: stepS.cases)
+  subgoal by(auto elim: stepS.cases)
+  subgoal by(auto elim: stepS.cases) .
 
 lemma stepS_0: "(pstate, Config 0 s, [], ibT, ibUT, ls) \<rightarrow>S (pstate, Config 1 s, [], ibT, ibUT, ls)"
 using prog_0 apply-apply(rule nonspec_normal) 

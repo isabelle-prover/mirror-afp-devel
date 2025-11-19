@@ -1,0 +1,34 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/basis/mlton.mlb
+
+sequential.sml
+
+local
+    Unsynchronized.sml
+
+    Writeln.sml
+
+    basics.ML
+
+    ann "nonexhaustiveMatch ignore" in
+      library.ML
+      (* Certificate.sml *)
+      Certificate.ML
+    end
+in
+    structure Timing
+    structure Tracing
+    structure Model_Checker
+end
+
+basics.ML
+ann "nonexhaustiveMatch ignore" in
+    library.ML
+end
+Unsynchronized.sml
+$(MLUNTA_CERT)/prelude.sml
+$(MLUNTA_CERT)/serializable.sml
+$(MLUNTA_CERT)/certificate.sml
+Util.sml
+Muntac.sml
+Mlton_Main.sml

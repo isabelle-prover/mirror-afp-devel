@@ -73,8 +73,8 @@ next
     have "y' \<in># mset y" by simp
     moreover have "z' \<in># mset y" using Suc by simp
     ultimately have "\<exists>c. mset y = mset (y'#z'#c)"
-      using False ex_mset in_set_member multi_member_split set_mset_mset
-      by (metis (mono_tags, opaque_lifting) member_rec(1) mset.simps(2))
+      using False multi_member_split [of z' \<open>mset ys\<close>]
+      by auto (metis ex_mset) 
     then obtain c where c_def[simp]: "mset y = mset (y'#z'#c)" by blast
     then have 0: "mset ys = mset (z'#c)" by simp
     then have 1: "mset zs = mset (y'#c)" using Suc.prems by simp
@@ -113,8 +113,8 @@ next
     have "x' \<in># mset x" by simp
     moreover have "z' \<in># mset x" using Suc by simp
     ultimately have "\<exists>c. mset x = mset (x'#z'#c)"
-      using False ex_mset in_set_member multi_member_split set_mset_mset
-      by (metis (mono_tags, opaque_lifting) member_rec(1) mset.simps(2))
+      using False multi_member_split [of z' \<open>mset xs\<close>]
+      by auto (metis ex_mset) 
     then obtain c where c_def[simp]: "mset x = mset (x'#z'#c)" by blast
     then have 0: "mset xs = mset (z'#c)" by simp
     then have 1: "mset zs = mset (x'#c)" using Suc.prems by simp

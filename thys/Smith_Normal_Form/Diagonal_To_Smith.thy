@@ -1173,7 +1173,7 @@ subsection\<open>Implementation and formal proof
   of the matrices $P$ and $Q$ which transform the input matrix by means of elementary operations.\<close>
 
 
-fun diagonal_step_PQ :: "'a::{bezout_ring}^'cols::mod_type^'rows::mod_type \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a bezout \<Rightarrow> 
+definition diagonal_step_PQ :: "'a::{bezout_ring}^'cols::mod_type^'rows::mod_type \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a bezout \<Rightarrow> 
 (
 ('a::{bezout_ring}^'rows::mod_type^'rows::mod_type) \<times>
 ('a::{bezout_ring}^'cols::mod_type^'cols::mod_type)
@@ -1207,8 +1207,6 @@ value "let A = list_of_list_to_matrix [[12,0,0::int],[0,6,0::int],[0,0,2::int]]:
             (P,Q) = diagonal_step_PQ A i k euclid_ext2
   in matrix_to_list_of_list (P**(A)**Q)"
 
-
-lemmas diagonal_step_PQ_def = diagonal_step_PQ.simps
 
 lemma from_nat_neq_rows:
   fixes A::"'a^'cols::mod_type^'rows::mod_type"
@@ -1680,8 +1678,11 @@ next
         by (simp add: matrix_mul_assoc)       
       show "isDiagonal ?B'" by (rule isDiagonal_diagonal_step[OF diagB i j])
       show "invertible (?P'** P)"
-        by (metis inv_P diagonal_step_PQ_invertible_P i i_notin in_set_member 
-           invertible_mult j member_rec(1) prod.exhaust_sel)
+        apply (rule invertible_mult)
+         apply (rule diagonal_step_PQ_invertible_P [of _ _ B i j bezout])
+        using inv_P i i_notin j
+             apply (auto simp add: prod_eq_iff)
+        done
       show "invertible (Q ** ?Q')"
         by (metis diagonal_step_PQ_invertible_Q i i_notin inv_Q 
             invertible_mult j list.set_intros(1) prod.collapse)
@@ -1747,8 +1748,11 @@ next
         by (simp add: matrix_mul_assoc)       
       show "isDiagonal ?B'" by (rule isDiagonal_diagonal_step[OF diagB i j])
       show "invertible (?P'** P)"
-        by (metis inv_P diagonal_step_PQ_invertible_P i i_notin in_set_member 
-           invertible_mult j member_rec(1) prod.exhaust_sel)
+        apply (rule invertible_mult)
+         apply (rule diagonal_step_PQ_invertible_P [of _ _ B i j bezout])
+        using inv_P i i_notin j
+             apply (auto simp add: prod_eq_iff)
+        done
       show "invertible (Q ** ?Q')"
         by (metis diagonal_step_PQ_invertible_Q i i_notin inv_Q 
             invertible_mult j list.set_intros(1) prod.collapse)

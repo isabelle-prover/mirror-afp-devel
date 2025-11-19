@@ -24,4 +24,23 @@ lemma mgu_vd_string_complete:
     s \<cdot> \<mu>1 = t \<cdot> \<mu>2"
   unfolding mgu_vd_string_def
   by (rule mgu_vd_complete[OF assms])
+
+abbreviation (input) x_var :: "string \<Rightarrow> string" where "x_var \<equiv> Cons (CHR ''x'')"
+abbreviation (input) y_var :: "string \<Rightarrow> string" where "y_var \<equiv> Cons (CHR ''y'')"
+abbreviation (input) z_var :: "string \<Rightarrow> string" where "z_var \<equiv> Cons (CHR ''z'')"
+
+text \<open>Here, only the t-term is renamed.\<close>
+lemma mgu_var_disjoint_right_string:
+  fixes s t :: "('f, string) term" and \<sigma> \<tau> :: "('f, string) subst"
+  assumes s: "vars_term s \<subseteq> range x_var \<union> range z_var"
+    and id: "s \<cdot> \<sigma> = t \<cdot> \<tau>"
+  shows "\<exists> \<mu> \<delta>. mgu s (map_vars_term y_var t) = Some \<mu> \<and>
+    s \<cdot> \<sigma> = s \<cdot> \<mu> \<cdot> \<delta> \<and> (\<forall>t::('f, string) term. t \<cdot> \<tau> = map_vars_term y_var t \<cdot> \<mu> \<cdot> \<delta>) \<and>
+    (\<forall>x \<in> range x_var \<union> range z_var. \<sigma> x = \<mu> x \<cdot> \<delta>)"
+proof -
+  have inj: "inj y_var" unfolding inj_on_def by simp
+  show ?thesis
+    by (rule mgu_var_disjoint_right[OF s inj _ id], auto)
+qed
+
 end

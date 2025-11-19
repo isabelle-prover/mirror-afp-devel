@@ -288,7 +288,7 @@ proof
         using decom in_X every_eqclass_has_transition by metis
       then have "x \<in> lang_rhs {Trn Y (Atom c)| Y c. Y \<in> UNIV // \<approx>A \<and> Y \<Turnstile>c\<Rightarrow> X}"
         unfolding transition_def
-        using decom by (force simp add: conc_def)
+        using decom by (fastforce simp add: conc_def)
       then have "x \<in> lang_rhs rhs" using X_in_eqs in_X
         unfolding Init_def Init_rhs_def by simp
     }

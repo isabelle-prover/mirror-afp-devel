@@ -201,8 +201,11 @@ lemma paths_of_length_1: "paths_of_length 1 e s = fimage (\<lambda>(d, t, id). [
    defer
    apply (simp add: ffilter_def ffUnion_def Abs_fset_inverse)
    apply auto[1]
-  apply (simp add: ffilter_def ffUnion_def Abs_fset_inverse fset_both_sides)
-  by force
+   apply (simp add: ffilter_def ffUnion_def Abs_fset_inverse fset_both_sides)
+   apply (auto simp add: split_def image_iff ffUnion.rep_eq)
+   apply force
+  apply force
+  done
 
 fun step_score :: "(tids \<times> tids) list \<Rightarrow> iEFSM \<Rightarrow> strategy \<Rightarrow> nat" where
   "step_score [] _ _ = 0" |
@@ -348,10 +351,10 @@ definition state_nondeterminism :: "nat \<Rightarrow> (cfstate \<times> transiti
   "state_nondeterminism og nt = (if size nt < 2 then {||} else ffUnion (fimage (\<lambda>x. let (dest, t) = x in fimage (\<lambda>y. let (dest', t') = y in (og, (dest, dest'), (t, t'))) (nt - {|x|})) nt))"
 
 lemma state_nondeterminism_empty [simp]: "state_nondeterminism a {||} = {||}"
-  by (simp add: state_nondeterminism_def ffilter_def Set.filter_def)
+  by (simp add: state_nondeterminism_def ffilter_def)
 
 lemma state_nondeterminism_singledestn [simp]: "state_nondeterminism a {|x|} = {||}"
-  by (simp add: state_nondeterminism_def ffilter_def Set.filter_def)
+  by (simp add: state_nondeterminism_def ffilter_def)
 
 (* For each state, get its outgoing transitions and see if there's any nondeterminism there *)
 definition nondeterministic_pairs :: "iEFSM \<Rightarrow> nondeterministic_pair fset" where

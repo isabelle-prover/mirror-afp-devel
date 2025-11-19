@@ -293,8 +293,6 @@ next
   qed
 qed
 
-declare [[code drop: wpo_ub]]
-
 lemma wpo_ub_memoized_code[code]: 
   "wpo_ub pr prl ssimple large cS cNS \<sigma> c s t = wpo_mem_impl s t"
 proof -

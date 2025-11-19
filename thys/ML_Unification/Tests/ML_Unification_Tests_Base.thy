@@ -12,21 +12,21 @@ text \<open>Shared setup for unification tests. We use \<^cite>\<open>speccheck\
 tests and create unit tests.\<close>
 
 ML\<open>
-  @{functor_instance struct_name = Test_Unification_Hints
-    and functor_name = Term_Index_Unification_Hints
-    and id = \<open>"test"\<close>
-    and more_args = \<open>
-      structure TI = Discrimination_Tree
-      val init_args = {
-        concl_unifier = SOME (Higher_Order_Pattern_Unification.match
-          |> Type_Unification.e_match Unification_Util.match_types),
-        normalisers = SOME Unification_Util.beta_eta_short_norms_unif,
-        prems_unifier = SOME (Higher_Order_Pattern_Unification.unify
-          |> Type_Unification.e_unify Unification_Util.unify_types),
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
-          TI.generalisations TI.norm_term),
-        hint_preprocessor = SOME (K I)
-      }\<close>}
+\<^functor_instance>\<open>struct_name: Test_Unification_Hints
+  functor_name: Term_Index_Unification_Hints
+  id: \<open>"test"\<close>
+  more_args: \<open>
+    structure TI = Discrimination_Tree
+    structure Args = Term_Index_Unification_Hints_Args
+    val init_args = {
+      concl_unifier = SOME (Higher_Order_Pattern_Unification.match
+        |> Type_Unification.e_match Unification_Util.match_types),
+      normalisers = SOME Unification_Util.beta_eta_short_norms_unif,
+      prems_unifier = SOME (Higher_Order_Pattern_Unification.unify
+        |> Type_Unification.e_unify Unification_Util.unify_types),
+      retrieval = SOME (Args.mk_retrieval_sym_pair (K TI.generalisations |> Args.retrieve_transfer)
+        TI.norm_term),
+      hint_preprocessor = SOME (K I)}\<close>\<close>
 \<close>
 
 ML_file \<open>tests_base.ML\<close>

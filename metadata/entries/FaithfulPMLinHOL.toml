@@ -1,0 +1,29 @@
+title = "Faithful Logic Embeddings in HOL — Deep and Shallow (Isabelle/HOL dataset)"
+date = 2025-05-06
+topics = [
+  "Logic/General logic/Modal logic",
+  "Logic/General logic",
+]
+abstract = "A recipe for the simultaneous deployment of different forms of deep and shallow embeddings of non-classical logics in classical higher-order logic is presented, which enables interactive or even automated faithfulness proofs between the logic embeddings. The approach, which is particularly fruitful for logic education, is explained in detail in an associated CADE conference paper. This paper presents the corresponding Isabelle/HOL dataset (which is only slightly modified to meet AFP requirements)."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2502.19311",
+]
+pubs = []

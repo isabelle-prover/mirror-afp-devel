@@ -16,10 +16,6 @@ begin
 
 declare finite_image_iff [simp]
 
-lemma inj_on_finite:
-  \<open>finite (f ` A) \<longleftrightarrow> finite A\<close> if \<open>inj_on f A\<close>
-  using that by (fact finite_image_iff)
-
 text \<open>The following lemma is slightly generalized from Determinants.thy in HMA.\<close>
 
 lemma finite_bounded_functions:
@@ -70,27 +66,7 @@ next
     by metis
 qed
 
-lemma permutes_less [simp]:
-  assumes p: "p permutes {0..<(n :: nat)}"
-  shows
-    "i < n \<Longrightarrow> p i < n"
-    "i < n \<Longrightarrow> inv p i < n" 
-    "p (inv p i) = i"
-    "inv p (p i) = i"
-  using assms
-  by (simp_all add: permutes_inverses permutes_nat_less permutes_nat_inv_less)
-
-lemma permutes_prod:
-  assumes p: "p permutes S"
-  shows "(\<Prod>s\<in>S. f (p s) s) = (\<Prod>s\<in>S. f s (inv p s))"
-    (is "?l = ?r")
-  using assms by (fact prod.permutes_inv)
-
-lemma permutes_sum:
-  assumes p: "p permutes S"
-  shows "(\<Sum>s\<in>S. f (p s) s) = (\<Sum>s\<in>S. f s (inv p s))"
-    (is "?l = ?r")
-  using assms by (fact sum.permutes_inv)
+declare permutes_inverses [simp] permutes_nat_less [simp] permutes_nat_inv_less [simp]
 
 context
   fixes A :: "'a set" 

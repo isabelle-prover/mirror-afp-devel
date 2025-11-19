@@ -549,21 +549,18 @@ primrec enum_pos' :: "'a list \<Rightarrow> 'a::enum \<Rightarrow> nat" where
 
 lemma enum_pos'_inverse:
   "List.member xs x \<Longrightarrow> xs!(enum_pos' xs x) = x"
-  apply (induct xs)
-  apply (simp add: member_rec(2))
-  by (metis diff_add_inverse enum_pos'.simps(2) less_one member_rec(1) not_add_less1 nth_Cons')
+  by (induct xs) auto
 
 text \<open>
 The following function finds the position of an index in the enumerated universe.
 \<close>
 
-fun enum_pos :: "'a::enum \<Rightarrow> nat" where "enum_pos x = enum_pos' (enum_class.enum::'a list) x"
+fun enum_pos :: "'a::enum \<Rightarrow> nat"
+  where "enum_pos x = enum_pos' (enum_class.enum::'a list) x"
 
 lemma enum_pos_inverse [simp]:
   "enum_class.enum!(enum_pos x) = x"
-  apply (unfold enum_pos.simps)
-  apply (rule enum_pos'_inverse)
-  by (metis in_enum List.member_def)
+  by (simp add: enum_pos'_inverse enum_UNIV)
 
 lemma enum_pos_injective [simp]:
   "enum_pos x = enum_pos y \<Longrightarrow> x = y"

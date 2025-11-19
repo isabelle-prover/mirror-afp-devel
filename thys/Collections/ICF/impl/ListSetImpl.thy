@@ -38,8 +38,7 @@ setup Locale_Code.open_block
 interpretation ls_basic: StdBasicSet ls_basic_ops
   apply unfold_locales
   unfolding ls_basic_ops_def ls_\<alpha>_def[abs_def]
-  apply (auto simp: dlist_member_empty Dlist.member_def List.member_def
-    dlist_iteratei_correct
+  apply (auto simp: dlist_member_empty Dlist.member_def     dlist_iteratei_correct
     dlist_remove'_correct set_dlist_remove1'
   )
   done

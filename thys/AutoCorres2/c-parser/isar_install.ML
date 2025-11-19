@@ -215,7 +215,11 @@ fun get_Csyntax thy src_path lines = let
     warning ("please use command" ^ quote (fst @{command_keyword "include_C_file"}) ^
       " to include the following files: " ^ pretty_list not_included)
 in
-  ast0 |> SyntaxTransforms.nest_gotos ctxt |> SyntaxTransforms.remove_anonstructs ctxt |> SyntaxTransforms.remove_typedefs
+  ast0 
+  |> SyntaxTransforms.nest_gotos ctxt 
+  |> SyntaxTransforms.anonymous_empty_fields
+  |> SyntaxTransforms.remove_anonstructs ctxt 
+  |> SyntaxTransforms.remove_typedefs
 end
 
 fun print_addressed_vars ctxt cse = let
@@ -249,7 +253,7 @@ fun define_global_initializers msgpfx name_munger mungedb cse globs lthy =
       in
         (x, xs)
       end
-    val deps = inittab |> MSymTab.dest |> map (apsnd (Expr.vars_expr {typ = false, addr = false}))
+    val deps = inittab |> MSymTab.dest |> map (apsnd (Expr.vars_expr {typ = false, addr = false, post_op=true}))
       |> map (apsnd (map_filter mname))
       |> map (apsnd (sort_distinct MString.ord)) |> map check |> MSymTab.make
 
@@ -316,8 +320,8 @@ fun define_global_initializers msgpfx name_munger mungedb cse globs lthy =
 val use_anon_vars = Attrib.setup_config_bool \<^binding>\<open>use_anonymous_local_variables\<close> (K false)
 val allow_underscore_idents = Attrib.setup_config_bool \<^binding>\<open>allow_underscore_idents\<close> (K false)
 
-fun get_callees ctxt cse slist = let
-  val {callees,...} = ProgramAnalysis.compute_callgraphs ctxt cse
+fun get_callees cse slist = let
+  val {callees,...} = ProgramAnalysis.compute_callgraphs cse
   fun recurse acc worklist =
       case worklist of
           [] => acc
@@ -380,11 +384,11 @@ fun fun_ptr_clique_thms file_name_base cliques fun_ptrs lthy =
          |> Thm.cterm_of ctxt |> Simplifier.rewrite ctxt
        val fallthrough_eqs = (@{thm map_of_default_other_lookup_Ball} OF [eq_list_of, eq_map_fst, subtree_thm])
          |> Conv.fconv_rule (Simplifier.rewrite (ctxt delsimps @{thms map_of_default.simps}))
-         |> HOLogic.conj_elims ctxt |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
+         |> HOLogic.conj_elims |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
 
        val clique_eqs = (@{thm map_of_default_distinct_lookup_list_all''} OF [eq_list_of, eq_map_fst, distinct_thm])
          |> Conv.fconv_rule (Simplifier.rewrite (ctxt delsimps @{thms map_of_default.simps}))
-         |> HOLogic.conj_elims ctxt |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
+         |> HOLogic.conj_elims |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
 
        val _ = Goal.prove
      in
@@ -410,7 +414,7 @@ fun install_C_file0 (files, options) thy = let
   val file as {src_path, lines, pos,...}:Token.file = the_single files
 
   val file_name = Path.file_name (Path.base src_path)
-  val prog_name = Path.base src_path |> Path.split_ext |> fst |> Path.file_name
+  val prog_name = Path.base src_path |> Path.drop_ext |> Path.file_name
 
   val thy = thy
     |> C_Files.map_main (K file_name)
@@ -483,7 +487,7 @@ fun install_C_file0 (files, options) thy = let
   val state = create_state cse
   val (rcdinfo, lthy) = mk_thy_types cse install_typs prune_types lthy
   val ast = SyntaxTransforms.remove_embedded_fncalls lthy cse ast
-  val toTranslate = Option.map (get_callees lthy cse) roots_opt
+  val toTranslate = Option.map (get_callees cse) roots_opt
   val toTranslate_s =
       case toTranslate of
           NONE => "all functions"
@@ -499,7 +503,7 @@ fun install_C_file0 (files, options) thy = let
           NONE => (fn _ => true)
         | SOME set => (fn s => Binaryset.member(set,s))
   val (fninfo_cliques, callgraph) = HPInter.mk_fninfo lthy cse toTranslateP ast
-  val callgraph_with_exit = ProgramAnalysis.compute_callgraphs_with_exit lthy cse
+  val callgraph_with_exit = ProgramAnalysis.compute_callgraphs_with_exit cse
   val cliques = map (map #fname) fninfo_cliques;
   val cse = cse |> map_cliques (K cliques)
   val lthy = lthy |> Local_Theory.background_theory 

@@ -615,9 +615,20 @@ proof -
     
     have distinct_tl: "X \<union> {x} \<notin> set (removeAll X Q)"
     proof
-      from partition have partition': "\<forall>x\<in>set Q. \<forall>y\<in>set Q. (x \<inter> y \<noteq> {}) = (x = y)" unfolding is_non_overlapping_def .
+      from partition have partition': \<open>x \<inter> y \<noteq> {} \<longleftrightarrow> x = y\<close> if \<open>x \<in> set Q\<close> \<open>y \<in> set Q\<close> for x y
+        using that by (simp add: is_non_overlapping_def)
+      from partition \<open>X \<in> set Q\<close> have \<open>X \<noteq> {}\<close>
+        by (auto dest: no_empty_in_non_overlapping)
       assume "X \<union> {x} \<in> set (removeAll X Q)"
-      with X_in_Q partition show False by (metis partition' inf_sup_absorb member_remove no_empty_in_non_overlapping remove_code(1))
+      then have \<open>insert x X \<in> set Q\<close>
+        by auto
+      with partition' [of X \<open>insert x X\<close>] X_in_Q
+      have \<open>X \<inter> insert x X \<noteq> {} \<longleftrightarrow> X = insert x X\<close>
+        by simp
+      with \<open>X \<noteq> {}\<close> have \<open>x \<in> X\<close>
+        by auto
+      with \<open>X \<union> {x} \<in> set (removeAll X Q)\<close> show False
+        by auto
     qed
     with ps_list distinct show ?thesis by (metis (full_types) distinct.simps(2) distinct_removeAll)
   qed

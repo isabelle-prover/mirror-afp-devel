@@ -48,7 +48,7 @@ locale discount_loop = labeled_lifting_intersection Bot_F Inf_F Bot_G Q entails_
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50)
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
-    wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
+    wf_prec_F: "wfp (\<prec>\<cdot>)" "transp (\<prec>\<cdot>)" and
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
@@ -57,12 +57,13 @@ locale discount_loop = labeled_lifting_intersection Bot_F Inf_F Bot_G Q entails_
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
 begin
 
-lemma po_on_DL_Prec_L: "po_on (\<sqsubset>L) UNIV"
-  by (metis (mono_tags, lifting) DL_Prec_L_def irreflp_onI less_imp_neq order.strict_trans po_on_def
-      transp_onI)
+lemma po_DL_Prec_L: "transp (\<sqsubset>L)" "asymp (\<sqsubset>L)"
+  unfolding DL_Prec_L_def transp_def
+  by auto
 
-lemma wfp_on_DL_Prec_L: "wfp_on (\<sqsubset>L) UNIV"
-  unfolding wfp_on_UNIV DL_Prec_L_def by (simp add: wfP_app)
+lemma wfp_DL_Prec_L: "wfp (\<sqsubset>L)"
+  unfolding DL_Prec_L_def
+  by(simp add: wfP_app)  
 
 lemma Active_minimal: "l2 \<noteq> Active \<Longrightarrow> Active \<sqsubset>L l2"
   by (cases l2) (auto simp: DL_Prec_L_def)
@@ -72,21 +73,12 @@ lemma at_least_two_labels: "\<exists>l2. Active \<sqsubset>L l2"
 
 sublocale lgc?: lazy_given_clause Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q
   Equiv_F Prec_F DL_Prec_L Active
-  apply unfold_locales
-              apply simp
-             apply simp
-            apply (rule equiv_equiv_F)
-          apply (simp add: minimal_element.po wf_prec_F)
-          using minimal_element.wf wf_prec_F apply blast
-         apply (rule po_on_DL_Prec_L)
-        apply (rule wfp_on_DL_Prec_L)
-       apply (fact compat_equiv_prec)
-      apply (fact equiv_F_grounding)
-     apply (fact prec_F_grounding)
-    apply (fact Active_minimal)
-   apply (rule at_least_two_labels)
-  using static_ref_comp statically_complete_calculus.statically_complete apply fastforce
-  done
+proof unfold_locales
+  show "\<And>B N. \<lbrakk>B \<in> Bot_F; no_labels.empty_ord.saturated N; N \<Turnstile>\<inter>\<G> {B}\<rbrakk> \<Longrightarrow> \<exists>B'\<in>Bot_F. B' \<in> N"
+    using static_ref_comp statically_complete_calculus.statically_complete
+    by meson
+qed (simp_all add: equiv_equiv_F wf_prec_F po_DL_Prec_L wfp_DL_Prec_L compat_equiv_prec 
+      prec_F_grounding Active_minimal at_least_two_labels equiv_F_grounding)
 
 notation lgc.step (infix \<open>\<leadsto>LGC\<close> 50)
 

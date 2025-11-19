@@ -83,7 +83,7 @@ begin
     then have "A \<otimes> B = a \<cdot> B" unfolding tensor_prod_def smult_def using order_0 by simp
     moreover have "lookup A [] = a" by (simp add: \<open>Tensor.vec A = [a]\<close> lookup_def order_0.hyps)
     ultimately have "lookup (A \<otimes> B) (is2) = a * lookup B is2" by (simp add: lookup_smult is2_valid)
-    then show ?case using \<open>lookup A [] = a\<close> null_rec(1) order_0.hyps order_0.prems(1) by auto
+    then show ?case using \<open>lookup A [] = a\<close> order_0.hyps order_0.prems(1) by auto
   next
     case (order_step A is1)
     then obtain i is1' where "i # is1' = is1" by blast

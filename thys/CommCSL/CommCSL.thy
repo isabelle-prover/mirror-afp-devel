@@ -1,5 +1,7 @@
 section \<open>CommCSL\<close>
 
+text \<open>In this file, we define the assertion language and the rules of CommCSL.\<close>
+
 theory CommCSL
   imports Lang StateModel
 begin
@@ -58,6 +60,9 @@ inductive PRE_shared_simpler :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Righ
 
 definition PRE_unique :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> bool" where
   "PRE_unique upre uargs uargs' \<longleftrightarrow> length uargs = length uargs' \<and> (\<forall>i. i \<ge> 0 \<and> i < length uargs' \<longrightarrow> upre (uargs ! i) (uargs' ! i))"
+
+
+text \<open>The following function defines the validity of CommCSL assertions, which corresponds to Figure 7 from the paper.\<close>
 
 fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" (\<open>_, _ \<Turnstile> _\<close> [51, 65, 66] 50) where
   "(s, _), (s', _)  \<Turnstile> Bool b \<longleftrightarrow> bdenot b s \<and> bdenot b s'"
@@ -638,6 +643,7 @@ next
   qed
 qed (auto simp add: unary_def)
 
+text \<open>The following record defines resource contexts (Section 3.5).\<close>
 record ('i, 'a, 'v) single_context =
   view :: "(loc \<rightharpoonup> val) \<Rightarrow> 'v"
   abstract_view :: "'v \<Rightarrow> 'v"
@@ -650,7 +656,7 @@ type_synonym ('i, 'a, 'v) cont = "('i, 'a, 'v) single_context option"
 definition no_guard_assertion where
   "no_guard_assertion A \<longleftrightarrow> (\<forall>s1 h1 s2 h2. (s1, h1), (s2, h2) \<Turnstile> A \<longrightarrow> no_guard h1 \<and> no_guard h2)"
 
-text \<open>Axiom that says that view only depends on the part of the heap described by inv\<close>
+text \<open>Axiom that says that view only depends on the part of the heap described by the invariant inv.\<close>
 definition view_function_of_inv :: "('i, 'a, nat) single_context \<Rightarrow> bool" where
   "view_function_of_inv \<Gamma> \<longleftrightarrow> (\<forall>(h :: ('i, 'a) heap) (h' :: ('i, 'a) heap) s. (s, h), (s, h) \<Turnstile> invariant \<Gamma> \<and> (h' \<succeq> h)
   \<longrightarrow> view \<Gamma> (normalize (get_fh h)) = view \<Gamma> (normalize (get_fh h')))"

@@ -235,10 +235,10 @@ lemma right_unique_at_set_iff_right_unique_at_pred [iff]:
   "right_unique_at (S :: 'a set) (R :: 'b \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> right_unique_at (mem_of S) R"
   by simp
 
-lemma Transfer_right_unique_eq_right_unique [HOL_bin_rel_alignment]:
-  "Transfer.right_unique = Binary_Relations_Right_Unique.right_unique"
-  by (intro ext) (blast intro: Transfer.right_uniqueI
-    dest: Transfer.right_uniqueD Binary_Relations_Right_Unique.right_uniqueD)
+lemma Relation_right_unique_eq_right_unique [HOL_bin_rel_alignment]:
+  "Relation.right_unique = Binary_Relations_Right_Unique.right_unique"
+  by (intro ext) (blast intro: Relation.right_uniqueI
+    dest: Relation.right_uniqueD Binary_Relations_Right_Unique.right_uniqueD)
 
 
 subparagraph \<open>Surjective\<close>
@@ -426,13 +426,13 @@ lemma eq_onp_eq_eq_restrict [HOL_bin_rel_alignment]: "eq_onp = rel_restrict_left
   unfolding eq_onp_def by (intro ext) auto
 
 definition "rel_restrict_left_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<restriction>\<^bsub>mem_of S\<^esub>"
-adhoc_overloading rel_restrict_left rel_restrict_left_set
+adhoc_overloading rel_restrict_left \<rightleftharpoons> rel_restrict_left_set
 
 definition "rel_restrict_right_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'b set) \<equiv> R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
-adhoc_overloading rel_restrict_right rel_restrict_right_set
+adhoc_overloading rel_restrict_right \<rightleftharpoons> rel_restrict_right_set
 
 definition "rel_restrict_set (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<up>\<^bsub>mem_of S\<^esub>"
-adhoc_overloading rel_restrict rel_restrict_set
+adhoc_overloading rel_restrict \<rightleftharpoons> rel_restrict_set
 
 lemma rel_restrict_left_set_eq_restrict_left_pred [simp]:
   "R\<restriction>\<^bsub>S\<^esub> = R\<restriction>\<^bsub>mem_of S\<^esub>"

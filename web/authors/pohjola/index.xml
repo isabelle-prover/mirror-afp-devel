@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>pohjola on Archive of Formal Proofs
-    </title>
-    <link>/authors/pohjola/</link>
-    <description>
-        Recent content in pohjola 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 27 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/pohjola/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Broadcast Psi-calculi</title>
-          <link>/entries/Broadcast_Psi.html</link>
-          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Broadcast_Psi.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Hoare Logic for Diverging Programs</title>
-          <link>/entries/HoareForDivergence.html</link>
-          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HoareForDivergence.html</guid>
-          <description></description>
-        </item>
+    <title>Johannes Åman Pohjola</title>
+    <link>https://isa-afp.org/authors/pohjola/</link>
+    <description>AFP entries of Johannes Åman Pohjola</description><item>
+  <title>Broadcast Psi-calculi</title>
+  <link>https://isa-afp.org/entries/Broadcast_Psi.html</link>
+  <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Broadcast Psi-calculi in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>A Hoare Logic for Diverging Programs</title>
+  <link>https://isa-afp.org/entries/HoareForDivergence.html</link>
+  <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
+  <description>A Hoare Logic for Diverging Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+
   </channel>
 </rss>

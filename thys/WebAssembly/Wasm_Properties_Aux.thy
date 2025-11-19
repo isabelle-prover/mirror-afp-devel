@@ -123,9 +123,8 @@ lemma lfilled_collapse3:
 proof (induction "[Label n les es]" LI rule: Lfilled.induct)
   case (L0 vs lholed es')
   have "Lfilled 0 (LBase [] []) es es"
-    using Lfilled.intros(1)
-    unfolding const_list_def
-    by (metis append.left_neutral append_Nil2 list_all_simps(2))
+    using Lfilled.intros(1) [of \<open>[]\<close> \<open>LBase [] []\<close> \<open>[]\<close> es]
+    by (simp add: const_list_def)
   thus ?case
     using Lfilled.intros(2) L0
     by fastforce

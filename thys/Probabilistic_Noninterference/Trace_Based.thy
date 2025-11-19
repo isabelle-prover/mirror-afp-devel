@@ -142,13 +142,13 @@ proof -
   { have "measure M A \<le> measure M (B \<union> C)"
       using AE sets by (auto intro: finite_measure_mono_AE)
     also have "\<dots> \<le> measure M B + measure M C"
-      using sets by (auto intro: finite_measure_subadditive)
+      using sets by (simp add: measure_Un_le)
     finally have A: "measure M A \<le> measure M B + measure M C" . }
   moreover
   { have "measure M B \<le> measure M (A \<union> C)"
       using AE sets by (auto intro: finite_measure_mono_AE)
     also have "\<dots> \<le> measure M A + measure M C"
-      using sets by (auto intro: finite_measure_subadditive)
+      using sets by (simp add: measure_Un_le)
     finally have B: "measure M B \<le> measure M A + measure M C" . }
   ultimately show ?thesis
     by (simp add: dist_real_def)

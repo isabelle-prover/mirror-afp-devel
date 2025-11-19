@@ -4,16 +4,15 @@
 
 chapter \<open>Unsigned words of 8 bits\<close>
 
-theory Uint8 imports
-  Word_Type_Copies
-  Code_Target_Integer_Bit
+theory Uint8
+  imports
+    Uint_Common
+    Code_Target_Word
 begin
 
 text \<open>
   Restriction for OCaml code generation:
-  OCaml does not provide an int8 type, so no special code generation 
-  for this type is set up. If the theory \<^text>\<open>Code_Target_Int_Bit\<close>
-  is imported, the type \<open>uint8\<close> is emulated via \<^typ>\<open>8 word\<close>.
+  OCaml does not provide an int8 type, so no special code generation for this type is set up.
 \<close>
 
 section \<open>Type definition and primitive operations\<close>
@@ -29,7 +28,7 @@ declare uint8.of_word_of [code abstype]
 
 declare Quotient_uint8 [transfer_rule]
 
-instantiation uint8 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
+instantiation uint8 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder, order_bot, order_top}\<close>
 begin
 
 lift_definition zero_uint8 :: uint8 is 0 .
@@ -43,12 +42,15 @@ lift_definition modulo_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> u
 lift_definition equal_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
 lift_definition less_eq_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
 lift_definition less_uint8 :: \<open>uint8 \<Rightarrow> uint8 \<Rightarrow> bool\<close> is \<open>(<)\<close> .
+lift_definition bot_uint8 :: uint8 is bot .
+lift_definition top_uint8 :: uint8 is top .
 
 global_interpretation uint8: word_type_copy_ring Abs_uint8 Rep_uint8
   by standard (fact zero_uint8.rep_eq one_uint8.rep_eq
     plus_uint8.rep_eq uminus_uint8.rep_eq minus_uint8.rep_eq
     times_uint8.rep_eq divide_uint8.rep_eq modulo_uint8.rep_eq
-    equal_uint8.rep_eq less_eq_uint8.rep_eq less_uint8.rep_eq)+
+    equal_uint8.rep_eq less_eq_uint8.rep_eq less_uint8.rep_eq
+    bot_uint8.rep_eq top_uint8.rep_eq)+
 
 instance proof -
   show \<open>OFCLASS(uint8, comm_ring_1_class)\<close>
@@ -59,9 +61,16 @@ instance proof -
     by (fact uint8.of_class_equal)
   show \<open>OFCLASS(uint8, linorder_class)\<close>
     by (fact uint8.of_class_linorder)
+  show \<open>OFCLASS(uint8, order_bot_class)\<close>
+    by (fact uint8.of_class_order_bot)
+  show \<open>OFCLASS(uint8, order_top_class)\<close>
+    by (fact uint8.of_class_order_top)
 qed
 
 end
+
+instance uint8 :: \<open>{interval_bot, interval_top}\<close>
+  by (fact uint8.of_class_interval_bot uint8.of_class_interval_top)+
 
 instantiation uint8 :: ring_bit_operations
 begin
@@ -122,27 +131,12 @@ global_interpretation uint8: word_type_copy_more Abs_uint8 Rep_uint8 signed_drop
          Uint8.rep_eq integer_of_uint8.rep_eq integer_eq_iff)
   done
 
-instantiation uint8 :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint8 :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint8 :: \<open>uint8 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint8 :: \<open>uint8 \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint8\<close>
-  where set_bit_uint8_eq: \<open>set_bit_uint8 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint8_transfer [transfer_rule]:
-  \<open>(cr_uint8 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint8) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint8_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint8 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint8\<close> is set_bits .
 lift_definition set_bits_aux_uint8 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is set_bits_aux .
@@ -152,7 +146,6 @@ global_interpretation uint8: word_type_copy_misc Abs_uint8 Rep_uint8 signed_drop
   by (standard; transfer) simp_all
 
 instance using uint8.of_class_bit_comprehension
-  uint8.of_class_set_bit
   by simp_all standard
 
 end
@@ -164,18 +157,11 @@ code_printing code_module Uint8 \<rightharpoonup> (SML)
 val _ = if 3 <= Word.wordSize then () else raise (Fail ("wordSize less than 3"));
 
 structure Uint8 : sig
-  val set_bit : Word8.word -> IntInf.int -> bool -> Word8.word
   val shiftl : Word8.word -> IntInf.int -> Word8.word
   val shiftr : Word8.word -> IntInf.int -> Word8.word
   val shiftr_signed : Word8.word -> IntInf.int -> Word8.word
   val test_bit : Word8.word -> IntInf.int -> bool
 end = struct
-
-fun set_bit x n b =
-  let val mask = Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word8.orb (x, mask)
-     else Word8.andb (x, Word8.notb mask)
-  end
 
 fun shiftl x n =
   Word8.<< (x, Word.fromLargeInt (IntInf.toLarge n))
@@ -190,14 +176,14 @@ fun test_bit x n =
   Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
 
 end; (* struct Uint8 *)\<close>
-code_reserved SML Uint8
+code_reserved (SML) Uint8
 
 code_printing code_module Uint8 \<rightharpoonup> (Haskell)
  \<open>module Uint8(Int8, Word8) where
 
   import Data.Int(Int8)
   import Data.Word(Word8)\<close>
-code_reserved Haskell Uint8
+code_reserved (Haskell) Uint8
 
 text \<open>
   Scala provides only signed 8bit numbers, so we use these and 
@@ -219,12 +205,6 @@ def less_eq(x: Byte, y: Byte) : Boolean =
     case false => y < 0 || x <= y
   }
 
-def set_bit(x: Byte, n: BigInt, b: Boolean) : Byte =
-  b match {
-    case true => (x | (1 << n.intValue)).toByte
-    case false => (x & (1 << n.intValue).unary_~).toByte
-  }
-
 def shiftl(x: Byte, n: BigInt) : Byte = (x << n.intValue).toByte
 
 def shiftr(x: Byte, n: BigInt) : Byte = ((x & 255) >>> n.intValue).toByte
@@ -235,7 +215,7 @@ def test_bit(x: Byte, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint8 */\<close>
-code_reserved Scala Uint8
+code_reserved (Scala) Uint8
 
 text \<open>
   Avoid @{term Abs_uint8} in generated code, use @{term Rep_uint8'} instead. 
@@ -275,8 +255,8 @@ lemma term_of_uint8_code [code]:
        (term_of_class.term_of (Rep_uint8' x))"
 by(simp add: term_of_anything)
 
-lemma Uin8_code [code]: "Rep_uint8 (Uint8 i) = word_of_int (int_of_integer_symbolic i)"
-unfolding Uint8_def int_of_integer_symbolic_def by(simp add: Abs_uint8_inverse)
+lemma Uint8_code [code]: "Rep_uint8 (Uint8 i) = word_of_int (int_of_integer i)"
+  by (fact Uint8.rep_eq)
 
 code_printing type_constructor uint8 \<rightharpoonup>
   (SML) "Word8.word" and
@@ -416,7 +396,6 @@ global_interpretation uint8: word_type_copy_target_language Abs_uint8 Rep_uint8 
     and uint8_shiftl = uint8.shiftl
     and uint8_shiftr = uint8.shiftr
     and uint8_sshiftr = uint8.sshiftr
-    and uint8_set_bit = uint8.set_bit
   by standard simp_all
 
 code_printing constant uint8_test_bit \<rightharpoonup>
@@ -424,12 +403,6 @@ code_printing constant uint8_test_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint8.test'_bit" and
   (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit w i)"
-
-code_printing constant uint8_set_bit \<rightharpoonup>
-  (SML) "Uint8.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (Scala) "Uint8.set'_bit" and
-  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_set'_bit out of bounds\") else Uint8.set'_bit w i b)"
 
 code_printing constant uint8_shiftl \<rightharpoonup>
   (SML) "Uint8.shiftl" and
@@ -529,7 +502,6 @@ interpretation quickcheck_narrowing_samples
   "Typerep.Typerep (STR ''Uint8.uint8'') []" .
 
 definition "narrowing_uint8 d = qc_narrowing_drawn_from (narrowing_samples d) d"
-declare [[code drop: "partial_term_of :: uint8 itself \<Rightarrow> _"]]
 lemmas partial_term_of_uint8 [code] = partial_term_of_code
 
 instance ..

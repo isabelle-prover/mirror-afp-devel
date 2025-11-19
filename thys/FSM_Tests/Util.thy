@@ -275,7 +275,7 @@ lemma filter_double :
   assumes "x \<in> set (filter P1 xs)"
   and     "P2 x"
 shows "x \<in> set (filter P2 (filter P1 xs))"
-  by (metis (no_types) assms(1) assms(2) filter_set member_filter)
+  using assms by simp
 
 lemma filter_list_set :
   assumes "x \<in> set xs"
@@ -1488,10 +1488,7 @@ lemma linear_order_from_list_position_total:
 
 lemma linear_order_from_list_position_refl: 
   "refl_on (set xs) (set (linear_order_from_list_position xs))"  
-proof 
-  show "set (linear_order_from_list_position xs) \<subseteq> set xs \<times> set xs"
-    unfolding linear_order_from_list_position_set
-    using non_sym_dist_pairs_subset[of xs] by auto
+proof (rule refl_onI)
   show "\<And>x. x \<in> set xs \<Longrightarrow> (x, x) \<in> set (linear_order_from_list_position xs)"
     unfolding linear_order_from_list_position_set
     using non_sym_dist_pairs_subset[of xs] by auto
@@ -2212,20 +2209,6 @@ next
   ultimately show ?case
     by auto 
 qed
-
-
-fun inter_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "inter_list xs ys = filter (\<lambda> x . x \<in> set ys) xs"
-
-lemma inter_list_set : "set (inter_list xs ys) = (set xs) \<inter> (set ys)"
-  by auto
-
-fun subset_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "subset_list xs ys = list_all (\<lambda> x . x \<in> set ys) xs"
-
-lemma subset_list_set : "subset_list xs ys = ((set xs) \<subseteq> (set ys))" 
-  unfolding subset_list.simps
-  by (simp add: Ball_set subset_code(1)) 
 
 
 subsubsection \<open>Removing Subsets in a List of Sets\<close>

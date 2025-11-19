@@ -862,7 +862,7 @@ proof -
       by (rule one_half_limit_point_Reals_minus_Ints)
   next
     show "1 / (2 :: complex) \<in> -\<int>"
-      using fraction_not_in_ints[of 2 1, where ?'a = complex] by auto
+      using fraction_not_in_Ints[of 2 1, where ?'a = complex] by auto
   next
     show "z \<in> -\<int>"
       using assms by simp

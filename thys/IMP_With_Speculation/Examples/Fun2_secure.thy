@@ -308,8 +308,8 @@ proof(rule unwindIntoCond_simpleI)
   then show "isIntO ss3 = isIntO ss4" by simp
 
 
-  show "match (oor \<Delta>0 \<Delta>1) ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor \<Delta>0 \<Delta>1) ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposibT, ibUTle case since isIntO always holds *)
     show "match1 (oor \<Delta>0 \<Delta>1) ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_defs)
@@ -370,45 +370,23 @@ proof(rule unwindIntoCond_simpleI)
          apply simp_all apply(cases statO, simp_all) apply(cases statA, simp_all)
          apply(cases statO, simp_all) apply (cases statA, simp_all)
           apply (fastforce) 
-         using updStat.simps status.exhaust status.distinct by (smt(z3))
-        } note stat = this
+         using newStat.simps status.exhaust status.distinct by (smt(z3))
+     } note stat = this
+
+     have cfgs3_e:"cfgs3 = []" using \<Delta>0[unfolded \<Delta>0_defs ss cfg] by fast
 
         show "oor \<Delta>0 \<Delta>1 \<infinity> ss3' ss4' statA' (nextN ss1) (nextN ss2) (sstatO' statO ss1 ss2)"
         (* the cmbination of nonspec_normal and nonspec_normal is the only nontrivial possibT, ibUTility, deferred to the end *)
-          using v3[unfolded ss, simplified] proof(cases rule: stepS_cases)
-            case spec_normal
-            then show ?thesis using sa \<Delta>0 stat unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_mispred
-            then show ?thesis using sa \<Delta>0 stat unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_Fence
-            then show ?thesis using sa \<Delta>0 stat unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_resolve
-            then show ?thesis using sa \<Delta>0 stat unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case nonspec_mispred 
-            then show ?thesis using sa \<Delta>0 stat unfolding ss apply (simp add: \<Delta>0_defs) 
-              by (metis is_If_pc less_Suc_eq nat_less_le numeral_1_eq_Suc_0 numeral_3_eq_3 
+        using v3[unfolded ss, simplified] cfgs3_e proof(cases rule: stepS_cases)
+         case nonspec_mispred 
+         then show ?thesis using sa \<Delta>0 stat unfolding ss apply (simp add: \<Delta>0_defs) 
+         by (metis is_If_pc less_Suc_eq nat_less_le numeral_1_eq_Suc_0 numeral_3_eq_3 
                   one_eq_numeral_iff semiring_norm(83) zero_less_numeral zero_neq_numeral)  
         next
           case nonspec_normal note nn3 = nonspec_normal
           show ?thesis 
-          using v3[unfolded ss, simplified] proof(cases rule: stepS_cases)
+          using v3[unfolded ss, simplified] cfgs3_e proof(cases rule: stepS_cases)
             case nonspec_mispred
-            then show ?thesis using sa \<Delta>0 stat nn3 unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_normal
-            then show ?thesis using sa \<Delta>0 stat nn3 unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_mispred
-            then show ?thesis using sa \<Delta>0 stat nn3 unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_Fence
-            then show ?thesis using sa \<Delta>0 stat nn3 unfolding ss by (simp add: \<Delta>0_defs)
-          next
-            case spec_resolve
             then show ?thesis using sa \<Delta>0 stat nn3 unfolding ss by (simp add: \<Delta>0_defs)
           next
             case nonspec_normal note nn4=nonspec_normal
@@ -420,9 +398,9 @@ proof(rule unwindIntoCond_simpleI)
               unfolding \<Delta>1_defs 
               subgoal by (simp add: \<Delta>0_defs) 
               subgoal by (simp add: \<Delta>0_defs) .  
-            by (simp add: \<Delta>0_defs)+ 
-          qed
-        qed
+            by (simp add: \<Delta>0_defs)+        
+          qed simp+
+        qed simp+
       qed
     qed  
   qed
@@ -487,8 +465,8 @@ proof(rule unwindIntoCond_simpleI)
 
   then show "isIntO ss3 = isIntO ss4" by simp
 
-  show "match (oor4 \<Delta>1 \<Delta>2 \<Delta>3 \<Delta>4) ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor4 \<Delta>1 \<Delta>2 \<Delta>3 \<Delta>4) ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposibT, ibUTle case since isIntO always holds *)
     show "match1 (oor4 \<Delta>1 \<Delta>2 \<Delta>3 \<Delta>4) ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -540,49 +518,27 @@ proof(rule unwindIntoCond_simpleI)
          using cases_6[of pc3] apply(elim disjE)
          defer 1 defer 1 
            subgoal apply(cases statO, simp_all) apply(cases statA, simp_all) 
-             using cfg finals ss status.distinct(1) updStat.simps by auto
+             using cfg finals ss status.distinct(1) newStat.simps by auto
            subgoal apply(cases statO, simp_all) apply(cases statA, simp_all) 
-             using cfg finals ss status.distinct(1) updStat.simps by auto
+             using cfg finals ss status.distinct(1) newStat.simps by auto
            subgoal apply(cases statO, simp_all) apply(cases statA, simp_all)
-             using cfg finals ss status.distinct(1) updStat.simps by auto
+             using cfg finals ss status.distinct(1) newStat.simps by auto
            subgoal apply(cases statO, simp_all) apply(cases statA, simp_all) 
-             using cfg finals ss status.distinct(1) updStat.simps by auto
+             using cfg finals ss status.distinct(1) newStat.simps by auto
            subgoal apply(cases statO, simp_all) apply(cases statA, simp_all) 
-             using cfg finals ss status.distinct(1) updStat.simps by auto
+             using cfg finals ss status.distinct(1) newStat.simps by auto
            by simp+
-        } note stat = this
+       } note stat = this
+
+       have cfgs_e:"cfgs3 = []" "cfgs4 = []" using \<Delta>1_implies[OF \<Delta>1[unfolded ss]] by auto
 
         show "(oor4 \<Delta>1 \<Delta>2 \<Delta>3 \<Delta>4) \<infinity> ss3' ss4' statA' (nextN ss1) (nextN ss2) (sstatO' statO ss1 ss2)"
         (* nonspec_normal and nonspec_mispred are the only nontrivial possibT, ibUTility, deferred to the end *)
-        using v3[unfolded ss, simplified] proof(cases rule: stepS_cases)
-          case spec_normal
-          then show ?thesis using sa \<Delta>1 stat unfolding ss by (simp add: \<Delta>1_defs)  
-        next
-          case spec_mispred
-          then show ?thesis using sa \<Delta>1 stat unfolding ss by (simp add: \<Delta>1_defs) 
-        next
-          case spec_Fence
-          then show ?thesis using sa \<Delta>1 stat unfolding ss by (simp add: \<Delta>1_defs) 
-        next
-          case spec_resolve
-          then show ?thesis using sa \<Delta>1 stat unfolding ss by (simp add: \<Delta>1_defs) 
-        next
+        using v3[unfolded ss, simplified] cfgs_e proof(cases rule: stepS_cases)
           case nonspec_mispred note nm3 = nonspec_mispred
-          show ?thesis using v4[unfolded ss, simplified] proof(cases rule: stepS_cases)
+          show ?thesis using v4[unfolded ss, simplified] cfgs_e proof(cases rule: stepS_cases)
             (* trace 4 can only have the same case as trace 3 as nontrivial case, here nonspec_mispred -- deferred *)
               case nonspec_normal
-              then show ?thesis using sa \<Delta>1 stat nm3 unfolding ss by (simp add: \<Delta>1_defs) 
-            next
-              case spec_normal
-              then show ?thesis using sa \<Delta>1 stat nm3 unfolding ss by (simp add: \<Delta>1_defs) 
-            next
-              case spec_mispred
-              then show ?thesis using sa \<Delta>1 stat nm3 unfolding ss by (simp add: \<Delta>1_defs) 
-            next
-              case spec_Fence
-              then show ?thesis using sa \<Delta>1 stat nm3 unfolding ss by (simp add: \<Delta>1_defs) 
-            next
-              case spec_resolve
               then show ?thesis using sa \<Delta>1 stat nm3 unfolding ss by (simp add: \<Delta>1_defs) 
             next
               case nonspec_mispred note nm4 = nonspec_mispred
@@ -596,24 +552,12 @@ proof(rule unwindIntoCond_simpleI)
                   subgoal apply(rule oor4I2) by (simp add: \<Delta>1_defs \<Delta>2_defs)
                   subgoal apply(rule oor4I3) by (simp add: \<Delta>1_defs \<Delta>3_defs) .
                 by (simp add: \<Delta>1_defs)+ 
-          qed
+          qed simp+
         next
           case nonspec_normal note nn3 = nonspec_normal
-          show ?thesis using v4[unfolded ss, simplified] proof(cases rule: stepS_cases)
+          show ?thesis using v4[unfolded ss, simplified] cfgs_e proof(cases rule: stepS_cases)
           (* trace 4 can only have the same case as trace 3 as nontrivial case, here nonspec_normal -- deferred *)
             case nonspec_mispred
-            then show ?thesis using sa \<Delta>1 stat nn3 unfolding ss by (simp add: \<Delta>1_defs) 
-          next
-            case spec_normal
-            then show ?thesis using sa \<Delta>1 stat nn3 unfolding ss by (simp add: \<Delta>1_defs) 
-          next
-            case spec_mispred
-            then show ?thesis using sa \<Delta>1 stat nn3 unfolding ss by (simp add: \<Delta>1_defs) 
-          next
-            case spec_Fence
-            then show ?thesis using sa \<Delta>1 stat nn3 unfolding ss by (simp add: \<Delta>1_defs) 
-          next
-            case spec_resolve
             then show ?thesis using sa \<Delta>1 stat nn3 unfolding ss by (simp add: \<Delta>1_defs) 
           next
             case nonspec_normal
@@ -629,8 +573,8 @@ proof(rule unwindIntoCond_simpleI)
               subgoal apply(rule oor4I1) by (simp add: \<Delta>1_defs) 
               subgoal apply(rule oor4I4) by (simp add: \<Delta>1_defs \<Delta>4_defs)
               subgoal apply(rule oor4I4) by (simp add: \<Delta>1_defs \<Delta>4_defs) .
-          qed
-        qed
+          qed simp+
+        qed simp+
       qed
     qed
   qed
@@ -685,8 +629,8 @@ proof(rule unwindIntoCond_simpleI)
 
   then show "isIntO ss3 = isIntO ss4" by simp
 
-  show "match \<Delta>1 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react \<Delta>1 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposibT, ibUTle case since isIntO always holds *)
     show "match1 \<Delta>1 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -726,12 +670,13 @@ proof(rule unwindIntoCond_simpleI)
       apply(cases statO, simp_all) 
       apply(cases statA, simp_all)
       unfolding finalS_def final_def 
-      by (smt (verit, ccfv_SIG) updStat.simps(1))
+      by (smt (verit, ccfv_SIG) newStat.simps(1))
 
-
+      have isO:"is_Output (prog ! pcOf (last cfgs3))" "is_Output (prog ! pcOf (last cfgs4))" using \<Delta>2_implies[OF \<Delta>2[unfolded ss]] by auto
+      have pstate3:"pstate3 = pstate4" using \<Delta>2[unfolded ss \<Delta>2_defs] by fast
       show "\<Delta>1 \<infinity> ss3' ss4' statA' ss1 ss2 statO"
       (* the only nontrivial combination of cases will be spec_resolve and spec_resolve *)
-      using v3[unfolded ss, simplified] proof(cases rule: stepS_cases)
+      using v3[unfolded ss, simplified] isO proof(cases rule: stepS_cases)
         case nonspec_normal
         then show ?thesis using sa stat \<Delta>2 unfolding ss by (simp add: \<Delta>2_defs)
       next
@@ -750,7 +695,12 @@ proof(rule unwindIntoCond_simpleI)
         then show ?thesis using sa stat \<Delta>2 unfolding ss apply-  
         apply(frule \<Delta>2_implies) by (simp add: \<Delta>2_defs)
       next
+        case spec_resolveI
+        then show ?thesis using sa stat \<Delta>2 unfolding ss apply-  
+        apply(frule \<Delta>2_implies) by (simp add: \<Delta>2_defs)
+      next
         case spec_resolve note sr3 = spec_resolve
+        then have r4:"resolve pstate4 (pcOf cfg4 # map pcOf cfgs4)" using \<Delta>2_implies[OF \<Delta>2[unfolded ss]] unfolding pstate3 by auto
         show ?thesis using v4[unfolded ss, simplified] proof(cases rule: stepS_cases)
           case nonspec_normal
           then show ?thesis using sa stat \<Delta>2 sr3 unfolding ss by (simp add: \<Delta>2_defs)
@@ -767,8 +717,48 @@ proof(rule unwindIntoCond_simpleI)
           case spec_Fence 
           then show ?thesis using sa stat \<Delta>2 sr3 unfolding ss by (simp add: \<Delta>2_defs)
         next
+          case spec_resolveI
+          then show ?thesis using sa stat \<Delta>2 sr3 isO by blast
+        next
           case spec_resolve note sr4 = spec_resolve
           show ?thesis using sa stat \<Delta>2 v3 v4 sr3 sr4 
+          unfolding ss lcfgs hh apply-
+          apply(frule \<Delta>2_implies) by (simp add: \<Delta>2_defs \<Delta>1_defs, metis)
+        next
+          case spec_resolveO note sr4 = spec_resolveO(1,3-) r4
+          show ?thesis using sa stat \<Delta>2 v3 v4 sr3 sr4
+          unfolding ss lcfgs hh apply-
+          apply(frule \<Delta>2_implies) by (simp add: \<Delta>2_defs \<Delta>1_defs, metis)
+      qed 
+      next
+      case spec_resolveO  note srO3 = spec_resolveO
+      have cfgs4:"cfgs4 \<noteq> []" using sa stat \<Delta>2 unfolding ss apply-by(frule \<Delta>2_implies, auto)
+      show ?thesis using v4[unfolded ss, simplified] proof(cases rule: stepS_cases)
+          case nonspec_normal
+          then show ?thesis by (simp add: cfgs4)
+        next
+          case nonspec_mispred
+          then show ?thesis by (simp add: cfgs4)
+        next
+          case spec_normal
+          then show ?thesis by (simp add: isO)
+        next
+          case spec_mispred
+          then show ?thesis using isO by blast
+        next
+          case spec_Fence 
+          then show ?thesis using isO by blast
+        next
+          case spec_resolveI
+          then show ?thesis using isO by blast
+        next
+          case spec_resolveO note srO4 = spec_resolveO
+          show ?thesis using sa stat \<Delta>2 v3 v4 srO3 srO4
+          unfolding ss lcfgs hh apply-
+          apply(frule \<Delta>2_implies) by (simp add: \<Delta>2_defs \<Delta>1_defs, metis)
+        next
+          case spec_resolve note sr4 = spec_resolve(1,3-) isO(2)
+          show ?thesis using sa stat \<Delta>2 v3 v4 srO3 sr4
           unfolding ss lcfgs hh apply-
           apply(frule \<Delta>2_implies) by (simp add: \<Delta>2_defs \<Delta>1_defs, metis)
         qed 
@@ -833,8 +823,8 @@ proof(rule unwindIntoCond_simpleI)
 
   then show "isIntO ss3 = isIntO ss4" by simp
 
-  show "match (oor \<Delta>3 \<Delta>1) ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor \<Delta>3 \<Delta>1) ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposibT, ibUTle case since isIntO always holds *)
     show "match1 (oor \<Delta>3 \<Delta>1) ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -869,10 +859,13 @@ proof(rule unwindIntoCond_simpleI)
       apply(cases statO, simp_all) apply(cases statA, simp_all)
       unfolding finalS_defs
       by (smt (z3) Zero_neq_Suc list.size(3) 
-          map_eq_imp_length_eq status.exhaust updStat.simps)
+          map_eq_imp_length_eq status.exhaust newStat.simps)
+
+    have fence:"prog ! pcOf (last cfgs3) = Fence" "prog ! pcOf (last cfgs4) = Fence" 
+      using \<Delta>3  unfolding ss apply-by(frule \<Delta>3_implies, simp)+
 
       show "oor \<Delta>3 \<Delta>1 \<infinity> ss3' ss4' statA' ss1 ss2 statO"
-      using v3[unfolded ss, simplified] proof(cases rule: stepS_cases)
+      using v3[unfolded ss, simplified]  proof(cases rule: stepS_cases)
         case nonspec_normal
         then show ?thesis using sa stat \<Delta>3 lcfgs unfolding ss by (simp_all add: \<Delta>3_defs)  
       next
@@ -880,18 +873,35 @@ proof(rule unwindIntoCond_simpleI)
         then show ?thesis using sa stat \<Delta>3 lcfgs unfolding ss by (simp_all add: \<Delta>3_defs) 
       next
         case spec_mispred
-        then show ?thesis using sa stat \<Delta>3 lcfgs  unfolding ss apply-         
-        apply(frule \<Delta>3_implies) by (simp_all add: \<Delta>3_defs) 
+        then show ?thesis by (simp add: fence) 
       next (* the nontrivial cases deferred to the end: *)
         case spec_normal 
-        then show ?thesis using sa stat \<Delta>3 lcfgs  unfolding ss apply-         
-        apply(frule \<Delta>3_implies) by (simp_all add: \<Delta>3_defs) 
+        then show ?thesis by (simp add: fence) 
       next
-        case spec_Fence 
-        then show ?thesis using sa stat \<Delta>3 lcfgs unfolding ss 
-          apply (simp add: \<Delta>3_defs) 
-          by (metis cfgs_map config.sel(1) empty_set list.set_map list.simps(15))
-        next
+        case spec_Fence note sf3 = spec_Fence
+        have r4:"\<not> resolve pstate4 (pcOf cfg4 # map pcOf cfgs4)"using sa stat \<Delta>3 lcfgs sf3 unfolding ss by (simp add: \<Delta>3_defs)
+          show ?thesis
+          using v4[unfolded ss, simplified] proof(cases rule: stepS_cases)
+            case nonspec_normal
+            then show ?thesis using sa stat \<Delta>3 lcfgs sf3 unfolding ss 
+            by (simp add: \<Delta>3_defs)
+          next
+            case nonspec_mispred
+            then show ?thesis using sa stat \<Delta>3 lcfgs sf3 unfolding ss 
+            by (simp add: \<Delta>3_defs)
+          next 
+            case spec_resolve   
+            then show ?thesis using sa stat \<Delta>3 lcfgs sf3 unfolding ss 
+            by (simp add: \<Delta>3_defs)    
+          next (* the nontrivial case deferred to the end: *)
+            case spec_Fence note sf4 = spec_Fence
+            show ?thesis
+            apply(intro oorI2)
+            using sa stat \<Delta>3 lcfgs v3 v4 sf3 sf4 unfolding ss hh
+            apply(simp add: \<Delta>3_defs \<Delta>1_defs) 
+            by (metis empty_iff empty_set length_1_butlast map_eq_imp_length_eq)
+        qed (simp_all add: fence)
+      next
           case spec_resolve note sr3 = spec_resolve
           show ?thesis
           using v4[unfolded ss, simplified] proof(cases rule: stepS_cases)
@@ -921,8 +931,8 @@ proof(rule unwindIntoCond_simpleI)
             using sa stat \<Delta>3 lcfgs v3 v4 sr3 sr4 unfolding ss hh
             apply(simp add: \<Delta>3_defs \<Delta>1_defs) 
             by (metis empty_iff empty_set length_1_butlast map_eq_imp_length_eq)
-          qed 
-        qed
+          qed (simp_all add: fence)
+        qed(simp_all add: fence)
     qed
   qed  
 qed 
@@ -963,8 +973,8 @@ proof(rule unwindIntoCond_simpleI)
 
   then show "isIntO ss3 = isIntO ss4" by simp
 
-  show "match \<Delta>4 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react \<Delta>4 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposibT, ibUTle case since isIntO always holds *)
     show "match1 \<Delta>4 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)

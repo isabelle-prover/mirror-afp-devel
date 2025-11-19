@@ -24,7 +24,7 @@ homepage = "eberl_homepage"
 [contributors]
 
 [notify]
-eberl = "eberl_email1"
+eberl = "eberl_email"
 
 [history]
 

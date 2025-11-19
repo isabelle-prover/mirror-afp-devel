@@ -112,7 +112,7 @@ proof -
 
   have h2: "i\<le>?d \<Longrightarrow> real_of_int(\<bar>x0\<bar> ^ i) \<le> real (X ^ i)" for i
     using root_bound
-    by (simp add: linordered_semidom_class.power_mono) 
+    by (simp add: power_mono) 
 
   have "abs (poly F x0) =
     abs (\<Sum>i\<le>?d. (coeff F i)* x0^i)"

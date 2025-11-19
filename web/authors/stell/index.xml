@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>stell on Archive of Formal Proofs
-    </title>
-    <link>/authors/stell/</link>
-    <description>
-        Recent content in stell 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 21 Jan 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/stell/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>(Extended) Interval Analysis</title>
-          <link>/entries/Interval_Analysis.html</link>
-          <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Interval_Analysis.html</guid>
-          <description></description>
-        </item>
+    <title>Amy Stell</title>
+    <link>https://isa-afp.org/authors/stell/</link>
+    <description>AFP entries of Amy Stell</description><item>
+  <title>Formalizing Neural Networks</title>
+  <link>https://isa-afp.org/entries/Neural_Networks.html</link>
+  <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Formalizing Neural Networks in the AFP</description>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>(Extended) Interval Analysis</title>
+  <link>https://isa-afp.org/entries/Interval_Analysis.html</link>
+  <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
+  <description>(Extended) Interval Analysis in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics</category>
+</item>
+
   </channel>
 </rss>

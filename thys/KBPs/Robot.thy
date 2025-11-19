@@ -154,8 +154,8 @@ where
 definition
   kbp :: "(Agent, Proposition, RobotAct) KBP"
 where
-  "kbp \<equiv> [ \<lparr> guard = \<^bold>K\<^sub>Robot (Kprop InGoal),        action = Halt \<rparr>,
-           \<lparr> guard = Knot (\<^bold>K\<^sub>Robot (Kprop InGoal)), action = NOP \<rparr> ]"
+  "kbp \<equiv> [ \<lparr> guard = \<^bold>K\<^bsub>Robot\<^esub> (Kprop InGoal),        action = Halt \<rparr>,
+           \<lparr> guard = Knot (\<^bold>K\<^bsub>Robot\<^esub> (Kprop InGoal)), action = NOP \<rparr> ]"
 
 (*<*)
 

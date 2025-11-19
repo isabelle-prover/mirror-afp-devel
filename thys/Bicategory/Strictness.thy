@@ -1457,7 +1457,7 @@ begin
                                B.can (E.Trg (Dom f') \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod f') (E.Trg (Dom f') \<^bold>\<star> Cod f')"
                   using par 1 arr_char by simp
                 ultimately show ?thesis
-                  using 2 B.monoE cod_char by auto
+                  using 2 B.mono_cancel cod_char by auto
               qed
               show ?thesis
               proof -
@@ -1474,7 +1474,7 @@ begin
                                      (B.can (E.Trg (Dom f) \<^bold>\<star> Dom f) (E.Trg (Dom f) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom f))"
                   using 1 3 calculation(2) by auto
                 ultimately show ?thesis
-                  using par 1 3 arr_char B.epiE by simp
+                  using par 1 3 arr_char B.epi_cancel by simp
               qed
             qed
             moreover have "trg\<^sub>B (Map f) = \<lbrace>E.Trg (Dom f)\<rbrace> \<and>
@@ -1574,7 +1574,7 @@ begin
                                B.can (Cod f' \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom f')) (Cod f' \<^bold>\<star> E.Src (Dom f'))"
                   using par 1 arr_char by simp
                 ultimately show ?thesis
-                  using 6 B.monoE cod_char by auto
+                  using 6 B.mono_cancel cod_char by auto
               qed
               show ?thesis
               proof -
@@ -1589,7 +1589,7 @@ begin
                                    (B.can (Dom f \<^bold>\<star> E.Src (Dom f)) (Dom f \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom f)))"
                   using 1 5 calculation(2) by auto
                 ultimately show ?thesis
-                  using par 1 5 arr_char B.epiE by simp
+                  using par 1 5 arr_char B.epi_cancel by simp
               qed
             qed
             moreover have "src\<^sub>B (Map f) = \<lbrace>E.Src (Dom f)\<rbrace> \<and>
@@ -1618,19 +1618,15 @@ begin
     proof
       show "\<And>\<tau>\<mu>\<nu>. \<not> VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow> \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>)) = null"
         using \<a>_def by simp
-      show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
-                  dom (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))) = HoHV (VVV.dom \<tau>\<mu>\<nu>)"
+      show 1: "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow> arr (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>)))"
         using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<a>_def hcomp_assoc HoHV_def VVV.dom_simp VV.dom_simp
         by force
-      show 1: "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
-                     cod (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))) = HoVH (VVV.cod \<tau>\<mu>\<nu>)"
-        using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<a>_def HoVH_def VVV.cod_simp VV.cod_simp by force
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
                   HoVH \<tau>\<mu>\<nu> \<cdot>
                     \<a> (fst (VVV.dom \<tau>\<mu>\<nu>)) (fst (snd (VVV.dom \<tau>\<mu>\<nu>)))
                       (snd (snd (VVV.dom \<tau>\<mu>\<nu>))) =
                   \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
-        using \<a>_def HoVH.as_nat_trans.is_natural_1 HoVH_def by auto
+        using \<a>_def HoVH.as_nat_trans.naturality1 HoVH_def by auto
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
                    \<a> (fst (VVV.cod \<tau>\<mu>\<nu>)) (fst (snd (VVV.cod \<tau>\<mu>\<nu>)))
                      (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot> HoHV \<tau>\<mu>\<nu> =
@@ -1645,8 +1641,8 @@ begin
         thus "\<a> (fst (VVV.cod \<tau>\<mu>\<nu>)) (fst (snd (VVV.cod \<tau>\<mu>\<nu>))) (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot>
                 HoHV \<tau>\<mu>\<nu> =
               \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
-          using 1 \<tau>\<mu>\<nu> comp_cod_arr \<a>_def
-          by (metis (no_types, lifting) HoVH_def HoHV.preserves_arr prod.collapse)
+          using 1 \<tau>\<mu>\<nu> comp_cod_arr \<a>_def HoVH.as_nat_trans.naturality2
+          by (metis (no_types, lifting) HoVH_def prod.collapse)
       qed
       show "\<And>fgh. VVV.ide fgh \<Longrightarrow> iso (\<a> (fst fgh) (fst (snd fgh)) (snd (snd fgh)))"
         using \<a>_def HoVH.preserves_ide HoVH_def by auto
@@ -1877,35 +1873,23 @@ begin
     proof
       fix \<mu>
       assume \<mu>: "B.arr \<mu>"
-      show "isomorphic (UP (src\<^sub>B \<mu>)) (src (UP \<mu>))"
+      show "UP (src\<^sub>B \<mu>) \<cong> src (UP \<mu>)"
       proof -
         let ?\<phi> = "MkArr \<^bold>\<langle>src\<^sub>B \<mu>\<^bold>\<rangle> \<^bold>\<langle>src\<^sub>B \<mu>\<^bold>\<rangle>\<^sub>0 (src\<^sub>B \<mu>)"
         have \<phi>: "\<guillemotleft>?\<phi> : UP (src\<^sub>B \<mu>) \<Rightarrow> src (UP \<mu>)\<guillemotright>"
-        proof
-          show 1: "arr ?\<phi>"
-            using \<mu> by (intro arrI, auto)
-          show "dom ?\<phi> = UP (src\<^sub>B \<mu>)"
-            using \<mu> 1 dom_char UP_def by simp
-          show "cod ?\<phi> = src (UP \<mu>)"
-            using \<mu> 1 cod_char src_def by auto
-        qed
+          using \<mu> UP_def src_def arr_UP
+          by (intro MkArr_in_hom) auto
         have "iso ?\<phi>"
           using \<mu> \<phi> iso_char src_def by auto
         thus ?thesis
           using \<phi> isomorphic_def by auto
       qed
-      show "isomorphic (UP (trg\<^sub>B \<mu>)) (trg (UP \<mu>))"
+      show "UP (trg\<^sub>B \<mu>) \<cong> trg (UP \<mu>)"
       proof -
         let ?\<phi> = "MkArr \<^bold>\<langle>trg\<^sub>B \<mu>\<^bold>\<rangle> \<^bold>\<langle>trg\<^sub>B \<mu>\<^bold>\<rangle>\<^sub>0 (trg\<^sub>B \<mu>)"
         have \<phi>: "\<guillemotleft>?\<phi> : UP (trg\<^sub>B \<mu>) \<Rightarrow> trg (UP \<mu>)\<guillemotright>"
-        proof
-          show 1: "arr ?\<phi>"
-            using \<mu> by (intro arrI, auto)
-          show "dom ?\<phi> = UP (trg\<^sub>B \<mu>)"
-            using \<mu> 1 dom_char UP_def by simp
-          show "cod ?\<phi> = trg (UP \<mu>)"
-            using \<mu> 1 cod_char trg_def by auto
-        qed
+          using \<mu> UP_def trg_def arr_UP
+          by (intro MkArr_in_hom) auto
         have "iso ?\<phi>"
           using \<mu> \<phi> iso_char trg_def by auto
         thus ?thesis
@@ -2302,7 +2286,7 @@ begin
       also have 1: "... = \<lbrace>E.Src (Dom a)\<rbrace>"
         using assms src_def by auto
       also have "... = \<lbrace>\<^bold>\<langle>Map a\<^bold>\<rangle>\<^sub>0\<rbrace>"
-        using assms B.src.is_extensional 1 obj_simps(2) by force
+        using assms B.src.extensionality 1 obj_simps(2) by force
       also have "... = Map a"
         using assms by auto
       finally have "src\<^sub>B (Map a) = Map a" by simp
@@ -2473,7 +2457,7 @@ begin
       show "B.isomorphic (DN (src \<mu>)) (src\<^sub>B (DN \<mu>))"
       proof -
         have "DN (src \<mu>) = src\<^sub>B (DN \<mu>)"
-          using B.src.is_extensional DN_def DN_simps(2) by auto
+          using B.src.extensionality DN_def DN_simps(2) by auto
         moreover have "B.ide (DN (src \<mu>))"
           using \<mu> by simp
         ultimately show ?thesis
@@ -2803,7 +2787,7 @@ begin
                   using f arr_char Cod_ide by auto
                 show "src\<^sub>B (Map f) = trg\<^sub>B \<lbrace>Dom g \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom h\<rbrace>"
                   using f g h fg gh 1 2 src_def trg_def B.arrI B.hseqE B.not_arr_null
-                        B.trg.is_extensional B.trg.preserves_hom B.vconn_implies_hpar(2)
+                        B.trg.extensionality B.trg.preserves_hom B.vconn_implies_hpar(2)
                         B.vconn_implies_hpar(4) E.eval.simps(3)
                   by (metis (no_types, lifting) Map_ide(1))
               qed
@@ -3104,55 +3088,16 @@ begin
         proof -
           let ?\<mu> = "MkArr (Dom f) (Dom f') \<nu>"
           have \<mu>: "\<guillemotleft>?\<mu> : f \<Rightarrow> f'\<guillemotright>"
-          proof
-            have "Map f = \<lbrace>Dom f\<rbrace>"
-              using f by simp
-            have "Map f' = \<lbrace>Dom f'\<rbrace>"
-              using f' by simp
-            have "Dom f' = Cod f'"
-              using f' Cod_ide by simp
-            show \<mu>: "arr ?\<mu>"
-            proof -
-              have "E.Nml (Dom ?\<mu>) \<and> E.Ide (Dom ?\<mu>)"
-              proof -
-                have "E.Nml (Dom f) \<and> E.Ide (Dom f)"
-                  using f ide_char arr_char by blast
-                thus ?thesis
-                  using f by simp
-              qed
-              moreover have "E.Nml (Cod ?\<mu>) \<and> E.Ide (Cod ?\<mu>)"
-              proof -
-                have "E.Nml (Dom f') \<and> E.Ide (Dom f')"
-                  using f' ide_char arr_char by blast
-                thus ?thesis
-                  using f' by simp
-              qed
-              moreover have "E.Src (Dom ?\<mu>) = E.Src (Cod ?\<mu>)"
-                using f f' \<nu> arr_char src_def eq_src ideD(1) by auto
-              moreover have "E.Trg (Dom ?\<mu>) = E.Trg (Cod ?\<mu>)"
-                using f f' \<nu> arr_char trg_def eq_trg ideD(1) by auto
-              moreover have "\<guillemotleft>Map ?\<mu> : \<lbrace>Dom ?\<mu>\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Cod ?\<mu>\<rbrace>\<guillemotright>"
-              proof -
-                have "\<guillemotleft>\<nu> : \<lbrace>Dom f\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Dom f'\<rbrace>\<guillemotright>"
-                  using f f' \<nu> ide_char arr_char DN_def Cod_ide Map_ide
-                  by (metis (no_types, lifting) ideD(1))
-                thus ?thesis by simp
-              qed
-              ultimately show ?thesis
-                using f f' \<nu> ide_char arr_char by blast
-            qed
-            show "dom ?\<mu> = f"
-              using f \<mu> dom_char MkArr_Map MkIde_Dom' by simp
-            show "cod ?\<mu> = f'"
-            proof -
-              have "cod ?\<mu> = MkIde (Dom f')"
-                using \<mu> cod_char by simp
-              also have "... = MkArr (Dom f') (Cod f') (Map f')"
-                using f' by auto
-              also have "... = f'"
-                using f' MkArr_Map by simp
-              finally show ?thesis by simp
-            qed
+          proof -
+            have "E.Src (Dom f) = E.Src (Dom f')"
+              using f f'
+              by (metis (no_types, lifting) eq_src ideD(1) src_simps(2))
+            moreover have "E.Trg (Dom f) = E.Trg (Dom f')"
+              using f f'
+              by (metis (no_types, lifting) eq_trg ideD(1) trg_simps(2))
+            ultimately show ?thesis
+              using f f' \<nu> DN_def MkArr_Map [of f] MkArr_Map [of f']
+              by (intro MkArr_in_hom) auto
           qed
           moreover have "DN ?\<mu> = \<nu>"
             using \<mu> DN_def by auto
@@ -3282,13 +3227,8 @@ begin
           apply (unfold arr_char, intro conjI)
           using assms by auto
         show "\<guillemotleft>MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a : UP.map\<^sub>0 a \<Rightarrow> UP a\<guillemotright>"
-        proof
-          show "arr (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)" by fact
-          show "dom (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a) = UP.map\<^sub>0 a"
-            using assms 1 2 dom_char UP.map\<^sub>0_def UP_def src_def by auto
-          show "cod (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a) = UP a"
-            using assms 1 2 cod_char UP.map\<^sub>0_def UP_def src_def by auto
-        qed
+          using assms 1 2 UP_def UP.map\<^sub>0_def src_def
+          by (intro MkArr_in_hom) auto
         show "iso (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)"
           using assms 1 iso_char by auto
         show "MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<cdot> \<i> (UP.map\<^sub>0 a) =
@@ -3978,7 +3918,7 @@ begin
                   have "S.mono (S.cmp\<^sub>U\<^sub>P (g, src g))"
                     using antipar S.iso_is_section S.section_is_mono by simp
                   thus ?thesis
-                    using 2 8 7 S.monoE S.comp_assoc by presburger
+                    using 2 8 7 S.mono_cancel S.comp_assoc by presburger
                 qed
                 moreover have "S.epi (S.inv (S.cmp\<^sub>U\<^sub>P (trg g, g)))"
                   using antipar S.iso_is_retraction S.retraction_is_epi by simp
@@ -3992,7 +3932,7 @@ begin
                          (S.inv (S.cmp\<^sub>U\<^sub>P (trg g, g)))"
                   using antipar calculation(1,3) by presburger
                 ultimately show ?thesis
-                  using 2 S.epiE by blast
+                  using 2 S.epi_cancel by blast
               qed
               have 6: "S.seq (S.UP g \<star>\<^sub>S S.UP \<epsilon> \<cdot>\<^sub>S S.cmp\<^sub>U\<^sub>P (f, g))
                              (S.inv (S.cmp\<^sub>U\<^sub>P (g, f)) \<cdot>\<^sub>S S.UP \<eta> \<star>\<^sub>S S.UP g)"

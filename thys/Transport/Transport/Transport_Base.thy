@@ -24,7 +24,17 @@ definition "preorder_galois_connection \<equiv>
   \<and> preorder_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)
   \<and> preorder_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>)"
 
+end
+
+bundle transport_preorder_galois_connection_syntax
+begin
 notation transport.preorder_galois_connection (infix \<open>\<stileturn>\<^bsub>pre\<^esub>\<close> 50)
+end
+
+context transport
+begin
+
+unbundle transport_preorder_galois_connection_syntax
 
 lemma preorder_galois_connectionI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
@@ -60,7 +70,17 @@ definition "partial_equivalence_rel_galois_connection \<equiv>
   \<and> partial_equivalence_rel (\<le>\<^bsub>L\<^esub>)
   \<and> partial_equivalence_rel (\<le>\<^bsub>R\<^esub>)"
 
+end
+
+bundle transport_partial_equivalence_rel_galois_connection_syntax
+begin
 notation transport.partial_equivalence_rel_galois_connection (infix \<open>\<stileturn>\<^bsub>PER\<^esub>\<close> 50)
+end
+
+context transport
+begin
+
+unbundle transport_partial_equivalence_rel_galois_connection_syntax
 
 lemma partial_equivalence_rel_galois_connectionI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
@@ -112,7 +132,17 @@ definition "preorder_equivalence \<equiv>
   \<and> preorder_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)
   \<and> preorder_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>)"
 
+end
+
+bundle transport_preorder_equivalence_syntax
+begin
 notation transport.preorder_equivalence (infix \<open>\<equiv>\<^bsub>pre\<^esub>\<close> 50)
+end
+
+context transport
+begin
+
+unbundle transport_preorder_equivalence_syntax
 
 lemma preorder_equivalence_if_galois_equivalenceI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
@@ -169,7 +199,17 @@ definition "partial_equivalence_rel_equivalence \<equiv>
   \<and> partial_equivalence_rel (\<le>\<^bsub>L\<^esub>)
   \<and> partial_equivalence_rel (\<le>\<^bsub>R\<^esub>)"
 
+end
+
+bundle transport_partial_equivalence_rel_equivalence_syntax
+begin
 notation transport.partial_equivalence_rel_equivalence (infix \<open>\<equiv>\<^bsub>PER\<^esub>\<close> 50)
+end
+
+context transport
+begin
+
+unbundle transport_partial_equivalence_rel_equivalence_syntax
 
 lemma partial_equivalence_rel_equivalence_if_galois_equivalenceI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
@@ -217,5 +257,12 @@ lemma partial_equivalence_rel_equivalence_rel_inv_eq_partial_equivalence_rel_equ
 
 end
 
+bundle transport_equivalences_syntax
+begin
+unbundle transport_preorder_galois_connection_syntax
+and transport_partial_equivalence_rel_galois_connection_syntax
+and transport_partial_equivalence_rel_equivalence_syntax
+and transport_preorder_equivalence_syntax
+end
 
 end

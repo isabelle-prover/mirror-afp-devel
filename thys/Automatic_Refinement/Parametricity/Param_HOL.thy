@@ -388,7 +388,21 @@ lemma param_case_list':
     
 lemma param_map[param]: 
   "(map,map)\<in>(R1\<rightarrow>R2) \<rightarrow> \<langle>R1\<rangle>list_rel \<rightarrow> \<langle>R2\<rangle>list_rel"
-  unfolding map_rec[abs_def] by (parametricity)
+proof (rule fun_relI)+
+  fix f g and xs ys
+  assume \<open>(f, g) \<in> R1 \<rightarrow> R2\<close>
+  assume \<open>(xs, ys) \<in> \<langle>R1\<rangle>list_rel\<close>
+  then show \<open>(map f xs, map g ys) \<in> \<langle>R2\<rangle>list_rel\<close>
+  proof induction
+    case 1
+    show ?case
+      by simp
+  next
+    case (2 x y xs ys)
+    with \<open>(f, g) \<in> R1 \<rightarrow> R2\<close> show ?case
+      by (simp add: fun_relD2)
+  qed
+qed
     
 lemma param_fold[param]: 
   "(fold,fold)\<in>(Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs \<rightarrow> Rs"
@@ -397,8 +411,8 @@ lemma param_fold[param]:
   unfolding List.fold_def List.foldr_def List.foldl_def
   by (parametricity)+
 
-  lemma param_list_all[param]: "(list_all,list_all) \<in> (A\<rightarrow>bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
-    by (fold rel2p_def) (simp add: rel2p List.list_all_transfer)
+lemma param_list_all[param]: "(list_all,list_all) \<in> (A\<rightarrow>bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
+  by (fold rel2p_def) (simp add: rel2p List.list_all_transfer)
 
 context begin
   private primrec list_all2_alt :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> bool" where
@@ -537,7 +551,6 @@ lemma param_replicate[param]:
   "(replicate,replicate) \<in> nat_rel \<rightarrow> R \<rightarrow> \<langle>R\<rangle>list_rel"
   unfolding replicate_def by parametricity
 
-term list_update
 lemma param_list_update[param]: 
   "(list_update,list_update) \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> Ra \<rightarrow> \<langle>Ra\<rangle>list_rel"
   unfolding list_update_def[abs_def] by parametricity
@@ -554,10 +567,26 @@ lemma param_concat[param]: "(concat, concat) \<in>
     \<langle>\<langle>R\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel"
 unfolding concat_def[abs_def] by parametricity
 
-lemma param_all_interval_nat[param]: 
-  "(List.all_interval_nat, List.all_interval_nat) 
+lemma param_all_interval_nat' [param]:
+  "(List.all_interval, List.all_interval) 
   \<in> (nat_rel \<rightarrow> bool_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel"
-  unfolding List.all_interval_nat_def[abs_def]
+  unfolding List.all_interval_iff [abs_def]
+  apply parametricity
+  apply simp
+  done
+
+context
+begin
+
+qualified definition all_interval_nat :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool\<close>
+  where all_interval_nat_eq [simp]: \<open>all_interval_nat P m n \<longleftrightarrow> (\<forall>i\<in>{m..<n}. P i)\<close>
+
+end
+
+lemma param_all_interval_nat [param]:
+  \<open>(Param_HOL.all_interval_nat, Param_HOL.all_interval_nat)
+  \<in> (nat_rel \<rightarrow> bool_rel) \<rightarrow> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel\<close>
+  unfolding Param_HOL.all_interval_nat_eq [abs_def]
   apply parametricity
   apply simp
   done
@@ -569,7 +598,5 @@ lemma param_dropWhile[param]:
 lemma param_takeWhile[param]: 
   "(takeWhile, takeWhile) \<in> (a \<rightarrow> bool_rel) \<rightarrow> \<langle>a\<rangle>list_rel \<rightarrow> \<langle>a\<rangle>list_rel"
   unfolding takeWhile_def by parametricity
-
-
 
 end

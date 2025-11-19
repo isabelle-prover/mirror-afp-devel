@@ -1,0 +1,54 @@
+title = "The Sigmoid Function and the Universal Approximation Theorem"
+date = 2025-05-23
+topics = [
+  "Computer science/Artificial intelligence",
+  "Computer science/Machine learning",
+  "Mathematics/Analysis",
+]
+abstract = """
+We present a machine-checked Isabelle/HOL development of the sigmoid
+function
+\\[
+  \\sigma(x)=\\frac{e^{x}}{1+e^{x}},
+\\]
+together with its most important analytic properties.  After proving
+positivity, strict monotonicity, \\(C^{\\infty}\\) smoothness, and the
+limits at \\(\\pm\\infty\\), we derive a closed-form expression for the
+\\(n\\)-th derivative using Stirling numbers of the second kind, following
+the combinatorial argument of Minai and Williams.
+These results are packaged into a small reusable library of lemmas on
+\\(\\sigma\\).
+
+Building on this analytic groundwork we mechanise a constructive version
+of the classical Universal Approximation Theorem: for every continuous
+function \\(f\\colon[a,b]\\to\\mathbb{R}\\) and every \\(\\varepsilon>0\\) there
+is a single‑hidden‑layer neural network with sigmoidal activations whose
+output is within \\(\\varepsilon\\) of \\(f\\) everywhere on \\([a,b]\\).  Our
+proof follows the method of Costarell and Spigler,
+giving the first fully verified end-to‑end proof of this
+theorem inside a higher‑order proof assistant."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bryant]
+email = "bryant_email"
+
+[authors.woodcock]
+
+[authors.fosters]
+email = "fosters_email"
+
+[contributors]
+
+[notify]
+bryant = "bryant_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

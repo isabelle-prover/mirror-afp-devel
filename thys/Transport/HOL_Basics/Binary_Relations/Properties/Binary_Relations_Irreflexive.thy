@@ -54,7 +54,7 @@ lemma irreflexiveI [intro]:
 lemma irreflexiveD:
   assumes "irreflexive R"
   shows "\<not>(R x x)"
-  using assms by (urule (d) irreflexive_onD where chained = insert) simp
+  using assms by (urule (d) irreflexive_onD chained: insert) simp
 
 lemma irreflexive_on_if_irreflexive:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

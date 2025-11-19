@@ -240,7 +240,7 @@ lemma FOREACHoci_refine_genR:
   apply (rule_tac x=l in exI)
   apply simp
   apply (subst inj_on_map_eq_map[where f=\<alpha>,symmetric])
-  apply (rule subset_inj_on, assumption, blast)
+  apply (rule inj_on_subset, assumption, blast)
   apply assumption
 
   apply (simp split: prod.split_asm, elim conjE)

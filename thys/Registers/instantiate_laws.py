@@ -4,7 +4,7 @@ import os
 import re
 import sys
 from hashlib import sha1
-from stat import S_IREAD, S_IRGRP, S_IROTH
+from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWRITE
 from typing import Union, Collection, Match, Dict, Optional, Tuple, Any, Set
 
 had_errors = False
@@ -51,10 +51,11 @@ def write_to_file(file, content):
         if content == old_content:
             print("(Nothing changed, not writing.)")
             return
+        os.chmod(file, S_IREAD | S_IWRITE | S_IRGRP | S_IROTH)
         os.remove(file)
     except FileNotFoundError: pass
 
-    with open(file, 'wt') as f:
+    with open(file, 'wt', newline='\n') as f:
         f.write(content)
     os.chmod(file, S_IREAD | S_IRGRP | S_IROTH)
 

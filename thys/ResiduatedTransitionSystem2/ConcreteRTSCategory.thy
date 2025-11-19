@@ -156,6 +156,17 @@ begin
         by (cases t; cases u) auto
     qed
 
+    lemma conI [intro]:
+    assumes "Con t u"
+    shows "t \<frown> u"
+      using assms con_char by blast
+
+    lemma conE [elim]:
+    assumes "t \<frown> u"
+    and "\<lbrakk>V.arr t; Con t u\<rbrakk> \<Longrightarrow> T"
+    shows T
+      using assms V.con_implies_arr(1) con_char by blast
+
     lemma arr_char:
     shows "V.arr t \<longleftrightarrow> Arr t"
       by (metis V.arr_def con_char extensional_rts_def
@@ -260,7 +271,7 @@ begin
       using assms con_char
       by (cases t; cases u) auto
 
-    sublocale rts resid
+    sublocale V: rts resid
     proof
       show "\<And>t. V.arr t \<Longrightarrow> V.ide (V.trg t)"
         by (simp add: arr_char extensional_rts.axioms(1) rts.ide_trg
@@ -340,7 +351,7 @@ begin
     sublocale V: extensional_rts resid
     proof
       fix t u
-      assume tu: "cong t u"
+      assume tu: "V.cong t u"
       have 1: "t \\ u \<noteq> V.null"
         using tu by auto
       interpret HOM: extensional_rts \<open>Hom (Dom t) (Cod t)\<close>
@@ -353,7 +364,7 @@ begin
         using tu con_char by blast
       moreover have "Trn t = Trn u"
         by (metis calculation(2-3) Cod_resid Dom_resid Trn_resid sta_char
-            congE HOM.cong_char tu)
+            V.congE HOM.cong_char tu)
       ultimately show "t = u"
         by (metis Cod.elims Dom.simps(1) Trn.simps(1))
     qed
@@ -384,7 +395,7 @@ begin
     lemma src_char:
     shows "V.src t = (if V.arr t
                       then MkArr (Dom t) (Cod t)
-                             (weakly_extensional_rts.src (Hom (Dom t) (Cod t)) (Trn t))
+                             (rts.src (Hom (Dom t) (Cod t)) (Trn t))
                       else Null)"
     proof (cases "V.arr t")
       show "\<not> V.arr t \<Longrightarrow> ?thesis"
@@ -574,7 +585,7 @@ begin
 
     lemma mkobj_Dom [simp]:
     assumes "H.ide a"
-    shows "mkobj (Dom a) = H.dom a"
+    shows "mkobj (Dom a) = a"
       using assms obj_char by auto
 
     lemma cod_char:
@@ -722,11 +733,11 @@ begin
 
     lemma dom_src\<^sub>C\<^sub>R\<^sub>C [simp]:
     shows "H.dom (V.src t) = H.dom t"
-      by (metis V.arr_src_iff_arr V.con_arr_src(2) con_implies_par dom.extensional)
+      by (metis V.arr_src_iff_arr V.con_arr_src(2) con_implies_par dom.extensionality)
 
     lemma dom_trg\<^sub>C\<^sub>R\<^sub>C [simp]:
     shows "H.dom (V.trg t) = H.dom t"
-      by (metis H.dom_dom V.arr_def V.trg_def dom.extensional null_char
+      by (metis H.dom_dom V.arr_def V.trg_def dom.extensionality null_char
           par_resid trg_char)
 
     lemma cod_src\<^sub>C\<^sub>R\<^sub>C [simp]:
@@ -743,7 +754,7 @@ begin
 
     lemma trg_dom\<^sub>C\<^sub>R\<^sub>C [simp]:
     shows "V.trg (H.dom t) = H.dom t"
-      by (metis H.cod_dom V.ide_iff_src_self V.trg_ide cod.extensional
+      by (metis H.cod_dom V.ide_iff_src_self V.trg_ide cod.extensionality
           null_char src_dom\<^sub>C\<^sub>R\<^sub>C trg_char)
 
     lemma src_cod\<^sub>C\<^sub>R\<^sub>C [simp]:
@@ -752,7 +763,7 @@ begin
 
     lemma trg_cod\<^sub>C\<^sub>R\<^sub>C [simp]:
     shows "V.trg (H.cod t) = H.cod t"
-      by (metis cod.extensional cod.preserves_trg cod_trg\<^sub>C\<^sub>R\<^sub>C dom.extensional
+      by (metis cod.extensionality cod.preserves_trg cod_trg\<^sub>C\<^sub>R\<^sub>C dom.extensionality
           trg_dom\<^sub>C\<^sub>R\<^sub>C)
 
     sublocale rts_category resid hcomp

@@ -92,7 +92,10 @@ proof (induct xs)
 next
   case (step xs)
   then show ?case
-    by (metis holds.elims(1) list.pred_inject(2) list_all_simps(2) sdrop.simps(1-2) stake.simps(1-2))
+    apply (auto simp add: list_all_iff)
+    using sdrop.simps(1-2) stake.simps(1-2)
+    apply (metis list.distinct(1) list.set_cases sdrop_simps(1) set_ConsD)
+    done    
 qed
 
 text \<open>More specifically, the path will consists of a prefix and a suffix for which the property

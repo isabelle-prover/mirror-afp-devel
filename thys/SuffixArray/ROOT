@@ -1,9 +1,8 @@
 chapter AFP
 
-session SuffixArray = Main +
+session SuffixArray = HOL +
   options [timeout = 600]
-  
-  sessions 
+  sessions
     "HOL-Combinatorics"
     "HOL-Library"
   directories
@@ -40,18 +39,18 @@ session SuffixArray = Main +
     Suffix_Util
     List_Permutation_Util
 
-	(* Extra Theories *)
-	Prefix
-	Prefix_Util
+    (* Extra Theories *)
+    Prefix
+    Prefix_Util
 
-    (* An axiomatic characterisation fully specifying suffix array construction as well as  
+    (* An axiomatic characterisation fully specifying suffix array construction as well as
        properties of this axiomatic characterisation (in spec folder) *)
     Suffix_Array
     Suffix_Array_Properties
 
     (* A simple suffix array construction algorithm and its formal verification against the
-       specification (in simple folder). 
-       This is used to validate the specification and to compare the verification effort to 
+       specification (in simple folder).
+       This is used to validate the specification and to compare the verification effort to
        that of verifying SAIS *)
     Simple_SACA
     Simple_SACA_Verification
@@ -64,16 +63,16 @@ session SuffixArray = Main +
     Abs_SAIS
 
     (*
-	"sais/prop/Buckets"
-	"sais/prop/List_Type"
-	"sais/prop/LMS_List_Slice_Util"
+     "sais/prop/Buckets"
+     "sais/prop/List_Type"
+     "sais/prop/LMS_List_Slice_Util"
 
-	"sais/abs_proof/Abs_Bucket_Insert_Verification"
-	"sais/abs-proof/Abs_Induce_Verification"
-	"sais/abs-proof/Abs_Induce_L_Verification"
-	"sais/abs-proof/Abs_Induce_S_Verification"
-	"sais/abs-proof/Abs_Order_LMS_Verification"
-	"sais/abs-proof/Abs_Rename_LMS_Verification"
+     "sais/abs_proof/Abs_Bucket_Insert_Verification"
+     "sais/abs-proof/Abs_Induce_Verification"
+     "sais/abs-proof/Abs_Induce_L_Verification"
+     "sais/abs-proof/Abs_Induce_S_Verification"
+     "sais/abs-proof/Abs_Order_LMS_Verification"
+     "sais/abs-proof/Abs_Rename_LMS_Verification"
     *)
 
     Abs_Bucket_Insert_Verification
@@ -89,12 +88,12 @@ session SuffixArray = Main +
     Abs_SAIS_Verification
 
     (*
-	"sais/def/Bucket_Insert"
-	"sais/def/Get_Types"
-	"sais/def/Induce_L"
-	"sais/def/Induce_S"
-	"sais/def/Induce"
-	
+     "sais/def/Bucket_Insert"
+     "sais/def/Get_Types"
+     "sais/def/Induce_L"
+     "sais/def/Induce_S"
+     "sais/def/Induce"
+
     *)
 
     (* Generalising the SAIS algorithm to work on any list and extending the verification *)

@@ -377,7 +377,7 @@ code_printing
 code_printing
   type_constructor finfun \<rightharpoonup> (Scala) "Map[_, _]"
   | constant "finfun_const" \<rightharpoonup> (Scala) "scala.collection.immutable.Map().withDefaultValue((_))"
-  | constant "finfun_update" \<rightharpoonup> (Scala) "_ + (_ -> _)"
+  | constant "finfun_update_code" \<rightharpoonup> (Scala) "_ + (_ -> _)"
   | constant "finfun_apply" \<rightharpoonup> (Scala) "_((_))"
   | constant "finfun_to_list" \<rightharpoonup> (Scala) "_.keySet.toList"
 declare finfun_to_list_const_code [code del]

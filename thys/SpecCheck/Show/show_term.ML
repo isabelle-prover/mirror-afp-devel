@@ -7,6 +7,7 @@ Show functions for terms, types, and related data structures.
 signature SPECCHECK_SHOW_TERM =
 sig
 
+  val indexname : indexname SpecCheck_Show_Types.show
   val term : Proof.context -> term SpecCheck_Show_Types.show
   val typ : Proof.context -> typ SpecCheck_Show_Types.show
   val thm : Proof.context -> thm SpecCheck_Show_Types.show
@@ -22,11 +23,12 @@ struct
 
 structure Show = SpecCheck_Show_Base
 
+val indexname = Show.zip Show.string Show.int
 val term = Syntax.pretty_term
 val typ = Syntax.pretty_typ
 fun thm ctxt = term ctxt o Thm.prop_of
 
-local 
+local
 fun show_env_aux show_entry =
   Vartab.dest
   #> map show_entry

@@ -9,7 +9,7 @@ begin
 type_synonym 'a lang = "'a list set"
 
 definition conc :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a lang" (infixr \<open>@@\<close> 75) where
-"A @@ B = {xs@ys | xs ys. xs:A & ys:B}"
+"A @@ B = {xs @ ys | xs ys. xs \<in> A \<and> ys \<in> B}"
 
 text \<open>checks the code preprocessor for set comprehensions\<close>
 export_code conc checking SML
@@ -27,8 +27,8 @@ definition lang_pow :: "nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang" where
   lang_pow_code_def [code_abbrev]: "lang_pow = compow"
 
 lemma [code]:
-  "lang_pow (Suc n) A = A @@ (lang_pow n A)"
   "lang_pow 0 A = {[]}"
+  "lang_pow (Suc n) A = A @@ (lang_pow n A)"
   by (simp_all add: lang_pow_code_def)
 
 hide_const (open) lang_pow
@@ -94,6 +94,11 @@ by (fastforce simp: Cons_eq_append_conv append_eq_Cons_conv
 
 
 subsection\<open>@{term "A ^^ n"}\<close>
+
+lemma lang_pow_mono:
+  fixes A :: "'a lang"
+  shows "A \<subseteq> B \<Longrightarrow> A ^^ n \<subseteq> B ^^ n"
+using conc_mono[of A B] by (induction n) auto
 
 lemma lang_pow_add: "A ^^ (n + m) = A ^^ n @@ A ^^ m"
 by (induct n) (auto simp: conc_assoc)
@@ -241,15 +246,14 @@ lemma star_decom:
 using a by (induct rule: star_induct) (blast)+
 
 lemma star_pow:
-  assumes "s \<in> star A"
-  shows "\<exists>n. s \<in> A ^^ n"
-using assms
-apply(induct)
-apply(rule_tac x="0" in exI)
-apply(auto)
-apply(rule_tac x="Suc n" in exI)
-apply(auto)
-done
+  "s \<in> star A \<Longrightarrow>\<exists>n. s \<in> A ^^ n"
+proof(induction rule: star_induct)
+  case Nil
+  show ?case using lang_pow.simps(1) by blast
+next
+  case (append u v)
+  then show ?case using lang_pow.simps(2) by blast
+qed
 
 
 subsection \<open>Left-Quotients of languages\<close>
@@ -317,7 +321,7 @@ lemma Derivs_alt_def [code]: "Derivs w L = fold Deriv w L"
 
 lemma Deriv_code [code]: 
   "Deriv x A = tl ` Set.filter (\<lambda>xs. case xs of x' # _ \<Rightarrow> x = x' | _ \<Rightarrow> False) A"
-  by (auto simp: Deriv_def Set.filter_def image_iff tl_def split: list.splits)
+  by (rule set_eqI) (auto simp add: tl_def Deriv_def split: list.splits)
 
 subsection \<open>Shuffle product\<close>
 
@@ -382,29 +386,9 @@ next
   finally show "X = (A ^^ Suc (Suc n)) @@ X \<union> (\<Union>m\<le>Suc n. (A ^^ m) @@ B)" .
 qed
 
-lemma Arden:
-  assumes "[] \<notin> A" 
-  shows "X = A @@ X \<union> B \<longleftrightarrow> X = star A @@ B"
-proof
-  assume eq: "X = A @@ X \<union> B"
-  { fix w assume "w : X"
-    let ?n = "size w"
-    from \<open>[] \<notin> A\<close> have "\<forall>u \<in> A. length u \<ge> 1"
-      by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
-    hence "\<forall>u \<in> A^^(?n+1). length u \<ge> ?n+1"
-      by (metis length_lang_pow_lb nat_mult_1)
-    hence "\<forall>u \<in> A^^(?n+1)@@X. length u \<ge> ?n+1"
-      by(auto simp only: conc_def length_append)
-    hence "w \<notin> A^^(?n+1)@@X" by auto
-    hence "w : star A @@ B" using \<open>w : X\<close> using arden_helper[OF eq, where n="?n"]
-      by (auto simp add: star_def conc_UNION_distrib)
-  } moreover
-  { fix w assume "w : star A @@ B"
-    hence "\<exists>n. w \<in> A^^n @@ B" by(auto simp: conc_def star_def)
-    hence "w : X" using arden_helper[OF eq] by blast
-  } ultimately show "X = star A @@ B" by blast 
-next
-  assume eq: "X = star A @@ B"
+lemma Arden_star_is_sol:
+  "star A @@ B = A @@ star A @@ B \<union> B"
+proof -
   have "star A = A @@ star A \<union> {[]}"
     by (rule star_unfold_left)
   then have "star A @@ B = (A @@ star A \<union> {[]}) @@ B"
@@ -413,10 +397,34 @@ next
     unfolding conc_Un_distrib by simp
   also have "\<dots> = A @@ (star A @@ B) \<union> B" 
     by (simp only: conc_assoc)
-  finally show "X = A @@ X \<union> B" 
-    using eq by blast 
+  finally show ?thesis .
 qed
 
+lemma Arden_sol_is_star:
+  assumes "[] \<notin> A" "X = A @@ X \<union> B"
+  shows "X = star A @@ B"
+proof (safe)
+  fix w assume "w : X"
+  let ?n = "size w"
+  from \<open>[] \<notin> A\<close> have "\<forall>u \<in> A. length u \<ge> 1"
+    by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
+  hence "\<forall>u \<in> A^^(?n+1). length u \<ge> ?n+1"
+    by (metis length_lang_pow_lb nat_mult_1)
+  hence "\<forall>u \<in> A^^(?n+1)@@X. length u \<ge> ?n+1"
+    by(auto simp only: conc_def length_append)
+  hence "w \<notin> A^^(?n+1)@@X" by auto
+  thus "w : star A @@ B" using \<open>w : X\<close> arden_helper[OF assms(2), where n="?n"]
+    by (auto simp add: star_def conc_UNION_distrib)
+next
+  fix w assume "w : star A @@ B"
+  hence "\<exists>n. w \<in> A^^n @@ B" by(auto simp: conc_def star_def)
+  thus "w : X" using arden_helper[OF assms(2)] by blast
+qed
+
+lemma Arden:
+  assumes "[] \<notin> A" 
+  shows "X = A @@ X \<union> B \<longleftrightarrow> X = star A @@ B"
+using Arden_sol_is_star[OF assms] Arden_star_is_sol by metis
 
 lemma reversed_arden_helper:
   assumes eq: "X = X @@ A \<union> B"

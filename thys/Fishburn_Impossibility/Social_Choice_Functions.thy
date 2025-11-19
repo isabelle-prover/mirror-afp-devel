@@ -30,7 +30,7 @@ lemma eval_set_filter:
   "Set.filter P {} = {}" 
   "P x \<Longrightarrow> Set.filter P (insert x A) = insert x (Set.filter P A)"
   "\<not>P x \<Longrightarrow> Set.filter P (insert x A) = Set.filter P A"
-  unfolding Set.filter_def by auto
+  by auto
   
 context election
 begin

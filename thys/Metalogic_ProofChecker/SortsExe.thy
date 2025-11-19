@@ -217,7 +217,7 @@ lemma class_ex_rec: "finite r \<Longrightarrow> class_ex (insert (a,b) r) c = (a
 
 definition [simp]: "execlass_ex rel c = List.member (exefield rel) c"
 lemma execlass_ex_code: "class_ex (set rel) c = execlass_ex rel c"
-  by (metis Field_set_code class_ex_def execlass_ex_def in_set_member)
+  by (simp add: class_ex_def execlass_ex_def Field_set_code)
 
 definition [simp]: "exesort_ex rel S = (\<forall>x\<in>S . (List.member (exefield rel) x))"
 lemma sort_ex_code: "sort_ex (set rel) S = exesort_ex rel S"
@@ -225,14 +225,14 @@ lemma sort_ex_code: "sort_ex (set rel) S = exesort_ex rel S"
 
 definition [simp]: "execlass_les cs c1 c2 = (List.member cs (c1,c2) \<and> \<not> List.member cs (c2,c1))"
 lemma execlass_les_code: "class_les (set cs) c1 c2 = execlass_les cs c1 c2"
-  by (simp add: class_leq_def class_les_def member_def)
+  by (simp add: class_leq_def class_les_def)
 
 definition [simp]: "exenormalize_sort cs (s::sort)
   = {c \<in> s . \<not> (\<exists>c' \<in> s . execlass_les cs c' c)}"
 definition [simp]: "exenormalized_sort cs s \<equiv> (exenormalize_sort cs s) = s"
 
 lemma normalize_sort_code[code]: "normalize_sort (set cs) s = exenormalize_sort cs s"
-  by (auto simp add: normalize_sort_def List.member_def list_ex_iff class_leq_def class_les_def)
+  by (auto simp add: normalize_sort_def list_ex_iff class_leq_def class_les_def)
 
 lemma normalized_sort_code[code]: "normalized_sort (set cs) s = exenormalized_sort cs s"
   using exenormalized_sort_def normalize_sort_code by presburger
@@ -345,7 +345,8 @@ qed
 lemma antisym_iff_exe_antisym: "antisym (set l) = exe_antisym l"
   using antisym_imp_exe_antisym exe_antisym_imp_antisym by blast
 
-definition "exe_wf_subclass cs = (trans (set cs) \<and> exe_antisym cs \<and> Refl (set cs))"
+definition "exe_wf_subclass cs \<longleftrightarrow>
+  set cs \<subseteq> Field (set cs) \<times> Field (set cs) \<and> trans (set cs) \<and> exe_antisym cs \<and> Refl (set cs)"
 
 lemma wf_classes_iff_exe_wf_classes: "wf_subclass (set cs) \<longleftrightarrow> exe_wf_subclass cs"
   by (simp add: antisym_iff_exe_antisym exe_wf_subclass_def)

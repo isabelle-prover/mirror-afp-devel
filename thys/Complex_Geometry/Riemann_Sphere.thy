@@ -29,7 +29,7 @@ lemma sphere_bounds':
   shows "-1 \<le> x \<and> x \<le> 1"
 proof-
   from assms have "x*x \<le> 1"
-    by (smt real_minus_mult_self_le)
+    by (smt (verit) real_minus_mult_self_le)
   hence "x\<^sup>2 \<le> 1\<^sup>2" "(- x)\<^sup>2 \<le> 1\<^sup>2"
     by (auto simp add: power2_eq_square)
   show "-1 \<le> x \<and> x \<le> 1"
@@ -37,12 +37,12 @@ proof-
     case True
     thus ?thesis
       using \<open>x\<^sup>2 \<le> 1\<^sup>2\<close>
-      by (smt power2_le_imp_le)      
+      by (smt (verit) power2_le_imp_le)      
   next
     case False
     thus ?thesis
       using \<open>(-x)\<^sup>2 \<le> 1\<^sup>2\<close>
-      by (smt power2_le_imp_le)      
+      by (smt (verit) power2_le_imp_le)      
   qed
 qed
 
@@ -154,7 +154,7 @@ lemma inv_stereographic_on_sphere:
   shows "X*X + Y*Y + Z*Z = 1"
 proof-
   have "1 + (cmod z)\<^sup>2 \<noteq> 0"
-    by (smt power2_less_0)
+    by (smt (verit) power2_less_0)
   thus ?thesis
     using assms
     by (simp add: Re_stereographic Im_stereographic)
@@ -311,7 +311,7 @@ proof (safe)
         using * ** \<open>za \<noteq> 1\<close>
         apply (simp_all add: field_simps)
         unfolding complex_of_real_def imaginary_unit.ctr
-        by (simp_all add: legacy_Complex_simps)
+        by (simp_all add: Complex_simps)
       thus ?thesis
           using * ** *** \<open>za \<noteq> 1\<close> \<open>zb \<noteq> 1\<close>
           by simp
@@ -483,7 +483,7 @@ proof (rule ext, simp)
       using HH
       apply simp
       apply (rule_tac x=1 in exI, cases B)
-      by (smt add_uminus_conv_diff complex_cnj_add complex_cnj_complex_of_real complex_cnj_i complex_cnj_mult complex_cnj_one complex_eq distrib_left_numeral mult.commute mult.left_commute mult.left_neutral mult_cancel_right2 mult_minus_left of_real_1 one_add_one)
+      by (smt (verit) add_uminus_conv_diff complex_cnj_add complex_cnj_complex_of_real complex_cnj_i complex_cnj_mult complex_cnj_one complex_eq distrib_left_numeral mult.commute mult.left_commute mult.left_neutral mult_cancel_right2 mult_minus_left of_real_1 one_add_one)
   qed
 qed
 

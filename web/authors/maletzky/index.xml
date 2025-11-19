@@ -1,52 +1,48 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>maletzky on Archive of Formal Proofs
-    </title>
-    <link>/authors/maletzky/</link>
-    <description>
-        Recent content in maletzky 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 16 Jun 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/maletzky/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Hilbert&#39;s Nullstellensatz</title>
-          <link>/entries/Nullstellensatz.html</link>
-          <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Nullstellensatz.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds</title>
-          <link>/entries/Groebner_Macaulay.html</link>
-          <pubDate>Sat, 15 Jun 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Groebner_Macaulay.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Signature-Based Gröbner Basis Algorithms</title>
-          <link>/entries/Signature_Groebner.html</link>
-          <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Signature_Groebner.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gröbner Bases Theory</title>
-          <link>/entries/Groebner_Bases.html</link>
-          <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Groebner_Bases.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Multivariate Polynomials</title>
-          <link>/entries/Polynomials.html</link>
-          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomials.html</guid>
-          <description></description>
-        </item>
+    <title>Alexander Maletzky</title>
+    <link>https://isa-afp.org/authors/maletzky/</link>
+    <description>AFP entries of Alexander Maletzky</description><item>
+  <title>Hilbert&#39;s Nullstellensatz</title>
+  <link>https://isa-afp.org/entries/Nullstellensatz.html</link>
+  <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Hilbert&#39;s Nullstellensatz in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds</title>
+  <link>https://isa-afp.org/entries/Groebner_Macaulay.html</link>
+  <pubDate>Sat, 15 Jun 2019 00:00:00 +0000</pubDate>
+  <description>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Signature-Based Gröbner Basis Algorithms</title>
+  <link>https://isa-afp.org/entries/Signature_Groebner.html</link>
+  <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Signature-Based Gröbner Basis Algorithms in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Gröbner Bases Theory</title>
+  <link>https://isa-afp.org/entries/Groebner_Bases.html</link>
+  <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+  <description>Gröbner Bases Theory in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Executable Multivariate Polynomials</title>
+  <link>https://isa-afp.org/entries/Polynomials.html</link>
+  <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+  <description>Executable Multivariate Polynomials in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+
   </channel>
 </rss>

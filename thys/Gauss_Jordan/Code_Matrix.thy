@@ -7,9 +7,10 @@
 section\<open>Code generation for vectors and matrices\<close>
 
 theory Code_Matrix
-imports 
-  Rank_Nullity_Theorem.Miscellaneous
-  Code_Set
+  imports
+    "HOL-Analysis.Finite_Cartesian_Product"
+    "HOL-Analysis.Cartesian_Space"
+    Code_Set
 begin
 
 text\<open>In this file the code generator is set up properly to allow the execution of matrices 
@@ -41,7 +42,7 @@ lemma matrix_vector_mult_code [code abstract]:
   "vec_nth (A *v x) = (%i. (\<Sum>j\<in>UNIV. A $ i $ j * x $ j))" unfolding matrix_vector_mult_def by fastforce
 
 lemma vector_matrix_mult_code [code abstract]:
-  "vec_nth (x v* A) = (%j. (\<Sum>i\<in>UNIV. A $ i $ j * x $ i))" unfolding vector_matrix_mult_def by fastforce
+  "vec_nth (x v* A) = (%j. (\<Sum>i\<in>UNIV. x $ i * A $ i $ j))" unfolding vector_matrix_mult_def by fastforce
 
 definition mat_row
   where "mat_row k i = vec_lambda (%j. if i = j then k else 0)"

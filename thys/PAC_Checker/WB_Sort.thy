@@ -1618,10 +1618,9 @@ lemma full_quicksort_ref_full_quicksort:
 proof -
   show ?thesis
     unfolding full_quicksort_ref_def full_quicksort_def
+    using lin
     apply (intro frefI nres_relI)
-    apply (auto intro!: quicksort_ref_quicksort[unfolded Down_id_eq] simp: List.null_def)
-    subgoal by (rule trans)
-    subgoal using lin by blast
+    apply (auto intro!: quicksort_ref_quicksort[unfolded Down_id_eq] intro: trans)
     done
 qed
 

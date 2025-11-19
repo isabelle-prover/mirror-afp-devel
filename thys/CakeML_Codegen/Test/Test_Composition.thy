@@ -14,10 +14,7 @@ lemma [code]: "id x = x" by simp
 declassify List.append List.rev HOL.Not
 embed (eval) test_code is id List_append List_rev HOL_Not .
 
-thm test_code_def
-
 definition "test_sem_env \<equiv> compile_to_env test_code.C_info test_code"
-declare test_code.C_info_def[code]
 
 definition "ml_app f x = Ast.App Opapp [f, x]"
 
@@ -33,6 +30,16 @@ definition exp :: exp where
 
 definition exp_expected :: exp where
 "exp_expected = ml_cons ml_false (ml_cons ml_true ml_nil)"
+
+declare
+  constructors.C_def [code]
+  constructors.as_static_cenv_def [code]
+  constructors.flat_C_info_def [code]
+  test_code.C_info_def [code]
+  cakeml.mk_exp.simps [code]
+  cakeml.mk_con.simps [code]
+  cakeml.mk_clauses.simps [code]
+  cakeml.mk_letrec_body_def [code]
 
 lemma "is_cupcake_exp exp" by eval
 

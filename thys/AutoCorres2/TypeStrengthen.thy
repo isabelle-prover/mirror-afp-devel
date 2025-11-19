@@ -306,7 +306,7 @@ Monad_Types.new_monad_type
                              else if T = @{typ "'e"} then HP_TermsTypes.strip_c_exntype exT
                              else T)
        @{typ "('e, 'a, 's) exn_monad"})
-  (fn ctxt => fn _ => let fun lift t = \<^infer_instantiate>\<open>t = t in term \<open>liftE t:: (exit_status, 'a, 's) exn_monad\<close>\<close> ctxt in Utils.lift_result_with_arity 0 lift end)
+  (fn ctxt => fn T => let fun lift t = \<^infer_instantiate>\<open>'e=dummyT and t = t in term \<open>liftE t:: ('e, 'a, 's) exn_monad\<close>\<close> ctxt in Utils.lift_result_with_arity 0 lift end)
   {rules_name = @{synthesize_rules_name exit}, 
     relator = @{term \<open>rel_xval (=) (=)\<close>}, 
     relator_from_c_exntype = SOME @{term \<open>rel_xval rel_Nonlocal (=)\<close>}, lift = @{term \<open>\<lambda>x. x\<close>},   

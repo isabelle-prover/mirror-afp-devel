@@ -51,10 +51,6 @@ qed
 lemmas inverse_mod_ring_code' [code] =
   inverse_mod_ring_altdef [where 'p = "'p :: {prime_card, card_UNIV}"]
 
-lemma divide_mod_ring_code' [code]:
-  "x / (y :: 'p :: {prime_card, card_UNIV} mod_ring) = x * inverse y"
-  by (fact divide_inverse)
-
 instantiation mod_ring :: ("{finite, card_UNIV}") card_UNIV
 begin
 definition "card_UNIV = Phantom('a mod_ring) (of_phantom (card_UNIV :: 'a card_UNIV))"
@@ -90,15 +86,14 @@ lemma card_UNIV_code:
   by (simp add: card_UNIV)
 
 setup \<open>
-  Code_Preproc.map_pre (fn ctxt =>
-    ctxt addsimprocs
-      [Simplifier.make_simproc \<^context>
-        {name = "card_UNIV",
-         kind = Simproc,
-         lhss = [\<^term>\<open>card UNIV\<close>],
-         proc = fn _ => fn _ => fn ct =>
-          SOME @{thm card_UNIV_code [THEN eq_reflection]},
-         identifier = []}])
+  Code_Preproc.map_pre (Simplifier.add_proc
+    (Simplifier.make_simproc \<^context>
+      {name = "card_UNIV",
+       kind = Simproc,
+       lhss = [\<^term>\<open>card UNIV\<close>],
+       proc = fn _ => fn _ => fn ct =>
+        SOME @{thm card_UNIV_code [THEN eq_reflection]},
+       identifier = []}))
 \<close>
 
 

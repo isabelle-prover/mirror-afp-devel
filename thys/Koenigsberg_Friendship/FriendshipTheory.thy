@@ -1207,8 +1207,7 @@ proof (rule ccontr)
                   have "last (tl ps)=last ps" using \<open>length ps=l+1\<close> 
                     by (metis \<open>last ps \<noteq> hd ps\<close> list.sel(1,3) last_ConsL last_tl neq_Nil_conv)
                   moreover have "length ps\<noteq>1" using \<open>last ps \<noteq> hd ps\<close> 
-                    by (metis Suc_eq_plus1_left gen_length_code(1) gen_length_def list.sel(1) 
-                      last_ConsL length_Suc_conv neq_Nil_conv)
+                    by (auto simp add: length_Suc_conv)
                   hence "tl ps\<noteq>[]" using \<open>length ps=l+1\<close> 
                     by(auto simp: length_Suc_conv)
                   ultimately have "adj_path (hd ps) (tl ps @ [last x])"
@@ -1511,30 +1510,32 @@ proof (rule ccontr)
           thus "p dvd card {y. (\<exists>n<p. rotate n x=y)}" by auto
         qed
       hence "\<forall>X\<in>C (p-(1::nat)) // r. p dvd card X" unfolding quotient_def Image_def r by auto
-      moreover have "refl_on (C (p - 1)) r" 
-        proof -
-          have "r \<subseteq> C (p - 1) \<times> C (p - 1)" 
-            proof 
-              fix x assume "x\<in>r"
-              hence "fst x\<in>C (p - 1)" and "\<exists>n. snd x=rotate n (fst x)" using r by auto
-              moreover then obtain n where "snd x=rotate n (fst x)" by auto
-              ultimately have "snd x\<in>C (p - 1)" using closure by auto
-              moreover have "x=(fst x,snd x)" using \<open>x\<in>r\<close> r by auto
-              ultimately show  "x \<in> C (p - 1) \<times> C (p - 1)" using \<open>fst x\<in> C (p - 1)\<close> 
-                by (metis SigmaI)
-            qed
-          moreover have "\<forall>x\<in>C (p - 1). (x, x) \<in> r" 
-            proof 
-              fix x assume "x \<in> C (p - 1)"
-              hence "rotate 0 x \<in> C (p - 1)" using closure by auto
-              moreover have "0<p" using \<open>prime p\<close> by (auto intro: prime_gt_0_nat)
-              ultimately have "(x,rotate 0 x)\<in> r" using \<open>x\<in>C (p - 1 )\<close> r by auto
-              moreover have "rotate 0 x=x" by auto
-              ultimately show "(x,x)\<in>r" by auto
-            qed
-          ultimately show ?thesis using refl_on_def by auto
+      moreover have "equiv (C (p - 1)) r"
+      proof (rule equivI)
+        show "r \<subseteq> C (p - 1) \<times> C (p - 1)" 
+        proof 
+          fix x assume "x\<in>r"
+          hence "fst x\<in>C (p - 1)" and "\<exists>n. snd x=rotate n (fst x)" using r by auto
+          moreover then obtain n where "snd x=rotate n (fst x)" by auto
+          ultimately have "snd x\<in>C (p - 1)" using closure by auto
+          moreover have "x=(fst x,snd x)" using \<open>x\<in>r\<close> r by auto
+          ultimately show  "x \<in> C (p - 1) \<times> C (p - 1)" using \<open>fst x\<in> C (p - 1)\<close> 
+            by (metis SigmaI)
         qed
-      moreover have "sym r" unfolding sym_def 
+      next
+        have "\<forall>x\<in>C (p - 1). (x, x) \<in> r" 
+        proof 
+          fix x assume "x \<in> C (p - 1)"
+          hence "rotate 0 x \<in> C (p - 1)" using closure by auto
+          moreover have "0<p" using \<open>prime p\<close> by (auto intro: prime_gt_0_nat)
+          ultimately have "(x,rotate 0 x)\<in> r" using \<open>x\<in>C (p - 1 )\<close> r by auto
+          moreover have "rotate 0 x=x" by auto
+          ultimately show "(x,x)\<in>r" by auto
+        qed
+        thus "refl_on (C (p - 1)) r" 
+          using refl_on_def by auto
+      next
+        show "sym r" unfolding sym_def 
         proof (rule,rule,rule)
           fix x y assume "(x, y) \<in> r"
           hence "x\<in>C (p - 1)" using r by auto
@@ -1542,31 +1543,32 @@ proof (rule ccontr)
           obtain n where "n<p" "rotate n x = y" using \<open>(x,y)\<in>r\<close> r by auto
           hence "y\<in> C (p - 1)" using closure[OF \<open>x\<in> C (p - 1)\<close>] by auto
           have "n=0\<Longrightarrow>(y, x) \<in> r" 
-            proof -
-              assume "n=0"
-              hence "x=y" using \<open>rotate n x=y\<close> by auto
-              thus "(y,x)\<in>r" using \<open>refl_on (C (p - 1)) r\<close> \<open>y \<in> C (p - 1)\<close> refl_on_def by fast
-            qed
+          proof -
+            assume "n=0"
+            hence "x=y" using \<open>rotate n x=y\<close> by auto
+            thus "(y,x)\<in>r" using \<open>(x, y) \<in> r\<close> by blast
+          qed
           moreover have "n\<noteq>0 \<Longrightarrow> (y,x)\<in>r" 
+          proof -
+            assume "n\<noteq>0"
+            have "rotate (p-n) y = x" 
             proof -
-              assume "n\<noteq>0"
-              have "rotate (p-n) y = x" 
-                proof -
-                  have "rotate (p-n) y = rotate (p-n) (rotate n x)"
-                    using \<open>rotate n x=y\<close> by auto
-                  also have "rotate (p-n) (rotate n x)=rotate (p-n+n) x" 
-                    using rotate_rotate by auto
-                  also have "...=rotate p x" using \<open>n<p\<close> by auto
-                  also have "...=rotate 0 x" using \<open>length x=p\<close> by auto
-                  also have "...=x" by auto
-                  finally show ?thesis .
-                qed
-              moreover have "p-n<p" using \<open>n<p\<close> \<open>n\<noteq>0\<close> by auto
-              ultimately show "(y,x)\<in>r" using r \<open>y\<in> C (p - 1)\<close> by auto
+              have "rotate (p-n) y = rotate (p-n) (rotate n x)"
+                using \<open>rotate n x=y\<close> by auto
+              also have "rotate (p-n) (rotate n x)=rotate (p-n+n) x" 
+                using rotate_rotate by auto
+              also have "...=rotate p x" using \<open>n<p\<close> by auto
+              also have "...=rotate 0 x" using \<open>length x=p\<close> by auto
+              also have "...=x" by auto
+              finally show ?thesis .
             qed
+            moreover have "p-n<p" using \<open>n<p\<close> \<open>n\<noteq>0\<close> by auto
+            ultimately show "(y,x)\<in>r" using r \<open>y\<in> C (p - 1)\<close> by auto
+          qed
           ultimately show "(y,x)\<in>r" by auto
         qed
-      moreover have "trans r" unfolding trans_def
+      next
+        show "trans r" unfolding trans_def
         proof (rule,rule,rule,rule,rule)
           fix x y z assume "(x, y) \<in> r" "(y, z) \<in> r"
           hence "x\<in>C (p - 1)" using r by auto
@@ -1578,9 +1580,11 @@ proof (rule ccontr)
           moreover have "(n2+n1) mod p < p" by (metis \<open>prime p\<close> mod_less_divisor prime_gt_0_nat)
           ultimately show "(x,z)\<in>r" using \<open>x\<in> C (p - 1)\<close> r by auto 
         qed
+      qed
       moreover have "finite (C (p - 1))" 
         by (metis \<open>card (C (p - 1)) mod p = 1\<close> card_eq_0_iff mod_0 zero_neq_one)
-      ultimately have "p dvd card (C (p-(1::nat)))" using equiv_imp_dvd_card equiv_def by fast
+      ultimately have "p dvd card (C (p-(1::nat)))"
+        by (metis equiv_imp_dvd_card[of "C (p - 1)" r p])
       thus "card (C (p-(1::nat))) mod p=0" by (metis dvd_eq_mod_eq_0)
     qed 
   ultimately show False by auto

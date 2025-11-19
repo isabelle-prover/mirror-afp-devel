@@ -18,7 +18,7 @@ context
 begin
 
 abbreviation
-  wordNOT  :: "'a::len word \<Rightarrow> 'a word"      (\<open>~~ _\<close> [70] 71)
+  wordNOT  :: "'a::len word \<Rightarrow> 'a word"      (\<open>(\<open>open_block notation=\<open>prefix ~~\<close>\<close>~~ _)\<close> [70] 71)
 where
   "~~ x == NOT x"
 

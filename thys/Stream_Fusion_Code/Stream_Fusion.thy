@@ -16,6 +16,6 @@ simproc_setup stream_fusion ("f x") = \<open>K Stream_Fusion.fusion_simproc\<clo
 declare [[simproc del: stream_fusion]]
 
 text \<open>Install stream fusion as a simproc in the preprocessor for code equations\<close>
-setup \<open>Code_Preproc.map_pre (fn ss => ss addsimprocs [@{simproc "stream_fusion"}])\<close>
+setup \<open>Code_Preproc.map_pre (Simplifier.add_proc @{simproc "stream_fusion"})\<close>
 
 end

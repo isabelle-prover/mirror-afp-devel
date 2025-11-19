@@ -13,6 +13,35 @@ imports
   Rank  
 begin
 
+subsection \<open>Some auxiliary\<close>
+
+lemma forall_mod_type_greater_eq_iff:
+  \<open>(\<forall>b\<ge>a. P b) \<longleftrightarrow> (\<forall>n\<in>{to_nat a..<CARD('a)}. P (from_nat n))\<close>
+  for P :: \<open>'a::mod_type \<Rightarrow> bool\<close>
+proof -
+  define m where \<open>m = to_nat a\<close>
+  then have bound: \<open>m < CARD('a)\<close>
+    and a: \<open>a = from_nat m\<close>
+    by (simp_all add: to_nat_less_card)
+  from bound show ?thesis
+    by (auto simp add: all_interval_simps a to_nat_from_nat_id from_nat_mono')
+      (metis from_nat_to_nat_id m_def to_nat_less_card to_nat_mono')
+qed
+
+lemma forall_mod_type_greater_iff:
+  \<open>(\<forall>b>a. P b) \<longleftrightarrow> (\<forall>n\<in>{to_nat a<..<CARD('a)}. P (from_nat n))\<close>
+  for P :: \<open>'a::mod_type \<Rightarrow> bool\<close>
+proof -
+  define m where \<open>m = to_nat a\<close>
+  then have bound: \<open>m < CARD('a)\<close>
+    and a: \<open>a = from_nat m\<close>
+    by (simp_all add: to_nat_less_card)
+  from bound show ?thesis
+    by (auto simp add: all_interval_simps a to_nat_from_nat_id from_nat_mono)
+      (metis m_def to_nat_from_nat to_nat_less_card to_nat_mono)
+qed
+
+
 subsection\<open>The Gauss-Jordan Algorithm\<close>
 
 text\<open>Now, a computable version of the Gauss-Jordan algorithm is presented. The output will be a matrix in reduced row echelon form.
@@ -63,6 +92,18 @@ definition Gauss_Jordan_column_k :: "(nat \<times> ('a::{zero,inverse,uminus,sem
 => nat => (nat \<times> ('a^'m::{mod_type}^'n::{mod_type}))"
 where "Gauss_Jordan_column_k A' k = (let i=fst A'; A=(snd A'); from_nat_i=(from_nat i::'n); from_nat_k=(from_nat k::'m) in 
         if (\<forall>m\<ge>(from_nat_i). A $ m $(from_nat_k)=0) \<or> (i = nrows A) then (i,A) else (i+1, (Gauss_Jordan_in_ij A (from_nat_i) (from_nat_k))))"
+
+lemma Gauss_Jordan_column_k_code [code]:
+  \<open>Gauss_Jordan_column_k (i, A) k = (
+    let
+      a = from_nat i;
+      b = from_nat k
+    in 
+      if (\<forall>n\<in>{to_nat a ..<nrows A}. A $ from_nat n $ b = 0) \<or> i = nrows A
+      then (i, A)
+      else (i + 1, Gauss_Jordan_in_ij A a b)
+  )\<close>
+  by (simp add: Gauss_Jordan_column_k_def Let_def forall_mod_type_greater_eq_iff nrows_def)
 
 text\<open>The following definition applies the Gauss-Jordan step from the first column up to the k one (included).\<close>
 
@@ -2358,7 +2399,7 @@ qed
 qed
 also have "... = card {i. i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"
 proof (rule bij_betw_same_card[of "\<lambda>i. to_nat i"], unfold bij_betw_def, rule conjI)
-  show "inj_on to_nat {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}" using bij_to_nat by (metis bij_betw_imp_inj_on subset_inj_on top_greatest)
+  show "inj_on to_nat {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}" using bij_to_nat by (metis bij_betw_imp_inj_on inj_on_subset top_greatest)
   show "to_nat ` {i. i \<le> (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))} = {i. i \<le> to_nat (GREATEST a. \<not> is_zero_row a (Gauss_Jordan A))}"    
     proof (unfold image_def, auto simp add: to_nat_mono')
     fix x

@@ -1,10 +1,10 @@
 chapter AFP
 
 session Padic_Ints = "HOL-Algebra" +
-  options [timeout = 1200] 
- sessions 
+  options [timeout = 1200]
+  sessions
     "HOL-Number_Theory"
- theories
+  theories
     Function_Ring
     Cring_Poly
     Supplementary_Ring_Facts
@@ -18,4 +18,3 @@ session Padic_Ints = "HOL-Algebra" +
  document_files
     "root.tex"
     "root.bib"
-

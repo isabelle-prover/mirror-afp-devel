@@ -62,22 +62,22 @@ global_interpretation RP: deterministic_FO_resolution_prover where
     (auto simp: less_kbo_subst is_ground_atm_ground less_kbo_less intro: ground_less_less_kbo)
 
 declare
-  RP.deterministic_RP.simps[code]
-  RP.deterministic_RP_step.simps[code]
-  RP.is_final_dstate.simps[code]
-  RP.is_tautology_def[code]
-  RP.reduce.simps[code]
-  RP.reduce_all_def[code]
-  RP.reduce_all2.simps[code]
-  RP.resolve_rename_def[code]
-  RP.resolve_rename_either_way_def[code]
-  RP.select_min_weight_clause.simps[code]
-  RP.weight.simps[code]
-  St0_def[code]
-  substitution_ops.strictly_subsumes_def[code]
-  substitution_ops.subst_cls_lists_def[code]
-  substitution_ops.subst_lit_def[code]
-  substitution_ops.subst_cls_def[code]
+  RP.deterministic_RP.simps [code]
+  RP.deterministic_RP_step.simps [code]
+  RP.is_final_dstate.simps [code]
+  RP.is_tautology_def [code]
+  RP.reduce.simps [code]
+  RP.reduce_all_def [code]
+  RP.reduce_all2.simps [code]
+  RP.resolve_rename_def [code]
+  RP.resolve_rename_either_way_def [code]
+  RP.select_min_weight_clause.simps [code]
+  RP.weight.simps [code]
+  St0_def [code]
+  substitution_ops.strictly_subsumes_def [code]
+  substitution_ops.subst_cls_lists_def [code]
+  substitution_ops.subst_lit_def [code]
+  substitution_ops.subst_cls_def [code]
 
 lemma remove1_mset_subset_eq: "remove1_mset a A \<subseteq># B \<longleftrightarrow> A \<subseteq># add_mset a B"
   by (metis add_mset_add_single subset_eq_diff_conv)
@@ -138,12 +138,32 @@ lemma is_reducible_lit_code[code]: "RP.is_reducible_lit Ds C L =
     done
   done
 
-declare
-  Pairs_def[folded sorted_list_of_set_def, code]
-  linorder.sorted_list_of_set_sort_remdups[OF class_linorder_compare,
-    folded sorted_list_of_set_def sort_key_def, code]
-  linorder.sort_key_def[OF class_linorder_compare, folded sort_key_def insort_key_def, code]
-  linorder.insort_key.simps[OF class_linorder_compare, folded insort_key_def, code]
+lemma [code]:
+  \<open>Pairs AAA = concat
+    (Executable_FO_Ordered_Resolution_Prover.sorted_list_of_set
+      ((pairs \<circ> Executable_FO_Ordered_Resolution_Prover.sorted_list_of_set) ` AAA))\<close>
+  by (simp add: Pairs_def sorted_list_of_set_def)
+
+lemma [code]:
+  \<open>Executable_FO_Ordered_Resolution_Prover.sorted_list_of_set (set xs) =
+    Executable_FO_Ordered_Resolution_Prover.sort_key (\<lambda>x. x) (remdups xs)\<close>
+  using linorder.sorted_list_of_set_sort_remdups [OF class_linorder_compare, of xs]
+  by (simp add: sorted_list_of_set_def sort_key_def)
+
+lemma [code]:
+  \<open>Executable_FO_Ordered_Resolution_Prover.sort_key f xs =
+    foldr (Executable_FO_Ordered_Resolution_Prover.insort_key f) xs []\<close>
+  using linorder.sort_key_def [OF class_linorder_compare, of f xs]
+  by (simp add: sort_key_def insort_key_def)
+
+lemma [code]:
+  \<open>Executable_FO_Ordered_Resolution_Prover.insort_key f x [] = [x]\<close>
+  \<open>Executable_FO_Ordered_Resolution_Prover.insort_key f x (y # ys) =
+    (if le_of_comp compare (f x) (f y)
+     then x # y # ys
+     else y # Executable_FO_Ordered_Resolution_Prover.insort_key f x ys)\<close>
+  using linorder.insort_key.simps [OF class_linorder_compare, of f x]
+  by (simp_all add: insort_key_def)
 
 export_code St0 in SML
 export_code deterministic_RP in SML module_name RP

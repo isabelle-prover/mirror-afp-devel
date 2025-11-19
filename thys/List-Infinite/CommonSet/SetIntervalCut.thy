@@ -917,7 +917,7 @@ where
 
 lemma mirror_elem_inj_on: "finite I \<Longrightarrow> inj_on (\<lambda>x. mirror_elem x I) I"
 unfolding mirror_elem_def
-by (metis Max_le_imp_subset_atMost nat_mirror_inj_on not_add_less2 not_le_imp_less subset_inj_on)
+by (metis Max_le_imp_subset_atMost nat_mirror_inj_on not_add_less2 not_le_imp_less inj_on_subset)
 
 lemma mirror_elem_add: "
   finite I \<Longrightarrow> mirror_elem (n + k) I = mirror_elem n I - k"
@@ -1181,7 +1181,7 @@ lemma imirror_bounds_Int: "
   imirror_bounds A l r \<inter> imirror_bounds B l r"
 apply (unfold imirror_bounds_def)
 apply (rule inj_on_image_Int[OF _ Un_upper1 Un_upper2])
-apply (rule subset_inj_on[OF nat_mirror_inj_on])
+apply (rule inj_on_subset[OF nat_mirror_inj_on])
 apply (rule Un_least[of A _ B], assumption+)
 done
 

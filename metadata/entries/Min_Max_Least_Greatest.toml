@@ -1,0 +1,26 @@
+title = "Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering"
+date = 2024-10-24
+topics = [
+  "Mathematics/Order",
+]
+abstract = "This entry provides small, reusable, theories that specify the concepts of minimal, maximal, least, and greatest elements in sets, final sets, and final multisets. The concepts are uniformly specified as predicates parametrized by a binary relation. The binary relation is only required to be an ordering on the elements of the concrete collection considered. This is useful when working with a partial ordering, but some assumption or invariant proves that the ordering is total on all elements of the considered set."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+email = "desharnais_email"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

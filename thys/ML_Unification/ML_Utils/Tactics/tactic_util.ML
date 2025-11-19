@@ -6,18 +6,29 @@ Tactic utilities.
 signature TACTIC_UTIL =
 sig
   include HAS_LOGGER
-  (* tactic combinators*)
+  (* tactic combinators *)
   val HEADGOAL : (int -> 'a) -> 'a
 
   val THEN : ('a -> 'b Seq.seq) * ('b -> 'c Seq.seq) -> 'a -> 'c Seq.seq
   val THEN' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'c -> 'd Seq.seq) -> 'a -> 'b -> 'd Seq.seq
 
+  val APPEND : ('a -> 'b Seq.seq) * ('a -> 'b Seq.seq) -> 'a -> 'b Seq.seq
+  val APPEND' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'b -> 'c Seq.seq) -> 'a -> 'b -> 'c Seq.seq
+
+  val ORELSE : ('a -> 'b Seq.seq) * ('a -> 'b Seq.seq) -> 'a -> 'b Seq.seq
+  val ORELSE' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'b -> 'c Seq.seq) -> 'a -> 'b -> 'c Seq.seq
+
   val TRY' : ('a -> tactic) -> 'a -> tactic
 
   val EVERY_ARG : ('a -> tactic) -> 'a list -> tactic
   val EVERY_ARG' : ('a -> 'b -> tactic) -> 'a list -> 'b -> tactic
-  val CONCAT : tactic list -> tactic
-  val CONCAT' : ('a -> tactic) list -> 'a -> tactic
+  val CONCAT : ('a -> 'b Seq.seq) list -> ('a -> 'b Seq.seq)
+  val CONCAT' : ('a -> 'b -> 'c Seq.seq) list -> 'a -> 'b -> 'c Seq.seq
+
+  (*filters duplicate results*)
+  val unique_thmsq : (thm * thm -> bool) -> thm Seq.seq -> thm Seq.seq
+  val UNIQUE : (thm * thm -> bool) -> tactic -> tactic
+  val UNIQUE' : (thm * thm -> bool) -> ('a -> tactic) -> 'a -> tactic
 
   val FOCUS_PARAMS' : (Subgoal.focus -> int -> tactic) -> Proof.context -> int -> tactic
   val FOCUS_PARAMS_CTXT : (Proof.context -> tactic) -> Proof.context -> int -> tactic
@@ -40,9 +51,9 @@ sig
   val thin_tac : int -> int -> tactic
   val thin_tacs : int list -> int -> tactic
 
-  val set_kernel_ho_unif_bounds : int -> int -> Proof.context -> Proof.context
-  val silence_kernel_ho_bounds_exceeded : Proof.context -> Proof.context
-  val safe_simp_tac : Proof.context -> int -> tactic
+  val set_kernel_ho_unif_bound : int -> Proof.context -> Proof.context
+  val silence_kernel_ho_bound_exceeded : Proof.context -> Proof.context
+  val FLEX_PAIRS_UNCHANGED : tactic -> tactic
 
   (*nth_eq_assume_tac n i solves ith subgoal by assumption, without unification,
     preferring premise n*)
@@ -97,13 +108,35 @@ fun HEADGOAL f = f 1
 fun (tac1 THEN tac2) = Seq.THEN (tac1, tac2)
 fun (tac1 THEN' tac2) x = tac1 x THEN tac2 x
 
-fun TRY' tac =  tac ORELSE' K all_tac
+fun (tac1 ORELSE tac2) st = Seq.make (fn _ => case Seq.pull (tac1 st) of
+    NONE => Seq.pull (tac2 st)
+  | some => some)
+fun (tac1 ORELSE' tac2) x = tac1 x ORELSE tac2 x
+
+fun TRY' tac = tac ORELSE' K all_tac
 
 fun EVERY_ARG tac = EVERY o map tac
 fun EVERY_ARG' tac = EVERY' o map tac
 
-fun CONCAT tacs = fold_rev (curry op APPEND) tacs no_tac
-fun CONCAT' tacs = fold_rev (curry op APPEND') tacs (K no_tac)
+fun (tac1 APPEND tac2) st = Seq.append (tac1 st) (Seq.make (fn _ => Seq.pull (tac2 st)))
+fun (tac1 APPEND' tac2) x = tac1 x APPEND tac2 x
+
+fun CONCAT tacs = fold_rev (curry (op APPEND)) tacs (K Seq.empty)
+fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K (K Seq.empty))
+
+local structure TI = Net
+in
+fun unique_thmsq eq_thm thmsq =
+  let fun go ti = Seq.pull #> Option.mapPartial (fn (thm, thmsq) =>
+    let val key = Thm.full_prop_of thm |> Term_Normalisation.beta_eta_short |> TI.key_of_term
+    in
+      TI.insert eq_thm (key, thm) ti |> (fn ti => SOME (thm, Seq.make (fn _ => go ti thmsq)))
+      handle TI.INSERT => go ti thmsq
+    end)
+  in Seq.make (fn _ => go TI.empty thmsq) end
+fun UNIQUE eq_thm tac = unique_thmsq eq_thm o tac
+fun UNIQUE' eq_thm tac = UNIQUE eq_thm o tac
+end
 
 fun FOCUS_PARAMS' tac = Subgoal.FOCUS_PARAMS (HEADGOAL o tac)
 fun FOCUS_PARAMS_FIXED' tac = Subgoal.FOCUS_PARAMS_FIXED (HEADGOAL o tac)
@@ -128,21 +161,13 @@ val thin_tacs = sort int_ord
   #> map_index ((op -) o swap)
   #> EVERY_ARG' thin_tac
 
-fun set_kernel_ho_unif_bounds trace_bound search_bound =
-  Config.put Unify.unify_trace_bound trace_bound
-  #> Config.put Unify.search_bound search_bound
+val set_kernel_ho_unif_bound = Config.put Unify.search_bound
+val silence_kernel_ho_bound_exceeded = Context_Position.set_visible false
 
-val silence_kernel_ho_bounds_exceeded = Context_Position.set_visible false
-
-(*some "safe" solvers create instantiations via flex-flex pairs, which we disallow here*)
-fun safe_simp_tac ctxt i state =
-  let
-    val eq_flexps = Thm.tpairs_of
-      #> pair (Thm.tpairs_of state)
-      #> eq_list (eq_pair (op aconv) (op aconv))
-    (*stop higher-order unifier from entering difficult unification problems*)
-    val ctxt = set_kernel_ho_unif_bounds 1 1 ctxt |> silence_kernel_ho_bounds_exceeded
-  in Simplifier.safe_simp_tac ctxt i state |> Seq.filter eq_flexps end
+fun FLEX_PAIRS_UNCHANGED tac state =
+  let val eq_flexps = Thm.tpairs_of #> pair (Thm.tpairs_of state)
+    #> eq_list (eq_pair (op aconv) (op aconv))
+  in tac state |> Seq.filter eq_flexps end
 
 fun nth_eq_assume_tac n = if n < 1 then K no_tac
   else rotate_tac (n - 1) THEN' eq_assume_tac
@@ -189,7 +214,7 @@ fun rewrite_subgoal_unif_concl inst_binders norm_state norm_eq_thm binders (env_
         norm_eq_thm ctxt env eq_thm
         |> eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems ctxt
         |> Option.map rewrite_subgoal_tac
-        |> the_default (K no_tac)
+        |> \<^if_none>\<open>K no_tac\<close>
       end
   in
     (*smash tpairs in case some binder occurs*)

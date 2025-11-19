@@ -252,7 +252,7 @@ lemma expectation_gpv_parametric':
   apply(rule rel_funI)
   apply(rule rel_funI)
   apply(rule fixp_lfp_parametric_eq[OF expectation_gpv.mono expectation_gpv.mono])
-  apply(fold nn_integral_spmf_def Set.is_empty_def pmf_None_eq_weight_spmf[symmetric])
+  apply(fold nn_integral_spmf_def pmf_None_eq_weight_spmf[symmetric])
   apply(simp only: weight_spmf'_def[symmetric])
   subgoal premises [transfer_rule] supply the_gpv_parametric'[transfer_rule] by transfer_prover
   done

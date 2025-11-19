@@ -60,7 +60,7 @@ lemma injectiveD:
   assumes "injective f"
   and "f x = f x'"
   shows "x = x'"
-  using assms by (urule (d) injective_onD where chained = insert) simp_all
+  using assms by (urule (d) injective_onD chained: insert) simp_all
 
 lemma injective_on_if_injective:
   fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> _"

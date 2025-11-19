@@ -38,7 +38,7 @@ next
       using Suc.prems(2) assms(1) finite_subset by fastforce
     have "prod f (A - B) = prod f ((A-B') - {x})"
       by (simp add: decomp,subst Diff_insert,simp)
-    also have "\<dots> = (prod f (A-B')) div f x"  
+    also have "\<dots> = (prod f (A-B')) div f x"
       using prod_diff1[of "A-B'" f x] Suc decomp by auto
     also have "\<dots> = (prod f A div prod f B') div f x"
       using Suc(1)[of B'] Suc(3) B'card decomp

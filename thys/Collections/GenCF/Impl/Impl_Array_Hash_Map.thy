@@ -6,7 +6,6 @@ theory Impl_Array_Hash_Map imports
   "../Intf/Intf_Hash"
   "../Intf/Intf_Map"
   "../../Lib/HashCode"
-  "../../Lib/Code_Target_ICF"
   "../../Lib/Diff_Array"
   Impl_List_Map
 begin

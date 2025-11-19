@@ -30,7 +30,8 @@ lemmas ptr_val_ptr_add_simps =
 ML \<open>
 
 val AUTOCORRES_SIMPSET =
-  @{context} delsimps (
+  @{context}
+  |> Simplifier.del_simps (
     (* interferes with heap_lift *)
     @{thms fun_upd_apply}
     (* affects boolean expressions *)
@@ -42,19 +43,19 @@ val AUTOCORRES_SIMPSET =
     @ @{thms CollectPairFalse}
     @ @{thms unsigned_of_nat unsigned_of_int}
     @ @{thms map_of_default.simps}
-    @ @{thms field_lvalue_append} @
-    @{thms ptr_val_ptr_add_simps} )
-  addsimps (
+    @ @{thms field_lvalue_append} 
+    @ @{thms ptr_val_ptr_add_simps}
+    @ @{thms distinct_sets.simps} )
+  |> Simplifier.add_simps (
     (* Needed for L2corres_spec *)
     @{thms globals_surj}
     )
-  addsimps (
+  |> Simplifier.add_simps (
     (* builds up by monad_equiv tactic, and record updates *)
     @{thms triv_ex_apply} (* fixme Shouldn't this already be handled by HOL.ex_simps and simproc defined_Ex.*)
     )
-  addsimps (@{thms ptr_NULL_conv})
-  delsimprocs
-    [@{simproc case_prod_beta},@{simproc case_prod_eta}]
+  |> Simplifier.add_simps @{thms ptr_NULL_conv}
+  |> fold Simplifier.del_proc [@{simproc case_prod_beta}, @{simproc case_prod_eta}]
   |> simpset_of
 
 \<close>

@@ -113,3 +113,16 @@ unsigned int inc_g (unsigned int n) {
  g = g + n;
  return g;
 }
+
+typedef struct pair {
+  unsigned fst;
+  unsigned snd[4];
+} pair_t;
+
+void update_fst (pair_t* p, unsigned x) {
+  p->fst = x;
+}
+
+void update_snd_i (pair_t* p, unsigned i, unsigned x) {
+  p->snd[i] = p->snd[i] + x;
+}

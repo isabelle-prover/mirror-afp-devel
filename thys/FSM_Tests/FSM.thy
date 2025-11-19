@@ -3142,7 +3142,7 @@ proof
     then have "snd ` Set.filter (\<lambda> (y',q') . y' = y) (h M (q,x)) = {}"
       unfolding h.simps by force
     then have "card (snd ` Set.filter (\<lambda> (y',q') . y' = y) (h M (q,x))) = 0"
-      by simp
+      by (simp add: card_eq_0_iff)
     then show ?thesis
       unfolding h_obs_simps Let_def \<open>snd ` Set.filter (\<lambda> (y',q') . y' = y) (h M (q,x)) = {}\<close>
       by auto
@@ -3160,7 +3160,7 @@ proof
   proof -
     assume "h_obs M q x y = Some q'"
     then have "(snd ` Set.filter (\<lambda> (y',q') . y' = y) (h M (q,x))) \<noteq> {}"
-      by force 
+      by (auto simp add: card_1_singleton_iff split: if_splits)
     then have "card (snd ` Set.filter (\<lambda> (y',q') . y' = y) (h M (q,x))) > 0"
       unfolding h_simps using fsm_transitions_finite[of M]
       by (metis assms card_0_eq h_observable_card(2) h_simps neq0_conv) 
@@ -5811,8 +5811,7 @@ proof -
 
         have "S1 \<noteq> {}" and "S2 \<noteq> {}"
           using \<open>wk_suffix \<in> LS M (after M q1 wk) = (wk_suffix \<notin> LS M (after M q2 wk))\<close> \<open>after M q1 wk \<in> S\<close> \<open>after M q2 wk \<in> S\<close>
-          unfolding S1 S2
-          by (metis empty_iff member_filter)+
+          unfolding S1 S2 by auto
         then have "card S1 > 0" and "card S2 > 0"
           using \<open>S = S1 \<union> S2\<close> \<open>finite S\<close>
           by (meson card_0_eq finite_Un neq0_conv)+
@@ -5855,8 +5854,7 @@ proof -
               unfolding \<open>S = S1 \<union> S2\<close>
               by blast
             then have "wk_suffix \<in> LS M (after M q1 w') = (wk_suffix \<notin> LS M (after M q2 w'))"
-              unfolding S1 S2
-              by (metis member_filter)
+              using S1 S2 by auto
             then have "distinguishes M (after M q1 w') (after M q2 w') wk_suffix"
               unfolding distinguishes_def by blast
             then have "distinguishes M q1 q2 (w'@wk_suffix)"
@@ -5890,7 +5888,7 @@ proof -
           unfolding W 
           using \<open>wk \<in> {w' . w' \<in> set (prefixes w) \<and> w' \<noteq> w \<and> after M q1 w' \<in> S \<and> after M q2 w' \<in> S}\<close>
                 \<open>wk_suffix \<in> LS M (after M q1 wk) = (wk_suffix \<notin> LS M (after M q2 wk))\<close>
-          by (metis (no_types, lifting) S1 Un_iff \<open>S = S1 \<union> S2\<close> mem_Collect_eq member_filter)
+          using S1 by clarsimp (auto simp add: \<open>S = S1 \<union> S2\<close>)
         ultimately have "W S1 S2 \<union> W S2 S1 = {wk}"
           by blast
 

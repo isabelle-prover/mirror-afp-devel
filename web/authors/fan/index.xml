@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>fan on Archive of Formal Proofs
-    </title>
-    <link>/authors/fan/</link>
-    <description>
-        Recent content in fan 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/fan/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
-          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
-          <description></description>
-        </item>
+    <title>Zixuan Fan</title>
+    <link>https://isa-afp.org/authors/fan/</link>
+    <description>AFP entries of Zixuan Fan</description><item>
+  <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
+  <link>https://isa-afp.org/entries/Randomized_Closest_Pair.html</link>
+  <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Rabin&#39;s Closest Pair of Points Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
   </channel>
 </rss>

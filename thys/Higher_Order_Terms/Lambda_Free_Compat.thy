@@ -43,13 +43,13 @@ lift_definition consts_tm :: "('a, 'b) tm \<Rightarrow> name fset" is "\<lambda>
 
 end
 
-lemma frees_tm[code, simp]:
+lemma frees_tm [simp, code]:
   "frees (App f x) = frees f |\<union>| frees x"
   "frees (Hd h) = (case h of Sym _ \<Rightarrow> fempty | Var v \<Rightarrow> {| to_name v |})"
 including fset.lifting
 by (transfer; auto split: hd.splits)+
 
-lemma consts_tm[code, simp]:
+lemma consts_tm [simp, code]:
   "consts (App f x) = consts f |\<union>| consts x"
   "consts (Hd h) = (case h of Var _ \<Rightarrow> fempty | Sym v \<Rightarrow> {| to_name v |})"
 including fset.lifting
@@ -59,7 +59,7 @@ definition subst_tm :: "('a, 'b) tm \<Rightarrow> (name, ('a, 'b) tm) fmap \<Rig
 "subst_tm t env =
   Lambda_Free_Term.subst (fmlookup_default env (Hd \<circ> Var \<circ> of_name) \<circ> to_name) t"
 
-lemma subst_tm[code, simp]:
+lemma subst_tm [simp, code]:
   "subst (App t u) env = App (subst t env) (subst u env)"
   "subst (Hd h) env = (case h of
     Sym s \<Rightarrow> Hd (Sym s) |

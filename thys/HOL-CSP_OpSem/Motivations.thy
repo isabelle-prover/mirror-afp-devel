@@ -6,7 +6,7 @@
  *
  * This file       : Motivations for our future definitions
  *
- * Copyright (c) 2023 Université Paris-Saclay, France
+ * Copyright (c) 2025 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -42,30 +42,33 @@
 
 chapter \<open> Motivations for our Definitions \<close>
 
+(*<*)
 theory  Motivations
-  imports AfterExt
+  imports After_Ext_Operator
 begin
-
+  (*>*)
 
 (*<*)
-definition dummy_\<tau>_trans :: \<open>'\<alpha> process \<Rightarrow> '\<alpha> process \<Rightarrow> bool\<close> (infixl \<open>\<leadsto>\<^sub>\<tau>\<close> 50)
+definition dummy_\<tau>_trans :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (infixl \<open>\<leadsto>\<^sub>\<tau>\<close> 50)
   where \<open>P \<leadsto>\<^sub>\<tau> P' \<equiv> undefined\<close>
 
-definition dummy_ev_trans :: \<open>'\<alpha> process \<Rightarrow> '\<alpha> event \<Rightarrow> '\<alpha> process \<Rightarrow> bool\<close> 
-                             (\<open>_ \<leadsto>_/ _\<close> [50, 3, 51] 50)
-  where \<open>P \<leadsto> e P' \<equiv> undefined\<close>
-(*>*)
+definition dummy_event_trans :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+  where \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<equiv> undefined\<close>
+
+definition dummy_tick_trans :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+  where \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<equiv> undefined\<close>
+    (*>*)
 
 
 text \<open>To construct our bridge between denotational and operational semantics, we
       want to define two kind of transitions:  
       \<^item> without external event: \<^term>\<open>P \<leadsto>\<^sub>\<tau> P'\<close>
-      \<^item> with an external event \<^term>\<open>e\<close> (which can possibly be \<^term>\<open>\<checkmark>\<close>): \<^term>\<open>P \<leadsto>e P'\<close>.
+      \<^item> with the terminating event \<^term>\<open>\<checkmark>(r)\<close>: \<^term>\<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P'\<close>
+      \<^item> with a non terminating external event \<^term>\<open>ev e\<close>: \<^term>\<open>P \<leadsto>\<^bsub>e\<^esub> P'\<close>.
 
- 
       We will discuss in this theory some fundamental properties that we want
      
-      \<^term>\<open>P \<leadsto>\<^sub>\<tau> Q\<close> and \<^term>\<open>P \<leadsto>e Q\<close> to verify, and on the consequences that this will have.\<close>
+      \<^term>\<open>P \<leadsto>\<^sub>\<tau> Q\<close>, \<^term>\<open>P \<leadsto>\<^bsub>e\<^esub> P'\<close> and \<^term>\<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P'\<close> to verify, and the consequences that this will have.\<close>
 
 
 
@@ -79,9 +82,9 @@ text \<open>Let's say we want to define the \<open>\<tau>\<close> transition as 
 
 (*<*)
 no_notation dummy_\<tau>_trans (infixl \<open>\<leadsto>\<^sub>\<tau>\<close> 50)
-(*>*)
+  (*>*)
 
-inductive \<tau>_trans :: \<open>'\<alpha> process \<Rightarrow> '\<alpha> process \<Rightarrow> bool\<close> (infixl \<open>\<leadsto>\<^sub>\<tau>\<close> 50)
+inductive \<tau>_trans :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (infixl \<open>\<leadsto>\<^sub>\<tau>\<close> 50)
   where \<tau>_trans_eq    : \<open>P \<leadsto>\<^sub>\<tau> P\<close>
   |     \<tau>_trans_NdetL : \<open>P \<sqinter> Q \<leadsto>\<^sub>\<tau> P\<close>
   |     \<tau>_trans_NdetR : \<open>P \<sqinter> Q \<leadsto>\<^sub>\<tau> Q\<close>
@@ -95,69 +98,112 @@ text \<open>With this definition, we immediately show that the \<open>\<tau>\<cl
 
 lemma \<tau>_trans_is_FD: \<open>(\<leadsto>\<^sub>\<tau>) = (\<sqsubseteq>\<^sub>F\<^sub>D)\<close>
   apply (intro ext iffI)
-  by (metis mono_Ndet_FD_left Ndet_commute \<tau>_trans.simps idem_FD)
-     (metis mono_Ndet_FD mono_Ndet_FD_right 
-            FD_antisym Ndet_id \<tau>_trans_NdetL idem_FD)
+  by (metis Ndet_FD_self_left Ndet_FD_self_right \<tau>_trans.simps order_class.order_eq_iff)
+    (metis FD_antisym Ndet_FD_self_left Ndet_id \<tau>_trans_NdetR mono_Ndet_FD)
 
 
+(*<*)
+context AfterExt
+begin
+  (*>*)
 
 text \<open>The definition of the event transition will be a little bit more complex.
 
-      First of all we want to prevent a process @{term [show_types] \<open>P::'\<alpha> process\<close>} to make a
-      transition with @{term [show_types] \<open>e::'\<alpha> event\<close>} if \<^term>\<open>P\<close> can not begin with \<^term>\<open>e\<close>.
+      First of all we want to prevent a process @{term [show_types] \<open>P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>}
+      to make a transition with @{term [show_types] \<open>ev e :: ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>}
+      (resp. @{term [show_types] \<open>\<checkmark>(r) :: ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>})
+      if \<^term>\<open>P\<close> can not begin with \<^term>\<open>ev e\<close> (resp. \<^term>\<open>\<checkmark>(r)\<close>).
 
-      More formally, we want \<^term>\<open>P \<leadsto>e P' \<Longrightarrow> e \<in> ready_set P\<close>.
+      More formally, we want \<^term>\<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> ev e \<in> initials P\<close> (resp. \<^term>\<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> \<checkmark>(r) \<in> P\<^sup>0\<close>).
 
       Moreover, we want the event transitions to absorb the \<open>\<tau>\<close> transitions.
       
-      Finally, when \<^term>\<open>e \<in> ready_set P\<close>, we want to have \<^term>\<open>P \<leadsto>e (P afterExt e)\<close>.
+      Finally, when \<^term>\<open>e \<in> P\<^sup>0\<close> (resp. \<^term>\<open>\<checkmark>(r) \<in> P\<^sup>0\<close>), we want to have
+      \<^term>\<open>P \<leadsto>\<^bsub>e\<^esub> P after\<^sub>\<checkmark> ev e\<close> (resp. \<^term>\<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P after\<^sub>\<checkmark> \<checkmark>(r)\<close>).
     
       This brings us to the following inductive definition:\<close>
 
 (*<*)
-no_notation dummy_ev_trans (\<open>_ \<leadsto>_/ _\<close> [50, 3, 51] 50)
-(*>*)
+no_notation dummy_event_trans (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close>  [50, 3, 51] 50)
+no_notation dummy_tick_trans  (\<open>_ \<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+  (*>*)
 
-inductive event_trans_prem :: \<open>'\<alpha> process \<Rightarrow> '\<alpha> event \<Rightarrow> '\<alpha> process \<Rightarrow> bool\<close>
+inductive event_trans_prem :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close>
   where  
-    \<tau>_left_absorb : \<open>\<lbrakk>e \<in> ready_set P'; P \<leadsto>\<^sub>\<tau> P'; event_trans_prem P' e P''\<rbrakk>
+    \<tau>_left_absorb : \<open>\<lbrakk>e \<in> initials P'; P \<leadsto>\<^sub>\<tau> P'; event_trans_prem P' e P''\<rbrakk>
                      \<Longrightarrow> event_trans_prem P e P''\<close>
-  | \<tau>_right_absorb : \<open>\<lbrakk>e \<in> ready_set P; event_trans_prem P e P'; P' \<leadsto>\<^sub>\<tau> P''\<rbrakk>
+  | \<tau>_right_absorb : \<open>\<lbrakk>e \<in> initials P; event_trans_prem P e P'; P' \<leadsto>\<^sub>\<tau> P''\<rbrakk>
                       \<Longrightarrow> event_trans_prem P e P''\<close>
-  | ready_trans_to_AfterExt : \<open>e \<in> ready_set P
-                              \<Longrightarrow> event_trans_prem P e (P afterExt e)\<close>
+  | initial_trans_to_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k : \<open>e \<in> initials P \<Longrightarrow> event_trans_prem P e (P after\<^sub>\<checkmark> e)\<close>
 
-abbreviation event_trans :: \<open>'\<alpha> process \<Rightarrow> '\<alpha> event \<Rightarrow> '\<alpha> process \<Rightarrow> bool\<close> 
-             (\<open>_ \<leadsto>_/ _\<close> [50, 3, 51] 50)
-  where \<open>P \<leadsto>e P' \<equiv> e \<in> ready_set P \<and> event_trans_prem P e P'\<close>
+abbreviation event_trans :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 'a \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> 
+  (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+  where \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<equiv> ev e \<in> initials P \<and> event_trans_prem P (ev e) P'\<close>
+
+abbreviation tick_trans :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 'r \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+  where \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<equiv> \<checkmark>(r) \<in> P\<^sup>0 \<and> event_trans_prem P \<checkmark>(r) P'\<close>
 
 
 
-text \<open>We immediately show that this event transition definition is equivalent to the following:\<close>
+text \<open>We immediately show that, under the assumption of monotony of \<^term>\<open>\<Omega>\<close>,
+      this event transition definition is equivalent to the following:\<close>
 
 lemma startable_imp_ev_trans_is_startable_and_FD_After: 
-  \<open>(P \<leadsto>e P') \<longleftrightarrow> e \<in> ready_set P \<and> P afterExt e \<leadsto>\<^sub>\<tau> P'\<close>
-proof safe
-  show \<open>e \<in> ready_set P \<Longrightarrow> event_trans_prem P e P' \<Longrightarrow> P afterExt e \<leadsto>\<^sub>\<tau> P'\<close>
-    apply (rotate_tac, induct rule: event_trans_prem.induct)
-      apply (metis \<tau>_trans_is_FD mono_AfterExt_FD trans_FD)
-     apply (metis \<tau>_trans_is_FD trans_FD)
-    by (simp add: \<tau>_trans_is_FD)
-next
-  show \<open>e \<in> ready_set P \<Longrightarrow> P afterExt e \<leadsto>\<^sub>\<tau> P' \<Longrightarrow> event_trans_prem P e P'\<close>
-    by (rule \<tau>_right_absorb[of e P \<open>P afterExt e\<close> P'])
-       (simp_all add: ready_trans_to_AfterExt \<tau>_trans_is_FD)
+  \<open>(case e of ev x \<Rightarrow> P \<leadsto>\<^bsub>x\<^esub> P' | \<checkmark>(r) \<Rightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P') \<longleftrightarrow> e \<in> P\<^sup>0 \<and> P after\<^sub>\<checkmark> e \<leadsto>\<^sub>\<tau> P'\<close>
+  if \<open>\<And>P Q. case e of \<checkmark>(r) \<Rightarrow> \<Omega> P r \<leadsto>\<^sub>\<tau> \<Omega> Q r\<close>
+proof -
+  have \<open>(case e of ev x \<Rightarrow> P \<leadsto>\<^bsub>x\<^esub> P' | \<checkmark>(r) \<Rightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P') \<longleftrightarrow>
+        e \<in> initials P \<and> event_trans_prem P e P'\<close> by (simp split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
+  also have \<open>\<dots> \<longleftrightarrow> e \<in> initials P \<and> P after\<^sub>\<checkmark> e \<leadsto>\<^sub>\<tau> P'\<close>
+  proof (insert that, safe)
+    show \<open>event_trans_prem P e P' \<Longrightarrow> e \<in> P\<^sup>0 \<Longrightarrow>
+          (\<And>P Q. case e of \<checkmark>(r) \<Rightarrow> \<Omega> P r \<leadsto>\<^sub>\<tau> \<Omega> Q r) \<Longrightarrow> P after\<^sub>\<checkmark> e \<leadsto>\<^sub>\<tau> P'\<close>
+    proof (induct rule: event_trans_prem.induct)
+      case (\<tau>_left_absorb e P' P P'')
+      thus ?case 
+        apply (cases e)
+         apply (metis (mono_tags, lifting) \<tau>_trans_is_FD event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(5) mono_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD trans_FD)
+        by (metis After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def FD_antisym \<tau>_trans_is_FD event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(6))
+    next
+      case (\<tau>_right_absorb e P P' P'')
+      thus ?case by (metis \<tau>_trans_is_FD trans_FD)
+    next
+      case (initial_trans_to_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k e P)
+      thus ?case by (simp add: \<tau>_trans_eq)
+    qed
+  next
+    show \<open>e \<in> initials P \<Longrightarrow> P after\<^sub>\<checkmark> e \<leadsto>\<^sub>\<tau> P' \<Longrightarrow> event_trans_prem P e P'\<close>
+      by (rule \<tau>_right_absorb[of e P \<open>P after\<^sub>\<checkmark> e\<close> P'])
+        (simp_all add: initial_trans_to_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<tau>_trans_is_FD)
+  qed
+  finally show ?thesis .
 qed
 
 
 
 text \<open>With these two results, we are encouraged in the following theories to define:
-      \<^item> \<^term>\<open>P \<leadsto>\<^sub>\<tau> Q \<equiv> P \<sqsubseteq>\<^sub>F\<^sub>D Q\<close>
-      \<^item> \<^term>\<open>P \<leadsto>e Q \<equiv> e \<in> ready_set P \<and> P afterExt e \<leadsto>\<^sub>\<tau> Q\<close>
-
+       \<^item> \<^term>\<open>P \<leadsto>\<^sub>\<tau> Q \<equiv> P \<sqsubseteq>\<^sub>F\<^sub>D Q\<close>
+       \<^item> \<^term>\<open>P \<leadsto>\<^bsub>e\<^esub> P' \<equiv> ev e \<in> initials P \<and> P after\<^sub>\<checkmark> (ev e) \<leadsto>\<^sub>\<tau> Q\<close>
+       \<^item> \<^term>\<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<equiv> \<checkmark>(r) \<in> P\<^sup>0 \<and> P after\<^sub>\<checkmark> \<checkmark>(r) \<leadsto>\<^sub>\<tau> Q\<close>
 
       and possible variations with other refinements.\<close>
 
+(*<*)
+
+no_notation \<tau>_trans (infixl \<open>\<leadsto>\<^sub>\<tau>\<close> 50)
+no_notation event_trans (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close>  [50, 3, 51] 50)
+no_notation tick_trans  (\<open>_ \<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+
+end 
 
 
+(*>*)
+
+text \<open>But we want to make the construction as general as possible.
+      Therefore we will continue with the locale mechanism, eventually adding additional required
+      assumptions for each operator, and we will instantiate with refinements at the end.\<close>
+
+
+(*<*)
 end
+  (*>*)

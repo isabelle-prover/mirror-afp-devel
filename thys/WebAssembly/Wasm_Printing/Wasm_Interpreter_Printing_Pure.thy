@@ -2,8 +2,8 @@ theory Wasm_Interpreter_Printing_Pure
   imports
     "../Wasm_Interpreter_Properties"
     Wasm_Type_Abs_Printing
-   "HOL-Library.Code_Target_Nat"
-   "Native_Word.Code_Target_Int_Bit"
+    "HOL-Library.Code_Target_Numeral"
+    "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 axiomatization where

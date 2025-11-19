@@ -522,7 +522,7 @@ lemmas morph = map_is_simplicial_morph[of f]
 
 lemma iso_codim_map:
   "x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> card (f`x - f`y) = card (x-y)"
-  using inj inj_on_image_set_diff[of f _ x y] finite_simplex subset_inj_on[of f _ "x-y"]
+  using inj inj_on_image_set_diff[of f _ x y] finite_simplex inj_on_subset[of f _ "x-y"]
         inj_on_iff_eq_card[of "x-y"]
   by    fastforce
 

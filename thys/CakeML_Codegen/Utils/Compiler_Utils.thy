@@ -432,8 +432,7 @@ proof -
       with distinct have "z \<noteq> fst x"
         by simp
       thus "get_map (S - {x}) z = get_map S z"
-        unfolding get_map_def Set.filter_def
-        by (metis (full_types, lifting) case_prodE fst_conv member_remove remove_def)
+        by (auto simp add: get_map_def intro: arg_cong [of _ _ the_elem])
     qed
   also have "\<dots> = map (get_map S) (removeAll (fst x) (sorted_list_of_set (fst ` S)))"
     using distinct
@@ -463,7 +462,7 @@ unfolding list_all_iff
 using assms by (simp add: ordered_map_set_eq)
 
 lemma ordered_map_singleton[simp]: "ordered_map {(x, y)} = [(x, y)]"
-unfolding ordered_map_def get_map_def Set.filter_def the_elem_def
+unfolding ordered_map_def get_map_def the_elem_def
 by auto
 
 context
@@ -563,7 +562,7 @@ definition group_by' :: "('a \<Rightarrow> ('b \<times> 'c)) \<Rightarrow> 'a se
 
 lemma group_by'_eq[code, code_unfold]: "group_by = group_by'"
 apply (rule ext)+
-unfolding group_by_def group_by'_def Set.filter_def
+unfolding group_by_def group_by'_def
 by (auto simp: Let_def split_beta)
 
 lemma is_map_group_by[intro]: "is_map (group_by f M)"

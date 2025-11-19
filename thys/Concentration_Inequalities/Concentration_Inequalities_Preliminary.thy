@@ -119,7 +119,7 @@ lemma indep_sets_reindex:
   shows "indep_sets A (f ` I) = indep_sets (\<lambda>i. A (f i)) I"
 proof -
   have a: "\<And>J g. J \<subseteq> I \<Longrightarrow> (\<Prod>j \<in> f ` J. g j) = (\<Prod>j \<in> J. g (f j))"
-    by (metis assms prod.reindex_cong subset_inj_on)
+    by (metis assms prod.reindex_cong inj_on_subset)
 
   have b:"J \<subseteq> I \<Longrightarrow> (\<Pi>\<^sub>E i \<in> J. A (f i)) = (\<lambda>a. restrict (a \<circ> f) J) ` PiE (f ` J) A" for J
     using assms inj_on_subset

@@ -145,10 +145,10 @@ ML \<open>
         | strip_app_aux t args = (t,args)
     in strip_app_aux t [] end
       
-    fun untag_conv ctxt = Raw_Simplifier.rewrite ctxt
+    fun untag_conv ctxt = Simplifier.rewrite_wrt ctxt
       true (Autoref_Tag_Defs.get ctxt)
 
-    fun ABS_beta_conv ctxt = Raw_Simplifier.rewrite ctxt
+    fun ABS_beta_conv ctxt = Simplifier.rewrite_wrt ctxt
       true @{thms ABS_beta}
   
     val mk_PROTECT_conv = Conv.rewr_conv @{thm PROTECT_def[symmetric]}

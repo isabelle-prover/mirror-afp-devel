@@ -98,7 +98,7 @@ fun ccompare_instance_via_comparator tname thy =
         in
           (Ts, define_overloaded_generic
            ((Binding.name ("ccompare_" ^ Long_Name.base_name tname ^ "_def"),
-            @{attributes [code]}),
+            [Code.singleton_default_equation_attrib]),
             cmp_def) ctxt)
         end)
     val thy = Class.prove_instantiation_exit (fn ctxt =>

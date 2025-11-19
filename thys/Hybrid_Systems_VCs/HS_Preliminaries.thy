@@ -92,8 +92,7 @@ lemma vderiv_on_composeI:
     and " D g = g' on T"
     and "h = (\<lambda>t. g' t *\<^sub>R f' (g t))"
   shows "D (\<lambda>t. f (g t)) = h on T"
-  apply(subst ssubst[of h], simp)
-  using assms has_vderiv_on_compose by auto
+  using assms has_vderiv_on_compose' by blast
 
 lemma vderiv_uminusI[poly_derivatives]:
   "D f = f' on T \<Longrightarrow> g = (\<lambda>t. - f' t) \<Longrightarrow> D (\<lambda>t. - f t) = g on T"
@@ -120,21 +119,21 @@ lemma vderiv_divI[poly_derivatives]:
 lemma vderiv_cosI[poly_derivatives]:
   assumes "D (f::real \<Rightarrow> real) = f' on T" and "g = (\<lambda>t. - (f' t) * sin (f t))"
   shows "D (\<lambda>t. cos (f t)) = g on T"
-  apply(rule vderiv_on_composeI[OF _ assms(1), of "\<lambda>t. cos t"])
+  apply(rule vderiv_on_composeI[OF _ assms(1), of "cos"])
   unfolding has_vderiv_on_def has_vector_derivative_def 
   by (auto intro!: derivative_eq_intros simp: assms)
 
 lemma vderiv_sinI[poly_derivatives]:
   assumes "D (f::real \<Rightarrow> real) = f' on T" and "g = (\<lambda>t. (f' t) * cos (f t))"
   shows "D (\<lambda>t. sin (f t)) = g on T"
-  apply(rule vderiv_on_composeI[OF _ assms(1), of "\<lambda>t. sin t"])
+  apply(rule vderiv_on_composeI[OF _ assms(1), of "sin"])
   unfolding has_vderiv_on_def has_vector_derivative_def 
   by (auto intro!: derivative_eq_intros simp: assms)
 
 lemma vderiv_expI[poly_derivatives]:
   assumes "D (f::real \<Rightarrow> real) = f' on T" and "g = (\<lambda>t. (f' t) * exp (f t))"
   shows "D (\<lambda>t. exp (f t)) = g on T"
-  apply(rule vderiv_on_composeI[OF _ assms(1), of "\<lambda>t. exp t"])
+  apply(rule vderiv_on_composeI[OF _ assms(1), of "exp"])
   unfolding has_vderiv_on_def has_vector_derivative_def 
   by (auto intro!: derivative_eq_intros simp: assms)
 
@@ -252,8 +251,7 @@ proof(unfold eventually_def)
   have obs: "\<forall>i. ?F (P i)"
     using h by auto
   have "?F (\<lambda>x. \<forall>i \<in> UNIV. P i x)"
-    apply(rule finite_induct)
-    by(auto intro: eventually_conj simp: obs h)
+    by (rule finite_induct) (auto intro: eventually_conj simp: obs h)
   thus "?F (\<lambda>x. \<forall>i. P i x)"
     by simp
 qed
@@ -289,9 +287,7 @@ lemma bounded_linear_component:
 proof
   assume ?lhs 
   thus ?rhs
-    apply(clarsimp, rule_tac f="(\<lambda>x. x $ i)" in bounded_linear_compose)
-     apply(simp_all add: bounded_linear_def bounded_linear_axioms_def linear_iff)
-    by (rule_tac x=1 in exI, clarsimp) (meson Finite_Cartesian_Product.norm_nth_le)
+    using bounded_linear_compose by blast
 next
   assume ?rhs
   hence "(\<forall>i. \<exists>K. \<forall>x. \<parallel>f x $ i\<parallel> \<le> \<parallel>x\<parallel> * K)" "linear f"
@@ -314,12 +310,7 @@ qed
 
 lemma open_preimage_nth:
   "open S \<Longrightarrow> open {s::('a::real_normed_vector^'n::finite). s $ i \<in> S}"
-  unfolding open_contains_ball apply clarsimp
-  apply(erule_tac x="x$i" in ballE; clarsimp)
-  apply(rule_tac x=e in exI; clarsimp simp: dist_norm subset_eq ball_def)
-  apply(rename_tac x e y, erule_tac x="y$i" in allE)
-  using Finite_Cartesian_Product.norm_nth_le
-  by (metis le_less_trans vector_minus_component)
+  by (metis open_vimage_vec_nth vimage_def)
 
 lemma tendsto_nth_iff: \<comment> \<open> following @{thm tendsto_componentwise_iff} \<close>
   fixes l::"'a::real_normed_vector^'n::finite"

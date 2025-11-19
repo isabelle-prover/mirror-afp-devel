@@ -213,7 +213,6 @@ context fixes N :: nat and w_dummy::"'W::{heap,weight}" begin
       (list_assn (prod_assn (pure (node_rel N)) (prod_assn weight_assn (pure (node_rel N)))))
       weight_assn)
     "
-    
 
   concrete_definition mdijkstra' uses Dijkstra.impl_aux
 
@@ -227,8 +226,10 @@ context fixes N :: nat and w_dummy::"'W::{heap,weight}" begin
     unfolding drmap_assn2_def
     using [[id_debug, goals_limit = 1]]
     by sepref
-  export_code dijkstra_imp checking SML_imp
+
 end
+
+export_code dijkstra_imp checking SML_imp
 
 
 text \<open>The main correctness theorem\<close>

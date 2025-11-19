@@ -435,7 +435,8 @@ where
   "field_size t n \<equiv> size_td (the (field_ti t n))"
 
 definition (in c_type)
-  field_lvalue :: "'a ptr \<Rightarrow> qualified_field_name \<Rightarrow> addr" (\<open>&'(_\<rightarrow>_')\<close>)
+  field_lvalue :: "'a ptr \<Rightarrow> qualified_field_name \<Rightarrow> addr"
+    (\<open>(\<open>open_block notation=\<open>mixfix field_lvalue\<close>\<close>&'(_\<rightarrow>_'))\<close>)
 where
   "&(p\<rightarrow>f) \<equiv> ptr_val (p::'a ptr) + of_nat (field_offset TYPE('a) f)"
 
@@ -459,7 +460,7 @@ definition (in c_type) zero ::"'a" where
 hide_const (open) zero \<comment> \<open>mandatory qualifier: \<^const>\<open>c_type_class.zero\<close>\<close>
 
 syntax
-  "_zero" :: "type \<Rightarrow> logic" (\<open>(1ZERO/(1'(_')))\<close>)
+  "_zero" :: "type \<Rightarrow> logic"  (\<open>(\<open>indent=1 notation=\<open>mixfix ZERO\<close>\<close>ZERO/(1'(_')))\<close>)
 syntax_consts
   "_zero" == c_type_class.zero
 translations

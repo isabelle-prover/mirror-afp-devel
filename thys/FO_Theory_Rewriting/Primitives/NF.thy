@@ -118,7 +118,7 @@ lemma bound_max_sound:
 
 lemma Bot_in_filter:
   "Bot \<in> Set.filter (\<lambda>s. s \<le>\<^sub>b t) (states R)"
-  by (auto simp: Set.filter_def states_def)
+  by (auto simp: states_def)
 
 lemma bound_max_exists:
   "\<exists> p. p = bound_max t (psubt_lhs_bot R)"

@@ -272,7 +272,6 @@ next
       with * a have "a = int CARD('b) * (i mod int CARD('a)) mod int CARD('a)"
         by (auto simp:d)
     moreover from * a have "0 \<le> i"
-      using linordered_semiring_strict_class.mult_pos_neg of_nat_0_less_iff zero_less_card_finite
       by (simp add: zero_le_mult_iff)
     ultimately have "\<exists>i\<ge>0. i < int CARD('d) \<and> a = int CARD('b) * (i mod int CARD('a)) mod int CARD('a)"
       by (auto intro: exI[of _ i])

@@ -1,38 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>munive on Archive of Formal Proofs
-    </title>
-    <link>/authors/munive/</link>
-    <description>
-        Recent content in munive 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/munive/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
-          <link>/entries/MFOTL_Checker.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/MFOTL_Checker.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Matrices for ODEs</title>
-          <link>/entries/Matrices_for_ODEs.html</link>
-          <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Matrices_for_ODEs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verification Components for Hybrid Systems</title>
-          <link>/entries/Hybrid_Systems_VCs.html</link>
-          <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Hybrid_Systems_VCs.html</guid>
-          <description></description>
-        </item>
+    <title>Jonathan Julian Huerta y Munive</title>
+    <link>https://isa-afp.org/authors/munive/</link>
+    <description>AFP entries of Jonathan Julian Huerta y Munive</description><item>
+  <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+  <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
+  <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+  <description>A Verified Proof Checker for Metric First-Order Temporal Logic in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Computer science/Algorithms</category>
+    <category>Logic/General logic/Temporal logic</category>
+</item>
+<item>
+  <title>Matrices for ODEs</title>
+  <link>https://isa-afp.org/entries/Matrices_for_ODEs.html</link>
+  <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
+  <description>Matrices for ODEs in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Verification Components for Hybrid Systems</title>
+  <link>https://isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
+  <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+  <description>Verification Components for Hybrid Systems in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+</item>
+
   </channel>
 </rss>

@@ -38,8 +38,8 @@ proof -
   have xe: "real ?x * e < 1"
     using e_lt2 deg_gt 
     by (simp add: less_divide_eq mult_of_nat_commute)
-  then have div_gt: "(real ?x - 1) / (real ?x * e) > real ?x - 1" 
-    by (smt (verit) assms(1) assms(2) div_by_1 divide_strict_left_mono less_imp_of_nat_less linordered_semiring_strict_class.mult_pos_pos of_nat_1)
+  then have div_gt: "(real ?x - 1) / (real ?x * e) > real ?x - 1"
+    using \<open>e>0\<close> deg_gt divide_strict_left_mono by fastforce 
   have "((real ?x - 1) / (real ?x * e) + 1) > real ?x"
     using div_gt  
     by linarith
@@ -1158,7 +1158,7 @@ proof -
 
     then have "(1/d - eps) * (d*h - 1)\<le> h - 1"
       using d_gt apply (simp add: field_simps)
-      by (smt (verit, ccfv_threshold) One_nat_def diff_mult_distrib2 h_gt le_eq_less_or_eq linordered_semiring_strict_class.mult_pos_pos nat_SN.gt_trans nat_mult_1_right nonzero_eq_divide_eq of_nat_0_less_iff of_nat_1 of_nat_diff of_nat_mult pos_divide_less_eq zero_less_diff)
+      by (smt (verit, ccfv_threshold) One_nat_def diff_mult_distrib2 h_gt le_eq_less_or_eq mult_pos_pos nat_SN.gt_trans nat_mult_1_right nonzero_eq_divide_eq of_nat_0_less_iff of_nat_1 of_nat_diff of_nat_mult pos_divide_less_eq zero_less_diff)
     then have "(d * h) * ((1/d - eps) * (d*h - 1)) \<le> (d * h) * (h - 1)"
       by (simp add: mult_left_mono)
     then have "(1/d - eps) * (d * h * (d*h - 1)) \<le> ((h - 1)  *  (d * h))"

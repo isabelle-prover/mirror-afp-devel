@@ -162,25 +162,27 @@ proof -
   from assms obtain p p'
     where as: "v1 \<sqsubset>val p v2" "v2 \<sqsubset>val p' v3" unfolding PosOrd_ex_def by blast
   then have pos: "p \<in> Pos v1" "p' \<in> Pos v2" unfolding PosOrd_def pflat_len_def
-    by (smt not_int_zless_negative)+
+    by (metis (full_types) not_int_zless_negative[of "length (flat (at v2 p))"] zero_less_one
+        verit_comp_simplify1(1)[of "- 1"] pos_int_cases[of "1"])
+       (metis PosOrd_def as(2) int_ops(2) not_int_zless_negative pflat_len_def verit_comp_simplify1(1))
   have "p = p' \<or> p \<sqsubset>lex p' \<or> p' \<sqsubset>lex p"
     by (rule lex_trichotomous)
   moreover
     { assume "p = p'"
       with as have "v1 \<sqsubset>val p v3" unfolding PosOrd_def pflat_len_def
-      by (smt Un_iff)
+        by (smt (verit, best) UnCI)
       then have " v1 :\<sqsubset>val v3" unfolding PosOrd_ex_def by blast
     }   
   moreover
     { assume "p \<sqsubset>lex p'"
       with as have "v1 \<sqsubset>val p v3" unfolding PosOrd_def pflat_len_def
-      by (smt Un_iff lex_trans)
+        by (smt (verit, best) UnCI lex_trans)
       then have " v1 :\<sqsubset>val v3" unfolding PosOrd_ex_def by blast
     }
   moreover
     { assume "p' \<sqsubset>lex p"
       with as have "v1 \<sqsubset>val p' v3" unfolding PosOrd_def
-      by (smt Un_iff lex_trans pflat_len_def)
+        by (smt (verit, best) UnCI lex_trans pflat_len_outside)
       then have "v1 :\<sqsubset>val v3" unfolding PosOrd_ex_def by blast
     }
   ultimately show "v1 :\<sqsubset>val v3" by blast
@@ -397,8 +399,8 @@ prefer 2
 apply(simp add: PosOrd_def pflat_len_simps pflat_len_outside)
 apply(rule_tac x="list" in exI)
 apply(auto simp add: PosOrd_def2 pflat_len_simps)
-apply(smt Collect_disj_eq lex_list.intros(2) mem_Collect_eq pflat_len_simps(2))
-apply(smt Collect_disj_eq lex_list.intros(2) mem_Collect_eq pflat_len_simps(2))
+apply(smt (verit) Collect_disj_eq lex_list.intros(2) mem_Collect_eq pflat_len_simps(2))
+apply(smt (verit) Collect_disj_eq lex_list.intros(2) mem_Collect_eq pflat_len_simps(2))
 done
 
 
@@ -607,7 +609,7 @@ next
     "flat v3a @ flat v3b = s1 @ s2" 
     by (force simp add: prefix_list_def LV_def elim: Prf.cases)
   with cond have "flat v3a \<sqsubseteq>pre s1" unfolding prefix_list_def
-    by (smt L_flat_Prf1 append_eq_append_conv2 append_self_conv)
+    by (smt (verit) L_flat_Prf1 append_eq_append_conv2 append_self_conv)
   then have "flat v3a \<sqsubset>spre s1 \<or> (flat v3a = s1 \<and> flat v3b = s2)" using eqs
     by (simp add: sprefix_list_def append_eq_conv_conj)
   then have q2: "v1 :\<sqsubset>val v3a \<or> (flat v3a = s1 \<and> flat v3b = s2)" 
@@ -642,7 +644,8 @@ next
       have "flat (Stars (v3a # vs3)) = s1 @ s2" using NonEmpty(4) . 
       with cond have "flat v3a \<sqsubseteq>pre s1" using NonEmpty(2,3)
         unfolding prefix_list_def
-        by (smt L_flat_Prf1 append_Nil2 append_eq_append_conv2 flat.simps(7)) 
+        by (smt (verit) Prf_flat_lang append.right_neutral append_eq_append_conv2
+            flat.simps(7))
       then have "flat v3a \<sqsubset>spre s1 \<or> (flat v3a = s1 \<and> flat (Stars vs3) = s2)" using NonEmpty(4)
         by (simp add: sprefix_list_def append_eq_conv_conj)
       then have q2: "v :\<sqsubset>val v3a \<or> (flat v3a = s1 \<and> flat (Stars vs3) = s2)" 

@@ -23,15 +23,8 @@ begin
 
 lemma divmod_int_code[code]: "divmod_int m n = map_prod int_of_integer int_of_integer 
   (divmod_integer (integer_of_int m) (integer_of_int n))"
-  unfolding divmod_int_def divmod_integer_def map_prod_def split prod.simps
-proof 
-  show "m div n = int_of_integer
-     (integer_of_int m div integer_of_int n)"
-    by (transfer, simp)
-  show "m mod n = int_of_integer
-     (integer_of_int m mod integer_of_int n)"
-    by (transfer, simp)
-qed
+  by (simp add: Divmod_Int.divmod_int_def divmod_integer_def)
+
 end
 
 end

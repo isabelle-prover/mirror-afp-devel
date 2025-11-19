@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>yang on Archive of Formal Proofs
-    </title>
-    <link>/authors/yang/</link>
-    <description>
-        Recent content in yang 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 15 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/yang/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
-          <description></description>
-        </item>
+    <title>Jiong Yang</title>
+    <link>https://isa-afp.org/authors/yang/</link>
+    <description>AFP entries of Jiong Yang</description><item>
+  <title>Approximate Model Counting</title>
+  <link>https://isa-afp.org/entries/Approximate_Model_Counting.html</link>
+  <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Approximate Model Counting in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
   </channel>
 </rss>

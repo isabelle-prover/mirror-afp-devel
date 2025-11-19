@@ -332,7 +332,7 @@ fun RAWCONV cv i st = Seq.single (Conv.gconv_rule cv i st)
 fun split_bind_all_tac {right_only: bool, simp_all_cases: bool} ctxt =
   let
     val rewr_tac = if simp_all_cases
-      then Raw_Simplifier.rewrite_goal_tac ctxt [case_prod_th] else K all_tac
+      then Simplifier.rewrite_goal_tac ctxt [case_prod_th] else K all_tac
   in
     RAWCONV (split_bind_all_conv {right_only = right_only} ctxt) THEN' rewr_tac
   end

@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>raumer on Archive of Formal Proofs
-    </title>
-    <link>/authors/raumer/</link>
-    <description>
-        Recent content in raumer 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 09 Sep 2014 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/raumer/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>The Jordan-Hölder Theorem</title>
-          <link>/entries/Jordan_Hoelder.html</link>
-          <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Jordan_Hoelder.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Secondary Sylow Theorems</title>
-          <link>/entries/Secondary_Sylow.html</link>
-          <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Secondary_Sylow.html</guid>
-          <description></description>
-        </item>
+    <title>Jakob von Raumer</title>
+    <link>https://isa-afp.org/authors/raumer/</link>
+    <description>AFP entries of Jakob von Raumer</description><item>
+  <title>The Jordan-Hölder Theorem</title>
+  <link>https://isa-afp.org/entries/Jordan_Hoelder.html</link>
+  <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
+  <description>The Jordan-Hölder Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Secondary Sylow Theorems</title>
+  <link>https://isa-afp.org/entries/Secondary_Sylow.html</link>
+  <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Secondary Sylow Theorems in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+
   </channel>
 </rss>

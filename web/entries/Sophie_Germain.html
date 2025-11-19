@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sophie Germain’s Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="Sophie Germain’s Theorem in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Sophie Germain’s Theorem in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Sophie Germain’s Theorem" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Sophie_Germain.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>S</span>ophie <span class='first'>G</span>ermain’s <span class='first'>T</span>heorem
+  </h1>
+  <div>
+      <p><a href="../authors/ballenghien/">Benoît Ballenghien</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJlbm9pdCIsImJhbGxlbmdoaWVuIl0sImhvc3QiOlsidW5pdmVyc2l0ZS1wYXJpcy1zYWNsYXkiLCJmciJdfQ==">📧</a>
+      </p>
+      <p class="date">April 9, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">Sophie Germain's theorem states that if $p$ is a prime number such that $2 p + 1$ is also prime (with $p$ then called a Sophie Germain prime), a weak version of Fermat’s Last Theorem (FLT) holds for the exponent $p$. That is, there exist no nontrivial integer solutions $x, y, z \in \mathbb{Z}$ to the equation
+$$x ^ p + y ^ p = z ^ p$$
+such that $p$ divides neither $x$, $y$ nor $z$.
+After some preliminary results, mainly on sufficient criteria for FLT, we propose a formalization of the classical version of Sophie Germain's theorem as well as a variant involving the concept of auxiliary primes that generalizes Sophie Germain primes.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/number-theory/">Mathematics/Number theory</a></li>
+      </ul>
+      <h3>Session Sophie_Germain</h3>
+      <ul>
+          <li><a href="../sessions/sophie_germain/#SG_Introduction">SG_Introduction</a></li>
+          <li><a href="../sessions/sophie_germain/#SG_Preliminaries">SG_Preliminaries</a></li>
+          <li><a href="../sessions/sophie_germain/#FLT_Sufficient_Conditions">FLT_Sufficient_Conditions</a></li>
+          <li><a href="../sessions/sophie_germain/#SG_Theorem">SG_Theorem</a></li>
+          <li><a href="../sessions/sophie_germain/#SG_Generalization">SG_Generalization</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Fermat3_4.html">Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</a></li>
+              <li><a href="../entries/Wlog.html">Without Loss of Generality</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Sophie_Germain/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Sophie_Germain/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Sophie_Germain/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Sophie_Germain-AFP</p>
+        <pre id="copy-text">@article{Sophie_Germain-AFP,
+  author  = {Benoît Ballenghien},
+  title   = {Sophie Germain’s Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = {April},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Sophie_Germain.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Sophie_Germain-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -51,7 +51,7 @@ lemma Least_le_Least:
   by (metis assms order_trans wellorder_Least_lemma)
 
 lemma is_empty_image [simp]: "Set.is_empty (f ` A) = Set.is_empty A"
-  by(auto simp add: Set.is_empty_def)
+  by(auto simp add:)
 
 subsection \<open>Relations\<close>
 

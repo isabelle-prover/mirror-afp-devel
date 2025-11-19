@@ -349,7 +349,8 @@ next
 
     have subs: "{#(D, ia) \<in># N + {#(D, j) \<in># P. D \<noteq> C'#} + (Q + {#(C', i')#}). ia \<le> weight (C, i)#}
       \<subseteq># {#(D, ia) \<in># {#} + (P + {#(C', i')#}) + Q. ia \<le> weight (C, i)#}"
-      using n_low_weight_empty by (auto simp: multiset_filter_mono)
+      using n_low_weight_empty
+      by (auto simp add: multiset_filter_mono simp del: filter_mset_eq_mempty_iff)
 
     have "fst3 (RP_combined_measure (weight (C, i)) St')
       \<le> fst3 (RP_combined_measure (weight (C, i)) St)"
@@ -480,7 +481,7 @@ proof -
   then have j_smallest:
     "\<And>i t. enat (t_C + t) < llength Sts \<Longrightarrow> (C, i) \<in># wP_of_wstate (lnth Sts (t_C + t)) \<Longrightarrow> j \<le> i"
     unfolding comp_def
-    by (smt add.commute ldrop_enat ldrop_eq_LConsD ldrop_ldrop ldropn_Suc_conv_ldropn
+    by (smt (verit) add.commute ldrop_enat ldrop_eq_LConsD ldrop_ldrop ldropn_Suc_conv_ldropn
         plus_enat_simps(1)  lnth_ldropn Sup_llist_def UN_I ldrop_lmap llength_lmap lnth_lmap
         mem_Collect_eq)
   from j_p have "\<exists>t_Cj. t_Cj < llength (ldrop (enat t_C) Sts)
@@ -489,7 +490,7 @@ proof -
   then obtain t_Cj where j_p:
     "(C,j) \<in># wP_of_wstate (lnth Sts (t_C + t_Cj))"
     "enat (t_C + t_Cj) < llength Sts"
-    by (smt add.commute ldrop_enat ldrop_eq_LConsD ldrop_ldrop ldropn_Suc_conv_ldropn
+    by (smt (verit) add.commute ldrop_enat ldrop_eq_LConsD ldrop_ldrop ldropn_Suc_conv_ldropn
         plus_enat_simps(1) lhd_ldropn)
   have Ci_stays:
     "t_C + t_Cj + t < llength Sts \<Longrightarrow> (C,j) \<in># wP_of_wstate (lnth Sts (t_C + t_Cj + t))" for t
@@ -501,20 +502,20 @@ proof -
     case (Suc t)
     have any_Ck_in_wP: "j \<le> k" if "(C, k) \<in># wP_of_wstate (lnth Sts (t_C + t_Cj + t))" for k
       using that j_p j_smallest Suc
-      by (smt Suc_ile_eq add.commute add.left_commute add_Suc less_imp_le plus_enat_simps(1)
+      by (smt (verit) Suc_ile_eq add.commute add.left_commute add_Suc less_imp_le plus_enat_simps(1)
           the_enat.simps)
     from Suc have Cj_in_wP: "(C, j) \<in># wP_of_wstate (lnth Sts (t_C + t_Cj + t))"
       by (metis (no_types, opaque_lifting) Suc_ile_eq add.commute add_Suc_right less_imp_le)
     moreover have "C \<in> P_of_state (state_of_wstate (lnth Sts (Suc (t_C + t_Cj + t))))"
       using t_C_p(2) Suc.prems by auto
     then have "\<exists>k. (C, k) \<in># wP_of_wstate (lnth Sts (Suc (t_C + t_Cj + t)))"
-      by (smt Suc.prems Ci_in_nth_wP add.commute add.left_commute add_Suc_right enat_ord_code(4))
+      by (smt (verit) Suc.prems Ci_in_nth_wP add.commute add.left_commute add_Suc_right enat_ord_code(4))
     ultimately have "(C, j) \<in># wP_of_wstate (lnth Sts (Suc (t_C + t_Cj + t)))"
       using preserve_min_P_Sts Cj_in_wP any_Ck_in_wP Suc.prems by force
     then have "(C, j) \<in># lnth (lmap wP_of_wstate Sts) (Suc (t_C + t_Cj + t))"
       using Suc.prems by auto
     then show ?case
-      by (smt Suc.prems add.commute add_Suc_right lnth_lmap)
+      by (smt (verit) Suc.prems add.commute add_Suc_right lnth_lmap)
   qed
   then have "(\<And>t. t_C + t_Cj \<le> t \<Longrightarrow> t < llength (lmap (set_mset \<circ> wP_of_wstate) Sts) \<Longrightarrow>
     (C, j) \<in># wP_of_wstate (lnth Sts t))"
@@ -640,7 +641,7 @@ qed
 lemma N_of_state_state_of_wstate_wN_of_wstate:
   assumes "C \<in> N_of_state (state_of_wstate St)"
   shows "\<exists>i. (C, i) \<in># wN_of_wstate St"
-  by (smt N_of_state.elims assms eq_fst_iff fstI fst_conv image_iff of_wstate_split set_image_mset
+  by (smt (verit) N_of_state.elims assms eq_fst_iff fstI fst_conv image_iff of_wstate_split set_image_mset
       state_of_wstate.simps)
 
 lemma in_wN_of_wstate_in_N_of_wstate: "(C, i) \<in># wN_of_wstate St \<Longrightarrow> C \<in> N_of_wstate St"
@@ -706,8 +707,7 @@ next
     then have "(lnth (lmap m (ldrop (enat k) Sts)) (j + 1), lnth (lmap m (ldrop (enat k) Sts)) j)
       \<in> mR"
       unfolding St_def St'_def using lnth_lmap
-      by (smt enat.distinct(1) enat_add_left_cancel enat_ord_simps(4) inf ldrop_lmap llength_lmap
-          lnth_ldrop plus_enat_simps(3))
+      by (simp add: local.ldrop_inf)
   }
   then show "\<forall>j. enat (j + 1) < llength (lmap m (ldrop (enat k) Sts)) \<longrightarrow>
     (\<lambda>x y. (x, y) \<in> mR)\<inverse>\<inverse> (lnth (lmap m (ldrop (enat k) Sts)) j)
@@ -779,7 +779,7 @@ proof (rule ccontr)
     then show False
       using wfP_iff_no_infinite_down_chain_llist[of "\<lambda>x y. (x, y) \<in> RP_combined_relation"]
         wf_RP_combined_relation inff
-      by (smt inf_llist_lnth ldrop_enat_inf_llist lfinite_inf_llist lfinite_lmap wfpUNIVI
+      by (smt (verit) inf_llist_lnth ldrop_enat_inf_llist lfinite_inf_llist lfinite_lmap wfpUNIVI
           wf_induct_rule)
   qed
 qed

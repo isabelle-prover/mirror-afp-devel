@@ -2,8 +2,8 @@
 section \<open>Example Transports Between Lists and Sets\<close>
 theory Transport_Lists_Sets_Examples
   imports
+    Galois_Relator_Syntax
     Transport_Prototype
-    Transport_Syntax
     "HOL-Library.FSet"
 begin
 
@@ -11,8 +11,7 @@ paragraph \<open>Summary\<close>
 text \<open>Introductory examples from \<^cite>\<open>"transport"\<close>.
 Transports between lists and (finite) sets. Refer to the paper for more details.\<close>
 
-context
-  includes galois_rel_syntax and transport_syntax
+context includes galois_rel_Galois_syntax and transport_equivalences_syntax
 begin
 
 paragraph \<open>Introductory examples from paper\<close>

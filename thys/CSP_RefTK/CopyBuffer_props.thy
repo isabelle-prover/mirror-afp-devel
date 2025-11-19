@@ -46,44 +46,42 @@ chapter\<open>Examples\<close>
 section\<open>CopyBuffer Refinement over an infinite alphabet\<close>
 
 theory     CopyBuffer_props
- imports   "HOL-CSP.CopyBuffer" "HOL-CSP.Assertions"
+  imports   "HOL-CSP.CopyBuffer" "HOL-CSP.CSP"
 begin 
 
 subsection\<open> The Copy-Buffer vs. reference processes \<close>
 
-lemma DF_COPY: "(DF (range left \<union> range right)) \<sqsubseteq>\<^sub>F\<^sub>D COPY"
-  by (simp add: DF_COPY)
-
+thm DF_COPY
 
 subsection\<open> ... and abstract consequences \<close>
 
 corollary df_COPY: "deadlock_free COPY"
-      and lf_COPY: "lifelock_free COPY"
+  and lf_COPY: "lifelock_free COPY"
    apply (meson DF_COPY DF_Univ_freeness UNIV_not_empty image_is_empty sup_eq_bot_iff)
-  by (meson CHAOS_DF_refine_FD DF_COPY DF_Univ_freeness UNIV_not_empty deadlock_free_def 
-            image_is_empty lifelock_free_def sup_eq_bot_iff trans_FD)
+  apply (rule deadlock_free_implies_lifelock_free)
+  by (metis DF_COPY DF_Univ_freeness UNIV_I empty_iff image_eqI le_sup_iff subset_empty)
 
-corollary df_v2_COPY: "deadlock_free_v2 COPY" 
-      and lf_v2_COPY: "lifelock_free_v2 COPY"
-      and nt_COPY: "non_terminating COPY"
-  apply (simp add: df_COPY deadlock_free_is_deadlock_free_v2)
-  apply (simp add: lf_COPY lifelock_free_is_lifelock_free_v2)
+corollary df\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_COPY: "deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S COPY" 
+  and lf\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_COPY: "lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S COPY"
+  and nt_COPY: "non_terminating COPY"
+    apply (simp add: df_COPY deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
+   apply (simp add: lf_COPY lifelock_free_imp_lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
   using lf_COPY lifelock_free_is_non_terminating by blast
 
 lemma DF_SYSTEM: "DF UNIV \<sqsubseteq>\<^sub>F\<^sub>D SYSTEM"
-  using DF_subset[of "(range left \<union> range right)" UNIV, simplified]
-        DF_COPY impl_refines_spec trans_FD by blast
+  using deadlock_free_def df_COPY impl_refines_spec' trans_FD by blast
 
 corollary df_SYSTEM: "deadlock_free SYSTEM"
-      and lf_SYSTEM: "lifelock_free SYSTEM"
-  apply (simp add: DF_SYSTEM deadlock_free_def)
-  using CHAOS_DF_refine_FD DF_SYSTEM lifelock_free_def trans_FD by blast 
+  and lf_SYSTEM: "lifelock_free SYSTEM"
+   apply (simp add: DF_SYSTEM deadlock_free_def)
+  apply (rule deadlock_free_implies_lifelock_free)
+  by (simp add: DF_SYSTEM deadlock_free_def)
 
-corollary df_v2_SYSTEM: "deadlock_free_v2 SYSTEM" 
-      and lf_v2_SYSTEM: "lifelock_free_v2 SYSTEM"
-      and nt_SYSTEM: "non_terminating SYSTEM"
-  apply (simp add: df_SYSTEM deadlock_free_is_deadlock_free_v2)
-  apply (simp add: lf_SYSTEM lifelock_free_is_lifelock_free_v2)
+corollary df\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_SYSTEM: "deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S SYSTEM" 
+  and lf\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_SYSTEM: "lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S SYSTEM"
+  and nt_SYSTEM: "non_terminating SYSTEM"
+    apply (simp add: df_SYSTEM deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
+   apply (simp add: lf_SYSTEM lifelock_free_imp_lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
   using lf_SYSTEM lifelock_free_is_non_terminating by blast
 
 end

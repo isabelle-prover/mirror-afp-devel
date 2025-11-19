@@ -69,7 +69,9 @@ lemma kronecker_assoc:
   unfolding kronecker_product_def Let_def
   apply (case_tac "dim_row B * dim_row C > 0 & dim_col B * dim_col C > 0")
    apply (auto simp add: mat_eq_iff less_mult_imp_div_less)
-  by (smt (verit, best) div_less_iff_less_mult div_mult2_eq kronecker_inverse_index linordered_semiring_strict_class.mult_pos_pos mod_less_divisor mod_mult2_eq mult.assoc mult.commute mult_div_mod_eq)
+  using Rings.ordered_semiring_strict_class.mult_pos_pos
+  by (smt (verit, best) div_less_iff_less_mult div_mult2_eq kronecker_inverse_index
+      mod_less_divisor mod_mult2_eq mult.assoc mult.commute mult_div_mod_eq)
 
 lemma sum_sum_mod_div:
   "(\<Sum>ia = 0::nat..<x. \<Sum>ja = 0..<y. f ia ja) =
@@ -735,7 +737,8 @@ proof -
   have 2:"y = a \<or> y = b"
     using \<open>ls = x # xs\<close> \<open>xs = y # ys\<close> assms(2) by auto
   have 3:"ys = []"
-    by (metis (no_types) \<open>ls = x # xs\<close> \<open>xs = y # ys\<close> assms(1) assms(2) distinct.simps(2) distinct_length_2_or_more in_set_member member_rec(2) neq_Nil_conv set_ConsD)
+    using \<open>ls = x # xs\<close> \<open>xs = y # ys\<close> assms
+    by (cases ys; clarsimp) (metis insertE insertI1 insertI2 singletonD) 
   show "ls = [a, b] \<or> ls = [b, a]" using ls xs 1 2 3 assms
     by auto
 qed
@@ -1541,8 +1544,8 @@ proof clarsimp
       then obtain j where jth: "j < (length ?pp) \<and> fst (pivot_positions A ! j) = (Suc i)"
         by blast
       have "j > i"
-        using sorted_hyp apply (auto)
-        by (metis Suc_lessD \<open>fst (pivot_positions A ! i) = i\<close> jth less_not_refl linorder_neqE_nat n_not_Suc_n suc_i_lt)
+        using sorted_hyp
+        by (metis Suc_lessD fst_i_is jth n_not_Suc_n nat_neq_iff suc_i_lt)
       have "j > (Suc i) \<Longrightarrow> False"
       proof -
         assume j_gt: "j > (Suc i)"
@@ -1606,17 +1609,10 @@ proof -
   then have length_asm: "length (map snd (pivot_positions A)) = length (pivot_positions A)"
     using len_pivot by linarith
   then have "\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A"
-  proof clarsimp 
-    fix a
-    assume a_in: "List.member (map snd (pivot_positions A)) a"
-    have "\<exists>v \<in> set (pivot_positions A). a = snd v" 
-      using a_in in_set_member[where xs = "(pivot_positions A)"] apply (auto)
-      by (metis in_set_impl_in_set_zip2 in_set_member length_map snd_conv zip_map_fst_snd) 
-    then show "a < dim_col A"
-      using pivot_set_var in_set_member by auto
-  qed
+    using row_ech rref_pivot_positions
+    by auto blast
   then have h2b: "(filter (\<lambda>y. y < dim_col A) (map snd (pivot_positions A))) =  (map snd (pivot_positions A))"
-    by (meson filter_True in_set_member)
+    by simp
   then have h2a: "length (map ((!) (cols A)) (filter (\<lambda>y. y < dim_col A) (map snd (pivot_positions A)))) = length (pivot_positions A)"
     using length_asm
     by (simp add: h2b) 
@@ -1679,10 +1675,15 @@ proof -
       qed
       then have w_is: "?w = f j"
         by (metis h1 j_lt nth_map snd_conv)
-      have h0: "i = j \<longrightarrow> ((cols A) ! ?w) $ i = 1" using w_is pivot_funD(4)[of A ?nr f ?nc i]
-        by (metis \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> \<open>i < length (pivot_positions A)\<close> \<open>pivot_fun A f (dim_col A)\<close> cols_length i_lt in_set_member length_asm mat_of_cols_cols mat_of_cols_index nth_mem)
-      have h1:  "i \<noteq> j \<longrightarrow> ((cols A) ! ?w) $ i = 0" using w_is pivot_funD(5)
-        by (metis \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> \<open>pivot_fun A f (dim_col A)\<close> cols_length h1 i_lt in_set_member j_lt len_lt length_asm less_le_trans mat_of_cols_cols mat_of_cols_index nth_mem)
+      have h0: "i = j \<longrightarrow> ((cols A) ! ?w) $ i = 1"
+        using w_is pivot_funD(4)[of A ?nr f ?nc i] \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> \<open>i < length (pivot_positions A)\<close> \<open>pivot_fun A f (dim_col A)\<close>
+          cols_length i_lt length_asm
+        by (auto simp add: image_iff) (metis cols_nth index_col nth_mem)
+      have h1:  "i \<noteq> j \<longrightarrow> ((cols A) ! ?w) $ i = 0"
+        using \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> \<open>pivot_fun A f (dim_col A)\<close>
+          h1 i_lt w_is
+        by auto (smt (verit, best) cols_nth h1 index_col j_lt j_lt_nr length_asm list.set_map nth_mem
+            pivot_fun_def) 
       show "(mat_of_cols (dim_row A) (map ((!) (cols A)) (map snd (pivot_positions A))) $$ (i, j) 
         = (1\<^sub>m (length (pivot_positions A))) $$ (i, j))" using h0 h1 breaking_it_down
         by (metis \<open>i < length (pivot_positions A)\<close> h2 h_len index_one_mat(1) j_lt len_lt) 
@@ -1691,7 +1692,10 @@ proof -
     proof - 
       assume i_gt: "i \<ge> (length ?pp)"
       have h0a: "((cols A) ! ((map snd (pivot_positions A)) ! j)) $ i = (row A i) $ ?w"
-        by (metis \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> cols_length h1 i_lt in_set_member index_row(1) j_lt length_asm mat_of_cols_cols mat_of_cols_index nth_mem)
+        using \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> h1 i_lt j_lt length_asm
+        by (auto simp add: image_iff)
+          (smt (verit) cols_length h1 index_row(1) mat_of_cols_cols mat_of_cols_index nth_map
+            nth_mem)
       have h0b: 
         "take_rows A [0..<length (pivot_positions A)] @\<^sub>r 0\<^sub>m (dim_row A - length (pivot_positions A)) (dim_col A) = A"
         using assms row_echelon_form_zero_rows[of A]
@@ -1699,8 +1703,11 @@ proof -
       then have h0c: "(row A i) = 0\<^sub>v (dim_col A)"  using i_gt
         by (smt (verit, best) add_diff_cancel_left' add_diff_cancel_right' add_less_cancel_left dim_col_take_rows 
             dim_row_append_rows i_lt index_zero_mat(2) index_zero_mat(3) le_Suc_ex len_lt nat_less_le nle_le row_append_rows row_zero)
-      then show ?thesis using h0a breaking_it_down apply (auto)
-        by (metis \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> h1 in_set_member index_zero_vec(1) j_lt length_asm nth_mem) 
+      then show ?thesis
+        using \<open>\<forall>a. List.member (map snd (pivot_positions A)) a \<longrightarrow> a < dim_col A\<close> h0a breaking_it_down
+          h1 j_lt length_asm
+        by (auto simp add: image_iff)
+          (smt (verit, del_insts) h1 index_zero_vec(1) nth_map nth_mem)
     qed
     have h1: " mat_of_cols (dim_row A)
      (map ((!) (cols A)) (map snd (pivot_positions A))) $$ (i, j) =
@@ -1901,8 +1908,8 @@ lemma gjs_and_take_cols_var:
 proof -
   let ?gjs = "(gauss_jordan_single A)"
   have "\<forall>x. List.member (map snd (pivot_positions (gauss_jordan_single A))) x \<longrightarrow> x \<le> dim_col A"  
-    using rref_pivot_positions gauss_jordan_single(3) carrier_matD(2) gauss_jordan_single(2) in_set_impl_in_set_zip2 in_set_member length_map less_irrefl less_trans not_le_imp_less zip_map_fst_snd
-    by (metis (no_types, lifting) carrier_mat_triv)
+    using A rref_pivot_positions [of \<open>gauss_jordan_single A\<close> n nc]
+    by auto (metis gauss_jordan_single(2,3) order_le_less)
   then have "(filter (\<lambda>y. y < dim_col A) (map snd (pivot_positions (gauss_jordan_single A)))) = 
     (map snd (pivot_positions (gauss_jordan_single A)))"
     by (metis (no_types, lifting) A carrier_matD(2) filter_True gauss_jordan_single(2) gauss_jordan_single(3) in_set_impl_in_set_zip2 length_map rref_pivot_positions zip_map_fst_snd)

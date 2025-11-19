@@ -1,0 +1,35 @@
+chapter AFP
+session GyrovectorSpaces = "Poincare_Disc" + 
+  options [timeout = 600]
+  sessions
+    "HOL-Types_To_Sets"
+    
+(* The top-level theories of the submission: *)
+  theories
+    GyroVectorSpace
+    Abe
+    Einstein
+    GammaFactor
+    GyroGroup
+    Gyrotrigonometry
+    GyroVectorSpaceIsomorphism
+    GyroVectorSpaceTrivial
+    hDistance
+    HyperbolicFunctions
+    MobiusCollinear
+    MobiusGeometry
+    MobiusGyroGroup
+    MobiusGyroTarski
+    MobiusGyrotrigonometry
+    MobiusGyroVectorSpace
+    MoreComplex
+    More_Real_Vector
+    Poincare
+    PoincareDisc
+    TarskiIsomorphism
+    VectorSpace
+
+  document_files
+    "root.bib"
+    "root.tex"
+

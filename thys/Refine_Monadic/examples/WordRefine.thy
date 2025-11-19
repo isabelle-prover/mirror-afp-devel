@@ -17,8 +17,8 @@ lemma [simp, relator_props]:
   "single_valued word_nat_rel" unfolding word_nat_rel_def
   by blast
 
-lemma [simp]: "single_valuedp (\<lambda>c a. a = unat c)" 
-  by (rule single_valuedpI) blast
+lemma [simp]: "right_unique (\<lambda>c a. a = unat c)" 
+  by (rule right_uniqueI) blast
 
 lemma [simp, relator_props]: "single_valued (converse word_nat_rel)" 
   by (auto intro: injI)

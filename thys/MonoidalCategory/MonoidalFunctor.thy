@@ -485,7 +485,7 @@ $$\xymatrix{
     interpretation FoT\<^sub>C': composite_functor C.CC.comp C D C'.T F ..
     interpretation \<phi>': natural_transformation C.CC.comp D T\<^sub>D'oFF.map FoT\<^sub>C'.map
                                               \<open>\<lambda>f. \<phi> (snd f, fst f)\<close>
-      using \<phi>.is_natural_1 \<phi>.is_natural_2 \<phi>.is_extensional by (unfold_locales, auto)
+      using \<phi>.naturality1 \<phi>.naturality2 \<phi>.extensionality by (unfold_locales, auto)
     interpretation \<phi>': natural_isomorphism C.CC.comp D T\<^sub>D'oFF.map FoT\<^sub>C'.map
                                            \<open>\<lambda>f. \<phi> (snd f, fst f)\<close>
       by (unfold_locales, simp)
@@ -590,11 +590,11 @@ $$\xymatrix{
     shows "F (\<alpha>\<^sub>C (f, g, h)) = \<alpha>\<^sub>D (F f, F g, F h)"
     proof -
       have "F (\<alpha>\<^sub>C (f, g, h)) = F ((f \<otimes>\<^sub>C g \<otimes>\<^sub>C h) \<cdot>\<^sub>C \<alpha>\<^sub>C (C.dom f, C.dom g, C.dom h))"
-        using assms C.\<alpha>.is_natural_1 [of "(f, g, h)"] C.T.ToCT_simp by force
+        using assms C.\<alpha>.naturality1 [of "(f, g, h)"] C.T.ToCT_simp by force
       also have "... = (F f \<otimes>\<^sub>D F g \<otimes>\<^sub>D F h) \<cdot>\<^sub>D \<alpha>\<^sub>D (D.dom (F f), D.dom (F g), D.dom (F h))"
         using assms strictly_preserves_\<alpha>_ide strictly_preserves_tensor by simp
       also have "... = \<alpha>\<^sub>D (F f, F g, F h)"
-        using assms D.\<alpha>.is_natural_1 [of "(F f, F g, F h)"] by simp
+        using assms D.\<alpha>.naturality1 [of "(F f, F g, F h)"] by simp
       finally show ?thesis by blast
     qed
 
@@ -682,13 +682,13 @@ $$\xymatrix{
         finally show "T\<^sub>DoFF.map x = FoT\<^sub>C.map x" by simp
       qed
       moreover have "\<not> C.CC.arr x \<Longrightarrow> T\<^sub>DoFF.map x = FoT\<^sub>C.map x"
-        using T\<^sub>DoFF.is_extensional FoT\<^sub>C.is_extensional by simp
+        using T\<^sub>DoFF.extensionality FoT\<^sub>C.extensionality by simp
       ultimately show "T\<^sub>DoFF.map x = FoT\<^sub>C.map x" by blast
     qed
 
     abbreviation \<phi> where "\<phi> \<equiv> T\<^sub>DoFF.map"
 
-    lemma structure_is_natural_isomorphism:
+    lemma structure_naturalityisomorphism:
     shows "natural_isomorphism C.CC.comp D T\<^sub>DoFF.map FoT\<^sub>C.map \<phi>"
       using T\<^sub>DoFF.as_nat_iso.natural_isomorphism_axioms structure_is_trivial by force
 
@@ -704,7 +704,7 @@ $$\xymatrix{
     interpret FoT\<^sub>C: composite_functor C.CC.comp C D T\<^sub>C F ..
     interpret T\<^sub>DoFF: composite_functor C.CC.comp D.CC.comp D FF.map T\<^sub>D ..
     interpret \<phi>: natural_isomorphism C.CC.comp D T\<^sub>DoFF.map FoT\<^sub>C.map \<phi>
-      using structure_is_natural_isomorphism by simp
+      using structure_naturalityisomorphism by simp
     show "monoidal_functor C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D F \<phi>"
     proof
       show "D.isomorphic \<I>\<^sub>D (F \<I>\<^sub>C)"

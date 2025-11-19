@@ -1278,7 +1278,7 @@ lemma eqs_insert': "y \<noteq> x \<Longrightarrow> eqs x (insert (x \<approx> y)
   by (auto simp: eqs_def split: fmla.splits term.splits)
 
 lemma eqs_code[code]: "eqs x G = (\<lambda>eq. case eq of y \<approx> z \<Rightarrow> z) ` (Set.filter (\<lambda>eq. case eq of y \<approx> z \<Rightarrow> x = y \<and> x \<noteq> z | _ => False) G)"
-  by (auto simp: eqs_def image_iff Set.filter_def split: term.splits fmla.splits)
+  by (auto simp: eqs_def image_iff split: term.splits fmla.splits)
 
 lemma gen_finite[simp]: "gen x Q G \<Longrightarrow> finite G"
   by (induct x Q G rule: gen_induct) auto

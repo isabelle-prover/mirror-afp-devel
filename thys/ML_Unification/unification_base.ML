@@ -22,6 +22,7 @@ sig
   type type_unifier = Proof.context -> typ * typ -> Envir.env -> Envir.env
   type type_matcher = type_unifier
 
+  (* proof-producing unifiers and matchers *)
   type closed_unifier = Proof.context -> term * term -> Envir.env -> (Envir.env * thm) Seq.seq
   (*term binders stores fresh free variables associated to each loose bound variable*)
   type unifier = term Binders.binders -> closed_unifier

@@ -87,7 +87,7 @@ code_printing
   *)
 
 \<close>
-code_reserved SML Statistics Timer
+code_reserved (SML) Statistics Timer
 
 
 end

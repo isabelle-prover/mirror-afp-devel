@@ -1861,7 +1861,7 @@ qed
       unfolding s_TS_def  by fastforce
    qed
        
-   have 1: "k < length cs"
+   have "k < length cs"
                    "(\<forall>j<k. cs ! j \<noteq> cs ! k)"
                    "cs ! k \<noteq> x" "cs ! k \<notin> set bs" 
               "~ x < z in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + k + 1)"
@@ -1871,13 +1871,9 @@ qed
           using assms(2) ki i_in_cs apply(fastforce)
           using z_notinbs apply(simp)
           using notxbeforez by auto
-          
-          
-                    
-   show ?case apply(simp only: ex_nat_less_eq)
-      apply(rule bexI[where x=k])
-        using 1 zcsk apply(simp)
-        using ki by simp
+
+  with zcsk ki show ?case
+    by auto
 qed
 
 lemma nopaid: "snd (fst (TS_step_d s q)) = []" unfolding TS_step_d_def by simp

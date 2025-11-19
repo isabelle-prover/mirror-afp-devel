@@ -1122,14 +1122,14 @@ and tsi''="zip (zip (subtrees
     (Some li, ai) # (Some ri, sepa) # drop (Suc (length lsi')) tsi'))"
                     ]
                 thm R
-              apply (sep_auto simp add: upd_drop_prepend eintros del: exI heap: R split!: prod.splits)
+              apply (sep_auto simp add: list_update_beyond upd_drop_prepend eintros del: exI heap: R split!: prod.splits)
                 subgoal
                 proof (goal_cases)
                   case 1
                   from sym[OF 1(8)] have "lsi' = take (length lsi') (zip (zip (subtrees tsi') (zip (butlast (r' # pointers)) pointers)) (separators tsi'))"
                     by auto
                   then show ?case using 1
-                    by (auto simp add: take_zip take_map take_butlast_prepend take_butlast_append)
+                    by (auto simp: take_zip take_map take_butlast_prepend take_butlast_append)
                 qed
                 subgoal 
                 proof (goal_cases)

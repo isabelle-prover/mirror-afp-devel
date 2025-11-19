@@ -216,8 +216,8 @@ lemma out_in_arcs_reflexive_uniq: "v \<in> verts G \<Longrightarrow> e \<in> (ou
 
 lemma in_eq_out_arc_ends: "(u, v) \<in> ((arc_to_ends G) ` (in_arcs G v)) \<longleftrightarrow> 
     (v, u) \<in> ((arc_to_ends G) ` (out_arcs G v))"
-  using arc_to_ends_def in_in_arcs_conv in_out_arcs_conv
-  by (smt (z3) Pair_inject adj_in_verts(1) dominatesI image_iff out_in_arcs_reflexive_uniq)
+  unfolding arc_to_ends_def in_in_arcs_conv in_out_arcs_conv
+  using arcs_ends_conv graph_symmetric by fastforce
 
 lemma in_degree_eq_card_arc_ends: "in_degree G v = card ((arc_to_ends G) ` (in_arcs G v))"
   apply (simp add: in_degree_def)

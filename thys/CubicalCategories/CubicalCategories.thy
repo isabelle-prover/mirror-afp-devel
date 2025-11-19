@@ -72,10 +72,12 @@ proof-
 qed
 
 lemma face_compat: "\<partial> i \<alpha> \<circ> \<partial> i \<beta>  = \<partial> i \<beta>"
-  by (smt (z3) fun.map_ident_strong icid.ts_compat image_iff local.icid.stopp.ts_compat)
+  by (metis (full_types, lifting) ext comp_def[of "\<partial> i tt" "\<partial> i tt"] comp_def[of "\<partial> i tt" "\<partial> i ff"]
+      comp_def[of "\<partial> i ff" "\<partial> i tt"] comp_def[of "\<partial> i ff" "\<partial> i ff"] icid.ts_compat[of i]
+      local.icid.stopp.ts_compat[of i])
 
 lemma face_compat_var [simp]: "\<partial> i \<alpha> (\<partial> i \<beta> x) = \<partial> i \<beta> x"
-  by (smt (z3) local.face_fix_prop local.icid.stopp.ST_im local.icid.stopp.tfix_im range_eqI)
+  by (metis (full_types) icid.ts_compat local.icid.stopp.ts_compat)
 
 lemma face_comm_var: "i \<noteq> j \<Longrightarrow> \<partial> i \<alpha> (\<partial> j \<beta> x) = \<partial> j \<beta> (\<partial> i \<alpha> x)"
   by (meson comp_eq_dest local.face_comm)
@@ -264,7 +266,8 @@ lemma inv_sym_type_lift_var [simp]: "\<partial>\<partial> i \<alpha> (\<theta>\<
 lemma inv_sym_type_lift: 
   assumes "FFx (i + 1) X"
   shows "\<partial>\<partial> i \<alpha> (\<theta>\<theta> i X) = \<theta>\<theta> i X"
-  by (smt (z3) assms icid.st_eq1 image_cong image_image inv_sym_type_var)
+  by (smt (verit, best) assms image_cong image_ident inv_sym_type_lift_var
+      local.icid.stopp.ST_compat)
 
 lemma sym_inv_sym_var1 [simp]: "\<sigma> i (\<theta> i (\<partial> (i + 1) \<alpha> x)) = \<partial> (i + 1) \<alpha> x"
   by (simp add: local.sym_inv_sym)
@@ -326,7 +329,8 @@ lemma sym_face1_lift_var: "\<partial>\<partial> i \<alpha> (\<sigma>\<sigma> i (
 lemma sym_face1_lift: 
   assumes "FFx i X"
   shows "\<partial>\<partial> i \<alpha> (\<sigma>\<sigma> i X) = \<sigma>\<sigma> i (\<partial>\<partial> (i + 1) \<alpha> X)"
-  by (smt (z3) assms image_cong image_image local.sym_face1)
+  by (metis (lifting) ext assms inv_sym_sym_lift inv_sym_type_lift_var sym_face1_lift_var
+      sym_type_var_lift)
 
 lemma sym_face2_var1: 
   assumes "i \<noteq> j"
@@ -380,7 +384,7 @@ lemma sym_sym_braid_lift:
   and "FFx i X"
   and "FFx j X"
   shows "\<sigma>\<sigma> i (\<sigma>\<sigma> j X) = \<sigma>\<sigma> j (\<sigma>\<sigma> i X)"
-  by (smt (z3) assms comp_apply image_comp image_cong sym_sym_braid_var1)
+  by (smt (verit, best) assms(1,2,3) comp_apply image_comp image_cong local.sym_sym_braid)
 
 lemma sym_func2: 
   assumes "fFx i x" 
@@ -604,7 +608,9 @@ lemma sym_inv_sym_braid:
   and "fFx (j + 1) x"
   and "fFx i x"
   shows "\<sigma> i (\<theta> j x) = \<theta> j (\<sigma> i x)"
-  by (smt (z3) add_diff_cancel_left' assms diff_is_0_eq inv_sym_face2 inv_sym_sym_var1 inv_sym_type_var le_add1 local.sym_face2 one_add_one rel_simps(28) sym_inv_sym_var1 sym_sym_braid_var1)
+  by (metis (no_types, lifting) ext assms(1,2,3) diff_add_0 diff_add_inverse inv_sym_face2
+      inv_sym_type_var local.inv_sym_sym local.sym_face2 local.sym_inv_sym not_numeral_le_zero
+      numeral_le_one_iff semiring_norm(69) sym_sym_braid_var1)
 
 lemma sym_func1: 
   assumes "fFx i x"
@@ -621,9 +627,10 @@ proof-
   have "\<sigma>\<sigma> i (\<theta> i (\<partial> (i + 1) \<alpha> x) \<odot>\<^bsub>(i + 1)\<^esub> \<theta> i (\<partial> (i + 1) \<beta> y)) = \<partial> (i + 1) \<alpha> x \<odot>\<^bsub>i\<^esub> \<partial> (i + 1) \<beta> y"
     by (metis func2_var2 inv_sym_type_var1 sym_inv_sym_var1)
   hence "\<sigma>\<sigma> i (\<partial>\<partial> i ff (\<theta> i (\<partial> (i + 1) \<alpha> x) \<odot>\<^bsub>(i + 1)\<^esub> \<theta> i (\<partial> (i + 1) \<beta> y))) = \<partial>\<partial> (i + 1) ff (\<partial> (i + 1) \<alpha> x \<odot>\<^bsub>i\<^esub> \<partial> (i + 1) \<beta> y)"
-    by (smt (z3) empty_is_image image_insert inv_sym_type_var local.face_compat_var local.face_fix_comp_var local.iDst local.it_absorb)
+    by (smt (verit) diff_add_0 diff_add_inverse inv_sym_type_var1 local.face_fix_comp_var
+        local.icid.stopp.ts_compat numerals(1) zero_neq_numeral)
   hence "\<partial>\<partial> i ff (\<theta> i (\<partial> (i + 1) \<alpha> x) \<odot>\<^bsub>(i + 1)\<^esub> \<theta> i (\<partial> (i + 1) \<beta> y)) = \<theta>\<theta> i (\<partial>\<partial> (i + 1) ff (\<partial> (i + 1) \<alpha> x \<odot>\<^bsub>i\<^esub> \<partial> (i + 1) \<beta> y))"
-    by (smt (z3) image_empty image_insert local.icat.functionality_lem_var local.inv_sym_sym_var1)
+    by (metis inv_sym_sym_lift_var)
   thus ?thesis
     by (metis add_cancel_right_right dual_order.eq_iff inv_sym_type_var1 local.face_compat_var local.face_fix_comp_var not_one_le_zero)
 qed

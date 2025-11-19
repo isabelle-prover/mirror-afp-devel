@@ -6,14 +6,13 @@ subsection \<open>Environment functor\<close>
 
 theory Applicative_Environment imports 
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 definition "const x = (\<lambda>_. x)"
 definition "apf x y = (\<lambda>z. x z (y z))"
 
-adhoc_overloading Applicative.pure const
-adhoc_overloading Applicative.ap apf
+adhoc_overloading Applicative.pure \<rightleftharpoons> const
+adhoc_overloading Applicative.ap \<rightleftharpoons> apf
 
 text \<open>The declaration below demonstrates that applicative functors which lift the reductions
   for combinators K and W also lift C. However, the interchange law must be supplied in this case.\<close>

@@ -1020,9 +1020,9 @@ proof -
       hence pre: "finite (padr m ` A')" "finite (padl n ` B')"
         using finite_subset[OF _ finU] by auto
       show "finite A'"
-        apply (rule finite_imageD) using subset_inj_on[OF padr_inj A'] pre by auto
+        apply (rule finite_imageD) using inj_on_subset[OF padr_inj A'] pre by auto
       show "finite B'"
-        apply (rule finite_imageD) using subset_inj_on[OF padl_inj B'] pre by auto
+        apply (rule finite_imageD) using inj_on_subset[OF padl_inj B'] pre by auto
     qed
     have "0\<^sub>v n \<notin> A" using N.zero_nin_lin_indpt[OF _ liA] A class_semiring.one_zeroI by auto
     hence "?A \<inter> ?B = {}" using pad_disjoint A B by auto
@@ -1200,8 +1200,8 @@ proof -
     apply(rule card_Un_disjoint)
     using pad_disjoint[OF bBc bB0 bDc] fin_bB fin_bD by auto
   also have "... = card baseB + card baseD"
-    using card_image[OF subset_inj_on[OF padr_inj]]
-    using card_image[OF subset_inj_on[OF padl_inj]] bBc bDc by auto
+    using card_image[OF inj_on_subset[OF padr_inj]]
+    using card_image[OF inj_on_subset[OF padl_inj]] bBc bDc by auto
   also have "card baseB = KB.dim" using KB.Ker.dim_basis[OF fin_bB] bB by auto
   also have "card baseD = KD.dim" using KD.Ker.dim_basis[OF fin_bD] bD by auto
   finally show ?thesis.

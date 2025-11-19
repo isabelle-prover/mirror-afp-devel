@@ -16,6 +16,9 @@ note = ""
 [authors.desharnais]
 email = "desharnais_email"
 
+[authors.toth]
+email = "toth_email1"
+
 [contributors]
 
 [notify]

@@ -100,7 +100,7 @@ fun check ctxt = let val context = Context.Proof ctxt in Name_Space.check contex
 fun new_entry binding init = let
   fun decl _ context = let
     val sstab = Data.get context
-    val ss = the_default (Raw_Simplifier.clear_simpset (Context.proof_of context) |> simpset_of) init
+    val ss = the_default (Simplifier.clear_simpset (Context.proof_of context) |> simpset_of) init
     val (_,sstab) = Name_Space.define context true (binding,ss) sstab
   in Data.put sstab context end  
   

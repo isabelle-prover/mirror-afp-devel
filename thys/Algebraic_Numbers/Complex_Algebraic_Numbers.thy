@@ -103,7 +103,7 @@ proof -
   from factors_int_poly_represents[OF this] obtain pi where pi: "pi \<in> set (factors_of_int_poly ?q)"
     and appi: "pi represents (x - cnj x)" and irr_pi: "irreducible pi" by auto
   have id: "inverse (2 * \<i>) * (x - cnj x) = of_real (Im x)"
-    apply (cases x) by (simp add: complex_split imaginary_unit.ctr legacy_Complex_simps)
+    apply (cases x) by (simp add: complex_split imaginary_unit.ctr Complex_simps)
   from represents_2i have 12: "poly_2i represents (2 * \<i>)" by simp
   have "\<exists> qi \<in> set ?Imp. qi represents (inverse (2 * \<i>) * (x - cnj x))" 
   proof (cases "x - cnj x = 0")

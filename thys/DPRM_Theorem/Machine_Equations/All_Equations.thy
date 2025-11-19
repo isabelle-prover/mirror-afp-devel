@@ -183,10 +183,8 @@ proof -
       using nth_append[of "map r' [0..<n]" "z_list @ s_list"] by auto 
 
     have z: "(map (\<lambda>P. peval P (push_list a ks)) z) ! x = z' x" if "x < n" for x
-      using that unfolding ks_def z_list_def r_list_def z_def push_list_def apply simp
-      using nth_append[of "map r' [0..<n] @ map z' [0..<n]" "s_list"]
-      by (metis add_diff_cancel_left' gen_length_def length_code length_map length_upt 
-          not_add_less1 nth_append nth_map_upt) 
+      using that 
+      by (auto simp add: ks_def z_list_def r_list_def z_def push_list_def nth_append)
 
     have s: "(map (\<lambda>P. peval P (push_list a ks)) s) ! x = s' x" if "x < Suc m" for x
       using that unfolding ks_def r_list_def z_list_def s_list_def s_def push_list_def apply simp 

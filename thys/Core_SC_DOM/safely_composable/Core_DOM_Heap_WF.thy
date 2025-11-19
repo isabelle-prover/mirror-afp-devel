@@ -837,9 +837,9 @@ lemma remove_from_disconnected_nodes_removes:
   assumes "h' \<turnstile> get_disconnected_nodes ptr \<rightarrow>\<^sub>r disc_nodes'"
   shows "node_ptr \<notin> set disc_nodes'"
   using assms
-  by (metis distinct_remove1_removeAll heap_is_wellformed_disconnected_nodes_distinct
-      set_disconnected_nodes_get_disconnected_nodes member_remove remove_code(1)
-      returns_result_eq)
+  by (metis Diff_iff insertCI local.heap_is_wellformed_disconnected_nodes_distinct
+      set_disconnected_nodes_get_disconnected_nodes returns_result_eq
+      set_remove1_eq)
 end
 
 locale l_set_disconnected_nodes_get_disconnected_nodes_wf = l_heap_is_wellformed
@@ -1209,9 +1209,8 @@ proof (safe)
     then show ?case
     proof (cases "ptr = child")
       case True
-      then show ?thesis
-        by (metis (no_types, lifting) assms(2) bind_returns_result_E get_ancestors_def
-            in_set_member member_rec(1) return_returns_result)
+      with assms show ?thesis
+        by (auto simp add: get_ancestors_def elim!: bind_returns_result_E)
     next
       case False
       obtain ptr_child where
@@ -3396,11 +3395,10 @@ proof -
         get_child_nodes_ptr_in_heap is_OK_returns_result_E is_OK_returns_result_I)
 
   have "child \<notin> set children'"
-    by (metis (mono_tags, lifting) \<open>type_wf h'\<close> children children' distinct_remove1_removeAll h2
-        known_ptr local.heap_is_wellformed_children_distinct
-        local.set_child_nodes_get_child_nodes member_remove remove_code(1) select_result_I2
-        wellformed)
-
+    using \<open>type_wf h'\<close> children children' h2 known_ptr wellformed
+      local.heap_is_wellformed_children_distinct [of h ptr children]
+      local.set_child_nodes_get_child_nodes [of h' ptr \<open>remove1 child children\<close> h2]
+    by (auto dest: select_result_I2)
 
   moreover have "\<And>other_ptr other_children. other_ptr \<noteq> ptr
                 \<Longrightarrow> h' \<turnstile> get_child_nodes other_ptr \<rightarrow>\<^sub>r other_children \<Longrightarrow> child \<notin> set other_children"

@@ -110,7 +110,7 @@ apply(induct bound n As rule: gen_remove.induct)
 apply simp
 apply(subst gen_remove.simps)
 apply(subst Benchmark_Comparison.gen_remove.simps)
-apply(simp add: split_beta delete_correct Set.remove_def)
+apply(simp add: split_beta delete_correct)
 done
 
 lemma build_invar: "invar (fst (build n seed))"

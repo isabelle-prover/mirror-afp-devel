@@ -40,7 +40,7 @@ datatype
 
 text\<open>Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...\<close>
 syntax
-  "_MTuple"      :: "['a, args] => 'a * 'b"       (\<open>(2\<lbrace>_,/ _\<rbrace>)\<close>)
+  "_MTuple"      :: "['a, args] => 'a * 'b"  (\<open>(\<open>indent=2 notation=\<open>mixfix message tuple\<close>\<close>\<lbrace>_,/ _\<rbrace>)\<close>)
 syntax_consts
   "_MTuple"     == MPair
 translations
@@ -849,7 +849,7 @@ fun spy_analz_tac ctxt i =
       [  (*push in occurrences of X...*)
        (REPEAT o CHANGED)
          (Rule_Insts.res_inst_tac ctxt [((("x", 1), Position.none), "X")] []
-          (insert_commute RS ssubst) 1),
+          (@{thm insert_commute} RS ssubst) 1),
        (*...allowing further simplifications*)
        simp_tac ctxt 1,
        REPEAT (FIRSTGOAL (resolve_tac ctxt [allI,impI,notI,conjI,iffI])),

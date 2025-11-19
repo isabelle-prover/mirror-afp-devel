@@ -1,0 +1,42 @@
+title = "Examples of Restriction Spaces"
+date = 2025-05-07
+topics = [
+  "Mathematics/Analysis",
+  "Mathematics/Topology",
+  "Mathematics/Algebra",
+  "Computer science/Concurrency/Process calculi",
+]
+abstract = """
+In this session, a number of examples are provided to illustrate how the Restriction_Spaces library works.
+The simple cases are, of course, covered: trivial restriction, booleans, integers, option type, and so on.
+But we also explore more elaborate constructions, such as formal power series and a trace model of the CSP process algebra.
+Additionally, we provide a lightweight integration with HOLCF,
+equipping restriction spaces with the inherited partial order structure when needed."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.puyobro]
+email = "puyobro_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+puyobro = "puyobro_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

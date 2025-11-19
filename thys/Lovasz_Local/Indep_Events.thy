@@ -21,9 +21,8 @@ lemma bij_betw_obtain_subsetl:
   by (metis bij_betw_imp_surj_on subset_imageE) 
 
 lemma bij_betw_remove:  "bij_betw f A B \<Longrightarrow> a \<in> A \<Longrightarrow> bij_betw f (A - {a}) (B - {f a})"
-  using  bij_betwE notIn_Un_bij_betw3
-  by (metis Un_insert_right insert_Diff member_remove  remove_def sup_bot.right_neutral)
-(* Slow *)
+  using bij_betwE [of f A B] notIn_Un_bij_betw3 [of a A f B] bij_betw_DiffI [of f A B \<open>{a}\<close> \<open>{f a}\<close>]
+  by simp
 
 subsection \<open>Independent Event Extensions \<close>
 text \<open> Extensions on both the indep\_event definition and the indep\_events definition \<close>

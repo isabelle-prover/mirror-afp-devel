@@ -156,7 +156,7 @@ next
       have "low x n < 2^n \<and> high x n < 2^n" 
         using "4.hyps"(2) "4.hyps"(3) \<open>high x n < length treeList\<close> low_def by auto
       have "invar_vebt (treeList ! (high x n)) n"
-        by (metis "4.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+        using "4.IH"(1) \<open>high x n < length treeList\<close> by simp
       hence "both_member_options (vebt_insert (treeList ! (high x n)) (low x n)) (low x n)"
         by (simp add: "4.IH"(1) \<open>high x n < length treeList\<close> low_def)
       have " (treeList[ (high x n):=vebt_insert (treeList ! (high x n)) (low x n)]) ! (high x n) = vebt_insert (treeList ! (high x n)) (low x n)" 
@@ -207,9 +207,9 @@ next
       have "low x n < 2^n \<and> high x n < 2^m" 
         using "5.hyps"(2) "5.hyps"(3) \<open>high x n < length treeList\<close> low_def by auto
       have "invar_vebt (treeList ! (high x n)) n"
-        by (metis "5.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+        using "5.IH"(1) \<open>high x n < length treeList\<close> by simp
       hence "both_member_options (vebt_insert (treeList ! (high x n)) (low x n)) (low x n)"
-        by (metis "5.IH"(1) \<open>high x n < length treeList\<close> \<open>low x n < 2 ^ n \<and> high x n < 2 ^ m\<close> inthall member_def) 
+        using "5.IH"(1) \<open>high x n < length treeList\<close> \<open>low x n < 2 ^ n \<and> high x n < 2 ^ m\<close> by simp
       have " (treeList[ (high x n):=vebt_insert (treeList ! (high x n)) (low x n)]) ! (high x n) = vebt_insert (treeList ! (high x n)) (low x n)" 
         by (meson \<open>high x n < length treeList\<close> nth_list_update_eq)
       then show ?thesis 
@@ -287,7 +287,7 @@ next
                                (if minNull (treeList ! (high x n)) then  vebt_insert summary (high x n) else summary)"
             by (metis "0" "00" False True add_self_div_2 insert_simp_excp linorder_neqE_nat xyprop)
           have 15: " invar_vebt (treeList ! (high x n)) n" 
-            by (metis "4"(1) "4.hyps"(2) in_set_member inthall xyprop)
+            using "4"(1) "4.hyps"(2) xyprop by simp
           hence 16: "both_member_options (vebt_insert (treeList ! high x n) (low x n)) (low x n)"
             using \<open>low x n < 2 ^ n \<and> low y n < 2 ^ n\<close> valid_insert_both_member_options_add by blast
           then show ?thesis
@@ -314,7 +314,7 @@ next
                                (if minNull (treeList ! (high y n)) then  vebt_insert summary (high y n) else summary)"
             using "0" "00" True insert_simp_norm xyprop by auto
           have "invar_vebt (treeList ! (high x n)) n"
-            by (metis "4.IH"(1) "4.hyps"(2) in_set_member inthall xyprop)
+            using "4.IH"(1) "4.hyps"(2) xyprop by simp
           then show ?thesis 
           proof(cases "high x n = high y n")
             case True
@@ -339,7 +339,7 @@ next
           have mimaprop: "high mi n < 2^n \<and> low mi n < 2^n"  
             by (metis "00" "4.hyps"(7) "4.hyps"(8) div_eq_0_iff div_exp_eq high_def le_less_trans low_def mod_less_divisor zero_less_numeral zero_less_power)
           have "invar_vebt (treeList ! (high x n)) n"
-            by (metis "4.IH"(1) "4.hyps"(2) in_set_member inthall xyprop)      
+            using "4.IH"(1) "4.hyps"(2) xyprop by simp      
           then show ?thesis 
           proof(cases "high x n = high mi n")
             case True
@@ -412,7 +412,7 @@ next
                                (if minNull (treeList ! (high x n)) then  vebt_insert summary (high x n) else summary)"
             by (metis "0" "00" False True add_self_div_2 insert_simp_excp linorder_neqE_nat xyprop)
           have 15: " invar_vebt (treeList ! (high x n)) n" 
-            by (metis "5"(1) "5.hyps"(2) in_set_member inthall xyprop)
+            using "5"(1) "5.hyps"(2) xyprop by simp
           hence 16: "both_member_options (vebt_insert (treeList ! high x n) (low x n)) (low x n)"
             using \<open>low x n < 2 ^ n \<and> low y n < 2 ^ n\<close> valid_insert_both_member_options_add by blast
           then show ?thesis 
@@ -438,7 +438,7 @@ next
                                (if minNull (treeList ! (high y n)) then  vebt_insert summary (high y n) else summary)"
             by (metis "0" "00" True insert_simp_norm xyprop)
           have "invar_vebt (treeList ! (high x n)) n"
-            by (metis "5.IH"(1) "5.hyps"(2) in_set_member inthall xyprop)
+            using "5.IH"(1) "5.hyps"(2) xyprop by simp
           then show ?thesis 
           proof(cases "high x n = high y n")
             case True
@@ -462,7 +462,7 @@ next
             by (metis "0" "00" "5.hyps"(7) "5.hyps"(8) div_eq_0_iff False antisym_conv3 div_exp_eq high_def le_less_trans power_not_zero zero_neq_numeral)      
           have mimaprop: "high mi n < 2^m \<and> low mi n < 2^n" using exp_split_high_low[of mi n m] 00 "5"(9,10) by force
           have "invar_vebt (treeList ! (high x n)) n"
-            by (metis "5.IH"(1) "5.hyps"(2) in_set_member inthall xyprop)      
+            using "5.IH"(1) "5.hyps"(2) xyprop by simp
           then show ?thesis 
           proof(cases "high x n = high mi n")
             case True
@@ -575,7 +575,7 @@ next
               naive_member (Node (Some (mi , ma)) deg treeList summary) y" 
             by (metis "00" Suc_le_D add_self_div_2 naive_member.simps(3) one_add_one plus_1_eq_Suc xyprop)
           moreover have 001:"invar_vebt (treeList ! (high y n)) n \<and> treeList ! (high y n) \<in> set treeList "
-            by (metis (full_types) "4.IH"(1) "4.hyps"(2) "4.hyps"(3) inthall member_def xyprop)
+            using "4.IH"(1) "4.hyps"(2) "4.hyps"(3) xyprop by simp
           moreover have " both_member_options (Node (Some (mi , ma)) deg treeList summary) y"
             by (metis "00" "000" "001" "004" Suc_le_D add_self_div_2 both_member_options_def member_valid_both_member_options membermima.simps(4) one_add_one plus_1_eq_Suc xyprop)
           moreover have "vebt_member (Node (Some (mi, ma)) deg treeList summary) y" 
@@ -647,7 +647,7 @@ next
               naive_member (Node (Some (mi , ma)) deg treeList summary) y" 
             by (metis "00" Suc_le_D add_self_div_2 naive_member.simps(3) one_add_one plus_1_eq_Suc xyprop)
           moreover have 001:"invar_vebt (treeList ! (high y n)) n \<and> treeList ! (high y n) \<in> set treeList "
-            by (metis (full_types) "4.IH"(1) "4.hyps"(2) "4.hyps"(3) inthall member_def xyprop)
+            using "4.IH"(1) "4.hyps"(2) "4.hyps"(3) xyprop by simp
           moreover have " both_member_options (Node (Some (mi , ma)) deg treeList summary) y"
             by (metis "00" "000" "001" "004" Suc_le_D add_self_div_2 both_member_options_def member_valid_both_member_options membermima.simps(4) one_add_one plus_1_eq_Suc xyprop)
           then show ?thesis using both_member_options_equiv_member[of "(Node (Some (mi, ma)) deg treeList summary)" deg y]
@@ -736,7 +736,7 @@ next
               naive_member (Node (Some (mi , ma)) deg treeList summary) y" 
             using "00" xyprop by auto
           moreover have 001:"invar_vebt (treeList ! (high y n)) n \<and> treeList ! (high y n) \<in> set treeList "
-            by (metis (full_types) "5"inthall member_def xyprop)
+            using "5" xyprop by simp
           moreover have " both_member_options (Node (Some (mi , ma)) deg treeList summary) y" 
             using "00" "000" "001" both_member_options_def member_valid_both_member_options xyprop by fastforce
           moreover have "vebt_member (Node (Some (mi, ma)) deg treeList summary) y" 
@@ -810,7 +810,7 @@ next
               naive_member (Node (Some (mi , ma)) deg treeList summary) y" 
             using "00" xyprop by auto
           moreover have 001:"invar_vebt (treeList ! (high y n)) n \<and> treeList ! (high y n) \<in> set treeList "
-            by (metis (full_types) "5.IH"(1) "5.hyps"(2) "5.hyps"(3) inthall member_def xyprop)
+            using "5.IH"(1) "5.hyps"(2) "5.hyps"(3) xyprop by simp
           moreover have " both_member_options (Node (Some (mi , ma)) deg treeList summary) y"
             using "00" "000" "001" both_member_options_def member_valid_both_member_options xyprop by fastforce
           then show ?thesis using both_member_options_equiv_member[of "(Node (Some (mi, ma)) deg treeList summary)" deg y]

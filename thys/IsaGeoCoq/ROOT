@@ -1,9 +1,89 @@
 chapter AFP
 
 session IsaGeoCoq = HOL +
-  options [timeout = 600]
-  theories
-    Tarski_Neutral
-  document_files
-    "root.bib"
-    "root.tex"
+  options [timeout = 2400]
+
+theories
+
+(*** Tarski ***)
+  (** Tarski Neutral **)
+    (* context Tarski_neutral_dimension_less *)
+       Tarski_Neutral
+       Tarski_Neutral_Archimedes  
+       Tarski_Postulate_Parallels 
+
+       Tarski_Neutral_Continuity 
+       Tarski_Neutral_Continuous
+       Tarski_Neutral_Archimedes_Continuity
+
+       Tarski_Neutral_Hilbert
+    (* context Tarski_neutral_2D *)
+       Tarski_Neutral_2D
+       Tarski_Neutral_Continuity_2D
+    (* context Tarski_neutral_3D *)
+       Tarski_Neutral_3D
+       Tarski_Neutral_3D_Hilbert
+
+  (** Tarski Euclidean ***)
+    (* context Tarski_Euclidean *)
+       Tarski_Euclidean
+    (* context Tarski_Euclidean_2D *)
+       Tarski_Euclidean_2D
+       Tarski_Euclidean_2D_Continuous
+
+  (** Tarski - Exercices **)
+    (* context Tarski_neutral_dimensionless *)
+       Highschool_Neutral
+    (* context Tarski_Euclidean *)
+       Highschool_Euclidean
+    (* context Tarski_Euclidean_2D *)
+       Highschool_Euclidean_2D
+
+  (** Tarski Non Euclidean **)
+    (* context Tarski_Non_Euclidean *)
+       Tarski_Non_Euclidean
+    (* context Tarski_Non_Euclidean_Aristotle *)
+       Tarski_Non_Euclidean_Aristotle
+    (* context Tarski_Non_Euclidean_Archimedean *)
+       Tarski_Non_Euclidean_Archimedean
+
+(*** Gupta ***)
+  (** Gupta Neutral **)
+      Gupta_Neutral
+      Gupta_Neutral_2D
+
+  (** Gupta Euclidean **)
+      Gupta_Euclidean
+
+(*** Hilbert ***)
+  (** Hilbert Neutral **)
+      Hilbert_Neutral
+      Hilbert_Neutral_2D
+      Hilbert_Neutral_3D
+
+  (** Hilbert Euclidean **)
+      Hilbert_Euclidean
+
+(*** Models ***)
+  (** Models Gupta/Tarski **)
+       Tarski_Neutral_Model_Gupta_Neutral
+       Tarski_Neutral_2D_Model_Gupta_Neutral_2D
+       Tarski_Euclidean_Model_Gupta_Euclidean
+  (** Models Tarski/Gupta **)
+       Gupta_Neutral_Model_Tarski_Neutral
+       Gupta_Neutral_2D_Model_Tarski_Neutral_2D
+       Gupta_Euclidean_Model_Tarski_Euclidean
+  (** Models Hilbert/Tarski **)
+       Hilbert_Neutral_Model_Tarski_Neutral
+       Hilbert_Neutral_2D_Model_Tarski_Neutral_2D
+       Hilbert_Neutral_3D_Model_Tarski_Neutral_3D
+       Hilbert_Euclidean_Model_Tarski_Euclidean
+  (** Models Tarski/Hilbert **)
+       Tarski_Neutral_Model_Hilbert_Neutral
+       Tarski_Neutral_2D_Model_Hilbert_Neutral_2D
+       Tarski_Neutral_3D_Model_Hilbert_Neutral_3D
+       Tarski_Euclidean_Model_Hilbert_Euclidean
+
+document_files
+  "root.bib"
+  "root.tex"

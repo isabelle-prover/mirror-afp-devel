@@ -181,7 +181,7 @@ proof -
   let ?B = "preferred A a"
   have "(!) (P ! a) ` {<n} = {<n}" by (metis P_set a map_nth set_map set_upt)
   hence "inj_on ((!) (P ! a)) {<n}" by(simp add: eq_card_imp_inj_on)
-  hence "inj_on ((!) (P ! a)) {<A!a}" using final by(simp add: subset_inj_on)
+  hence "inj_on ((!) (P ! a)) {<A!a}" using final by(simp add: inj_on_subset)
   hence 1: "Suc(card ?B) = n" using final by (simp add: card_image)
   have 2: "card ?B \<le> card M"
     by(rule surj_card_le[OF subset_eq_atLeast0_lessThan_finite[OF M] pref_match'])
@@ -2121,8 +2121,6 @@ theorem gs: "\<lbrakk> Pref P Q; n = length P \<rbrakk> \<Longrightarrow>
    Pref.stable P Q A {<n} \<and> Pref.optiA P Q A"
 unfolding Gale_Shapley_def using Pref.gs
 by (metis fst_conv surj_pair)
-
-declare Pref_def [code]
 
 definition
 "Gale_Shapley1 P Q = (if Pref P Q then Some (fst (gs1 (length P) P (map ranking Q))) else None)"

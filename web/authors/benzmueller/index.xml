@@ -1,80 +1,95 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>benzmueller on Archive of Formal Proofs
-    </title>
-    <link>/authors/benzmueller/</link>
-    <description>
-        Recent content in benzmueller 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sat, 09 Mar 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/benzmueller/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
-          <link>/entries/CondNormReasHOL.html</link>
-          <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/CondNormReasHOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
-          <link>/entries/PAL.html</link>
-          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/PAL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
-          <link>/entries/SimplifiedOntologicalArgument.html</link>
-          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/SimplifiedOntologicalArgument.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
-          <link>/entries/GewirthPGCProof.html</link>
-          <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/GewirthPGCProof.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Axiom Systems for Category Theory in Free Logic</title>
-          <link>/entries/AxiomaticCategoryTheory.html</link>
-          <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/AxiomaticCategoryTheory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
-          <link>/entries/Lowe_Ontological_Argument.html</link>
-          <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Lowe_Ontological_Argument.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
-          <link>/entries/Types_Tableaus_and_Goedels_God.html</link>
-          <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Types_Tableaus_and_Goedels_God.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gödel&#39;s God in Isabelle/HOL</title>
-          <link>/entries/GoedelGod.html</link>
-          <pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/GoedelGod.html</guid>
-          <description></description>
-        </item>
+    <title>Christoph Benzmüller</title>
+    <link>https://isa-afp.org/authors/benzmueller/</link>
+    <description>AFP entries of Christoph Benzmüller</description><item>
+  <title>Faithful Logic Embeddings in HOL — Deep and Shallow (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/FaithfulPMLinHOL.html</link>
+  <pubDate>Tue, 06 May 2025 00:00:00 +0000</pubDate>
+  <description>Faithful Logic Embeddings in HOL — Deep and Shallow (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html</link>
+  <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/CondNormReasHOL.html</link>
+  <pubDate>Sat, 09 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Conditional normative reasoning as a fragment of HOL (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
+  <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+  <description>Automation of Boolos&#39; Curious Inference in Isabelle/HOL in the AFP</description>
+    <category>Logic</category>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/Computability</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic</category>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/SimplifiedOntologicalArgument.html</link>
+  <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+  <description>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/PAL.html</link>
+  <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+  <description>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL in the AFP</description>
+    <category>Logic/General logic/Logics of knowledge and belief</category>
+</item>
+<item>
+  <title>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/GewirthPGCProof.html</link>
+  <pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Formalisation and Evaluation of Alan Gewirth&#39;s Proof for the Principle of Generic Consistency in Isabelle/HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
+<item>
+  <title>Axiom Systems for Category Theory in Free Logic</title>
+  <link>https://isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
+  <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+  <description>Axiom Systems for Category Theory in Free Logic in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument</title>
+  <link>https://isa-afp.org/entries/Lowe_Ontological_Argument.html</link>
+  <pubDate>Thu, 21 Sep 2017 00:00:00 +0000</pubDate>
+  <description>Computer-assisted Reconstruction and Assessment of E. J. Lowe&#39;s Modal Ontological Argument in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
+<item>
+  <title>Types, Tableaus and Gödel’s God in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Types_Tableaus_and_Goedels_God.html</link>
+  <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
+  <description>Types, Tableaus and Gödel’s God in Isabelle/HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
+<item>
+  <title>Gödel&#39;s God in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/GoedelGod.html</link>
+  <pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
+  <description>Gödel&#39;s God in Isabelle/HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
+
   </channel>
 </rss>

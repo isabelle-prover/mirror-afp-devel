@@ -55,7 +55,7 @@ primrec pred :: "value \<Rightarrow> bool" where
     name |\<in>| fmdom css \<and>
     R (fmdom css)"
 
-declare pred.simps[simp del]
+declare pred.simps [simp del]
 
 lemma pred_alt_def[simp, code]:
   "pred (Vconstr name vs) \<longleftrightarrow> Q name \<and> list_all pred vs"
@@ -272,7 +272,7 @@ lemmas vwelldefined_alt_def = vwelldefined.pred_alt_def
 
 end
 
-declare pre_constants.vwelldefined_alt_def[code]
+declare pre_constants.vwelldefined_alt_def [code]
 
 context constructors begin
 
@@ -310,8 +310,8 @@ definition vconstructor_value_rs :: "vrule list \<Rightarrow> bool" where
 
 end
 
-declare constructors.vconstructor_value_alt_def[code]
-declare constructors.vconstructor_value_rs_def[code]
+declare constructors.vconstructor_value_alt_def [code]
+declare constructors.vconstructor_value_rs_def [code]
 
 context pre_constants begin
 
@@ -348,7 +348,7 @@ abbreviation "not_shadows_vconsts_env \<equiv> fmpred (\<lambda>_ s. not_shadows
 
 end
 
-declare pre_constants.not_shadows_vconsts_alt_def[code]
+declare pre_constants.not_shadows_vconsts_alt_def [code]
 
 fun term_to_value :: "sterm \<Rightarrow> value" where
 "term_to_value t =

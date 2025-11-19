@@ -1,551 +1,480 @@
-theory Substitution
-  imports Main
+theory Substitution \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
+  imports
+    Abstract_Substitution
+    "HOL-Library.FSet"
+    Option_Extra
 begin
 
-section \<open>General Results on Groups\<close>
+section \<open>Substitutions on variables\<close>
 
-lemma (in monoid) right_inverse_idem:
-  fixes inv
-  assumes right_inverse:  "\<And>a. a \<^bold>* inv a = \<^bold>1"
-  shows "\<And>a. inv (inv a) = a"
-    by (metis assoc right_inverse right_neutral)
-
-lemma (in monoid) left_inverse_if_right_inverse:
-  fixes inv
-  assumes
-    right_inverse:  "\<And>a. a \<^bold>* inv a = \<^bold>1"
-  shows "inv a \<^bold>* a = \<^bold>1"
-  by (metis right_inverse_idem right_inverse)
-
-lemma (in monoid) group_wrt_right_inverse:
-  fixes inv
-  assumes right_inverse:  "\<And>a. a \<^bold>* inv a = \<^bold>1"
-  shows "group (\<^bold>*) \<^bold>1 inv"
-proof unfold_locales
-  show "\<And>a. \<^bold>1 \<^bold>* a = a"
-    by simp
-next
-  show "\<And>a. inv a \<^bold>* a = \<^bold>1"
-    by (metis left_inverse_if_right_inverse right_inverse)
-qed
-
-
-section \<open>Semigroup Action\<close>
-
-text \<open>We define both left and right semigroup actions. Left semigroup actions seem to be prevalent
-in algebra, but right semigroup actions directly uses the usual notation of term/atom/literal/clause
-substitution.\<close>
-
-locale left_semigroup_action = semigroup +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix "\<cdot>" 70)
-  assumes action_compatibility[simp]: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)"
-
-locale right_semigroup_action = semigroup +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix "\<cdot>" 70)
-  assumes action_compatibility[simp]: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b"
-
-text \<open>We then instantiate the right action in the context of the left action in order to get access
-to any lemma proven in the context of the other locale. We do analogously in the context of the
-right locale.\<close>
-
-sublocale left_semigroup_action \<subseteq> right: right_semigroup_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-proof unfold_locales
-  show "\<And>a b c. c \<^bold>* (b \<^bold>* a) = c \<^bold>* b \<^bold>* a"
-    by (simp only: assoc)
-next
-  show "\<And>x a b. (b \<^bold>* a) \<cdot> x = b \<cdot> (a \<cdot> x)"
-    by simp
-qed
-
-sublocale right_semigroup_action \<subseteq> left: left_semigroup_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-proof unfold_locales
-  show "\<And>a b c. c \<^bold>* (b \<^bold>* a) = c \<^bold>* b \<^bold>* a"
-    by (simp only: assoc)
-next
-  show "\<And>a b x. x \<cdot> (b \<^bold>* a) = (x \<cdot> b) \<cdot> a"
-    by simp
-qed
-
-lemma (in right_semigroup_action) lifting_semigroup_action_to_set:
-  "right_semigroup_action (\<^bold>*) (\<lambda>X a. (\<lambda>x. action x a) ` X)"
-proof unfold_locales
-  show "\<And>x a b. (\<lambda>x. x \<cdot> (a \<^bold>* b)) ` x = (\<lambda>x. x \<cdot> b) ` (\<lambda>x. x \<cdot> a) ` x"
-    by (simp add: image_comp)
-qed
-
-lemma (in right_semigroup_action) lifting_semigroup_action_to_list:
-  "right_semigroup_action (\<^bold>*) (\<lambda>xs a. map (\<lambda>x. action x a) xs)"
-proof unfold_locales
-  show "\<And>x a b. map (\<lambda>x. x \<cdot> (a \<^bold>* b)) x = map (\<lambda>x. x \<cdot> b) (map (\<lambda>x. x \<cdot> a) x)"
-    by (simp add: image_comp)
-qed
-
-
-section \<open>Monoid Action\<close>
-
-locale left_monoid_action = monoid +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix "\<cdot>" 70)
-  assumes
-    monoid_action_compatibility: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)" and
-    action_neutral[simp]: "\<And>x. \<^bold>1 \<cdot> x = x"
-
-locale right_monoid_action = monoid +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix "\<cdot>" 70)
-  assumes
-    monoid_action_compatibility: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b" and
-    action_neutral[simp]: "\<And>x. x \<cdot> \<^bold>1 = x"
-
-sublocale left_monoid_action \<subseteq> left_semigroup_action
-  by unfold_locales (fact monoid_action_compatibility)
-
-sublocale right_monoid_action \<subseteq> right_semigroup_action
-  by unfold_locales (fact monoid_action_compatibility)
-
-sublocale left_monoid_action \<subseteq> right: right_monoid_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-sublocale right_monoid_action \<subseteq> left: left_monoid_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-lemma (in right_monoid_action) lifting_monoid_action_to_set:
-  "right_monoid_action (\<^bold>*) \<^bold>1 (\<lambda>X a. (\<lambda>x. action x a) ` X)"
-proof (unfold_locales)
-  show "\<And>x a b. (\<lambda>x. x \<cdot> (a \<^bold>* b)) ` x = (\<lambda>x. x \<cdot> b) ` (\<lambda>x. x \<cdot> a) ` x"
-    by (simp add: image_comp)
-next
-  show "\<And>x. (\<lambda>x. x \<cdot> \<^bold>1) ` x = x"
-    by simp
-qed
-
-lemma (in right_monoid_action) lifting_monoid_action_to_list:
-  "right_monoid_action (\<^bold>*) \<^bold>1 (\<lambda>xs a. map (\<lambda>x. action x a) xs)"
-proof unfold_locales
-  show "\<And>x a b. map (\<lambda>x. x \<cdot> (a \<^bold>* b)) x = map (\<lambda>x. x \<cdot> b) (map (\<lambda>x. x \<cdot> a) x)"
-    by simp
-next
-  show "\<And>x. map (\<lambda>x. x \<cdot> \<^bold>1) x = x"
-    by simp
-qed
-
-
-section \<open>Group Action\<close>
-
-locale left_group_action = group +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix "\<cdot>" 70)
-  assumes
-    group_action_compatibility: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)" and
-    group_action_neutral: "\<And>x. \<^bold>1 \<cdot> x = x"
-
-locale right_group_action = group +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infixl "\<cdot>" 70)
-  assumes
-    group_action_compatibility: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b" and
-    group_action_neutral: "\<And>x. x \<cdot> \<^bold>1 = x"
-
-sublocale left_group_action \<subseteq> left_monoid_action
-  by unfold_locales (fact group_action_compatibility group_action_neutral)+
-
-sublocale right_group_action \<subseteq> right_monoid_action
-  by unfold_locales (fact group_action_compatibility group_action_neutral)+
-
-sublocale left_group_action \<subseteq> right: right_group_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-sublocale right_group_action \<subseteq> left: left_group_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-
-section \<open>Assumption-free Substitution\<close>
-
-locale substitution_ops =
-  fixes
-    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl "\<cdot>" 67) and
-    id_subst :: 's and
-    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<odot>" 67) and
-    is_ground :: "'x \<Rightarrow> bool"
+locale substitution = abstract_substitution where
+  subst = subst and is_ground = "\<lambda>expr. vars expr = {}"
+for
+  subst :: "'expr \<Rightarrow> 'subst \<Rightarrow> 'expr" (infixl "\<cdot>" 69) and
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) and
+  subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" (\<open>_\<lbrakk>_ := _\<rbrakk>\<close> [1000, 0, 50] 71) and
+  vars :: "'expr \<Rightarrow> 'v set" +
+assumes
+  (* Interesting that not both directions are required *)
+  subst_eq: "\<And>expr \<sigma> \<tau>. (\<And>x. x \<in> vars expr \<Longrightarrow> x \<cdot>v \<sigma> = x \<cdot>v \<tau>) \<Longrightarrow> expr \<cdot> \<sigma> = expr \<cdot> \<tau>" and
+  subst_update [simp]:
+    "\<And>x update. x \<cdot>v \<sigma>\<lbrakk>x := update\<rbrakk> = update" 
+    "\<And>x y update. x \<noteq> y \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>y := update\<rbrakk> = x \<cdot>v \<sigma>"
 begin
 
-definition subst_set :: "'x set \<Rightarrow> 's \<Rightarrow> 'x set" where
-  "subst_set X \<sigma> = (\<lambda>x. subst x \<sigma>) ` X"
+abbreviation is_ground where "is_ground expr \<equiv> vars expr = {}"
 
-definition subst_list :: "'x list \<Rightarrow> 's \<Rightarrow> 'x list" where
-  "subst_list xs \<sigma> = map (\<lambda>x. subst x \<sigma>) xs"
+definition vars_set :: "'expr set \<Rightarrow> 'v set" where
+  "vars_set exprs \<equiv> \<Union>expr \<in> exprs. vars expr"
 
-definition is_ground_set :: "'x set \<Rightarrow> bool" where
-  "is_ground_set X \<longleftrightarrow> (\<forall>x \<in> X. is_ground x)"
+lemma subst_reduntant_upd [simp]:
+  assumes "x \<notin> vars expr"
+  shows "expr \<cdot> \<sigma>\<lbrakk>x := update\<rbrakk> = expr \<cdot> \<sigma>"
+  using assms subst_eq subst_update
+  by metis
 
-definition is_ground_subst :: "'s \<Rightarrow> bool" where
-  "is_ground_subst \<gamma> \<longleftrightarrow> (\<forall>x. is_ground (x \<cdot> \<gamma>))"
+lemma subst_cannot_unground:
+  assumes "\<not>is_ground (expr \<cdot> \<sigma>)"
+  shows "\<not>is_ground expr"
+  using assms 
+  by force
 
-definition generalizes :: "'x \<Rightarrow> 'x \<Rightarrow> bool" where
-  "generalizes x y \<longleftrightarrow> (\<exists>\<sigma>. x \<cdot> \<sigma> = y)"
+abbreviation (input) var_subst where
+  "var_subst \<sigma> x \<equiv> x \<cdot>v \<sigma>"
 
-definition specializes :: "'x \<Rightarrow> 'x \<Rightarrow> bool" where
-  "specializes x y \<equiv> generalizes y x"
+abbreviation (input) expr_subst where
+  "expr_subst \<sigma> expr \<equiv> expr \<cdot> \<sigma>"
 
-definition strictly_generalizes :: "'x \<Rightarrow> 'x \<Rightarrow> bool" where
-  "strictly_generalizes x y \<longleftrightarrow> generalizes x y \<and> \<not> generalizes y x"
+definition subst_domain :: "'subst \<Rightarrow> 'v set" where
+  "subst_domain \<sigma> = {x. x \<cdot>v \<sigma> \<noteq> x \<cdot>v id_subst}"
 
-definition strictly_specializes :: "'x \<Rightarrow> 'x \<Rightarrow> bool" where
-  "strictly_specializes x y \<equiv> strictly_generalizes y x"
+abbreviation subst_range :: "'subst \<Rightarrow> 'base set" where
+  "subst_range \<sigma> \<equiv> var_subst \<sigma> ` subst_domain \<sigma>"
 
-definition instances :: "'x \<Rightarrow> 'x set" where
-  "instances x = {y. generalizes x y}"
+lemma subst_inv:
+  assumes "\<sigma> \<odot> \<sigma>_inv = id_subst"
+  shows "expr \<cdot> \<sigma> \<cdot> \<sigma>_inv = expr"
+  using assms
+  by (metis subst_comp_subst subst_id_subst)
 
-definition instances_set :: "'x set \<Rightarrow> 'x set" where
-  "instances_set X = (\<Union>x \<in> X. instances x)"
+definition rename where
+  "is_renaming \<rho> \<Longrightarrow> rename \<rho> x \<equiv> SOME x'. x \<cdot>v \<rho> = x' \<cdot>v id_subst"
 
-definition ground_instances :: "'x \<Rightarrow> 'x set" where
-  "ground_instances x = {x\<^sub>\<G> \<in> instances x. is_ground x\<^sub>\<G>}"
+lemma is_unifier_two_iff [simp]: "is_unifier \<upsilon> {expr, expr'} \<longleftrightarrow> expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
+  unfolding is_unifier_def
+  using insertCI
+  by fastforce
 
-definition ground_instances_set :: "'x set \<Rightarrow> 'x set" where
-  "ground_instances_set X = {x\<^sub>\<G> \<in> instances_set X. is_ground x\<^sub>\<G>}"
+lemma is_unifier_set_two_iff [simp]: "is_unifier_set \<upsilon> {{expr, expr'}} \<longleftrightarrow> expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
+  unfolding is_unifier_set_def
+  by simp
 
-lemma ground_instances_set_eq_Union_ground_instances:
-  "ground_instances_set X = (\<Union>x \<in> X. ground_instances x)"
-  unfolding ground_instances_set_def ground_instances_def
-  unfolding instances_set_def
-  by auto
-
-lemma ground_instances_eq_Collect_subst_grounding:
-  "ground_instances x = {x \<cdot> \<gamma> | \<gamma>. is_ground (x \<cdot> \<gamma>)}"
-  by (auto simp: ground_instances_def instances_def generalizes_def)
-
-(* This corresponds to the maximal subgroup of the monoid on (\<odot>) and id_subst *)
-definition is_renaming :: "'s \<Rightarrow> bool" where
-  "is_renaming \<rho> \<longleftrightarrow> (\<exists>\<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
-
-definition renaming_inverse where
-  "is_renaming \<rho> \<Longrightarrow> renaming_inverse \<rho> = (SOME \<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
-
-lemma renaming_comp_renaming_inverse[simp]:
-  "is_renaming \<rho> \<Longrightarrow> \<rho> \<odot> renaming_inverse \<rho> = id_subst"
-  by (auto simp: is_renaming_def renaming_inverse_def intro: someI_ex)
-
-definition is_unifier :: "'s \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "is_unifier \<upsilon> X \<longleftrightarrow> card (subst_set X \<upsilon>) \<le> 1"
-
-definition is_unifier_set :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
-  "is_unifier_set \<upsilon> XX \<longleftrightarrow> (\<forall>X \<in> XX. is_unifier \<upsilon> X)"
-
-definition is_mgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
-  "is_mgu \<mu> XX \<longleftrightarrow> is_unifier_set \<mu> XX \<and> (\<forall>\<upsilon>. is_unifier_set \<upsilon> XX \<longrightarrow> (\<exists>\<sigma>. \<mu> \<odot> \<sigma> = \<upsilon>))"
-
-definition is_imgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
-  "is_imgu \<mu> XX \<longleftrightarrow> is_unifier_set \<mu> XX \<and> (\<forall>\<tau>. is_unifier_set \<tau> XX \<longrightarrow> \<mu> \<odot> \<tau> = \<tau>)"
-
-definition is_idem :: "'s \<Rightarrow> bool" where
-  "is_idem \<sigma> \<longleftrightarrow> \<sigma> \<odot> \<sigma> = \<sigma>"
-
-lemma is_unifier_iff_if_finite:
-  assumes "finite X"
-  shows "is_unifier \<sigma> X \<longleftrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>)"
-proof (rule iffI)
-  show "is_unifier \<sigma> X \<Longrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>)"
-    using assms
-    unfolding is_unifier_def
-    by (metis One_nat_def card_le_Suc0_iff_eq finite_imageI image_eqI subst_set_def)
-next
-  show "(\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>) \<Longrightarrow> is_unifier \<sigma> X"
-    unfolding is_unifier_def
-    by (smt (verit, del_insts) One_nat_def substitution_ops.subst_set_def card_eq_0_iff
-        card_le_Suc0_iff_eq dual_order.eq_iff imageE le_Suc_eq)
-qed
-
-lemma is_unifier_singleton[simp]: "is_unifier \<upsilon> {x}"
-  by (simp add: is_unifier_iff_if_finite)
-
-lemma is_unifier_set_insert_singleton[simp]:
-  "is_unifier_set \<sigma> (insert {x} XX) \<longleftrightarrow> is_unifier_set \<sigma> XX"
-  by (simp add: is_unifier_set_def)
-
-lemma is_mgu_insert_singleton[simp]: "is_mgu \<mu> (insert {x} XX) \<longleftrightarrow> is_mgu \<mu> XX"
-  by (simp add: is_mgu_def)
-
-lemma is_imgu_insert_singleton[simp]: "is_imgu \<mu> (insert {x} XX) \<longleftrightarrow> is_imgu \<mu> XX"
-  by (simp add: is_imgu_def)
-
-lemma subst_set_empty[simp]: "subst_set {} \<sigma> = {}"
-  by (simp only: subst_set_def image_empty)
-
-lemma subst_set_insert[simp]: "subst_set (insert x X) \<sigma> = insert (x \<cdot> \<sigma>) (subst_set X \<sigma>)"
-  by (simp only: subst_set_def image_insert)
-
-lemma subst_set_union[simp]: "subst_set (X1 \<union> X2) \<sigma> = subst_set X1 \<sigma> \<union> subst_set X2 \<sigma>"
-  by (simp only: subst_set_def image_Un)
-
-lemma subst_list_Nil[simp]: "subst_list [] \<sigma> = []"
-  by (simp only: subst_list_def list.map)
-
-lemma subst_list_insert[simp]: "subst_list (x # xs) \<sigma> = (x \<cdot> \<sigma>) # (subst_list xs \<sigma>)"
-  by (simp only: subst_list_def list.map)
-
-lemma subst_list_append[simp]: "subst_list (xs\<^sub>1 @ xs\<^sub>2) \<sigma> = subst_list xs\<^sub>1 \<sigma> @ subst_list xs\<^sub>2 \<sigma>"
-  by (simp only: subst_list_def map_append)
-
-lemma is_unifier_set_union:
-  "is_unifier_set \<upsilon> (XX\<^sub>1 \<union> XX\<^sub>2) \<longleftrightarrow> is_unifier_set \<upsilon> XX\<^sub>1 \<and> is_unifier_set \<upsilon> XX\<^sub>2"
-  by (auto simp add: is_unifier_set_def)
-
-lemma is_unifier_subset: "is_unifier \<upsilon> A \<Longrightarrow> finite A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> is_unifier \<upsilon> B"
-  by (smt (verit, best) card_mono dual_order.trans finite_imageI image_mono is_unifier_def
-      subst_set_def)
-
-lemma is_ground_set_subset: "is_ground_set A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> is_ground_set B"
-  by (auto simp: is_ground_set_def)
-
-lemma is_ground_set_ground_instances[simp]: "is_ground_set (ground_instances x)"
-  by (simp add: ground_instances_def is_ground_set_def)
-
-lemma is_ground_set_ground_instances_set[simp]: "is_ground_set (ground_instances_set x)"
-  by (simp add: ground_instances_set_def is_ground_set_def)
+lemma obtain_imgu_absorption: 
+  assumes "is_unifier_set \<upsilon> XX" "is_imgu \<mu> XX" 
+  obtains \<sigma> where "\<upsilon> = \<mu> \<odot> \<sigma>"
+  using assms
+  unfolding is_imgu_def
+  by metis
 
 end
 
 
-section \<open>Basic Substitution\<close>
+subsection \<open>Properties of substitutions\<close>
 
-(* Rename to abstract substitution *)
-locale substitution =
-  comp_subst: right_monoid_action comp_subst id_subst subst +
-  substitution_ops subst id_subst comp_subst is_ground
-  for
-    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<odot>" 70) and
-    id_subst :: 's and
-    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl "\<cdot>" 70) and
+locale all_subst_ident_iff_ground =
+  substitution +
+  assumes all_subst_ident_iff_ground: "\<And>expr. is_ground expr \<longleftrightarrow> (\<forall>\<sigma>. expr \<cdot> \<sigma> = expr)"
 
-    \<comment> \<open>Predicate identifying the fixed elements w.r.t. the monoid action\<close>
-    is_ground :: "'x \<Rightarrow> bool" +
+locale exists_non_ident_subst =
+  substitution where vars = vars
+  for vars :: "'expr \<Rightarrow> 'v set" +
   assumes
-    all_subst_ident_if_ground: "is_ground x \<Longrightarrow> (\<forall>\<sigma>. x \<cdot> \<sigma> = x)"
+    exists_non_ident_subst:
+      "\<And>expr S. finite S \<Longrightarrow> \<not>is_ground expr \<Longrightarrow> \<exists>\<sigma>. expr \<cdot> \<sigma> \<noteq> expr \<and> expr \<cdot> \<sigma> \<notin> S"
 begin
 
-sublocale comp_subst_set: right_monoid_action comp_subst id_subst subst_set
-  using comp_subst.lifting_monoid_action_to_set unfolding subst_set_def .
+lemma infinite_expr:
+  assumes "\<exists>expr. vars expr \<noteq> {}"
+  shows "infinite (UNIV :: 'expr set)"
+proof 
+  assume finite: "finite (UNIV :: 'expr set)"
 
-sublocale comp_subst_list: right_monoid_action comp_subst id_subst subst_list
-  using comp_subst.lifting_monoid_action_to_list unfolding subst_list_def .
+  obtain expr where expr: "vars expr \<noteq> {}"
+    using assms
+    by metis
 
-
-subsection \<open>Substitution Composition\<close>
-
-lemmas subst_comp_subst = comp_subst.action_compatibility
-lemmas subst_set_comp_subst = comp_subst_set.action_compatibility
-lemmas subst_list_comp_subst = comp_subst_list.action_compatibility
-
-
-subsection \<open>Substitution Identity\<close>
-
-lemmas subst_id_subst = comp_subst.action_neutral
-lemmas subst_set_id_subst = comp_subst_set.action_neutral
-lemmas subst_list_id_subst = comp_subst_list.action_neutral
-
-lemma is_renaming_id_subst[simp]: "is_renaming id_subst"
-  by (simp add: is_renaming_def)
-
-lemma is_unifier_id_subst_empty[simp]: "is_unifier id_subst {}"
-  by (simp add: is_unifier_def)
-
-lemma is_unifier_set_id_subst_empty[simp]: "is_unifier_set id_subst {}"
-  by (simp add: is_unifier_set_def)
-
-lemma is_mgu_id_subst_empty[simp]: "is_mgu id_subst {}"
-  by (simp add: is_mgu_def)
-
-lemma is_imgu_id_subst_empty[simp]: "is_imgu id_subst {}"
-  by (simp add: is_imgu_def)
-
-lemma is_idem_id_subst[simp]: "is_idem id_subst"
-  by (simp add: is_idem_def)
-
-lemma is_unifier_id_subst: "is_unifier id_subst X \<longleftrightarrow> card X \<le> 1"
-  by (simp add: is_unifier_def)
-
-lemma is_unifier_set_id_subst: "is_unifier_set id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. card X \<le> 1)"
-  by (simp add: is_unifier_set_def is_unifier_id_subst)
-
-lemma is_mgu_id_subst: "is_mgu id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. card X \<le> 1)"
-  by (simp add: is_mgu_def is_unifier_set_id_subst)
-
-lemma is_imgu_id_subst: "is_imgu id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. card X \<le> 1)"
-  by (simp add: is_imgu_def is_unifier_set_id_subst)
-
-
-subsection \<open>Generalization\<close>
-
-sublocale generalizes: preorder generalizes strictly_generalizes
-proof unfold_locales
-  show "\<And>x y. strictly_generalizes x y = (generalizes x y \<and> \<not> generalizes y x)"
-    unfolding strictly_generalizes_def generalizes_def by blast
-next
-  show "\<And>x. generalizes x x"
-    unfolding generalizes_def using subst_id_subst by metis
-next
-  show "\<And>x y z. generalizes x y \<Longrightarrow> generalizes y z \<Longrightarrow> generalizes x z"
-    unfolding generalizes_def using subst_comp_subst by metis
-qed
-
-
-subsection \<open>Substituting on Ground Expressions\<close>
-
-lemma subst_ident_if_ground[simp]: "is_ground x \<Longrightarrow> x \<cdot> \<sigma> = x"
-  using all_subst_ident_if_ground by simp
-
-lemma subst_set_ident_if_ground[simp]: "is_ground_set X \<Longrightarrow> subst_set X \<sigma> = X"
-  unfolding is_ground_set_def subst_set_def by simp
-
-
-subsection \<open>Instances of Ground Expressions\<close>
-
-lemma instances_ident_if_ground[simp]: "is_ground x \<Longrightarrow> instances x = {x}"
-  unfolding instances_def generalizes_def by simp
-
-lemma instances_set_ident_if_ground[simp]: "is_ground_set X \<Longrightarrow> instances_set X = X"
-  unfolding instances_set_def is_ground_set_def by simp
-
-lemma ground_instances_ident_if_ground[simp]: "is_ground x \<Longrightarrow> ground_instances x = {x}"
-  unfolding ground_instances_def by auto
-
-lemma ground_instances_set_ident_if_ground[simp]: "is_ground_set X \<Longrightarrow> ground_instances_set X = X"
-  unfolding is_ground_set_def ground_instances_set_eq_Union_ground_instances by simp
-
-
-subsection \<open>Unifier of Ground Expressions\<close>
-
-lemma ground_eq_ground_if_unifiable:
-  assumes "is_unifier \<upsilon> {t\<^sub>1, t\<^sub>2}" and "is_ground t\<^sub>1" and "is_ground t\<^sub>2"
-  shows "t\<^sub>1 = t\<^sub>2"
-  using assms by (simp add: card_Suc_eq is_unifier_def le_Suc_eq subst_set_def)
-
-lemma ball_eq_constant_if_unifier:
-  assumes "finite X" and "x \<in> X" and "is_unifier \<upsilon> X" and "is_ground_set X"
-  shows "\<forall>y \<in> X. y = x"
-  using assms
-proof (induction X rule: finite_induct)
-  case empty
-  show ?case by simp
-next
-  case (insert z F)
-  then show ?case
-    by (metis is_ground_set_def finite.insertI is_unifier_iff_if_finite subst_ident_if_ground)
-qed
-
-lemma subst_mgu_eq_subst_mgu: 
-  assumes "is_mgu \<mu> {{t\<^sub>1, t\<^sub>2}}" 
-  shows "t\<^sub>1 \<cdot> \<mu> = t\<^sub>2 \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite[of "{t\<^sub>1, t\<^sub>2}"]
-  unfolding is_mgu_def is_unifier_set_def
-  by blast
-
-lemma subst_imgu_eq_subst_imgu: 
-  assumes "is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}" 
-  shows "t\<^sub>1 \<cdot> \<mu> = t\<^sub>2 \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite[of "{t\<^sub>1, t\<^sub>2}"]
-  unfolding is_imgu_def is_unifier_set_def
-  by blast
-
-
-subsection \<open>Ground Substitutions\<close>
-
-lemma is_ground_subst_comp_left: "is_ground_subst \<sigma> \<Longrightarrow> is_ground_subst (\<sigma> \<odot> \<tau>)"
-  by (simp add: is_ground_subst_def)
-
-lemma is_ground_subst_comp_right: "is_ground_subst \<tau> \<Longrightarrow> is_ground_subst (\<sigma> \<odot> \<tau>)"
-  by (simp add: is_ground_subst_def)
-
-lemma is_ground_subst_is_ground: 
-  assumes "is_ground_subst \<gamma>" 
-  shows "is_ground (t \<cdot> \<gamma>)"
-  using assms is_ground_subst_def by blast
-
-
-subsection \<open>IMGU is Idempotent and an MGU\<close>
-
-lemma is_imgu_iff_is_idem_and_is_mgu: "is_imgu \<mu> XX \<longleftrightarrow> is_idem \<mu> \<and> is_mgu \<mu> XX"
-  by (auto simp add: is_imgu_def is_idem_def is_mgu_def simp flip: comp_subst.assoc)
-
-
-subsection \<open>IMGU can be used before unification\<close>
-
-lemma subst_imgu_subst_unifier:
-  assumes unif: "is_unifier \<upsilon> X" and imgu: "is_imgu \<mu> {X}" and "x \<in> X"
-  shows "x \<cdot> \<mu> \<cdot> \<upsilon> = x \<cdot> \<upsilon>"
-proof -
-  have "x \<cdot> \<mu> \<cdot> \<upsilon> = x \<cdot> (\<mu> \<odot> \<upsilon>)"
+  show False
+    using exists_non_ident_subst[OF finite expr]
     by simp
-
-  also have "\<dots> = x \<cdot> \<upsilon>"
-    using imgu unif by (simp add: is_imgu_def is_unifier_set_def)
-
-  finally show ?thesis .
 qed
 
+end
 
-subsection \<open>Groundings Idempotence\<close>
+locale finite_variables = substitution where vars = vars
+  for vars :: "'expr \<Rightarrow> 'v set" +
+  assumes finite_vars [intro]: "\<And>expr. finite (vars expr)"
+begin
 
-lemma image_ground_instances_ground_instances:
-  "ground_instances ` ground_instances x = (\<lambda>x. {x}) ` ground_instances x"
-proof (rule image_cong)
-  show "\<And>x\<^sub>\<G>. x\<^sub>\<G> \<in> ground_instances x \<Longrightarrow> ground_instances x\<^sub>\<G> = {x\<^sub>\<G>}"
-    using ground_instances_ident_if_ground ground_instances_def by auto
-qed simp
+abbreviation finite_vars :: "'expr \<Rightarrow> 'v fset" where
+  "finite_vars expr \<equiv> Abs_fset (vars expr)"
 
-lemma grounding_of_set_grounding_of_set_idem[simp]:
-  "ground_instances_set (ground_instances_set X) = ground_instances_set X"
-  unfolding ground_instances_set_eq_Union_ground_instances UN_UN_flatten
-  unfolding image_ground_instances_ground_instances
+lemma fset_finite_vars [simp]: "fset (finite_vars expr) = vars expr"
+  using Abs_fset_inverse finite_vars
+  by blast
+
+end
+
+locale infinite_variables = substitution where vars = vars
+  for vars :: "'expr \<Rightarrow> 'v set" +
+  assumes infinite_vars [intro]: "infinite (UNIV :: 'v set)"
+
+locale renaming_variables = substitution +
+  assumes
+    is_renaming_iff:
+      "\<And>\<rho>. is_renaming \<rho> \<longleftrightarrow> inj (var_subst \<rho>) \<and> (\<forall>x. \<exists>x'. x \<cdot>v \<rho> = x' \<cdot>v id_subst)" and
+    rename_variables: "\<And>expr \<rho>. is_renaming \<rho> \<Longrightarrow> vars (expr \<cdot> \<rho>) = rename \<rho> ` (vars expr)"
+begin
+
+lemma renaming_range_id_subst:
+  assumes "is_renaming \<rho>"
+  shows "x \<cdot>v \<rho> \<in> range (var_subst id_subst)"
+  using assms
+  unfolding is_renaming_iff
+  by auto
+
+lemma obtain_renamed_variable:
+  assumes "is_renaming \<rho>"
+  obtains x' where "x \<cdot>v \<rho> = x' \<cdot>v id_subst"
+  using renaming_range_id_subst[OF assms]
+  by auto
+
+lemma id_subst_rename [simp]:
+  assumes "is_renaming \<rho>"
+  shows "rename \<rho> x \<cdot>v id_subst = x \<cdot>v \<rho>"
+  unfolding rename_def[OF assms]
+  using obtain_renamed_variable[OF assms]
+  by (metis (mono_tags, lifting) someI)
+
+lemma rename_variables_id_subst: 
+  assumes "is_renaming \<rho>" 
+  shows "var_subst id_subst ` vars (expr \<cdot> \<rho>) = var_subst \<rho> ` (vars expr)"
+  using rename_variables[OF assms] id_subst_rename[OF assms]
+  by (smt (verit, best) image_cong image_image)
+
+lemma surj_inv_renaming:
+  assumes "is_renaming \<rho>"
+  shows "surj (\<lambda>x. inv (var_subst \<rho>) (x \<cdot>v id_subst))"
+  using assms inv_f_f
+  unfolding is_renaming_iff surj_def
+  by metis
+
+lemma renaming_range:
+  assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
+  shows "x \<cdot>v id_subst \<in> range (var_subst \<rho>)"
+  using rename_variables_id_subst[OF assms(1)] assms(2)
+  by fastforce
+
+lemma renaming_inv_into:
+  assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
+  shows "inv (var_subst \<rho>) (x \<cdot>v id_subst) \<cdot>v \<rho> = x \<cdot>v id_subst"
+  using f_inv_into_f[OF renaming_range[OF assms]].
+
+lemma inv_renaming:
+  assumes "is_renaming \<rho>"
+  shows "inv (var_subst \<rho>) (x \<cdot>v \<rho>)  = x"
+  using assms
+  unfolding is_renaming_iff
+  by (simp add: inv_into_f_eq)
+
+lemma renaming_inv_in_vars:
+  assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
+  shows "inv (var_subst \<rho>) (x \<cdot>v id_subst) \<in> vars expr"
+  using assms rename_variables_id_subst[OF assms(1)]
+  by (metis image_eqI image_inv_f_f is_renaming_iff)
+
+lemma inj_id_subst: "inj (var_subst id_subst)"
+  using is_renaming_id_subst is_renaming_iff
+  by blast
+
+end
+
+locale grounding = substitution where vars = vars and id_subst = id_subst
+  for vars :: "'expr \<Rightarrow> 'var set" and id_subst :: "'subst" +
+  fixes to_ground :: "'expr \<Rightarrow> 'expr\<^sub>G" and from_ground :: "'expr\<^sub>G \<Rightarrow> 'expr"
+  assumes
+    range_from_ground_iff_is_ground: "{expr. is_ground expr} = range from_ground" and
+    from_ground_inverse [simp]: "\<And>expr\<^sub>G. to_ground (from_ground expr\<^sub>G) = expr\<^sub>G"
+begin
+
+definition ground_instances' ::"'expr \<Rightarrow> 'expr\<^sub>G set" where
+  "ground_instances' expr = { to_ground (expr \<cdot> \<gamma>) | \<gamma>. is_ground (expr \<cdot> \<gamma>) }"
+
+lemma ground_instances'_eq_ground_instances: 
+  "ground_instances' expr = (to_ground ` ground_instances expr)"
+  unfolding ground_instances'_def ground_instances_def generalizes_def instances_def 
+  by blast
+
+lemma to_ground_from_ground_id [simp]: "to_ground \<circ> from_ground = id"
+  using from_ground_inverse
+  by auto
+
+lemma surj_to_ground: "surj to_ground"
+  using from_ground_inverse
+  by (metis surj_def)
+
+lemma inj_from_ground: "inj_on from_ground domain\<^sub>G"
+  by (metis from_ground_inverse inj_on_inverseI)
+
+lemma inj_on_to_ground: "inj_on to_ground (from_ground ` domain\<^sub>G)"
+  unfolding inj_on_def
   by simp
 
+lemma bij_betw_to_ground: "bij_betw to_ground (from_ground ` domain\<^sub>G) domain\<^sub>G"
+  by (smt (verit, best) bij_betwI' from_ground_inverse image_iff)
 
-subsection \<open>Instances of Substitution\<close>
+lemma bij_betw_from_ground: "bij_betw from_ground domain\<^sub>G (from_ground ` domain\<^sub>G)"
+  by (simp add: bij_betw_def inj_from_ground)
 
-lemma instances_subst:
-  "instances (x \<cdot> \<sigma>) \<subseteq> instances x"
-proof (rule subsetI)
-  fix x\<^sub>\<sigma> assume "x\<^sub>\<sigma> \<in> instances (x \<cdot> \<sigma>)"
-  thus "x\<^sub>\<sigma> \<in> instances x"
-    by (metis CollectD CollectI generalizes_def instances_def subst_comp_subst)
+lemma ground_is_ground [simp, intro]: "is_ground (from_ground expr\<^sub>G)"
+  using range_from_ground_iff_is_ground
+  by blast
+
+lemma is_ground_iff_range_from_ground: "is_ground expr \<longleftrightarrow> expr \<in> range from_ground"
+  using range_from_ground_iff_is_ground
+  by auto
+
+lemma to_ground_inverse [simp]:
+  assumes "is_ground expr"
+  shows "from_ground (to_ground expr) = expr"
+  using inj_on_to_ground from_ground_inverse is_ground_iff_range_from_ground assms
+  unfolding inj_on_def
+  by blast
+
+corollary obtain_grounding:
+  assumes "is_ground expr"
+  obtains expr\<^sub>G where "from_ground expr\<^sub>G = expr"
+  using to_ground_inverse assms
+  by blast
+
+lemma from_ground_eq [simp]:
+  "from_ground expr = from_ground expr' \<longleftrightarrow> expr = expr'"
+  by (metis from_ground_inverse)
+
+lemma to_ground_eq [simp]:
+  assumes "is_ground expr" "is_ground expr'"
+  shows "to_ground expr = to_ground expr' \<longleftrightarrow> expr = expr'"
+  using assms obtain_grounding
+  by fastforce
+
+end
+
+locale exists_ground_subst = substitution +
+  assumes exists_ground_subst: "\<exists>\<gamma>. is_ground_subst \<gamma>"
+begin
+
+lemma obtain_ground_subst:
+  obtains \<gamma> where "is_ground_subst \<gamma>"
+  using exists_ground_subst
+  by metis
+
+lemma ground_exists: "\<exists>expr. is_ground expr"
+proof -
+  fix expr
+
+  obtain \<gamma> where \<gamma>: "is_ground_subst \<gamma>"
+    using obtain_ground_subst .
+
+  show "\<exists>expr. is_ground expr"
+  proof (rule exI)
+    show "is_ground (expr \<cdot> \<gamma>)"
+      using \<gamma> is_ground_subst_is_ground
+      by blast
+  qed
 qed
 
-lemma instances_set_subst_set:
-  "instances_set (subst_set X \<sigma>) \<subseteq> instances_set X"
-  unfolding instances_set_def subst_set_def
-  using instances_subst by auto
+lemma ground_subst_extension:
+  assumes "is_ground (expr \<cdot> \<gamma>)"
+  obtains \<gamma>'
+  where "expr \<cdot> \<gamma> = expr \<cdot> \<gamma>'" and "is_ground_subst \<gamma>'"
+  using obtain_ground_subst assms
+  by (metis all_subst_ident_if_ground is_ground_subst_comp_right subst_comp_subst)
 
-lemma ground_instances_subst:
-  "ground_instances (x \<cdot> \<sigma>) \<subseteq> ground_instances x"
-  unfolding ground_instances_def
-  using instances_subst by auto
+end
 
-lemma ground_instances_set_subst_set:
-  "ground_instances_set (subst_set X \<sigma>) \<subseteq> ground_instances_set X"
-  unfolding ground_instances_set_def
-  using instances_set_subst_set by auto
+locale subst_updates = substitution where vars = vars and apply_subst = apply_subst
+ for
+    vars :: "'expr \<Rightarrow> 'v set" and
+    apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base"  (infixl \<open>\<cdot>v\<close> 69) +
+  fixes subst_updates :: "'subst \<Rightarrow> ('v \<rightharpoonup> 'base) \<Rightarrow> 'subst" 
+  assumes
+    subst_updates [simp]: "\<And>x. x \<cdot>v subst_updates \<sigma> update = get_or (update x) (x \<cdot>v \<sigma>)"
 
+locale exists_imgu = substitution +
+  assumes exists_imgu: "\<And>\<upsilon> expr expr'. expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon> \<Longrightarrow> \<exists>\<mu>. is_imgu \<mu> {{expr, expr'}}"
+begin
 
-subsection \<open>Instances of Renamed Expressions\<close>
+lemma obtains_imgu:
+  assumes "expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
+  obtains \<mu> where "is_imgu \<mu> {{expr, expr'}}"
+  using exists_imgu[OF assms]
+  by metis
 
-lemma instances_subst_ident_if_renaming[simp]:
-  "is_renaming \<rho> \<Longrightarrow> instances (x \<cdot> \<rho>) = instances x"
-  by (metis instances_subst is_renaming_def subset_antisym subst_comp_subst subst_id_subst)
+lemma exists_imgu_set:
+  assumes finite_X: "finite X" and unifier: "is_unifier \<upsilon> X" 
+  shows "\<exists>\<mu>. is_imgu \<mu> {X}"
+  using assms
+proof (cases X)
+  case emptyI
 
-lemma instances_set_subst_set_ident_if_renaming[simp]:
-  "is_renaming \<rho> \<Longrightarrow> instances_set (subst_set X \<rho>) = instances_set X"
-  by (simp add: instances_set_def subst_set_def)
+  then show ?thesis
+    using is_imgu_id_subst is_unifier_id_subst is_unifier_id_subst_empty
+    by blast
+next
+  case (insertI X' x)
 
-lemma ground_instances_subst_ident_if_renaming[simp]:
-  "is_renaming \<rho> \<Longrightarrow> ground_instances (x \<cdot> \<rho>) = ground_instances x"
-  by (simp add: ground_instances_def)
+  then have "X \<noteq> {}"
+    by simp
 
-lemma ground_instances_set_subst_set_ident_if_renaming[simp]:
-  "is_renaming \<rho> \<Longrightarrow> ground_instances_set (subst_set X \<rho>) = ground_instances_set X"
-  by (simp add: ground_instances_set_def)
+  with finite_X show ?thesis
+    using unifier
+  proof (induction X rule: finite_ne_induct)
+    case (singleton x)
+
+    then show ?case
+      using is_imgu_id_subst_empty is_imgu_insert_singleton 
+      by blast
+  next
+    case (insert expr X')
+
+    then obtain \<mu> where \<mu>: "is_imgu \<mu> {X'}"
+      by (meson finite_insert is_unifier_subset subset_insertI)
+
+    then have "card (subst_set X' \<mu>) = 1"
+      by (simp add: is_imgu_def is_unifier_def subst_set_def insert is_unifier_set_insert le_Suc_eq)
+
+    then obtain expr' where X'_\<mu>: "subst_set X' \<mu> = {expr'}"
+      using card_1_singletonE
+      by blast
+
+    then have expr': "\<And>expr. expr \<in> X' \<Longrightarrow> expr \<cdot> \<mu> = expr'"
+      unfolding subst_set_def
+      by auto
+
+    have \<mu>_absorbs_\<tau>: "\<And>expr. expr \<cdot> \<mu> \<cdot> \<upsilon> =  expr \<cdot> \<upsilon>"
+        using \<mu> insert.prems insert.hyps(1)
+        unfolding is_imgu_def is_unifier_set_def
+        by (metis comp_subst.left.monoid_action_compatibility finite_insert is_unifier_subset
+            singletonD subset_insertI)
+
+    obtain \<mu>' where \<mu>': "is_imgu \<mu>' {{expr \<cdot> \<mu>, expr'}}"
+    proof (rule obtains_imgu)
+
+      obtain expr'' where "expr'' \<in> X'"
+        using insert.hyps(2) by auto
+
+      moreover then have expr': "expr' = expr'' \<cdot> \<mu>"
+        using expr'
+        by presburger
+
+      ultimately show "expr \<cdot> \<mu> \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
+        using \<mu>_absorbs_\<tau>
+        unfolding expr'
+        by (metis finite.insertI insert.hyps(1) insert.prems insertI1 insertI2
+            is_unifier_iff_if_finite)
+    qed
+
+    define \<mu>'' where "\<mu>'' = \<mu> \<odot> \<mu>'"
+
+    show ?case 
+    proof (rule exI)
+
+      show "is_imgu \<mu>'' {insert expr X'}"
+      proof (unfold is_imgu_def, intro conjI allI impI)
+
+        show "is_unifier_set \<mu>'' {insert expr X'}"
+          using \<mu>'
+          unfolding \<mu>''_def 
+          by (simp add: is_unifier_iff_if_finite is_unifier_set_insert expr' insert.hyps(1)
+              subst_imgu_eq_subst_imgu)
+      next
+        fix \<tau>
+        assume "is_unifier_set \<tau> {insert expr X'}"
+
+        moreover then have "is_unifier_set \<tau> {{expr \<cdot> \<mu>, expr'}}"
+          using \<mu> 
+          unfolding is_imgu_def is_unifier_set_insert
+          by (metis X'_\<mu> is_unifier_subset subst_set_insert finite_insert insert.hyps(1) 
+              is_unifier_def subset_insertI subst_set_comp_subst)
+
+        ultimately show "\<mu>'' \<odot> \<tau> = \<tau>"
+          using \<mu> \<mu>'
+          unfolding \<mu>''_def is_imgu_def is_unifier_set_insert
+          by (metis finite.insertI insert.hyps(1) is_unifier_subset assoc subset_insertI)
+      qed
+    qed
+  qed
+qed
+
+lemma exists_imgu_sets:
+  assumes finite_XX: "finite XX" and finite_X: "\<forall>X\<in>XX. finite X" and unifier: "is_unifier_set \<upsilon> XX"
+  shows "\<exists>\<mu>. is_imgu \<mu> XX"
+using finite_XX finite_X unifier
+proof (induction XX rule: finite_induct)
+  case empty
+
+  then show ?case
+    by (metis is_imgu_id_subst_empty)
+next
+  case (insert X XX)
+
+  obtain \<mu> where \<mu>: "is_imgu \<mu> XX" 
+    using insert.IH insert.prems is_unifier_set_insert
+    by force
+
+  define X_\<mu> where "X_\<mu> = subst_set X \<mu>"
+
+  then obtain \<mu>' where \<mu>': "is_imgu \<mu>' {X_\<mu>}" 
+  proof -
+    have "finite X_\<mu>"
+      unfolding X_\<mu>_def subst_set_def
+      using insert.prems(1)
+      by simp
+
+    moreover have "\<mu> \<odot> \<upsilon> = \<upsilon>"
+      using \<mu> insert.prems(2)
+      unfolding is_imgu_def is_unifier_set_def
+      by blast
+
+    then have "is_unifier \<upsilon> X_\<mu>"
+      using insert.prems(2)
+      unfolding is_unifier_set_def is_unifier_def X_\<mu>_def
+      by (metis insertCI subst_set_comp_subst)
+
+    ultimately show ?thesis
+      using that exists_imgu_set
+      by blast
+  qed
+
+  define \<mu>'' where "\<mu>'' = \<mu> \<odot> \<mu>'"
+
+  show ?case
+  proof (unfold is_imgu_def, intro exI conjI allI impI)
+
+    show "is_unifier_set \<mu>'' (insert X XX)"
+      using \<mu> \<mu>' insert.prems(1) is_unifier_iff_if_finite
+      unfolding \<mu>''_def is_imgu_def X_\<mu>_def is_unifier_def is_unifier_set_def 
+      by (smt (verit, best) comp_subst.left.monoid_action_compatibility insert_iff
+          subst_set_comp_subst)
+  next
+    fix \<tau>
+    assume "is_unifier_set \<tau> (insert X XX)"
+
+    then show "\<mu>'' \<odot> \<tau> = \<tau>"
+      using \<mu> \<mu>'
+      unfolding \<mu>''_def X_\<mu>_def is_imgu_def is_unifier_set_insert is_unifier_def
+      by (metis comp_subst.left.assoc is_unifier_set_empty subst_set_comp_subst)
+  qed
+qed
 
 end
 

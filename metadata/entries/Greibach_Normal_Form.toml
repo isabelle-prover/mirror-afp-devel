@@ -1,0 +1,37 @@
+title = "Greibach Normal Form"
+date = 2025-08-27
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This theory formalizes Hopcroft and Ullman’s algorithm to transform a set of productions into Greibach Normal Form (GNF). We
+concentrate on the essential property of the GNF: every production
+starts with a terminal; the tail of a rhs may contain further terminals.
+The complexity of the algorithm can be exponential."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.haberl]
+email = "haberl_email"
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[authors.yamada]
+email = "yamada_email2"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+yamada = "yamada_email2"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

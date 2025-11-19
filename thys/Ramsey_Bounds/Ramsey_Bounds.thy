@@ -727,7 +727,7 @@ proof
     finally show ?thesis .
   qed
   ultimately have "P.prob (Reds \<union> Blues) < 1"
-    using P.finite_measure_subadditive \<open>Blues \<in> P.events\<close> \<open>Reds \<in> P.events\<close> n
+    using measure_Un_le \<open>Blues \<in> P.events\<close> \<open>Reds \<in> P.events\<close> n
     by fastforce
   with P.prob_space Uev sets_eq obtain F where F: "F \<in> \<Omega> - (Reds \<union> Blues)"
     unfolding Reds_def Blues_def space_eq

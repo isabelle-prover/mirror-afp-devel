@@ -2,7 +2,6 @@
  * Copyright Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 (* Author: Jeremy Dawson, NICTA *)
@@ -15,75 +14,36 @@ theory Generic_set_bit
     Most_significant_bit
 begin
 
-class set_bit = semiring_bits +
-  fixes set_bit :: \<open>'a \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a\<close>
-  assumes bit_set_bit_iff_2n:
-  \<open>bit (set_bit a m b) n \<longleftrightarrow>
-    (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> 0\<close>
-begin
+definition set_bit :: \<open>'a \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a::semiring_bit_operations\<close>
+  where set_bit_eq: \<open>set_bit a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
 
 lemma bit_set_bit_iff [bit_simps]:
-    \<open>bit (set_bit a m b) n \<longleftrightarrow>
-      (if m = n then b else bit a n) \<and> possible_bit TYPE('a) n\<close>
-  by (simp add: bit_set_bit_iff_2n fold_possible_bit) 
-
-end
-
-lemma set_bit_eq:
-  \<open>set_bit a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-  for a :: \<open>'a::{semiring_bit_operations, set_bit}\<close>
-  by (rule bit_eqI) (simp add: bit_simps)
-
-instantiation nat :: set_bit
-begin
-
-definition set_bit_nat :: \<open>nat \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> nat\<close>
-  where \<open>set_bit m n b = (if b then Bit_Operations.set_bit else unset_bit) n m\<close> for m n :: nat
-
-instance
-  by standard (simp add: set_bit_nat_def bit_simps)
-
-end
-
-
-instantiation int :: set_bit
-begin
-
-definition set_bit_int :: \<open>int \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> int\<close>
-  where \<open>set_bit_int i n b = (if b then Bit_Operations.set_bit else Bit_Operations.unset_bit) n i\<close>
-
-instance
-  by standard (simp add: set_bit_int_def bit_simps)
-
-end
-
-instantiation word :: (len) set_bit
-begin
-
-definition set_bit_word :: \<open>'a word \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a word\<close>
-  where set_bit_unfold: \<open>set_bit w n b = (if b then Bit_Operations.set_bit n w else unset_bit n w)\<close>
-  for w :: \<open>'a::len word\<close>
-
-instance
-  by standard (auto simp add: set_bit_unfold bit_simps dest: bit_imp_le_length)
-
-end
+  \<open>bit (set_bit a m b) n \<longleftrightarrow>
+    (if m = n then possible_bit TYPE('a) n \<and> b else bit a n)\<close>
+  for a :: \<open>'a::semiring_bit_operations\<close>
+  by (auto simp add: set_bit_eq bit_simps bit_imp_possible_bit)
 
 lemma bit_set_bit_word_iff [bit_simps]:
-  \<open>bit (set_bit w m b) n \<longleftrightarrow> (if m = n then n < LENGTH('a) \<and> b else bit w n)\<close>
-  for w :: \<open>'a::len word\<close>
-  by (auto simp add: bit_simps dest: bit_imp_le_length)
+  \<open>bit (set_bit w m b) n \<longleftrightarrow>
+    (if m = n then n < LENGTH('a) \<and> b else bit w n)\<close> for w :: \<open>'a::len word\<close>
+  by (simp add: bit_simps bit_imp_le_length)
+
+lemma bit_set_bit_iff_2n:
+  \<open>bit (set_bit a m b) n \<longleftrightarrow>
+    (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> (0 :: 'a)\<close>
+  for a :: \<open>'a::semiring_bit_operations\<close>
+  by (auto simp add: bit_simps fold_possible_bit bit_imp_possible_bit)
 
 context
   includes bit_operations_syntax
 begin
 
-lemma int_set_bit_0 [simp]: fixes x :: int shows
-  "set_bit x 0 b = of_bool b + 2 * (x div 2)"
-  by (simp add: set_bit_eq)
+lemma int_set_bit_0 [simp]:
+  "set_bit x 0 b = of_bool b + 2 * (x div 2)" for x :: int
+  by (simp add: set_bit_eq set_bit_0 unset_bit_0)
 
-lemma int_set_bit_Suc: fixes x :: int shows
-  "set_bit x (Suc n) b = of_bool (odd x) + 2 * set_bit (x div 2) n b"
+lemma int_set_bit_Suc [simp]:
+  "set_bit x (Suc n) b = of_bool (odd x) + 2 * set_bit (x div 2) n b" for x :: int
   by (simp add: set_bit_eq set_bit_Suc unset_bit_Suc mod2_eq_if)
 
 lemma bin_last_set_bit:
@@ -94,8 +54,8 @@ lemma bin_rest_set_bit:
   "(set_bit x n b :: int) div 2 = (if n > 0 then set_bit (x div 2) (n - 1) b else x div 2)"
   by (cases n) (simp_all add: int_set_bit_Suc)
 
-lemma int_set_bit_numeral: fixes x :: int shows
-  "set_bit x (numeral w) b = of_bool (odd x) + 2 * set_bit (x div 2) (pred_numeral w) b"
+lemma int_set_bit_numeral [simp]:
+  "set_bit x (numeral w) b = of_bool (odd x) + 2 * set_bit (x div 2) (pred_numeral w) b" for x :: int
   by (simp add: numeral_eq_Suc int_set_bit_Suc)
 
 lemmas int_set_bit_numerals [simp] =
@@ -119,7 +79,7 @@ lemma fixes i :: int
 
 lemma msb_set_bit [simp]:
   "msb (set_bit (x :: int) n b) \<longleftrightarrow> msb x"
-  by (simp add: msb_int_def set_bit_int_def)
+  by (simp add: msb_int_def set_bit_eq)
 
 lemmas msb_bin_sc = msb_set_bit
 
@@ -131,13 +91,13 @@ lemma bin_sc_eq:
   \<open>bin_sc n True = Bit_Operations.set_bit n\<close>
   by (simp_all add: set_bit_eq)
 
-lemma bin_sc_0 [simp]:
-  "bin_sc 0 b w = of_bool b + 2 * (\<lambda>k::int. k div 2) w"
-  by (simp add: set_bit_eq)
+lemma bin_sc_0:
+  "bin_sc 0 b w = of_bool b + 2 * (w div 2)"
+  by (fact int_set_bit_0)
 
-lemma bin_sc_Suc [simp]:
+lemma bin_sc_Suc:
   "bin_sc (Suc n) b w = of_bool (odd w) + 2 * bin_sc n b (w div 2)"
-  by (simp add: set_bit_eq set_bit_Suc unset_bit_Suc mod2_eq_if)
+  by (fact int_set_bit_Suc)
 
 lemma bin_nth_sc [bit_simps]: "bit (bin_sc n b w) n \<longleftrightarrow> b"
   by (simp add: bit_simps)
@@ -156,19 +116,19 @@ lemma bin_sc_nth [simp]: "bin_sc n ((bit :: int \<Rightarrow> nat \<Rightarrow> 
 
 lemma bin_sc_bintr [simp]:
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w)) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x w)"
-  by (simp add: Generic_set_bit.set_bit_int_def take_bit_set_bit_eq take_bit_unset_bit_eq)
+  by (simp add: set_bit_eq take_bit_set_bit_eq take_bit_unset_bit_eq)
 
 lemma bin_clr_le: "bin_sc n False w \<le> w"
-  by (simp add: set_bit_int_def unset_bit_less_eq)
+  by (simp add: set_bit_eq unset_bit_less_eq)
 
 lemma bin_set_ge: "bin_sc n True w \<ge> w"
-  by (simp add: set_bit_int_def set_bit_greater_eq)
+  by (simp add: set_bit_eq set_bit_greater_eq)
 
 lemma bintr_bin_clr_le: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (bin_sc m False w) \<le> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: set_bit_int_def take_bit_unset_bit_eq unset_bit_less_eq)
+  by (simp add: set_bit_eq take_bit_unset_bit_eq unset_bit_less_eq)
 
 lemma bintr_bin_set_ge: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (bin_sc m True w) \<ge> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (simp add: set_bit_int_def take_bit_set_bit_eq set_bit_greater_eq)
+  by (simp add: set_bit_eq take_bit_set_bit_eq set_bit_greater_eq)
 
 lemma bin_sc_FP [simp]: "bin_sc n False 0 = 0"
   by (induct n) auto
@@ -184,10 +144,10 @@ lemma bin_sc_minus: "0 < n \<Longrightarrow> bin_sc (Suc (n - 1)) b w = bin_sc n
 lemmas bin_sc_Suc_minus =
   trans [OF bin_sc_minus [symmetric] bin_sc_Suc]
 
-lemma bin_sc_numeral [simp]:
+lemma bin_sc_numeral:
   "bin_sc (numeral k) b w =
     of_bool (odd w) + 2 * bin_sc (pred_numeral k) b (w div 2)"
-  by (simp add: numeral_eq_Suc)
+  by (fact int_set_bit_numeral)
 
 lemmas bin_sc_minus_simps =
   bin_sc_simps (2,3,4) [THEN [2] trans, OF bin_sc_minus [THEN sym]]
@@ -206,7 +166,7 @@ lemma bin_set_conv_OR:
 
 lemma word_set_bit_def:
   \<open>set_bit a n x = word_of_int (bin_sc n x (uint a))\<close>
-  by (rule bit_word_eqI) (simp add: bit_of_int_iff bit_uint_iff set_bit_class.bit_set_bit_iff)
+  by (rule bit_word_eqI) (simp add: bit_simps)
 
 lemma set_bit_word_of_int:
   "set_bit (word_of_int x) n b = word_of_int (bin_sc n b x)"
@@ -282,22 +242,5 @@ lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
 
 lemma one_bit_pow: "set_bit 0 n True = (2 :: 'a :: len word) ^ n"
   by (rule word_eqI) (simp add: bit_simps)
-
-instantiation integer :: set_bit
-begin
-
-context
-  includes integer.lifting
-begin
-
-lift_definition set_bit_integer :: \<open>integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer\<close>
-  is set_bit .
-
-instance
-  by (standard; transfer) (simp add: bit_simps)
-
-end
-
-end
 
 end

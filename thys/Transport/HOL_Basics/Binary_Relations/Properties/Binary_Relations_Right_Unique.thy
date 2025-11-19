@@ -131,7 +131,7 @@ lemma right_uniqueD:
   assumes "right_unique R"
   and "R x y" "R x y'"
   shows "y = y'"
-  using assms by (urule (d) right_unique_onD where chained = insert) simp_all
+  using assms by (urule (d) right_unique_onD chained: insert) simp_all
 
 lemma right_unique_eq_right_unique_at:
   "(right_unique :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) = right_unique_at (\<top> :: 'b \<Rightarrow> bool)"

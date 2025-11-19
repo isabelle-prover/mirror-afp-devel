@@ -618,6 +618,26 @@ tts_lemma greaterThanAtMost_empty_iff:
   assumes "k \<in> U" and "l \<in> U"
   shows "({k<\<^sub>o\<^sub>w..l} = {}) = (\<not> k <\<^sub>o\<^sub>w l)"
     is preorder_class.greaterThanAtMost_empty_iff.
+ 
+tts_lemma lift_Suc_mono_less_iff:
+  assumes "range f \<subseteq> U" and "\<And>n. f n <\<^sub>o\<^sub>w f (Suc n)"
+  shows "(f n <\<^sub>o\<^sub>w f m) = (n < m)"
+    is preorder.lift_Suc_mono_less_iff.
+ 
+tts_lemma lift_Suc_mono_less:
+  assumes "range f \<subseteq> U" and "\<And>n. f n <\<^sub>o\<^sub>w f (Suc n)" and "n < n'"
+  shows "f n <\<^sub>o\<^sub>w f n'"
+    is preorder_class.lift_Suc_mono_less.
+  
+tts_lemma lift_Suc_mono_le:
+  assumes "range f \<subseteq> U" and "\<And>n. f n \<le>\<^sub>o\<^sub>w f (Suc n)" and "n \<le> n'"
+  shows "f n \<le>\<^sub>o\<^sub>w f n'"
+    is preorder.lift_Suc_mono_le.
+    
+tts_lemma lift_Suc_antimono_le:
+  assumes "range f \<subseteq> U" and "\<And>n. f (Suc n) \<le>\<^sub>o\<^sub>w f n" and "n \<le> n'"
+  shows "f n' \<le>\<^sub>o\<^sub>w f n"
+    is preorder_class.lift_Suc_antimono_le.
 
 end
 
@@ -937,27 +957,7 @@ tts_lemma Icc_eq_Icc:
   assumes "l \<in> U" and "h \<in> U" and "l' \<in> U" and "h' \<in> U"
   shows "({l..\<^sub>o\<^sub>wh} = {l'..\<^sub>o\<^sub>wh'}) = (h = h' \<and> l = l' \<or> \<not> l' \<le>\<^sub>o\<^sub>w h' \<and> \<not> l \<le>\<^sub>o\<^sub>w h)"
     is order_class.Icc_eq_Icc.
-    
-tts_lemma lift_Suc_mono_less_iff:
-  assumes "range f \<subseteq> U" and "\<And>n. f n <\<^sub>o\<^sub>w f (Suc n)"
-  shows "(f n <\<^sub>o\<^sub>w f m) = (n < m)"
-    is order_class.lift_Suc_mono_less_iff.
-
-tts_lemma lift_Suc_mono_less:
-  assumes "range f \<subseteq> U" and "\<And>n. f n <\<^sub>o\<^sub>w f (Suc n)" and "n < n'"
-  shows "f n <\<^sub>o\<^sub>w f n'"
-    is order_class.lift_Suc_mono_less.
-  
-tts_lemma lift_Suc_mono_le:
-  assumes "range f \<subseteq> U" and "\<And>n. f n \<le>\<^sub>o\<^sub>w f (Suc n)" and "n \<le> n'"
-  shows "f n \<le>\<^sub>o\<^sub>w f n'"
-    is order_class.lift_Suc_mono_le.
-    
-tts_lemma lift_Suc_antimono_le:
-  assumes "range f \<subseteq> U" and "\<And>n. f (Suc n) \<le>\<^sub>o\<^sub>w f n" and "n \<le> n'"
-  shows "f n' \<le>\<^sub>o\<^sub>w f n"
-    is order_class.lift_Suc_antimono_le.
-
+   
 tts_lemma ivl_disj_int_two:
   assumes "l \<in> U" and "m \<in> U" and "u \<in> U"
   shows 

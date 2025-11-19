@@ -50,21 +50,17 @@ global_interpretation bplustree_linear_search:
   subgoal by (metis case_prod_conv hd_dropWhile le_less_linear list.sel(1) list.simps(3))
   done
 
-lemma [code]: "bplustree_ls_isin (Leaf ks) x = bplustree_ls_isin_list x ks"
-  by (simp add: bplustree_ls_isin_list_def)
-declare bplustree_linear_search.isin.simps(2)[code]
+declare bplustree_ls_isin_list_def [symmetric, code_unfold]
 
-lemma [code]: "bplustree_ls_ins k x (Leaf ks) =
-bplustree_linear_search.Lnode\<^sub>i k (bplustree_ls_insert_list x ks)"
-  by (simp add: bplustree_ls_insert_list_def)
-declare bplustree_linear_search.ins.simps(2)[code]
+declare bplustree_linear_search.isin.simps [code]
 
-lemma [code]: "bplustree_ls_del k x (Leaf ks) =
-Leaf (bplustree_ls_delete_list x ks)"
-  by (simp add: bplustree_ls_delete_list_def)
-declare bplustree_linear_search.del.simps(2)[code]
+declare bplustree_ls_insert_list_def [symmetric, code_unfold]
 
-find_theorems bplustree_ls_isin
+declare bplustree_linear_search.ins.simps [code]
+
+declare bplustree_ls_delete_list_def [symmetric, code_unfold]
+
+declare bplustree_linear_search.del.simps [code]
 
 text "Some examples follow to show that the implementation works
       and the above lemmas make sense. The examples are visualized in the thesis."

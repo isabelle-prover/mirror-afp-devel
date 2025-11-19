@@ -317,14 +317,13 @@ lemma normal_subgroup_closure:
   assumes normal_subgroup: "N \<lhd> G"
   shows "(T closure_of N) \<lhd> G"
 proof -
-  have "(conjugation \<sigma>)`(T closure_of N) \<subseteq> T closure_of N" if h\<sigma>: "\<sigma> \<in> carrier G" for \<sigma> 
+  have "(conjugation \<sigma>) \<in> (T closure_of N) \<rightarrow> T closure_of N" if h\<sigma>: "\<sigma> \<in> carrier G" for \<sigma> 
   proof -
-    have "(conjugation \<sigma>)`N \<subseteq> N" using normal_subgroup normal_invE(2) h\<sigma> by auto
-    then have "T closure_of (conjugation \<sigma>)`N \<subseteq> T closure_of N" 
-      using closure_of_mono by meson
-    moreover have "(conjugation \<sigma>)`(T closure_of N) \<subseteq> T closure_of (conjugation \<sigma>)`N"
-      using h\<sigma> conjugation_homeo
-      by (meson continuous_map_eq_image_closure_subset homeomorphic_imp_continuous_map)
+    have "(conjugation \<sigma>) \<in> N \<rightarrow> N" using normal_subgroup normal_invE(2) h\<sigma> by auto
+    then have "T closure_of (conjugation \<sigma>) ` N \<subseteq> T closure_of N"
+      by (simp add: closure_of_mono funcset_image) 
+    moreover have "(conjugation \<sigma>) \<in> (T closure_of N) \<rightarrow> T closure_of (conjugation \<sigma>)`N"
+      by (simp add: conjugation_homeo continuous_map_subset_aux1 homeomorphic_imp_continuous_map that)
     ultimately show ?thesis by blast
   qed
   moreover have "subgroup (T closure_of N) G" using subgroup_closure

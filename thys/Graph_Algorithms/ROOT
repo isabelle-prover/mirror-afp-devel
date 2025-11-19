@@ -1,0 +1,23 @@
+chapter AFP
+
+session Graph_Algorithms = HOL +
+  options [timeout = 600]
+
+  sessions
+    Graph_Theory
+    "HOL-Data_Structures"
+  theories
+    More_Lists
+    Pair_Graph
+    Vwalk
+    Enat_Misc
+    Dist
+    Set_Addons
+    Map_Addons
+    Set2_Addons
+    Pair_Graph_Specs
+    DFS
+    BFS_2
+
+  document_files
+    "root.tex"

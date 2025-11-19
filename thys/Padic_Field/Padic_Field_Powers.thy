@@ -7515,7 +7515,7 @@ proof-
       by (smt Int_iff evimageI2 subsetI vimage_eq)
   qed
   have 6: "length (f @ g) = m + n"
-    unfolding f_def g_def by (metis index_list_length length_append length_map map_nth)
+    unfolding f_def g_def by simp
   show ?thesis using 2 5 6 assms pullback_is_semialg[of m "f@g" "m+n" "cartesian_product A {b}"]
     by (metis is_semialgebraicE zero_eq_add_iff_both_eq_0)
 qed

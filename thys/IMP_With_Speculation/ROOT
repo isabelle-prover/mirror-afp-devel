@@ -1,13 +1,12 @@
 chapter AFP
 
-session IMP_With_Speculation = 
-  Secret_Directed_Unwinding + 
-  options [timeout = 900]
-  directories 
+session IMP_With_Speculation = Secret_Directed_Unwinding +
+  options [timeout = 3600]
+  directories
     Examples
     IMP
     Instance_IMP
-  theories [document = false] 
+  theories [document = false]
     Language_Prelims
   theories
     Language_Syntax
@@ -26,9 +25,11 @@ session IMP_With_Speculation =
     Fun4
     Fun4_secure
     Fun5
-    Fun5_secure    
+    Fun5_secure
     Fun6
-    Fun6_secure
+    Fun6_secure    
+    Fun_mask
+    Fun_mask_secure
   document_files
     "root.tex"
     "root.bib"

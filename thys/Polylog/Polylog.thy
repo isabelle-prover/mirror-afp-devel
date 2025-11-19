@@ -8,7 +8,7 @@ imports
   "HOL-Complex_Analysis.Complex_Analysis"
   "Linear_Recurrences.Eulerian_Polynomials"
   "HOL-Real_Asymp.Real_Asymp"
-  Polylog_Library
+
 begin
 
 subsection \<open>Definition and basic properties\<close>

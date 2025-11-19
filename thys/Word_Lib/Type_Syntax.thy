@@ -30,7 +30,8 @@ end
 
 
 syntax
-  "_Ucast" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1UCAST/(1'(_ \<rightarrow> _')))\<close>)
+  "_Ucast" :: "type \<Rightarrow> type \<Rightarrow> logic"
+    (\<open>(\<open>indent=1 notation=\<open>mixfix UCAST\<close>\<close>UCAST/(\<open>indent=1 notation=\<open>infix cast\<close>\<close>'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Ucast" == ucast
 translations
@@ -40,7 +41,8 @@ typed_print_translation
 
 
 syntax
-  "_Scast" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1SCAST/(1'(_ \<rightarrow> _')))\<close>)
+  "_Scast" :: "type \<Rightarrow> type \<Rightarrow> logic"
+    (\<open>(\<open>indent=1 notation=\<open>mixfix SCAST\<close>\<close>SCAST/(\<open>indent=1 notation=\<open>infix cast\<close>\<close>'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Scast" == scast
 translations
@@ -50,7 +52,8 @@ typed_print_translation
 
 
 syntax
-  "_Revcast" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1REVCAST/(1'(_ \<rightarrow> _')))\<close>)
+  "_Revcast" :: "type \<Rightarrow> type \<Rightarrow> logic"
+    (\<open>(\<open>indent=1 notation=\<open>mixfix REVCAST\<close>\<close>REVCAST/(\<open>indent=1 notation=\<open>infix cast\<close>\<close>'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Revcast" == revcast
 translations

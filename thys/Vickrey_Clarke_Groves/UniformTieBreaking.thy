@@ -768,14 +768,14 @@ corollary lm080:
 
 corollary lm081: 
   "inj_on pseudoAllocation allocationsUniverse" 
-  using lm077 lm080 subset_inj_on by blast
+  using lm077 lm080 inj_on_subset by blast
 
 corollary lm082: 
   "inj_on pseudoAllocation (allAllocations N G)" 
 proof -
   have "allAllocations N G \<subseteq> allocationsUniverse" 
     by (metis (no_types) allAllocationsUniverse)
-  thus "inj_on pseudoAllocation (allAllocations N G)" using lm081 subset_inj_on by blast
+  thus "inj_on pseudoAllocation (allAllocations N G)" using lm081 inj_on_subset by blast
 qed
 
 lemma lm083: 

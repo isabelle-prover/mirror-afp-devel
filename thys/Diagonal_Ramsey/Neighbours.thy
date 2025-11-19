@@ -9,6 +9,10 @@ begin
 abbreviation set_difference :: "['a set,'a set] \<Rightarrow> 'a set" (infixl \<open>\<setminus>\<close> 65)
   where "A \<setminus> B \<equiv> A-B"
 
+lemma setdif_eq_iff: "\<lbrakk>A \<subseteq> C; B \<subseteq> C\<rbrakk> \<Longrightarrow> C \<setminus> A = C \<setminus> B \<longleftrightarrow> A = B"
+  by auto
+
+
 subsection \<open>Preliminaries on graphs\<close>
 
 context ulgraph
@@ -16,16 +20,16 @@ begin
 
 text \<open>The set of \emph{undirected} edges between two sets\<close>
 definition all_edges_betw_un :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set" where
-  "all_edges_betw_un X Y \<equiv> {{x, y}| x y. x \<in> X \<and> y \<in> Y \<and> {x, y} \<in> E}"
+  "all_edges_betw_un X Y \<equiv> {{x, y}| x y. x \<in> X \<and> y \<in> Y} \<inter> E"
 
 lemma all_edges_betw_un_commute1: "all_edges_betw_un X Y \<subseteq> all_edges_betw_un Y X"
-  by (smt (verit, del_insts) Collect_mono all_edges_betw_un_def insert_commute)
+  by (auto simp: all_edges_betw_un_def)
 
 lemma all_edges_betw_un_commute: "all_edges_betw_un X Y = all_edges_betw_un Y X"
   by (simp add: all_edges_betw_un_commute1 subset_antisym)
 
 lemma all_edges_betw_un_iff_mk_edge: "all_edges_betw_un X Y = mk_edge ` all_edges_between X Y"
-  using all_edges_between_set all_edges_betw_un_def by presburger
+  by (auto simp: all_edges_between_set all_edges_betw_un_def)
 
 lemma all_uedges_betw_subset: "all_edges_betw_un X Y \<subseteq> E"
   by (auto simp: all_edges_betw_un_def)
@@ -174,7 +178,7 @@ qed
 
 lemma edge_card_diff:
   assumes "Y\<subseteq>X" "disjnt X Z" "finite X" 
-  shows "edge_card C (X-Y) Z = edge_card C X Z - edge_card C Y Z"
+  shows "edge_card C (X\<setminus>Y) Z = edge_card C X Z - edge_card C Y Z"
 proof -
   have "(X\<setminus>Y) \<union> Y = X" "disjnt (X\<setminus>Y) Y"
     by (auto simp: Un_absorb2 assms disjnt_iff)
@@ -301,15 +305,16 @@ qed
 
 lemma gen_density_le1: "gen_density C X Y \<le> 1"
   unfolding gen_density_def
-  by (smt (verit) card.infinite divide_le_eq_1 edge_card_le mult_eq_0_iff of_nat_le_0_iff of_nat_mono)
+  apply (simp add: divide_simps mult_less_0_iff zero_less_mult_iff)
+  by (metis card_ge_0_finite edge_card_le of_nat_mono of_nat_mult)
 
 lemma gen_density_le_1_minus: 
-  shows "gen_density C X Y \<le> 1 - gen_density (E-C) X Y"
+  shows "gen_density C X Y \<le> 1 - gen_density (E\<setminus>C) X Y"
 proof (cases "finite X \<and> finite Y")
   case True
-  have "C \<inter> all_edges_betw_un X Y \<union> (E - C) \<inter> all_edges_betw_un X Y = all_edges_betw_un X Y"
+  have "C \<inter> all_edges_betw_un X Y \<union> (E\<setminus>C) \<inter> all_edges_betw_un X Y = all_edges_betw_un X Y"
     by (auto simp: all_edges_betw_un_def)
-  with True have "(edge_card C X Y) + (edge_card (E - C) X Y) \<le> card (all_edges_betw_un X Y)"
+  with True have "(edge_card C X Y) + (edge_card (E\<setminus>C) X Y) \<le> card (all_edges_betw_un X Y)"
     unfolding edge_card_def
     by (metis Diff_Int_distrib2 Diff_disjoint card_Un_disjoint card_Un_le finite_Int finite_all_edges_betw_un)
   with True show ?thesis
@@ -318,16 +323,16 @@ proof (cases "finite X \<and> finite Y")
 qed (auto simp: gen_density_def)
 
 lemma gen_density_lt1: 
-  assumes "{x,y} \<in> E-C" "x \<in> X" "y \<in> Y" "C \<subseteq> E"
+  assumes "{x,y} \<in> E\<setminus>C" "x \<in> X" "y \<in> Y" "C \<subseteq> E"
   shows "gen_density C X Y < 1"
 proof (cases "finite X \<and> finite Y")
   case True
-  then have "0 < gen_density (E - C) X Y"
+  then have "0 < gen_density (E\<setminus>C) X Y"
     using assms gen_density_gt0 by auto
-  have "gen_density C X Y \<le> 1 - gen_density (E - C) X Y"
+  have "gen_density C X Y \<le> 1 - gen_density (E\<setminus>C) X Y"
     by (intro gen_density_le_1_minus)
   then show ?thesis
-    using \<open>0 < gen_density (E - C) X Y\<close> by linarith
+    using \<open>0 < gen_density (E\<setminus>C) X Y\<close> by linarith
 qed (auto simp: gen_density_def)
 
 lemma gen_density_le_iff:
@@ -341,7 +346,7 @@ from the remaining set" (page 17) \<close>
 lemma gen_density_below_avg_ge:
   assumes "disjnt X Z" "finite X" "Y\<subset>X" "finite Z" 
     and genY: "gen_density C Y Z \<le> gen_density C X Z"
-  shows "gen_density C (X-Y) Z \<ge> gen_density C X Z"
+  shows "gen_density C (X\<setminus>Y) Z \<ge> gen_density C X Z"
 proof -
   have "real (edge_card C Y Z) / card Y \<le> real (edge_card C X Z) / card X"
     using assms
@@ -499,13 +504,13 @@ proposition density_eq_average_partition:
 proof (cases "k=1 \<or> gorder = Suc k")
   case True
   then have [simp]: "gorder choose k = gorder" by auto
-  have eq: "(C \<inter> {{x, y} |y. y \<in> V \<and> y \<noteq> x \<and> {x, y} \<in> E}) 
-           = (\<lambda>y. {x,y}) ` {y. {x,y} \<in> C}" for x
-    using \<open>C\<subseteq>E\<close> wellformed by fastforce
   have "V \<noteq> {}"
     using assms by force
   then have nontriv: "E \<noteq> {}"
     using assms card_all_edges finV by force
+  have eq: "(C \<inter> ({{x, y} |y. y \<in> V \<and> y \<noteq> x} \<inter> E))
+           = (\<lambda>y. {x,y}) ` {y. {x,y} \<in> C}" for x
+    using \<open>C\<subseteq>E\<close> wellformed by fastforce
   have "(\<Sum>U\<in>[V]\<^bsup>k\<^esup>. gen_density C U (V \<setminus> U)) = (\<Sum>x\<in>V. gen_density C {x} (V \<setminus> {x}))"
     using True
   proof
@@ -514,13 +519,21 @@ proof (cases "k=1 \<or> gorder = Suc k")
       by (simp add: sum_nsets_one)
   next
     assume \<section>: "gorder = Suc k"
-    then have  "V-A \<noteq> {}" if "card A = k" "finite A" for A
-      using that
-      by (metis assms(2) card.empty card_less_sym_Diff finV less_nat_zero_code)
+    have "[V]\<^bsup>k\<^esup> \<subseteq> (\<lambda>x. V \<setminus> {x}) ` V"
+      unfolding inj_on_def bij_betw_def nsets_def
+    proof clarify
+      fix A
+      assume A: "k = card A" "finite A" "A \<subseteq> V"
+      then obtain x where "x \<in> V \<setminus> A"
+        by (metis assms(2) order_less_le psubset_imp_ex_mem)
+      then have "A = V \<setminus> {x}"
+        using \<section> A 
+        by (metis Diff_insert_absorb card.insert card_subset_eq insert_subset subsetI finV Diff_iff)
+      then show "A \<in> (\<lambda>x. V \<setminus> {x}) ` V"
+        using \<open>x \<in> V \<setminus> A\<close> by blast
+    qed
     then have bij: "bij_betw (\<lambda>x. V \<setminus> {x}) V ([V]\<^bsup>k\<^esup>)"
-      using finV \<section> 
-      by (auto simp: inj_on_def bij_betw_def nsets_def image_iff)
-        (metis Diff_insert_absorb card.insert card_subset_eq insert_subset subsetI)
+      using finV \<section> by (auto simp add: inj_on_def bij_betw_def nsets_def)
     moreover have "V\<setminus>(V\<setminus>{x}) = {x}" if "x\<in>V" for x
       using that by auto
     ultimately show ?thesis

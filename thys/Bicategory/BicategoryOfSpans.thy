@@ -799,7 +799,7 @@ $$
                             using w_def Chn_\<rho>w C.comp_cod_arr by simp
                           also have "... = ?\<nu>'"
                             by (metis (no_types, lifting) C.not_arr_null C.prj_tuple(1) C.seqE
-                                C.tuple_is_extensional Chn_\<rho>w 4)
+                                C.tuple_extensionality Chn_\<rho>w 4)
                           finally have "rfw.Prj\<^sub>0 \<cdot> Chn (\<rho> \<star> w) = ?\<nu>'"
                             by blast
                           thus ?thesis by simp
@@ -818,7 +818,7 @@ $$
                         also have "... = (r.chine \<cdot> \<p>\<^sub>1[r0, r0 \<cdot> ?q1]) \<cdot> Chn \<a>[r, f, w] \<cdot>
                                            Chn (\<rho> \<star> w) \<cdot> Chn \<nu>"
                           by (metis (no_types, lifting) C.not_arr_null C.prj_tuple(2) C.seqE
-                              C.tuple_is_extensional Chn_r\<theta> 4)
+                              C.tuple_extensionality Chn_r\<theta> 4)
                         also have "... = r.chine \<cdot> (rfw.Prj\<^sub>1 \<cdot> Chn \<a>[r, f, w]) \<cdot> Chn (\<rho> \<star> w) \<cdot> Chn \<nu>"
                           using w_def Dom_\<theta>_leg1_eq C.comp_assoc by simp
                         also have "... = r.chine \<cdot> (rfw.Prj\<^sub>1\<^sub>1 \<cdot> Chn (\<rho> \<star> w)) \<cdot> Chn \<nu>"
@@ -832,7 +832,7 @@ $$
                             using C.comp_assoc by simp
                           also have "... = k1 \<cdot> ?\<rho> \<cdot> ?q1"
                             by (metis (no_types, lifting) C.not_arr_null C.prj_tuple(2)
-                                C.seqE C.tuple_is_extensional Chn_\<rho>w 4)
+                                C.seqE C.tuple_extensionality Chn_\<rho>w 4)
                           also have "... = (k1 \<cdot> ?\<rho>) \<cdot> ?q1"
                             using C.comp_assoc by presburger
                           also have "... = ?R \<cdot> ?q1"
@@ -1149,7 +1149,7 @@ $$
               hence "C.commutative_square r0 ?u1 \<p>\<^sub>1[r0, r0 \<cdot> ?p1] (\<theta>.chine \<cdot> \<p>\<^sub>0[r0, r0 \<cdot> ?p1])"
                 using fw.leg1_composite by auto
               have "C.commutative_square r0 ?u1 \<p>\<^sub>1[r0, r0 \<cdot> ?p1'] (\<theta>'.chine \<cdot> \<p>\<^sub>0[r0, r0 \<cdot> ?p1'])"
-                using C.tuple_is_extensional Chn_r\<theta>'_eq r\<theta>'.chine_simps(1) fw' by force
+                using C.tuple_extensionality Chn_r\<theta>'_eq r\<theta>'.chine_simps(1) fw' by force
               have "C.commutative_square ra ?w1 rfw.Prj\<^sub>0\<^sub>1 rfw.Prj\<^sub>0"
                 using C.pullback_commutes' gw.legs_form_cospan(1) rfw.prj_simps(2) C.comp_assoc
                       C.comp_cod_arr
@@ -1164,18 +1164,18 @@ $$
                 have "C.arr rfw.chine_assoc"
                   by (metis C.seqE rfw.prj_chine_assoc(1) rfw.prj_simps(1))
                 thus ?thesis
-                  using C.tuple_is_extensional rfw.chine_assoc_def by fastforce
+                  using C.tuple_extensionality rfw.chine_assoc_def by fastforce
               qed
               have "C.commutative_square r0 (r0 \<cdot> ?p1') rfw'.Prj\<^sub>1\<^sub>1 \<langle>rfw'.Prj\<^sub>0\<^sub>1 \<lbrakk>ra, ?w1'\<rbrakk> rfw'.Prj\<^sub>0\<rangle>"
-                by (metis (no_types, lifting) C.not_arr_null C.seqE C.tuple_is_extensional
+                by (metis (no_types, lifting) C.not_arr_null C.seqE C.tuple_extensionality
                     arrow_of_spans_data.select_convs(2) rfw'.chine_assoc_def
                     rfw'.prj_chine_assoc(1) rfw'.prj_simps(1) span_data.select_convs(1-2))
               have "C.commutative_square k0 ?w1 (\<rho>.chine \<cdot> ?p1) ?p0"
-                using C.tuple_is_extensional Chn_\<rho>w_eq \<rho>w.chine_simps(1) by fastforce
+                using C.tuple_extensionality Chn_\<rho>w_eq \<rho>w.chine_simps(1) by fastforce
               have "C.commutative_square k0 ?w1' (\<rho>.chine \<cdot> ?p1') (w'.chine \<cdot> ?p0')"
-                using C.tuple_is_extensional \<rho>w'.chine_composite \<rho>w'.chine_simps(1) by force
+                using C.tuple_extensionality \<rho>w'.chine_composite \<rho>w'.chine_simps(1) by force
               have "C.commutative_square k0 ?w1' (\<rho>.chine \<cdot> ?p1') ?p0'"
-                using C.tuple_is_extensional Chn_\<rho>w'_eq \<rho>w'.chine_simps(1) by force
+                using C.tuple_extensionality Chn_\<rho>w'_eq \<rho>w'.chine_simps(1) by force
               text \<open>
                 Now, derive the consequences of the equation:
                 \[
@@ -1515,7 +1515,7 @@ $$
                         have "r\<theta>.chine \<noteq> C.null \<Longrightarrow>
                                 \<p>\<^sub>1[r.cod.leg0, Cod_\<theta>.leg1] \<cdot> r\<theta>.chine =
                                 r.chine \<cdot> \<p>\<^sub>1[r0, Dom_\<theta>.leg1]"
-                          by (metis (lifting) C.prj_tuple(2) C.tuple_is_extensional r.cod_simps(2)
+                          by (metis (lifting) C.prj_tuple(2) C.tuple_extensionality r.cod_simps(2)
                               r\<theta>.chine_composite)
                         thus ?thesis
                           using Cod_\<theta>_1 Dom_\<theta>_1 r\<theta>.chine_simps(1) fw by fastforce
@@ -1566,7 +1566,7 @@ $$
                 using L R E by simp
               have **: "?p1' \<cdot> \<beta>.chine = ?p1"
                 by (metis "*" C.in_homE C.not_arr_null C.prj_tuple(2) C.tuple_in_hom
-                    C.tuple_is_extensional
+                    C.tuple_extensionality
                     \<open>C.commutative_square r0 u.leg1
                        (\<p>\<^sub>1[ra, w'.leg1] \<cdot> \<beta>.chine) (\<theta>'.chine \<cdot> \<beta>.chine)\<close>)
               have ***: "\<theta>'.chine \<cdot> \<beta>.chine = \<theta>.chine"
@@ -1791,7 +1791,7 @@ $$
                     qed
                     thus ?thesis
                       using C.iso_pullback_ide C.iso_is_retraction C.retraction_is_epi
-                            C.epiE [of "?p0" \<gamma>'.chine \<gamma>.chine] cospan \<gamma>.chine_in_hom
+                            C.epi_cancel [of "?p0" \<gamma>'.chine \<gamma>.chine] cospan \<gamma>.chine_in_hom
                             \<gamma>'.chine_in_hom
                       by auto
                   qed
@@ -3097,9 +3097,9 @@ $$
                   \<a>[h, p\<^sub>0, w] \<cdot> \<ll> ((h \<star> p\<^sub>0) \<star> w) \<cdot> (trg h \<star> \<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w])"
               using assms 0 k.antipar cospan comp_cod_arr \<ll>_ide_simp by simp
             also have "... = \<a>[h, p\<^sub>0, w] \<cdot> \<ll> (\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w])"
-              using assms 0 k.antipar cospan \<ll>.is_natural_2 [of "\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]"] by simp
+              using assms 0 k.antipar cospan \<ll>.naturality2 [of "\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]"] by simp
             also have "... = \<a>[h, p\<^sub>0, w] \<cdot> \<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w] \<cdot> \<ll> (h \<star> p\<^sub>0 \<star> w)"
-              using assms 0 k.antipar cospan \<ll>.is_natural_1 [of "\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]"] comp_assoc
+              using assms 0 k.antipar cospan \<ll>.naturality1 [of "\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]"] comp_assoc
               by simp
             also have "... = (\<a>[h, p\<^sub>0, w] \<cdot> \<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]) \<cdot> \<ll> (h \<star> p\<^sub>0 \<star> w)"
               using comp_assoc by presburger
@@ -3416,7 +3416,7 @@ $$
           using assms \<beta> k.antipar cospan tab_in_hom by fastforce
         ultimately have "composite_cell w \<theta> = composite_cell w' \<theta>' \<cdot> \<beta>"
           using assms 0 w w' \<beta> k.antipar cospan iso_assoc iso_is_section section_is_mono
-                monoE [of "\<a>[k\<^sup>*, h, u]" "composite_cell w \<theta>" "composite_cell w' \<theta>' \<cdot> \<beta>"]
+                mono_cancel [of "\<a>[k\<^sup>*, h, u]" "composite_cell w \<theta>" "composite_cell w' \<theta>' \<cdot> \<beta>"]
                 comp_assoc
           by simp
         thus ?thesis
@@ -5232,7 +5232,7 @@ $$
          using assms B.is_iso_class_def B.ide_in_iso_class by auto
      qed
 
-     lemma Comp_is_extensional:
+     lemma Comp_extensionality:
      assumes "Comp G F \<noteq> {}"
      shows "B.is_iso_class F" and "B.is_iso_class G"
      and "F \<noteq> {}" and "G \<noteq> {}"
@@ -6278,7 +6278,7 @@ $$
                B.isomorphic_implies_ide(1) B.src_hcomp)
          let ?W = "CLS w"
          have W: "\<guillemotleft>?W : dom U \<rightarrow> dom \<lbrakk>\<lbrakk>?f\<rbrakk>\<rbrakk>\<guillemotright>"
-         proof
+         proof (intro in_homI)
            show "arr ?W"
              using w CLS_in_hom by blast
            thus "dom ?W = dom U"
@@ -7869,13 +7869,13 @@ $$
         hence "(LHS \<cdot> \<a>[t\<^sub>1, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]) \<cdot> (\<omega>.the_\<nu> \<star> \<rho>\<sigma>.p\<^sub>1) =
                (RHS \<cdot> \<a>[t\<^sub>1, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]) \<cdot> (\<omega>.the_\<nu> \<star> \<rho>\<sigma>.p\<^sub>1)"
           using u\<^sub>\<tau> r\<^sub>0s\<^sub>1.ide_u LHS RHS iso_is_section [of "\<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0]"] section_is_mono
-                monoE \<tau>\<mu>.composable comp_assoc
+                mono_cancel \<tau>\<mu>.composable comp_assoc
           by (metis (no_types, lifting) \<Delta>_simps(1) \<mu>.ide_base
               \<open>\<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> r\<^sub>0s\<^sub>1.p\<^sub>0] \<cdot> LHS \<cdot> \<a>[t\<^sub>1, \<omega>.chine, r\<^sub>0s\<^sub>1.p\<^sub>1] \<cdot> (\<omega>.the_\<nu> \<star> r\<^sub>0s\<^sub>1.p\<^sub>1) =
                ((\<omega> \<star> \<chi>) \<star> s\<^sub>0 \<star> r\<^sub>0s\<^sub>1.p\<^sub>0) \<cdot> \<rho>\<sigma>.tab\<close>
               \<tau>.ide_base hseq_char ideD(1) ide_u iso_assoc')
         hence 1: "LHS \<cdot> \<a>[t\<^sub>1, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1] = RHS \<cdot> \<a>[t\<^sub>1, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]"
-          using epiE LHS RHS iso_is_retraction retraction_is_epi \<tau>\<mu>.composable
+          using epi_cancel LHS RHS iso_is_retraction retraction_is_epi \<tau>\<mu>.composable
                 \<omega>.the_\<nu>_props iso_hcomp
           by (metis \<Delta>_simps(1) \<omega>.the_\<nu>_simps(2)
               \<open>((\<omega> \<star> \<chi>) \<star> s\<^sub>0 \<star> r\<^sub>0s\<^sub>1.p\<^sub>0) \<cdot> \<rho>\<sigma>.tab =
@@ -7890,7 +7890,7 @@ $$
           moreover have "seq RHS \<a>[t\<^sub>1, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]"
             using RHS \<rho>.T0.antipar(1) by auto
           ultimately show ?thesis
-            using epiE 1 by blast
+            using epi_cancel 1 by blast
         qed
       qed
       have 1: "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : ?w\<^sub>\<tau> \<Rightarrow> ?w\<^sub>\<tau>'\<guillemotright> \<and> ?\<beta>\<^sub>\<tau> = t\<^sub>1 \<star> \<gamma> \<and> ?\<theta>\<^sub>\<tau> = ?\<theta>\<^sub>\<tau>' \<cdot> (t\<^sub>0 \<star> \<gamma>)"
@@ -10341,12 +10341,12 @@ $$
       using VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<Xi>.map_simp_ide compositor_is_iso
       by (unfold_locales, simp)
 
-    lemma compositor_is_natural_transformation:
+    lemma compositor_naturalitytransformation:
     shows "transformation_by_components VV.comp Span.vcomp HoSPN_SPN.map SPNoH.map
              (\<lambda>rs. CMP (fst rs) (snd rs))"
       ..
 
-    lemma compositor_is_natural_isomorphism:
+    lemma compositor_naturalityisomorphism:
     shows "natural_isomorphism VV.comp Span.vcomp HoSPN_SPN.map SPNoH.map \<Xi>.map"
       ..
 
@@ -10603,10 +10603,10 @@ $$
 
     interpretation \<Phi>: transformation_by_components VV.comp Span.vcomp
                         HoSPN_SPN.map SPNoH.map \<open>\<lambda>rs. CMP (fst rs) (snd rs)\<close>
-      using compositor_is_natural_transformation by simp
+      using compositor_naturalitytransformation by simp
     interpretation \<Phi>: natural_isomorphism VV.comp Span.vcomp
                         HoSPN_SPN.map SPNoH.map \<Phi>.map
-      using compositor_is_natural_isomorphism by simp
+      using compositor_naturalityisomorphism by simp
 
     (*
      * TODO: Figure out how this subcategory gets introduced.
@@ -13971,10 +13971,10 @@ $$
 
     interpretation \<Phi>: transformation_by_components VV.comp Span.vcomp
                         HoSPN_SPN.map SPNoH.map \<open>\<lambda>rs. CMP (fst rs) (snd rs)\<close>
-      using compositor_is_natural_transformation by simp
+      using compositor_naturalitytransformation by simp
     interpretation \<Phi>: natural_isomorphism VV.comp Span.vcomp
                         HoSPN_SPN.map SPNoH.map \<Phi>.map
-      using compositor_is_natural_isomorphism by simp
+      using compositor_naturalityisomorphism by simp
 
     abbreviation \<Phi>
     where "\<Phi> \<equiv> \<Phi>.map"
@@ -14596,7 +14596,7 @@ $$
             using \<mu> \<mu>_def \<mu>.\<mu>_in_terms_of_\<Delta> by auto
           hence "r.T0.trnr\<^sub>\<epsilon> s \<Delta> = r.T0.trnr\<^sub>\<epsilon> s \<mu>.\<Delta>"
             using r s \<Delta> r.T0.adjoint_transpose_right(2) r.yields_isomorphic_representation
-                  iso_inv_iso iso_is_retraction retraction_is_epi epiE
+                  iso_inv_iso iso_is_retraction retraction_is_epi epi_cancel
             by (metis \<mu>.in_hom \<mu>_def arrI)
           thus ?thesis
             using \<Delta> \<mu>.\<Delta>_in_hom(2) src_eq r.T0.adjoint_transpose_right(6)

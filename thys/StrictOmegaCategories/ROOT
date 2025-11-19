@@ -2,13 +2,12 @@ chapter AFP
 
 session "StrictOmegaCategories" = HOL +
   options [timeout = 600]
-	sessions
-		"HOL-Library" 
+  sessions
+    "HOL-Library"
   theories
     Globular_Set
     Pasting_Diagram
     Strict_Omega_Category
-	document_files
+  document_files
     "root.bib"
-		"root.tex"
-    				
+    "root.tex"

@@ -1429,7 +1429,7 @@ next
   have "tl es = extract_subdiags B4 l" unfolding es_def
     using extract_subdiags_not_emp(2)[OF sp[symmetric]] by simp
   have "list_all (\<lambda>B. 0 < dim_row B \<and> hermitian B) (hd es # (tl es))"
-  proof (rule list_all_simps(1)[THEN iffD2], intro conjI)
+  proof (rule list_all_Cons_iff [THEN iffD2], intro conjI)
     show "hermitian (hd es)" 
     proof (rule split_block_hermitian_1)
       show "hermitian A" using Cons by simp
@@ -1700,7 +1700,7 @@ subsection \<open>Counting similar neighbours in a list\<close>
 text \<open>The function \verb+eq_comps+ takes a list as an input and counts the number of
 adjacent elements that are identical.\<close>
 
-fun eq_comps where
+fun eq_comps :: \<open>'a list \<Rightarrow> nat list\<close> where
   "eq_comps [] = []"
 | "eq_comps [x] = [1]"
 | "eq_comps (x#y#l) = (let tmp = (eq_comps (y#l)) in
@@ -1791,27 +1791,10 @@ qed
 lemma eq_comps_gt_0:
   assumes "l \<noteq> []"
   shows "list_all (\<lambda>a. 0 < a) (eq_comps l)"
-proof (induct l rule:eq_comps.induct)
-  case 1
-  then show ?case by simp
-next
-  case (2 x)
-  then show ?case by simp
-next
-  case (3 x y l)
-  then show ?case 
-  proof (cases "x = y")
-    case True
-    then show ?thesis 
-      using 3 eq_comps.simps(3)[of x y l] list_all_simps(1) unfolding Let_def
-      by (metis eq_comps_not_empty hd_Cons_tl list.discI zero_less_Suc) 
-  next
-    case False
-    then show ?thesis 
-      using 3 eq_comps.simps(3)[of x y l] list_all_simps(1) unfolding Let_def 
-      by auto
-  qed
-qed
+  apply (induction l rule: eq_comps.induct)
+    apply (auto simp add: list_all_iff Let_def)
+  apply (metis eq_comps_not_empty list.distinct(1) list.set_sel(2))
+  done
 
 lemma eq_comps_elem_le_length:
   assumes "a#m = eq_comps l"
@@ -2410,7 +2393,7 @@ next
     assume asm: "i < a \<and> a \<le> j \<and> j < length l"
     hence "Re (l!i) < Re (l!j)"
       using Cons eq_comps_compare eq_comp_Re
-      by (smt (z3) dual_order.strict_trans dual_order.strict_trans1 length_map 
+      by (smt (verit) dual_order.strict_trans dual_order.strict_trans1 length_map 
           nth_map)
     moreover have "l!i \<in> Reals" using asm Cons by simp
     moreover have "l!j \<in> Reals" using asm Cons by simp

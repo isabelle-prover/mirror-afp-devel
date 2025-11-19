@@ -1370,8 +1370,7 @@ proof -
     using wit
     apply (induction vs arbitrary: v)
      apply (auto)
-     apply (smt empty_is_image idem imageE insert_not_empty keys_idem_def mem_Collect_eq
-        the_elem_eq the_elem_image_unique)
+    apply (metis (mono_tags, lifting) emptyE imageI insertE mem_Collect_eq)
     apply (smt Collect_cong idem imageE insert_compr keys_idem_def mem_Collect_eq)
     done
   then show ?thesis

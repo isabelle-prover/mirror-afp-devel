@@ -1,0 +1,26 @@
+chapter AFP
+session Typed_Ordered_Resolution = Saturation_Framework_Extensions +
+  options [timeout = 900]
+  sessions
+    First_Order_Clause
+    Saturation_Framework
+    Saturation_Framework_Extensions
+    Abstract_Substitution
+
+  theories
+    Ground_Ordered_Resolution_Completeness
+    Ground_Ordered_Resolution_Soundness
+    Ground_Ordered_Resolution
+    
+    Ordered_Resolution_Soundness
+    Ordered_Resolution_Completeness
+    Ordered_Resolution_Welltypedness_Preservation
+
+    Untyped_Ordered_Resolution_Completeness
+    Untyped_Ordered_Resolution_Soundness
+
+    Monomorphic_Ordered_Resolution
+    Ordered_Resolution_Example
+
+  document_files
+    "root.tex"

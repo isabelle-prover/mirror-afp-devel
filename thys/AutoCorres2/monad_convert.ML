@@ -218,8 +218,12 @@ let
   val simps = if do_polish then Utils.get_rules ctxt @{named_theorems polish} else []
   val congs = if do_polish then Utils.get_rules ctxt @{named_theorems polish_cong} else []
   (* Simplify using polish rules. *)
-  val simp_ctxt = put_simpset HOL_ss ctxt addsimps simps addsimprocs [@{simproc NO_MATCH}]
-                  |> fold Simplifier.add_cong congs
+  val record_ss = RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt)
+  val basic_ss = merge_ss (HOL_ss, record_ss)
+  val simp_ctxt = put_simpset basic_ss ctxt
+    |> Simplifier.add_simps simps
+    |> Simplifier.add_proc @{simproc NO_MATCH}
+    |> fold Simplifier.add_cong congs
                   
   val simp_conv = Simplifier.rewrite simp_ctxt
 

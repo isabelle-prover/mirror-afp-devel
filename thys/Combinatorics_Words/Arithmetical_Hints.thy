@@ -4,6 +4,7 @@
     Author:     Štěpán Starosta, CTU in Prague
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
 *)
 
 theory Arithmetical_Hints
@@ -35,8 +36,7 @@ lemma plus_one_between:  "(a :: nat) < b \<Longrightarrow> \<not> b < a + 1"
 lemma quotient_smaller: "k \<noteq> (0 :: nat) \<Longrightarrow>  b \<le> k * b"
   by simp
 
-lemma mult_cancel_le: "b \<noteq> 0 \<Longrightarrow> a*b \<le> c*b \<Longrightarrow> a \<le> (c::nat)"
-  by simp
+  thm mult_right_le_imp_le
 
 lemma add_lessD2: "k + m < (n::nat) \<Longrightarrow> m < n"
 unfolding add.commute[of k] using add_lessD1.
@@ -55,6 +55,9 @@ qed
 lemma assumes "q \<noteq> (0::nat)" shows "p \<le> p + q - gcd p q"
   using gcd_le2_nat[OF \<open>q \<noteq> 0\<close>, of p]
   by linarith
+
+lemma pos_div_gcd_pos [intro]: assumes "(0 :: nat) < p" shows "0 < p div gcd p q"
+    using \<open>0 < p\<close> dvd_div_eq_0_iff[OF gcd_dvd1] gr0I by metis
 
 lemma less_mult_one: assumes "(m-1)*k < k" obtains "m = 0" | "m = (1::nat)"
   using assms by fastforce
@@ -130,6 +133,18 @@ proof-
   thus "a = b"
     using eq by auto
 qed
+
+lemma add_le_cancel_ge_right: "a + b \<le> c + d \<Longrightarrow> d \<le> b \<Longrightarrow> a \<le> (c :: nat)" for a b c d
+  by force
+
+lemma add_less_cancel_ge_right: "a + b \<le> c + d \<Longrightarrow> d < b \<Longrightarrow> a < (c :: nat)" for a b c d
+  by force
+
+lemma add_le_cancel_ge_left: "a + b \<le> c + d \<Longrightarrow> c \<le> a \<Longrightarrow> b \<le> (d :: nat)" for a b c d
+  by simp
+
+lemma add_less_cancel_ge_left: "a + b \<le> c + d \<Longrightarrow> c < a \<Longrightarrow> b < (d :: nat)" for a b c d
+  by simp
 
 lemma crossproduct_le: assumes "(a::nat) \<le> b" and "c \<le> d"
   shows "a*d + b*c \<le> a*c + b*d"

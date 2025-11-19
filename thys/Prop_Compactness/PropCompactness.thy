@@ -3,7 +3,8 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780.  In Spanish 
+   Last modified: 29 Sep, 2025 *)
 
 theory PropCompactness
 
@@ -30,10 +31,9 @@ proof (rule notI)
   show "False"
   proof -
     have  "\<exists>I. I model {F, \<not>.F}" using hip by(unfold satisfiable_def, auto) 
-    then obtain I where I: "(t_v_evaluation I F) = Ttrue" 
-      and "(t_v_evaluation I (\<not>.F)) = Ttrue"  
+    then obtain I where I: "(t_v_evaluation I F)" and "(t_v_evaluation I (\<not>.F))"  
       by(unfold model_def, auto)
-    thus "False" by(auto simp add: v_negation_def)
+    thus "False" by auto
   qed
 qed
  
@@ -57,59 +57,59 @@ proof (rule allI notI)+
 qed
 
 lemma UnsatisfiableFF:
-  shows "\<not> (satisfiable {FF})"
+  shows "\<not> (satisfiable {\<bottom>.})"
 proof -
-  have "\<forall> I. t_v_evaluation I FF = Ffalse" by simp
-  hence "\<forall> I. \<not> (I model {FF})"  by(unfold model_def, auto) 
+  have "\<not>(\<forall> I. t_v_evaluation I \<bottom>.)" by simp
+  hence "\<forall> I. \<not> (I model {\<bottom>.})"  by(unfold model_def, auto) 
   thus ?thesis by(unfold satisfiable_def, auto)
 qed
 
 lemma consistenceP_Prop2:
   assumes "\<forall> (A::'b formula set). (A\<subseteq> W \<and> finite A) \<longrightarrow> satisfiable A"
-  shows "FF \<notin> W"
+  shows "\<bottom>. \<notin> W"
 proof (rule notI)
-  assume hip: "FF \<in> W"
+  assume hip: "\<bottom>. \<in> W"
   show "False"
   proof -
-    have "{FF} \<subseteq> W" using hip by simp 
+    have "{\<bottom>.} \<subseteq> W" using hip by simp 
     moreover
-    have "finite {FF}" by simp  
+    have "finite {\<bottom>.}" by simp  
     ultimately
-    have "{FF} \<subseteq> W \<and> finite {FF}" by simp  
+    have "{\<bottom>.} \<subseteq> W \<and> finite {\<bottom>.}" by simp  
     moreover
-    have "({FF::'b formula} \<subseteq> W \<and> finite {FF}) \<longrightarrow> satisfiable {FF::'b formula}" 
+    have "({\<bottom>.::'b formula} \<subseteq> W \<and> finite {\<bottom>.}) \<longrightarrow> satisfiable {\<bottom>.::'b formula}" 
       using assms by auto
     ultimately show "False" using UnsatisfiableFF by auto
   qed
-qed
+qed  
 
-lemma UnsatisfiableFFa:
-  shows "\<not> (satisfiable {\<not>.TT})"
+lemma Unsatisfiable1:
+  shows "\<not> (satisfiable {\<not>.\<top>.})"
 proof -
-  have "\<forall> I. t_v_evaluation I TT = Ttrue" by simp  
-  have "\<forall> I. t_v_evaluation I (\<not>.TT) = Ffalse" by(auto simp add:v_negation_def)
-  hence "\<forall> I. \<not> (I model {\<not>.TT})"  by(unfold model_def, auto) 
+  have "\<forall> I. t_v_evaluation I \<top>. = True" by simp  
+  have "\<not>(\<forall> I. t_v_evaluation I (\<not>.\<top>.))" by auto
+  hence "\<forall> I. \<not> (I model {\<not>.\<top>.})"  by(unfold model_def, auto) 
   thus ?thesis by(unfold satisfiable_def, auto)
 qed
 
 lemma consistenceP_Prop3:
   assumes "\<forall> (A::'b formula set). (A\<subseteq> W \<and> finite A) \<longrightarrow> satisfiable A"
-  shows "\<not>.TT \<notin> W"
+  shows "\<not>.\<top>. \<notin> W"
 proof (rule notI)
-  assume hip: "\<not>.TT \<in> W"
+  assume hip: "\<not>.\<top>. \<in> W"
   show "False"
   proof -
-    have "{\<not>.TT} \<subseteq> W" using hip by simp 
+    have "{\<not>.\<top>.} \<subseteq> W" using hip by simp 
     moreover
-    have "finite {\<not>.TT}" by simp  
+    have "finite {\<not>.\<top>.}" by simp  
     ultimately
-    have "{\<not>.TT} \<subseteq> W \<and> finite {\<not>.TT}" by simp  
+    have "{\<not>.\<top>.} \<subseteq> W \<and> finite {\<not>.\<top>.}" by simp  
     moreover
-    have "({\<not>.TT::'b formula} \<subseteq> W \<and> finite {\<not>.TT}) \<longrightarrow> 
-          satisfiable {\<not>.TT::'b formula}" 
+    have "({\<not>.\<top>.::'b formula} \<subseteq> W \<and> finite {\<not>.\<top>.}) \<longrightarrow> 
+          satisfiable {\<not>.\<top>.::'b formula}" 
       using assms by auto
-    thus "False" using UnsatisfiableFFa
-      using \<open>{\<not>.TT} \<subseteq> W\<close> by auto
+    thus "False" using Unsatisfiable1
+      using \<open>{\<not>.\<top>.} \<subseteq> W\<close> by auto
   qed
 qed
 
@@ -123,21 +123,17 @@ lemma satisfiableUnion1:
   assumes "satisfiable (A \<union> {\<not>.\<not>.F})" 
   shows "satisfiable (A \<union> {F})"
 proof -
-  have "\<exists>I. \<forall> G \<in> (A \<union> {\<not>.\<not>.F}). t_v_evaluation I G = Ttrue"  
+  have "\<exists>I. \<forall> G \<in> (A \<union> {\<not>.\<not>.F}). t_v_evaluation I G = True"  
     using assms by(unfold satisfiable_def, unfold model_def, auto)
-  then obtain I where I: "\<forall> G \<in> (A \<union> {\<not>.\<not>.F}). t_v_evaluation I G = Ttrue" 
+  then obtain I where I: "\<forall> G \<in> (A \<union> {\<not>.\<not>.F}). t_v_evaluation I G = True" 
     by auto      
-  hence 1: "\<forall> G \<in> A. t_v_evaluation I G = Ttrue" 
-    and 2: "t_v_evaluation I (\<not>.\<not>.F) = Ttrue" 
-    by auto
-  have "typeFormula (\<not>.\<not>.F) = NoNo" by auto
-  hence "t_v_evaluation I  F = Ttrue" using EquivNoNoComp[of "\<not>.\<not>.F"] 2 
-    by (unfold equivalent_def, unfold Comp1_def, auto)          
-  hence "\<forall> G \<in> A \<union> {F}. t_v_evaluation I G = Ttrue" using 1 by auto  
+  hence 1: "\<forall> G \<in> A. t_v_evaluation I G = True" 
+    and 2: "t_v_evaluation I (\<not>.\<not>.F) = True" 
+    by auto        
+  hence "\<forall> G \<in> A \<union> {F}. t_v_evaluation I G = True" using 1 by auto  
   thus "satisfiable (A \<union> {F})" 
     by(unfold satisfiable_def, unfold model_def, auto)
 qed
-
 
 lemma consistenceP_Prop4:
   assumes hip1: "\<forall> (A::'b formula set). (A\<subseteq> W \<and> finite A) \<longrightarrow> satisfiable A" 
@@ -160,29 +156,24 @@ proof (rule allI, rule impI)+
   qed
 qed
 
-
 lemma satisfiableUnion2:
-  assumes hip1: "FormulaAlfa F" and hip2: "satisfiable (A \<union> {F})" 
+  assumes hip1: "FormulaAlpha F" and hip2: "satisfiable (A \<union> {F})" 
   shows "satisfiable (A \<union> {Comp1 F,Comp2 F})"
 proof -   
-  have "\<exists>I.\<forall> G \<in> A \<union> {F}. t_v_evaluation I G = Ttrue"  
+  have "\<exists>I.\<forall> G \<in> A \<union> {F}. t_v_evaluation I G = True"  
     using hip2 by(unfold satisfiable_def, unfold model_def, auto)
-  then obtain I where I:  "\<forall> G \<in> A \<union> {F}. t_v_evaluation I G = Ttrue" by auto      
-  hence 1: "\<forall> G \<in> A. t_v_evaluation I G = Ttrue" and 2: "t_v_evaluation I F = Ttrue" by auto
-  have "typeFormula F = Alfa" using hip1 noAlfaBeta noAlfaNoNo by auto
-  hence "equivalent F (Comp1 F \<and>. Comp2 F)" 
-    using 2 EquivAlfaComp[of F] by auto  
-  hence  "t_v_evaluation I (Comp1 F \<and>. Comp2 F) = Ttrue" 
-    using 2 by( unfold equivalent_def, auto) 
-  hence "t_v_evaluation I (Comp1 F) = Ttrue \<and> t_v_evaluation I (Comp2 F) = Ttrue"  
-    using ConjunctionValues by auto 
-  hence "\<forall> G \<in> A \<union> {Comp1 F, Comp2 F} . t_v_evaluation I G = Ttrue" using 1 by auto
+  then obtain I where I:  "\<forall> G \<in> A \<union> {F}. t_v_evaluation I G" by auto      
+  hence 1: "\<forall> G \<in> A. t_v_evaluation I G" and 2: "t_v_evaluation I F" by auto
+  hence  "t_v_evaluation I (Comp1 F \<and>. Comp2 F)"
+    using EquivAlpha equivalent_def hip1 by blast  
+  hence "t_v_evaluation I (Comp1 F) \<and> t_v_evaluation I (Comp2 F)" by auto 
+  hence "\<forall> G \<in> A \<union> {Comp1 F, Comp2 F} . t_v_evaluation I G" using 1 by auto
   thus "satisfiable (A \<union> {Comp1 F,Comp2 F})" 
     by (unfold satisfiable_def, unfold model_def, auto)
 qed
 
 lemma consistenceP_Prop5:
-  assumes hip0: "FormulaAlfa F" 
+  assumes hip0: "FormulaAlpha F" 
   and hip1: "\<forall> (A::'b formula set). (A\<subseteq> W \<and> finite A) \<longrightarrow> satisfiable A" 
   and hip2: "F \<in> W"
   shows "\<forall> (A::'b formula set). (A\<subseteq> W \<union> {Comp1 F, Comp2 F} \<and> finite A) \<longrightarrow> 
@@ -208,43 +199,23 @@ proof (intro allI impI)
   qed
 qed
 
-
 lemma satisfiableUnion3:
   assumes hip1: "FormulaBeta F" and hip2: "satisfiable (A \<union> {F})" 
   shows "satisfiable (A \<union> {Comp1 F}) \<or> satisfiable (A \<union> {Comp2 F})" 
 proof - 
-  obtain I where I: "\<forall>G \<in> (A \<union> {F}). t_v_evaluation I G = Ttrue"
+  obtain I where I: "\<forall>G \<in> (A \<union> {F}). t_v_evaluation I G"
   using hip2 by(unfold satisfiable_def, unfold model_def, auto) 
-  hence S1: "\<forall>G \<in> A. t_v_evaluation I G = Ttrue" 
-    and S2: " t_v_evaluation I F = Ttrue" 
+  hence S1: "\<forall>G \<in> A. t_v_evaluation I G" 
+    and S2: " t_v_evaluation I F" 
     by auto
-  have V: "t_v_evaluation I (Comp1 F) = Ttrue \<or> t_v_evaluation I (Comp2 F) = Ttrue" 
-    using hip1 S2 EquivBetaComp[of F] DisjunctionValues
-    by (unfold equivalent_def, auto)       
-  have "((\<forall>G \<in> A. t_v_evaluation I G = Ttrue) \<and> t_v_evaluation I (Comp1 F) = Ttrue) \<or>
-        ((\<forall>G \<in> A. t_v_evaluation I G = Ttrue) \<and> t_v_evaluation I (Comp2 F) = Ttrue)" 
-    using V
-  proof (rule disjE)
-    assume "t_v_evaluation I (Comp1 F) = Ttrue" 
-    hence "(\<forall>G \<in> A. t_v_evaluation I G = Ttrue) \<and> t_v_evaluation I (Comp1 F) = Ttrue"
-      using S1 by auto
-    thus ?thesis by simp  
-  next
-    assume "t_v_evaluation I (Comp2 F) = Ttrue"
-    hence "(\<forall>G \<in> A. t_v_evaluation I G = Ttrue) \<and> t_v_evaluation I (Comp2 F) = Ttrue"
-      using S1 by auto
-    thus ?thesis by simp
-  qed
-  hence "(\<forall>G \<in> A \<union> {Comp1 F}. t_v_evaluation I G = Ttrue) \<or> 
-         (\<forall>G \<in> A \<union> {Comp2 F}. t_v_evaluation I G = Ttrue)" 
-    by auto 
-  hence "(\<exists>I.\<forall>G \<in> A \<union> {Comp1 F}. t_v_evaluation I G = Ttrue) \<or>
-         (\<exists>I.\<forall>G \<in> A \<union> {Comp2 F}. t_v_evaluation I G = Ttrue)" 
-    by auto
+  have V: "t_v_evaluation I (Comp1 F) \<or> t_v_evaluation I (Comp2 F)"
+    by (metis EquivBetaComp S2 equivalent_def hip1 t_v_evaluation.simps(6))       
+  have "((\<forall>G \<in> A. t_v_evaluation I G) \<and> t_v_evaluation I (Comp1 F)) \<or>
+        ((\<forall>G \<in> A. t_v_evaluation I G ) \<and> t_v_evaluation I (Comp2 F))" 
+    using V S1 by blast
   thus "satisfiable (A \<union> {Comp1 F}) \<or> satisfiable (A \<union> {Comp2 F})"
-  by (unfold satisfiable_def, unfold model_def, auto)
+    by (unfold satisfiable_def, unfold model_def, auto)
 qed
-
 
 lemma consistenceP_Prop6:
   assumes hip0: "FormulaBeta F" 
@@ -296,7 +267,7 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma ConsistenceCompactness:   
+lemma ConsistenceCompactness1:   
   shows "consistenceP{W::'b formula set. \<forall>A. (A\<subseteq> W \<and> finite A) \<longrightarrow> 
   satisfiable A}"
 proof (unfold consistenceP_def, rule allI, rule impI)  
@@ -306,9 +277,9 @@ proof (unfold consistenceP_def, rule allI, rule impI)
   hence  hip: "\<forall>A. (A\<subseteq> W \<and> finite A) \<longrightarrow> satisfiable A" by simp
   show "(\<forall>P. \<not> (atom P \<in> W \<and> (\<not>.atom P ) \<in> W)) \<and>
         FF \<notin> W \<and>
-        \<not>.TT \<notin> W \<and>
+        \<not>.\<top>. \<notin> W \<and>
         (\<forall>F. \<not>.\<not>.F \<in> W \<longrightarrow> W \<union> {F} \<in> ?C) \<and>
-        (\<forall>F. (FormulaAlfa F) \<and> F \<in> W \<longrightarrow> 
+        (\<forall>F. (FormulaAlpha F) \<and> F \<in> W \<longrightarrow> 
         (W \<union>  {Comp1 F, Comp2 F} \<in> ?C)) \<and>
         (\<forall>F. (FormulaBeta F) \<and> F \<in> W \<longrightarrow> 
         (W \<union> {Comp1 F} \<in> ?C \<or> W \<union> {Comp2 F} \<in> ?C))"
@@ -318,7 +289,7 @@ proof (unfold consistenceP_def, rule allI, rule impI)
     moreover
     have "FF \<notin> W" using hip consistenceP_Prop2 by auto
     moreover 
-    have "\<not>. TT \<notin> W" using hip consistenceP_Prop3 by auto
+    have "\<not>. \<top>. \<notin> W" using hip consistenceP_Prop3 by auto
     moreover
     have "\<forall>F. (\<not>.\<not>.F) \<in> W \<longrightarrow> W \<union> {F} \<in> ?C"
     proof (rule allI impI)+
@@ -328,10 +299,10 @@ proof (unfold consistenceP_def, rule allI, rule impI)
     qed
     moreover
     have
-    "\<forall>F. (FormulaAlfa F) \<and> F \<in> W \<longrightarrow> (W \<union>  {Comp1 F, Comp2 F} \<in> ?C)" 
+    "\<forall>F. (FormulaAlpha F) \<and> F \<in> W \<longrightarrow> (W \<union>  {Comp1 F, Comp2 F} \<in> ?C)" 
     proof (rule allI impI)+
       fix F 
-      assume "FormulaAlfa F \<and> F \<in> W"      
+      assume "FormulaAlpha F \<and> F \<in> W"      
       thus "W \<union> {Comp1 F, Comp2 F} \<in> ?C" using hip consistenceP_Prop5[of F] by blast
     qed
     moreover         
@@ -347,6 +318,12 @@ proof (unfold consistenceP_def, rule allI, rule impI)
     show ?thesis by auto
   qed
 qed
+  
+
+lemma ConsistenceCompactness:   
+  shows "consistenceP{W::'b formula set. \<forall>A. (A\<subseteq> W \<and> finite A) \<longrightarrow> 
+  satisfiable A}"
+  using ConsistenceCompactness1  consistenceEq by auto 
 
 lemma countable_enumeration_formula:
   shows  "\<exists>f. enumeration (f:: nat \<Rightarrow>'a::countable formula)" 

@@ -34,9 +34,9 @@ structure Record_Intf: RECORD_INTF = struct
   structure Data = Generic_Data
   (
     type T = simpset;
-    val empty = HOL_basic_ss (*addsimprocs 
+    val empty = HOL_basic_ss (*|> fold Simplifier.add_proc 
       [Record.simproc, Record.upd_simproc]*);
-    val merge = Raw_Simplifier.merge_ss;
+    val merge = Simplifier.merge_ss;
   );
 
   structure CppSS = Oc_Simpset (
@@ -126,7 +126,7 @@ structure Record_Intf: RECORD_INTF = struct
   fun setup_simprocs thy = let
     val ctxt = Proof_Context.init_global thy
     val ss = put_simpset HOL_basic_ss ctxt
-      addsimprocs [Record.simproc, Record.upd_simproc]
+      |> fold Simplifier.add_proc [Record.simproc, Record.upd_simproc]
       |> simpset_of
 
   in

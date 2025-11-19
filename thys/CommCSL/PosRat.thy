@@ -1,5 +1,8 @@
 subsection \<open>Fractional Permissions\<close>
 
+text \<open>In this file, we define the type of positive rationals, which we use as permission amounts in
+extended heaps (see FractionalHeap.thy).\<close>
+
 theory PosRat
   imports Main HOL.Rat
 begin

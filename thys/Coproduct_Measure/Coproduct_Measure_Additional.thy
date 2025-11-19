@@ -9,7 +9,7 @@ theory Coproduct_Measure_Additional
           "S_Finite_Measure_Monad.Measure_QuasiBorel_Adjunction"
 begin
 
-subsection \<open> S-Finiteness\<close>
+subsection \<open> s-Finiteness\<close>
 lemma s_finite_measure_copair_measure:
   assumes "s_finite_measure M" "s_finite_measure N"
   shows "s_finite_measure (copair_measure M N)"

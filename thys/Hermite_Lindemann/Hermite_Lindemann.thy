@@ -2440,12 +2440,9 @@ proof
 
   have nz1: "real_of_int n + 1 / 2 \<noteq> 0" for n
   proof -
-    have "real_of_int (2 * n + 1) / real_of_int 2 \<notin> \<int>"
-      by (intro fraction_not_in_ints) auto
-    also have "real_of_int (2 * n + 1) / real_of_int 2 = real_of_int n + 1 / 2"
-      by simp
-    finally show "\<dots> \<noteq> 0"
-      by auto
+    have "real_of_int (2 * n + 1) \<noteq> 0"
+      unfolding of_int_eq_0_iff by presburger
+    thus ?thesis unfolding of_int_add by simp
   qed
 
   have nz2: "1 + tan z ^ 2 \<noteq> 0"

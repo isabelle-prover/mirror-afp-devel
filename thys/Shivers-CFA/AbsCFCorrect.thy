@@ -1,7 +1,7 @@
 section \<open>The abstract semantics is correct\<close>
 
 theory AbsCFCorrect
-  imports AbsCF ExCF "HOL-Library.Adhoc_Overloading"
+  imports AbsCF ExCF
 begin
 
 default_sort type
@@ -40,19 +40,19 @@ Therefore, we use a module by Christian Sternagel and Alexander Krauss for ad-ho
 consts abs :: "'a \<Rightarrow> 'b" (\<open>|_|\<close>)
 
 adhoc_overloading
-  abs abs_cnt
+  abs \<rightleftharpoons> abs_cnt
 
 definition abs_benv :: "benv \<Rightarrow> 'c::contour_a \<abenv>"
   where "abs_benv \<beta> = map_option abs_cnt \<circ> \<beta>"
 
 adhoc_overloading
-  abs abs_benv
+  abs \<rightleftharpoons> abs_benv
 
 primrec abs_closure :: "closure \<Rightarrow> 'c::contour_a \<aclosure>"
   where "abs_closure (l,\<beta>) = (l,|\<beta>| )"
 
 adhoc_overloading
-  abs abs_closure
+  abs \<rightleftharpoons> abs_closure
 
 primrec abs_d :: "d \<Rightarrow> 'c::contour_a \<ad>"
   where "abs_d (DI i) = {}"
@@ -61,13 +61,13 @@ primrec abs_d :: "d \<Rightarrow> 'c::contour_a \<ad>"
       | "abs_d (Stop) = {AStop}"
 
 adhoc_overloading
-  abs abs_d  
+  abs \<rightleftharpoons> abs_d  
 
 definition abs_venv :: "venv \<Rightarrow> 'c::contour_a \<avenv>"
   where "abs_venv ve = (\<lambda>(v,b_a). \<Union>{(case ve (v,b) of Some d \<Rightarrow> |d| | None \<Rightarrow> {}) | b. |b| = b_a })"
 
 adhoc_overloading
-  abs abs_venv
+  abs \<rightleftharpoons> abs_venv
 
 definition abs_ccache :: "ccache \<Rightarrow> 'c::contour_a \<accache>"
   where "abs_ccache cc = (\<Union>((c,\<beta>),d) \<in> cc . {((c,abs_benv \<beta>), p) | p . p\<in>abs_d d})"
@@ -75,19 +75,19 @@ definition abs_ccache :: "ccache \<Rightarrow> 'c::contour_a \<accache>"
   where "abs_ccache cc = { ((c,abs_benv \<beta>),p) | c \<beta> p d . ((c,\<beta>),d) \<in> cc \<and> p \<in> abs_d d}" *)
 
 adhoc_overloading
-  abs abs_ccache
+  abs \<rightleftharpoons> abs_ccache
 
 fun abs_fstate :: "fstate \<Rightarrow> 'c::contour_a \<afstate>"
   where "abs_fstate (d,ds,ve,b) = (the_elem |d|, map abs_d ds, |ve|, |b| )"
 
 adhoc_overloading
-  abs abs_fstate
+  abs \<rightleftharpoons> abs_fstate
 
 fun abs_cstate :: "cstate \<Rightarrow> 'c::contour_a \<acstate>"
   where "abs_cstate (c,\<beta>,ve,b) = (c, |\<beta>|, |ve|, |b| )"
 
 adhoc_overloading
-  abs abs_cstate
+  abs \<rightleftharpoons> abs_cstate
 
 subsection \<open>Lemmas about abstraction functions\<close>
 
@@ -127,38 +127,38 @@ definition venv_approx :: "'c \<avenv> \<Rightarrow>'c \<avenv> \<Rightarrow> bo
   where "venv_approx = smap_less"
 
 adhoc_overloading
-  approx venv_approx
+  approx \<rightleftharpoons> venv_approx
 
 definition ccache_approx :: "'c \<accache> \<Rightarrow>'c \<accache> \<Rightarrow> bool"
   where "ccache_approx = less_eq"
 
 adhoc_overloading
-  approx ccache_approx
+  approx \<rightleftharpoons> ccache_approx
 
 definition d_approx :: "'c \<ad> \<Rightarrow>'c \<ad> \<Rightarrow> bool"
   where "d_approx = less_eq"
 
 adhoc_overloading
-  approx d_approx
+  approx \<rightleftharpoons> d_approx
 
 definition ds_approx :: "'c \<ad> list \<Rightarrow>'c \<ad> list \<Rightarrow> bool"
   where "ds_approx = list_all2 d_approx"
 
 adhoc_overloading
-  approx ds_approx
+  approx \<rightleftharpoons> ds_approx
 
 inductive fstate_approx :: "'c \<afstate> \<Rightarrow>'c \<afstate> \<Rightarrow> bool"
   where "\<lbrakk> ve \<lessapprox> ve' ; ds \<lessapprox> ds' \<rbrakk>
          \<Longrightarrow> fstate_approx (proc,ds,ve,b) (proc,ds',ve',b)"
 
 adhoc_overloading
-  approx fstate_approx
+  approx \<rightleftharpoons> fstate_approx
 
 inductive cstate_approx :: "'c \<acstate> \<Rightarrow>'c \<acstate> \<Rightarrow> bool"
   where "\<lbrakk> ve \<lessapprox> ve' \<rbrakk> \<Longrightarrow> cstate_approx (c,\<beta>,ve,b) (c,\<beta>,ve',b)"
 
 adhoc_overloading
-  approx cstate_approx
+  approx \<rightleftharpoons> cstate_approx
 
 subsection \<open>Lemmas about the approximation relation\<close>
 

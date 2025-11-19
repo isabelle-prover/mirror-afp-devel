@@ -1,0 +1,9 @@
+chapter AFP
+
+session Rogers_Ramanujan (AFP) = Theta_Functions +
+  options [timeout = 900]
+  theories
+    Rogers_Ramanujan
+  document_files
+    "root.tex"
+    "root.bib"

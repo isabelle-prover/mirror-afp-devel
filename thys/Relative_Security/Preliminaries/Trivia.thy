@@ -76,7 +76,7 @@ lemma list_all_hd:
   assumes \<open>list_all P xs\<close>
       and \<open>xs \<noteq> []\<close>
     shows \<open>P (hd xs)\<close>
-  using assms by (metis list.collapse list_all_simps(1))
+  using assms by (cases xs) simp_all
 
 lemma measure_induct2[case_names IH]:
 fixes meas :: "'a \<Rightarrow> 'b \<Rightarrow> nat"
@@ -290,11 +290,11 @@ shows "lmap func (lfilter pred as) = lmap func' (lfilter pred' as')"
 proof-
   define P where "P \<equiv> \<lambda>(trn,wL,wR) as as'. sameFM1 trn wL wR as as'"
   show ?thesis 
-  apply(rule lmap_lfilter_lappend_coind_wf[OF wf_TWW, of P "(trn,wL,wR)"])
+    apply(rule lmap_lfilter_lappend_coind_wf[OF wf_TWW, of P "(trn,wL,wR)"])
     subgoal using assms unfolding P_def by simp
     subgoal for w lxs lxs' apply (cases w)
     unfolding P_def apply clarify apply (erule sameFM1.cases)
-    by (fastforce elim: sameFM1.cases simp: TWW_def less_turn_def)+ .   
+    by (fastforce elim: sameFM1.cases simp: TWW_def)+ .   
 qed
  
 

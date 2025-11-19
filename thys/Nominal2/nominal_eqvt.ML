@@ -19,7 +19,7 @@ open Nominal_Permeq;
 open Nominal_ThmDecls;
 
 fun atomize_conv ctxt =
-  Raw_Simplifier.rewrite_cterm (true, false, false) (K (K NONE))
+  Simplifier.rewrite_cterm (true, false, false) (K (K NONE))
     (put_simpset HOL_basic_ss ctxt addsimps @{thms induct_atomize})
 
 fun atomize_intr ctxt = Conv.fconv_rule (Conv.prems_conv ~1 (atomize_conv ctxt))

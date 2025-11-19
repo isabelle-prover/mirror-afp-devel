@@ -33,25 +33,48 @@ lemma equiv_trans_sym:
   done
   
 lemma union_equiv: 
-  "equiv V R \<Longrightarrow> equiv V (per_union R a b)"
-  apply (rule equivI)        
-  unfolding per_union_def 
-  subgoal unfolding equiv_def refl_on_def by auto
-  subgoal apply (rule symI) by (auto dest: equiv_sym)
-  subgoal apply (rule transI) by (auto dest: equiv_trans equiv_trans_sym)
-  done
-  
-  
-lemma equiv_mono: "E'\<subseteq>E \<Longrightarrow> equiv E R1 \<Longrightarrow> equiv E' (R1 \<inter> E'\<times>E')"
-  apply(rule equivI)
-  subgoal unfolding equiv_def 
-    by (simp add: refl_on_def subset_iff)  
-  subgoal unfolding equiv_def 
-    by (metis mem_Sigma_iff symI sym_Int)  
-  subgoal unfolding equiv_def using trans_Restr by fastforce
-  done
-    
-    
+  assumes "equiv V R"
+  shows "equiv V (per_union R a b)"
+proof (rule equivI)
+  have "R \<subseteq> V \<times> V" and "refl_on V R" and "sym R" and "trans R"
+    using \<open>equiv V R\<close> by (auto elim: equivE)
+
+  show "per_union R a b \<subseteq> V \<times> V"
+    using \<open>R \<subseteq> V \<times> V\<close> by (auto simp: per_union_def)
+
+  show "refl_on V (per_union R a b)"
+    using \<open>refl_on V R\<close> by (auto simp: per_union_def refl_on_def)
+
+  show "sym (per_union R a b)"
+    using \<open>sym R\<close> by (auto simp: per_union_def sym_def)
+
+  show "trans (per_union R a b)"
+    using \<open>trans R\<close> by (metis \<open>sym R\<close> part_equiv_def union_part_equivp)
+qed
+
+lemma equiv_mono:
+  assumes "E' \<subseteq> E" and "equiv E R1"
+  shows "equiv E' (R1 \<inter> E'\<times>E')"
+proof (rule equivI)
+  show "Restr R1 E' \<subseteq> E' \<times> E'"
+    by simp
+next
+  have "refl_on E R1"
+    using \<open>equiv E R1\<close> by (auto elim: equivE)
+  thus "refl_on E' (Restr R1 E')"
+    by (metis (lifting) ext Field_square Refl_Restr UNIV_I assms(1) inf.absorb_iff2 refl_on_Int
+        refl_on_def subsetI)
+next
+  have "sym R1"
+    using \<open>equiv E R1\<close> by (auto elim: equivE)
+  thus "sym (Restr R1 E')"
+    by (metis mem_Sigma_iff symI sym_Int)
+next
+  have "trans R1"
+    using \<open>equiv E R1\<close> by (auto elim: equivE)
+  thus "trans (Restr R1 E')"
+    using trans_Restr by fastforce
+qed 
 
 lemma unify2EquivClasses_alt: 
   assumes "R``{x} \<noteq> R``{y}" and inV: "y\<in>V" "x\<in>V" and "R\<subseteq>V\<times>V"    

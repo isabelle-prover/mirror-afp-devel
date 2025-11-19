@@ -31,7 +31,7 @@ proof -
   obtain S where
     run: "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S" and
     no_more_step: "(\<nexists>S'. regular_scl N \<beta> S S')"
-    using termination_regular_scl[THEN ex_trans_min_element_if_wfp_on, of initial_state]
+    using termination_regular_scl[THEN bex_rtransclp_min_element_if_wfp_on, of initial_state]
     by (metis (no_types, opaque_lifting) conversep_iff mem_Collect_eq rtranclp.rtrancl_into_rtrancl
         rtranclp.rtrancl_refl)
   

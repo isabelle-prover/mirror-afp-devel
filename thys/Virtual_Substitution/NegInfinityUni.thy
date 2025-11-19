@@ -299,9 +299,9 @@ proof -
     then have "\<forall> y. List.member ?l y \<longrightarrow> x < y"
     proof clarsimp
       fix y
-      assume "List.member ?l y"
+      assume "y \<in> set ?l"
       then have "\<exists>n. n < length ?l \<and> ?l ! n = y"
-        by (meson in_set_conv_nth in_set_member)
+        using in_set_conv_nth [of y] by auto
       then obtain n where n_prop: "n < length ?l \<and> ?l ! n = y"
         by auto
       have h: "\<forall>n < length ?l. ?l ! n \<ge> ?l !0" using sorted_iff_nth_mono
@@ -310,8 +310,7 @@ proof -
       then show "x < y" using x_prop by auto
     qed
     then show ?thesis
-      using finset set_sorted_list_of_set in_set_member
-      by (metis (mono_tags, lifting) mem_Collect_eq)
+      using finset by auto
   qed
   then obtain x where x_prop: "(\<forall>y. a*y^2 + b*y + c = 0 \<longrightarrow> x < y)" by auto
   then have same_as: "\<forall>y<x. (aEvalUni At y = aEvalUni At x)"

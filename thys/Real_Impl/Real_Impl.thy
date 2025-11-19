@@ -465,24 +465,14 @@ qed
 
 code_datatype real_of
 
-declare [[code drop:
-  "plus :: real \<Rightarrow> real \<Rightarrow> real"
-  "uminus :: real \<Rightarrow> real"
-  "times :: real \<Rightarrow> real \<Rightarrow> real"
-  "inverse :: real \<Rightarrow> real"
-  "floor :: real \<Rightarrow> int"
-  sqrt
-  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
-]]
-
 lemma [code]:
   "Ratreal = real_of \<circ> ma_of_rat"
   by (simp add: fun_eq_iff) (transfer, simp)
 
-lemmas ma_code_eqns [code equation] = ma_ge_0 ma_floor ma_0 ma_1 ma_uminus ma_inverse ma_sqrt ma_plus ma_times ma_equal ma_is_rat
+lemmas ma_code_eqns [code] = ma_ge_0 ma_floor ma_0 ma_1 ma_uminus ma_inverse ma_sqrt ma_plus ma_times ma_equal ma_is_rat
   comparison_impl
 
-lemma [code equation]:
+lemma [code]:
   "(x :: real) / (y :: real) = x * inverse y"
   "(x :: real) - (y :: real) = x + (- y)"
   by (simp_all add: divide_inverse)

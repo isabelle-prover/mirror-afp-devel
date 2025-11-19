@@ -40,7 +40,7 @@ fun SIMPS_TO_UNIF_tac simp_tac eq_tac maxidx ctxt =
         val env = Envir.empty (Thm.maxidx_of state)
       in
         Unify.hounifiers (map fst binders) (Context.Proof ctxt, env, [(rhs, lhs)])
-        |> Seq.filter (fn (env, _) => Envir.above env maxidx) (*only keep the matchers*)
+        |> Seq.filter (fn (env, _) => Envir.above env maxidx) (*only keep matchers (note: incomplete)*)
         |> Seq.map (fn (env, _) => #inst_thm Higher_Order_Unification.norms ctxt env state)
       end
     val simp_inst_tac = simp_tac THEN' Tactic_Util.SUBGOAL_STRIPPED (apsnd snd) (K o inst_tac)

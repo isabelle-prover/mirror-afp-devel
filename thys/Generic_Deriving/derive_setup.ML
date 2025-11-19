@@ -75,7 +75,7 @@ let
     abstract (x::xs) t = (Abs (x, dummyT, abstract xs t))          
   val (v,T) = dest_Free var
   val (binders,body) = strip_type T
-  val argnames = Name.invent_names (Variable.names_of lthy) "x" binders |> map fst
+  val argnames = Name.invent (Variable.names_of lthy) "x" (length binders)
   val args_converted = map convert_arg (binders ~~ (List.tabulate (length binders,fn n => (length binders)-(n+1))))
   val op_call = list_comb ((Free (v,T)),args_converted)
   val op_converted = 
@@ -99,7 +99,9 @@ let
   val lthy' = Named_Target.theory_init thy'
 
   val tfree_dt = get_tvar (map (dest_Free #> snd) vars)
-  val tfree_rep = let val (n,s) = tfree_dt |> dest_TFree in Name.invent_names (Name.make_context [n]) "'a" [s] end |> hd |> TFree
+  val tfree_rep =
+    let val (a, S) = dest_TFree tfree_dt
+    in TFree (singleton (Name.invent_types (Name.make_context [a])) S) end
   val from = Free ("from",tfree_rep --> tfree_dt)
   val to   = Free ("to",tfree_dt --> tfree_rep)
 

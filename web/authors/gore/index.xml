@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>gore on Archive of Formal Proofs
-    </title>
-    <link>/authors/gore/</link>
-    <description>
-        Recent content in gore 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 16 Nov 2016 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/gore/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Separata: Isabelle tactics for Separation Algebra</title>
-          <link>/entries/Separata.html</link>
-          <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Separata.html</guid>
-          <description></description>
-        </item>
+    <title>Rajeev Gore</title>
+    <link>https://isa-afp.org/authors/gore/</link>
+    <description>AFP entries of Rajeev Gore</description><item>
+  <title>Separata: Isabelle tactics for Separation Algebra</title>
+  <link>https://isa-afp.org/entries/Separata.html</link>
+  <pubDate>Wed, 16 Nov 2016 00:00:00 +0000</pubDate>
+  <description>Separata: Isabelle tactics for Separation Algebra in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Tools</category>
+</item>
+
   </channel>
 </rss>

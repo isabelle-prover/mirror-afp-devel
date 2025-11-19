@@ -722,7 +722,7 @@ lemma rename_gens_normalize:
 proof(rule normalize_discover)
   from \<open>inj_on g (image snd (set l))\<close>
   have "inj_on g (image snd (set (normalize l)))"
-  proof (rule subset_inj_on)
+  proof (rule inj_on_subset)
     
     have UNIV_snd: "\<And>A. A \<subseteq> UNIV \<times> snd ` A"
       proof fix A and x::"'c\<times>'d" assume "x\<in>A"

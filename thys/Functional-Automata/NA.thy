@@ -32,9 +32,7 @@ by(induct v, simp_all add:O_assoc)
 
 lemma in_steps_append[iff]:
   "(p,r) : steps A (v@w) = ((p,r) : (steps A v O steps A w))"
-apply(rule steps_append[THEN equalityE])
-apply blast
-done
+  by simp
 
 lemma delta_conv_steps: "\<And>p. delta A w p = {q. (p,q) : steps A w}"
 by(induct w)(auto simp:step_def)

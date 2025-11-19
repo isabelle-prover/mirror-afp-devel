@@ -42,16 +42,13 @@ context
 includes fset.lifting
 begin
 
-lift_definition fstates :: "('f, 'v) term fset \<Rightarrow> 'f bot_term fset" is states
-  by (simp add: finite_states)
-
 lift_definition fsubterms :: "('f, 'v) term \<Rightarrow> ('f, 'v) term fset" is subterms
   by (simp add: finite_subterms_fun)
 
-lemmas fsubterms [code] = subterms.simps[Transfer.transferred]
+lemmas fsubterms [code] = subterms.simps [Transfer.transferred]
 
-lift_definition ffunas_trs :: "(('f, 'v) term \<times> ('f, 'v) term) fset \<Rightarrow> ('f \<times> nat) fset" is funas_trs
-  by (simp add: finite_funas_trs)
+lift_definition fstates :: "('f, 'v) term fset \<Rightarrow> 'f bot_term fset" is states
+  by (simp add: finite_states)
 
 lemma fstates_def':
   "t |\<in>| fstates R \<longleftrightarrow> (\<exists> s u. s |\<in>| R \<and> s \<unrhd> u \<and> u\<^sup>\<bottom> = t)"
@@ -67,13 +64,15 @@ lemma fstates_fmemberI [intro]:
   "s |\<in>| R \<Longrightarrow> s \<unrhd> u \<Longrightarrow> u\<^sup>\<bottom> |\<in>| fstates R"
   unfolding fstates_def' by blast
 
-lemmas froot_bot_states_root_subterms = root_bot_states_root_subterms[Transfer.transferred]
-lemmas root_fsubsterms_ffunas_term_fset = root_substerms_funas_term_set[Transfer.transferred]
-
-
-lemma fstates[code]:
+lemma fstates [code]:
   "fstates R = term_to_bot_term |`| ( |\<Union>| (fsubterms |`| R))"
   by transfer (auto simp: states_conv)
+
+lemmas froot_bot_states_root_subterms = root_bot_states_root_subterms [Transfer.transferred]
+lemmas root_fsubsterms_ffunas_term_fset = root_substerms_funas_term_set [Transfer.transferred]
+
+lift_definition ffunas_trs :: "(('f, 'v) term \<times> ('f, 'v) term) fset \<Rightarrow> ('f \<times> nat) fset" is funas_trs
+  by (simp add: finite_funas_trs)
 
 end
 
@@ -256,7 +255,7 @@ proof
   let ?t_o_g = "term_of_gterm :: 'f gterm \<Rightarrow> ('f, 'v) Term.term"
   have [simp]: "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> fst) |`| R) = \<F>"
     "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> snd) |`| R) = \<F>" using assms(2)
-    by (force simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def ffunas_term.rep_eq ffUnion.rep_eq)+
+    by (fastforce simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def funas_rule_def ffunas_term.rep_eq ffUnion.rep_eq)+
   {fix s t assume "(s, t) \<in> ?Ls"
     from pair_at_langE[OF this] obtain p q where st: "(q, p) |\<in>| Rel\<^sub>f R"
       "q |\<in>| gta_der (fst (root_pair_automaton \<F> R)) s" "p |\<in>| gta_der (snd (root_pair_automaton \<F> R)) t"
@@ -267,7 +266,7 @@ proof
       using pattern_automaton_reach_smallet_term[of l \<F> "fst |`| R" "term_of_gterm s"]
       using pattern_automaton_reach_smallet_term[of r \<F> "snd |`| R" "term_of_gterm t"]
       using st(2, 3) tm(3) unfolding tm
-      by (auto simp: gta_der_def root_pair_automaton_def) (smt bot_term_of_gterm_conv)+
+      by (auto simp: gta_der_def root_pair_automaton_def) (smt (verit) bot_term_of_gterm_conv)+
     have "linear_term l" "linear_term r" using tm(3) assms(1)
       by (auto simp: lv_trs_def)
     then obtain \<sigma> \<tau> where "l \<cdot> \<sigma> = ?t_o_g s" "r \<cdot> \<tau> = ?t_o_g t" using sm

@@ -1,0 +1,9 @@
+chapter AFP
+
+session Dilworth = Min_Max_Least_Greatest +  
+  options [timeout=600]
+  theories
+    Dilworth
+  document_files
+    "root.tex"
+    "root.bib"

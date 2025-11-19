@@ -25,77 +25,6 @@ begin
 
 hide_const(open) module.smult up_ring.monom up_ring.coeff
 
-(**** Could be merged to HOL/Rings.thy ****)
-
-class ordered_semiring_1 = Rings.ordered_semiring_0 + monoid_mult + zero_less_one
-begin
-
-subclass semiring_1..
-
-lemma of_nat_ge_zero[intro!]: "of_nat n \<ge> 0"
-  using add_right_mono[of _ _ 1] by (induct n, auto)
-
-(* Following lemmas are moved from @{class ordered_idom}. *)
-lemma zero_le_power [simp]: "0 \<le> a \<Longrightarrow> 0 \<le> a ^ n"
-  by (induct n) simp_all
-
-lemma power_mono: "a \<le> b \<Longrightarrow> 0 \<le> a \<Longrightarrow> a ^ n \<le> b ^ n"
-  by (induct n) (auto intro: mult_mono order_trans [of 0 a b])
-
-lemma one_le_power [simp]: "1 \<le> a \<Longrightarrow> 1 \<le> a ^ n"
-  using power_mono [of 1 a n] by simp
-
-lemma power_le_one: "0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> a ^ n \<le> 1"
-  using power_mono [of a 1 n] by simp
-
-lemma power_gt1_lemma:
-  assumes gt1: "1 < a"
-  shows "1 < a * a ^ n"
-proof -
-  from gt1 have "0 \<le> a"
-    by (fact order_trans [OF zero_le_one less_imp_le])
-  from gt1 have "1 * 1 < a * 1" by simp
-  also from gt1 have "\<dots> \<le> a * a ^ n"
-    by (simp only: mult_mono \<open>0 \<le> a\<close> one_le_power order_less_imp_le zero_le_one order_refl)
-  finally show ?thesis by simp
-qed
-
-lemma power_gt1: "1 < a \<Longrightarrow> 1 < a ^ Suc n"
-  by (simp add: power_gt1_lemma)
-
-lemma one_less_power [simp]: "1 < a \<Longrightarrow> 0 < n \<Longrightarrow> 1 < a ^ n"
-  by (cases n) (simp_all add: power_gt1_lemma)
-
-lemma power_decreasing: "n \<le> N \<Longrightarrow> 0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> a ^ N \<le> a ^ n"
-proof (induction N)
-  case (Suc N)
-  then have "a * a^N \<le> 1 * a^n" if "n \<le> N"
-    using that by (intro mult_mono) auto
-  then show ?case
-    using Suc by (auto simp add: le_Suc_eq)
-qed (auto)
-
-lemma power_increasing: "n \<le> N \<Longrightarrow> 1 \<le> a \<Longrightarrow> a ^ n \<le> a ^ N"
-proof (induction N)
-  case (Suc N)
-  then have "1 * a^n \<le> a * a^N" if "n \<le> N"
-    using that by (intro mult_mono) (auto simp add: order_trans[OF zero_le_one])
-  then show ?case
-    using Suc by (auto simp add: le_Suc_eq)
-qed (auto)
-
-lemma power_Suc_le_self: "0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> a ^ Suc n \<le> a"
-  using power_decreasing [of 1 "Suc n" a] by simp
-
-end
-
-lemma prod_list_nonneg: "(\<And> x. (x :: 'a :: ordered_semiring_1) \<in> set xs \<Longrightarrow> x \<ge> 0) \<Longrightarrow> prod_list xs \<ge> 0"
-  by (induct xs, auto)
-
-subclass (in ordered_idom) ordered_semiring_1 by unfold_locales auto
-
-(**** End of lemmas that could be moved to HOL/Rings.thy ****)
-
 (* missing lemma on logarithms *)
 lemma log_prod: assumes "0 < a" "a \<noteq> 1" "\<And> x. x \<in> X \<Longrightarrow> 0 < f x" 
   shows "log a (prod f X) = sum (log a o f) X" 
@@ -117,12 +46,6 @@ hide_fact Missing_Ring.zero_less_one
 instance real :: ordered_semiring_strict by (intro_classes, auto)
 instance real :: linordered_idom..
 
-(*This is a generalisation of thm less_1_mult*) 
-lemma less_1_mult': 
-  fixes a::"'a::linordered_semidom"
-  shows "1 < a \<Longrightarrow> 1 \<le> b \<Longrightarrow> 1 < a * b"
-  by (metis le_less less_1_mult mult.right_neutral)
-
 lemma upt_minus_eq_append: "i\<le>j \<Longrightarrow> i\<le>j-k \<Longrightarrow> [i..<j] = [i..<j-k] @ [j-k..<j]"
 proof (induct k)
   case (Suc k)
@@ -143,13 +66,6 @@ lemma id_imp_bij_betw:
 lemma range_subsetI:
   assumes "\<And>x. f x = g (h x)" shows "range f \<subseteq> range g"
   using assms by auto
-
-lemma Gcd_uminus: 
-  fixes A::"int set"
-  assumes "finite A"
-  shows "Gcd A = Gcd (uminus ` A)"
-  using assms
-  by (induct A, auto)
 
 lemma aux_abs_int: fixes c :: int
   assumes "c \<noteq> 0" 
@@ -177,10 +93,11 @@ qed
 (* an intro version of sum_list_0 *)
 lemma sum_list_zero:
   assumes "set xs \<subseteq> {0}" shows "sum_list xs = 0"
-  using assms by (induct xs, auto)
+  by (meson assms singletonD subset_eq sum_list_neutral)
 
 (* About @{const max} *)
-lemma max_idem [simp]: shows "max a a = a" by (simp add: max_def)
+lemma max_idem [simp]: "max a a = a" 
+  by (simp add: max_def)
 
 lemma hom_max:
   assumes "a \<le> b \<longleftrightarrow> f a \<le> f b"
@@ -398,11 +315,6 @@ lemma poly_of_vec_add:
   shows "poly_of_vec (a + b) = poly_of_vec a + poly_of_vec b"
   using assms
   by (auto simp add: poly_eq_iff coeff_poly_of_vec)
-
-(*TODO: replace the one in Resultant.thy*)
-lemma degree_poly_of_vec_less:
-  assumes "0 < dim_vec v" and "dim_vec v \<le> n" shows "degree (poly_of_vec v) < n"
-  using degree_poly_of_vec_less assms by (auto dest: less_le_trans)
 
 lemma (in vec_module) poly_of_vec_finsum:
   assumes "f \<in> X \<rightarrow> carrier_vec n"

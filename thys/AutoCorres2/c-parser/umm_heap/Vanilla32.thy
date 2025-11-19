@@ -177,6 +177,7 @@ lemma size_td_words [simp]:
   "size_td (typ_info_t TYPE(16 word)) = 2"
   "size_td (typ_info_t TYPE(32 word)) = 4"
   "size_td (typ_info_t TYPE(64 word)) = 8"
+  "size_td (typ_info_t TYPE(128 word)) = 16"
   by (auto simp: typ_info_word word_tag_def)
 
 lemma align_td_words [simp]:
@@ -184,6 +185,7 @@ lemma align_td_words [simp]:
   "align_td (typ_info_t TYPE(16 word)) = 1"
   "align_td (typ_info_t TYPE(32 word)) = 2"
   "align_td (typ_info_t TYPE(64 word)) = 3"
+  "align_td (typ_info_t TYPE(128 word)) = 4"
   by (auto simp: typ_info_word word_tag_def len8_bytes)
 
 lemma size_of_words [simp]:
@@ -191,6 +193,7 @@ lemma size_of_words [simp]:
   "size_of TYPE(16 word) = 2"
   "size_of TYPE(32 word) = 4"
   "size_of TYPE(64 word) = 8"
+  "size_of TYPE(128 word) = 16"
   by (auto simp: size_of_def)
 
 lemma align_of_words [simp]:
@@ -198,6 +201,7 @@ lemma align_of_words [simp]:
   "align_of TYPE(16 word) = 2"
   "align_of TYPE(32 word) = 4"
   "align_of TYPE(64 word) = 8"
+  "align_of TYPE(128 word) = 16"
   by (auto simp: align_of_word)
 
 lemma size_td_swords [simp]:
@@ -205,6 +209,7 @@ lemma size_td_swords [simp]:
   "size_td (typ_info_t TYPE(16 sword)) = 2"
   "size_td (typ_info_t TYPE(32 sword)) = 4"
   "size_td (typ_info_t TYPE(64 sword)) = 8"
+  "size_td (typ_info_t TYPE(128 sword)) = 16"
   by (auto simp: typ_info_word word_tag_def)
 
 lemma align_td_swords [simp]:
@@ -212,6 +217,7 @@ lemma align_td_swords [simp]:
   "align_td (typ_info_t TYPE(16 sword)) = 1"
   "align_td (typ_info_t TYPE(32 sword)) = 2"
   "align_td (typ_info_t TYPE(64 sword)) = 3"
+  "align_td (typ_info_t TYPE(128 sword)) = 4"
   by (auto simp: typ_info_word word_tag_def len8_bytes)
 
 lemma size_of_swords [simp]:
@@ -219,6 +225,7 @@ lemma size_of_swords [simp]:
   "size_of TYPE(16 sword) = 2"
   "size_of TYPE(32 sword) = 4"
   "size_of TYPE(64 sword) = 8"
+  "size_of TYPE(128 sword) = 16"
   by (auto simp: size_of_def)
 
 lemma align_of_swords [simp]:
@@ -226,6 +233,7 @@ lemma align_of_swords [simp]:
   "align_of TYPE(16 sword) = 2"
   "align_of TYPE(32 sword) = 4"
   "align_of TYPE(64 sword) = 8"
+  "align_of TYPE(128 sword) = 16"
   by (auto simp: align_of_word)
 
 
@@ -419,10 +427,12 @@ lemma typ_name_words [simp]:
    "typ_name (typ_uinfo_t TYPE(16 word)) = ''word000010''"
    "typ_name (typ_uinfo_t TYPE(32 word)) = ''word0000010''"
    "typ_name (typ_uinfo_t TYPE(64 word)) = ''word00000010''"
+   "typ_name (typ_uinfo_t TYPE(128 word)) = ''word000000010''"
    "typ_name (typ_info_t  TYPE(8 word))  = ''word00010''"
    "typ_name (typ_info_t  TYPE(16 word)) = ''word000010''"
    "typ_name (typ_info_t  TYPE(32 word)) = ''word0000010''"
    "typ_name (typ_info_t  TYPE(64 word)) = ''word00000010''"
+   "typ_name (typ_info_t  TYPE(128 word)) = ''word000000010''"
   by (auto simp: typ_uinfo_t_def nat_to_bin_string.simps export_uinfo_def)
 
 lemma typ_name_swords [simp]:
@@ -430,10 +440,12 @@ lemma typ_name_swords [simp]:
    "typ_name (typ_uinfo_t TYPE(16 sword)) = ''word000010''"
    "typ_name (typ_uinfo_t TYPE(32 sword)) = ''word0000010''"
    "typ_name (typ_uinfo_t TYPE(64 sword)) = ''word00000010''"
+   "typ_name (typ_uinfo_t TYPE(128 sword)) = ''word000000010''"
    "typ_name (typ_info_t  TYPE(8 sword))  = ''word00010''"
    "typ_name (typ_info_t  TYPE(16 sword)) = ''word000010''"
    "typ_name (typ_info_t  TYPE(32 sword)) = ''word0000010''"
    "typ_name (typ_info_t  TYPE(64 sword)) = ''word00000010''"
+   "typ_name (typ_info_t  TYPE(128 sword)) = ''word000000010''"
   by (auto simp: typ_uinfo_t_def nat_to_bin_string.simps export_uinfo_def)
 
 lemma ptr_arith[simp]:

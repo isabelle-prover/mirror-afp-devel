@@ -321,7 +321,7 @@ subsection\<open>Equality with @{term "\<gamma>,p\<turnstile> \<langle>rs, s\<ra
   definition good_ruleset :: "'a rule list \<Rightarrow> bool" where
     "good_ruleset rs \<equiv> \<forall>r \<in> set rs. (\<not>(\<exists>chain. get_action r = Call chain) \<and> get_action r \<noteq> Return \<and> \<not>(\<exists>chain. get_action r = Goto chain) \<and> get_action r \<noteq> Unknown)"
 
-  lemma[code_unfold]: "good_ruleset rs = (\<forall>r\<in>set rs. (case get_action r of Call chain \<Rightarrow> False | Return \<Rightarrow> False | Goto chain \<Rightarrow> False | Unknown \<Rightarrow> False | _ \<Rightarrow> True))"
+  lemma[code]: "good_ruleset rs = (\<forall>r\<in>set rs. (case get_action r of Call chain \<Rightarrow> False | Return \<Rightarrow> False | Goto chain \<Rightarrow> False | Unknown \<Rightarrow> False | _ \<Rightarrow> True))"
       unfolding good_ruleset_def
       apply(rule Set.ball_cong)
        apply(simp_all)

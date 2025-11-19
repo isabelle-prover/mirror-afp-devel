@@ -4,9 +4,10 @@
 
 chapter \<open>Unsigned words of 16 bits\<close>
 
-theory Uint16 imports
-  Word_Type_Copies
-  Code_Target_Integer_Bit
+theory Uint16
+  imports
+    Uint_Common
+    Code_Target_Word
 begin
 
 text \<open>
@@ -17,8 +18,7 @@ text \<open>
   rather than \<open>SML\<close>.  This ensures that code generation still
   works as long as \<open>uint16\<close> is not involved.
   For the target \<open>SML\<close> itself, no special code generation 
-  for this type is set up. Nevertheless, it should work by emulation via \<^typ>\<open>16 word\<close>
-  if the theory \<^text>\<open>Code_Target_Int_Bit\<close> is imported.
+  for this type is set up. Nevertheless, it should work by emulation via \<^typ>\<open>16 word\<close>.
 
   Restriction for OCaml code generation:
   OCaml does not provide an int16 type, so no special code generation 
@@ -38,7 +38,7 @@ declare uint16.of_word_of [code abstype]
 
 declare Quotient_uint16 [transfer_rule]
 
-instantiation uint16 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
+instantiation uint16 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder, order_bot, order_top}\<close>
 begin
 
 lift_definition zero_uint16 :: uint16 is 0 .
@@ -52,12 +52,15 @@ lift_definition modulo_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow
 lift_definition equal_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
 lift_definition less_eq_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
 lift_definition less_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> bool\<close> is \<open>(<)\<close> .
+lift_definition bot_uint16 :: uint16 is bot .
+lift_definition top_uint16 :: uint16 is top .
 
 global_interpretation uint16: word_type_copy_ring Abs_uint16 Rep_uint16
   by standard (fact zero_uint16.rep_eq one_uint16.rep_eq
     plus_uint16.rep_eq uminus_uint16.rep_eq minus_uint16.rep_eq
     times_uint16.rep_eq divide_uint16.rep_eq modulo_uint16.rep_eq
-    equal_uint16.rep_eq less_eq_uint16.rep_eq less_uint16.rep_eq)+
+    equal_uint16.rep_eq less_eq_uint16.rep_eq less_uint16.rep_eq
+    bot_uint16.rep_eq top_uint16.rep_eq)+
 
 instance proof -
   show \<open>OFCLASS(uint16, comm_ring_1_class)\<close>
@@ -68,9 +71,16 @@ instance proof -
     by (fact uint16.of_class_equal)
   show \<open>OFCLASS(uint16, linorder_class)\<close>
     by (fact uint16.of_class_linorder)
+  show \<open>OFCLASS(uint16, order_bot_class)\<close>
+    by (fact uint16.of_class_order_bot)
+  show \<open>OFCLASS(uint16, order_top_class)\<close>
+    by (fact uint16.of_class_order_top)
 qed
 
 end
+
+instance uint16 :: \<open>{interval_bot, interval_top}\<close>
+  by (fact uint16.of_class_interval_bot uint16.of_class_interval_top)+
 
 instantiation uint16 :: ring_bit_operations
 begin
@@ -131,27 +141,12 @@ global_interpretation uint16: word_type_copy_more Abs_uint16 Rep_uint16 signed_d
          Uint16.rep_eq integer_of_uint16.rep_eq integer_eq_iff)
   done
 
-instantiation uint16 :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint16 :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint16 :: \<open>uint16 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint16 :: \<open>uint16 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint16\<close>
-  where set_bit_uint16_eq: \<open>set_bit_uint16 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint16_transfer [transfer_rule]:
-  \<open>(cr_uint16 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint16) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint16_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint16 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint16\<close> is set_bits .
 lift_definition set_bits_aux_uint16 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is set_bits_aux .
@@ -161,7 +156,6 @@ global_interpretation uint16: word_type_copy_misc Abs_uint16 Rep_uint16 signed_d
   by (standard; transfer) simp_all
 
 instance using uint16.of_class_bit_comprehension
-  uint16.of_class_set_bit
   by simp_all standard
 
 end
@@ -173,18 +167,11 @@ code_printing code_module Uint16 \<rightharpoonup> (SML_word)
 val _ = if 4 <= Word.wordSize then () else raise (Fail ("wordSize less than 4"));
 
 structure Uint16 : sig
-  val set_bit : Word16.word -> IntInf.int -> bool -> Word16.word
   val shiftl : Word16.word -> IntInf.int -> Word16.word
   val shiftr : Word16.word -> IntInf.int -> Word16.word
   val shiftr_signed : Word16.word -> IntInf.int -> Word16.word
   val test_bit : Word16.word -> IntInf.int -> bool
 end = struct
-
-fun set_bit x n b =
-  let val mask = Word16.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word16.orb (x, mask)
-     else Word16.andb (x, Word16.notb mask)
-  end
 
 fun shiftl x n =
   Word16.<< (x, Word.fromLargeInt (IntInf.toLarge n))
@@ -199,25 +186,19 @@ fun test_bit x n =
   Word16.andb (x, Word16.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word16.fromInt 0
 
 end; (* struct Uint16 *)\<close>
-code_reserved SML_word Uint16
+code_reserved (SML_word) Uint16
 
 code_printing code_module Uint16 \<rightharpoonup> (Haskell)
  \<open>module Uint16(Int16, Word16) where
 
   import Data.Int(Int16)
   import Data.Word(Word16)\<close>
-code_reserved Haskell Uint16
+code_reserved (Haskell) Uint16
 
 text \<open>Scala provides unsigned 16-bit numbers as Char.\<close>
 
 code_printing code_module Uint16 \<rightharpoonup> (Scala)
 \<open>object Uint16 {
-
-def set_bit(x: scala.Char, n: BigInt, b: Boolean) : scala.Char =
-  b match {
-    case true => (x | (1.toChar << n.intValue)).toChar
-    case false => (x & (1.toChar << n.intValue).unary_~).toChar
-  }
 
 def shiftl(x: scala.Char, n: BigInt) : scala.Char = (x << n.intValue).toChar
 
@@ -228,7 +209,7 @@ def shiftr_signed(x: scala.Char, n: BigInt) : scala.Char = (x.toShort >> n.intVa
 def test_bit(x: scala.Char, n: BigInt) : Boolean = (x & (1.toChar << n.intValue)) != 0
 
 } /* object Uint16 */\<close>
-code_reserved Scala Uint16
+code_reserved (Scala) Uint16
 
 text \<open>
   Avoid @{term Abs_uint16} in generated code, use @{term Rep_uint16'} instead. 
@@ -269,8 +250,8 @@ lemma term_of_uint16_code [code]:
        (term_of_class.term_of (Rep_uint16' x))"
 by(simp add: term_of_anything)
 
-lemma Uint16_code [code]: "Rep_uint16 (Uint16 i) = word_of_int (int_of_integer_symbolic i)"
-unfolding Uint16_def int_of_integer_symbolic_def by(simp add: Abs_uint16_inverse)
+lemma Uint16_code [code]: "Rep_uint16 (Uint16 i) = word_of_int (int_of_integer i)"
+  by (fact Uint16.rep_eq)
 
 code_printing
   type_constructor uint16 \<rightharpoonup>
@@ -377,18 +358,12 @@ global_interpretation uint16: word_type_copy_target_language Abs_uint16 Rep_uint
     and uint16_shiftl = uint16.shiftl
     and uint16_shiftr = uint16.shiftr
     and uint16_sshiftr = uint16.sshiftr
-    and uint16_set_bit = uint16.set_bit
   by standard simp_all
 
 code_printing constant uint16_test_bit \<rightharpoonup>
   (SML_word) "Uint16.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint16.test'_bit"
-
-code_printing constant uint16_set_bit \<rightharpoonup>
-  (SML_word) "Uint16.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (Scala) "Uint16.set'_bit"
 
 code_printing constant uint16_shiftl \<rightharpoonup>
   (SML_word) "Uint16.shiftl" and
@@ -456,10 +431,10 @@ interpretation quickcheck_narrowing_samples
   "Typerep.Typerep (STR ''Uint16.uint16'') []" .
 
 definition "narrowing_uint16 d = qc_narrowing_drawn_from (narrowing_samples d) d"
-declare [[code drop: "partial_term_of :: uint16 itself \<Rightarrow> _"]]
 lemmas partial_term_of_uint16 [code] = partial_term_of_code
 
 instance ..
 end
 
 end
+

@@ -119,11 +119,11 @@ begin
     using assms unfolding stream.pred_rel eq_onp_def by (coinduction arbitrary: w) (auto)
   lemma stream_pred_coinduct_shift[case_names stream_pred, consumes 1]:
     assumes "R w"
-    assumes "\<And> w. R w \<Longrightarrow> \<exists> u v. w = u @- v \<and> u \<noteq> [] \<and> list_all P u \<and> R v"
+    assumes "\<And>w. R w \<Longrightarrow> \<exists> u v. w = u @- v \<and> u \<noteq> [] \<and> list_all P u \<and> R v"
     shows "pred_stream P w"
   proof -
     have "\<exists> u v. w = u @- v \<and> list_all P u \<and> R v"
-      using assms(1) by (metis list_all_simps(2) shift.simps(1))
+      using assms(1) by (simp add: list_all_iff) (metis emptyE empty_set shift.simps) 
     then show ?thesis using assms(2) by (coinduct) (force elim: list_pred_cases)
   qed
   lemma stream_pred_flat_coinduct[case_names stream_pred, consumes 1]:

@@ -275,7 +275,7 @@ proof-
       have "j \<in> {0..n - 1}-{i} \<Longrightarrow> list_of_vec (unit_vec n i) ! j = 0"
         for j
         using a3 atMost_atLeast0 atMost_iff diff_Suc_less index_unit_vec(1) le_less_trans
-          list_of_vec_index member_remove zero_le by fastforce
+          list_of_vec_index zero_le by fastforce
       hence "j \<in> {0..n - 1}-{i} \<Longrightarrow> list_of_vec (unit_vec n i) ! j *\<^sub>C basis ! j = 0"
         for j
         by auto
@@ -1219,6 +1219,39 @@ lemma mat_of_cblinfun_sandwich:
   fixes a :: "(_::onb_enum, _::onb_enum) cblinfun"
   shows \<open>mat_of_cblinfun (sandwich a *\<^sub>V b) = (let a' = mat_of_cblinfun a in a' * mat_of_cblinfun b * mat_adjoint a')\<close>
   by (simp add: mat_of_cblinfun_compose sandwich_apply Let_def mat_of_cblinfun_adj)
+
+
+lemma mat_of_cblinfun_one_dim_iso:
+  \<open>mat_of_cblinfun (one_dim_iso f :: 'a::one_dim\<Rightarrow>\<^sub>C\<^sub>L'b::one_dim) = mat_of_rows_list 1 [[one_dim_iso f]]\<close>
+proof -
+  define c :: complex where \<open>c = one_dim_iso f\<close>
+  have \<open>mat_of_cblinfun (one_dim_iso f :: 'a\<Rightarrow>\<^sub>C\<^sub>L'b) = mat_of_cblinfun (c *\<^sub>C 1 :: 'a\<Rightarrow>\<^sub>C\<^sub>L'b)\<close>
+    by (simp add: c_def)
+  also have \<open>\<dots> = smult_mat c (mat_of_cblinfun (1 :: 'a\<Rightarrow>\<^sub>C\<^sub>L'b))\<close>
+    using mat_of_cblinfun_scaleC by blast
+  also have \<open>\<dots> = smult_mat c (1\<^sub>m 1)\<close>
+    by (simp add: mat_of_cblinfun_1)
+  also have \<open>\<dots> = mat_of_rows_list 1 [[c]]\<close>
+    by (auto simp: mat_of_rows_list_def)
+  finally show ?thesis
+    by (simp add: c_def)
+qed
+
+
+lemma mat_of_cblinfun_times:
+  fixes F G :: \<open>'a::one_dim \<Rightarrow>\<^sub>C\<^sub>L 'b::one_dim\<close>
+  shows \<open>mat_of_cblinfun (F * G) = mat_of_rows_list 1 [[(one_dim_iso F) * (one_dim_iso G)]]\<close>
+proof -
+  have \<open>mat_of_cblinfun (F * G) = mat_of_cblinfun (one_dim_iso (one_dim_iso F * one_dim_iso G :: complex) :: 'a\<Rightarrow>\<^sub>C\<^sub>L'b)\<close>
+    by (metis id_apply mat_of_cblinfun_one_dim_iso one_dim_iso_id one_dim_iso_times)
+  also have \<open>\<dots> = mat_of_rows_list 1 [[one_dim_iso (one_dim_iso F * one_dim_iso G :: complex)]]\<close>
+    using mat_of_cblinfun_one_dim_iso by blast
+  also have \<open>\<dots> = mat_of_rows_list 1 [[one_dim_iso F * one_dim_iso G :: complex]]\<close>
+    by simp
+  finally show ?thesis
+    by -
+qed
+
 
 subsection \<open>Operations on subspaces\<close>
 

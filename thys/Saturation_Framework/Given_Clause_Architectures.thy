@@ -37,8 +37,8 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     active :: "'l"
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
-    wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
-    wf_prec_L: "minimal_element (\<sqsubset>L) UNIV" and
+    wf_prec_F: "wfp (\<prec>\<cdot>)" "transp (\<prec>\<cdot>)" and
+    wf_prec_L: "wfp (\<sqsubset>L)" "transp (\<sqsubset>L)" and
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
@@ -58,47 +58,35 @@ definition Prec_FL :: "('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightar
   "Cl1 \<sqsubset> Cl2 \<longleftrightarrow> fst Cl1 \<prec>\<cdot> fst Cl2 \<or> (fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
 
 lemma irrefl_prec_F: "\<not> C \<prec>\<cdot> C"
-  by (simp add: minimal_element.po[OF wf_prec_F, unfolded po_on_def irreflp_on_def])
+  using wf_prec_F
+  by (meson asympD wfp_imp_asymp)
 
 lemma trans_prec_F: "C1 \<prec>\<cdot> C2 \<Longrightarrow> C2 \<prec>\<cdot> C3 \<Longrightarrow> C1 \<prec>\<cdot> C3"
-  by (auto intro: minimal_element.po[OF wf_prec_F, unfolded po_on_def transp_on_def, THEN conjunct2,
-        simplified, rule_format])
+  using wf_prec_F
+  by (meson transpE)
 
-lemma wf_prec_FL: "minimal_element (\<sqsubset>) UNIV"
-proof
-  show "po_on (\<sqsubset>) UNIV" unfolding po_on_def
-  proof
-    show "irreflp (\<sqsubset>)" unfolding irreflp_on_def Prec_FL_def
-    proof
-      fix Cl
-      assume a_in: "Cl \<in> (UNIV::('f \<times> 'l) set)"
-      have "\<not> (fst Cl \<prec>\<cdot> fst Cl)" using wf_prec_F minimal_element.min_elt_ex by force
-      moreover have "\<not> (snd Cl \<sqsubset>L snd Cl)" using wf_prec_L minimal_element.min_elt_ex by force
-      ultimately show "\<not> (fst Cl \<prec>\<cdot> fst Cl \<or> fst Cl \<doteq> fst Cl \<and> snd Cl \<sqsubset>L snd Cl)" by blast
-    qed
-  next
-    show "transp (\<sqsubset>)" unfolding Prec_FL_def
-    proof (rule transpI)
-      fix Cl1 Cl2 Cl3
-      assume trans_hyps:
-        "(fst Cl1 \<prec>\<cdot> fst Cl2 \<or> fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
-        "(fst Cl2 \<prec>\<cdot> fst Cl3 \<or> fst Cl2 \<doteq> fst Cl3 \<and> snd Cl2 \<sqsubset>L snd Cl3)"
-      have "fst Cl1 \<prec>\<cdot> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
-        using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<prec>\<cdot> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
-        using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "snd Cl1 \<sqsubset>L snd Cl2 \<Longrightarrow> snd Cl2 \<sqsubset>L snd Cl3 \<Longrightarrow> snd Cl1 \<sqsubset>L snd Cl3"
-        using wf_prec_L unfolding minimal_element_def po_on_def transp_def by (meson UNIV_I)
-      moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<doteq> fst Cl3"
-        using equiv_equiv_F by (meson equivp_transp)
-      ultimately show "fst Cl1 \<prec>\<cdot> fst Cl3 \<or> fst Cl1 \<doteq> fst Cl3 \<and> snd Cl1 \<sqsubset>L snd Cl3"
-        using trans_hyps trans_prec_F by blast
-    qed
+lemma wf_prec_FL: "wfp (\<sqsubset>)" "transp (\<sqsubset>)"
+proof-
+  show "transp (\<sqsubset>)" unfolding Prec_FL_def
+  proof (rule transpI)
+    fix Cl1 Cl2 Cl3
+    assume trans_hyps:
+      "(fst Cl1 \<prec>\<cdot> fst Cl2 \<or> fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
+      "(fst Cl2 \<prec>\<cdot> fst Cl3 \<or> fst Cl2 \<doteq> fst Cl3 \<and> snd Cl2 \<sqsubset>L snd Cl3)"
+    have "fst Cl1 \<prec>\<cdot> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
+      using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
+    moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<prec>\<cdot> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
+      using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
+    moreover have "snd Cl1 \<sqsubset>L snd Cl2 \<Longrightarrow> snd Cl2 \<sqsubset>L snd Cl3 \<Longrightarrow> snd Cl1 \<sqsubset>L snd Cl3"
+      using wf_prec_L unfolding transp_def by (meson UNIV_I)
+    moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<doteq> fst Cl3"
+      using equiv_equiv_F by (meson equivp_transp)
+    ultimately show "fst Cl1 \<prec>\<cdot> fst Cl3 \<or> fst Cl1 \<doteq> fst Cl3 \<and> snd Cl1 \<sqsubset>L snd Cl3"
+      using trans_hyps trans_prec_F by blast
   qed
 next
-  show "wfp_on (\<sqsubset>) UNIV" unfolding wfp_on_def
-  proof
-    assume contra: "\<exists>f. \<forall>i. f i \<in> UNIV \<and> f (Suc i) \<sqsubset> f i"
+   {
+    assume contra: "\<exists>f. \<forall>i. f (Suc i) \<sqsubset> f i"
     then obtain f where
       f_suc: "\<forall>i. f (Suc i) \<sqsubset> f i"
       by blast
@@ -112,9 +100,9 @@ next
       f_chain: "\<forall>i. (f (Suc (i + k)), f (i + k)) \<in> S"
     proof (atomize_elim, rule wf_infinite_down_chain_compatible[of R f S])
       show "wf R"
-        unfolding R_def using wf_app[OF wf_prec_F[unfolded minimal_element_def, THEN conjunct2,
-              unfolded wfp_on_UNIV wfp_def]]
-        by force
+        using wfP_app wf_prec_F
+        unfolding R_def wfp_def
+        by auto
     next
       show "\<forall>i. (f (Suc i), f i) \<in> R \<union> S"
         using f_suc unfolding R_def S_def Prec_FL_def by blast
@@ -130,14 +118,15 @@ next
       unfolding g_def using f_chain by simp
     have wf_s: "wf S"
       unfolding S_def
-      by (rule wf_subset[OF wf_app[OF wf_prec_L[unfolded minimal_element_def, THEN conjunct2,
-                unfolded wfp_on_UNIV wfp_def], of snd]])
-        fast
-    show False
-      using g_chain[unfolded S_def]
-        wf_s[unfolded S_def, folded wfp_def wfp_on_UNIV, unfolded wfp_on_def]
-      by auto
-  qed
+      by (rule wf_subset[OF wf_app[OF wf_prec_L(1)[ unfolded wfp_def], of snd]]) fast
+    have False
+      using g_chain[unfolded S_def] wf_s[unfolded S_def, folded wfp_def, unfolded wfp_on_def]
+      by (meson g_chain wf_no_infinite_down_chainE wf_s)
+  }
+
+  then show "wfp (\<sqsubset>)"
+    unfolding infinite_chain_function_iff_infinite_chain_llist wfP_iff_no_infinite_down_chain_llist
+    by argo
 qed
 
 definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
@@ -508,7 +497,7 @@ proof
     assume j_in: "j \<in> {0..<m}"
     then obtain C where c_is: "(C, active) = prems_of \<iota> ! j"
       using i_in2 unfolding m_def Inf_from_def active_subset_def
-      by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
+      by (smt (verit, ccfv_threshold) atLeastLessThan_iff mem_Collect_eq nth_mem snd_conv subset_iff surj_pair)
     then have "(C, active) \<in> Liminf_llist Ns"
       using j_in i_in unfolding m_def Inf_from_def by force
     then obtain nj where nj_is: "enat nj < llength Ns" and
@@ -524,8 +513,8 @@ proof
       by (metis (mono_tags, lifting) INT_E LeastI_ex mem_Collect_eq)
     have njm_smaller_D: "enat nj_min < llength Ns"
       using nj_min_is
-      by (smt LeastI_ex \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength Ns;
-          (C, active) \<in> \<Inter> (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns})\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
+      by (metis (lifting) ext LeastI
+          \<open>\<And>thesis. (\<And>nj. enat nj < llength Ns \<Longrightarrow> (C, active) \<in> \<Inter> (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns}) \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
     have "nj_min > 0"
       using nj_is c_in2 nj_pos nj_min_is lhd_is
       by (metis (mono_tags, lifting) Collect_empty_eq \<open>(C, active) \<in> Liminf_llist Ns\<close>
@@ -544,9 +533,7 @@ proof
       assume "\<not> (C, active) \<notin> lnth Ns njm_prec"
       then have absurd_hyp: "(C, active) \<in> lnth Ns njm_prec" by simp
       have prec_smaller: "enat njm_prec < llength Ns" using nj_min_is nj_prec_is
-        by (smt LeastI_ex Suc_leD \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength Ns;
-            (C, active) \<in> \<Inter> (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns})\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
-            enat_ord_simps(1) le_eq_less_or_eq le_less_trans)
+        using njm_prec_smaller_d by fastforce
       have "(C, active) \<in> \<Inter> (lnth Ns ` {k. njm_prec \<le> k \<and> enat k < llength Ns})"
       proof -
         {
@@ -599,7 +586,9 @@ proof
     unfolding nj_set_def by blast
   obtain C0 where C0_is: "prems_of \<iota> ! j0 = (C0, active)" using j0_in
     using i_in2 unfolding m_def Inf_from_def active_subset_def
-    by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
+    by (metis (mono_tags, lifting)
+        \<open>\<And>thesis. (\<And>j0. j0 \<in> {0..<m} \<Longrightarrow> enat (Suc n) < llength Ns \<Longrightarrow> prems_of \<iota> ! j0 \<notin> active_subset (lnth Ns n) \<Longrightarrow> \<forall>k>n. enat k < llength Ns \<longrightarrow> prems_of \<iota> ! j0 \<in> active_subset (lnth Ns k) \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
+        active_subset_def j0_allin lessI mem_Collect_eq split_pairs)
   then have C0_prems_i: "(C0, active) \<in> set (prems_of \<iota>)" using in_set_conv_nth j0_in m_def by force
   have C0_in: "(C0, active) \<in> (lnth Ns (Suc n))"
     using C0_is j0_allin suc_n_length by (simp add: active_subset_def)
@@ -620,7 +609,9 @@ proof
       using step.simps[of "lnth Ns n" "lnth Ns (Suc n)"] step_n by blast
     show ?thesis
       using C0_in C0_notin proc_or_infer j0_in C0_is
-      by (smt Un_iff active_subset_def mem_Collect_eq snd_conv sup_bot.right_neutral)
+      by (smt (verit, ccfv_threshold) UnI1
+          \<open>\<And>thesis. (\<And>j0. j0 \<in> {0..<m} \<Longrightarrow> enat (Suc n) < llength Ns \<Longrightarrow> prems_of \<iota> ! j0 \<notin> active_subset (lnth Ns n) \<Longrightarrow> \<forall>k>n. enat k < llength Ns \<longrightarrow> prems_of \<iota> ! j0 \<in> active_subset (lnth Ns k) \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
+          active_subset_union lessI sup_bot.right_neutral)
   qed
   then obtain N M L where inf_from_subs:
     "no_labels.Inf_between (fst ` active_subset N) {C0}
@@ -640,12 +631,14 @@ proof
       using exist_nj j_in by blast
     then have "nj \<in> nj_set" unfolding nj_set_def using j_in by blast
     moreover have "nj \<noteq> n"
-    proof (rule ccontr)
-      assume "\<not> nj \<noteq> n"
+    proof
+      assume "nj = n"
       then have "prems_of \<iota> ! j = (C0, active)"
         using C0_in C0_notin step.simps[of "lnth Ns n" "lnth Ns (Suc n)"] step_n
-        by (smt Un_iff nth_d_is suc_nth_d_is l_not_active active_subset_def insertCI insertE lessI
-            mem_Collect_eq nj_greater nj_prems snd_conv suc_n_length)
+          nj_greater nj_prems snd_conv 
+        by (simp add: suc_n_length)
+           (smt (verit, del_insts) C0_notin Un_iff active_subset_def insertCI insertE lessI mem_Collect_eq snd_conv suc_n_length
+            sup_bot.right_neutral)
       then show False using j_not_j0 C0_is by simp
     qed
     ultimately have "nj < n" using n_bigger by force
@@ -800,7 +793,8 @@ qed
 
 (* lem:lgc-derivations-are-red-derivations *)
 lemma lgc_to_red: "chain (\<leadsto>LGC) Ns \<Longrightarrow> chain (\<rhd>L) (lmap snd Ns)"
-  using one_step_equiv Lazy_List_Chain.chain_mono by (smt chain_lmap prod.collapse)
+  using one_step_equiv Lazy_List_Chain.chain_mono
+  by (smt (verit) chain_lmap prod.exhaust_sel)
 
 (* lem:fair-lgc-derivations *)
 lemma lgc_fair:
@@ -833,7 +827,7 @@ proof
     assume j_in: "j \<in> {0..<m}"
     then obtain C where c_is: "(C, active) = prems_of \<iota> ! j"
       using i_in2 unfolding m_def Inf_from_def active_subset_def
-      by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
+      by (smt (verit) atLeastLessThan_iff mem_Collect_eq nth_mem snd_eqD subsetD surj_pair)
     then have "(C, active) \<in> Liminf_llist (lmap snd Ns)"
       using j_in i_in unfolding m_def Inf_from_def by force
     then obtain nj where nj_is: "enat nj < llength Ns" and
@@ -850,8 +844,8 @@ proof
       by blast
     have njm_smaller_D: "enat nj_min < llength Ns"
       using nj_min_is
-      by (smt LeastI_ex \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength Ns;
-          (C, active) \<in> \<Inter> (snd ` (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns}))\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
+      by (metis (no_types, lifting) ext LeastI
+          \<open>\<And>thesis. (\<And>nj. enat nj < llength Ns \<Longrightarrow> (C, active) \<in> \<Inter> (snd ` lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns}) \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
     have "nj_min > 0"
       using nj_is c_in2 nj_pos nj_min_is lhd_is
       by (metis (mono_tags, lifting) active_subset_def emptyE in_allk init_state mem_Collect_eq
@@ -868,9 +862,7 @@ proof
       assume "\<not> (C, active) \<notin> snd (lnth Ns njm_prec)"
       then have absurd_hyp: "(C, active) \<in> snd (lnth Ns njm_prec)" by simp
       have prec_smaller: "enat njm_prec < llength Ns" using nj_min_is nj_prec_is
-        by (smt LeastI_ex Suc_leD \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength Ns;
-            (C, active) \<in> \<Inter> (snd ` (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns}))\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
-            enat_ord_simps(1) le_eq_less_or_eq le_less_trans)
+        using njm_prec_smaller_d by blast
       have "(C, active) \<in> \<Inter> (snd ` (lnth Ns ` {k. njm_prec \<le> k \<and> enat k < llength Ns}))"
       proof -
         {
@@ -932,7 +924,7 @@ proof
       unfolding nj_set_def by blast
     obtain C0 where C0_is: "prems_of \<iota> ! j0 = (C0, active)"
       using j0_in i_in2 unfolding m_def Inf_from_def active_subset_def
-      by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
+      by (metis (mono_tags, lifting) active_subset_def j0_allin less_Suc_eq mem_Collect_eq split_pairs suc_n_length)
     then have C0_prems_i: "(C0, active) \<in> set (prems_of \<iota>)" using in_set_conv_nth j0_in m_def by force
     have C0_in: "(C0, active) \<in> (snd (lnth Ns (Suc n)))"
       using C0_is j0_allin suc_n_length by (simp add: active_subset_def)
@@ -1101,7 +1093,7 @@ proof
     then have prems_i_active_p: "m > 0 \<Longrightarrow>
         to_F \<iota> \<in> no_labels.Inf_from (fst ` active_subset (snd (lnth Ns p)))"
       using i_in_F unfolding no_labels.Inf_from_def
-      by (smt atLeast0LessThan in_set_conv_nth lessThan_iff m_def_F mem_Collect_eq subsetI)
+      by (simp add: atLeast0LessThan m_def_F) (metis in_set_conv_nth subsetI)
     have "m = 0 \<Longrightarrow> (\<exists>T1 T2 \<iota> N2 N1 M. lnth Ns p = (T1, N1) \<and> lnth Ns (Suc p) = (T2, N2) \<and>
         T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
         \<iota> \<in> no_labels.Red_I_\<G> (fst ` (N1 \<union> M)))"

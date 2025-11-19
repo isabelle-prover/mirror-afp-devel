@@ -257,10 +257,11 @@ local
 val ss =
   simpset_of
     (put_simpset (simpset_of @{theory_context Fun}) @{context}
-      addsimps (@{thm StateFun.id_id_cancel}
+    |> Simplifier.add_simps (@{thm StateFun.id_id_cancel}
       :: @{thms list.inject list.distinct char.inject
-      cong_exp_iff_simps simp_thms} )
-    addsimprocs [Record.simproc, StateFun.lazy_conj_simproc] @ @{code_simprocs state_simp}
+      cong_exp_iff_simps simp_thms})
+    |> fold Simplifier.add_proc [Record.simproc, StateFun.lazy_conj_simproc]
+    |> fold Simplifier.add_proc @{code_simprocs state_simp}
     |> fold Simplifier.add_cong @{thms block_conj_cong});
 
 in
@@ -382,7 +383,7 @@ fun params_of_fun_types ctxt ctys = map (params_of_fun_type ctxt) ctys
 
 fun mk_fninfo ctxt csenv includeP decllist: (fninfo list list * ProgramAnalysis.callgraph) =
 let
-  val cg as {callees,callers} = ProgramAnalysis.compute_callgraphs ctxt csenv
+  val cg as {callees,callers} = ProgramAnalysis.compute_callgraphs csenv
   fun lift f fnm = case Symtab.lookup f fnm of
                      NONE => []
                    | SOME s => Binaryset.listItems s

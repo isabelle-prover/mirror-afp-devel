@@ -184,7 +184,7 @@ qed
 lemma smaller_than_small:
   assumes "small A" "B \<subseteq> A" shows "small B"
   using assms
-  by (metis down elts_of_set image_mono small_def small_iff_range subset_inj_on) 
+  by (metis down elts_of_set image_mono small_def small_iff_range inj_on_subset) 
 
 lemma small_insert_iff [iff]: "small (insert a X) \<longleftrightarrow> small X"
   by (meson small_insert smaller_than_small subset_insertI)

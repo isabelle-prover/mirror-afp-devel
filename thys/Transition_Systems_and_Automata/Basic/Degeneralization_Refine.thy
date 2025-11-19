@@ -13,6 +13,6 @@ begin
 
   lemma count_param[param]: "(Degeneralization.count, Degeneralization.count) \<in>
     \<langle>A \<rightarrow> bool_rel\<rangle> list_rel \<rightarrow> A \<rightarrow> nat_rel \<rightarrow> nat_rel"
-    unfolding count_def null_def[symmetric] by parametricity
+    unfolding count_def List.null_iff [symmetric] by parametricity
 
 end

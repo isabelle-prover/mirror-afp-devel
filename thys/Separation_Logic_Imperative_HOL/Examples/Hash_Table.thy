@@ -2,7 +2,6 @@ section "Hash-Tables"
 theory Hash_Table
 imports
   Collections.HashCode
-  Collections.Code_Target_ICF
   "../Sep_Main"
 begin
 

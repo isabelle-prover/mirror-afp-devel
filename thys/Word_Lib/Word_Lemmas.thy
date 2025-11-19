@@ -2,7 +2,6 @@
  * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 section "Lemmas with Generic Word Length"
@@ -359,7 +358,7 @@ lemma shiftr_div_2n':
   by word_eqI
 
 lemma shiftl_shiftr_id:
-  "\<lbrakk> n < LENGTH('a); x < 2 ^ (LENGTH('a) - n) \<rbrakk> \<Longrightarrow> x << n >> n = (x::'a::len word)" 
+  "\<lbrakk> n < LENGTH('a); x < 2 ^ (LENGTH('a) - n) \<rbrakk> \<Longrightarrow> x << n >> n = (x::'a::len word)"
   by word_eqI (metis add.commute less_diff_conv)
 
 lemma ucast_shiftl_eq_0:
@@ -377,7 +376,7 @@ proof -
   have "0 < unat x"
     by (simp add: assms unat_gt_0)
   moreover
-  have "unat x \<le> 2 ^ m" 
+  have "unat x \<le> 2 ^ m"
     by (simp add: assms word_unat_less_le)
   then have \<section>: "2 ^ n * unat x < 2 ^ LENGTH('a)"
     by (metis add_diff_cancel_right' mn le_add2 nat_le_power_trans order_le_less_trans unat_lt2p unat_power_lower)
@@ -844,7 +843,7 @@ next
       using Cons.prems less word_enum_decomp_elem word_upto_Cons_eq by fastforce
     moreover have "(x + 1 \<le> a) = (x < a)"
       by (metis less word_Suc_le word_not_simps(3))
-    ultimately 
+    ultimately
     show ?thesis
       using Cons less word_l_diffs(2) less_is_non_zero_p1 olen_add_eqv unat_plus_simple
         word_overflow_unat word_upto_Cons_eq by fastforce
@@ -854,7 +853,7 @@ next
       using Cons.prems by auto
   next
     case greater
-    then show ?thesis      
+    then show ?thesis
       using Cons
       by (simp add: word_upto_Nil)
   qed
@@ -918,7 +917,7 @@ lemma upto_enum_word_nth:
 proof -
   have "unat i + unat (j-i) < 2 ^ LENGTH('a)"
     by (metis add.commute \<open>i \<le> j\<close> eq_diff_eq no_olen_add_nat)
-  then have "toEnum (unat i + k) = i + word_of_nat k" 
+  then have "toEnum (unat i + k) = i + word_of_nat k"
     using assms by auto
   moreover have "[j] ! (k + unat i - unat j) = i + word_of_nat k"
     if "\<not> k < unat j - unat i"  "unat i \<le> unat j"
@@ -1529,7 +1528,7 @@ proof -
   proof cases
     case 1
     with assms show ?thesis
-      using is_aligned_no_overflow linorder_not_le 
+      using is_aligned_no_overflow linorder_not_le
       by (force simp: upto_enum_step_def)
   qed (auto simp: map_idI)
 qed
@@ -1691,12 +1690,12 @@ proof (rule classical)
 
   have result_range_overflow: "(sint a sdiv sint b = 2 ^ (size a - 1)) = (?a_int_min \<and> ?b_minus1)"
   proof -
-    have False 
+    have False
       if "sint a sdiv sint b = 2 ^ (size a - 1)" "\<not> (a = - (2 ^ (size a - 1)) \<and> b = - 1)"
     proof (cases "?a_int_min")
       case True
       with that show ?thesis
-        by (smt (verit, best) One_nat_def int_sdiv_negated_is_minus1 sint_int_min sint_minus1 
+        by (smt (verit, best) One_nat_def int_sdiv_negated_is_minus1 sint_int_min sint_minus1
             wsst_TYs(3) zero_less_power)
     next
       case False

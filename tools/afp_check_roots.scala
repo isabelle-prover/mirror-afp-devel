@@ -84,8 +84,8 @@ object AFP_Check_Roots {
           for {
             dir <- check_dirs
             entry_name <- entries(dir)
-            entry_info = structure(entry_name)
-            if !sessions.contains(entry_name) || entry_info.dir.base.implode != entry_name
+            entry_info = structure.get(entry_name)
+            if !sessions.contains(entry_name) || entry_info.get.dir.base.implode != entry_name
           } yield entry_name),
       Check[String]("roots",
         "The following entries do not match with the ROOTS file:",
@@ -149,8 +149,12 @@ object AFP_Check_Roots {
       Check[String]("document_presence",
         "The following entries do not contain a document root.tex",
         (structure, _, check_dirs) =>
-          check_dirs.flatMap(entries).filterNot(
-            structure(_).document_files.map(_._2).contains(Path.basic("root.tex")))),
+          for {
+            dir <- check_dirs
+            entry <- entries(dir)
+            session = structure.get(entry).getOrElse(error("No session " + quote(entry)))
+            if !session.document_files.map(_._2).contains(Path.basic("root.tex"))
+          } yield entry),
       Check[(String, List[String])]("thy_name_clashes",
         "The following would cause name conflicts:",
         (structure, sessions, check_dirs) => {

@@ -11,11 +11,13 @@ Authors:
 theory Complex_Bounded_Linear_Function
   imports
     "HOL-Types_To_Sets.Types_To_Sets"
+    "HOL-Library.Function_Algebras"
     Banach_Steinhaus.Banach_Steinhaus
+    Wlog.Wlog
+
     Complex_Inner_Product
     One_Dimensional_Spaces
     Complex_Bounded_Linear_Function0
-    "HOL-Library.Function_Algebras"
 begin
 
 unbundle lattice_syntax
@@ -656,6 +658,90 @@ lemma Cblinfun_comp_bounded_cbilinear: \<open>bounded_clinear (CBlinfun o p)\<cl
 lemma Cblinfun_comp_bounded_sesquilinear: \<open>bounded_antilinear (CBlinfun o p)\<close> if \<open>bounded_sesquilinear p\<close>
   by (metis (mono_tags, opaque_lifting) bounded_clinear_CBlinfun_apply bounded_sesquilinear.bounded_clinear_right comp_apply that transfer_bounded_sesquilinear_bounded_antilinearI)
 
+declare (in bounded_cbilinear) bounded_cbilinear_axioms[bounded_cbilinear]
+declare (in bounded_clinear) bounded_clinear_axioms[bounded_clinear]
+
+lemma norm_cblinfun_bound_both_sides:
+  fixes a :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner\<close>
+  assumes \<open>b \<ge> 0\<close>
+  assumes leq: \<open>\<And>\<psi> \<phi>. norm \<psi> = 1 \<Longrightarrow> norm \<phi> = 1 \<Longrightarrow> norm (\<psi> \<bullet>\<^sub>C a \<phi>) \<le> b\<close>
+  shows \<open>norm a \<le> b\<close>
+proof -
+  wlog not_singleton: \<open>class.not_singleton TYPE('a)\<close>
+    apply (subst not_not_singleton_cblinfun_zero)
+    by (simp_all add: negation assms)
+  have \<open>norm a = (\<Squnion>(\<psi>, \<phi>). cmod (\<psi> \<bullet>\<^sub>C (a *\<^sub>V \<phi>)) / (norm \<psi> * norm \<phi>))\<close>
+    apply (rule cinner_sup_norm_cblinfun[internalize_sort' 'a])
+     apply (rule complex_normed_vector_axioms)
+    by (fact not_singleton)
+  also have \<open>\<dots> \<le> b\<close>
+  proof (rule cSUP_least)
+    show \<open>UNIV \<noteq> {}\<close>
+      by simp
+    fix x :: \<open>'b \<times> 'a\<close>
+    obtain \<psi> \<phi> where x: \<open>x = (\<psi>, \<phi>)\<close>
+      by fastforce
+    have \<open>(case x of (\<psi>, \<phi>) \<Rightarrow> cmod (\<psi> \<bullet>\<^sub>C (a *\<^sub>V \<phi>)) / (norm \<psi> * norm \<phi>)) = cmod (\<psi> \<bullet>\<^sub>C a \<phi>) / (norm \<psi> * norm \<phi>)\<close>
+      using x by force
+    also have \<open>\<dots> = cmod (sgn \<psi> \<bullet>\<^sub>C a (sgn \<phi>))\<close>
+      by (simp add: sgn_div_norm cblinfun.scaleR_right divide_inverse_commute norm_inverse norm_mult)
+    also have \<open>\<dots> \<le> b\<close>
+      apply (cases \<open>\<psi> = 0\<close>, simp add: assms)
+      apply (cases \<open>\<phi> = 0\<close>, simp add: assms)
+      apply (rule leq)
+      by (simp_all add: norm_sgn)
+    finally show \<open>(case x of (\<psi>, \<phi>) \<Rightarrow> cmod (\<psi> \<bullet>\<^sub>C (a *\<^sub>V \<phi>)) / (norm \<psi> * norm \<phi>)) \<le> b\<close>
+      by -
+  qed
+  finally show ?thesis
+    by -
+qed
+
+lemma norm_cblinfun_bound_unit:
+  assumes \<open>b \<ge> 0\<close>
+  assumes \<open>\<And>\<psi>. norm \<psi> = 1 \<Longrightarrow> norm (a *\<^sub>V \<psi>) \<le> b\<close>
+  shows \<open>norm a \<le> b\<close>
+proof (rule norm_cblinfun_bound)
+  from assms show \<open>b \<ge> 0\<close> by simp
+  fix x
+  show \<open>norm (a *\<^sub>V x) \<le> b * norm x\<close>
+  proof (cases \<open>x = 0\<close>)
+    case True
+    then show ?thesis by simp
+  next
+    case False
+    have \<open>norm (a *\<^sub>V x) = norm (a *\<^sub>V (norm x *\<^sub>C sgn x))\<close>
+      by simp
+    also have \<open>\<dots> = norm (a *\<^sub>V sgn x) * norm x\<close>
+      by (simp add: cblinfun.scaleC_right del: norm_scaleC_sgn)
+    also have \<open>\<dots> \<le> (b * norm (sgn x)) * norm x\<close>
+      by (simp add: assms(2) norm_sgn)
+    also have \<open>\<dots> = b * norm x\<close>
+      by (simp add: norm_sgn)
+    finally show ?thesis 
+      by -
+  qed
+qed
+
+lemma cblinfun_eq_from_separatingI:
+  fixes a b :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector\<close>
+  assumes \<open>separating_set (bounded_clinear :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) S\<close>
+  assumes \<open>\<And>x. x \<in> S \<Longrightarrow> a x = b x\<close>
+  shows \<open>a = b\<close>
+  apply (rule cblinfun_eqI, rule fun_cong[where f=\<open>cblinfun_apply _\<close>])
+  using assms(1) apply (rule eq_from_separatingI)
+  using assms(2) by (auto intro!: bounded_cbilinear_apply_bounded_clinear cblinfun.bounded_cbilinear_axioms simp: )
+
+lemma cblinfun_eq_from_separatingI2:
+  fixes a b :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector\<close>
+  assumes \<open>separating_set (bounded_clinear :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) ((\<lambda>(x,y). h x y) ` (S\<times>T))\<close>
+  assumes \<open>\<And>x y. x \<in> S \<Longrightarrow> y \<in> T \<Longrightarrow> a (h x y) = b (h x y)\<close>
+  shows \<open>a = b\<close>
+  apply (rule cblinfun_eqI, rule fun_cong[where f=\<open>cblinfun_apply _\<close>])
+  using assms(1) apply (rule eq_from_separatingI2)
+  using assms(2) by (auto intro!: bounded_cbilinear_apply_bounded_clinear cblinfun.bounded_cbilinear_axioms simp: )
+
+
 subsection \<open>Relationship to real bounded operators (\<^typ>\<open>_ \<Rightarrow>\<^sub>L _\<close>)\<close>
 
 instantiation blinfun :: (real_normed_vector, complex_normed_vector) "complex_normed_vector"
@@ -1258,10 +1344,10 @@ lemma adjoint_eqI:
 lemma adj_uminus: \<open>(-A)* = - (A*)\<close>
   by (metis scaleR_adj scaleR_minus1_left scaleR_minus1_left)
 
-lemma cinner_real_hermiteanI:
+lemma cinner_real_selfadjointI:
   \<comment> \<open>Prop. II.2.12 in \<^cite>\<open>conway2013course\<close>\<close>
   assumes \<open>\<And>\<psi>. \<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>) \<in> \<real>\<close>
-  shows \<open>A* = A\<close>
+  shows \<open>selfadjoint A\<close>
 proof -
   { fix g h :: 'a
     {
@@ -1290,9 +1376,11 @@ proof -
     have \<open>cinner h (A g) = cinner h (A* *\<^sub>V g)\<close>
       by (auto simp: ring_class.ring_distribs)
   }
-  then show "A* = A"
+  then have \<open>A* = A\<close>
     apply (rule_tac sym)
     by (simp add: adjoint_eqI cinner_adj_right)
+  then show "selfadjoint A"
+    by (simp add: selfadjoint_def)
 qed
 
 
@@ -1367,7 +1455,7 @@ lemma has_sum_adj:
 lemma adj_minus: \<open>(A - B)* = (A*) - (B*)\<close>
   by (metis add_implies_diff adj_plus diff_add_cancel)
 
-lemma cinner_hermitian_real: \<open>x \<bullet>\<^sub>C (A *\<^sub>V x) \<in> \<real>\<close> if \<open>selfadjoint A\<close>
+lemma cinner_selfadjoint_real: \<open>x \<bullet>\<^sub>C (A *\<^sub>V x) \<in> \<real>\<close> if \<open>selfadjoint A\<close>
   by (metis Reals_cnj_iff cinner_adj_right cinner_commute' that selfadjoint_def)
 
 lemma adj_inject: \<open>adj a = adj b \<longleftrightarrow> a = b\<close>
@@ -1392,6 +1480,121 @@ proof -
   finally show ?thesis
     by -
 qed
+
+lemma cblinfun_norm_is_Sup_cinner:
+  \<comment> \<open>\<^cite>\<open>conway2013course\<close>, Proposition II.2.13\<close>
+fixes A :: \<open>'a::{not_singleton,chilbert_space} \<Rightarrow>\<^sub>C\<^sub>L 'a\<close>
+  assumes Aselfadj: \<open>selfadjoint A\<close>
+  shows \<open>is_Sup ((\<lambda>\<psi>. cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>))) ` {\<psi>. norm \<psi> = 1}) (norm A)\<close>
+proof (rule is_SupI)
+  fix b assume \<open>b \<in> (\<lambda>\<psi>. cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>))) ` {\<psi>. norm \<psi> = 1}\<close>
+  then obtain \<psi> where \<open>norm \<psi> = 1\<close> and b_\<psi>: \<open>b = cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>))\<close>
+    by blast
+  have \<open>b \<le> norm (A \<psi>)\<close>
+    using b_\<psi> \<open>norm \<psi> = 1\<close>
+    by (metis complex_inner_class.Cauchy_Schwarz_ineq2 mult_cancel_right2)
+  also have \<open>\<dots> \<le> norm A\<close>
+    using \<open>norm \<psi> = 1\<close>
+    by (metis mult_cancel_left2 norm_cblinfun)
+  finally show \<open>b \<le> norm A\<close>
+    by -
+next
+  fix c assume asm: \<open>(\<And>b. b \<in> (\<lambda>\<psi>. cmod (\<psi> \<bullet>\<^sub>C A \<psi>)) ` {\<psi>. norm \<psi> = 1} \<Longrightarrow> b \<le> c)\<close>
+  have c_upper: \<open>cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>)) \<le> c\<close> if \<open>norm \<psi> = 1\<close> for \<psi>
+    using that using asm[of \<open>cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>))\<close>] by auto
+  have \<open>c \<ge> 0\<close>
+    by (smt (z3) ex_norm1_not_singleton c_upper norm_ge_zero)
+  have *: \<open>Re (g \<bullet>\<^sub>C A h) \<le> c\<close> if \<open>norm g = 1\<close> and \<open>norm h = 1\<close> for g h
+  proof -
+    have c_upper': \<open>cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>)) \<le> c * (norm \<psi>)\<^sup>2\<close> for \<psi>
+      apply (cases \<open>\<psi> = 0\<close>, simp)
+      apply (subst (2) norm_scaleC_sgn[symmetric, of \<psi>])
+      apply (subst norm_scaleC_sgn[symmetric])
+      apply (simp only: cinner_scaleC_left cinner_scaleC_right cblinfun.scaleC_right)
+      using c_upper[of \<open>sgn \<psi>\<close>]
+      by (simp add: norm_mult norm_sgn power2_eq_square)
+    from Aselfadj have Aselfadj': "x \<bullet>\<^sub>C (A *\<^sub>V y) = (A *\<^sub>V x) \<bullet>\<^sub>C y" for x y
+      using cinner_adj_right[of x A y] by (auto simp: selfadjoint_def)
+    from Aselfadj have Aselfadj'': "(A *\<^sub>V x) \<bullet>\<^sub>C y = cnj ((A *\<^sub>V y) \<bullet>\<^sub>C x)" for x y
+      by (subst cinner_commute, subst Aselfadj') auto
+
+    have 1: \<open>(h + g) \<bullet>\<^sub>C A (h + g) = h \<bullet>\<^sub>C A h + 2 * Re (g \<bullet>\<^sub>C A h) + g \<bullet>\<^sub>C A g\<close>
+      by (simp add: cblinfun.cbilinear_simps algebra_simps
+            Aselfadj' Aselfadj''[of h g] complex_add_cnj del: cinner_commute')
+    from Aselfadj have 2: \<open>(h - g) \<bullet>\<^sub>C A (h - g) = h \<bullet>\<^sub>C A h - 2 * Re (g \<bullet>\<^sub>C A h) + g \<bullet>\<^sub>C A g\<close>
+      by (simp add: cblinfun.cbilinear_simps algebra_simps Aselfadj' 
+            Aselfadj''[of h g] complex_add_cnj del: cinner_commute')
+    have \<open>4 * Re (g \<bullet>\<^sub>C A h) = Re ((h + g) \<bullet>\<^sub>C A (h + g)) - Re ((h - g) \<bullet>\<^sub>C A (h - g))\<close>
+      by (smt (verit, ccfv_SIG) "1" "2" Re_complex_of_real minus_complex.simps(1) plus_complex.sel(1))
+    also have \<open>\<dots> \<le> c * (norm (h + g))\<^sup>2 - Re ((h - g) \<bullet>\<^sub>C A (h - g))\<close>
+      using c_upper'[of \<open>h + g\<close>]
+      by (smt (verit, best) complex_Re_le_cmod)
+    also have \<open>\<dots> \<le> c * (norm (h + g))\<^sup>2 + c * (norm (h - g))\<^sup>2\<close>
+      unfolding diff_conv_add_uminus
+      by (rule add_left_mono)
+         (use c_upper'[of \<open>h - g\<close>] in \<open>smt (verit) abs_Re_le_cmod add_uminus_conv_diff\<close>)
+    also have \<open>\<dots> = 2 * c * ((norm h)\<^sup>2 + (norm g)\<^sup>2)\<close>
+      by (auto intro!: simp: polar_identity polar_identity_minus ring_distribs)
+    also have \<open>\<dots> \<le> 4 * c\<close>
+      by (simp add: \<open>norm h = 1\<close> \<open>norm g = 1\<close>)
+    finally show \<open>Re (g \<bullet>\<^sub>C (A *\<^sub>V h)) \<le> c\<close>
+      by simp
+  qed      
+  have *: \<open>cmod (g \<bullet>\<^sub>C A h) \<le> c\<close> if \<open>norm g = 1\<close> and \<open>norm h = 1\<close> for g h
+  proof -
+    define \<gamma> where \<open>\<gamma> = (if g \<bullet>\<^sub>C A h = 0 then 1 else sgn (g \<bullet>\<^sub>C A h))\<close>
+    have \<gamma>: \<open>\<gamma> * cmod (g \<bullet>\<^sub>C A h) = g \<bullet>\<^sub>C A h\<close>
+      by (simp add: \<gamma>_def sgn_eq)
+    have \<open>norm \<gamma> = 1\<close>
+      by (simp add: \<gamma>_def norm_sgn)
+    have \<open>cmod (g \<bullet>\<^sub>C A h) = Re (complex_of_real (norm (g \<bullet>\<^sub>C A h)))\<close>
+      by simp
+    also have \<open>\<dots> = Re (g \<bullet>\<^sub>C (A (h /\<^sub>C \<gamma>)))\<close>
+      using \<gamma> \<open>cmod \<gamma> = 1\<close>
+      by (smt (verit) Groups.mult_ac(2) Groups.mult_ac(3) cblinfun.scaleC_right cinner_scaleC_right left_inverse more_arith_simps(6) norm_eq_zero)
+    also have \<open>\<dots> \<le> c\<close>
+      using \<open>norm \<gamma> = 1\<close>
+      by (auto intro!: * simp: that norm_inverse)
+    finally show \<open>cmod (g \<bullet>\<^sub>C (A *\<^sub>V h)) \<le> c\<close>
+      by -
+  qed
+  have \<open>norm (A h) \<le> c\<close> if \<open>norm h = 1\<close> for h
+    by (cases \<open>A h = 0\<close>)
+       (use *[OF _ that, of \<open>sgn (A h)\<close>] in \<open>simp_all add: norm_sgn \<open>0 \<le> c\<close>\<close>)
+  then show \<open>norm A \<le> c\<close>
+    using \<open>c \<ge> 0\<close> by (auto intro!: norm_cblinfun_bound_unit)
+qed
+
+lemma cblinfun_norm_approx_witness_cinner:
+  fixes A :: \<open>'a::{not_singleton,chilbert_space} \<Rightarrow>\<^sub>C\<^sub>L 'a\<close>
+  assumes \<open>selfadjoint A\<close> and \<open>\<epsilon> > 0\<close>
+  shows \<open>\<exists>\<psi>. cmod (\<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>)) \<ge> norm A - \<epsilon> \<and> norm \<psi> = 1\<close>
+  using is_Sup_approx_below[OF cblinfun_norm_is_Sup_cinner[OF assms(1)] assms(2)]
+  by blast
+
+lemma cblinfun_norm_approx_witness_cinner':
+  fixes A :: \<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a\<close>
+  assumes \<open>selfadjoint A\<close> and \<open>\<epsilon> > 0\<close>
+  shows \<open>\<exists>\<psi>. cmod (\<psi> \<bullet>\<^sub>C A \<psi>) / (norm \<psi>)^2 \<ge> norm A - \<epsilon>\<close>
+proof (cases \<open>class.not_singleton TYPE('a)\<close>)
+  case True
+  obtain \<psi> where \<open>cmod (\<psi> \<bullet>\<^sub>C A \<psi>) \<ge> norm A - \<epsilon>\<close> and \<open>norm \<psi> = 1\<close>
+    apply atomize_elim
+    using chilbert_space_axioms True assms
+    by (rule cblinfun_norm_approx_witness_cinner[internalize_sort' 'a])
+  then have \<open>cmod (\<psi> \<bullet>\<^sub>C A \<psi>) / (norm \<psi>)^2 \<ge> norm A - \<epsilon>\<close>
+    by simp
+  then show ?thesis 
+    by auto
+next
+  case False
+  show ?thesis
+    apply (subst not_not_singleton_cblinfun_zero[OF False])
+     apply simp
+    apply (subst not_not_singleton_cblinfun_zero[OF False])
+    using \<open>\<epsilon> > 0\<close> by simp
+qed
+
 
 subsection \<open>Powers of operators\<close>
 
@@ -1630,7 +1833,7 @@ lemma cblinfun_right_adj_apply[simp]: \<open>cblinfun_right* *\<^sub>V \<psi> = 
   by (auto intro!: cinner_extensionality[of \<open>_ *\<^sub>V _\<close>] simp: cinner_adj_right)
 
 lift_definition ccsubspace_Times :: \<open>'a::complex_normed_vector ccsubspace \<Rightarrow> 'b::complex_normed_vector ccsubspace \<Rightarrow> ('a\<times>'b) ccsubspace\<close> is
-  Product_Type.Times
+  \<open>\<lambda>S T. S \<times> T\<close>
 proof -
   fix S :: \<open>'a set\<close> and T :: \<open>'b set\<close>
   assume [simp]: \<open>closed_csubspace S\<close> \<open>closed_csubspace T\<close>
@@ -2213,6 +2416,12 @@ lemma sandwich_id[simp]: "sandwich id_cblinfun = id_cblinfun"
 lemma sandwich_compose: \<open>sandwich (A o\<^sub>C\<^sub>L B) = sandwich A o\<^sub>C\<^sub>L sandwich B\<close>
   by (auto intro!: cblinfun_eqI simp: sandwich_apply)
 
+lemma sandwich_scaleC_left: \<open>sandwich (c *\<^sub>C e) = (cmod c)^2 *\<^sub>C sandwich e\<close>
+  by (auto intro!: cblinfun_eqI simp: sandwich_apply cnj_x_x abs_complex_def)
+
+lemma sandwich_scaleR_left: \<open>sandwich (r *\<^sub>R e) = r^2 *\<^sub>R sandwich e\<close>
+  by (simp add: scaleR_scaleC sandwich_scaleC_left flip: of_real_power)
+
 lemma inj_sandwich_isometry: \<open>inj (sandwich U)\<close> if [simp]: \<open>isometry U\<close> for U :: \<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b::chilbert_space\<close>
   apply (rule inj_on_inverseI[where g=\<open>(*\<^sub>V) (sandwich (U*))\<close>])
   by (auto simp flip: cblinfun_apply_cblinfun_compose sandwich_compose)
@@ -2712,6 +2921,16 @@ proof -
     by -
 qed
 
+lemma Proj_o_Proj_subspace_right:
+  assumes \<open>A \<ge> B\<close>
+  shows \<open>Proj A o\<^sub>C\<^sub>L Proj B = Proj B\<close>
+  by (simp add: Proj_compose_cancelI assms) 
+
+lemma Proj_o_Proj_subspace_left:
+  assumes \<open>A \<le> B\<close>
+  shows \<open>Proj A o\<^sub>C\<^sub>L Proj B = Proj A\<close>
+  by (metis Proj_o_Proj_subspace_right adj_Proj adj_cblinfun_compose assms) 
+
 lemma space_as_setI_via_Proj:
   assumes \<open>Proj M *\<^sub>V x = x\<close>
   shows \<open>x \<in> space_as_set M\<close>
@@ -2740,6 +2959,23 @@ qed
 
 lemma Proj_on_image [simp]: \<open>Proj S *\<^sub>S S = S\<close>
   by (metis Proj_idempotent Proj_range cblinfun_compose_image)
+
+lemma Proj_nearest:
+  assumes \<open>x \<in> space_as_set S\<close>
+  shows \<open>dist (Proj S m) m \<le> dist x m\<close>
+proof -
+  have \<open>is_projection_on (Proj S) (space_as_set S)\<close>
+    by (simp add: Proj.rep_eq)
+  then have \<open>is_arg_min (\<lambda>x. dist x m) (\<lambda>x. x \<in> space_as_set S) (Proj S m)\<close>
+    by (simp add: is_projection_on_def)
+  with assms show ?thesis
+    by (auto simp: is_arg_min_def)
+qed
+
+lemma Proj_0_compl: \<open>Proj S x = 0\<close> if \<open>x \<in> space_as_set (-S)\<close>
+  by (metis (no_types, lifting) ext Proj_fixes_image Proj_idempotent Proj_ortho_compl Proj_top UNIV_I
+      cancel_comm_monoid_add_class.diff_cancel cblinfun.real.diff_left cblinfun.real.diff_right
+      cblinfun_apply_cblinfun_compose space_as_set_top that)
 
 subsection \<open>Kernel / eigenspaces\<close>
 
@@ -2987,6 +3223,32 @@ next
   then show \<open>x \<in> space_as_set (kernel A)\<close>
     by (simp add: kernel.rep_eq)
 qed
+
+lemma eq_on_ccsubspaces_Sup:
+  fixes a b :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector\<close>
+  assumes \<open>\<And>i h. i \<in> I \<Longrightarrow> h \<in> space_as_set (X i) \<Longrightarrow> a h = b h\<close>
+  shows \<open>\<And>h. h \<in> space_as_set (\<Squnion>i\<in>I. X i) \<Longrightarrow> a h = b h\<close>
+proof -
+  from assms
+  have \<open>X i \<le> kernel (a - b)\<close> if \<open>i \<in> I\<close> for i
+    using that by (auto intro!: ccsubspace_leI simp: kernel.rep_eq minus_cblinfun.rep_eq)
+  then have \<open>(\<Squnion>i\<in>I. X i) \<le> kernel (a - b)\<close>
+    by (simp add: SUP_least) 
+  then show \<open>h \<in> space_as_set (\<Squnion>i\<in>I. X i) \<Longrightarrow> a h = b h\<close> for h
+    using kernel_memberD less_eq_ccsubspace.rep_eq 
+    by (metis (no_types, opaque_lifting) cblinfun.diff_left cblinfun.real.diff_right cblinfun.real.zero_left diff_eq_diff_eq double_diff mem_simps(6) subset_refl)
+qed
+
+lemma eq_on_ccsubspaces_sup:
+  fixes a b :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector\<close>
+  assumes \<open>\<And>h i. h \<in> space_as_set S \<Longrightarrow> a h = b h\<close>
+  assumes \<open>\<And>h i. h \<in> space_as_set T \<Longrightarrow> a h = b h\<close>
+  shows \<open>\<And>h. h \<in> space_as_set (S \<squnion> T) \<Longrightarrow> a h = b h\<close>
+  apply (rule eq_on_ccsubspaces_Sup[where I=\<open>{True,False}\<close> and X=\<open>\<lambda>i. if i then T else S\<close>])
+  using assms
+   apply presburger
+  by fastforce
+
 
 subsection \<open>Partial isometries\<close>
 
@@ -3409,13 +3671,13 @@ lemma heterogenous_same_type_cblinfun[simp]: \<open>heterogenous_same_type_cblin
 instantiation cblinfun :: (chilbert_space, chilbert_space) ord begin
 definition less_eq_cblinfun_def_heterogenous: \<open>A \<le> B \<longleftrightarrow>
   (if heterogenous_same_type_cblinfun TYPE('a) TYPE('b) then
-    \<forall>\<psi>::'b. cinner \<psi> ((B-A) *\<^sub>V heterogenous_cblinfun_id *\<^sub>V \<psi>) \<ge> 0 else (A=B))\<close>
+    \<forall>\<psi>::'b. \<psi> \<bullet>\<^sub>C ((B-A) *\<^sub>V heterogenous_cblinfun_id *\<^sub>V \<psi>) \<ge> 0 else (A=B))\<close>
 definition \<open>(A :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) < B \<longleftrightarrow> A \<le> B \<and> \<not> B \<le> A\<close>
 instance..
 end
 
 lemma less_eq_cblinfun_def: \<open>A \<le> B \<longleftrightarrow>
-    (\<forall>\<psi>. cinner \<psi> (A *\<^sub>V \<psi>) \<le> cinner \<psi> (B *\<^sub>V \<psi>))\<close>
+    (\<forall>\<psi>. \<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>) \<le> \<psi> \<bullet>\<^sub>C (B *\<^sub>V \<psi>))\<close>
   unfolding less_eq_cblinfun_def_heterogenous
   by (auto simp del: less_eq_complex_def simp: cblinfun.diff_left cinner_diff_right)
 
@@ -3524,13 +3786,14 @@ proof intro_classes
 qed
 end
 
-
+instance cblinfun :: (chilbert_space,chilbert_space) ordered_comm_monoid_add
+  by intro_classes
 
 lemma positive_id_cblinfun[simp]: "id_cblinfun \<ge> 0"
   unfolding less_eq_cblinfun_def using cinner_ge_zero by auto
 
-lemma positive_hermitianI: \<open>A* = A\<close> if \<open>A \<ge> 0\<close>
-  apply (rule cinner_real_hermiteanI)
+lemma positive_selfadjointI: \<open>selfadjoint A\<close> if \<open>A \<ge> 0\<close>
+  apply (rule cinner_real_selfadjointI)
   using that by (auto simp: complex_is_real_iff_compare0 less_eq_cblinfun_def)
 
 lemma cblinfun_leI:
@@ -3571,7 +3834,7 @@ proof -
     finally have \<open>norm (x \<bullet>\<^sub>C (A *\<^sub>V x)) \<le> c\<close>
       by -
     moreover have \<open>x \<bullet>\<^sub>C (A *\<^sub>V x) \<in> \<real>\<close>
-      by (metis assms(2) cinner_hermitian_real)
+      by (metis assms(2) cinner_selfadjoint_real)
     ultimately show ?thesis
       by (smt (verit) Re_complex_of_real Reals_cases complex_of_real_nn_iff less_eq_complex_def norm_of_real reals_zero_comparable)
   qed
@@ -3615,17 +3878,20 @@ proof (rule cblinfun_eq_0_on_UNIV_span[where basis=UNIV]; simp)
     by simp
 qed
 
-lemma comparable_hermitean:
+lemma comparable_selfadjoint:
   assumes \<open>a \<le> b\<close>
   assumes \<open>selfadjoint a\<close>
   shows \<open>selfadjoint b\<close>
-  by (smt (verit, best) assms(1) assms(2) cinner_hermitian_real cinner_real_hermiteanI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
+  by (smt (verit, best) assms(1) assms(2) cinner_selfadjoint_real cinner_real_selfadjointI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
 
-lemma comparable_hermitean':
+lemma comparable_selfadjoint':
   assumes \<open>a \<le> b\<close>
   assumes \<open>selfadjoint b\<close>
   shows \<open>selfadjoint a\<close>
-  by (smt (verit, best) assms(1) assms(2) cinner_hermitian_real cinner_real_hermiteanI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
+  by (smt (verit, best) assms(1) assms(2) cinner_selfadjoint_real cinner_real_selfadjointI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
+
+lemma is_Proj_leq_id: \<open>is_Proj P \<Longrightarrow> P \<le> id_cblinfun\<close>
+  by (metis diff_ge_0_iff_ge is_Proj_algebraic is_Proj_complement positive_cblinfun_squareI)
 
 lemma Proj_mono: \<open>Proj S \<le> Proj T \<longleftrightarrow> S \<le> T\<close>
 proof (rule iffI)
@@ -3659,11 +3925,60 @@ next
   qed
 qed
 
+lemma has_sum_mono_neutral_cblinfun:
+  fixes f :: "'a \<Rightarrow> ('b::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b)"
+  assumes \<open>(f has_sum a) A\<close> and "(g has_sum b) B"
+  assumes \<open>\<And>x. x \<in> A\<inter>B \<Longrightarrow> f x \<le> g x\<close>
+  assumes \<open>\<And>x. x \<in> A-B \<Longrightarrow> f x \<le> 0\<close>
+  assumes \<open>\<And>x. x \<in> B-A \<Longrightarrow> g x \<ge> 0\<close>
+  shows "a \<le> b"
+proof -
+  from assms 
+  have sum_hfh: \<open>((\<lambda>x. h \<bullet>\<^sub>C f x h) has_sum h \<bullet>\<^sub>C a h) A\<close> for h
+    by (intro has_sum_cinner_left has_sum_cblinfun_apply_left)
+  from assms
+  have sum_hgh: \<open>((\<lambda>x. h \<bullet>\<^sub>C g x h) has_sum h \<bullet>\<^sub>C b h) B\<close> for h
+    by (intro has_sum_cinner_left has_sum_cblinfun_apply_left)
+  from sum_hfh sum_hgh
+  have \<open>h \<bullet>\<^sub>C a h \<le> h \<bullet>\<^sub>C b h\<close> for h
+    apply (rule has_sum_mono_neutral_complex)
+    using assms
+    by (auto intro!: simp: less_eq_cblinfun_def)
+  then show \<open>a \<le> b\<close>
+    by (simp add: less_eq_cblinfun_def)
+qed
+
+lemma sums_mono_cblinfun:
+  fixes f :: "nat \<Rightarrow> ('b::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b)"
+  assumes \<open>f sums a\<close> and "g sums b"
+  assumes \<open>\<And>n. f n \<le> g n\<close>
+  shows "a \<le> b"
+proof (rule cblinfun_leI)
+  fix h
+  from \<open>f sums a\<close>
+  have sum1: \<open>(\<lambda>n. h \<bullet>\<^sub>C (f n *\<^sub>V h)) sums (h \<bullet>\<^sub>C (a *\<^sub>V h))\<close>
+    apply (rule bounded_linear.sums[rotated])
+    using bounded_clinear.bounded_linear bounded_clinear_cinner_right bounded_linear_compose cblinfun.real.bounded_linear_left by blast 
+  from \<open>g sums b\<close>
+  have sum2: \<open>(\<lambda>n. h \<bullet>\<^sub>C (g n *\<^sub>V h)) sums (h \<bullet>\<^sub>C (b *\<^sub>V h))\<close>
+    apply (rule bounded_linear.sums[rotated])
+    by (metis bounded_linear_compose cblinfun.real.bounded_linear_left cblinfun.real.bounded_linear_right cblinfun_cinner_right.rep_eq) 
+  have \<open>h \<bullet>\<^sub>C (f n *\<^sub>V h) \<le> h \<bullet>\<^sub>C (g n *\<^sub>V h)\<close> for n
+    using assms(3) less_eq_cblinfun_def by auto 
+  with sum1 sum2
+  show \<open>h \<bullet>\<^sub>C (a *\<^sub>V h) \<le> h \<bullet>\<^sub>C (b *\<^sub>V h)\<close>
+    by (rule sums_le_complex[rotated])
+qed
+
 subsection \<open>Embedding vectors to operators\<close>
 
 lift_definition vector_to_cblinfun :: \<open>'a::complex_normed_vector \<Rightarrow> 'b::one_dim \<Rightarrow>\<^sub>C\<^sub>L 'a\<close> is
   \<open>\<lambda>\<psi> \<phi>. one_dim_iso \<phi> *\<^sub>C \<psi>\<close>
   by (simp add: bounded_clinear_scaleC_const)
+
+lemma vector_to_cblinfun_apply[simp]: \<open>vector_to_cblinfun \<psi> *\<^sub>V \<phi> = one_dim_iso \<psi> *\<^sub>C \<phi>\<close>
+  apply (transfer fixing: \<psi> \<phi>)
+  by simp
 
 lemma vector_to_cblinfun_cblinfun_compose[simp]:
   "A  o\<^sub>C\<^sub>L (vector_to_cblinfun \<psi>) = vector_to_cblinfun (A *\<^sub>V \<psi>)"
@@ -3782,15 +4097,24 @@ lemma image_vector_to_cblinfun_adj':
   apply (rule image_vector_to_cblinfun_adj)
   using assms by simp
 
+lemma vector_to_cblinfun_inj: \<open>inj_on (vector_to_cblinfun :: 'a::complex_normed_vector \<Rightarrow> 'b::one_dim \<Rightarrow>\<^sub>C\<^sub>L _) X\<close>
+proof (rule inj_onI)
+  fix x y :: 'a
+  assume \<open>vector_to_cblinfun x = (vector_to_cblinfun y :: 'b \<Rightarrow>\<^sub>C\<^sub>L _)\<close>
+  then have \<open>vector_to_cblinfun x (1::'b) = vector_to_cblinfun y (1::'b)\<close>
+    by simp
+  then show \<open>x = y\<close>
+    by simp
+qed
+
 subsection \<open>Rank-1 operators / butterflies\<close>
 
 definition rank1 where \<open>rank1 A \<longleftrightarrow> (\<exists>\<psi>. A *\<^sub>S \<top> = ccspan {\<psi>})\<close>
-(* TODO update description in paper *)
 \<comment> \<open>This is not the usual definition of a rank-1 operator.
-The usual definition is an operator with 1-dim image.
-Here we define it as an operator with 0- or 1-dim image.
-This makes the definition simpler to use.
-The normal definition of rank-1 operators then corresponds to the non-zero \<^term>\<open>rank1\<close> operators.\<close>
+   The usual definition is an operator with 1-dim image.
+   Here we define it as an operator with 0- or 1-dim image.
+   This makes the definition simpler to use.
+   The normal definition of rank-1 operators then corresponds to the non-zero \<^term>\<open>rank1\<close> operators.\<close>
 
 definition "butterfly (s::'a::complex_normed_vector) (t::'b::chilbert_space)
    = vector_to_cblinfun s o\<^sub>C\<^sub>L (vector_to_cblinfun t :: complex \<Rightarrow>\<^sub>C\<^sub>L _)*"
@@ -3864,7 +4188,6 @@ lemma butterfly_is_rank1:
   shows \<open>butterfly \<psi> \<phi> *\<^sub>S \<top> = ccspan {\<psi>}\<close>
   using assms by (simp add: butterfly_def cblinfun_compose_image image_vector_to_cblinfun_adj')
 
-
 lemma rank1_is_butterfly:
   \<comment> \<open>The restriction \<^term>\<open>\<psi>::_::chilbert_space\<close> is necessary.
     Consider, e.g., the space of all finite sequences (with sum-norm), and \<^term>\<open>A' f = (\<Sum>x. f x)\<close>.
@@ -3922,6 +4245,10 @@ next
       by (auto intro!: exI[of _ \<psi>] simp: rank1_def)
   qed
 qed
+
+lemma rank1_butterfly[iff]: \<open>rank1 (butterfly x y)\<close>
+  apply (cases \<open>y = 0\<close>)
+  by (auto intro: exI[of _ 0] simp: rank1_def butterfly_is_rank1)
 
 lemma norm_butterfly: "norm (butterfly \<psi> \<phi>) = norm \<psi> * norm \<phi>"
 proof (cases "\<phi>=0")
@@ -4244,6 +4571,9 @@ lemma rank1_scaleC: \<open>rank1 (c *\<^sub>C a)\<close> if \<open>rank1 a\<clos
   using rank1_compose_left[OF \<open>rank1 a\<close>, where a=\<open>c *\<^sub>C id_cblinfun\<close>]
   using that by force
 
+lemma rank1_scaleR[simp]: \<open>rank1 (c *\<^sub>R a)\<close> if \<open>rank1 a\<close> and \<open>c \<noteq> 0\<close>
+  by (simp add: rank1_scaleC scaleR_scaleC that(1) that(2))
+
 lemma rank1_uminus: \<open>rank1 (-a)\<close> if \<open>rank1 a\<close>
   using that rank1_scaleC[where c=\<open>-1\<close> and a=a] by simp
 
@@ -4284,6 +4614,20 @@ lemma butterfly_sum_left: \<open>butterfly (\<Sum>i\<in>M. \<psi> i) \<phi> = (\
 lemma butterfly_sum_right: \<open>butterfly \<psi> (\<Sum>i\<in>M. \<phi> i) = (\<Sum>i\<in>M. butterfly \<psi> (\<phi> i))\<close>
   apply (induction M rule:infinite_finite_induct)
   by (auto simp add: butterfly_add_right)
+
+lemma sum_butterfly_leq_id: 
+  assumes \<open>is_ortho_set E\<close>
+  assumes \<open>\<And>e. e\<in>E \<Longrightarrow> norm e = 1\<close>
+  shows \<open>(\<Sum>i\<in>E. butterfly i i) \<le> id_cblinfun\<close>
+proof -
+  have \<open>is_Proj (\<Sum>\<psi>\<in>E. butterfly \<psi> \<psi>)\<close>
+    using assms by (rule sum_butterfly_is_Proj)
+  then show ?thesis
+    by (auto intro!: is_Proj_leq_id)
+qed
+
+lemma sandwich_butterfly: \<open>sandwich a (butterfly x y) = butterfly (a x) (a y)\<close>
+  by (simp add: sandwich_apply butterfly_comp_cblinfun cblinfun_comp_butterfly)
 
 subsection \<open>Banach-Steinhaus\<close>
 
@@ -4424,13 +4768,12 @@ proof -
   then have [simp]: \<open>f *\<^sub>V y = cinner x y\<close> for y
     by (simp add: bounded_clinear_CBlinfun_apply bounded_clinear_cinner_right)
   then have [simp]: \<open>norm f = norm x\<close>
-    apply (auto intro!: norm_cblinfun_eqI[where x=x] simp: power2_norm_eq_cinner[symmetric])
-     apply (smt (verit, best) norm_eq_sqrt_cinner norm_ge_zero power2_norm_eq_cinner real_div_sqrt)
-    using Cauchy_Schwarz_ineq2 by blast
+    apply (auto intro!: Cauchy_Schwarz_ineq2 norm_cblinfun_eqI[where x=x] simp: power2_norm_eq_cinner[symmetric])
+    by (simp add: norm_mult power2_eq_square)
   show ?thesis
     apply (auto intro!: norm_cblinfun_eqI[where x=f])
      apply (metis norm_eq_sqrt_cinner norm_imp_pos_and_ge real_div_sqrt)
-    by (metis norm_cblinfun ordered_field_class.sign_simps(33))
+    by (metis mult.commute norm_cblinfun)
 qed
 
 lemma norm_bidual_embedding[simp]: \<open>norm (bidual_embedding :: 'a::{complex_inner, not_singleton} \<Rightarrow>\<^sub>C\<^sub>L _) = 1\<close>

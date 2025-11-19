@@ -179,18 +179,19 @@ lemma same_at_least_as_equal:
          at_least_as_good y carrier relation" (is "?az = ?ay")
 proof
   have "z \<in> carrier \<and> y \<in> carrier"
-    by (meson assms refl_onD2 reflexivity)
-  moreover have "\<forall>x \<in> carrier. x \<succeq> z \<longrightarrow> x \<succeq> y"
+    using assms not_outside by metis
+
+  have "\<forall>x \<in> carrier. x \<succeq> z \<longrightarrow> x \<succeq> y"
     by (meson assms transD transitivity)
-  ultimately show "?az \<subseteq> ?ay"
+  thus "?az \<subseteq> ?ay"
+    using \<open>z \<in> carrier \<and> y \<in> carrier\<close>
     by (metis at_lst_asgd_ge at_lst_asgd_not_ge
         equals0D not_outside subsetI)
-next
-   have "z \<in> carrier \<and> y \<in> carrier"
-    by (meson assms refl_onD2 reflexivity)
-  moreover have "\<forall>x \<in> carrier. x \<succeq> y \<longrightarrow> x \<succeq> z"
+
+  have "\<forall>x \<in> carrier. x \<succeq> y \<longrightarrow> x \<succeq> z"
     by (meson assms transD transitivity)
-  ultimately show "?ay \<subseteq> ?az"
+  thus "?ay \<subseteq> ?az"
+    using \<open>z \<in> carrier \<and> y \<in> carrier\<close>
     by (metis at_lst_asgd_ge at_lst_asgd_not_ge
         equals0D not_outside subsetI)
 qed
@@ -207,7 +208,8 @@ lemma nbt_subset:
   by auto
 
 lemma fnt_carrier_fnt_rel: "finite carrier \<Longrightarrow> finite relation"
-  by (metis finite_SigmaI refl_on_def reflexivity rev_finite_subset)
+  by (metis finite_cartesian_product_iff[of carrier carrier] order_on_defs(1)[of carrier relation]
+      rev_finite_subset[of "carrier \<times> carrier" relation] trans_refl)
 
 lemma nbt_subset_carrier:
   assumes "x \<in> carrier"
@@ -285,36 +287,58 @@ lemma finite_ne_remove_induct:
 
 
 lemma finite_nempty_preorder_has_max:
-  assumes "finite B" "B \<noteq> {}" "refl_on B R" "trans R" "total_on B R"
+  assumes "finite B" "B \<noteq> {}" "R \<subseteq> B \<times> B" "refl_on B R" "trans R" "total_on B R"
   shows "\<exists>x \<in> B. \<forall>y \<in> B. (x, y) \<in> R"
   using assms(1) subset_refl[of B] assms(2)
 proof (induct B rule: finite_subset_induct)
   case (insert x F)
-  then show ?case using assms(3-)
-    by (cases "F = {}") (auto simp: refl_onD total_on_def, metis refl_onD2 transE)
-qed auto
+  show ?case
+  proof (cases "F = {}")
+    case True
+    then show ?thesis
+      using assms(4) insert.hyps(2) refl_onD[of B R x] by blast
+  next
+    case False
+    then show ?thesis
+      by (metis (full_types) assms(3,4,5,6) insert.hyps(2) total_on_def[of B R] insert_iff[of x x F]
+          insert_iff[of _ x F] mem_Sigma_iff[of _ _ B "\<lambda>Q. B"] local.insert(4) transD[of R x]
+          in_mono[of R "B \<times> B" "(_, _)"] refl_onD[of B R x])
+  qed
+qed simp
 
 lemma finite_nempty_preorder_has_min:
-  assumes "finite B" "B \<noteq> {}" "refl_on B R" "trans R" "total_on B R"
+  assumes "finite B" "B \<noteq> {}" "R \<subseteq> B \<times> B" "refl_on B R" "trans R" "total_on B R"
   shows "\<exists>x \<in> B. \<forall>y \<in> B. (y, x) \<in> R"
   using assms(1) subset_refl[of B] assms(2)
 proof (induct B rule: finite_subset_induct)
   case (insert x F)
-  then show ?case using assms(3-)
-    by (cases "F = {}") (auto simp: refl_onD total_on_def, metis refl_onD2 transE)
-qed auto
+  show ?case
+  proof (cases "F = {}")
+    case True
+    then show ?thesis
+      using assms(4) insert.hyps(2) refl_onD[of B R x] by blast
+  next
+    case False
+    then show ?thesis
+      by (metis (full_types) assms(3,4,5,6) insert.hyps(2,4) total_on_def[of B R]
+          insert_iff[of x x F] insert_iff[of _ x F] mem_Sigma_iff[of _ _ B "\<lambda>Q. B"] transD[of R x]
+          in_mono[of R "B \<times> B" "(_, _)"] refl_onD[of B R x])
+  qed
+qed simp
 
 lemma finite_nonempty_carrier_has_maximum:
   assumes "carrier \<noteq> {}"
   shows "\<exists>e \<in> carrier. \<forall>m \<in> carrier. e \<succeq>[relation] m"
   using finite_nempty_preorder_has_max[of carrier relation] assms
-     \<open>finite carrier\<close> reflexivity total transitivity by blast
+     \<open>finite carrier\<close> reflexivity total transitivity
+  by (metis preorder_on_def trans_refl)
 
 lemma finite_nonempty_carrier_has_minimum:
   assumes "carrier \<noteq> {}"
   shows "\<exists>e \<in> carrier. \<forall>m \<in> carrier. m \<succeq>[relation] e"
   using finite_nempty_preorder_has_min[of carrier relation] assms
-     \<open>finite carrier\<close> reflexivity total transitivity by blast
+     \<open>finite carrier\<close> reflexivity total transitivity
+  by (metis preorder_on_def trans_refl)
 
 end (*finite carrier*)
 
@@ -350,8 +374,9 @@ proof (standard,standard)
       by (metis (no_types, lifting) CollectI a1 a2 c_in case_prodI compl r'_def subset_iff)
   qed
   have "rational_preference c r'"
-    by (meson local.refl local.trans preference.intro preorder_on_def rational_preference.intro 
-        rational_preference_axioms.intro refl_on_domain total)
+    by (metis (lifting) Sigma_cong case_prodD local.refl local.trans
+        mem_Collect_eq preference.intro preorder_on_def r'_def r'_sub
+        rational_preference_axioms_def rational_preference_def total)
   thus "\<exists>r\<subseteq>relation. rational_preference c r"
     by (metis (no_types, lifting) CollectD case_prodD r'_def subrelI)
 qed
@@ -465,8 +490,9 @@ proof-
     have "v = 1"
       using assms(5) u_0 by auto
     then have "?thesis"
-      by (metis add.left_neutral assms(2) preference.reflexivity preference_axioms
-          real_vector.scale_zero_left refl_onD2 scaleR_one strict_not_refl_weak)
+      by (metis preference_axioms scaleR_zero_left[of x] add_0[of y]
+          scaleR_one[of y] assms(2) same_nbt_same_pref[of y y]
+          worse_in_no_better[of x y] preference_def[of carrier relation])
     thus "u *\<^sub>R x + v *\<^sub>R y \<succeq>[relation] y "
       using u_0 by blast
   qed
@@ -486,7 +512,7 @@ proof (rule weak_convexI)
   then have "x \<in> carrier"
     by (meson assum preference.not_outside rational_preference.axioms(1) have_rpr)
   have "y \<in> carrier"
-    by (meson assum refl_onD2 reflexivity)
+    by (metis preference_axioms assum preference_def[of carrier relation])
   then have y_in_upper_cont: "y \<in> (at_least_as_good y carrier relation)"
     using assms rational_preference.at_lst_asgd_not_ge
       rational_preference.compl  by (metis empty_iff have_rpr)

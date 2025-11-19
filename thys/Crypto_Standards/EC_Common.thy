@@ -1045,8 +1045,9 @@ next
   qed
 qed
 
-lemma point_mult_eq [code]: "point_mult a n P = point_mmult a n P"
-  apply (induct n) apply simp using point_add_eq by force
+lemma point_mult_eq:
+  \<open>point_mult a n P = point_mmult a n P\<close>
+  by (induction n) (simp_all add: point_add_eq)
 
 text \<open>Also in Elliptic_Test, they provide methods for converting a point in projective coordinates
 to a point in affine coordinates, but not the other way around.  Here we provide a few more tools

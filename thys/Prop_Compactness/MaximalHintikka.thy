@@ -3,11 +3,13 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780. In Spanish;
+   Last modified: 29 Sep, 2025
+  *)
 
 (*<*)
 theory MaximalHintikka
-imports HintikkaTheory   
+imports HintikkaTheory  
 begin
 (*>*)
 
@@ -17,43 +19,44 @@ the fact that if $\mathcal {C}$ is a propositional consistence property closed b
 a maximal set belonging to $\mathcal{C}$ then $M$ is a Hintikka set.
 \<close> 
 
-
-lemma ext_hintikkaP1:
-  assumes  hip1: "consistenceP \<C>" and hip2: "M \<in> \<C>"
+lemma   (in consistProp) ext_HintikkaP1:
+  assumes   hip: "M \<in> \<C>"
   shows   "\<forall>p. \<not> (atom p \<in> M \<and> (\<not>.atom p) \<in> M)"
 (*<*)
 proof -
-  show ?thesis using hip1 hip2 by(unfold consistenceP_def) simp 
+  show ?thesis using hip by (simp add: cond_consistP)  
 qed
 (*>*)
 
 text \<open> \<close>
 
-lemma ext_hintikkaP2: 
-  assumes hip1: "consistenceP \<C>" and hip2: "M \<in> \<C>"  
-  shows "FF \<notin> M"
+lemma  (in consistProp) ext_HintikkaP2: 
+  assumes hip: "M \<in> \<C>"  
+  shows "\<bottom>. \<notin> M"
 (*<*)
 proof -
-  show ?thesis using hip1 hip2 by(unfold consistenceP_def) simp 
+  show ?thesis using hip by (simp add: cond_consistP2) 
 qed
 (*>*)
 
 text \<open> \<close>
 
-lemma ext_hintikkaP3:
-  assumes  hip1: "consistenceP \<C>" and hip2: "M \<in> \<C>"  
-  shows "(\<not>.TT) \<notin> M"
+lemma  (in consistProp) ext_HintikkaP3:
+  assumes  hip: "M \<in> \<C>"  
+  shows "(\<not>.\<top>.) \<notin> M"
 (*<*)
 proof -
-  show ?thesis using hip1 hip2 by(unfold consistenceP_def) simp
+  show ?thesis using hip by (simp add: cond_consistP2)
 qed
 (*>*)
 
 text \<open> \<close>
 
-lemma ext_hintikkaP4:
-  assumes  hip1: "consistenceP \<C>" and hip2: "maximal M \<C>" and hip3: "M \<in> \<C>"  
-  shows "\<forall>F. (\<not>.\<not>.F) \<in> M \<longrightarrow> F \<in> M" 
+lemma  (in consistProp) ext_HintikkaP4:
+  assumes  hip1: "maximal M \<C>" and hip2: "M \<in> \<C>"  
+  shows "\<forall>F. (\<not>.\<not>.F) \<in> M \<longrightarrow> F \<in> M"
+ (* by (metis (no_types, opaque_lifting) Un_insert_right consistProp_axioms consistProp_def consistenceEq
+      consistenceP1_def hip1 hip2 insertI1 maximal_def subset_insertI sup_bot.right_neutral) *)
 (*<*)
 proof (rule allI impI)+  
   fix F 
@@ -61,10 +64,15 @@ proof (rule allI impI)+
   show "F \<in> M"
   proof -   
     have "(\<not>.\<not>.F) \<in> M \<longrightarrow> M \<union> {F} \<in> \<C>"
-      using hip1 hip3 by (unfold consistenceP_def) simp    
+    proof -
+      have "consistenceP \<C>"
+        using consistProp_axioms consistProp_def consistenceEq by blast  
+      then show ?thesis
+        by (simp add: consistenceEq consistenceP_def hip2)
+    qed
     hence "M \<union> {F} \<in> \<C>" using h1 by simp  
     moreover 
-    have  "\<forall>M'\<in>\<C>. M \<subseteq> M' \<longrightarrow> M = M'" using hip2 by (unfold maximal_def)
+    have  "\<forall> M'\<in> \<C>. M \<subseteq> M' \<longrightarrow> M = M'" using hip1 by (unfold maximal_def)
     moreover
     have "M \<subseteq> M \<union> {F}" by auto
     ultimately
@@ -76,17 +84,17 @@ qed
 
 text \<open> \<close>
 
-lemma ext_hintikkaP5:
+lemma ext_HintikkaP5:
   assumes hip1: "consistenceP \<C>" and hip2: "maximal M \<C>" and hip3: "M \<in> \<C>"  
-  shows "\<forall>F. (FormulaAlfa F) \<and> F \<in> M \<longrightarrow> (Comp1 F \<in> M \<and> Comp2 F \<in> M)"
+  shows "\<forall>F. (FormulaAlpha F) \<and> F \<in> M \<longrightarrow> (Comp1 F \<in> M \<and> Comp2 F \<in> M)"
 (*<*)      
 proof (rule allI impI)+  
   fix F 
-  assume h1: "(FormulaAlfa F) \<and> F \<in> M"
+  assume h1: "(FormulaAlpha F) \<and> F \<in> M"
   show "Comp1 F \<in> M \<and> Comp2 F \<in> M"
   proof -
-    have "(FormulaAlfa F) \<and> F \<in> M \<longrightarrow> M \<union> {Comp1 F, Comp2 F} \<in> \<C>"
-      using hip1 hip3 by (unfold consistenceP_def) simp
+    have "(FormulaAlpha F) \<and> F \<in> M \<longrightarrow> M \<union> {Comp1 F, Comp2 F} \<in> \<C>"
+      using hip1 hip3 consistenceEq consistenceP_def by auto
     hence  "M \<union> {Comp1 F, Comp2 F} \<in> \<C>" using h1 by simp
     moreover
     have "\<forall>M'\<in>\<C>. M \<subseteq> M' \<longrightarrow> M = M'" using hip2 by (unfold maximal_def) 
@@ -101,7 +109,7 @@ qed
 
 text \<open> \<close>
 
-lemma ext_hintikkaP6:
+lemma ext_HintikkaP6:
   assumes hip1: "consistenceP \<C>" and hip2: "maximal M \<C>" and  hip3: "M \<in> \<C>"  
   shows "\<forall>F. (FormulaBeta F) \<and> F \<in> M \<longrightarrow> Comp1 F \<in> M \<or> Comp2 F \<in> M" 
 (*<*)     
@@ -111,7 +119,8 @@ proof (rule allI impI)+
   show "Comp1 F \<in> M \<or> Comp2 F \<in> M"
   proof -    
     have "(FormulaBeta F) \<and> F \<in> M \<longrightarrow> M \<union> {Comp1 F} \<in> \<C> \<or> M \<union> {Comp2 F} \<in> \<C>"
-      using hip1 hip3 by (unfold consistenceP_def) simp
+      using hip1 hip3
+      by (simp add: consistenceEq consistenceP_def) 
     hence  "M \<union> {Comp1 F} \<in> \<C> \<or> M \<union> {Comp2 F} \<in> \<C>" using h1 by simp
     thus ?thesis
     proof (rule disjE)
@@ -139,26 +148,24 @@ proof (rule allI impI)+
 qed
 (*>*)
 
-
-theorem MaximalHintikkaP:
-  assumes hip1: "consistenceP \<C>" and hip2: "maximal M \<C>" and  hip3: "M \<in> \<C>"
-  shows "hintikkaP M"
-proof (unfold hintikkaP_def)     
-  show "(\<forall>P. \<not> (atom P \<in> M \<and> \<not>.atom P \<in> M)) \<and>
-        FF \<notin> M \<and>
-        \<not>.TT \<notin> M \<and>
+theorem  (in consistProp) MaximalHintikkaP:
+  assumes  hip1: "maximal M \<C>" and  hip2: "M \<in> \<C>"
+  shows "HintikkaP M"
+(*  by (metis consistProp_axioms consistProp_def ext_HintikkaP1 ext_HintikkaP2 ext_HintikkaP3
+      ext_HintikkaP4 ext_HintikkaP5 ext_HintikkaP6 HintikkaEq HintikkaP1_def hip1 hip2)*)
+proof-
+  have "(\<forall>P. \<not> (atom P \<in> M \<and> \<not>.atom P \<in> M)) \<and>
+        \<bottom>. \<notin> M \<and>
+        \<not>.\<top>. \<notin> M \<and>
         (\<forall>F. \<not>.\<not>.F \<in> M \<longrightarrow> F \<in> M) \<and>
-        (\<forall>F. FormulaAlfa F \<and> F \<in> M \<longrightarrow> Comp1 F \<in> M \<and> Comp2 F \<in> M) \<and>
+        (\<forall>F. FormulaAlpha F \<and> F \<in> M \<longrightarrow> Comp1 F \<in> M \<and> Comp2 F \<in> M) \<and>
         (\<forall>F. FormulaBeta F \<and> F \<in> M \<longrightarrow> Comp1 F \<in> M \<or> Comp2 F \<in> M)"
-    using ext_hintikkaP1[OF hip1 hip3] 
-          ext_hintikkaP2[OF hip1 hip3] 
-          ext_hintikkaP3[OF hip1 hip3] 
-          ext_hintikkaP4[OF hip1 hip2 hip3]
-          ext_hintikkaP5[OF hip1 hip2 hip3] 
-          ext_hintikkaP6[OF hip1 hip2 hip3]         
-    by blast
+    by (meson consistProp_axioms consistenceEq ext_HintikkaP1 ext_HintikkaP2 ext_HintikkaP3 ext_HintikkaP4 ext_HintikkaP5 ext_HintikkaP6
+        hip1 hip2)
+  thus ?thesis
+    using HintikkaEq HintikkaP_def by auto
 qed   
-   
+  
 (*<*)         
 end
 (*<*)

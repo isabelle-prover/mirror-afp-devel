@@ -7,8 +7,6 @@ theory Test_Suite_Representations_Refined
 imports Test_Suite_Representations "../Prefix_Tree_Refined" "../Util_Refined"
 begin
 
-declare [[code drop: Test_Suite_Representations.test_suite_from_io_tree]]
-
 lemma test_suite_from_io_tree_refined[code] :
   fixes M :: "('a,'b :: ccompare, 'c :: ccompare) fsm"
     and m :: "(('b\<times>'c), ('b\<times>'c) prefix_tree) mapping_rbt"
@@ -156,7 +154,7 @@ next
     then have "Mapping.lookup m' = (\<lambda>((b, c), ba). case Mapping.lookup (RBT_Mapping m) (b, c) of None \<Rightarrow> None | Some p \<Rightarrow> (case h_obs M q b c of None \<Rightarrow> if ba then None else Some Prefix_Tree.empty | Some a \<Rightarrow> if ba then Some (test_suite_from_io_tree M a p) else None))"
       by auto
     then show ?thesis
-      by (metis (no_types) lookup_Mapping_code(2))
+      by (simp add: Mapping.lookup.abs_eq)
   qed
   then have "Mapping.lookup m' = ?f1 (RBT_Mapping2.entries m)"
     unfolding map_of_entries[OF \<open>ID CCOMPARE(('b \<times> 'c)) \<noteq> None\<close>, of m] by simp

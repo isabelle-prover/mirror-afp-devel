@@ -10,15 +10,15 @@ paragraph \<open>Summary\<close>
 text \<open>Setup of resolution tactics and examples.\<close>
 
 ML\<open>
-  @{functor_instance struct_name = Standard_Unify_Resolve
-    and functor_name = Unify_Resolve
-    and id = \<open>""\<close>
-    and more_args = \<open>val init_args = {
-      normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-      unifier = SOME Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify,
-      mode = SOME (Unify_Resolve_Args.PM.key Unify_Resolve_Args.PM.any),
-      chained = SOME (Unify_Resolve_Args.PCM.key Unify_Resolve_Args.PCM.resolve)
-    }\<close>}
+\<^functor_instance>\<open>struct_name: Standard_Unify_Resolve
+  functor_name: Unify_Resolve
+  id: \<open>""\<close>
+  more_args: \<open>val init_args = {
+    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
+    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify,
+    mode = SOME (Unify_Resolve_Args.PM.key Unify_Resolve_Args.PM.any),
+    chained = SOME (Unify_Resolve_Args.PCM.key Unify_Resolve_Args.PCM.resolve)
+  }\<close>\<close>
 \<close>
 local_setup \<open>Standard_Unify_Resolve.setup_attribute NONE\<close>
 local_setup \<open>Standard_Unify_Resolve.setup_method NONE\<close>
@@ -38,8 +38,8 @@ lemma
 lemma
   assumes h: "PROP C x"
   shows "PROP C x"
-  by (urule h where unifier = First_Order_Unification.unify) \<comment>\<open>the line below is equivalent\<close>
-  (* using [[urule unifier = First_Order_Unification.unify]] by (urule h) *)
+  by (urule h unifier: First_Order_Unification.unify) \<comment>\<open>the line below is equivalent\<close>
+  (* using [[urule unifier: First_Order_Unification.unify]] by (urule h) *)
 
 lemma
   assumes h: "\<And>x. PROP A x \<Longrightarrow> PROP D x"
@@ -70,8 +70,8 @@ lemma
   (* apply (urule h1) *)
   (* using h2 apply (rule h1) *)
   (* using h2 apply (urule h1) *)
-  using h2 apply (urule h1 where chained = fact)
-  (* using h2 apply (urule h1 where chained = insert) *)
+  using h2 apply (urule h1 use chained: fact)
+  (* using h2 apply (urule h1 chained: insert) *)
   done
 
 text\<open>You can specify whether any or every rule must resolve against the goal:\<close>
@@ -81,7 +81,7 @@ lemma
   and h2: "\<And>x y. PROP C x \<Longrightarrow> PROP D x"
   and h3: "\<And>x y. PROP C x"
   shows "\<And>x. PROP A x \<Longrightarrow> PROP B x \<Longrightarrow> PROP C x"
-  using h3 apply (urule h1 h2 where mode = every)
+  using h3 apply (urule h1 h2 mode: every)
   (* using h3 apply (urule h1 h2) *)
   done
 
@@ -90,7 +90,7 @@ lemma
   and h2: "\<And>x y. PROP C x \<Longrightarrow> PROP B x \<Longrightarrow> PROP D x"
   and h3: "\<And>x y. PROP C x"
   shows "\<And>x. PROP A x \<Longrightarrow> PROP B x \<Longrightarrow> PROP C x"
-  using h3 apply (urule (d) h1 h2 where mode = every)
+  using h3 apply (urule (d) h1 h2 mode: every)
   oops
 
 end

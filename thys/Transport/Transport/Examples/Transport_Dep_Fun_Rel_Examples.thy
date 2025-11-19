@@ -3,7 +3,7 @@ section \<open>Example Transports for Dependent Function Relator\<close>
 theory Transport_Dep_Fun_Rel_Examples
   imports
     Transport_Prototype
-    Transport_Syntax
+    Galois_Relator_Syntax
     HOL_Alignment_Binary_Relations
     "HOL-Library.IArray"
 begin
@@ -13,7 +13,7 @@ text \<open>Dependent function relator examples from \<^cite>\<open>"transport"\
 Refer to the paper for more details.\<close>
 
 context
-  includes galois_rel_syntax and transport_syntax
+  includes galois_rel_Galois_syntax and transport_equivalences_syntax
   notes
     transport.rel_if_partial_equivalence_rel_equivalence_if_iff_if_partial_equivalence_rel_equivalenceI
       [rotated, per_intro]

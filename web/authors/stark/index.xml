@@ -1,59 +1,53 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>stark on Archive of Formal Proofs
-    </title>
-    <link>/authors/stark/</link>
-    <description>
-        Recent content in stark 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/stark/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Enriched Category Basics</title>
-          <link>/entries/EnrichedCategoryBasics.html</link>
-          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/EnrichedCategoryBasics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Transition Systems II: Categorical Properties</title>
-          <link>/entries/ResiduatedTransitionSystem2.html</link>
-          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Transition Systems</title>
-          <link>/entries/ResiduatedTransitionSystem.html</link>
-          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Bicategories</title>
-          <link>/entries/Bicategory.html</link>
-          <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Bicategory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Monoidal Categories</title>
-          <link>/entries/MonoidalCategory.html</link>
-          <pubDate>Thu, 04 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/MonoidalCategory.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Category Theory with Adjunctions and Limits</title>
-          <link>/entries/Category3.html</link>
-          <pubDate>Sun, 26 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Category3.html</guid>
-          <description></description>
-        </item>
+    <title>Eugene W. Stark</title>
+    <link>https://isa-afp.org/authors/stark/</link>
+    <description>AFP entries of Eugene W. Stark</description><item>
+  <title>Residuated Transition Systems II: Categorical Properties</title>
+  <link>https://isa-afp.org/entries/ResiduatedTransitionSystem2.html</link>
+  <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+  <description>Residuated Transition Systems II: Categorical Properties in the AFP</description>
+    <category>Mathematics/Category theory</category>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Enriched Category Basics</title>
+  <link>https://isa-afp.org/entries/EnrichedCategoryBasics.html</link>
+  <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+  <description>Enriched Category Basics in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Residuated Transition Systems</title>
+  <link>https://isa-afp.org/entries/ResiduatedTransitionSystem.html</link>
+  <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Residuated Transition Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+</item>
+<item>
+  <title>Bicategories</title>
+  <link>https://isa-afp.org/entries/Bicategory.html</link>
+  <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Bicategories in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Monoidal Categories</title>
+  <link>https://isa-afp.org/entries/MonoidalCategory.html</link>
+  <pubDate>Thu, 04 May 2017 00:00:00 +0000</pubDate>
+  <description>Monoidal Categories in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Category Theory with Adjunctions and Limits</title>
+  <link>https://isa-afp.org/entries/Category3.html</link>
+  <pubDate>Sun, 26 Jun 2016 00:00:00 +0000</pubDate>
+  <description>Category Theory with Adjunctions and Limits in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+
   </channel>
 </rss>

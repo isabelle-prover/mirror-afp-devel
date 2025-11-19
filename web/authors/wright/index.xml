@@ -1,45 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>wright on Archive of Formal Proofs
-    </title>
-    <link>/authors/wright/</link>
-    <description>
-        Recent content in wright 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/wright/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>A formalized programming language with speculative execution</title>
-          <link>/entries/IMP_With_Speculation.html</link>
-          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/IMP_With_Speculation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>More Operations on Lazy Lists</title>
-          <link>/entries/More_LazyLists.html</link>
-          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/More_LazyLists.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Relative Security</title>
-          <link>/entries/Relative_Security.html</link>
-          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Relative_Security.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Secret-Directed Unwinding</title>
-          <link>/entries/Secret_Directed_Unwinding.html</link>
-          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Secret_Directed_Unwinding.html</guid>
-          <description></description>
-        </item>
+    <title>Jamie Wright</title>
+    <link>https://isa-afp.org/authors/wright/</link>
+    <description>AFP entries of Jamie Wright</description><item>
+  <title>A formalized programming language with speculative execution</title>
+  <link>https://isa-afp.org/entries/IMP_With_Speculation.html</link>
+  <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+  <description>A formalized programming language with speculative execution in the AFP</description>
+    <category>Computer science/Programming languages</category>
+    <category>Computer science/Security</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Secret-Directed Unwinding</title>
+  <link>https://isa-afp.org/entries/Secret_Directed_Unwinding.html</link>
+  <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+  <description>Secret-Directed Unwinding in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Relative Security</title>
+  <link>https://isa-afp.org/entries/Relative_Security.html</link>
+  <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+  <description>Relative Security in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>More Operations on Lazy Lists</title>
+  <link>https://isa-afp.org/entries/More_LazyLists.html</link>
+  <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+  <description>More Operations on Lazy Lists in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+
   </channel>
 </rss>

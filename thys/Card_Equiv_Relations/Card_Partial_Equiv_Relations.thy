@@ -26,25 +26,25 @@ proof
     unfolding partial_equiv_def by blast
   moreover have "equiv (R `` A) R"
   proof (rule equivI)
+    show "R \<subseteq> R `` A \<times> R `` A"
+    proof
+      fix p
+      assume "p \<in> R"
+      obtain x y where "p = (x, y)" by fastforce
+      moreover have "x \<in> R `` A"
+        using \<open>p \<in> R\<close> \<open>p = (x, y)\<close> \<open>partial_equiv A R\<close>
+          partial_equiv_def sym_def by fastforce
+      moreover have "y \<in> R `` A"
+        using \<open>p \<in> R\<close> \<open>p = (x, y)\<close> \<open>R `` A \<subseteq> A\<close> \<open>x \<in> R `` A\<close> by blast
+      ultimately show "p \<in> R `` A \<times> R `` A" by auto
+    qed
+  next
     from \<open>partial_equiv A R\<close> show "sym R"
       unfolding partial_equiv_def by blast
     from \<open>partial_equiv A R\<close> show "trans R"
       unfolding partial_equiv_def by blast
     show "refl_on (R `` A) R"
     proof (rule refl_onI)
-      show "R \<subseteq> R `` A \<times> R `` A"
-      proof
-        fix p
-        assume "p \<in> R"
-        obtain x y where "p = (x, y)" by fastforce
-        moreover have "x \<in> R `` A"
-          using \<open>p \<in> R\<close> \<open>p = (x, y)\<close> \<open>partial_equiv A R\<close>
-            partial_equiv_def sym_def by fastforce
-        moreover have "y \<in> R `` A"
-          using \<open>p \<in> R\<close> \<open>p = (x, y)\<close> \<open>R `` A \<subseteq> A\<close> \<open>x \<in> R `` A\<close> by blast
-        ultimately show "p \<in> R `` A \<times> R `` A" by auto
-      qed
-    next
       fix y
       assume "y \<in> R `` A"
       from this obtain x where "(x, y) \<in> R" by auto

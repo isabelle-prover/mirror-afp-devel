@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{A meta-modal logic for bisimulations}
+\author{Alfredo Burrieza \and Fernando Soler-Toscano \and Antonio Yuste-Ginel}
+
+\maketitle
+
+\begin{abstract}
+  Bisimulations are a fundamental formal tool in the model theory of
+  standard modal logic. Roughly speaking, bisimulations provide a
+  clear answer to a foundational model-theoretical question: Given two
+  (Kripke-style) models, what conditions are sufficient and necessary
+  for them to satisfy the same modal formulas?  We propose a modal
+  study of the notion of bisimulation. We extend the basic modal
+  language with a new modality $[b]$, whose intended meaning is
+  universal quantification over all states that are bisimilar to the
+  current one. We provide a sound and complete axiomatisation of the
+  class of all pairs of Kripke models linked by bisimulations.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+{\medskip}
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

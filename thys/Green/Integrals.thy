@@ -381,19 +381,11 @@ proof -
     by (metis (no_types, lifting)  Henstock_Kurzweil_Integration.integral_cong mult.commute real_scaleR_def)
 qed
 
-lemma frontier_ic:
+lemma
   assumes "a < (b::real)"
-  shows "frontier {a<..b}  = {a,b}"
-  apply(simp add: frontier_def)
-  using assms
-  by auto
-
-lemma frontier_ci:
-  assumes "a < (b::real)"
-  shows "frontier {a<..<b}  = {a,b}"
-  apply(simp add: frontier_def)
-  using assms
-  by auto
+  shows  frontier_ic: "frontier {a<..b}  = {a,b}" 
+     and frontier_ci:  "frontier {a<..<b}  = {a,b}"
+  using assms by(auto simp: frontier_def)
 
 lemma ic_not_closed:
   assumes "a < (b::real)"
@@ -403,9 +395,7 @@ lemma ic_not_closed:
 lemma closure_ic_union_ci:
   assumes "a < (b::real)" "b < c"
   shows "closure ({a..<b} \<union> {b<..c})  = {a .. c}"
-  using frontier_ic[OF assms(1)] frontier_ci[OF assms(2)] closure_Un assms
-  apply(simp add: frontier_def)
-  by auto
+  using assms by force
 
 lemma interior_ic_ci_union:
   assumes "a < (b::real)" "b < c"
@@ -611,7 +601,7 @@ lemma has_integral_bound_spike_finite:
   assumes "0 \<le> B" and "finite S"
     and f: "(f has_integral i) (cbox a b)"
     and leB: "\<And>x. x \<in> cbox a b - S \<Longrightarrow> norm (f x) \<le> B"
-  shows "norm i \<le> B * content (cbox a b)"
+  shows "norm i \<le> B * measure lborel (cbox a b)"
 proof -
   define g where "g \<equiv> (\<lambda>x. if x \<in> S then 0 else f x)"
   then have "\<And>x. x \<in> cbox a b - S \<Longrightarrow> norm (g x) \<le> B"
@@ -630,7 +620,7 @@ lemma has_integral_bound_:
     and f: "(f has_integral i) (cbox a b)"
     and "finite s"
     and "\<forall>x\<in>(cbox a b)-s. norm (f x) \<le> B"
-  shows "norm i \<le> B * content (cbox a b)"
+  shows "norm i \<le> B * measure lborel (cbox a b)"
   using has_integral_bound_spike_finite assms by blast
 
 corollary has_integral_bound_real':
@@ -639,7 +629,7 @@ corollary has_integral_bound_real':
     and f: "(f has_integral i) (cbox a b)"
     and "finite s"
     and "\<forall>x\<in>(cbox a b)-s. norm (f x) \<le> B"
-  shows "norm i \<le> B * content {a..b}"
+  shows "norm i \<le> B * measure lborel {a..b}"
   by (metis assms(1) assms(3) assms(4) box_real(2) f has_integral_bound_spike_finite)
 
 lemma integral_has_vector_derivative_continuous_at':

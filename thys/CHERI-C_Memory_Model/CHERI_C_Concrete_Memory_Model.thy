@@ -1706,14 +1706,12 @@ lemma store_bytes_domain_2:
 lemma store_bytes_keys_1:
   "Set.filter (\<lambda> x. x + length vs \<le> n) (Mapping.keys m) = 
    Set.filter (\<lambda> x. x + length vs \<le> n) (Mapping.keys (store_bytes m n vs))"
-  by (induct vs arbitrary: m n)
-    (simp, smt (verit, best) Collect_cong Set.filter_def keys_is_none_rep store_bytes_domain_1)
-
+  by (induct vs arbitrary: m n) (auto simp add: keys_is_none_rep store_bytes_domain_1)
+ 
 lemma store_bytes_keys_2:
   "Set.filter (\<lambda> x. n + length vs \<le> x) (Mapping.keys m) = 
    Set.filter (\<lambda> x. n + length vs \<le> x) (Mapping.keys (store_bytes m n vs))"
-  by (induct vs arbitrary: m n)
-    (simp, smt (verit, best) Collect_cong Set.filter_def keys_is_none_rep store_bytes_domain_2)
+  by (induct vs arbitrary: m n) (auto simp add: keys_is_none_rep store_bytes_domain_2)
 
 lemma store_cap_domain_1:
   assumes "x + n \<le> p"
@@ -1730,14 +1728,12 @@ lemma store_cap_domain_2:
 lemma store_cap_keys_1:
   "Set.filter (\<lambda> x. x + n \<le> p) (Mapping.keys m) = 
    Set.filter (\<lambda> x. x + n \<le> p) (Mapping.keys (store_cap m p c n))"
-  by (induct n arbitrary: m p) 
-    (force, smt (verit, best) Collect_cong Set.filter_def keys_is_none_rep store_cap_domain_1)
+  by (induct n arbitrary: m p)  (auto simp add: keys_is_none_rep store_cap_domain_1)
 
 lemma store_cap_keys_2:
   "Set.filter (\<lambda> x. p + n \<le> x) (Mapping.keys m) = 
    Set.filter (\<lambda> x. p + n \<le> x) (Mapping.keys (store_cap m p c n))"
-  by (induct n arbitrary: m p)
-    (force, smt (verit, best) Collect_cong Set.filter_def keys_is_none_rep store_cap_domain_2)
+  by (induct n arbitrary: m p)  (auto simp add: keys_is_none_rep store_cap_domain_2)
 
 lemma store_tags_domain_1:
   assumes "x < n"
@@ -3605,7 +3601,7 @@ lemma alloc_wellformed:
   shows "\<W>\<^sub>\<ff>(heap_map h')"
   using assms
   by (simp add: alloc_def wellformed_def, safe, erule_tac x=b in allE, erule_tac x=obj in allE, simp)
-    (smt (verit, best) Mapping.keys_empty Mapping.lookup_update Mapping.lookup_update_neq Set.filter_def bot_nat_0.not_eq_extremum empty_iff mem_Collect_eq object.select_convs(3) option.sel t.sel zero_less_diff)
+    (smt (verit, best) Mapping.keys_empty Mapping.lookup_update Mapping.lookup_update_neq bot_nat_0.not_eq_extremum empty_iff mem_Collect_eq object.select_convs(3) option.sel t.sel zero_less_diff)
 
 lemma free_wellformed:
   assumes "\<W>\<^sub>\<ff>(heap_map h)"
@@ -3655,8 +3651,11 @@ proof -
       apply (erule_tac x=map in allE)
       apply (clarsimp simp del: memval_type.simps)
       apply (subgoal_tac "Set.filter (\<lambda>x. 0 < x mod |Cap|\<^sub>\<tau>) (Mapping.keys (tags (store_tval map (nat (int |memval_type v|\<^sub>\<tau> * nth)) v))) = {}")
-       apply (smt (verit, best) Mapping.lookup_update Mapping.lookup_update_neq Set.member_filter assms(1) emptyE option.sel rel_simps(70) t.sel wellformed_def)
-      apply (simp add: store_tval_def del: memval_type.simps split: ccval.split_asm; fastforce) (* WARNING: The last line takes a VERY LONG TIME to process, at least 30s *)
+      using assms(1) 
+      apply (auto simp add: not_less Mapping.lookup_update Mapping.lookup_update_neq wellformed_def)[1]
+      apply (metis (no_types, lifting) Mapping.lookup_update Mapping.lookup_update_neq option.sel
+          t.inject)
+       apply (simp add: store_tval_def del: memval_type.simps split: ccval.split_asm; fastforce) (* WARNING: This line takes a VERY LONG TIME to process, at least 30s *)
       done
     done
 qed

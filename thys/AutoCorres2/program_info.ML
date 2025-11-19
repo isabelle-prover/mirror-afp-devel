@@ -13,6 +13,7 @@ structure ProgramInfo =
 struct
 
 type parameter_kind = FunctionInfo.parameter_kind
+type in_out_fun_ptr_spec = FunctionInfo.in_out_fun_ptr_spec
 
 @{record \<open>datatype function_options = Function_options of {
   heap_abs         : bool,
@@ -20,8 +21,12 @@ type parameter_kind = FunctionInfo.parameter_kind
   unsigned_abs     : bool,
   skip_heap_abs    : bool,
   skip_word_abs    : bool,
+  skip_io_abs      : bool,
   in_out_globals : bool,
-  in_out_parameters : (string * parameter_kind) list option
+  in_out_parameters : (string * parameter_kind) list option,
+  in_out_disjoint_ptrs : string list option,
+  in_out_fun_ptr_params : (string * in_out_fun_ptr_spec) list,
+  might_exit : bool
 }\<close>
 }
 
@@ -31,8 +36,12 @@ val default_fun_options = make_function_options {
   unsigned_abs=false, 
   skip_heap_abs = false, 
   skip_word_abs = false,
+  skip_io_abs   = false,
   in_out_globals = false,
-  in_out_parameters = NONE}
+  in_out_parameters = NONE,
+  in_out_disjoint_ptrs = NONE,
+  in_out_fun_ptr_params = [], 
+  might_exit = false}
 
 fun skip_in_out_abs opts = is_none (get_in_out_parameters opts)
 val get_in_out_parameters_raw = get_in_out_parameters
@@ -42,6 +51,23 @@ fun is_in_out_parameter opts name = is_some (AList.lookup (op =) (get_in_out_par
 fun has_in_out_parameters opts = not (null (get_in_out_parameters opts))
 fun parameter_kind opts name = (AList.lookup (op =) (get_in_out_parameters opts) name)
 
+fun in_out_fun_ptr_spec_of opt arg_infos =
+  let
+    val in_out_parameters = get_in_out_parameters opt
+    val in_out_disjoint_ptrs = get_in_out_disjoint_ptrs opt
+    val might_exit = get_might_exit opt
+    val in_out_globals = get_in_out_globals opt
+    fun kind arg_info = 
+      let 
+        val name = ProgramAnalysis.srcname arg_info
+        val (kind, dist) = FunctionInfo.default_parameter_kind (ProgramAnalysis.get_vtype arg_info)
+        val kind' = the_default kind (AList.lookup (op =) in_out_parameters name)
+        val dist' = the_default dist (in_out_disjoint_ptrs |> Option.map (fn xs => member (op =) xs name)) 
+      in (kind', dist') end
+    val param_kinds = map kind arg_infos
+  in
+    {param_kinds = param_kinds, in_out_globals=in_out_globals, might_exit = might_exit}: FunctionInfo.in_out_fun_ptr_spec
+  end
 
 (* Program information type. *)
 @{record \<open>datatype prog_info = Prog_info of 
@@ -56,6 +82,7 @@ fun parameter_kind opts name = (AList.lookup (op =) (get_in_out_parameters opts)
   prog_name : string,
   naming: Name_Space.naming,
   method_callers: string list,
+  method_io_params: (int CType.ctype * FunctionInfo.in_out_fun_ptr_spec) list,
 
   state_type : typ,
   globals_type : typ,
@@ -205,11 +232,11 @@ fun demangle_name (prog_info: prog_info) m =
 (*
  * Extract details from the c-parser about the given program.
  *)
-fun get_prog_info thy fun_options mk_fun_name dest_fun_name cfilename : prog_info =
+fun get_prog_info thy fun_options method_io_params mk_fun_name dest_fun_name cfilename : prog_info =
   let
     val ctxt = Proof_Context.init_global thy
     val csenv = CalculateState.get_csenv thy cfilename |> the;
-    val prog_name = cfilename |> Path.explode |> Path.split_ext |> fst |> Path.file_name
+    val prog_name = cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
 
     (* Get the type of the state record and the globals record. *)
     val globals_type =  Proof_Context.read_typ ctxt NameGeneration.global_rcd_name
@@ -264,6 +291,7 @@ fun get_prog_info thy fun_options mk_fun_name dest_fun_name cfilename : prog_inf
         SOME x => x
       | NONE => raise Utils.InvalidInput "'globals' doesn't appear to have a \"t_hrs_'\" field."
     val method_callers = ProgramAnalysis.method_callers csenv
+
   in
     make_prog_info
     {
@@ -275,6 +303,7 @@ fun get_prog_info thy fun_options mk_fun_name dest_fun_name cfilename : prog_inf
       prog_name = prog_name,
       naming = Sign.naming_of thy,
       method_callers = method_callers,
+      method_io_params = method_io_params,
 
       state_type = state_type,
       globals_type = globals_type,
@@ -322,4 +351,24 @@ fun is_t_hrs_const (prog_info : prog_info) t =
 fun is_t_hrs_update_const (prog_info : prog_info) t =
   (t = get_t_hrs_setter prog_info)
 
+(* Copy from record.ML *)
+fun dest_recT (typ as Type (c_ext_type, Ts as (_ :: _))) =
+      (case try (unsuffix Record.ext_typeN) c_ext_type of
+        NONE => raise TYPE ("Record.dest_recT", [typ], [])
+      | SOME c => ((c, Ts), List.last Ts))
+  | dest_recT typ = raise TYPE ("Record.dest_recT", [typ], []);
+
+(* Copy from record.ML *)
+fun recname name =
+  let val (nm :: _ :: rst) = rev (Long_Name.explode name)
+  in Long_Name.implode (rev (nm :: rst)) end;
+
+fun get_state_fold_congs thy prog_info =
+  let
+    fun name T = dest_recT T |> fst |> fst |> recname
+    fun fold_congs T = Record.get_info thy (name T) 
+      |> Option.map (#fold_congs) |> these
+  in
+    maps fold_congs ([get_globals_type prog_info] @ the_list (get_lifted_globals_type prog_info))
+  end
 end

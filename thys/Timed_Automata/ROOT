@@ -9,7 +9,7 @@ session "Timed_Automata" = Difference_Bound_Matrices +
   theories [document=false]
     Instantiate_Existentials
   theories
-    More_List
+    More_List1
     Stream_More
     TA_Misc
     Graphs

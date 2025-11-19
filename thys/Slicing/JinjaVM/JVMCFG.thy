@@ -406,7 +406,7 @@ proof (induct b)
 next
   case (Suc b)
   thus ?case
-    by (cases "n - b", auto simp: list_update_append not_less_eq less_Suc_eq)
+    by (cases "n - b", auto simp: list_update_beyond list_update_append not_less_eq less_Suc_eq)
 qed
 
 lemma locs_pullout' [simp]:
@@ -800,10 +800,10 @@ by (erule JVM_CFG.cases) simp_all
 declare split_def [simp add]
 declare find_handler_for.simps [simp del]
 
-(* The following lemma explores many cases, it takes a little to prove *)
+(* The following lemma explores many cases, it takes a little while to prove *)
 lemma JVMCFG_edge_det:
   "\<lbrakk>prog \<turnstile> n -et\<rightarrow> n'; prog \<turnstile> n -et'\<rightarrow> n'\<rbrakk> \<Longrightarrow> et = et'"
-  by (erule JVM_CFG.cases, (erule JVM_CFG.cases, fastforce+)+)
+  by (erule JVM_CFG.cases; erule JVM_CFG.cases; fastforce)
 
 declare split_def [simp del]
 declare find_handler_for.simps [simp add]

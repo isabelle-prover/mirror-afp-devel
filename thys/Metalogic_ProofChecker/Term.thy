@@ -947,8 +947,7 @@ partial_function (option) beta_norm :: "term \<Rightarrow> term option" where
     | None \<Rightarrow> None)
   | t \<Rightarrow> Some t)"
 
-simps_of_case beta_norm_simps[simp]: beta_norm.simps
-declare beta_norm_simps[code]
+simps_of_case beta_norm_simps [simp, code]: beta_norm.simps
 
 lemma not_beta_reducible_imp_beta_norm_unchanged: "\<not> beta_reducible t \<Longrightarrow> beta_norm t = Some t"
 proof (induction t)
@@ -1495,6 +1494,6 @@ qed
 
 (* Hs parameter to check if var is fixed by hypotheses *)
 abbreviation "forall_intro_vars t Hs \<equiv> mk_all_list 
-  (diff_list (add_vars' t []) (fold (add_vars') Hs [])) t"
+  (minus_list_set (add_vars' t []) (fold (add_vars') Hs [])) t"
 
 end

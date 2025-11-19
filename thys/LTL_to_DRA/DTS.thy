@@ -189,7 +189,7 @@ proof (cases "\<Sigma> \<noteq> []")
     note extend_run = this
     
     interpret DFS "\<lambda>q. map (\<delta> q) \<Sigma>" "\<lambda>q. q \<in> reach (set \<Sigma>) \<delta> q\<^sub>0" "\<lambda>S. S \<subseteq> reach (set \<Sigma>) \<delta> q\<^sub>0" Set.insert "(\<in>)" "{}" id
-      apply (unfold_locales; auto simp add: member_rec reach_redef list_all_iff elim: extend_run)
+      apply (unfold_locales; auto simp add: reach_redef list_all_iff elim: extend_run)
       apply (metis extend_run image_eqI set_map)
       apply (metis assms[unfolded reach_redef])
       done
@@ -271,7 +271,7 @@ proof -
   let ?succs = "\<lambda>(_, _, q). (map (\<lambda>\<nu>. (q, \<nu>, \<delta> q \<nu>)) \<Sigma>)"
 
   interpret DFS "\<lambda>(_, _, q). (map (\<lambda>\<nu>. (q, \<nu>, \<delta> q \<nu>)) \<Sigma>)" "\<lambda>t. t \<in> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0" "\<lambda>S. set S \<subseteq> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0" List.insert "\<lambda>x xs. x \<in> set xs" "[]" id
-    apply (unfold_locales; auto simp add: member_rec reach\<^sub>t_foldl_def list_all_iff elim: extend_run)
+    apply (unfold_locales; auto simp add: reach\<^sub>t_foldl_def list_all_iff elim: extend_run)
     apply (metis extend_run image_eqI set_map)
     using  assms unfolding reach\<^sub>t_foldl_def by simp
 

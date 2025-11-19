@@ -25,7 +25,7 @@ translations
 lift_definition usedBy_uexpr :: "('b \<Longrightarrow> '\<alpha>) \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> bool" 
 is "\<lambda> x e. (\<forall> b b'. e (b' \<oplus>\<^sub>L b on x) = e b)" .
 
-adhoc_overloading usedBy usedBy_uexpr
+adhoc_overloading usedBy \<rightleftharpoons> usedBy_uexpr
   
 lemma usedBy_lit [unrest]: "x \<natural> \<guillemotleft>v\<guillemotright>"
   by (transfer, simp)

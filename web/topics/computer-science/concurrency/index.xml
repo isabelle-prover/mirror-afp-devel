@@ -1,170 +1,104 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Concurrency on Archive of Formal Proofs
-    </title>
-    <link>/topics/computer-science/concurrency/</link>
-    <description>
-        Recent content in Computer science/Concurrency 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/computer-science/concurrency/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Definitive Set Semantics for LTL3</title>
-          <link>/entries/LTL3_Semantics.html</link>
-          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL3_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Definitive Set Semantics for LTL3</title>
-          <link>/entries/LTL3_Semantics.html</link>
-          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/LTL3_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Transition Systems II: Categorical Properties</title>
-          <link>/entries/ResiduatedTransitionSystem2.html</link>
-          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Transition Systems II: Categorical Properties</title>
-          <link>/entries/ResiduatedTransitionSystem2.html</link>
-          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>ConcurrentHOL</title>
-          <link>/entries/ConcurrentHOL.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ConcurrentHOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>ConcurrentHOL</title>
-          <link>/entries/ConcurrentHOL.html</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/ConcurrentHOL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
-          <link>/entries/Coupledsim_Contrasim.html</link>
-          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Coupledsim_Contrasim.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
-          <link>/entries/Coupledsim_Contrasim.html</link>
-          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Coupledsim_Contrasim.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
-          <link>/entries/CommCSL.html</link>
-          <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CommCSL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
-          <link>/entries/CommCSL.html</link>
-          <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/CommCSL.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Transition Systems</title>
-          <link>/entries/ResiduatedTransitionSystem.html</link>
-          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Residuated Transition Systems</title>
-          <link>/entries/ResiduatedTransitionSystem.html</link>
-          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/ResiduatedTransitionSystem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
-          <link>/entries/TESL_Language.html</link>
-          <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/TESL_Language.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
-          <link>/entries/TESL_Language.html</link>
-          <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/TESL_Language.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Reduction Theorem for Store Buffers</title>
-          <link>/entries/Store_Buffer_Reduction.html</link>
-          <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Store_Buffer_Reduction.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Reduction Theorem for Store Buffers</title>
-          <link>/entries/Store_Buffer_Reduction.html</link>
-          <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Store_Buffer_Reduction.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Concurrent Revisions</title>
-          <link>/entries/Concurrent_Revisions.html</link>
-          <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Concurrent_Revisions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Concurrent Revisions</title>
-          <link>/entries/Concurrent_Revisions.html</link>
-          <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Concurrent_Revisions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Concurrent Refinement Algebra and Rely Quotients</title>
-          <link>/entries/Concurrent_Ref_Alg.html</link>
-          <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Concurrent_Ref_Alg.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Concurrent Refinement Algebra and Rely Quotients</title>
-          <link>/entries/Concurrent_Ref_Alg.html</link>
-          <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Concurrent_Ref_Alg.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Constructive Proof for FLP</title>
-          <link>/entries/FLP.html</link>
-          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/FLP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Constructive Proof for FLP</title>
-          <link>/entries/FLP.html</link>
-          <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/FLP.html</guid>
-          <description></description>
-        </item>
+    <title>Computer science/Concurrency</title>
+    <link>https://isa-afp.org/topics/computer-science/concurrency/</link>
+    <description>AFP entries in Concurrency</description><item>
+  <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
+  <link>https://isa-afp.org/entries/Serializable.html</link>
+  <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>
+  <description>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking in the AFP</description>
+    <category>Computer science/Data management systems</category>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Definitive Set Semantics for LTL3</title>
+  <link>https://isa-afp.org/entries/LTL3_Semantics.html</link>
+  <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+  <description>Definitive Set Semantics for LTL3 in the AFP</description>
+    <category>Logic/General logic/Temporal logic</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Residuated Transition Systems II: Categorical Properties</title>
+  <link>https://isa-afp.org/entries/ResiduatedTransitionSystem2.html</link>
+  <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+  <description>Residuated Transition Systems II: Categorical Properties in the AFP</description>
+    <category>Mathematics/Category theory</category>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>ConcurrentHOL</title>
+  <link>https://isa-afp.org/entries/ConcurrentHOL.html</link>
+  <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+  <description>ConcurrentHOL in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
+  <link>https://isa-afp.org/entries/Coupledsim_Contrasim.html</link>
+  <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Coupled Similarity and Contrasimilarity, and How to Compute Them in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Mathematics/Games and economics</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs</title>
+  <link>https://isa-afp.org/entries/CommCSL.html</link>
+  <pubDate>Wed, 15 Mar 2023 00:00:00 +0000</pubDate>
+  <description>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Residuated Transition Systems</title>
+  <link>https://isa-afp.org/entries/ResiduatedTransitionSystem.html</link>
+  <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Residuated Transition Systems in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+</item>
+<item>
+  <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
+  <link>https://isa-afp.org/entries/TESL_Language.html</link>
+  <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+  <description>A Formal Development of a Polychronous Polytimed Coordination Language in the AFP</description>
+    <category>Computer science/System description languages</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>A Reduction Theorem for Store Buffers</title>
+  <link>https://isa-afp.org/entries/Store_Buffer_Reduction.html</link>
+  <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+  <description>A Reduction Theorem for Store Buffers in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Formalization of Concurrent Revisions</title>
+  <link>https://isa-afp.org/entries/Concurrent_Revisions.html</link>
+  <pubDate>Tue, 25 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Formalization of Concurrent Revisions in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Concurrent Refinement Algebra and Rely Quotients</title>
+  <link>https://isa-afp.org/entries/Concurrent_Ref_Alg.html</link>
+  <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
+  <description>Concurrent Refinement Algebra and Rely Quotients in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>A Constructive Proof for FLP</title>
+  <link>https://isa-afp.org/entries/FLP.html</link>
+  <pubDate>Wed, 18 May 2016 00:00:00 +0000</pubDate>
+  <description>A Constructive Proof for FLP in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+
   </channel>
 </rss>

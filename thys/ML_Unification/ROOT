@@ -2,7 +2,7 @@ chapter AFP
 
 session ML_Unification = HOL +
   description
-    \<open>Various unification utilities for Isabelle/ML, e.g. E-unification, E-matching, and unification hints.\<close>
+    \<open>Various unification utilities for Isabelle/ML, e.g. proof-producing E-unification, E-matching, and unification hints.\<close>
   options [timeout = 300]
   sessions
     SpecCheck
@@ -14,6 +14,7 @@ session ML_Unification = HOL +
     "ML_Utils"
     "ML_Utils/Attributes"
     "ML_Utils/Conversions"
+    "ML_Utils/Costs_Priorities"
     "ML_Utils/Functor_Instances"
     "ML_Utils/General"
     "ML_Utils/Generic_Data"
@@ -21,7 +22,6 @@ session ML_Unification = HOL +
     "ML_Utils/ML_Attributes"
     "ML_Utils/ML_Code"
     "ML_Utils/Parsing"
-    "ML_Utils/Priorities"
     "ML_Utils/Tactics"
     "ML_Utils/Terms"
     "ML_Utils/Theorems"
@@ -53,4 +53,3 @@ session ML_Unification = HOL +
   document_files
     "root.tex"
     "root.bib"
-

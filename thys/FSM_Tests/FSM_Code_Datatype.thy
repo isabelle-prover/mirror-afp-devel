@@ -161,19 +161,10 @@ proof -
     using that[of m] unfolding set_as_mapping_def by blast
 qed
 
-lemma set_as_mapping_refined[code] :
+lemma set_as_mapping_refined [code]:
   fixes t :: "('a :: ccompare \<times> 'c :: ccompare) set_rbt" 
   and   xs:: "('b :: ceq \<times> 'd :: ceq) set_dlist"
-  shows "set_as_mapping (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
-           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
-                        None \<Rightarrow> Mapping.update (x) {z} m |
-                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
-                      t
-                      Mapping.empty) |
-           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
-                                (\<lambda>_. set_as_mapping (RBT_set t)))"
-    (is "set_as_mapping (RBT_set t) = ?C1 (RBT_set t)")
-  and   "set_as_mapping (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
+  shows "set_as_mapping (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
             Some _ \<Rightarrow> (DList_Set.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
                         None \<Rightarrow> Mapping.update (x) {z} m |
                         Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
@@ -182,6 +173,15 @@ lemma set_as_mapping_refined[code] :
            None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
                                 (\<lambda>_. set_as_mapping (DList_set xs)))"
     (is "set_as_mapping (DList_set xs) = ?C2 (DList_set xs)")
+    and "set_as_mapping (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
+           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
+                        None \<Rightarrow> Mapping.update (x) {z} m |
+                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
+                      t
+                      Mapping.empty) |
+           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
+                                (\<lambda>_. set_as_mapping (RBT_set t)))"
+    (is "set_as_mapping (RBT_set t) = ?C1 (RBT_set t)")
 proof -
   show "set_as_mapping (RBT_set t) = ?C1 (RBT_set t)"
   proof (cases "ID CCOMPARE(('a \<times> 'c))")
@@ -417,9 +417,7 @@ proof -
     have "ID CEQ('b \<times> 'd) \<noteq> None"
       using Some by auto
     then have **: "\<And> x . x \<in> set (list_of_dlist xs) = (x \<in> (DList_set xs))" 
-      using DList_Set.member.rep_eq[of xs]
-      using Set_member_code(2) ceq_class.ID_ceq in_set_member by fastforce 
-    
+      by (simp add: Collect_member DList_set_def)
     have "Mapping.lookup (?f' xs) = (\<lambda> x . if (\<exists> z . (x,z) \<in> (DList_set xs)) then Some {z . (x,z) \<in> (DList_set xs)} else None)"
       using *[of "(list_of_dlist xs)"] 
       unfolding DList_Set.fold.rep_eq ** by assumption
@@ -470,7 +468,7 @@ proof (cases "Mapping.lookup h' (q,x)")
     by auto
   moreover have "?A q x y = None"
     unfolding h_obs_impl.simps Let_def None
-    by (simp add: Set.filter_def) 
+    by (simp add:) 
   ultimately show ?thesis 
     by presburger
 next
@@ -526,20 +524,12 @@ proof -
     using that[of m] unfolding set_as_mapping_image_def by blast
 qed
 
-lemma set_as_mapping_image_code[code]  :
+lemma set_as_mapping_image_code [code]:
   fixes t :: "('a1 ::ccompare \<times> 'a2 :: ccompare) set_rbt" 
   and   f1 :: "('a1 \<times> 'a2) \<Rightarrow> ('b1 :: ccompare \<times> 'b2 ::ccompare)"
   and   xs :: "('c1 :: ceq \<times> 'c2 :: ceq) set_dlist" 
   and   f2 :: "('c1 \<times> 'c2) \<Rightarrow> ('d1 \<times> 'd2)"
-shows "set_as_mapping_image (RBT_set t) f1 = (case ID CCOMPARE(('a1 \<times> 'a2)) of
-           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> kv m1 .
-                        ( case f1 kv of (x,z) \<Rightarrow> (case Mapping.lookup m1 (x) of None \<Rightarrow> Mapping.update (x) {z} m1 | Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m1)))
-                      t
-                      Mapping.empty) |
-           None   \<Rightarrow> Code.abort (STR ''set_as_map_image RBT_set: ccompare = None'') 
-                                (\<lambda>_. set_as_mapping_image (RBT_set t) f1))"
-  (is "set_as_mapping_image (RBT_set t) f1 = ?C1 (RBT_set t)")
-and   "set_as_mapping_image (DList_set xs) f2 = (case ID CEQ(('c1 \<times> 'c2)) of
+  shows "set_as_mapping_image (DList_set xs) f2 = (case ID CEQ(('c1 \<times> 'c2)) of
             Some _ \<Rightarrow> (DList_Set.fold (\<lambda> kv m1 . 
                         ( case f2 kv of (x,z) \<Rightarrow> (case Mapping.lookup m1 (x) of None \<Rightarrow> Mapping.update (x) {z} m1 | Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m1)))
                       xs
@@ -547,6 +537,14 @@ and   "set_as_mapping_image (DList_set xs) f2 = (case ID CEQ(('c1 \<times> 'c2))
            None   \<Rightarrow> Code.abort (STR ''set_as_map_image DList_set: ccompare = None'') 
                                 (\<lambda>_. set_as_mapping_image (DList_set xs) f2))"
   (is "set_as_mapping_image (DList_set xs) f2 = ?C2 (DList_set xs)")
+    and "set_as_mapping_image (RBT_set t) f1 = (case ID CCOMPARE(('a1 \<times> 'a2)) of
+           Some _ \<Rightarrow> (RBT_Set2.fold (\<lambda> kv m1 .
+                        ( case f1 kv of (x,z) \<Rightarrow> (case Mapping.lookup m1 (x) of None \<Rightarrow> Mapping.update (x) {z} m1 | Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m1)))
+                      t
+                      Mapping.empty) |
+           None   \<Rightarrow> Code.abort (STR ''set_as_map_image RBT_set: ccompare = None'') 
+                                (\<lambda>_. set_as_mapping_image (RBT_set t) f1))"
+  (is "set_as_mapping_image (RBT_set t) f1 = ?C1 (RBT_set t)")
 proof -
   show "set_as_mapping_image (RBT_set t) f1 = ?C1 (RBT_set t)"
 
@@ -783,9 +781,8 @@ proof -
     have "ID CEQ('c1 \<times> 'c2) \<noteq> None"
       using Some by auto
     then have **: "\<And> x . x \<in> f2 ` set (list_of_dlist xs) = (x \<in> f2 ` (DList_set xs))" 
-      using DList_Set.member.rep_eq[of xs]
-      using Set_member_code(2) ceq_class.ID_ceq in_set_member by fastforce 
-    
+      by (simp add: Collect_member DList_set_def)
+   
     have "Mapping.lookup (?f' xs) = (\<lambda> x . if (\<exists> z . (x,z) \<in> f2 ` (DList_set xs)) then Some {z . (x,z) \<in> f2 ` (DList_set xs)} else None)"
       using *[of "(list_of_dlist xs)"] 
       unfolding DList_Set.fold.rep_eq ** .
@@ -937,7 +934,7 @@ proof -
   moreover have "(\<forall> q x y . h_obs_impl  (h_wpi M) q x y = (h_obs_lookup  (h_obs_wpi M) q x y))"
     unfolding h_obs_impl.simps Let_def
     unfolding calculation M
-    by (simp add: Mapping.empty_def Mapping.lookup.abs_eq Set.filter_def) 
+    by (simp add: Mapping.empty_def Mapping.lookup.abs_eq) 
   ultimately have "well_formed_fsm_with_precomputations M"
     unfolding M by auto
   then show ?thesis 
@@ -1153,8 +1150,6 @@ code_datatype FSMWP
 
 subsection \<open>Lifting\<close>
 
-
-declare [[code drop: fsm_impl_from_list]]
 lemma fsm_impl_from_list[code] :
   "fsm_impl_from_list q ts = FSMWP (fsm_with_precomputations_from_list q ts)"
 proof (induction ts)
@@ -1165,8 +1160,6 @@ next
   show ?case unfolding fsm_impl_from_list.simps FSMWP_def fsm_with_precomputations_from_list_Cons_simps Let_def by simp
 qed
 
-
-declare [[code drop: fsm_impl.initial fsm_impl.states fsm_impl.inputs fsm_impl.outputs fsm_impl.transitions]]
 lemma fsm_impl_FSMWP_initial[code,simp] : "fsm_impl.initial (FSMWP M) = initial_wp M"
   by (simp add: FSMWP_def) 
 lemma fsm_impl_FSMWP_states[code,simp] : "fsm_impl.states (FSMWP M) = states_wp M"
@@ -1198,10 +1191,6 @@ proof -
     unfolding FSMWP_def by simp
 qed
 
-
-
-
-declare [[code drop: FSM_Impl.h ]]
 lemma h_with_precomputations_code [code] : "FSM_Impl.h ((FSMWP M)) = (\<lambda> (q,x) . case Mapping.lookup (h_wp M) (q,x) of Some yqs \<Rightarrow> yqs | None \<Rightarrow> {})"
 proof -
   have *: "\<And> q x . (case (Mapping.lookup (h_wp M) (q,x)) of Some ts \<Rightarrow> ts | None \<Rightarrow> {}) = { (y,q') . (q,x,y,q') \<in> transitions_wp M }"
@@ -1216,7 +1205,6 @@ proof -
     by blast
 qed
 
-declare [[code drop: FSM_Impl.h_obs ]]
 lemma h_obs_with_precomputations_code [code] : "FSM_Impl.h_obs ((FSMWP M)) q x y = (h_obs_lookup  (h_obs_wp M) q x y)"
   unfolding fsm_with_precomputations_h_obs_prop
   unfolding FSM_Impl.h_obs.simps
@@ -1357,9 +1345,6 @@ lemma filter_states_simps:
   "transitions_wp (filter_states M P) = (if P (initial_wp M) then (Set.filter (\<lambda> t . P (t_source t) \<and> P (t_target t)) (transitions_wp M)) else transitions_wp M)"
   by (transfer; simp add: Let_def)+
 
-
-
-declare [[code drop: FSM_Impl.filter_states ]]
 lemma filter_states_with_precomputations_code [code] : "FSM_Impl.filter_states ((FSMWP M)) P = FSMWP (filter_states M P)"
   unfolding FSM_Impl.filter_states.simps Let_def
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions
@@ -1414,7 +1399,7 @@ proof -
     have h_obs_prop: "\<And> q x y . h_obs_impl  (h_wpi ?M) q x y = h_obs_lookup  (h_obs_wpi ?M) q x y"
       unfolding h_obs_impl.simps Let_def
       unfolding * *** Mapping.lookup_empty
-      by (simp add: Set.filter_def) 
+      by (simp add:) 
 
     show ?thesis
       using base_props transition_prop h_prop h_obs_prop
@@ -1434,8 +1419,6 @@ lemma create_unconnected_fsm_from_fsets_simps:
   "transitions_wp (create_unconnected_fsm_from_fsets q ns ins outs) = {}"
   by (transfer; simp add: Let_def)+
 
-
-declare [[code drop: FSM_Impl.create_unconnected_fsm_from_fsets ]]
 lemma create_unconnected_fsm_with_precomputations_code [code] : "FSM_Impl.create_unconnected_fsm_from_fsets q ns ins outs = FSMWP (create_unconnected_fsm_from_fsets q ns ins outs)"
   unfolding FSM_Impl.create_unconnected_fsm_from_fsets.simps 
   unfolding FSMWP_def
@@ -1556,8 +1539,6 @@ lemma add_transitions_simps:
                                           then transitions_wp M \<union> ts else transitions_wp M)"
   by (transfer; simp add: Let_def)+
 
-
-declare [[code drop: FSM_Impl.add_transitions ]]
 lemma add_transitions_with_precomputations_code [code] : "FSM_Impl.add_transitions ((FSMWP M)) ts = FSMWP (add_transitions M ts)"
   unfolding FSM_Impl.add_transitions.simps 
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions
@@ -1648,7 +1629,6 @@ lemma rename_states_simps:
   "transitions_wp (rename_states M f) = ((\<lambda>t . (f (t_source t), t_input t, t_output t, f (t_target t))) ` transitions_wp M)"
   by (transfer; simp add: Let_def)+
 
-declare [[code drop: FSM_Impl.rename_states ]]
 lemma rename_states_with_precomputations_code[code] : "FSM_Impl.rename_states ((FSMWP M)) f = FSMWP (rename_states M f)"
   unfolding FSM_Impl.rename_states.simps 
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions
@@ -1731,7 +1711,6 @@ lemma filter_transitions_simps:
   "transitions_wp (filter_transitions M P) = Set.filter P (transitions_wp M)"
   by (transfer; simp add: Let_def)+
 
-declare [[code drop: FSM_Impl.filter_transitions ]]
 lemma filter_transitions_with_precomputations_code [code] : "FSM_Impl.filter_transitions ((FSMWP M)) P = FSMWP (filter_transitions M P)"
   unfolding FSM_Impl.filter_transitions.simps 
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions
@@ -1824,7 +1803,6 @@ lemma initial_singleton_simps:
   "transitions_wp (initial_singleton M) = {}"
   by (transfer; simp add: Let_def)+
 
-declare [[code drop: FSM_Impl.initial_singleton]]
 lemma initial_singleton_with_precomputations_code[code] : "FSM_Impl.initial_singleton ((FSMWP M)) = FSMWP (initial_singleton M)"
   unfolding FSM_Impl.initial_singleton.simps 
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions
@@ -2024,8 +2002,6 @@ lemma canonical_separator'_simps :
         "transitions_wp (canonical_separator' M P q1 q2) = (if initial_wp P = (q1,q2) then shifted_transitions (transitions_wp P) \<union> distinguishing_transitions (\<lambda> (q,x) . {y . \<exists> q' . (q,x,y,q') \<in> transitions_wp M}) q1 q2 (states_wp P) (inputs_wp P) else {})"
   unfolding h_out_impl_helper by (transfer; simp add: Let_def)+
 
-
-declare [[code drop: FSM_Impl.canonical_separator']]
 lemma canonical_separator_with_precomputations_code [code] : "FSM_Impl.canonical_separator' ((FSMWP M)) ((FSMWP P)) q1 q2 = FSMWP (canonical_separator' M P q1 q2)"
 proof -
 
@@ -2113,7 +2089,6 @@ lemma product_simps:
   "transitions_wp (product A B) = (image (\<lambda>((qA,x,y,qA'), (qB,x',y',qB')) . ((qA,qB),x,y,(qA',qB'))) (Set.filter (\<lambda>((qA,x,y,qA'), (qB,x',y',qB')) . x = x' \<and> y = y') (\<Union>(image (\<lambda> tA . image (\<lambda> tB . (tA,tB)) (transitions_wp B)) (transitions_wp A)))))"
   by (transfer; simp)+
 
-declare [[code drop: FSM_Impl.product]]
 lemma product_with_precomputations_code [code] : "FSM_Impl.product ((FSMWP A)) ((FSMWP B)) = FSMWP (product A B)"
   unfolding FSM_Impl.product_code_naive 
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions
@@ -2142,7 +2117,6 @@ lemma from_FSMI_simps:
   "transitions_wp (from_FSMI M q) = transitions_wp M"
   by (transfer; simp add: Let_def)+
 
-declare [[code drop: FSM_Impl.from_FSMI]]
 lemma from_FSMI_with_precomputations_code [code] : "FSM_Impl.from_FSMI ((FSMWP M)) q = FSMWP (from_FSMI M q)"
   unfolding FSM_Impl.from_FSMI.simps 
   unfolding fsm_impl_FSMWP_initial fsm_impl_FSMWP_states fsm_impl_FSMWP_inputs fsm_impl_FSMWP_outputs fsm_impl_FSMWP_transitions

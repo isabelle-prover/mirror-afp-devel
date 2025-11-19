@@ -317,7 +317,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
           Spec_Rules.add Binding.empty Spec_Rules.equational_recdef [f] simps
           #> Local_Theory.note 
             ((Binding.qualify true fname (Binding.name "simps"),
-              @{attributes [code]}), simps) #>> snd #>> hd)
+              [Code.singleton_default_equation_attrib]), simps) #>> snd #>> hd)
       end
   in 
     fold (fn i => fn (simps, lthy) => case register i lthy of

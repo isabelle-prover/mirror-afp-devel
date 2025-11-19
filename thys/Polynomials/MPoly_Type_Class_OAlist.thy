@@ -256,17 +256,16 @@ definition is_zero :: "('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> bool"
   where [code_abbrev]: "is_zero p \<longleftrightarrow> (p = 0)"
 
 lemma is_zero_MP_oalist [code]: "is_zero (MP_oalist xs) = List.null (fst (list_of_oalist_ntm xs))"
-  unfolding is_zero_def List.null_def
-proof
+unfolding is_zero_def List.null_iff proof
   assume "MP_oalist xs = 0"
   hence "OAlist_lookup_ntm xs k = 0" for k by (simp add: poly_mapping_eq_iff)
-  thus "fst (list_of_oalist_ntm xs) = []"
+  then show "fst (list_of_oalist_ntm xs) = []"
     by (metis image_eqI ko_ntm.min_key_val_raw_in oa_ntm.in_sorted_domain_iff_lookup oa_ntm.set_sorted_domain)
 next
   assume "fst (list_of_oalist_ntm xs) = []"
   hence "OAlist_lookup_ntm xs k = 0" for k
     by (metis oa_ntm.list_of_oalist_empty oa_ntm.lookup_empty oalist_ntm_eqI surjective_pairing)
-  thus "MP_oalist xs = 0" by (simp add: poly_mapping_eq_iff ext)
+  then show "MP_oalist xs = 0" by (simp add: poly_mapping_eq_iff ext)
 qed
 
 lemma plus_MP_oalist [code]: "MP_oalist xs + MP_oalist ys = MP_oalist (OAlist_map2_val_neutr_ntm (\<lambda>_. (+)) xs ys)"
@@ -323,8 +322,7 @@ lemma if_poly_mapping_eq_iff:
   by simp (metis UnI1 UnI2 in_keys_iff poly_mapping_eqI)
 
 lemma keys_add_eq: "keys (a + b) = keys a \<union> keys b - {x \<in> keys a \<inter> keys b. lookup a x + lookup b x = 0}"
-  by (auto simp: in_keys_iff lookup_add add_eq_0_iff
-      simp del: lookup_not_eq_zero_eq_in_keys)
+  by (auto simp: in_keys_iff lookup_add add_eq_0_iff)
 
 locale gd_nat_term =
     gd_term pair_of_term term_of_pair
@@ -417,7 +415,7 @@ proof (split if_split, intro conjI impI)
     by (simp add: is_zero_def)
 next
   assume "\<not> is_zero (MP_oalist xs)"
-  hence *: "fst (list_of_oalist_ntm xs) \<noteq> []" by (simp add: is_zero_MP_oalist List.null_def)
+  hence *: "fst (list_of_oalist_ntm xs) \<noteq> []" by (simp add: is_zero_MP_oalist)
   define ct where "ct = OAlist_hd_ntm xs"
   have eq: "except (MP_oalist xs) {fst ct} = MP_oalist (OAlist_tl_ntm xs)"
     by (rule poly_mapping_eqI, simp add: lookup_except ct_def oa_ntm.lookup_tl')
@@ -525,7 +523,7 @@ proof (split if_split, intro conjI impI)
   thus "lt (MP_oalist xs) = min_term" by (simp add: is_zero_def)
 next
   assume "\<not> is_zero (MP_oalist xs)"
-  hence "fst (list_of_oalist_ntm xs) \<noteq> []" by (simp add: is_zero_MP_oalist List.null_def)
+  hence "fst (list_of_oalist_ntm xs) \<noteq> []" by (simp add: is_zero_MP_oalist)
   show "lt (MP_oalist xs) = fst (OAlist_min_key_val_ntm cmp_term xs)"
   proof (rule lt_eqI_keys)
     show "fst (OAlist_min_key_val_ntm cmp_term xs) \<in> keys (MP_oalist xs)"
@@ -549,7 +547,7 @@ proof (split if_split, intro conjI impI)
   thus "lc (MP_oalist xs) = 0" by (simp add: is_zero_def)
 next
   assume "\<not> is_zero (MP_oalist xs)"
-  moreover from this have "fst (list_of_oalist_ntm xs) \<noteq> []" by (simp add: is_zero_MP_oalist List.null_def)
+  moreover from this have "fst (list_of_oalist_ntm xs) \<noteq> []" by (simp add: is_zero_MP_oalist)
   ultimately show "lc (MP_oalist xs) = snd (OAlist_min_key_val_ntm cmp_term xs)"
     by (simp add: lc_def lt_MP_oalist oa_ntm.snd_min_key_val)
 qed
@@ -557,11 +555,11 @@ qed
 lemma tail_MP_oalist [code]: "tail (MP_oalist xs) = MP_oalist (OAlist_except_min_ntm cmp_term xs)"
 proof (cases "is_zero (MP_oalist xs)")
   case True
-  hence "fst (list_of_oalist_ntm xs) = []" by (simp add: is_zero_MP_oalist List.null_def)
+  hence "fst (list_of_oalist_ntm xs) = []" by (simp add: is_zero_MP_oalist)
   hence "fst (list_of_oalist_ntm (OAlist_except_min_ntm cmp_term xs)) = []"
     by (rule oa_ntm.except_min_Nil)
   hence "is_zero (MP_oalist (OAlist_except_min_ntm cmp_term xs))"
-    by (simp add: is_zero_MP_oalist List.null_def)
+    by (simp add: is_zero_MP_oalist)
   with True show ?thesis by (simp add: is_zero_def)
 next
   case False

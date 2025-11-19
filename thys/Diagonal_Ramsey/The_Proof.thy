@@ -102,7 +102,7 @@ definition "f2 \<equiv> \<lambda>x y. f1 x y - (1 / (40 * ln 2)) * ((1-x) / (2-x
 
 definition "ff \<equiv> \<lambda>x y. if x < 3/4 then f1 x y else f2 x y"
 
-text \<open>Incorporating Bhavik‘s idea, which gives us a lower bound for @{term \<gamma>} of 1/101\<close>
+text \<open>Incorporating Bhavik's idea, which gives us a lower bound for @{term \<gamma>} of 1/101\<close>
 definition ffGG :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real" where
   "ffGG \<equiv> \<lambda>\<mu> x y. max 1.9 (min (ff x y) (GG \<mu> x y))"
 
@@ -308,7 +308,7 @@ proof -
     and "X0 = V \<setminus> Y0" "Y0\<subseteq>V"
     and p0_half: "1/2 \<le> gen_density Red X0 Y0"
     and "Book V E p0_min Red Blue k k \<mu> X0 Y0" 
-  proof (rule Basis_imp_Book)
+  proof (rule to_Book)
     show "p0_min \<le> graph_density Red"
       using p0_min12 Red by linarith
     show "0 < \<mu>" "\<mu> < 1"
@@ -491,7 +491,7 @@ proof -
 qed 
 
 theorem (in P0_min) From_11_1:
-  assumes \<mu>: "0 < \<mu>" "\<mu> \<le> 2/5" and "\<eta> > 0" and le: "\<eta> \<le> 1/12"
+  assumes \<mu>: "0 < \<mu>" "\<mu> \<le> 2/5" and "0 < \<eta>" "\<eta> \<le> 1/12"
     and p0_min12: "p0_min \<le> 1/2" and big: "Big_From_11_1 \<eta> \<mu> k"
   shows "log 2 (RN k k) / k \<le> (SUP x \<in> {0..1}. SUP y \<in> {0..3/4}. ffGG \<mu> x y + \<eta>)"
 proof -
@@ -839,7 +839,6 @@ proof -
     using assms by (simp add: x_def x_of_def)
   then have x: "x \<in> I"
     by (simp add: x_of_def I_def)
-
   have D: "((\<lambda>x. f1 x (y_of x)) has_real_derivative D x) (at x)" if "x \<in> I" for x
     using that Df1_y by (force simp: D_def I_def)
   have Dgt0: "D x \<ge> 0" if "x \<in> I" for x
@@ -871,8 +870,7 @@ begin
 
 text \<open>The truly horrible Lemma 12.3\<close>
 lemma 123:
-  fixes \<delta>::real
-  assumes "0 < \<delta>" "\<delta> \<le> 1 / 2^11"
+  assumes "\<delta> \<le> 1 / 2^11"
   shows "(SUP x \<in> {0..1}. SUP y \<in> {0..3/4}. ffGG (2/5) x y) \<le> 2-\<delta>"
 proof -
   have "min (ff x y) (gg x y) \<le> 2 - 1/2^11" if "x \<in> {0..1}" "y \<in> {0..3/4}" for x y

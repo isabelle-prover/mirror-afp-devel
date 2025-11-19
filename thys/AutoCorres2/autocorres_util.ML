@@ -224,7 +224,7 @@ fun dyn_call_split_simp_sidecondition_tac check simps intros ctxt = SUBGOAL (fn 
       val _ = Utils.verbose_msg 4 ctxt (fn _ => "dyn_call_split_simp_sidecondition_tac: fun_ptr_simps:" ^ string_of_thms ctxt fun_ptr_simps)
   
       val ctxt = ctxt addsimps (fun_ptr_simps @ simps) delsimps @{thms map_of_default.simps}
-                 |> Config.get ctxt Utils.verbose >= 100 ? Config.map (Raw_Simplifier.simp_trace) (K true)
+                 |> Config.get ctxt Utils.verbose >= 100 ? Config.map (Simplifier.simp_trace) (K true)
 
       val bound_rules = @{thms 
            signed_bounds_to_nat_boundsF signed_bounds_one_to_nat
@@ -267,7 +267,7 @@ val measureT = @{typ nat};
 fun split_Ball_attr phase = Thm.declaration_attribute (fn thm => fn context =>
   let
     val ctxt = Context.proof_of context
-    val derived_thms = thm |> Conv.fconv_rule (Simplifier.rewrite ctxt) |> HOLogic.conj_elims ctxt
+    val derived_thms = thm |> Conv.fconv_rule (Simplifier.rewrite ctxt) |> HOLogic.conj_elims
 
   in
     context |> fold (Named_Theorems.add_thm (AutoCorresData.corres_named_thms phase)) derived_thms
@@ -562,6 +562,7 @@ fun define_funcs_single_recursive_group
     val fn_def_thms = fn_def_thms |> map (safe_mk_meta_eq) 
     val induct_thms = map (FunctionInfo.get_induct_thms o the o (AutoCorresData.get_function_info (Context.Proof lthy) filename phase)) fn_names
         |> hd
+
     (*
      * Instantiate schematic function calls in our theorems with their
      * concrete definitions.

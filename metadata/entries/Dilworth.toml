@@ -1,0 +1,48 @@
+title = "Formal Proof of Dilworth's Theorem"
+date = 2025-03-25
+topics = [
+  "Mathematics/Order",
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>A <em>chain</em> is defined as a totally ordered subset of a partially ordered set. A <em>chain cover</em> refers to a collection of chains of a partially ordered set whose union equals the entire set. A <em>chain decomposition</em> is a chain cover consisting of pairwise disjoint sets. An <em>antichain</em> is a subset of elements of a partially ordered set in which no two elements are comparable.</p>
+
+    <p>In 1950, Dilworth <a href=\"https://link.springer.com/article/10.1007/BF02759805\">proved</a> that in any finite partially ordered set, the cardinality of a largest antichain equals the cardinality of a smallest chain decomposition.</p>
+
+    <p>In this paper, we formalise a proof of the theorem above, also known as <em>Dilworth's theorem</em>, based on a <a href=\"https://arxiv.org/abs/1703.06133\">proof</a> by Perles (1963). We draw on the <a href=\"https://arxiv.org/abs/1703.06133\">formalisation of Dilworth's theorem</a> in Coq by Abhishek Kr. Singh, and depend on the  <a href=\"https://www.isa-afp.org/entries/Min_Max_Least_Greatest.html\"> AFP entry</a> containing formalisation of minimal and maximal elements in a set by Martin Desharnais .</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.maadoori]
+email = "maadoori_email"
+
+[authors.meesum]
+email = "meesum_email"
+
+[authors.pillai]
+email = "pillai_email"
+
+[authors.prathamesht]
+email = "prathamesht_email"
+
+[authors.swami]
+email = "swami_email"
+
+[contributors]
+
+[notify]
+maadoori = "maadoori_email"
+meesum = "meesum_email"
+pillai = "pillai_email"
+prathamesht = "prathamesht_email"
+swami = "swami_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

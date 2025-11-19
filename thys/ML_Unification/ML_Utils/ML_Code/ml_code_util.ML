@@ -19,11 +19,15 @@ sig
   val flat_read : string list -> code
   val reads : string list -> code
 
+  val newline : code
+  val newlines : code list -> code
+  val comma : code
   val commas : code list -> code
 
   val enclose : code -> code -> code -> code
   val atomic : code -> code
   val tuple : code list -> code
+  val option : code option -> code
   val list : code list -> code
   val record : code -> (code * code) list -> code
 
@@ -43,11 +47,17 @@ val flat = flat
 val read = ML_Lex.read
 val flat_read = String.concat #> read
 val reads = map read #> flat
-val commas = separate (read ",") #> flat
+
+val newline = (read "\n")
+val newlines = separate newline #> flat
+val comma = (read ",")
+val commas = separate comma #> flat
 
 fun enclose start close code = flat [start, code, close]
 val atomic = enclose (read "(") (read ")")
 val tuple = commas #> enclose (read "(") (read ")")
+fun option NONE = read "NONE"
+  | option (SOME c) = read "SOME" @ c
 val list = commas #> enclose (read "[") (read "]")
 fun record delim = map (fn (v, t) => v @ delim @ t)
   #> commas #> enclose (read "{") (read "}")

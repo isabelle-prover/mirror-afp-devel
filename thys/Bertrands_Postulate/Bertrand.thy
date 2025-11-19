@@ -9,7 +9,7 @@ theory Bertrand
   imports 
     Complex_Main
     "HOL-Number_Theory.Number_Theory"
-    "HOL-Library.Discrete"
+    "HOL-Library.Discrete_Functions"
     "HOL-Decision_Procs.Approximation_Bounds"
     "HOL-Library.Code_Target_Numeral"
     Pratt_Certificate.Pratt_Certificate
@@ -1111,7 +1111,7 @@ lemma primepow_iff_even_sqr:
                  prime_elem_multiplicity_power_distrib prime_aprimedivisor' prime_imp_prime_elem
                  unit_factor_nat_def primepow_gt_0_nat dest: primepow_gt_Suc_0)
 
-lemma psi_sqrt: "psi (Discrete.sqrt n) = psi_even n"
+lemma psi_sqrt: "psi (floor_sqrt n) = psi_even n"
 proof (induction n)
   case 0
   with psi_def psi_even_def show ?case by simp
@@ -1120,45 +1120,45 @@ next
   then show ?case
     proof cases
       assume asm: "\<exists> m. Suc n = m^2"
-      with sqrt_Suc have sqrt_seq: "Discrete.sqrt(Suc n) = Suc(Discrete.sqrt n)"
+      with floor_sqrt_Suc have sqrt_seq: "floor_sqrt(Suc n) = Suc(floor_sqrt n)"
         by simp
       from asm obtain "m" where "   Suc n = m^2"
         by blast
-      with sqrt_seq have "Suc(Discrete.sqrt n) = m"
+      with sqrt_seq have "Suc(floor_sqrt n) = m"
         by simp
-      with \<open>Suc n = m^2\<close> have suc_sqrt_n_sqrt: "(Suc(Discrete.sqrt n))^2 = Suc n"
+      with \<open>Suc n = m^2\<close> have suc_sqrt_n_sqrt: "(Suc(floor_sqrt n))^2 = Suc n"
         by simp
-      from sqrt_seq have "psi (Discrete.sqrt (Suc n)) = psi (Suc (Discrete.sqrt n))"
+      from sqrt_seq have "psi (floor_sqrt (Suc n)) = psi (Suc (floor_sqrt n))"
         by simp
-      also from psi_def have "\<dots> = psi (Discrete.sqrt n) + mangoldt (Suc (Discrete.sqrt n))"
+      also from psi_def have "\<dots> = psi (floor_sqrt n) + mangoldt (Suc (floor_sqrt n))"
         by simp
-      also from Suc.IH have "psi (Discrete.sqrt n) = psi_even n" .
-      also have "mangoldt (Suc (Discrete.sqrt n)) = mangoldt_even (Suc n)"
-      proof (cases "primepow (Suc(Discrete.sqrt n))")
+      also from Suc.IH have "psi (floor_sqrt n) = psi_even n" .
+      also have "mangoldt (Suc (floor_sqrt n)) = mangoldt_even (Suc n)"
+      proof (cases "primepow (Suc(floor_sqrt n))")
         case True
-        with primepow_iff_even_sqr have True2: "primepow_even ((Suc(Discrete.sqrt n))^2)"
+        with primepow_iff_even_sqr have True2: "primepow_even ((Suc(floor_sqrt n))^2)"
           by simp
-        from suc_sqrt_n_sqrt have "mangoldt_even (Suc n) = mangoldt_even ((Suc(Discrete.sqrt n))^2)"
+        from suc_sqrt_n_sqrt have "mangoldt_even (Suc n) = mangoldt_even ((Suc(floor_sqrt n))^2)"
           by simp
         also from mangoldt_even_def True2
-          have "\<dots> = ln (aprimedivisor ((Suc (Discrete.sqrt n))^2))"
+          have "\<dots> = ln (aprimedivisor ((Suc (floor_sqrt n))^2))"
           by simp
-        also from True have "aprimedivisor ((Suc (Discrete.sqrt n))^2) = aprimedivisor (Suc (Discrete.sqrt n))"
+        also from True have "aprimedivisor ((Suc (floor_sqrt n))^2) = aprimedivisor (Suc (floor_sqrt n))"
           by (simp add: aprimedivisor_primepow_power)
-        also from True have "ln (\<dots>) = mangoldt (Suc (Discrete.sqrt n))"
+        also from True have "ln (\<dots>) = mangoldt (Suc (floor_sqrt n))"
           by (simp add: mangoldt_def)
         finally show ?thesis ..
       next
         case False
         with primepow_iff_even_sqr
-          have False2: "\<not> primepow_even ((Suc(Discrete.sqrt n))^2)"
+          have False2: "\<not> primepow_even ((Suc(floor_sqrt n))^2)"
           by simp
-        from suc_sqrt_n_sqrt have "mangoldt_even (Suc n) = mangoldt_even ((Suc(Discrete.sqrt n))^2)"
+        from suc_sqrt_n_sqrt have "mangoldt_even (Suc n) = mangoldt_even ((Suc(floor_sqrt n))^2)"
           by simp
         also from mangoldt_even_def False2
           have "\<dots> = 0"
           by simp
-        also from False have "\<dots> = mangoldt (Suc (Discrete.sqrt n))"
+        also from False have "\<dots> = mangoldt (Suc (floor_sqrt n))"
           by (simp add: mangoldt_def)
         finally show ?thesis ..
       qed  
@@ -1167,9 +1167,9 @@ next
       finally show ?case .
     next
       assume asm: "\<not>(\<exists>m. Suc n = m^2)"
-      with sqrt_Suc have sqrt_eq: "Discrete.sqrt (Suc n) = Discrete.sqrt n"
+      with floor_sqrt_Suc have sqrt_eq: "floor_sqrt (Suc n) = floor_sqrt n"
         by simp
-      then have lhs: "psi (Discrete.sqrt (Suc n)) = psi (Discrete.sqrt n)"
+      then have lhs: "psi (floor_sqrt (Suc n)) = psi (floor_sqrt n)"
         by simp
       have "\<not> primepow_even (Suc n)"
         proof
@@ -1225,7 +1225,7 @@ lemma psi_odd_pos: "0 \<le> psi_odd n"
   by (auto simp: psi_odd_def intro!: sum_nonneg mangoldt_odd_pos)
 
 lemma psi_theta:
-  "theta n + psi (Discrete.sqrt n) \<le> psi n" "psi n \<le> theta n + 2 * psi (Discrete.sqrt n)"
+  "theta n + psi (floor_sqrt n) \<le> psi n" "psi n \<le> theta n + 2 * psi (floor_sqrt n)"
   using psi_odd_pos[of n] psi_residues_compare[of n] psi_sqrt[of n] psi_split[of n]
   by simp_all
 
@@ -1496,18 +1496,18 @@ lemma theta_double_lemma:
   assumes "n \<ge> 1200"
   shows "theta (n div 2) < theta n"
 proof -
-  from psi_theta[of "n div 2"] psi_pos[of "Discrete.sqrt (n div 2)"]
+  from psi_theta[of "n div 2"] psi_pos[of "floor_sqrt (n div 2)"]
     have theta_le_psi_n_2: "theta (n div 2) \<le> psi (n div 2)"
     by simp
-  have "(Discrete.sqrt n * 18)^2 \<le> 324 * n"
+  have "(floor_sqrt n * 18)^2 \<le> 324 * n"
     by simp
   from mult_less_cancel2[of "324" "n" "n"] assms have "324 * n < n^2"
     by (simp add: power2_eq_square)
-  with \<open>(Discrete.sqrt n * 18)^2 \<le> 324 * n\<close> have "(Discrete.sqrt n*18)^2 < n^2"
+  with \<open>(floor_sqrt n * 18)^2 \<le> 324 * n\<close> have "(floor_sqrt n*18)^2 < n^2"
     by presburger
-  with power2_less_imp_less assms have "Discrete.sqrt n * 18 < n"
+  with power2_less_imp_less assms have "floor_sqrt n * 18 < n"
     by blast
-  with psi_ubound_3_2[of "Discrete.sqrt n"] have "2 * psi (Discrete.sqrt n) < n / 6"
+  with psi_ubound_3_2[of "floor_sqrt n"] have "2 * psi (floor_sqrt n) < n / 6"
     by simp
   with psi_theta[of "n"] have psi_lt_theta_n: "psi n - n / 6 < theta n"
     by simp

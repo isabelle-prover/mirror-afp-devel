@@ -17,9 +17,13 @@ definition
   validE :: "('s \<Rightarrow> bool) \<Rightarrow> ('e, 'a, 's) exn_monad \<Rightarrow>
              ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow>
              ('e \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool"
-(\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
-where
-  "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,\<lbrace>E\<rbrace> \<equiv> \<forall>s. P s \<longrightarrow> f \<bullet> s ?\<lbrace> \<lambda>v s. case v of Result r \<Rightarrow> Q r s | Exn e \<Rightarrow> E e s \<rbrace>"
+
+  where "validE P f Q E \<equiv> \<forall>s. P s \<longrightarrow> f \<bullet> s ?\<lbrace> \<lambda>v s. case v of Result r \<Rightarrow> Q r s | Exn e \<Rightarrow> E e s \<rbrace>"
+
+open_bundle validE_syntax
+begin
+notation validE (\<open>(\<open>open_block notation=\<open>mixfix L1 Hoare triple\<close>\<close>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>))\<close>)
+end
 
 lemma hoareE_TrueI: "\<lbrace>P\<rbrace> f \<lbrace>\<lambda>_ _. True\<rbrace>, \<lbrace>\<lambda>r _. True\<rbrace>"
   by (simp add: validE_def runs_to_partial_def_old split: xval_splits)

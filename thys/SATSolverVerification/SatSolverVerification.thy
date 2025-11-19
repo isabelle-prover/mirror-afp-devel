@@ -2316,7 +2316,7 @@ next
           by auto
         from \<open>k = (a, b)\<close> \<open>x # l' = a @ b\<close> 
         show "k \<in> ?S' x l'"
-          using SimpleLevi[of "a" "b" "x" "l'"]
+          using append_eq_Cons_conv[of "a" "b" "x" "l'"]
           by auto
       qed
     next
@@ -2945,7 +2945,7 @@ proof-
   have "(?Y, ?X) \<in> (mult1 ?ord)"
   proof-
     let ?Z = "mset (remdups (oppositeLiteralList (removeAll (opposite l) C)))"
-    let ?W = "mset (remdups (oppositeLiteralList (removeAll l (list_diff reason C))))"
+    let ?W = "mset (remdups (oppositeLiteralList (removeAll l (minus_list_set reason C))))"
     let ?a = "l"
     from \<open>(opposite l) el C\<close>
     have "?X = ?Z + {#?a#}"
@@ -2956,15 +2956,15 @@ proof-
     moreover
     have "?Y = ?Z + ?W" 
     proof-
-      have "list_diff (oppositeLiteralList (removeAll l reason)) (oppositeLiteralList (removeAll (opposite l) C)) = 
-        oppositeLiteralList (removeAll l (list_diff reason C))"
+      have "minus_list_set (oppositeLiteralList (removeAll l reason)) (oppositeLiteralList (removeAll (opposite l) C)) = 
+        oppositeLiteralList (removeAll l (minus_list_set reason C))"
       proof-
         from \<open>isReason reason l (elements M)\<close>
         have "opposite l \<notin> set (removeAll l reason)"
           unfolding isReason_def
           by auto
         
-        hence "list_diff (removeAll l reason) (removeAll (opposite l) C) = list_diff (removeAll l reason) C"
+        hence "minus_list_set (removeAll l reason) (removeAll (opposite l) C) = minus_list_set (removeAll l reason) C"
           using listDiffRemoveAllNonMember[of "opposite l" "removeAll l reason" "C"]
           by simp
         thus ?thesis
@@ -2987,12 +2987,12 @@ proof-
         hence "opposite b \<in> set (removeAll l reason)"
         proof-
           from \<open>b \<in># ?W\<close> 
-          have "b el remdups (oppositeLiteralList (removeAll l (list_diff reason C)))"
+          have "b el remdups (oppositeLiteralList (removeAll l (minus_list_set reason C)))"
             by simp
-          hence "opposite b el removeAll l (list_diff reason C)"
-            using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite b" "removeAll l (list_diff reason C)"]
+          hence "opposite b el removeAll l (minus_list_set reason C)"
+            using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite b" "removeAll l (minus_list_set reason C)"]
             by auto
-          hence "opposite b el list_diff (removeAll l reason) C"
+          hence "opposite b el minus_list_set (removeAll l reason) C"
             by simp
           thus ?thesis
             using listDiffIff[of "opposite b" "removeAll l reason" "C"]
@@ -3030,7 +3030,7 @@ lemma multLessListDiff:
 assumes 
   "(a, b) \<in> multLess M"
 shows
-  "(list_diff a x, b) \<in> multLess M"
+  "(minus_list_set a x, b) \<in> multLess M"
 proof-
   let ?pOrd = "precedesOrder (elements M)"
   let ?f = "\<lambda> l. remdups (map opposite l)"
@@ -3044,14 +3044,14 @@ proof-
     unfolding oppositeLiteralList_def
     by simp
   moreover
-  have "multiset_le (mset (list_diff (?f a) (?f x)))
+  have "multiset_le (mset (minus_list_set (?f a) (?f x)))
                     (mset (?f a))
                     ?pOrd"
     using \<open>trans ?pOrd\<close>
     using multisetLeListDiff[of "?pOrd" "?f a" "?f x"]
     by simp
   ultimately
-  have "(mset (list_diff (?f a) (?f x)), mset (?f b)) \<in> mult ?pOrd"
+  have "(mset (minus_list_set (?f a) (?f x)), mset (?f b)) \<in> mult ?pOrd"
     unfolding multiset_le_def
     unfolding mult_def
     by auto

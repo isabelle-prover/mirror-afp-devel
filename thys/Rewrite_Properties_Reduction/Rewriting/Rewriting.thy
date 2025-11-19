@@ -1,22 +1,19 @@
 section \<open>Rewriting\<close>
 theory Rewriting
-  imports Terms_Positions
+  imports 
+    Terms_Positions
+    First_Order_Rewriting.Trs
 begin
 
+declare rstep_converse[simp del]
+
 subsection \<open>Basic rewrite definitions\<close>
-
-subsubsection \<open>Rewrite steps with implicit signature declaration (encoded in the type)\<close>
-
-inductive_set rrstep :: "('f, 'v) term rel \<Rightarrow> ('f, 'v) term rel" for \<R> where
-  [intro]: "(l, r) \<in> \<R> \<Longrightarrow> (l \<cdot> \<sigma>, r \<cdot> \<sigma>) \<in> rrstep \<R>"
-
-inductive_set rstep :: "('f, 'v) term rel \<Rightarrow> ('f, 'v) term rel" for \<R> where
-  "(s, t) \<in> rrstep \<R> \<Longrightarrow> (C\<langle>s\<rangle>, C\<langle>t\<rangle>) \<in> rstep \<R>"
 
 
 subsubsection \<open>Restrict relations to terms induced by a given signature\<close>
 
-definition "sig_step \<F> \<R> = Restr \<R> (Collect (\<lambda> s. funas_term s \<subseteq> \<F>))"
+lemma sig_step_def': "sig_step \<F> \<R> = Restr \<R> (Collect (\<lambda> s. funas_term s \<subseteq> \<F>))"
+  unfolding sig_step_def by auto
 
 subsubsection \<open>Rewriting under a given signature/restricted to ground terms\<close>
 
@@ -27,8 +24,6 @@ abbreviation "gsrstep \<F> \<R> \<equiv> Restr (sig_step \<F> (rstep \<R>)) (Col
 
 subsubsection \<open>Rewriting sequences involving a root step\<close>
 
-abbreviation (input) relto :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
-  "relto R S \<equiv> S^* O R O S^*"
 definition "srsteps_with_root_step \<F> \<R> \<equiv> relto (sig_step \<F> (rrstep \<R>)) (srstep \<F> \<R>)"
 
 
@@ -40,7 +35,7 @@ lemma Restr_trancl_mono_set: "(Restr r A)\<^sup>+ \<subseteq> A \<times> A"
   by (simp add: trancl_subset_Sigma)
 
 lemma rrstep_rstep_mono: "rrstep \<R> \<subseteq> rstep \<R>"
-  by (auto intro: rstep.intros[where ?C = \<box>, simplified])
+  by (simp add: rrstep_imp_rstep subrelI)
 
 lemma sig_step_mono:
   "\<F> \<subseteq> \<G> \<Longrightarrow> sig_step \<F> \<R> \<subseteq> sig_step \<G> \<R>"
@@ -74,25 +69,7 @@ lemma srsteps_with_root_step_sig_mono:
 
 subsection \<open>Introduction, elimination, and destruction rules for @{const sig_step}, @{const rstep}, @{const rrstep},
    @{const srrstep}, and @{const srstep}\<close>
-
-lemma sig_stepE [elim, consumes 1]:
-  "(s, t) \<in> sig_step \<F> \<R> \<Longrightarrow> \<lbrakk>(s, t) \<in> \<R> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (auto simp: sig_step_def)
-
-lemma sig_stepI [intro]:
-  "funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> \<R> \<Longrightarrow> (s, t) \<in> sig_step \<F> \<R>"
-  by (auto simp: sig_step_def)
-
-lemma rrstep_subst [elim, consumes 1]:
-  assumes "(s, t) \<in> rrstep \<R>"
-  obtains l r \<sigma> where "(l, r) \<in> \<R>" "s = l \<cdot> \<sigma>" "t = r \<cdot> \<sigma>" using assms
-  by (meson rrstep.simps)
   
-lemma rstep_imp_C_s_r:
-  assumes "(s, t) \<in> rstep \<R>"
-  shows "\<exists>C \<sigma> l r. (l,r) \<in> \<R> \<and> s = C\<langle>l\<cdot>\<sigma>\<rangle> \<and> t = C\<langle>r\<cdot>\<sigma>\<rangle>"using assms
-  by (metis rrstep.cases rstep.simps)
-
   
 lemma rstep_imp_C_s_r' [elim, consumes 1]:
   assumes "(s, t) \<in> rstep \<R>"
@@ -101,23 +78,8 @@ lemma rstep_imp_C_s_r' [elim, consumes 1]:
 
 lemma rrstep_basicI [intro]:
   "(l, r) \<in> \<R> \<Longrightarrow> (l, r) \<in> rrstep \<R>"
-  by (metis rrstepp.intros rrstepp_rrstep_eq subst_apply_term_empty)
+  using rules_subset_rrstep by blast
 
-lemma rstep_ruleI [intro]:
-  "(l, r) \<in> \<R> \<Longrightarrow> (l, r) \<in> rstep \<R>"
-  using rrstep_rstep_mono by blast
-
-lemma rstepI [intro]:
-  "(l, r) \<in> \<R> \<Longrightarrow> s = C\<langle>l \<cdot> \<sigma>\<rangle> \<Longrightarrow> t = C\<langle>r \<cdot> \<sigma>\<rangle> \<Longrightarrow> (s, t) \<in> rstep \<R>"
-  by (simp add: rrstep.intros rstep.intros)
-
-lemma rstep_substI [intro]:
-  "(s, t) \<in> rstep \<R> \<Longrightarrow> (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> rstep \<R>"
-  by (auto elim!: rstep_imp_C_s_r' simp flip: subst_subst_compose)
-
-lemma rstep_ctxtI [intro]:
-  "(s, t) \<in> rstep \<R> \<Longrightarrow> (C\<langle>s\<rangle>, C\<langle>t\<rangle>) \<in> rstep \<R>"
-  by (auto elim!: rstep_imp_C_s_r' simp flip: ctxt_ctxt_compose)
 
 lemma srrstepD:
   "(s, t) \<in> srrstep \<F> \<R> \<Longrightarrow> (s, t) \<in> rrstep \<R> \<and> funas_term s \<subseteq> \<F> \<and> funas_term t \<subseteq> \<F>"
@@ -129,18 +91,18 @@ lemma srstepD:
 
 lemma srstepsD:
   "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+ \<Longrightarrow> (s, t) \<in> (rstep \<R>)\<^sup>+ \<and> funas_term s \<subseteq> \<F> \<and> funas_term t \<subseteq> \<F>"
-  unfolding sig_step_def using trancl_mono_set[OF Restr_mono] 
+  unfolding sig_step_def' using trancl_mono_set[OF Restr_mono] 
   by (auto simp: sig_step_def dest: subsetD[OF Restr_trancl_mono_set])
 
 
 subsubsection \<open>Transitive and relfexive closure distribution over @{const sig_step}\<close>
 
-lemma funas_rel_converse:
-  "funas_rel \<R> \<subseteq> \<F> \<Longrightarrow> funas_rel (\<R>\<inverse>) \<subseteq> \<F>" unfolding funas_rel_def
+lemma funas_trs_converse:
+  "funas_trs \<R> \<subseteq> \<F> \<Longrightarrow> funas_trs (\<R>\<inverse>) \<subseteq> \<F>" unfolding funas_rel_def
   by auto
 
 lemma rstep_term_to_sig_r:
-  assumes "(s, t) \<in> rstep \<R>" and "funas_rel \<R> \<subseteq> \<F>" and "funas_term s \<subseteq> \<F>"
+  assumes "(s, t) \<in> rstep \<R>" and "funas_trs \<R> \<subseteq> \<F>" and "funas_term s \<subseteq> \<F>"
   shows "(s, term_to_sig \<F> v t) \<in> rstep \<R>"
 proof -
   from assms(1) obtain C l r \<sigma> where
@@ -153,7 +115,7 @@ proof -
 qed
 
 lemma rstep_term_to_sig_l:
-  assumes "(s, t) \<in> rstep \<R>" and "funas_rel \<R> \<subseteq> \<F>" and "funas_term t \<subseteq> \<F>"
+  assumes "(s, t) \<in> rstep \<R>" and "funas_trs \<R> \<subseteq> \<F>" and "funas_term t \<subseteq> \<F>"
   shows "(term_to_sig \<F> v s, t) \<in> rstep \<R>"
 proof -
   from assms(1) obtain C l r \<sigma> where
@@ -166,7 +128,7 @@ proof -
 qed
 
 lemma rstep_trancl_sig_step_r:
-  assumes "(s, t) \<in> (rstep \<R>)\<^sup>+" and "funas_rel \<R> \<subseteq> \<F>" and "funas_term s \<subseteq> \<F>"
+  assumes "(s, t) \<in> (rstep \<R>)\<^sup>+" and "funas_trs \<R> \<subseteq> \<F>" and "funas_term s \<subseteq> \<F>"
   shows "(s, term_to_sig \<F> v t) \<in> (srstep \<F> \<R>)\<^sup>+" using assms
 proof (induct)
   case (base t)
@@ -195,7 +157,7 @@ next
 qed
 
 lemma rstep_trancl_sig_step_l:
-  assumes "(s, t) \<in> (rstep \<R>)\<^sup>+" and "funas_rel \<R> \<subseteq> \<F>" and "funas_term t \<subseteq> \<F>"
+  assumes "(s, t) \<in> (rstep \<R>)\<^sup>+" and "funas_trs \<R> \<subseteq> \<F>" and "funas_term t \<subseteq> \<F>"
   shows "(term_to_sig \<F> v s, t) \<in> (srstep \<F> \<R>)\<^sup>+" using assms
 proof (induct rule: converse_trancl_induct)
   case (base t)
@@ -224,21 +186,21 @@ next
 qed
 
 lemma rstep_srstepI [intro]:
-  "funas_rel \<R> \<subseteq> \<F> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> rstep \<R> \<Longrightarrow> (s, t) \<in> srstep \<F> \<R>"
+  "funas_trs \<R> \<subseteq> \<F> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> rstep \<R> \<Longrightarrow> (s, t) \<in> srstep \<F> \<R>"
   by blast
 
 lemma rsteps_srstepsI [intro]:
-  "funas_rel \<R> \<subseteq> \<F> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> (rstep \<R>)\<^sup>+ \<Longrightarrow> (s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
+  "funas_trs \<R> \<subseteq> \<F> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> (rstep \<R>)\<^sup>+ \<Longrightarrow> (s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
   using rstep_trancl_sig_step_r[of s t \<R> \<F>]
   by auto
 
 
 lemma rsteps_eq_srsteps_eqI [intro]:
-  "funas_rel \<R> \<subseteq> \<F> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> (rstep \<R>)\<^sup>* \<Longrightarrow> (s, t) \<in> (srstep \<F> \<R>)\<^sup>*"
+  "funas_trs \<R> \<subseteq> \<F> \<Longrightarrow> funas_term s \<subseteq> \<F> \<Longrightarrow> funas_term t \<subseteq> \<F> \<Longrightarrow> (s, t) \<in> (rstep \<R>)\<^sup>* \<Longrightarrow> (s, t) \<in> (srstep \<F> \<R>)\<^sup>*"
   by (auto simp add: rtrancl_eq_or_trancl)
 
 lemma rsteps_eq_relcomp_srsteps_eq_relcompI [intro]:
-  assumes "funas_rel \<R> \<subseteq> \<F>" "funas_rel \<S> \<subseteq> \<F>"
+  assumes "funas_trs \<R> \<subseteq> \<F>" "funas_trs \<S> \<subseteq> \<F>"
     and funas: "funas_term s \<subseteq> \<F>" "funas_term t \<subseteq> \<F>"
     and steps: "(s, t) \<in> (rstep \<R>)\<^sup>* O (rstep \<S>)\<^sup>*"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>* O (srstep \<F> \<S>)\<^sup>*"
@@ -277,9 +239,16 @@ lemma rstep_converse_dist:
   "(rstep \<R>)\<inverse> = rstep (\<R>\<inverse>)"
   by auto
 
+lemma rrstep_converse_dist:
+  "(rrstep \<R>)\<inverse> = rrstep (\<R>\<inverse>)"
+  by (auto elim: rrstepE)
+
+lemma Restr_converse: "(Restr \<R> A)\<inverse> = Restr (\<R>\<inverse>) A"
+  by auto
+
 lemma srrstep_converse_dist:
   "(srrstep \<F> \<R>)\<inverse> = srrstep \<F> (\<R>\<inverse>)"
-  by (fastforce simp: sig_step_def)
+  unfolding sig_step_def' Restr_converse rrstep_converse_dist by simp
 
 lemma sig_step_converse_rstep:
   "(srstep \<F> \<R>)\<inverse> = sig_step \<F> ((rstep \<R>)\<inverse>)"
@@ -289,19 +258,16 @@ lemma srstep_converse_dist:
   "(srstep \<F> \<R>)\<inverse> = srstep \<F> (\<R>\<inverse>)"
   by (auto simp: sig_step_def)
 
-lemma Restr_converse: "(Restr \<R> A)\<inverse> = Restr (\<R>\<inverse>) A"
-  by auto
-
 lemmas rew_converse_inwards = rstep_converse_dist srrstep_converse_dist sig_step_converse_rstep
    srstep_converse_dist Restr_converse trancl_converse[symmetric] rtrancl_converse[symmetric]
 lemmas rew_converse_outwards = rew_converse_inwards[symmetric]
 
 lemma sig_step_rsteps_dist:
-  "funas_rel \<R> \<subseteq> \<F> \<Longrightarrow> sig_step \<F> ((rstep \<R>)\<^sup>+) = (srstep \<F> \<R>)\<^sup>+"
+  "funas_trs \<R> \<subseteq> \<F> \<Longrightarrow> sig_step \<F> ((rstep \<R>)\<^sup>+) = (srstep \<F> \<R>)\<^sup>+"
   by (auto elim!: sig_stepE dest: srstepsD)
 
 lemma sig_step_rsteps_eq_dist:
-  "funas_rel \<R> \<subseteq> \<F> \<Longrightarrow> sig_step \<F> ((rstep \<R>)\<^sup>+) \<union> Id = (srstep \<F> \<R>)\<^sup>*"
+  "funas_trs \<R> \<subseteq> \<F> \<Longrightarrow> sig_step \<F> ((rstep \<R>)\<^sup>+) \<union> Id = (srstep \<F> \<R>)\<^sup>*"
   by (auto simp: rtrancl_eq_or_trancl sig_step_rsteps_dist)
 
 lemma sig_step_conversion_dist:
@@ -374,8 +340,7 @@ lemma srsteps_eq_ctxt_closed:
 lemma sig_steps_join_ctxt_closed:
   assumes "funas_ctxt C \<subseteq> \<F>" and "(s, t) \<in> (srstep \<F> \<R>)\<^sup>\<down>"
   shows "(C\<langle>s\<rangle>, C\<langle>t\<rangle>) \<in> (srstep \<F> \<R>)\<^sup>\<down>" using srsteps_eq_ctxt_closed[OF assms(1)] assms(2)
-  unfolding join_def rew_converse_inwards
-  by auto
+  unfolding join_def rew_converse_inwards by blast
                                  
 
 text \<open>The following lemma shows that every rewrite sequence either contains a root step or is root stable\<close>
@@ -444,7 +409,7 @@ lemma pos_replace_to_rstep:
     and "s |_ p = l \<cdot> \<sigma>" "t = s[p \<leftarrow> r \<cdot> \<sigma>]"
   shows "(s, t) \<in> rstep \<R>"
   using assms(1, 3-) replace_term_at_subt_at_id [of s p]
-  by (intro rstepI[OF assms(2), of s "ctxt_at_pos s p" \<sigma>])
+  by (intro rstepI[OF assms(2), of s "ctxt_of_pos_term p s" \<sigma>])
      (auto simp add: ctxt_of_pos_term_apply_replace_at_ident)
 
 end

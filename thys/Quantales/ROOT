@@ -2,14 +2,11 @@ chapter AFP
 
 session "Quantales" = "Order_Lattice_Props" +
   options [timeout = 600]
-
   sessions
     Kleene_Algebra
     Order_Lattice_Props
-
   theories [document = false]
     Dioid_Models_New
-
   theories
     Quantales
     Quantale_Star
@@ -17,7 +14,6 @@ session "Quantales" = "Order_Lattice_Props" +
     Quantale_Models
     Quantic_Nuclei_Conuclei
     Quantale_Left_Sided
-
   document_files
     "root.tex"
     "root.bib"

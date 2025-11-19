@@ -1,0 +1,109 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+\usepackage{latexsym}
+\usepackage{wasysym}
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Notes on Gödel's and Scott's Variants of the Ontological
+  Argument (Isabelle/HOL dataset)}
+\author{Christoph Benzm{\"u}ller and Dana S. Scott}
+\maketitle
+
+\begin{abstract}
+Experimental studies with Isabelle/HOL on Kurt G\"odel's modal
+ontological argument and Dana Scott's variant of it are presented.
+They implicitly answer some questions that the authors have received
+over the last decade(s). In addition, some new results are reported.
+
+Our contribution is explained in full detail in \cite{J75}.  This document
+presents the corresponding Isabelle/HOL dataset (which is only slightly modified
+to meet AFP requirements).
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+
+\section{Introduction}
+The Isabelle/HOL dataset associated with 
+\cite{J75} is presented. Compared to previous work on G\"odel's modal
+ontological argument as published in the Archive of Formal
+Proofs (AFP) \cite{SimplifiedOntologicalArgument-AFP,Types_Tableaus_and_Goedels_God-AFP,GoedelGod-AFP},
+our dataset addresses several relevant and in some cases
+novel aspects, which are combined here in a single publication,
+including:
+\begin{enumerate}
+  \item For the first time, G\"odel's original manuscript
+    \cite{GoedelNotes} has been formalized as closely as possible.
+   \item The inconsistency of the postulates in G\"odel's original manuscript is explained in detail.
+   \item Two different ways of eliminating this inconsistency are presented, one of which is novel.
+   \item Scott's variant \cite{ScottNotes} of G\"odel's original
+     manuscript is presented and compared with G\"odel's original
+     variant.
+  \item In addition to logics S5 and K, the above
+    variants are also studied for logic S4.
+  \item The above variants are tested for various combinations of
+    of possibilist and actualist quantifiers for individuals (which has not been done systematically in previous publications).
+  \item Concepts of evil are examined and the derivability of evil is critically questioned.
+\end{enumerate}  
+The purpose of this AFP publication is essentially twofold. One
+motivation is to make the data sources associated with \cite{J75}
+available in a sustainable, well-maintained way. The other motivation is to support
+university education in higher-order modal logic by 
+providing a small dataset for reuse that illustrates a systematically explored
+philosophical argument, emphasizing in particular 
+different notions of quantification.
+
+Compared to \cite{J75}, the Isabelle sources presented here have been slightly modified to meet some AFP requirements. This concerns the commenting out of calls to sledghemmer (to reduce computational resources) and 
+some minor reformatting (e.g. insertion of new lines). The formalization code itself remains unchanged.
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

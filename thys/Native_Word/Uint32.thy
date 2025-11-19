@@ -4,9 +4,10 @@
 
 chapter \<open>Unsigned words of 32 bits\<close>
 
-theory Uint32 imports
-  Word_Type_Copies
-  Code_Target_Integer_Bit
+theory Uint32
+  imports
+    Uint_Common
+    Code_Target_Word
 begin
 
 section \<open>Type definition and primitive operations\<close>
@@ -22,7 +23,7 @@ declare uint32.of_word_of [code abstype]
 
 declare Quotient_uint32 [transfer_rule]
 
-instantiation uint32 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
+instantiation uint32 :: \<open>{comm_ring_1, semiring_modulo, equal, linorder, order_bot, order_top}\<close>
 begin
 
 lift_definition zero_uint32 :: uint32 is 0 .
@@ -36,12 +37,15 @@ lift_definition modulo_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow
 lift_definition equal_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
 lift_definition less_eq_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
 lift_definition less_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> bool\<close> is \<open>(<)\<close> .
+lift_definition bot_uint32 :: uint32 is bot .
+lift_definition top_uint32 :: uint32 is top .
 
 global_interpretation uint32: word_type_copy_ring Abs_uint32 Rep_uint32
   by standard (fact zero_uint32.rep_eq one_uint32.rep_eq
     plus_uint32.rep_eq uminus_uint32.rep_eq minus_uint32.rep_eq
     times_uint32.rep_eq divide_uint32.rep_eq modulo_uint32.rep_eq
-    equal_uint32.rep_eq less_eq_uint32.rep_eq less_uint32.rep_eq)+
+    equal_uint32.rep_eq less_eq_uint32.rep_eq less_uint32.rep_eq
+    bot_uint32.rep_eq top_uint32.rep_eq)+
 
 instance proof -
   show \<open>OFCLASS(uint32, comm_ring_1_class)\<close>
@@ -52,9 +56,16 @@ instance proof -
     by (fact uint32.of_class_equal)
   show \<open>OFCLASS(uint32, linorder_class)\<close>
     by (fact uint32.of_class_linorder)
+  show \<open>OFCLASS(uint32, order_bot_class)\<close>
+    by (fact uint32.of_class_order_bot)
+  show \<open>OFCLASS(uint32, order_top_class)\<close>
+    by (fact uint32.of_class_order_top)
 qed
 
 end
+
+instance uint32 :: \<open>{interval_bot, interval_top}\<close>
+  by (fact uint32.of_class_interval_bot uint32.of_class_interval_top)+
 
 instantiation uint32 :: ring_bit_operations
 begin
@@ -115,27 +126,12 @@ global_interpretation uint32: word_type_copy_more Abs_uint32 Rep_uint32 signed_d
          Uint32.rep_eq integer_of_uint32.rep_eq integer_eq_iff)
   done
 
-instantiation uint32 :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint32 :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint32 :: \<open>uint32 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint32\<close>
-  where set_bit_uint32_eq: \<open>set_bit_uint32 a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint32_transfer [transfer_rule]:
-  \<open>(cr_uint32 ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint32) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint32_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint32 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint32\<close> is set_bits .
 lift_definition set_bits_aux_uint32 :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is set_bits_aux .
@@ -145,7 +141,6 @@ global_interpretation uint32: word_type_copy_misc Abs_uint32 Rep_uint32 signed_d
   by (standard; transfer) simp_all
 
 instance using uint32.of_class_bit_comprehension
-  uint32.of_class_set_bit
   by simp_all standard
 
 end
@@ -157,18 +152,11 @@ code_printing code_module Uint32 \<rightharpoonup> (SML)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
 structure Uint32 : sig
-  val set_bit : Word32.word -> IntInf.int -> bool -> Word32.word
   val shiftl : Word32.word -> IntInf.int -> Word32.word
   val shiftr : Word32.word -> IntInf.int -> Word32.word
   val shiftr_signed : Word32.word -> IntInf.int -> Word32.word
   val test_bit : Word32.word -> IntInf.int -> bool
 end = struct
-
-fun set_bit x n b =
-  let val mask = Word32.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word32.orb (x, mask)
-     else Word32.andb (x, Word32.notb mask)
-  end
 
 fun shiftl x n =
   Word32.<< (x, Word.fromLargeInt (IntInf.toLarge n))
@@ -183,14 +171,14 @@ fun test_bit x n =
   Word32.andb (x, Word32.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word32.fromInt 0
 
 end; (* struct Uint32 *)\<close>
-code_reserved SML Uint32
+code_reserved (SML) Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Haskell)
  \<open>module Uint32(Int32, Word32) where
 
   import Data.Int(Int32)
   import Data.Word(Word32)\<close>
-code_reserved Haskell Uint32
+code_reserved (Haskell) Uint32
 
 text \<open>
   OCaml and Scala provide only signed 32bit numbers, so we use these and 
@@ -200,7 +188,6 @@ code_printing code_module "Uint32" \<rightharpoonup> (OCaml)
 \<open>module Uint32 : sig
   val less : int32 -> int32 -> bool
   val less_eq : int32 -> int32 -> bool
-  val set_bit : int32 -> Z.t -> bool -> int32
   val shiftl : int32 -> Z.t -> int32
   val shiftr : int32 -> Z.t -> int32
   val shiftr_signed : int32 -> Z.t -> int32
@@ -219,11 +206,6 @@ let less_eq x y =
     Int32.compare y Int32.zero < 0 && Int32.compare x y <= 0
   else Int32.compare y Int32.zero < 0 || Int32.compare x y <= 0;;
 
-let set_bit x n b =
-  let mask = Int32.shift_left Int32.one (Z.to_int n)
-  in if b then Int32.logor x mask
-     else Int32.logand x (Int32.lognot mask);;
-
 let shiftl x n = Int32.shift_left x (Z.to_int n);;
 
 let shiftr x n = Int32.shift_right_logical x (Z.to_int n);;
@@ -237,7 +219,7 @@ let test_bit x n =
   <> 0;;
 
 end;; (*struct Uint32*)\<close>
-code_reserved OCaml Uint32
+code_reserved (OCaml) Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Scala)
 \<open>object Uint32 {
@@ -254,12 +236,6 @@ def less_eq(x: Int, y: Int) : Boolean =
     case false => y < 0 || x <= y
   }
 
-def set_bit(x: Int, n: BigInt, b: Boolean) : Int =
-  b match {
-    case true => x | (1 << n.intValue)
-    case false => x & (1 << n.intValue).unary_~
-  }
-
 def shiftl(x: Int, n: BigInt) : Int = x << n.intValue
 
 def shiftr(x: Int, n: BigInt) : Int = x >>> n.intValue
@@ -270,7 +246,7 @@ def test_bit(x: Int, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint32 */\<close>
-code_reserved Scala Uint32
+code_reserved (Scala) Uint32
 
 text \<open>
   OCaml's conversion from Big\_int to int32 demands that the value fits int a signed 32-bit integer.
@@ -291,14 +267,13 @@ lemma Uint32_code [code]:
   including undefined_transfer and integer.lifting unfolding Uint32_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-     apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
+     apply (auto simp add: mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)
   done
 
 lemma Uint32_signed_code [code]:
   "Rep_uint32 (Uint32_signed i) = 
-  (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer_symbolic i))"
-unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def 
-by(simp add: Abs_uint32_inverse)
+  (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer i))"
+  unfolding Uint32_signed_def Uint32_def by (simp add: Abs_uint32_inverse)
 
 end
 
@@ -500,7 +475,6 @@ global_interpretation uint32: word_type_copy_target_language Abs_uint32 Rep_uint
     and uint32_shiftl = uint32.shiftl
     and uint32_shiftr = uint32.shiftr
     and uint32_sshiftr = uint32.sshiftr
-    and uint32_set_bit = uint32.set_bit
   by standard simp_all
 
 code_printing constant uint32_test_bit \<rightharpoonup>
@@ -509,13 +483,6 @@ code_printing constant uint32_test_bit \<rightharpoonup>
   (OCaml) "Uint32.test'_bit" and
   (Scala) "Uint32.test'_bit" and
   (Eval) "(fn w => fn n => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_test'_bit out of bounds\") else Uint32.test'_bit w n)"
-
-code_printing constant uint32_set_bit \<rightharpoonup>
-  (SML) "Uint32.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (OCaml) "Uint32.set'_bit" and
-  (Scala) "Uint32.set'_bit" and
-  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit w n b)"
 
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and
@@ -619,7 +586,6 @@ interpretation quickcheck_narrowing_samples
   "Typerep.Typerep (STR ''Uint32.uint32'') []" .
 
 definition "narrowing_uint32 d = qc_narrowing_drawn_from (narrowing_samples d) d"
-declare [[code drop: "partial_term_of :: uint32 itself \<Rightarrow> _"]]
 lemmas partial_term_of_uint32 [code] = partial_term_of_code
 
 instance ..

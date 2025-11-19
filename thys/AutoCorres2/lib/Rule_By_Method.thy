@@ -120,7 +120,7 @@ fun zip_subgoal assume tac (ctxt,st : thm) = if Thm.nprems_of st = 0 then Seq.si
 let
   fun bind_prems st' =
   let
-    val prems = Drule.cprems_of st';
+    val prems = Thm.cprems_of st';
     val (asms, ctxt') = Assumption.add_assumes prems ctxt;
     val ctxt'' = fold add_rule_prem asms ctxt';
     val st'' = Goal.conclude (Drule.implies_elim_list st' (map Thm.assume prems));
@@ -203,7 +203,7 @@ fun rule_by_tac' ctxt {vars,prop} tac asm_tacs pos raw_st =
        (atomize_equiv_tac ctxt (Thm.nprems_of result)
        THEN resolve_tac ctxt @{thms Pure.reflexive} (Thm.nprems_of result)))
     |> Seq.hd
-    |> Raw_Simplifier.norm_hhf ctxt
+    |> Simplifier.norm_hhf ctxt
 
   in Drule.zero_var_indexes result' end;
 

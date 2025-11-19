@@ -171,7 +171,12 @@ begin
     hence 1: "n' \<in> set (successors g n)" using assms(1) by simp
     from assms(2) have 2: "v' \<in> phiDefs g n'" by (auto simp add:phiDefs_def)
     from assms(2) have 3: "the (phis g (n',v')) = vs" by simp
-    show ?thesis unfolding phiUses_def by (rule UN_I[OF 1], rule UN_I[OF 2], auto simp:image_def Set.filter_def assms(3) 3)
+    with assms(3) show ?thesis
+      apply (simp only: phiUses_def)
+      using 1 apply (rule UN_I)
+      using 2 apply (rule UN_I)
+      apply auto
+      done
   qed
 
   lemma phiUsesE:
@@ -200,7 +205,7 @@ begin
   lemma phiUses_finite[simp]:
     assumes "n \<in> set (\<alpha>n g)"
     shows "finite (phiUses g n)"
-  by (auto simp:phiUses_def Set.filter_def)
+    by (auto simp: phiUses_def)
 
   lemma allDefs_finite[simp]: "n \<in> set (\<alpha>n g) \<Longrightarrow> finite (allDefs g n)" by (auto simp add:allDefs_def)
   lemma allUses_finite[simp]: "n \<in> set (\<alpha>n g) \<Longrightarrow> finite (allUses g n)" by (auto simp add:allUses_def)

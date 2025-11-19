@@ -202,12 +202,10 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   val _ = if forall Thm.no_prems code_thms then () else 
     warning "Unresolved premises in code theorems"
 
-  val (_,lthy) = Local_Theory.note 
-    ((mk_qualified basename "code",@{attributes [code]}),new_def_thm::code_thms)
-     lthy;
-
 in
   lthy
+  |> Local_Theory.note ((mk_qualified basename "code", []), new_def_thm :: code_thms)
+  |-> (fn (_, thms) => Code.declare_default_eqns (map (rpair true) thms))
 end;
 
 fun prepare_code_thms_cmd names thm lthy = let

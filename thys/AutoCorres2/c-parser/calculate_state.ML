@@ -25,6 +25,7 @@ sig
   val record_globinits : bool Config.T
 
   val ctype_to_typ : Proof.context -> int ctype -> typ
+  val ctype_to_typ_flexible_array : Proof.context -> int ctype -> typ
   datatype var_sort = Local of (string * bool)
                     | NSGlobal
                     | AddressedGlobal
@@ -121,7 +122,7 @@ fun define_enum_consts (CE {enumenv, ...}) lthy = let
     val binding = Binding.name nm'
     val ((_, (_, th)), lthy) =
         Local_Theory.define ((binding, NoSyn),
-                             ((Thm.def_binding binding, []), rhs_v))
+                             ((Thm.def_binding binding, @{attributes [enum_defs]}), rhs_v))
                             lthy
     fun upd th t = th :: t
     val acc = case tyname_opt of
@@ -159,7 +160,7 @@ fun isa_type_to_cty (refty (_, c)) = c
   | isa_type_to_cty (array (_, _, c)) = c
   | isa_type_to_cty (existing(_, c)) = c
 
-fun translate_inttype (ty : int ctype) =
+fun gen_translate_inttype (options as {empty_array_decay}) (ty : int ctype) =
   case ty of
     Signed x => existing (IntInfo.ity2wty (Signed x), ty)
   | Unsigned x => existing (IntInfo.ity2wty (Unsigned x), ty)
@@ -167,17 +168,20 @@ fun translate_inttype (ty : int ctype) =
   | Bool => existing (IntInfo.ity2wty Bool, ty)
   | Ptr Void => refty (NONE, ty)
   | Ptr (Function _) => refty (NONE, ty)
-  | Ptr ty0 => refty (SOME (translate_inttype ty0), ty)
-  | Array(ty0, SOME sz) => array (translate_inttype ty0, sz, ty)
-  | Array(_, NONE) => raise Fail "translate_inttype: incomplete array!"
+  | Ptr ty0 => refty (SOME (gen_translate_inttype options ty0), ty)
+  | Array(ty0, SOME sz) => array (gen_translate_inttype options ty0, sz, ty)
+  | Array(ty0, NONE) => if empty_array_decay then refty (SOME (gen_translate_inttype options ty0), ty) else raise Fail "translate_inttype: incomplete array!"
   | StructTy s => recd (s, ty)
   | UnionTy s => recd (s, ty)
-  | EnumTy _ => translate_inttype (Signed Int)
+  | EnumTy _ => gen_translate_inttype options (Signed Int)
   | Ident _ => raise Fail "Should never happen: translate out typedefs"
   | Void => existing (@{typ unit}, ty)
   | Bitfield _ => raise Fail "Can't cope with bitfields"
   | _ =>
     raise Fail ("translate_type: can't cope with "^tyname ty)
+
+val translate_inttype = gen_translate_inttype {empty_array_decay=false}
+val translate_inttype_flexible_array = gen_translate_inttype {empty_array_decay=true}
 
 val translate_type = translate_inttype
 
@@ -244,8 +248,10 @@ in
   | existing (ty, _) => ty
 end
 
-fun ctype_to_typ ctxt c0ty =
-    isa_type_to_typ ctxt (translate_inttype c0ty)
+fun ctype_to_typ ctxt cty =
+    isa_type_to_typ ctxt (translate_inttype cty)
+fun ctype_to_typ_flexible_array ctxt cty =
+  isa_type_to_typ ctxt (translate_inttype_flexible_array cty)
 
 fun create_state cse = let
   val trans = translate_vi cse
@@ -386,12 +392,12 @@ let
           map (map (the o Symtab.lookup rcdmap)) sorted1
         end
   val used_types = ProgramAnalysis.get_usedtypes cse
-in
-  sorted_structs
-  |> burrow_split (List.partition (fn item => not prune 
+  val res = sorted_structs
+    |> burrow_split (List.partition (fn item => not prune 
        orelse Binaryset.member (used_types, CType.type_of_rcd item) 
        orelse member (op =) union_structs item))
-
+in
+  res
 end
 
 
@@ -486,7 +492,6 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
   *)
 
   val structs_and_unions = get_sorted_structs prune cse |> fst 
-
   open MemoryModelExtras
   open UserTypeDeclChecking
   val umm_prfstate = initial_state
@@ -506,18 +511,20 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
        end
     | single_variant_union_fields n _ flds = flds
  
-  fun new_rcdinfo' ctxt (recname,(kind,flds, _, attrs))  = 
+  fun new_rcdinfo' ctxt (recname,(kind,flds, _, attrs)) = 
     let
       val flds = single_variant_union_fields recname kind flds
-      fun fldtys (fldname, (cty, attrs)) = (fldname, ctype_to_typ ctxt cty, cty, attrs)
+      fun fldtys (fldname, (cty, attrs)) = 
+        if flexible_array_type cty then NONE else SOME (fldname, ctype_to_typ ctxt cty, cty, attrs)
     in
-      (recname, (map fldtys flds, attrs))
+      (recname, (map_filter fldtys flds, attrs))
     end
 
   fun new_rcdinfo ctxt (recname,flds, attrs)  = let
-    fun fldtys (fldname, (cty, attrs)) = (fldname, ctype_to_typ ctxt cty, cty, attrs)
+    fun fldtys (fldname, (cty, attrs)) = 
+      if flexible_array_type cty then NONE else SOME (fldname, ctype_to_typ ctxt cty, cty, attrs)
   in
-    (recname, (map fldtys flds, attrs))
+    (recname, (map_filter fldtys flds, attrs))
   end
 
   fun rcddecls_phase0 recflds lthy = 
@@ -533,19 +540,22 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
                                       listvars #1 (canonical_union_variant recname active flds)))
                     recflds
 
-        fun mk_rp_fld ctxt (fldname,(cty,_)) = {fldname = fldname,
-                                           fldty = ctype_to_typ ctxt cty}
+        fun mk_rp_fld ctxt (fldname,(cty,_)) = 
+          if flexible_array_type cty then 
+            NONE 
+          else 
+            SOME {fldname = fldname, fldty = ctype_to_typ ctxt cty}
         fun mk_rp_recd ctxt (recname, (Struct, flds, _, _)) =
-              {record_name = recname, fields = map (mk_rp_fld ctxt) flds}
+              {record_name = recname, fields = map_filter (mk_rp_fld ctxt) flds}
           | mk_rp_recd ctxt (recname, (Union active, flds, _, _)) =
-              {record_name = recname, fields = map (mk_rp_fld ctxt) (canonical_union_variant recname active flds)}
+              {record_name = recname, fields = map_filter (mk_rp_fld ctxt) (canonical_union_variant recname active flds)}
 
         val def_lthy = lthy
           |> More_Local_Theory.in_theory (RecursiveRecordPackage.define_record_type (map (mk_rp_recd lthy) recflds))
       in
         def_lthy 
         |> fold UMM_Proofs.c_type_name_instantiation (map fst recflds)
-        |> fold_map UMM_Proofs.c_type_instantiation (map (new_rcdinfo' def_lthy) recflds)
+        |> fold_map (UMM_Proofs.c_type_instantiation cse)  (map (new_rcdinfo' def_lthy) recflds)
       end
   
   val (thms, lthy) = if install then lthy |> fold_map rcddecls_phase0 structs_and_unions else ([], lthy)
@@ -792,6 +802,11 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
                in prop \<open>all_distinct t\<close> for t:: \<open>unit ptr tree\<close>\<close>, 
              [])])
 
+      val disjnt_G_S = ((Binding.make ("disjoint_\<G>_\<S>", \<^here>), @{attributes [disjoint_\<G>_\<S>]}), 
+            [(\<^instantiate>\<open>G = G and S = S 
+               in prop \<open>(G::addr set) \<inter> S = {}\<close>\<close>, 
+             [])])
+
       fun declare_addressed_global g thy =
         let
           val T = (mk_ptr_ty o #2) g
@@ -804,7 +819,8 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
     in
       (thy, [Element.Fixes (map (mk_fix nat) owners), 
              Element.Assumes (map mk_fun_ptr_guard (fun_ptrs ~~ addressed_funs)),
-             Element.Assumes [all_distinct]])
+             Element.Assumes [all_distinct],
+             Element.Assumes [disjnt_G_S]])
     end
     val lvars = lvars
     val (thy, globs) = mk_globals_rcd thy

@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>steen on Archive of Formal Proofs
-    </title>
-    <link>/authors/steen/</link>
-    <description>
-        Recent content in steen 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 05 Dec 2022 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/steen/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
+    <title>Alexander Steen</title>
+    <link>https://isa-afp.org/authors/steen/</link>
+    <description>AFP entries of Alexander Steen</description><item>
+  <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
+  <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+  <description>Automation of Boolos&#39; Curious Inference in Isabelle/HOL in the AFP</description>
+    <category>Logic</category>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/Computability</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic</category>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+</item>
+
   </channel>
 </rss>

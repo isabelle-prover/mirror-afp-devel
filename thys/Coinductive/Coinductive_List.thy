@@ -309,7 +309,7 @@ lemma lappend_simps [simp]:
   and ltl_lappend: "ltl (lappend xs ys) = (if lnull xs then ltl ys else lappend (ltl xs) ys)"
 by(case_tac [!] xs) simp_all
 
-lemma lnull_lappend [simp]:
+lemma lnull_lappend:
   "lnull (lappend xs ys) \<longleftrightarrow> lnull xs \<and> lnull ys"
 by(auto simp add: lappend_def)
 
@@ -3339,12 +3339,12 @@ qed simp
 
 subsection \<open>Distinct lazy lists @{term "ldistinct"}\<close>
 
-inductive_simps ldistinct_LCons [code, simp]:
-  "ldistinct (LCons x xs)"
-
 lemma ldistinct_LNil_code [code]:
   "ldistinct LNil = True"
 by simp
+
+inductive_simps ldistinct_LCons [code, simp]:
+  "ldistinct (LCons x xs)"
 
 lemma ldistinct_llist_of [simp]:
   "ldistinct (llist_of xs) \<longleftrightarrow> distinct xs"
@@ -4733,6 +4733,14 @@ subsection \<open>Sublist view of a lazy list: @{term "lnths"}\<close>
 lemma lnths_empty [simp]: "lnths xs {} = LNil"
 by(auto simp add: lnths_def split_def lfilter_empty_conv)
 
+lemma lzip_LCons_iterates_eq:
+  "lzip (LCons x xs) (iterates f y) = LCons (x, y) (lzip xs (iterates f (f y)))"
+  by (simp add: iterates [of f y])
+
+lemma lzip_iterates_LCons_eq:
+  "lzip (iterates f x) (LCons y ys) = LCons (x, y) (lzip (iterates f (f x)) ys)"
+  by (simp add: iterates [of f x])
+
 lemma lnths_LNil [simp]: "lnths LNil A = LNil"
 by(simp add: lnths_def)
 
@@ -4748,8 +4756,8 @@ proof -
     hence "lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (?it (Suc n)))) =
            lmap fst (lfilter (\<lambda>(x, y). Suc y \<in> A) (lzip xs (?it n)))"
       by(simp add: lfilter_lmap o_def split_def llist.map_comp) }
-  thus ?thesis
-    by(auto simp add: lnths_def)(subst iterates, simp)+
+  then show ?thesis
+    by (auto simp add: lnths_def lzip_LCons_iterates_eq)
 qed
 
 lemma lset_lnths:

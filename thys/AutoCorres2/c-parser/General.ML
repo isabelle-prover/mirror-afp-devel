@@ -345,6 +345,36 @@ val trivial_meta_eq_thm = Thm.cconcl_of #> trivial_meta_eq
 val _ = Theory.setup
   (ML_Antiquotation.inline \<^binding>\<open>assert_msg\<close>
     (Scan.succeed "(fn b => fn msg => if b then () else raise General.Fail (msg ()))"))
+
+val eq_TrueD = @{lemma  "P \<equiv> True \<Longrightarrow> P" by blast}
+val eq_FalseD = @{lemma "P \<equiv> False \<Longrightarrow> \<not> P" by blast}
+
+fun dest_bool_eq eq =
+  (try (fn eq => (eq_TrueD OF [eq])) eq |> the_list) @
+  (try (fn eq => (eq_FalseD OF [eq])) eq |> the_list)
+
+val dest_bool_eqs = maps dest_bool_eq
+
+val is_iarith = Match_Cterm.switch [
+  @{cterm_match "Trueprop ((?m::'a::linordered_nonzero_semiring) < ?n)" } #> (fn _ => true),
+  @{cterm_match "Trueprop ((?m::'a::linordered_nonzero_semiring) \<le> ?n)" } #> (fn _ => true),
+  @{cterm_match "Trueprop ((?m::'a::linordered_nonzero_semiring) = ?n)" } #> (fn _ => true),
+  @{cterm_match "Trueprop (\<not> (?m::'a::linordered_nonzero_semiring) < ?n)" } #> (fn _ => true),
+  @{cterm_match "Trueprop (\<not> (?m::'a::linordered_nonzero_semiring) \<le> ?n)" } #> (fn _ => true),
+  @{cterm_match "Trueprop (\<not> (?m::'a::linordered_nonzero_semiring) = ?n)" } #> (fn _ => true),
+  fn _ => false
+]
+
+val iariths_of_eqs = dest_bool_eqs #> filter (is_iarith o Thm.cprop_of)
+
+fun add_ariths thms ctxt = 
+  let
+    val _ = Utils.verbose_msg 5 ctxt (fn _ => ("adding ariths:\n "  ^ string_of_thms ctxt thms))
+  in
+    ctxt |> Context.proof_map (
+      fold (Named_Theorems.add_thm @{named_theorems arith}) thms)
+  end
+
 end
 
 

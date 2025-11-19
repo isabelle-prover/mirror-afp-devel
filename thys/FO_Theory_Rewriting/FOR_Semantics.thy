@@ -73,7 +73,7 @@ proof -
     using \<tau>_def by auto (metis term_subst_eq)
   from this(1) have [simp]: "funas_gterm s = funas_term C\<langle>l \<cdot> \<tau>\<rangle>" by (metis funas_term_of_gterm_conv)
   from w assms(1, 3, 4) have [simp]: "funas_term C\<langle>r \<cdot> \<tau>\<rangle> \<subseteq> \<F>" using \<tau>_def
-    by (auto simp: funas_trs_def funas_term_subst)
+    by (force simp: funas_trs_def funas_rule_def funas_term_subst split: if_splits)
   moreover have "ground C\<langle>r \<cdot> \<tau>\<rangle>" using terms(1) w \<tau>_def
     by (auto intro!: ground_substI) (metis term_of_gterm_ctxt_subst_apply_ground)
   ultimately show ?thesis using assms(2) terms(2)
@@ -93,8 +93,16 @@ subsection \<open>Defining properties of @{const gcomp_rel} and @{const gtrancl_
 lemma gcomp_rel_sig:
   assumes "R \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>" and "S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
   shows "gcomp_rel \<F> R S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
-  using assms subsetD[OF signature_pres_funas_cl(2)[OF assms(1)]]
-  by (auto simp: gcomp_rel_def lift_root_step.simps gmctxt_cl_gmctxtex_onp_conv) (metis refl_onD2 relf_on_gmctxtcl_funas)
+proof -
+  have "R O gmctxt_cl \<F> S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+    using assms
+    by (metis gmctxt_cl_gmctxtex_onp_conv relcomp_subset_Sigma signature_pres_funas_cl(2))
+  moreover have "gmctxt_cl \<F> R O S \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+    using assms
+    by (metis gmctxt_cl_gmctxtex_onp_conv relcomp_subset_Sigma signature_pres_funas_cl(2))
+  ultimately show ?thesis
+    unfolding gcomp_rel_def by simp
+qed
 
 lemma gtrancl_rel_sig:
   assumes "R \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"

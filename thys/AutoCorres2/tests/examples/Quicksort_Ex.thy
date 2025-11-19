@@ -360,6 +360,13 @@ lemma the_updated_array:
   by (auto simp: is_array_def array_loc_valid_def the_array_elem
            intro: nth_equalityI)
 
+lemma the_updated_array':
+  "\<lbrakk> is_array s p n; m < n \<rbrakk> \<Longrightarrow>
+   the_array (heap_w32_update (\<lambda>h q. if q = p +\<^sub>p int m then g h q else f h q) s) p n =
+   (the_array (heap_w32_update f s) p n)[m := (g (heap_w32 s) ( p +\<^sub>p int m))]"
+  by (auto simp: is_array_def array_loc_valid_def the_array_elem
+           intro: nth_equalityI)
+
 
 lemma multiset_of_cycle:
   (* Courtesy of Dave G *)
@@ -496,6 +503,12 @@ where
 
 lemmas runs_to_whileLoop2 =  runs_to_whileLoop_res' [split_tuple C and B arity: 2]
 
+lemma heap_w32_update_pointwise: "heap_w32_update f s = heap_w32_update (\<lambda>_. f (heap_w32 s)) s"
+  by simp
+
+lemma heap_w32_modify_pointwise: "modify (heap_w32_update f) = (modify (\<lambda>s. heap_w32_update (\<lambda>_. f (heap_w32 s)) s))"
+  by (simp add: heap_w32_update_pointwise[symmetric])
+
 lemma (in ts_definition_partition) partition_correct:
   "is_array s0 a (unat n) \<Longrightarrow> n > 0 \<Longrightarrow>
         partition' a n \<bullet> s0
@@ -504,8 +517,8 @@ lemma (in ts_definition_partition) partition_correct:
                 r < n \<and> partitioned s a (unat n) (unat r) \<and>
                 unmodified_outside_range s0 s a (unat n) \<rbrace>"
   apply (unfold partition'_def fun_upd_apply)
-  apply runs_to_vcg
   apply simp
+  apply runs_to_vcg
   apply (rule runs_to_whileLoop2 [where
          I = "\<lambda>(i, pivot_idx) s. is_array s a (unat n) \<and>
                                  mset (the_array s a (unat n)) =
@@ -527,8 +540,9 @@ lemma (in ts_definition_partition) partition_correct:
     subgoal by (rule_tac n = "n" in array_valid_elem2, assumption+)
     subgoal by (erule_tac n = "n" in array_valid_elem2, unat_arith)
     subgoal
+      
       apply (simp add: o_def)
-      apply (subst uint_nat, subst the_updated_array, assumption, unat_arith)+
+      apply (subst uint_nat, subst the_updated_array', assumption, unat_arith)+
       apply (clarsimp simp: is_array_def array_loc_valid_def)
       apply (intro conjI impI)
        apply (subst (asm) ptr_offsets_eq2, simp, unat_arith, simp, unat_arith)

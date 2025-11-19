@@ -466,9 +466,7 @@ context begin interpretation autoref_syn .
 
   lemma refine_map[autoref_rules]: 
     "(map,map)\<in>(R1\<rightarrow>R2) \<rightarrow> \<langle>R1\<rangle>list_rel \<rightarrow> \<langle>R2\<rangle>list_rel"
-    using [[autoref_sbias = -1]]
-    unfolding map_rec[abs_def]
-    by autoref
+    by (fact param_map)
 
   lemma refine_fold[autoref_rules]: 
     "(fold,fold)\<in>(Re\<rightarrow>Rs\<rightarrow>Rs) \<rightarrow> \<langle>Re\<rangle>list_rel \<rightarrow> Rs \<rightarrow> Rs"
@@ -601,14 +599,16 @@ context begin interpretation autoref_syn .
 
   declare param_rev[autoref_rules]
 
-  declare param_all_interval_nat[autoref_rules]
-  lemma [autoref_op_pat]: 
-    "(\<forall>i<u. P i) \<equiv> OP List.all_interval_nat P 0 u"
-    "(\<forall>i\<le>u. P i) \<equiv> OP List.all_interval_nat P 0 (Suc u)"
-    "(\<forall>i<u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l u"
-    "(\<forall>i\<le>u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l (Suc u)"
-    by (auto intro!: eq_reflection simp: List.all_interval_nat_def)
+  declare param_all_interval_nat'[autoref_rules]
 
+  declare param_all_interval_nat[autoref_rules]
+
+  lemma [autoref_op_pat]: 
+    "(\<forall>i<u. P i) \<equiv> OP Param_HOL.all_interval_nat P 0 u"
+    "(\<forall>i\<le>u. P i) \<equiv> OP List.all_interval P 0 u"
+    "(\<forall>i<u. l\<le>i \<longrightarrow> P i) \<equiv> OP Param_HOL.all_interval_nat P l u"
+    "(\<forall>i\<le>u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval P l u"
+    by (auto intro!: eq_reflection split: nat.splits)
 
   lemmas [autoref_rules] = param_dropWhile param_takeWhile
 

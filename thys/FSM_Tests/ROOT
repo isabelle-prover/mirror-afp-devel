@@ -24,12 +24,12 @@ session FSM_Tests = "HOL-Library" +
     "Prime_Transformation"
     "State_Cover"
     "OFSM_Tables_Refined"
-    
+
     "EquivalenceTesting/Convergence"
     "EquivalenceTesting/Convergence_Graph"
     "EquivalenceTesting/Empty_Convergence_Graph"
     "EquivalenceTesting/H_Framework"
-    "EquivalenceTesting/H_Method_Implementations"    
+    "EquivalenceTesting/H_Method_Implementations"
     "EquivalenceTesting/HSI_Method_Implementations"
     "EquivalenceTesting/Intermediate_Frameworks"
     "EquivalenceTesting/Intermediate_Implementations"
@@ -37,18 +37,18 @@ session FSM_Tests = "HOL-Library" +
     "EquivalenceTesting/Partial_S_Method_Implementations"
     "EquivalenceTesting/Simple_Convergence_Graph"
     "EquivalenceTesting/SPY_Framework"
-    "EquivalenceTesting/SPY_Method_Implementations"    
+    "EquivalenceTesting/SPY_Method_Implementations"
     "EquivalenceTesting/SPYH_Method_Implementations"
     "EquivalenceTesting/Test_Suite_Representations_Refined"
     "EquivalenceTesting/Test_Suite_Representations"
     "EquivalenceTesting/W_Method_Implementations"
     "EquivalenceTesting/Wp_Method_Implementations"
-    
+
     "AdaptiveStateCounting/Adaptive_Test_Case"
     "AdaptiveStateCounting/Backwards_Reachability_Analysis"
     "AdaptiveStateCounting/Helper_Algorithms"
     "AdaptiveStateCounting/Maximal_Path_Trie"
-    "AdaptiveStateCounting/R_Distinguishability"    
+    "AdaptiveStateCounting/R_Distinguishability"
     "AdaptiveStateCounting/State_Preamble"
     "AdaptiveStateCounting/State_Separator"
     "AdaptiveStateCounting/Test_Suite_Calculation"
@@ -62,4 +62,5 @@ session FSM_Tests = "HOL-Library" +
   document_files
     "root.tex"
     "root.bib"
-  export_files (in "code_export") [2] "FSM_Tests.Test_Suite_Generator_Code_Export:code**"
+  export_files (in "code_export") [2]
+    "FSM_Tests.Test_Suite_Generator_Code_Export:code**"

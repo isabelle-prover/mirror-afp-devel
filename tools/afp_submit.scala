@@ -629,11 +629,6 @@ object AFP_Submit {
 
       private val archive_name: String = "archive"
 
-      def make_partial_patch(base_dir: Path, src: Path, dst: Path): String = {
-        val patch = Isabelle_System.make_patch(base_dir, src, dst, "--unidirectional-new-file")
-        split_lines(patch).filterNot(_.startsWith("Only in")).mkString("\n")
-      }
-
       def save(
         state: State,
         metadata: Model.Metadata,
@@ -652,10 +647,12 @@ object AFP_Submit {
         val archive_file = dir + Path.basic(archive_name + file_extension)
         Bytes.write(archive_file, archive)
 
-        val metadata_rel =
-          File.relative_path(afp.base_dir, afp.metadata_dir).getOrElse(afp.metadata_dir)
-        val metadata_patch = make_partial_patch(afp.base_dir, metadata_rel, structure.metadata_dir)
-        File.write(patch_file(id), metadata_patch)
+        val patches =
+          for {
+            file <- structure.authors_file :: metadata.entries.map(_.name).map(structure.entry_file)
+            relative = File.relative_path(structure.base_dir, file).get
+          } yield Isabelle_System.make_patch(afp.base_dir, relative, file)
+        File.write(patch_file(id), cat_lines(patches))
 
         val info =
           JSON.Format(JSON.Object(
@@ -1197,7 +1194,7 @@ object AFP_Submit {
           hidden(key + ID, overview.id) ::
           hidden(key + DATE, overview.date.toString) ::
           hidden(key + NAME, overview.name) ::
-          span(text(overview.date.toString)) ::
+          css("white-space: nowrap")(span(text(overview.date.toString))) ::
           span(List(frontend_link(Page.SUBMISSION, List(ID.print -> overview.id),
             text(overview.name)))) ::
           render_if(mode == Mode.SUBMISSION,

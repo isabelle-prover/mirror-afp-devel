@@ -31,7 +31,7 @@ code_printing
       val _ = Statistics.register_stat ("Promela",is_active,to_string)
     end
 \<close>
-code_reserved SML PromelaStatistics
+code_reserved (SML) PromelaStatistics
 
 ML_val \<open>@{code hd}\<close>
 

@@ -9,9 +9,9 @@ abbreviation "Mono_Dep_Fun_Rel (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) (S 
   ((x y \<Colon> R) \<Rrightarrow> S x y)\<^sup>\<oplus>"
 abbreviation "Mono_Fun_Rel R S \<equiv> Mono_Dep_Fun_Rel R (\<lambda>_ _. S)"
 
-open_bundle Mono_Dep_Fun_Rel_syntax 
+open_bundle Mono_Dep_Fun_Rel_syntax
 begin
-notation "Mono_Fun_Rel" (infixr "\<Rrightarrow>\<oplus>" 40)
+notation "Mono_Fun_Rel" (infixr \<open>\<Rrightarrow>\<oplus>\<close> 40)
 syntax
   "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)
@@ -23,6 +23,13 @@ syntax_consts
 translations
   "(x y \<Colon> R) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. S)"
   "(x y \<Colon> R | B) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. CONST rel_if B S)"
+
+text \<open>The monotone function relator is the function relator restricted to monotone functions:\<close>
+
+lemma Mono_Dep_Fun_Rel_eq_Dep_Fun_Rel_restrict_dep_monos:
+  fixes R S defines "dep_mono \<equiv> ((x y \<Colon> R) \<Rightarrow> S x y)"
+  shows "((x y \<Colon> R) \<Rrightarrow>\<oplus> S x y) = ((x y \<Colon> R) \<Rrightarrow> S x y)\<restriction>\<^bsub>dep_mono\<^esub>\<upharpoonleft>\<^bsub>dep_mono\<^esub>"
+  unfolding dep_mono_def by force
 
 locale Dep_Fun_Rel_orders =
   fixes L :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -60,11 +67,9 @@ lemma Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_le_if_reflexive_onI:
   and "\<And>x1 x2. x1 \<le>\<^bsub>L\<^esub> x2 \<Longrightarrow> (\<le>\<^bsub>R x1 x1\<^esub>) \<le> (\<le>\<^bsub>R x1 x2\<^esub>)"
   shows "((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>)\<^sup>\<oplus>) = ((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>))"
 proof -
-  {
-    fix f g x1 x2
-    assume "((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R x y\<^esub>)) f g" "x1 \<le>\<^bsub>L\<^esub> x1" "x1 \<le>\<^bsub>L\<^esub> x2"
-    with assms have "f x1 \<le>\<^bsub>R x1 x2\<^esub> g x1" "f x2 \<le>\<^bsub>R x1 x2\<^esub> g x2" by blast+
-  }
+  have "f x1 \<le>\<^bsub>R x1 x2\<^esub> g x1" "f x2 \<le>\<^bsub>R x1 x2\<^esub> g x2"
+    if "((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R x y\<^esub>)) f g" "x1 \<le>\<^bsub>L\<^esub> x1" "x1 \<le>\<^bsub>L\<^esub> x2" for f g x1 x2
+    using that assms by blast+
   with refl_L show ?thesis
     by (intro ext iffI Refl_RelI Dep_Fun_Rel_relI) (auto elim!: Refl_RelE)
 qed
@@ -75,7 +80,7 @@ lemma Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_mono_if_reflexive_onI:
   shows "((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>)\<^sup>\<oplus>) = ((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>))"
   using assms
   by (intro Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_le_if_reflexive_onI)
-  (auto 6 0)
+  blast+
 
 end
 
@@ -91,6 +96,5 @@ corollary Mono_Fun_Rel_Refl_Rel_right_eq_Mono_Fun_RelI:
   simp_all
 
 end
-
 
 end

@@ -163,7 +163,7 @@ paragraph \<open>Monotone Function Relator\<close>
 context transport_Mono_Fun_Rel
 begin
 
-lemmas mono_wrt_rel_leftI = tpdfr.mono_wrt_rel_leftI[OF tfr.mono_wrt_rel_leftI]
+lemmas mono_wrt_rel_leftI = tmdfr.mono_wrt_rel_leftI[OF tfr.mono_wrt_rel_leftI]
 
 end
 

@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>dirix on Archive of Formal Proofs
-    </title>
-    <link>/authors/dirix/</link>
-    <description>
-        Recent content in dirix 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 13 Mar 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/dirix/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Weight-Balanced Trees</title>
-          <link>/entries/Weight_Balanced_Trees.html</link>
-          <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Weight_Balanced_Trees.html</guid>
-          <description></description>
-        </item>
+    <title>Stefan Dirix</title>
+    <link>https://isa-afp.org/authors/dirix/</link>
+    <description>AFP entries of Stefan Dirix</description><item>
+  <title>Weight-Balanced Trees</title>
+  <link>https://isa-afp.org/entries/Weight_Balanced_Trees.html</link>
+  <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
+  <description>Weight-Balanced Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+
   </channel>
 </rss>

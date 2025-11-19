@@ -380,17 +380,17 @@ context ids begin
 fun seq_sem ::"('sf, 'sc, 'sz) interp \<Rightarrow> ('sf, 'sc, 'sz) sequent \<Rightarrow> 'sz state set"
 where "seq_sem I S = fml_sem I (seq2fml S)"
 
-lemma and_foldl_sem:"\<nu> \<in> fml_sem I (foldr And \<Gamma> TT) \<Longrightarrow> (\<And>\<phi>. List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>)"
-  by(induction \<Gamma>, auto simp add: member_rec)
+lemma and_foldl_sem:"\<nu> \<in> fml_sem I (foldr And \<Gamma> TT) \<Longrightarrow> (\<And>\<phi>. \<phi> \<in> set \<Gamma>  \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>)"
+  by (induction \<Gamma>) auto
 
-lemma and_foldl_sem_conv:"(\<And>\<phi>. List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr And \<Gamma> TT)"
-  by(induction \<Gamma>, auto simp add: member_rec)
+lemma and_foldl_sem_conv:"(\<And>\<phi>. \<phi> \<in> set \<Gamma> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr And \<Gamma> TT)"
+  by (induction \<Gamma>) auto
 
-lemma or_foldl_sem:"List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I (foldr Or \<Gamma> FF)"
-  by(induction \<Gamma>, auto simp add: member_rec)
+lemma or_foldl_sem:"\<phi> \<in> set \<Gamma> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I (foldr Or \<Gamma> FF)"
+  by (induction \<Gamma>) auto
 
-lemma or_foldl_sem_conv:"\<nu> \<in> fml_sem I (foldr Or \<Gamma> FF) \<Longrightarrow> \<exists> \<phi>. \<nu> \<in> fml_sem I \<phi> \<and> List.member \<Gamma> \<phi>"
-  by(induction \<Gamma>, auto simp add: member_rec)
+lemma or_foldl_sem_conv:"\<nu> \<in> fml_sem I (foldr Or \<Gamma> FF) \<Longrightarrow> \<exists> \<phi>. \<nu> \<in> fml_sem I \<phi> \<and> \<phi> \<in> set \<Gamma>"
+  by (induction \<Gamma>) auto
 
 lemma seq_semI':"(\<nu> \<in> fml_sem I (foldr And \<Gamma> TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr Or \<Delta> FF)) \<Longrightarrow> \<nu> \<in> seq_sem I (\<Gamma>,\<Delta>)"
   by auto 
@@ -399,23 +399,26 @@ lemma seq_semD':"\<And>P. \<nu> \<in> seq_sem I (\<Gamma>,\<Delta>) \<Longrighta
   by simp
 
 definition sublist::"'a list \<Rightarrow> 'a list \<Rightarrow> bool"
-where "sublist A B \<equiv> (\<forall>x. List.member A x \<longrightarrow> List.member B x)"
+where "sublist A B \<equiv> (\<forall>x. x \<in> set A \<longrightarrow> x \<in> set B)"
 
-lemma sublistI:"(\<And>x. List.member A x \<Longrightarrow> List.member B x) \<Longrightarrow> sublist A B"
+lemma sublistI:"(\<And>x. x \<in> set A \<Longrightarrow> x \<in> set B) \<Longrightarrow> sublist A B"
   unfolding sublist_def by auto
 
 lemma \<Gamma>_sub_sem:"sublist \<Gamma>1 \<Gamma>2 \<Longrightarrow> \<nu> \<in> fml_sem I (foldr And \<Gamma>2 TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr And \<Gamma>1 TT)"
   unfolding sublist_def 
   by (metis and_foldl_sem and_foldl_sem_conv)
 
-lemma seq_semI:"List.member \<Delta> \<psi> \<Longrightarrow>((\<And>\<phi>. List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>) \<Longrightarrow> \<nu> \<in> fml_sem I \<psi>) \<Longrightarrow> \<nu> \<in> seq_sem I (\<Gamma>,\<Delta>)"
-  apply(rule seq_semI')
-  using and_foldl_sem[of \<nu> I \<Gamma>] or_foldl_sem by blast
+lemma seq_semI:"\<psi> \<in> set \<Delta>  \<Longrightarrow>((\<And>\<phi>. \<phi> \<in> set \<Gamma> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>) \<Longrightarrow> \<nu> \<in> fml_sem I \<psi>) \<Longrightarrow> \<nu> \<in> seq_sem I (\<Gamma>,\<Delta>)"
+  apply (rule seq_semI')
+  using and_foldl_sem[of \<nu> I \<Gamma>] or_foldl_sem 
+  apply blast
+  done
 
-lemma seq_semD:"\<nu> \<in> seq_sem I (\<Gamma>,\<Delta>) \<Longrightarrow> (\<And>\<phi>. List.member \<Gamma> \<phi> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>) \<Longrightarrow> \<exists>\<phi>. (List.member \<Delta> \<phi>) \<and>\<nu> \<in> fml_sem I \<phi> "
-  apply(rule seq_semD')
+lemma seq_semD:"\<nu> \<in> seq_sem I (\<Gamma>,\<Delta>) \<Longrightarrow> (\<And>\<phi>. \<phi> \<in> set \<Gamma> \<Longrightarrow> \<nu> \<in> fml_sem I \<phi>) \<Longrightarrow> \<exists>\<phi>. \<phi> \<in> set \<Delta> \<and> \<nu> \<in> fml_sem I \<phi> "
+  apply (rule seq_semD')
   using and_foldl_sem_conv or_foldl_sem_conv
-  by blast+
+   apply blast+
+  done  
 
 lemma seq_MP:"\<nu> \<in> seq_sem I (\<Gamma>,\<Delta>) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr And \<Gamma> TT) \<Longrightarrow> \<nu> \<in> fml_sem I (foldr Or \<Delta> FF)"
   by(induction \<Delta>, auto)
@@ -435,24 +438,23 @@ lemma soundI:"(\<And>I. is_interp I \<Longrightarrow> (\<And>i. i \<ge> 0 \<Long
 lemma soundI':"(\<And>I \<nu>. is_interp I \<Longrightarrow> (\<And>i . i \<ge> 0 \<Longrightarrow> i < length SG \<Longrightarrow> \<nu> \<in> seq_sem I (nth SG i)) \<Longrightarrow> \<nu> \<in> seq_sem I G) \<Longrightarrow> sound (SG,G)"
   unfolding sound_def by auto
     
-lemma soundI_mem:"(\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi>. List.member SG \<phi> \<Longrightarrow> seq_sem I \<phi> = UNIV) \<Longrightarrow> seq_sem I C = UNIV) \<Longrightarrow> sound (SG,C)"
+lemma soundI_mem:"(\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi>. \<phi> \<in> set SG \<Longrightarrow> seq_sem I \<phi> = UNIV) \<Longrightarrow> seq_sem I C = UNIV) \<Longrightarrow> sound (SG,C)"
   apply (auto simp add: sound_def)
-  by (metis in_set_conv_nth in_set_member iso_tuple_UNIV_I seq2fml.simps)
+  apply (metis UNIV_I in_set_conv_nth seq2fml.simps)
+  done
 
-lemma soundI_memv:"(\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi> \<nu>. List.member SG \<phi> \<Longrightarrow> \<nu> \<in> seq_sem I \<phi>) \<Longrightarrow> (\<And>\<nu>. \<nu> \<in> seq_sem I C)) \<Longrightarrow> sound (SG,C)"
+lemma soundI_memv:"(\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi> \<nu>. \<phi> \<in> set SG \<Longrightarrow> \<nu> \<in> seq_sem I \<phi>) \<Longrightarrow> (\<And>\<nu>. \<nu> \<in> seq_sem I C)) \<Longrightarrow> sound (SG,C)"
   apply(rule soundI_mem)
   using impl_sem by blast
 
-lemma soundI_memv':"(\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi> \<nu>. List.member SG \<phi> \<Longrightarrow> \<nu> \<in> seq_sem I \<phi>) \<Longrightarrow> (\<And>\<nu>. \<nu> \<in> seq_sem I C)) \<Longrightarrow> R = (SG,C) \<Longrightarrow> sound R"
+lemma soundI_memv':"(\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi> \<nu>. \<phi> \<in> set SG \<Longrightarrow> \<nu> \<in> seq_sem I \<phi>) \<Longrightarrow> (\<And>\<nu>. \<nu> \<in> seq_sem I C)) \<Longrightarrow> R = (SG,C) \<Longrightarrow> sound R"
   using  soundI_mem
   using impl_sem by blast
 
-lemma soundD_mem:"sound (SG,C) \<Longrightarrow> (\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi>. List.member SG \<phi> \<Longrightarrow> seq_sem I \<phi> = UNIV) \<Longrightarrow> seq_sem I C = UNIV)"
-  apply (auto simp add: sound_def)
-  using in_set_conv_nth in_set_member iso_tuple_UNIV_I seq2fml.simps
-  by (metis seq2fml.elims)
+lemma soundD_mem:"sound (SG,C) \<Longrightarrow> (\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi>. \<phi> \<in> set SG \<Longrightarrow> seq_sem I \<phi> = UNIV) \<Longrightarrow> seq_sem I C = UNIV)"
+  by (auto simp add: sound_def)
 
-lemma soundD_memv:"sound (SG,C) \<Longrightarrow> (\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi> \<nu>. List.member SG \<phi> \<Longrightarrow> \<nu> \<in> seq_sem I \<phi>) \<Longrightarrow> (\<And>\<nu>. \<nu> \<in> seq_sem I C))"
+lemma soundD_memv:"sound (SG,C) \<Longrightarrow> (\<And>I. is_interp I \<Longrightarrow> (\<And>\<phi> \<nu>. \<phi> \<in> set SG \<Longrightarrow> \<nu> \<in> seq_sem I \<phi>) \<Longrightarrow> (\<And>\<nu>. \<nu> \<in> seq_sem I C))"
   using soundD_mem
   by (metis UNIV_I UNIV_eq_I)
 

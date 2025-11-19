@@ -19,7 +19,6 @@ theory HNF_Mod_Det_Algorithm
     Smith_Normal_Form.SNF_Algorithm_Euclidean_Domain
     Smith_Normal_Form.SNF_Missing_Lemmas
     Uniqueness_Hermite_JNF
-    Matrix_Change_Row
 begin
 
 subsubsection \<open>Echelon form algorithm\<close>
@@ -287,11 +286,10 @@ text \<open>From here on, we define functions to transform a matrix in echelon f
 normal form. Essentially, we are defining the functions that are available in the AFP entry Hermite
 (which uses HOL Analysis + mod-type) in the JNF matrix representation.\<close>
 
-(*Find the first nonzero element of row l (A is upper triangular)*)
-definition find_fst_non0_in_row :: "nat \<Rightarrow> int mat \<Rightarrow> nat option" where
-  "find_fst_non0_in_row l A = (let is = [l ..< dim_col A];
-    Ais = filter (\<lambda>j. A $$ (l, j) \<noteq> 0) is
-    in case Ais of [] \<Rightarrow> None | _ \<Rightarrow> Some (Ais!0))"
+definition find_fst_non0_in_row :: \<open>nat \<Rightarrow> 'a::comm_ring_1 mat \<Rightarrow> nat option\<close>
+  \<comment> \<open>Find the first nonzero element of row l if A is upper triangular\<close>
+  where \<open>find_fst_non0_in_row l A = find (\<lambda>j. A $$ (l, j) \<noteq> 0)  [l ..< dim_col A]\<close>
+
 
 primrec Hermite_reduce_above
 where "Hermite_reduce_above (A::int mat) 0 i j = A"

@@ -8032,7 +8032,7 @@ begin
           using par \<tau>.ide_map\<^sub>0_obj \<tau>.iso_map\<^sub>1_ide D.comp_arr_dom D.comp_arr_inv'
                 \<tau>.map\<^sub>1_in_hom [of \<mu>]
           by (metis C.dom_trg C.ide_dom C.obj_trg C.trg.preserves_dom D.whisker_left
-              F.as_nat_trans.is_natural_2 F.as_nat_trans.naturality F.preserves_arr
+              F.as_nat_trans.naturality2 F.as_nat_trans.naturality F.preserves_arr
               \<tau>.map\<^sub>1_simps(5))
         also have "... = ((\<tau>\<^sub>0 ?a' \<star>\<^sub>D F \<mu>) \<cdot>\<^sub>D \<tau>\<^sub>1 ?f) \<cdot>\<^sub>D D.inv (\<tau>\<^sub>1 ?f)"
           using D.comp_assoc by simp

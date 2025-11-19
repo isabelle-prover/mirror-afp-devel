@@ -64,17 +64,13 @@ structure HOPU = Higher_Order_Pattern_Unification
 fun unify_resolve_tac norms unify rule ctxt =
   let fun tac cgoal i state =
     let
-      val _ = @{log Logger.TRACE} ctxt (fn _ =>
-          Pretty.block [
-            Pretty.str ("Calling unification resolution tactic on subgoal "),
-            Pretty.str (Int.toString i),
-            Pretty.str ": ",
-            Util.pretty_terms ctxt [Thm.term_of cgoal],
-            Pretty.str (" and rule: "),
-            Thm.pretty_thm ctxt rule
-          ]
-          |> Pretty.string_of
-        )
+      val _ = @{log Logger.TRACE} ctxt (fn _ => Pretty.breaks [
+          Pretty.block [Pretty.str ("Calling unification resolution tactic on subgoal "),
+            Pretty.str (Int.toString i), Pretty.str ":"],
+          Util.pretty_terms ctxt [Thm.term_of cgoal],
+          Pretty.str "and rule:",
+          Thm.pretty_thm ctxt rule
+        ] |> Pretty.block |> Pretty.string_of)
       val lifted_rule = Thm.lift_rule cgoal (Drule.incr_indexes state rule)
       val nprems_rule = Thm.nprems_of rule
       val rparams = Term_Util.strip_all (Thm.term_of cgoal) |> fst
@@ -120,22 +116,19 @@ fun unify_eresolve_tac_index norms_resolve unify_resolve norms_assume unify_assu
   unify_resolve_tac norms_resolve unify_resolve rule ctxt i state
   |> Seq.maps (Unify_Assumption_Base.unify_assumption_tac_index norms_assume unify_assume ctxt i)
 
-fun unify_eresolve_tac norms_resolve unify_resolve norms_assume unify_assume
-  rule ctxt i state =
+fun unify_eresolve_tac norms_resolve unify_resolve norms_assume unify_assume rule ctxt i =
   let val nprems = Thm.nprems_of rule
   in
     if nprems = 0 then
-      (@{log Logger.WARN} ctxt (fn _ =>
-        Pretty.block [
+      (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
           Pretty.str "elim-resolution rule ",
           Thm.pretty_thm ctxt rule,
           Pretty.str " has no premises."
-        ] |> Pretty.string_of
-      );
-      Seq.empty)
+        ] |> Pretty.string_of);
+      no_tac)
     else
-      unify_eresolve_tac_index norms_resolve unify_resolve norms_assume unify_assume rule ctxt i state
-      |> Seq.maps (fn (n, state) =>
+      unify_eresolve_tac_index norms_resolve unify_resolve norms_assume unify_assume rule ctxt i
+      #> Seq.maps (fn (n, state) =>
         Tactic_Util.EVERY_ARG (Tactic_Util.thin_tac n) (i upto i + nprems - 2) state)
   end
 
@@ -151,19 +144,24 @@ fun unify_eresolve_any_tac norms_resolve unify_resolve norms_assume unify_assume
   unify_eresolve_tacs norms_resolve unify_resolve norms_assume unify_assume rules
   #> Tactic_Util.CONCAT'
 
+(*Tactic.make_elim allows no context passing but Thm.biresolution fails to certificate certain
+theorems without a context*)
+fun make_elim ctxt thm =
+  let val resolve = Thm.biresolution (SOME ctxt) false [(false, thm)] |> HEADGOAL #> Seq.hd
+  in zero_var_indexes (resolve revcut_rl) end
+
 fun unify_dresolve_tac norms unify rule ctxt =
   let val nprems = Thm.nprems_of rule
   in
     if nprems = 0 then
-      (@{log Logger.WARN} ctxt (fn _ =>
-        Pretty.block [
+      (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
           Pretty.str "destruct-resolution rule ",
           Thm.pretty_thm ctxt rule,
           Pretty.str " has no premises."
-        ] |> Pretty.string_of
-      );
+        ] |> Pretty.string_of);
       K no_tac)
-    else unify_eresolve_tac HOPU.norms_unify HOPU.unify norms unify (Tactic.make_elim rule) ctxt
+    else unify_eresolve_tac HOPU.norms_unify HOPU.unify norms
+      (Unification_Combinator.flip_unifier unify) (make_elim ctxt rule) ctxt
   end
 
 fun unify_dresolve_tacs norms unify rules ctxt =
@@ -174,22 +172,20 @@ fun unify_dresolve_every_tac norms unify rules = unify_dresolve_tacs norms unify
 fun unify_dresolve_any_tac norms unify rules =
   unify_dresolve_tacs norms unify rules #> Tactic_Util.CONCAT'
 
-fun unify_fresolve_tac norms unify rule ctxt i state =
+fun unify_fresolve_tac norms unify rule ctxt i =
   let val nprems = Thm.nprems_of rule
   in
     if nprems = 0 then
-      (@{log Logger.WARN} ctxt (fn _ =>
-        Pretty.block [
+      (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
           Pretty.str "forward-resolution rule ",
           Thm.pretty_thm ctxt rule,
           Pretty.str " has no premises."
-        ] |> Pretty.string_of
-      );
-      Seq.empty)
+        ] |> Pretty.string_of);
+      no_tac)
     else
-      unify_eresolve_tac_index HOPU.norms_unify HOPU.unify norms unify (Tactic.make_elim rule)
-        ctxt i state
-      |> Seq.map snd
+      unify_eresolve_tac_index HOPU.norms_unify HOPU.unify norms
+        (Unification_Combinator.flip_unifier unify) (make_elim ctxt rule) ctxt i
+      #> Seq.map snd
   end
 
 fun unify_fresolve_tacs norms unify rules ctxt =

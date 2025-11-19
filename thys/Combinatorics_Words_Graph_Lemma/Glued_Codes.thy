@@ -3,6 +3,7 @@
     Author:     Martin Raška, Charles University
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
+
 *)
 
 theory Glued_Codes
@@ -234,7 +235,7 @@ using assms proof (induction us rule: last_neq_block_induct)
   case (block k u us)
     have "k < n" and "\<not> [w] \<^sup>@ n \<le>f us"
       using \<open>\<not> [w] \<^sup>@ n \<le>f [w] \<^sup>@ k \<cdot> u # us\<close>
-      by (blast intro!: not_le_imp_less le_exps_pref, blast intro!: fac_ext_pref fac_ext_hd)
+      by (blast intro!: not_le_imp_less, blast intro!: fac_ext_pref fac_ext_hd)
     then show ?case
       using \<open>[w] \<^sup>@ k \<cdot> u # us \<in> lists G\<close> \<open>u \<noteq> w\<close> unfolding glue_block_append[OF \<open>u \<noteq> w\<close>]
       by (blast intro!: block.IH del: in_listsD in_listsI)
@@ -274,7 +275,7 @@ proof (induction us rule: last_neq_block_induct)
     have "\<not> [x] \<^sup>@ Suc (Suc 0) \<le>f [x] \<^sup>@ k \<cdot> u # us"
       using block.prems(2) by auto
     then have "k < Suc (Suc 0)"
-      by (blast intro!: not_le_imp_less le_exps_pref)
+      by (blast intro!: not_le_imp_less)
     then show ?case unfolding \<open>u = y\<close> glue_block_append[OF \<open>x \<noteq> y\<close>[symmetric]]
       by (elim less_SucE less_zeroE) (simp_all add: \<open>x \<noteq> y\<close> \<open>x \<noteq> y\<close>[symmetric] \<open>x \<noteq> \<epsilon>\<close> IH)
 qed simp
@@ -357,10 +358,15 @@ lemma ref_glue: "us = \<epsilon> \<or> last us \<noteq> w \<Longrightarrow> us \
   by (intro refI glue_in_lists_hull) simp_all
 
 end
-theorem glued_code:
+theorem glued_code_right:
   assumes "code C" and "w \<in> C"
   shows "code {w \<^sup>@ k \<cdot> u |k u. u \<in> C \<and> u \<noteq> w}"
   using code.glued_gens_code[OF \<open>code C\<close> \<open>w \<in> C\<close>] unfolding glued_gens_alt_def.
+
+theorem glued_code:
+  assumes "code C" and "w \<in> C"
+  shows "code {u \<cdot> w \<^sup>@ k |k u. u \<in> C \<and> u \<noteq> w}"
+  using glued_code_right[reversed, OF assms].
 
 section \<open>Gluing is primitivity preserving\<close>
 

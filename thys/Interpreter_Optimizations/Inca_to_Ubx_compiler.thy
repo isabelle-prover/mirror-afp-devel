@@ -218,7 +218,7 @@ lemma lift_instr_jump_in_range:
   shows "Subx.jump_in_range (set L) y"
   using assms
   by (induction F L ret N x \<Sigma>i rule: lift_instr.induct)
-    (auto simp: Let_def bind_eq_Some_conv in_set_member)
+    (auto simp: Let_def bind_eq_Some_conv)
 
 lemma lift_instrs_all_jump_in_range:
   assumes "lift_instrs F L ret N \<Sigma>i xs = Some (\<Sigma>o, ys)"
@@ -845,7 +845,7 @@ lemma lift_instr_complete:
   shows "\<exists>instr' \<Sigma>'. lift_instr F L ret N instr \<Sigma> = Some (instr', \<Sigma>') \<and> length \<Sigma>' = k"
   using assms
   by (cases "(F, L, ret, N, instr, \<Sigma>)" rule: lift_instr.cases)
-    (auto simp add: in_set_member Let_def
+    (auto simp add: Let_def
       dest: Map.domD dest!: list_all_eq_const_imp_replicate' elim: Sinca.sp_instr.cases)
 
 lemma lift_instrs_complete:

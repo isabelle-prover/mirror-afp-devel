@@ -1,5 +1,0 @@
-<a href="{{ .Get "href" | safeURL }}"
-   {{ if strings.HasPrefix (.Get "src") "http" }}target="_blank" rel="noreferrer noopener"{{ end }}
-   download>
-  {{ .Get "label" | safeHTML }}
-</a>

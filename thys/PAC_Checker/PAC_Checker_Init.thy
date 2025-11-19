@@ -69,14 +69,14 @@ where
                       (msort f (take (size xs div 2) xs))
                       (msort f (drop (size xs div 2) xs))"
 
-lemmas [code del] =
-  msort2.simps
-
-declare msort2.simps[simp del]
-lemmas [code] =
-  msort2.simps[unfolded swap_ternary.simps, simplified]
-
-declare msort2.simps[simp]
+lemma msort2_code [code]:
+  \<open>msort2 f [] = []\<close>
+  \<open>msort2 f [x] = [x]\<close>
+  \<open>msort2 f [x, y] = (if f x y then [x, y] else [y, x])\<close>
+  \<open>msort2 f (v # vb # va # vd) =
+    PAC_Checker_Init.merge f (msort f (v # take (Suc (length vd) div 2) (vb # va # vd)))
+     (msort f (drop (Suc (length vd) div 2) (vb # va # vd)))\<close>
+  by simp_all
 
 lemma msort_msort2:
   fixes xs :: \<open>'a :: linorder list\<close>
@@ -608,9 +608,8 @@ sepref_definition full_quicksort_poly_impl
     quicksort_poly_def[symmetric]
     le_term_order_rel'[symmetric]
     term_order_rel'_def[symmetric]
-    List.null_def
+    List.null_iff
   by sepref
-
 
 lemmas sort_poly_spec_hnr =
   full_quicksort_poly_impl.refine[FCOMP full_quicksort_sort_poly_spec]
@@ -744,9 +743,8 @@ sepref_definition full_quicksort_vars_impl
     quicksort_vars_def[symmetric]
     le_var_order_rel[symmetric]
     term_order_rel'_def[symmetric]
-    List.null_def
-  by sepref
-
+    List.null_iff
+    by sepref
 
 lemmas sort_vars_spec_hnr =
   full_quicksort_vars_impl.refine[FCOMP full_quicksort_sort_vars_spec]

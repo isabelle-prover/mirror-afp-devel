@@ -1,129 +1,129 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>noce on Archive of Formal Proofs
-    </title>
-    <link>/authors/noce/</link>
-    <description>
-        Recent content in noce 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/noce/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
-          <link>/entries/IMP_Noninterference_Extension.html</link>
-          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/IMP_Noninterference_Extension.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Information Flow Control via Stateful Intransitive Noninterference in Language IMP</title>
-          <link>/entries/IMP_Noninterference.html</link>
-          <pubDate>Mon, 12 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/IMP_Noninterference.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
-          <link>/entries/IMP_Compiler_Reuse.html</link>
-          <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/IMP_Compiler_Reuse.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Logging-independent Message Anonymity in the Relational Method</title>
-          <link>/entries/Logging_Independent_Anonymity.html</link>
-          <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Logging_Independent_Anonymity.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Shorter Compiler Correctness Proof for Language IMP</title>
-          <link>/entries/IMP_Compiler.html</link>
-          <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/IMP_Compiler.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
-          <link>/entries/Relational_Method.html</link>
-          <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Relational_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
-          <link>/entries/Generalized_Counting_Sort.html</link>
-          <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Generalized_Counting_Sort.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
-          <link>/entries/Password_Authentication_Protocol.html</link>
-          <pubDate>Tue, 03 Jan 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Password_Authentication_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
-          <link>/entries/Noninterference_Concurrent_Composition.html</link>
-          <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Conservation of CSP Noninterference Security under Sequential Composition</title>
-          <link>/entries/Noninterference_Sequential_Composition.html</link>
-          <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Noninterference_Sequential_Composition.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Inductive Unwinding Theorem for CSP Noninterference Security</title>
-          <link>/entries/Noninterference_Inductive_Unwinding.html</link>
-          <pubDate>Tue, 18 Aug 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Noninterference_Inductive_Unwinding.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Reasoning about Lists via List Interleaving</title>
-          <link>/entries/List_Interleaving.html</link>
-          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Interleaving.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Generic Unwinding Theorem for CSP Noninterference Security</title>
-          <link>/entries/Noninterference_Generic_Unwinding.html</link>
-          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Noninterference_Generic_Unwinding.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Ipurge Unwinding Theorem for CSP Noninterference Security</title>
-          <link>/entries/Noninterference_Ipurge_Unwinding.html</link>
-          <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Noninterference_Ipurge_Unwinding.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Noninterference Security in Communicating Sequential Processes</title>
-          <link>/entries/Noninterference_CSP.html</link>
-          <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Noninterference_CSP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
-          <link>/entries/Tail_Recursive_Functions.html</link>
-          <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/Tail_Recursive_Functions.html</guid>
-          <description></description>
-        </item>
+    <title>Pasquale Noce</title>
+    <link>https://isa-afp.org/authors/noce/</link>
+    <description>AFP entries of Pasquale Noce</description><item>
+  <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
+  <link>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</link>
+  <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP in the AFP</description>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+    <category>Computer science/Security</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Information Flow Control via Stateful Intransitive Noninterference in Language IMP</title>
+  <link>https://isa-afp.org/entries/IMP_Noninterference.html</link>
+  <pubDate>Mon, 12 Feb 2024 00:00:00 +0000</pubDate>
+  <description>Information Flow Control via Stateful Intransitive Noninterference in Language IMP in the AFP</description>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+  <link>https://isa-afp.org/entries/IMP_Compiler_Reuse.html</link>
+  <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+  <description>A Reuse-Based Multi-Stage Compiler Verification for Language IMP in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
+<item>
+  <title>Logging-independent Message Anonymity in the Relational Method</title>
+  <link>https://isa-afp.org/entries/Logging_Independent_Anonymity.html</link>
+  <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+  <description>Logging-independent Message Anonymity in the Relational Method in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+  <link>https://isa-afp.org/entries/IMP_Compiler.html</link>
+  <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
+  <description>A Shorter Compiler Correctness Proof for Language IMP in the AFP</description>
+    <category>Computer science/Programming languages/Compiling</category>
+</item>
+<item>
+  <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
+  <link>https://isa-afp.org/entries/Relational_Method.html</link>
+  <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
+  <description>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+  <link>https://isa-afp.org/entries/Generalized_Counting_Sort.html</link>
+  <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+  <description>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Functional programming</category>
+</item>
+<item>
+  <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
+  <link>https://isa-afp.org/entries/Password_Authentication_Protocol.html</link>
+  <pubDate>Tue, 03 Jan 2017 00:00:00 +0000</pubDate>
+  <description>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
+  <link>https://isa-afp.org/entries/Noninterference_Concurrent_Composition.html</link>
+  <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
+  <description>Conservation of CSP Noninterference Security under Concurrent Composition in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Conservation of CSP Noninterference Security under Sequential Composition</title>
+  <link>https://isa-afp.org/entries/Noninterference_Sequential_Composition.html</link>
+  <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
+  <description>Conservation of CSP Noninterference Security under Sequential Composition in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>The Inductive Unwinding Theorem for CSP Noninterference Security</title>
+  <link>https://isa-afp.org/entries/Noninterference_Inductive_Unwinding.html</link>
+  <pubDate>Tue, 18 Aug 2015 00:00:00 +0000</pubDate>
+  <description>The Inductive Unwinding Theorem for CSP Noninterference Security in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>The Ipurge Unwinding Theorem for CSP Noninterference Security</title>
+  <link>https://isa-afp.org/entries/Noninterference_Ipurge_Unwinding.html</link>
+  <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+  <description>The Ipurge Unwinding Theorem for CSP Noninterference Security in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>The Generic Unwinding Theorem for CSP Noninterference Security</title>
+  <link>https://isa-afp.org/entries/Noninterference_Generic_Unwinding.html</link>
+  <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+  <description>The Generic Unwinding Theorem for CSP Noninterference Security in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Reasoning about Lists via List Interleaving</title>
+  <link>https://isa-afp.org/entries/List_Interleaving.html</link>
+  <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+  <description>Reasoning about Lists via List Interleaving in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Noninterference Security in Communicating Sequential Processes</title>
+  <link>https://isa-afp.org/entries/Noninterference_CSP.html</link>
+  <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+  <description>Noninterference Security in Communicating Sequential Processes in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
+  <link>https://isa-afp.org/entries/Tail_Recursive_Functions.html</link>
+  <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
+  <description>A General Method for the Proof of Theorems on Tail-recursive Functions in the AFP</description>
+    <category>Computer science/Functional programming</category>
+</item>
+
   </channel>
 </rss>

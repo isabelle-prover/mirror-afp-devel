@@ -366,7 +366,7 @@ next
     obtain K' T' where s_Ana: "Ana s = (K', T')" by (metis surj_pair)
     hence "set K = set K' \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>" "set T = set T' \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
       using Ana_subst'[of f S K' T'] fT Ana.hyps(2) s(2) by auto
-    then obtain k' where k': "k' \<in> set K'" "k = k' \<cdot> \<theta>" using Ana.hyps(3) by fast
+    then obtain k' where k': "k' \<in> set K'" "k = k' \<cdot> \<theta>" using Ana.hyps(3) by auto
     show ?thesis
     proof (cases "k' \<in> M")
       case True thus ?thesis using k' \<theta>(1,2) by blast

@@ -5,6 +5,7 @@ session First_Order_Terms = "Abstract-Rewriting" +
   options [timeout = 300]
   sessions
     "HOL-Library"
+    Certification_Monads
     Polynomial_Factorization
     Show
     Fresh_Identifiers
@@ -14,16 +15,18 @@ session First_Order_Terms = "Abstract-Rewriting" +
     Renaming2_String
   theories
     Seq_More
-    Fun_More
+    Fun_More2
     Option_Monad
   theories
     Matching
+    Subterm_and_Context
     Unification_String
     Subsumption
-    Subterm_and_Context
   theories 
     Position
     Term_More
+    Term_Impl
+    Unification_More
   document_files
     "root.tex"
     "root.bib"

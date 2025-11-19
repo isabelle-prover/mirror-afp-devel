@@ -876,6 +876,14 @@ val long_doc_class_prefix = ISA_prefix ^ "long_doc_class_"
 
 fun is_ISA s = String.isPrefix ISA_prefix (Long_Name.base_name s)
 
+val strip_positions_is_ISA =
+  let
+    fun strip ((t as Const ("_type_constraint_", \<^Type>\<open>fun A _\<close>)) $ (u as Const (s,_))) =
+          if Term_Position.detect_positionT A andalso is_ISA s then u else t $ u
+      | strip (t $ u) = strip t $ strip u
+      | strip (Abs (a, T, b)) = Abs (a, T, strip b)
+      | strip t = t;
+  in strip end;
 
 fun transduce_term_global {mk_elaboration=mk_elaboration} (term,pos) thy =
     (* pre: term should be fully typed in order to allow type-related term-transformations *)
@@ -908,24 +916,27 @@ fun transduce_term_global {mk_elaboration=mk_elaboration} (term,pos) thy =
                 else Const(s, ty)
           | T(Abs(s,ty,t)) = Abs(s,ty,T t)
           | T t = t
-    in T term end
+    in T (strip_positions_is_ISA term) end
 
 (* Elaborate an Isabelle_DOF term-antiquotation from an only parsed-term (not checked) *)
-fun parsed_elaborate ctxt pos (Const(s,ty) $ t) =
-        if is_ISA s
-        then Syntax.check_term ctxt (Const(s, ty) $ t)
-             |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-        else (Const(s,ty) $ (parsed_elaborate ctxt pos t))
-  | parsed_elaborate ctxt pos (t1 $ t2) = parsed_elaborate ctxt pos (t1) $ parsed_elaborate ctxt pos (t2)
-  | parsed_elaborate ctxt pos (Const(s,ty)) =
-        if is_ISA s
-        then Syntax.check_term ctxt (Const(s, ty))
-             |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-        else Const(s,ty)
-  | parsed_elaborate ctxt pos (Abs(s,ty,t)) = Abs (s,ty,parsed_elaborate ctxt pos t)
-  | parsed_elaborate _ _ t = t
+fun parsed_elaborate ctxt pos  =
+  let
+    fun elaborate (Const(s,ty) $ t) =
+            if is_ISA s
+            then Syntax.check_term ctxt (Const(s, ty) $ t)
+                 |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+            else (Const(s,ty) $ (elaborate t))
+      | elaborate (t1 $ t2) = elaborate (t1) $ elaborate (t2)
+      | elaborate (Const(s,ty)) =
+            if is_ISA s
+            then Syntax.check_term ctxt (Const(s, ty))
+                 |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+            else Const(s,ty)
+      | elaborate (Abs(s,ty,t)) = Abs (s,ty,elaborate t)
+      | elaborate t = t
+  in elaborate o strip_positions_is_ISA end
 
 fun elaborate_term' ctxt parsed_term = parsed_elaborate ctxt Position.none parsed_term
 
@@ -938,23 +949,26 @@ fun check_term ctxt term = transduce_term_global {mk_elaboration=false}
                                                               (Proof_Context.theory_of ctxt)
 
 (* Check an Isabelle_DOF term-antiquotation from an only parsed-term (not checked) *)
-fun parsed_check ctxt pos (Const(s,ty) $ t) =
-        if is_ISA s
-        then let val _ = Syntax.check_term ctxt (Const(s, ty) $ t)
-                         |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-             in (Const(s,ty) $ (parsed_check ctxt pos t)) end
-        else (Const(s,ty) $ (parsed_check ctxt pos t))
-  | parsed_check ctxt pos (t1 $ t2) = parsed_check ctxt pos (t1) $ parsed_check ctxt pos (t2)
-  | parsed_check ctxt pos (Const(s,ty)) =
-        if is_ISA s
-        then let val _ = Syntax.check_term ctxt (Const(s, ty))
-                         |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-             in Const(s,ty) end
-        else Const(s,ty)
-  | parsed_check ctxt pos (Abs(s,ty,t)) = Abs (s,ty,parsed_check ctxt pos t)
-  | parsed_check _ _ t = t
+fun parsed_check ctxt pos =
+  let
+    fun check (Const(s,ty) $ t) =
+            if is_ISA s
+            then let val _ = Syntax.check_term ctxt (Const(s, ty) $ t)
+                             |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+                 in (Const(s,ty) $ (check t)) end
+            else (Const(s,ty) $ (check t))
+      | check (t1 $ t2) = check (t1) $ check (t2)
+      | check (Const(s,ty)) =
+            if is_ISA s
+            then let val _ = Syntax.check_term ctxt (Const(s, ty))
+                             |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+                 in Const(s,ty) end
+            else Const(s,ty)
+      | check (Abs(s,ty,t)) = Abs (s,ty,check t)
+      | check t = t
+  in check o strip_positions_is_ISA end
 
 fun check_term' ctxt parsed_term = parsed_check ctxt Position.none parsed_term
 
@@ -1082,8 +1096,8 @@ ML \<open>
       let fun err () = raise TERM ("string_tr", args) in
         (case args of
           [(c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p] =>
-            (case Term_Position.decode_position p of
-              SOME (pos, _) => c $ f (mk_string f_mk accu (content (s, pos))) $ p
+            (case Term_Position.decode_position1 p of
+              SOME {pos, ...} => c $ f (mk_string f_mk accu (content (s, pos))) $ p
             | NONE => err ())
         | _ => err ())
       end;
@@ -1285,15 +1299,14 @@ fun declare_ISA_class_accessor_and_check_instance (params, doc_class_name, bind_
     fun mixfix_enclose name = name |> enclose "@{"  " _}"
     val mixfix = clean_mixfix bname |> mixfix_enclose
     val mixfix' = clean_mixfix doc_class_name |> mixfix_enclose
+    fun add_const (b, T, mx) =
+      Sign.add_consts [(b, T, mx)] #>
+      DOF_core.add_isa_transformer b
+        ((check_instance, elaborate_instance) |> DOF_core.make_isa_transformer)
   in
     thy |> rm_mixfix bname' mixfix
-        |> Sign.add_consts [(bind, const_typ, Mixfix.mixfix mixfix)]
-        |> DOF_core.add_isa_transformer bind ((check_instance, elaborate_instance)
-                                               |> DOF_core.make_isa_transformer)
-        |> Sign.add_consts [(bind', const_typ, Mixfix.mixfix mixfix')]
-        |> DOF_core.add_isa_transformer bind' ((check_instance, elaborate_instance)
-                                                |> DOF_core.make_isa_transformer)
-
+        |> add_const (bind, const_typ, Mixfix.mixfix mixfix)
+        |> add_const (bind', const_typ, Mixfix.mixfix mixfix')
   end
 
 fun elaborate_instances_of thy _ _ term_option _ =
@@ -2260,7 +2273,7 @@ fun meta_args_2_latex thy sem_attrs transform_attr
         fun markup2string s = String.concat (List.filter (fn c => c <> Symbol.DEL) 
                                             (Symbol.explode (Protocol_Message.clean_output s)))
         fun ltx_of_markup ctxt s = let
-  	                            val term = (Syntax.check_term ctxt o Syntax.parse_term ctxt) s
+                                val term = (Syntax.check_term ctxt o Syntax.parse_term ctxt) s
                                 val str_of_term = ltx_of_term  ctxt true term 
                                   (*  handle _ => "Exception in ltx_of_term" *)
                               in
@@ -2270,7 +2283,7 @@ fun meta_args_2_latex thy sem_attrs transform_attr
         val ctxt = Proof_Context.init_global thy
         val actual_args =  map (fn ((lhs,_),rhs) => (toLong lhs, ltx_of_markup ctxt rhs))
                                attr_list
-	      val default_args =
+        val default_args =
           (DOF_core.get_attribute_defaults cid_long thy)
           |> map (fn (b,_, parsed_term) =>
                     (toLong (Long_Name.base_name ( Sign.full_name thy b))
@@ -2560,13 +2573,13 @@ fun get_positions ctxt x =
     fun get Cs (Const ("_type_constraint_", C) $ t) = get (C :: Cs) t
       | get Cs (Free (y, T)) =
           if x = y then
-            map_filter Term_Position.decode_positionT
+            maps Term_Position.decode_positionT
               (T :: map (Type.constraint_type ctxt) Cs)
           else []
       | get _ (t $ u) = get [] t @ get [] u
       | get _ (Abs (_, _, t)) = get [] t
       | get _ _ = [];
-  in get [] end;
+  in map #pos o get [] end;
 
 fun dummy_frees ctxt xs tss =
   let
@@ -2620,17 +2633,14 @@ fun gen_def prep_spec prep_att raw_var raw_params raw_prems ((a, raw_atts), raw_
     val lthy3 = lthy2 |> Spec_Rules.add name Spec_Rules.equational [lhs] [th];
 
     val ([(def_name, [th'])], lthy4) = lthy3
-      |> Local_Theory.notes [((name, atts), [([th], [])])];
+      |> Local_Theory.notes [((name, Code.singleton_default_equation_attrib :: atts), [([th], [])])];
 
-    val lthy5 = lthy4
-      |> Code.declare_default_eqns [(th', true)];
-
-    val lhs' = Morphism.term (Local_Theory.target_morphism lthy5) lhs;
+    val lhs' = Morphism.term (Local_Theory.target_morphism lthy) lhs;
 
     val _ =
-      Proof_Display.print_consts int (Position.thread_data ()) lthy5
+      Proof_Display.print_consts int (Position.thread_data ()) lthy4
         (Frees.defined (Frees.build (Frees.add_frees lhs'))) [(x, T)];
-  in ((lhs, (def_name, th')), lthy5) end;
+  in ((lhs, (def_name, th')), lthy4) end;
 
 val definition_cmd = gen_def read_spec_open Attrib.check_src;
 
@@ -2696,9 +2706,8 @@ fun gen_theorem schematic bundle_includes prep_att prep_stmt
       |> prep_statement (prep_att lthy) prep_stmt elems raw_concl;
     val atts = more_atts @ map (prep_att lthy) raw_atts;
 
-    val pos = Position.thread_data ();
     val print_results =
-      Proof_Display.print_results {interactive = int, pos = pos, proof_state = false};
+      Proof_Display.print_results {interactive = int, pos = Position.thread_data ()};
 
     fun after_qed' results goal_ctxt' =
       let

@@ -1,0 +1,9 @@
+chapter AFP
+
+session "No_Free_Lunch_ML" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories
+    "No_Free_Lunch_ML"
+  document_files
+    "root.tex"
+    "root.bib"

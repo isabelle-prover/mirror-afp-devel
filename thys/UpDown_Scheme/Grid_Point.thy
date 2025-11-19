@@ -98,11 +98,11 @@ qed
 lemma child_ex_neighbour: "\<exists> b'. child b dir d = child b' (inv dir) d"
 proof
   show "child b dir d = child (b[d := (lv b d, ix b d + sgn dir)]) (inv dir) d"
-    unfolding child_def ix_def lv_def by (cases "d < length b", auto simp add: algebra_simps)
+    unfolding child_def ix_def lv_def by (cases "d < length b", auto simp: list_update_beyond algebra_simps)
 qed
 
-lemma child_level_gt[simp]: "level (child p dir d) >= level p"
-  by (cases "d < length p", simp, simp add: child_def)
+lemma child_level_gt[simp]: "level (child p dir d) \<ge> level p"
+  by (cases "d < length p", simp, simp add: child_def list_update_beyond)
 
 lemma child_estimate_child:
   assumes "d < length p"

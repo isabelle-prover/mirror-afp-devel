@@ -28,8 +28,8 @@ definition size_tree :: "'a tree \<Rightarrow> nat" where
 "size_tree t = val(size_tree_tm t)"
 
 lemma size_tree_Leaf[simp,code]: "size_tree \<langle>\<rangle> = 0"
-using val_cong[OF size_tree_tm.simps(1)]
-by(simp only: size_tree_def val_simps)
+using val_cong [OF size_tree_tm.simps(1)]
+by (simp only: size_tree_def val_simps)
 
 lemma size_tree_Node[simp,code]:
   "size_tree \<langle>l, x, r\<rangle> =
@@ -37,7 +37,7 @@ lemma size_tree_Node[simp,code]:
        n = size_tree r
    in m+n+1)"
 using val_cong[OF size_tree_tm.simps(2)]
-by(simp only: size_tree_def val_simps)
+by (simp only: size_tree_def val_simps)
 
 lemma size_tree: "size_tree t = size t"
 by(induction t rule: size_tree_tm.induct)(auto)

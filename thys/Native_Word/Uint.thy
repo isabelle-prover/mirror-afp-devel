@@ -5,9 +5,10 @@
 
 chapter \<open>Unsigned words of default size\<close>
 
-theory Uint imports
-  Word_Type_Copies
-  Code_Target_Integer_Bit
+theory Uint
+  imports
+    Uint_Common
+    Code_Target_Word
 begin
 
 text \<open>
@@ -70,7 +71,7 @@ declare uint.of_word_of [code abstype]
 
 declare Quotient_uint [transfer_rule]
 
-instantiation uint :: \<open>{comm_ring_1, semiring_modulo, equal, linorder}\<close>
+instantiation uint :: \<open>{comm_ring_1, semiring_modulo, equal, linorder, order_bot, order_top}\<close>
 begin
 
 lift_definition zero_uint :: uint is 0 .
@@ -84,12 +85,15 @@ lift_definition modulo_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint
 lift_definition equal_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>HOL.equal\<close> .
 lift_definition less_eq_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>(\<le>)\<close> .
 lift_definition less_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> bool\<close> is \<open>(<)\<close> .
+lift_definition bot_uint :: uint is bot .
+lift_definition top_uint :: uint is top .
 
 global_interpretation uint: word_type_copy_ring Abs_uint Rep_uint
   by standard (fact zero_uint.rep_eq one_uint.rep_eq
     plus_uint.rep_eq uminus_uint.rep_eq minus_uint.rep_eq
     times_uint.rep_eq divide_uint.rep_eq modulo_uint.rep_eq
-    equal_uint.rep_eq less_eq_uint.rep_eq less_uint.rep_eq)+
+    equal_uint.rep_eq less_eq_uint.rep_eq less_uint.rep_eq
+    bot_uint.rep_eq top_uint.rep_eq)+
 
 instance proof -
   show \<open>OFCLASS(uint, comm_ring_1_class)\<close>
@@ -100,9 +104,16 @@ instance proof -
     by (fact uint.of_class_equal)
   show \<open>OFCLASS(uint, linorder_class)\<close>
     by (fact uint.of_class_linorder)
+  show \<open>OFCLASS(uint, order_bot_class)\<close>
+    by (fact uint.of_class_order_bot)
+  show \<open>OFCLASS(uint, order_top_class)\<close>
+    by (fact uint.of_class_order_top)
 qed
 
 end
+
+instance uint :: \<open>{interval_bot, interval_top}\<close>
+  by (fact uint.of_class_interval_bot uint.of_class_interval_top)+
 
 instantiation uint :: ring_bit_operations
 begin
@@ -163,27 +174,12 @@ global_interpretation uint: word_type_copy_more Abs_uint Rep_uint signed_drop_bi
          Uint.rep_eq integer_of_uint.rep_eq integer_eq_iff)
   done
 
-instantiation uint :: "{size, msb, set_bit, bit_comprehension}"
+instantiation uint :: "{size, msb, bit_comprehension}"
 begin
 
 lift_definition size_uint :: \<open>uint \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint :: \<open>uint \<Rightarrow> bool\<close> is msb .
-
-text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
-
-definition set_bit_uint :: \<open>uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint\<close>
-  where set_bit_uint_eq: \<open>set_bit_uint a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-
-context
-  includes lifting_syntax
-begin
-
-lemma set_bit_uint_transfer [transfer_rule]:
-  \<open>(cr_uint ===> (=) ===> (\<longleftrightarrow>) ===> cr_uint) Generic_set_bit.set_bit Generic_set_bit.set_bit\<close>
-  by (simp only: set_bit_eq [abs_def] set_bit_uint_eq [abs_def]) transfer_prover
-
-end
 
 lift_definition set_bits_uint :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> uint\<close> is set_bits .
 lift_definition set_bits_aux_uint :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> uint \<Rightarrow> uint\<close> is set_bits_aux .
@@ -193,7 +189,6 @@ global_interpretation uint: word_type_copy_misc Abs_uint Rep_uint signed_drop_bi
   by (standard; transfer) simp_all
 
 instance using uint.of_class_bit_comprehension
-  uint.of_class_set_bit
   by simp_all standard
 
 end
@@ -203,18 +198,11 @@ section \<open>Code setup\<close>
 code_printing code_module Uint \<rightharpoonup> (SML)
 \<open>
 structure Uint : sig
-  val set_bit : Word.word -> IntInf.int -> bool -> Word.word
   val shiftl : Word.word -> IntInf.int -> Word.word
   val shiftr : Word.word -> IntInf.int -> Word.word
   val shiftr_signed : Word.word -> IntInf.int -> Word.word
   val test_bit : Word.word -> IntInf.int -> bool
 end = struct
-
-fun set_bit x n b =
-  let val mask = Word.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
-  in if b then Word.orb (x, mask)
-     else Word.andb (x, Word.notb mask)
-  end
 
 fun shiftl x n =
   Word.<< (x, Word.fromLargeInt (IntInf.toLarge n))
@@ -229,7 +217,7 @@ fun test_bit x n =
   Word.andb (x, Word.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word.fromInt 0
 
 end; (* struct Uint *)\<close>
-code_reserved SML Uint
+code_reserved (SML) Uint
 
 code_printing code_module Uint \<rightharpoonup> (Haskell)
  \<open>module Uint(Int, Word, dflt_size) where
@@ -256,7 +244,7 @@ code_printing code_module Uint \<rightharpoonup> (Haskell)
     bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Int
     bitSize_aux = Data.Bits.bitSize
 \<close>
-code_reserved Haskell Uint dflt_size
+code_reserved (Haskell) Uint dflt_size
 
 text \<open>
   OCaml and Scala provide only signed bit numbers, so we use these and 
@@ -269,7 +257,6 @@ code_printing code_module "Uint" \<rightharpoonup> (OCaml)
   val dflt_size : Z.t
   val less : t -> t -> bool
   val less_eq : t -> t -> bool
-  val set_bit : t -> Z.t -> bool -> t
   val shiftl : t -> Z.t -> t
   val shiftr : t -> Z.t -> t
   val shiftr_signed : t -> Z.t -> t
@@ -295,11 +282,6 @@ let less_eq x y =
     y < 0 &&  x <= y
   else y < 0 || x <= y;;
 
-let set_bit x n b =
-  let mask = 1 lsl (Z.to_int n)
-  in if b then x lor mask
-     else x land (lnot mask);;
-
 let shiftl x n = x lsl (Z.to_int n);;
 
 let shiftr x n = x lsr (Z.to_int n);;
@@ -320,7 +302,7 @@ let int64_mask =
   else Int64.of_string "0xFFFFFFFFFFFFFFFF";;
 
 end;; (*struct Uint*)\<close>
-code_reserved OCaml Uint
+code_reserved (OCaml) Uint
 
 code_printing code_module Uint \<rightharpoonup> (Scala)
 \<open>object Uint {
@@ -338,12 +320,6 @@ def less_eq(x: Int, y: Int) : Boolean =
     case false => y < 0 || x <= y
   }
 
-def set_bit(x: Int, n: BigInt, b: Boolean) : Int =
-  b match {
-    case true => x | (1 << n.intValue)
-    case false => x & (1 << n.intValue).unary_~
-  }
-
 def shiftl(x: Int, n: BigInt) : Int = x << n.intValue
 
 def shiftr(x: Int, n: BigInt) : Int = x >>> n.intValue
@@ -354,7 +330,7 @@ def test_bit(x: Int, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint */\<close>
-code_reserved Scala Uint
+code_reserved (Scala) Uint
 
 
 text \<open>
@@ -402,14 +378,14 @@ lemma Uint_code [code]:
   unfolding Uint_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-       apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed
-         wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def)
+       apply (auto simp add: mask_eq_exp_minus_1 word_of_int_via_signed
+         wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def Let_def)
   done
 
 lemma Uint_signed_code [code]:
   "Rep_uint (Uint_signed i) = 
-  (if i < wivs_least_integer \<or> i \<ge> wivs_overflow_integer then Rep_uint (undefined Uint i) else word_of_int (int_of_integer_symbolic i))"
-  unfolding Uint_signed_def Uint_def int_of_integer_symbolic_def by(simp add: Abs_uint_inverse)
+  (if i < wivs_least_integer \<or> i \<ge> wivs_overflow_integer then Rep_uint (undefined Uint i) else word_of_int (int_of_integer i))"
+  unfolding Uint_signed_def Uint_def by (simp add: Abs_uint_inverse)
 end
 
 text \<open>
@@ -676,7 +652,6 @@ global_interpretation uint: word_type_copy_target_language Abs_uint Rep_uint sig
     and uint_shiftl = uint.shiftl
     and uint_shiftr = uint.shiftr
     and uint_sshiftr = uint.sshiftr
-    and uint_set_bit = uint.set_bit
   by standard (simp_all add: wivs_index_def)
 
 code_printing constant uint_test_bit \<rightharpoonup>
@@ -686,14 +661,6 @@ code_printing constant uint_test_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.testBitBounded" and
   (OCaml) "Uint.test'_bit" and
   (Scala) "Uint.test'_bit"
-
-code_printing constant uint_set_bit \<rightharpoonup>
-  (SML) "Uint.set'_bit" and
-  (Eval) "(raise (Fail \"Machine dependent code\"))" and
-  (Quickcheck) "Uint.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (OCaml) "Uint.set'_bit" and
-  (Scala) "Uint.set'_bit"
 
 code_printing constant uint_shiftl \<rightharpoonup>
   (SML) "Uint.shiftl" and
@@ -749,12 +716,9 @@ interpretation quickcheck_narrowing_samples
   "Typerep.Typerep (STR ''Uint.uint'') []" .
 
 definition "narrowing_uint d = qc_narrowing_drawn_from (narrowing_samples d) d"
-declare [[code drop: "partial_term_of :: uint itself \<Rightarrow> _"]]
 lemmas partial_term_of_uint [code] = partial_term_of_code
 
 instance ..
 end
-
-find_consts name: wivs
 
 end

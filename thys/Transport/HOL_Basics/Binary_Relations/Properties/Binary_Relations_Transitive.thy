@@ -74,7 +74,7 @@ lemma transitiveD [dest]:
   assumes "transitive R"
   and "R x y" "R y z"
   shows "R x z"
-  using assms by (urule (d) transitive_onD where chained = insert) simp_all
+  using assms by (urule (d) transitive_onD chained: insert) simp_all
 
 lemma transitive_on_if_transitive:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

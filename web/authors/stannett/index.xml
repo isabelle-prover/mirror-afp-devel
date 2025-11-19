@@ -1,45 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>stannett on Archive of Formal Proofs
-    </title>
-    <link>/authors/stannett/</link>
-    <description>
-        Recent content in stannett 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/stannett/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>The Stone-Cech Compactification</title>
-          <link>/entries/Stone_Cech.html</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Stone_Cech.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
-          <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>No Faster-Than-Light Observers (GenRel)</title>
-          <link>/entries/No_FTL_observers_Gen_Rel.html</link>
-          <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/No_FTL_observers_Gen_Rel.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>No Faster-Than-Light Observers</title>
-          <link>/entries/No_FTL_observers.html</link>
-          <pubDate>Thu, 28 Apr 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/No_FTL_observers.html</guid>
-          <description></description>
-        </item>
+    <title>Mike Stannett</title>
+    <link>https://isa-afp.org/authors/stannett/</link>
+    <description>AFP entries of Mike Stannett</description><item>
+  <title>The Stone-Cech Compactification</title>
+  <link>https://isa-afp.org/entries/Stone_Cech.html</link>
+  <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+  <description>The Stone-Cech Compactification in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
+  <link>https://isa-afp.org/entries/MHComputation.html</link>
+  <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
+  <description>The Halting Problem is Soluble in Malament-Hogarth Spacetimes in the AFP</description>
+    <category>Computer science</category>
+    <category>Logic/Computability</category>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
+  <title>No Faster-Than-Light Observers (GenRel)</title>
+  <link>https://isa-afp.org/entries/No_FTL_observers_Gen_Rel.html</link>
+  <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+  <description>No Faster-Than-Light Observers (GenRel) in the AFP</description>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
+  <title>No Faster-Than-Light Observers</title>
+  <link>https://isa-afp.org/entries/No_FTL_observers.html</link>
+  <pubDate>Thu, 28 Apr 2016 00:00:00 +0000</pubDate>
+  <description>No Faster-Than-Light Observers in the AFP</description>
+    <category>Mathematics/Physics</category>
+</item>
+
   </channel>
 </rss>

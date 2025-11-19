@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kuldeep S. Meel</title>
+    <link>https://isa-afp.org/authors/meel/</link>
+    <description>AFP entries of Kuldeep S. Meel</description><item>
+  <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+  <link>https://isa-afp.org/entries/CVM_Distinct_Elements.html</link>
+  <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+  <description>Verification of the CVM algorithm with a New Recursive Analysis Technique in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
+  </channel>
+</rss>

@@ -206,7 +206,7 @@ proof-
       moreover have \<open>norm (x n - x m) < e/(2*M)\<close>
         using \<open>N \<le> m\<close> \<open>N \<le> n\<close> \<open>N1 \<le> N\<close> N1_def by auto
       ultimately have \<open>norm ((x n \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y n)) < (e/(2*M)) * M\<close>
-        by (smt linordered_semiring_strict_class.mult_strict_mono norm_ge_zero)
+        by (smt mult_strict_mono norm_ge_zero)
       moreover have \<open> (e/(2*M)) * M = e/2\<close>
         using \<open>M > 0\<close> by simp
       ultimately have  \<open>norm ((x n \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y n)) < e/2\<close>
@@ -224,7 +224,7 @@ proof-
       moreover have \<open>norm (y n - y m) < e/(2*M)\<close>
         using \<open>N \<le> m\<close> \<open>N \<le> n\<close> \<open>N2 \<le> N\<close> N2_def by auto
       ultimately have \<open>norm ((x m \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y m)) < M * (e/(2*M))\<close>
-        by (smt linordered_semiring_strict_class.mult_strict_mono norm_ge_zero)
+        by (smt mult_strict_mono norm_ge_zero)
       moreover have \<open>M * (e/(2*M)) = e/2\<close>
         using \<open>M > 0\<close> by simp
       ultimately have  \<open>norm ((x m \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y m)) < e/2\<close>
@@ -253,7 +253,7 @@ next
     by auto
   show \<open>n \<le> norm \<psi>\<close>
     unfolding n\<phi>
-    by (simp add: complex_inner_class.Cauchy_Schwarz_ineq2 divide_le_eq ordered_field_class.sign_simps(33))
+    by (simp add: Cauchy_Schwarz_ineq2 mult.commute divide_le_eq)
 qed
 
 lemma cinner_sup_onorm:
@@ -275,12 +275,13 @@ next
     by force
 next
   fix b
-  assume \<open>b \<in> range (\<lambda>(\<psi>, \<phi>). cmod (cinner \<psi> (A \<phi>)) / (norm \<psi> * norm \<phi>))\<close>
-  then obtain \<psi> \<phi> where b: \<open>b = cmod (cinner \<psi> (A \<phi>)) / (norm \<psi> * norm \<phi>)\<close>
+  assume \<open>b \<in> range (\<lambda>(\<psi>, \<phi>).  cmod (\<psi> \<bullet>\<^sub>C A \<phi>) / (norm \<psi> * norm \<phi>))\<close>
+  then obtain \<psi> \<phi> where b: \<open>b =  cmod (\<psi> \<bullet>\<^sub>C A \<phi>) / (norm \<psi> * norm \<phi>)\<close>
     by auto
-  then have \<open>b \<le> norm (A \<phi>) / norm \<phi>\<close>
-    apply auto
-    by (smt (verit, ccfv_threshold) complex_inner_class.Cauchy_Schwarz_ineq2 division_ring_divide_zero linordered_field_class.divide_right_mono mult_cancel_left1 nonzero_mult_divide_mult_cancel_left2 norm_imp_pos_and_ge ordered_field_class.sign_simps(33) zero_le_divide_iff)
+  then have \<open>b \<le> norm (A \<phi>) / norm \<phi>\<close> 
+    using Cauchy_Schwarz_ineq2[of \<psi> "A \<phi>"]
+    apply (simp add: divide_simps split: if_split_asm)
+    by (metis mult_le_cancel_left_pos mult.left_commute zero_less_norm_iff)
   then show \<open>\<exists>a\<in>range (\<lambda>x. norm (A x) / norm x). b \<le> a\<close>
     by auto
 qed
@@ -493,7 +494,9 @@ definition is_ortho_set :: "'a::complex_inner set \<Rightarrow> bool" where
   \<comment> \<open>Orthogonal set\<close>
   \<open>is_ortho_set S \<longleftrightarrow> (\<forall>x\<in>S. \<forall>y\<in>S. x \<noteq> y \<longrightarrow> (x \<bullet>\<^sub>C y) = 0) \<and> 0 \<notin> S\<close>
 
-definition is_onb where \<open>is_onb E \<longleftrightarrow> is_ortho_set E \<and> (\<forall>b\<in>E. norm b = 1) \<and> ccspan E = top\<close>
+definition is_onb :: "'a::complex_inner set \<Rightarrow> bool" where
+  \<comment> \<open>Orthonormal basis\<close>
+  \<open>is_onb E \<longleftrightarrow> is_ortho_set E \<and> (\<forall>b\<in>E. norm b = 1) \<and> ccspan E = top\<close>
 
 lemma is_ortho_set_empty[simp]: "is_ortho_set {}"
   unfolding is_ortho_set_def by auto
@@ -804,6 +807,24 @@ proof -
     using assms by auto
   finally show ?thesis
     by -
+qed
+
+lemma cfinite_dim_subspace_has_onb:
+  assumes \<open>cfinite_dim S\<close> and \<open>csubspace S\<close>
+  shows \<open>\<exists>B. finite B \<and> is_ortho_set B \<and> cspan B = S \<and> (\<forall>x\<in>B. norm x = 1)\<close>
+proof -
+  from assms
+  obtain C where \<open>finite C\<close> and \<open>cindependent C\<close> and \<open>cspan C = S\<close>
+    using cfinite_dim_subspace_has_basis by blast
+  obtain B where \<open>finite B\<close> and \<open>is_ortho_set B\<close> and \<open>cspan B = cspan C\<close>
+    and norm: \<open>x \<in> B \<Longrightarrow> norm x = 1\<close> for x
+    using orthonormal_basis_of_cspan[OF \<open>finite C\<close>]
+    by blast
+  with \<open>cspan C = S\<close> have \<open>cspan B = S\<close>
+    by simp
+  with \<open>finite B\<close> and \<open>is_ortho_set B\<close> and norm
+  show ?thesis
+    by blast
 qed
 
 
@@ -1820,7 +1841,10 @@ lemma orthogonal_spaces_leq_compl: \<open>orthogonal_spaces S T \<longleftrighta
   unfolding orthogonal_spaces_def apply transfer
   by (auto simp: orthogonal_complement_def)
 
-lemma orthogonal_bot[simp]: \<open>orthogonal_spaces S bot\<close>
+lemma orthogonal_spaces_bot_right[simp]: \<open>orthogonal_spaces S bot\<close>
+  by (simp add: orthogonal_spaces_def)
+
+lemma orthogonal_spaces_bot_left[simp]: \<open>orthogonal_spaces bot S\<close>
   by (simp add: orthogonal_spaces_def)
 
 lemma orthogonal_spaces_sym: \<open>orthogonal_spaces S T \<Longrightarrow> orthogonal_spaces T S\<close>
@@ -1841,6 +1865,16 @@ lemma orthogonal_sum:
 
 lemma orthogonal_spaces_ccspan: \<open>(\<forall>x\<in>S. \<forall>y\<in>T. is_orthogonal x y) \<longleftrightarrow> orthogonal_spaces (ccspan S) (ccspan T)\<close>
   by (meson ccspan_leq_ortho_ccspan ccspan_superset orthogonal_spaces_def orthogonal_spaces_leq_compl subset_iff)
+
+lemma orthogonal_spaces_SUP_left:
+  assumes \<open>\<And>x. x \<in> X \<Longrightarrow> orthogonal_spaces (A x) B\<close>
+  shows \<open>orthogonal_spaces (SUP x\<in>X. A x) B\<close>
+  by (meson SUP_least assms orthogonal_spaces_leq_compl) 
+
+lemma orthogonal_spaces_SUP_right:
+  assumes \<open>\<And>x. x \<in> X \<Longrightarrow> orthogonal_spaces A (B x)\<close>
+  shows \<open>orthogonal_spaces A (SUP x\<in>X. B x)\<close>
+  by (meson assms orthogonal_spaces_SUP_left orthogonal_spaces_sym) 
 
 subsection \<open>Orthonormal bases\<close>
 
@@ -2179,7 +2213,7 @@ qed
 
 lemma riesz_representation_existence:
   \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
-  fixes f::\<open>'a::chilbert_space \<Rightarrow> complex\<close>
+  fixes f :: \<open>'a::chilbert_space \<Rightarrow> complex\<close>
   assumes a1: \<open>bounded_clinear f\<close>
   shows \<open>\<exists>t. \<forall>x.  f x = t \<bullet>\<^sub>C x\<close>
 proof(cases \<open>\<forall> x. f x = 0\<close>)
@@ -2224,7 +2258,7 @@ lemma riesz_representation_unique:
 
 subsection \<open>Adjoints\<close>
 
-definition "is_cadjoint F G \<longleftrightarrow> (\<forall>x. \<forall>y. (F x \<bullet>\<^sub>C y) = (x \<bullet>\<^sub>C G y))"
+definition \<open>is_cadjoint F G \<longleftrightarrow> (\<forall>x y. (F x \<bullet>\<^sub>C y) = (x \<bullet>\<^sub>C G y))\<close>
 
 lemma is_adjoint_sym:
   \<open>is_cadjoint F G \<Longrightarrow> is_cadjoint G F\<close>
@@ -2580,5 +2614,36 @@ proof -
   then show \<open>closure (cspan S) = UNIV\<close>
     by (simp add: orthogonal_complement_orthogonal_complement_closure_cspan)
 qed
+
+lemma antilinear_cinner:
+  shows \<open>antilinear (\<lambda>x. x \<bullet>\<^sub>C y)\<close>
+  by (simp add: antilinearI cinner_add_left)
+
+lemma cinner_extensionality_basis:
+  fixes g h :: \<open>'a::complex_inner\<close>
+  assumes \<open>ccspan B = top\<close>
+  assumes \<open>\<And>x. x \<in> B \<Longrightarrow> x \<bullet>\<^sub>C g = x \<bullet>\<^sub>C h\<close>
+  shows \<open>g = h\<close>
+proof (rule cinner_extensionality)
+  fix y :: 'a
+  have \<open>y \<in> closure (cspan B)\<close>
+    using assms(1) ccspan.rep_eq by fastforce
+  then obtain x where \<open>x \<longlonglongrightarrow> y\<close> and xB: \<open>x i \<in> cspan B\<close> for i
+    using closure_sequential by blast
+  have lin: \<open>antilinear (\<lambda>a. a \<bullet>\<^sub>C g - a \<bullet>\<^sub>C h)\<close>
+    by (intro antilinear_diff antilinear_cinner)
+  from lin have \<open>x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h = 0\<close> for i
+    apply (rule antilinear_eq_0_on_span[of _ B])
+    using xB assms by auto
+  then have \<open>(\<lambda>i. x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h) \<longlonglongrightarrow> 0\<close> for i
+    by simp
+  moreover have \<open>(\<lambda>i. x i \<bullet>\<^sub>C g - x i \<bullet>\<^sub>C h) \<longlonglongrightarrow> y \<bullet>\<^sub>C g - y \<bullet>\<^sub>C h\<close>
+    by (simp add: \<open>x \<longlonglongrightarrow> y\<close> tendsto_cinner tendsto_diff)
+  ultimately have \<open>y \<bullet>\<^sub>C g - y \<bullet>\<^sub>C h = 0\<close>
+    using LIMSEQ_unique by blast
+  then show \<open>y \<bullet>\<^sub>C g = y \<bullet>\<^sub>C h\<close>
+    by simp
+qed
+
 
 end

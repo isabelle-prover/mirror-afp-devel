@@ -1,45 +1,36 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>keskin on Archive of Formal Proofs
-    </title>
-    <link>/authors/keskin/</link>
-    <description>
-        Recent content in keskin 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 15 Feb 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/keskin/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem</title>
-          <link>/entries/Doob_Convergence.html</link>
-          <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Doob_Convergence.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Martingales</title>
-          <link>/entries/Martingales.html</link>
-          <pubDate>Tue, 21 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Martingales.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Eudoxus Reals</title>
-          <link>/entries/Eudoxus_Reals.html</link>
-          <pubDate>Sun, 29 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Eudoxus_Reals.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Sauer-Shelah Lemma</title>
-          <link>/entries/Sauer_Shelah_Lemma.html</link>
-          <pubDate>Thu, 24 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Sauer_Shelah_Lemma.html</guid>
-          <description></description>
-        </item>
+    <title>Ata Keskin</title>
+    <link>https://isa-afp.org/authors/keskin/</link>
+    <description>AFP entries of Ata Keskin</description><item>
+  <title>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem</title>
+  <link>https://isa-afp.org/entries/Doob_Convergence.html</link>
+  <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
+  <description>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Martingales</title>
+  <link>https://isa-afp.org/entries/Martingales.html</link>
+  <pubDate>Tue, 21 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Martingales in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Eudoxus Reals</title>
+  <link>https://isa-afp.org/entries/Eudoxus_Reals.html</link>
+  <pubDate>Sun, 29 Oct 2023 00:00:00 +0000</pubDate>
+  <description>Eudoxus Reals in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Sauer-Shelah Lemma</title>
+  <link>https://isa-afp.org/entries/Sauer_Shelah_Lemma.html</link>
+  <pubDate>Thu, 24 Nov 2022 00:00:00 +0000</pubDate>
+  <description>Sauer-Shelah Lemma in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+
   </channel>
 </rss>

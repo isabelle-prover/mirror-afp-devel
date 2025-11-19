@@ -92,7 +92,7 @@ proof -
     by (cases "multiset_problem_of_cnf cnf", auto)
   from assms(1)[unfolded term_lists_of_cnf_def mp split]
   have abs: "as = map (ms_elem_to_term cnf) xs" "bs = map (ms_elem_to_term cnf) ys" by auto
-  from mp[unfolded multiset_problem_of_cnf_def Let_def List.maps_def, simplified]
+  from mp[unfolded multiset_problem_of_cnf_def Let_def, simplified]
   have S: "S = concat (map (\<lambda>i. map (\<lambda>l. (ms_elem_of_lit l, Inr i)) (cnf ! i)) [0..<length cnf])" 
     and NS: "NS = concat (map (\<lambda>x. [(Inl (x, Positive), Inl (x, Unsigned)), (Inl (x, Negative), Inl (x, Unsigned))]) (vars_of_cnf cnf)) @ S" 
     and ys: "ys = map (\<lambda>x. Inl (x, Unsigned)) (vars_of_cnf cnf) @ map Inr [0..<length cnf]" 

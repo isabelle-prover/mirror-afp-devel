@@ -79,7 +79,7 @@ lemma those_map_Some[simp]: "those (map Some xs) = Some xs" by simp
 
 lemma those_append:
   "those (as @ bs) = do {xs \<leftarrow> those as; ys \<leftarrow> those bs; Some (xs@ys)}"
-  by (auto simp: those_eq_None split: bind_split)
+  by (auto split: bind_split)
 
 lemma those_Cons:
   "those (a#as) = do {x \<leftarrow> a; xs \<leftarrow> those as; Some (x # xs)}"
@@ -203,6 +203,15 @@ lemma nex_hastype_iff: "(\<nexists>\<sigma>. a : \<sigma> in A) \<longleftrighta
 lemma all_dom_iff_all_hastype: "(\<forall>x \<in> dom A. P x) \<longleftrightarrow> (\<forall>x \<sigma>. x : \<sigma> in A \<longrightarrow> P x)"
   by (simp add: all_dom hastype_def)
 
+text \<open>Explicitly sorted sets:\<close>
+
+abbreviation "sort_annotated \<equiv> Some \<circ> snd"
+
+lemma hastype_in_Some[simp]: "a : \<sigma> in (\<lambda>x. Some (f x)) \<longleftrightarrow> \<sigma> = f a"
+  by (auto simp: hastype_def)
+
+text \<open>Listwise type judgement:\<close>
+
 abbreviation hastype_list (\<open>((_) :\<^sub>l/ (_) in/ (_))\<close> [50,61,51]50)
   where "as :\<^sub>l \<sigma>s in A \<equiv> list_all2 (\<lambda>a \<sigma>. a : \<sigma> in A) as \<sigma>s" 
 
@@ -254,13 +263,40 @@ lemma has_same_type_in_dom_subsset:
   "a : \<sigma> in A' \<Longrightarrow> A \<subseteq>\<^sub>m A' \<Longrightarrow> a \<in> dom A \<longleftrightarrow> a : \<sigma> in A"
   by (auto simp: in_dom_iff_ex_type dest: has_same_type_in_subsset)
 
+text \<open>Restriction of partial map, also depending on the value.\<close>
+
+definition "restrict_sset A P a \<equiv>
+  do { \<sigma> \<leftarrow> A a; if P a \<sigma> then Some \<sigma> else None }"
+
+syntax restrict_sset :: "'pttrn \<Rightarrow> 'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  (\<open>{_ : _ in _./ _}\<close> [50,51,50,0]1000)
+
+translations "{a : \<sigma> in A. P}" \<rightleftharpoons> "CONST restrict_sset A (\<lambda>a \<sigma>. P)"
+
+lemma hastype_in_restrict_sset[simp]:
+  "a : \<sigma> in {a : \<sigma> in A. P a \<sigma>} \<longleftrightarrow> a : \<sigma> in A \<and> P a \<sigma>"
+  by (auto simp: restrict_sset_def hastype_def bind_eq_Some_conv)
+
+lemma restrict_sset_cong:
+  assumes "A = A'"
+    and "\<And>a \<sigma>. a : \<sigma> in A \<Longrightarrow> P a \<sigma> \<longleftrightarrow> P' a \<sigma>"
+  shows "{a : \<sigma> in A. P a \<sigma>} = {a : \<sigma> in A'. P' a \<sigma>}"
+  by (auto intro!: sset_eqI simp: assms)
+
+lemma restrict_sset_True[simp]: "{a : \<sigma> in A. True} = A"
+  by (auto intro!: sset_eqI)
+
+lemma dom_restrict_sset: "dom {a : \<sigma> in A. P a \<sigma>} = {a. \<exists>\<sigma>. a : \<sigma> in A \<and> P a \<sigma>}"
+  by (auto elim!: in_dom_hastypeE)
+
 lemma hastype_restrict: "a : \<sigma> in A |` S \<longleftrightarrow> a \<in> S \<and> a : \<sigma> in A"
   by (auto simp: restrict_map_def hastype_def)
 
+lemma restrict_map_eq_restrict_sset: "A |` S = {x : \<sigma> in A. x \<in> S}"
+  by (auto intro!: sset_eqI simp: hastype_restrict)
+
 lemma hastype_the_simp[simp]: "a : \<sigma> in A \<Longrightarrow> the (A a) = \<sigma>"
   by (auto)
-
-lemma hastype_in_Some[simp]: "x : \<sigma> in Some \<longleftrightarrow> x = \<sigma>" by (auto simp: hastype_def)
 
 lemma hastype_in_upd[simp]: "x : \<sigma> in A(y \<mapsto> \<tau>) \<longleftrightarrow> (if x = y then \<sigma> = \<tau> else x : \<sigma> in A)"
   by (auto simp: hastype_def)
@@ -355,6 +391,12 @@ begin
 lemma same_value_imp_in_dom_iff:
   assumes fafa': "f a = f a'" and a: "a : \<sigma> in A" shows a': "a' \<in> dom A \<longleftrightarrow> a' : \<sigma> in A"
   using same_value_imp_same_type[OF a _ fafa'] by (auto elim!: in_dom_hastypeE)
+
+lemma sort_preserving_subsset:
+  assumes "A' \<subseteq>\<^sub>m A"
+  shows "sort_preserving f A'"
+  using same_value_imp_same_type
+  apply unfold_locales by (auto dest!: subssetD[OF assms])
 
 end
 
@@ -490,9 +532,55 @@ next
     by (intro sorted_map.intro, unfold hastype_in_o_sset, unfold hastype_def,auto split:nat.split_asm elim:safe_nth_eq_SomeE)
 qed
 
+subsubsection \<open>Sorted bijection\<close>
+
+locale sorted_surjection = sorted_map +
+  assumes surj: "f ` dom A = dom B"
+begin
+
+lemma hastype_in_target_iff: "b : \<sigma> in B \<longleftrightarrow> (\<exists>a : \<sigma> in A. b = f a)"
+proof safe
+  assume b: "b : \<sigma> in B"
+  then have "b \<in> f ` dom A" by (auto simp: surj)
+  then obtain a where "a \<in> dom A" "b = f a" by auto
+  with b show "\<exists>a : \<sigma> in A. b = f a"
+    by (auto intro!:exI[of _ a] simp: source_dom_iff_hastype)
+qed (simp add: sorted_map)
+
+lemma image_of_sort: "f ` {a. a : \<sigma> in A} = {b. b : \<sigma> in B}"
+  by (auto simp: hastype_in_target_iff)
+
+lemma all_in_target_iff: "(\<forall>b : \<sigma> in B. P b) \<longleftrightarrow> (\<forall>a : \<sigma> in A. P (f a))"
+  by (auto simp: hastype_in_target_iff)
+
+end
+
+locale sorted_bijection = sorted_map +
+  assumes bij: "bij_betw f (dom A) (dom B)"
+begin
+
+lemma inj: "inj_on f (dom A)"
+  using bij by (auto simp: bij_betw_def)
+
+sublocale sorted_surjection
+proof
+  show "f ` dom A = dom B" using bij by (auto simp: bij_betw_def)
+qed
+
+thm inj_on_subset[OF inj]
+
+lemma bij_betw_sort: "bij_betw f {a. a : \<sigma> in A} {b. b : \<sigma> in B}"
+  by (auto simp: bij_betw_def sorted_map hastype_in_target_iff intro: inj_on_subset[OF inj])
+
+end
+
 locale inhabited = fixes A
   assumes inhabited: "\<And>\<sigma>. \<exists>a. a : \<sigma> in A"
 begin
+
+lemma some_hastype:
+  "(SOME a. a : \<sigma> in A) : \<sigma> in A"
+  using inhabited[of \<sigma>] by (auto intro: someI)
 
 lemma ex_sorted_map: "\<exists>\<alpha>. \<alpha> :\<^sub>s V \<rightarrow> A"
 proof (unfold sorted_map_def, intro choice allI)
@@ -540,9 +628,17 @@ lemma hastype_in_imageE:
   shows thesis
   using assms by (auto simp: hastype_def sorted_image_def safe_The_eq_Some)
 
-lemma in_dom_imageE:
+lemma in_dom_image_hastypeE:
   "b \<in> dom (f `\<^sup>s A) \<Longrightarrow> (\<And>a \<sigma>. a : \<sigma> in A \<Longrightarrow> b = f a \<Longrightarrow> thesis) \<Longrightarrow> thesis"
   by (elim in_dom_hastypeE hastype_in_imageE)
+
+lemma in_dom_imageE:
+  assumes x: "x \<in> dom (f `\<^sup>s A)" and main: "\<And>a. a \<in> dom A \<Longrightarrow> x = f a \<Longrightarrow> thesis"
+  shows thesis
+proof-
+  from x obtain a \<sigma> where a: "a : \<sigma> in A" and xf: "x = f a" by (auto elim!: in_dom_image_hastypeE)
+  from main[OF hastype_imp_dom[OF a] xf] show thesis.
+qed
 
 context sort_preserving begin
 
@@ -613,7 +709,7 @@ lemma dom_image_subset[intro!]: "f ` dom A \<subseteq> dom B"
 end
 
 lemma sorted_image_cong: "(\<And>a \<sigma>. a : \<sigma> in A \<Longrightarrow> f a = f' a) \<Longrightarrow> f `\<^sup>s A = f' `\<^sup>s A"
-  by (auto 0 3 intro!: ext arg_cong[of _ _ safe_The] simp: sorted_image_def)
+  by (auto 0 3 intro!: arg_cong[of _ _ safe_The] simp: fun_eq_iff sorted_image_def)
 
 lemma inj_on_dom_imp_sort_preserving_inv_into:
   assumes inj: "inj_on f (dom A)" shows "sort_preserving (inv_into (dom A) f) (f `\<^sup>s A)"

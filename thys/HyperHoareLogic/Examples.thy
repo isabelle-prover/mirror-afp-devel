@@ -134,7 +134,8 @@ proof (rule RuleSeq)
         then have "a \<in> Set.filter ((\<lambda>\<sigma>. 0 \<le> \<sigma> y \<and> \<sigma> y \<le> 100) \<circ> snd) S \<and> b \<in> Set.filter ((\<lambda>\<sigma>. 0 \<le> \<sigma> y \<and> \<sigma> y \<le> 100) \<circ> snd) S"
           by (simp add: \<open>a \<in> S\<close> \<open>b \<in> S\<close>)
         then show "?R1 (Set.filter ((\<lambda>\<sigma>. 0 \<le> \<sigma> y \<and> \<sigma> y \<le> 100) \<circ> snd) S)"
-          using \<open>snd a h < snd b h \<and> 0 \<le> snd a y \<and> snd a y \<le> 100 \<and> snd b y = 100\<close> by force
+          using \<open>snd a h < snd b h \<and> 0 \<le> snd a y \<and> snd a y \<le> 100 \<and> snd b y = 100\<close>
+          by (cases a; cases b) force
       qed
     qed
   qed

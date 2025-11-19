@@ -1,52 +1,47 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>schirmer on Archive of Formal Proofs
-    </title>
-    <link>/authors/schirmer/</link>
-    <description>
-        Recent content in schirmer 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 17 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schirmer/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>AutoCorres2</title>
-          <link>/entries/AutoCorres2.html</link>
-          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/AutoCorres2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Reduction Theorem for Store Buffers</title>
-          <link>/entries/Store_Buffer_Reduction.html</link>
-          <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Store_Buffer_Reduction.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
-          <link>/entries/Simpl.html</link>
-          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/Simpl.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>BDD Normalisation</title>
-          <link>/entries/BDD.html</link>
-          <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/BDD.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Jive Data and Store Model</title>
-          <link>/entries/JiveDataStoreModel.html</link>
-          <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/JiveDataStoreModel.html</guid>
-          <description></description>
-        </item>
+    <title>Norbert Schirmer</title>
+    <link>https://isa-afp.org/authors/schirmer/</link>
+    <description>AFP entries of Norbert Schirmer</description><item>
+  <title>AutoCorres2</title>
+  <link>https://isa-afp.org/entries/AutoCorres2.html</link>
+  <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+  <description>AutoCorres2 in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Tools</category>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>A Reduction Theorem for Store Buffers</title>
+  <link>https://isa-afp.org/entries/Store_Buffer_Reduction.html</link>
+  <pubDate>Mon, 07 Jan 2019 00:00:00 +0000</pubDate>
+  <description>A Reduction Theorem for Store Buffers in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</title>
+  <link>https://isa-afp.org/entries/Simpl.html</link>
+  <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+  <description>A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>BDD Normalisation</title>
+  <link>https://isa-afp.org/entries/BDD.html</link>
+  <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+  <description>BDD Normalisation in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Jive Data and Store Model</title>
+  <link>https://isa-afp.org/entries/JiveDataStoreModel.html</link>
+  <pubDate>Mon, 20 Jun 2005 00:00:00 +0000</pubDate>
+  <description>Jive Data and Store Model in the AFP</description>
+    <category>Computer science/Programming languages/Misc</category>
+</item>
+
   </channel>
 </rss>

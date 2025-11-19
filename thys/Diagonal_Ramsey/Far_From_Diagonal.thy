@@ -501,11 +501,11 @@ proof -
     by (intro X_7_1) (auto simp: Big_Far_9_3_def)
   also have "\<dots> \<le> RN k l34"
   proof -
-    have "p0 - 3 * eps k > 1/k" and "pee halted_point \<ge> p0 - 3 * eps k"
+    have "p0 - 3 * \<epsilon> > 1/k" and "pseq halted_point \<ge> p0 - 3 * \<epsilon>"
       using l_le_k big p0_ge Y_6_2_halted by (auto simp: Big_Far_9_3_def \<gamma>_def)
     then show ?thesis
       using halted_point_halted \<gamma>01
-      by (fastforce simp: step_terminating_iff termination_condition_def pee_def l34_def)
+      by (fastforce simp: step_terminating_iff termination_condition_def pseq_def l34_def)
   qed
   also have "\<dots> \<le> 2 powr (\<lceil>k powr (3/4)\<rceil> * log 2 k)"
     using RN34_le_2powr_ok l34_def l_le_k ln0 by blast
@@ -838,7 +838,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection \<open>Lemma 9.2 actual proof\<close>
+subsection \<open>Lemma 9.2\<close>
 
 context P0_min
 begin
@@ -874,7 +874,8 @@ qed
 
 end
 
-lemma (in Book') Far_9_2_conclusion:
+text \<open>Used for both 9.2 and 10.2\<close>
+lemma (in Book') Off_diagonal_conclusion:
   defines "\<R> \<equiv> Step_class {red_step}"
   defines "t \<equiv> card \<R>"
   assumes Y: "(k-t+l choose l) \<le> card (Yseq halted_point)"
@@ -1027,7 +1028,7 @@ proof -
   have D: "exp (- 3*\<gamma>*t\<^sup>2 / (20*k)) \<le> ((1-\<gamma>-\<eta>) / (1-\<gamma>))^t"
     by (simp add: eval_nat_numeral powr_powr exp_powr_real mult_ac flip: powr_realpow)
 
-  have "(k-t+l choose l) \<le> card (Yseq halted_point)"
+  have Y: "(k-t+l choose l) \<le> card (Yseq halted_point)"
   proof -
     have "1 * real(k-t+l choose l) 
             \<le> exp (ok_fun_95b k + \<gamma>*k/60) * (k-t+l choose l)"
@@ -1058,12 +1059,12 @@ proof -
     finally show ?thesis by simp
   qed
   then show False
-    using Far_9_2_conclusion by (simp flip: \<R>_def t_def)
+    using Off_diagonal_conclusion by (simp flip: \<R>_def t_def)
 qed
 
 text \<open>Mediation of 9.2 (and 10.2) from locale @{term Book_Basis} to the book locales
    with the starting sets of equal size\<close>
-lemma (in No_Cliques) Basis_imp_Book:
+lemma (in No_Cliques) to_Book:
   assumes gd: "p0_min \<le> graph_density Red"
   assumes \<mu>01: "0 < \<mu>" "\<mu> < 1"
   obtains X0 Y0 where "l\<ge>2" "card X0 \<ge> real nV / 2" "card Y0 = gorder div 2" 
@@ -1107,7 +1108,7 @@ qed
 text \<open>Material that needs to be proved \textbf{outside} the book locales\<close>
 
 text \<open>As above, for @{term Book'}\<close>
-lemma (in No_Cliques) Basis_imp_Book':
+lemma (in No_Cliques) to_Book':
   assumes gd: "p0_min \<le> graph_density Red"
   assumes l: "0<l" "l\<le>k"
   obtains X0 Y0 where "l\<ge>2" "card X0 \<ge> real nV / 2" "card Y0 = gorder div 2" and "X0 = V \<setminus> Y0" "Y0\<subseteq>V" 
@@ -1117,7 +1118,7 @@ proof -
   define \<gamma> where "\<gamma> \<equiv> real l / (real k + real l)"
   have "0 < \<gamma>" "\<gamma> < 1"
     using l by (auto simp: \<gamma>_def)
-  with assms Basis_imp_Book [of  \<gamma>]
+  with assms to_Book [of  \<gamma>]
   obtain X0 Y0 where *: "l\<ge>2" "card X0 \<ge> real nV / 2" "card Y0 = gorder div 2" "X0 = V \<setminus> Y0" "Y0\<subseteq>V" 
     "graph_density Red \<le> gen_density Red X0 Y0" "Book V E p0_min Red Blue l k \<gamma> X0 Y0"
     by blast
@@ -1133,10 +1134,10 @@ lemma (in No_Cliques) Far_9_2:
   fixes \<delta> \<gamma> \<eta>::real
   defines "\<gamma> \<equiv> l / (real k + real l)"
   defines "\<delta> \<equiv> \<gamma>/20"
-  assumes nV: "real nV \<ge> exp (-\<delta> * k) * (k+l choose l)" 
   assumes gd: "graph_density Red \<ge> 1-\<gamma>-\<eta>" and p0_min_OK: "p0_min \<le> 1-\<gamma>-\<eta>"  
-  assumes big: "Big_Far_9_2 \<gamma> l" 
   assumes "\<gamma> \<le> 1/10" and \<eta>: "0\<le>\<eta>" "\<eta> \<le> \<gamma>/15"
+  assumes nV: "real nV \<ge> exp (-\<delta> * k) * (k+l choose l)" 
+  assumes big: "Big_Far_9_2 \<gamma> l" 
   shows False
 proof -
   obtain X0 Y0 where "l\<ge>2" and card_X0: "card X0 \<ge> real nV / 2" 
@@ -1144,7 +1145,7 @@ proof -
     and X0_def: "X0 = V \<setminus> Y0" and "Y0\<subseteq>V" 
     and gd_le: "graph_density Red \<le> gen_density Red X0 Y0"
     and "Book' V E p0_min Red Blue l k \<gamma> X0 Y0" 
-    using Basis_imp_Book' assms p0_min no_Red_clique no_Blue_clique ln0 by auto
+    using to_Book' assms p0_min no_Red_clique no_Blue_clique ln0 by auto
   then interpret Book' V E p0_min Red Blue l k \<gamma> X0 Y0
     by blast 
   show False

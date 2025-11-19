@@ -2,6 +2,8 @@ theory NonInterference
   imports Soundness
 begin
 
+text \<open>In this file, we prove two non-interference theorems, based on the soundness of CommCSL.\<close>
+
 fun low_list where
   "low_list [] = Bool Btrue"
 | "low_list (v # q) = And (LowExp (Evar v)) (low_list q)"

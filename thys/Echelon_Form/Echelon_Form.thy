@@ -2979,6 +2979,40 @@ definition
             in
               (bezout_iterate (interchange_A) (nrows A - 1) (from_nat_i) (from_nat_k) bezout, i + 1))"
 
+lemma forall_mod_type_greater_iff:
+  \<open>(\<forall>b>a. P b) \<longleftrightarrow> (\<forall>n\<in>{to_nat a<..<CARD('a)}. P (from_nat n))\<close>
+  for P :: \<open>'a::mod_type \<Rightarrow> bool\<close>
+proof -
+  define m where \<open>m = to_nat a\<close>
+  then have bound: \<open>m < CARD('a)\<close>
+    and a: \<open>a = from_nat m\<close>
+    by (simp_all add: to_nat_less_card)
+  from bound show ?thesis
+    by (auto simp add: all_interval_simps a to_nat_from_nat_id from_nat_mono)
+      (metis m_def to_nat_from_nat to_nat_less_card to_nat_mono)
+qed
+
+
+lemma echelon_form_of_column_k_efficient_code [code]:
+  \<open>echelon_form_of_column_k_efficient bezout (A, i) k = (
+    let
+      a = from_nat i;
+      b = from_nat k;
+      all_zero_below_i = (\<forall>n\<in>{to_nat a<..<nrows A}. A $ from_nat n $ b = 0)
+    in
+      if i = nrows A \<or> A $ a $ b = 0 \<and> all_zero_below_i
+      then (A, i)
+      else if all_zero_below_i
+      then (A, i + 1)
+      else
+        let
+          n = (LEAST n. A $ n $ b \<noteq> 0 \<and> a \<le> n);
+          interchange_A = interchange_rows A a n
+        in
+          (bezout_iterate interchange_A (nrows A - 1) a b bezout, i + 1)
+  )\<close>
+  by (simp add: echelon_form_of_column_k_efficient_def Let_def forall_mod_type_greater_iff nrows_def)
+
 lemma echelon_form_of_column_k_efficient[code]: 
   "(echelon_form_of_column_k bezout) (A,i) k
     = (echelon_form_of_column_k_efficient bezout) (A,i) k"

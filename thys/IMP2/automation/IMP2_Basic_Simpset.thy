@@ -24,8 +24,8 @@ begin
         resolve_tac ctxt (Simplifier.prems_of ctxt))
     in
       Named_Simpsets.map_ctxt @{named_simpset vcg_bb} (
-           (fn ctxt => Simplifier.addSolver (ctxt,asm_sol))
-        #> (fn ctxt => ctxt addsimprocs [@{simproc NO_MATCH}])
+        Simplifier.add_unsafe_solver asm_sol
+        #> Simplifier.add_proc @{simproc NO_MATCH}
       )
     end
   \<close>

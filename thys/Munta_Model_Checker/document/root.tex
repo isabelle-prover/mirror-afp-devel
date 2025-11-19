@@ -1,0 +1,110 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{a4wide}
+\usepackage[english]{babel}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+\usepackage{wasysym}
+% for \<hole>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+% for uniform font size
+\renewcommand{\isastyle}{\isastyleminor}
+
+\renewcommand{\isamarkupsection}[1]{\section{#1}}
+\renewcommand{\isamarkupsubsection}[1]{\subsection{#1}}
+\renewcommand{\isamarkupsubsubsection}[1]{\paragraph{#1}}
+
+\newcommand{\munta}{\textsc{Munta}}
+
+\begin{document}
+
+\title{\munta: A Verified Model Checker for Timed Automata}
+\author{Simon Wimmer}
+\date{}
+
+\maketitle
+\begin{abstract}
+  \munta\ is a verified model checker for timed automata.
+  It has been described in detail in a PhD thesis \cite{wimmer-phd}
+  and conference publications~\cite{munta-tacas,munta-tool-paper}.
+  This entry supersedes earlier versions of \munta\ hosted on GitHub.
+\end{abstract}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+\section*{Introduction}
+
+\munta\ is a verified model checker for timed automata.
+It has been described in detail in a PhD thesis \cite{wimmer-phd}
+and presented in peer-reviewed conference publications~\cite{munta-tacas,munta-tool-paper}.
+
+This AFP entry builds upon and extends formalizations from the following previous entries:
+\begin{itemize}
+  \item \texttt{Timed\_Automata}~\cite{timed-automata-afp}
+  \item \texttt{Worklist\_Algorithms}~\cite{worklist-afp}
+  \item \texttt{Difference\_Bound\_Matrices}~\cite{dbm-afp}
+\end{itemize}
+and supersedes an earlier version of \munta\ hosted on GitHub:
+\url{https://github.com/wimmers/munta}.
+
+\paragraph{Usage}
+Theory \texttt{Simple\_Network\_Language\_Export\_Code} (page \pageref{export-munta}) describes
+how to obtain executable code for and run \munta\ from within Isabelle.
+
+This entry also provides a build setup for the \textsc{munta} executable
+using the MLton SML compiler.
+Build and run instructions are given in theory \texttt{Munta\_Compile\_MLton}
+(on page \pageref{build-mlton}).
+A number of example model files can be found in the \texttt{benchmarks} directory.
+
+\paragraph{Graphical Interface} 
+A graphical user interface for \textsc{munta} is also available:
+\url{https://munta.isabelle.systems}.
+The GUI frontend can communicate with a local instance of \munta\ behind a Python-based server
+or run \munta\ directly in the browser.
+Detailed run instructions are given on Github:
+\url{https://github.com/wimmers/munta/?tab=readme-ov-file#graphical-user-interface}.
+
+\paragraph{OCaml Code Generation} 
+While the default backend targets SML/MLton,
+\textsc{munta} in principle also supports code generation to OCaml
+(c.f.\ theory \texttt{Simple\_Network\_Language\_Export\_Code} on page \pageref{export-ocaml}).
+Among its use cases is the browser-based version of the GUI, which is compiled from the OCaml code.
+For instructions on compiling with the \texttt{dune} build system, see the \texttt{ocaml} branch:
+\url{https://github.com/wimmers/munta/tree/ocaml}.
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+

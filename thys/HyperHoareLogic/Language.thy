@@ -310,17 +310,7 @@ qed
 
 lemma assume_sem:
   "sem (Assume b) S = Set.filter (b \<circ> snd) S" (is "?A = ?B")
-proof
-  show "?A \<subseteq> ?B"
-  proof (rule subsetPairI)
-    fix l \<sigma>
-    assume asm0: "(l, \<sigma>) \<in> sem (Assume b) S"
-    then show "(l, \<sigma>) \<in> Set.filter (b \<circ> snd) S"
-      by (metis comp_apply fst_conv in_sem member_filter single_sem_Assume_elim snd_conv)
-  qed
-  show "?B \<subseteq> ?A"
-    by (metis (mono_tags, opaque_lifting) SemAssume comp_apply in_sem member_filter prod.collapse subsetI)
-qed
+  by (auto simp add: sem_assume)
 
 lemma sem_split_general:
   "sem C (\<Union>x. F x) = (\<Union>x. sem C (F x))" (is "?A = ?B")

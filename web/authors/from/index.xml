@@ -1,80 +1,78 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>from on Archive of Formal Proofs
-    </title>
-    <link>/authors/from/</link>
-    <description>
-        Recent content in from 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Mon, 09 Jan 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/from/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Synthetic Completeness</title>
-          <link>/entries/Synthetic_Completeness.html</link>
-          <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Synthetic_Completeness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness and Completeness of Implicational Logic</title>
-          <link>/entries/Implicational_Logic.html</link>
-          <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Implicational_Logic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Naive Prover for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc3.html</link>
-          <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc3.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
-          <link>/entries/FOL_Seq_Calc2.html</link>
-          <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-          <link>/entries/FOL_Axiomatic.html</link>
-          <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Axiomatic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Public Announcement Logic</title>
-          <link>/entries/Public_Announcement_Logic.html</link>
-          <pubDate>Thu, 17 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Public_Announcement_Logic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
-          <link>/entries/Hybrid_Logic.html</link>
-          <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Hybrid_Logic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Sequent Calculus for First-Order Logic</title>
-          <link>/entries/FOL_Seq_Calc1.html</link>
-          <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/FOL_Seq_Calc1.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Epistemic Logic: Completeness of Modal Logics</title>
-          <link>/entries/Epistemic_Logic.html</link>
-          <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Epistemic_Logic.html</guid>
-          <description></description>
-        </item>
+    <title>Asta Halkjær From</title>
+    <link>https://isa-afp.org/authors/from/</link>
+    <description>AFP entries of Asta Halkjær From</description><item>
+  <title>Synthetic Completeness</title>
+  <link>https://isa-afp.org/entries/Synthetic_Completeness.html</link>
+  <pubDate>Mon, 09 Jan 2023 00:00:00 +0000</pubDate>
+  <description>Synthetic Completeness in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Soundness and Completeness of Implicational Logic</title>
+  <link>https://isa-afp.org/entries/Implicational_Logic.html</link>
+  <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+  <description>Soundness and Completeness of Implicational Logic in the AFP</description>
+    <category>Logic/General logic/Classical propositional logic</category>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>A Naive Prover for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/FOL_Seq_Calc3.html</link>
+  <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+  <description>A Naive Prover for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+  <link>https://isa-afp.org/entries/FOL_Seq_Calc2.html</link>
+  <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
+  <description>A Sequent Calculus Prover for First-Order Logic with Functions in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/FOL_Axiomatic.html</link>
+  <pubDate>Fri, 24 Sep 2021 00:00:00 +0000</pubDate>
+  <description>Soundness and Completeness of an Axiomatic System for First-Order Logic in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Public Announcement Logic</title>
+  <link>https://isa-afp.org/entries/Public_Announcement_Logic.html</link>
+  <pubDate>Thu, 17 Jun 2021 00:00:00 +0000</pubDate>
+  <description>Public Announcement Logic in the AFP</description>
+    <category>Logic/General logic/Logics of knowledge and belief</category>
+</item>
+<item>
+  <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
+  <link>https://isa-afp.org/entries/Hybrid_Logic.html</link>
+  <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
+  <description>Formalizing a Seligman-Style Tableau System for Hybrid Logic in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>A Sequent Calculus for First-Order Logic</title>
+  <link>https://isa-afp.org/entries/FOL_Seq_Calc1.html</link>
+  <pubDate>Thu, 18 Jul 2019 00:00:00 +0000</pubDate>
+  <description>A Sequent Calculus for First-Order Logic in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Epistemic Logic: Completeness of Modal Logics</title>
+  <link>https://isa-afp.org/entries/Epistemic_Logic.html</link>
+  <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Epistemic Logic: Completeness of Modal Logics in the AFP</description>
+    <category>Logic/General logic/Logics of knowledge and belief</category>
+</item>
+
   </channel>
 </rss>

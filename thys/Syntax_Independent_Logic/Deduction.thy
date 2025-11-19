@@ -580,8 +580,8 @@ lemma prv_imp_imp_exi:
   assumes "x \<in> var" and "\<phi> \<in> fmla" and "\<chi> \<in> fmla"
   assumes "x \<notin> Fvars \<phi>"
   shows "prv (imp (exi x (imp \<phi> \<chi>)) (imp \<phi> (exi x \<chi>)))"
-  using assms imp exi Fvars_exi Fvars_imp Un_iff assms prv_exi_imp_gen prv_exi_inst prv_imp_mp
-    prv_imp_trans1 member_remove remove_def subst_same_Var by (metis (full_types) Var)
+  using assms imp exi Fvars_exi Fvars_imp assms prv_exi_imp_gen prv_exi_inst prv_imp_mp
+    prv_imp_trans1 subst_same_Var Var by (metis DiffD2 insertI1 Un_iff)
 
 lemma prv_imp_exi:
   assumes "x \<in> var" and "\<phi> \<in> fmla" and "\<chi> \<in> fmla"

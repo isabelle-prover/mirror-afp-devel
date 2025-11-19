@@ -1,331 +1,120 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Algorithms/Distributed on Archive of Formal Proofs
-    </title>
-    <link>/topics/computer-science/algorithms/distributed/</link>
-    <description>
-        Recent content in Computer science/Algorithms/Distributed 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/computer-science/algorithms/distributed/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-          <link>/entries/Progress_Tracking.html</link>
-          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Progress_Tracking.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-          <link>/entries/Progress_Tracking.html</link>
-          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Progress_Tracking.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
-          <link>/entries/Progress_Tracking.html</link>
-          <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Progress_Tracking.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-          <link>/entries/Chandy_Lamport.html</link>
-          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Chandy_Lamport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-          <link>/entries/Chandy_Lamport.html</link>
-          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Chandy_Lamport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
-          <link>/entries/Chandy_Lamport.html</link>
-          <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Chandy_Lamport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
-          <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
-          <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
-          <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Stellar Quorum Systems</title>
-          <link>/entries/Stellar_Quorums.html</link>
-          <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Stellar_Quorums.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Stellar Quorum Systems</title>
-          <link>/entries/Stellar_Quorums.html</link>
-          <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Stellar_Quorums.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Stellar Quorum Systems</title>
-          <link>/entries/Stellar_Quorums.html</link>
-          <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Stellar_Quorums.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-          <link>/entries/OpSets.html</link>
-          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/OpSets.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-          <link>/entries/OpSets.html</link>
-          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/OpSets.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-          <link>/entries/OpSets.html</link>
-          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/OpSets.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The IMAP CmRDT</title>
-          <link>/entries/IMAP-CRDT.html</link>
-          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/IMAP-CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The IMAP CmRDT</title>
-          <link>/entries/IMAP-CRDT.html</link>
-          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/IMAP-CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The IMAP CmRDT</title>
-          <link>/entries/IMAP-CRDT.html</link>
-          <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/IMAP-CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-          <link>/entries/CRDT.html</link>
-          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-          <link>/entries/CRDT.html</link>
-          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-          <link>/entries/CRDT.html</link>
-          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CRDT.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Consensus Refined</title>
-          <link>/entries/Consensus_Refined.html</link>
-          <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Consensus_Refined.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Consensus Refined</title>
-          <link>/entries/Consensus_Refined.html</link>
-          <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Consensus_Refined.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Consensus Refined</title>
-          <link>/entries/Consensus_Refined.html</link>
-          <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Consensus_Refined.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</title>
-          <link>/entries/Heard_Of.html</link>
-          <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Heard_Of.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</title>
-          <link>/entries/Heard_Of.html</link>
-          <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Heard_Of.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</title>
-          <link>/entries/Heard_Of.html</link>
-          <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Heard_Of.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abortable Linearizable Modules</title>
-          <link>/entries/Abortable_Linearizable_Modules.html</link>
-          <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Abortable_Linearizable_Modules.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abortable Linearizable Modules</title>
-          <link>/entries/Abortable_Linearizable_Modules.html</link>
-          <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Abortable_Linearizable_Modules.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abortable Linearizable Modules</title>
-          <link>/entries/Abortable_Linearizable_Modules.html</link>
-          <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Abortable_Linearizable_Modules.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Instances of Schneider&#39;s generalized protocol of clock synchronization</title>
-          <link>/entries/ClockSynchInst.html</link>
-          <pubDate>Wed, 15 Mar 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/ClockSynchInst.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Instances of Schneider&#39;s generalized protocol of clock synchronization</title>
-          <link>/entries/ClockSynchInst.html</link>
-          <pubDate>Wed, 15 Mar 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/ClockSynchInst.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Instances of Schneider&#39;s generalized protocol of clock synchronization</title>
-          <link>/entries/ClockSynchInst.html</link>
-          <pubDate>Wed, 15 Mar 2006 00:00:00 +0000</pubDate>
-          <guid>/entries/ClockSynchInst.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Generalized Protocol for Clock Synchronization</title>
-          <link>/entries/GenClock.html</link>
-          <pubDate>Fri, 24 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/GenClock.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Generalized Protocol for Clock Synchronization</title>
-          <link>/entries/GenClock.html</link>
-          <pubDate>Fri, 24 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/GenClock.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of a Generalized Protocol for Clock Synchronization</title>
-          <link>/entries/GenClock.html</link>
-          <pubDate>Fri, 24 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/GenClock.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Proving the Correctness of Disk Paxos</title>
-          <link>/entries/DiskPaxos.html</link>
-          <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/DiskPaxos.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Proving the Correctness of Disk Paxos</title>
-          <link>/entries/DiskPaxos.html</link>
-          <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/DiskPaxos.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Proving the Correctness of Disk Paxos</title>
-          <link>/entries/DiskPaxos.html</link>
-          <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
-          <guid>/entries/DiskPaxos.html</guid>
-          <description></description>
-        </item>
+    <title>Computer science/Algorithms/Distributed</title>
+    <link>https://isa-afp.org/topics/computer-science/algorithms/distributed/</link>
+    <description>AFP entries in Distributed</description><item>
+  <title>The Sumcheck Protocol</title>
+  <link>https://isa-afp.org/entries/Sumcheck_Protocol.html</link>
+  <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+  <description>The Sumcheck Protocol in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Distributed Distinct Elements</title>
+  <link>https://isa-afp.org/entries/Distributed_Distinct_Elements.html</link>
+  <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+  <description>Distributed Distinct Elements in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
+  <link>https://isa-afp.org/entries/Progress_Tracking.html</link>
+  <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+  <description>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+  <link>https://isa-afp.org/entries/Chandy_Lamport.html</link>
+  <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
+  <description>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
+  <link>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
+  <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Strong Eventual Consistency of the Collaborative Editing Framework WOOT in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Stellar Quorum Systems</title>
+  <link>https://isa-afp.org/entries/Stellar_Quorums.html</link>
+  <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Stellar Quorum Systems in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+  <link>https://isa-afp.org/entries/OpSets.html</link>
+  <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+  <description>OpSets: Sequential Specifications for Replicated Datatypes in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>The IMAP CmRDT</title>
+  <link>https://isa-afp.org/entries/IMAP-CRDT.html</link>
+  <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+  <description>The IMAP CmRDT in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+  <link>https://isa-afp.org/entries/CRDT.html</link>
+  <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+  <description>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Consensus Refined</title>
+  <link>https://isa-afp.org/entries/Consensus_Refined.html</link>
+  <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
+  <description>Consensus Refined in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</title>
+  <link>https://isa-afp.org/entries/Heard_Of.html</link>
+  <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
+  <description>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Abortable Linearizable Modules</title>
+  <link>https://isa-afp.org/entries/Abortable_Linearizable_Modules.html</link>
+  <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
+  <description>Abortable Linearizable Modules in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Instances of Schneider&#39;s generalized protocol of clock synchronization</title>
+  <link>https://isa-afp.org/entries/ClockSynchInst.html</link>
+  <pubDate>Wed, 15 Mar 2006 00:00:00 +0000</pubDate>
+  <description>Instances of Schneider&#39;s generalized protocol of clock synchronization in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Formalization of a Generalized Protocol for Clock Synchronization</title>
+  <link>https://isa-afp.org/entries/GenClock.html</link>
+  <pubDate>Fri, 24 Jun 2005 00:00:00 +0000</pubDate>
+  <description>Formalization of a Generalized Protocol for Clock Synchronization in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+<item>
+  <title>Proving the Correctness of Disk Paxos</title>
+  <link>https://isa-afp.org/entries/DiskPaxos.html</link>
+  <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
+  <description>Proving the Correctness of Disk Paxos in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+
   </channel>
 </rss>

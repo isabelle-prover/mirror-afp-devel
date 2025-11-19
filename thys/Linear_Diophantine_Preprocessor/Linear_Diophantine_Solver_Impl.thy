@@ -115,7 +115,7 @@ proof (atomize (full), unfold dleq_normalized_def, goal_cases)
         unfolding pq by transfer auto
       also have "vars_l p = vars_l q" by (simp add: vars)
       also have "Gcd ((*) g' ` coeff_l q ` vars_l q) = g' * Gcd (coeff_l q ` vars_l q)" 
-        by (metis Gcd_int_greater_eq_0 Gcd_mult abs_of_nonneg linordered_nonzero_semiring_class.zero_le_one norm_gcd(2) normalize_int_def order.trans zero_le_mult_iff)
+        by (metis Gcd_int_greater_eq_0 Gcd_mult abs_of_nonneg zero_le_one norm_gcd(2) normalize_int_def order.trans zero_le_mult_iff)
       finally have "abs g' = abs g' * abs (Gcd (coeff_l q ` vars_l q))" by simp
       with g'01 show "Gcd (coeff_l q ` vars_l q) = 1" by simp
     qed

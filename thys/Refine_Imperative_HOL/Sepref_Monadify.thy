@@ -219,9 +219,9 @@ ML \<open>
 
     fun comb_tac ctxt = let
       val comb1_ss = put_simpset HOL_basic_ss ctxt 
-        addsimps (Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_monadify_comb})
-        (*addsimps (Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_monadify_evalcomb})*)
-        addsimprocs [monadify_simproc]
+        |> Simplifier.add_simps (Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_monadify_comb})
+        (*|> Simplifier.add_simps (Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_monadify_evalcomb})*)
+        |> Simplifier.add_proc monadify_simproc
         |> Simplifier.add_cong @{thm SP_cong}
         |> Simplifier.add_cong @{thm PR_CONST_cong}
 

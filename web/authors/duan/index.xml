@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Yiran Duan</title>
+    <link>https://isa-afp.org/authors/duan/</link>
+    <description>AFP entries of Yiran Duan</description><item>
+  <title>A Verified Reduction Algorithm from MLSSmf to MLSS</title>
+  <link>https://isa-afp.org/entries/MLSSmf_to_MLSS.html</link>
+  <pubDate>Mon, 05 May 2025 00:00:00 +0000</pubDate>
+  <description>A Verified Reduction Algorithm from MLSSmf to MLSS in the AFP</description>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic/Decidability of theories</category>
+</item>
+
+  </channel>
+</rss>

@@ -16,8 +16,8 @@ lemma ta_der'_poss_subt_at_ta_der':
   shows "t |_ p |\<in>| ta_der' \<A> (s |_ p)" using assms
   by (induct s arbitrary: t p) (auto simp: ta_der'.simps, blast+)
 
-lemma ta_der'_varposs_to_ta_der:
-  assumes "t |\<in>| ta_der' \<A> s" and "p \<in> varposs t"
+lemma ta_der'_var_poss_to_ta_der:
+  assumes "t |\<in>| ta_der' \<A> s" and "p \<in> var_poss t"
   shows "the_Var (t |_ p) |\<in>| ta_der \<A> (s |_ p)" using assms
   by (induct s arbitrary: t p) (auto simp: ta_der'.simps, blast+)
 
@@ -91,12 +91,12 @@ proof -
     by (auto simp: ta_der'_mctxt_simps split_vars_num_holes ta_der'_inf_mctxt)
   have "i < length (ta_der'_target_args t) \<Longrightarrow>
        ta_der'_target_args t ! i |\<in>| ta_der \<A> (ta_der'_source_args t s ! i)" for i
-    using ta_der'_poss_subt_at_ta_der'[OF assms, of "varposs_list t ! i"]
+    using ta_der'_poss_subt_at_ta_der'[OF assms, of "var_poss_list t ! i"]
     unfolding ta_der'_mctxt_simps split_vars_vars_term_list length_map 
     by (auto simp: unfill_holes_to_subst_at_hole_poss[OF ta_der'_inf_mctxt[OF assms]]
-       simp flip: varposs_list_to_var_term_list[of i t, unfolded varposs_list_var_terms_length])
-       (metis assms hole_poss_split_vars_varposs_list nth_map nth_mem
-        ta_der'_varposs_to_ta_der ta_der_to_ta_der' varposs_eq_varposs_list varposs_list_var_terms_length)
+       simp flip: var_poss_list_to_var_term_list[of i t, unfolded var_poss_list_var_terms_length])
+       (metis assms hole_poss_split_vars_var_poss_list nth_map nth_mem
+        ta_der'_var_poss_to_ta_der ta_der_to_ta_der' var_poss_list_sound var_poss_list_var_terms_length)
   then show ?G1 ?G2 ?G3 "i < length (ta_der'_source_args t s) \<Longrightarrow>
        ta_der'_target_args t ! i |\<in>| ta_der \<A> (ta_der'_source_args t s ! i)" using len t_split s_split
     by (simp_all add: ta_der'_mctxt_simps)
@@ -339,25 +339,27 @@ lemma ta_der_to_mcxtx:
 proof -
   from ta_der_split[OF assms] obtain t where
     wit: "t |\<in>| ta_der' \<A> (term_of_gterm s)" "q |\<in>| ta_der \<B> t" by auto
-  let ?C = "fst (split_vars t)" let ?ss = "map (gsubt_at s) (varposs_list t)"
+  let ?C = "fst (split_vars t)" let ?ss = "map (gsubt_at s) (var_poss_list t)"
   let ?qs = "snd (split_vars t)"
-  have poss [simp]:"i < length (varposs_list t) \<Longrightarrow> varposs_list t ! i \<in> gposs s" for i
-    by (metis nth_mem ta_der'_poss[OF wit(1)] poss_gposs_conv subset_eq varposs_eq_varposs_list
-        varposs_imp_poss varposs_list_var_terms_length)
+  have poss [simp]:"i < length (var_poss_list t) \<Longrightarrow> var_poss_list t ! i \<in> gposs s" for i
+    by (metis nth_mem ta_der'_poss[OF wit(1)] poss_gposs_conv subset_eq var_poss_list_sound
+        var_poss_imp_poss var_poss_list_var_terms_length)
   have len: "num_holes ?C = length ?ss" "length ?ss = length ?qs"
-    by (simp_all add: split_vars_num_holes split_vars_vars_term_list varposs_list_var_terms_length)
-  from unfill_holes_to_subst_at_hole_poss[OF ta_der'_inf_mctxt[OF wit(1)]]
-  have "unfill_holes (fst (split_vars t)) (term_of_gterm s) = map (term_of_gterm \<circ> gsubt_at s) (varposs_list t)"
-    by (auto simp: comp_def hole_poss_split_vars_varposs_list
-        dest: in_set_idx intro!: nth_equalityI term_of_gterm_gsubt)
+    by (simp_all add: split_vars_num_holes split_vars_vars_term_list var_poss_list_var_terms_length)
+  have "unfill_holes (fst (split_vars t)) (term_of_gterm s) = map (term_of_gterm \<circ> gsubt_at s) (var_poss_list t)"
+    unfolding unfill_holes_to_subst_at_hole_poss[OF ta_der'_inf_mctxt[OF wit(1)]]
+    unfolding hole_poss_split_vars_var_poss_list
+    apply (intro map_cong refl, simp)
+    apply (intro term_of_gterm_gsubt)
+    by (metis in_set_conv_nth poss var_poss_list_sound)
   from fill_unfill_holes[OF ta_der'_inf_mctxt[OF wit(1)]] this
   have rep: "fill_holes ?C (map term_of_gterm ?ss) = term_of_gterm s"
     by simp
   have reach_int: "i < length ?ss \<Longrightarrow> ?qs ! i |\<in>| ta_der \<A> (term_of_gterm (?ss ! i))" for i
-    using wit(1) ta_der'_varposs_to_ta_der
+    using wit(1) ta_der'_var_poss_to_ta_der
     unfolding split_vars_vars_term_list length_map
-    unfolding varposs_list_to_var_term_list[symmetric]
-    by (metis nth_map nth_mem poss term_of_gterm_gsubt varposs_eq_varposs_list)
+    unfolding var_poss_list_to_var_term_list[symmetric]
+    by (metis nth_map nth_mem poss term_of_gterm_gsubt var_poss_list_sound)
   have reach_end: "q |\<in>| ta_der \<B> (fill_holes ?C (map Var ?qs))" using wit
     using split_vars_fill_holes[of ?C t "map Var ?qs"]
     by auto

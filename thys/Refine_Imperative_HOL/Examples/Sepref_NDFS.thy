@@ -158,9 +158,10 @@ sepref_definition blue_dfs_impl_sz is "uncurry2 blue_dfs" :: "((adjg_assn nat_as
   apply (rewrite in "RECT _ \<hole>" testsuite_blue_dfs_modify)
   using [[goals_limit = 1]]
   by sepref (* Takes long *)
-export_code blue_dfs_impl_sz checking SML_imp 
 
 end
+
+export_code blue_dfs_impl_sz checking SML_imp
 
 lemmas blue_dfs_impl_sz_correct' = blue_dfs_impl_sz.refine[FCOMP blue_dfs_correct']
 

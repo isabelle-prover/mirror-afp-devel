@@ -18,7 +18,7 @@ begin
     
         val unfold_conv = 
            map (Local_Defs.meta_rewrite_rule ctxt #> perhaps (try Drule.abs_def)) analysis_unfolds
-        |> Raw_Simplifier.rewrite ctxt true
+        |> Simplifier.rewrite_wrt ctxt true
     
     in
       unfold_conv #> SOME
@@ -26,9 +26,8 @@ begin
   \<close>
   declare [[simproc del: ANALYZE]]
 
-  declaration \<open>fn _ => Named_Simpsets.map_ctxt @{named_simpset vcg_bb} (
-    fn ctxt => ctxt addsimprocs [@{simproc ANALYZE}]
-  )\<close>
+  declaration \<open>fn _ =>
+    Named_Simpsets.map_ctxt @{named_simpset vcg_bb} (Simplifier.add_proc @{simproc ANALYZE})\<close>
 
   (* TODO: There's a more general concept here: 
     Activating specific simpsets depending on the context, or, in this case, a trigger constant.
@@ -215,10 +214,7 @@ begin
   lemma lhsv_approx: "lhsv \<pi>' c \<subseteq> lhsv\<pi> \<pi>' \<union> lhsv' c" 
     apply (induction c arbitrary: \<pi>')
               apply auto
-    apply (auto simp: lhsv\<pi>_def)
     done
-  
-              
 
   lemma modifies_lhsv:
     assumes "\<pi>: (c, s) \<Rightarrow> t"
@@ -229,9 +225,7 @@ begin
      subgoal by (auto simp: modifies_lhsv\<pi>) []
     subgoal using lhsv_approx by (auto simp: modifies_def)
     done
-    
-    
-      
+
   lemma wp_strengthen_modset: "wp \<pi> c Q s \<Longrightarrow> wp \<pi> c (\<lambda>s'. Q s' \<and> modifies (lhsv \<pi> c) s' s) s"
     unfolding wp_def 
     by (blast intro: modifies_lhsv)

@@ -302,7 +302,7 @@ fun get_mod_inv_prop ctxt post_abs mod_inv_props = let
         resolve_tac ctxt @{thms CollectI} 1 THEN
         TRY (REPEAT_ALL_NEW (resolve_tac ctxt @{thms exI}) 1) THEN
         resolve_tac ctxt [globals_equality] 1 THEN
-        ALLGOALS (simp_tac (clear_simpset ctxt addsimprocs [Record.simproc]))
+        ALLGOALS (simp_tac (clear_simpset ctxt |> Simplifier.add_proc Record.simproc))
       fun mi_incl_tac _ =
         simp_tac (clear_simpset ctxt addsimps @{thms modifies_inv_incl_def mex_def meq_def}) 1 THEN
         resolve_tac ctxt @{thms allI} 1 THEN
@@ -341,7 +341,7 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
     fun gamma_t ctxt = HP_TermsTypes.mk_gamma ctxt prog_name;
 
 
-    val {callees,callers} = ProgramAnalysis.compute_callgraphs ctxt csenv
+    val {callees,callers} = ProgramAnalysis.compute_callgraphs csenv
 
     fun do_one fname (failedsofar, mod_inv_props, thy) =
       let
@@ -439,7 +439,7 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
           val _ = Feedback.informStr lthy (0, pnm ^ " commencing.")
           fun msg () = Feedback.informStr lthy(0, pnm ^ " completed.")
           val nway_thm = munge_tactic lthy nway_goal msg tac
-          val nway_thms = HOLogic.conj_elims lthy nway_thm
+          val nway_thms = HOLogic.conj_elims nway_thm
           val _ = length nway_thms = length fnlist orelse
                   raise Fail "CONJUNCTS nway_thm and fnlist don't match up!"
           fun note_it nm th lthy =

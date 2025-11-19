@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>scott on Archive of Formal Proofs
-    </title>
-    <link>/authors/scott/</link>
-    <description>
-        Recent content in scott 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 23 May 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/scott/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Axiom Systems for Category Theory in Free Logic</title>
-          <link>/entries/AxiomaticCategoryTheory.html</link>
-          <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/AxiomaticCategoryTheory.html</guid>
-          <description></description>
-        </item>
+    <title>Dana Scott</title>
+    <link>https://isa-afp.org/authors/scott/</link>
+    <description>AFP entries of Dana Scott</description><item>
+  <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html</link>
+  <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Axiom Systems for Category Theory in Free Logic</title>
+  <link>https://isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
+  <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+  <description>Axiom Systems for Category Theory in Free Logic in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+
   </channel>
 </rss>

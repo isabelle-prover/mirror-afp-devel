@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[greek.polutoniko,greek,main=english]{babel}
+\newcommand{\greekbous}{\textgreek{βοῦς}}
+\newcommand{\greekstrofe}{\textgreek{στροφή}}
+\newcommand{\greekdon}{\textgreek{-ηδόν}}
+\DeclareMathOperator{\sech}{sech}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{The Boustrophedon Transform, the Entringer Numbers, and Related Sequences}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry defines the \emph{Boustrophedon transform}, which can be seen as either a transformation of a sequence of numbers or, equivalently, an exponential generating function.
+We define it in terms of the \emph{Seidel triangle}, a number triangle similar to Pascal's triangle, and then prove the closed form $\mathcal B(f) = (\sec + \tan) f$.
+
+We also define several related sequences, such as:
+\begin{itemize}
+\item the \emph{zigzag numbers} $E_n$, counting the number of alternating permutations on a linearly ordered set with $n$ elements; or, alternatively, the number of increasing binary trees with $n$ elements
+\item the \emph{Entringer numbers} $E_{n,k}$, which generalise the zigzag numbers and count the number of alternating permutations of $n+1$ elements that start with the $k$-th smallest element
+\item the \emph{secant} and \emph{tangent} numbers $S_n$ and $T_n$, which are the series of numbers such that $\sec x = \sum_{n\geq 0} \frac{S(n)}{(2n)!}\,x^{2n}$ and $\tan x = \sum_{n\geq 1} \frac{T(n)}{(2n-1)!}\,x^{2n-1}$, respectively
+\item the \emph{Euler numbers} $\mathcal{E}_n$ and \emph{Euler polynomials} $\mathcal{E}_n(x)$, which are analogous to Bernoulli numbers and Bernoulli polynomials and satisfy many similar properties, which we also prove
+\end{itemize}
+
+Various relationships between these sequences are shown; notably we have $E_{2n} = S_n$ and $E_{2n+1} = T_{n+1}$ and $\mathcal E_{2n} = (-1)^n S_n$ and
+\[T_n = \frac{(-1)^{n+1} 2^{2n} (2^{2n}-1) B_{2n}}{2n}\]
+where $B_n$ denotes the Bernoulli numbers.
+
+Reasonably efficient executable algorithms to compute the Boustrophedon transform and the above sequences are also given, including imperative ones for $T_n$ and $S_n$ using Imperative HOL.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{zimmermann99}
+\nocite{bertot02}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

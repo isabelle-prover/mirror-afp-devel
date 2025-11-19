@@ -9,21 +9,21 @@ lemma fixes rhs z
   defines "rhs \<equiv> nth_cons (flatten (\<lambda>s'. s') (upto_prod 17) (upto_prod z)) (2, None) 8"
   shows "nth (List.maps (\<lambda>x. upto x 17) (upto 2 z)) 8 = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
-apply(simp del: id_apply) \<comment> \<open>fuses\<close>
+apply(simp del: id_apply List.maps_eq) \<comment> \<open>fuses\<close>
 by(unfold rhs_def) rule
 
 lemma fixes rhs z
   defines "rhs \<equiv> nth_cons (flatten (\<lambda>s. (s, 1)) (fix_gen (\<lambda>x. upto_prod (id x))) (upto_prod z)) (2, None) 8"
   shows "nth (List.maps (\<lambda>x. upto 1 (id x)) (upto 2 z)) 8 = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
-apply(simp del: id_apply) \<comment> \<open>fuses\<close>
+apply(simp del: id_apply List.maps_eq) \<comment> \<open>fuses\<close>
 by(unfold rhs_def) rule
 
 lemma fixes rhs n
   defines "rhs \<equiv> List.maps (\<lambda>x. [Suc 0..<sum_list_cons (replicate_prod x) x]) [2..<n]"
   shows "(concat (map (\<lambda>x. [1..<sum_list (replicate x x)]) [2..<n])) = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
-apply(simp add: concat_map_maps) \<comment> \<open>fuses partially\<close>
+apply(simp flip: List.maps_eq) \<comment> \<open>fuses partially\<close>
 by(unfold rhs_def) rule
 
 subsection \<open>Micro-benchmarks from Farmer et al. \<^cite>\<open>"FarmerHoenerGill2014PEPM"\<close>\<close>

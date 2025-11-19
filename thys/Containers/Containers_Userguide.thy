@@ -6,6 +6,7 @@ theory Containers_Userguide imports
   List_Proper_Interval
   Containers
 begin
+
 (*>*)
 chapter \<open>User guide\<close>
 text_raw \<open>\label{chapter:Userguide}\<close>
@@ -991,12 +992,13 @@ text \<open>
   \end{center}
 
   The type classes @{class card_UNIV} and @{class cproper_interval} are only required to implement the operations on set complements.
-  If your code does not need complements, you can manually delete the code equations involving @{const "Complement"}, the theorem list @{thm [source] set_complement_code} collects them.
+  If your code does not need complements, you can manually declare the code equations not involving @{const "Complement"}
+  using the theorem collection @{thm [source] set_base_code}.
   It is also recommended that you remove the pseudo-constructor @{const Complement} from the code generator.
   Note that some set operations like @{term "A - B"} and @{const UNIV} have no code equations any more.
 \<close>
-declare set_complement_code[code del]
 code_datatype Collect_set DList_set RBT_set Set_Monad
+declare set_base_code [code]
 (*<*)
 datatype minimal_sorts = Minimal_Sorts bool
 derive (eq) ceq minimal_sorts

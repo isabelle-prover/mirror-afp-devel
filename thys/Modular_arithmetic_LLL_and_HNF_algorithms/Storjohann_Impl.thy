@@ -229,7 +229,7 @@ definition LLL_initial :: "bool \<Rightarrow> int \<times> state_impl \<times> n
       dmui = IArray.of_fun (\<lambda> i. let row = init !! i in IArray.of_fun (\<lambda> j. row !! j symmod (mods !! j)) i) m
       in (p, (compute_initial_mfs p, dmui, di, mods), g_idx))" 
 
-fun LLL_add_rows_loop where
+primrec LLL_add_rows_loop where
   "LLL_add_rows_loop p state i 0 = state"
 | "LLL_add_rows_loop p state i (Suc j) = (
      let state' = LLL_add_row p state i j
@@ -279,8 +279,6 @@ declare LLL.LLL_reduce_basis_def[code]
 declare LLL.LLL_reduce_basis_iso_def[code]
 declare LLL.LLL_iso_main_def[code]
 declare LLL.LLL_iso_main_inner.simps[code]
-declare LLL.LLL_add_rows_outer_loop.simps[code]
-declare LLL.LLL_add_rows_loop.simps[code]
 declare LLL.LLL_initial_def[code]
 declare LLL.LLL_main.simps[code]
 declare LLL.LLL_adjust_mod_def[code]

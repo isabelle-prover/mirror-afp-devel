@@ -1030,7 +1030,7 @@ sublocale FiniteSingleAgentEnvironment
   using spr_simTrans
   apply blast
 
-  apply (rule trie_odlist_MapOps[OF subset_inj_on[OF spr_simAbs_inj subset_UNIV]])
+  apply (rule trie_odlist_MapOps[OF inj_on_subset[OF spr_simAbs_inj subset_UNIV]])
   apply (rule trans_MapOps)
 
   done

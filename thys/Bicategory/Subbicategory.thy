@@ -167,7 +167,7 @@ begin
       proof -
         have "Arr (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) =
               Arr ((fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>)) \<cdot>\<^sub>B \<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>))"
-          using assms 1 B.\<alpha>_def B.assoc_is_natural_1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
+          using assms 1 B.\<alpha>_def B.assoc_naturality1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
                 VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C
           apply simp
           by (metis (no_types, lifting) arr_char\<^sub>S\<^sub>b\<^sub>C dom_char\<^sub>S\<^sub>b\<^sub>C dom_closed src.preserves_dom
@@ -185,7 +185,7 @@ begin
                   B.VVV.dom_simp B.VVV.cod_simp
             apply simp
             by (metis (no_types, lifting) B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arrE B.\<alpha>.preserves_reflects_arr
-                B.assoc_is_natural_1 B.seqE arr_dom dom_char\<^sub>S\<^sub>b\<^sub>C src_dom trg_dom)
+                B.assoc_naturality1 B.seqE arr_dom dom_char\<^sub>S\<^sub>b\<^sub>C src_dom trg_dom)
           show "Arr (\<a> (fst (B.VVV.dom \<mu>\<nu>\<tau>)) (fst (snd (B.VVV.dom \<mu>\<nu>\<tau>)))
                     (snd (snd (B.VVV.dom \<mu>\<nu>\<tau>))))"
           proof -
@@ -224,7 +224,7 @@ begin
       moreover have "B.dom f = B.cod (B.\<ll> (B.dom f))"
         using 1 arr_char\<^sub>S\<^sub>b\<^sub>C B.\<ll>.preserves_cod inclusion by simp
       moreover have "B.\<ll> f = f \<cdot> B.\<ll> (B.dom f)"
-        using assms 1 B.\<ll>.is_natural_1 inclusion comp_char arr_char\<^sub>S\<^sub>b\<^sub>C by simp
+        using assms 1 B.\<ll>.naturality1 inclusion comp_char arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       ultimately show ?thesis
         using arr_char\<^sub>S\<^sub>b\<^sub>C comp_closed cod_char\<^sub>S\<^sub>b\<^sub>C seqI dom_simp by auto
     qed
@@ -239,7 +239,7 @@ begin
       moreover have "B.dom f = B.cod (B.\<rr> (B.dom f))"
         using 1 arr_char\<^sub>S\<^sub>b\<^sub>C B.\<ll>.preserves_cod inclusion by simp
       moreover have "B.\<rr> f = f \<cdot> B.\<rr> (B.dom f)"
-        using assms 1 B.\<rr>.is_natural_1 inclusion comp_char arr_char\<^sub>S\<^sub>b\<^sub>C by simp
+        using assms 1 B.\<rr>.naturality1 inclusion comp_char arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       ultimately show ?thesis
         using arr_char\<^sub>S\<^sub>b\<^sub>C comp_closed cod_char\<^sub>S\<^sub>b\<^sub>C seqI dom_simp by auto
     qed
@@ -254,44 +254,8 @@ begin
         using \<mu>\<nu>\<tau> VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C
               src_def trg_def inclusion
         by auto
-      show "dom (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) = HoHV (VVV.dom \<mu>\<nu>\<tau>)"
-      proof -
-        have "dom (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) = B.HoHV (B.VVV.dom \<mu>\<nu>\<tau>)"
-          using \<mu>\<nu>\<tau> 1 arr_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-                B.\<alpha>_def assoc_closed' dom_simp
-          by simp
-        also have "... = HoHV (VVV.dom \<mu>\<nu>\<tau>)"
-        proof -
-          have "HoHV (VVV.dom \<mu>\<nu>\<tau>) = HoHV (VxVxV.dom \<mu>\<nu>\<tau>)"
-            using \<mu>\<nu>\<tau> VVV.dom_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def VVV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
-          also have "... = B.HoHV (B.VVV.dom \<mu>\<nu>\<tau>)"
-             using \<mu>\<nu>\<tau> VVV.dom_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def
-                   HoHV_def B.HoHV_def arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-                   dom_closed hcomp_closed hcomp_def inclusion dom_simp
-             by auto
-          finally show ?thesis by simp
-        qed
-        finally show ?thesis by simp
-      qed
-      show "cod (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) = HoVH (VVV.cod \<mu>\<nu>\<tau>)"
-      proof -
-        have "cod (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) = B.HoVH (B.VVV.cod \<mu>\<nu>\<tau>)"
-          using \<mu>\<nu>\<tau> 1 arr_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-                B.\<alpha>_def assoc_closed' cod_simp
-          by simp
-        also have "... = HoVH (VVV.cod \<mu>\<nu>\<tau>)"
-        proof -
-          have "HoVH (VVV.cod \<mu>\<nu>\<tau>) = HoVH (VxVxV.cod \<mu>\<nu>\<tau>)"
-            using \<mu>\<nu>\<tau> VVV.cod_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def VVV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
-          also have "... = B.HoVH (B.VVV.cod \<mu>\<nu>\<tau>)"
-            using \<mu>\<nu>\<tau> VVV.cod_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
-                  HoVH_def B.HoVH_def arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-                  cod_closed hcomp_closed hcomp_def inclusion cod_simp
-            by simp
-          finally show ?thesis by simp
-        qed
-        finally show ?thesis by simp
-      qed
+      show "arr (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>)"
+        using \<mu>\<nu>\<tau> assoc_closed' by blast
       have 3: "Arr (fst \<mu>\<nu>\<tau>) \<and> Arr (fst (snd \<mu>\<nu>\<tau>)) \<and> Arr (snd (snd \<mu>\<nu>\<tau>)) \<and>
                src\<^sub>B (fst \<mu>\<nu>\<tau>) = trg\<^sub>B (fst (snd \<mu>\<nu>\<tau>)) \<and>
                src\<^sub>B (fst (snd \<mu>\<nu>\<tau>)) = trg\<^sub>B (snd (snd \<mu>\<nu>\<tau>))"
@@ -300,7 +264,7 @@ begin
       proof -
         have "\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau> = (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>)) \<cdot>\<^sub>B
                            \<a>\<^sub>B (B.dom (fst \<mu>\<nu>\<tau>)) (B.dom (fst (snd \<mu>\<nu>\<tau>))) (B.dom (snd (snd \<mu>\<nu>\<tau>)))"
-          using 3 inclusion B.assoc_is_natural_1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
+          using 3 inclusion B.assoc_naturality1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
           by (simp add: \<mu>\<nu>\<tau>)
         also have "... = (fst \<mu>\<nu>\<tau> \<star> fst (snd \<mu>\<nu>\<tau>) \<star> snd (snd \<mu>\<nu>\<tau>)) \<cdot>
                            \<a>\<^sub>B (dom (fst \<mu>\<nu>\<tau>)) (dom (fst (snd \<mu>\<nu>\<tau>))) (dom (snd (snd \<mu>\<nu>\<tau>)))"
@@ -320,7 +284,7 @@ begin
         have "\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau> =
               \<a>\<^sub>B (B.cod (fst \<mu>\<nu>\<tau>)) (B.cod (fst (snd \<mu>\<nu>\<tau>))) (B.cod (snd (snd \<mu>\<nu>\<tau>))) \<cdot>\<^sub>B
                 (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>)) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>)"
-          using 3 inclusion B.assoc_is_natural_2 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
+          using 3 inclusion B.assoc_naturality2 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
           by (simp add: \<mu>\<nu>\<tau>)
         also have "... = \<a>\<^sub>B (cod (fst \<mu>\<nu>\<tau>)) (cod (fst (snd \<mu>\<nu>\<tau>))) (cod (snd (snd \<mu>\<nu>\<tau>))) \<cdot>
                            ((fst \<mu>\<nu>\<tau> \<star> fst (snd \<mu>\<nu>\<tau>)) \<star> snd (snd \<mu>\<nu>\<tau>))"
@@ -997,32 +961,14 @@ begin
           show "\<guillemotleft>\<ll> \<mu> : a \<star> dom \<mu> \<Rightarrow> cod \<mu>\<guillemotright>"
             using \<mu> 2 \<ll>.preserves_hom [of \<mu> "dom \<mu>" "cod \<mu>"] arr_simps(2) arr_cod by fastforce
         qed
-        show "dom (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)) = fst (w, dom \<mu>) \<star> snd (w, dom \<mu>)"
-        proof -
-          have "dom (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)) = dom \<phi> \<star> dom \<mu>"
-            using \<mu> 3 hcomp_simps(3) dom_comp dom_dom
-            apply (elim seqE) by auto
-          also have "... = fst (w, dom \<mu>) \<star> snd (w, dom \<mu>)"
-            using \<omega>_in_vhom \<phi>
-            by (metis (no_types, lifting) in_homE prod.sel(1) prod.sel(2))
-          finally show ?thesis by simp
-        qed
-        show "cod (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)) = map (cod \<mu>)"
-        proof -
-          have "seq (\<ll> \<mu>) (\<phi> \<star> dom \<mu>)"
-            using 3 by simp
-          hence "cod (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)) = cod (\<ll> \<mu>)"
-            using cod_comp by blast
-          also have "... = map (cod \<mu>)"
-            using \<mu> by blast
-          finally show ?thesis by blast
-        qed
+        show "arr (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>))"
+        using 3 by blast
         show "map \<mu> \<cdot> \<ll> (dom \<mu>) \<cdot> (\<phi> \<star> dom (dom \<mu>)) = \<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)"
         proof -
           have "map \<mu> \<cdot> \<ll> (dom \<mu>) \<cdot> (\<phi> \<star> dom (dom \<mu>)) = (map \<mu> \<cdot> \<ll> (dom \<mu>)) \<cdot> (\<phi> \<star> dom \<mu>)"
             using \<mu> comp_assoc by simp
           also have "... = \<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)"
-            using \<mu> \<phi> \<ll>.is_natural_1 by auto
+            using \<mu> \<phi> \<ll>.naturality1 by auto
           finally show ?thesis by blast
         qed
         show "(\<ll> (cod \<mu>) \<cdot> (\<phi> \<star> dom (cod \<mu>))) \<cdot> (fst (w, \<mu>) \<star> snd (w, \<mu>)) = \<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)"
@@ -1062,7 +1008,7 @@ begin
             have "L \<mu> = cod \<phi> \<star> \<mu>"
               using \<mu> \<phi> arr_simps(2) in_homE by auto
             hence "\<ll> (cod \<mu>) \<cdot> (cod \<phi> \<star> \<mu>) = \<ll> \<mu>"
-              using \<mu> \<ll>.is_natural_2 [of \<mu>] by simp
+              using \<mu> \<ll>.naturality2 [of \<mu>] by simp
             thus ?thesis by simp
           qed
           finally show ?thesis by simp
@@ -1160,26 +1106,8 @@ begin
                   dom_simp cod_simp
             by fastforce
         qed
-        show "dom (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)) = fst (dom \<mu>, w) \<star> snd (dom \<mu>, w)"
-        proof -
-          have "dom (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)) = dom \<mu> \<star> dom \<phi>"
-            using \<mu> 3 hcomp_simps(3) dom_comp dom_dom
-            apply (elim seqE) by auto
-          also have "... = fst (dom \<mu>, w) \<star> snd (dom \<mu>, w)"
-            using \<omega>_in_vhom \<phi>
-            by (metis (no_types, lifting) in_homE prod.sel(1) prod.sel(2))
-          finally show ?thesis by simp
-        qed
-        show "cod (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)) = map (cod \<mu>)"
-        proof -
-          have "seq (\<rr> \<mu>) (dom \<mu> \<star> \<phi>)"
-            using 3 by simp
-          hence "cod (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)) = cod (\<rr> \<mu>)"
-            using cod_comp by blast
-          also have "... = map (cod \<mu>)"
-            using \<mu> by blast
-          finally show ?thesis by blast
-        qed
+        show "arr (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>))"
+          using 3 by blast
         show "map \<mu> \<cdot> \<rr> (dom \<mu>) \<cdot> (dom (dom \<mu>) \<star> \<phi>) = \<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)"
         proof -
           have "map \<mu> \<cdot> \<rr> (dom \<mu>) \<cdot> (dom (dom \<mu>) \<star> \<phi>) =
@@ -1188,7 +1116,7 @@ begin
           also have "... = (map \<mu> \<cdot> \<rr> (dom \<mu>)) \<cdot> (dom \<mu> \<star> \<phi>)"
             using \<mu> dom_dom by simp
           also have "... = \<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)"
-            using \<mu> \<phi> \<rr>.is_natural_1 by auto
+            using \<mu> \<phi> \<rr>.naturality1 by auto
           finally show ?thesis by blast
         qed
         show "(\<rr> (cod \<mu>) \<cdot> (dom (cod \<mu>) \<star> \<phi>)) \<cdot> (fst (\<mu>, w) \<star> snd (\<mu>, w)) = \<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)"
@@ -1235,7 +1163,7 @@ begin
             have "\<mu> \<star> cod \<phi> = R \<mu>"
               using \<mu> \<phi> arr_simps(1) in_homE by auto
             hence "\<rr> (cod \<mu>) \<cdot> (\<mu> \<star> cod \<phi>) = \<rr> \<mu>"
-              using \<mu> \<phi> \<rr>.is_natural_2 by simp
+              using \<mu> \<phi> \<rr>.naturality2 by simp
             thus ?thesis by simp
           qed
           finally show ?thesis by simp

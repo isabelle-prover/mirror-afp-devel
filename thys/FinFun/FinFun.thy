@@ -166,7 +166,7 @@ lemma finfun_right_compose:
 proof -
   from g obtain b where b: "finite {a. g a \<noteq> b}" unfolding finfun_def by blast
   moreover have "f ` {a. g (f a) \<noteq> b} \<subseteq> {a. g a \<noteq> b}" by auto
-  moreover from inj have "inj_on f {a.  g (f a) \<noteq> b}" by(rule subset_inj_on) blast
+  moreover from inj have "inj_on f {a.  g (f a) \<noteq> b}" by(rule inj_on_subset) blast
   ultimately have "finite {a. g (f a) \<noteq> b}"
     by(blast intro: finite_imageD[where f=f] finite_subset)
   thus ?thesis unfolding finfun_def by auto
@@ -297,7 +297,7 @@ by transfer (simp add: fun_eq_iff)
 subsection \<open>Code generator setup\<close>
 
 definition finfun_update_code :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>f 'b"
-where [simp, code del]: "finfun_update_code = finfun_update"
+where [simp]: "finfun_update_code = finfun_update"
 
 code_datatype finfun_const finfun_update_code
 
@@ -1147,14 +1147,15 @@ by(simp add: finfun_fst_def [abs_def] finfun_comp_conv_comp)
 
 
 definition finfun_snd :: "'a \<Rightarrow>f ('b \<times> 'c) \<Rightarrow> 'a \<Rightarrow>f 'c"
-where [code]: "finfun_snd f = snd \<circ>$ f"
+where "finfun_snd f = snd \<circ>$ f"
 
 lemma finfun_snd_const: "finfun_snd (K$ bc) = (K$ snd bc)"
 by(simp add: finfun_snd_def)
 
 lemma finfun_snd_update: "finfun_snd (f(a $:= bc)) = (finfun_snd f)(a $:= snd bc)"
   and finfun_snd_update_code [code]: "finfun_snd (finfun_update_code f a bc) = (finfun_snd f)(a $:= snd bc)"
-by(simp_all add: finfun_snd_def)
+  by(simp_all add: finfun_snd_def)
+declare finfun_snd_def [code]
 
 lemma finfun_snd_comp_conv: "finfun_snd (f \<circ>$ g) = (snd \<circ> f) \<circ>$ g"
 by(simp add: finfun_snd_def)

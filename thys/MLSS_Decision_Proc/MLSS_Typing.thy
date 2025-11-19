@@ -4,12 +4,14 @@ begin
 
 section \<open>Typing and Branch Expansion\<close>
 text \<open>
-  In this theory, we prove that the branch expansion rules
+  We prove that the branch expansion rules
   preserve well-typedness.
 \<close>
 
+(*<*)
 context includes no member_ASCII_syntax
 begin
+(*>*)
 
 lemma types_term_unique:
   shows "v \<turnstile> t : l1 \<Longrightarrow> v \<turnstile> t : l2 \<Longrightarrow> l2 = l1"
@@ -496,6 +498,8 @@ proof -
     unfolding urelem_def by blast+
 qed
 
+(*<*)
 end
 
 end
+(*>*)

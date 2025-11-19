@@ -138,7 +138,7 @@ definition
 declare nat_explode_def [solidity_symbex]
 
 lemma nat_explode'_not_empty: \<open>nat_explode' n \<noteq> []\<close> 
-  by (smt (verit, ccfv_threshold) nat_explode'.elims ord.lexordp_eq_simps(1) ord.lexordp_eq_simps(3))
+  by (induction n rule: nat_explode'.induct) (simp_all split: bool.split)
 
 lemma nat_explode_not_empty: \<open>nat_explode n \<noteq> []\<close>
   using nat_explode'_not_empty nat_explode_def by auto 

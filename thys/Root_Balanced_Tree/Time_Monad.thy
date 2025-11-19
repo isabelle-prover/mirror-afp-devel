@@ -17,7 +17,7 @@ fun time :: "'a tm \<Rightarrow> nat" where
 definition bind_tm :: "'a tm \<Rightarrow> ('a \<Rightarrow> 'b tm) \<Rightarrow> 'b tm" where
 "bind_tm s f = (case s of TM u m \<Rightarrow> case f u of TM v n \<Rightarrow> TM v (m+n))"
 
-adhoc_overloading Monad_Syntax.bind bind_tm
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_tm
 
 definition "tick v = TM v 1"
 

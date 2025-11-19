@@ -1,0 +1,31 @@
+title = "CSP Semantics over Restriction Spaces"
+date = 2025-05-07
+topics = [
+  "Computer science/Semantics and reasoning",
+  "Computer science/Concurrency/Process calculi",
+]
+abstract = "We use the Restriction_Spaces library as a semantic foundation for the process algebra framework HOL-CSP, offering a complementary backend to the existing HOLCF infrastructure. The type of processes is instantiated as a restriction space, and we prove that it is complete in this setting. This enables the construction of fixed points for recursive process definitions without having to rely exclusively on a pointed complete partial order. Notably, some operators are constructive without being Scott-continuous, and vice versa, illustrating the genuine complementarity between the two approaches. We also show that key CSP operators are either constructive or non-destructive, and verify the admissibility of several predicates, thereby supporting automated reasoning over recursive specifications."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

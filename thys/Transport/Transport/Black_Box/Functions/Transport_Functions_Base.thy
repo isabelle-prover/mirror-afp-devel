@@ -410,7 +410,7 @@ paragraph \<open>Monotone Function Relator\<close>
 locale transport_Mono_Fun_Rel =
   transport_Fun_Rel_syntax L1 R1 l1 r1 L2 R2 l2 r2 +
   tfr : transport_Fun_Rel L1 R1 l1 r1 L2 R2 l2 r2 +
-  tpdfr : transport_Mono_Dep_Fun_Rel L1 R1 l1 r1 "\<lambda>_ _. L2" "\<lambda>_ _. R2"
+  tmdfr : transport_Mono_Dep_Fun_Rel L1 R1 l1 r1 "\<lambda>_ _. L2" "\<lambda>_ _. R2"
     "\<lambda>_ _. l2" "\<lambda>_ _. r2"
   for L1 :: "'a1 \<Rightarrow> 'a1 \<Rightarrow> bool"
   and R1 :: "'a2 \<Rightarrow> 'a2 \<Rightarrow> bool"
@@ -424,32 +424,32 @@ begin
 
 (*FIXME: we have to repeat the Galois syntax here since tdfr already contains
 a Galois instance, blocking a galois sublocale interpretation here*)
-notation tpdfr.L (\<open>L\<close>)
-notation tpdfr.R (\<open>R\<close>)
+notation tmdfr.L (\<open>L\<close>)
+notation tmdfr.R (\<open>R\<close>)
 
-abbreviation "l \<equiv> tpdfr.l"
-abbreviation "r \<equiv> tpdfr.r"
+abbreviation "l \<equiv> tmdfr.l"
+abbreviation "r \<equiv> tmdfr.r"
 
-notation tpdfr.L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
-notation tpdfr.R (infix \<open>\<le>\<^bsub>R\<^esub>\<close> 50)
+notation tmdfr.L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
+notation tmdfr.R (infix \<open>\<le>\<^bsub>R\<^esub>\<close> 50)
 
-notation tpdfr.ge_left (infix \<open>\<ge>\<^bsub>L\<^esub>\<close> 50)
-notation tpdfr.ge_right (infix \<open>\<ge>\<^bsub>R\<^esub>\<close> 50)
+notation tmdfr.ge_left (infix \<open>\<ge>\<^bsub>L\<^esub>\<close> 50)
+notation tmdfr.ge_right (infix \<open>\<ge>\<^bsub>R\<^esub>\<close> 50)
 
-notation tpdfr.left_Galois (infix \<open>\<^bsub>L\<^esub>\<lessapprox>\<close> 50)
-notation tpdfr.ge_Galois_left (infix \<open>\<greaterapprox>\<^bsub>L\<^esub>\<close> 50)
-notation tpdfr.right_Galois (infix \<open>\<^bsub>R\<^esub>\<lessapprox>\<close> 50)
-notation tpdfr.ge_Galois_right (infix \<open>\<greaterapprox>\<^bsub>R\<^esub>\<close> 50)
-notation tpdfr.right_ge_Galois (infix \<open>\<^bsub>R\<^esub>\<greaterapprox>\<close> 50)
-notation tpdfr.Galois_right (infix \<open>\<lessapprox>\<^bsub>R\<^esub>\<close> 50)
-notation tpdfr.left_ge_Galois (infix \<open>\<^bsub>L\<^esub>\<greaterapprox>\<close> 50)
-notation tpdfr.Galois_left (infix \<open>\<lessapprox>\<^bsub>L\<^esub>\<close> 50)
+notation tmdfr.left_Galois (infix \<open>\<^bsub>L\<^esub>\<lessapprox>\<close> 50)
+notation tmdfr.ge_Galois_left (infix \<open>\<greaterapprox>\<^bsub>L\<^esub>\<close> 50)
+notation tmdfr.right_Galois (infix \<open>\<^bsub>R\<^esub>\<lessapprox>\<close> 50)
+notation tmdfr.ge_Galois_right (infix \<open>\<greaterapprox>\<^bsub>R\<^esub>\<close> 50)
+notation tmdfr.right_ge_Galois (infix \<open>\<^bsub>R\<^esub>\<greaterapprox>\<close> 50)
+notation tmdfr.Galois_right (infix \<open>\<lessapprox>\<^bsub>R\<^esub>\<close> 50)
+notation tmdfr.left_ge_Galois (infix \<open>\<^bsub>L\<^esub>\<greaterapprox>\<close> 50)
+notation tmdfr.Galois_left (infix \<open>\<lessapprox>\<^bsub>L\<^esub>\<close> 50)
 
-notation tpdfr.unit (\<open>\<eta>\<close>)
-notation tpdfr.counit (\<open>\<epsilon>\<close>)
+notation tmdfr.unit (\<open>\<eta>\<close>)
+notation tmdfr.counit (\<open>\<epsilon>\<close>)
 
 lemma left_rel_eq_Mono_Fun_Rel: "(\<le>\<^bsub>L\<^esub>) = ((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<oplus> (\<le>\<^bsub>L2\<^esub>))"
-  unfolding tpdfr.left_rel_eq_Mono_Dep_Fun_Rel by simp
+  unfolding tmdfr.left_rel_eq_Mono_Dep_Fun_Rel by simp
 
 lemma left_eq_fun_map: "l = (r1 \<leadsto> l2)"
   unfolding tfr.left_eq_fun_map ..
@@ -462,7 +462,7 @@ lemma right_rel_eq_Mono_Fun_Rel: "(\<le>\<^bsub>R\<^esub>) = ((\<le>\<^bsub>R1\<
 lemma right_eq_fun_map: "r = (l1 \<leadsto> r2)"
   unfolding flip.left_eq_fun_map ..
 
-lemmas transport_defs = tpdfr.transport_defs
+lemmas transport_defs = tmdfr.transport_defs
 
 end
 

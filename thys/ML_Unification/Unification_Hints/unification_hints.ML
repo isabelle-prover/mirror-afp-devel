@@ -3,8 +3,7 @@
 
 Unification hints with arguments from context.
 *)
-@{parse_entries (sig) PARSE_UNIFICATION_HINTS_ARGS
-  [concl_unifier, normalisers, prems_unifier]}
+@{parse_entries (sig) PARSE_UNIFICATION_HINTS_ARGS [concl_unifier, normalisers, prems_unifier]}
 
 signature UNIFICATION_HINTS_ARGS =
 sig
@@ -21,13 +20,11 @@ end
 
 structure Unification_Hints_Args : UNIFICATION_HINTS_ARGS =
 struct
-
 structure UB = Unification_Base
 structure EN = Envir_Normalisation
 structure UHB = Unification_Hints_Base
 
-@{parse_entries (struct) PA
-  [concl_unifier, normalisers, prems_unifier]}
+@{parse_entries (struct) PA [concl_unifier, normalisers, prems_unifier]}
 
 type args = (UB.unifier, UB.normalisers, UB.unifier) PA.entries
 
@@ -40,12 +37,12 @@ val arg_parsers = {
   normalisers = SOME Unification_Parser.parse_normalisers,
   prems_unifier = SOME Unification_Parser.parse_unifier
 }
-
 end
 
 signature UNIFICATION_HINTS =
 sig
   structure Data : GENERIC_DATA
+  where type T = Unification_Hints_Args.args
 
   val get_args : Context.generic -> Unification_Hints_Args.args
   val map_args : (Unification_Hints_Args.args -> Unification_Hints_Args.args) ->
@@ -69,22 +66,22 @@ sig
     Unification_Hints_Args.PA.entries * Position.T -> attribute
 end
 
-functor Unification_Hints(A : sig
-    structure FIA : FUNCTOR_INSTANCE_ARGS
+functor Unification_Hints(A :
+  sig
+    structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unification_Hints_Args.args
   end) : UNIFICATION_HINTS =
 struct
 
 structure UHA = Unification_Hints_Args
 structure PA = UHA.PA
-structure FIU = Functor_Instance_Util(A.FIA)
+structure FI = Functor_Instance(A.FI)
 structure MCU = ML_Code_Util
 
-structure Data = Generic_Data(struct
+structure Data = Generic_Data(
   type T = UHA.args
   val empty = A.init_args
-  val merge = fst
-end)
+  val merge = fst)
 
 val get_args = Data.get
 val map_args = Data.map
@@ -112,7 +109,7 @@ fun attribute (entries, pos) =
       |> map (fn (k, v) => code_from_key k @ MCU.atomic (code_from_entry v))
       |> MCU.list
     val code =
-      FIU.code_struct_op "map_args" @ MCU.atomic (code_PA_op "merge_entries" @
+      FI.code_struct_op "map_args" @ MCU.atomic (code_PA_op "merge_entries" @
       MCU.atomic (code_PA_op "entries_from_entry_list" @ code_entries))
   in ML_Attribute.run_map_context (code, pos) end
 

@@ -15,30 +15,7 @@ lemma set_reorder: "set (xs @ (y # ys)) = set (y # (xs @ ys))" by simp
 lemma distinctI:
   assumes "\<And>i j. i < j \<Longrightarrow> i < length xs \<Longrightarrow> j < length xs \<Longrightarrow> xs ! i \<noteq> xs ! j"
   shows "distinct xs"
-  using assms
-proof (induct xs)
-  case Nil
-  show ?case by simp
-next
-  case (Cons x xs)
-  show ?case
-  proof (simp, intro conjI, rule)
-    assume "x \<in> set xs"
-    then obtain j where "j < length xs" and "x = xs ! j" by (metis in_set_conv_nth)
-    hence "Suc j < length (x # xs)" by simp
-    have "(x # xs) ! 0 \<noteq> (x # xs) ! (Suc j)" by (rule Cons(2), simp, simp, fact)
-    thus False by (simp add: \<open>x = xs ! j\<close>)
-  next
-    show "distinct xs"
-    proof (rule Cons(1))
-      fix i j
-      assume "i < j" and "i < length xs" and "j < length xs"
-      hence "Suc i < Suc j" and "Suc i < length (x # xs)" and "Suc j < length (x # xs)" by simp_all
-      hence "(x # xs) ! (Suc i) \<noteq> (x # xs) ! (Suc j)" by (rule Cons(2))
-      thus "xs ! i \<noteq> xs ! j" by simp
-    qed
-  qed
-qed
+  by (metis assms distinct_conv_nth nat_neq_iff)
 
 lemma filter_nth_pairE:
   assumes "i < j" and "i < length (filter P xs)" and "j < length (filter P xs)"
@@ -114,30 +91,13 @@ proof (rule distinctI)
 qed
 
 lemma set_zip_map: "set (zip (map f xs) (map g xs)) = (\<lambda>x. (f x, g x)) ` (set xs)"
-proof -
-  have "{(map f xs ! i, map g xs ! i) |i. i < length xs} = {(f (xs ! i), g (xs ! i)) |i. i < length xs}"
-  proof (rule Collect_eqI, rule, elim exE conjE, intro exI conjI, simp add: map_nth, assumption,
-      elim exE conjE, intro exI)
-    fix x i
-    assume "x = (f (xs ! i), g (xs ! i))" and "i < length xs"
-    thus "x = (map f xs ! i, map g xs ! i) \<and> i < length xs" by (simp add: map_nth)
-  qed
-  also have "... = (\<lambda>x. (f x, g x)) ` {xs ! i | i. i < length xs}" by blast
-  finally show "set (zip (map f xs) (map g xs)) = (\<lambda>x. (f x, g x)) ` (set xs)"
-    by (simp add: set_zip set_conv_nth[symmetric])
-qed
+by (auto simp add: set_zip) (metis in_set_conv_nth nth_map)
 
 lemma set_zip_map1: "set (zip (map f xs) xs) = (\<lambda>x. (f x, x)) ` (set xs)"
-proof -
-  have "set (zip (map f xs) (map id xs)) = (\<lambda>x. (f x, id x)) ` (set xs)" by (rule set_zip_map)
-  thus ?thesis by simp
-qed
+by (metis set_zip_map map_ident)
 
 lemma set_zip_map2: "set (zip xs (map f xs)) = (\<lambda>x. (x, f x)) ` (set xs)"
-proof -
-  have "set (zip (map id xs) (map f xs)) = (\<lambda>x. (id x, f x)) ` (set xs)" by (rule set_zip_map)
-  thus ?thesis by simp
-qed
+by (metis (no_types, lifting) ext map_ident set_zip_map)
 
 lemma UN_upt: "(\<Union>i\<in>{0..<length xs}. f (xs ! i)) = (\<Union>x\<in>set xs. f x)"
   by (metis image_image map_nth set_map set_upt)
@@ -145,12 +105,7 @@ lemma UN_upt: "(\<Union>i\<in>{0..<length xs}. f (xs ! i)) = (\<Union>x\<in>set 
 lemma sum_list_zeroI':
   assumes "\<And>i. i < length xs \<Longrightarrow> xs ! i = 0"
   shows "sum_list xs = 0"
-proof (rule sum_list_zeroI, rule, simp)
-  fix x
-  assume "x \<in> set xs"
-  then obtain i where "i < length xs" and "x = xs ! i" by (metis in_set_conv_nth)
-  from this(1) show "x = 0" unfolding \<open>x = xs ! i\<close> by (rule assms)
-qed
+by (metis assms in_set_conv_nth insert_iff subsetI sum_list_zeroI)
 
 lemma sum_list_map2_plus:
   assumes "length xs = length ys"
@@ -314,20 +269,8 @@ qed
 
 subsubsection \<open>\<open>diff_list\<close> and \<open>insert_list\<close>\<close>
 
-definition diff_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl \<open>--\<close> 65)
-  where "diff_list xs ys = fold removeAll ys xs"
-
-lemma set_diff_list: "set (xs -- ys) = set xs - set ys"
-  by (simp only: diff_list_def, induct ys arbitrary: xs, auto)
-
-lemma diff_list_disjoint: "set ys \<inter> set (xs -- ys) = {}"
-  unfolding set_diff_list by (rule Diff_disjoint)
-
-lemma subset_append_diff_cancel:
-  assumes "set ys \<subseteq> set xs"
-  shows "set (ys @ (xs -- ys)) = set xs"
-  by (simp only: set_append set_diff_list Un_Diff_cancel, rule Un_absorb1, fact)
-
+notation minus_list_set (infixl \<open>--\<close> 65)
+declare set_minus_list_set[simp]
 definition insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"
   where "insert_list x xs = (if x \<in> set xs then xs else x # xs)"
 

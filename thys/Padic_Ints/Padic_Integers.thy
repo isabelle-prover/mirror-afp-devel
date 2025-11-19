@@ -562,7 +562,7 @@ proof(cases "p = 2")
         using assms 
         by (simp add: True)
       then have "p^n \<ge> 4"
-        using assms   power_increasing[of 2 n 2] 
+        using assms power_increasing[of 2 n "2::int"]
         by (simp add: True)
       then have "(3::int) < p^n"
         by linarith
@@ -2487,12 +2487,12 @@ lemma (in padic_integers) equal_val_Zp':
   shows "val_Zp (a \<oplus> c) = val_Zp b"
 proof-
   have 0: "val_Zp b < val_Zp (a \<oplus> c \<ominus> a)"
-    by (simp add: R.minus_eq nonzero_closed R.r_neg1 add_comm assms(1) assms(3) assms(5))
+    by (simp add: R.minus_eq nonzero_closed R.r_neg1 add_comm assms)
   have 1: "val_Zp a \<noteq> val_Zp (\<ominus> c)"
     using assms(3) assms(4) assms(5) 
     by (metis eq_iff not_less val_Zp_of_a_inv)
-  then show ?thesis
-    by (meson "0" R.semiring_axioms assms(1) assms(2) assms(3) assms(4) equal_val_Zp semiring.semiring_simprules(1))
+  with assms show ?thesis
+    by (metis add_comm val_Zp_ultrametric_eq)
 qed
 
 lemma (in padic_integers) val_Zp_of_minus:

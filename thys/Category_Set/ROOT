@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Category_Set" = "HOL-Eisbach" +
+  options [timeout = 600]
+  theories
+    ETCS
+  document_files
+    "root.bib"
+    "root.tex"

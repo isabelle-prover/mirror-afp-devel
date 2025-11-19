@@ -145,4 +145,19 @@ val _ =
               (prefer_and_protect_subgoals_tac_pat kind invert pattern ctxt))) end) state)))
 \<close>
 
+paragraph \<open>Usage examples\<close>
+
+lemma
+  "x > 2 \<Longrightarrow> x > 0 \<and> x > 1" for x :: nat
+  apply standard
+  subgoals \<open>_ > _\<close>
+    by simp+
+  done
+
+lemma
+  "x = 2 \<Longrightarrow> x > 0 \<and> x \<le> 3 \<and> x \<le> 2" for x :: nat
+  apply (intro conjI)
+  prefers \<open>_ \<le> _\<close>
+  by simp+
+
 end

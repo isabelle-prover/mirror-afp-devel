@@ -4,6 +4,7 @@ session Rewrite_Properties_Reduction = "HOL-Library" +
   options [timeout = 600]
   sessions
     "Regular_Tree_Relations"
+    "First_Order_Rewriting"
   directories
     "Util"
     "Rewriting"

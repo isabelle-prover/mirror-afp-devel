@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>bootle on Archive of Formal Proofs
-    </title>
-    <link>/authors/bootle/</link>
-    <description>
-        Recent content in bootle 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 02 Feb 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/bootle/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
+    <title>Jonathan Bootle</title>
+    <link>https://isa-afp.org/authors/bootle/</link>
+    <description>AFP entries of Jonathan Bootle</description><item>
+  <title>The Sumcheck Protocol</title>
+  <link>https://isa-afp.org/entries/Sumcheck_Protocol.html</link>
+  <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+  <description>The Sumcheck Protocol in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
   </channel>
 </rss>

@@ -597,7 +597,7 @@ proof -
       show "punit.is_reduced_GB {1}" unfolding punit.is_reduced_GB_def
       proof (intro conjI, fact punit.is_Groebner_basis_singleton)
         show "punit.is_auto_reduced {1}" unfolding punit.is_auto_reduced_def
-          by (rule ballI, simp add: remove_def punit.not_is_red_empty)
+          by (rule ballI) (simp add: punit.not_is_red_empty)
       next
         show "punit.is_monic_set {1}"
           by (rule punit.is_monic_setI, simp del: single_one add: single_one[symmetric])

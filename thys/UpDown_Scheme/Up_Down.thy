@@ -83,7 +83,7 @@ next
   also have "\<dots> = (\<Sum> p'' \<in> snd ` (\<Union> p' \<in> ?subgrid d p. (\<Union> p'' \<in> ?leafs p'. { (p', p'') })).
     \<alpha> p'' * (?prod (Suc d) p'' p))" unfolding lgrid_def
     by (rule sum.reindex[symmetric],
-        rule subset_inj_on[OF grid_grid_inj_on[OF ivl_disj_int(15)[where l=0 and m="d" and u="d"], where b="?b"]])
+        rule inj_on_subset[OF grid_grid_inj_on[OF ivl_disj_int(15)[where l=0 and m="d" and u="d"], where b="?b"]])
        auto
   also have "\<dots> = (\<Sum> p'' \<in> (\<Union> p' \<in> ?subgrid d p. (\<Union> p'' \<in> ?leafs p'. snd ` { (p', p'') })).
     \<alpha> p'' * (?prod (Suc d) p'' p))" by (auto simp only: image_UN)

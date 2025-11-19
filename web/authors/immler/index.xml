@@ -1,94 +1,96 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>immler on Archive of Formal Proofs
-    </title>
-    <link>/authors/immler/</link>
-    <description>
-        Recent content in immler 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 17 Apr 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/immler/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>AutoCorres2</title>
-          <link>/entries/AutoCorres2.html</link>
-          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/AutoCorres2.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
-          <link>/entries/Safe_Distance.html</link>
-          <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Safe_Distance.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Poincaré-Bendixson Theorem</title>
-          <link>/entries/Poincare_Bendixson.html</link>
-          <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Poincare_Bendixson.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Laplace Transform</title>
-          <link>/entries/Laplace_Transform.html</link>
-          <pubDate>Wed, 14 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Laplace_Transform.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Smooth Manifolds</title>
-          <link>/entries/Smooth_Manifolds.html</link>
-          <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Smooth_Manifolds.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Taylor Models</title>
-          <link>/entries/Taylor_Models.html</link>
-          <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Taylor_Models.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Gröbner Bases Theory</title>
-          <link>/entries/Groebner_Bases.html</link>
-          <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Groebner_Bases.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Affine Arithmetic</title>
-          <link>/entries/Affine_Arithmetic.html</link>
-          <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Affine_Arithmetic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ordinary Differential Equations</title>
-          <link>/entries/Ordinary_Differential_Equations.html</link>
-          <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
-          <guid>/entries/Ordinary_Differential_Equations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>RIPEMD-160</title>
-          <link>/entries/RIPEMD-160-SPARK.html</link>
-          <pubDate>Mon, 10 Jan 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/RIPEMD-160-SPARK.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Multivariate Polynomials</title>
-          <link>/entries/Polynomials.html</link>
-          <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
-          <guid>/entries/Polynomials.html</guid>
-          <description></description>
-        </item>
+    <title>Fabian Immler</title>
+    <link>https://isa-afp.org/authors/immler/</link>
+    <description>AFP entries of Fabian Immler</description><item>
+  <title>AutoCorres2</title>
+  <link>https://isa-afp.org/entries/AutoCorres2.html</link>
+  <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+  <description>AutoCorres2 in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Tools</category>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+  <link>https://isa-afp.org/entries/Safe_Distance.html</link>
+  <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+  <description>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
+  <title>The Poincaré-Bendixson Theorem</title>
+  <link>https://isa-afp.org/entries/Poincare_Bendixson.html</link>
+  <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+  <description>The Poincaré-Bendixson Theorem in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Laplace Transform</title>
+  <link>https://isa-afp.org/entries/Laplace_Transform.html</link>
+  <pubDate>Wed, 14 Aug 2019 00:00:00 +0000</pubDate>
+  <description>Laplace Transform in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Smooth Manifolds</title>
+  <link>https://isa-afp.org/entries/Smooth_Manifolds.html</link>
+  <pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Smooth Manifolds in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>Taylor Models</title>
+  <link>https://isa-afp.org/entries/Taylor_Models.html</link>
+  <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+  <description>Taylor Models in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Computer science/Data structures</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Gröbner Bases Theory</title>
+  <link>https://isa-afp.org/entries/Groebner_Bases.html</link>
+  <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+  <description>Gröbner Bases Theory in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Affine Arithmetic</title>
+  <link>https://isa-afp.org/entries/Affine_Arithmetic.html</link>
+  <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
+  <description>Affine Arithmetic in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Ordinary Differential Equations</title>
+  <link>https://isa-afp.org/entries/Ordinary_Differential_Equations.html</link>
+  <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+  <description>Ordinary Differential Equations in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>RIPEMD-160</title>
+  <link>https://isa-afp.org/entries/RIPEMD-160-SPARK.html</link>
+  <pubDate>Mon, 10 Jan 2011 00:00:00 +0000</pubDate>
+  <description>RIPEMD-160 in the AFP</description>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
+  <title>Executable Multivariate Polynomials</title>
+  <link>https://isa-afp.org/entries/Polynomials.html</link>
+  <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+  <description>Executable Multivariate Polynomials in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+
   </channel>
 </rss>

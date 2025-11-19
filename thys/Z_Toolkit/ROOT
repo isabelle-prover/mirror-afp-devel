@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Z_Toolkit" (AFP) = "Optics" +
+  options [timeout="600"]
+  theories Z_Toolkit_Overview Relation_Lib Z_Toolkit Z_Toolkit_Pretty
+  document_files
+    "root.tex"
+    "root.bib"
+    "isabellezed.sty"
+    "cztsymb.sty"
+    "zed.sty"

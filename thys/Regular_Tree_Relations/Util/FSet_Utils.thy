@@ -16,7 +16,7 @@ lift_definition fSigma :: "'a fset \<Rightarrow> ('a \<Rightarrow> 'b fset) \<Ri
 
 lift_definition is_fempty :: "'a fset \<Rightarrow> bool" is Set.is_empty .
 lift_definition fremove :: "'a \<Rightarrow> 'a fset \<Rightarrow> 'a fset" is Set.remove
-  by (simp add: remove_def)
+  by simp
 
 lift_definition finj_on :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fset \<Rightarrow> bool" is inj_on .
 lift_definition the_finv_into  :: "'a fset \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a" is the_inv_into .
@@ -92,7 +92,7 @@ let
       if check (P, 0) then tr' P
       else
         let
-          val (x as _ $ Free(xN, _), t) = Syntax_Trans.atomic_abs_tr' abs;
+          val (x as _ $ Free(xN, _), t) = Syntax_Trans.atomic_abs_tr' ctxt abs;
           val M = Syntax.const \<^syntax_const>\<open>_fColl\<close> $ x $ t;
         in
           case t of
@@ -320,7 +320,7 @@ lemmas fconverse_empty[simp] = converse_empty[Transfer.transferred]
 (* injectivity *)
 
 lemmas finj_on_def' = inj_on_def[Transfer.transferred]
-lemmas fsubset_finj_on = subset_inj_on[Transfer.transferred]
+lemmas fsubset_finj_on = inj_on_subset[Transfer.transferred]
 lemmas the_finv_into_f_f = the_inv_into_f_f[Transfer.transferred]
 lemmas f_the_finv_into_f = f_the_inv_into_f[Transfer.transferred]
 lemmas the_finv_into_into = the_inv_into_into[Transfer.transferred]
@@ -442,7 +442,7 @@ lift_definition fvars_ctxt :: "('f, 'v) ctxt \<Rightarrow> 'v fset" is vars_ctxt
 
 lemmas fvars_term_ctxt_apply [simp] = vars_term_ctxt_apply[Transfer.transferred]
 lemmas fvars_term_of_gterm [simp] = vars_term_of_gterm[Transfer.transferred]
-lemmas ground_fvars_term_empty [simp] = ground_vars_term_empty[Transfer.transferred]
+lemmas ground_fvars_term_empty = ground_vars_term_empty[Transfer.transferred]
 
 lemma ffuns_term_Var [simp]: "ffuns_term (Var x) = {||}"
   by transfer auto

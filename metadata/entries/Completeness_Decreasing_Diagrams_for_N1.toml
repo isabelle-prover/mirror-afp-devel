@@ -1,0 +1,38 @@
+title = "Completeness of Decreasing Diagrams for the Least Uncountable Cardinality"
+date = 2025-04-12
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+<p>In <a href=\"https://isa-afp.org/entries/Decreasing-Diagrams.html\">Decreasing-Diagrams</a> it was formally proved that the decreasing diagrams method is sound for proving confluence: if a binary relation $r$ has $LD$ property defined in <a href=\"https://isa-afp.org/entries/Decreasing-Diagrams.html\">Decreasing-Diagrams</a>, then it has $CR$ property defined in <a href=\"https://isa-afp.org/entries/Abstract-Rewriting.html\">Abstract-Rewriting</a>.</p>
+
+<p>In this formal theory it is proved that if the cardinality of $r$ does not exceed the first uncountable cardinal, then $r$ has $CR$ property if and only if $r$ has $LD$ property. As a consequence, the decreasing diagrams method is complete for proving confluence of relations of the least uncountable cardinality.<p>
+
+<p>A paper that describes details of this proof has been submitted to the FSCD 2025 conference.</p>"""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.ivanov]
+
+[contributors]
+
+[notify]
+hall = "hall_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.5281/zenodo.14254256",
+  "10.5281/zenodo.15190469",
+  "10.5281/zenodo.14740062",
+  "10.5281/zenodo.11571490",
+]
+pubs = [
+  "V. van Oostrom. Confluence by decreasing diagrams. Theoretical computer science, Vol. 126, P. 259-280, 1994.",
+  "I. Ivanov. On Non-triviality of the Hierarchy of Decreasing Church-Rosser Abstract Rewriting Systems. Proceedings of the 13th International Workshop on Confluence, P. 30-35, 2024.",
+]

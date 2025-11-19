@@ -1,9 +1,8 @@
 chapter AFP
 
-session Well_Quasi_Orders = "HOL-Library" +
+session Well_Quasi_Orders = "Abstract-Rewriting" +
   options [timeout = 600]
   sessions
-    "Abstract-Rewriting"
     Open_Induction
   theories
     Infinite_Sequences

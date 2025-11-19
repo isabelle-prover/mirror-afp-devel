@@ -72,38 +72,32 @@ lemma bound_scheme_inst_mk_scheme [simp]:
 lemma substitution_lemma: "$S (bound_scheme_inst B sch) = (bound_scheme_inst ($S \<circ> B) ($ S sch))"
   by (induct sch) simp_all
 
-lemma bound_scheme_inst_type [rule_format]: "\<forall>t. mk_scheme t = bound_scheme_inst B sch \<longrightarrow>  
+lemma bound_scheme_inst_type:
+    "mk_scheme t = bound_scheme_inst B sch \<Longrightarrow>
           (\<exists>S. \<forall>x\<in>bound_tv sch. B x = mk_scheme (S x))"
-apply (induct_tac "sch")
-apply (simp (no_asm))
-apply safe
-apply (rule exI)
-apply (rule ballI)
-apply (rule sym)
-apply simp
-apply (rename_tac type_scheme1 type_scheme2 t)
-apply simp
-apply (drule mk_scheme_Fun)
-apply (erule exE)+
-apply (erule conjE)
-apply (drule sym)
-apply (drule sym)
-apply (drule mp, fast)+
-apply safe
-apply (rename_tac S1 S2)
-apply (rule_tac x = "\<lambda>x. if x:bound_tv type_scheme1 then (S1 x) else (S2 x) " in exI)
-apply auto
-done
+proof (induction "sch" arbitrary: t)
+  case (BVar x)
+  then show ?case
+    by (force intro: sym)
+next
+  case (SFun type_scheme1 type_scheme2 t)
+  obtain S1 where S1: "\<forall>x\<in>bound_tv type_scheme1. B x = mk_scheme (S1 x)"
+    by (metis SFun.IH(1) SFun.prems bound_scheme_inst.simps(3) mk_scheme_Fun)
+  obtain S2 where S2: "\<forall>x\<in>bound_tv type_scheme2. B x = mk_scheme (S2 x)"
+    by (metis SFun.IH(2) SFun.prems bound_scheme_inst.simps(3) mk_scheme_Fun)
+  let ?S = "\<lambda>x. if x:bound_tv type_scheme1 then (S1 x) else (S2 x)"
+  show ?case
+  proof
+    show "\<forall>x\<in>bound_tv (type_scheme1 =-> type_scheme2). B x = mk_scheme (?S x)"
+      using S1 S2 by auto
+  qed
+qed auto
 
 lemma subst_to_scheme_inverse: 
   "new_tv n sch \<Longrightarrow>
     subst_to_scheme (\<lambda>k. if n \<le> k then BVar (k - n) else FVar k)  
       (bound_typ_inst (\<lambda>k. TVar (k + n)) sch) = sch"
-  apply (induct sch)
-    apply (simp add: not_le)
-   apply (simp add: le_add2 diff_add_inverse2)
-  apply simp
-  done
+by (induction sch) auto
 
 lemma aux: "t = t' \<Longrightarrow>  
       subst_to_scheme (\<lambda>k. if n \<le> k then BVar (k - n) else FVar k) t =  
@@ -118,105 +112,43 @@ lemma aux2: "new_tv n sch \<Longrightarrow>
 lemma le_type_scheme_def2:
   fixes sch sch' :: type_scheme
   shows "(sch' \<le> sch) = (\<exists>B. sch' = bound_scheme_inst B sch)"
-apply (unfold le_type_scheme_def is_bound_typ_instance)
-apply (rule iffI)
-apply (cut_tac sch = "sch" in fresh_variable_type_schemes)
-apply (cut_tac sch = "sch'" in fresh_variable_type_schemes)
-apply (drule make_one_new_out_of_two)
-apply assumption
-apply (erule_tac V = "\<exists>n. new_tv n sch'" in thin_rl)
-apply (erule exE)
-apply (erule allE)
-apply (drule mp)
-apply (rule_tac x = " (\<lambda>k. TVar (k + n))" in exI)
-apply (rule refl)
-apply (erule exE)
-apply (erule conjE)+
-apply (drule_tac n = "n" in aux)
-apply (simp add: subst_to_scheme_inverse)
-apply (rule_tac x = " (subst_to_scheme (\<lambda>k. if n \<le> k then BVar (k - n) else FVar k)) \<circ> S" in exI)
-apply (simp (no_asm_simp) add: aux2)
-apply safe
-apply (rule_tac x = "\<lambda>n. bound_typ_inst S (B n) " in exI)
-apply (induct_tac "sch")
-apply (simp (no_asm))
-apply (simp (no_asm))
-apply (simp (no_asm_simp))
-done
+proof -
+  have *: "bound_typ_inst S (bound_scheme_inst B sch) =
+           bound_typ_inst (\<lambda>n. bound_typ_inst S (B n)) sch" for S B
+    by (induction sch) auto
+  show ?thesis
+    by (metis (no_types, lifting) "*" aux2 fresh_variable_type_schemes
+        is_bound_typ_instance le_type_scheme_def new_tv_Fun2 subst_to_scheme_inverse)
+qed
 
-lemma le_type_eq_is_bound_typ_instance [rule_format]: "(mk_scheme t) \<le> sch = t <| sch"
-apply (unfold is_bound_typ_instance)
-apply (simp (no_asm) add: le_type_scheme_def2)
-apply (rule iffI)
-apply (erule exE)
-apply (frule bound_scheme_inst_type)
-apply (erule exE)
-apply (rule exI)
-apply (rule mk_scheme_injective)
-apply simp
-apply (rotate_tac 1)
-apply (rule mp)
-prefer 2 apply (assumption)
-apply (induct_tac "sch")
-apply (simp (no_asm))
-apply simp
-apply fast
-apply (intro strip)
-apply simp
-apply (erule exE)
-apply simp
-apply (rule exI)
-apply (induct_tac "sch")
-apply (simp (no_asm))
-apply (simp (no_asm))
-apply simp
-done
+lemma le_type_eq_is_bound_typ_instance: "(mk_scheme t) \<le> sch = t <| sch"
+  using bound_typ_inst_mk_scheme is_bound_typ_instance le_type_scheme_def by presburger
 
 lemma le_env_Cons [iff]: 
   "(sch # A \<le> sch' # B) = (sch \<le> (sch'::type_scheme) \<and> A \<le> B)"
-apply (unfold le_env_def)
-apply (simp (no_asm))
-apply (rule iffI)
- apply clarify
- apply (rule conjI) 
-  apply (erule_tac x = "0" in allE)
-  apply simp
- apply (rule conjI, assumption)
- apply clarify
- apply (erule_tac x = "Suc i" in allE) 
- apply simp
-apply (rule conjI)
- apply fast
-apply (rule allI)
-apply (induct_tac "i")
-apply simp_all
-done
+proof (intro iffI)
+  assume "sch # A \<le> sch' # B" then show "sch \<le> sch' \<and> A \<le> B"
+    by (smt (verit) Suc_length_conv Suc_mono le_env_def nat.inject nth_Cons_0
+      nth_Cons_Suc zero_less_Suc)
+next
+  assume "sch \<le> sch' \<and> A \<le> B" then show "sch # A \<le> sch' # B"
+    by (smt (verit, ccfv_SIG) le_env_def length_Cons less_Suc_eq_0_disj nth_Cons_0
+        nth_Cons_Suc)
+qed
 
 lemma is_bound_typ_instance_closed_subst: "t <| sch \<Longrightarrow> $S t <| $S sch"
-apply (unfold is_bound_typ_instance)
-apply (erule exE)
-apply (rename_tac "SA") 
-apply simp
-apply (rule_tac x = "$S \<circ> SA" in exI)
-apply simp
-done
+  by (metis bound_typ_inst_composed_subst is_bound_typ_instance)
 
 lemma S_compatible_le_scheme:
   fixes sch sch' :: type_scheme
   shows "sch' \<le> sch \<Longrightarrow> $S sch' \<le> $ S sch"
-apply (simp add: le_type_scheme_def2)
-apply (erule exE)
-apply (simp add: substitution_lemma)
-apply fast
-done
+  using le_type_scheme_def2 substitution_lemma
+  by force
 
 lemma S_compatible_le_scheme_lists: 
   fixes A A' :: "type_scheme list"
   shows "A' \<le> A \<Longrightarrow> $S A' \<le> $ S A"
-apply (unfold le_env_def app_subst_list)
-apply (simp cong add: conj_cong)
-apply (fast intro!: S_compatible_le_scheme)
-done
+  by (simp add: S_compatible_le_scheme le_env_def nth_subst)
 
 lemma bound_typ_instance_trans: "[| t <| sch; sch \<le> sch' |] ==> t <| sch'"
   unfolding le_type_scheme_def by blast
@@ -228,27 +160,16 @@ lemma le_env_refl [iff]: "A \<le> (A::type_scheme list)"
   unfolding le_env_def by blast
 
 lemma bound_typ_instance_BVar [iff]: "sch \<le> BVar n"
-apply (unfold le_type_scheme_def is_bound_typ_instance)
-apply (intro strip)
-apply (rule_tac x = "\<lambda>a. t" in exI)
-apply simp
-done
+  using le_type_scheme_def2 by auto
 
 lemma le_FVar [simp]: "(sch \<le> FVar n) = (sch = FVar n)"
-apply (unfold le_type_scheme_def is_bound_typ_instance)
-apply (induct_tac "sch")
-apply auto
-done
+  by (simp add: le_type_scheme_def2)
 
 lemma not_FVar_le_Fun [iff]: "~(FVar n \<le> sch1 =-> sch2)"
   unfolding le_type_scheme_def is_bound_typ_instance by simp
 
 lemma not_BVar_le_Fun [iff]: "~(BVar n \<le> sch1 =-> sch2)"
-apply (unfold le_type_scheme_def is_bound_typ_instance)
-apply simp
-apply (rule_tac x = "TVar n" in exI)
-apply fastforce
-done
+  by (simp add: le_type_scheme_def2)
 
 lemma Fun_le_FunD: 
   "(sch1 =-> sch2 \<le> sch1' =-> sch2') \<Longrightarrow> sch1 \<le> sch1' \<and> sch2 \<le> sch2'"
@@ -257,38 +178,42 @@ lemma Fun_le_FunD:
 lemma scheme_le_Fun: "(sch' \<le> sch1 =-> sch2) \<Longrightarrow> \<exists>sch'1 sch'2. sch' = sch'1 =-> sch'2"
   by (induct sch') auto
 
-lemma le_type_scheme_free_tv [rule_format]:
-  "\<forall>sch'::type_scheme. sch \<le> sch' \<longrightarrow> free_tv sch' \<le> free_tv sch"
-apply (induct_tac "sch")
-  apply (rule allI)
-  apply (induct_tac "sch'")
-    apply (simp (no_asm))
-   apply (simp (no_asm))
-  apply (simp (no_asm))
- apply (rule allI)
- apply (induct_tac "sch'")
-   apply (simp (no_asm))
-  apply (simp (no_asm))
- apply (simp (no_asm))
-apply (rule allI)
-apply (induct_tac "sch'")
-  apply (simp (no_asm))
- apply (simp (no_asm))
-apply simp
-apply (intro strip)
-apply (drule Fun_le_FunD)
-apply fast
-done
+lemma le_type_scheme_free_tv:
+  fixes sch'::type_scheme
+  shows "sch \<le> sch' \<Longrightarrow> free_tv sch' \<le> free_tv sch"
+proof (induction "sch" arbitrary: sch')
+  case (FVar x)
+  then show ?case
+    by (induction "sch'") auto
+next
+  case (BVar x)
+  then show ?case
+    by (induction "sch'") auto
+next
+  case (SFun sch1 sch2)
+  then show ?case
+  proof (induction sch')
+    case (SFun sch'1 sch'2)
+    then show ?case
+      by (metis Fun_le_FunD Un_mono free_tv_type_scheme.simps(3))
+  qed auto
+qed
 
-lemma le_env_free_tv [rule_format]:
-  "\<forall>A::type_scheme list. A \<le> B \<longrightarrow> free_tv B \<le> free_tv A"
-apply (induct_tac "B")
- apply (simp (no_asm))
-apply (rule allI)
-apply (induct_tac "A")
- apply (simp (no_asm) add: le_env_def)
-apply (simp (no_asm))
-apply (fast dest: le_type_scheme_free_tv)
-done
+lemma le_env_free_tv:
+  fixes A :: "type_scheme list"
+  assumes "A \<le> B"
+  shows "free_tv B \<le> free_tv A"
+  using assms
+proof (induction B arbitrary: A)
+  case Nil
+  then show ?case
+    by auto
+next
+  case (Cons b B)
+  then obtain a A' where "A = a # A'" "a \<le> b" "A' \<le> B"
+    by (metis le_env_Cons le_env_def length_0_conv neq_Nil_conv)
+  with Cons show ?case
+    using le_type_scheme_free_tv by fastforce
+qed
 
 end

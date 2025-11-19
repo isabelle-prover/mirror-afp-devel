@@ -1,0 +1,36 @@
+title = "Dyck Language"
+date = 2025-06-02
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+The Dyck language over a pair of brackets, e.g. ( and ), is the set
+of balanced strings/words/lists of brackets. That is, the set of words
+with the same number of ( and ), where every prefix of the word
+contains no more ) than (. In general, a Dyck language is defined over
+a whole set of matching pairs of brackets."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[authors.roos]
+email = "roos_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "https://en.wikipedia.org/wiki/Dyck_language",
+]

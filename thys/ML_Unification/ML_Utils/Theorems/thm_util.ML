@@ -21,15 +21,11 @@ struct
 
 val logger = Logger.setup_new_logger Logger.root "Thm_Util"
 
-fun pretty_THM ctxt (msg, subgoal, thms) = Pretty.block [
+fun pretty_THM ctxt (msg, subgoal, thms) = Pretty.fbreaks [
     Pretty.str msg,
-    Pretty.fbrk,
-    Pretty.str "Subgoal number ",
-    Pretty.str (string_of_int subgoal),
-    Pretty.fbrk,
-    Pretty.str "Theorems ",
-    Pretty.list "[" "]" (map (Thm.pretty_thm ctxt) thms)
-  ]
+    Pretty.block [Pretty.str "Subgoal number ", Pretty.str (string_of_int subgoal)],
+    Pretty.block [Pretty.str "Theorems ", Pretty.list "[" "]" (map (Thm.pretty_thm ctxt) thms)]
+  ] |> Pretty.block
 
 fun abstract_rule ctxt n ct thm = SOME (Thm.abstract_rule n ct thm)
   handle THM data => (@{log Logger.DEBUG} ctxt (fn _ => pretty_THM ctxt data |> Pretty.string_of);

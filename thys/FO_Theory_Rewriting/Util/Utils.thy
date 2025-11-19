@@ -1,29 +1,21 @@
 theory Utils
   imports Regular_Tree_Relations.Term_Context
     Regular_Tree_Relations.FSet_Utils
+    First_Order_Terms.Fun_More2
+    First_Order_Terms.Term_Impl
+    First_Order_Terms.Term_More
 begin
 
 subsection \<open>Misc\<close>
 
-definition "funas_trs \<R> = \<Union> ((\<lambda> (s, t). funas_term s \<union> funas_term t) ` \<R>)"
-
-fun linear_term :: "('f, 'v) term \<Rightarrow> bool" where
-  "linear_term (Var _) = True" |
-  "linear_term (Fun _ ts) = (is_partition (map vars_term ts) \<and> (\<forall>t\<in>set ts. linear_term t))"
-
-fun vars_term_list :: "('f, 'v) term \<Rightarrow> 'v list" where
-  "vars_term_list (Var x) = [x]" |
-  "vars_term_list (Fun _ ts) = concat (map vars_term_list ts)"
-
-fun varposs :: "('f, 'v) term \<Rightarrow> pos set" where
-  "varposs (Var x) = {[]}" |
-  "varposs (Fun f ts) = (\<Union>i<length ts. {i # p | p. p \<in> varposs (ts ! i)})"
-
 abbreviation "poss_args f ts \<equiv> map2 (\<lambda> i t. map ((#) i) (f t)) ([0 ..< length ts]) ts"
 
-fun varposs_list :: "('f, 'v) term \<Rightarrow> pos list" where
-  "varposs_list (Var x) = [[]]" |
-  "varposs_list (Fun f ts) = concat (poss_args varposs_list ts)"
+lemma var_poss_list_simp[simp]: "var_poss_list (Fun f ts) = concat (poss_args var_poss_list ts)" 
+  unfolding var_poss_list.simps
+  by (intro arg_cong[of _ _ concat], intro nth_equalityI, auto)
+
+declare var_poss_list.simps(2)[simp del]
+  
 
 fun concat_index_split where
   "concat_index_split (o_idx, i_idx) (x # xs) =
@@ -59,17 +51,6 @@ lemma sum_list_replicate_length' [simp]:
   "sum_list (replicate n (Suc 0)) = n"
   by (induct n) simp_all
 
-lemma arg_subteq [simp]:
-  assumes "t \<in> set ts" shows "Fun f ts \<unrhd> t"
-  using assms by auto
-
-lemma finite_funas_term: "finite (funas_term s)"
-  by (induct s) auto
-
-lemma finite_funas_trs:
-  "finite \<R> \<Longrightarrow> finite (funas_trs \<R>)"
-  by (induct rule: finite.induct) (auto simp: finite_funas_term funas_trs_def)
-
 fun subterms where
   "subterms (Var x) = {Var x}"|
   "subterms (Fun f ts) = {Fun f ts} \<union> (\<Union> (subterms ` set ts))"
@@ -83,10 +64,6 @@ lemma subterms_supteq_conv: "t \<in> subterms s \<longleftrightarrow> s \<unrhd>
 lemma set_all_subteq_subterms:
   "subterms s = {t. s \<unrhd> t}"
   using subterms_supteq_conv by auto
-
-lemma finite_subterms: "finite {t. s \<unrhd> t}"
-  unfolding set_all_subteq_subterms[symmetric]
-  by (simp add: finite_subterms_fun)
 
 lemma finite_strict_subterms: "finite {t. s \<rhd> t}"
   by (intro finite_subset[OF _ finite_subterms]) auto
@@ -129,20 +106,7 @@ qed
 lemma root_substerms_funas_term_set:
   "the ` (root ` \<Union> (subterms ` R) - {None}) = \<Union> (funas_term ` R)"
   using root_substerms_funas_term
-  by auto (smt DiffE DiffI UN_I image_iff)
-
-
-lemma subst_merge:
-  assumes part: "is_partition (map vars_term ts)"
-  shows "\<exists>\<sigma>. \<forall>i<length ts. \<forall>x\<in>vars_term (ts ! i). \<sigma> x = \<tau> i x"
-proof -
-  let ?\<tau> = "map \<tau> [0 ..< length ts]"
-  let ?\<sigma> = "fun_merge ?\<tau> (map vars_term ts)"
-  show ?thesis
-    by (rule exI[of _ ?\<sigma>], intro allI impI ballI,
-      insert fun_merge_part[OF part, of _ _ ?\<tau>], auto)
-qed
-
+  by fastforce
 
 lemma rel_comp_empty_trancl_simp: "R O R = {} \<Longrightarrow> R\<^sup>+ = R"
   by (metis O_assoc relcomp_empty2 sup_bot_right trancl_unfold trancl_unfold_right)
@@ -445,59 +409,27 @@ proof (induct xs arbitrary: ys n i)
     have [simp]: "length y = length x" using IH(4) by force
     have [simp]: "\<not> i < length x \<Longrightarrow> i - length x < length (concat xs)" using IH(2) by auto
     have [simp]: "i < length ys' \<Longrightarrow> length (xs ! i) = length (ys' ! i)" for i using IH(3, 4)
-      by (auto simp: All_less_Suc) (metis IH(4) Suc_less_eq length_Cons Cons nth_Cons_Suc)
+      by (auto simp: All_less_Suc) 
     show ?thesis using IH(2-) IH(1)[of "i - length x" ys' "Suc n"] by auto
   qed
 qed auto
 
-lemma set_vars_term_list [simp]:
-  "set (vars_term_list t) = vars_term t"
-  by (induct t) simp_all
-
 lemma vars_term_list_empty_ground [simp]:
   "vars_term_list t = [] \<longleftrightarrow> ground t"
-  by (induct t) auto
+  using set_vars_term_list[of t]
+  by (metis ground_vars_term_empty set_empty)
 
-lemma varposs_imp_poss:
-  assumes "p \<in> varposs t"
-  shows "p \<in> poss t"
-  using assms by (induct t arbitrary: p) auto
-
-lemma vaposs_list_fun:
-  assumes "p \<in> set (varposs_list (Fun f ts))"
+lemma var_poss_list_Fun:
+  assumes "p \<in> set (var_poss_list (Fun f ts))"
   obtains i ps where "i < length ts" "p = i # ps"
   using assms set_zip_leftD by fastforce
 
-lemma varposs_list_distinct:
-  "distinct (varposs_list t)"
-proof (induct t)
-  case (Fun f ts)
-  then show ?case proof (induct ts rule: rev_induct)
-    case (snoc x xs)
-    then have "distinct (varposs_list (Fun f xs))" "distinct (varposs_list x)" by auto
-    then show ?case using snoc by (auto simp add: map_cons_presv_distinct dest: set_zip_leftD)
-  qed auto
-qed auto
-
-lemma varposs_append:
-  "varposs (Fun f (ts @ [t])) = varposs (Fun f ts) \<union> ((#) (length ts)) ` varposs t"
+lemma var_poss_append:
+  "var_poss (Fun f (ts @ [t])) = var_poss (Fun f ts) \<union> ((#) (length ts)) ` var_poss t"
   by (auto simp: nth_append split: if_splits)
 
-lemma varposs_eq_varposs_list:
-  "set (varposs_list t) = varposs t"
-proof (induct t)
-  case (Fun f ts)
-  then show ?case proof (induct ts rule: rev_induct)
-    case (snoc x xs)
-    then have "varposs (Fun f xs) = set (varposs_list (Fun f xs))"
-      "varposs x = set (varposs_list x)" by auto
-    then show ?case using snoc unfolding varposs_append
-      by auto
-  qed auto
-qed auto
-
-lemma varposs_list_var_terms_length:
-  "length (varposs_list t) = length (vars_term_list t)"
+lemma var_poss_list_var_terms_length:
+  "length (var_poss_list t) = length (vars_term_list t)"
   by (induct t) (auto simp: vars_term_list.simps intro: eq_length_concat_nth)
 
 lemma vars_term_list_nth:
@@ -509,28 +441,28 @@ lemma vars_term_list_nth:
   using assms concat_index_split_less_length_concat[of i "map vars_term_list ts" k j]
   by (auto simp: vars_term_list.simps comp_def take_map) 
 
-lemma varposs_list_nth:
-  assumes "i < length (varposs_list (Fun f ts))"
-     and "concat_index_split (0, i) (poss_args varposs_list ts) = (k, j)"
-  shows "k < length ts \<and> j < length (varposs_list (ts ! k)) \<and>
-    varposs_list (Fun f ts) ! i = k # (map varposs_list ts) ! k ! j \<and>
-    i = sum_list (map length (map varposs_list (take k ts))) + j"
-  using assms concat_index_split_less_length_concat[of i "poss_args varposs_list ts" k j]
+lemma var_poss_list_nth:
+  assumes "i < length (var_poss_list (Fun f ts))"
+     and "concat_index_split (0, i) (poss_args var_poss_list ts) = (k, j)"
+  shows "k < length ts \<and> j < length (var_poss_list (ts ! k)) \<and>
+    var_poss_list (Fun f ts) ! i = k # (map var_poss_list ts) ! k ! j \<and>
+    i = sum_list (map length (map var_poss_list (take k ts))) + j"
+  using assms concat_index_split_less_length_concat[of i "poss_args var_poss_list ts" k j]
   by (auto simp: comp_def take_map intro: nth_sum_listI)
 
-lemma varposs_list_to_var_term_list:
-  assumes "i < length (varposs_list t)"
-  shows "the_Var (t |_ (varposs_list t ! i)) = (vars_term_list t) ! i" using assms
+lemma var_poss_list_to_var_term_list:
+  assumes "i < length (var_poss_list t)"
+  shows "the_Var (t |_ (var_poss_list t ! i)) = (vars_term_list t) ! i" using assms
 proof (induct t arbitrary: i)
   case (Fun f ts)
-  have "concat_index_split (0, i) (poss_args varposs_list ts) = concat_index_split (0, i) (map vars_term_list ts)"
-    using Fun(2) concat_index_split_unique[of i "poss_args varposs_list ts" "map vars_term_list ts" 0]
-    using varposs_list_var_terms_length[of "ts ! i" for i]
+  have "concat_index_split (0, i) (poss_args var_poss_list ts) = concat_index_split (0, i) (map vars_term_list ts)"
+    using Fun(2) concat_index_split_unique[of i "poss_args var_poss_list ts" "map vars_term_list ts" 0]
+    using var_poss_list_var_terms_length[of "ts ! i" for i]
     by (auto simp: vars_term_list.simps)
-  then obtain k j where "concat_index_split (0, i) (poss_args varposs_list ts) = (k, j)"
+  then obtain k j where "concat_index_split (0, i) (poss_args var_poss_list ts) = (k, j)"
     "concat_index_split (0, i) (map vars_term_list ts) = (k, j)" by fastforce
-  from varposs_list_nth[OF Fun(2) this(1)] vars_term_list_nth[OF _ this(2)]
-  show ?case using Fun(2) Fun(1)[OF nth_mem] varposs_list_var_terms_length[of "Fun f ts"] by auto
+  from var_poss_list_nth[OF Fun(2) this(1)] vars_term_list_nth[OF _ this(2)]
+  show ?case using Fun(2) Fun(1)[OF nth_mem] var_poss_list_var_terms_length[of "Fun f ts"] by auto
 qed (auto simp: vars_term_list.simps)
 
 end

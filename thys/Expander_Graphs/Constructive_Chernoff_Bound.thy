@@ -10,6 +10,7 @@ theory Constructive_Chernoff_Bound
     "HOL-Probability.Probability_Measure"
     Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
     Weighted_Arithmetic_Geometric_Mean.Weighted_Arithmetic_Geometric_Mean
+    Negative_Association.Negative_Association_Util
 begin
 
 lemma powr_mono_rev:
@@ -80,9 +81,6 @@ proof -
     unfolding split_pair_pmf by simp
   finally show ?thesis by simp
 qed
-
-definition KL_div :: "real \<Rightarrow> real \<Rightarrow> real"
-  where "KL_div p q = p * ln (p/q) + (1-p) * ln ((1-p)/(1-q))"
 
 theorem impagliazzo_kabanets_pmf:
   fixes Y :: "nat \<Rightarrow> 'a \<Rightarrow> bool"
@@ -179,12 +177,10 @@ proof -
     also have "... =  exp ((ln ((\<delta>_avg / \<gamma>) powr \<gamma>) + ln (((1 - \<delta>_avg) / (1 - \<gamma>)) powr (1-\<gamma>))))"
       using \<gamma>_gt_0 \<delta>_avg_range that by (subst ln_mult) auto
     also have "... =  exp ((\<gamma> * ln (\<delta>_avg / \<gamma>) + (1 - \<gamma>) * ln ((1 - \<delta>_avg) / (1 - \<gamma>))))"
-      using \<gamma>_gt_0 \<delta>_avg_range that by (simp add:ln_powr algebra_simps)
+      using \<gamma>_gt_0 \<delta>_avg_range that by (simp add:algebra_simps)
     also have "... =  exp (- (\<gamma> * ln (\<gamma> / \<delta>_avg) + (1 - \<gamma>) * ln ((1 - \<gamma>) / (1 - \<delta>_avg))))"
-      using \<gamma>_gt_0 \<delta>_avg_range that by (simp add: ln_div algebra_simps)
-    also have "... = ?R1"
-      unfolding KL_div_def by simp
-
+      using \<gamma>_gt_0 \<delta>_avg_range that by (simp add:ln_div algebra_simps)
+    also have "... = ?R1" using assms(5,6) by (subst KL_div_eq') force+
     finally show ?thesis by simp
   qed
 
@@ -224,7 +220,7 @@ proof -
     have "?L1 = \<delta>_avg ^ n"
       using \<gamma>_eq_1 r_def q_def by simp
     also have "... = exp( - KL_div 1 \<delta>_avg) ^ n"
-      unfolding KL_div_def using assms(6) by (simp add:ln_div)
+      using assms(5,6) by (subst KL_div_eq') (simp_all add:ln_div)
     also have "... = ?R1"
       using \<gamma>_eq_1 by (simp add: powr_realpow[symmetric] exp_powr)
     finally show ?thesis by simp
@@ -456,18 +452,19 @@ proof (cases "p = 0")
 
   have "ln (1 / (1 - q)) - 2 * q^2 \<le> ln (1 / (1 - q')) - 2 * q'^2"
     using deriv deriv_nonneg by (intro DERIV_nonneg_imp_nondecreasing[OF assms(3)]) auto
-  thus ?thesis using True unfolding KL_div_def by simp
+  thus ?thesis using True assms by (subst (1 2) KL_div_eq') simp_all
 next
   case False
   hence p_gt_0: "p > 0" using assms by auto
 
   define f' :: "real \<Rightarrow> real" where "f' = (\<lambda>x. (1-p)/(1-x) - p/x + 4 * (p-x))"
 
-  have deriv: "((\<lambda>q. KL_div p q - 2*(p-q)^2) has_real_derivative (f' x)) (at x)" if "x \<in> {q..q'}"
+  let ?KL_div = "(\<lambda>p q.  p * ln (p/q) + (1-p) * ln ((1-p)/(1-q)))"
+  have deriv: "((\<lambda>q. ?KL_div p q - 2*(p-q)^2) has_real_derivative (f' x)) (at x)" if "x \<in> {q..q'}"
     for x
   proof -
     have "0 < p /x" " 0 < (1 - p) / (1 - x)" using that assms p_gt_0 by auto
-    thus ?thesis unfolding KL_div_def f'_def by (auto intro!: derivative_eq_intros)
+    thus ?thesis unfolding f'_def by (auto intro!: derivative_eq_intros)
   qed
 
   have f'_part_nonneg: "(1/(x*(1-x)) - 4) \<ge> 0" if "x \<in> {0<..<1}" for x :: real
@@ -494,12 +491,14 @@ next
     finally show ?thesis by simp
   qed
 
-  show ?thesis using deriv deriv_nonneg
+  have "KL_div p q-2*(p-q)^2 = ?KL_div p q-2*(p-q)^2"
+    using assms by (subst KL_div_eq') auto
+  also have "\<dots> \<le> ?KL_div p q'-2*(p-q')^2" using deriv deriv_nonneg
     by (intro DERIV_nonneg_imp_nondecreasing[OF assms(3)]) auto
+  also have "\<dots> = KL_div p q'-2*(p-q')^2"
+    using assms by (subst KL_div_eq') auto
+  finally show ?thesis by simp
 qed
-
-lemma KL_div_swap: "KL_div (1-p) (1-q) = KL_div p q"
-  unfolding KL_div_def by auto
 
 lemma KL_div_mono_right_aux_2:
   assumes "0 < q'" "q' \<le> q" "q \<le> p" "p \<le> 1"
@@ -507,7 +506,7 @@ lemma KL_div_mono_right_aux_2:
 proof -
   have "KL_div (1-p) (1-q)-2*((1-p)-(1-q))^2 \<le> KL_div (1-p) (1-q')-2*((1-p)-(1-q'))^2"
     using assms by (intro KL_div_mono_right_aux_1) auto
-  thus ?thesis unfolding KL_div_swap by (auto simp:algebra_simps power2_commute)
+  thus ?thesis using assms by (subst (1 2)  KL_div_swap_gen) (auto simp:algebra_simps power2_commute)
 qed
 
 lemma KL_div_mono_right_aux:
@@ -540,7 +539,7 @@ lemma KL_div_lower_bound:
   assumes "p \<in> {0..1}" "q \<in> {0<..<1}"
   shows "2*(p-q)^2 \<le> KL_div p q"
 proof -
-  have "0 \<le> KL_div p p - 2 * (p-p)^2" unfolding KL_div_def by simp
+  have "0 \<le> KL_div p p - 2 * (p-p)^2" using assms by (subst KL_div_eq') auto
   also have "... \<le> KL_div p q - 2 * (p-q)^2" using assms by (intro KL_div_mono_right_aux) auto
   finally show ?thesis by simp
 qed

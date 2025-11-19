@@ -197,7 +197,8 @@ proof (auto)
     and "\<forall>y\<in>S - {p}. norm (v - p) < norm (v - y)"
     and "y \<in> S"
     and "\<forall>ya\<in>S - {y}. norm (v - y) < norm (v - ya)"
-  thus "p = y" by (metis member_remove not_less_iff_gr_or_eq remove_def)
+  then show "p = y"
+    by (metis DiffI order_less_imp_not_less singletonD) 
 qed
 
 
@@ -228,9 +229,10 @@ proof (auto)
     and a_uniq: "\<forall>b. (b\<in>S \<and> (\<forall>c\<in>S-{b}. norm (v - b) < norm (v - c))) \<longrightarrow> b=a"
     using least_squares_approximation4[OF subspace_S]
     by metis
-  have "p=a" using p p' a_uniq leD  by (metis a a' member_remove remove_def)
-  moreover have "y=a" using y y' a_uniq
-    by (metis a a' leD member_remove remove_def)
+  have "p=a" using p p' a_uniq a a'
+    by (meson DiffI linorder_not_less singletonD) 
+  moreover have "y=a" using y y' a_uniq a a'
+    by (meson DiffI linorder_not_less singletonD)
   ultimately show "p = y" by simp
 qed
 
@@ -251,9 +253,8 @@ proof (auto)
     show "x \<in> X \<Longrightarrow> proj v x \<in> S" for x
       by (simp add: Projections.proj_def X rev_subsetD subspace_S subspace_mul)
     have "\<forall>y\<in>S - {?p}. norm (v - ?p) < norm (v - y)" 
-      using least_squares_approximation[OF subspace_S ind_X X span_X o]
-      unfolding proj_onto_def
-      by (metis (no_types) member_remove remove_def)
+      using least_squares_approximation [OF subspace_S ind_X X span_X o]
+      by (auto simp add: proj_onto_def not_less) (metis less_le_not_le)
     moreover have "v - ?p \<in> orthogonal_complement S" 
       by (metis (no_types) X ind_X o span_X subspace_S v_minus_p_orthogonal_complement proj_onto_def)
     ultimately show "\<forall>y\<in>S - {?p}. norm (v - ?p) < norm (v - y) \<and> v - ?p \<in> orthogonal_complement S"

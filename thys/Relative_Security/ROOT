@@ -12,6 +12,8 @@ session Relative_Security = More_LazyLists +
     Relative_Security
     Unwinding_fin 
     Unwinding   
+    Incomplete_fin
+    Incomplete
   document_files
     "root.tex"
     "root.bib"

@@ -3,166 +3,45 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780.  In Spanish
+   Last modified: 11 Aug, 2025
+  *)
 
 (*<*)
 theory SyntaxAndSemantics
-imports Main  
+imports Main HOL.List
 begin
 (*>*)
 
 datatype 'b formula = 
-    FF
-  | TT
-  | atom 'b                 (* ("P_" [1000]) *)
+    FF                                      (\<open>\<bottom>.\<close>)
+  | TT                                      (\<open>\<top>.\<close>)
+  | atom 'b                
   | Negation "'b formula"                   (\<open>\<not>.(_)\<close> [110] 110)
-  | Conjunction "'b formula" "'b formula"     (infixl \<open>\<and>.\<close>  109)
-  | Disjunction "'b formula" "'b formula"     (infixl \<open>\<or>.\<close>  108)
+  | Conjunction "'b formula" "'b formula"   (infixl \<open>\<and>.\<close>  109)
+  | Disjunction "'b formula" "'b formula"   (infixl \<open>\<or>.\<close>  108)
   | Implication "'b formula" "'b formula"   (infixl \<open>\<rightarrow>.\<close> 100)
 
 
-lemma "(\<not>.\<not>. Atom P \<rightarrow>. Atom Q  \<rightarrow>. Atom R) = 
-       (((\<not>. (\<not>. Atom P)) \<rightarrow>. Atom Q) \<rightarrow>. Atom R)"
-by simp
-
-
-datatype v_truth = Ttrue | Ffalse 
-
-
-definition v_negation :: "v_truth \<Rightarrow> v_truth" where
- "v_negation x \<equiv> (if x = Ttrue then Ffalse else Ttrue)"
-
-definition v_conjunction ::  "v_truth \<Rightarrow> v_truth \<Rightarrow> v_truth" where
- "v_conjunction x y \<equiv> (if x = Ffalse then Ffalse else y)"
-
-definition v_disjunction ::  "v_truth \<Rightarrow> v_truth \<Rightarrow> v_truth" where
- "v_disjunction x y \<equiv> (if x = Ttrue then Ttrue else y)"
-
-definition v_implication :: "v_truth \<Rightarrow> v_truth \<Rightarrow> v_truth" where
- "v_implication x y \<equiv> (if x = Ffalse then Ttrue else y)"
-
-
-primrec t_v_evaluation :: "('b \<Rightarrow>  v_truth) \<Rightarrow> 'b formula  \<Rightarrow> v_truth"
+primrec t_v_evaluation :: "('b \<Rightarrow>  bool) \<Rightarrow> 'b formula  \<Rightarrow> bool"
 where
-   "t_v_evaluation I FF = Ffalse"
-|  "t_v_evaluation I TT = Ttrue"
+   "t_v_evaluation I \<bottom>. = False"
+|  "t_v_evaluation I \<top>. = True"
 |  "t_v_evaluation I (atom p) = I p"
-|  "t_v_evaluation I (\<not>. F) = (v_negation (t_v_evaluation I F))"
-|  "t_v_evaluation I (F \<and>. G) = (v_conjunction (t_v_evaluation I F) (t_v_evaluation I G))"
-|  "t_v_evaluation I (F \<or>. G) = (v_disjunction (t_v_evaluation I F) (t_v_evaluation I G))"
-|  "t_v_evaluation I (F \<rightarrow>. G) = (v_implication (t_v_evaluation I F) (t_v_evaluation I G))"  
-
-
-lemma Bivaluation:
-shows "t_v_evaluation I F = Ttrue \<or>  t_v_evaluation I F = Ffalse"
-(*<*)
-proof(cases "t_v_evaluation I F")
-  assume "t_v_evaluation I F = Ttrue" thus ?thesis by simp
-  next  
-  assume hip: "t_v_evaluation I F = Ffalse" thus ?thesis by simp
-qed
-(*>*)
-
-
-lemma NegationValues1:
-assumes "t_v_evaluation I (\<not>.F) = Ffalse"
-shows "t_v_evaluation I F = Ttrue"
-(*<*)
-proof -
-  { assume "t_v_evaluation I F \<noteq> Ttrue"
-    hence "t_v_evaluation I F = Ffalse"  using Bivaluation by auto
-    hence "t_v_evaluation I (\<not>.F) = Ttrue" by(simp add:v_negation_def)
-    hence "False"
-      using assms by auto}
-  thus "t_v_evaluation I F = Ttrue" by auto
-qed
-(*>*)
-
-
-lemma NegationValues2:
-assumes "t_v_evaluation I (\<not>.F) = Ttrue"
-shows "t_v_evaluation I F = Ffalse"
-(*<*)
-proof -
-  { assume "t_v_evaluation I F \<noteq> Ffalse"
-    hence "t_v_evaluation I F = Ttrue"  using Bivaluation by auto
-    hence "t_v_evaluation I (\<not>.F) = Ffalse" by(simp add:v_negation_def)
-    hence "False" using assms by auto}
-  thus "t_v_evaluation I F = Ffalse" by auto
-qed
-(*>*)
-
-lemma  non_Ttrue:
-  assumes "t_v_evaluation I F \<noteq>  Ttrue" shows "t_v_evaluation I F = Ffalse"
-(*<*)
-proof(rule ccontr)
-  assume "t_v_evaluation I F \<noteq> Ffalse"
-  thus False using assms Bivaluation by auto
-qed
-(*>*)
-
-
-lemma ConjunctionValues: 
-  assumes "t_v_evaluation I (F \<and>. G) = Ttrue" 
-  shows "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ttrue"
-(*<*)
-proof - 
- { assume "\<not>(t_v_evaluation I  F = Ttrue \<and> t_v_evaluation I  G = Ttrue)" 
-   hence "t_v_evaluation I  F \<noteq> Ttrue \<or> t_v_evaluation I G \<noteq> Ttrue" by simp
-   hence "t_v_evaluation I  F = Ffalse \<or> t_v_evaluation I G = Ffalse" using Bivaluation by auto
-   hence "t_v_evaluation I (F \<and>. G) = Ffalse" by(auto simp add: v_conjunction_def)
-   hence "False" using assms by simp}    
- thus "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ttrue" by auto
-qed
-(*>*)
-
-
-lemma DisjunctionValues:
-  assumes "t_v_evaluation I (F \<or>. G ) = Ttrue"
-  shows "t_v_evaluation I  F = Ttrue \<or> t_v_evaluation I G = Ttrue" 
-(*<*)
-proof - 
- { assume "\<not>(t_v_evaluation I  F = Ttrue \<or> t_v_evaluation I G  = Ttrue)" 
-   hence "t_v_evaluation I F  \<noteq> Ttrue \<and> t_v_evaluation I G \<noteq> Ttrue" by simp
-   hence "t_v_evaluation I  F = Ffalse \<and> t_v_evaluation I G = Ffalse" using Bivaluation by auto
-   hence "t_v_evaluation I (F \<or>. G) = Ffalse" by(simp add: v_disjunction_def)
-   hence "False" using assms by simp}    
- thus "t_v_evaluation I F = Ttrue \<or> t_v_evaluation I G = Ttrue" by auto
-qed
-(*>*)
-
-
-lemma ImplicationValues:
-  assumes "t_v_evaluation I (F \<rightarrow>. G) = Ttrue"
-  shows "t_v_evaluation I F = Ttrue \<longrightarrow> t_v_evaluation I G = Ttrue"
-(*<*) 
-proof - 
- { assume "\<not>(t_v_evaluation I F = Ttrue \<longrightarrow> t_v_evaluation I G = Ttrue)" 
-   hence "t_v_evaluation I F =  Ttrue \<and> t_v_evaluation I G \<noteq> Ttrue" by simp
-   hence "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ffalse" using Bivaluation by auto
-   hence "t_v_evaluation I (F \<rightarrow>. G) = Ffalse" by(simp add: v_implication_def)
-   hence "False" using assms by simp}    
- thus "t_v_evaluation I F = Ttrue \<longrightarrow> t_v_evaluation I G = Ttrue" by auto
-qed
+|  "t_v_evaluation I (\<not>. F) = (\<not> (t_v_evaluation I F))"
+|  "t_v_evaluation I (F \<and>. G) = ( (t_v_evaluation I F) \<and> (t_v_evaluation I G))"
+|  "t_v_evaluation I (F \<or>. G) = ( (t_v_evaluation I F) \<or> (t_v_evaluation I G))"
+|  "t_v_evaluation I (F \<rightarrow>. G) = ( (t_v_evaluation I F) \<longrightarrow> (t_v_evaluation I G))"  
 
 lemma eval_false_implication:
-  assumes "t_v_evaluation I (F \<rightarrow>.G) = Ffalse"
-  shows "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ffalse"
-proof(rule ccontr) 
-  assume "\<not> (t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ffalse)"
-  hence "t_v_evaluation I F = Ffalse \<or> t_v_evaluation I G = Ttrue"
-    using Bivaluation by auto 
-  hence "t_v_evaluation I (F \<rightarrow>.G) = Ttrue"
-    by(unfold t_v_evaluation_def, unfold v_implication_def, auto) 
-  thus False using assms by auto
-qed
+  assumes "\<not> t_v_evaluation I (F \<rightarrow>.G)"
+  shows "t_v_evaluation I F \<and> \<not> t_v_evaluation I G "
+  by (meson assms t_v_evaluation.simps(7))
 
 (*>*)
 
-
-definition model :: "('b \<Rightarrow> v_truth) \<Rightarrow> 'b formula set \<Rightarrow> bool" (\<open>_ model _\<close> [80,80] 80) where
- "I model S \<equiv> (\<forall>F \<in> S. t_v_evaluation I F = Ttrue)"
-
+definition model :: "('b \<Rightarrow> bool) \<Rightarrow> 'b formula set \<Rightarrow> bool" (\<open>_ model _\<close> [80,80] 80) where
+ "I model S \<equiv> (\<forall>F \<in> S. t_v_evaluation I F)"
 
 definition satisfiable :: "'b formula set \<Rightarrow> bool" where
  "satisfiable S \<equiv> (\<exists>v. v model S)"
@@ -172,30 +51,11 @@ definition satisfiable :: "'b formula set \<Rightarrow> bool" where
 lemma satisfiable_subset:
   assumes "satisfiable S" and "H\<subseteq>S"
   shows "satisfiable H"
-proof(unfold satisfiable_def)
-  show "\<exists>v. v model H"
-  proof-
-    have "\<exists>v. v model S" using assms(1) by(unfold satisfiable_def)
-    then obtain v where v: "v model S" by auto
-    have "v model H"
-    proof(unfold model_def)
-      show  "\<forall>F\<in>H. t_v_evaluation v F = Ttrue"
-      proof
-        fix F
-        assume "F\<in>H"
-        thus "t_v_evaluation v F = Ttrue" using assms(2) v by(unfold model_def, auto)
-      qed
-    qed
-    thus ?thesis by auto
-  qed
-qed
-
+  by (meson assms(1,2) model_def satisfiable_def subset_iff)
 (*>*)
 
-  
 definition consequence :: "'b formula set \<Rightarrow> 'b formula \<Rightarrow> bool" (\<open>_ \<Turnstile> _\<close> [80,80] 80) where
- "S \<Turnstile> F \<equiv> (\<forall>I. I model S \<longrightarrow> t_v_evaluation I F = Ttrue)"
-
+ "S \<Turnstile> F \<equiv> (\<forall>I. I model S \<longrightarrow> t_v_evaluation I F)"
 
 (*<*)
 
@@ -206,24 +66,16 @@ proof(rule notI)
   assume "satisfiable (S \<union> {\<not>. F})"
   hence 1: "\<exists>I. I model (S \<union> {\<not>. F})" by (auto simp add: satisfiable_def) 
   obtain I where I: "I model (S \<union> {\<not>. F})" using 1 by auto
-  hence 2: "\<forall>G\<in>(S \<union> {\<not>. F}). t_v_evaluation I G = Ttrue" 
+  hence 2: "\<forall>G\<in>(S \<union> {\<not>. F}). t_v_evaluation I G" 
     by (auto simp add: model_def)
-  hence "\<forall>G\<in>S. t_v_evaluation I G = Ttrue" by blast
+  hence "\<forall>G\<in>S. t_v_evaluation I G" by blast
   moreover
-  have 3: "t_v_evaluation I (\<not>. F) = Ttrue" using 2 by simp
-  hence "t_v_evaluation I F = Ffalse" 
-    proof (cases "t_v_evaluation I F")
-      assume "t_v_evaluation I F = Ttrue" 
-      thus ?thesis using 3 by(simp add:v_negation_def)
-      next
-      assume "t_v_evaluation I F = Ffalse" 
-      thus ?thesis by simp
-    qed
+   have 3: "t_v_evaluation I (\<not>. F)" using 2 by simp
+   hence "\<not>t_v_evaluation I F" by auto 
   ultimately 
   show "False" using assms 
     by (simp add: consequence_def, simp add: model_def)
 qed
-
 
 lemma SatCons:
   assumes "\<not> satisfiable (S \<union> {\<not>. F})"
@@ -232,18 +84,18 @@ proof (rule contrapos_np)
   assume hip: "\<not> S \<Turnstile> F"
   show "satisfiable (S \<union> {\<not>. F})"
   proof -
-    have 1: "\<exists>I. I model S \<and> \<not>(t_v_evaluation I F = Ttrue)"  
+    have 1: "\<exists>I. I model S \<and> \<not>(t_v_evaluation I F)"  
       using hip by (simp add: consequence_def)
-    obtain I where I: "I model S \<and> \<not>(t_v_evaluation I F = Ttrue)" using 1 by auto
+    obtain I where I: "I model S \<and> \<not>(t_v_evaluation I F = True)" using 1 by auto
     hence  "I model S" by simp
-    hence 2: "\<forall>G\<in>S. t_v_evaluation I G = Ttrue" by (simp add: model_def) 
-    have "\<not>(t_v_evaluation I F = Ttrue)" using I by simp
-    hence 3: "t_v_evaluation I (\<not>. F) = Ttrue" by (simp add:v_negation_def)
-    have  "\<forall>G\<in>(S \<union> {\<not>. F}). t_v_evaluation I G = Ttrue" 
+    hence 2: "\<forall>G\<in>S. t_v_evaluation I G" by (simp add: model_def) 
+    have "\<not>t_v_evaluation I F" using I by simp
+    hence 3: "t_v_evaluation I (\<not>. F)" by simp
+    have  "\<forall>G\<in>(S \<union> {\<not>. F}). t_v_evaluation I G" 
     proof (rule ballI) 
       fix G 
       assume hip2: "G\<in>(S \<union> {\<not>. F})"    
-      show "t_v_evaluation I G = Ttrue"
+      show "t_v_evaluation I G"
       proof (cases)
         assume "G\<in>S"
         thus ?thesis using 2 by simp
@@ -261,55 +113,30 @@ proof (rule contrapos_np)
 qed 
 (*>*)
 
- 
 theorem EquiConsSat: 
   shows  "S \<Turnstile> F = (\<not> satisfiable (S \<union> {\<not>. F}))"
 (*<*)
 using SatCons ConsSat by blast
 (*>*)
 
-
 definition tautology :: "'b formula \<Rightarrow> bool" where
-  "tautology F \<equiv> (\<forall>I. ((t_v_evaluation I F) = Ttrue))"
+  "tautology F \<equiv> (\<forall>I. ((t_v_evaluation I F)))"
 
-lemma "tautology (F  \<rightarrow>. (G \<rightarrow>. F))" 
+lemma "tautology (F  \<rightarrow>. (G \<rightarrow>. F))"
+  by (simp add: tautology_def)
+
+lemma empty_model: "\<forall>(I::'b \<Rightarrow> bool). I model {}"
 proof - 
-  have "\<forall>I. t_v_evaluation I (F \<rightarrow>. (G \<rightarrow>. F)) = Ttrue"
-  proof 
-    fix I
-    show "t_v_evaluation I (F \<rightarrow>. (G \<rightarrow>. F)) = Ttrue"
-    proof (cases "t_v_evaluation I F")
-      text\<open> Caso 1: \<close>    
-    { assume "t_v_evaluation I F = Ttrue"        
-      thus ?thesis by (simp add: v_implication_def) }               
-      next 
-      text\<open> Caso 2: \<close> 
-    { assume "t_v_evaluation I F = Ffalse"    
-      thus ?thesis by(simp add: v_implication_def) }     
-    qed 
-  qed  
-  thus ?thesis by (simp add: tautology_def)
-qed
-
-
-
-(*<*)
-
-
-lemma empty_model: "\<forall>(I::'b \<Rightarrow> v_truth). I model {}"
-proof - 
-  have "\<forall>F\<in> {}. t_v_evaluation (I::'b \<Rightarrow> v_truth) F = Ttrue" by simp
+  fix I
+  have "\<forall>F\<in> {}. t_v_evaluation (I::'b \<Rightarrow> bool) F" by simp
   thus "\<forall>I. I model {}" by (simp add: model_def)
 qed
 (*>*)
-
 
 theorem CNS_tautology: "tautology F = ({} \<Turnstile> F)"
 (*<*)
 by(simp add: tautology_def consequence_def empty_model)
 (*>*)
-
-
 
 theorem TautSatis:
   shows "tautology (F \<rightarrow>. G) = (\<not> satisfiable{F, \<not>.G})"
@@ -318,30 +145,30 @@ proof -
  { assume h1: "\<not> tautology (F \<rightarrow>. G)"
    have "satisfiable{F, \<not>.G}"
    proof -
-     have "\<exists> I. t_v_evaluation I (F \<rightarrow>. G) \<noteq> Ttrue" 
+     have "\<exists> I. \<not> t_v_evaluation I (F \<rightarrow>. G)" 
        using h1 by (unfold tautology_def, auto) 
-    then obtain I where "t_v_evaluation I (F \<rightarrow>. G) \<noteq> Ttrue" by auto 
-    hence a: "t_v_evaluation I (F \<rightarrow>. G) = Ffalse" using Bivaluation by blast
-    hence "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ffalse" 
-    proof -
-     { assume "t_v_evaluation I F \<noteq> Ttrue \<or> t_v_evaluation I G \<noteq> Ffalse"
+    then obtain I where "\<not> t_v_evaluation I (F \<rightarrow>. G)" by auto 
+    hence a: "\<not> t_v_evaluation I (F \<rightarrow>. G)"  by auto
+    hence "t_v_evaluation I F  \<and> \<not>t_v_evaluation I G" 
+    proof -             
+     { assume "\<not> t_v_evaluation I F \<or> t_v_evaluation I G"
        hence "False"
        proof(rule disjE)
-         assume "t_v_evaluation I F \<noteq> Ttrue"
-         hence "t_v_evaluation I F = Ffalse" using Bivaluation by auto
-         hence "t_v_evaluation I (F \<rightarrow>. G) = Ttrue" 
-           by (auto simp add: v_implication_def)
+         assume "\<not>t_v_evaluation I F"
+         hence " \<not>t_v_evaluation I F" by auto
+         hence "t_v_evaluation I (F \<rightarrow>. G)" 
+           by simp
          thus "False" using a by auto
        next
-         assume "t_v_evaluation I G \<noteq> Ffalse"
-         hence "t_v_evaluation I G = Ttrue" using Bivaluation by auto
-         hence "t_v_evaluation I (F \<rightarrow>. G) = Ttrue" by( simp add: v_implication_def)
+         assume "t_v_evaluation I G"
+         hence "t_v_evaluation I G" by auto
+         hence "t_v_evaluation I (F \<rightarrow>. G)" by simp
          thus "False" using a by auto
        qed}  
-     thus "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I G = Ffalse" by auto
+     thus "t_v_evaluation I F \<and> \<not> t_v_evaluation I G" by auto
    qed
-   hence "t_v_evaluation I F = Ttrue \<and> t_v_evaluation I (\<not>.G) = Ttrue" 
-     by (simp add:v_negation_def)
+   hence "t_v_evaluation I F = True \<and> t_v_evaluation I (\<not>.G)" 
+     by simp
    hence "\<exists> I. I model {F, \<not>.G}" by (auto simp add: model_def)  
    thus "satisfiable {F, \<not>.G}" by(simp add: satisfiable_def)
  qed}
@@ -350,61 +177,53 @@ moreover
   have "\<not> tautology (F \<rightarrow>. G)" 
   proof -  
     have "\<exists> I. I model {F, \<not>.G}" using h2 by (simp add: satisfiable_def)  
-    hence "\<exists> I. t_v_evaluation I F = Ttrue \<and> t_v_evaluation I (\<not>.G) = Ttrue" 
+    hence "\<exists> I. t_v_evaluation I F \<and> t_v_evaluation I (\<not>.G)" 
       by(simp add: model_def)
-    then obtain I where I1: "t_v_evaluation I F = Ttrue" and I2: "t_v_evaluation I (\<not>.G) = Ttrue"
+    then obtain I where I1: "t_v_evaluation I F" and I2: "t_v_evaluation I (\<not>.G)"
       by auto
-    have "t_v_evaluation I G = Ffalse" using I2 NegationValues2 by auto   
-    hence "t_v_evaluation I (F \<rightarrow>. G) = Ffalse" using I1 
-      by (simp add: v_implication_def)
+    have "\<not> t_v_evaluation I G" using I2  by auto   
+    hence "\<not>t_v_evaluation I (F \<rightarrow>. G)" using I1 
+      by simp
     thus "\<not> tautology (F \<rightarrow>. G)" by (auto, unfold tautology_def, auto)
   qed}
   ultimately
   show ?thesis by auto
 qed
-
-  
+ 
 definition equivalent:: "'b formula  \<Rightarrow> 'b formula \<Rightarrow> bool" where
   "equivalent F G \<equiv> (\<forall> I. (t_v_evaluation I F) = (t_v_evaluation I G))"
 
 primrec disjunction_atomic :: "'b list \<Rightarrow>'a \<Rightarrow> ('a \<times> 'b)formula"  where
- "disjunction_atomic [] i = FF"   
+ "disjunction_atomic [] i = \<bottom>."   
 | "disjunction_atomic (x#D) i = (atom (i, x)) \<or>. (disjunction_atomic D i)"
 
 lemma t_v_evaluation_disjunctions1:
-  assumes "t_v_evaluation I (disjunction_atomic (a # l) i) = Ttrue"
-  shows "t_v_evaluation I (atom (i,a)) = Ttrue \<or> t_v_evaluation I (disjunction_atomic l i) = Ttrue" 
-proof-
-  have
-  "(disjunction_atomic (a # l) i) = (atom (i,a)) \<or>. (disjunction_atomic l i)"
-    by auto
-  hence "t_v_evaluation I ((atom (i ,a)) \<or>. (disjunction_atomic l i)) = Ttrue" 
-    using assms by auto
-  thus ?thesis using DisjunctionValues by blast
-qed
+  assumes "t_v_evaluation I (disjunction_atomic (a # l) i)"
+  shows "t_v_evaluation I (atom (i,a)) \<or> t_v_evaluation I (disjunction_atomic l i)"
+  using assms by auto
 
 lemma t_v_evaluation_atom:
-  assumes "t_v_evaluation I (disjunction_atomic l i) = Ttrue"
-  shows "\<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)) = Ttrue)"
+  assumes "t_v_evaluation I (disjunction_atomic l i)"
+  shows "\<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)))"
 proof-
-  have "t_v_evaluation I (disjunction_atomic l i) = Ttrue \<Longrightarrow>
-  \<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)) = Ttrue)"
+  have "t_v_evaluation I (disjunction_atomic l i) \<Longrightarrow>
+  \<exists>x. x \<in> set l \<and> (t_v_evaluation I (atom (i,x)))"
   proof(induct l)
     case Nil
     then show ?case by auto
   next   
     case (Cons a l)  
-    show  "\<exists>x. x \<in> set (a # l) \<and> t_v_evaluation I (atom (i,x)) = Ttrue"  
+    show  "\<exists>x. x \<in> set (a # l) \<and> t_v_evaluation I (atom (i,x))"  
     proof-
       have
-      "(t_v_evaluation I (atom (i,a)) = Ttrue) \<or> t_v_evaluation I (disjunction_atomic l i)=Ttrue" 
+      "(t_v_evaluation I (atom (i,a))) \<or> t_v_evaluation I (disjunction_atomic l i)" 
         using Cons(2) t_v_evaluation_disjunctions1[of I] by auto      
       thus ?thesis
     proof(rule disjE)
-      assume "t_v_evaluation I (atom (i,a)) = Ttrue"
+      assume "t_v_evaluation I (atom (i,a))"
       thus ?thesis by auto
     next
-      assume "t_v_evaluation I (disjunction_atomic l i) = Ttrue" 
+      assume "t_v_evaluation I (disjunction_atomic l i)" 
       thus ?thesis using Cons by auto    
     qed
   qed
@@ -412,16 +231,12 @@ qed
   thus ?thesis using assms by auto
 qed 
 
-definition set_to_list :: "'a set \<Rightarrow> 'a list"
-  where "set_to_list s =  (SOME l. set l = s)"
+definition set_to_list ::  "'a set \<Rightarrow> 'a list" 
+  where "set_to_list s = (SOME l. set l = s)"
 
-lemma  set_set_to_list:
-   "finite s \<Longrightarrow> set (set_to_list s) = s"
-  unfolding set_to_list_def by (metis (mono_tags) finite_list some_eq_ex)
+lemma  finiteness_set_to_list:
+   "finite s \<equiv> (set (set_to_list s) = s)"
+  unfolding set_to_list_def using List.finite_set finite_list tfl_some
+  by (smt (verit, del_insts)) 
 
-
-(*>*)
-     
-(*<*)
 end
-(*>*)

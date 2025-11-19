@@ -23,19 +23,6 @@ lemma Nats_not_empty [simp]: "\<nat> \<noteq> {}"
 
 subsection \<open>Infinite sums\<close>
 
-lemma has_sum_iff: "(f has_sum S) A \<longleftrightarrow> f summable_on A \<and> infsum f A = S"
-  using infsumI summable_iff_has_sum_infsum by blast
-  
-lemma summable_on_reindex_bij_witness:
-  assumes "\<And>a. a \<in> S \<Longrightarrow> i (j a) = a"
-  assumes "\<And>a. a \<in> S \<Longrightarrow> j a \<in> T"
-  assumes "\<And>b. b \<in> T \<Longrightarrow> j (i b) = b"
-  assumes "\<And>b. b \<in> T \<Longrightarrow> i b \<in> S"
-  assumes "\<And>a. a \<in> S \<Longrightarrow> h (j a) = g a"
-  shows   "g summable_on S \<longleftrightarrow> h summable_on T"
-  using has_sum_reindex_bij_witness[of S i j T h g, OF assms refl]
-  by (simp add: summable_on_def)
-
 lemma has_sum_diff:
   fixes f g :: "'a \<Rightarrow> 'b::{topological_ab_group_add}"
   assumes \<open>(f has_sum a) A\<close>
@@ -262,6 +249,43 @@ proof -
     by (intro conv_radius_mono eventually_mono[OF ev(2)]) auto
   ultimately show ?thesis
     by (simp add: one_ereal_def)
+qed
+
+lemma even_power_diff_commute: "even n \<Longrightarrow> (x - y) ^ n = (y - x :: 'a :: ring_1) ^ n"
+  by (metis Parity.ring_1_class.power_minus_even minus_diff_eq)
+
+lemma not_summable_power_of_nat: "\<not>summable (\<lambda>n. of_nat n ^ k :: 'a :: {real_normed_field,banach})"
+proof -
+  have "\<not>(\<lambda>n. of_nat n ^ k :: 'a) \<longlonglongrightarrow> 0"
+  proof (cases "k = 0")
+    case True
+    hence "(\<lambda>n. of_nat n ^ k :: 'a) \<longlonglongrightarrow> 1"
+      by simp
+    thus ?thesis
+      using LIMSEQ_unique zero_neq_one by blast
+  next
+    case False
+    have "filterlim (\<lambda>n. of_nat n ^ k :: 'a) at_infinity at_top"
+    proof (rule filterlim_compose[OF filterlim_power_at_infinity])
+      show "filterlim (of_nat :: nat \<Rightarrow> 'a) at_infinity sequentially"
+        by (rule tendsto_of_nat)
+    qed (use False in \<open>auto intro: filterlim_ident\<close>)
+    thus ?thesis
+      using not_tendsto_and_filterlim_at_infinity sequentially_bot by blast
+  qed
+  thus ?thesis
+    using summable_LIMSEQ_zero by blast
+qed
+
+lemma conv_radius_power_of_nat:
+  "conv_radius (\<lambda>n. of_nat n ^ k :: 'a :: {real_normed_field, banach}) = 1"
+proof -
+  have "conv_radius (\<lambda>n. of_nat n ^ k :: 'a) \<le> norm (1::'a)"
+    using not_summable_power_of_nat[of k, where ?'a = 'a] by (intro conv_radius_leI') auto
+  moreover have "conv_radius (\<lambda>n. of_nat n ^ k :: 'a) \<ge> 1"
+    by (rule conv_radius_bigo_polynomial[of _ k]) auto
+  ultimately show "conv_radius (\<lambda>n. of_nat n ^ k :: 'a) = 1"
+    by (intro antisym) (auto simp: one_ereal_def)
 qed
 
 

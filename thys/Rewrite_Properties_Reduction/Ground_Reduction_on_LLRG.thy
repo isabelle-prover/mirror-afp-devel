@@ -93,7 +93,7 @@ proof -
       using remove_const_subst_steps_eq_lhs[OF llrg_linear_sys[OF llrg] fresh_sys c_free, of u,
         THEN rsteps_eq_srsteps_eqI[OF sig funas(3) fv]]
       using remove_const_subst_step_lhs[OF llrg_linear_sys[OF llrg] fresh_sys c_free, of t,
-        THEN sig_stepI[OF funas(2) fv]]
+          THEN sig_stepI[OF _ funas(2) fv]]
       by (auto simp: ground_subst_apply dest: srstepD gsrsteps_eq_to_rsteps_eq)
     then have "SCRp \<F> \<R> t u" by blast}
   then show ?thesis by (intro SCR_rrstep_intro) (metis srrstep_to_srestep)+ 
@@ -124,7 +124,7 @@ proof -
     have "(t, u) \<in> (srstep \<F> \<R>)\<^sup>\<down>" unfolding join_def
       using remove_const_subst_relcomp_rhs[OF lin fresh_sys c_free
         gsrsteps_eq_relcomp_to_rsteps_relcomp[OF w[unfolded join_def rew_converse_inwards]],
-        THEN rsteps_eq_relcomp_srsteps_eq_relcompI[OF sig funas_rel_converse[OF sig] funas(2-)]]
+        THEN rsteps_eq_relcomp_srsteps_eq_relcompI[OF sig funas_trs_converse[OF sig] funas(2-)]]
       by (metis (no_types, lifting) srstep_converse_dist)}
   then show ?thesis by (intro WCR_rrstep_intro) simp
 qed

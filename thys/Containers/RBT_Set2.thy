@@ -38,9 +38,6 @@ lemma filter_conv_foldr:
   "filter P xs = foldr (\<lambda>x xs. if P x then x # xs else xs) xs []"
 by(induct xs) simp_all
 
-lemma map_of_filter: "map_of (filter (\<lambda>x. P (fst x)) xs) = map_of xs |` Collect P"
-by(induct xs)(simp_all add: fun_eq_iff restrict_map_def)
-
 lemma map_of_map_Pair_key: "map_of (map (\<lambda>k. (k, f k)) xs) x = (if x \<in> set xs then Some (f x) else None)"
 by(induct xs) simp_all
 

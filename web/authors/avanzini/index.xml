@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Martin Avanzini</title>
+    <link>https://isa-afp.org/authors/avanzini/</link>
+    <description>AFP entries of Martin Avanzini</description><item>
+  <title>First-Order Rewriting</title>
+  <link>https://isa-afp.org/entries/First_Order_Rewriting.html</link>
+  <pubDate>Sun, 13 Apr 2025 00:00:00 +0000</pubDate>
+  <description>First-Order Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+
+  </channel>
+</rss>

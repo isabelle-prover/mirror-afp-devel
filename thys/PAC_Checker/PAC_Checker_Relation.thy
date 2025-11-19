@@ -242,7 +242,6 @@ proof -
   show
     \<open>term_order_rel' x y = ord_class.lexordp x y\<close>
     \<open>term_order_rel' x y \<longleftrightarrow> x < y\<close>
-    unfolding less_than_char_of_char[symmetric, abs_def]
     by (auto simp: lexordp_conv_lexord less_eq_list_def
          less_list_def lexordp_def var_order_rel_def
          rel2p_def term_order_rel_alt_def p2rel_def)

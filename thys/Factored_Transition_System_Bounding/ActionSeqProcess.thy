@@ -469,7 +469,7 @@ lemma rem_effectless_works_10:
   assumes "(no_effectless_act as)"
   shows "(no_effectless_act (filter P as))"
   using assms
-  by (auto simp: rem_effectless_works_7) (metis Ball_set filter_set member_filter)
+  by (simp add: rem_effectless_works_7 list_all_iff)
 
 
 lemma rem_effectless_works_11:

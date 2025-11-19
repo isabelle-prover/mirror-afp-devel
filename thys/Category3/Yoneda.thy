@@ -698,7 +698,7 @@ begin
                                  (\<tau>.FUN b o (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a)))"
                 proof
                   show "S.seq (\<tau> b) (Y a ?\<psi>x)"
-                    using \<psi>x \<tau>.is_natural_2 by fastforce
+                    using \<psi>x \<tau>.naturality2 by fastforce
                   show "\<tau> b \<cdot>\<^sub>S Y a ?\<psi>x =
                            S.mkArr (Hom.set (a, a)) (F.SET b)
                                    (\<tau>.FUN b o (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a)))"
@@ -757,7 +757,7 @@ begin
     lemma eqI:
     assumes "natural_transformation Cop.comp S (Y a) F \<tau>'" and "\<tau>' a = \<tau> a"
     shows "\<tau>' = \<tau>"
-    proof (intro NaturalTransformation.eqI)
+    proof (intro natural_transformation_eqI)
       interpret \<tau>': natural_transformation Cop.comp S \<open>Y a\<close> F \<tau>' using assms by auto
       interpret T': yoneda_lemma_fixed_\<tau> C S setp \<phi> F a \<tau>' ..
       show "natural_transformation Cop.comp S (Y a) F \<tau>" ..

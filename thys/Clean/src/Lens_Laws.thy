@@ -22,11 +22,11 @@ text \<open>This theory introduces the signature of lenses and indentifies the c
   classes, including laws for well-behaved, very well-behaved, and bijective lenses~\cite{Foster07,Fischer2015,Gibbons17}.\<close>
   
 record ('a, 'b) lens =
-  lens_get :: "'b \<Rightarrow> 'a" ("get\<index>")
-  lens_put :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" ("put\<index>")
+  lens_get :: "'b \<Rightarrow> 'a" (\<open>get\<index>\<close>)
+  lens_put :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>put\<index>\<close>)
 
 type_notation
-  lens (infixr "\<Longrightarrow>" 0)
+  lens (infixr \<open>\<Longrightarrow>\<close> 0)
 
 text \<open>
   \begin{figure}
@@ -51,13 +51,13 @@ named_theorems lens_defs
 text \<open> \<open>lens_source\<close> gives the set of constructible sources; that is those that can be built
   by putting a value into an arbitrary source. \<close>
 
-definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" ("\<S>\<index>") where
+definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" (\<open>\<S>\<index>\<close>) where
 "lens_source X = {s. \<exists> v s'. s = put\<^bsub>X\<^esub> s' v}"
 
-abbreviation some_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b" ("src\<index>") where
+abbreviation some_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b" (\<open>src\<index>\<close>) where
 "some_source X \<equiv> (SOME s. s \<in> \<S>\<^bsub>X\<^esub>)"
 
-definition lens_create :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" ("create\<index>") where
+definition lens_create :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>create\<index>\<close>) where
 [lens_defs]: "create\<^bsub>X\<^esub> v = put\<^bsub>X\<^esub> (src\<^bsub>X\<^esub>) v"
 
 text \<open> Function $\lcreate_X~v$ creates an instance of the source type of $X$ by injecting $v$
@@ -303,7 +303,7 @@ locale lens_indep =
   and lens_put_irr1: "get\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> \<sigma> v) = get\<^bsub>X\<^esub> \<sigma>"
   and lens_put_irr2: "get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> \<sigma> u) = get\<^bsub>Y\<^esub> \<sigma>"
 
-notation lens_indep (infix "\<bowtie>" 50)
+notation lens_indep (infix \<open>\<bowtie>\<close> 50)
 
 lemma lens_indepI:
   "\<lbrakk> \<And> u v \<sigma>. lens_put x (lens_put y \<sigma> v) u = lens_put y (lens_put x \<sigma> u) v;

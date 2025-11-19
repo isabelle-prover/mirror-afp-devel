@@ -282,7 +282,7 @@ lemma eval_all_concat[simp]: "eval_all \<alpha> (concat fs) = (\<forall> f \<in>
   by auto
 
 lemma eval_all_maps[simp]: "eval_all \<alpha> (List.maps f fs) = (\<forall> g \<in> set fs. eval_all \<alpha> (f g))"
-  unfolding List.maps_def eval_all_concat by auto
+  unfolding eval_all_concat by auto
 end
 
 context ms_encoder
@@ -424,8 +424,7 @@ proof -
     from eval15[unfolded formula15_def Let_def eval_all_append eval_all_maps] i j gamm
     have "\<not> v (Epsilon ?i) \<Longrightarrow> cs ?i j" by (force split: if_splits)
     moreover have not: "\<not> v (Epsilon ?i)" using nmem i j i_of_j j_of_i
-      unfolding xs1_def property_def
-      by (metis atLeast0LessThan filter_set imageI lessThan_iff list.set_map member_filter set_upt)
+      by (auto simp add: xs1_def property_def image_iff) metis
     ultimately have "cs ?i j" by simp
     hence sy: "(s ?i,y) \<in> S" unfolding y using cs[of ?i j] by (auto split: if_splits) 
     from not i have "?i \<in> set xs2" unfolding xs2_def property_def by auto
@@ -778,7 +777,7 @@ shows "sum_list (map f xs) = n * c"
 lemma size_pf_formula14: "sum_list (map size_pf (pf_formula14 n m)) = m + 3 * n + m * (n * 16 - 21) + n * (m * 16 - 21)"
 proof -
   have "sum_list (map size_pf (pf_formula14 n m)) = m * (1 + (16 * n - 21)) + n * (3 + (16 * m - 21))" 
-    unfolding pf_encoder.formula14_def Let_def sum_list_append map_append map_concat List.maps_def sum_list_concat map_map o_def     
+    unfolding pf_encoder.formula14_def Let_def sum_list_append map_append map_concat sum_list_concat map_map o_def List.maps_eq
   proof (intro arg_cong2[of _ _ _ _ "(+)"], goal_cases)
     case 1
     show ?case
@@ -809,7 +808,7 @@ lemma size_pf_formula15: "sum_list (map size_pf (pf_formula15 cs cns n m)) \<le>
 proof -
   have "sum_list (map size_pf (pf_formula15 cs cns n m)) \<le> sum_list (map size_pf (pf_formula14 n m)) + 4 * m * n" 
     unfolding pf_encoder.formula15_def Let_def
-    apply (simp add: size_list_conv_sum_list List.maps_def map_concat o_def length_concat sum_list_triv sum_list_concat algebra_simps)
+    apply (simp add: size_list_conv_sum_list map_concat o_def length_concat sum_list_triv sum_list_concat algebra_simps)
     apply (rule le_trans, rule sum_list_mono, rule sum_list_mono[of _ _ "\<lambda> _. 4"])
     by (auto simp: size_pf_encodeGammaCond sum_list_triv)
   also have "\<dots> = m + 3 * n + m * (n * 16 - 21) + n * (m * 16 - 21) + 4 * m * n" 
@@ -952,7 +951,7 @@ shows "sum_list (map f xs) \<le> n * c"
 lemma size_cnf_formula14: "sum_list (map size_cnf (cnf_formula14 n m)) \<le> 2 * m + 4 * n + m * (26 * n - 42) + n * (26 * m - 42)"
 proof -
   have "sum_list (map size_cnf (cnf_formula14 n m)) \<le> m * (2 + (26 * n - 42)) + n * (4 + (26 * m - 42))" 
-    unfolding cnf_encoder.formula14_def Let_def sum_list_append map_append map_concat List.maps_def sum_list_concat map_map o_def     
+    unfolding cnf_encoder.formula14_def Let_def sum_list_append map_append map_concat sum_list_concat map_map o_def List.maps_eq
   proof ((intro add_mono; intro sum_list_mono_const), goal_cases)
     case (1 j)
     obtain one conds where cnf: "cnf_encode_exactly_one (map (\<lambda>i. (Gamma i j, AuxZeroJI i j, AuxOneJI i j)) [0..<n]) = (one, conds)" (is "?e = _")
@@ -978,7 +977,7 @@ lemma size_cnf_formula15: "sum_list (map size_cnf (cnf_formula15 cs cns n m)) \<
 proof -
   have "sum_list (map size_cnf (cnf_formula15 cs cns n m)) \<le> sum_list (map size_cnf (cnf_formula14 n m)) + 3 * n * m" 
     unfolding cnf_encoder.formula15_def Let_def
-    apply (simp add: size_list_conv_sum_list List.maps_def map_concat o_def length_concat sum_list_triv sum_list_concat algebra_simps)
+    apply (simp add: size_list_conv_sum_list map_concat o_def length_concat sum_list_triv sum_list_concat algebra_simps)
     apply (rule le_trans, rule sum_list_mono_const[OF _ refl], rule sum_list_mono_const[OF _ refl, of _ _ 3])
     by (auto simp: size_cnf_encodeGammaCond)
   also have "\<dots> \<le> (2 * m + 4 * n + m * (26 * n - 42) + n * (26 * m - 42)) + 3 * n * m" 

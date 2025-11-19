@@ -54,9 +54,8 @@ proof (goal_cases \<F> lv fin)
   case \<F> show ?case using assms nth_mem
     apply (auto simp: is_to_trs_def funas_trs_def case_prod_beta split: ftrs.splits)
      apply fastforce
-    apply (metis (no_types, lifting) assms(1) in_mono rhs_wf)
-    apply (metis (no_types, lifting) assms(1) in_mono rhs_wf)
-    by (smt (z3) UN_subset_iff fst_conv in_mono le_sup_iff)
+    by (smt (verit, ccfv_threshold) UN_subset_iff Un_iff
+        funas_defs(2) prod.sel(1,2) subsetD)
 qed (insert assms, (fastforce simp: is_to_trs_def funas_trs_def lv_trs_def split: ftrs.splits)+)
 
 
@@ -100,7 +99,7 @@ qed
 
 subsection \<open>Computing GTTs\<close>
 
-fun gtt_of_gtt_rel :: "('f \<times> nat) fset \<Rightarrow> ('f :: linorder, 'v) fin_trs list \<Rightarrow> ftrs gtt_rel \<Rightarrow> (nat, 'f) gtt option" where
+fun gtt_of_gtt_rel :: "('f \<times> nat) fset \<Rightarrow> ('f :: compare, 'v) fin_trs list \<Rightarrow> ftrs gtt_rel \<Rightarrow> (nat, 'f) gtt option" where
   "gtt_of_gtt_rel \<F> Rs (ARoot is) = liftO1 (\<lambda>R. relabel_gtt (agtt_grrstep R \<F>)) (is_to_trs' Rs is)"
 | "gtt_of_gtt_rel \<F> Rs (GInv g) = liftO1 prod.swap (gtt_of_gtt_rel \<F> Rs g)"
 | "gtt_of_gtt_rel \<F> Rs (AUnion g1 g2) = liftO2 (\<lambda>g1 g2. relabel_gtt (AGTT_union' g1 g2)) (gtt_of_gtt_rel \<F> Rs g1) (gtt_of_gtt_rel \<F> Rs g2)"
@@ -220,7 +219,7 @@ lemma RRn_spec_eps_free_reg[simp]:
   "RRn_spec n (eps_free_reg \<A>) R = RRn_spec n \<A> R"
   by (auto simp: RRn_spec_def \<L>_eps_free)
 
-fun rr1_of_rr1_rel :: "('f \<times> nat) fset \<Rightarrow> ('f :: linorder, 'v) fin_trs list \<Rightarrow> ftrs rr1_rel \<Rightarrow> (nat, 'f) reg option"
+fun rr1_of_rr1_rel :: "('f \<times> nat) fset \<Rightarrow> ('f :: compare_order, 'v) fin_trs list \<Rightarrow> ftrs rr1_rel \<Rightarrow> (nat, 'f) reg option"
 and rr2_of_rr2_rel :: "('f \<times> nat) fset \<Rightarrow> ('f, 'v) fin_trs list \<Rightarrow> ftrs rr2_rel \<Rightarrow> (nat, 'f option \<times> 'f option) reg option" where
   "rr1_of_rr1_rel \<F> Rs R1Terms = Some (relabel_reg (term_reg \<F>))"
 | "rr1_of_rr1_rel \<F> Rs (R1NF is) = liftO1 (\<lambda>R. (simplify_reg (nf_reg (fst |`| R) \<F>))) (is_to_trs' Rs is)"
@@ -268,7 +267,7 @@ abbreviation lhss where
   "lhss R \<equiv> fst |`| R"
 
 lemma rr12_of_rr12_rel_correct:
-  fixes Rs :: "(('f :: linorder, 'v) Term.term \<times> ('f, 'v) Term.term) fset list"
+  fixes Rs :: "(('f :: compare_order, 'v) Term.term \<times> ('f, 'v) Term.term) fset list"
   assumes  "\<forall>R \<in> set Rs. lv_trs (fset R) \<and> ffunas_trs R |\<subseteq>| \<F>"
   shows "\<forall>ta1. rr1_of_rr1_rel \<F> Rs r1 = Some ta1 \<longrightarrow> RR1_spec ta1 (eval_rr1_rel (fset \<F>) (map fset Rs) r1)"
     "\<forall>ta2. rr2_of_rr2_rel \<F> Rs r2 = Some ta2 \<longrightarrow> RR2_spec ta2 (eval_rr2_rel (fset \<F>) (map fset Rs) r2)"
@@ -647,7 +646,7 @@ next
         apply (simp add: Compl_eq[symmetric] Diff_eq[symmetric] Un_Diff Diff_triv Int_absorb1)
         apply (simp add: nth_image[symmetric, of "length xs" xs for xs, simplified] image_iff comp_def)
         using image_cong[OF refl arg_cong[OF the_mem_idx_simp]] \<open>distinct vs''\<close>
-        by (smt (z3) add_diff_inverse_nat add_less_cancel_left atLeast0LessThan lessThan_iff the_mem_idx_simp)
+        by (smt (verit) add_diff_inverse_nat add_less_cancel_left atLeast0LessThan lessThan_iff the_mem_idx_simp)
       done
   done
 qed
@@ -923,7 +922,7 @@ lemma closed_sat_form_env_dom:
   using formula_relevantD[OF assms(1)] assms(2-)
   apply auto
   apply blast
-  by (smt rangeI shift_eq shift_rangeI shift_right_rangeI shift_shift_right_id subsetD)
+  by (smt (verit) rangeI shift_eq shift_rangeI shift_right_rangeI shift_shift_right_id subsetD)
 
 (* MOVE *)
 lemma find_append:

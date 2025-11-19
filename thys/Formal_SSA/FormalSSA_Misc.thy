@@ -197,7 +197,7 @@ lemma singleton_list_hd_last: "length xs = 1 \<Longrightarrow> hd xs = last xs"
   by (metis One_nat_def impossible_Cons last.simps length_0_conv less_nat_zero_code list.sel(1) nat_less_le neq_Nil_conv not_less_eq_eq)
 
 lemma distinct_hd_tl: "distinct xs \<Longrightarrow> hd xs \<notin> set (tl xs)"
-  by (metis distinct.simps(2) hd_Cons_tl in_set_member list.sel(2) member_rec(2))
+  by (cases xs) simp_all
 
 lemma set_mono_strict_prefix: "strict_prefix xs ys \<Longrightarrow> set xs \<subseteq> set (butlast ys)"
   by (metis append_butlast_last_id strict_prefixE strict_prefix_simps(1) prefix_snoc set_mono_prefix)
@@ -247,9 +247,8 @@ apply (rule the_equality)
 by (metis Max_singleton Min_singleton Nitpick.Ex1_unfold The_Min the_equality)
 
 lemma set_sorted_list_of_set_remove [simp]:
-"set (sorted_list_of_set (Set.remove x A)) = Set.remove x (set (sorted_list_of_set A))"
-  unfolding Set.remove_def
-by (cases "finite A"; simp)
+  "set (sorted_list_of_set (Set.remove x A)) = Set.remove x (set (sorted_list_of_set A))"
+  by (cases \<open>finite A\<close>) (simp_all add:)
 
 lemma set_minus_one: "\<lbrakk>v \<noteq> v'; v' \<in> set vs\<rbrakk> \<Longrightarrow> set vs - {v'} \<subseteq> {v} \<longleftrightarrow> set vs = {v'} \<or> set vs = {v,v'}"
   by auto

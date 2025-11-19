@@ -159,7 +159,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
 
     val map_simps = Bnf_Access.map_simps lthy tycos
     val case_simps = Bnf_Access.case_simps lthy tycos
-    val maps = Bnf_Access.map_terms lthy tycos
+    val map_terms = Bnf_Access.map_terms lthy tycos
     val map_comp_thms = Bnf_Access.map_comps lthy tycos
 
     val t_ixs = 0 upto (length Ts - 1)
@@ -233,7 +233,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
         val cs = map (subT "eq") used_tfrees
         val arg_Ts = map compT used_tfrees
         val args = map Free (cs ~~ arg_Ts)
-        val (pcomp, m) = AList.lookup (op =) (tycos ~~ (pcomps ~~ maps)) tyco |> the
+        val (pcomp, m) = AList.lookup (op =) (tycos ~~ (pcomps ~~ map_terms)) tyco |> the
         val ts = tfrees |> map TFree |> map (fn T =>
           AList.lookup (op =) (used_tfrees ~~ args) T |> the_default (default_comp T))
         val rhs = HOLogic.mk_comp (pcomp, list_comb (m, ts)) |> infer_type lthy
@@ -327,15 +327,15 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
                     dep_map_comps @ comp_defs @ dep_comp_defs @ flat map_simps))
           in thms end
 
-        val thms = map (generate_eq_thm lthy) constrs |> flat
+        val thms = maps (generate_eq_thm lthy) constrs
         val simp_thms = map (Local_Defs.unfold lthy @{thms list_all_eq_unfold}) thms
 
         val name = "equality_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), simp_thms)
-        |> snd
-        |> (fn lthy => (thms, lthy))
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp]}), simp_thms)
+        |-> (fn (_, simps) => Code.declare_default_eqns (map (rpair true) simps))
+        |> pair thms
       end
 
     val (comp_simps, lthy) =
@@ -487,7 +487,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
     ||> fold (fn (((((((tyco, map), pcomp), comp), comp_def), map_comp) , peq_thm), comp_thm) =>
           declare_info tyco map pcomp comp (SOME comp_def) (SOME map_comp)
             peq_thm comp_thm used_positions)
-         (tycos ~~ maps ~~ pcomps ~~ comps ~~ comp_defs ~~ map_comp_thms ~~ eq_thms' ~~ comp_thms)
+         (tycos ~~ map_terms ~~ pcomps ~~ comps ~~ comp_defs ~~ map_comp_thms ~~ eq_thms' ~~ comp_thms)
   end
 
 fun generate_equality gen_type tyco lthy =

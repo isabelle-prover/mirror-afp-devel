@@ -8,7 +8,8 @@ theory Relative_Security
 imports Relative_Security_fin "Preliminaries/Trivia"
 begin
 
-unbundle no relcomp_syntax
+no_notation relcomp (infixr "O" 75)
+no_notation relcompp (infixr "OO" 75)
 
 
 subsection \<open>Leakage models and attacker models \<close>
@@ -18,10 +19,7 @@ subsection \<open>Leakage models and attacker models \<close>
 locale Leakage_Mod = System_Mod istate validTrans final
 for istate :: "'state \<Rightarrow> bool" and validTrans :: "'state \<times> 'state \<Rightarrow> bool" and final :: "'state \<Rightarrow> bool"
 +
-fixes S :: "'state llist \<Rightarrow> 'secret llist"
-and A :: "'state ltrace \<Rightarrow> 'act llist" 
-and O :: "'state ltrace \<Rightarrow> 'obs llist"
-and lleakVia :: "'state llist \<Rightarrow> 'state llist \<Rightarrow> 'leak \<Rightarrow> bool" 
+fixes lleakVia :: "'state llist \<Rightarrow> 'state llist \<Rightarrow> 'leak \<Rightarrow> bool" 
 
 
 locale Attacker_Mod = System_Mod istate validTrans final
@@ -49,21 +47,15 @@ subsection \<open>Locales for increasingly concrete notions of relative security
 
 (* Very abstract relative security, based on leakage models (as in the paper's section 2.3) *)
 locale Relative_Security'' = 
-  Van: Leakage_Mod istateV validTransV finalV SV AV OV lleakViaV
+  Van: Leakage_Mod istateV validTransV finalV lleakViaV
 +
-  Opt: Leakage_Mod istateO validTransO finalO SO AO OO lleakViaO
+  Opt: Leakage_Mod istateO validTransO finalO lleakViaO
   for validTransV :: "'stateV \<times> 'stateV \<Rightarrow> bool"
   and istateV :: "'stateV \<Rightarrow> bool" and finalV :: "'stateV \<Rightarrow> bool"
-  and SV :: "'stateV llist \<Rightarrow> 'secret llist"
-  and AV :: "'stateV ltrace \<Rightarrow> 'actV llist" 
-  and OV :: "'stateV ltrace \<Rightarrow> 'obsV llist"
   and lleakViaV :: "'stateV llist \<Rightarrow> 'stateV llist \<Rightarrow> 'leak \<Rightarrow> bool"   
   (* NB: we have the same notion of secret, but everything else can be different  *)
   and validTransO :: "'stateO \<times> 'stateO \<Rightarrow> bool"
   and istateO :: "'stateO \<Rightarrow> bool" and finalO :: "'stateO \<Rightarrow> bool"
-  and SO :: "'stateO llist \<Rightarrow> 'secret llist"
-  and AO :: "'stateO ltrace \<Rightarrow> 'actO llist" 
-  and OO :: "'stateO ltrace \<Rightarrow> 'obsO llist"
   and lleakViaO :: "'stateO llist \<Rightarrow> 'stateO llist \<Rightarrow> 'leak \<Rightarrow> bool"  
   (* We also parameterize the relative security notion by a "corresponding state" 
   relationship between states, which in the examples so far has always been taken to 

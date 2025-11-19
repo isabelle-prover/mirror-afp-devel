@@ -26,30 +26,32 @@ by (induct w)(auto simp:na2da_def)
 
 lemma NA_DA_equiv:
   "NA.accepts A w = DA.accepts (na2da A) w"
-apply (simp add: DA.accepts_def NA.accepts_def DA_delta_is_lift_NA_delta)
-apply (simp add: na2da_def)
-done
+  unfolding DA.accepts_def NA.accepts_def DA_delta_is_lift_NA_delta
+  by (simp add: na2da_def)
 
 (*** Direct equivalence of NAe and DA ***)
 
 lemma espclosure_DA_delta_is_steps:
  "\<And>Q. (eps A)\<^sup>* `` (DA.delta (nae2da A) w Q) = steps A w `` Q"
-apply (induct w)
- apply(simp)
-apply (simp add: step_def nae2da_def)
-apply (blast)
-done
+  by (induct w) (auto simp add: step_def nae2da_def)
 
 lemma NAe_DA_equiv:
   "DA.accepts (nae2da A) w = NAe.accepts A w"
 proof -
-  have "\<And>Q. fin (nae2da A) Q = (\<exists>q \<in> (eps A)\<^sup>* `` Q. fin A q)"
-    by(simp add:nae2da_def)
-  thus ?thesis
-    apply(simp add:espclosure_DA_delta_is_steps NAe.accepts_def DA.accepts_def)
-    apply(simp add:nae2da_def)
-    apply blast
-    done
+  have "NAe.accepts A w"
+    if "fin A x"
+      and "(y, x) \<in> (eps A)\<^sup>*"
+      and "y \<in> DA.delta ({start A}, \<lambda>a Q. \<Union> (next A (Some a) ` (eps A)\<^sup>* `` Q), \<lambda>Q. \<exists>x\<in>(eps A)\<^sup>* `` Q. fin A x) w {start A}"
+    for x y
+    by (metis (lifting) that ext ImageI Image_singleton_iff NAe.accepts_def
+      espclosure_DA_delta_is_steps nae2da_def)
+  moreover have "\<exists>x\<in>(eps A)\<^sup>* `` DA.delta ({start A}, \<lambda>a Q. \<Union> (next A (Some a) ` (eps A)\<^sup>* `` Q), 
+                   \<lambda>Q. \<exists>x\<in>(eps A)\<^sup>* `` Q. fin A x) w {start A}. fin A x"
+    if "NAe.accepts A w"
+    using that unfolding  NAe.accepts_def
+    by (metis Image_singleton_iff espclosure_DA_delta_is_steps nae2da_def)
+  ultimately show ?thesis
+    by (auto simp: nae2da_def DA.accepts_def)
 qed
 
 end

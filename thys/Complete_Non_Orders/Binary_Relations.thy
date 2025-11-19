@@ -61,7 +61,7 @@ abbreviation(input) dual (\<open>(_\<^sup>-)\<close> [1000] 1000) where "r\<^sup
 
 lemma conversep_is_dual[simp]: "conversep = dual" by auto
 
-lemma dual_inf: "(r \<sqinter> s)\<^sup>- = r\<^sup>- \<sqinter> s\<^sup>-" by (auto intro!: ext)
+lemma dual_inf: "(r \<sqinter> s)\<^sup>- = r\<^sup>- \<sqinter> s\<^sup>-" by (auto simp: fun_eq_iff)
 
 text \<open>Monotonicity is already defined in the library, but we want one restricted to a domain.\<close>
 
@@ -93,17 +93,17 @@ lemma sympartpE[elim]:
   using assms by (auto simp: sympartp_def)
 
 lemma sympartp_dual: "sympartp r\<^sup>- = sympartp r"
-  by (auto intro!:ext simp: sympartp_def)
+  by (auto simp: sympartp_def)
 
 lemma sympartp_eq[simp]: "sympartp (=) = (=)" by auto
 
-lemma sympartp_sympartp[simp]: "sympartp (sympartp r) = sympartp r" by (auto intro!:ext)
+lemma sympartp_sympartp[simp]: "sympartp (sympartp r) = sympartp r" by (auto simp: fun_eq_iff)
 
 lemma reflclp_sympartp[simp]: "(sympartp r)\<^sup>=\<^sup>= = sympartp r\<^sup>=\<^sup>=" by auto
 
 definition "equivpartp r x y \<equiv> x = y \<or> r x y \<and> r y x"
 
-lemma sympartp_reflclp_equivp[simp]: "sympartp r\<^sup>=\<^sup>= = equivpartp r" by (auto intro!:ext simp: equivpartp_def)
+lemma sympartp_reflclp_equivp[simp]: "sympartp r\<^sup>=\<^sup>= = equivpartp r" by (auto simp: fun_eq_iff equivpartp_def)
 
 lemma equivpartI[simp]: "equivpartp r x x"
   and sympartp_equivpartpI: "sympartp r x y \<Longrightarrow> equivpartp r x y"
@@ -122,10 +122,10 @@ lemma equivpartp_eq[simp]: "equivpartp (=) = (=)" by auto
 lemma sympartp_equivpartp[simp]: "sympartp (equivpartp r) = (equivpartp r)"
   and equivpartp_equivpartp[simp]: "equivpartp (equivpartp r) = (equivpartp r)"
   and equivpartp_sympartp[simp]: "equivpartp (sympartp r) = (equivpartp r)"
-  by (auto 0 5 intro!:ext)
+  by (auto 0 5 simp: fun_eq_iff)
 
 lemma equivpartp_dual: "equivpartp r\<^sup>- = equivpartp r"
-  by (auto intro!:ext simp: equivpartp_def)
+  by (auto simp: fun_eq_iff equivpartp_def)
 
 text \<open>The asymmetric part:\<close>
 
@@ -142,7 +142,7 @@ lemma asympartp_eq[simp]: "asympartp (=) = bot" by auto
 
 lemma asympartp_sympartp [simp]: "asympartp (sympartp r) = bot"
   and sympartp_asympartp [simp]: "sympartp (asympartp r) = bot"
-  by (auto intro!: ext)
+  by (auto simp: fun_eq_iff)
 
 lemma asympartp_dual: "asympartp r\<^sup>- = (asympartp r)\<^sup>-" by auto
 
@@ -665,7 +665,7 @@ interpretation less_eq_symmetrize.
 
 lemma sym_iff_eq_refl: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sim> y \<longleftrightarrow> x = y \<and> y \<sqsubseteq> y" by (auto dest: antisym)
 
-lemma equiv_iff_eq[simp]: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<simeq> y \<longleftrightarrow> x = y" by (auto dest: antisym elim: equivpartpE)
+lemma equiv_iff_eq[simp]: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<simeq> y \<longleftrightarrow> x = y" by (auto dest: antisym)
 
 lemma extreme_unique: "X \<subseteq> A \<Longrightarrow> extreme X (\<sqsubseteq>) x \<Longrightarrow> extreme X (\<sqsubseteq>) y \<longleftrightarrow> x = y"
   by (elim extremeE, auto dest!: antisym[OF _ _ subsetD])
@@ -721,7 +721,7 @@ interpretation less_eq_symmetrize.
 lemma equiv_order_trans[trans]:
   assumes xy: "x \<simeq> y" and yz: "y \<sqsubseteq> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
   shows "x \<sqsubseteq> z"
-  using attract[OF _ _ _ x y z] xy yz by (auto elim: equivpartpE)
+  using attract[OF _ _ _ x y z] xy yz by auto
 
 lemma equiv_transitive: "transitive A (\<simeq>)"
 proof unfold_locales
@@ -817,7 +817,7 @@ sublocale dual: semiattractive A "(\<sqsubseteq>)\<^sup>-"
     and "sympartp (\<sqsubseteq>)\<^sup>- \<equiv> (\<sim>)"
     and "equivpartp (\<sqsubseteq>)\<^sup>- \<equiv> (\<simeq>)"
   using attractive_axioms[unfolded attractive_def]
-  by (auto intro!: ext simp: attractive_axioms_def atomize_eq equivpartp_def)
+  by (auto simp: fun_eq_iff attractive_axioms_def atomize_eq equivpartp_def)
 
 lemma order_equiv_trans[trans]:
   assumes xy: "x \<sqsubseteq> y" and yz: "y \<simeq> z" and x: "x \<in> A" and y: "y \<in> A" and z: "z \<in> A"
@@ -888,7 +888,7 @@ sublocale attractive
     and "asympartp (sympartp (\<sqsubseteq>)) = bot"
     and "asympartp (\<sqsubseteq>) \<restriction> A = asympartp ((\<sqsubseteq>) \<restriction> A)"
   apply unfold_locales
-  by (auto intro!:ext dest: trans simp: atomize_eq)
+  by (auto dest: trans simp: fun_eq_iff atomize_eq)
 
 end
 
@@ -1108,7 +1108,7 @@ sublocale transitive A "(\<sim>)"
     and "sympartp ((\<sim>)\<restriction>A) \<equiv> (\<sim>)\<restriction>A"
   using partial_equivalence_axioms
   unfolding partial_equivalence_axioms_def partial_equivalence_def
-  by (auto simp: atomize_eq sym intro!:ext)
+  by (auto simp: atomize_eq sym fun_eq_iff)
 
 lemma partial_equivalence_subset: "B \<subseteq> A \<Longrightarrow> partial_equivalence B (\<sim>)"
   apply (intro partial_equivalence.intro partial_equivalence_axioms.intro)
@@ -1314,7 +1314,7 @@ next
 qed
 
 lemma chain_connect: "Complete_Partial_Order.chain r A \<equiv> connex A r"
-  by (auto intro!: ext simp: atomize_eq connex_def Complete_Partial_Order.chain_def)
+  by (auto simp: atomize_eq connex_def Complete_Partial_Order.chain_def)
 
 lemma connex_union:
   assumes "connex X (\<sqsubseteq>)" and "connex Y (\<sqsubseteq>)" and "\<forall>x \<in> X. \<forall>y \<in> Y. x \<sqsubseteq> y \<or> y \<sqsubseteq> x"
@@ -1640,7 +1640,7 @@ lemma dense_bound_iff:
 
 lemma dense_extreme_bound:
   "extreme_bound A (\<sqsubseteq>) {x \<in> A. x \<sqsubset> s} s"
-  by (auto intro!: extreme_boundI intro: strict_implies_weak simp: dense_bound_iff sA)
+  by (intro extreme_boundI, auto intro: strict_implies_weak simp: dense_bound_iff sA)
 
 end
 
@@ -1690,15 +1690,15 @@ lemma pointwise_cong:
   shows "pointwise I r f g = pointwise I r' f' g'"
   using assms by (auto simp: pointwise_def)
 
-lemma pointwise_empty[simp]: "pointwise {} = \<top>" by (auto intro!: ext pointwiseI)
+lemma pointwise_empty[simp]: "pointwise {} = \<top>" by (auto simp: fun_eq_iff intro!: pointwiseI)
 
 lemma dual_pointwise[simp]: "(pointwise I r)\<^sup>- = pointwise I r\<^sup>-"
-  by (auto intro!: ext pointwiseI dest: pointwiseD)
+  by (auto simp: fun_eq_iff intro!: pointwiseI dest: pointwiseD)
 
 lemma pointwise_dual: "pointwise I r\<^sup>- f g \<Longrightarrow> pointwise I r g f" by (auto simp: pointwise_def)
 
 lemma pointwise_un: "pointwise (I\<union>J) r = pointwise I r \<sqinter> pointwise J r"
-  by (auto intro!: ext pointwiseI)
+  by (auto simp: fun_eq_iff intro!: pointwiseI)
 
 lemma pointwise_unI[intro!]: "pointwise I r f g \<Longrightarrow> pointwise J r f g \<Longrightarrow> pointwise (I \<union> J) r f g"
   by (auto simp: pointwise_un)
@@ -1878,14 +1878,39 @@ lemma supremumE: "supremum X s \<Longrightarrow>
     (bound X (\<ge>) i \<Longrightarrow> (\<And>b. bound X (\<ge>) b \<Longrightarrow> b \<le> i) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
   by (auto)
 
-lemma extreme_bound_supremum[simp]: "extreme_bound UNIV (\<le>) = supremum" by (auto intro!: ext)
-lemma extreme_bound_infimum[simp]: "extreme_bound UNIV (\<ge>) = infimum" by (auto intro!: ext)
+lemma extreme_bound_supremum[simp]: "extreme_bound UNIV (\<le>) = supremum" by (auto simp: fun_eq_iff)
+lemma extreme_bound_infimum[simp]: "extreme_bound UNIV (\<ge>) = infimum" by (auto simp: fun_eq_iff)
 
 lemma Least_eq_The_least: "Least P = The (least {x. P x})"
   by (auto simp: Least_def extreme_def[unfolded atomize_eq, THEN ext])
 
+lemma The_least_eq_Least: "The (least X) = Least (\<lambda>x. x \<in> X)"
+  by (simp add: Least_eq_The_least)
+
+lemma least_imp_infimum: assumes "least X x" shows "infimum X x"
+  using extreme_imp_extreme_bound[OF assms, of UNIV] by simp
+
+lemma least_LeastI_ex1:
+  assumes ex1: "\<exists>!x. least {x. P x} x"
+  shows "least {x. P x} (LEAST x. P x)"
+  using theI'[OF ex1] by (simp add: Least_eq_The_least)
+
+end (* TODO: Greatest should also be defined in ord. *)
+context order begin
+
 lemma Greatest_eq_The_greatest: "Greatest P = The (greatest {x. P x})"
   by (auto simp: Greatest_def extreme_def[unfolded atomize_eq, THEN ext])
+
+lemma The_greatest_eq_Greatest: "The (greatest X) = Greatest (\<lambda>x. x \<in> X)"
+  by (simp add: Greatest_eq_The_greatest)
+
+lemma greatest_imp_supremum: assumes "greatest X x" shows "supremum X x"
+  using extreme_imp_extreme_bound[OF assms, of UNIV] by simp
+
+lemma greatest_GreatestI_ex1:
+  assumes ex1: "\<exists>!x. greatest {x. P x} x"
+  shows "greatest {x. P x} (GREATEST x. P x)"
+  using theI'[OF ex1] by (simp add: Greatest_eq_The_greatest)
 
 end
 
@@ -2117,6 +2142,21 @@ sublocale order: strict_partial_ordering UNIV
 
 end
 
+(* TODO: move to psorder. *)
+context order begin
+
+lemma ex_greatest_iff_Greatest:
+  "Ex (greatest X) \<longleftrightarrow> greatest X (Greatest (\<lambda>x. x \<in> X))"
+  using order.ex_extreme_iff_the[of X]
+  by (simp add: The_greatest_eq_Greatest)
+
+lemma greatest_imp_supremum_Greatest:
+  "greatest X x \<Longrightarrow> supremum X (Greatest (\<lambda>x. x \<in> X))"
+  using ex_greatest_iff_Greatest[THEN iffD1, THEN greatest_imp_supremum]
+  by auto
+
+end
+
 text \<open>Isabelle/HOL's @{class linorder} is equivalent to our locale @{locale total_ordering}.\<close>
 
 context linorder begin
@@ -2179,7 +2219,7 @@ sublocale dual: attractive A "(\<sqsupseteq>)"
     and "\<And>r. sympartp (r \<restriction> A) \<equiv> sympartp r \<restriction> A"
     and "\<And>r. sympartp (sympartp r) \<equiv> sympartp r"
     and "(\<sqsubseteq>)\<^sup>- \<restriction> A \<equiv> ((\<sqsubseteq>) \<restriction> A)\<^sup>-"
-  apply unfold_locales by (auto intro!: ext dest: attract dual.attract simp: atomize_eq)
+  apply unfold_locales by (auto dest: attract dual.attract simp: fun_eq_iff atomize_eq)
 
 end
 
@@ -2195,7 +2235,7 @@ sublocale transitive \<subseteq> dual: transitive A "(\<sqsubseteq>)\<^sup>-"
   rewrites "(\<sqsubseteq>)\<^sup>- \<restriction> A \<equiv> ((\<sqsubseteq>) \<restriction> A)\<^sup>-"
     and "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
     and "asympartp (\<sqsubseteq>)\<^sup>- = (asympartp (\<sqsubseteq>))\<^sup>-"
-  apply unfold_locales by (auto dest: trans simp: atomize_eq intro!:ext)
+  apply unfold_locales by (auto dest: trans simp: atomize_eq fun_eq_iff)
 
 sublocale antisymmetric \<subseteq> dual: antisymmetric A "(\<sqsubseteq>)\<^sup>-"
   rewrites "(\<sqsubseteq>)\<^sup>- \<restriction> A \<equiv> ((\<sqsubseteq>) \<restriction> A)\<^sup>-"
@@ -2272,6 +2312,11 @@ sublocale reflexive_attractive_ordering \<subseteq> dual: reflexive_attractive_o
 sublocale pseudo_ordering \<subseteq> dual: pseudo_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
   by unfold_locales auto
+
+lemma (in psorder) least_Least:
+  fixes X :: "'a set"
+  shows "Ex (least X) \<longleftrightarrow> least X (LEAST x. x \<in> X)"
+  using order.dual.ex_extreme_iff_the[of X, unfolded The_least_eq_Least].
 
 sublocale quasi_ordering \<subseteq> dual: quasi_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"

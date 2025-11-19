@@ -205,7 +205,7 @@ proof (induct C arbitrary: q)
       using More(2) length_map
      (* SLOW *)
       by (auto simp: comp_def nth_append_Cons split: if_splits cong: if_cong')
-         (smt nat_neq_iff nth_map ta_der_strict_simps)+
+         (smt (verit) nat_neq_iff nth_map ta_der_strict_simps)+
     have "(p, q') \<in> Q_inf \<A>" using More(1)[OF q(1) False] .
     then show ?thesis using step_in_Q_inf[OF q(2)] by (auto intro: trans)
   qed
@@ -234,7 +234,7 @@ proof -
   ultimately have inf: "infinite ?S" using ctxt_comp_n_lower_bound[OF ctxt(1)]
     using no_upper_bound_infinite[of _ depth, of ?S] by blast
   from infinite_inj_image_infinite[OF this] have inf:"infinite (ctxt_apply_term C2 ` ?S)"
-    by (smt ctxt_eq inj_on_def)
+    by (smt (verit) ctxt_eq inj_on_def)
   {fix u assume "u \<in> (ctxt_apply_term C2 ` ?S)"
     then have "?P u" unfolding image_Collect using closing_ctxt cl_reach
       by (auto simp: ta_der_ctxt)}
@@ -284,58 +284,6 @@ proof -
     by (cases ss; cases ts) auto
 qed
 
-lemma subt_at_ctxt_apply_hole_pos [simp]: "C\<langle>s\<rangle> |_ hole_pos C = s"
-  by (induct C) auto
-
-lemma ctxt_at_pos_ctxt_apply_hole_poss [simp]: "ctxt_at_pos C\<langle>s\<rangle> (hole_pos C) = C"
-  by (induct C) auto
-
-abbreviation "map_funs_ctxt f \<equiv> map_ctxt f (\<lambda> x. x)"
-lemma map_funs_term_ctxt_apply [simp]:
-  "map_funs_term f C\<langle>s\<rangle> = (map_funs_ctxt f C)\<langle>map_funs_term f s\<rangle>"
-  by (induct C) auto
-
-lemma map_funs_term_ctxt_decomp:
-  assumes "map_funs_term fg t = C\<langle>s\<rangle>"
-  shows "\<exists> D u. C = map_funs_ctxt fg D \<and> s = map_funs_term fg u \<and> t = D\<langle>u\<rangle>"
-using assms
-proof (induct C arbitrary: t)
-  case Hole
-  show ?case
-    by (rule exI[of _ Hole], rule exI[of _ t], insert Hole, auto)
-next
-  case (More g bef C aft)
-  from More(2) obtain f ts where t: "t = Fun f ts" by (cases t, auto)
-  from More(2)[unfolded t] have f: "fg f = g" and ts: "map (map_funs_term fg) ts = bef @ C\<langle>s\<rangle> # aft" (is "?ts = ?bca") by auto
-  from ts have "length ?ts = length ?bca" by auto
-  then have len: "length ts = length ?bca" by auto
-  note id = ts[unfolded map_nth_eq_conv[OF len], THEN spec, THEN mp]
-  let ?i = "length bef"
-  from len have i: "?i < length ts" by auto
-  from id[of ?i] have "map_funs_term fg (ts ! ?i) = C\<langle>s\<rangle>" by auto
-  from More(1)[OF this] obtain D u where D: "C = map_funs_ctxt fg D" and
-    u: "s = map_funs_term fg u" and id: "ts ! ?i = D\<langle>u\<rangle>" by auto
-  from ts have "take ?i ?ts = take ?i ?bca" by simp
-  also have "... = bef" by simp
-  finally have bef: "map (map_funs_term fg) (take ?i ts) = bef" by (simp add: take_map)
-  from ts have "drop (Suc ?i) ?ts = drop (Suc ?i) ?bca" by simp
-  also have "... = aft" by simp
-  finally have aft: "map (map_funs_term fg) (drop (Suc ?i) ts) = aft" by (simp add:drop_map)
-  let ?bda = "take ?i ts @ D\<langle>u\<rangle> # drop (Suc ?i) ts"
-  show ?case
-  proof (rule exI[of _ "More f (take ?i ts) D (drop (Suc ?i) ts)"],
-      rule exI[of _ u], simp add: u f D bef aft t)
-    have "ts = take ?i ts @ ts ! ?i # drop (Suc ?i) ts"
-      by (rule id_take_nth_drop[OF i])
-    also have "... = ?bda" by (simp add: id)
-    finally show "ts = ?bda" .
-  qed
-qed
-
-
-
-
-
 lemma prod_automata_from_none_root_dec:
   assumes "gta_lang Q \<A> \<subseteq> {gpair s t| s t. funas_gterm s \<subseteq> \<F> \<and> funas_gterm t \<subseteq> \<F>}"
     and "q |\<in>| ta_der \<A> (term_of_gterm t)" and "fst (groot_sym t) = None"
@@ -355,7 +303,7 @@ proof -
   from this have "hole_pos C \<notin> gposs s" using assms(3)
     using arg_cong[OF gp, of "\<lambda> t. gfun_at t (hole_pos C)"]
     using ground_hole_pos_to_ghole[OF ctxt]
-    using gfun_at_after_hole_pos[OF position_less_refl, of "gctxt_of_ctxt C"]
+    using gfun_at_after_hole_pos[of "gctxt_of_ctxt C"]
     by (auto simp: gfun_at_gpair * split: if_splits)
        (metis fstI gfun_at_None_ngposs_iff)+
   from subst_at_gpair_nt_poss_None_Some[OF _ this, of v] this
@@ -374,7 +322,7 @@ proof (rule ccontr)
   have "S \<subseteq> f ` {x . P x}" using assms(2) by auto 
   then show False using ass assms(1)
     by (auto simp: subset_image_iff)
-      (smt Ball_Collect finite_imageI image_subset_iff infinite_iff_countable_subset subset_eq) 
+       (metis (mono_tags, lifting) Ball_Collect finite_imageI image_eqI infinite_super)
 qed
 
 lemma Q_inf_exec_impl_Q_inf:

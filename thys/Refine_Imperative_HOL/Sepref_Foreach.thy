@@ -263,8 +263,6 @@ definition "imp_nfoldli l c f s \<equiv> heap.fixp_fun (\<lambda>D (l,s). case l
     }
   ) (l,s)"
 
-declare imp_nfoldli_def[code del]
-
 lemma imp_nfoldli_simps[simp,code]:
   "imp_nfoldli [] c f s = return s"
   "imp_nfoldli (x#ls) c f s = (do {

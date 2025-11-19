@@ -10,7 +10,7 @@ theory E_Unification_Examples
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Sample applications of e-unifiers, methods, etc. introduced in this session.\<close>
+text \<open>Sample applications of E-unifiers, methods, etc. introduced in this session.\<close>
 
 experiment
 begin
@@ -25,12 +25,12 @@ text \<open>Premises of the form @{term "SIMPS_TO_UNIF lhs rhs"} are solved by
 @{ML_structure Simplifier_Unification}. It first normalises @{term lhs} and then unifies the
 normalisation with @{term rhs}. See also @{theory ML_Unification.ML_Unification_HOL_Setup}.\<close>
 
-lemma [uhint where prio = Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_TO_UNIF (n - 1) m \<Longrightarrow> n \<equiv> Suc m"
+lemma [uhint prio: Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_TO_UNIF (n - 1) m \<Longrightarrow> n \<equiv> Suc m"
   unfolding SIMPS_TO_UNIF_eq by linarith
 
 text \<open>By default, below unification methods use
-@{ML Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify}, which is a combination of
-various practical unification algorithms.\<close>
+@{ML Standard_Mixed_Comb_Unification.first_higherp_comb_unify}, which is a combination of various
+practical unification algorithms.\<close>
 
 schematic_goal "(\<And>x. x + 4 = n) \<Longrightarrow> Suc ?x = n"
   by uassm
@@ -95,7 +95,7 @@ text \<open>Solution 1: we can use @{attribute rec_uhint} for recursive usages o
 Warning: recursive hint applications easily loop.\<close>
 
 schematic_goal "n - ?m = length []"
-  supply [[ucombine del = \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
+  supply [[ucombine del: \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
   (*doesn't work*)
   \<comment> \<open>by (ufact refl)\<close>
   supply sub_self_eq_zero[uhint del, rec_uhint]
@@ -106,7 +106,7 @@ text \<open>Solution 2: make the recursion explicit in the hint.\<close>
 lemma [uhint]: "k \<equiv> 0 \<Longrightarrow> (n :: nat) \<equiv> m \<Longrightarrow> n - m \<equiv> k" by simp
 
 schematic_goal "n - ?m = length []"
-  supply [[ucombine del = \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
+  supply [[ucombine del: \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
   by (ufact refl)
 
 subsection \<open>Strenghten Unification With Unification Hints\<close>

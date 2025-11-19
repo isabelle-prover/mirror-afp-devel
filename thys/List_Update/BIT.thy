@@ -1755,7 +1755,7 @@ text "Approximation of the Term for Free exchanges"
         then have Ssubso: "(index init) ` ?S \<subseteq> {0..<?l}" using setinit by auto
         from a have s_subst_init: "?S \<subseteq> set init" by auto
         
-        note index_inj_on_S=subset_inj_on[OF inj_on_index[of "init"] s_subst_init]
+        note index_inj_on_S=inj_on_subset[OF inj_on_index[of "init"] s_subst_init]
 
         have l: "xs'!k = q" unfolding k_def apply(rule nth_index) using queryinlist by(auto)
         have "xs'!k \<notin> set (take k' xs')"

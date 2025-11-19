@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Language Partitioning for Mission-time Linear Temporal Logic - Archive of Formal Proofs</title>
+    <meta name="description" content="Language Partitioning for Mission-time Linear Temporal Logic in the Archive of Formal Proofs" />
+    <meta property="og:description" content="Language Partitioning for Mission-time Linear Temporal Logic in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="Language Partitioning for Mission-time Linear Temporal Logic" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>L</span>anguage <span class='first'>P</span>artitioning for <span class='first'>M</span>ission-time <span class='first'>L</span>inear <span class='first'>T</span>emporal <span class='first'>L</span>ogic
+  </h1>
+  <div>
+      <p><a href="../authors/wangz/">Zili Wang</a> <a class="obfuscated" data="eyJ1c2VyIjpbInppbGl3MSJdLCJob3N0IjpbImlhc3RhdGUiLCJlZHUiXX0=">📧</a>, <a href="../authors/cordwell/">Katherine Kosaian</a> <a class="obfuscated" data="eyJ1c2VyIjpbImthdGhlcmluZS1rb3NhaWFuIl0sImhvc3QiOlsidWlvd2EiLCJlZHUiXX0=">📧</a> and <a href="../authors/rosentrater/">Alec Rosentrater</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFsZWNyb3NlIl0sImhvc3QiOlsiaWFzdGF0ZSIsImVkdSJdfQ==">📧</a>
+      </p>
+      <p class="date">March 3, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">Building on the existing formalization of Mission-time Linear Temporal Logic (MLTL), we formalize the notions of language decomposition and language partition for MLTL. More specifically, we formalize an algorithm to compute a language partition for MLTL and formally prove its correctness. Our algorithm is executable, and we export it to Haskell via Isabelle/HOL's code generator.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/automata-and-formal-languages/">Computer science/Automata and formal languages</a></li>
+          <li><a href="../topics/logic/general-logic/temporal-logic/">Logic/General logic/Temporal logic</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Alec Rosentrater, Zili Wang, Katherine Kosaian, Kristin Yvonne Rozier. Language Partitioning for Mission-time Linear Temporal Logic. To appear in NASA Formal Methods (NFM) 2025.</li>
+      </ul>
+      <h3>Session Mission_Time_LTL_Language_Partition</h3>
+      <ul>
+          <li><a href="../sessions/mission_time_ltl_language_partition/#MLTL_Language_Partition_Algorithm">MLTL_Language_Partition_Algorithm</a></li>
+          <li><a href="../sessions/mission_time_ltl_language_partition/#MLTL_Language_Partition_Proof">MLTL_Language_Partition_Proof</a></li>
+          <li><a href="../sessions/mission_time_ltl_language_partition/#MLTL_Language_Partition_Codegen">MLTL_Language_Partition_Codegen</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Mission_Time_LTL.html">Mission-time Linear Temporal Logic</a></li>
+              <li><a href="../entries/Show.html">Haskell's Show Class in Isabelle/HOL</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL_Language_Partition/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL_Language_Partition/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Mission_Time_LTL_Language_Partition/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Mission_Time_LTL_Language_Partition-AFP</p>
+        <pre id="copy-text">@article{Mission_Time_LTL_Language_Partition-AFP,
+  author  = {Zili Wang and Katherine Kosaian and Alec Rosentrater},
+  title   = {Language Partitioning for Mission-time Linear Temporal Logic},
+  journal = {Archive of Formal Proofs},
+  month   = {March},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Mission_Time_LTL_Language_Partition.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL_Language_Partition-current.tar.gz" download>
+        Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL_Language_Partition-2025-03-17.tar.gz">Mar 17, 2025
+              </a>
+              : Isabelle2025
+            </li>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Mission_Time_LTL_Language_Partition-2025-03-04.tar.gz">Mar 4, 2025
+              </a>
+              : Isabelle2024
+            </li>
+        </ul>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

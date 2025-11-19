@@ -126,8 +126,8 @@ lemma dim_vector_in_basis:
 proof -
   let ?vec = "(form_basis p M X d) ! i"
   have eo: "List.member (form_basis_helper p M X d) ?vec \<or> ?vec = vec_associated_to_int_poly p X"
-    using assms  
-    by (metis List.member_def add_Suc_right dim_form_basis_helper form_basis_def less_Suc_eq nat_1_add_1 nth_append nth_append_length nth_mem plus_1_eq_Suc) 
+    using assms dim_form_basis_helper [of p M X d]
+    by (simp add: form_basis_def nth_append)
   have len_helper: "length (form_basis_helper p M X d) = d + 1"
     using dim_form_basis form_basis_def by simp
   have h1: "\<And>x. List.member (form_basis_helper p M X d) x \<Longrightarrow> dim_vec x = degree p + 1"
@@ -135,8 +135,8 @@ proof -
     fix x 
     assume "List.member (form_basis_helper p M X d) x"
     then have "\<exists>k. x = g_i_vec M X k (degree p + 1)"
-      using ith_row_form_basis_helper
-      by (metis List.member_def dim_form_basis_helper in_set_conv_nth le_simps(2) semiring_norm(174)) 
+      using ith_row_form_basis_helper [of _ d p M X] dim_form_basis_helper [of p M X d]
+      by (auto simp add: in_set_conv_nth)
     then show "dim_vec x = degree p + 1"
       using assms unfolding g_i_vec_def by auto
   qed 
@@ -720,8 +720,7 @@ proof -
     by (metis Suc_pred' add_2_eq_Suc' d_is d_gt atLeast0AtMost gauss_sum_nat semiring_norm(174))
 
   have d1: "(sqrt 2)^(d* (d+1)) = 2 ^ (d * (d + 1) div 2)"
-    apply (subst sqrt_even_pow2[symmetric])
-    using real_sqrt_power by auto
+    by (simp add: real_sqrt_power_even)
 
   have d2:"root d (real (d + 1)) ^ (d * (d + 1)) = (d + 1) ^ (d + 1)"
     by (metis d_gt of_nat_0_le_iff power_mult real_root_pow_pos2 semiring_1_class.of_nat_power)
@@ -730,9 +729,9 @@ proof -
     using X_lt d_gt
     by (auto simp add: field_simps)
 
-  then have "(sqrt 2 * root d (d+1) * X) ^ (d * (d+1)) < M ^ 2"
-    by (smt (verit, ccfv_SIG) Num.of_nat_simps(4) d_gt linordered_semiring_strict_class.mult_pos_pos mult_sign_intros(1) nat_less_real_le of_nat_0_le_iff real_root_ge_0_iff real_root_less_iff real_root_pos_unique real_root_power real_sqrt_ge_0_iff semiring_1_class.of_nat_power)
-
+  from power_strict_mono [OF this, of "(d * (d+1))"] d_gt 
+  have "(sqrt 2 * root d (d+1) * X) ^ (d * (d+1)) < M ^ 2"
+    by (auto simp flip: real_root_power)
   moreover have "(sqrt 2 * root d (d+1) * X) ^ (d * (d+1)) =
     (sqrt 2)^(d* (d+1))  * X ^ (d * (d+1)) * 
     (root d (d+1))^(d * (d+1))"

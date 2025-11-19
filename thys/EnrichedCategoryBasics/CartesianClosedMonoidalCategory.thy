@@ -46,7 +46,7 @@ begin
       using extends_to_cartesian_monoidal_category\<^sub>E\<^sub>C\<^sub>C by blast
 
     interpretation CMC: closed_monoidal_category C Prod \<alpha> \<iota>
-      using CMC.T.is_extensional interchange left_adjoint_prod
+      using CMC.T.extensionality interchange left_adjoint_prod
       by unfold_locales
          (auto simp add: left_adjoint_functor.ex_terminal_arrow)
 

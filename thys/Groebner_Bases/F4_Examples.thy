@@ -3,7 +3,11 @@
 section \<open>Sample Computations with the F4 Algorithm\<close>
 
 theory F4_Examples
-  imports F4 Algorithm_Schema_Impl Jordan_Normal_Form.Gauss_Jordan_IArray_Impl Code_Target_Rat
+  imports
+    F4
+    Algorithm_Schema_Impl
+    Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
+    Code_Target_Rat
 begin
 
 text \<open>We only consider scalar polynomials here, but vector-polynomials could be handled, too.\<close>
@@ -24,7 +28,7 @@ next
   from Cons(2) have 1: "v \<notin> f ` set (remdups_wrt_rev f xs vs)" by (rule Cons(1))
   from Cons(2) have "v \<in> set (f x # vs)" by simp
   hence 2: "v \<notin> f ` set (remdups_wrt_rev f xs (f x # vs))" by (rule Cons(1))
-  from Cons(2) show ?case by (auto simp: Let_def 1 2 List.member_def)
+  from Cons(2) show ?case by (auto simp: Let_def 1 2)
 qed
 
 lemma distinct_remdups_wrt_rev: "distinct (map f (remdups_wrt_rev f xs vs))"
@@ -44,12 +48,13 @@ proof (induct xs arbitrary: vs)
 next
   case (Cons x xs)
   show ?case
-  proof (simp add: Let_def List.member_def Cons, intro impI)
+  proof (simp add: Let_def Cons, intro impI)
     assume "k \<noteq> fst x"
     have "map_of (filter (\<lambda>y. fst y \<noteq> fst x \<and> fst y \<notin> set vs) xs) =
           map_of (filter (\<lambda>y. fst y \<noteq> fst x) (filter (\<lambda>y. fst y \<notin> set vs) xs))"
       by (simp only: filter_filter conj_commute)
-    also have "... = map_of (filter (\<lambda>y. fst y \<notin> set vs) xs) |` {y. y \<noteq> fst x}" by (rule map_of_filter)
+    also have "... = map_of (filter (\<lambda>y. fst y \<notin> set vs) xs) |` {y. y \<noteq> fst x}"
+      by (rule map_of_filter)
     finally show "map_of (filter (\<lambda>y. fst y \<noteq> fst x \<and> fst y \<notin> set vs) xs) k =
                   map_of (filter (\<lambda>y. fst y \<notin> set vs) xs) k"
       by (simp add: restrict_map_def \<open>k \<noteq> fst x\<close>)
@@ -58,31 +63,6 @@ qed
 
 corollary map_of_remdups_wrt_rev: "map_of (remdups_wrt_rev fst xs []) = map_of xs"
   by (rule ext, simp add: map_of_remdups_wrt_rev')
-
-lemma (in term_powerprod) compute_list_to_poly [code]:
-  "list_to_poly ts cs = distr\<^sub>0 DRLEX (remdups_wrt_rev fst (zip ts cs) [])"
-  by (rule poly_mapping_eqI,
-      simp add: lookup_list_to_poly list_to_fun_def distr\<^sub>0_def oalist_of_list_ntm_def
-        oa_ntm.lookup_oalist_of_list distinct_remdups_wrt_rev lookup_dflt_def map_of_remdups_wrt_rev)
-
-lemma (in ordered_term) compute_Macaulay_list [code]:
-  "Macaulay_list ps =
-     (let ts = Keys_to_list ps in
-      filter (\<lambda>p. p \<noteq> 0) (mat_to_polys ts (row_echelon (polys_to_mat ts ps)))
-     )"
-  by (simp add: Macaulay_list_def Macaulay_mat_def Let_def)
-
-declare conversep_iff [code]
-
-derive (eq) ceq poly_mapping
-derive (no) ccompare poly_mapping
-derive (dlist) set_impl poly_mapping
-derive (no) cenum poly_mapping
-
-derive (eq) ceq rat
-derive (no) ccompare rat
-derive (dlist) set_impl rat
-derive (no) cenum rat
 
 global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_strict_punit cmp_term"
   rewrites "punit.adds_term = (adds)"
@@ -148,6 +128,26 @@ global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_stric
   subgoal by (simp only: ord_strict_p_punit_def ord_pp_strict_punit_alt)
   subgoal by (simp only: keys_to_list_punit_def ord_pp_punit_alt) 
   done
+
+lemma (in term_powerprod) compute_list_to_poly:
+  "list_to_poly ts cs = distr\<^sub>0 DRLEX (remdups_wrt_rev fst (zip ts cs) [])"
+  by (rule poly_mapping_eqI,
+      simp add: lookup_list_to_poly list_to_fun_def distr\<^sub>0_def oalist_of_list_ntm_def
+        oa_ntm.lookup_oalist_of_list distinct_remdups_wrt_rev lookup_dflt_def map_of_remdups_wrt_rev)
+
+declare punit.compute_list_to_poly [code]
+
+lemma (in ordered_term) compute_Macaulay_list:
+  "Macaulay_list ps =
+     (let ts = Keys_to_list ps in
+      filter (\<lambda>p. p \<noteq> 0) (mat_to_polys ts (row_echelon (polys_to_mat ts ps)))
+     )"
+  by (simp add: Macaulay_list_def Macaulay_mat_def Let_def)
+
+declare punit'.punit.compute_Macaulay_list [code]
+
+declare conversep_iff [code]
+
 
 subsection \<open>Computations\<close>
 

@@ -123,12 +123,12 @@ lemma rel_pmf_code [code]:
   unfolding Let_def
 proof(intro iffI strip)
   have eq: "snd ` Set.filter (case_prod R) (A \<times> set_pmf q) = {y. \<exists>x\<in>A. R x y} \<inter> set_pmf q" for A
-    by(auto intro: rev_image_eqI simp add: Set.filter_def)
+    by (rule set_eqI) (auto simp add: image_iff)
   show "measure_pmf.prob p A \<le> measure_pmf.prob q (snd ` Set.filter (case_prod R) (A \<times> set_pmf q))"
     if "rel_pmf R p q" and "A \<in> Pow (set_pmf p)" for A
-    using that by(auto dest: rel_pmf_measureD simp add: eq measure_Int_set_pmf)
+    using that by (simp only: eq)(auto dest: rel_pmf_measureD simp add: measure_Int_set_pmf)
   show "rel_pmf R p q" if "\<forall>A\<in>Pow (set_pmf p). measure_pmf.prob p A \<le> measure_pmf.prob q (snd ` Set.filter (case_prod R) (A \<times> set_pmf q))"
-    using that by(intro rel_pmf_measureI')(auto intro: ord_le_eq_trans arg_cong2[where f=measure] simp add: eq)
+    using that by (intro rel_pmf_measureI') (simp only: eq, auto intro: ord_le_eq_trans arg_cong2[where f=measure])
 qed
 
 end

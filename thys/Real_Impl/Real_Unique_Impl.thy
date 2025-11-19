@@ -291,7 +291,7 @@ definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_l
 
 text\<open>The following code equation terminates if it is started on two
   different inputs.\<close>
-lemma real_lt [code equation]: "real_lt x y = (let fx = floor x; fy = floor y in
+lemma real_lt [code]: "real_lt x y = (let fx = floor x; fy = floor y in
   (if fx < fy then True else if fx > fy then False else real_lt (x * 1024) (y * 1024)))"
 proof (cases "floor x < floor y")
   case True
@@ -349,20 +349,6 @@ lemma mau_show_real: "show_real (real_of_u x) = mau_show_real x"
   unfolding show_real_def by simp
 
 code_datatype real_of_u
-
-declare [[code drop:
-  "plus :: real \<Rightarrow> real \<Rightarrow> real"
-  "uminus :: real \<Rightarrow> real"
-  "times :: real \<Rightarrow> real \<Rightarrow> real"
-  "inverse :: real \<Rightarrow> real"
-  "floor :: real \<Rightarrow> int"
-  sqrt
-  "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool"
-  ge_0
-  is_rat
-  "less :: real \<Rightarrow> real \<Rightarrow> bool" 
-  "less_eq :: real \<Rightarrow> real \<Rightarrow> bool" 
-]]
 
 lemmas mau_code_eqns [code] = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
   mau_show_real comparison_impl

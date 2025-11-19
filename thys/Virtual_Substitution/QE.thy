@@ -1630,8 +1630,7 @@ proof -
         unfolding root_set_def using x_prop by auto
       let ?srl = "sorted_root_list_set (set les)"
       have notinlist: "\<not> List.member ?srl x"
-        using xnotin same_set
-        by (simp add: in_set_member)
+        using xnotin same_set by simp
       then have notmem: "\<forall>n < (length ?srl). x \<noteq> nth_default 0 ?srl n"
         using nth_mem same_set xnotin nth_default_def
         by metis  
@@ -1684,7 +1683,7 @@ proof -
                 then obtain q where q_prop: "q < nth_default 0 ?srl 0 \<and>a*q^2 + b*q + c = 0" by auto
                 then have " q \<in> root_set (set les)" unfolding root_set_def using inset by auto
                 then have "List.member ?srl q" using same_set
-                  by (simp add: in_set_member)
+                  by simp
                 then have "q \<ge> nth_default 0 ?srl 0"
                   using sorted_sorted_list_of_set[where A = "root_set (set les)"]
                   unfolding sorted_root_list_set_def
@@ -1714,9 +1713,10 @@ proof -
           assume xgt: "x > nth_default 0 ?srl (length ?srl - 1)"
           let ?lg = "nth_default 0 ?srl (length ?srl - 1)"
           have "List.member ?srl ?lg"
-            by (metis diff_less in_set_member lengthsrl nth_default_def nth_mem zero_less_one)
+            using Cons.hyps(2)
+            by (cases \<open>length (sorted_root_list_set (set les))\<close>) (simp_all add: lengthsrl nth_default_def)
           then have "?lg \<in> root_set (set les) "
-            using same_set in_set_member[of ?lg ?srl]  by auto
+            using same_set by simp
           then have exabc: "\<exists>(a, b, c)\<in>set les. a*?lg^2 + b*?lg + c = 0"
             unfolding root_set_def by auto
           have "(\<forall>(d, e, f)\<in>set les. \<forall>q\<in>{?lg<..x}. d * q^2 + e * q + f < 0)"
@@ -1733,8 +1733,8 @@ proof -
                 then obtain r where r_prop: "d*r^2 + e*r + f = 0 \<and> r > ?lg" by auto
                 then have "r \<in> root_set (set les)" using inset unfolding root_set_def by auto
                 then have "List.member ?srl r"
-                  using same_set in_set_member
-                  by (simp add: in_set_member) 
+                  using same_set by simp
+
                 then have " r \<le> ?lg" using sorted_sorted_list_of_set nth_default_def
                   by (metis One_nat_def Suc_pred \<open>r \<in> root_set (set les)\<close> in_set_conv_nth lengthsrl lessI less_Suc_eq_le same_set sorted_nth_mono sorted_root_list_set_def)
                 then show "False" using r_prop by auto
@@ -1768,10 +1768,9 @@ proof -
           let ?elt = "nth_default 0 ?srl n"
           let ?elt2 = "nth_default 0 ?srl (n + 1)"
           have "List.member ?srl ?elt"
-            using n_prop nth_default_def
-            by (metis add_lessD1 in_set_member nth_mem) 
+            using n_prop by (simp add: nth_default_def)
           then have "?elt \<in> root_set (set les) "
-            using same_set in_set_member[of ?elt ?srl]  by auto
+            using same_set by simp
           then have exabc: "\<exists>(a, b, c)\<in>set les. a*?elt^2 + b*?elt + c = 0"
             unfolding root_set_def by auto
           then obtain a b c where "(a, b, c)\<in>set les \<and> a*?elt^2 + b*?elt + c = 0"
@@ -1793,8 +1792,7 @@ proof -
                 then obtain r where r_prop: "d*r^2 + e*r + f = 0 \<and> r > ?elt  \<and> r < ?elt2" by auto
                 then have "r \<in> root_set (set les)" using inset unfolding root_set_def by auto
                 then have "List.member ?srl r"
-                  using same_set in_set_member
-                  by (simp add: in_set_member) 
+                  using same_set by simp
                 then have "\<exists>i < (length ?srl). r = nth_default 0 ?srl i"
                   by (metis \<open>r \<in> root_set (set les)\<close> in_set_conv_nth same_set nth_default_def)
                 then obtain i where i_prop: "i < (length ?srl) \<and> r = nth_default 0 ?srl i"
@@ -4072,12 +4070,10 @@ proof -
               by auto
             then have "q \<in> set ?srl" using qin unfolding nonzero_root_set_def
               by auto 
-            then have "List.member ?srl q"     
-              using in_set_member[of q ?srl]
-              by auto
+            then have "List.member ?srl q" 
+              by simp
             then show "False"
-              using lenzero
-              by (simp add: member_rec(2)) 
+              using lenzero by simp
           qed
           then show ?thesis by auto
         qed
@@ -4137,10 +4133,9 @@ proof -
               then have "x \<in> set ?srl" using xin unfolding nonzero_root_set_def
                 by auto 
               then have "List.member ?srl x"     
-                using in_set_member[of x ?srl]
-                by auto
+                by simp
               then show "False" using lenzero
-                by (simp add: member_rec(2)) 
+                by simp 
             qed
             then show ?thesis
               using \<open>t * x\<^sup>2 + u * x + v \<le> 0\<close> by fastforce 
@@ -4161,11 +4156,9 @@ proof -
               then have "q \<in> set ?srl" using qin unfolding nonzero_root_set_def
                 by auto 
               then have "List.member ?srl q"     
-                using in_set_member[of q ?srl]
-                by auto
+                by simp
               then show "False"
-                using lenzero
-                by (simp add: member_rec(2)) 
+                using lenzero by simp 
             qed
             then show ?thesis by auto
           qed
@@ -4227,11 +4220,9 @@ proof -
             then have "q \<in> set ?srl" using qin unfolding nonzero_root_set_def
               by auto 
             then have "List.member ?srl q"     
-              using in_set_member[of q ?srl]
-              by auto
+              by simp
             then show "False"
-              using lenzero
-              by (simp add: member_rec(2)) 
+              using lenzero by simp
           qed
           then show ?thesis by auto
         qed
@@ -4273,9 +4264,10 @@ proof -
     have cases_mem: "(List.member ?srl x) \<Longrightarrow> False"
     proof - 
       assume "(List.member ?srl x)"
-      then have "x \<in> {x. \<exists>(a, b, c)\<in>set b \<union> set c \<union> set d. (a \<noteq> 0 \<or> b \<noteq> 0) \<and> a * x\<^sup>2 + b * x + c = 0}"
-        using set_sorted_list_of_set nonzero_root_set_finite in_set_member
-        by (metis List.finite_set finite_Un nonzero_root_set_def sorted_nonzero_root_list_set_def)
+      moreover have \<open>finite (nonzero_root_set (set b \<union> set c \<union> set d))\<close>
+        by (simp add: nonzero_root_set_finite)
+      ultimately have "x \<in> {x. \<exists>(a, b, c)\<in>set b \<union> set c \<union> set d. (a \<noteq> 0 \<or> b \<noteq> 0) \<and> a * x\<^sup>2 + b * x + c = 0}"
+        by (simp add: sorted_nonzero_root_list_set_def nonzero_root_set_def)
       then have "\<exists> (a, b, c) \<in> (((set b) \<union> (set c))\<union> (set d)) . (a \<noteq> 0 \<or> b \<noteq> 0) \<and> a*x^2 + b*x + c = 0"
         by blast
       then obtain t u v where def_prop: "(t, u, v) \<in> (((set b) \<union> (set c))\<union> (set d)) \<and> (t \<noteq> 0 \<or> u \<noteq> 0) \<and> t*x^2 + u*x + v = 0"
@@ -4457,8 +4449,7 @@ proof -
               then have "q \<in> set ?srl" using qin unfolding nonzero_root_set_def
                 by auto 
               then have lm: "List.member ?srl q"     
-                using in_set_member[of q ?srl]
-                by auto
+                by simp
               then have " List.member
                  (sorted_list_of_set (nonzero_root_set (set b \<union> set c \<union> set d)))
                  q \<Longrightarrow>
@@ -4480,7 +4471,7 @@ proof -
                 have f4: "q < sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)} ! 0"
                   using a2 by (metis nonzero_root_set_def)
                 have f5: "q \<in> set (sorted_list_of_set {r. \<exists>p. p \<in> set b \<union> set c \<union> set d \<and> (case p of (ra, rb, rc) \<Rightarrow> (ra \<noteq> 0 \<or> rb \<noteq> 0) \<and> ra * r\<^sup>2 + rb * r + rc = 0)})"
-                  using f3 by (meson in_set_member)
+                  using f3 by simp
                 have "\<forall>rs r. \<exists>n. ((r::real) \<notin> set rs \<or> n < length rs) \<and> (r \<notin> set rs \<or> rs ! n = r)"
                   by (metis in_set_conv_nth)
                 then obtain nn :: "real list \<Rightarrow> real \<Rightarrow> nat" where
@@ -4493,7 +4484,7 @@ proof -
                 then show ?thesis
                   using f6 f5 f4 by (meson le0 not_less sorted_sorted_list_of_set)
               qed 
-              then show "False" using lm qlt in_set_conv_nth in_set_member not_le_imp_less not_less0 sorted_iff_nth_mono sorted_nonzero_root_list_set_def sorted_sorted_list_of_set
+              then show "False" using lm qlt in_set_conv_nth not_le_imp_less not_less0 sorted_iff_nth_mono sorted_nonzero_root_list_set_def sorted_sorted_list_of_set
                 by auto
             qed   
             then have "\<not>(\<exists>q. q \<le> x \<and> t * q\<^sup>2 + u * q + v = 0)"
@@ -4627,9 +4618,8 @@ proof -
               then have "q \<in> set ?srl" using qin unfolding nonzero_root_set_def
                 by auto 
               then have "List.member ?srl q"     
-                using in_set_member[of q ?srl]
-                by auto
-              then show "False" using qgt in_set_conv_nth in_set_member not_le_imp_less not_less0 sorted_iff_nth_mono sorted_nonzero_root_list_set_def sorted_sorted_list_of_set
+                by simp
+              then show "False" using qgt in_set_conv_nth not_le_imp_less not_less0 sorted_iff_nth_mono sorted_nonzero_root_list_set_def sorted_sorted_list_of_set
                 by (smt (z3) Suc_diff_Suc Suc_n_not_le_n \<open>q \<in> set (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d))\<close> in_set_conv_nth length_0_conv length_greater_0_conv length_sorted_list_of_set lenzero less_Suc_eq_le minus_nat.diff_0 not_le sorted_nth_mono sorted_sorted_list_of_set) 
             qed   
             then have nor: "\<not>(\<exists>q. q > ?bgrt \<and> t * q\<^sup>2 + u * q + v = 0)"
@@ -4656,7 +4646,7 @@ proof -
         have "(\<forall>(a, b, c)\<in>set a. a = 0 \<and> b = 0 \<and> c = 0)" 
           using alleqsetvar by auto 
         have " ?bgrt \<in> set ?srl" 
-          using set_sorted_list_of_set nonzero_root_set_finite in_set_member
+          using set_sorted_list_of_set nonzero_root_set_finite
           using asm by auto
         then have "?bgrt \<in> nonzero_root_set (set b \<union> set c \<union> set d )"
           unfolding sorted_nonzero_root_list_set_def
@@ -5025,7 +5015,7 @@ proof -
       proof - 
         assume len1: "length ?srl = 1"
         have cases: "(List.member ?srl x) \<or> x < ?srl ! 0 \<or> x > ?srl ! 0"
-          using in_set_member lenzero nth_mem by fastforce
+          using lenzero nth_mem by fastforce
         then show "False"
           using len1 cases_mem cases_lt cases_gt by auto
       qed
@@ -5060,18 +5050,21 @@ proof -
                   proof (induct k)
                     case 0
                     then show ?case
-                      using in_set_member lenzero nth_mem by fastforce 
+                      using lenzero nth_mem by fastforce 
                   next
                     case (Suc k)
                     then show ?case
-                      by (smt Suc_leD Suc_le_lessD \<open>\<forall>k. sorted_nonzero_root_list_set (set b \<union> set c \<union> set d) ! k < x \<longrightarrow> k \<le> length (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d)) - 2 \<longrightarrow> \<not> x < sorted_nonzero_root_list_set (set b \<union> set c \<union> set d) ! Suc k\<close> diff_less in_set_member length_0_conv length_greater_0_conv lenzero less_trans_Suc nth_mem pos2) 
+                      using \<open>\<forall>k. sorted_nonzero_root_list_set (set b \<union> set c \<union> set d) ! k < x \<longrightarrow> k \<le> length (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d)) - 2 \<longrightarrow> \<not> x < sorted_nonzero_root_list_set (set b \<union> set c \<union> set d) ! Suc k\<close>
+                      apply (auto simp add: not_less Suc_le_eq)
+                      using not_less_eq by fastforce
                   qed
                 qed
                 then have "x \<ge> ?srl ! (length ?srl -1)" 
                   using allk
                   by (metis One_nat_def Suc_diff_Suc lengt1 less_eq_real_def less_or_eq_imp_le one_add_one plus_1_eq_Suc xinbtw) 
                 then have "x > ?srl ! (length ?srl - 1)" using nonmem
-                  by (metis One_nat_def Suc_le_D asm diff_Suc_Suc diff_zero in_set_member lessI less_eq_real_def nth_mem) 
+                  apply auto
+                  using lengt1 order_less_trans by fastforce 
                 then show "False" using xinbtw by auto
               qed
               then show "(\<exists>k \<le> (length ?srl - 2). ?srl ! k < x \<and> x <?srl ! (k + 1))"
@@ -5118,8 +5111,7 @@ proof -
                 then have "q \<in> set ?srl" using qin unfolding nonzero_root_set_def
                   by auto 
                 then have "List.member ?srl q"     
-                  using in_set_member[of q ?srl]
-                  by auto
+                  by simp
                 then have "\<exists>n < length ?srl. q = ?srl ! n"
                   by (metis \<open>q \<in> set (sorted_nonzero_root_list_set (set b \<union> set c \<union> set d))\<close> in_set_conv_nth) 
                 then obtain n where nprop: "n < length ?srl \<and> q = ?srl ! n" by auto
@@ -5170,7 +5162,7 @@ proof -
           have "(\<forall>(a, b, c)\<in>set a. a = 0 \<and> b = 0 \<and> c = 0)" 
             using alleqsetvar by auto 
           have " ?bgrt \<in> set ?srl" 
-            using set_sorted_list_of_set nonzero_root_set_finite in_set_member k_prop asm
+            using set_sorted_list_of_set nonzero_root_set_finite k_prop asm
             by (smt diff_Suc_less le_eq_less_or_eq less_le_trans nth_mem one_add_one plus_1_eq_Suc zero_less_one)
           then have "?bgrt \<in> nonzero_root_set (set b \<union> set c \<union> set d )"
             unfolding sorted_nonzero_root_list_set_def

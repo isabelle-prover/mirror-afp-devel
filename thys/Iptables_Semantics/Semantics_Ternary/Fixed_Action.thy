@@ -158,19 +158,19 @@ proof(rule just_show_all_approximating_bigstep_fun_equalities_with_start_Undecid
           hence "m \<in> set m2" by simp
   
           have repl_filter_simp: "(replicate (length [x\<leftarrow>m2 . x = m]) m) = [x\<leftarrow>m2 . x = m]"
-            by (metis (lifting, full_types) filter_set member_filter replicate_length_same)
-  
+            using replicate_length_filter [of m m2] by (metis (mono_tags, lifting) filter_cong) 
+
           from Cons.prems  \<open>m \<notin> set m1\<close> have "set m1 = set (filter (\<lambda>x. x\<noteq>m) m2)" by auto
           from Cons.IH[OF this] have "approximating_bigstep_fun \<gamma> p (map (\<lambda>m. Rule m a) m1) Undecided = approximating_bigstep_fun \<gamma> p (map (\<lambda>m. Rule m a) [x\<leftarrow>m2 . x \<noteq> m]) Undecided" .
           from this have "approximating_bigstep_fun \<gamma> p (map (\<lambda>m. Rule m a) (m#m1)) Undecided = approximating_bigstep_fun \<gamma> p (map (\<lambda>m. Rule m a) (m#[x\<leftarrow>m2 . x \<noteq> m])) Undecided"
-            apply(simp split: action.split)
+            apply (simp split: action.split)
             by fast
           also have "\<dots> = approximating_bigstep_fun \<gamma> p (map (\<lambda>m. Rule m a) ([x\<leftarrow>m2 . x = m]@[x\<leftarrow>m2 . x \<noteq> m])) Undecided"
-            apply(simp only: list.map)
-            thm approximating_bigstep_fun_prepend_replicate[where n="length [x\<leftarrow>m2 . x = m]"]
-            apply(subst approximating_bigstep_fun_prepend_replicate[where n="length [x\<leftarrow>m2 . x = m]"])
+            apply (simp only: list.map)
+            apply (subst approximating_bigstep_fun_prepend_replicate[where n="length [x\<leftarrow>m2 . x = m]"])
             apply (metis (full_types) False filter_empty_conv neq0_conv repl_filter_simp replicate_0)
-            by (metis (lifting, no_types) map_append map_replicate repl_filter_simp)
+            apply (metis (lifting, no_types) map_append map_replicate repl_filter_simp)
+            done
           also have "\<dots> =  approximating_bigstep_fun \<gamma> p (map (\<lambda>m. Rule m a) m2) Undecided"
             proof(induction m2)
             case Nil thus ?case by simp

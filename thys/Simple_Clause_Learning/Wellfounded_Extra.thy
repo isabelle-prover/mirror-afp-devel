@@ -4,21 +4,6 @@ theory Wellfounded_Extra
     "Ordered_Resolution_Prover.Lazy_List_Chain"
 begin
 
-lemma wf_onI:
-  "(\<And>P x. (\<And>y. y \<in> A \<Longrightarrow> (\<And>z. z \<in> A \<Longrightarrow> (z, y) \<in> r \<Longrightarrow> P z) \<Longrightarrow> P y) \<Longrightarrow> x \<in> A \<Longrightarrow> P x) \<Longrightarrow> wf_on A r"
-  unfolding wf_on_def by metis
-
-lemma wfI: "(\<And>P x. (\<And>y. (\<And>z. (z, y) \<in> r \<Longrightarrow> P z) \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> wf r"
-  by (auto simp: wf_on_def)
-
-lemma wf_on_induct[consumes 1, case_names less in_dom]:
-  assumes
-    "wf_on A r" and
-    "\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> (y, x) \<in> r \<Longrightarrow> P y) \<Longrightarrow> P x" and
-    "x \<in> A"
-  shows "P x"
-  using assms unfolding wf_on_def by metis
-
 
 subsection \<open>Basic Results\<close>
 
@@ -27,13 +12,7 @@ subsubsection \<open>Minimal-element characterization of well-foundedness\<close
 lemma minimal_if_wf_on:
   assumes wf: "wf_on A R" and "B \<subseteq> A" and "B \<noteq> {}"
   shows "\<exists>z \<in> B. \<forall>y. (y, z) \<in> R \<longrightarrow> y \<notin> B"
-  using wf_onE_pf[OF wf \<open>B \<subseteq> A\<close>]
-  by (metis Image_iff assms(3) subsetI)
-
-lemma wfE_min:
-  assumes wf: "wf R" and Q: "x \<in> Q"
-  obtains z where "z \<in> Q" "\<And>y. (y, z) \<in> R \<Longrightarrow> y \<notin> Q"
-  using Q wfE_pf[OF wf, of Q] by blast
+  using wf_on_iff_ex_minimal[THEN iffD1, rule_format, OF assms] .
 
 lemma wfE_min':
   "wf R \<Longrightarrow> Q \<noteq> {} \<Longrightarrow> (\<And>z. z \<in> Q \<Longrightarrow> (\<And>y. (y, z) \<in> R \<Longrightarrow> y \<notin> Q) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
@@ -42,30 +21,7 @@ lemma wfE_min':
 lemma wf_on_if_minimal:
   assumes "\<And>B. B \<subseteq> A \<Longrightarrow> B \<noteq> {} \<Longrightarrow> \<exists>z \<in> B. \<forall>y. (y, z) \<in> R \<longrightarrow> y \<notin> B"
   shows "wf_on A R"
-proof (rule wf_onI_pf)
-  fix B
-  show "B \<subseteq> A \<Longrightarrow> B \<subseteq> R `` B \<Longrightarrow> B = {}"
-  using assms by (metis ImageE subset_eq)
-qed
-
-lemma ex_trans_min_element_if_wf_on:
-  assumes wf: "wf_on A r" and x_in: "x \<in> A"
-  shows "\<exists>y \<in> A. (y, x) \<in> r\<^sup>* \<and> \<not>(\<exists>z \<in> A. (z, y) \<in> r)"
-  using wf
-proof (induction x rule: wf_on_induct)
-  case (less x)
-  thus ?case
-    by (metis rtrancl.rtrancl_into_rtrancl rtrancl.rtrancl_refl)
-next
-  case in_dom
-  thus ?case
-    using x_in by metis
-qed
-
-lemma ex_trans_min_element_if_wfp_on: "wfp_on A R \<Longrightarrow> x \<in> A \<Longrightarrow> \<exists>y\<in>A. R\<^sup>*\<^sup>* y x \<and> \<not> (\<exists>z\<in>A. R z y)"
-  by (rule ex_trans_min_element_if_wf_on[to_pred])
-
-text \<open>Well-foundedness of the empty relation\<close>
+  using wf_on_iff_ex_minimal[THEN iffD2, rule_format, OF assms] .
 
 definition inv_imagep_on :: "'a set \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "inv_imagep_on A R f = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> R (f x) (f y))"
@@ -83,22 +39,6 @@ proof (intro allI impI)
     by (metis image_iff)
 qed
 
-lemma wfp_on_if_convertible_to_wfp:
-  assumes
-    wf: "wfp_on (f ` A) Q" and
-    convertible: "(\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> R x y \<Longrightarrow> Q (f x) (f y))"
-  shows "wfp_on A R"
-  unfolding wfp_on_iff_ex_minimal
-proof (intro allI impI)
-  fix B assume "B \<subseteq> A" and "B \<noteq> {}"
-  moreover from wf have "wfp_on A (inv_imagep Q f)"
-    by (rule wfp_on_inv_imagep)
-  ultimately obtain y where "y \<in> B" and "\<And>z. Q (f z) (f y) \<Longrightarrow> z \<notin> B"
-    unfolding wfp_on_iff_ex_minimal in_inv_imagep by metis
-  thus "\<exists>z \<in> B. \<forall>y. R y z \<longrightarrow> y \<notin> B"
-    using \<open>B \<subseteq> A\<close> convertible by blast
-qed
-
 definition lex_prodp where
   "lex_prodp R\<^sub>A R\<^sub>B x y \<longleftrightarrow> R\<^sub>A (fst x) (fst y) \<or> fst x = fst y \<and> R\<^sub>B (snd x) (snd y)"
 
@@ -110,57 +50,8 @@ lemma lex_prod_lex_prodp_iff:
   "lex_prod {(x, y). R\<^sub>A x y} {(x, y). R\<^sub>B x y} = {(x, y). lex_prodp R\<^sub>A R\<^sub>B x y}"
   unfolding lex_prodp_def lex_prod_def by auto
 
-lemma wf_on_lex_prod:
-  assumes wfA: "wf_on A r\<^sub>A" and wfB: "wf_on B r\<^sub>B" and AB_subset: "AB \<subseteq> A \<times> B"
-  shows "wf_on AB (r\<^sub>A <*lex*> r\<^sub>B)"
-  unfolding wf_on_iff_ex_minimal
-proof (intro allI impI)
-  fix AB' assume "AB' \<subseteq> AB" and "AB' \<noteq> {}"
-  hence "fst ` AB' \<subseteq> A" and "snd ` AB' \<subseteq> B"
-    using AB_subset by auto
-
-  from \<open>fst ` AB' \<subseteq> A\<close> \<open>AB' \<noteq> {}\<close> obtain a where
-    a_in: "a \<in> fst ` AB'" and
-    a_minimal: "(\<forall>y. (y, a) \<in> r\<^sub>A \<longrightarrow> y \<notin> fst ` AB')"
-    using wfA[unfolded wf_on_iff_ex_minimal, rule_format, of "fst ` AB'"]
-    by auto
-
-  from \<open>snd ` AB' \<subseteq> B\<close> \<open>AB' \<noteq> {}\<close> a_in obtain b where
-    b_in: "b \<in> snd ` {p \<in> AB'. fst p = a}" and
-    b_minimal: "(\<forall>y. (y, b) \<in> r\<^sub>B \<longrightarrow> y \<notin> snd ` {p \<in> AB'. fst p = a})"
-    using wfB[unfolded wf_on_iff_ex_minimal, rule_format, of "snd ` {p \<in> AB'. fst p = a}"]
-    by blast
-
-  show "\<exists>z\<in>AB'. \<forall>y. (y, z) \<in> r\<^sub>A <*lex*> r\<^sub>B \<longrightarrow> y \<notin> AB'"
-  proof (rule bexI)
-    show "(a, b) \<in> AB'"
-      using b_in by (simp add: image_iff)
-  next
-    show "\<forall>y. (y, (a, b)) \<in> r\<^sub>A <*lex*> r\<^sub>B \<longrightarrow> y \<notin> AB'"
-    proof (intro allI impI)
-      fix p assume "(p, (a, b)) \<in> r\<^sub>A <*lex*> r\<^sub>B"
-      hence "(fst p, a) \<in> r\<^sub>A \<or> fst p = a \<and> (snd p, b) \<in> r\<^sub>B"
-        unfolding lex_prod_def by auto
-      thus "p \<notin> AB'"
-      proof (elim disjE conjE)
-        assume "(fst p, a) \<in> r\<^sub>A"
-        hence "fst p \<notin> fst ` AB'"
-          using a_minimal by simp
-        thus ?thesis
-          by (rule contrapos_nn) simp
-      next
-        assume "fst p = a" and "(snd p, b) \<in> r\<^sub>B"
-        hence "snd p \<notin> snd ` {p \<in> AB'. fst p = a}"
-          using b_minimal by simp
-        thus "p \<notin> AB'"
-          by (rule contrapos_nn) (simp add: \<open>fst p = a\<close>)
-      qed
-    qed
-  qed
-qed
-
-lemma wfp_on_lex_prodp: "wfp_on A R\<^sub>A \<Longrightarrow> wfp_on B R\<^sub>B \<Longrightarrow> AB \<subseteq> A \<times> B \<Longrightarrow> wfp_on AB (lex_prodp R\<^sub>A R\<^sub>B)"
-  using wf_on_lex_prod[of A _ B _ AB, to_pred, unfolded lex_prod_lex_prodp_iff, to_pred] .
+lemma wfp_on_lex_prodp: "wfp_on A R\<^sub>A \<Longrightarrow> wfp_on B R\<^sub>B \<Longrightarrow> wfp_on (A \<times> B) (lex_prodp R\<^sub>A R\<^sub>B)"
+  using wf_on_lex_prod[of A _ B _, to_pred, unfolded lex_prod_lex_prodp_iff, to_pred] .
 
 corollary wfp_lex_prodp: "wfp R\<^sub>A \<Longrightarrow> wfp R\<^sub>B \<Longrightarrow> wfp (lex_prodp R\<^sub>A R\<^sub>B)"
   using wfp_on_lex_prodp[of UNIV _ UNIV, simplified] .
@@ -173,11 +64,11 @@ lemma wfp_on_sup_if_convertible_to_wfp:
     convertible_R: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> R x y \<Longrightarrow> Q (f x) (f y)" and
     convertible_S: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> S x y \<Longrightarrow> Q (f x) (f y) \<or> f x = f y"
   shows "wfp_on A (R \<squnion> S)"
-proof (rule wfp_on_if_convertible_to_wfp)
+proof (rule wfp_on_if_convertible_to_wfp_on)
   show "wfp_on ((\<lambda>x. (f x, x)) ` A) (lex_prodp Q S)"
   proof (rule wfp_on_subset)
     show "wfp_on (f ` A \<times> A) (lex_prodp Q S)"
-      by (rule wfp_on_lex_prodp[OF wf_Q wf_S subset_refl])
+      by (rule wfp_on_lex_prodp[OF wf_Q wf_S])
   next
     show "(\<lambda>x. (f x, x)) ` A \<subseteq> f ` A \<times> A"
       by auto
@@ -188,9 +79,6 @@ next
     using convertible_R convertible_S
     by (auto simp add: lex_prodp_def)
 qed
-
-lemma wfp_on_iff_wfp: "wfp_on A R \<longleftrightarrow> wfp (\<lambda>x y. R x y \<and>  x \<in> A \<and> y \<in> A)"
-  by (smt (verit, del_insts) UNIV_I subsetI wfp_on_def wfp_on_antimono_strong wfp_on_subset)
 
 lemma chain_lnth_rtranclp:
   assumes
@@ -317,7 +205,7 @@ proof (rule iffI)
   hence "wfp (\<lambda>z y. R\<inverse>\<inverse> z y \<and> z \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x} \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
     using wfp_on_iff_wfp by blast
   hence "wfp (\<lambda>z y. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y)"
-    by (auto elim: wfp_on_antimono_strong)
+    by (auto elim: wfp_on_mono_strong)
   hence "\<nexists>xs. \<not> lfinite xs \<and> Lazy_List_Chain.chain (\<lambda>y z. R y z \<and> R\<^sup>*\<^sup>* x\<^sub>0 y) xs"
     unfolding wfP_iff_no_infinite_down_chain_llist
     by (metis (no_types, lifting) Lazy_List_Chain.chain_mono conversepI)
@@ -354,7 +242,7 @@ next
     unfolding wfP_iff_no_infinite_down_chain_llist
     using Lazy_List_Chain.chain_mono by fastforce
   hence "wfp (\<lambda>z y. R\<inverse>\<inverse> z y \<and> z \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x} \<and> y \<in> {x. R\<^sup>*\<^sup>* x\<^sub>0 x})"
-    by (auto elim: wfp_on_antimono_strong)
+    by (auto elim: wfp_on_mono_strong)
   thus "wfp_on {x. R\<^sup>*\<^sup>* x\<^sub>0 x} R\<inverse>\<inverse>"
     unfolding wfp_on_iff_wfp[of "{x. R\<^sup>*\<^sup>* x\<^sub>0 x}" "R\<inverse>\<inverse>"] by argo
 qed

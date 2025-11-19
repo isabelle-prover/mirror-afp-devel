@@ -214,6 +214,28 @@ lemma is_imgu_imp_is_mgu:
   shows "is_mgu \<sigma> E"
   using assms by (auto simp: is_imgu_def is_mgu_def)
 
+lemma is_mguI:
+  fixes \<sigma> :: "('f, 'v) subst"
+  assumes "\<forall>(s, t) \<in> E. s \<cdot> \<sigma> = t \<cdot> \<sigma>"
+    and "\<And>\<tau> :: ('f, 'v) subst. \<forall>(s, t) \<in> E. s \<cdot> \<tau> = t \<cdot> \<tau> \<Longrightarrow> \<exists>\<gamma> :: ('f, 'v) subst. \<tau> = \<sigma> \<circ>\<^sub>s \<gamma>"
+  shows "is_mgu \<sigma> E"
+  using assms by (fastforce simp: is_mgu_def unifiers_def)
+
+lemma subst_set_insert [simp]:
+  "subst_set \<sigma> (insert e E) = insert (fst e \<cdot> \<sigma>, snd e \<cdot> \<sigma>) (subst_set \<sigma> E)"
+  by (auto simp: subst_set_def)
+
+lemma unifiable_UnD [dest]:
+  "unifiable (M \<union> N) \<Longrightarrow> unifiable M \<and> unifiable N"
+  by (auto simp: unifiable_def)
+
+lemma unifiable_insert_Var_swap [simp]:
+  "unifiable (insert (t, Var x) E) \<longleftrightarrow> unifiable (insert (Var x, t) E)"
+  by (rule unifiable_insert_swap)
+
+lemma unifiers_Int1 [simp]:
+  "(s, t) \<in> E \<Longrightarrow> unifiers {(s, t)} \<inter> unifiers E = unifiers E"
+  by (auto simp: unifiers_def)
 
 subsubsection \<open>Properties of \<^term>\<open>is_imgu\<close>\<close>
 

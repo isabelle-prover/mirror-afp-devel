@@ -15,8 +15,6 @@ datatype 'a st = FunDom "vname \<Rightarrow> 'a" "vname list"
 fun "fun" where "fun (FunDom f xs) = f"
 fun dom where "dom (FunDom f xs) = xs"
 
-definition [simp]: "inter_list xs ys = [x\<leftarrow>xs. x \<in> set ys]"
-
 definition "show_st S = [(x,fun S x). x \<leftarrow> sort(dom S)]"
 
 definition "show_acom = map_acom (map_option show_st)"
@@ -39,7 +37,7 @@ definition "le_st F G = (\<forall>x \<in> set(dom G). lookup F x \<sqsubseteq> f
 
 definition
 "join_st F G =
- FunDom (\<lambda>x. fun F x \<squnion> fun G x) (inter_list (dom F) (dom G))"
+ FunDom (\<lambda>x. fun F x \<squnion> fun G x) (inter_list_set (dom F) (dom G))"
 
 definition "\<top> = FunDom (\<lambda>x. \<top>) []"
 

@@ -4,11 +4,10 @@
 *)
 section \<open>\isaheader{Hash maps implementation}\<close>
 theory HashMap_Impl
-imports 
-  RBTMapImpl 
+imports
+  RBTMapImpl
   ListMapImpl
   "../../Lib/HashCode"
-  "../../Lib/Code_Target_ICF"
 begin
 
 text \<open>

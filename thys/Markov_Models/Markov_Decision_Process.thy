@@ -6,8 +6,6 @@ theory Markov_Decision_Process
   imports Discrete_Time_Markov_Chain
 begin
 
-definition "some_elem s = (SOME x. x \<in> s)"
-
 lemma some_elem_ne: "s \<noteq> {} \<Longrightarrow> some_elem s \<in> s"
   unfolding some_elem_def by (auto intro: someI)
 

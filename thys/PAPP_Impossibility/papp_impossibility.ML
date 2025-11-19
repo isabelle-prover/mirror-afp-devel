@@ -485,7 +485,7 @@ let
             |> Thm.elim_implies (#wf_thm profile)
             |> Thm.elim_implies (profile_def profile)
             |> Conv.fconv_rule (Conv.arg_conv (total_conv wr_thms))
-          val right_unique_thms = inst' r_right_unique_thm |> HOLogic.conj_elims ctxt
+          val right_unique_thms = inst' r_right_unique_thm |> HOLogic.conj_elims
           val right_unique_clauses =
             (committee_pairs ~~ right_unique_thms)
             |> filter (fn ((i, j), _) => is_possible_committee (profile, i)
@@ -671,10 +671,6 @@ fun mk_dimacs sat =
 
 fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), hyp_thm, ctxt') grat_file =
   let
-    val is_xz =
-      case Path.split_ext grat_file of
-        (_, "xz") => true
-      | _ => false
     val rup_input =
     {
       ctxt = ctxt',
@@ -684,7 +680,7 @@ fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), hyp_thm, ctxt') grat
       tracing = false
     } : Replay_RUP.rup_input
   in
-    Replay_RUP.replay_rup_file rup_input (grat_file, is_xz)
+    Replay_RUP.replay_rup_file rup_input (grat_file, Path.is_xz grat_file)
     |> Thm.implies_intr (Thm.cprop_of hyp_thm)
     |> Thm.elim_implies hyp_thm
     |> Local_Defs.export ctxt' ctxt

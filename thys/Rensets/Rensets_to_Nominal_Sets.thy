@@ -61,7 +61,7 @@ next
   define dd where "dd \<equiv> vsubstA (vsubstA (vsubstA a yy x) x y) y yy"
 
   have "finite ({vv. \<not> freshA vv a} \<union> {yy,x,y})"  
-  	by (simp add: cofinite_freshA)
+    by (simp add: cofinite_freshA)
   then obtain vv where vv: "vv \<noteq> yy \<and> vv \<noteq> x \<and> vv \<noteq> y \<and> freshA vv a" 
     by (metis (no_types, lifting) UnCI exists_var insertCI mem_Collect_eq)
 
@@ -70,7 +70,7 @@ next
 
   show ?thesis using yy vv unfolding 0 11[unfolded dd_def] 
     using vsubstA_commute_diff 
-    by (smt (z3) freshA_vsubstA2 vsubstA_chain_freshA vsubstA_id)
+    by (smt (verit) freshA_vsubstA2 vsubstA_chain_freshA vsubstA_id)
 qed
 
 lemma swapA_cmp: 
@@ -81,14 +81,14 @@ proof(cases "z1=z2 \<or> x = y")
 next
   case False
   have "finite ({uu. \<not> freshA uu a} \<union> {z1,z2,x,y})"  
-  	by (simp add: cofinite_freshA)
+    by (simp add: cofinite_freshA)
   then obtain uu where uu: "uu \<noteq> z1 \<and> uu \<noteq> z2 \<and> uu \<noteq> x \<and> uu \<noteq> y \<and> freshA uu a" 
     by (metis (no_types, lifting) UnCI exists_var insertCI mem_Collect_eq)
       (* *)
   have "finite ({uu'. \<not> freshA uu' a} \<union> {z1,z2,x,y,uu})"  
-  	by (simp add: cofinite_freshA)
+    by (simp add: cofinite_freshA)
   then obtain uu' where uu': "uu' \<noteq> z1 \<and> uu' \<noteq> z2 \<and> uu' \<noteq> x \<and> uu' \<noteq> y \<and> uu' \<noteq> uu \<and> freshA uu' a" 
-    by (smt (z3) UnCI exists_var insertCI mem_Collect_eq)
+    by (smt (verit, ccfv_threshold) UnCI exists_var insertCI mem_Collect_eq)
       (* *)
 
   show ?thesis apply(subst swapA_any[of uu])
@@ -102,23 +102,23 @@ next
           subgoal apply(cases "x = z1", simp_all)
             subgoal apply(cases "y = z1", simp_all)
               subgoal   
-              	by (smt (verit, ccfv_threshold) vsubstA_id vsubstA_idem 
+                by (smt (verit, ccfv_threshold) vsubstA_id vsubstA_idem 
                     vsubstA_chain vsubstA_commute_diff swapA_any uu uu')  
               subgoal apply(cases "y = z2", simp_all)
-                subgoal by (smt (z3) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
-                subgoal by (smt (z3) freshA_vsubstA2 uu uu' vsubstA_chain_freshA vsubstA_commute_diff) . .
+                subgoal by (smt (verit, ccfv_threshold) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
+                subgoal by (smt (verit, ccfv_threshold) freshA_vsubstA2 uu uu' vsubstA_chain_freshA vsubstA_commute_diff) . .
             subgoal apply(cases "x = z2", simp_all)
               subgoal apply(cases "y = z1", simp_all)
-                subgoal by (smt (z3) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
+                subgoal by (smt (verit, ccfv_threshold) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
                 subgoal apply(cases "y = z2", simp_all)
-                  subgoal by (smt (z3) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
-                  subgoal by (smt (z3) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff) . .
+                  subgoal by (smt (verit, ccfv_threshold) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
+                  subgoal by (smt (verit, ccfv_threshold) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff) . .
               subgoal apply(cases "y = z1", simp_all)
-                subgoal by (smt (z3) freshA_vsubstA2 uu uu' vsubstA_chain_freshA vsubstA_commute_diff)
+                subgoal by (smt (verit, ccfv_threshold) freshA_vsubstA2 uu uu' vsubstA_chain_freshA vsubstA_commute_diff)
                 subgoal apply(cases "y = z2", simp_all)
-                  subgoal by (smt (z3) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
+                  subgoal by (smt (verit, ccfv_threshold) uu uu' vsubstA_chain vsubstA_chain_freshA vsubstA_commute_diff)
                   subgoal 
-                    by (smt (z3) freshA_vsubstA2 swapA_any uu uu' vsubstA_commute_diff) . . . . . . . .
+                    by (smt (verit, ccfv_threshold) freshA_vsubstA2 swapA_any uu uu' vsubstA_commute_diff) . . . . . . . .
 qed
 
 
@@ -129,7 +129,7 @@ lemma freshA_swapA_vsubstA:
   shows "swapA a y x = vsubstA a y x"
 proof-
   have "finite ({uu. \<not> freshA uu a} \<union> {x,y})"  
-  	by (simp add: cofinite_freshA)
+    by (simp add: cofinite_freshA)
   then obtain uu where uu: "uu \<noteq> x \<and> uu \<noteq> y \<and> freshA uu a" 
     by (metis (no_types, lifting) UnCI exists_var insertCI mem_Collect_eq)
   show ?thesis apply(subst swapA_any[of uu])
@@ -167,7 +167,7 @@ is written as sublocale inclusions. \<close>
 text \<open>... the object component: \<close>
 sublocale Renset_FinSupp < Sw: Nominal_Set where swapA = swapA
   apply standard unfolding freshA_swapA[symmetric] 
-	by (simp add: cofinite_freshA)
+  by (simp add: cofinite_freshA)
 
 text \<open>... the morphism component: \<close>
 sublocale Renset_Morphism < F: Nominal_Morphism where 

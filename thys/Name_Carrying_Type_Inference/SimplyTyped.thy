@@ -799,8 +799,6 @@ qed
 lift_definition infer :: "'a typing_ctx \<Rightarrow> 'a trm \<Rightarrow> type option" is ptrm_infer_type
 using ptrm_infer_type_alpha_equiv.
 
-export_code infer fresh_nat_inst.fresh_in_nat in Haskell
-
 lemma infer_simp:
   shows
     "infer \<Gamma> Unit = Some TUnit"
@@ -3261,4 +3259,7 @@ proof -
 qed
 
 end
+
+export_code infer \<open>fresh_in :: nat set \<Rightarrow> nat\<close> in Haskell
+
 end

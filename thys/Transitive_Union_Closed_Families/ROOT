@@ -1,0 +1,10 @@
+chapter AFP
+session "Transitive_Union_Closed_Families" =  "Pluennecke_Ruzsa_Inequality" +
+
+  options [timeout = 300]
+  theories
+    Transitive_Union_Closed_Families
+
+  document_files
+    "root.bib"
+    "root.tex"

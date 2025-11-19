@@ -419,7 +419,7 @@ fun prove_by_assoc_norm_tac n ctxt state =
     if null subgoals then Seq.empty else
       let
         (* Subgoal to be proved, in the form [A1, ..., An] ==> s = t *)
-        val subgoal = state |> Drule.cprems_of |> hd
+        val subgoal = hd (Thm.take_cprems_of 1 state)
         val (cprems, cconcl) = (Drule.strip_imp_prems subgoal, Drule.strip_imp_concl subgoal)
         val concl = HOLogic.dest_Trueprop (Thm.term_of cconcl)
 

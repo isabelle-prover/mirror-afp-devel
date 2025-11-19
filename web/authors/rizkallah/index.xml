@@ -1,59 +1,60 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>rizkallah on Archive of Formal Proofs
-    </title>
-    <link>/authors/rizkallah/</link>
-    <description>
-        Recent content in rizkallah 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/rizkallah/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Formally Verified Suffix Array Construction</title>
-          <link>/entries/SuffixArray.html</link>
-          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/SuffixArray.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
-          <link>/entries/Complx.html</link>
-          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Complx.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Compositional Security-Preserving Refinement for Concurrent Imperative Programs</title>
-          <link>/entries/Dependent_SIFUM_Refinement.html</link>
-          <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Dependent_SIFUM_Refinement.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
-          <link>/entries/Dependent_SIFUM_Type_Systems.html</link>
-          <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Dependent_SIFUM_Type_Systems.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>An Axiomatic Characterization of the Single-Source Shortest Path Problem</title>
-          <link>/entries/ShortestPath.html</link>
-          <pubDate>Wed, 22 May 2013 00:00:00 +0000</pubDate>
-          <guid>/entries/ShortestPath.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Maximum Cardinality Matching</title>
-          <link>/entries/Max-Card-Matching.html</link>
-          <pubDate>Thu, 21 Jul 2011 00:00:00 +0000</pubDate>
-          <guid>/entries/Max-Card-Matching.html</guid>
-          <description></description>
-        </item>
+    <title>Christine Rizkallah</title>
+    <link>https://isa-afp.org/authors/rizkallah/</link>
+    <description>AFP entries of Christine Rizkallah</description><item>
+  <title>Formalised Burrows-Wheeler Transform</title>
+  <link>https://isa-afp.org/entries/BurrowsWheeler.html</link>
+  <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Formalised Burrows-Wheeler Transform in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Formally Verified Suffix Array Construction</title>
+  <link>https://isa-afp.org/entries/SuffixArray.html</link>
+  <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Formally Verified Suffix Array Construction in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
+  <link>https://isa-afp.org/entries/Complx.html</link>
+  <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
+  <description>COMPLX: A Verification Framework for Concurrent Imperative Programs in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Compositional Security-Preserving Refinement for Concurrent Imperative Programs</title>
+  <link>https://isa-afp.org/entries/Dependent_SIFUM_Refinement.html</link>
+  <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+  <description>Compositional Security-Preserving Refinement for Concurrent Imperative Programs in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+<item>
+  <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
+  <link>https://isa-afp.org/entries/Dependent_SIFUM_Type_Systems.html</link>
+  <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
+  <description>A Dependent Security Type System for Concurrent Imperative Programs in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
+  <title>An Axiomatic Characterization of the Single-Source Shortest Path Problem</title>
+  <link>https://isa-afp.org/entries/ShortestPath.html</link>
+  <pubDate>Wed, 22 May 2013 00:00:00 +0000</pubDate>
+  <description>An Axiomatic Characterization of the Single-Source Shortest Path Problem in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Maximum Cardinality Matching</title>
+  <link>https://isa-afp.org/entries/Max-Card-Matching.html</link>
+  <pubDate>Thu, 21 Jul 2011 00:00:00 +0000</pubDate>
+  <description>Maximum Cardinality Matching in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+
   </channel>
 </rss>

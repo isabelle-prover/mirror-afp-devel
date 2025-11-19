@@ -7,7 +7,6 @@ chapter \<open>An alternative modelling of Recursive Functions\<close>
 theory Recs_alt_Def
   imports Main
     "HOL-Library.Nat_Bijection"
-    "HOL-Library.Discrete"
 begin
 
 
@@ -600,7 +599,7 @@ lemma BMax_rec_eq2:
 
 lemma BMax_rec_eq3:
   "BMax_rec R x = Max (Set.filter (\<lambda>z. R z) {..x} \<union> {0})"
-  by (simp add: BMax_rec_eq2 Set.filter_def)
+  by (simp add: BMax_rec_eq2)
 
 definition
   "rec_max1 f = PR Z (CN rec_ifz [CN f [CN S [Id 3 0], Id 3 2], CN S [Id 3 0], Id 3 1])"

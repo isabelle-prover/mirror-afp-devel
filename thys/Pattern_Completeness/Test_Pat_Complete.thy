@@ -5,18 +5,24 @@ theory Test_Pat_Complete
     Pattern_Completeness
     "HOL-Library.Code_Abstract_Char"
     "HOL-Library.Code_Target_Numeral"
+    "HOL-Library.RBT_Mapping" 
+    "HOL-Library.Product_Lexorder" 
+    "HOL-Library.List_Lexorder" 
+    "Show.Number_Parser" 
 begin
 
+subsection \<open>FSCD paper\<close>
+
 text \<open>turn error message into runtime error\<close>
-definition pat_complete_alg :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> bool" where 
-  "pat_complete_alg C D lhss = (
-  case decide_pat_complete_lhss C D lhss of Inl err \<Rightarrow> Code.abort (err (STR '''')) (\<lambda> _. True)
+definition pat_complete_alg_fscd :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> bool" where 
+  "pat_complete_alg_fscd C D lhss = (
+  case decide_pat_complete_lhss_fscd C D lhss of Inl err \<Rightarrow> Code.abort (err (STR '''')) (\<lambda> _. True)
     | Inr res \<Rightarrow> res)" 
 
 text \<open>turn error message into runtime error\<close>
-definition strong_quasi_reducible_alg :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> bool" where 
-  "strong_quasi_reducible_alg C D lhss = (
-  case decide_strong_quasi_reducible C D lhss of Inl err \<Rightarrow> Code.abort (err (STR '''')) (\<lambda> _. True)
+definition strong_quasi_reducible_alg :: "_ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> bool" where 
+  "strong_quasi_reducible_alg rn rv C D lhss = (
+  case decide_strong_quasi_reducible rn rv C D lhss of Inl err \<Rightarrow> Code.abort (err (STR '''')) (\<lambda> _. True)
     | Inr res \<Rightarrow> res)" 
 
 text \<open>Examples\<close>
@@ -26,6 +32,23 @@ definition "nat_bool = [
    ((''true'', []), ''bool''),
    ((''false'', []), ''bool'')
    ]"
+
+definition rn_string where "rn_string x = ''x'' @ show (x :: nat)"
+definition rv_string where "rv_string x = ''y'' @ x"
+
+lemma renaming_string: "renaming_funs rn_string rv_string"
+  using inj_show_nat 
+  unfolding renaming_funs_def 
+  by (auto simp: inj_def rn_string_def rv_string_def) 
+
+definition "decide_pat_complete_lhss_string = decide_pat_complete_lhss rn_string rv_string" 
+definition "decide_strong_qd_lhss_string = decide_strong_quasi_reducible rn_string rv_string" 
+
+lemmas decide_pat_complete_lhss_string = decide_pat_complete_lhss[OF _ renaming_string,
+    folded decide_pat_complete_lhss_string_def]
+
+lemmas decide_strong_qd_lhss_string = decide_strong_quasi_reducible[OF _ renaming_string,
+    folded decide_strong_qd_lhss_string_def]
 
 definition "int_bool = [ 
    ((''zero'', []), ''int''),
@@ -59,28 +82,36 @@ definition "even_lhss_int = [
   Fun ''pred'' [Fun ''succ'' [Var ''x'']]
   ]"
 
-lemma decide_pat_complete_wrapper: 
-  assumes "(case decide_pat_complete_lhss C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
+lemma decide_pat_complete_wrapper_fscd: 
+  assumes "(case decide_pat_complete_lhss_fscd C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
   shows "pat_complete_lhss (map_of C) (map_of D) (set lhss) = res" 
-  using decide_pat_complete_lhss[of C D lhss] assms by (auto split: sum.splits)
+  using decide_pat_complete_lhss_fscd[of C D lhss] assms by (auto split: sum.splits)
+
+lemma decide_pat_complete_wrapper: 
+  assumes "(case decide_pat_complete_lhss_string C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
+  shows "pat_complete_lhss (map_of C) (map_of D) (set lhss) = res" 
+  using decide_pat_complete_lhss_string[of C D lhss] assms by (auto split: sum.splits)
 
 lemma decide_strong_quasi_reducible_wrapper: 
-  assumes "(case decide_strong_quasi_reducible C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
+  assumes "(case decide_strong_qd_lhss_string C D lhss of Inr b \<Rightarrow> Some b | Inl _ \<Rightarrow> None) = Some res"
   shows "strong_quasi_reducible (map_of C) (map_of D) (set lhss) = res" 
-  using decide_strong_quasi_reducible[of C D lhss] assms by (auto split: sum.splits)
+  using decide_strong_qd_lhss_string[of C D lhss] assms by (auto split: sum.splits)
 
 lemma "pat_complete_lhss (map_of nat_bool) (map_of even_nat) (set even_lhss)"
-  apply (subst decide_pat_complete_wrapper[of _ _ _ True])
+  apply (subst decide_pat_complete_wrapper_fscd[of _ _ _ True])
   by eval+
 
 lemma "\<not> pat_complete_lhss (map_of int_bool) (map_of even_int) (set even_lhss_int)" 
-  apply (subst decide_pat_complete_wrapper[of _ _ _ False])
+  apply (subst decide_pat_complete_wrapper_fscd[of _ _ _ False])
   by eval+
+
+value "decide_pat_complete_linear_lhss int_bool even_int even_lhss_int" 
 
 
 lemma "strong_quasi_reducible (map_of int_bool) (map_of even_int) (set even_lhss_int)" 
   apply (subst decide_strong_quasi_reducible_wrapper[of _ _ _ True])
   by eval+
+
 
 definition "non_lin_lhss = [
   Fun ''f'' [Var ''x'', Var ''x'', Var ''y''],
@@ -89,12 +120,30 @@ definition "non_lin_lhss = [
   ]"
 
 lemma "pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''bool'',''bool'',''bool'']),''bool'')]) (set non_lin_lhss)" 
+  apply (subst decide_pat_complete_wrapper_fscd[of _ _ _ True])
+  by eval+
+
+lemma "\<not> pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''nat'',''nat'',''nat'']),''bool'')]) (set non_lin_lhss)" 
+  apply (subst decide_pat_complete_wrapper_fscd[of _ _ _ False])
+  by eval+
+
+(* the algorithm for linear lhss returns a wrong result here; the reason is that 
+   it does not check that the input is indeed linear *)
+value "decide_pat_complete_linear_lhss nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss" 
+
+(* the algorithm from the journal submission can of course also be used for the non-linear problems *)
+lemma "pat_complete_lhss (map_of nat_bool) (map_of even_nat) (set even_lhss)" 
   apply (subst decide_pat_complete_wrapper[of _ _ _ True])
   by eval+
 
 lemma "\<not> pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''nat'',''nat'',''nat'']),''bool'')]) (set non_lin_lhss)" 
   apply (subst decide_pat_complete_wrapper[of _ _ _ False])
   by eval+
+
+lemma "pat_complete_lhss (map_of nat_bool) (map_of [((''f'',[''bool'',''bool'',''bool'']),''bool'')]) (set non_lin_lhss)" 
+  apply (subst decide_pat_complete_wrapper[of _ _ _ True])
+  by eval+
+
 
 definition "testproblem (c :: nat) n = (let s = String.implode; s = id;
     c1 = even c;
@@ -140,9 +189,9 @@ definition createHaskellInput :: "integer \<Rightarrow> integer \<Rightarrow> (i
     (_,_,lhss) \<Rightarrow> STR ''module Test(g) where\<newline>\<newline>data B = TT | FF\<newline>\<newline>'' + 
       foldr (\<lambda> l s. (term_to_haskell l + STR '' = TT\<newline>'' + s)) lhss (STR ''''))" 
 
-definition pat_complete_alg_test :: "integer \<Rightarrow> integer \<Rightarrow> (integer list * integer list)list \<Rightarrow> bool" where
-  "pat_complete_alg_test c n perms = (case test_problem_integer c n perms of 
-    (C,D,lhss) \<Rightarrow> pat_complete_alg C D lhss)" 
+definition pat_complete_alg_test_fscd :: "integer \<Rightarrow> integer \<Rightarrow> (integer list * integer list)list \<Rightarrow> bool" where
+  "pat_complete_alg_test_fscd c n perms = (case test_problem_integer c n perms of 
+    (C,D,lhss) \<Rightarrow> pat_complete_alg_fscd C D lhss)" 
 
 definition show_pat_complete_test :: "integer \<Rightarrow> integer \<Rightarrow> (integer list * integer list)list \<Rightarrow> String.literal" where
   "show_pat_complete_test c n perms = (case test_problem_integer c n perms of (_,_,lhss) 
@@ -160,17 +209,6 @@ definition create_agcp_input :: "(String.literal \<Rightarrow> 't) \<Rightarrow>
       
       patlist = map (\<lambda> t. case t of Fun _ ps \<Rightarrow> map tt ps) lhss
     in ([pslist], patlist))"
-
-text \<open>connection to AGCP, which is written in SML, and 
-  SML-export of verified pattern completeness algorithm\<close>
-export_code 
-  pat_complete_alg_test 
-  show_pat_complete_test 
-  create_agcp_input
-  pat_complete_alg
-  strong_quasi_reducible_alg
-  Var
-  in SML module_name Pat_Complete
 
 
 text \<open>tree automata encoding\<close>
@@ -251,14 +289,194 @@ value "show_pat_complete_test 4 4 []"
 
 value "createHaskellInput 4 4 []" 
 
-text \<open>connection to FORT-h, generation of Haskell-examples, and Haskell tests of 
-  verified pattern completeness algorithm\<close>
+
+subsection \<open>Journal Submission\<close>
+
+definition pat_complete_alg_linear :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v)term list \<Rightarrow> bool" where 
+  "pat_complete_alg_linear C D lhss = (
+  case decide_pat_complete_linear_lhss C D lhss of Inl err \<Rightarrow> Code.abort (err (STR '''')) (\<lambda> _. True)
+    | Inr res \<Rightarrow> res)" 
+
+definition pat_complete_alg_new :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,string)term list \<Rightarrow> bool" where 
+  "pat_complete_alg_new C D lhss = (
+  case decide_pat_complete_lhss_string C D lhss of Inl err \<Rightarrow> Code.abort (err (STR '''')) (\<lambda> _. True)
+    | Inr res \<Rightarrow> res)" 
+
+
+value (code) "pat_complete_alg_linear nat_bool even_nat even_lhss" (* return True *)
+value (code) "pat_complete_alg_linear int_bool even_int even_lhss_int" (* return False *)
+
+value (code) "pat_complete_alg_fscd nat_bool [((''f'',[''bool'',''bool'',''bool'']),''bool'')] non_lin_lhss" (* return True *)
+value (code) "pat_complete_alg_fscd nat_bool [((''f'',[''nat'',''nat'',''nat'']),''bool'')] non_lin_lhss" (* return False *)
+
+
+definition pat_complete_alg_test_linear :: "integer \<Rightarrow> integer \<Rightarrow> (integer list * integer list)list \<Rightarrow> bool" where
+  "pat_complete_alg_test_linear c n perms = (case test_problem_integer c n perms of 
+    (C,D,lhss) \<Rightarrow> pat_complete_alg_linear C D lhss)" 
+
+definition pat_complete_alg_test_new :: "integer \<Rightarrow> integer \<Rightarrow> (integer list * integer list)list \<Rightarrow> bool" where
+  "pat_complete_alg_test_new c n perms = (case test_problem_integer c n perms of 
+    (C,D,lhss) \<Rightarrow> pat_complete_alg_new C D lhss)" 
+
+definition test_problem_nl1 :: "integer \<Rightarrow> _" where
+  "test_problem_nl1 n = (let 
+    n' = int_of_integer n;
+    s = (\<lambda> i. CHR ''s'' # show i);
+    c = (\<lambda> i. ((CHR ''c'' # show i, if i = 0 then [] else [s (i - 1), s (i - 1)]), s i ));
+    C = map c [0..n'];
+    D = [((''f'', [s n', s n']), s 0)];
+    lhss = [Fun ''f'' [Var ''x'', Var ''x'']]
+  in (C, D, lhss))"
+
+definition test_problem_nl2 :: "integer \<Rightarrow> _" where
+  "test_problem_nl2 n = (case test_problem_nl1 n of
+    (C, D, lhss) \<Rightarrow> (((''d'', []), ''s0'') # C, D, lhss))" 
+
+definition test_problem_nl3 :: "integer \<Rightarrow> _" where
+  "test_problem_nl3 n = (let 
+    n' = int_of_integer (n + 1);
+    s = (\<lambda> i. CHR ''s'' # show i);
+    x = (\<lambda> i. Var (CHR ''x'' # show i));
+    cSym = (\<lambda> i. CHR ''c'' # show i);
+    c = (\<lambda> i. ((cSym i, if i = 0 then [] else [s (i - 1), s (i - 1)]), s i));
+    C = map c [0..n'];
+    D = [((''f'', map s [0..n']), s 0)];
+    lhss = map (\<lambda> k. (Fun ''f'' (map (x(k + 1 := Fun (cSym (k + 1)) [x k, x k])) [0..n']))) [0..n' - 1]
+  in (C, D, lhss))"
+
+definition test_problem_nl4 :: "integer \<Rightarrow> _" where
+  "test_problem_nl4 n = (case test_problem_nl3 n of
+    (C, D, lhss) \<Rightarrow> (((''d'', []), ''s0'') # C, D, lhss))" 
+
+definition test_pigeon_hole :: "int \<Rightarrow> nat \<Rightarrow> _" where
+  "test_pigeon_hole n m = (let
+     s = ''s'';
+     f = ''f'';
+     x = (\<lambda> i. Var (CHR ''x'' # show i));
+     y = Var ''y'';
+     C = map (\<lambda> i. (((CHR ''c'' # show i), [] :: string list), s)) [0 .. n];
+     D = [((f, map (\<lambda> _. s) [0..<Suc m]), s)];
+     xs = map x [0..<Suc m];
+     l = (\<lambda> i j. xs [ i := y, j := y]); 
+     lhss = List.maps (\<lambda> i. let xsi = xs [i := y] in
+         map (\<lambda> j. Fun f (xsi[ j := y ])) [Suc i ..< Suc m]) [0..<m]
+   in (C, D, lhss))" 
+
+definition test_problem_nl5 :: "integer \<Rightarrow> _" where
+  "test_problem_nl5 n = test_pigeon_hole (int_of_integer n) (nat_of_integer (n + 1))" 
+
+definition test_problem_nl6 :: "integer \<Rightarrow> _" where
+  "test_problem_nl6 n = test_pigeon_hole (int_of_integer (n + 1)) (nat_of_integer (n + 1))" 
+
+
+definition test_problem_nl :: "integer \<Rightarrow> _" where
+  "test_problem_nl c = (if c = 1 then test_problem_nl1
+    else if c = 2 then test_problem_nl2
+    else if c = 3 then test_problem_nl3
+    else if c = 4 then test_problem_nl4
+    else if c = 5 then test_problem_nl5
+    else if c = 6 then test_problem_nl6
+    else (\<lambda> _. ([],[],[])))"  
+
+fun show_term :: "(string,string)term \<Rightarrow> showsl" where
+  "show_term (Var x) = (+) (String.implode x)" 
+| "show_term (Fun f []) = (+) (String.implode f)" 
+| "show_term (Fun f ts) = showsl_paren (\<lambda> s. String.implode f + STR '' '' + 
+    showsl_sep id ((+) STR '' '') (map show_term ts) s)" 
+
+
+definition show_pat_complete_test_nl :: "integer \<Rightarrow> integer \<Rightarrow> String.literal" where
+  "show_pat_complete_test_nl c n = (case test_problem_nl c n of 
+    (C,D,lhss) \<Rightarrow> let sorts = remdups (map snd C);
+      baseS = snd (hd D);
+      baseC = (fst o fst o hd o filter (\<lambda> ((_,ss),s). ss = [] \<and> s = baseS)) C;
+      tos = String.implode;
+      s_sym = (\<lambda> ((f,ss),s). STR ''(fun '' + tos f + STR '' '' + 
+       (if ss = [] then tos s else STR ''(-> '' + showsl_sep ((+) o tos) ((+) STR '' '') (ss @ [s]) (STR '')''))
+        + STR '')'');
+      rule = (\<lambda> l. let sl = show_term l (STR '''') in STR ''(rule '' + sl + STR '' '' + tos baseC + STR '')'')
+ 
+     in showsl_sep (+) showsl_nl 
+      ([STR ''(format MSTRS)''] @
+      map (\<lambda> s. STR ''(sort '' + tos s + STR '')'') sorts @
+      map s_sym C @ map s_sym D @
+      map rule lhss
+      )
+     ) (STR '''')" 
+
+value (code) "show_pat_complete_test_nl 1 3" 
+
+definition pat_complete_alg_test_nl_new :: "integer \<Rightarrow> integer  \<Rightarrow> bool" where
+  "pat_complete_alg_test_nl_new c n = (case test_problem_nl c n of 
+    (C,D,lhss) \<Rightarrow> pat_complete_alg_new C D lhss)" 
+
+definition pat_complete_alg_test_nl_fscd :: "integer \<Rightarrow> integer  \<Rightarrow> bool" where
+  "pat_complete_alg_test_nl_fscd c n = (case test_problem_nl c n of 
+    (C,D,lhss) \<Rightarrow> pat_complete_alg_fscd C D lhss)" 
+
+value(code) "showsl (test_problem_nl1 2) (STR '''')" 
+lemma "pat_complete_alg_test_nl_new 1 2" by eval
+
+value(code) "showsl (test_problem_nl2 2) (STR '''')"
+lemma "\<not> pat_complete_alg_test_nl_new 2 2" by eval
+
+value(code) "showsl (test_problem_nl3 2) (STR '''')" 
+lemma "pat_complete_alg_test_nl_new 3 2" by eval
+
+value(code) "showsl (test_problem_nl4 2) (STR '''')"
+lemma "\<not> pat_complete_alg_test_nl_new 4 2" by eval
+
+value(code) "showsl (test_problem_nl5 2) (STR '''')" 
+lemma "pat_complete_alg_test_nl_new 5 2" by eval
+
+value(code) "showsl (test_problem_nl6 2) (STR '''')"
+lemma "\<not> pat_complete_alg_test_nl_new 6 2" by eval
+
+declare [[code drop: "equal_class.equal :: bool \<Rightarrow> bool \<Rightarrow> bool"]]
+
+(* TODO: omit these code equation setup, once it has been fixed *)
+lemma equal_bool_code[code]:  
+  "equal_class.equal p False = (\<not> p)" 
+  "equal_class.equal p True = p"
+  unfolding equal_eq by auto
+(* END TODO *)
+
+subsection \<open>Export Code to SML and Haskell\<close>
+
+text \<open>Connection to AGCP, which is written in SML, and 
+  SML-export of verified pattern completeness algorithms\<close>
+
+export_code
+  pat_complete_alg_test_fscd
+  pat_complete_alg_test_linear
+  pat_complete_alg_test_new
+  pat_complete_alg_test_nl_new
+  pat_complete_alg_test_nl_fscd
+  show_pat_complete_test 
+  create_agcp_input
+  pat_complete_alg_fscd
+  strong_quasi_reducible_alg
+  Var
+  in SML module_name Pat_Complete 
+  (* locally stored in file "../experiments/SML/src-agcp-v0.02/src/pat_complete_tests/pat_complete.sml" *)
+
+
+text \<open>Connection to FORT, which is written in Haskell, and 
+  Haskell-export of verified pattern completeness algorithms\<close>
+
 export_code encodeAutomata 
   showAutomata
   patCompleteAutomataTest
   show_pat_complete_test
-  pat_complete_alg_test
+  show_pat_complete_test_nl
+  pat_complete_alg_test_fscd
+  pat_complete_alg_test_linear
+  pat_complete_alg_test_new
+  pat_complete_alg_test_nl_new
+  pat_complete_alg_test_nl_fscd
   createHaskellInput
   in Haskell module_name Pat_Test_Generated 
+  (* locally stored in file "../experiments/Haskell/pat-complete-0.1.0.0" *)
+
 
 end

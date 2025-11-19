@@ -1,0 +1,11 @@
+chapter AFP
+
+session Generalized_Cauchy_Davenport = Jacobson_Basic_Algebra +
+ options [timeout = 300] 
+ theories
+    Generalized_Cauchy_Davenport_preliminaries
+    Generalized_Cauchy_Davenport_main_proof
+ document_files
+    "root.bib"
+    "root.tex"                                
+                                    

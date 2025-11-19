@@ -79,8 +79,8 @@ fun compressed :: "qtr \<Rightarrow> bool" where
   "compressed (Q t0 t1 t2 t3) = (compressed t0 \<and> compressed t1 \<and> compressed t2 \<and> compressed t3)"
 
 lemma compressed_Q:
-  "compressed (Q t1 t2 t3 t4) \<Longrightarrow> (compressed t1 \<and> compressed t2 \<and> compressed t3 \<and> compressed t4)"
-  by(cases "Q t1 t2 t3 t4" rule: compressed.cases)(auto)
+  "compressed (Q t0 t1 t2 t3) \<Longrightarrow> (compressed t0 \<and> compressed t1 \<and> compressed t2 \<and> compressed t3)"
+  by(cases "Q t0 t1 t2 t3" rule: compressed.cases)(auto)
 
 definition Qma :: "nat \<Rightarrow> ma \<Rightarrow> ma \<Rightarrow> ma \<Rightarrow> ma \<Rightarrow> ma" where
 "Qma n a b c d =
@@ -116,7 +116,7 @@ subsection "Matrix Operations on Trees"
 fun Qc :: "qtr \<Rightarrow> qtr \<Rightarrow> qtr \<Rightarrow> qtr \<Rightarrow> qtr" where
 "Qc (L x0) (L x1) (L x2) (L x3) =
    (if x1=0 \<and> x2=0 \<and> x0=x3 then L x0 else Q (L x0) (L x1) (L x2) (L x3))" |
-"Qc t1 t2 t3 t4 = Q t1 t2 t3 t4"
+"Qc t0 t1 t2 t3 = Q t0 t1 t2 t3"
 
 lemma ma_Suc_Qc: "ma (Suc n) (Qc t0 t1 t2 t3) = ma (Suc n) (Q t0 t1 t2 t3)"
 by(induction t0 t1 t2 t3 rule: Qc.induct)(auto simp: diag_ma_Suc)

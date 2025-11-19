@@ -4,7 +4,7 @@ theory Lift_Root_Step
     Rewriting
     FOR_Certificate
     Context_Extensions
-    Multihole_Context
+    First_Order_Rewriting.Multihole_Context
 begin
 
 text \<open>Closure under all contexts\<close>
@@ -74,11 +74,11 @@ lemma compatible_p [simp]:
   by rule (case_tac C, auto)+
 
 lemma gmctxtcl_funas_sigcl:
-  "all_ctxt_closed \<F> (gmctxtcl_funas \<F> \<R>)"
+  "all_ctxt_closed_gterm \<F> (gmctxtcl_funas \<F> \<R>)"
   by (intro gmctxtex_onp_sig_closed) auto
 
 lemma gctxtex_funas_nroot_sigcl:
-  "all_ctxt_closed \<F> (gmctxtex_funas_nroot \<F> \<R>)"
+  "all_ctxt_closed_gterm \<F> (gmctxtex_funas_nroot \<F> \<R>)"
   by (intro gmctxtex_onp_sig_closed) auto
 
 lemma gmctxtcl_funas_strict_funcl:
@@ -183,7 +183,9 @@ subsection \<open>Equivalence lemmas\<close>
 lemma grrstep_subst_cl_conv:
   "grrstep \<R> = gsubst_cl \<R>"
   unfolding gsubst_cl_def grrstep_def rrstep_def rstep_r_p_s_def
-  by (auto, metis ground_substI ground_term_of_gterm term_of_gterm_inv) blast
+  apply auto
+   apply (metis ground_subst ground_term_of_gterm term_of_gterm_inv)
+  by blast
 
 lemma gnrrstepD_gnrrstep_conv:
   "gnrrstep \<R> = gnrrstepD UNIV (gsubst_cl \<R>)" (is "?Ls = ?Rs")
@@ -232,7 +234,7 @@ proof -
     proof (induct arbitrary: s t)
       case (root_step u v \<sigma>)
       then have "(s, t) \<in> gsubst_cl \<R>" unfolding gsubst_cl_def
-        by auto (metis ground_substI ground_term_of_gterm term_of_gterm_inv)
+        by auto (metis ground_subst ground_term_of_gterm term_of_gterm_inv) 
       then show ?case by auto
     next
       case (par_step_fun ts ss f)
@@ -371,7 +373,7 @@ lemma R_in_gtrancl_rel:
 proof
   fix s t assume ass: "(s, t) \<in> \<R>"
   then have "(s, s) \<in> gmctxtcl_funas \<F> \<R>" "(t, t) \<in> gmctxtcl_funas \<F> \<R>" using assms
-    using all_ctxt_closed_imp_reflx_on_sig[OF gmctxtcl_funas_sigcl, of \<F> \<R>]
+    using all_ctxt_closed_gterm_imp_reflx_on_sig[OF gmctxtcl_funas_sigcl, of \<F> \<R>]
     by auto
   then show "(s, t) \<in> gtrancl_rel \<F> \<R>" using ass
     by (auto simp: gmctxt_cl_gmctxtex_onp_conv relcomp_unfold gtrancl_rel_def)
@@ -391,8 +393,10 @@ lemma gtrancl_rel_cl:
   shows "gmctxtcl_funas \<F> (gtrancl_rel \<F> \<R>) \<subseteq> (gmctxtcl_funas \<F> \<R>)\<^sup>+"
 proof -
  have *:"(s, t) \<in> \<R> \<Longrightarrow> (s, t) \<in> gmctxtcl_funas \<F> \<R>" for s t
-    by (metis bot.extremum funas_gmctxt.simps(2) gmctxtex_closure subsetD)
-  have "gmctxtcl_funas \<F> ((gmctxtcl_funas \<F> \<R>)\<^sup>+) \<subseteq> (gmctxtcl_funas \<F> \<R>)\<^sup>+"
+   by (metis bot.extremum funas_gmctxt.simps(2) gmctxtex_closure subsetD)
+  have "gmctxtcl_funas \<F> \<R> \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
+    using \<open>\<R> \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>\<close> by simp
+  hence "gmctxtcl_funas \<F> ((gmctxtcl_funas \<F> \<R>)\<^sup>+) \<subseteq> (gmctxtcl_funas \<F> \<R>)\<^sup>+"
     unfolding gtrancl_rel_def using relf_on_gmctxtcl_funas[OF assms]
     by (intro gmctxtex_onp_substep_trancl, intro gmctxtex_pred_cmp_subseteq2)
        (auto simp: less_sup_gmctxt_args_funas_gmctxt refl_on_def)
@@ -597,7 +601,7 @@ next
   show ?case using lift_root_step_sig_transfer2[OF step(1) assms(2)] step(3,4)
       lift_root_step_sig'[of R UNIV \<G> \<G> W X, THEN subsetD, of "(s, s')"] assms(2)
     by (auto simp: \<T>\<^sub>G_funas_gterm_conv \<T>\<^sub>G_equivalent_def)
-       (smt SigmaI UNIV_I image_subset_iff snd_conv subrelI trancl_into_trancl2)
+       (smt (verit) SigmaI UNIV_I image_subset_iff snd_conv subrelI trancl_into_trancl2)
 qed
 
 lemma lift_root_stepseq_sig_transfer:

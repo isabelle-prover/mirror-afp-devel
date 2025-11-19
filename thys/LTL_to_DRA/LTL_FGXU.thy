@@ -789,7 +789,7 @@ lemma ltl_prop_equiv_quotient_restricted_to_P_finite:
   shows "finite {Abs \<phi> | \<phi>. nested_propos \<phi> \<subseteq> P}"
 proof -
   have "inj_on sat_models {Abs \<phi> |\<phi>. nested_propos \<phi> \<subseteq> P}"
-    using sat_models_inj subset_inj_on by auto
+    using sat_models_inj inj_on_subset by auto
   thus ?thesis
     using finite_imageD[OF sat_models_finite_image[OF assms]] by fast
 qed

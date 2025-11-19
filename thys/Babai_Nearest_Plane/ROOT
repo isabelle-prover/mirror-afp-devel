@@ -1,0 +1,12 @@
+chapter AFP
+
+session Babai_Nearest_Plane = LLL_Factorization +
+  options [timeout = 600]
+  sessions
+    BenOr_Kozen_Reif
+  theories
+    Babai_Algorithm
+    Babai_Correct
+  document_files
+    "root.tex"
+    "root.bib"

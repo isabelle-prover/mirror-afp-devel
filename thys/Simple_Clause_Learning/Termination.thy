@@ -138,10 +138,10 @@ lemma "\<M>_skip_fact_reso' C (propagate_lit K D \<gamma> # \<Gamma>) =
   (let n = count C (- (K \<cdot>l \<gamma>)) in n # \<M>_skip_fact_reso' (C + repeat_mset n (D \<cdot> \<gamma>)) \<Gamma>)"
   by (simp add: propagate_lit_def)
 
-fun \<M> :: "_ \<Rightarrow> _ \<Rightarrow> ('f, 'v) state \<Rightarrow>
+fun \<M> :: "_ \<Rightarrow> ('f, 'v) state \<Rightarrow>
   bool \<times> ('f, 'v) Term.term literal fset \<times> nat list \<times> nat" where
-  "\<M> N \<beta> (\<Gamma>, U, None) = (True, \<M>_prop_deci \<beta> \<Gamma>, [], 0)" |
-  "\<M> N \<beta> (\<Gamma>, U, Some (C, \<gamma>)) = (False, {||}, \<M>_skip_fact_reso \<Gamma> (C \<cdot> \<gamma>), size C)"
+  "\<M> \<beta> (\<Gamma>, U, None) = (True, \<M>_prop_deci \<beta> \<Gamma>, [], 0)" |
+  "\<M> \<beta> (\<Gamma>, U, Some (C, \<gamma>)) = (False, {||}, \<M>_skip_fact_reso \<Gamma> (C \<cdot> \<gamma>), size C)"
 
 lemma length_\<M>_skip_fact_reso[simp]: "length (\<M>_skip_fact_reso \<Gamma> C) = length \<Gamma>"
   by (induction \<Gamma> arbitrary: C) (simp_all add: Let_def)
@@ -191,7 +191,7 @@ proof -
           ((<) :: nat \<Rightarrow> nat \<Rightarrow> bool)))"
 
   show "wfp_on {S. invars S} scl_without_backtrack\<inverse>\<inverse>"
-  proof (rule wfp_on_if_convertible_to_wfp)
+  proof (rule wfp_on_if_convertible_to_wfp_on)
     fix S' S :: "('f, 'v) state"
     assume "S' \<in> {S. invars S}" and "S \<in> {S. invars S}" and step: "scl_without_backtrack\<inverse>\<inverse> S' S"
     hence
@@ -203,11 +203,11 @@ proof -
       "initial_lits_generalize_learned_trail_conflict N S'"
       by (simp_all add: invars_def)
 
-    from step show "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+    from step show "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       unfolding conversep_iff scl_without_backtrack_def sup_apply sup_bool_def
     proof (elim disjE)
       assume "decide N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: decide.cases)
         case (decideI L \<gamma> \<Gamma> U)
         have "\<M>_prop_deci \<beta> ((L \<cdot>l \<gamma>, None) # \<Gamma>) |\<subset>| \<M>_prop_deci \<beta> \<Gamma>"
@@ -237,7 +237,7 @@ proof -
       qed
     next
       assume "propagate N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: propagate.cases)
         case (propagateI C U L C' \<gamma> C\<^sub>0 C\<^sub>1 \<Gamma> \<mu>)
 
@@ -281,7 +281,7 @@ proof -
       qed
     next
       assume "conflict N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: conflict.cases)
         case (conflictI D U \<gamma> \<Gamma>)
         show ?thesis
@@ -289,7 +289,7 @@ proof -
       qed
     next
       assume "skip N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: skip.cases)
         case (skipI L D \<sigma> n \<Gamma> U)
         have "(\<M>_skip_fact_reso \<Gamma> (D \<cdot> \<sigma>), \<M>_skip_fact_reso ((L, n) # \<Gamma>) (D \<cdot> \<sigma>)) \<in>
@@ -300,7 +300,7 @@ proof -
       qed
     next
       assume "factorize N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: factorize.cases)
         case (factorizeI L \<gamma> L' \<mu> \<Gamma> U D)
 
@@ -325,7 +325,7 @@ proof -
       qed
     next
       assume "resolve N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: resolve.cases)
         case (resolveI \<Gamma> \<Gamma>' K D \<gamma>\<^sub>D L \<gamma>\<^sub>C \<rho>\<^sub>C \<rho>\<^sub>D C \<mu> \<gamma> U)
         from \<open>ground_closures S\<close> have
@@ -384,9 +384,9 @@ proof -
       qed
     qed
   next
-    show "wfp_on (\<M> N \<beta> ` {S. invars S}) ?less"
+    show "wfp_on (\<M> \<beta> ` {S. invars S}) ?less"
     proof (rule wfp_on_subset)
-      show "\<M> N \<beta> ` {S. invars S} \<subseteq> UNIV"
+      show "\<M> \<beta> ` {S. invars S} \<subseteq> UNIV"
         by simp
     next
       show "wfp ?less"
@@ -458,7 +458,7 @@ corollary termination_stragegy_without_back:
       factorize N \<beta> \<squnion> resolve N \<beta>"
   assumes strategy_stronger: "\<And>S S'. strategy S S' \<Longrightarrow> scl_without_backtrack S S'"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_strong)
+proof (rule wfp_on_mono_strong)
   show "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
   proof (rule wfp_on_subset)
     show "wfp_on {S. scl_without_backtrack\<^sup>*\<^sup>* initial_state S} scl_without_backtrack\<inverse>\<inverse>"
@@ -732,7 +732,7 @@ theorem termination_regular_scl_invars:
       sound_state N \<beta> \<sqinter> almost_no_conflict_with_trail N \<beta> \<sqinter> regular_conflict_resolution N \<beta>"
   shows
     "wfp_on {S. invars S} (regular_scl N \<beta>)\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_strong)
+proof (rule wfp_on_mono_strong)
   fix S S' assume "(regular_scl N \<beta>)\<inverse>\<inverse> S S'"
   thus "(backtrack N \<beta> \<squnion> (propagate N \<beta> \<squnion> decide N \<beta> \<squnion> conflict N \<beta> \<squnion> skip N \<beta> \<squnion> factorize N \<beta> \<squnion>
       resolve N \<beta>))\<inverse>\<inverse> S S'"
@@ -857,7 +857,7 @@ corollary termination_projectable_strategy:
     "\<And>S S'. strategy\<^sup>*\<^sup>* strategy_init S \<Longrightarrow> strategy S S' \<Longrightarrow> regular_scl N \<beta> (proj S) (proj S')" and
     initial_state: "proj strategy_init = initial_state"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* strategy_init S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_stronger)
+proof (rule wfp_on_mono_stronger)
   show "wfp_on {proj S | S. strategy\<^sup>*\<^sup>* strategy_init S} (regular_scl N \<beta>)\<inverse>\<inverse>"
   proof (rule wfp_on_subset)
     show "wfp_on {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"

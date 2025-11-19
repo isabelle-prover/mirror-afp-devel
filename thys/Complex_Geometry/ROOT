@@ -1,9 +1,8 @@
 chapter AFP
 
-session Complex_Geometry = HOL +
+session Complex_Geometry = "HOL-Analysis" +
   options [timeout = 1200]
   sessions
-    "HOL-Analysis"
     "HOL-Library"
   theories
     More_Transcendental

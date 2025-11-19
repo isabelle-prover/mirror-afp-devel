@@ -38,11 +38,10 @@ begin
 
   subsubsection \<open>Set and Reset Bit\<close>
 
-  function single_bit :: "nat \<Rightarrow> ('a::len) word list"
+  function single_bit :: "nat \<Rightarrow> 'a::len word list"
     where "single_bit n = (
-      if (n<LENGTH('a)) then
-        [set_bit 0 n True]
-      else 0#single_bit (n-LENGTH('a)))"
+      if n < LENGTH('a) then [set_bit n 0]
+      else 0 # single_bit (n - LENGTH('a)))"
     by pat_completeness auto
   termination
     apply (relation "measure id")

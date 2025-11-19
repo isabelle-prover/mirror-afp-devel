@@ -85,7 +85,7 @@ lemma rel_surjectiveI:
 lemma rel_surjectiveE:
   assumes "rel_surjective R"
   obtains x where "R x y"
-  using assms by (urule (e) rel_surjective_atE where chained = insert) simp
+  using assms by (urule (e) rel_surjective_atE chained: insert) simp
 
 lemma in_codom_if_rel_surjective:
   assumes "rel_surjective R"

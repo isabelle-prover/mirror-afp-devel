@@ -10,7 +10,7 @@ begin
 consts the_inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 definition "the_inverse_on_pred P f \<equiv> \<lambda>y. THE x : P. y = f x"
-adhoc_overloading the_inverse_on the_inverse_on_pred
+adhoc_overloading the_inverse_on \<rightleftharpoons> the_inverse_on_pred
 
 lemma the_inverse_on_eq_if_injective_onI:
   assumes "injective_on P f"
@@ -28,7 +28,7 @@ lemma the_inverse_on_app_eq_if_injective_onI [simp]:
 consts the_inverse :: "'a \<Rightarrow> 'b"
 
 definition "the_inverse_fun \<equiv> the_inverse_on (\<top> :: 'a \<Rightarrow> bool)"
-adhoc_overloading the_inverse the_inverse_fun
+adhoc_overloading the_inverse \<rightleftharpoons> the_inverse_fun
 
 lemma the_inverse_eq_the_inverse_on:
   "the_inverse = the_inverse_on (\<top> :: 'a \<Rightarrow> bool)"
@@ -134,12 +134,12 @@ lemma inverseI [intro]:
 lemma inverseD:
   assumes "inverse f g"
   shows "g (f x) = x"
-  using assms by (urule (d) inverse_onD where chained = insert) simp_all
+  using assms by (urule (d) inverse_onD chained: insert) simp_all
 
 lemma inverseE:
   assumes "inverse f g"
   obtains "\<And>x. g (f x) = x"
-  using assms by (urule (e) inverse_onE where chained = insert) simp_all
+  using assms by (urule (e) inverse_onE chained: insert) simp_all
 
 lemma inverse_on_if_inverse:
   fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"

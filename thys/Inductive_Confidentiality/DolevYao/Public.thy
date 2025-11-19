@@ -43,11 +43,11 @@ abbreviation
 text\<open>These abbreviations give backward compatibility.  They represent the
 simple situation where the signature and encryption keys are the same.\<close>
 
-abbreviation
+abbreviation (input)
   pubK :: "agent => key" where
   "pubK A == pubEK A"
 
-abbreviation
+abbreviation (input)
   priK :: "agent => key" where
   "priK A == invKey (pubEK A)"
 
@@ -404,14 +404,14 @@ struct
 
 val analz_image_freshK_ss =
   simpset_of (@{context}
-    delsimps [image_insert, image_Un]
-    delsimps [@{thm imp_disjL}]    (*reduces blow-up*)
+    delsimps @{thms insert_commute image_Un}
+    delsimps @{thms imp_disjL}    (*reduces blow-up*)
     addsimps @{thms analz_image_freshK_simps})
 
 (*Tactic for possibility theorems*)
 fun possibility_tac ctxt =
     REPEAT (*omit used_Says so that Nonces start from different traces!*)
-    (ALLGOALS (simp_tac (ctxt setSolver safe_solver delsimps [@{thm used_Says}]))
+    (ALLGOALS (simp_tac (ctxt |> Simplifier.set_unsafe_solver safe_solver |> Simplifier.del_simp @{thm used_Says}))
      THEN
      REPEAT_FIRST (eq_assume_tac ORELSE' 
                    resolve_tac ctxt [refl, conjI, @{thm Nonce_supply}]))
@@ -420,7 +420,7 @@ fun possibility_tac ctxt =
   nonces and keys initially*)
 fun basic_possibility_tac ctxt =
     REPEAT 
-    (ALLGOALS (asm_simp_tac (ctxt setSolver safe_solver))
+    (ALLGOALS (asm_simp_tac (ctxt |> Simplifier.set_unsafe_solver safe_solver))
      THEN
      REPEAT_FIRST (resolve_tac ctxt [refl, conjI]))
 
@@ -430,7 +430,7 @@ end
 method_setup analz_freshK = \<open>
     Scan.succeed (fn ctxt =>
      (SIMPLE_METHOD
-      (EVERY [REPEAT_FIRST (resolve_tac ctxt [allI, ballI, impI]),
+      (EVERY [REPEAT_FIRST (resolve_tac ctxt @{thms allI ballI impI}),
           REPEAT_FIRST (resolve_tac ctxt @{thms analz_image_freshK_lemma}),
           ALLGOALS (asm_simp_tac (put_simpset Public.analz_image_freshK_ss ctxt))])))\<close>
     "for proving the Session Key Compromise theorem"

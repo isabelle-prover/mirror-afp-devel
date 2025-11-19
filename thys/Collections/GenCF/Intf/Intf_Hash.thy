@@ -1,10 +1,9 @@
 section \<open>\isaheader{Hashable Interface}\<close>
 theory Intf_Hash
-imports 
-    Main
-    "../../Lib/HashCode"
-    "../../Lib/Code_Target_ICF"
-    Automatic_Refinement.Automatic_Refinement
+imports
+  Main
+  "../../Lib/HashCode"
+  Automatic_Refinement.Automatic_Refinement
 begin
 
 type_synonym 'a eq = "'a \<Rightarrow> 'a \<Rightarrow> bool"

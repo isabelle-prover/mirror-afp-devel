@@ -691,7 +691,7 @@ fun ptr_valid_instance_tac ctxt =
   in
     simp_tac (ctxt addsimps ptr_valid_def) 1 THEN
     EqSubst.eqsubst_tac ctxt [0] ptr_valid_u_recursion 1 THEN
-    asm_full_simp_tac (Raw_Simplifier.add_cong @{thm HOL.conj_cong} ctxt) 1 THEN
+    asm_full_simp_tac (Simplifier.add_cong @{thm HOL.conj_cong} ctxt) 1 THEN
     simp_tac (ctxt addsimps (fold_ptr_valid @
        @{thms fold_root_ptr_valid_u fold_field_lvalue Bex_intvl_conv Bex_union_conv})) 1 THEN
     REPEAT (EqSubst.eqsubst_tac ctxt [0] @{thms fold_exists_ptr} 1)
@@ -1219,10 +1219,10 @@ let
           pointer_writer_disjnt_ptr_corce_signed'} @
         Named_Theorems.get ctxt @{named_theorems pointer_writer_disjnt_intros})) ORELSE'
       SOLVED' (SELECT_GOAL (asm_full_simp_tac (
-        (ctxt |> put_simpset HOL_ss |>
-          Config.put Record.sort_updates true)
-          addsimps @{thms pointer_writer_disjntI option.inject prod.inject}
-          addsimprocs [@{simproc field_lookup}, @{simproc Record.update}]) 1)))
+        (ctxt |> put_simpset HOL_ss
+          |> Config.put Record.sort_updates true)
+          |> Simplifier.add_simps @{thms pointer_writer_disjntI option.inject prod.inject}
+          |> fold Simplifier.add_proc [@{simproc field_lookup}, @{simproc Record.update}]) 1)))
 
   fun construct_heap_typ (T, (All_Addressable _, _)) (tab : heap_field_info Typtab.table, lthy) =
     if TermsTypes.is_array_type T then
@@ -1314,7 +1314,7 @@ let
             (asm_full_simp_tac (ctxt addsimps [setter_thm]))
         ])) 1)
 
-      val [sim_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims lthy four_goal
+      val [sim_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims four_goal
 
       val (atomic_upds, lthy) = lthy
         |> typ_heap_simulation T getter setter v
@@ -1446,7 +1446,7 @@ let
             (asm_full_simp_tac (put_simpset HOL_basic_ss lthy addsimps ([setter_thm] @ @{thms fold.simps comp_apply id_apply})))
         ])) 1)
 
-      val [sim_thm, pointer_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims lthy four_goal
+      val [sim_thm, pointer_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims four_goal
 
       val (atomic_upds, lthy) = lthy
         |> typ_heap_simulation T getter setter v
@@ -1531,7 +1531,7 @@ let
         (\<^infer_instantiate>\<open> upd = \<open>#hupd d\<close> and w = \<open>s\<close> in
           prop \<open>\<And>p f g. upd p f o w g = w g o upd p f\<close>\<close> lthy)
         (fn { context, ... } => REPEAT_ALL_NEW (
-          DETERM' (match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
+          DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
           SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
       val update_thms = [@{thm comp_eq_dest} OF [disj_thm]]
       val read_thms = [@{thm lense.get_commute_of_commute} OF [atomic_lense, disj_thm]]
@@ -1571,7 +1571,7 @@ let
             (\<^infer_instantiate>\<open> upd = \<open>#hupd d2\<close> and w = \<open>atomic_setter\<close> in
               prop \<open>\<And>p f g. upd p f o w g = w g o upd p f\<close>\<close> lthy)
             (fn { context, ... } => REPEAT_ALL_NEW (
-              DETERM' (match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
+              DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
               SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
         in
           ([@{thm comp_eq_dest} OF [disj_thm]],
@@ -1602,7 +1602,7 @@ let
             (\<^infer_instantiate>\<open> upd1 = \<open>#hupd d2\<close> and upd2 = \<open>#hupd d1\<close> in
               prop \<open>\<And>p f q g. upd2 p f o upd1 q g = upd1 q g o upd2 p f\<close>\<close> lthy)
             (fn { context, ... } => REPEAT_ALL_NEW (
-              DETERM' (match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
+              DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
               SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
         in
           ([@{thm comp_eq_dest} OF [disj_thm]],
@@ -1623,7 +1623,7 @@ let
 
   val disjnt_heap_fields_comp = Named_Theorems.get lthy @{named_theorems disjnt_heap_fields_comp}
     |> (fn disj_thms => disj_thms @ map (fn thm => @{thm sym} OF [thm]) disj_thms)
-    |> Tactic.build_net
+    |> Bires.build_net
 
   val static_fields = take (length copied_fields) all_fields
   val lthy = Utils.timeit_msg 0 lthy (fn _ => "Prove heap field commutation rules [update_commute]") (fn _ => lthy
@@ -1667,7 +1667,9 @@ let
     CalculateState.ctype_to_typ ctxt (CTypeDatatype.StructTy name)
 
   (* Generate information relating to a field of a single struct. *)
-  fun get_field_info struct_name struct_type (field_name, (field_type, _)) = let
+  fun get_field_info struct_name struct_type (field_name, (field_type, _)) = 
+  if CType.flexible_array_type field_type then NONE else SOME
+  let
     val hol_field_type = CalculateState.ctype_to_typ ctxt field_type
   in
     {
@@ -1694,7 +1696,7 @@ let
     (struct_name, {
       name = struct_name,
       struct_type = struct_type,
-      field_info = map (get_field_info struct_name struct_type) struct_fields
+      field_info = map_filter (get_field_info struct_name struct_type) struct_fields
     })
   end
 
@@ -2116,7 +2118,7 @@ let
 
               val rewrite_thms = map (fn thm => @{thm symmetric} OF [thm])
                                      (getter_thms @ eta_setter_thms)
-              val aux_thms = map (Raw_Simplifier.rewrite_rule lthy rewrite_thms) aux_thms
+              val aux_thms = map (Simplifier.rewrite_rule lthy rewrite_thms) aux_thms
               val _ = tracing ("thms: " ^ string_of_thms lthy thms) 
               val _ = tracing ("rewrite_thms: " ^ string_of_thms lthy rewrite_thms) 
               val _ = tracing ("aux_thms: " ^ string_of_thms lthy aux_thms) 

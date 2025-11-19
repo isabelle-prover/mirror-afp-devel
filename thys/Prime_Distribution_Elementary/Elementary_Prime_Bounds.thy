@@ -363,13 +363,13 @@ theorem \<theta>_upper_bound_weak:
   assumes n: "n > 0"
   shows   "\<theta> n < 4 * ln 2 * n"
 proof -
-  define r where "r = Discrete.log n"
+  define r where "r = floor_log n"
   have "\<theta> n \<le> \<theta> (real (2 ^ Suc r))"
-    unfolding r_def using log_exp2_ge[of n] by (intro \<theta>_mono, unfold of_nat_le_iff) auto
+    unfolding r_def using floor_log_exp2_ge[of n] by (intro \<theta>_mono, unfold of_nat_le_iff) auto
   also have "\<dots> < 4 * ln 2 * real (2 ^ r)"
     using \<theta>_twopow_less[of "r + 1"] by (simp add: mult_ac)
   also have "\<dots> \<le> 4 * ln 2 * real n" unfolding r_def
-    by (intro mult_left_mono, unfold of_nat_le_iff, intro log_exp2_le) (use n in auto)
+    by (intro mult_left_mono, unfold of_nat_le_iff, intro floor_log_exp2_le) (use n in auto)
   finally show "\<theta> n < 4 * ln 2 * n" by simp
 qed
 

@@ -534,12 +534,14 @@ proof (intro sorted_wrt_mapI)
     "?fs ! j = SA ! j'"
     "?fs ! i = SA ! i'"
     by blast
-  hence "i' < length SA"
+  then have \<open>i' < length SA\<close>
     by linarith
-
-  have "SA ! i' < length T"
-    by (metis \<open>?fs ! i = SA ! i'\<close> \<open>i < j\<close> \<open>j < length ?fs\<close> filter_set member_filter
-              nth_mem order.strict_trans)
+  from \<open>i < j\<close> \<open>j < length ?fs\<close> have \<open>i < length ?fs\<close>
+    by (rule less_trans)
+  with \<open>?fs ! i = SA ! i'\<close> [symmetric] have \<open>SA ! i' \<in> set ?fs\<close>
+    by (simp only:) (erule nth_mem)
+  then have \<open>SA ! i' < length T\<close>
+    by simp
   with lms_val_location[OF assms(2-6) `i' < length SA`]
   obtain b where
     "b \<le> \<alpha> (Max (set T))"
@@ -641,12 +643,14 @@ proof (intro sorted_wrt_mapI)
     "?fs ! j = SA ! j'"
     "?fs ! i = SA ! i'"
     by blast
-  hence "i' < length SA"
+  then have \<open>i' < length SA\<close>
     by linarith
-
-  have "SA ! i' < length T"
-    by (metis \<open>?fs ! i = SA ! i'\<close> \<open>i < j\<close> \<open>j < length ?fs\<close> filter_set member_filter
-              nth_mem order.strict_trans)
+  from \<open>i < j\<close> \<open>j < length ?fs\<close> have \<open>i < length ?fs\<close>
+    by (rule less_trans)
+  with \<open>?fs ! i = SA ! i'\<close> [symmetric] have \<open>SA ! i' \<in> set ?fs\<close>
+    by (simp only:) (erule nth_mem)
+  then have \<open>SA ! i' < length T\<close>
+    by simp
   with lms_val_location[OF assms(2,3,5-7) `i' < length SA`]
   obtain b where
     "b \<le> \<alpha> (Max (set T))"
@@ -1726,7 +1730,7 @@ proof (intro allI impI; elim conjE)
     from assms(3)[simplified lms_distinct_inv_def distinct_append] `SA ! j < length T`
          `j < length SA`
     have "SA ! j \<notin> set (x # LMSb)"
-      by (metis IntI empty_iff filter_set member_filter nth_mem)
+      by (simp add: disjoint_iff)
     with lms_inserted_invD[OF assms(8)] `SA ! j \<in> set LMS`
     have "SA ! j \<in> set LMSa"
       by auto

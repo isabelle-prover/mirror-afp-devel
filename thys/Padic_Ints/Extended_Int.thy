@@ -360,9 +360,6 @@ instance ..
 
 end
 
-
-
-
 lemma idiff_eint_eint [simp, code]: "eint a - eint b = eint (a - b)"
   by (simp add: diff_eint_def)
 

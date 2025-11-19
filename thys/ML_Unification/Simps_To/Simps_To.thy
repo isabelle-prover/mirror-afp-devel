@@ -53,8 +53,9 @@ schematic_goal
   assumes [simp]: "P \<equiv> Q"
   and [simp]: "Q \<equiv> R"
   shows "PROP SIMPS_TO_UNIF P ?A"
-  by (tactic \<open>Simps_To_Unif.SIMPS_TO_UNIF_tac (simp_tac @{context})
-    (K all_tac) 1 @{context} 1\<close>)
+  apply (tactic \<open>HEADGOAL (Simps_To_Unif.SIMPS_TO_UNIF_tac (simp_tac @{context})
+    (K all_tac) 1 @{context})\<close>)
+  by (rule reflexive)
 
 end
 

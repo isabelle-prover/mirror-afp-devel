@@ -84,7 +84,7 @@ proof clarsimp
     using pqz q_in qnonz 
     by auto
   then have "x \<in> set ?zer_list"
-    by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+    by (smt (verit, best) finset mem_Collect_eq set_sorted_list_of_set) 
   then have "x \<le> ?zer_list ! (length ?zer_list - 1)" using strict_sorted_h
     by (meson all_prop x_in crb_lem_pos not_less prod_list_var_nonzero xgt)
   then show "False" using xgt crbgt 
@@ -314,7 +314,7 @@ proof clarsimp
     using pqz q_in qnonz 
     by auto
   then have "x \<in> set ?zer_list"
-    by (smt (verit, best) finset in_set_member mem_Collect_eq set_sorted_list_of_set) 
+    by (smt (verit, best) finset mem_Collect_eq set_sorted_list_of_set) 
   then have "x \<ge> ?zer_list ! 0" using strict_sorted_h
     by (smt (verit) all_x x_in crb_lem_neg linorder_not_le of_int_hom.hom_uminus prod_list_var_nonzero xlt) 
   then show "False" using xlt crbgt 

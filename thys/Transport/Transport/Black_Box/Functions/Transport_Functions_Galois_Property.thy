@@ -438,7 +438,7 @@ lemma half_galois_prop_left_left_rightI:
   and "((\<le>\<^bsub>L2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   and "transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro tpdfr.half_galois_prop_left_left_rightI tfr.mono_wrt_rel_leftI)
+  using assms by (intro tmdfr.half_galois_prop_left_left_rightI tfr.mono_wrt_rel_leftI)
   simp_all
 
 interpretation flip : transport_Mono_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2 .
@@ -451,7 +451,7 @@ lemma half_galois_prop_right_left_rightI:
   and "((\<le>\<^bsub>L2\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro tpdfr.half_galois_prop_right_left_rightI flip.tfr.mono_wrt_rel_leftI)
+  using assms by (intro tmdfr.half_galois_prop_right_left_rightI flip.tfr.mono_wrt_rel_leftI)
   simp_all
 
 corollary galois_prop_left_rightI:
@@ -462,7 +462,7 @@ corollary galois_prop_left_rightI:
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   and "transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro tpdfr.galois_propI
+  using assms by (intro tmdfr.galois_propI
     half_galois_prop_left_left_rightI half_galois_prop_right_left_rightI)
   auto
 

@@ -557,7 +557,7 @@ lemma trail_app_isoI:
 proof -
   interpret H: wf_digraph "app_iso hom G" using hom ..
   from t hom have i: "inj_on (iso_arcs hom) (set p)"
-     unfolding trail_def digraph_isomorphism_def by (auto dest:subset_inj_on[where A="set p"])
+     unfolding trail_def digraph_isomorphism_def by (auto dest:inj_on_subset[where B="set p"])
   then have "distinct (map (iso_arcs hom) p) = distinct p"
     by (auto simp: distinct_map dest: inj_onD)
   with t hom show ?thesis

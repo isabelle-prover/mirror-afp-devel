@@ -1216,13 +1216,9 @@ qed
 
 end
 
-lemma less_than_char_of_char[code_unfold]:
-  \<open>(x, y) \<in> less_than_char \<longleftrightarrow> (of_char x :: nat) < of_char y\<close>
-  by (auto simp: less_than_char_def less_char_def)
-
-
-lemmas [code] =
-  add_poly_l'.simps[unfolded var_order_rel_def]
+lemma in_var_order_rel_iff [code_unfold, no_atp]:
+  \<open>(v1, v2) \<in> var_order_rel \<longleftrightarrow> List.lexordp (\<lambda>c1 c2. (of_char c1 :: nat) < of_char c2) v1 v2\<close>
+  by (simp add: lexordp_def var_order_rel_def less_char_def [abs_def] p2rel_def)
 
 export_code add_poly_l' in SML module_name test
 

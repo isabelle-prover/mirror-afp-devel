@@ -1,0 +1,26 @@
+title = "Diﬀerential Privacy using Quasi-Borel Spaces"
+date = 2025-01-07
+topics = [
+  "Computer science/Semantics and reasoning",
+]
+abstract = "This entry formalizes differential privacy using quasi-Borel spaces. In general, differential privacy is discussed using measurable spaces. <a href=\"https://doi.org/10.1017/S0960129523000245\">Sato and Katsumata</a> showed that quasi-Borel spaces are also applied to formulate differential privacy. We formalize basic definitions and properties of differential privacy using quasi-Borel spaces, and show two examples: randomized response and the naive report noisy max algorithm."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hirata]
+email = "hirata_email"
+
+[contributors]
+
+[notify]
+hirata = "hirata_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

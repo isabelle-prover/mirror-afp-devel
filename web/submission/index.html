@@ -1,28 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en"><head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Entry Submission - Archive of Formal Proofs</title>
-    <meta name="description" content="A collection of proof libraries, examples, and larger
-     scientific developments, mechanically checked in the theorem prover Isabelle.">
+    <meta name="description" content="Submit to the Archive of Formal Proofs" />
+    <meta property="og:description" content="Submit to the Archive of Formal Proofs" />
 
   <meta property="og:title" content="Entry Submission" />
-<meta property="og:description" content="Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
-No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/submission/" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="" />
-
-<meta property="og:site_name" content="Archive of Formal Proofs" />
-
-  <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="/images/afp.png"/>
-
-<meta name="twitter:title" content="Entry Submission"/>
-<meta name="twitter:description" content="Submission Guidelines The submission must follow the following Isabelle style rules. For additional guidelines on Isabelle proofs, also see the this guide (feel free to follow all of these; only the below are mandatory). Technical details about the submission process and the format of the submission are explained on the submission site.
-No use of the commands sorry or back. Instantiations must not use Isabelle-generated names such as xa — use Isar, the subgoal command or rename_tac to avoid such names."/>
-
+  <meta property="og:url" content="https://isa-afp.org/submission/" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="website" />
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
 
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -36,9 +24,8 @@ No use of the commands sorry or back. Instantiations must not use Isabelle-gener
   <script src="../js/search-autocomplete.js"></script>
 </head>
 
-  <body class='mathjax_ignore'>
-    <aside>
-        <div id="menu-toggle">
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
     <span>menu</span>
@@ -46,82 +33,61 @@ No use of the commands sorry or back. Instantiations must not use Isabelle-gener
   </label>
 
   <a href="../" class="logo-link">
-    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-         class="logo">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
 
   <nav id="menu">
     <div>
-      <a href="../" class='logo-link'>
-        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
-             class="logo">
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
           <a href="../">
-            <li >
-              Home
-            </li>
+            <li >Home</li>
           </a>
           <a href="../topics/">
-            <li >
-              Topics
-            </li>
+            <li >Topics</li>
           </a>
           <a href="../download/">
-            <li >
-              Download
-            </li>
+            <li >Download</li>
           </a>
           <a href="../help/">
-            <li >
-              Help
-            </li>
+            <li >Help</li>
           </a>
           <a href="../submission/">
-            <li class="active" >
-              Submission
-            </li>
+            <li class="active" >Submission</li>
           </a>
           <a href="../statistics/">
-            <li >
-              Statistics
-            </li>
+            <li >Statistics</li>
           </a>
           <a href="../about/">
-            <li >
-              About
-            </li>
+            <li >About</li>
           </a>
       </ul>
     </div>
   </nav>
 </div>
     </aside>
-    <div class='content'>
-      <header>
+
+    <div class="content"><header>
     <form autocomplete="off" action="../search">
-      <div class='form-container'>
+      <div class="form-container">
         <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button
-               id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search"/>
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
         </button>
         <datalist id="autocomplete">
         </datalist>
       </div>
     </form>
-  <h1>
-    <span class='first'>E</span>ntry <span class='first'>S</span>ubmission
-    
+  <h1 ><span class='first'>E</span>ntry <span class='first'>S</span>ubmission
   </h1>
   <div>
   </div>
 </header>
       <div>
-        
-  <div>
-    <h2 id="submission-guidelines">Submission Guidelines</h2>
-<p><strong>The submission must follow the following Isabelle style rules.</strong> For additional guidelines on Isabelle proofs, also see the this <a href="https://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory). <strong>Technical details about the submission process and the format of the submission are explained on the submission site.</strong></p>
+  <div><h2 id="submission-guidelines">Submission Guidelines</h2>
+<p><strong>The submission must follow the following Isabelle style rules.</strong> For additional guidelines on Isabelle proofs, also see the this <a href="https://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory). For technical details about the submission process see the <a href="#submission-form">submission form section</a>.</p>
 <ul>
 <li>No use of the commands <code>sorry</code> or <code>back</code>.</li>
 <li>Instantiations must not use Isabelle-generated names such as <code>xa</code> — use Isar, the <code>subgoal</code> command or <code>rename_tac</code> to avoid such names.</li>
@@ -142,6 +108,7 @@ No use of the commands sorry or back. Instantiations must not use Isabelle-gener
 </ul>
 <p>Your submission must contain an abstract to be displayed on the web site – usually this will be the same as the abstract of your proof document in the root.tex file. You can use MathJax formulae in this web site abstract, either inline formulae in the form $a+b$ or \(a+b\) or display formulae in the form $$a + b$$ or \[a + b\]. Other occurrences of these characters must be escaped (e.g. \$ or \\(). Note that MathJax in the title of an entry is <em>not</em> allowed. MathJax supports most basic LaTeX functionality. For details on what parts of LaTeX are supported, see the <a href="https://docs.mathjax.org/en/v2.7-latest/tex.html">MathJax documentation.</a></p>
 <p>It is possible and encouraged to build on other archive entries in your submission. There is a standardised way to <a href="../help">refer to other AFP entries</a> in your theories.</p>
+<p>It is also encouraged to identify parts of your submission as potentially suitable for inclusion in the Isabelle distribution (i.e. the basic libraries in <code>isabelle/src/HOL</code>).  Use the comment field of the submission form to alert the editors to this material, ideally with a suggestion where it could go (e.g. into <code>List</code>). You may also want to put it in a separate theory with a descriptive name like <code>More_List</code>.</p>
 <h2 id="submission-form">Submission Form</h2>
 <p><a href="../webapp/submit">Submission form</a></p>
 <p>Your submission will be refereed and you will receive notification as soon as possible. If accepted, you must agree to maintain your archive entry or nominate someone else to maintain it. The Isabelle development team will assist with maintenance, but it does not have the resources to fully maintain the complete archive.</p>
@@ -162,11 +129,10 @@ No use of the commands sorry or back. Instantiations must not use Isabelle-gener
 <p>Major monotone changes, e.g. adding a new concept rather than more results on existing concepts, may also call for a new entry, but one that builds on the existing one. This depends on how you would like to organize your entries.</p>
 <h2 id="if-you-are-an-author">If you are an Author</h2>
 <p>The above means that if you are an author and would like to provide a new, better version of your AFP entry, you can do so.</p>
-<p>To achieve this, you should base your changes on the <a href="https:/foss.heptapod.net/isa-afp/afp-devel/">mercurial development version</a> of your AFP entry and test it against the current <a href="https://isabelle.in.tum.de/devel/">Isabelle development version</a>.</p>
+<p>To achieve this, you should base your changes on the <a href="https://foss.heptapod.net/isa-afp/afp-devel/">mercurial development version</a> of your AFP entry and test it against the current <a href="https://isabelle.sketis.net/repos/isabelle/">Isabelle development version</a>.</p>
 <p>If you would like to get write access to your entry in the mercurial repository or if you need assistance, please contact the <a href="../about#editors">editors</a>.</p>
 
   </div>
-        
       </div>
     </div>
   </body>

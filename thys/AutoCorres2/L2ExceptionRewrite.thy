@@ -1311,7 +1311,7 @@ fun rel_spec_monad_conv trace_unfinshed eq_intro ctxt lhs =
      val goal = \<^infer_instantiate>\<open>lhs = lhs' in prop (schematic) \<open>lhs = A\<close>\<close> ctxt'
      val thm = Goal.prove ctxt' [] [] goal (fn {context, ...} =>
        resolve_tac context [eq_intro] 1 THEN
-       simp_tac (Simplifier.clear_simpset context addsimprocs [@{simproc ETA_TUPLED}]) 1 THEN
+       simp_tac (Simplifier.clear_simpset context |> Simplifier.add_proc @{simproc ETA_TUPLED}) 1 THEN
        rel_spec_monad_L2_rewrite_tac context [] THEN
        trace_unfinshed context)
      val [eq] = Variable.export ctxt' ctxt [mk_meta_eq thm]

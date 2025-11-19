@@ -15,7 +15,7 @@ subsection\<open>Specification\<close>
 lemma [code_unfold]:
   fixes literal :: Literal and clause :: Clause
   shows "literal el clause = List.member clause literal"
-  by (auto simp add: member_def)
+  by simp_all
 
 datatype ExtendedBool = TRUE | FALSE | UNDEF
 
@@ -250,7 +250,7 @@ definition setConflictAnalysisClause :: "Clause \<Rightarrow> State \<Rightarrow
 where 
 "setConflictAnalysisClause clause state = 
   (let oppM0 = oppositeLiteralList (elements (prefixToLevel 0 (getM state))) in 
-   let state' = state (| getC := remdups (list_diff clause oppM0) |) in 
+   let state' = state (| getC := remdups (minus_list_set clause oppM0) |) in 
      countCurrentLevelLiterals (findLastAssertedLiteral state')
   )"
  

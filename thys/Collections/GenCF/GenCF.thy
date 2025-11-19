@@ -15,7 +15,6 @@ imports
   "Gen/Gen_Map2Set"
   "Gen/Gen_Comp"
   "Gen/Gen_Hash"
-  "../Lib/Code_Target_ICF"
 begin
 
   text \<open>Use one of the \<open>Refine_Dflt\<close>-theories as entry-point!\<close>

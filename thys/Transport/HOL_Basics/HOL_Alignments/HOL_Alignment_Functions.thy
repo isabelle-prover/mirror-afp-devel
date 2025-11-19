@@ -17,7 +17,7 @@ subparagraph \<open>Bijection\<close>
 
 definition "bijection_on_set (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool \<equiv>
   bijection_on (mem_of S) (mem_of S')"
-adhoc_overloading bijection_on bijection_on_set
+adhoc_overloading bijection_on \<rightleftharpoons> bijection_on_set
 
 lemma bijection_on_set_eq_bijection_on_pred [simp]:
   "bijection_on (S :: 'a set) (S' :: 'b set) = bijection_on (mem_of S) (mem_of S')"
@@ -164,7 +164,6 @@ lemma Fun_comp_eq_comp [HOL_fun_alignment]: "Fun.comp = Functions_Base.comp"
 
 lemma map_fun_eq_fun_map [HOL_fun_alignment]: "map_fun = fun_map"
   by (intro ext) simp
-
 
 paragraph \<open>Relators\<close>
 

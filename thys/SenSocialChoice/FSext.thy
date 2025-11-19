@@ -73,7 +73,7 @@ proof -
   from bijf have T: "f ` { a \<in> A. P (f a) } = { a \<in> A. P a }"
     unfolding bij_betw_def by auto
   from bijf have "card { a \<in> A. P (f a) } = card (f ` { a \<in> A. P (f a) })"
-    unfolding bij_betw_def by (auto intro: subset_inj_on card_image[symmetric])
+    unfolding bij_betw_def by (auto intro: inj_on_subset card_image[symmetric])
   with T show ?thesis by simp
 qed
 
@@ -176,7 +176,7 @@ proof -
       unfolding bij_betw_def by auto
     from P have "card ?PA - card ?QA = card ?C"
       unfolding bij_betw_def
-      by (auto iff: card_image subset_inj_on[where A="?CN"])
+      by (auto iff: card_image inj_on_subset[where B="?CN"])
     with c have "card ?PA - card ?C = card ?QA" by (rule nat_add_sub_shuffle)
     with finiteA P T have "card (?PA - ?C) = card ?QA"
       unfolding bij_betw_def by (auto iff: finite_subset card_Diff_subset)

@@ -27,6 +27,16 @@ sig
   val add_fallback_matcher : Unification_Base.e_matcher -> Unification_Base.matcher ->
     Unification_Base.matcher
 
+  (* symmetry *)
+  (*try flipped unifier*)
+  val flip_closed_unifier : Unification_Base.closed_unifier -> Unification_Base.closed_unifier
+  val flip_unifier : Unification_Base.unifier -> Unification_Base.unifier
+  val flip_e_unifier : Unification_Base.e_unifier -> Unification_Base.e_unifier
+
+  val flip_closed_match : Unification_Base.closed_matcher -> Unification_Base.closed_matcher
+  val flip_match : Unification_Base.matcher -> Unification_Base.matcher
+  val flip_e_match : Unification_Base.e_matcher -> Unification_Base.e_matcher
+
   (* sequential *)
   (*try all unifiers in sequence*)
   val concat_closed_unifiers : Unification_Base.closed_unifier list ->
@@ -87,6 +97,16 @@ fun add_fallback_unifier e_unif1 e_unif2 = add_fallback_e_unifier e_unif1 (K e_u
 
 val add_fallback_e_matcher = add_fallback_e_unifier
 fun add_fallback_matcher e_match1 e_match2 = add_fallback_e_matcher e_match1 (K e_match2) fail_match
+
+(* symmetry *)
+fun flip_closed_unifier unif ctxt tp = unif ctxt (swap tp)
+  #> Seq.map (apsnd Unification_Base.symmetric)
+fun flip_unifier unif = flip_closed_unifier o unif
+fun flip_e_unifier unif = flip_unifier o unif
+
+val flip_closed_match = flip_closed_unifier
+val flip_match = flip_unifier
+val flip_e_match = flip_e_unifier
 
 (* sequential *)
 fun concat_closed_unifiers unifiers ctxt tp =

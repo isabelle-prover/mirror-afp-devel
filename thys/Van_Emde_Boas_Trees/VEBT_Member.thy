@@ -155,8 +155,8 @@ next
     case False
     hence 1:"mi < x \<and> x < ma \<and> (high x (deg div 2 )) < length treeList \<and> vebt_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
       using member_inv[of mi ma deg treeList summary x] "4"(12) by blast
-    hence " (treeList ! (high x (deg div 2))) \<in> set treeList" 
-      by (metis in_set_member inthall)
+    hence " (treeList ! (high x (deg div 2))) \<in> set treeList"
+      by simp
     hence "both_member_options  (treeList ! (high x (deg div 2))) (low x (deg div 2))" 
       using "1" "4.IH"(1) both_member_options_def by blast
     then show ?thesis 
@@ -175,7 +175,7 @@ next
     hence 1:"mi < x \<and> x < ma \<and> (high x (deg div 2 )) < length treeList \<and> vebt_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
       using member_inv[of mi ma deg treeList summary x] "5"(12) by blast
     hence " (treeList ! (high x (deg div 2))) \<in> set treeList" 
-      by (metis in_set_member inthall)
+      by simp
     hence "both_member_options  (treeList ! (high x (deg div 2))) (low x (deg div 2))" 
       using "1" "5.IH"(1) both_member_options_def by blast
     then show ?thesis 
@@ -270,7 +270,7 @@ next
       hence "high x n < length treeList \<and> naive_member (treeList ! (high x n)) (low x n)"
         by (metis "1" "2.hyps"(3) "2.hyps"(4) add_cancel_right_left add_self_div_2 naive_member.simps(3) old.nat.exhaust valid_tree_deg_neq_0)
       then show ?thesis 
-        by (metis "5" both_member_options_def in_set_member inthall)
+        using 5 by (auto simp add: both_member_options_def)
     next
       case False
       hence "membermima  (Node None deg treeList summary) x" 
@@ -284,8 +284,8 @@ next
       ultimately
       have " high x (deg div 2) < length treeList \<and> membermima (treeList ! (high x n)) (low x n)"
         by (metis "2.hyps"(3) "2.hyps"(4) add_self_div_2)
-      then show ?thesis using "2.IH" "5" both_member_options_def in_set_member inthall
-        by (metis "2.hyps"(3) "2.hyps"(4) add_self_div_2)
+      then show ?thesis using 5
+        by (auto simp add: both_member_options_def "2.hyps")
     qed
   qed
   then show ?case
@@ -295,10 +295,11 @@ next
   hence 0: " ( \<forall> t \<in> set treeList. invar_vebt t n) " and 1:" invar_vebt summary m" and 2:" length treeList = 2^m" and
     3:" deg = n+m" and 4:" (\<nexists> i. both_member_options summary i)" and 5:" (\<forall> t \<in> set treeList. \<nexists> y. both_member_options t y) " and 6: "n> 0" and 7: "m> 0"
     and 8: "n+1 = m"
+    using "3.hyps" "3.IH"
             apply blast+
-            apply (metis (full_types) "3.IH"(1) "3.hyps"(2) in_set_member inthall neq0_conv power_eq_0_iff valid_tree_deg_neq_0 zero_neq_numeral)
-            apply (simp add: "3.hyps"(3))
-            by (simp add: "3.hyps"(3))
+    apply (simp_all add: "3.hyps"(3))
+    using "3.IH"(1) "3.hyps"(2) set_n_deg_not_0 zero_less_iff_neq_zero apply blast
+    done
   have "both_member_options (Node None deg treeList summary) x \<Longrightarrow> False"
   proof-
     assume "both_member_options (Node None deg treeList summary) x"
@@ -309,7 +310,7 @@ next
       hence "high x n < length treeList \<and> naive_member (treeList ! (high x n)) (low x n)"
         by (metis "3" "3.hyps"(3) add_Suc_right add_self_div_2 even_Suc_div_two naive_member.simps(3) odd_add)
       then show ?thesis 
-        by (metis "5" both_member_options_def in_set_member inthall)
+        using 5 by (auto simp add: both_member_options_def)
     next
       case False
       hence "membermima  (Node None deg treeList summary) x" 
@@ -323,7 +324,7 @@ next
       ultimately
       have " high x (deg div 2) < length treeList \<and> membermima (treeList ! (high x n)) (low x n)"
         by (metis "3" "3.hyps"(3) add_Suc_right add_self_div_2 even_Suc_div_two odd_add)
-      then show ?thesis using "3.IH" "5" both_member_options_def in_set_member inthall 11 by metis
+      then show ?thesis using "3.IH" "5" both_member_options_def inthall 11 by auto
     qed
   qed
   then show ?case
@@ -358,7 +359,7 @@ next
         hence "high x n < length treeList \<and> naive_member (treeList ! (high x n)) (low x n)"
           by (metis (no_types, opaque_lifting) "3" "4.hyps"(1) "4.hyps"(3) add_self_div_2 naive_member.simps(3) old.nat.exhaust valid_0_not zero_eq_add_iff_both_eq_0)
         then show ?thesis
-          by (metis "5" \<open>mi = ma\<close> both_member_options_def in_set_member inthall)
+          using 5 by (auto simp add: \<open>mi = ma\<close> both_member_options_def)
       next
         case False
         hence "membermima  (Node (Some (mi, ma)) deg treeList summary) x" using bstmt unfolding both_member_options_def by blast
@@ -367,8 +368,8 @@ next
           by (metis "3" "4.hyps"(3) One_nat_def Suc_diff_Suc \<open>0 < n\<close> add_gr_0 add_self_div_2 diff_zero)
         hence " high x n < length treeList \<and> membermima (treeList ! (high x n)) (low x n)" using xmimastmt 
           by presburger
-        then show ?thesis using both_member_options_def in_set_member inthall membermima.simps(4)[of mi ma n treeList summary x] astmt
-          by metis
+        then show ?thesis using both_member_options_def inthall membermima.simps(4)[of mi ma n treeList summary x] astmt
+          by auto
       qed
     qed
     hence "mi \<noteq> ma " by blast
@@ -389,7 +390,7 @@ next
         using "11" False order.not_eq_order_implies_strict by blast
     qed
     have "vebt_member (treeList ! (high x n)) (low x n)"
-      by (metis"10" "11" "4.IH"(1) in_set_member inthall)
+      using 10 11 by (simp add: "4.IH")
     then show ?thesis
       by (smt "10" "11" "12" "3" "4.hyps"(3) vebt_member.simps(5) One_nat_def Suc_leI \<open>0 < n\<close> add_Suc_right add_self_div_2 followstmt le_add_diff_inverse le_imp_less_Suc not_less_eq not_less_iff_gr_or_eq plus_1_eq_Suc)
   qed
@@ -401,8 +402,11 @@ next
     7: "(mi \<noteq> ma \<longrightarrow> (\<forall> i < 2^m. (high ma n = i \<longrightarrow> both_member_options (treeList ! i) (low ma n)) \<and>
                                          (\<forall> y. (high y n = i \<and> both_member_options (treeList ! i) (low y n)  ) \<longrightarrow> mi < y \<and> y \<le> ma)))"
     using "5.prems" by auto
-  hence "n>0"
-    by (metis "5.hyps"(3) in_set_member inthall neq0_conv power_Suc0_right valid_tree_deg_neq_0 zero_neq_numeral)
+  from 0 1 2 3 4 5 6 7 \<open>m = Suc n\<close> valid_tree_deg_neq_0 [of summary] set_n_deg_not_0 [of treeList]
+  have "n>0"
+    apply simp
+    apply (metis "2" gr0I not_one_le_zero set_n_deg_not_0)
+    done
   then show ?case proof(cases "x = mi \<or> x = ma")
     case True
     hence xmimastmt: "x = mi \<or> x=ma" by simp
@@ -423,7 +427,7 @@ next
         hence "high x n < length treeList \<and> naive_member (treeList ! (high x n)) (low x n)"
           by (metis "3" "5.hyps"(3) add_Suc_right add_self_div_2 even_Suc_div_two naive_member.simps(3) odd_add)
         then show ?thesis
-          by (metis "5" \<open>mi = ma\<close> both_member_options_def in_set_member inthall)
+          using 5 \<open>mi = ma\<close> by (auto simp add: both_member_options_def)
       next
         case False
         hence "membermima  (Node (Some (mi, ma)) deg treeList summary) x" using bstmt unfolding both_member_options_def by blast
@@ -432,8 +436,8 @@ next
           using "3" "5.hyps"(3) by auto
         hence " high x n < length treeList \<and> membermima (treeList ! (high x n)) (low x n)" using xmimastmt 
           by presburger
-        then show ?thesis using both_member_options_def in_set_member inthall membermima.simps(4)[of mi ma n treeList summary x] astmt
-          by metis
+        then show ?thesis using both_member_options_def inthall membermima.simps(4)[of mi ma n treeList summary x] astmt
+          by auto
       qed
     qed
     hence "mi \<noteq> ma " by blast
@@ -454,7 +458,7 @@ next
         using "11" False order.not_eq_order_implies_strict by blast
     qed
     have "vebt_member (treeList ! (high x n)) (low x n)"
-      by (metis "10" "11" "5.IH"(1) in_set_member inthall)
+      using 10 11 "5.IH" by simp
     then show ?thesis 
       by (smt "10" "11" "12" "3" "5.hyps"(3) vebt_member.simps(5) Suc_pred \<open>0 < n\<close> add_Suc_right add_self_div_2 even_Suc_div_two followstmt le_neq_implies_less not_less_iff_gr_or_eq odd_add)
   qed

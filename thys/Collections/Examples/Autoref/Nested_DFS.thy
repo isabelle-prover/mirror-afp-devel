@@ -3,8 +3,9 @@ theory Nested_DFS
 imports 
   Collections.Refine_Dflt
   Succ_Graph
-  Collections.Code_Target_ICF
   CAVA_Automata.Digraph_Basic
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 text \<open>

@@ -210,9 +210,9 @@ proof -
 qed
 
 text \<open>Syntactic constants for rendering \<^const>\<open>with_type\<close> nicely.\<close>
-syntax "_with_type" :: "type \<Rightarrow> 'a => 'b \<Rightarrow> 'c" ("let _ = _ in _" [0,0,10] 10)
-syntax "_with_type_with" :: "type \<Rightarrow> 'a => args \<Rightarrow> 'b \<Rightarrow> 'c" ("let _ = _ with _ in _" [0,0,10] 10)
-syntax (output) "_with_type_sort_annotation" :: "type \<Rightarrow> sort \<Rightarrow> type" ("_::_")
+syntax "_with_type" :: "type \<Rightarrow> 'a => 'b \<Rightarrow> 'c" (\<open>let _ = _ in _\<close> [0,0,10] 10)
+syntax "_with_type_with" :: "type \<Rightarrow> 'a => args \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>let _ = _ with _ in _\<close> [0,0,10] 10)
+syntax (output) "_with_type_sort_annotation" :: "type \<Rightarrow> sort \<Rightarrow> type" (\<open>_::_\<close>)
   \<comment> \<open>An auxiliary syntactic constant used to enforce the printing of sort constraints in certain terms.\<close>
 
 ML_file "with_type.ML"

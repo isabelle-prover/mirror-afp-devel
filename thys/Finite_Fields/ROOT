@@ -24,6 +24,7 @@ session Finite_Fields = "HOL-Probability" +
     Finite_Fields_Mod_Ring_Code
     Finite_Fields_Poly_Factor_Ring_Code
     Finite_Fields_Poly_Ring_Code
+    Finite_Fields_Nth_Root_Code
     Find_Irreducible_Poly
   document_files
     "root.tex"

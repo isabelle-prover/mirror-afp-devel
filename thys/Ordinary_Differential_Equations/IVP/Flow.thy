@@ -47,7 +47,7 @@ lemma integrable_ident_ivl[intro, simp]: "(\<lambda>x. x) integrable_on closed_s
 
 lemma content_closed_segment_real:
   fixes a b::real
-  shows "content (closed_segment a b) = abs (b - a)"
+  shows "measure lborel (closed_segment a b) = abs (b - a)"
   by (auto simp: closed_segment_eq_real_ivl)
 
 lemma integral_const_closed_segment:

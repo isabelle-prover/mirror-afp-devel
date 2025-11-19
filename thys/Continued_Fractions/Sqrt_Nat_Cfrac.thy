@@ -35,7 +35,7 @@ text \<open>
 \<close>
 definition sqrt_cfrac_info :: "nat \<Rightarrow> nat \<times> nat \<times> nat list" where
   "sqrt_cfrac_info D =
-     (sqrt_nat_period_length D, Discrete.sqrt D, 
+     (sqrt_nat_period_length D, floor_sqrt D, 
       map (\<lambda>n. nat (cfrac_nth (cfrac_of_real (sqrt D)) (Suc n))) [0..<sqrt_nat_period_length D])"
 
 lemma sqrt_nat_period_length_square [simp]: "is_square D \<Longrightarrow> sqrt_nat_period_length D = 0"
@@ -877,7 +877,7 @@ qed simp_all
 
 lemma sqrt_cfrac_info_last:
   assumes "sqrt_cfrac_info D = (a, b, cs)"
-  shows   "last cs = 2 * Discrete.sqrt D"
+  shows   "last cs = 2 * floor_sqrt D"
 proof -
   from assms show ?thesis using period_nonempty cfrac_sqrt_last
     by (auto simp: sqrt_cfrac_info_def last_map l_def D'_def Discrete_sqrt_altdef)
@@ -970,7 +970,7 @@ lemma sqrt_nat_period_length_pos_iff [simp]:
 
 lemma sqrt_cfrac_info_code [code]:
   "sqrt_cfrac_info D =
-     (let D' = Discrete.sqrt D
+     (let D' = floor_sqrt D
       in  if D'\<^sup>2 = D then (0, D', [])
           else
             case while_option
@@ -980,7 +980,7 @@ lemma sqrt_cfrac_info_code [code]:
                    ([], D', D - D'\<^sup>2)
             of Some (as, _) \<Rightarrow> (Suc (length as), D', rev ((2 * D') # as)))"
 proof -
-  define D' where "D' = Discrete.sqrt D"
+  define D' where "D' = floor_sqrt D"
   show ?thesis
   proof (cases "is_square D")
     case True
@@ -1009,7 +1009,7 @@ definition sqrt_cfrac_info_array where
 lemma fst_sqrt_cfrac_info_array [simp]: "fst (sqrt_cfrac_info_array D) = sqrt_nat_period_length D"
   by (simp add: sqrt_cfrac_info_array_def sqrt_cfrac_info_def)
 
-lemma snd_sqrt_cfrac_info_array [simp]: "fst (snd (sqrt_cfrac_info_array D)) = Discrete.sqrt D"
+lemma snd_sqrt_cfrac_info_array [simp]: "fst (snd (sqrt_cfrac_info_array D)) = floor_sqrt D"
   by (simp add: sqrt_cfrac_info_array_def sqrt_cfrac_info_def)
 
 
@@ -1042,7 +1042,7 @@ lemma sqrt_cfrac_code [code]:
       in  if l = 0 then cfrac_of_int (int a0) else cfrac (cfrac_sqrt_nth info))"
 proof (cases "is_square D")
   case True
-  hence "sqrt (real D) = of_int (Discrete.sqrt D)"
+  hence "sqrt (real D) = of_int (floor_sqrt D)"
     by (auto elim!: is_nth_powerE)
   thus ?thesis using True
     by (auto simp: Let_def sqrt_cfrac_info_array_def sqrt_cfrac_info_def sqrt_cfrac_def)

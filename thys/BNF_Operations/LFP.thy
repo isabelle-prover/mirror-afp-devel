@@ -1808,11 +1808,11 @@ lemma mor_fold:
 
 ML \<open>
   val fold1 = rule_by_tactic @{context}
-    (rtac @{context} CollectI 1 THEN BNF_Util.CONJ_WRAP (K (rtac @{context} @{thm subset_UNIV} 1)) (1 upto 3))
+    (rtac @{context} @{thm CollectI} 1 THEN BNF_Util.CONJ_WRAP (K (rtac @{context} @{thm subset_UNIV} 1)) (1 upto 3))
     @{thm morE1[OF mor_fold]}
 
   val fold2 = rule_by_tactic @{context}
-    (rtac @{context} CollectI 1 THEN BNF_Util.CONJ_WRAP (K (rtac @{context} @{thm subset_UNIV} 1)) (1 upto 3))
+    (rtac @{context} @{thm CollectI} 1 THEN BNF_Util.CONJ_WRAP (K (rtac @{context} @{thm subset_UNIV} 1)) (1 upto 3))
     @{thm morE2[OF mor_fold]}
 \<close>
 

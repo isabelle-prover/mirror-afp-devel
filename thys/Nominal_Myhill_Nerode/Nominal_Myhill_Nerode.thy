@@ -40,7 +40,6 @@ theory Nominal_Myhill_Nerode
     HOL.Relation
     HOL.Fun
     "HOL-Algebra.Group_Action"
-    "HOL-Library.Adhoc_Overloading"
     "HOL-Algebra.Elementary_Groups"
 
 begin
@@ -63,7 +62,7 @@ get the notation working in all three situations:
 consts star :: "'typ1 \<Rightarrow> 'typ2" (\<open>_\<^sup>\<star>\<close> [1000] 999)
 
 adhoc_overloading
-  star lists
+  star \<rightleftharpoons> lists
 
 text \<open>
 We use $\odot$ to convert between the definition of group actions via group homomoprhisms
@@ -136,7 +135,7 @@ being multiple instances of the locale \texttt{alt\_grp\_act} in a single contex
 \<close>
 
 adhoc_overloading
-  star induced_star_map
+  star \<rightleftharpoons> induced_star_map
 
 definition 
   induced_quot_map ::
@@ -379,7 +378,7 @@ The following lemmas are used for proofs in the locale \texttt{eq\_var\_rel}:
 
 lemma some_equiv_class_id:
   "\<lbrakk>equiv X R; w \<in> X // R; x \<in> w\<rbrakk> \<Longrightarrow> R `` {x} = R `` {SOME z. z \<in> w}"
-  by (smt (z3) Eps_cong equiv_Eps_in equiv_class_eq_iff quotient_eq_iff)
+  by (smt (verit) Eps_cong equiv_Eps_in equiv_class_eq_iff quotient_eq_iff)
 
 lemma nested_somes:
   "\<lbrakk>equiv X R; w \<in> X // R\<rbrakk> \<Longrightarrow> (SOME z. z \<in> w) = (SOME z. z \<in> R``{(SOME z'. z' \<in> w)})"
@@ -482,9 +481,9 @@ proof-
     apply (intro subset_antisym)
      apply (clarify)
     using A_0 H_z imageI insert_absorb insert_not_empty some_in_eq some_equiv_class_id 
-     apply (smt (z3) A_1 Eps_cong Image_singleton_iff equiv_Eps_in)
+     apply (smt (verit) A_1 Eps_cong Image_singleton_iff equiv_Eps_in)
     apply (clarify)
-    by (smt (z3) Eps_cong equiv_Eps_in image_iff in_quotient_imp_closed quotient_eq_iff)
+    by (smt (verit) Eps_cong equiv_Eps_in image_iff in_quotient_imp_closed quotient_eq_iff)
 qed
 
 lemma ec_er_closed_under_action:
@@ -639,9 +638,8 @@ proof-
         by (meson quotientE)
       have H2_4: "\<And>e. R `` {e} \<in> X // R \<Longrightarrow> R `` {e} = R `` {\<phi> g (\<phi> (inv\<^bsub>G\<^esub> g) e)} \<and>
         (\<phi> (inv\<^bsub>G\<^esub> g) e) \<in> R `` {\<phi> (inv\<^bsub>G\<^esub> g) e}"
-        by (smt (z3) A_0 A1_0 A1_4 H_0 H2_1 Image_singleton_iff equiv_class_eq_iff
-            group.inv_closed group_action.element_image in_quotient_imp_non_empty
-            subset_empty subset_emptyI)
+        by (metis A1_0 A1_4 A_0 H2_1 Image_singleton_iff element_image equiv_Eps_in equiv_class_eq_iff
+            group.inv_closed)
       have H2_5: "\<And>e. R `` {e} \<in> X // R \<Longrightarrow> \<forall>z\<in>R `` {\<phi> (inv\<^bsub>G\<^esub> g) e}. (\<phi> (inv\<^bsub>G\<^esub> g) e, z) \<in> R"
         by simp
       hence H2_6: "\<And>e. R `` {e} \<in> X // R \<Longrightarrow>
@@ -741,7 +739,7 @@ proof-
         apply (rule meta_mp[of "\<not>(\<exists>x. x \<in> w \<and> x \<notin> X)"])
         using A1_1 is_eq_var_rel' A1_3 A1_4 A1_5 A1_6 A2_0
          apply (clarsimp simp add: image_def BijGroup_def restrict_def compose_def Pi_def)
-         apply (smt (z3) Eps_cong)
+         apply (smt (verit) Eps_cong)
         apply (clarify) 
         using A_0 A2_0 in_quotient_imp_subset
         by auto
@@ -911,7 +909,7 @@ fun give_input :: "('state \<Rightarrow> 'alpha \<Rightarrow> 'state) \<Rightarr
   |   "give_input trans_func s (a#as) = give_input trans_func (trans_func s a) as"
 
 adhoc_overloading
-  star give_input
+  star \<rightleftharpoons> give_input
 
 locale det_aut =
   fixes
@@ -1032,7 +1030,7 @@ locale det_G_aut =
 begin
 
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 
 lemma give_input_eq_var:
   "eq_var_func G
@@ -1194,7 +1192,7 @@ To avoid duplicate variant of "star":
 \<close>
 
 no_adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 sublocale reach_det_G_aut \<subseteq> reach_det_aut
@@ -1831,7 +1829,7 @@ end
 
 context G_lang begin
 adhoc_overloading
-  star induced_star_map
+  star \<rightleftharpoons> induced_star_map
 
 lemma MN_quot_act_wd:
   "w' \<in> [w]\<^sub>M\<^sub>N \<Longrightarrow> \<forall>g \<in> carrier G. (g \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> w') \<in> [g \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> w]\<^sub>M\<^sub>N"
@@ -2464,12 +2462,12 @@ Proving the Myhill-Nerode Theorem for $G$-Automata
 \<close>
 context det_G_aut begin
 no_adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 context reach_det_G_aut_rec_lang begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 
 definition
   states_to_words :: "'states \<Rightarrow> 'alpha list"
@@ -2497,7 +2495,7 @@ proof-
     A_2: "(\<delta>\<^sup>\<star>) i w = (\<delta>\<^sup>\<star>) i w'"
   have H_0: "\<And>v. v \<in> A\<^sup>\<star> \<Longrightarrow> w @ v \<in> L \<longleftrightarrow> w' @ v \<in> L"
     apply clarify 
-    by (smt (z3) A_0 A_1 A_2 append_in_lists_conv is_aut.eq_pres_under_concat
+    by (smt (verit) A_0 A_1 A_2 append_in_lists_conv is_aut.eq_pres_under_concat
         is_aut.init_state_is_a_state is_lang is_recognised subsetD)+
   show "[w]\<^sub>M\<^sub>N = [w']\<^sub>M\<^sub>N "
     apply (simp add: rel_MN_def)
@@ -3003,13 +3001,13 @@ To avoid duplicate variant of "star":
 \<close>
 
 no_adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 
 end
 
 context det_G_aut_rec_lang begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 
@@ -3164,7 +3162,7 @@ proof-
     using triv_G_lang.syntact_aut_is_reach_aut_rec_lang
     apply (clarsimp simp add: reach_det_G_aut_rec_lang_def det_G_aut_rec_lang_def
         reach_det_aut_rec_lang_def reach_det_aut_def reach_det_aut_axioms_def det_G_aut_def)
-    by (smt (z3) alt_natural_map_MN_def quotientE triv_G_lang.MN_unique_init_state)
+    by (smt (verit) alt_natural_map_MN_def quotientE triv_G_lang.MN_unique_init_state)
   show "\<exists>S F:: 'alpha list set set. \<exists>i :: 'alpha list set. \<exists>\<delta>.
   reach_det_aut_rec_lang A S i F \<delta> L \<and> finite S"
     using A_0 H_0 
@@ -3518,7 +3516,7 @@ Proving the Myhill-Nerode Theorem for Nominal $G$-Automata
 
 context det_G_aut begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 lemma (in det_G_aut) input_to_init_eqvar:
@@ -3568,7 +3566,7 @@ lemma (in reach_det_G_aut) input_to_init_surj:
 
 context reach_det_G_aut begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 text \<open>

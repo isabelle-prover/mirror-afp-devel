@@ -154,6 +154,7 @@ schematic_goal "s\<langle>x := \<lambda>_. 2\<rangle> \<cdot> p = ?X"
 install_C_file "ex.c"
 
 thm size_td_simps
+thm my_struct_C_update_const 
 text \<open>The root locale storing the global content @{locale ex_global_addresses}. This is also
 the locale ware the bodies of the imported functions are defined.\<close>
 
@@ -166,7 +167,7 @@ The usage of global variables is analysed and three cases are distinguesed:
 \<^item> 'ordinary' global variables that are also updated somewhere in the code are stored in
   the record of global variables \<^typ>\<open>globals\<close>. They are accessed by the lookup and update function
   of the @{command record} package. 
-\<^item> In case the address of a global variabe is taken somewhere in the code, we declare a
+\<^item> In case the address of a global variable is taken somewhere in the code, we declare a
   global constant for a pointer to that variable. Lookup and update is then indirectly via the
   heap. Note that the pointer is only declared. There is no defining equation. Currently there
   are also no assumptions maintained about distinctness of global variable pointers. This is

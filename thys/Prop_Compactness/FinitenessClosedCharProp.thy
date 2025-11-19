@@ -3,7 +3,9 @@
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
-   https://idus.us.es/handle/11441/57780.  In Spanish  *)
+   https://idus.us.es/handle/11441/57780.  In Spanish 
+   Last modified: 11 Aug, 2025
+ *)
 
 
 (*<*)
@@ -19,19 +21,16 @@ text  \<open> This theory formalises the theorem that states that subset closed 
 The proof is by induction on the structure of propositional formulas based on the analysis of cases for the possible different types of formula in the sets of the collection of sets that hold the propositional consistency property. 
   \<close>
 
-
-
-definition finite_character :: "'a set set \<Rightarrow> bool" where
-  "finite_character \<C> = (\<forall>S. S \<in> \<C> = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>))"
-
+definition finite_character_property :: "'a set set \<Rightarrow> bool" where
+  "finite_character_property \<C> = (\<forall>S. S \<in> \<C> = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>))"
 
 theorem finite_character_closed: 
-  assumes "finite_character \<C>"
+  assumes "finite_character_property \<C>"
   shows "subset_closed \<C>"
 proof -  
   { fix S T
     assume "S \<in> \<C>" and  "T \<subseteq> S"
-    have "T \<in> \<C>" using "finite_character_def"
+    have "T \<in> \<C>" using "finite_character_property_def"
     proof -
       { fix U             
         assume "finite U" and "U \<subseteq> T"
@@ -39,28 +38,23 @@ proof -
         proof -
           have "U \<subseteq> S" using `U \<subseteq> T` and `T \<subseteq> S` by simp
           thus "U \<in> \<C>" using `S \<in> \<C>` and `finite U` and assms 
-            by (unfold finite_character_def) blast
+            by (unfold finite_character_property_def) blast
         qed} 
-      thus ?thesis using assms by( unfold finite_character_def) blast
+      thus ?thesis using assms by(unfold finite_character_property_def) blast
     qed }
   thus ?thesis  by(unfold  subset_closed_def) blast
 qed     
     
-
-
-
-definition closure_cfinite :: "'a set set \<Rightarrow> 'a set set" (\<open>_⁻\<close> [1000] 999) where
-  "\<C>⁻ = {S. \<forall>S'. S' \<subseteq> S \<longrightarrow> finite S' \<longrightarrow> S' \<in> \<C>}"
-
-
+definition closure_cfinite :: "'a set set \<Rightarrow> 'a set set" (\<open>_\<^sup>-\<close> [1000] 999) where
+  "\<C>\<^sup>- = {S. \<forall>S'. S' \<subseteq> S \<longrightarrow> finite S' \<longrightarrow> S' \<in> \<C>}"
 
 lemma finite_character_subset:
   assumes "subset_closed \<C>"
-  shows "\<C> \<subseteq> \<C>⁻"
+  shows "\<C> \<subseteq> \<C>\<^sup>-"
 proof -
   { fix S
     assume "S \<in> \<C>"
-    have "S \<in> \<C>⁻" 
+    have "S \<in> \<C>\<^sup>-" 
     proof -
       { fix S'
         assume "S' \<subseteq> S" and "finite S'"
@@ -71,28 +65,25 @@ proof -
   thus ?thesis by auto
 qed
 
-
-lemma finite_character: "finite_character (\<C>⁻)"
-proof (unfold finite_character_def)
-  show "\<forall>S. (S \<in> \<C>⁻) = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>⁻)"
+lemma finite_character: "finite_character_property (\<C>\<^sup>-)"
+proof (unfold finite_character_property_def)
+  show "\<forall>S. (S \<in> \<C>\<^sup>-) = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>\<^sup>-)"
   proof
     fix  S
-    { assume  "S \<in> \<C>⁻"
-      hence "\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>⁻" 
+    { assume  "S \<in> \<C>\<^sup>-"
+      hence "\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>\<^sup>-" 
         by(simp add: closure_cfinite_def)} 
     moreover
-    { assume "\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>⁻"
-      hence  "S \<in> \<C>⁻" by(simp add: closure_cfinite_def)}
+    { assume "\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>\<^sup>-"
+      hence  "S \<in> \<C>\<^sup>-" by(simp add: closure_cfinite_def)}
     ultimately
-    show "(S \<in> \<C>⁻) = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>⁻)"
+    show "(S \<in> \<C>\<^sup>-) = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> \<C>\<^sup>-)"
       by blast
   qed
 qed
  
-
-lemma cond_characterP1:
-  assumes "consistenceP \<C>" 
-  and "subset_closed \<C>" 
+lemma  (in consistProp) cond_characterP1:
+  assumes "subset_closed \<C>" 
   and hip: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>"
   shows "(\<forall>P. \<not>(atom P \<in> S \<and> (\<not>.atom P) \<in> S))"
 (*<*)
@@ -105,8 +96,7 @@ proof (rule allI)+
     hence "{atom P, \<not>.atom P} \<in> \<C>" using hip by simp
     moreover
     have "\<forall>S. S \<in> \<C> \<longrightarrow> (\<forall>P ts. \<not>(atom P \<in> S \<and> (\<not>.atom P) \<in> S))"
-      using `consistenceP \<C>`
-      by (simp add: consistenceP_def)
+      by (simp add: cond_consistP)
     ultimately
     have "\<not>(atom P \<in> {atom P , \<not>.atom P} \<and> 
           (\<not>.atom P) \<in> {atom P, \<not>.atom P})"
@@ -116,54 +106,51 @@ proof (rule allI)+
 qed  
 (*>*)
 
-lemma cond_characterP2:
-  assumes "consistenceP \<C>" 
-  and "subset_closed \<C>" 
+lemma  (in consistProp) cond_characterP2:
+  assumes  "subset_closed \<C>" 
   and hip: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>"
-  shows "FF \<notin> S \<and> (\<not>.TT)\<notin> S"
+  shows "\<bottom>. \<notin> S \<and> (\<not>.\<top>.)\<notin> S"
 (*<*)
 proof -
-  have "FF \<notin> S"
+  have "\<bottom>. \<notin> S"
   proof(rule notI)
-    assume "FF \<in> S"
-    hence "{FF} \<subseteq> S" by simp
-    hence "{FF}\<in> \<C>" using hip by simp
+    assume "\<bottom>. \<in> S"
+    hence "{\<bottom>.} \<subseteq> S" by simp
+    hence "{\<bottom>.}\<in> \<C>" using hip by simp
     moreover
-    have "\<forall>S. S \<in> \<C> \<longrightarrow> FF \<notin> S" using `consistenceP \<C>` 
-      by (simp add: consistenceP_def)
+    have "\<forall>S. S \<in> \<C> \<longrightarrow> \<bottom>. \<notin> S" 
+      by (simp add: cond_consistP2) 
     ultimately 
-    have "FF \<notin> {FF}" by auto    
+    have "\<bottom>. \<notin> {\<bottom>.}" by auto    
     thus False by simp
   qed   
   moreover
-  have "(\<not>.TT)\<notin> S"
+  have "(\<not>.\<top>.)\<notin> S"
   proof(rule notI)    
-    assume "(\<not>.TT) \<in> S"
-    hence "{\<not>.TT} \<subseteq> S" by simp
-    hence "{\<not>.TT}\<in> \<C>" using hip by simp
+    assume "(\<not>.\<top>.) \<in> S"
+    hence "{\<not>.\<top>.} \<subseteq> S" by simp
+    hence "{\<not>.\<top>.}\<in> \<C>" using hip by simp
     moreover
-    have "\<forall>S. S \<in> \<C> \<longrightarrow> (\<not>.TT) \<notin> S" using `consistenceP \<C>` 
-      by (simp add: consistenceP_def)
+    have "\<forall>S. S \<in> \<C> \<longrightarrow> (\<not>.\<top>.) \<notin> S" using cond_consistP2 by blast 
     ultimately 
-    have "(\<not>.TT) \<notin> {(\<not>.TT)}" by auto    
+    have "(\<not>.\<top>.) \<notin> {(\<not>.\<top>.)}" by auto    
     thus False by simp
   qed
   ultimately show ?thesis by simp   
 qed   
 (*>*)
 text\<open> \<close>
-lemma cond_characterP3:
-  assumes "consistenceP \<C>" 
-  and "subset_closed \<C>" 
+lemma  (in consistProp) cond_characterP3:
+  assumes  "subset_closed \<C>" 
   and hip: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>"
-  shows "\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow>  S \<union> {F} \<in> \<C>⁻"
+  shows "\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow>  S \<union> {F} \<in> \<C>\<^sup>-"
 (*<*)
 proof (rule allI)        
   fix F
-  show "(\<not>.\<not>.F) \<in> S \<longrightarrow>  S \<union> {F} \<in> \<C>⁻"
+  show "(\<not>.\<not>.F) \<in> S \<longrightarrow>  S \<union> {F} \<in> \<C>\<^sup>-"
   proof (rule impI)
     assume "(\<not>.\<not>.F) \<in> S"
-    show "S \<union> {F} \<in> \<C>⁻"  
+    show "S \<union> {F} \<in> \<C>\<^sup>-"  
     proof (unfold closure_cfinite_def)
       show "S \<union> {F} \<in> {S. \<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>}"
       proof (rule allI impI CollectI)+
@@ -174,14 +161,17 @@ proof (rule allI)
           have "S' - {F} \<union> {\<not>.\<not>.F}  \<subseteq> S"  
             using `(\<not>.\<not>.F) \<in> S` and  `S'\<subseteq> S \<union> {F}` by auto 
           moreover
-          have "finite (S' - {F} \<union> {\<not>.\<not>.F})" using `finite S'` by auto
+          have 1: "finite (S' - {F} \<union> {\<not>.\<not>.F})" using `finite S'` by auto
           ultimately
           have "(S' - {F} \<union> {\<not>.\<not>.F}) \<in> \<C>" using hip  by simp
           moreover
           have "(\<not>.\<not>.F) \<in> (S' - {F} \<union> {\<not>.\<not>.F})" by simp
           ultimately  
-          have "(S' - {F} \<union> {\<not>.\<not>.F})\<union> {F} \<in> \<C>" 
-            using `consistenceP \<C>` by (simp add: consistenceP_def)
+          have "(S' - {F} \<union> {\<not>.\<not>.F})\<union> {F} \<in> \<C>"
+          proof -
+            show ?thesis
+              using \<open>S' - {F} \<union> {\<not>.\<not>.F} \<in> \<C>\<close> consistProp_axioms consistProp_def consistenceEq consistenceP_def by fastforce
+          qed
           moreover
           have "(S' - {F} \<union> {\<not>.\<not>.F})\<union> {F} = (S' \<union> {\<not>.\<not>.F})\<union> {F}"
             by auto
@@ -203,15 +193,15 @@ lemma cond_characterP4:
   assumes "consistenceP \<C>" 
   and "subset_closed \<C>" 
   and hip: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>"
-  shows "(\<forall>F. ((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>⁻)"
+  shows "(\<forall>F. ((FormulaAlpha F) \<and> F \<in> S) \<longrightarrow> (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>\<^sup>-)"
 (*<*) 
 proof (rule allI) 
   fix F 
-  show "((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> S \<union> {Comp1 F, Comp2 F} \<in> \<C>⁻"
+  show "((FormulaAlpha F) \<and> F \<in> S) \<longrightarrow> S \<union> {Comp1 F, Comp2 F} \<in> \<C>\<^sup>-"
   proof (rule impI)
-    assume "(FormulaAlfa F) \<and> F \<in> S"
-    hence "(FormulaAlfa F)" and "F \<in> S" by auto
-    show "S \<union> {Comp1 F, Comp2 F} \<in> \<C>⁻"  
+    assume "(FormulaAlpha F) \<and> F \<in> S"
+    hence "(FormulaAlpha F)" and "F \<in> S" by auto
+    show "S \<union> {Comp1 F, Comp2 F} \<in> \<C>\<^sup>-"  
     proof (unfold closure_cfinite_def)
       show "S \<union> {Comp1 F, Comp2 F} \<in> {S. \<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>}"
       proof (rule allI impI CollectI)+
@@ -230,8 +220,8 @@ proof (rule allI)
           have "F \<in> (S' - {Comp1 F, Comp2 F} \<union> {F})" by simp
           ultimately  
           have "(S' - {Comp1 F, Comp2 F} \<union> {F}) \<union> {Comp1 F, Comp2 F} \<in> \<C>" 
-            using `consistenceP \<C>` `FormulaAlfa F` 
-            by (simp add: consistenceP_def)
+            using `consistenceP \<C>` `FormulaAlpha F`  consistenceP_def
+            by metis            
           moreover
           have "(S' - {Comp1 F, Comp2 F} \<union> {F}) \<union> {Comp1 F, Comp2 F} = 
                 (S' \<union> {F}) \<union> {Comp1 F, Comp2 F}"
@@ -254,18 +244,18 @@ lemma cond_characterP5:
   assumes "consistenceP \<C>" 
   and "subset_closed \<C>" 
   and hip: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>"
-  shows "\<forall>F. FormulaBeta F \<and> F \<in> S \<longrightarrow> S \<union> {Comp1 F} \<in> \<C>⁻ \<or> S \<union> {Comp2 F} \<in> \<C>⁻"
+  shows "\<forall>F. FormulaBeta F \<and> F \<in> S \<longrightarrow> S \<union> {Comp1 F} \<in> \<C>\<^sup>- \<or> S \<union> {Comp2 F} \<in> \<C>\<^sup>-"
 (*<*)
 proof (rule allI) 
   fix F 
-  show "FormulaBeta F \<and> F \<in> S \<longrightarrow> S \<union> {Comp1 F} \<in> \<C>⁻ \<or> S \<union> {Comp2 F} \<in> \<C>⁻"
+  show "FormulaBeta F \<and> F \<in> S \<longrightarrow> S \<union> {Comp1 F} \<in> \<C>\<^sup>- \<or> S \<union> {Comp2 F} \<in> \<C>\<^sup>-"
   proof (rule impI)
     assume "(FormulaBeta F) \<and> F \<in> S" 
     hence "FormulaBeta F" and "F \<in> S" by auto 
-    show "S \<union> {Comp1 F} \<in> \<C>⁻ \<or> S \<union> {Comp2 F} \<in> \<C>⁻"
+    show "S \<union> {Comp1 F} \<in> \<C>\<^sup>- \<or> S \<union> {Comp2 F} \<in> \<C>\<^sup>-"
     proof (rule ccontr)
-      assume "\<not>(S \<union> {Comp1 F} \<in> \<C>⁻ \<or> S \<union> {Comp2 F} \<in> \<C>⁻)"
-      hence "S \<union> {Comp1 F} \<notin> \<C>⁻ \<and> S \<union> {Comp2 F} \<notin> \<C>⁻" by simp    
+      assume "\<not>(S \<union> {Comp1 F} \<in> \<C>\<^sup>- \<or> S \<union> {Comp2 F} \<in> \<C>\<^sup>-)"
+      hence "S \<union> {Comp1 F} \<notin> \<C>\<^sup>- \<and> S \<union> {Comp2 F} \<notin> \<C>\<^sup>-" by simp    
       hence 1: "\<exists> S1. (S1 \<subseteq> S \<union> {Comp1 F} \<and> finite S1 \<and> S1 \<notin> \<C>)" 
         and 2: "\<exists> S2. (S2 \<subseteq> S \<union> {Comp2 F} \<and> finite S2 \<and> S2 \<notin> \<C>)"
         by (auto simp add: closure_cfinite_def) 
@@ -285,8 +275,8 @@ proof (rule allI)
       ultimately 
       have 3: "((S1-{Comp1 F}) \<union> (S2-{Comp2 F}) \<union> {F} \<union> {Comp1 F}) \<in> \<C> \<or> 
                ((S1-{Comp1 F}) \<union> (S2-{Comp2 F}) \<union> {F} \<union> {Comp2 F}) \<in> \<C>"
-        using `consistenceP \<C>` `FormulaBeta F` 
-        by (simp add: consistenceP_def)  
+        using `consistenceP \<C>` `FormulaBeta F`  consistenceP_def
+        by metis   
       hence "S1 \<in> \<C> \<or> S2 \<in> \<C>"
       proof (cases)
         assume "((S1-{Comp1 F}) \<union> (S2-{Comp2 F}) \<union> {F} \<union> {Comp1 F}) \<in> \<C>"
@@ -315,27 +305,29 @@ proof (rule allI)
 qed
 (*>*)
 
- 
-
-theorem cfinite_consistenceP:
-  assumes hip1: "consistenceP \<C>" and hip2: "subset_closed \<C>" 
-  shows "consistenceP (\<C>⁻)"
+theorem  (in consistProp) cfinite_consistenceP:
+  assumes hip1: "subset_closed \<C>" 
+  shows "consistenceP (\<C>\<^sup>-)"
+(*  by (smt (verit, del_insts) closure_cfinite_def cond_characterP4 cond_characterP5
+      consistProp.cond_characterP1 consistProp.cond_characterP2 consistProp.cond_characterP3
+      consistProp_axioms consistProp_def consistenceEq consistenceP1_def hip1 mem_Collect_eq) *)
 proof - 
   { fix S
-    assume "S \<in> \<C>⁻" 
-    hence hip3: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>" 
+    assume "S \<in> \<C>\<^sup>-" 
+    hence hip2: "\<forall>S'\<subseteq>S. finite S' \<longrightarrow> S' \<in> \<C>" 
       by (simp add: closure_cfinite_def) 
     have "(\<forall>P.  \<not>(atom P \<in> S \<and> (\<not>.atom P) \<in> S)) \<and>
-          FF \<notin> S \<and> (\<not>.TT) \<notin> S \<and>
-          (\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow> S \<union> {F} \<in> \<C>⁻) \<and>
-          (\<forall>F. ((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>⁻) \<and>
+          \<bottom>. \<notin> S \<and> (\<not>.\<top>.) \<notin> S \<and>
+          (\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow> S \<union> {F} \<in> \<C>\<^sup>-) \<and>
+          (\<forall>F. ((FormulaAlpha F) \<and> F \<in> S) \<longrightarrow> (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>\<^sup>-) \<and>
           (\<forall>F. ((FormulaBeta F) \<and> F \<in> S) \<longrightarrow> 
-               (S \<union> {Comp1 F} \<in> \<C>⁻) \<or> (S \<union> {Comp2 F} \<in> \<C>⁻))"
-      using 
-        cond_characterP1[OF hip1 hip2 hip3]  cond_characterP2[OF hip1 hip2 hip3] 
-        cond_characterP3[OF hip1 hip2 hip3]  cond_characterP4[OF hip1 hip2 hip3] 
-        cond_characterP5[OF hip1 hip2 hip3]  by auto }
-  thus ?thesis by (simp add: consistenceP_def) 
+               (S \<union> {Comp1 F} \<in> \<C>\<^sup>-) \<or> (S \<union> {Comp2 F} \<in> \<C>\<^sup>-))"
+      using cond_characterP1 cond_characterP2 cond_characterP3 cond_characterP4 cond_characterP5
+        consistProp_axioms consistProp_def hip1 hip2
+      by (smt (verit, ccfv_threshold) consistenceEq) 
+  }
+  thus ?thesis
+    using consistenceEq consistenceP_def by blast
 qed
 
 (*<*)

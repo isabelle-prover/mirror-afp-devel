@@ -27,7 +27,7 @@ let sub' (xs, i) = Array.get xs (Z.to_int i);;
 
 end\<close> for type_constructor iarray constant IArray.length' IArray.sub'
 
-code_reserved OCaml IArray
+code_reserved (OCaml) IArray
 
 code_printing
   type_constructor iarray \<rightharpoonup> (OCaml) "_ array"

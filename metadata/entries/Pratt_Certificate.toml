@@ -22,6 +22,11 @@ noschinski = "noschinski_email"
 wimmer = "wimmer_email"
 
 [history]
+2024-11-19 = """
+Added a command for reading and verifying certificates in bulk.
+Introduced more compact syntax.
+Verified primes from FIPS 186-4 and PKCS #1 v2.2.<br>
+"""
 
 [extra]
 

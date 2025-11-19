@@ -57,7 +57,7 @@ fun remdups_rev_code :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" wh
   "remdups_rev_code _ [] = []" |
   "remdups_rev_code ps (r#rs) = (if r \<in> set ps then remdups_rev_code ps rs else r#remdups_rev_code (r#ps) rs)"
 
-lemma remdups_rev_code[code_unfold]: "remdups_rev rs = remdups_rev_code [] rs"
+lemma remdups_rev_code[code]: "remdups_rev rs = remdups_rev_code [] rs"
 proof -
   { fix ps1 ps2 p and rs::"'a list"
     have "set ps1 = set ps2 \<Longrightarrow> remdups_rev_code ps1 rs = remdups_rev_code ps2 rs"

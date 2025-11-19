@@ -17,8 +17,8 @@ imports
   Arithmetic_Record_Based
   Native_Word.Uint32 
   Native_Word.Uint64
-  "HOL-Library.Code_Target_Numeral"  
-  Native_Word.Code_Target_Int_Bit
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 (* mod on standard case which can immediately be mapped to 
@@ -1235,28 +1235,7 @@ definition uminus_p_integer :: "integer \<Rightarrow> integer" where
 definition mult_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
   "mult_p_integer x y = (x * y mod p)"
 
-lemma int_of_integer_0_iff: "int_of_integer n = 0 \<longleftrightarrow> n = 0"
-  using integer_eqI by auto
-  
-lemma int_of_integer_0: "int_of_integer 0 = 0" unfolding int_of_integer_0_iff by simp
-
-lemma int_of_integer_plus: "int_of_integer (x + y) = (int_of_integer x + int_of_integer y)" 
-  by simp
-
-lemma int_of_integer_minus: "int_of_integer (x - y) = (int_of_integer x - int_of_integer y)"
-  by simp
-
-lemma int_of_integer_mult: "int_of_integer (x * y) = (int_of_integer x * int_of_integer y)" 
-  by simp  
-
-lemma int_of_integer_mod: "int_of_integer (x mod y) = (int_of_integer x mod int_of_integer y)" 
-  by simp  
-
-lemma int_of_integer_inv: "int_of_integer (integer_of_int x) = x" by simp
-
-lemma int_of_integer_shift: "int_of_integer (drop_bit k n) = (int_of_integer n) div (2 ^ k)" 
-  by transfer (simp add: int_of_integer_pow shiftr_integer_conv_div_pow2)
-
+ 
 context
   includes bit_operations_syntax
 begin
@@ -1269,16 +1248,12 @@ function power_p_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer
 
 termination 
 proof -
-  {
-    fix n :: integer
-    assume "\<not> (n \<le> 0)" 
-    hence "n > 0" by auto
-    hence "int_of_integer n > 0"
-      by (simp add: less_integer.rep_eq)
-    hence "0 < int_of_integer n" "int_of_integer n div 2 < int_of_integer n" by auto
-  } note * = this
+  include integer.lifting
+  have *: \<open>nat_of_integer (n div 2) < nat_of_integer n\<close> if \<open>0 < n\<close> for n
+    using that by transfer simp
   show ?thesis
-    by (relation "measure (\<lambda> (x,n). nat (int_of_integer n))", auto simp: * int_of_integer_shift) 
+    by (relation \<open>measure (nat_of_integer \<circ> snd)\<close>)
+      (simp_all add: not_le drop_bit_Suc *)
 qed
 
 end
@@ -1311,9 +1286,6 @@ definition finite_field_ops_integer :: "integer arith_ops_record" where
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 end 
 
-lemma shiftr_integer_code [code_unfold]: "drop_bit 1 x = (integer_shiftr x 1)"
-  unfolding shiftr_integer_code using integer_of_nat_1 by auto
-
 text \<open>For soundness of the integer implementation, we mainly prove that this implementation
   implements the int-based implementation of GF(p).\<close>
 context mod_ring_locale
@@ -1323,12 +1295,12 @@ context fixes pp :: "integer"
   assumes ppp: "p = int_of_integer pp" 
 begin
 
-lemmas integer_simps = 
-  int_of_integer_0
-  int_of_integer_plus 
-  int_of_integer_minus
-  int_of_integer_mult
-  
+lemma integer_simps:
+  \<open>int_of_integer 0 = 0\<close>
+  \<open>int_of_integer (x + y) = int_of_integer x + int_of_integer y\<close>
+  \<open>int_of_integer (x - y) = int_of_integer x - int_of_integer y\<close>
+  \<open>int_of_integer (x * y) = int_of_integer x * int_of_integer y\<close>
+  by simp_all
 
 definition urel_integer :: "integer \<Rightarrow> int \<Rightarrow> bool" where "urel_integer x y = (y = int_of_integer x \<and> y \<ge> 0 \<and> y < p)" 
 
@@ -1401,13 +1373,14 @@ qed
 
 lemma urel_integer_uminus: assumes "urel_integer x y"
   shows "urel_integer (uminus_p_integer pp x) (uminus_p p y)"
-proof -    
+proof -
+  include integer.lifting
   let ?x = "int_of_integer x"  
   from assms have id: "y = ?x" 
     and rel: "0 \<le> ?x" "?x < p" 
       unfolding urel_integer_def by auto
-  have le: "(x = 0) = (?x = 0)" unfolding int_of_integer_0_iff
-    using rel by auto
+  have le: "(x = 0) = (?x = 0)"
+    by transfer rule
   show ?thesis
   proof (cases "?x = 0")
     case True
@@ -1488,8 +1461,9 @@ including bit_operations_syntax proof (induct x' y' arbitrary: x y rule: power_p
       done
     from urel_integer_eq[OF this urel_integer_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
-    have div: "urel_integer (drop_bit 1 y) (int d')" unfolding d' using y unfolding urel_integer_def
-      unfolding ppp shiftr_integer_conv_div_pow2 by auto
+    have div: "urel_integer (drop_bit 1 y) (int d')"
+      unfolding d' using y unfolding urel_integer_def
+      unfolding ppp by (auto simp add: of_nat_div drop_bit_Suc)
     from id have "y' \<noteq> 0" by auto
     note IH = 1(1)[OF this refl dr'[symmetric] urel_integer_mult[OF x x] div]
     show ?thesis unfolding power_p.simps[of _ _ "y'"] power_p_integer.simps[of _ _ y] dr' id if_False rem

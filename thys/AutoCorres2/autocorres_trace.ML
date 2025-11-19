@@ -414,8 +414,8 @@ fun fast_solve_tac (ctxt : Proof.context)
   in if depth = SOME 0 then (warning "fast_solve_tac giving up: depth limit reached"; raise TRACE_SOLVE_TAC_FAIL [(st, @{thm reflexive})]) else
      if n = 0 orelse num_subgoals <= 0 then SOME st else
        let
-         val _ = Utils.verbose_print_subgoal_tac 4 "fast_solve_tac" ctxt 1 st
-         val _ = Utils.verbose_print_maingoal_tac 5 "fast_solve_tac" ctxt st
+         val _ = Utils.verbose_print_subgoal_tac 4 msg ctxt 1 st
+         val _ = Utils.verbose_print_maingoal_tac 5 msg ctxt st
        in try (timeap (get_tacs ctxt) (Thm.cprem_of st 1)) end
   end
 

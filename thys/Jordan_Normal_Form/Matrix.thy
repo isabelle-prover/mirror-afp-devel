@@ -665,6 +665,22 @@ lemma mat_of_cols_cols[simp]:
   unfolding mat_of_cols_def by (rule, auto simp: col_def)
 
 
+definition change_row :: "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
+  "change_row k f A = mat (dim_row A) (dim_col A) (\<lambda> (i,j).
+     if i = k then f j (A $$ (k,j)) else A $$ (i,j))"
+
+lemma change_row_carrier[simp]:
+  "(change_row k f A \<in> carrier_mat nr nc) = (A \<in> carrier_mat nr nc)"
+  "dim_row (change_row k f A) = dim_row A"
+  "dim_col (change_row k f A) = dim_col A"
+  unfolding change_row_def carrier_mat_def by auto
+
+lemma change_row_index[simp]: "A \<in> carrier_mat nr nc \<Longrightarrow> i < nr \<Longrightarrow> j < nc \<Longrightarrow>
+  change_row k f A $$ (i,j) = (if i = k then f j (A $$ (k,j)) else A $$ (i,j))"
+  "i < dim_row A \<Longrightarrow> j < dim_col A \<Longrightarrow> change_row k f A $$ (i,j) = (if i = k then f j (A $$ (k,j)) else A $$ (i,j))"
+  unfolding change_row_def by auto
+
+
 instantiation mat :: (ord) ord
 begin
 

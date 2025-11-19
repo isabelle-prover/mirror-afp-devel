@@ -1,12 +1,12 @@
 (*  Title:      ML_Unification/unification_hints_base.ML
     Author:     Kevin Kappelmann, Paul Bachmann
 
-Unification hints (introduced in "Hints in unification" by Asperti et al, 2009).
+A generalisation of unification hints (introduced in "Hints in unification" by Asperti et al, 2009).
 We support a generalisation that
-1. allows additional universal variables in premises
-2. allows non-atomic left-hand sides for premises
-3. allows arbitrary functions to perform the matching/unification of a hint with
-   a disagreement pair.
+1. creates provably equal terms (rather than definitionally equal),
+2. allows arbitrary, proof-producing functions to perform the matching/unification,
+3. allows additional universal variables in premises, and
+4. allows non-atomic left-hand sides for premises.
 
 General shape of a hint:
 \<open>\<And>y1...yn. (\<And>x1...xn1. lhs1 \<equiv> rhs1) \<Longrightarrow> ... \<Longrightarrow> (\<And>x1...xnk. lhsk \<equiv> rhsk) \<Longrightarrow> lhs \<equiv> rhs\<close>
@@ -135,8 +135,7 @@ type hint_retrieval = term Binders.binders -> Proof.context -> term * term -> En
   unif_hint Seq.seq
 
 fun try_hints get_hints match norms unif binders ctxt (t1, t2) env = Seq.make (fn _ =>
-  (@{log Logger.TRACE} ctxt (fn _ =>
-    Pretty.block [
+  (@{log Logger.TRACE} ctxt (fn _ => Pretty.block [
       Pretty.str "Trying unification hints for ",
       UUtil.pretty_unif_problem ctxt (t1, t2)
     ] |> Pretty.string_of);

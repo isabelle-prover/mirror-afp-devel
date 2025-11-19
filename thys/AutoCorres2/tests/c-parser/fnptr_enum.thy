@@ -10,7 +10,7 @@ begin
 
 install_C_file "fnptr_enum.c"
 
-
+thm enum_defs
 
 
 end

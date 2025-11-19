@@ -548,7 +548,7 @@ proof -
         hence "uverts G \<subseteq> uverts A" "uwellformed G"
           unfolding nonempty_subgraphs_def subgraph_def by simp+
         hence "inj_on f (uverts G)"
-          using f(2) unfolding bij_betw_def by (metis subset_inj_on)
+          using f(2) unfolding bij_betw_def by (metis inj_on_subset)
         hence "G \<simeq> map_ugraph f G"
           unfolding isomorphism_def bij_betw_def
           by (metis map_ugraph.simps fst_conv surjective_pairing map_ugraph_wellformed \<open>uwellformed G\<close>)
@@ -569,7 +569,7 @@ proof -
         hence G': "subgraph G' A" "nonempty_graph G'" "uwellformed G'"
           unfolding nonempty_subgraphs_def by auto
         hence "inj_on f (uverts G')"
-          using f unfolding bij_betw_def subgraph_def by (metis subset_inj_on)
+          using f unfolding bij_betw_def subgraph_def by (metis inj_on_subset)
         hence "uwellformed G''"
           using map_ugraph_wellformed G' G_subst by simp
         moreover have "nonempty_graph G''"

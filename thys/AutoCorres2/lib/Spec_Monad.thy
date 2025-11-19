@@ -397,8 +397,6 @@ lemma holds_top_post_state[simp]: "\<not> holds_post_state P \<top>"
 lemma holds_bot_post_state[simp]: "holds_post_state P \<bottom>"
   by (simp add: bot_post_state_def)
 
-
-
 lemma holds_Sup_post_state[simp]: "holds_post_state P (Sup F) \<longleftrightarrow> (\<forall>f\<in>F. holds_post_state P f)"
   by (subst (2) split_post_state)
     (auto simp: Sup_post_state_def split: post_state.splits)
@@ -476,7 +474,7 @@ lemma holds_partial_Sup_post_stateI:
   "(\<And>x. x \<in> X \<Longrightarrow> holds_partial_post_state P x) \<Longrightarrow> holds_partial_post_state P (Sup X)"
   by (force simp: Sup_post_state_def)
 
-lemma holds_partial_bind_post_stateI:
+lemma holds_partial_bind_post_state:
   "holds_partial_post_state (\<lambda>x. holds_partial_post_state P (g x)) f \<Longrightarrow>
     holds_partial_post_state P (bind_post_state f g)"
   by (cases f) (auto intro: holds_partial_Sup_post_stateI)
@@ -490,10 +488,11 @@ lemma holds_partial_vmap_post_state[simp]:
     holds_partial_post_state (\<lambda>x. \<forall>y. f y = x \<longrightarrow> P y) x"
   by (cases x) auto
 
-lemma holds_partial_bind_post_state:
-  "holds_partial_post_state (\<lambda>x. holds_partial_post_state P (g x)) f \<Longrightarrow>
-    holds_partial_post_state P (bind_post_state f g)"
-  by (cases f) (auto intro: holds_partial_Sup_post_stateI)
+lemma holds_partial_post_state_rel:
+  "rel_post_state (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) p q \<Longrightarrow>
+    holds_partial_post_state (\<lambda>b. \<forall>a. R a b \<longrightarrow> P a) q \<Longrightarrow>
+    holds_partial_post_state P p"
+  by (force elim!: rel_post_state.cases simp: rel_set_def)
 
 subsection \<open>\<open>sim_post_state\<close>\<close>
 
@@ -740,6 +739,14 @@ lemma pure_post_state_le_Success[simp]: "pure_post_state x \<le> Success X \<lon
 lemma Success_le_pure_post_state[simp]: "Success X \<le> pure_post_state x \<longleftrightarrow> X \<subseteq> {x}"
   by (auto simp add: pure_post_state_def)
 
+lemma case_pure_post_state[simp]:
+  "(case pure_post_state x of Failure \<Rightarrow> f | Success X \<Rightarrow> S X) = S {x}"
+  by (simp add: pure_post_state_def)
+
+lemma sim_post_state_Success_pure_post_state[simp]:
+  "sim_post_state R (Success X) (pure_post_state y) \<longleftrightarrow> (\<forall>x\<in>X. R x y)"
+  by (simp add: pure_post_state_def)
+
 subsection \<open>\<open>bind_post_state\<close>\<close>
 
 lemma bind_post_state_top: "bind_post_state \<top> g = \<top>"
@@ -858,6 +865,14 @@ lemma Success_vimage_image_cancel: "Success -` (\<lambda>x. Success (f x)) ` X =
 
 lemma Success_image_comp: "(\<lambda>x. Success (g x)) ` X = Success ` (g ` X)"
   by auto
+
+lemma case_top_post_state[simp]:
+  "(case \<top> of Failure \<Rightarrow> f | Success X \<Rightarrow> S X) = f"
+  by (simp add: top_post_state_def)
+
+lemma case_bot_post_state[simp]:
+  "(case \<bottom> of Failure \<Rightarrow> f | Success X \<Rightarrow> S X) = S {}"
+  by (simp add: bot_post_state_def)
 
 section \<open>\<open>exception_or_result\<close> type\<close>
 
@@ -1008,10 +1023,9 @@ lemma the_Exception_Result:
   "the_Exception (Result v) = default"
   by (simp add: the_Exception_def)
 
-syntax "_Res" :: "pttrn \<Rightarrow> pttrn" (\<open>Res _\<close>)
-
 definition undefined_unit::"unit \<Rightarrow> 'b" where "undefined_unit x \<equiv> undefined"
 
+syntax "_Res" :: "pttrn \<Rightarrow> pttrn" (\<open>(\<open>open_block notation=\<open>prefix Res\<close>\<close>Res _)\<close>)
 syntax_consts "_Res" \<rightleftharpoons> case_exception_or_result
 translations "\<lambda>Res x. b" \<rightleftharpoons> "CONST case_exception_or_result (CONST undefined_unit) (\<lambda>x. b)"
 
@@ -1260,7 +1274,7 @@ where
   "bind f g = bind_handle f g throw_exception_or_result"
 
 adhoc_overloading
-  Monad_Syntax.bind bind
+  Monad_Syntax.bind \<rightleftharpoons> bind
 
 lift_definition lift_state ::
     "('s \<Rightarrow> 't \<Rightarrow> bool) \<Rightarrow> ('e::default, 'a, 't) spec_monad \<Rightarrow> ('e, 'a, 's) spec_monad"
@@ -1334,7 +1348,7 @@ where
     bind get_state (\<lambda>s. if C s then T else F)"
 
 notation (output)
-  condition  (\<open>(condition (_)//  (_)//  (_))\<close> [1000,1000,1000] 999)
+  condition  (\<open>(\<open>notation=\<open>prefix condition\<close>\<close>condition (_)//  (_)//  (_))\<close> [1000,1000,1000] 999)
 
 definition "when" ::"bool \<Rightarrow> ('e::default, unit, 's) spec_monad \<Rightarrow> ('e, unit, 's) spec_monad"
   where "when c f \<equiv> condition (\<lambda>_. c) f skip"
@@ -1376,12 +1390,12 @@ type_synonym ('e, 'a, 's) predicate = "('e, 'a) exception_or_result \<Rightarrow
 
 lift_definition runs_to ::
     "('e::default, 'a, 's) spec_monad \<Rightarrow> 's \<Rightarrow> ('e, 'a, 's) predicate \<Rightarrow> bool"
-    (\<open>_/ \<bullet> _ \<lbrace> _ \<rbrace>\<close> [61, 1000, 0] 30) \<comment> \<open>syntax \<open>_do_block\<close> has 62\<close>
+    (\<open>(\<open>open_block notation=\<open>mixfix runs_to\<close>\<close>_/ \<bullet> _ \<lbrace> _ \<rbrace>)\<close> [61, 1000, 0] 30) \<comment> \<open>syntax \<open>_do_block\<close> has 62\<close>
   is "\<lambda>f s Q. holds_post_state (\<lambda>(r, t). Q r t) (f s)" .
 
 lift_definition runs_to_partial ::
     "('e::default, 'a, 's) spec_monad \<Rightarrow> 's \<Rightarrow> ('e, 'a, 's) predicate \<Rightarrow> bool"
-    (\<open>_/ \<bullet> _ ?\<lbrace> _ \<rbrace>\<close> [61, 1000, 0] 30)
+    (\<open>(\<open>open_block notation=\<open>mixfix runs_to_partial\<close>\<close>_/ \<bullet> _ ?\<lbrace> _ \<rbrace>)\<close> [61, 1000, 0] 30)
   is "\<lambda>f s Q. holds_partial_post_state (\<lambda>(r, t). Q r t) (f s)" .
 
 lift_definition refines ::
@@ -1479,9 +1493,21 @@ lemma refines_cong_cases:
   subgoal for v s v' s' by (cases v; cases v'; simp add: assms)
   done
 
+lemma refines_parallel: 
+  "always_progress g \<Longrightarrow> f \<bullet> s \<lbrace> P \<rbrace> \<Longrightarrow> g \<bullet> t \<lbrace> Q \<rbrace> \<Longrightarrow>
+    refines f g s t (\<lambda>(r, s) (q, t). P r s \<and> Q q t)"
+  apply (transfer fixing: P Q)
+  subgoal for g f s t
+    by (cases "f s"; cases "g t")
+       (auto simp: split_beta' bot_post_state_def dest!: spec[of _ t])
+  done
+
 lemma runs_to_partial_weaken[runs_to_vcg_weaken]:
   "f \<bullet> s ?\<lbrace>Q\<rbrace> \<Longrightarrow> (\<And>r t. Q r t \<Longrightarrow> Q' r t) \<Longrightarrow> f \<bullet> s ?\<lbrace>Q'\<rbrace>"
   by transfer (auto intro: holds_partial_post_state_weaken)
+
+lemma runs_to_partial_Res_True[simp]: "p \<bullet> s ?\<lbrace> \<lambda>Res a s. True \<rbrace>"
+  by (rule runs_to_partial_weaken[OF runs_to_partial_True]) auto
 
 lemma runs_to_weaken[runs_to_vcg_weaken]: "f \<bullet> s \<lbrace>Q\<rbrace> \<Longrightarrow> (\<And>r t. Q r t \<Longrightarrow> Q' r t) \<Longrightarrow> f \<bullet> s \<lbrace>Q'\<rbrace>"
   by transfer (auto intro: holds_post_state_weaken)
@@ -1497,6 +1523,17 @@ lemma runs_to_imp_runs_to[mono]:
 lemma refines_imp_refines[mono]:
   "(\<And>a s. P a s \<longrightarrow> Q a s) \<Longrightarrow> refines f g s t P \<longrightarrow> refines f g s t Q"
   using refines_weaken[of f g s t P Q] by auto
+
+lemma runs_to_strengthen:
+  "f \<bullet> s \<lbrace> P \<rbrace> \<Longrightarrow> f \<bullet> s ?\<lbrace> Q \<rbrace> \<Longrightarrow> (\<And>a s. P a s \<Longrightarrow> Q a s \<Longrightarrow> R a s) \<Longrightarrow> f \<bullet> s \<lbrace> R \<rbrace>"
+  by (cases "run f s") (auto simp: runs_to.rep_eq runs_to_partial.rep_eq split_beta')
+
+lemma runs_to_partial_weaken_rel_spec:
+  "g \<bullet> t ?\<lbrace> \<lambda>r t'. \<forall>p s'. R (p, s') (r, t') \<longrightarrow> P p s' \<rbrace> \<Longrightarrow> rel_spec f g s t R \<Longrightarrow> f \<bullet> s ?\<lbrace> P \<rbrace>"
+  apply transfer
+  apply (rule holds_partial_post_state_rel, assumption)
+  apply (auto simp: split_beta')
+  done
 
 lemma runs_to_cong_cases:
   assumes "\<And>e s. e \<noteq> default \<Longrightarrow> P (Exception e) s \<longleftrightarrow> Q (Exception e) s"
@@ -1518,7 +1555,7 @@ lemma spec_monad_eq_iff: "f = g \<longleftrightarrow> (\<forall>P s. f \<bullet>
 lemma spec_monad_eqI: "(\<And>P s. f \<bullet> s \<lbrace> P \<rbrace> \<longleftrightarrow> g \<bullet> s \<lbrace> P \<rbrace>) \<Longrightarrow> f = g"
   by (simp add: spec_monad_eq_iff)
 
-lemma runs_to_Sup_iff: "(Sup X) \<bullet> s \<lbrace> P \<rbrace> \<longleftrightarrow> (\<forall>x\<in>X. x \<bullet> s \<lbrace> P \<rbrace>)"
+lemma runs_to_Sup_iff[runs_to_iff]: "(Sup X) \<bullet> s \<lbrace> P \<rbrace> \<longleftrightarrow> (\<forall>x\<in>X. x \<bullet> s \<lbrace> P \<rbrace>)"
   by transfer simp
 
 lemma runs_to_lfp:
@@ -2595,7 +2632,7 @@ lemma runs_to_partial_bind_handle[runs_to_vcg]:
                  (\<forall>e. r = Exception e \<longrightarrow> e \<noteq> default \<longrightarrow> h e \<bullet> t ?\<lbrace> Q \<rbrace>)\<rbrace> \<Longrightarrow>
   bind_handle f g h \<bullet> s ?\<lbrace> Q \<rbrace>"
   by transfer
-     (auto intro!: holds_partial_bind_post_stateI intro: holds_partial_post_state_weaken
+     (auto intro!: holds_partial_bind_post_state intro: holds_partial_post_state_weaken
            split: exception_or_result_splits prod.splits)
 
 lemma runs_to_partial_bind_handle_exeption_monad[runs_to_vcg]:
@@ -2745,6 +2782,9 @@ lemma run_bind[run_spec_monad]: "run (bind f g) s =
       Exception e \<Rightarrow> pure_post_state (Exception e, t)
     | Result v \<Rightarrow> run (g v) t)"
   by (auto simp add: bind_def run_bind_handle )
+
+lemma run_bind_res: "run (f >>= g) s = bind_post_state (run f s) (\<lambda>(Res r, s). run (g r) s)"
+  by (auto simp add: run_bind intro!: arg_cong2[where f=bind_post_state])
 
 lemma run_bind_eq_top_iff:
   "run (bind f g) s = \<top> \<longleftrightarrow> \<not> (f \<bullet> s \<lbrace> \<lambda>x s. \<forall>a. x = Result a \<longrightarrow> run (g a) s \<noteq> \<top> \<rbrace>)"
@@ -2902,6 +2942,16 @@ lemma refines_bind_res':
   assumes g: "\<And>r t r' t'. Q (Result r, t) (Result r', t') \<Longrightarrow> refines (g r) (g' r') t t' R"
   shows "refines ((bind f g)::('a,'s) res_monad) ((bind f' g')::('b, 't) res_monad) s s' R"
   by (auto intro!: refines_bind_res refines_weaken[OF f] g)
+
+lemma refines_bind_res_bind_exn:
+  assumes f: "refines f f' s s' Q"
+  assumes rl: "\<And>v e t t'. Q (Result v, t) (Exn e, t') \<Longrightarrow>
+                refines (g v) (throw e) t t' R"
+  assumes rr: "\<And>v v' t t'. Q (Result v, t) (Result v', t') \<Longrightarrow>
+                refines (g v) (g' v') t t' R"
+  shows "refines (bind f g :: (_, _) res_monad) (bind f' g') s s' R"
+  using rl rr
+  by (intro refines_bind[OF f]) (auto simp: default_option_def simp flip: Exn_def)
 
 lemma refines_bind_bind_exn_wp: 
   assumes f: "refines f f' s s' (\<lambda>(r, t) (r',t'). 
@@ -4194,7 +4244,7 @@ lemma runs_to_partial_whileLoop_exn:
   done
 
 notation (output)
-  whileLoop  (\<open>(whileLoop (_)//  (_))\<close> [1000, 1000] 1000)
+  whileLoop  (\<open>(\<open>notation=\<open>prefix whileLoop\<close>\<close>whileLoop (_)//  (_))\<close> [1000, 1000] 1000)
 
 lemma whileLoop_mono: "b \<le> b' \<Longrightarrow> whileLoop c b i \<le> whileLoop c b' i"
   unfolding whileLoop_def
@@ -4618,7 +4668,7 @@ lemma rel_spec_map_value_left_iff:
   by (simp add: rel_spec_iff_refines refines_map_value_right_iff refines_map_value_left_iff
                 conversep.simps[abs_def] split_beta')
 
-lemma refines_map_value_right:
+lemma refines_map_value_right_same:
   "refines f (map_value m f) s s (\<lambda>(x, s) (y, t). y = m x \<and> s = t)"
   by (simp add: refines_map_value_right_iff refines_refl)
 
@@ -4842,9 +4892,9 @@ lemma monotone_try_ge[partial_function_mono]:
   "monotone R (\<ge>) (\<lambda>f'. f f') \<Longrightarrow> monotone R (\<ge>) (\<lambda>f'. try (f f'))"
   unfolding try_def by (rule monotone_map_value_ge)
 
-lemma refines_try_right:
+lemma refines_try_right_same:
   "refines f (try f) s s (\<lambda>(x, s) (y, t). y = unnest_exn x \<and> s = t)"
-  by (auto simp add: try_def refines_map_value_right)
+  by (auto simp add: try_def refines_map_value_right_same)
 
 subsection \<open>\<^const>\<open>finally\<close>\<close>
 
@@ -5062,13 +5112,14 @@ lemma liftE_le_iff_le_ignoreE: "liftE f \<le> g \<longleftrightarrow> f \<le> ig
   unfolding liftE_def ignoreE_eq[abs_def]
   by transfer (simp add: le_fun_def vmap_post_state_le_iff_le_map_post_state id_def)
 
+lemma runs_to_partial_ignoreE_iff:
+  "ignoreE f \<bullet> s ?\<lbrace> P \<rbrace> \<longleftrightarrow> f \<bullet> s ?\<lbrace> \<lambda>r t. \<forall>v. r = Result v \<longrightarrow> P (Result v) t \<rbrace>"
+  unfolding ignoreE_eq
+  by transfer (simp add: split_beta' prod_eq_iff eq_commute)
+
 lemma runs_to_partial_ignoreE[runs_to_vcg]:
-  "f \<bullet> s ?\<lbrace> \<lambda>r t. (\<forall>v. r = Result v \<longrightarrow>  Q (Result v) t)\<rbrace> \<Longrightarrow>
-      (ignoreE f) \<bullet> s ?\<lbrace> Q \<rbrace>"
-  unfolding ignoreE_def
-  apply (runs_to_vcg)
-  apply (fastforce simp add: runs_to_partial.rep_eq)
-  done
+  "f \<bullet> s ?\<lbrace> \<lambda>r t. (\<forall>v. r = Result v \<longrightarrow>  Q (Result v) t)\<rbrace> \<Longrightarrow> (ignoreE f) \<bullet> s ?\<lbrace> Q \<rbrace>"
+  by (simp add: runs_to_partial_ignoreE_iff)
 
 lemma mono_ignoreE: "f \<le> f' \<Longrightarrow> ignoreE f \<le> ignoreE f'"
   unfolding ignoreE_def
@@ -5592,5 +5643,1159 @@ unbundle basic_vcg_tagging_setup
 lemmas [runs_to_vcg] = runs_to_tag runs_to_tag_guard
 
 end
+
+lemma refines_set_state_right:
+  "refines f (set_state t' \<bind> g) s t R \<longleftrightarrow> refines f (g ()) s t' R"
+  by (auto simp add: refines_iff' runs_to_iff)
+
+lemma refines_bind_modify_right_iff:
+  "refines f (modify m \<bind> g) s t R \<longleftrightarrow> refines f (g ()) s (m t) R"
+  by (auto simp: refines_iff' runs_to_iff)
+
+lemma refines_guard_right_iff:
+  "refines f (guard P) s t R \<longleftrightarrow> (P t \<longrightarrow> refines f skip s t R)"
+  using refines_bind_guard_right_iff[of f P return s t R]  by simp
+
+lemma refines_select_right_witness:
+  "x \<in> X \<Longrightarrow> refines f (g x) s t Q \<Longrightarrow> refines f ((select X) >>= g) s t Q"
+  by (simp add: refines_iff' runs_to_iff)
+
+lemmas refines_select_right = refines_select_right_witness
+
+lemma refines_unknown_right:
+  "refines f (g x) s t R \<Longrightarrow> refines f (unknown >>= g) s t R"
+  unfolding unknown_def by (simp add: refines_select_right)
+
+lemma refines_bind_liftE_modify_iff:
+  "refines f (do {
+      liftE g;
+      modify h
+    }) x y R =
+    refines f (do {
+      g;
+      modify h
+    }) x y (\<lambda>(x, s') (y, t'). \<forall>v. y = Result v \<longrightarrow> R (x, s') (Result v, t'))"
+  by (subst refines_liftE_right_iff[symmetric]) (simp flip: liftE_bind)
+
+lemma refines_get_state_right_iff:
+  "refines f (do {x \<leftarrow> get_state; h x }) s t Q \<longleftrightarrow>
+    refines f (h t) s t Q"
+  by (auto simp add: refines_iff' runs_to_iff)
+
+lemma refines_gets_the_right_iff:
+  "refines f (do {x \<leftarrow> gets_the m; h x } :: ('a::default, 'b, 'c) spec_monad) s t Q \<longleftrightarrow>
+    (\<forall>r. m t = Some r \<longrightarrow> refines f (h r) s t Q)"
+  by (auto simp add: refines_iff' runs_to_iff)
+
+lemma refines_gets_the_right:
+  "(\<And>r. m t = Some r \<Longrightarrow> refines f (h r) s t Q) \<Longrightarrow>
+    refines f (do {x \<leftarrow> gets_the m; h x } :: ('a::default, 'b, 'c) spec_monad) s t Q"
+  by (simp add: refines_gets_the_right_iff)
+
+lemma refines_assert_right_iff:
+  "refines f (do {x \<leftarrow> assert P; h x } :: ('a::default, 'b, 'c) spec_monad) s t Q \<longleftrightarrow>
+    (P \<longrightarrow> refines f (h r) s t Q)"
+  by (auto simp add: refines_iff' runs_to_iff)
+
+lemma refines_modify_right: 
+  "refines C (modify f) s t R \<longleftrightarrow> (C \<bullet> s \<lbrace> \<lambda>r s'. R (r, s') (Result (), f t) \<rbrace>)"
+  by (cases "run C s") (simp_all add: refines.rep_eq runs_to.rep_eq)
+
+lemma refines_liftE_left:
+  "refines (liftE f) g s t R \<longleftrightarrow> refines f g s t (\<lambda>(Res a, s) b. R (Result a, s) b)"
+  by (auto simp add: refines_liftE_left_iff intro!: arg_cong[where f="refines f g s t"])
+
+lemma refines_liftE:
+  "refines f g s t R \<Longrightarrow>
+    refines (liftE f) (liftE g) s t
+      (\<lambda>(x, s') (y, t'). \<exists>r q. x = Result r \<and> y = Result q \<and> R (Result r, s') (Result q, t'))"
+  unfolding refines_liftE_left refines_liftE_right_iff
+  apply (rule refines_weaken, assumption)
+  apply auto
+  done
+
+lemma refines_catch_right:
+  assumes "refines f g s t (\<lambda>(x, s').
+    \<lambda>(Result y, t') \<Rightarrow> R (x, s') (Result y, t')
+    |(Exn e, t') \<Rightarrow> refines (yield x) (h e) s' t' R)"
+  shows "refines f (g <catch> h) s t R"
+  using assms
+  apply (auto simp add: refines_iff' runs_to_iff)
+  subgoal premises prems for P
+    apply (rule prems[rule_format])
+    apply (rule runs_to_weaken[OF prems(2)])
+    apply (force split: xval_splits)
+    done
+  done
+
+lemma return_catch:
+  "(return x <catch> H) = return x"
+  by (simp add: spec_monad_eq_iff runs_to_iff)
+
+lemma refines_gets_right:
+  "f \<bullet> s \<lbrace> \<lambda>r s'. R (r, s') (Result (m t), t) \<rbrace> \<Longrightarrow> refines f (gets m) s t R"
+  by (auto simp add: refines_iff' runs_to_iff intro: runs_to_weaken)
+
+lemma refines_when:
+  "P \<longleftrightarrow> P' \<Longrightarrow>
+    (P \<Longrightarrow> P' \<Longrightarrow> refines f f' s t R) \<Longrightarrow>
+    (\<not> P \<Longrightarrow> \<not> P' \<Longrightarrow> R (Result (), s) (Result (), t)) \<Longrightarrow>
+    refines (when P f) (when P' f') s t R"
+  by (cases P; simp)
+
+lemma refines_case_prod:
+  "(\<And>a b c d. x = (a, b) \<Longrightarrow> y = (c, d) \<Longrightarrow> refines (f a b) (g c d) s t R) \<Longrightarrow>
+    refines (case x of (a, b) \<Rightarrow> f a b) (case y of (c, d) \<Rightarrow> g c d) s t R"
+  by (cases x; cases y; auto)
+
+lemma refines_unless:
+  "(\<not> P \<Longrightarrow> refines f g s t R) \<Longrightarrow> (P \<longrightarrow> R (Result (), s) (Result (), t)) \<Longrightarrow>
+    refines (unless P f) (unless P g) s t R"
+  unfolding when_def
+  apply (rule refines_condition)
+    apply (auto intro: refines_yield)
+  done
+
+lemma refines_ext_left:
+  "f \<bullet> s_A \<lbrace> P \<rbrace> \<Longrightarrow> refines g f s_C s_A R \<Longrightarrow>
+    refines g f s_C s_A (\<lambda>a b. R a b \<and> P (fst b) (snd b))"
+  by transfer (force elim!: sim_post_state.cases simp: sim_set_def)
+
+lemma refines_return_throw:
+  "refines (return x) (throw e) s t R \<longleftrightarrow> R (Result x, s) (Exn e, t)"
+  by (simp add: refines_def Exn_def )
+
+lemma refines_returnOk_throw:
+  "refines (return x) (throw e) s t R \<longleftrightarrow> R (Result x, s) (Exn e, t)"
+  by (simp)
+
+lemma refines_throw_returnOk:
+  "refines (throw e) (return x) s t R \<longleftrightarrow> R (Exn e, s) (Result x, t)"
+  by (simp add: refines_def Exn_def)
+
+lemma refines_condition_right_iff:
+  "refines f (condition P g h) s t R \<longleftrightarrow> refines f (if P t then g else h) s t R"
+  by (simp add: refines_def)
+
+lemma refines_gets_theE_right_iff:
+  "m t = Some x \<Longrightarrow>
+    refines f (gets_the m >>= g) s t R \<longleftrightarrow> refines f (g x) s t R"
+  by (simp add: refines_iff' runs_to_iff)
+
+lemma refines_bind_bindE:
+  assumes f: "refines f f' s t Q"
+  assumes g': "\<And>r s x t. Q (Result r, s) (Result x, t) \<Longrightarrow> refines (g r) (g' x) s t R"
+  assumes g: "\<And>r s e t. Q (Result r, s) (Exn e, t) \<Longrightarrow> (g r) \<bullet> s \<lbrace> \<lambda>r s'. R (r, s') (Exn e, t) \<rbrace>"
+  shows "refines ((bind f g)::('a, 's) res_monad) (f' >>= g') s t R"
+  apply (rule refines_bind[OF f])
+  subgoal by simp
+  subgoal by simp
+  subgoal
+    using g by (auto simp add: refines_yield_right_iff default_option_def Exn_def)
+  subgoal using g' by simp
+  done
+
+lemma refines_whileLoop_cond_exn:
+  assumes C: "\<And>x s x' s'. R (Result x, s) (Result x', s') \<Longrightarrow> C x s = C' x' s'"
+  assumes B: "\<And>x s x' s'. R (Result x, s) (Result x', s') \<Longrightarrow> C x s \<Longrightarrow> C' x' s' \<Longrightarrow>
+    refines (B x) (B' x') s s' R"
+  assumes R_ER: "\<And>e s x' s'. e \<noteq> default \<Longrightarrow> R (Exception e, s) (Result x', s') \<Longrightarrow> \<not> C' x' s'"
+  assumes R_RE: "\<And>x s e' s'. e' \<noteq> default \<Longrightarrow> R (Result x, s) (Exception e', s') \<Longrightarrow> \<not> C x s"
+  assumes x: "R (Result x, s) (Result x', s')"
+  shows "refines (whileLoop C B x) (whileLoop C' B' x') s s' R"
+proof cases
+  assume *: "run (whileLoop C' B' x') s' \<noteq> \<top>"
+  show "refines (whileLoop C B x) (whileLoop C' B' x') s s' R" using x
+  proof (induction arbitrary: x s rule: whileLoop_ne_top_induct[OF *])
+    case (1 a' s' a s)
+    show ?case
+      apply (subst (1 2) whileLoop_unroll)
+      apply (intro refines_condition C 1 refines_yield)
+      apply (rule refines_bind')
+      apply (rule refines_strengthen2[OF B runs_to_partial_of_runs_to[OF 1(1)]])
+      apply (rule 1)
+      apply simp
+      apply simp
+      apply simp
+      apply auto
+      subgoal
+        apply (subst whileLoop_unroll)
+        apply (simp add: refines_condition_right_iff R_ER)
+        done
+      subgoal
+        apply (subst whileLoop_unroll)
+        apply (intro refines_condition_left)
+        apply (simp_all add: R_RE)
+        done
+      done
+  qed
+qed (simp add: refines.rep_eq)
+
+lemma refines_on_exit'_right:
+  assumes f: "refines f f' s s'
+    (\<lambda>(r, t) (r', t'). refines skip c' t t' (\<lambda>(q, t) (q', t'). R
+      (case q of Exception e \<Rightarrow> Exception e | Result _ \<Rightarrow> r, t)
+      (case q' of Exception e' \<Rightarrow> Exception e' | Result _ \<Rightarrow> r', t')))"
+  shows "refines f (on_exit' f' c') s s' R"
+  using refines_on_exit'[of f f' s s' skip c' R] f
+  by (simp add: on_exit'_skip)
+lemma runs_to_whileLoop':
+  assumes B[runs_to_vcg]: "\<And>r s x. I x (Result r) s \<Longrightarrow> C r s \<Longrightarrow>
+    (B r) \<bullet> s \<lbrace> \<lambda>q t. \<exists>y. I y q t \<and> (\<forall>a. q = Result a \<longrightarrow> (y, x) \<in> R) \<rbrace>"
+  assumes Qr: "\<And>x r s. I x (Result r) s \<Longrightarrow> \<not> C r s \<Longrightarrow> Q (Result r) s"
+  assumes Ql: "\<And>x e s. I x (Exn e) s \<Longrightarrow> Q (Exn e) s"
+  assumes R: "wf R"
+  assumes I: "I x (Result r) s"
+  shows "(whileLoop C B r) \<bullet> s \<lbrace> Q \<rbrace>"
+  using I
+proof (induction x arbitrary: r s rule: wf_induct_rule[OF R])
+  case (1 x)
+  note 1(1)[runs_to_vcg]
+
+  show ?case
+    apply (subst whileLoop_unroll)
+    apply runs_to_vcg
+    apply (rule 1)
+    apply assumption
+    apply assumption
+    subgoal by (rule Ql)
+    subgoal using 1(2) by (rule Qr)
+    done
+qed
+
+lemma runs_to_whileLoop_variant_exn:
+  assumes I: "\<And>r s x. I (Result r) s x \<Longrightarrow>
+    C r s \<Longrightarrow> (B r) \<bullet> s \<lbrace> \<lambda>q t. \<exists>y. I q t y \<and> (\<forall>a. q = Result a \<longrightarrow> (y, x) \<in> R) \<rbrace>"
+  assumes Q_Result: "\<And>r s c. I (Result r) s c \<Longrightarrow> \<not> C r s \<Longrightarrow> Q (Result r) s"
+  assumes Q_Exn: "\<And>e s c. I (Exn e) s c \<Longrightarrow> Q (Exn e) s"
+  assumes R: "wf R"
+  shows "I (Result r) s x \<Longrightarrow> (whileLoop C B r::('e, 'a, 's) exn_monad) \<bullet> s \<lbrace> Q \<rbrace>"
+  using runs_to_whileLoop'[OF assms] by auto
+
+lemma when_when_combine:
+  "when P (when Q f) = when (P \<and> Q) f"
+  by (rule spec_monad_eqI) (auto simp: runs_to_iff)
+
+lemma whileLoop_False[simp]: "whileLoop (\<lambda>_ _. False) B a = return a"
+  apply (subst whileLoop_unroll)
+  apply simp
+  done
+
+lemma refines_throw_refl: 
+  "refines (throw i) (throw i) s_A s_A (\<lambda>(r_C, t_C) (r_A, t_A). r_C = r_A \<and> t_C = s_A \<and> t_A = s_A)"
+  by (auto simp add: refines_def)
+
+lemma refinesI_runs_to:
+  "(f \<bullet> s \<lbrace> \<lambda>Res r s'. refines (return r) g s' t R \<rbrace>) \<Longrightarrow> refines f g s t R"
+  by (force simp add: refines_iff_runs_to intro: runs_to_weaken)
+
+lemma refinesI_runs_to':
+  "(f \<bullet> s \<lbrace> \<lambda>r s'. refines (yield r) g s' t R \<rbrace>) \<Longrightarrow> refines f g s t R"
+  by (force simp add: refines_iff_runs_to intro: runs_to_weaken)
+
+lemma refines_selectE_right:
+  "x \<in> X \<Longrightarrow> refines f (g x) s t R \<Longrightarrow> refines f (select X >>= g) s t R"
+  by (fastforce simp: refines_iff' runs_to_iff)
+
+lemma refines_unknownE_right:
+  "refines f (g x) s t R \<Longrightarrow> refines f (unknown >>= g) s t R"
+  unfolding unknown_def by (simp add: refines_selectE_right)
+
+lemma refines_liftE_set_state_right:
+  "refines f (g ()) s t' R \<Longrightarrow> refines f (liftE (set_state t') >>= g) s t R"
+  by (fastforce simp: refines_iff' runs_to_iff)
+
+lemma refines_modifyE:
+  "refines (modify m) (modify n) s t (\<lambda>x y. x = (Result (), m s) \<and> y = (Result (), n t))"
+  apply (rule refines_modify)
+  by simp
+
+lemma refines_modifyE_bindE:
+  "refines (f ()) (g ()) (m s) (n t) R \<Longrightarrow> refines (modify m >>= f) (modify n >>= g) s t R"
+  by (rule refines_bind[OF refines_modifyE]) auto
+
+lemma refines_bindE_right:
+  assumes f_g: "refines f g s t (\<lambda>(Res r, s') (r', t').
+    (\<forall>x. r' = Result x \<longrightarrow> refines (return r) (h x) s' t' R) \<and>
+    (\<forall>e. r' = Exn e \<longrightarrow> R (Result r, s') (Exn e, t')))"
+  shows "refines f (g >>= h) s t R"
+  apply (subst bind_return[symmetric])
+  apply (rule refines_bind[OF f_g])
+  apply (auto simp add: default_option_def Exn_def)
+  done
+
+lemma refines_gets_left_iff:
+  "refines (gets r) g s t R \<longleftrightarrow> refines (return (r s)) g s t R"
+  by (simp add: refines_def)
+
+lemma refines_right:
+  assumes f: "refines (skip::(unit,'t) res_monad) f s t R" and 
+    g: "\<And>x t. R (Result (), s) (Result x, t) \<Longrightarrow> refines g (g' x) s t Q"
+  shows "refines (g::('b, 't) res_monad) ((f \<bind> g')::('a, 's) res_monad) s t Q"
+proof -
+  have *: "refines skip f s t (\<lambda>(x, s') y. s' = s \<and> R (x, s) y)"
+    using refines_runs_to_partial_fuse[OF f runs_to_partial_yield, where P="\<lambda>_ t. t = s"]
+    by (rule refines_weaken) auto
+  then have "refines (bind (skip::(unit, 't) res_monad) (\<lambda>_. g)) (f >>= g') s t Q"
+    apply (rule refines_bind_res')
+    apply (simp add: g)
+    done
+  then show ?thesis
+    by simp
+qed
+
+lemma refines_skip_select:
+  "y \<in> Y \<Longrightarrow> 
+  refines skip (select Y) s t (\<lambda>x (y', t'). x = (Result (), s) \<and> t' = t \<and> y' = Result y)"
+  unfolding select_def
+  by transfer (simp add: pure_post_state_def image_image Sup_Success)
+
+lemma refines_modify_left_iff:
+  "refines (modify m) g s t R \<longleftrightarrow> refines (return ()) g (m s) t R"
+  by (simp add: refines_def)
+
+lemma refines_modify_bind_return_bind:
+  "Q (m H) c \<Longrightarrow> (\<And>H' b. Q H' b \<Longrightarrow> refines (g ()) (h b) H' A R) \<Longrightarrow>
+    refines (modify m >>= g) (return c >>= h) H A R"
+  apply (rule refines_bind [where Q="\<lambda>(x, H') (b', A'). 
+          (\<exists>v. x= Result v) \<and> (\<exists>v. b'=Result v \<and> Q H' v \<and> A' = A)"])
+      apply (auto)
+  apply (simp add: refines_def)
+  done
+
+lemma refines_return_of_runs_to:
+  "f \<bullet> s \<lbrace> P \<rbrace> \<Longrightarrow> refines f (return x) s t (\<lambda>(a, b) (c, d). P a b \<and> c = Result x \<and> d = t)"
+  by (cases "run f s"; auto simp add: refines.rep_eq runs_to.rep_eq)
+
+lemma refines_select_iff:
+  "refines (select P) (select Q) s t R \<longleftrightarrow> (\<forall>x\<in>P. \<exists>xa\<in>Q. R (Result x, s) (Result xa, t))"
+  by (auto simp add: refines_def)
+
+lemma select_empty_bind[simp]:
+  "select {} >>= f = select {}"
+  apply (simp add: spec_monad_eq_iff runs_to_iff)
+  done
+
+lemma on_exit_eq:
+  "on_exit f cleanup =
+  do {
+    r <- catch f (\<lambda>e.
+      do {
+        _ <- liftE (state_select cleanup);
+        throw e
+      });
+    liftE (state_select cleanup);
+    return r
+  }"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff on_exit_def Exn_def elim!: runs_to_weaken)
+   apply (metis default_option_def exception_or_result_nchotomy option.exhaust_sel)+
+  done
+
+lemma select_spec_commute:
+  assumes X: "(X = {} \<Longrightarrow> \<forall>s. \<exists>t. (s, t) \<in> H)"
+  shows "(do { x \<leftarrow> select X; _ \<leftarrow> state_select H; return x }) = 
+         (do { _ \<leftarrow> state_select H; select X })"
+  using X
+  by (auto simp add: spec_monad_eq_iff runs_to_iff Exn_def default_option_def)
+
+lemma refines_skip_right:
+  assumes f: "f \<bullet> s \<lbrace> \<lambda>r s'. R (r, s') (Result (), t)\<rbrace>" shows "refines f skip s t R"
+  by (rule refines_mono[OF _ refines_return_of_runs_to[OF f]]) simp
+
+
+lemma refines_select_right_iff:
+  "refines f (select X) s t R \<longleftrightarrow> (f \<bullet> s \<lbrace> \<lambda>r s'. \<exists>x\<in>X. R (r, s') (Result x, t)\<rbrace>)"
+  by (cases "run f s") (auto simp add: refines.rep_eq runs_to.rep_eq)
+
+lemma refines_return_right_iff:
+  "refines f (return a) s t R \<longleftrightarrow>
+    (f \<bullet> s \<lbrace> \<lambda>r s'. R (r, s') (Result a, t) \<rbrace>)"
+  by (cases "run f s") (simp_all add: refines.rep_eq runs_to.rep_eq pure_post_state_def)
+
+lemma refines_skip_right_iff:
+  "refines f skip s t R \<longleftrightarrow> (f \<bullet> s \<lbrace> \<lambda>r s'. R (r, s') (Result (), t)\<rbrace>)"
+  unfolding refines_return_right_iff ..
+
+lemma select_state_assume:
+  "(do {
+    x \<leftarrow> select X;
+    assume_result_and_state (F x)
+  }) =
+  assume_result_and_state (\<lambda>s. \<Union>x\<in>X. F x s)"
+  apply (auto simp add: spec_monad_eq_iff runs_to_iff)
+  done
+
+lemma getsE_fold_into_modifyE:
+  "((do { x \<leftarrow> gets f; modify (g x) }) :: ('e, unit,'s) exn_monad) =
+    modify (\<lambda>s. g (f s) s)"
+  "((do { x \<leftarrow> gets f; _ \<leftarrow> modify (g x); h }) :: ('e, 'a, 's) exn_monad) =
+    do { modify (\<lambda>s. g (f s) s); h }"
+   by (auto simp add: spec_monad_eq_iff runs_to_iff)+
+
+lemma refines_whileLoop_right:
+  assumes I: "R f I s t"
+  assumes final: "\<And>f x s t. R f x s t \<Longrightarrow> \<not> C x t \<Longrightarrow> f \<bullet> s \<lbrace> \<lambda>y s'. P (y, s') (Result x, t) \<rbrace>"
+  assumes R_step: "\<And>f x s t. R f x s t \<Longrightarrow> C x t \<Longrightarrow>
+    \<exists>(g::('a, 's) res_monad) f'. run f s = run (bind g f') s \<and>
+      refines g (B x) s t (\<lambda>(Res a, s) (Res b, t). R (f' a) b s t)"
+  shows "refines f (whileLoop C B I) s t P"
+proof cases
+  assume "run (whileLoop C B I) t \<noteq> \<top>" from this I show ?thesis
+  proof (induction arbitrary: f s rule: whileLoop_ne_top_induct)
+    case (step I t f s)
+    have *: "refines f (B I >>= whileLoop C B) s t P" if "C I t"
+    proof -
+      obtain g::"('a, 's) res_monad" and f' where eq: "run f s = run (bind g f') s"
+        and g: "refines g (B I) s t (\<lambda>(Res a, s) (Res b, t). R (f' a) b s t)"
+        using R_step[OF step.prems \<open>C I t\<close>] by blast
+      have "refines (g \<bind> f') (B I >>= whileLoop C B) s t P"
+        by (rule refines_bind[OF refines_ext_left[OF step.IH[OF \<open>C I t\<close>] g]]) simp_all
+      with eq show ?thesis
+        by (simp add: refines.rep_eq)
+    qed
+    show ?case
+      by (subst whileLoop_unroll)
+         (simp add: refines_condition_right_iff refines_return_right_iff final step.prems *)
+  qed
+qed (simp add: refines.rep_eq)
+
+lemma gets_condition:
+  "gets r >>= (\<lambda>x. condition (P x) f g) = condition (\<lambda>s. P (r s) s) f g"
+  by (auto simp add: spec_monad_eq_iff runs_to_iff)
+
+lemma condition_select_empty:
+  "condition P (select {}) f =
+  do {
+    b \<leftarrow> gets P;
+    assume (\<not> b);
+    f
+  }"
+  by (auto simp add: spec_monad_eq_iff runs_to_iff)
+
+lemma not_is_Result_Exn[simp]: "\<not> is_Result (Exn e)"
+  by (simp add: Exn_def default_option_def)
+
+lemma map_value_map_lift_result_return:
+  "map_value (map_exception_or_result E (\<lambda>x. x)) (return r) = return r"
+  by (auto simp add: spec_monad_eq_iff runs_to_iff)
+
+lemma refines_throw_throw:
+  "refines (throw e) (throw e') s t R = R (Exn e, s) (Exn e', t)"  
+  by (simp add: refines_yield_right_iff)
+
+lemma refines_bind_bind_exn':
+  assumes f: "refines f f' s s' Q"
+  assumes ll: "\<And>e e' t t'. Q (Exception e, t) (Exn e', t') \<Longrightarrow>
+                e \<noteq> default \<Longrightarrow>
+                R (Exception e, t) (Exn e', t')"
+  assumes lr: "\<And>e v' t t'. Q (Exception e, t) (Result v', t') \<Longrightarrow> 
+                e \<noteq> default \<Longrightarrow>
+                refines (yield (Exception e)) (g' v') t t' R"
+  assumes rl: "\<And>v e t t'. Q (Result v, t) (Exn e, t') \<Longrightarrow>
+                refines (g v) (throw e) t t' R"
+  assumes rr: "\<And>v v' t t'. Q (Result v, t) (Result v', t') \<Longrightarrow>
+                refines (g v) (g' v') t t' R"
+  shows "refines (bind f g) (bind f' g') s s' R"
+  using assms
+  by (auto intro!: refines_bind[OF f] simp: default_option_def Exn_def)
+lemma guard_bind_cong:
+  "g = g' \<Longrightarrow> (\<And>s. g' s \<Longrightarrow> run c s = run c' s) \<Longrightarrow> 
+    do {_ <- guard g;
+       c
+    } =
+    do {_ <- guard g';
+       c'
+    }"
+  apply (rule spec_monad_ext)
+  apply (simp add: run_bind run_guard)
+  done
+
+lemma modify_guard_swap:
+"(\<And>s. P (f s) = P s) \<Longrightarrow>
+  do { 
+    _ <- modify f;
+    guard P 
+  } = 
+  do { 
+    _ <- guard P;
+    modify f
+  }"
+ apply (rule spec_monad_ext)
+ apply (simp add: run_bind run_guard)
+ done
+
+lemma modify_guard_bind_swap:
+"(\<And>s. P (f s) = P s) \<Longrightarrow>
+  do { 
+    _ <- modify f;
+    _ <- guard P;
+    X
+  } = 
+  do { 
+    _ <- guard P;
+    _ <- modify f;
+    X
+  }"
+  apply (rule spec_monad_ext)
+  apply (simp add: run_bind run_guard)
+  done
+
+lemma when_throw_cong: "P = P' \<Longrightarrow> (\<And>s. P' \<Longrightarrow> run Y s = run Y' s) \<Longrightarrow> 
+  do { _ <- when (\<not> P) (throw x); Y  } =
+  do {_ <- when (\<not> P') (throw x); Y' }"
+  apply (rule spec_monad_ext)
+  apply (auto simp add: run_bind run_when)
+  done
+
+lemma condition_throw:
+  "condition (\<lambda>s. P) (throw e) B = do { when P (throw e); B }"
+  apply (auto simp add: spec_monad_eq_iff runs_to_iff Exn_def default_option_def)
+  done
+
+lemma map_value_map_lift_result_bind[simp]: 
+  "map_value (map_exception_or_result (\<lambda>x::unit. undefined) f) (bind m g) = 
+   bind m (\<lambda>x. map_value (map_exception_or_result (\<lambda>x. undefined) f) (g x))"
+  by (simp add: spec_monad_eq_iff runs_to_iff)
+
+lemma map_value_map_result_bind[simp]: 
+  "map_value (map_exception_or_result id f) (bind m g) = 
+   bind m (\<lambda>x. map_value (map_exception_or_result id f) (g x))"
+  apply (auto simp add: spec_monad_eq_iff runs_to_iff)
+  done
+
+lemma map_value_yield[simp]: "map_value f (yield x) = yield (f x)"
+  apply (rule spec_monad_ext)
+  apply (simp add: run_map_value)
+  done
+
+lemma map_result_return[simp]: "map_value (map_exception_or_result id f) (return x) = return (f x)"
+  apply (rule spec_monad_ext)
+  apply (simp add: run_map_value)
+  done
+
+lemma map_result_throw[simp]: "map_value (map_exception_or_result id f) (throw x) = throw x"
+  apply (rule spec_monad_ext)
+  apply (simp add: run_map_value)
+  done
+
+lemma map_value_compose[simp]: "map_value f (map_value g m) = (map_value (f \<circ> g) m)"
+  apply (auto simp add: runs_to_iff spec_monad_eq_iff)
+  done
+
+lemma map_result_compose[simp]:
+  "map_exception_or_result id f o map_exception_or_result id g = map_exception_or_result id (f o g)"
+  by (simp add: map_exception_or_result_comp fun_eq_iff)
+
+lemma map_value_condition: 
+  "map_value f (condition c g h) = condition c (map_value f g) (map_value f h)"
+  apply (auto simp add: runs_to_iff spec_monad_eq_iff)
+  done
+
+lemma whenE_throwError_cong: 
+  "P = P' \<Longrightarrow> (\<And>s. P' \<Longrightarrow> run Y s = run Y' s) \<Longrightarrow>
+  do { _ <- when (\<not> P)  (throw x); Y  } =
+  do { _ <- when (\<not> P') (throw x); Y' }"
+  by (rule when_throw_cong)
+
+lemma modifyE_guardE_bindE_swap:
+"(\<And>s. P (f s) = P s) \<Longrightarrow>
+  do {
+    _ <- modify f;
+    _ <- guard P;
+    X
+  } =
+  do {
+    _ <- guard P;
+    _ <- modify f;
+    X
+  }"
+  by (rule modify_guard_bind_swap)
+
+lemma condition_throwError:
+  "condition (\<lambda>s. P) (throw e) B = do { when P (throw e); B }"
+  by (rule condition_throw)
+
+lemma refines_bind_condition_check:
+  assumes f: "f \<bullet> s \<lbrace> \<lambda>Res r s'. s' = s \<and>
+    (P r s \<longleftrightarrow> (\<forall>a. \<not> Q t a)) \<and>
+    (P r s \<longrightarrow> (\<forall>a. \<not> Q t a) \<longrightarrow> R (Result e, s) (Exn q, t)) \<rbrace>"
+  assumes g_h: "\<And>x y. \<not> P x s \<Longrightarrow> Q t y \<Longrightarrow> refines (g x) (h y) s t R"
+  shows "refines
+    (do { x \<leftarrow> f; condition (P x) (return e) (g x) })
+    (do { x \<leftarrow> check q Q; h x }) s t R"
+  apply (rule refines_bind_left_res)
+  apply (rule f[THEN runs_to_weaken])
+  apply clarsimp
+  apply (rule refines_condition_neg_check)
+  apply (simp_all add: g_h)
+  done
+
+lemma refinesI_runs_to_vcg:
+  "f \<bullet> s \<lbrace> P \<rbrace> \<Longrightarrow> (\<And>r t. P r t \<Longrightarrow> Q (r, t) (r, t)) \<Longrightarrow> refines f f s s Q"
+  by (cases "run f s"; force simp: runs_to.rep_eq refines.rep_eq)
+
+lemma refines_gets_the_right_fixed:
+  assumes m:
+    "(gets_the m :: ('a::default, 'b, 'c) spec_monad) \<bullet> t \<lbrace> \<lambda>r t. t = t' \<and> r = Result r' \<rbrace>"
+  shows "refines f (h r') s t' Q \<Longrightarrow>
+    refines f (do {x \<leftarrow> gets_the m; h x } :: ('a::default, 'b, 'c) spec_monad) s t Q"
+  apply (rule refines_bind_right_runs_to_partialI[OF _ always_progress_gets_the])
+  apply (rule runs_to_partial_of_runs_to)
+  apply (rule runs_to_weaken[OF m])
+  apply simp
+  done
+
+lemma refines_gets_the:
+  "(\<And>b. n t = Some b \<Longrightarrow> \<exists>a. m s = Some a \<and> Q (Result a, s) (Result b, t)) \<Longrightarrow>
+    refines (gets_the m) (gets_the n) s t Q"
+  by (auto simp add: refines_iff_runs_to runs_to_gets_the_iff)
+
+lemma refines_bind_gets_the:
+  "(\<And>x. refines (f x) (g x) s s Q) \<Longrightarrow>
+    refines (do { x \<leftarrow> gets_the m; f x }) (do { x \<leftarrow> gets_the m; g x }) s s Q"
+  by (intro refines_bind[OF refines_gets_the[of _ _ _ _
+    "\<lambda>(a, x) (b, y). \<exists>v. a = Result v \<and> b = Result v \<and> x = s \<and> y = s"]])
+     simp_all
+
+lemma refines_bind_left':
+  "refines f f' s t (\<lambda>(Res r, s') (Res q, t'). refines (g r) (return q) s' t' Q) \<Longrightarrow>
+    refines (do { x \<leftarrow> f; g x }) f' s t Q"
+  using refines_bind_res[of f f' s t g return Q] by simp
+
+lemma refines_check_eq:
+  "refines (check i p) (check i p) s_A s_A
+    (\<lambda>(r_C, t_C) (r_A, t_A). r_C = r_A \<and> t_C = s_A \<and> t_A = s_A)"
+  unfolding check_def
+  apply (intro refines_condition refl
+      refines_bind[where Q="(\<lambda>(r_C, t_C) (r_A, t_A). r_C = r_A \<and> t_C = s_A \<and> t_A = s_A)"])
+  apply (auto intro: refines_get_state refines_select refines_throw_refl)
+  done
+
+lemma runs_to_check'[runs_to_vcg]: 
+  "(\<And>x. p s x \<Longrightarrow> Q (Result x) s) \<Longrightarrow> ((\<And>x. \<not> p s x) \<Longrightarrow> Q (Exn e) s) \<Longrightarrow> (check e p) \<bullet> s \<lbrace>Q\<rbrace>"
+  by (simp add: runs_to_check_iff)
+
+lemma refines_when_check: 
+  "P = (\<forall>a. \<not> Q t a) \<Longrightarrow>
+    (P \<Longrightarrow> \<forall>a. \<not> Q t a \<Longrightarrow> R (Exn r, s) (Exn q, t)) \<Longrightarrow>
+    (\<And>a. \<not> P \<Longrightarrow> Q t a \<Longrightarrow> refines (f ()) (g a) s t R) \<Longrightarrow>
+    refines (bind (when P (throw r)) f) (bind (check q Q) g) s t R"
+  apply (rule refines_bind_left_exn)
+  apply runs_to_vcg
+  apply (auto intro: refines_check_right_ok refines_throwError_check)
+  done
+
+lemma refines_bind_gets_right: 
+  "refines f (bind (gets g) h) s t R = refines f (h (g t)) s t R"
+  by (simp add: refines_iff' runs_to_iff)
+
+lemma modify_id_return:
+  "modify id = return ()"
+  by (simp add: spec_monad_eq_iff runs_to_iff)
+
+lemma refines_bind_exn_bind_exn: 
+  assumes f: "refines f f' s s' Q"
+  assumes ll: "\<And>e e' t t'. Q (Exn e, t) (Exn e', t') \<Longrightarrow>
+                R (Exn e, t) (Exn e', t')"
+  assumes lr: "\<And>e v' t t'. Q (Exn e, t) (Result v', t') \<Longrightarrow> 
+                refines (throw e) (g' v') t t' R"
+  assumes rl: "\<And>v e t t'. Q (Result v, t) (Exn e, t') \<Longrightarrow>
+                refines (g v) (throw e) t t' R"
+  assumes rr: "\<And>v v' t t'. Q (Result v, t) (Result v', t') \<Longrightarrow>
+                refines (g v) (g' v') t t' R"
+  shows "refines (bind f g) (bind f' g') s s' R"
+  using assms
+  by (auto intro!: refines_bind[OF f] simp: default_option_def Exn_def)
+
+lemma refines_finally_left: 
+  assumes *:
+    "refines f g s t (\<lambda>(r_C, t_C) A. \<forall>x. r_C = Exn x \<or> r_C = Result x \<longrightarrow> R (Result x, t_C) A)"
+  shows "refines (finally f) g s t R" 
+  unfolding finally_def refines_map_value_left_iff
+  by (rule refines_weaken[OF *]) (simp add: unite_def split: xval_split) 
+
+lemma refines_map_value_left: 
+  "refines f (map_value m g) s t R = refines f g s t (\<lambda>A (r, u). R A (m r, u))"
+  unfolding refines_map_value_right_iff
+  by (intro arg_cong[where f="refines _ _ _ _"] ext) auto
+
+lemma refines_map_value_right: 
+  "refines (map_value m f) g s t R = refines f g s t (\<lambda>(r, u). R (m r, u))"
+  unfolding refines_map_value_left_iff
+  by (intro arg_cong[where f="refines _ _ _ _"] ext) auto
+
+lemma refines_when':
+  "(P \<Longrightarrow> refines f g s t R) \<Longrightarrow> (\<not>P \<longrightarrow> R (Result (), s) (Result (), t)) \<Longrightarrow>
+    refines (when P f) (when P g) s t R"
+  by (simp add: refines_iff' runs_to_iff)
+
+lemma top_eq_fail: "top = fail"
+  by transfer
+    (auto simp: top_post_state_def)
+
+lemma refines_bind_get_state: 
+  "refines (f s) (g t) s t R \<Longrightarrow> refines (get_state \<bind> f) (get_state \<bind> g) s t R"
+  by (simp add: refines_iff' runs_to_iff)
+
+lemma refines_bind_assert: 
+  "refines (assert P \<bind> f) (assert Q \<bind> g) s t R"
+  if *: "Q \<Longrightarrow> P" "Q \<Longrightarrow> P \<Longrightarrow> refines (f ()) (g ()) s t R"
+  using * by (simp add: refines_iff' runs_to_iff)
+
+lemma refines_bind_set_state: "refines (set_state s' \<bind> f) (set_state t' \<bind> g) s t R"
+  if *: "refines (f ()) (g ()) s' t' R"
+  using * by (simp add: refines_iff' runs_to_iff)
+
+lemma refines_bind_select: "refines (select P \<bind> f) (select Q \<bind> g) s t R"
+  if *: "sim_set S P Q" "\<And>v v'. S v v' \<Longrightarrow> refines (f v) (g v') s t R"
+  using * by (auto simp add: refines_iff' runs_to_iff sim_set_def)
+
+lemma refines_assert_result_and_state':
+  "refines (assert_result_and_state f) (assert_result_and_state g) s t
+    (rel_prod (rel_exception_or_result E R) S)"
+  if *: "S s t" "sim_set (rel_prod R S) (f s) (g t)" "f s = {} \<Longrightarrow> g t = {}"
+  using *
+  by (intro refines_assert_result_and_state; force simp: sim_set_def rel_prod.simps)
+
+lemma runs_to_partial_assert_result_and_state_iff:
+  "assert_result_and_state f \<bullet> s ?\<lbrace> P \<rbrace> \<longleftrightarrow> (\<forall>(a, s)\<in>f s. P (Result a) s)"
+  apply safe
+  subgoal
+    by (auto simp: runs_to_partial_def run_assert_result_and_state split: if_splits)
+  subgoal by runs_to_vcg auto
+  done
+
+lemma bind_state_assume_eq: "run (do { (_::unit) <- assume_result_and_state P; f }) s = run f s"
+  if "\<And>s s'. ((), s') \<in> P s \<Longrightarrow> s' = s" "((), s) \<in> P s"
+  using that by (auto simp add: runs_to_iff run_runs_to_extensionality)
+
+lemma refines_bindE_right':
+  assumes f: "refines f f' s s' Q"
+  assumes ll: "\<And>e e' t t'. Q (Exn e, t) (Exn e', t') \<Longrightarrow> R (Exn e, t) (Exn e', t')"
+  assumes lr: "\<And>e v' t t'. Q (Exn e, t) (Result v', t') \<Longrightarrow> refines (throw e) (g' v') t t' R"
+  assumes rl: "\<And>v e' t t'. Q (Result v, t) (Exn e', t') \<Longrightarrow> refines ((return v)) (throw e') t t' R"
+  assumes rr: "\<And>v v' t t'. Q (Result v, t) (Result v', t') \<Longrightarrow> refines ((return v)) (g' v') t t' R"
+  shows "refines f (f' >>= g') s s' R"
+proof -
+  have eq: "f = (f >>= (\<lambda>v. return v))"
+    by simp
+  show ?thesis
+    apply (subst eq)
+    using assms
+    by (rule refines_bind_bind_exn)
+qed
+
+lemma refines_exec_modify_step_right: 
+  assumes "refines (return x) g s (upd t) Q"
+  shows "refines (return x) (do { _ <- (modify (upd)); g }) s t Q"
+  using assms
+  by (auto simp add: refines_iff' runs_to_iff)
+
+lemma runs_to_whileLoop_variant:
+  assumes I: "\<And>r s c. I r s c \<Longrightarrow>
+    C r s \<Longrightarrow> (B r) \<bullet> s \<lbrace> \<lambda>Res q t. \<exists>c'. I q t c' \<and> (c', c) \<in> R \<rbrace>"
+  assumes Q: "\<And>r s c. I r s c \<Longrightarrow> \<not> C r s \<Longrightarrow> Q r s"
+  assumes R: "wf R"
+  shows "I r s c \<Longrightarrow> (whileLoop C B r) \<bullet> s \<lbrace> \<lambda>Res r s. Q r s \<rbrace>"
+proof (induction arbitrary: r s rule: wf_induct[OF R])
+  case (1 c)
+  note 1(1)[rule_format, runs_to_vcg]
+  note I[OF 1(2), runs_to_vcg]
+  show ?case
+    apply (subst whileLoop_unroll)
+    apply runs_to_vcg
+    apply assumption+
+    apply (rule Q[OF 1(2)])
+    apply assumption+
+    done
+qed
+
+lemma catch_throw[simp]: "catch f throw = f"
+  apply (rule spec_monad_eqI)
+  apply (simp add: runs_to_iff)
+  apply (rule arg_cong[where f="runs_to _ _"])
+  apply (intro ext)
+  subgoal for P s x t
+    by (cases x) (auto simp add: default_option_def simp flip: Exn_def)
+  done
+
+lemma select_singleton: "select {x} = return x"
+  by (simp add: select_def)
+
+lemma gets_gets_combine:
+  "(do { x \<leftarrow> gets f; gets (g x) }) = gets (\<lambda>h. g (f h) h)"
+  by (intro spec_monad_eqI) (simp add: runs_to_iff)
+
+lemma gets_gets:
+  "(do { x \<leftarrow> gets f; y \<leftarrow> gets (g x); C y }) =
+    (do { y \<leftarrow> gets (\<lambda>h. g (f h) h); C y })"
+  by (simp add: gets_gets_combine flip: bind_assoc)
+
+lemma refines_whileLoop_exn_strong:
+  assumes C: "\<And>v s v' s'. 
+    R (v, s) (v', s') \<Longrightarrow>
+      (\<exists>x. v = Result x \<and> C x s) \<longleftrightarrow> (\<exists>x'. v' = Result x' \<and> C' x' s')"
+  assumes B: "\<And>x s x' s'. R (Result x, s) (Result x', s') \<Longrightarrow> C x s \<Longrightarrow> C' x' s' \<Longrightarrow>
+    refines (B x) (B' x') s s' R"
+  assumes Q: "\<And>x s x' s'. R (x, s) (x', s') \<Longrightarrow>
+    (\<And>r. x = Result r \<Longrightarrow> \<not> C r s) \<Longrightarrow> (\<And>r'. x' = Result r' \<Longrightarrow> \<not> C' r' s') \<Longrightarrow>
+    Q (x, s) (x', s')"
+  assumes x: "R (Result x, s) (Result x', s')"
+  shows "refines (whileLoop C B x) (whileLoop C' B' x') s s' Q"
+proof cases
+  assume *: "run (whileLoop C' B' x') s' \<noteq> \<top>"
+  show "refines (whileLoop C B x) (whileLoop C' B' x') s s' Q" using x
+  proof (induction arbitrary: x s rule: whileLoop_ne_top_induct[OF *])
+    case (1 a' s' a s)
+    show ?case 
+      apply (subst (1 2) whileLoop_unroll)
+      apply (intro refines_condition 1 refines_yield)
+      subgoal
+        using C[OF 1(2)] by simp
+      apply (rule refines_bind')
+      apply (rule refines_strengthen2[OF B runs_to_partial_of_runs_to[OF 1(1)]])
+      apply (rule 1)
+      subgoal by simp
+      subgoal by simp
+      subgoal by simp
+      subgoal for x t x' t'
+        using Q[of x t x' t'] C[of x t x' t']
+        apply auto
+        subgoal by (subst whileLoop_unroll) (simp add: refines_condition_right_iff)
+        subgoal by (subst whileLoop_unroll) (auto intro!: refines_condition_left)
+        done
+      subgoal using C[OF 1(2)] Q[OF 1(2)] by auto
+      done
+  qed
+qed (simp add: refines.rep_eq)
+
+lemma not_default_Some:
+  "x \<noteq> default \<longleftrightarrow> (\<exists>a. x = Some a)"
+  by (auto simp: default_option_def)
+
+lemma gets_fold_into_modify:
+  "do { x \<leftarrow> gets f; _ \<leftarrow> modify (g x); h } = do { modify (\<lambda>s. g (f s) s); h }"
+  "do { x \<leftarrow> gets f; modify (g x) } = modify (\<lambda>s. g (f s) s)"
+   by (rule spec_monad_eqI; auto simp add: runs_to_iff)+
+
+lemma assume_eq_select: "assume p = select {x. p}"
+  by (rule spec_monad_eqI) (simp add: runs_to_select_iff)
+
+lemma condition_bot:
+  "condition P \<bottom> f =
+  do {
+    b \<leftarrow> gets P;
+    assume (\<not> b);
+    f
+  }"
+  by (rule spec_monad_eqI; auto simp add: runs_to_iff)
+
+lemma unless_not: "unless (\<not> P) = when P"
+  by simp
+
+lemma select_bind_select:
+  "select X >>= (\<lambda>x. select (Y x)) = select {y. \<exists>x\<in>X. y\<in>Y x}"
+  by (intro spec_monad_eqI) (auto simp add: runs_to_iff)
+
+lemma case_exception_or_result_iff:
+  "case_exception_or_result P Q r \<longleftrightarrow>
+    (\<forall>x. r = Result x \<longrightarrow> Q x) \<and> (\<forall>e. r = Exception e \<longrightarrow> e \<noteq> default \<longrightarrow> P e)"
+  by (cases r) auto
+
+lemma case_exception_or_result_lam_iff:
+  "case_exception_or_result P Q r =
+    (\<lambda>s. (\<forall>x. r = Result x \<longrightarrow> Q x s) \<and> (\<forall>e. r = Exception e \<longrightarrow> e \<noteq> default \<longrightarrow> P e s))"
+  by (cases r) auto
+
+lemma runs_to_cong_split:
+  "(\<forall>a s. P (Result a) s \<longleftrightarrow> Q (Result a) s) \<Longrightarrow> 
+    (\<forall>e s. e \<noteq> default \<longrightarrow> P (Exception e) s \<longleftrightarrow> Q (Exception e) s) \<Longrightarrow> 
+    f \<bullet> s \<lbrace> P \<rbrace> \<longleftrightarrow> f \<bullet> s \<lbrace> Q \<rbrace>"
+  apply (intro arg_cong[where f="\<lambda>P. f \<bullet> s \<lbrace> P \<rbrace>"] ext)
+  subgoal for r t by (cases r; simp)
+  done
+
+lemma left_total_rel_map: "left_total (rel_map f)"
+  by (simp add: left_total_def rel_map_def)
+
+lemma rel_exception_or_result_Exception_right:
+  "e \<noteq> default \<Longrightarrow> 
+    rel_exception_or_result E A x (Exception e) \<longleftrightarrow>
+      (\<exists>e'. e' \<noteq> default \<and> x = Exception e' \<and> E e' e)"
+  by (auto simp: rel_exception_or_result.simps)
+
+lemma rel_exception_or_result_Exception_left:
+  "e \<noteq> default \<Longrightarrow> 
+    rel_exception_or_result E A (Exception e) y \<longleftrightarrow>
+      (\<exists>e'. e' \<noteq> default \<and> y = Exception e' \<and> E e e')"
+  by (auto simp: rel_exception_or_result.simps)
+
+lemma rel_exception_or_result_Result_right:
+  "rel_exception_or_result E A x (Result a) \<longleftrightarrow> (\<exists>a'. x = Result a' \<and> A a' a)"
+  by (auto simp: rel_exception_or_result.simps)
+
+lemma rel_exception_or_result_Result_left:
+  "rel_exception_or_result E A (Result a) x \<longleftrightarrow> (\<exists>a'. x = Result a' \<and> A a a')"
+  by (auto simp: rel_exception_or_result.simps)
+
+lemma right_unique_rel_exception_of_regular:
+  "right_unique E \<Longrightarrow> right_unique F \<Longrightarrow> right_unique (rel_exception_or_result E F)"
+  by (auto simp: right_unique_def rel_exception_or_result.simps)
+
+lemma left_total_rel_exception_of_regular:
+  "(\<And>x. x \<noteq> default \<Longrightarrow> \<exists>y. y \<noteq> default \<and> E x y) \<Longrightarrow> left_total F \<Longrightarrow>
+    left_total (rel_exception_or_result E F)"
+  apply (auto simp: left_total_def)
+  subgoal for x
+    apply (cases x)
+    apply (simp_all add:
+      rel_exception_or_result_Result_left rel_exception_or_result_Exception_left) 
+    done
+  done
+
+lemma left_unique_rel_map: "inj f \<Longrightarrow> left_unique (rel_map f)"
+  by (simp add: left_unique_def rel_map_def inj_def)
+
+lemma rel_exception_or_result_sym:
+  "rel_exception_or_result E\<inverse>\<inverse> F\<inverse>\<inverse> s t \<Longrightarrow> rel_exception_or_result E F t s"
+  by (auto elim!: rel_exception_or_result.cases intro:rel_exception_or_result.intros)
+
+lemma rel_post_state_inv: "rel_post_state R\<inverse>\<inverse> t s \<longleftrightarrow> rel_post_state R s t"
+  by (auto simp add: rel_post_state.simps)
+
+lemma rel_spec_inv: "rel_spec B A t s R\<inverse>\<inverse> \<longleftrightarrow> rel_spec A B s t R"
+  by (simp add: rel_spec_def rel_post_state_inv)
+lemma refines_gets'_right: 
+  "refines f (do { x \<leftarrow> gets g; h x }) s t R \<longleftrightarrow> refines f (h (g t)) s t R"
+  by (simp add: refines.rep_eq run_bind)
+
+lemma sim_post_state_Success_right': 
+  "sim_post_state R f (Success s) \<longleftrightarrow> f \<le> Success {x. \<exists>y\<in>s. R x y}"
+  by (cases f) auto
+
+lemma Sup_eq_top_post_state[simp]:
+  "Sup (X :: 'a post_state set) = \<top> \<longleftrightarrow> \<top> \<in> X"
+  by (simp add: top_post_state_def Sup_post_state_def)
+
+lemma sim_post_state_Success_right:
+ "sim_post_state R x (Success t) \<longleftrightarrow> (\<exists>s. x = Success s \<and> (\<forall>a\<in>s. \<exists>b\<in>t. R a b))"
+  by (cases x) auto
+
+lemma sim_post_state_Success_left:
+ "sim_post_state R (Success s) y \<longleftrightarrow> (\<forall>t. y = Success t \<longrightarrow> (\<forall>a\<in>s. \<exists>b\<in>t. R a b))"
+  by (cases y) auto
+
+lemma sim_post_state_bind_Success_right:
+  "sim_post_state R f (bind_post_state g (\<lambda>x. Success (p x))) \<longleftrightarrow>
+    sim_post_state (\<lambda>a b. \<exists>x\<in>p b. R a x) f g"
+  by (cases g; simp add: sim_post_state_Success_right Sup_Success)
+
+lemma sim_post_state_bind_Success_left:
+  "sim_post_state (\<lambda>x y. \<forall>a\<in>p x. R a y) f g \<Longrightarrow>
+    sim_post_state R (bind_post_state f (\<lambda>x. Success (p x))) g"
+  by (cases f; cases g; auto simp add: Sup_Success)
+
+lemma rel_post_state_Failure_left[simp]:
+ "rel_post_state R Failure y \<longleftrightarrow> y = Failure"
+  by (auto simp: rel_post_state.simps)
+
+lemma rel_post_state_Failure_right[simp]:
+ "rel_post_state R x Failure \<longleftrightarrow> x = Failure"
+  by (auto simp: rel_post_state.simps)
+
+lemma rel_post_state_Success_right:
+ "rel_post_state R x (Success t) \<longleftrightarrow> (\<exists>s. x = Success s \<and> rel_set R s t)"
+  by (auto simp: rel_post_state.simps)
+
+lemma rel_post_state_Success_left:
+ "rel_post_state R (Success s) y \<longleftrightarrow> (\<exists>t. y = Success t \<and> rel_set R s t)"
+  by (auto simp: rel_post_state.simps)
+
+lemma rel_post_state_bind_Success_left:
+  assumes *: "\<And>a b. rel_set R (\<Union> (p ` a)) b = rel_set Q a b"
+  shows "rel_post_state R (bind_post_state f (\<lambda>x. Success (p x))) g \<longleftrightarrow> rel_post_state Q f g"
+  by (cases f; cases g; simp add: * Sup_Success)
+
+lemma sim_post_state_mono:
+  "sim_post_state R f g \<Longrightarrow> (\<And>x y. R x y \<Longrightarrow> Q x y) \<Longrightarrow> sim_post_state Q f g"
+  by (force elim!: sim_post_state.cases intro!: sim_post_state.intros simp: sim_set_def)
+
+lemma rel_set_iff_eq:
+  "left_total R \<Longrightarrow> right_unique R \<Longrightarrow> rel_set R a b \<longleftrightarrow> b = (\<Union>x\<in>a. {y. R x y})"
+  by (fastforce simp: rel_set_def right_unique_def left_total_def)
+
+lemma left_total_rel_exception_or_result:
+  "left_total A \<Longrightarrow> (\<forall>x. \<exists>y. y \<noteq> default \<and> E x y) \<Longrightarrow> left_total (rel_exception_or_result E A)"
+  apply (clarsimp simp: left_total_def)
+  subgoal for x 
+    apply (cases x)
+    apply (force intro: rel_exception_or_result.intros)+
+    done
+  done
+
+lemma bind_return_eq_map_value:
+  "(do { x \<leftarrow> f; return (F x) }) = map_value (map_exception_or_result id F) f"
+  by (auto simp add: spec_monad_eq_iff runs_to_iff map_exception_or_result_def fun_eq_iff
+           intro!: runs_to_cong_pred_only split: exception_or_result_split)
+
+lemma refines_bind_return_iff:
+  fixes f :: "(_, _) res_monad" and g :: "(_, _) res_monad"
+  shows "refines (do { x \<leftarrow> f; return (F x) }) (do { x \<leftarrow> g; return (G x) }) s t R \<longleftrightarrow>
+    refines f g s t (\<lambda>(Res r, s') (Res q, t'). R (Result (F r), s') (Result (G q), t'))"
+  unfolding bind_return_eq_map_value refines_map_value_right_iff refines_map_value_left_iff
+  by (intro arg_cong[where f="refines f g s t"]) (auto simp: fun_eq_iff)
+
+lemma refines_bind_return_left_iff:
+  fixes g :: "(_, _) res_monad"
+  shows "refines f (do { x \<leftarrow> g; return (G x) }) s t R \<longleftrightarrow>
+    refines f g s t (\<lambda>x (Res q, t'). R x (Result (G q), t'))"
+  unfolding bind_return_eq_map_value refines_map_value_right_iff refines_map_value_left_iff
+  by (intro arg_cong[where f="refines f g s t"]) (auto simp: fun_eq_iff)
+
+lemma refines_bind_return_right_iff:
+  fixes f :: "(_, _) res_monad"
+  shows "refines (do { x \<leftarrow> f; return (G x) }) g s t R \<longleftrightarrow>
+    refines f g s t (\<lambda>(Res r, s') y. R (Result (G r), s') y)"
+  unfolding bind_return_eq_map_value refines_map_value_right_iff refines_map_value_left_iff
+  by (intro arg_cong[where f="refines f g s t"]) (auto simp: fun_eq_iff)
+
+lemma refines_runs_to_strenghten:
+  "refines f g s t R \<Longrightarrow> g \<bullet> t \<lbrace> P \<rbrace> \<Longrightarrow> (\<And>a x t'. R a (x, t') \<Longrightarrow> P x t' \<Longrightarrow> Q a (x, t')) \<Longrightarrow>
+    refines f g s t Q"
+  apply (rule refines_strengthen2[OF _ runs_to_partial_of_runs_to])
+  apply assumption
+  apply assumption
+  apply auto
+  done
+
+lemma refines_liftE_right:
+  "refines f (liftE g) s t R \<longleftrightarrow> refines f g s t (\<lambda>a (Res b, s). R a (Result b, s))"
+  unfolding liftE_def refines_map_value_right_iff
+  by (intro arg_cong[where f="refines f g s t"]) (auto simp: fun_eq_iff)
+
+lemma refines_return_iff:
+  "refines (return x) (return y) s t R \<longleftrightarrow> R (Result x, s) (Result y, t)"
+  by (simp add: refines.rep_eq)
+
+lemma on_exit'_res_monad: 
+  fixes f :: "('a, 's) res_monad"
+  shows "on_exit' f c = do { r \<leftarrow> f; c; return r }"
+  by (auto simp add: spec_monad_eq_iff runs_to_iff intro!: runs_to_cong_pred_only)
+
+lemma ignoreE_case_prod[ignoreE_simps]:
+  "ignoreE (case_prod f p) = (case p of (a, b) \<Rightarrow> ignoreE (f a b))"
+  by (cases p) simp
+
+lemma ignoreE_bind_handle[ignoreE_simps]:
+  "ignoreE (bind_handle f g h) = bind_handle f (\<lambda>x. ignoreE (g x)) (\<lambda>x. ignoreE (h x))"
+  by (rule spec_monad_eqI) (simp add: runs_to_iff)
+
+lemma ignoreE_assume_result_and_state[ignoreE_simps]:
+  "ignoreE (assume_result_and_state X) = assume_result_and_state X"
+  by (simp add: assume_result_and_state_def ignoreE_simps)
+
+lemma ignoreE_assert_result_and_state[ignoreE_simps]:
+  "ignoreE (assert_result_and_state X) = assert_result_and_state X"
+  by (simp add: assert_result_and_state_def ignoreE_simps)
+
+lemma ignoreE_throw_exception_or_result[ignoreE_simps]:
+  "x \<noteq> default \<Longrightarrow> ignoreE (throw_exception_or_result x) = \<bottom>"
+  by (simp add: ignoreE_def catch_def)
+
+lemma bind_handle_cong: 
+  assumes eq: "f = f'" "g = g'"
+  shows "(\<And>x. x \<noteq> default \<Longrightarrow> h x = h' x) \<Longrightarrow>
+    bind_handle f g h = bind_handle f' g' h'"
+  unfolding eq
+  apply transfer
+  apply (intro ext arg_cong[where f="bind_post_state _"])
+  apply (simp add: split_beta' fun_eq_iff split: exception_or_result_split)
+  done
+
+lemma bind_handle_ignoreE[ignoreE_simps]: "bind_handle (ignoreE f) g h = bind (ignoreE f) g"
+  by (rule spec_monad_eqI) (simp add: runs_to_iff)
+
+lemma bind_handle_eq_bind:
+  "bind_handle (f :: (_, _) res_monad) g h = bind f g"
+  unfolding bind_def
+  by (rule bind_handle_cong) simp_all
+
+lemma bind_handle_bot_eq_ignoreE[ignoreE_simps]:
+  "bind_handle f g (\<lambda>x. \<bottom>) = bind (ignoreE f) g"
+  by (rule spec_monad_eqI) (simp add: runs_to_iff)
+
+lemma state_select_bot: "\<forall>s. \<exists>t. (s, t) \<in> h \<Longrightarrow> do { x \<leftarrow> state_select h; \<bottom> } = \<bottom>"
+  by (rule spec_monad_eqI) (simp add: runs_to_iff)
+
+lemma runs_to_cong:
+  "f \<bullet> s ?\<lbrace> \<lambda>r t. P r t \<longleftrightarrow> Q r t\<rbrace> \<Longrightarrow> f \<bullet> s \<lbrace> P \<rbrace> \<longleftrightarrow> f \<bullet> s \<lbrace> Q \<rbrace>"
+  by (cases "run f s") (auto simp: runs_to.rep_eq runs_to_partial.rep_eq)
+
+lemma run_ignoreE_on_exit':
+  assumes f_h: "f \<bullet> s ?\<lbrace> \<lambda>r t. \<forall>e. e \<noteq> default \<longrightarrow> r = Exception e \<longrightarrow> h \<bullet> t \<lbrace>\<lambda>_ _. True \<rbrace>\<rbrace>"
+  shows "run (ignoreE (on_exit' f h)) s = run (on_exit' (ignoreE f) (ignoreE h)) s"
+  apply (simp add: run_runs_to_extensionality runs_to_iff)
+  apply (intro runs_to_cong allI)
+  apply (rule runs_to_partial_weaken[OF f_h])
+  subgoal for P r t
+    by (cases r; simp add: case_distrib_exception_or_result[of "\<lambda>x. x = _"] 
+              split: exception_or_result_split)
+  done
+
+lemma ignoreE_on_exit'[ignoreE_simps]:
+  "(\<And>s. f \<bullet> s ?\<lbrace> \<lambda>r t. \<forall>e. e \<noteq> default \<longrightarrow> r = Exception e \<longrightarrow> h \<bullet> t \<lbrace>\<lambda>_ _. True \<rbrace>\<rbrace>) \<Longrightarrow> 
+    ignoreE (on_exit' f h) = on_exit' (ignoreE f) (ignoreE h)"
+  by (simp add: spec_monad_ext_iff run_ignoreE_on_exit')
+
+lemma ignoreE_on_exit[ignoreE_simps]:
+  "\<forall>s. \<exists>t. (s, t) \<in> h \<Longrightarrow> ignoreE (on_exit f h) = on_exit (ignoreE f) h"
+  by (simp add: runs_to_iff ignoreE_simps on_exit_def)
+
+lemma sim_post_state_vmap_post_state1:
+  "sim_post_state (\<lambda>x y. \<forall>x'. f x' = x \<longrightarrow> R x' y) p q \<Longrightarrow> 
+    sim_post_state R (vmap_post_state f p) q"
+  by (cases p; cases q; auto simp: Ball_def Bex_def)
+
+lemma refines_vmap_value_left:
+  "refines f g s t (\<lambda>(r, s) y. \<forall>x. r = m x \<longrightarrow> R (x, s) y) \<Longrightarrow> 
+    refines (vmap_value m f) g s t R"
+  apply transfer
+  apply (rule sim_post_state_vmap_post_state1[OF sim_post_state_weaken], assumption)
+  apply auto
+  done
+
+lemma refines_ignoreE_left:
+  "refines f g s t (\<lambda>(r, s) y. \<forall>x. r = Result x \<longrightarrow> R (Result x, s) y) \<Longrightarrow> 
+    refines (ignoreE f) g s t R"
+  unfolding ignoreE_eq
+  by (rule refines_vmap_value_left[OF refines_weaken], assumption) auto
+
+lemma finally_when_throw:
+  "finally (when P (throw x) >>= f) =
+    condition (\<lambda>_. P) (return x) (finally (f ()))"
+  apply (rule spec_monad_eqI)
+  apply (simp add: runs_to_iff)
+  done
+
+lemma finally_gets_bind:
+  "finally (do { r \<leftarrow> gets X; Y r }) = do { r \<leftarrow> gets X; finally (Y r) }"
+  apply (rule spec_monad_eqI)
+  apply (simp add: runs_to_iff)
+  done
+
+lemma finally_modify_bind:
+  "finally (do { r \<leftarrow> modify X; Y r }) = do { r \<leftarrow> modify X; finally (Y r) }"
+  apply (rule spec_monad_eqI)
+  apply (simp add: runs_to_iff)
+  done
+
+lemma finally_return: "finally (return x) = return x"
+  apply (rule spec_monad_eqI)
+  apply (simp add: runs_to_iff)
+  done
+
+lemma f_catch_throw: "(f <catch> throw) = f"
+  by (rule spec_monad_eqI) (clarsimp simp add: runs_to_iff)
 
 end

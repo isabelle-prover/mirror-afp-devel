@@ -214,7 +214,7 @@ next
                 proof(cases "high x n = high ma n")
                   case True
                   have "invar_vebt (treeList ! i ) n"
-                    by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                    using "0" "2" \<open>i < 2 ^ m\<close> by simp
                   have "length ?nextTreeList = 2^m"
                     using "2" highlowprop by auto
                   hence "?nextTreeList ! i = vebt_insert (treeList ! i) (low x n)" 
@@ -266,7 +266,7 @@ next
                     case True  
                     hence cc:" i = high x n" by simp
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = vebt_insert (treeList ! i) (low x n)" 
@@ -297,7 +297,7 @@ next
                   next 
                     case False
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = (treeList ! i)" 
@@ -366,7 +366,10 @@ next
               have 165:"invar_vebt (vebt_insert (treeList ! ?h) ?l) n"
                 by (simp add: "2" "4.IH"(1) highlowprop)
               have 166:"both_member_options (vebt_insert (treeList ! ?h) ?l) ?l" using myIHs[of "treeList ! ?h" ?l] 
-                by (metis "0" "2" highlowprop in_set_member inthall valid_insert_both_member_options_add)
+                using "0" "2" highlowprop apply auto
+                apply (subst valid_insert_both_member_options_add)
+                  apply auto
+                done
               have 167:"\<exists> y. both_member_options ((?nextTreeList) ! i) y "
                 using "164" "166" by auto
               then show ?thesis
@@ -432,7 +435,7 @@ next
                 proof(cases "high mi n = high ma n")
                   case True
                   have "invar_vebt (treeList ! i ) n"
-                    by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                    using "0" "2" \<open>i < 2 ^ m\<close> by simp
                   have "length ?nextTreeList = 2^m"
                     using "2" highlowprop by auto
                   hence "?nextTreeList ! i = vebt_insert (treeList ! i) (low mi n)" 
@@ -474,7 +477,7 @@ next
                     case True  
                     hence cc:" i = high mi n" by simp
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = vebt_insert (treeList ! i) (low mi n)" 
@@ -506,7 +509,7 @@ next
                   next 
                     case False
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = (treeList ! i)" 
@@ -598,7 +601,8 @@ next
               have 165:"invar_vebt (vebt_insert (treeList ! ?h) ?l) n"
                 by (simp add: "11" "2" highlowprop set_update_memI)
               have 166:"both_member_options (vebt_insert (treeList ! ?h) ?l) ?l" using myIHs[of "treeList ! ?h" ?l] 
-                by (metis "0" "2" highlowprop in_set_member inthall valid_insert_both_member_options_add)
+                using "0" "2" highlowprop valid_insert_both_member_options_add [of \<open>treeList ! high x n\<close> \<open>2 ^ n\<close> \<open>low x n\<close>]
+                by auto (metis nth_mem valid_insert_both_member_options_add) 
               have 167:"\<exists> y. both_member_options ((?nextTreeList) ! i) y "
                 using "164" "166" by auto
               then show ?thesis
@@ -663,8 +667,8 @@ next
                 show "both_member_options (?nextTreeList ! i) (low (max ma x) n)"
                 proof(cases "high x n = high ma n")
                   case True
-                  have "invar_vebt (treeList ! i ) n"
-                    by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                  have "invar_vebt (treeList ! i) n"
+                    using "0" "2" \<open>i < 2 ^ m\<close> by simp
                   have "length ?nextTreeList = 2^m"
                     using "2" highlowprop by auto
                   hence "?nextTreeList ! i = vebt_insert (treeList ! i) (low x n)"  
@@ -704,7 +708,7 @@ next
                     case True  
                     hence cc:" i = high x n" by simp
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = vebt_insert (treeList ! i) (low x n)" 
@@ -736,7 +740,7 @@ next
                   next 
                     case False
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = (treeList ! i)" 
@@ -807,7 +811,9 @@ next
               have 165:"invar_vebt (vebt_insert (treeList ! ?h) ?l) n" 
                 by (simp add: "11" "2" highlowprop set_update_memI)
               have 166:"both_member_options (vebt_insert (treeList ! ?h) ?l) ?l" using myIHs[of "treeList ! ?h" ?l] 
-                by (metis "0" "2" highlowprop in_set_member inthall valid_insert_both_member_options_add)
+                using "0" "2" highlowprop
+                apply (subst valid_insert_both_member_options_add) apply auto
+                done
               have 167:"\<exists> y. both_member_options ((?nextTreeList) ! i) y "
                 using "164" "166" by auto
               then show ?thesis
@@ -873,7 +879,7 @@ next
                 proof(cases "high mi n = high ma n")
                   case True
                   have "invar_vebt (treeList ! i ) n"
-                    by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                    using "0" "2" \<open>i < 2 ^ m\<close> by simp
                   have "length ?nextTreeList = 2^m"
                     using "2" highlowprop by auto
                   hence "?nextTreeList ! i = vebt_insert (treeList ! i) (low mi n)" 
@@ -927,7 +933,7 @@ next
                     case True  
                     hence cc:" i = high mi n" by simp
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = vebt_insert (treeList ! i) (low mi n)" 
@@ -959,7 +965,7 @@ next
                   next 
                     case False
                     have "invar_vebt (treeList ! i ) n"
-                      by (metis "0" "2" \<open>i < 2 ^ m\<close> in_set_member inthall)
+                      using "0" "2" \<open>i < 2 ^ m\<close> by simp
                     have "length ?nextTreeList = 2^m"
                       using "2" highlowprop by auto
                     hence aa:"?nextTreeList ! i = (treeList ! i)" 

@@ -15,15 +15,28 @@ lemma trans_relation_of: "trans (relation_of r A) \<longleftrightarrow> transiti
   by (auto simp: trans_def relation_of_def transitive_def)
 
 lemma preorder_on_relation_of: "preorder_on A (relation_of r A) \<longleftrightarrow> quasi_ordered_set A r"
-  by (simp add: preorder_on_def refl_on_relation_of trans_relation_of quasi_ordered_set_def)
+proof (rule iffI)
+  assume "preorder_on A (relation_of r A)"
+  thus "quasi_ordered_set A r"
+    by (simp add: preorder_on_def refl_on_relation_of trans_relation_of quasi_ordered_set_def
+        del: Order_Relation.trans_relation_of)
+next
+  assume "quasi_ordered_set A r"
+  thus "preorder_on A (relation_of r A)"
+    by (metis (no_types, lifting) mem_Collect_eq
+        order_on_defs(1) prod.simps(2) quasi_ordered_set_def
+        refl_on_relation_of[of A r] relation_of_def subrelI
+        trans_relation_of[of r A])
+qed
 
 lemma antisym_relation_of: "antisym (relation_of r A) \<longleftrightarrow> antisymmetric A r"
   by (auto simp: antisym_def relation_of_def antisymmetric_def)
 
 lemma partial_order_on_relation_of:
   "partial_order_on A (relation_of r A) \<longleftrightarrow> partially_ordered_set A r"
-  by (auto simp: partial_order_on_def preorder_on_relation_of antisym_relation_of
-      quasi_ordered_set_def partially_ordered_set_def)
+  by (auto simp add: partial_order_on_def preorder_on_relation_of antisym_relation_of
+      quasi_ordered_set_def partially_ordered_set_def
+      simp del: Order_Relation.antisym_relation_of)
 
 lemma total_on_relation_of: "total_on A (relation_of r A) \<longleftrightarrow> semiconnex A r"
   by (auto simp: total_on_def relation_of_def semiconnex_def)

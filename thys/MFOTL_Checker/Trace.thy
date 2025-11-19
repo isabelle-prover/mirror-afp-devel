@@ -444,6 +444,9 @@ qed
 lemma i_ge_etpi: "ETP \<sigma> (\<tau> \<sigma> i) \<le> i"
   using i_ETP_tau by auto
 
+lemma etp_0[simp]: "ETP \<sigma> 0 = 0"
+  using i_ETP_tau by auto
+
 (*<*)
 end
 (*>*)

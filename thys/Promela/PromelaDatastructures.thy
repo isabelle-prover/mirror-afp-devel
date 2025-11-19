@@ -153,7 +153,7 @@ code_printing
 | constant usc \<rightharpoonup> (SML) "PromelaUtils.usc"
 | constant err \<rightharpoonup> (SML) "PromelaUtils.err"
 | constant abort \<rightharpoonup> (SML) "PromelaUtils.abort"
-code_reserved SML PromelaUtils
+code_reserved (SML) PromelaUtils
 
 
 (*<*)

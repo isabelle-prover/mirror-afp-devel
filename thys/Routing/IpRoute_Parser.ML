@@ -21,7 +21,7 @@ fun register_ip_route bitness (name,path) (lthy: local_theory) =
   fun define_const (t: term) (name: binding) (lthy: local_theory) : local_theory = let
         val _ = writeln ("Defining constant `"^Binding.name_of name^"' ("^Binding.name_of name^"_def')...");
         val ((_, (_, thm)), lthy) = Local_Theory.define ((name, NoSyn), ((Binding.empty, []), t)) lthy;
-        val (_, lthy) = Local_Theory.note ((Binding.suffix_name "_def" name, @{attributes [code]}), [thm]) lthy;
+        val (_, lthy) = Local_Theory.note ((Binding.suffix_name "_def" name, [Code.singleton_default_equation_attrib]), [thm]) lthy;
        in
          lthy
   end

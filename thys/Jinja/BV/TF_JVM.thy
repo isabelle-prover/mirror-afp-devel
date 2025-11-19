@@ -46,10 +46,8 @@ locale start_context = JVM_sl +
 
 subsection \<open>Connecting JVM and Framework\<close>
 lemma (in start_context) semi: "semilat (A, r, f)"
-  apply (insert semilat_JVM[OF wf])
-  apply (unfold A_def r_def f_def JVM_SemiType.le_def JVM_SemiType.sup_def states_def)
-  apply auto
-  done
+  using semilat_JVM[OF wf]
+  by (auto simp: JVM_SemiType.le_def JVM_SemiType.sup_def states_def)
 
 lemma (in JVM_sl) step_def_exec: "step \<equiv> exec P mxs T\<^sub>r xt is" 
   by (simp add: exec_def)  
@@ -164,21 +162,9 @@ declare set_drop_subset [simp del]
 lemma lesubstep_type_simple:
   "xs [\<sqsubseteq>\<^bsub>Product.le (=) r\<^esub>] ys \<Longrightarrow> set xs {\<sqsubseteq>\<^bsub>r\<^esub>} set ys"
 (*<*)
-  apply (unfold lesubstep_type_def)
-  apply clarify
-  apply (simp add: set_conv_nth)
-  apply clarify
-  apply (drule le_listD, assumption)
-  apply (clarsimp simp add: lesub_def Product.le_def)
-  apply (rule exI)
-  apply (rule conjI)
-   apply (rule exI)
-   apply (rule conjI)
-    apply (rule sym)
-    apply assumption
-   apply assumption
-  apply assumption
-  done
+  apply (simp add: lesubstep_type_def set_conv_nth)
+  by (metis (full_types, opaque_lifting) le_listD le_prod_Pair_conv lesub_def
+      surj_pair)
 (*>*)
 
 declare is_relevant_entry_def [simp del]
@@ -216,26 +202,13 @@ lemma (in JVM_sl) eff_mono:
    apply simp
   apply (clarsimp simp add: norm_eff_def lesubstep_type_def lesub_def iff del: sup_state_conv)
   apply (rule exI)
-  apply (rule conjI2)
-   apply (rule imageI)
-   apply (clarsimp simp add: Effect.app_def iff del: sup_state_conv)
-   apply (drule (2) succs_mono)
-   apply blast
-  apply simp
-  apply (erule eff\<^sub>i_mono)
-     apply simp
-    apply assumption   
-   apply clarsimp
-  apply clarsimp  
-  done
+  using succs_mono eff\<^sub>i_mono
+  by (fastforce simp: Effect.app_def iff del: sup_state_conv)
 (*>*)
 
 lemma (in JVM_sl) bounded_step: "bounded step (size is)"
 (*<*)
-  apply simp
-  apply (unfold bounded_def err_step_def Effect.app_def Effect.eff_def)
-  apply (auto simp add: error_def map_snd_def split: err.splits option.splits)
-  done
+  by (auto simp add: error_def map_snd_def bounded_def err_step_def Effect.app_def Effect.eff_def split: err.splits option.splits)
 (*>*)
 
 theorem (in JVM_sl) step_mono:
@@ -269,9 +242,7 @@ lemma (in JVM_sl) wt_method_def2:
    wt_start P C' Ts mxl\<^sub>0 \<tau>s \<and> 
    wt_app_eff (sup_state_opt P) app eff \<tau>s)"
 (*<*)
-  apply (unfold wt_method_def wt_app_eff_def wt_instr_def lesub_def check_types_def)
-  apply auto
-  done
+  by (auto simp: wt_method_def wt_app_eff_def wt_instr_def lesub_def check_types_def)
 (*>*)
 
 

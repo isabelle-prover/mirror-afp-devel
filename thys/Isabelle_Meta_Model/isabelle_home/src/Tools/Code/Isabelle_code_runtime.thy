@@ -131,7 +131,7 @@ fun add_eval_tyco (tyco, tyco') thy =
       | pr pr' _ [ty] =
           Code_Printer.concat [pr' Code_Printer.BR ty, tyco']
       | pr pr' _ tys =
-          Code_Printer.concat [Code_Printer.enum "," "(" ")" (map (pr' Code_Printer.BR) tys), tyco']
+          Code_Printer.concat [Pretty.enum "," "(" ")" (map (pr' Code_Printer.BR) tys), tyco']
   in
     thy
     |> Code_Target.set_printings (Type_Constructor (tyco, [(Code_Runtime.target, SOME (k, pr))]))
@@ -155,9 +155,9 @@ fun process_reflection (code, (tyco_map, (constr_map, const_map))) module_name N
       thy
       |> Code_Target.add_reserved Code_Runtime.target module_name
       |> Context.theory_map (exec (Proof_Context.init_global thy (*FIXME*)) true code)
-      |> fold (add_eval_tyco o apsnd Code_Printer.str) tyco_map
-      |> fold (add_eval_constr o apsnd Code_Printer.str) constr_map
-      |> fold (add_eval_const o apsnd Code_Printer.str) const_map
+      |> fold (add_eval_tyco o apsnd Pretty.str) tyco_map
+      |> fold (add_eval_constr o apsnd Pretty.str) constr_map
+      |> fold (add_eval_const o apsnd Pretty.str) const_map
   | process_reflection (code, _) _ (SOME file_name) thy =
       let
         val preamble =
@@ -173,10 +173,10 @@ fun gen_code_reflect prep_type prep_const all_public raw_datatypes raw_functions
   let
     val ctxt = Proof_Context.init_global thy;
     val datatypes = map (fn (raw_tyco, raw_cos) =>
-      (prep_type ctxt raw_tyco, (Option.map o map) (prep_const thy) raw_cos)) raw_datatypes;
+      (prep_type ctxt raw_tyco, (Option.map o map) (prep_const ctxt) raw_cos)) raw_datatypes;
     val (tycos, constrs) = map_split (uncurry (check_datatype thy)) datatypes
       |> apsnd flat;
-    val functions = map (prep_const thy) raw_functions;
+    val functions = map (prep_const ctxt) raw_functions;
     val consts = constrs @ functions;
     val program = Code_Thingol.consts_program ctxt consts;
     val result = evaluation_code ctxt module_name program tycos consts all_public

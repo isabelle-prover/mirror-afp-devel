@@ -123,6 +123,11 @@ begin
 
   end
 
+  locale category_with_bounded_pushouts =
+    category C
+  for C :: "'a comp"            (infixr "\<cdot>" 55) +
+  assumes has_bounded_pushouts: "bounded_span h k \<Longrightarrow> \<exists>f g. pushout_square f g h k"
+
   locale elementary_category_with_bounded_pushouts =
     category C
   for C :: "'a comp"            (infixr \<open>\<cdot>\<close> 55)
@@ -150,6 +155,51 @@ begin
     assumes "bounded_span h k"
     shows "pushout_square \<i>\<^sub>1[h, k] \<i>\<^sub>0[h, k] h k"
       using assms pushout_square_def pushout_commutes pushout_universal by simp
+
+    sublocale category_with_bounded_pushouts C
+      using has_bounded_pushouts
+      by unfold_locales auto
+
+    lemma is_category_with_bounded_pushouts:
+    shows "category_with_bounded_pushouts C"
+      ..
+
+  end
+
+  context category_with_bounded_pushouts
+  begin
+
+    definition inj0  ("\<i>\<^sub>0[_, _]")
+    where "inj0 h k \<equiv> if bounded_span h k
+                      then fst (SOME inj. pushout_square (snd inj) (fst inj) h k)
+                      else null"
+
+    definition inj1  ("\<i>\<^sub>1[_, _]")
+    where "inj1 h k \<equiv> if bounded_span h k
+                      then snd (SOME inj. pushout_square (snd inj) (fst inj) h k)
+                      else null"
+
+    lemma extends_to_elementary_category_with_bounded_pushouts:
+    shows "elementary_category_with_bounded_pushouts C inj0 inj1"
+    proof
+      show "\<And>h k. \<not> bounded_span h k \<Longrightarrow> \<i>\<^sub>0[h, k] = null"
+        unfolding inj0_def by simp
+      show "\<And>h k. \<not> bounded_span h k \<Longrightarrow> \<i>\<^sub>1[h, k] = null"
+        unfolding inj1_def by simp
+      have 1: "\<And>h k. bounded_span h k \<Longrightarrow> pushout_square \<i>\<^sub>1[h, k] \<i>\<^sub>0[h, k] h k"
+      proof -
+        fix h k
+        assume hk: "bounded_span h k"
+        show "pushout_square \<i>\<^sub>1[h, k] \<i>\<^sub>0[h, k] h k"
+          using hk has_bounded_pushouts inj0_def inj1_def
+                someI_ex [of "\<lambda>x. pushout_square (snd x) (fst x) h k"]
+          by (metis (no_types, lifting) split_pairs)
+      qed
+      show "\<And>h k. bounded_span h k \<Longrightarrow> commutative_square \<i>\<^sub>1[h, k] \<i>\<^sub>0[h, k] h k"
+        using 1 pushout_square_def by auto
+      show "\<And>f g h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. l \<cdot> \<i>\<^sub>1[h, k] = f \<and> l \<cdot> \<i>\<^sub>0[h, k] = g"
+        using 1 pushout_square_def bounded_spanI by force
+    qed
 
   end
 

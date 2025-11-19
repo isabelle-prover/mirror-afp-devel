@@ -1573,9 +1573,20 @@ lemma eventually_isFDERIV:
   assumes iD: "isFDERIV DIM('a) [0..<DIM('a)] fas (list_of_eucl x@params)"
   assumes m: "max_Var_floatariths fas \<le> DIM('a::executable_euclidean_space) + length params"
   shows "\<forall>\<^sub>F (x::'a) in at x. isFDERIV DIM('a) [0..<DIM('a)] fas (list_of_eucl x @ params)"
-  by (auto simp: isFDERIV_def all_nat_less_eq eventually_ball_finite_distrib isFDERIV_lengthD[OF iD]
-      intro!: interpret_floatarith_eventually_isDERIV[OF isFDERIV_uptD[OF iD], rule_format]
-        max_Var_floatarith_le_max_Var_floatariths[THEN order_trans] m)
+proof -
+  from iD have *: \<open>length fas = DIM('a)\<close>
+    by (simp add: isFDERIV_def)
+  have **: \<open>(\<forall>\<^sub>F x in at x. \<forall>i<DIM('a). P x i) \<longleftrightarrow> (\<forall>y<DIM('a). \<forall>\<^sub>F x in at x. P x y)\<close> for P
+    using eventually_ball_finite_distrib [of \<open>{0..<DIM('a)}\<close> P \<open>at x\<close>]
+    by (simp flip: lessThan_atLeast0 add: lessThan_def)
+  from iD * have  \<open>\<forall>\<^sub>F x in at x. isDERIV i (fas ! j) (list_of_eucl x @ params)\<close> if \<open>i < DIM('a)\<close> \<open>j < DIM('a)\<close> for i j
+    using interpret_floatarith_eventually_isDERIV [of \<open>fas ! j\<close> x params]
+      max_Var_floatarith_le_max_Var_floatariths [THEN order_trans, OF _ m]
+      that
+    by (auto dest: isFDERIV_uptD)
+  then show ?thesis
+    by (simp add: isFDERIV_def * **)
+qed
 
 lemma isFDERIV_eventually_isFDERIV:
   assumes iD: "isFDERIV DIM('a) [0..<DIM('a)] fas (list_of_eucl x@params)"

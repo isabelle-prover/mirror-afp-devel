@@ -25,6 +25,8 @@ class AFP_Structure private(options: Options, val base_dir: Path) {
 
   def entry_file(name: Metadata.Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
 
+  val site_dir = base_dir + Path.explode("admin/site")
+
 
   /* load */
 
@@ -45,7 +47,7 @@ class AFP_Structure private(options: Options, val base_dir: Path) {
   def load_licenses: Metadata.Licenses =
     Metadata.Licenses(load(licenses_file, Metadata.TOML.to_licenses))
 
-  def load_topics: Metadata.Topics = 
+  def load_topics: Metadata.Topics =
     Metadata.Topics(load(topics_file, Metadata.TOML.to_topics))
 
   def load_entry(
@@ -93,6 +95,8 @@ class AFP_Structure private(options: Options, val base_dir: Path) {
 
 
   /* sessions */
+
+  def example_entry: Metadata.Entry.Name = "Example-Submission"
 
   def entries_unchecked: List[Metadata.Entry.Name] = {
     val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r

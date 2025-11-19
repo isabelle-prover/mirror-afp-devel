@@ -104,7 +104,7 @@ fun ins :: "nat*nat \<Rightarrow> nat*nat" where
 "ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 
 fun T_ins :: "nat*nat \<Rightarrow> real" where
-"T_ins (n,l) = (if n<l then 1 else n+1)"
+"T_ins (n,l) = (if n<l then 1 else if l=0 then 1 else n+1)"
 
 fun invar :: "nat*nat \<Rightarrow> bool" where
 "invar (n,l) = (l/2 \<le> n \<and> n \<le> l)"

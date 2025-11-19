@@ -14,6 +14,7 @@ theory SCL_FOL
     Ordered_Resolution_Prover_Extra
 begin
 
+
 section \<open>Extra Lemmas\<close>
 
 
@@ -107,8 +108,10 @@ lemma lt_lengthD:
   assumes i_lt_xs: "i < length xs"
   shows "\<exists>xs1 xi xs2. xs = xs1 @ xi # xs2 \<and> length xs1 = i"
   using assms
-  by (metis Cons_nth_drop_Suc add_diff_cancel_left' add_diff_cancel_right'
-      canonically_ordered_monoid_add_class.lessE id_take_nth_drop length_append length_drop)
+  by (metis length_drop[of _ xs, of i] length_append[of "take i xs" "drop i xs"]
+      add_diff_cancel_left'[of i] add_diff_cancel_right'[of i]
+      add_diff_cancel_right'[of "length(take i xs)" "length(drop i xs)"] id_take_nth_drop[of i xs]
+      Cons_nth_drop_Suc[of i xs] canonically_ordered_monoid_add_class.lessE[of i "length xs"])
 
 lemma lt_lt_lengthD:
   assumes i_lt_xs: "i < length xs" and j_lt_xs: "j < length xs" and
@@ -433,8 +436,11 @@ lemma vars_cls_subset_vars_cls_if_subset_mset: "C \<subseteq># D \<Longrightarro
   by (auto simp add: vars_cls_def)
 
 lemma is_ground_atm_iff_vars_empty: "is_ground_atm t \<longleftrightarrow> vars_term t = {}"
-  by (metis (mono_tags, opaque_lifting) equals0D equals0I is_ground_atm_def subst_apply_term_empty
-      subst_def subst_simps(1) term.distinct(1) term_subst_eq term_subst_eq_rev)
+  by (metis (mono_tags, opaque_lifting) term.distinct(1)[of _ undefined undefined]
+      is_ground_atm_def[of t] subst_apply_term_empty[of t]
+      subst_simps(1)[of _ "Fun undefined undefined"] equals0I[of "vars_term t"]
+      term_subst_eq[of t Var] equals0D[of "vars_term t"]
+      term_subst_eq_rev[of t "subst _ (Fun undefined undefined)" Var])
 
 lemma is_ground_lit_iff_vars_empty: "is_ground_lit L \<longleftrightarrow> vars_lit L = {}"
   by (simp add: is_ground_atm_iff_vars_empty is_ground_lit_def)
@@ -686,17 +692,17 @@ lemma is_renaming_iff: "is_renaming \<rho> \<longleftrightarrow> (\<forall>x. is
 proof (rule iffI)
   show "?lhs \<Longrightarrow> ?rhs"
     unfolding is_renaming_def
-    apply safe
-     apply (metis subst_apply_eq_Var subst_compose term.disc(1))
-    by (metis injI subst_compose_def term.sel(1))
+    by (metis is_VarI inj_def[of \<rho>] term.inject(1) subst_apply_eq_Var[of "\<rho> _"]
+        eval_subst_def[of Fun \<rho>])
 next
   show "?rhs \<Longrightarrow> ?lhs"
     by (auto simp: is_renaming_def intro: ex_inverse_of_renaming)
 qed
 
 lemma subst_cls_idem_if_disj_vars: "subst_domain \<sigma> \<inter> vars_cls C = {} \<Longrightarrow> C \<cdot> \<sigma> = C"
-  by (metis (mono_tags, lifting) Int_iff empty_iff mem_Collect_eq same_on_vars_clause
-      subst_cls_id_subst subst_domain_def)
+  by (metis (mono_tags, lifting) subst_domain_def[of \<sigma>] empty_iff
+      mem_Collect_eq[of _ "\<lambda>x. \<sigma> x \<noteq> Var x"] Int_iff[of _ "subst_domain \<sigma>" "vars_cls C"]
+      subst_cls_id_subst[of C] same_on_vars_clause[of C \<sigma> Var])
 
 lemma subst_lit_idem_if_disj_vars: "subst_domain \<sigma> \<inter> vars_lit L = {} \<Longrightarrow> L \<cdot>l \<sigma> = L"
   by (rule subst_cls_idem_if_disj_vars[of _ "{#L#}", simplified])
@@ -817,9 +823,10 @@ qed
 lemma range_vars_eq_empty_if_is_ground:
   "is_ground_cls (C \<cdot> \<gamma>) \<Longrightarrow> subst_domain \<gamma> \<subseteq> vars_cls C \<Longrightarrow> range_vars \<gamma> = {}"
   unfolding range_vars_def UNION_empty_conv subst_range.simps is_ground_cls_iff_vars_empty
-  by (metis (no_types, opaque_lifting) dual_order.eq_iff imageE is_ground_atm_iff_vars_empty
-      is_ground_cls_iff_vars_empty is_ground_cls_is_ground_on_var
-      vars_cls_subset_subst_domain_if_grounding)
+  by (metis (no_types, opaque_lifting) dual_order.eq_iff[of "subst_domain \<gamma>" "vars_cls C"]
+      is_ground_atm_iff_vars_empty is_ground_cls_iff_vars_empty[of "C \<cdot> \<gamma>"]
+      imageE[of _ \<gamma> "vars_cls C"] vars_cls_subset_subst_domain_if_grounding[of C \<gamma>]
+      is_ground_cls_is_ground_on_var[of C \<gamma>])
 
 
 subsubsection \<open>Minimal, Idempotent Most General Unifier\<close>
@@ -1052,6 +1059,9 @@ abbreviation trail_propagate ::
     ('f, 'v) trail" where
   "trail_propagate \<Gamma> L C \<gamma> \<equiv> propagate_lit L C \<gamma> # \<Gamma>"
 
+lemma fst_propagate_lit[simp]: "fst (propagate_lit L C \<sigma>) = L \<cdot>l \<sigma>"
+  by (simp add: propagate_lit_def)
+
 lemma suffix_trail_propagate[simp]: "suffix \<Gamma> (trail_propagate \<Gamma> L C \<delta>)"
   unfolding suffix_def propagate_lit_def
   by simp
@@ -1066,6 +1076,9 @@ definition decide_lit where
 abbreviation trail_decide :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term literal \<Rightarrow> ('f, 'v) trail" where
   "trail_decide \<Gamma> L \<equiv> decide_lit L # \<Gamma>"
 
+lemma fst_decide_lit[simp]: "fst (decide_lit L) = L"
+  by (simp add: decide_lit_def)
+
 lemma clss_of_trail_trail_decide[simp]:
   "clss_of_trail (trail_decide \<Gamma> L) = clss_of_trail \<Gamma>"
   by (simp add: decide_lit_def)
@@ -1076,6 +1089,12 @@ definition is_decision_lit
 
 definition trail_interp :: "_ list \<Rightarrow> _ interp" where
   "trail_interp \<Gamma> = \<Union>((\<lambda>L. case L of Pos A \<Rightarrow> {A} | Neg A \<Rightarrow> {}) ` fst ` set \<Gamma>)"
+
+lemma
+  "trail_interp [] = {}"
+  "trail_interp ((Pos A, ann) # \<Gamma>) = insert A (trail_interp \<Gamma>)"
+  "trail_interp ((Neg A, ann) # \<Gamma>) = trail_interp \<Gamma>"
+  by (induction \<Gamma>) (simp_all add: trail_interp_def)
 
 lemma trail_interp_eq_Union:
   "trail_interp \<Gamma> = (\<Union>Ln \<in> set \<Gamma>. case fst Ln of Pos t \<Rightarrow> {t} | Neg t \<Rightarrow> {})"
@@ -1211,8 +1230,9 @@ proof (rule ballI)
   proof (elim disjE)
     show "K \<in># D \<cdot> \<mu> \<cdot> \<sigma> \<Longrightarrow> trail_false_lit \<Gamma> K"
       using imgu_\<mu> unif_\<sigma>
-      by (metis is_imgu_def subst_cls_comp_subst subst_cls_union tr_false_cls trail_false_cls_def
-          union_iff)
+      using tr_false_cls trail_false_cls_def[of \<Gamma> "D \<cdot> \<sigma> + {#L, L'#} \<cdot> \<sigma>"]
+        subst_cls_comp_subst[of D \<mu> \<sigma>] SCL_FOL.is_imgu_def[of \<mu> "{{atm_of L, atm_of L'}}"]
+      by force
   next
     have "L \<cdot>l \<mu> \<cdot>l \<sigma> = L \<cdot>l \<sigma>"
       using imgu_\<mu> unif_\<sigma> by (metis is_imgu_def subst_lit_comp_subst)
@@ -1239,8 +1259,7 @@ next
 qed
 
 lemma not_in_trail_interp_if_not_in_trail: "t \<notin> atm_of ` fst ` set \<Gamma> \<Longrightarrow> t \<notin> trail_interp \<Gamma>"
-  by (metis (no_types, lifting) atm_of_in_atm_of_set_iff_in_set_or_uminus_in_set
-      literal.sel(2) mem_Collect_eq trail_interp_conv)
+  using trail_interp_conv[of \<Gamma>] by auto
 
 inductive trail_consistent where
   Nil[simp]: "trail_consistent []" |
@@ -1287,21 +1306,9 @@ next
     next
       assume "L = - K"
       then show ?thesis
-      proof (cases L; cases K)
-        fix t\<^sub>L t\<^sub>K
-        from \<open>L = - K\<close> show "L = Pos t\<^sub>L \<Longrightarrow> K = Neg t\<^sub>K \<Longrightarrow> ?thesis"
-          unfolding trail_interp_Cons'
-          using Cons.hyps(1) Cons.prems
-          by (metis (no_types, lifting) image_insert insertE list.simps(15) literal.distinct(1)
-              prod.sel(1) trail_defined_lit_def trail_true_lit_def)
-      next
-        fix t\<^sub>L t\<^sub>K
-        from \<open>L = - K\<close> show "L = Neg t\<^sub>L \<Longrightarrow> K = Pos t\<^sub>K \<Longrightarrow> ?thesis"
-          unfolding trail_interp_Cons'
-          using Cons.hyps(1) Cons.prems
-          by (metis (no_types, lifting) image_insert insertE list.simps(15) literal.distinct(1)
-              prod.sel(1) trail_defined_lit_def trail_true_lit_def)
-      qed simp_all
+        by (metis Cons.hyps(1) uminus_not_id[of K] trail_true_lit_def[of "(K, u) # \<Gamma>" L]
+            trail_defined_lit_def[of \<Gamma> K] Cons.prems map_of_eq_None_iff[of "(K, u) # \<Gamma>" L]
+            map_of_eq_None_iff[of \<Gamma> "- K"] map_of_Cons_code(2)[of K u \<Gamma> L])
     qed
   next
     case False
@@ -1363,9 +1370,14 @@ lemma trail_false_cls_iff_not_trail_interp_entails:
   shows "trail_false_cls \<Gamma> C \<longleftrightarrow> \<not> trail_interp \<Gamma> \<TTurnstile> C"
 proof (rule iffI)
   show "trail_false_cls \<Gamma> C \<Longrightarrow> \<not> trail_interp \<Gamma> \<TTurnstile> C"
-    by (metis (mono_tags, opaque_lifting) assms(1) trail_false_cls_def trail_false_lit_def
-        trail_interp_lit_if_trail_true trail_true_lit_def true_cls_def true_lit_iff
-        true_lit_simps(1) true_lit_simps(2) uminus_Neg uminus_Pos)
+    by (metis assms(1) uminus_Neg uminus_Pos true_lit_iff[of "trail_interp \<Gamma>"]
+        trail_true_lit_def[of \<Gamma> "- (- Neg _)"] trail_true_lit_def[of \<Gamma> "- (- Pos _)"]
+        trail_false_cls_def[of \<Gamma> C] true_cls_def[of "trail_interp \<Gamma>" C]
+        trail_false_lit_def[of \<Gamma> "- Neg _"] trail_false_lit_def[of \<Gamma> "- Pos _"]
+        true_lit_simps(2)[of "trail_interp \<Gamma>"] true_lit_simps(1)[of "trail_interp \<Gamma>"]
+        trail_interp_lit_if_trail_true[of \<Gamma> "Neg _"]
+        trail_interp_lit_if_trail_true[of \<Gamma> "Pos _"])
+
 next
   show "\<not> trail_interp \<Gamma> \<TTurnstile> C \<Longrightarrow> trail_false_cls \<Gamma> C"
     using assms(1) assms(2) trail_defined_cls_def trail_interp_cls_if_trail_true
@@ -2322,12 +2334,12 @@ proof (induction S S' rule: factorize.induct)
   moreover have "clss_lits_generalize_clss_lits (fset N) {add_mset (L \<cdot>l \<mu>) (D \<cdot> \<mu>)}"
     using factorizeI
     unfolding initial_lits_generalize_learned_trail_conflict_def
+    unfolding state_proj_simp option.case prod.case
     apply (simp add: clss_lits_generalize_clss_lits_insert generalizes_lit_def)
     by (smt (verit, best) Melem_subst_cls subst_lit_comp_subst)
   ultimately show ?case
     unfolding initial_lits_generalize_learned_trail_conflict_def
-    apply simp
-    using clss_lits_generalize_clss_lits_insert by blast
+    by (simp add: clss_lits_generalize_clss_lits_insert[of "fset N"])
 qed
 
 lemma resolve_preserves_initial_lits_generalize_learned_trail_conflict:
@@ -3027,37 +3039,44 @@ lemma scl_preserves_trail_propagated_lit_wf:
   unfolding scl_def
 proof (elim disjE)
   assume "propagate N \<beta> S S'"
+  then obtain L C \<gamma> where "state_trail S' = trail_propagate (state_trail S) L C \<gamma>"
+    by (auto elim: propagate.cases)
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
-    using inv
-    by (smt (verit) fst_conv insert_iff list.simps(15) option.inject propagate.cases
-        propagate_lit_def snd_conv state_trail_simp)
+    using inv by (simp add: propagate_lit_def)
 next
   assume "decide N \<beta> S S'"
+  then obtain L where "state_trail S' = trail_decide (state_trail S) L"
+    by (auto elim: decide.cases)
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
-    using inv
-    by (smt (verit) Pair_inject decide.simps decide_lit_def option.discI set_ConsD sndI state_simp)
+    using inv by (simp add: decide_lit_def)
 next
   assume "conflict N \<beta> S S'"
+  hence "state_trail S' = state_trail S"
+    by (auto elim: conflict.cases)
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
-    using inv conflict.simps by fastforce
+    using inv by argo
 next
   assume "skip N \<beta> S S'"
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
     using inv skip.simps by fastforce
 next
   assume "factorize N \<beta> S S'"
+  hence "state_trail S' = state_trail S"
+    by (auto elim: factorize.cases)
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
-    using inv factorize.simps by fastforce
+    using inv by argo
 next
   assume "resolve N \<beta> S S'"
+  hence "state_trail S' = state_trail S"
+    by (auto elim: resolve.cases)
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
-    using inv
-    by (smt (verit) resolve.cases state_trail_simp)
+    using inv by argo
 next
   assume "backtrack N \<beta> S S'"
+  then obtain \<Gamma> where "state_trail S = \<Gamma> @ state_trail S'"
+    by (auto elim: backtrack.cases)
   thus "\<forall>\<K>\<in>set (state_trail S'). \<forall>D K \<gamma>. snd \<K> = Some (D, K, \<gamma>) \<longrightarrow> fst \<K> = K \<cdot>l \<gamma>"
-    using inv
-    by (smt (verit, del_insts) Un_iff fst_conv insertCI list.simps(15) backtrack.cases set_append state_trail_def)
+    using inv by simp
 qed
 
 
@@ -3092,9 +3111,8 @@ proof (cases N \<beta> S S' rule: propagate.cases)
 
   have "atm_of L \<cdot>a \<mu> \<cdot>a \<gamma> = atm_of L \<cdot>a \<gamma>"
   proof -
-    from propagateI have "is_unifiers \<gamma> {atm_of ` set_mset (add_mset L C\<^sub>1)}"
-      by (auto simp: is_unifiers_def is_unifier_alt intro: subst_atm_of_eqI)
-    with propagateI have "\<gamma> = \<mu> \<odot> \<gamma>"
+    have "\<gamma> = \<mu> \<odot> \<gamma>"
+      using \<open>is_unifiers \<gamma> {atm_of ` set_mset (add_mset L C\<^sub>1)}\<close> propagateI
       by (simp add: is_imgu_def)
     thus ?thesis
       by (metis subst_atm_comp_subst)
@@ -4030,9 +4048,11 @@ proof (cases N \<beta> S S' rule: propagate.cases)
     show "sound_trail N \<Gamma>"
       by (rule sound_\<Gamma>)
   next
-    from C_in N_entails_U have "fset N \<TTurnstile>\<G>e {C}"
-      by (metis (no_types, opaque_lifting) empty_subsetI funion_iff grounding_of_clss_mono
-          insert_subset true_clss_mono)
+    have "fset N \<TTurnstile>\<G>e {C}"
+      using C_in[unfolded funion_iff] N_entails_U
+      by (metis (no_types, opaque_lifting) empty_subsetI[of "fset _"]
+          grounding_of_clss_mono[of "{C}" "fset _"] insert_subset[of C "{}" "fset _"]
+          true_clss_mono[of "grounding_of_clss {C}" "grounding_of_clss (fset _)"])
     hence "fset N \<TTurnstile>\<G>e {add_mset L (C\<^sub>0 + C\<^sub>1)}"
       by (simp add: C_def C\<^sub>0_def C\<^sub>1_def)
     hence "fset N \<TTurnstile>\<G>e {add_mset L (C\<^sub>0 + C\<^sub>1) \<cdot> \<mu>}"
@@ -4053,13 +4073,16 @@ proof (cases N \<beta> S S' rule: propagate.cases)
           hence "\<forall>A\<in>atm_of ` set_mset (add_mset L C\<^sub>1). \<forall>B\<in>atm_of ` set_mset (add_mset L C\<^sub>1).
             A \<cdot>a \<mu> = B \<cdot>a \<mu>"
             using is_unifier_alt
-            by (metis (mono_tags, opaque_lifting) finite_imageI finite_set_mset)
+            by (metis (mono_tags, opaque_lifting) finite_set_mset[of "add_mset L C\<^sub>1"]
+                finite_imageI[of "set_mset (add_mset L C\<^sub>1)" atm_of])
           hence "\<forall>A\<in>atm_of ` set_mset C\<^sub>1. A \<cdot>a \<mu> = atm_of L \<cdot>a \<mu>"
             by (metis image_insert insert_iff set_mset_add_mset_insert)
           hence "\<forall>A\<in>set_mset C\<^sub>1. A \<cdot>l \<mu> = L \<cdot>l \<mu>"
             unfolding C\<^sub>1_def
-            by (metis (mono_tags, lifting) atm_of_subst_lit image_eqI literal.expand mem_Collect_eq
-                set_mset_filter subst_lit_is_neg)
+          by (metis (mono_tags, lifting) subst_lit_is_neg[of _ \<gamma>] subst_lit_is_neg[of _ \<mu>]
+              set_mset_filter[of "\<lambda>x. x \<cdot>l \<gamma> = L \<cdot>l \<gamma>" C'] atm_of_subst_lit[of _ \<mu>] mem_Collect_eq
+              image_eqI[of "atm_of _" atm_of _ "set_mset {#x \<in># C'. x \<cdot>l \<gamma> = L \<cdot>l \<gamma>#}"]
+              literal.expand[of "L \<cdot>l \<mu>" "_ \<cdot>l \<mu>"])
           hence "set_mset ((add_mset L C\<^sub>1) \<cdot> \<mu>) = {L \<cdot>l \<mu>}"
             by auto
           hence "set_mset ((C\<^sub>0 + C\<^sub>1 + {#L#}) \<cdot> \<mu>) = set_mset ((C\<^sub>0 + {#L#}) \<cdot> \<mu>)"
@@ -4076,8 +4099,8 @@ proof (cases N \<beta> S S' rule: propagate.cases)
         by (auto elim: true_clss_if_set_mset_eq[rotated])
     qed
     thus "fset N \<TTurnstile>\<G>e {C\<^sub>0 \<cdot> \<mu> + {#L \<cdot>l \<mu>#}}"
-      by (metis (no_types, opaque_lifting) add_mset_add_single grounding_of_clss_singleton
-          subst_cls_add_mset)
+      by (metis (no_types, opaque_lifting) add_mset_add_single[of "L \<cdot>l \<mu>" "C\<^sub>0 \<cdot> \<mu>"]
+          grounding_of_clss_singleton[of "add_mset L C\<^sub>0 \<cdot> \<mu>"] subst_cls_add_mset[of L C\<^sub>0 \<mu>])
   qed
   thus ?thesis
     unfolding S'_def sound_state_def
@@ -4120,10 +4143,10 @@ proof (cases N \<beta> S S' rule: conflict.cases)
     fix I
     assume valid_N: "I \<TTurnstile>s grounding_of_clss (fset N)"
     then show "I \<TTurnstile>s grounding_of_clss {D}"
-      using D_in
+      using D_in[unfolded funion_iff]
       unfolding grounding_of_clss_singleton
-      by (metis (mono_tags, opaque_lifting) N_entails_U UN_I funion_iff grounding_of_clss_def
-          true_clss_def)
+      by (metis (mono_tags, opaque_lifting) N_entails_U UN_I[of D "fset _" _ grounding_of_cls]
+          grounding_of_clss_def[of "fset _"] true_clss_def[of I])
   qed
   thus ?thesis
     unfolding conflictI(1,2) sound_state_def
@@ -4461,16 +4484,17 @@ lemma scl_monotone_wrt_bound:
   using assms(2)[unfolded scl_def]
 proof (elim disjE)
   assume "propagate N \<beta> S\<^sub>0 S\<^sub>1"
-  with assms(1) have "propagate N \<beta>' S\<^sub>0 S\<^sub>1"
-    using propagateI propagate.cases
-    by (smt (verit) is_ground_cls_imp_is_ground_lit is_ground_lit_def)
+  hence "propagate N \<beta>' S\<^sub>0 S\<^sub>1"
+    apply (cases rule: propagate.cases)
+    using propagateI is_ground_cls_imp_is_ground_lit[unfolded is_ground_lit_def, THEN assms(1)]
+    by metis
   thus ?thesis
     by (simp add: scl_def)
 next
   assume "decide N \<beta> S\<^sub>0 S\<^sub>1"
   with assms(1) have "decide N \<beta>' S\<^sub>0 S\<^sub>1"
     using decideI decide.cases
-    by (metis atm_of_subst_lit is_ground_lit_def)
+    by (metis atm_of_subst_lit is_ground_lit_def[of "_ \<cdot>l _"])
   thus ?thesis
     by (simp add: scl_def)
 next

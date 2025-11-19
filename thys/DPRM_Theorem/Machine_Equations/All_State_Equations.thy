@@ -71,8 +71,7 @@ proof -
 
       moreover have "(\<Sum>j = 0..<k. peval (s ! (([0..<Suc k]) ! j)) a) 
                    = (\<Sum>j = 0..<k. peval (s ! j) a)" 
-        apply (rule sum.cong, simp) using nth_upt[of 0 _ "Suc k"] 
-        by (metis Suc_lessD add_cancel_right_left ex_nat_less_eq not_less_eq)
+        using refl by (rule sum.cong) (simp del: upt_Suc)
       ultimately show ?thesis 
         by auto 
     qed

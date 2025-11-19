@@ -176,7 +176,7 @@ lemma fermat_theorem_power_poly[simp]:
 
 (* Some previous facts *)
 lemma degree_prod_monom: "degree (\<Prod>i = 0..<n. monom 1 1) = n"
-  by (metis degree_monom_eq prod_pow x_pow_n zero_neq_one)
+  by (metis degree_monom_eq degree_prod_monic monom.rep_eq zero_neq_one)
 
 lemma degree_monom0[simp]: "degree (monom a 0) = 0" using degree_monom_le by auto
 lemma degree_monom0'[simp]: "degree (monom 0 b) = 0" by auto
@@ -560,8 +560,7 @@ next
   case (Suc b)
   let ?N = "(\<Prod>i = 0..<b. monom 1 1)"
   have eq2: "(\<Prod>i = 0..<Suc b. monom 1 1) mod f = monom 1 1 \<otimes>\<^bsub>(R)\<^esub> (\<Prod>i = 0..<b. monom 1 1)"
-    by (metis field_R.m_comm field_R.nat_pow_Suc mod_in_carrier mod_mod_trivial 
-        pow_irr prod_pow times_mod_expand)
+    by (simp add: R_def mult_irr_def)
   also have "... = (monom 1 1 mod f) \<otimes>\<^bsub>(R)\<^esub> ((\<Prod>i = 0..<b. monom 1 1) mod f)" 
     by (rule times_mod_expand)
   finally have eq2: "(\<Prod>i = 0..<Suc b. monom 1 1) mod f 
@@ -585,15 +584,13 @@ private lemma monom_1_b:
   shows "P (monom 1 b) m'"
 proof -
   have "monom 1 b = (\<Prod>i = 0..<b. monom 1 1)"
-    by (metis prod_pow x_pow_n)
-  also have "... = (\<Prod>i = 0..<b. monom 1 1) mod f" 
-    by (rule mod_poly_less[symmetric], auto)
-       (metis One_nat_def b degree_linear_power x_as_monom)
+    by (simp add: x_pow_n flip: One_nat_def)
+  also have "... = (\<Prod>i = 0..<b. monom 1 1) mod f"
+    by (metis b degree_prod_monom mod_poly_less) 
   finally have eq2: "monom 1 b = (\<Prod>i = 0..<b. monom 1 1) mod f" .
   show ?thesis unfolding eq2 P_def 
     by (rule prod_monom_1_1[OF m monom_1_1[unfolded P_def]])  
 qed
-
 
 
 private lemma monom_a_b:

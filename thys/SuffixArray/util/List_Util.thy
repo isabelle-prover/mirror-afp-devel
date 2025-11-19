@@ -345,8 +345,7 @@ lemma filter_nth_update_subset:
 proof
   fix x
   assume "x \<in> set (filter P (xs[i := v]))"
-  with filter_set member_filter
-  have "x \<in> set (xs[i := v])" "P x"
+  then have "x \<in> set (xs[i := v])" "P x"
     by auto
   hence "\<exists>k < length (xs[i := v]). (xs[i := v]) ! k = x"
     by (simp add: in_set_conv_nth)

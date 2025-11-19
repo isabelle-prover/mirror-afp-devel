@@ -58,10 +58,13 @@ lemma timpl_apply_inv:
     and "\<And>i. i < length T \<Longrightarrow> S ! i \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>T ! i\<rangle>"
     and "f \<noteq> h \<Longrightarrow> f = Abs a \<and> h = Abs b"
 using assms term_variants_pred_iff_in_term_variants[of "(\<lambda>_. [])(Abs a := [Abs b])"]
-unfolding timpl_apply_term_def
-by (metis (full_types) term_variants_pred_inv(1),
-    metis (full_types) term_variants_pred_inv(2),
-    fastforce dest: term_variants_pred_inv(3))
+unfolding timpl_apply_term_def 
+  apply (metis (full_types) term_variants_pred_inv(1))
+  apply (metis assms term_variants_pred_iff_in_term_variants term_variants_pred_inv(2)
+    timpl_apply_term_def)
+  by (metis assms empty_iff fun_upd_apply insert_iff list.set(1) list.simps(15)
+      term_variants_pred_iff_in_term_variants term_variants_pred_inv(3)
+      timpl_apply_term_def)
 
 lemma timpl_apply_inv':
   assumes "s \<in> set \<langle>a --\<guillemotright> b\<rangle>\<langle>Fun f T\<rangle>"
@@ -486,7 +489,7 @@ proof
     case (TI u a b v) thus ?case 
       using term_variants_pred_iff_in_term_variants[of "(\<lambda>_. [])(Abs a := [Abs b])"]
             lfp_fixpoint[OF 0]
-      unfolding timpl_apply_term_def f_def by fastforce
+      unfolding timpl_apply_term_def f_def by force
   qed (use s lfp_fixpoint[OF 0] f_def in blast)
   thus "?N \<subseteq> lfp f" unfolding timpl_closure_set_def by blast
 qed
@@ -1353,9 +1356,9 @@ proof
         unfolding list_ex_iff by (cases "(a,b) \<in> set TI") auto
       show ?case
       proof (cases "(a,b) \<in> set TI")
-        case True thus ?thesis
-          by (metis (mono_tags, lifting) in_trancl.simps "1.prems"(2) list_ex_iff case_prodI
-                member_remove prod.inject remove_code(1))
+        case True
+        with "1.prems"(2) show ?thesis
+          by (auto simp add: in_trancl.simps [of _ a d] in_trancl.simps [of _ b d] list_ex_iff intro: bexI [of _ \<open>(a, b)\<close>])
       next
         case F: False
         then obtain e where e: "(a,e) \<in> set TI" "in_trancl (removeAll (a,e) TI) e b"
@@ -2242,8 +2245,9 @@ proof -
     show "?C t \<Longrightarrow> ?D t" using assms
     proof (induction t arbitrary: M TI TI' rule: intruder_synth_mod_timpls.induct)
       case (1 M TI' x)
-      hence "Var x \<in> timpl_closure_set (set M) (set TI)"
-        using timpl_closure.FP member_def unfolding timpl_closure_set_def by force
+      then have "Var x \<in> timpl_closure_set (set M) (set TI)"
+        using timpl_closure.FP [of \<open>Var x\<close> \<open>set TI\<close>]
+        by (auto simp add: timpl_closure_set_def)
       thus ?case by simp
     next
       case (2 M TI f T)
@@ -2267,7 +2271,7 @@ proof -
     proof (induction t rule: intruder_synth_induct)
       case (AxiomC t) thus ?case
         using timpl_closure_set_Var_in_iff[of _ "set M" "set TI"] *[OF assms, of "set M" t]
-        by (cases t rule: term.exhaust) (force simp add: member_def list_ex_iff)+
+        by (cases t rule: term.exhaust) (force simp add: list_ex_iff)+
     next
       case (ComposeC T f) thus ?case
         using list_all_iff[of "intruder_synth_mod_timpls M TI'" T]
@@ -2294,7 +2298,7 @@ proof -
     proof (induction t arbitrary: M TI rule: intruder_synth_mod_timpls'.induct)
       case (1 M TI x)
       hence "Var x \<in> timpl_closure_set (set M) (set TI)"
-        using timpl_closure.FP List.member_def[of M] unfolding timpl_closure_set_def by auto
+        using timpl_closure.FP unfolding timpl_closure_set_def by auto
       thus ?case by simp
     next
       case (2 M TI f T)
@@ -2318,7 +2322,7 @@ proof -
     proof (induction t rule: intruder_synth_induct)
       case (AxiomC t) thus ?case
         using AxiomC timpl_closure_set_Var_in_iff[of _ "set M" "set TI"] *[of "set M" TI t]
-              list_ex_iff[of _ M] List.member_def[of M]
+              list_ex_iff[of _ M]
         by (cases t rule: term.exhaust) force+
     next
       case (ComposeC T f) thus ?case

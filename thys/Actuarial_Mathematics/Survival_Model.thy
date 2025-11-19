@@ -97,7 +97,7 @@ proof -
   hence "ccdf (distr \<MM> borel X) x \<le> 0"
     using finite_borel_measure.ccdf_nonincreasing distrX_RD.finite_borel_measure_M X_RV
     by (metis order_less_le)
-  thus ?thesis using finite_borel_measure.ccdf_nonneg distrX_RD.finite_borel_measure_M X_RV by smt
+  thus ?thesis using finite_borel_measure.ccdf_nonneg distrX_RD.finite_borel_measure_M X_RV by (smt (verit))
 qed
 
 lemma ccdfX_psi_0: "ccdf (distr \<MM> borel X) (real_of_ereal $\<psi>) = 0" if "$\<psi> < \<infinity>"
@@ -807,7 +807,7 @@ lemma p_q_1: "$p_{t&x} + $q_{t&x} = 1" for t::real
   by (smt (verit) distrTx_RD.prob_space x_lt_psi)
 
 lemma q_defer_p: "$q_{f\<bar>t&x} = $p_{f&x} - $p_{f+t & x}" if "t \<ge> 0" for f t :: real
-  using q_defer_q p_q_1 that x_lt_psi by smt
+  using q_defer_q p_q_1 that x_lt_psi by (smt (verit))
 
 lemma q_defer_p_q_defer: "$p_{f&x} * $q_{f'\<bar>t & x+f} = $q_{f+f'\<bar>t & x}"
   if "x+f < $\<psi>" "f \<ge> 0" "f' \<ge> 0" "t \<ge> 0" for f f' t :: real
@@ -1193,7 +1193,7 @@ lemma temp_curt_e_P: "$e_{x:n} =
   unfolding temp_curt_life_expect_def
   apply (rewrite MM_PS.integral_cond_prob_space_nn; simp add: alive_T that)
   apply (rule disjI2, rule Bochner_Integration.integral_cong; simp)
-  using indicator_simps of_int_0 of_int_1 by smt
+  using indicator_simps of_int_0 of_int_1 by (smt (verit))
 
 lemma temp_curt_e_sum_P: "$e_{x:n} = (\<Sum>k<n. \<P>(\<xi> in \<MM>. T x \<xi> \<ge> k + 1 \<bar> T x \<xi> > 0))" for n::nat
 proof -
@@ -2003,13 +2003,13 @@ end
 subsubsection \<open>Properties of Probability Density Function of \<open>X\<close>\<close>
 
 lemma pdfX_nonneg: "pdfX x \<ge> 0" for x::real
-  using pdfTx_nonneg pdfT0_X psi_pos' by smt
+  using pdfTx_nonneg pdfT0_X psi_pos' by (smt (verit))
 
 lemma pdfX_nonpos_0: "pdfX x = 0" if "x \<le> 0" for x::real
-  using pdfTx_nonpos_0 pdfT0_X psi_pos' that by smt 
+  using pdfTx_nonpos_0 pdfT0_X psi_pos' that by (smt (verit))
 
 lemma pdfX_beyond_0: "pdfX x = 0" if "x \<ge> $\<psi>" for x::real
-  using pdfTx_beyond_0 pdfT0_X psi_pos' that by smt
+  using pdfTx_beyond_0 pdfT0_X psi_pos' that by (smt (verit))
 
 lemma nn_integral_pdfX_1: "integral\<^sup>N lborel pdfX = 1"
   using nn_integral_pdfTx_1 pdfT0_X psi_pos' by metis
@@ -2029,7 +2029,7 @@ lemma set_nn_integral_pdfX_PX: "set_nn_integral lborel A pdfX = \<P>(\<xi> in \<
   by (rewrite pdfT0_X[THEN sym], rewrite set_nn_integral_pdfTx_PTx; simp)
 
 lemma pdfX_set_integrable: "set_integrable lborel A pdfX" if "A \<in> sets lborel" for A :: "real set"
-  using pdfTx_set_integrable pdfT0_X psi_pos' that by smt
+  using pdfTx_set_integrable pdfT0_X psi_pos' that by (smt (verit))
 
 lemma set_integral_pdfX_PX: "(LBINT s:A. pdfX s) = \<P>(\<xi> in \<MM>. X \<xi> \<in> A)"
   if "A \<in> sets lborel" for A :: "real set"
@@ -2287,7 +2287,7 @@ proof -
   also have "\<dots> = Lim (at_right 0)
     (\<lambda>dt. \<P>(\<xi> in (\<MM> \<downharpoonright> alive x). x + t < X \<xi> \<and> X \<xi> \<le> x + t + dt \<bar> X \<xi> > x + t) / dt)"
     apply (rule Lim_cong, rule eventually_at_rightI[of 0 1], simp_all)
-    unfolding futr_life_def cond_prob_def using Collect_cong by smt
+    unfolding futr_life_def cond_prob_def using Collect_cong by (smt (verit))
   also have "\<dots> =
     Lim (at_right 0) (\<lambda>dt. \<P>(\<xi> in \<MM>. x + t < X \<xi> \<and> X \<xi> \<le> x + t + dt \<bar> X \<xi> > x + t) / dt)"
   proof -
@@ -2863,7 +2863,7 @@ proof (rule antisym)
   have \<star>: "?cpsi \<ge> 0" using psi_nonneg real_of_ereal_pos by fastforce
   moreover have "ccdf (distr \<MM> borel X) ?cpsi = 0" by (rule ccdfX_ceil_psi_0)
   ultimately have "$\<omega> \<le> nat ?cpsi"
-    unfolding ult_age_def using wellorder_Least_lemma of_nat_nat by smt
+    unfolding ult_age_def using wellorder_Least_lemma of_nat_nat by (smt (verit))
   thus "int $\<omega> \<le> ?cpsi" using le_nat_iff \<star> by blast
 next
   show "\<lceil>real_of_ereal $\<psi>\<rceil> \<le> int $\<omega>"
@@ -2920,7 +2920,7 @@ end
 
 lemma q_omega_1: "$q_($\<omega>-1) = 1"
   using q_1_equiv_nat
-  by (metis diff_less dual_order.refl le_diff_conv of_nat_1 omega_pos zero_less_one)
+  by (metis diff_less order.refl le_diff_conv of_nat_1 omega_pos zero_less_one)
 
 end
 

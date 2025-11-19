@@ -145,9 +145,9 @@ lemma stieltjes_gamma_aux1: "(\<lambda>n. (-1)^(n+1) * ln(n+1)^k / (n+1)) sums (
 proof -
   define H where "H = fds_perzeta (1 / 2)"
   have conv: "conv_abscissa H < 1" unfolding H_def
-    by (rule le_less_trans[OF conv_abscissa_perzeta']) (use fraction_not_in_ints[of 2 1] in auto)
+    by (rule le_less_trans[OF conv_abscissa_perzeta']) (use fraction_not_in_Ints[of 2 1] in auto)
   have [simp]: "eval_fds H s = g s" if "Re s > 0" for s
-    unfolding H_def g_def using fraction_not_in_ints[of 2 1] that
+    unfolding H_def g_def using fraction_not_in_Ints[of 2 1] that
     by (subst perzeta_altdef2) auto
   have ev: "eventually (\<lambda>s. s \<in> {s. Re s > 0}) (nhds 1)"
     by (intro eventually_nhds_in_open open_halfspace_Re_gt) auto
@@ -219,12 +219,12 @@ proof -
   have "G = fps_expansion g 1"
   proof (rule eval_fps_eqD)
     have "fps_conv_radius (fps_expansion g 1) \<ge> \<infinity>"
-      using fraction_not_in_ints[of 2 1]
+      using fraction_not_in_Ints[of 2 1]
       by (intro conv_radius_fps_expansion) (auto intro!: holomorphic_intros simp: g_def)
     thus "fps_conv_radius (fps_expansion g 1) > 0" by simp
   next
     have "eval_fps (fps_expansion g 1) z = g (1 + z)" for z
-      using fraction_not_in_ints[of 2 1]
+      using fraction_not_in_Ints[of 2 1]
       by (subst eval_fps_expansion'[where r = \<infinity>]) (auto simp: g_def intro!: holomorphic_intros)
     thus "eventually (\<lambda>z. eval_fps G z = eval_fps (fps_expansion g 1) z) (nhds 0)"
       by (simp add: eval_G')

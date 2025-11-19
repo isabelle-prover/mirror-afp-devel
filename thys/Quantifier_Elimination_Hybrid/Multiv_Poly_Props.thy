@@ -60,7 +60,7 @@ qed
 lemma variables_list_prop:
   shows "v \<in> set (variables_list qs) \<longleftrightarrow> (\<exists>q \<in> set qs. v \<in> vars q)"
   using variables_finite
-  by (simp add: member_def variables_prop) 
+  by (simp add: variables_prop) 
 
 section "Evaluating multivariate polynomials" 
 
@@ -911,7 +911,7 @@ proof -
   proof - fix i
     assume *: "i < length (Polynomial.coeffs q)"
     then have not_in_vars: "0 \<notin> vars ((Polynomial.coeffs q) ! i)"
-      using not_in_vars in_set_member 
+      using not_in_vars 
       by auto 
     then have same_eval: "eval_mpoly (y#xs) ((Polynomial.coeffs q) ! i) = eval_mpoly xs ((lowerPoly 0 1) ((Polynomial.coeffs q) ! i))"
       by (simp add: eval_mpoly_def insertion_lowerPoly01)
@@ -964,7 +964,7 @@ proof -
     let ?q = "(univariate_in qs 0) ! i"
     let ?q1 = "mpoly_to_mpoly_poly 0 (qs ! i)"
     have "\<forall>c\<in>set (Polynomial.coeffs ?q1). 0 \<notin> vars c"
-      using vars_coeff_mpoly_to_mpoly_poly[of 0 "qs ! i"] in_set_member
+      using vars_coeff_mpoly_to_mpoly_poly[of 0 "qs ! i"]
       unfolding Polynomial.coeffs_def
       by auto 
     then have "\<forall>c\<in>set (Polynomial.coeffs ?q). 0 \<notin> vars c"

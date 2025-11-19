@@ -14,7 +14,7 @@ lemma typ_ok_code:
 
 definition [simp]: "execlass_leq cs c1 c2 = List.member cs (c1,c2)"
 lemma execlass_leq_code: "class_leq (set cs) c1 c2 = execlass_leq cs c1 c2"
-  by (simp add: class_leq_def class_les_def member_def)
+  by (simp add: class_leq_def class_les_def)
 
 definition "exesort_leq sub s1 s2 = (\<forall>c\<^sub>2 \<in> s2 . \<exists>c\<^sub>1 \<in> s1. execlass_leq sub c\<^sub>1 c\<^sub>2)"
 lemma exesort_les_code: "sort_leq (set cs) c1 c2 = exesort_leq cs c1 c2"

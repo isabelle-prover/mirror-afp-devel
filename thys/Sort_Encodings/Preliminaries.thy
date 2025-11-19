@@ -368,10 +368,10 @@ proof-
   let ?V1 = "f ` ?A"  let ?V2 = "V - ?V1"
   have "V = ?V1 \<union> ?V2 \<and> ?V1 \<inter> ?V2 = {}" using r by blast
   moreover have "infinite ?V1" using 1 f
-  by (metis finite_imageD subset_inj_on top_greatest)
+  by (metis finite_imageD inj_on_subset top_greatest)
   moreover
   {have "infinite (f ` ?B)" using 1 f
-   by (metis finite_imageD subset_inj_on top_greatest)
+   by (metis finite_imageD inj_on_subset top_greatest)
    moreover have "f ` ?B \<subseteq> ?V2" using r f by (auto simp: inj_eq) arith
    ultimately have "infinite ?V2" by (metis infinite_super)
   }

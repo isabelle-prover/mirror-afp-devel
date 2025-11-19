@@ -13,7 +13,10 @@ Murtagh et al.~\cite[Theorem~20]{murtagh2019}. Combining all of the above it is 
 strongly explicit expander graphs of \emph{every size} and spectral gap.\<close>
 
 theory Expander_Graphs_Strongly_Explicit
-  imports Expander_Graphs_Power_Construction Expander_Graphs_MGG
+  imports
+    Expander_Graphs_Power_Construction
+    Expander_Graphs_MGG
+    Finite_Fields.Finite_Fields_Nth_Root_Code
 begin
 
 unbundle intro_cong_syntax
@@ -878,8 +881,65 @@ proof -
     unfolding see_standard_aux_def by simp
 qed
 
+lemma nth_root_nat_eq:
+  assumes "k > 0"
+  shows "nth_root_nat k n = nat \<lfloor>root k n\<rfloor>"
+proof (rule nth_root_nat_unique)
+  have "real (nat \<lfloor>root k (real n)\<rfloor> ^ k) = of_int (\<lfloor>root k (real n)\<rfloor>) ^ k"
+    unfolding of_nat_power using real_root_ge_zero
+    by (subst of_nat_nat) simp_all
+  also have "\<dots> \<le> root k n^k"
+    using real_root_ge_zero by (intro power_mono) auto
+  also have "\<dots> = n" using assms by simp
+  finally show "nat \<lfloor>root k (real n)\<rfloor> ^ k \<le> n" by simp
+next
+  have "real n = (root k (real n)) ^ k" using assms by simp
+  also have "\<dots> < (of_int \<lfloor>root k (real n)\<rfloor> + 1) ^ k"
+    using real_root_ge_zero assms by (intro power_strict_mono) auto
+  also have "\<dots> = real ((nat (\<lfloor>root k (real n)\<rfloor> + 1)) ^ k)"
+    unfolding of_nat_power using real_root_ge_zero
+    by (subst of_nat_nat) auto
+  also have "\<dots> = real ((nat \<lfloor>root k (real n)\<rfloor> + 1) ^ k)"
+    by (simp add: assms nat_add_distrib)
+  finally show "n < (nat \<lfloor>root k (real n)\<rfloor> + 1) ^ k" by linarith
+qed
+
+lemma nat_sqrt_code: "nth_root_nat 2 n + of_bool (\<not>(is_nth_power_nat 2 n)) = nat \<lceil>sqrt n\<rceil>"
+  (is "?L = ?R")
+proof (cases "is_nth_power_nat 2 n")
+  case True
+  then obtain m where n_def: "n=m^2" using is_nth_power_nat_def is_nth_powerE by metis
+  have "?L = nth_root_nat 2 n" using True by simp
+  also have "\<dots> = m" unfolding n_def by (intro nth_root_nat_nth_power) auto
+  also have "\<dots> = ?R" unfolding n_def by simp
+  finally show ?thesis by simp
+next
+  case False
+  have 0: "sqrt n \<ge> 0" by simp
+
+  have "False" if "sqrt n = of_int \<lfloor>sqrt n\<rfloor>"
+  proof -
+    define m where "m = nat (of_int \<lceil>sqrt n\<rceil>)"
+    have "int m = of_int \<lfloor>sqrt n\<rfloor>"
+      unfolding m_def using 0 that by (subst of_nat_nat) (simp_all add:ceiling_altdef)
+    hence "sqrt n = real m" using that by simp
+    hence "n = real m^2" by (metis of_nat_0_le_iff real_sqrt_pow2)
+    hence "n = m^2" by simp
+    thus "False" using False unfolding is_nth_power_nat_def is_nth_power_def by metis
+  qed
+  hence f:"sqrt n \<noteq> of_int \<lfloor>sqrt n\<rfloor>" by blast
+
+  have "?L = nat \<lfloor>sqrt n\<rfloor> + 1" using False by (subst nth_root_nat_eq) (simp_all add:sqrt_def)
+  also have "\<dots> = ?R" using f unfolding ceiling_altdef by (simp add: nat_add_distrib)
+  finally show ?thesis by simp
+qed
+
+lemma see_standard_aux_code [code]:
+  "see_standard_aux n = see_compress n (see_mgg (nth_root_nat 2 n + of_bool (\<not>is_nth_power_nat 2 n)))"
+  unfolding nat_sqrt_code see_standard_aux_def by simp
+
 definition see_standard_power
-  where "see_standard_power x  = (if x \<le> (0::real) then 0 else nat \<lceil>ln x / ln 0.95\<rceil>)"
+  where "see_standard_power x = (if x \<le> (0::real) then 0 else nat \<lceil>ln x / ln 0.95\<rceil>)"
 
 lemma see_standard_power:
   assumes "\<Lambda>\<^sub>a > 0"

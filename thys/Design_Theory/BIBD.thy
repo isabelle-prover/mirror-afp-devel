@@ -188,7 +188,7 @@ proof -
   then have "\<b> = (\<v> * \<Lambda> * (\<v> - 1)) div ((\<k> - 1)* \<k>)" using necessary_condition_one 
       necessary_condition_two dvd_div_div_eq_mult dvd_div_eq_0_iff dvd_triv_right mult.assoc 
       mult.commute mult.left_commute mult_eq_0_iff
-    by (smt (z3) b_non_zero) 
+    by (smt (verit) b_non_zero) 
   then show ?thesis by (simp add: mult.commute) 
 qed
 
@@ -486,10 +486,10 @@ proof (rule ccontr)
   then have "k * (k - 1) \<le> l*( 2 * k - l - 1)"
     by (simp add: sym)
   then have "k * (k - 1) - l*( 2 * k - l - 1) \<le> 0" by linarith
-  then have "k^2 - k - l* 2 * k + l^2 + l \<le> 0" using  mult.commute right_diff_distrib'
-    by (smt (z3) mult_cancel_left1 power2_diff ring_class.ring_distribs(2)) 
-  then have "(k - l)*(k - l - 1) \<le> 0" using  mult.commute right_diff_distrib'
-    by (smt (z3) \<open>k * (k - 1) \<le> l * (2 * k - l - 1)\<close> combine_common_factor) 
+  then have "k^2 - k - l* 2 * k + l^2 + l \<le> 0"
+    by (simp add: mult_ac right_diff_distrib' power2_eq_square)
+  then have "(k - l)*(k - l - 1) \<le> 0"
+    by (simp add: mult_ac right_diff_distrib' power2_eq_square)
   then have "k = l \<or> k = l + 1"
     using mult_le_0_iff by force
   thus False using assms kdef ldef by auto
@@ -704,9 +704,11 @@ proof -
     using assms sym_sum_mset_inter2_sets_size 
     by (auto simp add: size_big_union_sum n_intersect_num_subset_def)
   have "(\<k> choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<v> - 1) div 2)) * (\<Lambda> -1)" 
-    using choose_two symmetric_condition_2 k_non_zero by auto 
-  then have "(\<k> choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> -1)" 
-    using div_fact div_fact_2 by (smt div_mult_swap mult.assoc mult.commute) 
+    using choose_two symmetric_condition_2 k_non_zero by auto
+  also have "\<dots> = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> - 1)"
+    using div_fact div_fact_2
+    by (metis (no_types, lifting) ab_semigroup_mult_class.mult_ac(1) dvd_div_mult mult.commute)
+  finally have "(\<k> choose 2) * (\<Lambda> -1) = ((\<Lambda> * (\<Lambda> - 1) div 2)) * (\<v> -1)" .
   then show ?thesis using sum_fact by simp
 qed
 
@@ -916,7 +918,7 @@ lemma residual_index [simp]:
   shows  "(\<B>\<^sup>R) index ps = \<Lambda>"
 proof - 
   have a: "\<And> b . (b \<in># remove1_mset bl \<B> \<Longrightarrow> ps \<subseteq> b \<Longrightarrow>  ps \<subseteq> (b - bl))" using assms
-    by (smt DiffI block_comp_elem_alt_left in_diffD subset_eq wellformed) 
+    by (meson DiffI block_complement_elem_iff block_complement_subset_points subsetD subsetI)
   have b: "\<And> b . (b \<in># remove1_mset bl \<B> \<Longrightarrow>  ps \<subseteq> (b - bl) \<Longrightarrow>  ps \<subseteq> b)"
     by auto 
   have not_ss: "\<not> (ps \<subseteq> bl)" using set_diff_non_empty_not_subset blocks_nempty t_non_zero assms 

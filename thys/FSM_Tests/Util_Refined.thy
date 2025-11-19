@@ -8,21 +8,10 @@ begin
 
 subsection \<open>New Code Equations for @{text "set_as_map"}\<close>
 
-declare [[code drop: set_as_map]]
-
-lemma set_as_map_refined[code] :
+lemma set_as_map_refined [code]:
   fixes t :: "('a :: ccompare \<times> 'c :: ccompare) set_rbt" 
   and   xs:: "('b :: ceq \<times> 'd :: ceq) set_dlist"
-  shows "set_as_map (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
-           Some _ \<Rightarrow> Mapping.lookup (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
-                        None \<Rightarrow> Mapping.update (x) {z} m |
-                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
-                      t
-                      Mapping.empty) |
-           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
-                                (\<lambda>_. set_as_map (RBT_set t)))"
-    (is "?C1")
-  and   "set_as_map (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
+  shows "set_as_map (DList_set xs) = (case ID CEQ(('b \<times> 'd)) of
             Some _ \<Rightarrow> Mapping.lookup (DList_Set.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
                         None \<Rightarrow> Mapping.update (x) {z} m |
                         Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
@@ -31,6 +20,15 @@ lemma set_as_map_refined[code] :
            None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
                                 (\<lambda>_. set_as_map (DList_set xs)))"
     (is "?C2")
+  and "set_as_map (RBT_set t) = (case ID CCOMPARE(('a \<times> 'c)) of
+           Some _ \<Rightarrow> Mapping.lookup (RBT_Set2.fold (\<lambda> (x,z) m . case Mapping.lookup m (x) of
+                        None \<Rightarrow> Mapping.update (x) {z} m |
+                        Some zs \<Rightarrow> Mapping.update (x) (Set.insert z zs) m)
+                      t
+                      Mapping.empty) |
+           None   \<Rightarrow> Code.abort (STR ''set_as_map RBT_set: ccompare = None'') 
+                                (\<lambda>_. set_as_map (RBT_set t)))"
+    (is "?C1")
 proof -
   show ?C1
   proof (cases "ID CCOMPARE(('a \<times> 'c))")
@@ -256,8 +254,7 @@ proof -
     have "ID CEQ('b \<times> 'd) \<noteq> None"
       using Some by auto
     then have **: "\<And> x . x \<in> set (list_of_dlist xs) = (x \<in> (DList_set xs))" 
-      using DList_Set.member.rep_eq[of xs]
-      using Set_member_code(2) ceq_class.ID_ceq in_set_member by fastforce 
+      by (simp add: Collect_member DList_set_def)
     
     have "Mapping.lookup (?f' xs) = (\<lambda> x . if (\<exists> z . (x,z) \<in> (DList_set xs)) then Some {z . (x,z) \<in> (DList_set xs)} else None)"
       using *[of "(list_of_dlist xs)"] 
@@ -265,7 +262,5 @@ proof -
     then show ?thesis unfolding set_as_map_def using Some by simp
   qed
 qed
-
-
 
 end

@@ -262,13 +262,12 @@ definition to_simple_firewall :: "'i::len common_primitive rule list \<Rightarro
     else undefined"
 
 lemma to_simple_firewall_simps:
-      "to_simple_firewall [] = []"
-      "check_simple_fw_preconditions ((Rule m a)#rs) \<Longrightarrow> to_simple_firewall ((Rule m a)#rs) = (case common_primitive_match_to_simple_match m of
-          None \<Rightarrow> to_simple_firewall rs
-          | Some sm \<Rightarrow> (SimpleRule sm (action_to_simple_action a)) # to_simple_firewall rs)"
-      "\<not> check_simple_fw_preconditions rs' \<Longrightarrow> to_simple_firewall rs' = undefined"
-   by(auto simp add: to_simple_firewall_def List.map_filter_simps check_simple_fw_preconditions_def split: option.split)
-
+  "to_simple_firewall [] = []"
+  "check_simple_fw_preconditions ((Rule m a)#rs) \<Longrightarrow> to_simple_firewall ((Rule m a)#rs) = (case common_primitive_match_to_simple_match m of
+    None \<Rightarrow> to_simple_firewall rs
+    | Some sm \<Rightarrow> (SimpleRule sm (action_to_simple_action a)) # to_simple_firewall rs)"
+  "\<not> check_simple_fw_preconditions rs' \<Longrightarrow> to_simple_firewall rs' = undefined"
+  by (auto simp add: to_simple_firewall_def map_filter_def check_simple_fw_preconditions_def split: option.split)
 
 lemma "check_simple_fw_preconditions
      [Rule (MatchAnd (Match (Src (IpAddrNetmask (ipv4addr_of_dotdecimal (127, 0, 0, 0)) 8)))

@@ -661,7 +661,7 @@ lemma deduction_Diff: assumes "H \<turnstile> B" shows "H - {C} \<turnstile> C I
 using assms
 proof (induct)
   case (Hyp A H) thus ?case
-    by (metis Bool Imp_triv_I boolean_axioms.Ident hfthm.Hyp member_remove remove_def)
+    by (metis Bool Diff_iff Imp_triv_I boolean_axioms.Ident hfthm.Hyp singletonD)
 next
   case (Extra H) thus ?case
     by (metis Imp_triv_I hfthm.Extra)

@@ -1,45 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>tuong on Archive of Formal Proofs
-    </title>
-    <link>/authors/tuong/</link>
-    <description>
-        Recent content in tuong 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Tue, 22 Oct 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/tuong/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Isabelle/C</title>
-          <link>/entries/Isabelle_C.html</link>
-          <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Isabelle_C.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
-          <link>/entries/Clean.html</link>
-          <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Clean.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Meta-Model for the Isabelle API</title>
-          <link>/entries/Isabelle_Meta_Model.html</link>
-          <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Isabelle_Meta_Model.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</title>
-          <link>/entries/Featherweight_OCL.html</link>
-          <pubDate>Thu, 16 Jan 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/Featherweight_OCL.html</guid>
-          <description></description>
-        </item>
+    <title>Frédéric Tuong</title>
+    <link>https://isa-afp.org/authors/tuong/</link>
+    <description>AFP entries of Frédéric Tuong</description><item>
+  <title>Isabelle/C</title>
+  <link>https://isa-afp.org/entries/Isabelle_C.html</link>
+  <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+  <description>Isabelle/C in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
+  <link>https://isa-afp.org/entries/Clean.html</link>
+  <pubDate>Fri, 04 Oct 2019 00:00:00 +0000</pubDate>
+  <description>Clean - An Abstract Imperative Programming Language and its Theory in the AFP</description>
+    <category>Computer science/Programming languages</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>A Meta-Model for the Isabelle API</title>
+  <link>https://isa-afp.org/entries/Isabelle_Meta_Model.html</link>
+  <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+  <description>A Meta-Model for the Isabelle API in the AFP</description>
+    <category>Computer science/Programming languages/Language definitions</category>
+</item>
+<item>
+  <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</title>
+  <link>https://isa-afp.org/entries/Featherweight_OCL.html</link>
+  <pubDate>Thu, 16 Jan 2014 00:00:00 +0000</pubDate>
+  <description>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 in the AFP</description>
+    <category>Computer science/System description languages</category>
+</item>
+
   </channel>
 </rss>

@@ -169,8 +169,8 @@ proof (rule perron_frobenius_spectral_radius[OF A nonneg]; intro allI impI)
     yun_factorization_hom[of "char_poly A", unfolded yun map_prod_def split]] cp0, of x ox, unfolded ox]
   show "order x ?cp \<le> d" unfolding ox
   proof (cases ox)
-    case (Suc oo)
-    with sff obtain fi where mem: "(fi,Suc oo) \<in> set fis" and rt: "poly (map_poly ?cr fi) x = 0" by auto
+    case (Suc ox')
+    with sff obtain fi where mem: "(fi,Suc ox') \<in> set fis" and rt: "poly (map_poly ?cr fi) x = 0" by auto
     from bnd[OF mem exI[of _ x], OF conjI[OF rt x]]
     show "ox \<le> d" unfolding Suc .
   qed auto

@@ -3,7 +3,7 @@ chapter \<open>Graphs\<close>
 
 theory Graphs
   imports
-    More_List Stream_More
+    More_List1 Stream_More
     "HOL-Library.Rewrite"
 begin
 

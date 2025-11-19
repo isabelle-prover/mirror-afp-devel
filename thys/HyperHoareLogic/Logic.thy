@@ -403,7 +403,7 @@ next
 next
   case (RuleAssume P b)
   then show ?case
-    by (simp add: assume_rule)
+    by (auto simp add: assume_rule simp del: Set.filter_eq)
 next
   case (RuleWhile I C)
   then show ?case
@@ -508,7 +508,7 @@ proof (rule completeI)
   show "\<turnstile> {P} Assume b {Q}"
   proof (rule RuleCons)
     show "\<turnstile> { (\<lambda>S. Q (Set.filter (b \<circ> snd) S)) } (Assume b) {Q}"
-      by (simp add: RuleAssume)
+      by (simp add: RuleAssume del: Set.filter_eq)
     show "entails P (\<lambda>S. Q (Set.filter (b \<circ> snd) S))"
       by (metis (mono_tags, lifting) asm0 assume_sem entails_def hyper_hoare_tripleE)
     show "entails Q Q"      
@@ -760,7 +760,7 @@ definition combine where
 lemma combineI:
   assumes "P1 (Set.filter (\<lambda>\<phi>. fst \<phi> x = from_nat 1) S) \<and> P2 (Set.filter (\<lambda>\<phi>. fst \<phi> x = from_nat 2) S)"
   shows "combine from_nat x P1 P2 S"
-  by (simp add: assms combine_def)
+  by (simp add: assms combine_def del: Set.filter_eq)
 
 definition modify_lvar_to where
   "modify_lvar_to x v \<phi> = ((fst \<phi>)(x := v), snd \<phi>)"
@@ -812,7 +812,8 @@ proof
   proof
     fix y assume "y \<in> ?A"
     then have "y \<notin> S2'"
-      by (metis (mono_tags, lifting) assms(1) assms(3) fun_upd_same image_iff member_filter modify_lvar_to_def prod.sel(1))
+      using assms(1) assms(3)
+      by (auto simp add: modify_lvar_to_def)
     then show "y \<in> ?B"
       using \<open>y \<in> Set.filter (\<lambda>\<phi>. fst \<phi> x = a) (S1' \<union> S2')\<close> by auto
   qed

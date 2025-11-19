@@ -16,11 +16,12 @@ note = ""
 
 [authors.argyraki]
 homepage = "argyraki_homepage"
+email = "argyraki_email"
 
 [contributors]
 
 [notify]
-argyraki = "argyraki_email"
+argyraki = "argyraki_email1"
 
 [history]
 

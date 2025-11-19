@@ -35,7 +35,7 @@ definition FOREACH_cond where "FOREACH_cond c \<equiv> (\<lambda>(xs,\<sigma>). 
 
 text \<open>Foreach with continuation condition, order and annotated invariant:\<close>
 
-definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FOREACHoci R \<Phi> S c f \<sigma>0 inittime body_time \<equiv> do {
+definition FOREACHoci (\<open>FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>\<close>) where "FOREACHoci R \<Phi> S c f \<sigma>0 inittime body_time \<equiv> do {
   ASSERT (finite S);
   xs \<leftarrow> SPECT (emb (\<lambda>xs. distinct xs \<and> S = set xs \<and> sorted_wrt R xs) inittime);
   (_,\<sigma>) \<leftarrow> whileIET 
@@ -43,7 +43,7 @@ definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FORE
   RETURNT \<sigma> }"
 
 text \<open>Foreach with continuation condition and annotated invariant:\<close>
-definition FOREACHci ("FOREACH\<^sub>C\<^bsup>_\<^esup>") where "FOREACHci \<equiv> FOREACHoci (\<lambda>_ _. True)"
+definition FOREACHci (\<open>FOREACH\<^sub>C\<^bsup>_\<^esup>\<close>) where "FOREACHci \<equiv> FOREACHoci (\<lambda>_ _. True)"
 
 
 subsection \<open>Proof Rules\<close>

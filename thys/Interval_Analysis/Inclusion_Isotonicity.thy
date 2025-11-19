@@ -422,17 +422,8 @@ lemma inclusion_isotonic_times_const_real:
 lemma intervall_le_foldr: 
   assumes \<open>inclusion_isotonic_binary f\<close>
   shows \<open>length js = length is \<Longrightarrow> is \<le>\<^sub>I js \<Longrightarrow> (foldr f is e) \<le> (foldr f js e)\<close>
-proof (induction rule:list_induct2)
-  case Nil
-  then show ?case 
-    by (simp add: less_eq_interval_def)     
-next
-  case (Cons x xs y ys)
-  then show ?case 
-    unfolding le_interval_list_def
-    by (simp, metis (no_types, lifting) assms foldl_conj_True inclusion_isotonic_binary_def 
-        list_all_simps(1))
-qed
+  by (induction rule: list_induct2)
+    (use assms in \<open>simp_all add: less_eq_interval_def le_interval_list_def inclusion_isotonic_binary_def foldl_conj_True\<close>)
 
 lemma intervall_le_foldr_map: 
   assumes \<open>inclusion_isotonic_binary f\<close>

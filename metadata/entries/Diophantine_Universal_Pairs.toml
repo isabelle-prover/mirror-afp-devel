@@ -1,0 +1,67 @@
+title = "Universal Pairs for Diophantine Equations"
+date = 2025-07-29
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+We formalize a universal construction of Diophantine equations with bounded complexity. This is a formalization of our own work in number theory. <br/>
+
+Hilbert's Tenth Problem was answered negatively by Yuri Matiyasevich, who showed that there is no general algorithm to decide whether an arbitrary Diophantine equation has a solution. However, the problem remains open when generalized to the field of rational numbers, or contrarily, when restricted to Diophantine equations with bounded complexity, characterized by the number of variables $\\nu$ and the degree $\\delta$. If every Diophantine set can be represented within the bounds $(\\nu, \\delta)$, we say that this pair is universal, and it follows that the corresponding class of equations is undecidable. In a separate mathematics article, we have determined the first non-trivial universal pair for the case of integer unknowns. <br/>
+
+This AFP entry contributes the main construction required to establish said universal pair. In doing so, we markedly extend previous work on multivariate polynomials, and develop classical theory on Diophantine equations. Additionally, our work includes metaprogramming infrastructure designed to efficiently handle complex definitions of multivariate polynomials. Our mathematical draft has been formalized while the mathematical research was ongoing, and benefitted largely from the help of the theorem prover."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.david]
+email = "david_email"
+
+[authors.andre]
+
+[authors.dupuis]
+
+[authors.brenner]
+
+[authors.chevalier]
+
+[authors.danilkin]
+email = "danilkin_email"
+
+[authors.dorneich]
+
+[authors.leek]
+email = "leek_email"
+
+[authors.pige]
+
+[authors.ringeard]
+
+[authors.vermande]
+
+[authors.wangp]
+
+[authors.yaoa]
+
+[authors.yez]
+email = "yez_email"
+
+[authors.bayer]
+email = "bayer_email"
+
+[contributors]
+
+[notify]
+bayer = "bayer_email"
+david = "david_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2505.16963",
+  "10.48550/arXiv.2506.20909",
+]
+pubs = []

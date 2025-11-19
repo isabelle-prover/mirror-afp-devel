@@ -1424,8 +1424,8 @@ proof -
         using 4
         by blast
       then have "\<exists>x. x \<in> (last ` ?S) \<and> x \<notin> ?T"
-        using C2 a assms(2) assms(3) calculation lemma_1
-        by fastforce
+        using C2 a assms(2) assms(3) calculation lemma_1 [of s PROB as]
+        by (cases \<open>valid_states PROB \<subseteq> last ` state_set (state_list s as)\<close>) simp_all
     }
     note 5 = this
     moreover
@@ -2787,7 +2787,7 @@ lemma as_needed_asses_submap_exec_iii:
     fmdom' (action_needed_asses a s)
     = {v \<in> fmdom' s. v \<in> fmdom' (fst a) \<and> fmlookup (fst a) v = fmlookup s v}"
   unfolding action_needed_asses_def action_needed_vars_def
-  by (simp add: Set.filter_def fmfilter_alt_defs(4))
+  by (simp add: fmfilter_alt_defs(4))
 
 \<comment> \<open>NOTE added lemma.\<close>
 lemma as_needed_asses_submap_exec_iv:

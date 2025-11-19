@@ -1,10 +1,20 @@
+(*<*)
 theory MLSS_Suc_Theory
-  imports Main "HOL-Library.Adhoc_Overloading" Fresh_Identifiers.Fresh
+  imports Main Fresh_Identifiers.Fresh
 begin
+(*>*)
+
+chapter \<open>A Type Checker for MLSS\<close>
+text \<open>
+In this chapter, we define a type checker for MLSS that determines which variables of an input
+formula are urelements.
+
+For this we reduce the type checking problem to the theory of the successor function.
+\<close>
 
 section \<open>Solver for the Theory of the Successor Function\<close>
 text \<open>
-  This theory implements a solver for the theory consisting of
+  We implement a solver for the theory consisting of
   variables, 0, and the successor function.
   We only deal with equality and not with disequality or inequality.
   Disequalities of the form \<^term>\<open>l \<noteq> 0\<close> are translated to
@@ -47,7 +57,7 @@ fun is_Succ_normal_atom :: "'a suc_atom \<Rightarrow> bool" where
 | "is_Succ_normal_atom (NEq t1 t2) \<longleftrightarrow> is_Succ_normal_term t1 \<and> is_Succ_normal_term t2"
 
 consts is_Succ_normal :: "'a \<Rightarrow> bool"
-adhoc_overloading is_Succ_normal is_Succ_normal_term is_Succ_normal_atom
+adhoc_overloading is_Succ_normal \<rightleftharpoons> is_Succ_normal_term is_Succ_normal_atom
 
 fun I_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a suc_term \<Rightarrow> nat" where
   "I_term v (Var x) = v x"
@@ -459,6 +469,10 @@ proof -
     using that I_atom_elim_NEq_Zero_if_I_atom by metis
 qed
 
+(*<*)
 hide_const (open) Var Eq NEq subst_term subst_atom is_normal I_term I_atom is_Eq is_NEq assign solve
+(*>*)
 
+(*<*)
 end
+(*>*)

@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>keinholz on Archive of Formal Proofs
-    </title>
-    <link>/authors/keinholz/</link>
-    <description>
-        Recent content in keinholz 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 16 Nov 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/keinholz/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Matroids</title>
-          <link>/entries/Matroids.html</link>
-          <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Matroids.html</guid>
-          <description></description>
-        </item>
+    <title>Jonas Keinholz</title>
+    <link>https://isa-afp.org/authors/keinholz/</link>
+    <description>AFP entries of Jonas Keinholz</description><item>
+  <title>Matroids</title>
+  <link>https://isa-afp.org/entries/Matroids.html</link>
+  <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
+  <description>Matroids in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+
   </channel>
 </rss>

@@ -1,415 +1,166 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Algorithms/Randomized on Archive of Formal Proofs
-    </title>
-    <link>/topics/computer-science/algorithms/randomized/</link>
-    <description>
-        Recent content in Computer science/Algorithms/Randomized 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/computer-science/algorithms/randomized/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
-          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
-          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
-          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Sumcheck Protocol</title>
-          <link>/entries/Sumcheck_Protocol.html</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Sumcheck_Protocol.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Randomized Algorithms</title>
-          <link>/entries/Executable_Randomized_Algorithms.html</link>
-          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Randomized Algorithms</title>
-          <link>/entries/Executable_Randomized_Algorithms.html</link>
-          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Randomized Algorithms</title>
-          <link>/entries/Executable_Randomized_Algorithms.html</link>
-          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Schwartz-Zippel Lemma</title>
-          <link>/entries/Schwartz_Zippel.html</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Schwartz_Zippel.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Schwartz-Zippel Lemma</title>
-          <link>/entries/Schwartz_Zippel.html</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Schwartz_Zippel.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Schwartz-Zippel Lemma</title>
-          <link>/entries/Schwartz_Zippel.html</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Schwartz_Zippel.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
-          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
-          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
-          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Median Method</title>
-          <link>/entries/Median_Method.html</link>
-          <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Median_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Median Method</title>
-          <link>/entries/Median_Method.html</link>
-          <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Median_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Median Method</title>
-          <link>/entries/Median_Method.html</link>
-          <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Median_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Skip Lists</title>
-          <link>/entries/Skip_Lists.html</link>
-          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Skip_Lists.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Skip Lists</title>
-          <link>/entries/Skip_Lists.html</link>
-          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Skip_Lists.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Skip Lists</title>
-          <link>/entries/Skip_Lists.html</link>
-          <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Skip_Lists.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic Primality Testing</title>
-          <link>/entries/Probabilistic_Prime_Tests.html</link>
-          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_Prime_Tests.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic Primality Testing</title>
-          <link>/entries/Probabilistic_Prime_Tests.html</link>
-          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_Prime_Tests.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic Primality Testing</title>
-          <link>/entries/Probabilistic_Prime_Tests.html</link>
-          <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_Prime_Tests.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Randomised Binary Search Trees</title>
-          <link>/entries/Randomised_BSTs.html</link>
-          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Randomised Binary Search Trees</title>
-          <link>/entries/Randomised_BSTs.html</link>
-          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Randomised Binary Search Trees</title>
-          <link>/entries/Randomised_BSTs.html</link>
-          <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomised_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic while loop</title>
-          <link>/entries/Probabilistic_While.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_While.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic while loop</title>
-          <link>/entries/Probabilistic_While.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_While.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Probabilistic while loop</title>
-          <link>/entries/Probabilistic_While.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Probabilistic_While.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expected Shape of Random Binary Search Trees</title>
-          <link>/entries/Random_BSTs.html</link>
-          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Random_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expected Shape of Random Binary Search Trees</title>
-          <link>/entries/Random_BSTs.html</link>
-          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Random_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expected Shape of Random Binary Search Trees</title>
-          <link>/entries/Random_BSTs.html</link>
-          <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Random_BSTs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The number of comparisons in QuickSort</title>
-          <link>/entries/Quick_Sort_Cost.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Quick_Sort_Cost.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The number of comparisons in QuickSort</title>
-          <link>/entries/Quick_Sort_Cost.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Quick_Sort_Cost.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The number of comparisons in QuickSort</title>
-          <link>/entries/Quick_Sort_Cost.html</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Quick_Sort_Cost.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fisher–Yates shuffle</title>
-          <link>/entries/Fisher_Yates.html</link>
-          <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Fisher_Yates.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fisher–Yates shuffle</title>
-          <link>/entries/Fisher_Yates.html</link>
-          <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Fisher_Yates.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fisher–Yates shuffle</title>
-          <link>/entries/Fisher_Yates.html</link>
-          <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/Fisher_Yates.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
+    <title>Computer science/Algorithms/Randomized</title>
+    <link>https://isa-afp.org/topics/computer-science/algorithms/randomized/</link>
+    <description>AFP entries in Randomized</description><item>
+  <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+  <link>https://isa-afp.org/entries/CVM_Distinct_Elements.html</link>
+  <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+  <description>Verification of the CVM algorithm with a New Recursive Analysis Technique in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
+  <link>https://isa-afp.org/entries/Randomized_Closest_Pair.html</link>
+  <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Rabin&#39;s Closest Pair of Points Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Derandomization with Conditional Expectations</title>
+  <link>https://isa-afp.org/entries/Derandomization_Conditional_Expectations.html</link>
+  <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Derandomization with Conditional Expectations in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Approximate Model Counting</title>
+  <link>https://isa-afp.org/entries/Approximate_Model_Counting.html</link>
+  <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Approximate Model Counting in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The Sumcheck Protocol</title>
+  <link>https://isa-afp.org/entries/Sumcheck_Protocol.html</link>
+  <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
+  <description>The Sumcheck Protocol in the AFP</description>
+    <category>Computer science/Security</category>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Executable Randomized Algorithms</title>
+  <link>https://isa-afp.org/entries/Executable_Randomized_Algorithms.html</link>
+  <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+  <description>Executable Randomized Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The Schwartz-Zippel Lemma</title>
+  <link>https://isa-afp.org/entries/Schwartz_Zippel.html</link>
+  <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
+  <description>The Schwartz-Zippel Lemma in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Distributed Distinct Elements</title>
+  <link>https://isa-afp.org/entries/Distributed_Distinct_Elements.html</link>
+  <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+  <description>Distributed Distinct Elements in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Expander Graphs</title>
+  <link>https://isa-afp.org/entries/Expander_Graphs.html</link>
+  <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+  <description>Expander Graphs in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+  <link>https://isa-afp.org/entries/Frequency_Moments.html</link>
+  <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+  <description>Formalization of Randomized Approximation Algorithms for Frequency Moments in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Universal Hash Families</title>
+  <link>https://isa-afp.org/entries/Universal_Hash_Families.html</link>
+  <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Universal Hash Families in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Median Method</title>
+  <link>https://isa-afp.org/entries/Median_Method.html</link>
+  <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
+  <description>Median Method in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Skip Lists</title>
+  <link>https://isa-afp.org/entries/Skip_Lists.html</link>
+  <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+  <description>Skip Lists in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Probabilistic Primality Testing</title>
+  <link>https://isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
+  <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Probabilistic Primality Testing in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Randomised Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Randomised_BSTs.html</link>
+  <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+  <description>Randomised Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Probabilistic while loop</title>
+  <link>https://isa-afp.org/entries/Probabilistic_While.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Probabilistic while loop in the AFP</description>
+    <category>Computer science/Functional programming</category>
+    <category>Mathematics/Probability theory</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Expected Shape of Random Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Random_BSTs.html</link>
+  <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+  <description>Expected Shape of Random Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>The number of comparisons in QuickSort</title>
+  <link>https://isa-afp.org/entries/Quick_Sort_Cost.html</link>
+  <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+  <description>The number of comparisons in QuickSort in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Fisher–Yates shuffle</title>
+  <link>https://isa-afp.org/entries/Fisher_Yates.html</link>
+  <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
+  <description>Fisher–Yates shuffle in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Analysis of List Update Algorithms</title>
+  <link>https://isa-afp.org/entries/List_Update.html</link>
+  <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+  <description>Analysis of List Update Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Online</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
   </channel>
 </rss>

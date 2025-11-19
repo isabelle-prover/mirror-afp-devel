@@ -26,6 +26,7 @@ email = "leek_email"
 email = "yez_email"
 
 [authors.argyraki]
+homepage = "argyraki_homepage"
 email = "argyraki_email"
 
 [contributors]
@@ -33,7 +34,7 @@ email = "argyraki_email"
 [notify]
 leek = "leek_email"
 yez = "yez_email"
-argyraki = "argyraki_email"
+argyraki = "argyraki_email1"
 
 [history]
 

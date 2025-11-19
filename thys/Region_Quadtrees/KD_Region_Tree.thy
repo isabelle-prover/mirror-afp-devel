@@ -41,17 +41,12 @@ end
 lemma height_0_iff: "height t = 0 \<longleftrightarrow> (\<exists>x. t = Box x)"
 by(cases t)auto
 
-definition bits :: "nat \<Rightarrow> bool list set" where
-"bits n = nlists n UNIV"
+definition bits :: "nat \<Rightarrow> bool list set"
+  where "bits n = nlists n UNIV"
 
-(* for quickcheck *)
-
-lemma bits_0[code]: "bits 0 = {[]}"
-by(simp add:bits_def)
-
-lemma bits_Suc[code]:
-  "bits (Suc n) = (let B = bits n in (#) True ` B \<union> (#) False ` B)"
-by(simp_all add: bits_def nlists_Suc UN_bool_eq Let_def)
+lemma bits_code [code]:
+  "bits n = nlists n {False, True}"
+  by (simp add: bits_def UNIV_bool)
 
 
 subsection \<open>Subtree\<close>
@@ -157,7 +152,7 @@ text \<open>Compressing Split:\<close>
 
 fun SplitC :: "'a kdt \<Rightarrow> 'a kdt \<Rightarrow> 'a kdt" where
 "SplitC (Box b1) (Box b2) = (if b1=b2 then Box b1 else Split (Box b1) (Box b2))" |
-"SplitC t1 t2 = Split t1 t2"
+"SplitC l r = Split l r"
 
 fun compressed :: "'a kdt \<Rightarrow> bool" where
 "compressed (Box _) = True" |

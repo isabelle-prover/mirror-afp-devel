@@ -12,7 +12,6 @@ theory Lifting_to_Non_Ground_Calculi
   imports
     Intersection_Calculus
     Calculus_Variations
-    Well_Quasi_Orders.Minimal_Elements
 begin
 
 
@@ -82,7 +81,7 @@ next
   assume
     N1_entails_C: \<open>\<forall>C \<in> N2. N1 \<Turnstile>\<G> {C}\<close>
   show \<open>N1 \<Turnstile>\<G> N2\<close> using ground.all_formulas_entailed N1_entails_C
-    by (smt UN_E UN_I ground.entail_set_all_formulas singletonI)
+    by (simp add: ground.entail_unions)
 next
   fix N1 N2 N3
   assume
@@ -171,7 +170,7 @@ locale tiebreaker_lifting =
   + fixes
     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
   assumes
-    all_wf: "minimal_element (Prec_F_g g) UNIV"
+    all_wf: "wfp (Prec_F_g g)" "transp (Prec_F_g g)"
 begin
 
 definition Red_F_\<G> :: "'f set \<Rightarrow> 'f set" where
@@ -183,7 +182,9 @@ lemma Prec_trans:
     \<open>Prec_F_g D B C\<close>
   shows
     \<open>Prec_F_g D A C\<close>
-  using minimal_element.po assms unfolding po_on_def transp_on_def by (smt UNIV_I all_wf)
+  using assms all_wf 
+  unfolding transp_on_def
+  by blast
 
 lemma prop_nested_in_set: "D \<in> P C \<Longrightarrow> C \<in> {C. \<forall>D \<in> P C. A D \<or> B C D} \<Longrightarrow> A D \<or> B C D"
   by blast
@@ -212,12 +213,16 @@ proof (rule; clarsimp)
     have non_empty: \<open>\<exists>E\<in>N. Prec_F_g D E C \<and> D \<in> \<G>_F E\<close> using contrad unfol_C_D by auto
     define B where \<open>B = {E \<in> N. Prec_F_g D E C \<and> D \<in> \<G>_F E}\<close>
     then have B_non_empty: \<open>B \<noteq> {}\<close> using non_empty by auto
-    interpret minimal_element "Prec_F_g D" UNIV using all_wf[of D] .
-    obtain F :: 'f where F: \<open>F = min_elt B\<close> by auto
-    then have D_in_F: \<open>D \<in> \<G>_F F\<close> unfolding B_def using non_empty
-      by (smt Sup_UNIV Sup_upper UNIV_I contra_subsetD empty_iff empty_subsetI mem_Collect_eq
-        min_elt_mem unfol_C_D)
-    have F_prec: \<open>Prec_F_g D F C\<close> using F min_elt_mem[of B, OF _ B_non_empty] unfolding B_def by auto
+
+    obtain F :: 'f where F: "F \<in> B" "\<forall>y. Prec_F_g D y F \<longrightarrow> y \<notin> B" 
+      using all_wf[of D]
+      by (metis B_non_empty wfp_iff_ex_minimal)
+
+    then have D_in_F: \<open>D \<in> \<G>_F F\<close> 
+      unfolding B_def using non_empty
+      by blast
+     
+    have F_prec: \<open>Prec_F_g D F C\<close> using F unfolding B_def by auto
     have F_not_in: \<open>F \<notin> Red_F_\<G> N\<close>
     proof
       assume F_in: \<open>F \<in> Red_F_\<G> N\<close>
@@ -227,9 +232,9 @@ proof (rule; clarsimp)
       then obtain G where G_in: \<open>G \<in> N\<close> and G_prec: \<open>Prec_F_g D G F\<close> and G_map: \<open>D \<in> \<G>_F G\<close> by auto
       have \<open>Prec_F_g D G C\<close> using G_prec F_prec Prec_trans by blast
       then have \<open>G \<in> B\<close> unfolding B_def using G_in G_map by auto
-      then show \<open>False\<close> using F G_prec min_elt_minimal[of B G, OF _ B_non_empty] by auto
+      then show \<open>False\<close> using F G_prec by auto
     qed
-    have \<open>F \<in> N\<close> using F by (metis B_def B_non_empty mem_Collect_eq min_elt_mem top_greatest)
+    have \<open>F \<in> N\<close> using F B_def by blast 
     then have \<open>F \<in> N - Red_F_\<G> N\<close> using F_not_in by auto
     then show \<open>False\<close>
       using D_in_F neg_not_sec_case F_prec by blast
@@ -244,18 +249,19 @@ qed
 lemma not_red_map_in_map_not_red: \<open>\<G>_Fset N - Red_F_G (\<G>_Fset N) \<subseteq> \<G>_Fset (N - Red_F_\<G> N)\<close>
 proof
   fix D
-  assume
-    D_hyp: \<open>D \<in> \<G>_Fset N - Red_F_G (\<G>_Fset N)\<close>
-  interpret minimal_element "Prec_F_g D" UNIV using all_wf[of D] .
+  assume D_hyp: \<open>D \<in> \<G>_Fset N - Red_F_G (\<G>_Fset N)\<close>
+
+
   have D_in: \<open>D \<in> \<G>_Fset N\<close> using D_hyp by blast
   have  D_not_in: \<open>D \<notin> Red_F_G (\<G>_Fset N)\<close> using D_hyp by blast
   have exist_C: \<open>\<exists>C. C \<in> N \<and> D \<in> \<G>_F C\<close> using D_in by auto
   define B where \<open>B = {C \<in> N. D \<in> \<G>_F C}\<close>
-  obtain C where C: \<open>C = min_elt B\<close> by auto
+  obtain C where C: "C \<in> B" "\<forall>y. Prec_F_g D y C \<longrightarrow> y \<notin> B" 
+    by (metis (no_types, lifting) B_def all_wf(1) exist_C mem_Collect_eq wfp_eq_minimal)
   have C_in_N: \<open>C \<in> N\<close>
-    using exist_C by (metis B_def C empty_iff mem_Collect_eq min_elt_mem top_greatest)
+    using B_def C by auto
   have D_in_C: \<open>D \<in> \<G>_F C\<close>
-    using exist_C by (metis B_def C empty_iff mem_Collect_eq min_elt_mem top_greatest)
+    using B_def C by auto
   have C_not_in: \<open>C \<notin> Red_F_\<G> N\<close>
   proof
     assume C_in: \<open>C \<in> Red_F_\<G> N\<close>
@@ -268,8 +274,7 @@ proof
       next
         assume \<open>\<exists>E\<in>N. Prec_F_g D E C \<and> D \<in> \<G>_F E\<close>
         then show \<open>False\<close>
-          using C by (metis (no_types, lifting) B_def UNIV_I empty_iff mem_Collect_eq
-              min_elt_minimal top_greatest)
+          using C B_def by auto
       qed
   qed
   show \<open>D \<in> \<G>_Fset (N - Red_F_\<G> N)\<close> using D_in_C C_not_in C_in_N by blast
@@ -284,7 +289,7 @@ proof -
     N_entails: \<open>N \<Turnstile>\<G> {B}\<close>
   then have to_bot: \<open>\<G>_Fset N - Red_F_G (\<G>_Fset N) \<Turnstile>G \<G>_F B\<close>
     using ground.Red_F_Bot Bot_map
-      by (smt cSup_singleton ground.entail_set_all_formulas image_insert image_is_empty subsetCE)
+    by (metis SUP_upper ground.entail_set_all_formulas in_mono singletonI)
   have from_f: \<open>\<G>_Fset (N - Red_F_\<G> N) \<Turnstile>G \<G>_Fset N - Red_F_G (\<G>_Fset N)\<close>
     using ground.subset_entailed[OF not_red_map_in_map_not_red] by blast
   then have \<open>\<G>_Fset (N - Red_F_\<G> N) \<Turnstile>G \<G>_F B\<close> using to_bot ground.entails_trans by blast
@@ -298,7 +303,7 @@ lemma Red_F_of_subset_F: \<open>N \<subseteq> N' \<Longrightarrow> Red_F_\<G> N 
 (* lem:redundancy-monotonic-addition 2/2 *)
 lemma Red_I_of_subset_F: \<open>N \<subseteq> N' \<Longrightarrow> Red_I_\<G> N \<subseteq> Red_I_\<G> N'\<close>
   using Collect_mono \<G>_subset subset_iff ground.Red_I_of_subset unfolding Red_I_\<G>_def
-  by (smt ground.Red_F_of_subset Un_iff)
+  by (smt (verit, del_insts) UnCI UnE ground.Red_F_of_subset subsetD)
 
 (* lem:redundancy-monotonic-deletion-forms *)
 lemma Red_F_of_Red_F_subset_F: \<open>N' \<subseteq> Red_F_\<G> N \<Longrightarrow> Red_F_\<G> N \<subseteq> Red_F_\<G> (N - N')\<close>
@@ -324,7 +329,7 @@ proof
         using ground.Red_F_of_subset[OF not_red_map_in_map_not_red[of N]] by auto
       then have \<open>D \<in> Red_F_G (\<G>_Fset (N - N'))\<close>
         using N'_in_Red_F_N \<G>_subset[of "N - Red_F_\<G> N" "N - N'"]
-        by (smt DiffE DiffI ground.Red_F_of_subset subsetCE subsetI)
+        by (meson Diff_mono ground.Red_F_of_subset subset_iff)
       then show ?thesis by blast
     next
       assume \<open>\<exists>E\<in>N - Red_F_\<G> N. Prec_F_g D E C \<and> D \<in> \<G>_F E\<close>
@@ -379,8 +384,9 @@ proof
         ground.Red_F_of_subset[OF g_subs2] d_in_imp_d_in by blast
     have "\<G>_F (concl_of \<iota>) \<subseteq> (\<G>_Fset (N - N') \<union> Red_F_G (\<G>_Fset (N - N')))"
       using d_in_imp12 d_in_imp1 d_in_imp2
-      by (smt ground.Red_F_of_Red_F_subset ground.Red_F_of_subset UnCI UnE Un_Diff_cancel2
-        ground_concl_subs g_subs1 g_subs2 subset_iff)
+      by (smt (verit, ccfv_SIG) Un_Diff_cancel2 calculus.Red_F_of_subset g_subs1 g_subs2
+          ground.Red_F_of_Red_F_subset ground.reduced_calc_is_calc ground_concl_subs order_eq_refl
+          order_trans sup_mono)
   }
   ultimately show \<open>\<iota> \<in> Red_I_\<G> (N - N')\<close> using i_in unfolding Red_I_\<G>_def by auto
 qed
@@ -416,15 +422,14 @@ qed
 
 end
 
-lemma wf_empty_rel: "minimal_element (\<lambda>_ _. False) UNIV"
-  by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
-
 lemma standard_empty_tiebreaker_equiv: "standard_lifting Inf_F Bot_G Inf_G entails_G Red_I_G
   Red_F_G Bot_F \<G>_F \<G>_I = tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
   Red_F_G \<G>_F \<G>_I (\<lambda>g C C'. False)"
 proof -
   have "tiebreaker_lifting_axioms (\<lambda>g C C'. False)"
-    unfolding tiebreaker_lifting_axioms_def using wf_empty_rel by simp
+    unfolding tiebreaker_lifting_axioms_def 
+    by auto
+
   then show ?thesis
     unfolding standard_lifting_def tiebreaker_lifting_def by blast
 qed

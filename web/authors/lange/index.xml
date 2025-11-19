@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>lange on Archive of Formal Proofs
-    </title>
-    <link>/authors/lange/</link>
-    <description>
-        Recent content in lange 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 30 Apr 2015 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/lange/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>VCG - Combinatorial Vickrey-Clarke-Groves Auctions</title>
-          <link>/entries/Vickrey_Clarke_Groves.html</link>
-          <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Vickrey_Clarke_Groves.html</guid>
-          <description></description>
-        </item>
+    <title>Christoph Lange</title>
+    <link>https://isa-afp.org/authors/lange/</link>
+    <description>AFP entries of Christoph Lange</description><item>
+  <title>VCG - Combinatorial Vickrey-Clarke-Groves Auctions</title>
+  <link>https://isa-afp.org/entries/Vickrey_Clarke_Groves.html</link>
+  <pubDate>Thu, 30 Apr 2015 00:00:00 +0000</pubDate>
+  <description>VCG - Combinatorial Vickrey-Clarke-Groves Auctions in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+
   </channel>
 </rss>

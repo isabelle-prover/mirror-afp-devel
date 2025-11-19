@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>mulligan on Archive of Formal Proofs
-    </title>
-    <link>/authors/mulligan/</link>
-    <description>
-        Recent content in mulligan 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 10 May 2018 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/mulligan/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-          <link>/entries/OpSets.html</link>
-          <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/OpSets.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The LambdaMu-calculus</title>
-          <link>/entries/LambdaMu.html</link>
-          <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/LambdaMu.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
-          <link>/entries/CRDT.html</link>
-          <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/CRDT.html</guid>
-          <description></description>
-        </item>
+    <title>Dominic P. Mulligan</title>
+    <link>https://isa-afp.org/authors/mulligan/</link>
+    <description>AFP entries of Dominic P. Mulligan</description><item>
+  <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+  <link>https://isa-afp.org/entries/OpSets.html</link>
+  <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+  <description>OpSets: Sequential Specifications for Replicated Datatypes in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>The LambdaMu-calculus</title>
+  <link>https://isa-afp.org/entries/LambdaMu.html</link>
+  <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+  <description>The LambdaMu-calculus in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+</item>
+<item>
+  <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+  <link>https://isa-afp.org/entries/CRDT.html</link>
+  <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+  <description>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Data structures</category>
+</item>
+
   </channel>
 </rss>

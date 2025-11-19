@@ -95,9 +95,7 @@ lemma is_If_pcThen[simp]: "pcOf cfg \<in> {4..6} \<Longrightarrow> \<not>is_IfJu
 (* *)
 
 consts mispred :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool"
-fun resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool" where
-  "resolve p pc = (if (pc = [6,6] \<or> pc = [4,6]) then True else False)"
-
+consts resolve :: "predState \<Rightarrow> pcounter list \<Rightarrow> bool"
 consts update :: "predState \<Rightarrow> pcounter list \<Rightarrow> predState"
 consts initPstate :: predState
 
@@ -578,12 +576,21 @@ lemma finalS_cond_spec:
   subgoal for vsts avsts hhs ps apply(cases vsts, cases avsts, cases hhs, simp)
     subgoal for vss ass hs apply(elim disjE, elim conjE, elim disjE, simp) 
       unfolding finalS_defs
-      subgoal apply(rule notI,
+      subgoal apply(cases "\<not>resolve pstate [6, 4]")
+        subgoal apply(rule notI,
             erule allE[of _ "(pstate,Config 6 (State (Vstore vs) (Avstore as) (Heap h) p),
                             [Config 5 (State (Vstore (vss(vv := hs (array_loc aa1 (nat 0) avsts)))) avsts hhs ps)],
                             ibT,ibUT,ls \<union> readLocs (last cfgs))"], erule notE, 
                             rule spec_normal[of _ _ _ _ _ _"Config 5 (State (Vstore (vss(vv := hs (array_loc aa1 (nat 0) avsts)))) avsts hhs ps)"])
-        by auto
+          by auto
+
+        apply(rule notI,
+            erule allE[of _ "(update pstate [6, 4],Config 6 (State (Vstore vs) (Avstore as) (Heap h) p),
+                            [],
+                            ibT,ibUT,ls)"])
+      by( erule notE, 
+                            rule spec_resolve, auto)
+      subgoal apply(cases "\<not>resolve pstate [6, 5]")
       subgoal apply(rule notI, 
             erule allE[of _ "(pstate,Config 6 (State (Vstore vs) (Avstore as) (Heap h) p),
                             [Config 6 (State (Vstore (vss(tt := hs (array_loc aa2 (nat (vss vv * 512)) avsts) + vss xx))) avsts hhs ps)],
@@ -596,8 +603,12 @@ lemma finalS_cond_spec:
       subgoal apply(rule notI, 
       erule allE[of _ "(update pstate (6 # map pcOf cfgs),Config 6 (State (Vstore vs) (Avstore as) (Heap h) p),
                        [],ibT,ibUT,ls)"]) 
-      by(erule notE, rule spec_resolve, auto)
+      by(erule notE, rule spec_resolve, auto) .
 
+      subgoal apply(rule notI, 
+      erule allE[of _ "(update pstate (6 # map pcOf cfgs),Config 6 (State (Vstore vs) (Avstore as) (Heap h) p),
+                       [],ibT,ibUT,ls)"]) 
+        by(erule notE, rule spec_resolve, auto)
       subgoal apply(rule notI, 
       erule allE[of _ "(update pstate (4 # map pcOf cfgs),Config 4 (State (Vstore vs) (Avstore as) (Heap h) p),
                        [],ibT,ibUT,ls)"])

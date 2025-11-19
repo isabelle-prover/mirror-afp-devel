@@ -455,7 +455,7 @@ next
 next
   case (LookupN0 p q acc r)
   then show ?case
-    by (meson in_set_member inset_means_lookup_assump_some lookup_assump_means_inset spmods_multiv_assum_acc subsetD)
+    by (meson inset_means_lookup_assump_some lookup_assump_means_inset spmods_multiv_assum_acc subsetD)
 qed
 
 lemma spmods_multiv_aux_nonz_some:
@@ -487,17 +487,17 @@ next
     \<in> set (spmods_multiv_aux p (Multiv_Poly_Props.one_less_degree q)
              ((Polynomial.lead_coeff q, 0) # acc)) \<Longrightarrow>
     \<exists>i. lookup_assump_aux (Polynomial.lead_coeff q) assumps = Some i"
-    by (meson in_set_member inset_means_lookup_assump_some list.set_intros(1) subsetD)
+    by (meson inset_means_lookup_assump_some list.set_intros(1) subsetD)
   have h2: "\<And>b. (\<And>acc' seq' p q acc. (acc', seq') \<in> set (spmods_multiv_aux p q acc) \<Longrightarrow> set acc \<subseteq> set acc') \<Longrightarrow>
          (assumps, b)
          \<in> set (spmods_multiv_aux q (mul_pseudo_mod p q) ((Polynomial.lead_coeff q, 1) # acc)) \<Longrightarrow>
          sturm_seq = p # b \<Longrightarrow> \<exists>i. lookup_assump_aux (Polynomial.lead_coeff q) assumps = Some i"
-    by (meson in_set_member inset_means_lookup_assump_some list.set_intros(1) subsetD)
+    by (meson inset_means_lookup_assump_some list.set_intros(1) subsetD)
   have h3: "\<And>b. (\<And>acc' seq' p q acc. (acc', seq') \<in> set (spmods_multiv_aux p q acc) \<Longrightarrow> set acc \<subseteq> set acc') \<Longrightarrow>
          (assumps, b)
          \<in> set (spmods_multiv_aux q (mul_pseudo_mod p q) ((Polynomial.lead_coeff q, - 1) # acc)) \<Longrightarrow>
          sturm_seq = p # b \<Longrightarrow> \<exists>i. lookup_assump_aux (Polynomial.lead_coeff q) assumps = Some i"
-    by (meson in_set_member inset_means_lookup_assump_some list.set_intros(1) subsetD)
+    by (meson inset_means_lookup_assump_some list.set_intros(1) subsetD)
   show ?case 
     using bigh spmods_multiv_aux_assum_acc h1 h2 h3
     by auto
@@ -508,7 +508,7 @@ next
 next
   case (LookupN0 p q acc r)
   then show ?case
-    by (meson in_set_member inset_means_lookup_assump_some lookup_assump_means_inset spmods_multiv_aux_assum_acc subsetD)
+    by (meson inset_means_lookup_assump_some lookup_assump_means_inset spmods_multiv_aux_assum_acc subsetD)
 qed
 
 lemma spmods_multiv_sound:

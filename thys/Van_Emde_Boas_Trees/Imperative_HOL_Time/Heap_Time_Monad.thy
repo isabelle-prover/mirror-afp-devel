@@ -113,7 +113,7 @@ lemma success_ifI:
 subsubsection \<open>Predicate for a simple relational calculus\<close>
 
 text \<open>
-  The \<open>effect\<close> vebt_predicate states that when a computation \<open>c\<close>
+  The \<open>effect\<close> vebt\_predicate states that when a computation \<open>c\<close>
   runs with the heap \<open>h\<close> will result in return value \<open>r\<close>
   and a heap \<open>h'\<close>, i.e.~no exception occurs. AND consume time \<open>n\<close>
 \<close>  
@@ -289,7 +289,7 @@ definition bind :: "'a Heap \<Rightarrow> ('a \<Rightarrow> 'b Heap) \<Rightarro
   
   
 adhoc_overloading
-  Monad_Syntax.bind Heap_Time_Monad.bind
+  Monad_Syntax.bind \<rightleftharpoons> Heap_Time_Monad.bind
 
 lemma execute_bind [execute_simps]:
   "execute f h = Some (x, h',n) \<Longrightarrow> execute (f \<bind> g) h = timeFrame n (execute (g x) h')"
@@ -630,7 +630,7 @@ readArray = Data.Array.ST.readArray;
 writeArray :: STArray s a -> Integer -> a -> ST s ();
 writeArray = Data.Array.ST.writeArray;\<close>
 
-code_reserved Haskell Heap
+code_reserved (Haskell) Heap
 
 text \<open>Monad\<close>
 
@@ -684,7 +684,7 @@ object Array {
 }
 \<close>
 
-code_reserved Scala Heap Ref Array
+code_reserved (Scala) Heap Ref Array
 
 code_printing type_constructor Heap \<rightharpoonup> (Scala) "(Unit/ =>/ _)"
 code_printing constant bind \<rightharpoonup> (Scala) "Heap.bind"
@@ -709,7 +709,7 @@ val imp_program =
     (*assumption: dummy values are not relevant for serialization*)
     val unitT = \<^type_name>\<open>unit\<close> `%% [];
     val unitt =
-      IConst { sym = Code_Symbol.Constant \<^const_name>\<open>Unity\<close>, typargs = [], dicts = [], dom = [],
+      IConst { sym = Code_Symbol.Constant \<^const_name>\<open>Unity\<close>, typargs = [], dictss = [], dom = [],
         annotation = NONE, range = unitT };
     fun dest_abs ((v, ty) `|=> (t, _), _) = ((v, ty), t)
       | dest_abs (t, ty) =

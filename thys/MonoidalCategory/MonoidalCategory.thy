@@ -185,7 +185,7 @@ begin
     lemma \<alpha>_simp:
     assumes "arr f" and "arr g" and "arr h"
     shows "\<alpha> (f, g, h) = (f \<otimes> g \<otimes> h) \<cdot> \<a>[dom f, dom g, dom h]"
-      using assms \<alpha>.is_natural_1 [of "(f, g, h)"] by simp
+      using assms \<alpha>.naturality1 [of "(f, g, h)"] by simp
 
     lemma assoc_in_hom [intro]:
     assumes "ide a" and "ide b" and "ide c"
@@ -469,10 +469,10 @@ begin
     sublocale \<ll>: natural_transformation C C L map \<ll>
     proof -
       interpret \<ll>: transformation_by_components C C L map \<open>\<lambda>a. \<l>[a]\<close>
-        using lunit_in_hom lunit_naturality unit_in_hom_ax L.is_extensional
+        using lunit_in_hom lunit_naturality unit_in_hom_ax L.extensionality
         by (unfold_locales, auto)
       have "\<ll>.map = \<ll>"
-        using \<ll>.is_natural_1 \<ll>.is_extensional by auto
+        using \<ll>.naturality1 \<ll>.extensionality by auto
       thus "natural_transformation C C L map \<ll>"
         using \<ll>.natural_transformation_axioms by auto
     qed
@@ -484,10 +484,10 @@ begin
     sublocale \<rho>: natural_transformation C C R map \<rho>
     proof -
       interpret \<rho>: transformation_by_components C C R map \<open>\<lambda>a. \<r>[a]\<close>
-        using runit_naturality unit_in_hom_ax R.is_extensional
+        using runit_naturality unit_in_hom_ax R.extensionality
         by (unfold_locales, auto)
       have "\<rho>.map = \<rho>"
-        using \<rho>.is_natural_1 \<rho>.is_extensional by auto
+        using \<rho>.naturality1 \<rho>.extensionality by auto
       thus "natural_transformation C C R map \<rho>"
         using \<rho>.natural_transformation_axioms by auto
     qed
@@ -514,7 +514,7 @@ begin
     lemma \<alpha>'_simp:
     assumes "arr f" and "arr g" and "arr h"
     shows "\<alpha>' (f, g, h) = ((f \<otimes> g) \<otimes> h) \<cdot> \<a>\<^sup>-\<^sup>1[dom f, dom g, dom h]"
-      using assms T.ToTC_simp \<alpha>'.is_natural_1 \<alpha>'_ide_simp by force
+      using assms T.ToTC_simp \<alpha>'.naturality1 \<alpha>'_ide_simp by force
 
     lemma assoc_inv:
     assumes "ide a" and "ide b" and "ide c"
@@ -631,14 +631,16 @@ begin
     assumes "ide a"
     shows "\<l>[\<I> \<otimes> a] = \<I> \<otimes> \<l>[a]"
       using assms lunit_naturality lunit_in_hom iso_lunit iso_is_section
-            section_is_mono monoE L.preserves_ide arrI cod_lunit dom_lunit seqI
+            section_is_mono mono_cancel L.preserves_ide arrI cod_lunit
+            dom_lunit seqI
       by metis
 
     lemma runit_commutes_with_R:
     assumes "ide a"
     shows "\<r>[a \<otimes> \<I>] = \<r>[a] \<otimes> \<I>"
       using assms runit_naturality runit_in_hom iso_runit iso_is_section
-            section_is_mono monoE R.preserves_ide arrI cod_runit dom_runit seqI
+            section_is_mono mono_cancel R.preserves_ide arrI cod_runit
+            dom_runit seqI
       by metis
 
     text\<open>
@@ -703,7 +705,8 @@ $$\xymatrix{
           have "epi \<a>[a \<otimes> \<I>, \<I>, b]"
             using assms iso_assoc iso_is_retraction retraction_is_epi by simp
           thus ?thesis
-            using 1 assms epiE [of "\<a>[a \<otimes> \<I>, \<I>, b]" "(a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b]"]
+            using 1 assms
+                  epi_cancel [of "\<a>[a \<otimes> \<I>, \<I>, b]" "(a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b]"]
             by fastforce
         qed
       qed
@@ -798,8 +801,9 @@ $$\xymatrix{
         using assms by auto
       ultimately show ?thesis
         using 1 2 assms iso_is_retraction retraction_is_epi
-              epiE [of "\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)"
-                       "(a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c])" "a \<otimes> \<l>[b] \<otimes> c"]
+              epi_cancel
+                [of "\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)"
+                    "(a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c])" "a \<otimes> \<l>[b] \<otimes> c"]
         by auto
     qed
 
@@ -1641,13 +1645,13 @@ $$\xymatrix{
   sublocale opposite_monoidal_category \<subseteq> monoidal_category C T \<alpha> \<iota>
   proof -
     interpret T: binary_endofunctor C T
-      using C.T.is_extensional C.CC.seq_char C.interchange by (unfold_locales, auto)
+      using C.T.extensionality C.CC.seq_char C.interchange by (unfold_locales, auto)
     interpret ToTC: "functor" C.CCC.comp C T.ToTC
       using T.functor_ToTC by auto
     interpret ToCT: "functor" C.CCC.comp C T.ToCT
       using T.functor_ToCT by auto
     interpret \<alpha>: natural_transformation C.CCC.comp C T.ToTC T.ToCT \<alpha>
-      using C.\<alpha>'.is_extensional C.CCC.dom_char C.CCC.cod_char T.ToTC_def T.ToCT_def
+      using C.\<alpha>'.extensionality C.CCC.dom_char C.CCC.cod_char T.ToTC_def T.ToCT_def
             C.\<alpha>'_simp C.\<alpha>'.naturality
       by (unfold_locales) auto
     interpret \<alpha>: natural_isomorphism C.CCC.comp C T.ToTC T.ToCT \<alpha>
@@ -1691,7 +1695,7 @@ $$\xymatrix{
     sublocale dual_category C ..
     sublocale MM: product_category comp comp ..
     interpretation T: binary_functor comp comp comp T
-      using M.T.is_extensional M.interchange MM.comp_char
+      using M.T.extensionality M.interchange MM.comp_char
       by unfold_locales auto
     interpretation T: binary_endofunctor comp ..
     interpretation ToTC: "functor" T.CCC.comp comp T.ToTC
@@ -1699,7 +1703,7 @@ $$\xymatrix{
     interpretation ToCT: "functor" T.CCC.comp comp T.ToCT
       using T.functor_ToCT by blast
     interpretation \<alpha>: natural_transformation T.CCC.comp comp T.ToTC T.ToCT M.\<alpha>'
-      using M.\<alpha>'.is_extensional M.\<alpha>'.is_natural_1 M.\<alpha>'.is_natural_2
+      using M.\<alpha>'.extensionality M.\<alpha>'.naturality1 M.\<alpha>'.naturality2
       by unfold_locales auto
     interpretation \<alpha>: natural_isomorphism T.CCC.comp comp T.ToTC T.ToCT M.\<alpha>'
       by unfold_locales auto
@@ -1719,7 +1723,7 @@ $$\xymatrix{
     qed
 
     sublocale monoidal_category comp T M.\<alpha>' \<open>M.inv \<iota>\<close>
-      using T.is_extensional M.unit_in_hom M.inv_in_hom M.unit_is_iso M.pentagon'
+      using T.extensionality M.unit_in_hom M.inv_in_hom M.unit_is_iso M.pentagon'
             equivalence_functor_def category_axioms
       by unfold_locales auto
 
@@ -3350,7 +3354,7 @@ $$\xymatrix{
     lemma eval_Assoc [simp]:
     assumes "Arr t" and "Arr u" and "Arr v"
     shows "\<lbrace>\<^bold>\<a>\<^bold>[t, u, v\<^bold>]\<rbrace> = \<a>[cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>] \<cdot> ((\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>) \<otimes> \<lbrace>v\<rbrace>)"
-      using assms \<alpha>.is_natural_2 [of "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
+      using assms \<alpha>.naturality2 [of "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
 
     lemma eval_Assoc' [simp]:
     assumes "Arr t" and "Arr u" and "Arr v"
@@ -3414,11 +3418,11 @@ $$\xymatrix{
       fix t
       assume I: "Can t \<Longrightarrow> \<lbrace>Inv t\<rbrace> = inv \<lbrace>t\<rbrace>"
       show "Can \<^bold>\<l>\<^bold>[t\<^bold>] \<Longrightarrow> \<lbrace>Inv \<^bold>\<l>\<^bold>[t\<^bold>]\<rbrace> = inv \<lbrace>\<^bold>\<l>\<^bold>[t\<^bold>]\<rbrace>"
-        using I \<ll>'.is_natural_2 [of "inv \<lbrace>t\<rbrace>"] iso_eval_Can \<ll>_ide_simp iso_is_arr
+        using I \<ll>'.naturality2 [of "inv \<lbrace>t\<rbrace>"] iso_eval_Can \<ll>_ide_simp iso_is_arr
              comp_cod_arr inv_comp
         by simp
       show "Can \<^bold>\<r>\<^bold>[t\<^bold>] \<Longrightarrow> \<lbrace>Inv \<^bold>\<r>\<^bold>[t\<^bold>]\<rbrace> = inv \<lbrace>\<^bold>\<r>\<^bold>[t\<^bold>]\<rbrace>"
-        using I \<rho>'.is_natural_2 [of "inv \<lbrace>t\<rbrace>"] iso_eval_Can \<rho>_ide_simp iso_is_arr
+        using I \<rho>'.naturality2 [of "inv \<lbrace>t\<rbrace>"] iso_eval_Can \<rho>_ide_simp iso_is_arr
               comp_cod_arr inv_comp
         by simp
       show "Can \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> \<lbrace>Inv \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace> = inv \<lbrace>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
@@ -3428,7 +3432,7 @@ $$\xymatrix{
         have "inv \<lbrace>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace> = inv (\<ll>' \<lbrace>t\<rbrace>)"
           using t by simp
         also have "... = inv (\<l>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>] \<cdot> \<lbrace>t\<rbrace>)"
-          using 1 \<ll>'.is_natural_2 [of "\<lbrace>t\<rbrace>"] \<ll>'_ide_simp iso_is_arr by auto
+          using 1 \<ll>'.naturality2 [of "\<lbrace>t\<rbrace>"] \<ll>'_ide_simp iso_is_arr by auto
         also have "... = \<lbrace>Inv \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
           using t I 1 iso_is_arr inv_comp by auto
         finally show ?thesis by simp
@@ -3440,7 +3444,7 @@ $$\xymatrix{
         have "inv \<lbrace>\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace> = inv (\<rho>' \<lbrace>t\<rbrace>)"
           using t by simp
         also have "... = inv (\<r>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>] \<cdot> \<lbrace>t\<rbrace>)"
-          using 1 \<rho>'.is_natural_2 [of "\<lbrace>t\<rbrace>"] \<rho>'_ide_simp iso_is_arr by auto
+          using 1 \<rho>'.naturality2 [of "\<lbrace>t\<rbrace>"] \<rho>'_ide_simp iso_is_arr by auto
         also have "... = \<lbrace>Inv \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
           using t I 1 iso_is_arr inv_comp by auto
         finally show ?thesis by simp
@@ -4297,7 +4301,7 @@ $$\xymatrix{
             by fastforce
           thus ?thesis
             using t Arr_implies_Ide_Cod Ide_implies_Arr Ide_in_Hom Diagonalize_Comp_Cod_Arr
-                  eval_in_hom \<ll>'.is_natural_2 [of "\<lbrace>t\<rbrace>"]
+                  eval_in_hom \<ll>'.naturality2 [of "\<lbrace>t\<rbrace>"]
             by force
         qed
         show "Arr \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> coherent \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]"
@@ -4310,7 +4314,7 @@ $$\xymatrix{
             by fastforce
           thus ?thesis
             using t Arr_implies_Ide_Cod Ide_implies_Arr Ide_in_Hom Diagonalize_Comp_Cod_Arr
-                  eval_in_hom \<rho>'.is_natural_2 [of "\<lbrace>t\<rbrace>"]
+                  eval_in_hom \<rho>'.naturality2 [of "\<lbrace>t\<rbrace>"]
             by force
         qed
         next
@@ -4412,7 +4416,7 @@ $$\xymatrix{
             by simp
           moreover have "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]\<rbrace> = \<lbrace>((t \<^bold>\<otimes> u) \<^bold>\<otimes> v) \<^bold>\<cdot> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[Dom t, Dom u, Dom v\<^bold>]\<rbrace>"
             using t u v Arr_implies_Ide_Dom Ide_implies_Arr eval_in_hom comp_cod_arr
-                  \<alpha>'.is_natural_1 \<alpha>'_simp
+                  \<alpha>'.naturality1 \<alpha>'_simp
             by simp
           ultimately show "coherent \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]" by argo
         qed

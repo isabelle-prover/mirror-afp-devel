@@ -513,7 +513,7 @@ by transfer(fastforce dest: lfilter_eq_LConsD[OF sym])
 text \<open>Use a version of @{term "tfilter"} for code generation that does not evaluate the first argument\<close>
 
 definition tfilter' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
-where [simp, code del]: "tfilter' b = tfilter (b ())"
+where [simp]: "tfilter' b = tfilter (b ())"
 
 lemma tfilter_code [code, code_unfold]:
   "tfilter = (\<lambda>b. tfilter' (\<lambda>_. b))" 
@@ -539,7 +539,7 @@ by transfer auto
 text \<open>Use a version of @{term "tconcat"} for code generation that does not evaluate the first argument\<close>
 
 definition tconcat' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a llist, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
-where [simp, code del]: "tconcat' b = tconcat (b ())"
+where [simp]: "tconcat' b = tconcat (b ())"
 
 lemma tconcat_code [code, code_unfold]: "tconcat = (\<lambda>b. tconcat' (\<lambda>_. b))"
 by simp

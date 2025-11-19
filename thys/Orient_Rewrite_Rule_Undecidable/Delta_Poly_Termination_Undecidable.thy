@@ -645,8 +645,8 @@ proof (intro ballI)
         case 1
         from assignmentD[OF 1(1), of 0]
         show ?case using 1 h 
-          by (auto simp: field_simps)
-            (smt (verit, ccfv_threshold) add.commute add_le_cancel_left distrib_left linordered_nonzero_semiring_class.zero_le_one mult.commute mult_cancel_left1 mult_left_mono nle_le order_trans)
+          apply (simp add: field_simps)
+          by (metis (no_types, lifting) ext add_le_cancel_right comm_monoid_mult_class.mult_1 mult_right_mono order_trans distrib_right zero_le_one)
       qed
       subgoal by auto
       done

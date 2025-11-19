@@ -1,0 +1,51 @@
+{{- define "main" }}
+  {{- with .Params.orcid }}
+    <a href="{{ .url }}">
+      <img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png"
+           width="16" height="16" />
+      {{- .id }}
+    </a>
+  {{- end }}
+
+  {{- with .Params.homepages }}
+    <h2>Homepages 🌐</h2>
+    <ul>
+      {{- range . }}
+        <li><a href="{{ . | safeHTML }}">{{ . | safeHTML }}</a></li>
+      {{- end }}
+    </ul>
+  {{- end }}
+  {{- with .Params.emails }}
+    <h2>E-Mails 📧</h2>
+    <ul>
+      {{- range . }}
+        <li>
+          <a class="obfuscated" data="{{ .base64 }}">{{ partial "email.html" . }}</a>
+        </li>
+      {{- end }}
+    </ul>
+  {{- end }}
+
+  <h2>Entries</h2>
+  {{- range .Params.entries }}
+    <h3 class="head">{{ .year }}</h3>
+    {{- range .entries }}
+      {{- $entry := (site.GetPage (printf "entries/%s" .)) }}
+      <article class="entry">
+        <div class="item-text">
+          <h5>
+            <a class="title" href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a>
+          </h5>
+          <br>
+          by
+          {{- range $entry.Params.authors }}
+            {{- $author := site.GetPage (printf "authors/%s" .author) }}
+            <a href="{{ $author.RelPermalink }}">{{ $author.Params.name | safeHTML }}</a>
+            {{- .sep }}
+          {{- end }}
+        </div>
+        <span class="date">{{ $entry.Date.Format "Jan 02" }}</span>
+      </article>
+    {{- end }}
+  {{- end }}
+{{- end }}

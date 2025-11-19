@@ -8,6 +8,7 @@ theory Find_Irreducible_Poly
     Probabilistic_While.While_SPMF
     Card_Irreducible_Polynomials
     Executable_Randomized_Algorithms.Randomized_Algorithm
+    Finite_Fields_Nth_Root_Code
     "HOL-Library.Log_Nat"
 begin
 
@@ -626,7 +627,8 @@ proof -
   thus ?thesis using xe by simp
 qed
 
-definition "is_prime_power n = (\<exists>p k. Factorial_Ring.prime p \<and> k > 0 \<and> n = p^k)"
+definition is_prime_power :: "nat \<Rightarrow> bool" where
+  "is_prime_power n = (\<exists>p k. prime p \<and> k > 0 \<and> n = p^k)"
 
 lemma is_prime_powerI:
   assumes "prime p" "k > 0"

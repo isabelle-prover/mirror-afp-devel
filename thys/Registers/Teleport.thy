@@ -2,11 +2,11 @@ section \<open>Quantum teleportation\<close>
 
 theory Teleport
   imports 
-    QHoare
     Real_Impl.Real_Impl
     "HOL-Library.Code_Target_Numeral"
-    Finite_Tensor_Product_Matrices
     "HOL-Library.Word"
+    Hilbert_Space_Tensor_Product.Tensor_Product_Code
+    QHoare
 begin
 
 hide_const (open) Finite_Cartesian_Product.vec
@@ -14,16 +14,18 @@ hide_type (open) Finite_Cartesian_Product.vec
 hide_const (open) Finite_Cartesian_Product.mat
 hide_const (open) Finite_Cartesian_Product.row
 hide_const (open) Finite_Cartesian_Product.column
-no_notation Group.mult (infixl \<open>\<otimes>\<index>\<close> 70)
-no_notation Order.top (\<open>\<top>\<index>\<close>)
-unbundle no vec_syntax and no inner_syntax
+no_notation Group.mult (infixl "\<otimes>\<index>" 70)
+no_notation Order.top ("\<top>\<index>")
+unbundle no vec_syntax
+unbundle no inner_syntax
+unbundle register_syntax
+unbundle cblinfun_syntax
 
-
-locale teleport_locale = qhoare "TYPE('mem::finite)" +
-  fixes X :: "bit update \<Rightarrow> 'mem::finite update"
+locale teleport_locale = qhoare "TYPE('mem)" +
+  fixes X :: "bit update \<Rightarrow> 'mem update"
     and \<Phi> :: "(bit*bit) update \<Rightarrow> 'mem update"
-    and A :: "'atype::finite update \<Rightarrow> 'mem update"
-    and B :: "'btype::finite update \<Rightarrow> 'mem update"
+    and A :: "'atype update \<Rightarrow> 'mem update"
+    and B :: "'btype update \<Rightarrow> 'mem update"
   assumes compat[register]: "mutually compatible (X,\<Phi>,A,B)"
 begin
 
@@ -117,12 +119,12 @@ proof -
     apply (rule hoare_apply) by (simp add: O3_def cblinfun_assoc_left(2))
 
   also
-  define O4 where \<open>O4 = \<Phi>1 (selfbutterket a) o\<^sub>C\<^sub>L O3\<close>
+  define O4 where \<open>O4 = \<Phi>1 (selfbutter (ket a)) o\<^sub>C\<^sub>L O3\<close>
   have \<open>hoare (O3 *\<^sub>S pre) [ifthen \<Phi>1 a] (O4 *\<^sub>S pre)\<close>
     apply (rule hoare_ifthen) by (simp add: O4_def cblinfun_assoc_left(2))
 
   also
-  define O5 where \<open>O5 = X (selfbutterket b) o\<^sub>C\<^sub>L O4\<close>
+  define O5 where \<open>O5 = X (selfbutter (ket b)) o\<^sub>C\<^sub>L O4\<close>
   have \<open>hoare (O4 *\<^sub>S pre) [ifthen X b] (O5 *\<^sub>S pre)\<close>
     apply (rule hoare_ifthen) by (simp add: O5_def cblinfun_assoc_left(2))
 
@@ -145,7 +147,7 @@ proof -
   have O5': "O5 = (1/2) *\<^sub>C \<Phi>2 (XZ*) o\<^sub>C\<^sub>L X\<Phi>2 Uswap o\<^sub>C\<^sub>L \<Phi> (butterfly (ket a \<otimes>\<^sub>s ket b) \<beta>00)"
     unfolding O7 O5_def O4_def O3_def O2_def O1_def 
     apply (simp split del: if_split only: to_X\<Phi> register_mult[of X\<Phi>])
-    apply (simp split del: if_split add: register_mult[of X\<Phi>] 
+    apply (simp split del: if_split add: register_mult[of X\<Phi>] clinear_register
                 flip: complex_vector.linear_scale
                 del: comp_apply)
     apply (rule arg_cong[of _ _ X\<Phi>])
@@ -159,16 +161,15 @@ proof -
     by normalization
 
   have [simp]: "unitary XZ"
-    unfolding unitary_def unfolding XZ_def apply auto
-     apply (metis cblinfun_assoc_left(1) pauliXX pauliZZ cblinfun_compose_id_left)
-    by (metis cblinfun_assoc_left(1) pauliXX pauliZZ cblinfun_compose_id_left)
+    unfolding unitary_def unfolding XZ_def 
+    by (auto simp: cblinfun_assoc_left lift_cblinfun_comp[OF pauliZZ] lift_cblinfun_comp[OF pauliXX])
 
   have O7': "O7 = (1/2) *\<^sub>C X\<Phi>2 Uswap o\<^sub>C\<^sub>L \<Phi> (butterfly (ket a \<otimes>\<^sub>s ket b) \<beta>00)"
     unfolding O7 O5'
     by (simp add: cblinfun_compose_assoc[symmetric] register_mult[of \<Phi>2] del: comp_apply)
 
   have "O7 *\<^sub>S pre = X\<Phi>2 Uswap *\<^sub>S XAB (selfbutter \<psi>) *\<^sub>S \<Phi> (butterfly (ket (a, b)) \<beta>00) *\<^sub>S \<top>"
-    apply (simp add: O7' pre_def EQ_def cblinfun_compose_image)
+    apply (simp add: O7' pre_def EQ_def cblinfun_compose_image tensor_ell2_ket)
     apply (subst lift_cblinfun_comp[OF swap_registers[where R=\<Phi> and S=XAB]], simp)
     by (simp add: cblinfun_assoc_left(2))
   also have \<open>\<dots> \<le> X\<Phi>2 Uswap *\<^sub>S XAB (selfbutter \<psi>) *\<^sub>S \<top>\<close>
@@ -179,7 +180,7 @@ proof -
   also have \<open>\<dots> = \<Phi>2AB (selfbutter \<psi>) *\<^sub>S X\<Phi>2 Uswap *\<^sub>S \<top>\<close>
     apply (simp add: swap_sandwich sandwich_grow_left to_X\<Phi>2_AB   
         cblinfun_compose_image[symmetric] register_mult)
-    by (simp add: sandwich_def cblinfun_compose_assoc[symmetric] comp_tensor_op tensor_op_adjoint)
+    by (simp add: sandwich_apply cblinfun_compose_assoc[symmetric] comp_tensor_op tensor_op_adjoint)
   also have \<open>\<dots> \<le> \<Phi>2AB =\<^sub>q \<psi>\<close>
     by (simp add: EQ_def cblinfun_image_mono)
   finally have \<open>O7 *\<^sub>S pre \<le> \<Phi>2AB =\<^sub>q \<psi>\<close>
@@ -224,7 +225,11 @@ interpretation teleport_concrete:
                  concrete_teleport_vars.B_def[abs_def]
            intro!: compatible3' compatible3)
 
+(* Observe the resulting theorems: *)
 thm teleport
 thm teleport_def
+
+unbundle no register_syntax
+unbundle no cblinfun_syntax
 
 end

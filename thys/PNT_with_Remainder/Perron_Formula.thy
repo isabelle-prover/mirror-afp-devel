@@ -126,7 +126,7 @@ lemma perron_integrable:
   shows "(\<lambda>s. a powr s / s) contour_integrable_on (linepath (Complex b (-T)) (Complex b T))"
 using cond assms
 by (intro contour_integrable_continuous_linepath continuous_intros)
-   (auto simp add: closed_segment_def legacy_Complex_simps field_simps)
+   (auto simp add: closed_segment_def Complex_simps field_simps)
 
 lemma perron_aux_1':
   fixes U :: real
@@ -248,7 +248,7 @@ proof -
     proof -
       from * have Re_z: "Re z = - U"
         unfolding closed_segment_def
-        by (auto simp add: legacy_Complex_simps field_simps)
+        by (auto simp add: Complex_simps field_simps)
       hence "U = \<bar>Re z\<bar>" using hU by auto
       also have "\<dots> \<le> \<parallel>z\<parallel>" by (rule abs_Re_le_cmod)
       finally have zmod: "U \<le> \<parallel>z\<parallel>" .
@@ -263,7 +263,7 @@ proof -
   also have "\<dots> = a powr -U / U * (2 * T)"
   proof -
     have "sqrt ((2 * T)\<^sup>2) = \<bar>2 * T\<bar>" by (rule real_sqrt_abs)
-    thus ?thesis using hT' by (auto simp add: field_simps legacy_Complex_simps)
+    thus ?thesis using hT' by (auto simp add: field_simps Complex_simps)
   qed
   finally have I\<^sub>4_bound: "\<parallel>I\<^sub>4\<parallel> \<le> a powr -U / U * (2 * T)" .
   have "\<parallel>I\<^sub>2 / (2 * pi * \<i>) - 1\<parallel> \<le> 1 / (2*pi) * (\<parallel>g (- T)\<parallel> + \<parallel>- g T\<parallel> + \<parallel>I\<^sub>4\<parallel>)"
@@ -403,7 +403,7 @@ proof -
     proof -
       from * have Re_z: "Re z = U"
         unfolding closed_segment_def
-        by (auto simp add: legacy_Complex_simps field_simps)
+        by (auto simp add: Complex_simps field_simps)
       hence "U = \<bar>Re z\<bar>" using hU by auto
       also have "\<dots> \<le> \<parallel>z\<parallel>" by (rule abs_Re_le_cmod)
       finally have zmod: "U \<le> \<parallel>z\<parallel>" .
@@ -418,7 +418,7 @@ proof -
   also have "\<dots> \<le> a powr U / U * (2 * T)"
   proof -
     have "sqrt ((2 * T)\<^sup>2) = \<bar>2 * T\<bar>" by (rule real_sqrt_abs)
-    thus ?thesis using hT' by (simp add: field_simps legacy_Complex_simps)
+    thus ?thesis using hT' by (simp add: field_simps Complex_simps)
   qed
   finally have I\<^sub>2_bound: "\<parallel>I\<^sub>2\<parallel> \<le> a powr U / U * (2 * T)" .
   have "\<parallel>I\<^sub>4 / (2 * pi * \<i>)\<parallel> \<le> 1 / (2*pi) * (\<parallel>g (- T)\<parallel> + \<parallel>I\<^sub>2\<parallel> + \<parallel>- g T\<parallel>)"
@@ -671,7 +671,7 @@ lemma path_image_conv:
 proof -
   from assms have "Re s = b"
     unfolding img_path_def path_def
-    by (auto simp add: closed_segment_def legacy_Complex_simps field_simps)
+    by (auto simp add: closed_segment_def Complex_simps field_simps)
   thus ?thesis using Hb' conv_le_abs_conv_abscissa [of f] by auto
 qed
 
@@ -688,7 +688,7 @@ lemma summable_on_path:
 lemma zero_notin_path:
   shows "0 \<notin> closed_segment (Complex b (- T)) (Complex b T)"
   using Hb unfolding img_path_def path_def
-  by (auto simp add: closed_segment_def legacy_Complex_simps field_simps)
+  by (auto simp add: closed_segment_def Complex_simps field_simps)
 
 lemma perron_bound:
   "\<parallel>\<Sum>`n \<ge> 1. a n * F' n\<parallel> \<le> x powr b * H * B / T
@@ -784,7 +784,7 @@ proof (goal_cases)
     next
       fix t :: real
       show "\<parallel>vector_derivative path (at t)\<parallel> \<le> sqrt (4 * T\<^sup>2)"
-        unfolding path_def by (auto simp add: legacy_Complex_simps)
+        unfolding path_def by (auto simp add: Complex_simps)
     next
       from path_image_conv
       have *: "uniformly_convergent_on img_path (\<lambda>N s. \<Sum>n\<le>N. fds_nth f n / nat_power n s)"
@@ -828,7 +828,7 @@ proof (goal_cases)
         ultimately show ?thesis by auto
       qed
       moreover have "0 \<notin> closed_segment (Complex b (- T)) (Complex b T)"
-        using Hb by (auto simp: closed_segment_def legacy_Complex_simps algebra_simps)
+        using Hb by (auto simp: closed_segment_def Complex_simps algebra_simps)
       hence "bounded ((\<lambda>s. x powr s / s) ` img_path)"
         unfolding img_path_def path_def using Hx Hb
         by (intro compact_imp_bounded compact_continuous_image continuous_intros) auto

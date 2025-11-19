@@ -457,7 +457,7 @@ lemma is_weak_ranking_append:
   by (simp only: is_weak_ranking_iff)
      (auto dest: disjointD disjoint_unionD1 disjoint_unionD2 intro: disjoint_union)
 
-lemma is_weak_ranking_Cons [code]:
+lemma is_weak_ranking_Cons:
   "is_weak_ranking (x # xs) \<longleftrightarrow> 
       x \<noteq> {} \<and> is_weak_ranking xs \<and> x \<inter> \<Union>(set xs) = {}"
   using is_weak_ranking_append[of "[x]" xs] by auto

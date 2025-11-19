@@ -307,7 +307,7 @@ begin
   text \<open>This section contains the lemmas. The ML code is further down. \<close>
 
   abbreviation "id_assn \<equiv> pure Id"
-  abbreviation "unit_assn \<equiv> id_assn :: unit \<Rightarrow> _"
+  abbreviation (input) "unit_assn \<equiv> id_assn :: unit \<Rightarrow> _"
 
   lemma pure_unit_rel_eq_empty: "unit_assn x y = emp"  
     by (auto simp: pure_def)
@@ -1337,7 +1337,7 @@ begin
           val rr = map (Logic.dest_equals o Thm.prop_of) @{thms uncurry_def uncurry0_def}
           val thy = Proof_Context.theory_of ctxt
         in 
-          Pattern.rewrite_term_top thy rr [] t 
+          Pattern.rewrite_term_topdown thy rr [] t 
         end  
     
         (* Shortcuts for simplification tactics *)

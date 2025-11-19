@@ -161,7 +161,7 @@ proof-
   have "(-(1::complex)) ^ k1 * (-1) ^ k2 * (-1) ^ k3 = 1 \<or> (-(1::complex)) ^ k1 * (-1) ^ k2 * (-1) ^ k3 = -1"
     using neg_one_even_power[of "k1 + k2 + k3"]
     using neg_one_odd_power[of "k1 + k2 + k3"]
-    by (smt power_add)
+    by (smt (verit) power_add)
   ultimately
   have "\<xi> = (- (b / a) + ccsqrt (b\<^sup>2 - 4 * a * c) * 1 / a) / 2 \<or> \<xi> = (- (b / a) - ccsqrt (b\<^sup>2 - 4 * a * c) * 1 / a) / 2"
     by auto

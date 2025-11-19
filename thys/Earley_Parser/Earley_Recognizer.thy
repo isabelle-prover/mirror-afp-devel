@@ -776,7 +776,7 @@ proof -
       using * assms wf_bins_kth_bin wf_item_def filter_with_index_cong_filter
       by (metis dual_order.strict_trans2 filter_is_subset subsetD)
     moreover have "next_symbol x = Some (lhs_item y)"
-      using * filter_set filter_with_index_cong_filter member_filter by metis
+      using * by (simp add: filter_set filter_with_index_cong_filter)
     moreover have "start_item x \<le> k"
       using \<open>end_item x = start_item y\<close> \<open>wf_item \<G> \<omega> x\<close> assms wf_bins_kth_bin wf_item_def
       by (metis dual_order.order_iff_strict dual_order.strict_trans1)

@@ -1,31 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>schulz on Archive of Formal Proofs
-    </title>
-    <link>/authors/schulz/</link>
-    <description>
-        Recent content in schulz 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schulz/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Schönhage-Strassen Multiplication</title>
-          <link>/entries/Schoenhage_Strassen.html</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Schoenhage_Strassen.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Karatsuba Multiplication on Integers</title>
-          <link>/entries/Karatsuba.html</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Karatsuba.html</guid>
-          <description></description>
-        </item>
+    <title>Jakob Schulz</title>
+    <link>https://isa-afp.org/authors/schulz/</link>
+    <description>AFP entries of Jakob Schulz</description><item>
+  <title>Schönhage-Strassen Multiplication</title>
+  <link>https://isa-afp.org/entries/Schoenhage_Strassen.html</link>
+  <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+  <description>Schönhage-Strassen Multiplication in the AFP</description>
+    <category>Computer science/Algorithms/Mathematical</category>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Karatsuba Multiplication on Integers</title>
+  <link>https://isa-afp.org/entries/Karatsuba.html</link>
+  <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+  <description>Karatsuba Multiplication on Integers in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+
   </channel>
 </rss>

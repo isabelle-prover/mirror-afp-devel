@@ -1,9 +1,9 @@
 chapter AFP
 
-session Ordinal_Partitions = HOL +
+session Ordinal_Partitions = "Nash_Williams" +
   options [timeout = 600]
   sessions
-    "HOL-Library" "ZFC_in_HOL" "Nash_Williams"
+    "ZFC_in_HOL" 
   theories
     Omega_Omega
   document_files

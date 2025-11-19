@@ -204,7 +204,7 @@ proof -
     also have "\<dots> = \<Prod>P1"
     proof -
       have *: "(\<Prod>fj\<in>P1. fj^(ex fj)) = (\<Prod>P1) * (\<Prod>fj\<in>P1. fj^(ex fj-1))"
-      by (smt (z3) P1_def dvd_0_right mem_Collect_eq power_eq_if prod.cong prod.distrib)
+      by (smt P1_def dvd_0_right mem_Collect_eq power_eq_if prod.cong prod.distrib)
       show ?thesis unfolding * by auto
     qed
     finally show ?thesis by auto
@@ -307,11 +307,8 @@ proof -
         by (subst degree_normalize[of f, symmetric], unfold fm_def[symmetric]) auto
       then have "degree fj * ex fj \<le> degree f" by (subst degree_power_eq[OF \<open>fj\<noteq>0\<close>, symmetric],
         unfold ex_def) 
-      then show ?thesis 
-      by (metis Missing_Polynomial.is_unit_field_poly \<open>fj \<noteq> 0\<close> bot_nat_0.not_eq_extremum 
-        dual_order.trans dvd_imp_le dvd_triv_right empty_iff in_prime_factors_iff 
-        linordered_semiring_strict_class.mult_pos_pos prime_factorization_1 prime_factors_v 
-        semiring_norm(160) set_mset_empty that)
+      then show ?thesis
+        by (metis P1_prime divisors_zero prime_degree_gt_zero  bot_nat_0.not_eq_extremum order.trans dvd_imp_le dvd_triv_right that)
     qed
     then have min: "min (ex x - Suc 0) (degree f) = ex x -1" if "x\<in>P1" for x using n[OF that] by auto
     have mult1: "multiplicity g (\<Prod>fj\<in>P1. fj ^ (ex fj - Suc 0)) = ex g -1" if "g\<in>P1" for g

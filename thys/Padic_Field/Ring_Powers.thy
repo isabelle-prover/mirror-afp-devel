@@ -22,7 +22,7 @@ text\<open>Powers of a ring\<close>
 text\<open>\texttt{R\_list n R} produces the list $[R, ... , R]$ of length n\<close>
 
 fun R_list :: "nat \<Rightarrow> ('a, 'b) ring_scheme \<Rightarrow> (('a, 'b) ring_scheme ) list" where
-"R_list n R = map (\<lambda>_. R) (index_list n)"
+"R_list n R = map (\<lambda>_. R) [0..<n]"
 
 text\<open>Cartesian powers of a ring\<close>
 
@@ -35,7 +35,7 @@ lemma R_list_length:
 
 lemma R_list_nth:
 "i < n \<Longrightarrow> R_list n R ! i = R"
-  by (simp add: index_list_length)
+  by (simp)
 
 lemma cartesian_power_car_memI:
   assumes "length as = n" 
@@ -2643,23 +2643,22 @@ proof-
 qed
   
 definition point_to_polys :: "'a list \<Rightarrow> ('a, nat) mvar_poly list" where
-"point_to_polys as = map (\<lambda> x. pvar_trans (length as) (snd x) (fst x)) (zip as (index_list (length as)))"
+"point_to_polys as = map (\<lambda> x. pvar_trans (length as) (snd x) (fst x)) (zip as [0..<length as])"
 
 lemma point_to_polys_length: 
 "length (point_to_polys as) = length as"
-  unfolding point_to_polys_def 
-  by (smt index_list_length length_map list.map_ident map_eq_imp_length_eq zip_eq_conv)
+  unfolding point_to_polys_def by simp 
   
 lemma point_to_polysE: 
   assumes "i < length as"
   shows "(point_to_polys as) ! i = (pvar_trans (length as) i (as ! i))"
 proof- 
-  have " (zip as (index_list (length as)))!i =  ((as!i), i)"
-    by (metis assms index_list_indices index_list_length nth_zip)    
+  have " (zip as ([0..< length as]))!i =  ((as!i), i)"
+    using assms by simp
   then  have 0: "(point_to_polys as) ! i = (\<lambda> x. pvar_trans (length as) (snd x) (fst x)) ((as!i), i)"
     unfolding point_to_polys_def
-    using  assms nth_map[of i "(zip as (index_list (length as)))" "(\<lambda>x. pvar_trans (length as) (snd x) (fst x))" ]
-    by (metis index_list_length length_map map_fst_zip)
+    using  assms nth_map[of i "zip as [0..<length as]" "(\<lambda>x. pvar_trans (length as) (snd x) (fst x))" ]
+    by simp
   then show ?thesis 
     by (metis fst_conv snd_conv)
 qed
@@ -3207,24 +3206,21 @@ lemma poly_pullbackI:
   unfolding poly_tuple_pullback_def 
   by blast
 
-
-
-end 
+end
 
 text\<open>coordinate permutations as pullbacks. The point here is to realize that permutations of 
 indices are just pullbacks (or pushforwards) by particular polynomial maps\<close>
 
 abbreviation pvar_list where 
-"pvar_list R n \<equiv> map (pvar R) (index_list n)"
+"pvar_list R n \<equiv> map (pvar R) [0..<n]"
 
 lemma pvar_list_elements:
-  assumes "i < n"
-  shows "pvar_list R n ! i = pvar R i"
-  by (simp add: assms index_list_indices index_list_length)
+  "i < n \<Longrightarrow> pvar_list R n ! i = pvar R i"
+by (simp)
   
 lemma pvar_list_length:
 "length (pvar_list R n) = n"
-  by (simp add: index_list_length)
+  by (simp add: )
 
 context cring_coord_rings
 begin
@@ -3234,8 +3230,6 @@ lemma pvar_list_is_poly_tuple:
   unfolding is_poly_tuple_def 
 proof fix x
   assume A: "x \<in> set (pvar_list R n)"
-  have "set (index_list n) = {..<n}"
-    by (simp add: index_list_set)
   obtain i where "i < n \<and> x = pvar R i"
     using A  pvar_list_elements[of _ n R] pvar_list_length[of R n] 
     by (metis in_set_conv_nth)

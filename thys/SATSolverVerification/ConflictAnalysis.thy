@@ -134,7 +134,7 @@ proof-
   let ?oppM0 = "oppositeLiteralList ?M0"
 
   let ?clause' = "nth (getF state) (getConflictClause state)"
-  let ?clause'' = "list_diff ?clause' ?oppM0"
+  let ?clause'' = "minus_list_set ?clause' ?oppM0"
   let ?clause = "remdups ?clause''"
   let ?l = "getLastAssertedLiteral (oppositeLiteralList ?clause') (elements (getM state))"
 
@@ -207,7 +207,7 @@ proof-
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite x" "?clause''"]
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite x" "?clause'"]
       using listDiffIff[of "opposite x" "?clause'" "oppositeLiteralList (elements (prefixToLevel 0 (getM state)))"]
-      by auto
+      by fastforce
   qed
 
   have "isLastAssertedLiteral ?l (oppositeLiteralList ?clause'') (elements (getM state))"
@@ -232,7 +232,7 @@ proof-
     using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite ?l" "?clause"]
     by simp
   hence "?clause \<noteq> []"
-    by auto
+    by fastforce
 
   have "clauseFalse ?clause'' (elements (getM state))"
   proof-
@@ -241,7 +241,7 @@ proof-
       assume "l el ?clause''"
       hence "l el ?clause'"
         using listDiffIff[of "l" "?clause'" "?oppM0"]
-        by simp
+        by fastforce
       hence "literalFalse l (elements (getM state))"
         using \<open>clauseFalse ?clause' (elements (getM state))\<close>
         by (simp add: clauseFalseIffAllLiteralsAreFalse)
@@ -561,7 +561,7 @@ proof-
   let ?rc = "nth (getF state) reason"
   let ?M0 = "elements (prefixToLevel 0 (getM state))"
   let ?F0 = "(getF state) @ (val2form ?M0)"
-  let ?C' = "list_diff ?res ?oppM0"
+  let ?C' = "minus_list_set ?res ?oppM0"
   let ?C = "remdups ?C'"
   
   have "formulaEntailsClause (getF state) ?rc"
@@ -670,7 +670,7 @@ proof-
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite x" "?C'"]
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite x" "?res"]
       using listDiffIff[of "opposite x" "?res" "?oppM0"]
-      by auto
+      by fastforce
   qed
 
   have "isLastAssertedLiteral ?ll (oppositeLiteralList ?C') (elements (getM state))"
@@ -695,7 +695,7 @@ proof-
     using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite ?ll" "?C"]
     by simp
   hence "?C \<noteq> []"
-    by auto
+    by fastforce
 
   have "clauseFalse ?C' (elements (getM state))"
   proof-
@@ -704,7 +704,7 @@ proof-
       assume "l el ?C'"
       hence "l el ?res"
         using listDiffIff[of "l" "?res" "?oppM0"]
-        by simp
+        by fastforce
       hence "literalFalse l (elements (getM state))"
         using \<open>clauseFalse ?res (elements (getM state))\<close>
         by (simp add: clauseFalseIffAllLiteralsAreFalse)
@@ -919,7 +919,7 @@ next
 
       let ?res = "resolve (getC state') (getF state' ! reason) (opposite ?Cl)"
 
-      have "getC ?state'' = (remdups (list_diff ?res ?oppM0))"
+      have "getC ?state'' = (remdups (minus_list_set ?res ?oppM0))"
         unfolding applyExplain_def
         unfolding setConflictAnalysisClause_def
         using \<open>getReason state' ?Cl = Some reason\<close>
@@ -930,14 +930,14 @@ next
         using \<open>opposite ?Cl el (getC state')\<close>
         using \<open>isReason (nth (getF state') reason) ?Cl (elements (getM state'))\<close>
         by simp
-      hence "(list_diff ?res ?oppM0, getC state') \<in> multLess (getM state')"
+      hence "(minus_list_set ?res ?oppM0, getC state') \<in> multLess (getM state')"
         by (simp add: multLessListDiff)
 
-      have "(remdups (list_diff ?res ?oppM0), getC state') \<in> multLess (getM state')"
-        using \<open>(list_diff ?res ?oppM0, getC state') \<in> multLess (getM state')\<close>
+      have "(remdups (minus_list_set ?res ?oppM0), getC state') \<in> multLess (getM state')"
+        using \<open>(minus_list_set ?res ?oppM0, getC state') \<in> multLess (getM state')\<close>
         by (simp add: multLessRemdups)
       thus ?thesis
-        using \<open>getC ?state'' = (remdups (list_diff ?res ?oppM0))\<close>
+        using \<open>getC ?state'' = (remdups (minus_list_set ?res ?oppM0))\<close>
         using \<open>getM ?state'' = getM state'\<close>
         unfolding multLessState_def
         by simp

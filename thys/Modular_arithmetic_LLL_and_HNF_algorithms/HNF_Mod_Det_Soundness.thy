@@ -228,210 +228,6 @@ qed
 
 end
 
-text \<open>Now, we need to generalize some lemmas.\<close>
-
-context vec_module
-begin
-
-(*Generalized version of thm vec_space.finsum_index, now in vec_module*)
-lemma finsum_index:
-  assumes i: "i < n"
-    and f: "f \<in> A \<rightarrow> carrier_vec n"
-    and A: "A \<subseteq> carrier_vec n"
-  shows "finsum V f A $ i = sum (\<lambda>x. f x $ i) A"
-  using A f
-proof (induct A rule: infinite_finite_induct)
-  case empty
-    then show ?case using i by simp next
-  case (insert x X)
-    then have Xf: "finite X"
-      and xX: "x \<notin> X"
-      and x: "x \<in> carrier_vec n"
-      and X: "X \<subseteq> carrier_vec n"
-      and fx: "f x \<in> carrier_vec n"
-      and f: "f \<in> X \<rightarrow> carrier_vec n" by auto
-    have i2: "i < dim_vec (finsum V f X)"
-      using i finsum_closed[OF f] by auto
-    have ix: "i < dim_vec x" using x i by auto
-    show ?case
-      unfolding finsum_insert[OF Xf xX f fx]
-      unfolding sum.insert[OF Xf xX]
-      unfolding index_add_vec(1)[OF i2]
-      using insert lincomb_def
-      by auto
-qed (insert i, auto)
-
-(*Generalized version of thm vec_space.mat_of_rows_mult_as_finsum, now in vec_module*)
-lemma mat_of_rows_mult_as_finsum:
-  assumes "v \<in> carrier_vec (length lst)" "\<And> i. i < length lst \<Longrightarrow> lst ! i \<in> carrier_vec n"
-  defines "f l \<equiv> sum (\<lambda> i. if l = lst ! i then v $ i else 0) {0..<length lst}"
-  shows mat_of_cols_mult_as_finsum:"mat_of_cols n lst *\<^sub>v v = lincomb f (set lst)"
-proof -
-  from assms have "\<forall> i < length lst. lst ! i \<in> carrier_vec n" by blast
-  note an = all_nth_imp_all_set[OF this] hence slc:"set lst \<subseteq> carrier_vec n" by auto
-  hence dn [simp]:"\<And> x. x \<in> set lst \<Longrightarrow> dim_vec x = n" by auto
-  have dl [simp]:"dim_vec (lincomb f (set lst)) = n" using an
-    by (simp add: slc)
-  show ?thesis proof
-    show "dim_vec (mat_of_cols n lst *\<^sub>v v) = dim_vec (lincomb f (set lst))" using assms(1,2) by auto
-    fix i assume i:"i < dim_vec (lincomb f (set lst))" hence i':"i < n" by auto
-    with an have fcarr:"(\<lambda>v. f v \<cdot>\<^sub>v v) \<in> set lst \<rightarrow> carrier_vec n" by auto
-    from i' have "(mat_of_cols n lst *\<^sub>v v) $ i = row (mat_of_cols n lst) i \<bullet> v" by auto
-    also have "\<dots> = (\<Sum>ia = 0..<dim_vec v. lst ! ia $ i * v $ ia)"
-      unfolding mat_of_cols_def row_def scalar_prod_def
-      apply(rule sum.cong[OF refl]) using i an assms(1) by auto
-    also have "\<dots> = (\<Sum>ia = 0..<length lst. lst ! ia $ i * v $ ia)" using assms(1) by auto
-    also have "\<dots> = (\<Sum>x\<in>set lst. f x * x $ i)"
-      unfolding f_def sum_distrib_right apply (subst sum.swap)
-      apply(rule sum.cong[OF refl])
-      unfolding if_distrib if_distribR mult_zero_left sum.delta[OF finite_set] by auto
-    also have "\<dots> = (\<Sum>x\<in>set lst. (f x \<cdot>\<^sub>v x) $ i)"
-      apply(rule sum.cong[OF refl],subst index_smult_vec) using i slc by auto
-    also have "\<dots> = (\<Oplus>\<^bsub>V\<^esub>v\<in>set lst. f v \<cdot>\<^sub>v v) $ i" 
-      unfolding finsum_index[OF i' fcarr slc] by auto
-    finally show "(mat_of_cols n lst *\<^sub>v v) $ i = lincomb f (set lst) $ i"
-      by (auto simp:lincomb_def)
-  qed
-qed
-
-
-lemma lattice_of_altdef_lincomb:
-  assumes "set fs \<subseteq> carrier_vec n"
-  shows "lattice_of fs = {y. \<exists>f. lincomb (of_int \<circ> f) (set fs) = y}"
-  unfolding lincomb_def lattice_of_altdef[OF assms] image_def by auto
-
-end
-
-context vec_module
-begin
-
-(*Generalized version of thm idom_vec.lincomb_as_lincomb_list, now in vec_module*)
-lemma lincomb_as_lincomb_list:
-  fixes ws f
-  assumes s: "set ws \<subseteq> carrier_vec n"
-  shows "lincomb f (set ws) = lincomb_list (\<lambda>i. if \<exists>j<i. ws!i = ws!j then 0 else f (ws ! i)) ws"
-  using assms
-proof (induct ws rule: rev_induct)
-  case (snoc a ws)
-  let ?f = "\<lambda>i. if \<exists>j<i. ws ! i = ws ! j then 0 else f (ws ! i)"
-  let ?g = "\<lambda>i. (if \<exists>j<i. (ws @ [a]) ! i = (ws @ [a]) ! j then 0 else f ((ws @ [a]) ! i)) \<cdot>\<^sub>v (ws @ [a]) ! i"
-  let ?g2= "(\<lambda>i. (if \<exists>j<i. ws ! i = ws ! j then 0 else f (ws ! i)) \<cdot>\<^sub>v ws ! i)"
-  have [simp]: "\<And>v. v \<in> set ws \<Longrightarrow> v \<in> carrier_vec n" using snoc.prems(1) by auto
-  then have ws: "set ws \<subseteq> carrier_vec n" by auto
-  have hyp: "lincomb f (set ws) = lincomb_list ?f ws"
-    by (intro snoc.hyps ws)  
-  show ?case
-  proof (cases "a\<in>set ws")
-    case True    
-    have g_length: "?g (length ws) = 0\<^sub>v n" using True
-      by (auto, metis in_set_conv_nth nth_append)
-    have "(map ?g [0..<length (ws @ [a])]) = (map ?g [0..<length ws]) @ [?g (length ws)]"
-       by auto
-    also have "... = (map ?g [0..<length ws]) @ [0\<^sub>v n]" using g_length by simp
-    finally have map_rw: "(map ?g [0..<length (ws @ [a])]) = (map ?g [0..<length ws]) @ [0\<^sub>v n]" .
-    have "M.sumlist (map ?g2 [0..<length ws]) = M.sumlist (map ?g [0..<length ws])"
-      by (rule arg_cong[of _ _ "M.sumlist"], intro nth_equalityI, auto simp add: nth_append)
-    also have "... =  M.sumlist (map ?g [0..<length ws]) + 0\<^sub>v n "
-      by (metis M.r_zero calculation hyp lincomb_closed lincomb_list_def ws)
-    also have "... = M.sumlist (map ?g [0..<length ws] @ [0\<^sub>v n])" 
-      by (rule M.sumlist_snoc[symmetric], auto simp add: nth_append)
-    finally have summlist_rw: "M.sumlist (map ?g2 [0..<length ws]) 
-      = M.sumlist (map ?g [0..<length ws] @ [0\<^sub>v n])" .
-    have "lincomb f (set (ws @ [a])) = lincomb f (set ws)" using True unfolding lincomb_def
-      by (simp add: insert_absorb)
-    thus ?thesis 
-      unfolding hyp lincomb_list_def map_rw summlist_rw
-      by auto
-  next
-    case False    
-    have g_length: "?g (length ws) = f a \<cdot>\<^sub>v a" using False by (auto simp add: nth_append)
-    have "(map ?g [0..<length (ws @ [a])]) = (map ?g [0..<length ws]) @ [?g (length ws)]"
-       by auto
-    also have "... = (map ?g [0..<length ws]) @ [(f a \<cdot>\<^sub>v a)]" using g_length by simp
-    finally have map_rw: "(map ?g [0..<length (ws @ [a])]) = (map ?g [0..<length ws]) @ [(f a \<cdot>\<^sub>v a)]" .
-    have summlist_rw: "M.sumlist (map ?g2 [0..<length ws]) = M.sumlist (map ?g [0..<length ws])"
-      by (rule arg_cong[of _ _ "M.sumlist"], intro nth_equalityI, auto simp add: nth_append)
-    have "lincomb f (set (ws @ [a])) = lincomb f (set (a # ws))" by auto
-    also have "... = (\<Oplus>\<^bsub>V\<^esub>v\<in>set (a # ws). f v \<cdot>\<^sub>v v)" unfolding lincomb_def ..
-    also have "... = (\<Oplus>\<^bsub>V\<^esub>v\<in> insert a (set ws). f v \<cdot>\<^sub>v v)" by simp    
-    also have "... = (f a \<cdot>\<^sub>v a) + (\<Oplus>\<^bsub>V\<^esub>v\<in> (set ws). f v \<cdot>\<^sub>v v)"
-    proof (rule finsum_insert)
-      show "finite (set ws)" by auto
-      show "a \<notin> set ws" using False by auto
-      show "(\<lambda>v. f v \<cdot>\<^sub>v v) \<in> set ws \<rightarrow> carrier_vec n"
-        using snoc.prems(1) by auto
-      show "f a \<cdot>\<^sub>v a \<in> carrier_vec n" using snoc.prems by auto
-    qed
-    also have "... = (f a \<cdot>\<^sub>v a) + lincomb f (set ws)" unfolding lincomb_def ..
-    also have "... = (f a \<cdot>\<^sub>v a) + lincomb_list ?f ws" using hyp by auto
-    also have "... =  lincomb_list ?f ws  + (f a \<cdot>\<^sub>v a)"
-      using M.add.m_comm lincomb_list_carrier snoc.prems by auto
-    also have "... = lincomb_list (\<lambda>i. if \<exists>j<i. (ws @ [a]) ! i 
-      = (ws @ [a]) ! j then 0 else f ((ws @ [a]) ! i)) (ws @ [a])" 
-    proof (unfold lincomb_list_def map_rw summlist_rw, rule M.sumlist_snoc[symmetric])
-      show "set (map ?g [0..<length ws]) \<subseteq> carrier_vec n" using snoc.prems
-        by (auto simp add: nth_append)
-      show "f a \<cdot>\<^sub>v a \<in> carrier_vec n"
-        using snoc.prems by auto
-    qed
-    finally show ?thesis .
-  qed
-qed auto
-end
-
-context 
-begin
-
-interpretation vec_module "TYPE(int)" .
-
-lemma lattice_of_cols_as_mat_mult:
-  assumes A: "A \<in> carrier_mat n nc" (*Integer matrix*)
-  shows "lattice_of (cols A) = {y\<in>carrier_vec (dim_row A). \<exists>x\<in>carrier_vec (dim_col A). A *\<^sub>v x = y}"
-proof -
-  let ?ws = "cols A"
-  have set_cols_in: "set (cols A) \<subseteq> carrier_vec n" using A unfolding cols_def by auto
-  have "lincomb (of_int \<circ> f)(set  ?ws) \<in> carrier_vec (dim_row A)" for f 
-    using lincomb_closed A
-    by (metis (full_types) carrier_matD(1) cols_dim lincomb_closed)
-  moreover have "\<exists>x\<in>carrier_vec (dim_col A). A *\<^sub>v x = lincomb (of_int \<circ> f) (set (cols A))" for f
-  proof -    
-    let ?g = "(\<lambda>v. of_int (f v))"
-    let ?g' = "(\<lambda>i. if \<exists>j<i. ?ws ! i = ?ws ! j then 0 else ?g (?ws ! i))"           
-    have "lincomb (of_int \<circ> f) (set (cols A)) = lincomb ?g (set ?ws)" unfolding o_def by auto
-    also have "... = lincomb_list ?g' ?ws" 
-      by (rule lincomb_as_lincomb_list[OF set_cols_in])
-    also have "... = mat_of_cols n ?ws *\<^sub>v vec (length ?ws) ?g'" 
-      by (rule lincomb_list_as_mat_mult, insert set_cols_in A, auto)
-    also have "... = A *\<^sub>v (vec (length ?ws) ?g')" using mat_of_cols_cols A by auto
-    finally show ?thesis by auto
-  qed 
-  moreover have "\<exists>f. A *\<^sub>v x = lincomb (of_int \<circ> f) (set (cols A))" 
-    if Ax: "A *\<^sub>v x \<in> carrier_vec (dim_row A)" and x: "x \<in> carrier_vec (dim_col A)" for x 
-  proof -
-    let ?c = "\<lambda>i. x $ i"
-    have x_vec: "vec (length ?ws) ?c = x" using x by auto
-    have "A *\<^sub>v x = mat_of_cols n ?ws *\<^sub>v vec (length ?ws) ?c" using mat_of_cols_cols A x_vec by auto
-    also have "... = lincomb_list ?c ?ws"
-      by (rule lincomb_list_as_mat_mult[symmetric], insert set_cols_in A, auto)
-    also have "... = lincomb (mk_coeff ?ws ?c) (set ?ws)" 
-      by (rule lincomb_list_as_lincomb, insert set_cols_in A, auto)    
-    finally show ?thesis by auto
-  qed
-  ultimately show ?thesis unfolding lattice_of_altdef_lincomb[OF set_cols_in]
-    by (metis (mono_tags, opaque_lifting))
-qed
-
-
-corollary lattice_of_as_mat_mult:
-  assumes fs: "set fs \<subseteq> carrier_vec n"
-  shows "lattice_of fs = {y\<in>carrier_vec n. \<exists>x\<in>carrier_vec (length fs). (mat_of_cols n fs) *\<^sub>v x = y}"
-proof -
-  have cols_eq: "cols (mat_of_cols n fs) = fs" using cols_mat_of_cols[OF fs] by simp
-  have m: "(mat_of_cols n fs) \<in> carrier_mat n (length fs)" using mat_of_cols_carrier(1) by auto
-  show ?thesis using lattice_of_cols_as_mat_mult[OF m] unfolding cols_eq using m by auto
-qed
-end
-
 context vec_space
 begin
 
@@ -1446,64 +1242,74 @@ qed
 
 subsubsection \<open>The algorithm is sound\<close>
 
-lemma find_fst_non0_in_row: 
+lemma find_fst_non0_in_row_None': 
+  assumes "l<m"
+  shows "find_fst_non0_in_row l A = None \<longleftrightarrow> (\<forall>j\<in>{l..<dim_col A}. A $$ (l,j) = 0)" (is "?lhs = ?rhs")
+  using assms by (auto simp add: find_fst_non0_in_row_def find_None_iff)
+
+lemma find_fst_non0_in_row_None: 
   assumes A: "A \<in> carrier_mat m n"
-  and res: "find_fst_non0_in_row l A = Some j"
-  shows "A $$ (l,j) \<noteq> 0" "l \<le> j" "j < dim_col A"
+  and ut_A: "upper_triangular' A"
+  and lm: "l<m"
+  shows "find_fst_non0_in_row l A = None \<longleftrightarrow> is_zero_row_JNF l A" (is "?lhs = ?rhs")
 proof -
-  let ?xs = "filter (\<lambda>j. A $$ (l, j) \<noteq> 0) [l ..< dim_col A]"
-  from res[unfolded find_fst_non0_in_row_def Let_def]
-  have xs: "?xs \<noteq> []" by (cases ?xs, auto)
-  have j_in_xs: "j \<in> set ?xs" using res unfolding find_fst_non0_in_row_def Let_def
-    by (metis (no_types, lifting) length_greater_0_conv list.case(2) list.exhaust nth_mem option.simps(1) xs)
-  show "A $$ (l,j) \<noteq> 0" "l \<le> j" "j < dim_col A" using j_in_xs by auto+  
+  have \<open>A $$ (l, j) = 0\<close> if \<open>j < l\<close> \<open>j < dim_col A\<close> for j
+    using that ut_A A lm unfolding upper_triangular'_def by blast
+  moreover from find_fst_non0_in_row_None' [of l m A] lm
+  have \<open>find_fst_non0_in_row l A = None \<longleftrightarrow> (\<forall>j\<in>{l..<dim_col A}. A $$ (l,j) = 0)\<close>
+    by simp
+  ultimately show ?thesis
+    by (auto simp add: is_zero_row_JNF_def)
 qed
 
-
-lemma find_fst_non0_in_row_zero_before: 
-  assumes A: "A \<in> carrier_mat m n"
-  and res: "find_fst_non0_in_row l A = Some j"
-  shows "\<forall>j'\<in>{l..<j}. A $$ (l,j') = 0"
+lemma
+  assumes res: "find_fst_non0_in_row l A = Some j"
+  shows find_fst_non0_in_row: "A $$ (l,j) \<noteq> 0" "l \<le> j" "j < dim_col A"
+    and find_fst_non0_in_row_zero_before: "\<forall>j' \<in> {l..<j}. A $$ (l, j') = 0"
 proof -
-  let ?xs = "filter (\<lambda>j. A $$ (l, j) \<noteq> 0) [l ..< dim_col A]"
-  from res[unfolded find_fst_non0_in_row_def Let_def]
-  have xs: "?xs \<noteq> []" by (cases ?xs, auto)
-  have j_in_xs: "j \<in> set ?xs" using res unfolding find_fst_non0_in_row_def Let_def
-    by (metis (no_types, lifting) length_greater_0_conv list.case(2) list.exhaust nth_mem option.simps(1) xs)
-  have j_xs0: "j = ?xs ! 0"
-    by (smt (verit) res[unfolded find_fst_non0_in_row_def Let_def] list.case(2) list.exhaust option.inject xs)
-  show "\<forall>j'\<in>{l..<j}. A $$ (l,j') = 0"
-  proof (rule+, rule ccontr)
-    fix j' assume j': "j' : {l..<j}" and Alj': "A $$ (l, j') \<noteq> 0"
-    have j'j: "j'<j" using j' by auto
-    have j'_in_xs: "j' \<in> set ?xs"
-      by (metis (mono_tags, lifting) A Set.member_filter j' Alj' res atLeastLessThan_iff filter_set
-          find_fst_non0_in_row(3) nat_SN.gt_trans set_upt)  
-    have l_rw: "[l..<dim_col A] = [l ..<j] @[j..<dim_col A]"
-      using assms(1) assms(2) find_fst_non0_in_row(3) j' upt_append by auto
-    have xs_rw: "?xs = filter (\<lambda>j. A $$ (l, j) \<noteq> 0) ([l ..<j] @[j..<dim_col A])"
-      using l_rw by auto
-    hence "filter (\<lambda>j. A $$ (l, j) \<noteq> 0) [l ..<j] = []" using j_xs0 
-      by (metis (no_types, lifting) Set.member_filter atLeastLessThan_iff filter_append filter_set
-          length_greater_0_conv nth_append nth_mem order_less_irrefl set_upt)
-    thus False using j_xs0 j' j_xs0 
-      by (metis Set.member_filter filter_empty_conv filter_set j'_in_xs set_upt)
+  define B where \<open>B = {j. l \<le> j \<and> j < dim_col A \<and> A $$ (l, j) \<noteq> 0}\<close>
+  have \<open>finite B\<close>
+    by (simp add: B_def)
+  from res have \<open>B \<noteq> {}\<close>
+    by (clarsimp simp add: find_fst_non0_in_row_def find_Some_iff less_diff_conv B_def)
+      (metis add.commute le_add1)
+  with res have \<open>j = Min B\<close>
+    apply (simp add: find_fst_non0_in_row_def)
+    apply (subst (asm) sorted_find_Min)
+      apply (auto simp add: B_def)
+    done
+  with \<open>finite B\<close> \<open>B \<noteq> {}\<close> have \<open>j \<in> B\<close>
+    by simp
+  then show "l \<le> j" "j < dim_col A" "A $$ (l, j) \<noteq> 0"
+    by (simp_all add: B_def)
+  show \<open>\<forall>j'\<in>{l..<j}. A $$ (l, j') = 0\<close>
+  proof
+    fix j'
+    assume \<open>j' \<in> {l..<j}\<close>
+    show \<open>A $$ (l, j') = 0\<close>
+    proof (rule ccontr)
+      assume \<open>A $$ (l, j') \<noteq>  0\<close>
+      with \<open>j' \<in> {l..<j}\<close> \<open>j < dim_col A\<close> have \<open>j' \<in> B\<close>
+        by (simp add: B_def)
+      with \<open>finite B\<close> have \<open>j \<le> j'\<close>
+        by (simp add: \<open>j = Min B\<close>)
+      with \<open>j' \<in> {l..<j}\<close> show False
+        by simp
+    qed
   qed
 qed
 
-
 corollary find_fst_non0_in_row_zero_before': 
-  assumes A: "A \<in> carrier_mat m n"
-  and res: "find_fst_non0_in_row l A = Some j"
+  assumes res: "find_fst_non0_in_row l A = Some j"
   and "j' \<in> {l..<j}"
-  shows "A $$ (l,j') = 0" using find_fst_non0_in_row_zero_before assms by auto
+  shows "A $$ (l,j') = 0" using find_fst_non0_in_row_zero_before [of l A j] assms by auto
 
 lemma find_fst_non0_in_row_LEAST: 
   assumes A: "A \<in> carrier_mat m n"
   and ut_A: "upper_triangular' A"
   and res: "find_fst_non0_in_row l A = Some j"
   and lm: "l<m"
-shows "j = (LEAST n. A $$ (l,n) \<noteq> 0)"
+  shows "j = (LEAST n. A $$ (l,n) \<noteq> 0)"
 proof (rule Least_equality[symmetric])
   show " A $$ (l, j) \<noteq> 0" using res find_fst_non0_in_row(1) by blast
   show "\<And>y. A $$ (l, y) \<noteq> 0 \<Longrightarrow> j \<le> y"
@@ -1514,7 +1320,7 @@ proof (rule Least_equality[symmetric])
     have "A $$(l,y) = 0"
     proof (cases "y\<in>{l..<j}")
       case True
-      show ?thesis by (rule find_fst_non0_in_row_zero_before'[OF A res True])
+      show ?thesis by (rule find_fst_non0_in_row_zero_before'[OF res True])
     next
       case False hence "y<l" using jy by auto
       thus ?thesis using ut_A A lm unfolding upper_triangular'_def using yn by blast
@@ -1523,63 +1329,6 @@ proof (rule Least_equality[symmetric])
   qed 
 qed
 
-
-
-lemma find_fst_non0_in_row_None': 
-  assumes A: "A \<in> carrier_mat m n"  
-  and lm: "l<m"
-shows "(find_fst_non0_in_row l A = None) = (\<forall>j\<in>{l..<dim_col A}. A $$ (l,j) = 0)" (is "?lhs = ?rhs")
-proof
-  assume res: ?lhs
-  let ?xs = "filter (\<lambda>j. A $$ (l, j) \<noteq> 0) [l ..< dim_col A]"
-  from res[unfolded find_fst_non0_in_row_def Let_def]
-  have xs: "?xs = []" by (cases ?xs, auto)
-  have "A $$ (l, j) = 0" if j: "j\<in>{l..<dim_col A}" for j
-    using xs by (metis (mono_tags, lifting) empty_filter_conv j set_upt)
-  thus "?rhs" by blast
-next
-  assume rhs: ?rhs
-  show ?lhs
-  proof (rule ccontr)
-    assume "find_fst_non0_in_row l A \<noteq> None" 
-    from this obtain j where r: "find_fst_non0_in_row l A = Some j" by blast
-    hence "A $$ (l,j) \<noteq> 0" and  "l\<le>j" and "j<dim_col A" using find_fst_non0_in_row[OF A r] by blast+
-    thus False using rhs by auto  
-  qed
-qed
-
-
-lemma find_fst_non0_in_row_None: 
-  assumes A: "A \<in> carrier_mat m n"
-  and ut_A: "upper_triangular' A"
-  and lm: "l<m"
-shows "(find_fst_non0_in_row l A = None) = (is_zero_row_JNF l A)" (is "?lhs = ?rhs")
-proof
-  assume res: ?lhs
-  let ?xs = "filter (\<lambda>j. A $$ (l, j) \<noteq> 0) [l ..< dim_col A]"
-  from res[unfolded find_fst_non0_in_row_def Let_def]
-  have xs: "?xs = []" by (cases ?xs, auto)
-  have "A $$ (l, j) = 0" if j: "j < dim_col A" for j
-  proof (cases "j<l")
-    case True
-    then show ?thesis using ut_A A lm j unfolding upper_triangular'_def by blast
-  next
-    case False
-    hence j_ln: "j \<in> {l..<dim_col A}" using A lm j by simp
-    then show ?thesis using xs by (metis (mono_tags, lifting) empty_filter_conv set_upt)
-  qed
-  thus "?rhs" unfolding is_zero_row_JNF_def by blast
-next
-  assume rhs: ?rhs
-  show ?lhs
-  proof (rule ccontr)
-    assume "find_fst_non0_in_row l A \<noteq> None" 
-    from this obtain j where r: "find_fst_non0_in_row l A = Some j" by blast
-    hence "A $$ (l,j) \<noteq> 0" and "j<dim_col A" using find_fst_non0_in_row[OF A r] by blast+
-    hence "\<not> is_zero_row_JNF l A" unfolding is_zero_row_JNF_def using lm A by auto
-    thus False using rhs by contradiction    
-  qed
-qed
 
 lemma make_first_column_positive_preserves_dimensions:
   shows [simp]: "dim_row (make_first_column_positive A) = dim_row A" 
@@ -9271,7 +9020,7 @@ next
       next
         case False  
         have all_zero: "(\<forall>j\<in>{i..<dim_col A}. A $$ (i, j) = 0)" unfolding dc_1 using False by auto
-        hence "find_fst_non0_in_row i A = None" using find_fst_non0_in_row_None'[OF _ i] by blast
+        hence "find_fst_non0_in_row i A = None" using find_fst_non0_in_row_None'[OF i] by blast
         hence "Hermite_of_row_i A i = A" unfolding Hermite_of_row_i_def by auto
         then show ?thesis using eA by auto
       qed  
@@ -9491,7 +9240,7 @@ proof (rule Hermite_JNF_intro)
       have eA: "echelon_form_JNF A" by (metis A Suc_1 echelon_form_JNF_1xn lessI)
       have i0: "i=0" using Hermite_of_row_i[of A 0] A i by auto        
       have Aia: "A $$ (i,a) \<noteq> 0" and a0: "0 \<le> a" and an: "a<n"
-        using i0 Some assms find_fst_non0_in_row by auto+
+        using i0 Some assms find_fst_non0_in_row [of 0 A a] by auto
       have l: "(LEAST n. A $$ (i, n) \<noteq> 0) = (LEAST n.  multrow 0 (- 1) A $$ (i, n) \<noteq> 0)"
         by (rule least_multrow[symmetric, OF A _ eA _], insert nz_iA i A i0, auto)
       have a1: "a = (LEAST n. A $$ (i, n) \<noteq> 0)"
@@ -9523,7 +9272,7 @@ proof -
   next
     case (Some a)
     have "A $$ (0, a) \<noteq> 0"  and a0: "0 \<le> a" and an: "a<n"
-      using find_fst_non0_in_row[OF A Some] A by auto
+      using find_fst_non0_in_row[OF Some] A by auto
     then show ?thesis using Some Ai0 A an a0 im unfolding Hermite_of_row_i_def mat_multrow_def by auto
   qed
 qed
@@ -9564,7 +9313,7 @@ proof (rule Hermite_JNF_intro)
      next
       case (Some a)
       have Aia: "A $$ (0,a) \<noteq> 0" and a0: "0 \<le> a" and an: "a<1"
-        using find_fst_non0_in_row[OF A Some] A by auto  
+        using find_fst_non0_in_row[OF Some] A by auto  
       have nz_j_mA: "is_zero_row_JNF j (multrow 0 (- 1) A)" if j0: "j>0" and jm: "j<m" for j 
         unfolding is_zero_row_JNF_def using A j0 jm upA by auto
       show ?thesis
@@ -9644,7 +9393,7 @@ next
   have a_least: "a = (LEAST n. A $$ (x,n) \<noteq> 0)" 
     by (rule find_fst_non0_in_row_LEAST[OF _ ut_A Some], insert x, auto)
   have Axa: "A $$ (x, a) \<noteq> 0" and xa: "x\<le>a" and a: "a<dim_col A"
-    using find_fst_non0_in_row[OF A Some] unfolding a_least by auto
+    using find_fst_non0_in_row[OF Some] unfolding a_least by auto
   have nz_xA: "\<not> is_zero_row_JNF x A" using Axa xa x a unfolding is_zero_row_JNF_def by blast
   have a0: "a = 0" using a A by auto
   have x0: "x=0" using echelon_form_JNF_first_column_0[OF eH A] Axa a0 xa by blast  
@@ -9667,7 +9416,7 @@ next
   have a_least: "a = (LEAST n. A $$ (x,n) \<noteq> 0)" 
     by (rule find_fst_non0_in_row_LEAST[OF _ ut_A Some], insert x, auto)
   have Axa: "A $$ (x, a) \<noteq> 0" and xa: "x\<le>a" and a: "a<dim_col A"
-    using find_fst_non0_in_row[OF A Some] unfolding a_least by auto
+    using find_fst_non0_in_row[OF Some] unfolding a_least by auto
   have nz_xA: "\<not> is_zero_row_JNF x A" using Axa xa x a unfolding is_zero_row_JNF_def by blast
   have a0: "a = 0" using a A by auto
   have x0: "x=0" using echelon_form_JNF_first_column_0[OF eA A] Axa a0 xa by blast
@@ -11406,68 +11155,104 @@ end
 
 text \<open>Some work to make the algorithm executable\<close>
 
-definition find_non0' :: "nat \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 mat \<Rightarrow> nat option" where
-  "find_non0' i k A = (let is = [i ..< dim_row A];
-    Ais = filter (\<lambda>j. A $$ (j, k) \<noteq> 0) is
-    in case Ais of [] \<Rightarrow> None | _ \<Rightarrow> Some (Ais!0))"
+definition find_non0' :: \<open>nat \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 mat \<Rightarrow> nat option\<close> where
+  \<open>find_non0' i k A = find (\<lambda>j. A $$ (j, k) \<noteq> 0) [i ..< dim_row A]\<close>
 
-lemma find_non0': 
-  assumes A: "A \<in> carrier_mat m n"
-  and res: "find_non0' i k A = Some j"
-  shows "A $$ (j,k) \<noteq> 0" "i \<le> j" "j < dim_row A"
+lemma
+  assumes res: "find_non0' i k A = Some j"
+  shows find_non0': "A $$ (j, k) \<noteq> 0" "i \<le> j" "j < dim_row A"
+    and find_non0'_w_zero_before: "\<forall>j'\<in>{i..<j}. A $$ (j', k) = 0"
 proof -
-  let ?xs = "filter (\<lambda>j. A $$ (j,k) \<noteq> 0) [i ..< dim_row A]"
-  from res[unfolded find_non0'_def Let_def]
-  have xs: "?xs \<noteq> []" by (cases ?xs, auto)
-  have j_in_xs: "j \<in> set ?xs" using res unfolding find_non0'_def Let_def
-    by (metis (no_types, lifting) length_greater_0_conv list.case(2) list.exhaust nth_mem option.simps(1) xs)
-  show "A $$ (j,k) \<noteq> 0" "i \<le> j" "j < dim_row A" using j_in_xs by auto+  
-qed
-
-
-lemma find_non0'_w_zero_before: 
-  assumes A: "A \<in> carrier_mat m n"
-  and res: "find_non0' i k A = Some j"
-  shows "\<forall>j'\<in>{i..<j}. A $$ (j',k) = 0"
-proof -
-  let ?xs = "filter (\<lambda>j. A $$ (j, k) \<noteq> 0) [i ..< dim_row A]"
-  from res[unfolded find_non0'_def Let_def]
-  have xs: "?xs \<noteq> []" by (cases ?xs, auto)
-  have j_in_xs: "j \<in> set ?xs" using res unfolding find_non0'_def Let_def
-    by (metis (no_types, lifting) length_greater_0_conv list.case(2) list.exhaust nth_mem option.simps(1) xs)
-  have j_xs0: "j = ?xs ! 0"
-    by (smt (verit) res[unfolded find_non0'_def Let_def] list.case(2) list.exhaust option.inject xs)
-  show "\<forall>j'\<in>{i..<j}. A $$ (j',k) = 0"
-  proof (rule+, rule ccontr)
-    fix j' assume j': "j' : {i..<j}" and Alj': "A $$ (j',k) \<noteq> 0"
-    have j'j: "j'<j" using j' by auto
-    have j'_in_xs: "j' \<in> set ?xs" 
-      by (metis (mono_tags, lifting) A Alj' Set.member_filter atLeastLessThan_iff filter_set
-          find_non0'(3) j' nat_SN.gt_trans res set_upt)
-    have l_rw: "[i..<dim_row A] = [i ..<j] @[j..<dim_row A]"
-      using assms(1) assms(2) find_non0'(3) j' upt_append 
-      by (metis atLeastLessThan_iff le_trans linorder_not_le) 
-    have xs_rw: "?xs = filter (\<lambda>j. A $$ (j,k) \<noteq> 0) ([i ..<j] @[j..<dim_row A])"
-      using l_rw by auto
-    hence "filter (\<lambda>j. A $$ (j,k) \<noteq> 0) [i ..<j] = []" using j_xs0 
-      by (metis (no_types, lifting) Set.member_filter atLeastLessThan_iff filter_append filter_set
-          length_greater_0_conv nth_append nth_mem order_less_irrefl set_upt)
-    thus False using j_xs0 j' j_xs0 
-      by (metis Set.member_filter filter_empty_conv filter_set j'_in_xs set_upt)
+  define B where \<open>B = {j. i \<le> j \<and> j < dim_row A \<and> A $$ (j, k) \<noteq> 0}\<close>
+  have \<open>finite B\<close>
+    by (simp add: B_def)
+  from res have \<open>B \<noteq> {}\<close>
+    by (clarsimp simp add: find_non0'_def find_Some_iff less_diff_conv B_def ac_simps)
+      (metis add.commute le_add1)
+  with res have \<open>j = Min B\<close>
+    apply (simp add: find_non0'_def)
+    apply (subst (asm) sorted_find_Min)
+      apply (auto simp add: B_def)
+    done
+  with \<open>finite B\<close> \<open>B \<noteq> {}\<close> have \<open>j \<in> B\<close>
+    by simp
+  then show "A $$ (j, k) \<noteq> 0" "i \<le> j" "j < dim_row A"
+    by (simp_all add: B_def)
+  show "\<forall>j'\<in>{i..<j}. A $$ (j', k) = 0"
+  proof
+    fix j'
+    assume \<open>j' \<in> {i..<j}\<close>
+    show \<open>A $$ (j', k) = 0\<close>
+    proof (rule ccontr)
+      assume \<open>A $$ (j', k) \<noteq>  0\<close>
+      with \<open>j' \<in> {i..<j}\<close> \<open>j < dim_row A\<close> have \<open>j' \<in> B\<close>
+        by (simp add: B_def)
+      with \<open>finite B\<close> have \<open>j \<le> j'\<close>
+        by (simp add: \<open>j = Min B\<close>)
+      with \<open>j' \<in> {i..<j}\<close> show False
+        by simp
+    qed
   qed
 qed
 
-
 lemma find_non0'_LEAST: 
-  assumes A: "A \<in> carrier_mat m n"
-  and res: "find_non0' i k A = Some j"
-shows "j = (LEAST n. A $$ (n,k) \<noteq> 0 \<and> i\<le>n)"
+  assumes res: "find_non0' i k A = Some j"
+  shows "j = (LEAST n. A $$ (n,k) \<noteq> 0 \<and> i\<le>n)"
 proof (rule Least_equality[symmetric])
-  show " A $$ (j, k) \<noteq> 0 \<and> i \<le> j" 
-    using A res find_non0'[OF A] by auto
+  show "A $$ (j, k) \<noteq> 0 \<and> i \<le> j" 
+    using res find_non0' by auto
   show " \<And>y. A $$ (y, k) \<noteq> 0 \<and> i \<le> y \<Longrightarrow> j \<le> y"
-    by (meson A res atLeastLessThan_iff find_non0'_w_zero_before linorder_not_le)
+    by (meson res atLeastLessThan_iff find_non0'_w_zero_before linorder_not_le)
 qed
+
+(*
+lemma find_fst_non0_in_row_None: 
+  assumes A: "A \<in> carrier_mat m n"
+  and ut_A: "upper_triangular' A"
+  and lm: "l<m"
+  shows "find_fst_non0_in_row l A = None \<longleftrightarrow> is_zero_row_JNF l A" (is "?lhs = ?rhs")
+proof -
+  have \<open>A $$ (l, j) = 0\<close> if \<open>j < l\<close> \<open>j < dim_col A\<close> for j
+    using that ut_A A lm unfolding upper_triangular'_def by blast
+  moreover from find_fst_non0_in_row_None' [of l m A] lm
+  have \<open>find_fst_non0_in_row l A = None \<longleftrightarrow> (\<forall>j\<in>{l..<dim_col A}. A $$ (l,j) = 0)\<close>
+    by simp
+  ultimately show ?thesis
+    by (auto simp add: is_zero_row_JNF_def)
+qed
+
+
+corollary find_fst_non0_in_row_zero_before': 
+  assumes res: "find_fst_non0_in_row l A = Some j"
+  and "j' \<in> {l..<j}"
+  shows "A $$ (l,j') = 0" using find_fst_non0_in_row_zero_before [of l A j] assms by auto
+
+lemma find_fst_non0_in_row_LEAST: 
+  assumes A: "A \<in> carrier_mat m n"
+  and ut_A: "upper_triangular' A"
+  and res: "find_fst_non0_in_row l A = Some j"
+  and lm: "l<m"
+  shows "j = (LEAST n. A $$ (l,n) \<noteq> 0)"
+proof (rule Least_equality[symmetric])
+  show " A $$ (l, j) \<noteq> 0" using res find_fst_non0_in_row(1) by blast
+  show "\<And>y. A $$ (l, y) \<noteq> 0 \<Longrightarrow> j \<le> y"
+  proof (rule ccontr)
+    fix y assume Aly: "A $$ (l, y) \<noteq> 0" and jy: " \<not> j \<le> y "
+    have yn: "y < n"
+      by (metis A jy carrier_matD(2) find_fst_non0_in_row(3) leI less_imp_le_nat nat_SN.compat res)
+    have "A $$(l,y) = 0"
+    proof (cases "y\<in>{l..<j}")
+      case True
+      show ?thesis by (rule find_fst_non0_in_row_zero_before'[OF res True])
+    next
+      case False hence "y<l" using jy by auto
+      thus ?thesis using ut_A A lm unfolding upper_triangular'_def using yn by blast
+    qed
+    thus False using Aly by contradiction
+  qed 
+qed
+
+*)
 
 lemma echelon_form_of_column_k_JNF_code[code]:
   "echelon_form_of_column_k_JNF bezout (A,i) k = 
@@ -11480,15 +11265,13 @@ lemma echelon_form_of_column_k_JNF_code[code]:
 proof (cases "\<not> ((i = dim_row A) \<or> (\<forall>m \<in> {i..<dim_row A}. A $$ (m, k) = 0)) 
             \<and> \<not> (\<forall>m\<in>{i+1..<dim_row A}. A $$ (m,k) = 0)")
   case True
-  let ?n = "the (find_non0' i k A)"
-  let ?interchange_A = "swaprows i ?n A"
+  then have \<open>find_non0' i k A \<noteq> None\<close>
+    by (auto simp add: find_non0'_def sorted_find_Min)
+  then obtain j where j: \<open>find_non0' i k A = Some j\<close>
+    by auto
+  let ?interchange_A = "swaprows i j A"
   have f_rw: "(the (find_non0' i k A)) = (LEAST n. A $$ (n, k) \<noteq> 0 \<and> i \<le> n)"
-  proof (rule find_non0'_LEAST)
-    have "find_non0' i k A \<noteq> None" using True unfolding find_non0'_def Let_def
-      by (auto split: list.split)
-         (metis (mono_tags, lifting) atLeastLessThan_iff atLeastLessThan_upt empty_filter_conv)
-    thus "find_non0' i k A = Some (the (find_non0' i k A))" by auto
-  qed (auto)
+    by (rule find_non0'_LEAST) (simp add: j)
   show ?thesis unfolding echelon_form_of_column_k_JNF_def Let_def f_rw using True by auto
 next
   case False

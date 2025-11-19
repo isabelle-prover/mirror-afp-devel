@@ -1,156 +1,91 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Logic/Computability on Archive of Formal Proofs
-    </title>
-    <link>/topics/logic/computability/</link>
-    <description>
-        Recent content in Logic/Computability 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/logic/computability/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
-          <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
-          <link>/entries/MHComputation.html</link>
-          <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/MHComputation.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Cook-Levin theorem</title>
-          <link>/entries/Cook_Levin.html</link>
-          <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Cook_Levin.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Cook-Levin theorem</title>
-          <link>/entries/Cook_Levin.html</link>
-          <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Cook_Levin.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
-          <link>/entries/Boolos_Curious_Inference_Automated.html</link>
-          <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
-          <link>/entries/Multitape_To_Singletape_TM.html</link>
-          <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Multitape_To_Singletape_TM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
-          <link>/entries/Multitape_To_Singletape_TM.html</link>
-          <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Multitape_To_Singletape_TM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Diophantine Equations and the DPRM Theorem</title>
-          <link>/entries/DPRM_Theorem.html</link>
-          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/DPRM_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Diophantine Equations and the DPRM Theorem</title>
-          <link>/entries/DPRM_Theorem.html</link>
-          <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/DPRM_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ackermann&#39;s Function Is Not Primitive Recursive</title>
-          <link>/entries/Ackermanns_not_PR.html</link>
-          <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Ackermanns_not_PR.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ackermann&#39;s Function Is Not Primitive Recursive</title>
-          <link>/entries/Ackermanns_not_PR.html</link>
-          <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Ackermanns_not_PR.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Some classical results in inductive inference of recursive functions</title>
-          <link>/entries/Inductive_Inference.html</link>
-          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Inductive_Inference.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Some classical results in inductive inference of recursive functions</title>
-          <link>/entries/Inductive_Inference.html</link>
-          <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Inductive_Inference.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Turing Machine</title>
-          <link>/entries/Universal_Turing_Machine.html</link>
-          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Turing_Machine.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Turing Machine</title>
-          <link>/entries/Universal_Turing_Machine.html</link>
-          <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Turing_Machine.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Minsky Machines</title>
-          <link>/entries/Minsky_Machines.html</link>
-          <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Minsky_Machines.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Minsky Machines</title>
-          <link>/entries/Minsky_Machines.html</link>
-          <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Minsky_Machines.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Recursion Theory I</title>
-          <link>/entries/Recursion-Theory-I.html</link>
-          <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/Recursion-Theory-I.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Recursion Theory I</title>
-          <link>/entries/Recursion-Theory-I.html</link>
-          <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
-          <guid>/entries/Recursion-Theory-I.html</guid>
-          <description></description>
-        </item>
+    <title>Logic/Computability</title>
+    <link>https://isa-afp.org/topics/logic/computability/</link>
+    <description>AFP entries in Computability</description><item>
+  <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
+  <link>https://isa-afp.org/entries/MHComputation.html</link>
+  <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
+  <description>The Halting Problem is Soluble in Malament-Hogarth Spacetimes in the AFP</description>
+    <category>Computer science</category>
+    <category>Logic/Computability</category>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
+  <title>The Cook-Levin theorem</title>
+  <link>https://isa-afp.org/entries/Cook_Levin.html</link>
+  <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+  <description>The Cook-Levin theorem in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/Computability</category>
+</item>
+<item>
+  <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Boolos_Curious_Inference_Automated.html</link>
+  <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+  <description>Automation of Boolos&#39; Curious Inference in Isabelle/HOL in the AFP</description>
+    <category>Logic</category>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/Computability</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic</category>
+    <category>Computer science/Artificial intelligence</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
+  <link>https://isa-afp.org/entries/Multitape_To_Singletape_TM.html</link>
+  <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
+  <description>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines in the AFP</description>
+    <category>Logic/Computability</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Diophantine Equations and the DPRM Theorem</title>
+  <link>https://isa-afp.org/entries/DPRM_Theorem.html</link>
+  <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Diophantine Equations and the DPRM Theorem in the AFP</description>
+    <category>Logic/Computability</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Ackermann&#39;s Function Is Not Primitive Recursive</title>
+  <link>https://isa-afp.org/entries/Ackermanns_not_PR.html</link>
+  <pubDate>Wed, 23 Mar 2022 00:00:00 +0000</pubDate>
+  <description>Ackermann&#39;s Function Is Not Primitive Recursive in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
+<item>
+  <title>Some classical results in inductive inference of recursive functions</title>
+  <link>https://isa-afp.org/entries/Inductive_Inference.html</link>
+  <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+  <description>Some classical results in inductive inference of recursive functions in the AFP</description>
+    <category>Logic/Computability</category>
+    <category>Computer science/Machine learning</category>
+</item>
+<item>
+  <title>Universal Turing Machine</title>
+  <link>https://isa-afp.org/entries/Universal_Turing_Machine.html</link>
+  <pubDate>Fri, 08 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Universal Turing Machine in the AFP</description>
+    <category>Logic/Computability</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Minsky Machines</title>
+  <link>https://isa-afp.org/entries/Minsky_Machines.html</link>
+  <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+  <description>Minsky Machines in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
+<item>
+  <title>Recursion Theory I</title>
+  <link>https://isa-afp.org/entries/Recursion-Theory-I.html</link>
+  <pubDate>Sat, 05 Apr 2008 00:00:00 +0000</pubDate>
+  <description>Recursion Theory I in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
+
   </channel>
 </rss>

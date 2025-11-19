@@ -12,8 +12,8 @@ text\<open>Finite-String.thy implements a type of strings whose lengths are boun
 
 theory "Finite_String"
   imports 
-    Main 
-    "HOL-Library.Code_Target_Int"
+    Main
+    "HOL-Library.Char_ord"
 begin
 
 text\<open>This theory uses induction on pairs of lists often: give names to the cases\<close>
@@ -90,16 +90,6 @@ instance proof
   then have "finite (UNIV :: fin_string set)" using univEq fin by auto
   then show "finite (UNIV::fin_string set)" by auto
 qed
-end
-
-text\<open>Characters are linearly ordered by their code value\<close>
-instantiation char :: linorder begin
-definition less_eq_char where
-less_eq_char[code]:"less_eq_char x  y \<equiv> int_of_char x \<le> int_of_char y"
-definition less_char where
-less_char[code]:"less_char x y \<equiv> int_of_char x < int_of_char y"
-instance
-  by(standard, auto simp add: less_char less_eq_char int_of_char_def)+
 end
 
 text\<open>Finite strings are linearly ordered, lexicographically\<close>
@@ -212,19 +202,19 @@ fun fin_string_upto :: "nat \<Rightarrow> fin_string list"
 
 lemma mem_appL:"List.member L1 x \<Longrightarrow> List.member (L1 @ L2) x"
   apply(induction L1 arbitrary: L2)
-  by(auto simp add: member_rec)
+  by(auto simp add:)
 
 lemma mem_appR:"List.member L2 x \<Longrightarrow> List.member (L1 @ L2) x"
   apply(induction L1 arbitrary: L2)
-  by(auto simp add: member_rec)
+  by(auto simp add:)
 
 lemma mem_app_or:"List.member (L1 @ L2) x = List.member L1 x \<or> List.member L2 x"
-  unfolding member_def by auto
+  by auto
 
 lemma fin_string_nil:
   fixes n
   shows "List.member (fin_string_upto n) fin_string_empty"
-  by(induction n, auto simp add: member_rec Let_def fin_string_empty_def)
+  by(induction n, auto simp add: fin_string_empty_def)
 
 text\<open>List of every string. Not practical for code generation but used to show strings are an enum\<close>
 definition vals_def[code]:"vals \<equiv> fin_string_upto MAX_STR"
@@ -300,7 +290,7 @@ lemma enum_chars:"set (enum_class.enum::char list)= UNIV"
   using Enum.enum_class.enum_UNIV by auto
 
 lemma member_concat:"List.member (concat LL) x = (\<exists>L. List.member LL L \<and> List.member L x)"
-  by(auto simp add: member_def)
+  by auto
 
 text\<open>fin-string-upto k enumerates all strings up to length $min(k,MAX\_STR)$\<close>
 lemma fin_string_length:
@@ -314,7 +304,7 @@ proof -
     apply(auto) 
     subgoal for j 
       apply(cases j) 
-      by (auto simp add: fin_string_empty_def member_rec) 
+      by (auto simp add: fin_string_empty_def) 
     done
   have IS:"(\<And>k x xs.
       \<forall>j\<ge>k. k\<le>MAX_STR \<longrightarrow> length xs=k \<longrightarrow> List.member (fin_string_upto j) (Abs_fin_string xs)\<Longrightarrow>
@@ -345,30 +335,12 @@ proof -
             by (metis ilen sucMax)
           have univ:" set enum_class.enum  = (UNIV::char set)" using enum_chars by auto
           have "List.member (fin_string_upto j) (Abs_fin_string (x # xs))"
-            apply(auto simp add: member_rec(2) fin_string_empty_def)
-            using len sucMax 
-            apply(auto simp add: member_rec fin_string_empty_def fin_string_cons_def
-                Abs_fin_string_inverse Rep_fin_string_inverse neq)
-          proof -
-            let ?witLL = "(\<lambda> x. map (map_fun Rep_fin_string Abs_fin_string (string_cons x)) 
-                            (fin_string_upto jj))"
-            have f1: "Abs_fin_string xs \<in> set (fin_string_upto jj)"
-                by (metis member_def res)
-            have f2:"Abs_fin_string (x # xs) = Abs_fin_string 
-                      (if MAX_STR \<le> length (Rep_fin_string (Abs_fin_string xs)) 
-                       then Rep_fin_string (Abs_fin_string xs)
-                       else x # Rep_fin_string (Abs_fin_string xs))"
-                using Abs_fin_string_inverse ilen kMax by auto
-            have ex:"\<exists> LL. (List.member (map ?witLL enum_class.enum) LL) 
-                          \<and> List.member LL (Abs_fin_string (x # xs))"
-              apply(rule exI[where x="?witLL x"])
-              apply(auto simp add: member_def univ)
-              using f1 f2 by blast
-            show "List.member (concat (map ?witLL enum_class.enum))
-                    (Abs_fin_string (x # xs))"
-              using member_concat ex by fastforce
-          qed
-          then show "List.member (fin_string_upto j) (Abs_fin_string (x # xs))"  by auto
+            using len sucMax res Abs_fin_string_inverse
+            apply (auto simp add: fin_string_empty_def fin_string_cons_def enum_UNIV image_iff not_le)
+            apply fastforce
+            done
+          then show \<open>Abs_fin_string (x # xs) \<in> set (fin_string_upto j)\<close>
+            by simp
         qed
         done
     qed
@@ -388,32 +360,9 @@ lemma fin_string_upto_length:
   shows "List.member (fin_string_upto n) L \<Longrightarrow> ilength L \<le> n"
   apply(induction n arbitrary: L)
    apply(auto simp add: fin_string_empty_def Let_def ilength_def fin_string_cons_def 
-     Rep_fin_string_inverse Abs_fin_string_inverse member_rec)
-proof -
-  fix n L
-  let ?witLL = "(\<lambda>x. map(map_fun Rep_fin_string Abs_fin_string(string_cons x))(fin_string_upto n))"
-  assume len:"(\<And>L. List.member (fin_string_upto n) L \<Longrightarrow> length (Rep_fin_string L) \<le> n)"
-  assume mem:"List.member (concat (map ?witLL enum_class.enum)) L"
-  have L:"List.member (fin_string_upto n) L \<Longrightarrow> length (Rep_fin_string L) \<le> Suc n" 
-    using len[of L] by auto
-  assume a:"List.member (concat (map ?witLL enum_class.enum)) L"
-  obtain LL where conc:"List.member (map ?witLL enum_class.enum) LL"
-    and concmem:"List.member LL L"
-    using member_concat a by metis
-  obtain c cs where c:"L = fin_string_cons c cs" and cs:"List.member (fin_string_upto n) cs"
-    using a conc unfolding member_def apply(auto)
-    subgoal for c d cs
-      apply(cases "MAX_STR \<le> length (Rep_fin_string cs)")
-      apply(auto simp add: Rep_fin_string_inverse)
-      by (metis (full_types) Rep_fin_string_inverse fin_string_cons.rep_eq string_cons.simps)+ 
-    done
-  then have "ilength (fin_string_cons c cs) \<le> (Suc n)"
-    using len[of cs] unfolding ilength_def fin_string_cons_def 
-    apply (auto simp add: Rep_fin_string_inverse)
-    using c fin_string_cons.rep_eq by force
-  then show "length (Rep_fin_string L) \<le> Suc n"
-    using c ilength.rep_eq by auto
-qed
+     Rep_fin_string_inverse Abs_fin_string_inverse enum_UNIV)
+  apply fastforce
+  done
 
 text\<open>fin-string-upto produces no duplicate identifiers\<close>
 lemma distinct_upto:
@@ -425,7 +374,7 @@ next
   case (Suc j) then
   have jLen:"Suc j \<le> MAX_STR"
     and IH:"distinct (fin_string_upto j)" by auto
-  have distinct_char:"distinct (enum_class.enum:: char list)" 
+  have distinct_char:"distinct (enum_class.enum :: char list)" 
     by (auto simp add: distinct_map enum_char_unfold)
   have diseq:"\<And> x y. y \<in> set (fin_string_upto j) \<Longrightarrow>  fin_string_empty \<noteq> fin_string_cons x y" 
     using Rep_fin_string_inverse jLen apply(auto simp add: fin_string_empty_def fin_string_cons_def)
@@ -438,7 +387,7 @@ next
     subgoal 
       apply(auto simp add: distinct_map)
        apply(rule distinct_char)
-      apply(rule subset_inj_on[where B=UNIV])
+      apply(rule inj_on_subset)
        apply(rule injI)
        apply(auto simp add: fin_string_cons_def)
     proof -
@@ -449,7 +398,7 @@ next
          else x # Rep_fin_string xa))"
       assume a1:"\<forall>xa\<in>set (fin_string_upto j). ?l xa x = ?l xa y"
       then have a2:"\<And>xa. (List.member (fin_string_upto j) xa) \<Longrightarrow> ?l xa x = ?l xa y"
-        using  member_def by force
+        by force
       then have "Abs_fin_string [x] = Abs_fin_string [y] \<or> (MAX_STR::nat) = 0"
         using a2 fin_string_empty.rep_eq fin_string_nil by force
       then show "x = y"
@@ -469,19 +418,20 @@ next
         apply(auto)
         subgoal for x y
           using jLen fin_string_upto_length[of j x] fin_string_upto_length[of j y]
-          unfolding List.member_def ilength_def apply auto
+          unfolding ilength_def apply auto
           by (metis (mono_tags, opaque_lifting) Rep_fin_string_inverse fin_string_cons.rep_eq le_trans
               list.inject not_less_eq_eq string_cons.simps)
           done
       qed
-      apply(auto simp add: fin_string_cons_def)
-      subgoal for c ca xa xb xc
-        apply(cases "MAX_STR \<le> length (Rep_fin_string xa)")
-         apply (metis fin_string_upto_length jLen ilength.rep_eq le_trans member_def not_less_eq_eq)
-        apply(cases "MAX_STR \<le> length (Rep_fin_string xb)")
-         apply(metis fin_string_upto_length jLen ilength.rep_eq le_trans member_def not_less_eq_eq)
-        apply(cases "MAX_STR \<le> length (Rep_fin_string xc)") 
-         by(auto,metis Rep_fin_string_inverse fin_string_cons.rep_eq list.inject string_cons.simps)
+      apply (auto simp add: fin_string_cons_def enum_UNIV not_le split: if_splits)
+      using fin_string_upto_length ilength.rep_eq jLen apply fastforce
+      using fin_string_upto_length ilength.rep_eq jLen apply fastforce
+      using fin_string_upto_length ilength.rep_eq jLen apply fastforce
+      apply (metis Abs_fin_string_inverse Suc_le_eq length_Cons mem_Collect_eq nth_Cons_0)
+      using fin_string_upto_length ilength.rep_eq jLen apply fastforce
+      using fin_string_upto_length ilength.rep_eq jLen apply fastforce
+      using fin_string_upto_length ilength.rep_eq jLen apply fastforce
+      apply (metis Abs_fin_string_inverse Suc_le_eq length_Cons mem_Collect_eq nth_Cons_0)
       done
   qed
 
@@ -493,13 +443,18 @@ definition enum_all_fin_string
   where enum_all_fin_string[code]:"enum_all_fin_string \<equiv> fin_string_enum_all"
 definition enum_ex_fin_string
   where enum_ex_fin_string[code]:"enum_ex_fin_string \<equiv> fin_string_enum_ex"
-lemma enum_ALL:"(UNIV::fin_string set) = set enum_class.enum"
-  apply(auto simp add:enum_fin_string_def fin_string_enum_def vals_def)
-  by(metis fin_string_length List.member_def mem_Collect_eq Abs_fin_string_cases)
+lemma enum_ALL: "(UNIV::fin_string set) = set enum_class.enum"
+  apply (auto simp add:enum_fin_string_def fin_string_enum_def vals_def)
+  apply (metis Abs_fin_string_cases List.member_iff fin_string_length mem_Collect_eq)
+  done
 
 lemma vals_ALL:"set (vals::fin_string list) = UNIV"
-  using enum_ALL vals_def Rep_fin_string fin_string_length ilength.rep_eq member_def 
-  by(metis (mono_tags) Rep_fin_string_inverse UNIV_eq_I mem_Collect_eq)
+  apply (auto simp add: vals_def)
+  subgoal for s
+    using fin_string_length [of \<open>Rep_fin_string s\<close> MAX_STR] Rep_fin_string [of s]
+    apply (simp add: Rep_fin_string_inverse)
+    done
+  done
 
 lemma setA:
   assumes set:"\<And>y. y \<in> set L \<Longrightarrow> P y"

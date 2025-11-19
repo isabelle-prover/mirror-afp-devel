@@ -1,37 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Computer science/Algorithms/Online on Archive of Formal Proofs
-    </title>
-    <link>/topics/computer-science/algorithms/online/</link>
-    <description>
-        Recent content in Computer science/Algorithms/Online 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <atom:link href="/topics/computer-science/algorithms/online/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysis of List Update Algorithms</title>
-          <link>/entries/List_Update.html</link>
-          <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/List_Update.html</guid>
-          <description></description>
-        </item>
+    <title>Computer science/Algorithms/Online</title>
+    <link>https://isa-afp.org/topics/computer-science/algorithms/online/</link>
+    <description>AFP entries in Online</description><item>
+  <title>Analysis of List Update Algorithms</title>
+  <link>https://isa-afp.org/entries/List_Update.html</link>
+  <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+  <description>Analysis of List Update Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Online</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
   </channel>
 </rss>

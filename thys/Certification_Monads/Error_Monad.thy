@@ -17,7 +17,7 @@ where
   "bind m f = (case m of Inr x \<Rightarrow> f x | Inl e \<Rightarrow> Inl e)"
 
 adhoc_overloading
-  Monad_Syntax.bind bind
+  Monad_Syntax.bind \<rightleftharpoons> bind
 
 abbreviation (input) "return \<equiv> Inr"
 abbreviation (input) "error \<equiv> Inl"
@@ -56,7 +56,7 @@ where
   catch_def: "catch_error m f = (case m of Inl e \<Rightarrow> f e | Inr x \<Rightarrow> Inr x)"
 
 adhoc_overloading
-  Error_Syntax.catch catch_error
+  Error_Syntax.catch \<rightleftharpoons> catch_error
 
 lemma catch_splits:
   "P (try m catch f) \<longleftrightarrow> (\<forall>e. m = Inl e \<longrightarrow> P (f e)) \<and> (\<forall>x. m = Inr x \<longrightarrow> P (Inr x))"
@@ -68,7 +68,7 @@ where
   "update_error m f \<equiv> try m catch (\<lambda>x. error (f x))"
 
 adhoc_overloading
-  Error_Syntax.update_error update_error
+  Error_Syntax.update_error \<rightleftharpoons> update_error
 
 lemma catch_return [simp]:
   "(try return x catch f) = return x" by (simp add: catch_def)

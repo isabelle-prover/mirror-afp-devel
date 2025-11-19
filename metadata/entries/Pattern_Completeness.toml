@@ -32,6 +32,7 @@ thiemann = "thiemann_email"
 yamada = "yamada_email2"
 
 [history]
+2025-11-05 = "added improved algorithm for pattern completeness and complexity results (revision e2b0c94f7898)"
 
 [extra]
 

@@ -744,8 +744,8 @@ lemma dbproj_subseq:
   and "i \<noteq> k \<Longrightarrow> dbproj i Di = []" (is "i \<noteq> k \<Longrightarrow> ?B")
 proof -
   have *: "set Di \<subseteq> set (dbproj k D)" using subseqs_powset[of "dbproj k D"] assms by auto
-  thus ?A by (metis dbproj_def filter_True filter_set member_filter subsetCE)
-
+  then show ?A
+    by (auto simp add: dbproj_def intro: filter_True)
   have "\<And>j d. (j,d) \<in> set Di \<Longrightarrow> j = k" using * unfolding dbproj_def by auto
   moreover have "\<And>j d. (j,d) \<in> set (dbproj i Di) \<Longrightarrow> j = i" unfolding dbproj_def by auto
   moreover have "\<And>j d. (j,d) \<in> set (dbproj i Di) \<Longrightarrow> (j,d) \<in> set Di" unfolding dbproj_def by auto
@@ -755,8 +755,9 @@ qed
 lemma dbproj_subseq_subset:
   assumes "Di \<in> set (subseqs (dbproj i D))"
   shows "set Di \<subseteq> set D"
-using assms unfolding dbproj_def 
-by (metis Pow_iff filter_set image_eqI member_filter subseqs_powset subsetCE subsetI)
+  using assms by (auto simp add: dbproj_def image_iff simp flip: Pow_iff subseqs_powset in_set_subseqs
+    intro!: bexI [of _ Di])
+    (meson in_set_subseqs subseq_filter_left subseq_order.dual_order.trans)
 
 lemma dbproj_subseq_in_subseqs:
   assumes "Di \<in> set (subseqs (dbproj i D))"

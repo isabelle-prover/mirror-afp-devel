@@ -118,9 +118,9 @@ proof
   then obtain v where v_def:"rat_of_int v = rat_of_int x / rat_of_int y"
                 using int_of_rat(2) is_int_rat by fastforce
   hence "v = \<lfloor>rat_of_int x / rat_of_int y\<rfloor>" by linarith
-  hence "v * y = x - x mod y" using div_is_floor_divide_rat mod_div_equality_int by simp
-  hence "rat_of_int v * rat_of_int y = rat_of_int x - rat_of_int (x mod y)"
-    by (fold hom_distribs, unfold of_int_hom.eq_iff)
+  hence *: "v * y = x - x mod y" using div_is_floor_divide_rat mod_div_equality_int by simp
+  have "rat_of_int v * rat_of_int y = rat_of_int x - rat_of_int (x mod y)"
+    unfolding of_int_mult [symmetric] * by simp
   hence "(rat_of_int x / rat_of_int y) * rat_of_int y = rat_of_int x - rat_of_int (x mod y)"
     using v_def by simp
   hence "rat_of_int x = rat_of_int x - rat_of_int (x mod y)" by (simp add: assms)

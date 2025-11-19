@@ -16,22 +16,27 @@ paragraph \<open>Example\<close>
 ML_command\<open>
   \<comment>\<open>some arbitrary functor\<close>
   functor My_Functor(A : sig
-    structure FIA : FUNCTOR_INSTANCE_ARGS
+    structure FI : FUNCTOR_INSTANCE_BASE
     val n : int
   end) =
   struct
-    fun get_n () = (Pretty.writeln (Pretty.block
-        [Pretty.str "retrieving n from ", Pretty.str A.FIA.full_name]);
+    fun get_n () = (Pretty.writeln (Pretty.block [
+        Pretty.str "retrieving n from ", Binding.pretty A.FI.binding,
+        Pretty.str " with id ", Pretty.str (quote A.FI.id)
+      ]);
       A.n)
   end
 
   \<comment>\<open>create an instance (structure) called \<open>Test_Functor_Instance\<close>\<close>
-  @{functor_instance struct_name = Test_Functor_Instance
-    and functor_name = My_Functor
-    and id = \<open>"test"\<close>
-    and more_args = \<open>val n = 42\<close>}
-
-  val _ = Test_Functor_Instance.get_n ()
+structure A =
+struct
+\<^functor_instance>\<open>struct_name: Test
+  functor_name: My_Functor
+  path: \<open>"A"\<close>
+  id: \<open>"test"\<close>
+  more_args: \<open>val n = 42\<close>\<close>
+end
+  val _ = A.Test.get_n ()
 \<close>
 
 end

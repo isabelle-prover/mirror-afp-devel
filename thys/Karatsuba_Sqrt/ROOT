@@ -1,0 +1,9 @@
+chapter AFP
+
+session Karatsuba_Sqrt (AFP) = "HOL-Library" +
+  options [timeout = 900]
+  theories
+    Karatsuba_Sqrt_Test
+  document_files
+    "root.tex"
+    "root.bib"

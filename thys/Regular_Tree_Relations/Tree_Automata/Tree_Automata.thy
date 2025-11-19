@@ -650,7 +650,7 @@ qed
 
 lemma ground_ta_der_states:
   "ground t \<Longrightarrow> ta_der \<A> t |\<subseteq>| \<Q> \<A>"
-  using ta_der_states[of \<A> t] by auto
+  using ta_der_states[of \<A> t] by (auto simp: ground_fvars_term_empty)
 
 lemmas ground_ta_der_statesD = fsubsetD[OF ground_ta_der_states]
 
@@ -709,7 +709,7 @@ text \<open>Reachable states of ground terms are preserved over the @{const adap
 
 lemma ta_der_adapt_vars_ground [simp]:
   "ground t \<Longrightarrow> ta_der A (adapt_vars t) = ta_der A t"
-  by (induct t) auto
+  by (induct t, auto)
 
 lemma gterm_of_term_inv':
   "ground t \<Longrightarrow> term_of_gterm (gterm_of_term t) = adapt_vars t"
@@ -1089,7 +1089,7 @@ proof -
   moreover
   {fix t assume "ground (t :: ('b, 'a) term)"
     then have "ta_der \<A> t = ta_der (ta_only_reach \<A>) t" using ta_der_only_reach[of t \<A>]
-      by simp}
+      by (simp add: ground_fvars_term_empty)}
   ultimately show ?thesis unfolding ta_reachable_def
     by auto
 qed
@@ -1188,7 +1188,7 @@ proof -
     by (auto simp: ta_productive_def) fastforce
   moreover have "?RS |\<subseteq>| ?LS" using ta_der_only_prod
     by (auto elim!: ta_productiveE)
-       (smt (z3) ta_der_only_prod ta_productiveI ta_productive_setI)
+       (smt (verit) ta_der_only_prod ta_productiveI ta_productive_setI)
   ultimately show ?thesis by blast
 qed
 
@@ -2165,13 +2165,13 @@ qed
 
 lemma run_ta_der_ctxt_split1:
   assumes "run \<A> s t" "p \<in> gposs t"
-  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_at_pos (term_of_gterm t) p)\<langle>Var (ex_comp_state (gsubt_at s p))\<rangle>"
+  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_of_pos_term p (term_of_gterm t))\<langle>Var (ex_comp_state (gsubt_at s p))\<rangle>"
   using assms
 proof (induct p arbitrary: s t)
   case (Cons i p)
   obtain q f qs ts where [simp]: "s = GFun q qs" "t = GFun f ts" and l: "length qs = length ts"
     using run_argsD[OF Cons(2)] by (cases s, cases t) auto
-  from Cons(2, 3) l have "ex_comp_state (qs ! i) |\<in>| ta_der \<A> (ctxt_at_pos (term_of_gterm (ts ! i)) p)\<langle>Var (ex_comp_state (gsubt_at (qs ! i) p))\<rangle>"
+  from Cons(2, 3) l have "ex_comp_state (qs ! i) |\<in>| ta_der \<A> (ctxt_of_pos_term p (term_of_gterm (ts ! i)))\<langle>Var (ex_comp_state (gsubt_at (qs ! i) p))\<rangle>"
     by (intro Cons(1)) (auto dest: run_argsD)
   then show ?case using Cons(2-) l
     by (fastforce simp: nth_append_Cons min_def dest: run_root_rule run_argsD
@@ -2182,7 +2182,7 @@ qed auto
 
 lemma run_ta_der_ctxt_split2:
   assumes "run \<A> s t" "p \<in> gposs t"
-  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_at_pos (term_of_gterm t) p)\<langle>Var (ex_rule_state (gsubt_at s p))\<rangle>"
+  shows "ex_comp_state s |\<in>| ta_der \<A> (ctxt_of_pos_term p (term_of_gterm t))\<langle>Var (ex_rule_state (gsubt_at s p))\<rangle>"
 proof (cases "ex_rule_state (gsubt_at s p) = ex_comp_state (gsubt_at s p)")
   case False then show ?thesis
     using run_root_rule[OF run_gsubt_cl[OF assms]]

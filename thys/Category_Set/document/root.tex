@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\sslash{\mathbin{/\mkern-5.5mu/}}%
+
+
+\begin{document}
+
+\title{The Elementary Theory of the Category of Sets}
+\author{James Baxter \and Dustin Bryant}
+\maketitle
+
+\begin{abstract}
+  Category theory presents a formulation of mathematical structures in
+  terms of common properties of those structures. 
+  A particular formulation of interest is the Elementary Theory of the
+  Category of Sets (ETCS), which is an axiomatization of set theory in
+  category theory terms. 
+  This axiomatization provides an unusual view of sets, where the
+  functions between sets are regarded as more important than the
+  elements of the sets. 
+  We formalise an axiomatization of ETCS on top of HOL, following the
+  presentation given by Halvorson~\cite{Halvorson2019}. 
+  We also build some other set theoretic results on top of the
+  axiomatization, including Cantor's diagonalization theorem and
+  mathematical induction. 
+  We additionally define a system of quantified predicate logic within the ETCS
+  axiomatization.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

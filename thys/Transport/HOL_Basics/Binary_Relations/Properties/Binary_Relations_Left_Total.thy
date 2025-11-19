@@ -74,7 +74,7 @@ lemma left_totalI [intro]:
 lemma left_totalE:
   assumes "left_total R"
   obtains y where "R x y"
-  using assms by (urule (e) left_total_onE where chained = insert) simp
+  using assms by (urule (e) left_total_onE chained: insert) simp
 
 lemma in_dom_if_left_total:
   assumes "left_total R"

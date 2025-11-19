@@ -396,9 +396,7 @@ lemma Dep_Fun_Rel_left_Galois_restrict_left_right_restrict_left_right_eq:
       \<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub> =
     ((x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)) \<Rrightarrow> S x x')\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>" (is "?lhs = ?rhs")
 proof -
-  have "?lhs =
-    ((x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)) \<Rrightarrow> (S x x')\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)\<^esub>)
-      \<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
+  have "?lhs = ((x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)) \<Rrightarrow> (S x x')\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)\<^esub>)\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
     by (subst rel_restrict_left_right_eq_restrict_right_left,
       subst Dep_Fun_Rel_restrict_left_restrict_left_eq)
     auto
@@ -776,7 +774,7 @@ corollary Fun_Rel_left_Galois_if_left_GaloisI:
   and "transitive (\<le>\<^bsub>L2\<^esub>)"
   and "f \<^bsub>L\<^esub>\<lessapprox> g"
   shows "((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>)) f g"
-  by (urule tpdfr.Dep_Fun_Rel_left_Galois_if_left_GaloisI assms | simp)+
+  by (urule tmdfr.Dep_Fun_Rel_left_Galois_if_left_GaloisI assms | simp)+
 
 interpretation flip : transport_Mono_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2 .
 
@@ -788,7 +786,7 @@ lemma left_Galois_if_Fun_Rel_left_GaloisI:
   and "in_codom (\<le>\<^bsub>R\<^esub>) g"
   and "((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>)) f g"
   shows "f \<^bsub>L\<^esub>\<lessapprox> g"
-  by (urule tpdfr.left_Galois_if_Dep_Fun_Rel_left_GaloisI flip.tfr.mono_wrt_rel_leftI)+
+  by (urule tmdfr.left_Galois_if_Dep_Fun_Rel_left_GaloisI flip.tfr.mono_wrt_rel_leftI)+
    (urule assms | simp)+
 
 corollary left_Galois_iff_Fun_Rel_left_GaloisI:
@@ -812,7 +810,7 @@ theorem left_Galois_eq_Fun_Rel_left_Galois_restrictI:
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
   using assms by (intro ext iffI rel_restrict_leftI rel_restrict_rightI
     iffD1[OF left_Galois_iff_Fun_Rel_left_GaloisI])
-  (auto elim!: tpdfr.left_GaloisE intro!: iffD2[OF left_Galois_iff_Fun_Rel_left_GaloisI])
+  (auto elim!: tmdfr.left_GaloisE intro!: iffD2[OF left_Galois_iff_Fun_Rel_left_GaloisI])
 
 
 subparagraph \<open>Simplification of Restricted Function Relator\<close>
@@ -824,8 +822,8 @@ lemma Fun_Rel_left_Galois_restrict_left_right_eq_Fun_Rel_left_Galois_if_reflexiv
   and "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "((\<le>\<^bsub>L2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub> = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))"
-  using assms by (auto simp only: tpdfr.left_rel_eq_tdfr_left_rel_if_reflexive_on
-      tpdfr.right_rel_eq_tdfr_right_rel_if_reflexive_on
+  using assms by (auto simp only: tmdfr.left_rel_eq_tdfr_left_rel_if_reflexive_on
+      tmdfr.right_rel_eq_tdfr_right_rel_if_reflexive_on
     intro!: tfr.Fun_Rel_left_Galois_restrict_left_right_eq_Fun_Rel_left_GaloisI)
 
 lemma Fun_Rel_left_Galois_restrict_left_right_eq_Fun_Rel_left_GaloisI:
@@ -851,7 +849,7 @@ lemma Fun_Rel_left_Galois_restrict_left_right_restrict_left_right_eq:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   shows "((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> S\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L2\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R2\<^esub>)\<^esub>)\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub> =
     ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> S)\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
-  by (urule tpdfr.Dep_Fun_Rel_left_Galois_restrict_left_right_restrict_left_right_eq assms | simp)+
+  by (urule tmdfr.Dep_Fun_Rel_left_Galois_restrict_left_right_restrict_left_right_eq assms | simp)+
 
 end
 

@@ -60,7 +60,7 @@ lemma [simp]: "mergeP_impl s t \<longleftrightarrow> (s, t) \<in> mergeP" (is "?
 proof
   show "?LS \<Longrightarrow> ?RS"
     by (induct rule: mergeP_impl.induct, auto split: if_splits intro!: step)
-      (smt length_zip list_all_length mergeP.step min_less_iff_conj nth_mem nth_zip old.prod.case)
+      (smt (verit) length_zip list_all_length mergeP.step min_less_iff_conj nth_mem nth_zip old.prod.case)
 next
   show "?RS \<Longrightarrow> ?LS" by (induct rule: mergeP.induct, auto simp add: list_all_length)
 qed

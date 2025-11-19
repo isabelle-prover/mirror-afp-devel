@@ -11,6 +11,8 @@ theory PSPSP
   imports "Stateful_Protocol_Verification"
           "Eisbach_Protocol_Verification"
           "trac/trac"
+          "HOL-Library.Code_Target_Numeral"
+          "HOL-Library.Parallel"
 begin
 
 end

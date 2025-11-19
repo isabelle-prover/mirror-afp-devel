@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Alfredo Burrieza</title>
+    <link>https://isa-afp.org/authors/burrieza/</link>
+    <description>AFP entries of Alfredo Burrieza</description><item>
+  <title>A meta-modal logic for bisimulations</title>
+  <link>https://isa-afp.org/entries/Bisimulation_Logic.html</link>
+  <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+  <description>A meta-modal logic for bisimulations in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+
+  </channel>
+</rss>

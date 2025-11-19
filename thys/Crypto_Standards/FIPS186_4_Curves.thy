@@ -256,7 +256,7 @@ global_interpretation SEC1_P192: SEC1 P192_p P192_R P192_a P192_b P192_n P192_h 
   and     SEC1_P192_ECDSA_Verify_Alt        = "SEC1_P192.ECDSA_Verify_Alt"
   using P192valid SEC1.intro SEC1_axioms_def P192_residues_prime_gt2 
         P192_ECdomainParametersValid_def apply simp 
-  using P192_R_def by simp 
+  using P192_R_def by simp
 
 abbreviation "SEC1_P192_on_curve'        \<equiv> P192_on_curve P192_a P192_b"
 abbreviation "SEC1_P192_mon_curve'       \<equiv> mon_curve P192_p P192_a P192_b"

@@ -80,6 +80,10 @@ proof
       proof
         from iIs profileP have "complete A (P i)" by (blast dest: rpr_complete)
         with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
+        have "x \<in> A" and "y \<in> A" and "z \<in> A"
+          using has3A by auto
+        thus "?P' i \<subseteq> A \<times> A"
+          unfolding ij by auto
         from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
         with has3A ij show "refl_on A (?P' i)" by (simp, blast)
         from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
@@ -185,6 +189,10 @@ proof
       proof
         from iIs profileP have "complete A (P i)" by (auto simp add: rpr_def)
         with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
+        have "x \<in> A" and "y \<in> A" and "z \<in> A"
+          using has3A by auto
+        thus "?P' i \<subseteq> A \<times> A"
+          using ij by auto
         from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
         with has3A ij show "refl_on A (?P' i)" by (simp, blast)
         from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
@@ -445,6 +453,7 @@ proof
     show "rpr A (?P i)"
     proof
       show "complete A (?P i)" by (simp add: complete_def, blast)
+      from has3A iIs show "?P i \<subseteq> A \<times> A" by auto
       from has3A iIs show "refl_on A (?P i)" by - (simp, blast)
       from has3A iIs show "trans (?P i)" by (clarsimp simp add: trans_def)
     qed

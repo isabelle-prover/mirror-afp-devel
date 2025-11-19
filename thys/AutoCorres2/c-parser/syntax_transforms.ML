@@ -9,9 +9,11 @@ signature SYNTAX_TRANSFORMS =
 sig
   type program = Absyn.ext_decl list
   val remove_typedefs : program -> program
+  val anonymous_empty_fields: program -> program
   val remove_embedded_fncalls : Proof.context -> ProgramAnalysis.csenv -> program -> program
   val remove_anonstructs : Proof.context -> program -> program
   val nest_gotos: Proof.context -> program -> program
+
 end;
 
 
@@ -98,6 +100,13 @@ fun remove_attrs_typedefs env attrs =
 fun ap1 f (a, b, c) = (f a, b, c)
 
 fun map_triple f g h (a, b, c) = (f a, g b, h c)
+fun map_triple_idx f g h (i, (a, b, c)) = (f i a, g i b, h i c)
+
+val unsuffix_compound_record = ExpressionTyping.unsuffix_compound_record
+val compound_record_name = ExpressionTyping.compound_record_name
+
+val anonymous_field_names = map (node o #2) #> ExpressionTyping.anonymous_field_names
+fun rename_field_name ns i x = apnode (K (nth ns i)) x
 
 fun remove_decl_typedefs env d =
   case d of
@@ -109,9 +118,9 @@ fun remove_decl_typedefs env d =
        env)
     end
 
-  | StructDecl (sname, tys, attrs) =>
+  | StructDecl (sname, tys, attrs) =>    
       (SOME (StructDecl (sname, map (map_triple (update_type env) I (remove_attrs_typedefs env)) tys, 
-         apnode (remove_attrs_typedefs env) attrs)), env)
+         apnode (remove_attrs_typedefs env) attrs)), env) 
   | UnionDecl (sname, tys, attrs) =>
       (SOME (UnionDecl (sname,map (map_triple (update_type env) I (remove_attrs_typedefs env)) tys, 
          apnode (remove_attrs_typedefs env) attrs)), env)
@@ -134,6 +143,18 @@ fun remove_decl_typedefs env d =
       (SOME (EnumDecl (sw, map ecmap ecs)), env)
     end
 
+fun anonymous_empty_fields_decl env d =
+  case d of
+    StructDecl (sname, tys, attrs) =>
+      let val names = anonymous_field_names tys in
+      (SOME (StructDecl (sname, map_index (map_triple_idx (K I) (rename_field_name names) (K I)) tys, 
+         attrs)), env) end
+  | UnionDecl (sname, tys, attrs) =>
+      let val names = anonymous_field_names tys in
+      (SOME (UnionDecl (sname,map_index (map_triple_idx (K I) (rename_field_name names) (K I)) tys, 
+          attrs)), env) end
+  | _ => (SOME d, env)
+
 val bogus = SourcePos.bogus
 
 fun remove_stmt_typedefs env stmt = let
@@ -145,7 +166,7 @@ in
     Assign(e1, e2) => w(Assign(ret e1, ret e2))
   | AssignFnCall(fopt,s,args) => w(AssignFnCall(Option.map ret fopt, s,
                                                 map ret args))
-  | Block b => w(Block (#2 (remove_body_typedefs env b)))
+  | Block b => w(Block (#2 (anonymous_empty_fields_body env b)))
   | Chaos e => w(Chaos(ret e))
   | While(g,sopt,body) => w(While(ret g, sopt, rst body))
   | Trap(tty,s) => w(Trap(tty, rst s))
@@ -157,7 +178,7 @@ in
       val g' = ret g
       fun foldthis ((eoptlist, bilist), (env,acc)) = let
         val eoptlist' = map (Option.map ret) eoptlist
-        val (env', bilist') = remove_body_typedefs env bilist
+        val (env', bilist') = anonymous_empty_fields_body env bilist
       in
         (env', ((eoptlist',bilist') :: acc))
       end
@@ -175,18 +196,18 @@ in
   | AsmStmt _ => stmt
   | _ => raise Fail ("remove_stmt_typedefs: unhandled type - "^stmt_type stmt)
 end
-and remove_body_typedefs env bilist =
+and anonymous_empty_fields_body env bilist =
     case bilist of
       [] => (env, [])
     | BI_Stmt st :: rest => let
         val st' = BI_Stmt (remove_stmt_typedefs env st)
-        val (env', rest') = remove_body_typedefs env rest
+        val (env', rest') = anonymous_empty_fields_body env rest
       in
         (env', st' :: rest')
       end
     | BI_Decl d :: rest => let
         val (dopt, env') = remove_decl_typedefs env (node d)
-        val (env'', rest') = remove_body_typedefs env' rest
+        val (env'', rest') = anonymous_empty_fields_body env' rest
       in
         case dopt of
           NONE => (env'', rest')
@@ -214,15 +235,104 @@ fun remove_typedefs p = let
           | FnDefn ((retty, s), params, prepost, body) => let
               val params' = map (apfst (update_type env)) params
               val retty' = update_type env retty
-              val (_, body') = remove_body_typedefs env (node body)
+              val (_, body') = anonymous_empty_fields_body env (node body)
               val wbody = wrap(body', left body, right body)
               val newfn = FnDefn((retty', s), params', prepost, wbody)
             in
               transform (newfn :: acc) env es
             end
         end
+  val p' = transform [] [] p
 in
-  transform [] [] p
+  p'
+end
+
+
+fun anonymous_empty_fields_stmt env stmt = let
+  val ret = I
+  val rst = anonymous_empty_fields_stmt env
+  fun w st = swrap(st, sleft stmt, sright stmt)
+in
+  case snode stmt of
+    Assign(e1, e2) => w(Assign(ret e1, ret e2))
+  | AssignFnCall(fopt,s,args) => w(AssignFnCall(Option.map ret fopt, s,
+                                                map ret args))
+  | Block b => w(Block (#2 (anonymous_empty_fields_body env b)))
+  | Chaos e => w(Chaos(ret e))
+  | While(g,sopt,body) => w(While(ret g, sopt, rst body))
+  | Trap(tty,s) => w(Trap(tty, rst s))
+  | Return eopt => w(Return (Option.map ret eopt))
+  | ReturnFnCall (s,args) => w(ReturnFnCall(s,map ret args))
+  | IfStmt(g,s1,s2) => w(IfStmt(ret g, rst s1, rst s2))
+  | LabeledStmt(l,s1) =>w(LabeledStmt(l, rst s1))
+  | Switch(g,bilist) => let
+      val g' = ret g
+      fun foldthis ((eoptlist, bilist), (env,acc)) = let
+        val eoptlist' = map (Option.map ret) eoptlist
+        val (env', bilist') = anonymous_empty_fields_body env bilist
+      in
+        (env', ((eoptlist',bilist') :: acc))
+      end
+      val (_, bilist') = List.foldr foldthis (env,[]) bilist
+    in
+      w(Switch(g',bilist'))
+    end
+  | EmptyStmt => stmt
+  | Auxupd _ => stmt
+  | Ghostupd _ => stmt
+  | Spec _ => stmt
+  | Break => stmt
+  | Continue => stmt
+  | Goto _ => stmt
+  | AsmStmt _ => stmt
+  | _ => raise Fail ("anonymous_empty_fields_stmt: unhandled type - "^stmt_type stmt)
+end
+and anonymous_empty_fields_body env bilist =
+    case bilist of
+      [] => (env, [])
+    | BI_Stmt st :: rest => let
+        val st' = BI_Stmt (anonymous_empty_fields_stmt env st)
+        val (env', rest') = anonymous_empty_fields_body env rest
+      in
+        (env', st' :: rest')
+      end
+    | BI_Decl d :: rest => let
+        val (dopt, env') = anonymous_empty_fields_decl env (node d)
+        val (env'', rest') = anonymous_empty_fields_body env' rest
+      in
+        case dopt of
+          NONE => (env'', rest')
+        | SOME d' => (env'', BI_Decl (wrap(d',left d,right d)) :: rest')
+      end
+
+
+fun anonymous_empty_fields p = let
+  fun transform acc env p =
+      case p of
+        [] => List.rev acc
+      | e::es => let
+        in
+          case e of
+            Decl d => let
+              val (dopt, env') = anonymous_empty_fields_decl env (node d)
+            in
+              case dopt of
+                NONE => error ("anonymous_empty_fields: no result for: " ^ @{make_string} d) 
+              | SOME d' => transform (Decl (wrap (d',left d, right d))::acc) env' es
+            end
+          | FnDefn ((retty, s), params, prepost, body) => let
+              val params' = params
+              val retty' = retty
+              val (_, body') = anonymous_empty_fields_body env (node body)
+              val wbody = wrap(body', left body, right body)
+              val newfn = FnDefn((retty', s), params', prepost, wbody)
+            in
+              transform (newfn :: acc) env es
+            end
+        end
+  val p' = transform [] [] p
+in
+  p'
 end
 
 (* set up little state-transformer monad *)
@@ -251,7 +361,7 @@ fun new_var fname (ty,l,r) (embmap, calls) = let
                  NONE => 1
                | SOME i => i + 1
   val nm = tmp_var_name (rtype_n, temp_i)
-  val mvinfo = MungedVar{munge = nm, owned_by = NONE, fname = SOME fname, init=true}
+  val mvinfo = MungedVar{munge = nm, owned_by = NONE, fname = SOME fname, init=true, global=false}
   val temp = ewrap(Var (MString.dest nm, Unsynchronized.ref (SOME (ty, mvinfo))), l, r)
   val emb' = Symtab.update (rtype_n, temp_i) embmap
 in
@@ -305,6 +415,7 @@ in
         return (w(BinOp(bop,e1',e2')))))
     end
   | UnOp(uop,e) => doit e >- (fn e' => return (w(UnOp(uop, e'))))
+  | PostOp(e, m) => doit e >- (fn e' => return (w(PostOp(e',m))))
   | CondExp (g,t,e) => let
     in
       if eneeds_sc_protection t orelse eneeds_sc_protection e then let
@@ -438,16 +549,22 @@ in
     in
       sts @ [w(Chaos e')]
     end
-  | While(g,spec,body) => let
-      val (g', gsts) = expr_remove_embfncalls g
+  | While(g0,spec,body) => let
+      val (g, post_ops) = extract_post_ops ctxt g0
+      val _ = ProgramAnalysis.check_post_ops_while ctxt (g0, post_ops)
+      val post_op_assigns = map ProgramAnalysis.mk_post_op_assign post_ops
+      val (g', gsts0) = expr_remove_embfncalls g
+      val gsts = gsts0 @ post_op_assigns
       val body' = stmt_remove_embfncalls body
     in
       if null gsts andalso length body' = 1 then
         [w(While(g',spec,hd body'))]
       else
-        gsts @ [w(While(g',spec, swrap(Block (map BI_Stmt (body' @ gsts)),
+        let
+          val res = gsts @ [w(While(g',spec, swrap(Block (map BI_Stmt (body' @ gsts)),
                                        sleft body,
                                        sright body)))]
+        in res end
     end
   | Trap(tty, s) => let
       val s' = stmt_remove_embfncalls s
@@ -516,20 +633,14 @@ fun extdecl_remove_embfncalls ctxt cse e =
 
 fun remove_embedded_fncalls ctxt cse = map (extdecl_remove_embfncalls ctxt cse)
 
-fun compound_name {union} path =
- space_implode "'" (path @ [if union then "union" else "struct"]) 
 
-fun unsuffix_compound name =
-  case try (unsuffix "'union") name of
-     SOME name' => SOME (name', true)
-   | NONE => (case try (unsuffix "'struct") name of
-                SOME name' => SOME (name', false)
-              | NONE => NONE)
 
-fun unsuffix_compound' n = the_default n (unsuffix_compound n |> Option.map fst)
+
+fun unsuffix_compound' n = the_default n (unsuffix_compound_record n |> Option.map fst)
+
 
 fun dest_compound_name name =
-  unsuffix_compound name 
+  unsuffix_compound_record name 
   |> Option.map (fn (name', union) => (space_explode "'" name', union))
 
 fun subst_atomic_name th n =
@@ -537,7 +648,7 @@ fun subst_atomic_name th n =
 
 fun subst_name th n =
   case dest_compound_name n of
-    SOME (path, union) => compound_name {union=union} (map (unsuffix_compound' o subst_atomic_name th) path)
+    SOME (path, union) => compound_record_name {union=union} (map (unsuffix_compound' o subst_atomic_name th) path)
   | NONE => subst_atomic_name th n 
 
 fun norm_name th n = 
@@ -629,7 +740,7 @@ fun calctheta ctxt edecs edec acc =
              (i + 1, Symtab.update (oldnm, mkAnonStructName {union=false} i) th)
           else
             case paths_to_struct_or_union decls [] oldnm of
-              [path] => (i, Symtab.update (oldnm, compound_name {union=union} path) th)
+              [path] => (i, Symtab.update (oldnm, compound_record_name {union=union} path) th)
             | _ => (i + 1, Symtab.update (oldnm, mkAnonStructName {union=union} i) th)
 
         else

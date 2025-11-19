@@ -624,7 +624,8 @@ proof -
         using \<open>t0 > a\<close> that by auto
       done
     have "I t = integral {a .. t0} f + integral {t0 .. t} f"
-      by (smt I \<open>a \<le> t0\<close> \<open>f integrable_on {t0..t}\<close> has_integral_combine has_integral_integrable_integral that)
+      by (metis Henstock_Kurzweil_Integration.integral_combine I \<open>a \<le> t0\<close> dual_order.strict_trans
+          has_integral_integrable_integral less_eq_real_def that)
     also have "norm \<dots> \<le> norm (integral {a .. t0} f) + norm (integral {t0 .. t} f)" by norm
     also
     have "norm (integral {t0 .. t} f) \<le> integral {t0 .. t} (\<lambda>t. M * exp (c * t))"

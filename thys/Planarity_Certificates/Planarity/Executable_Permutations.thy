@@ -131,7 +131,7 @@ lemma list_succ_rotate[simp]:
 
 lemma list_succ_in_conv:
   "list_succ xs x \<in> set xs \<longleftrightarrow> x \<in> set xs"
-  by (auto simp: list_succ_def not_nil_if_in_set )
+unfolding list_succ_def using length_pos_if_in_set by force
 
 lemma list_succ_in_conv1:
   assumes "A \<inter> set xs = {}"
@@ -265,7 +265,7 @@ proof (induction xss)
 next
   case (Cons xs xss)
   have "list_succ xs permutes (set xs)"
-    using Cons by (intro list_succ_permutes) (simp add: distincts_def in_set_member)
+    using Cons by (intro list_succ_permutes) (simp add: distincts_def)
   moreover
   have "lists_succ xss permutes (\<Union>ys \<in> set xss. set ys)"
     using Cons by (auto simp: Cons distincts_def)
@@ -358,17 +358,17 @@ partial_function (tailrec)
 where
   "orbit_list_impl f s acc x = (let x' = f x in if x' = s then rev (x # acc) else orbit_list_impl f s (x # acc) x')"
 
-context notes [simp] = length_fold_remove1_le begin
+context notes [simp] = length_minus_list_mset begin
 text \<open>Computes the list of orbits\<close>
 fun orbits_list :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a list \<Rightarrow> 'a list list" where
   "orbits_list f [] = []"
 | "orbits_list f (x # xs) =
-     orbit_list f x # orbits_list f (fold remove1 (orbit_list f x) xs)"
+     orbit_list f x # orbits_list f (minus_list_mset xs (orbit_list f x))"
 
 fun orbits_list_impl :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a list \<Rightarrow> 'a list list" where
   "orbits_list_impl f [] = []"
 | "orbits_list_impl f (x # xs) =
-     (let fc = orbit_list_impl f x [] x in fc # orbits_list_impl f (fold remove1 fc xs))"
+     (let fc = orbit_list_impl f x [] x in fc # orbits_list_impl f (minus_list_mset xs fc))"
 
 declare orbit_list_impl.simps[code]
 end
@@ -449,7 +449,7 @@ lemma orbits_list_conv_impl:
   shows "orbits_list f xs = orbits_list_impl f xs"
 proof (induct "length xs" arbitrary: xs rule: less_induct)
   case less show ?case
-    using assms by (cases xs) (auto simp: assms less less_Suc_eq_le length_fold_remove1_le
+    using assms by (cases xs) (auto simp: assms less less_Suc_eq_le length_minus_list_mset
       orbit_list_conv_impl permutation_self_in_orbit Let_def)
 qed
 
@@ -465,24 +465,25 @@ proof (induct "length xs" arbitrary: xs rule: less_induct)
     case Nil then show ?thesis by simp
   next
     case (Cons x' xs')
-    let ?xs'' = "fold remove1 (orbit_list f x') xs'"
+    let ?xs'' = "minus_list_mset xs' (orbit_list f x')"
     have A: "sset (orbits_list f ?xs'') = orbit f ` set ?xs''"
-      using Cons by (simp add: less_Suc_eq_le length_fold_remove1_le less.hyps)
+      using Cons by (simp add: less_Suc_eq_le length_minus_list_mset less.hyps)
     have B: "set (orbit_list f x') = orbit f x'"
       by (rule set_orbit_list) (simp add: permutation_self_in_orbit assms)
 
-    have "orbit f ` set (fold remove1 (orbit_list f x') xs') \<subseteq> orbit f ` set xs'"
-      using set_fold_remove1[of _ xs'] by auto
+    have "orbit f ` set (minus_list_mset xs' (orbit_list f x')) \<subseteq> orbit f ` set xs'"
+      using minus_list_mset_subset[of xs'] by auto
     moreover
-    have "orbit f ` set xs' - {orbit f x'} \<subseteq> (orbit f ` set (fold remove1 (orbit_list f x') xs'))" (is "?L \<subseteq> ?R")
+    have "orbit f ` set xs' - {orbit f x'} \<subseteq> (orbit f ` set (minus_list_mset xs' (orbit_list f x')))" (is "?L \<subseteq> ?R")
     proof
       fix A assume "A \<in> ?L"
       then obtain y where "A = orbit f y" "y \<in> set xs'" by auto
       have "A \<noteq> orbit f x'" using \<open>A \<in> ?L\<close> by auto
       from \<open>A = _\<close> \<open>A \<noteq> _\<close> have "y \<notin> orbit f x'"
         by (meson assms cyclic_on_orbit orbit_cyclic_eq3 permutation_permutes)
-      with \<open>y \<in> _\<close> have "y \<in> set (fold remove1 (orbit_list f x') xs')"
-        by (auto simp: set_fold_remove1' set_orbit_list permutation_self_in_orbit assms)
+      with \<open>y \<in> _\<close> have "y \<in> set (minus_list_mset xs' (orbit_list f x'))"
+        using minus_list_set_subset_minus_list_mset
+        by (fastforce simp: set_orbit_list permutation_self_in_orbit assms)
       then show "A \<in> ?R" using \<open>A = _\<close> by auto
     qed
     ultimately
@@ -606,14 +607,14 @@ proof (induct "length as" arbitrary: as rule: less_induct)
   next
     case (Cons a as')
     let ?as' = "fold remove1 (orbit_list f a) as'"
-    from Cons less.prems have A: "distincts (orbits_list f (fold remove1 (orbit_list f a) as'))"
-      by (intro less) (auto simp: distinct_fold_remove1 length_fold_remove1_le less_Suc_eq_le)
+    from Cons less.prems have A: "distincts (orbits_list f (minus_list_mset as' (orbit_list f a)))"
+      by (intro less) (auto simp: distinct_minus_list_mset length_minus_list_mset less_Suc_eq_le)
 
-    have B: "set (orbit_list f a) \<inter> \<Union>(sset (orbits_list f (fold remove1 (orbit_list f a) as'))) = {}"
+    have B: "set (orbit_list f a) \<inter> \<Union>(sset (orbits_list f (minus_list_mset as' (orbit_list f a)))) = {}"
     proof -
-      have "orbit f a \<inter> set (fold remove1 (orbit_list f a) as') = {}"
-        using assms less.prems Cons by (simp add: set_fold_remove1_distinct set_orbit_list')
-      then have "orbit f a \<inter> \<Union> (orbit f ` set (fold remove1 (orbit_list f a) as')) = {}"
+      have "orbit f a \<inter> set (minus_list_mset as' (orbit_list f a)) = {}"
+        using assms less.prems Cons by (simp add: set_minus_list_mset_distinct set_orbit_list')
+      then have "orbit f a \<inter> \<Union> (orbit f ` set (minus_list_mset as' (orbit_list f a))) = {}"
         by auto (metis assms(2) cyclic_on_orbit disjoint_iff_not_equal permutation_self_in_orbit[OF assms(2)] orbit_cyclic_eq3 permutation_permutes)
       then show ?thesis using assms
       by (auto simp: set_orbit_list' sset_orbits_list disjoint_iff_not_equal)

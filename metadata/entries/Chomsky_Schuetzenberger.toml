@@ -1,0 +1,33 @@
+title = "Chomsky-Schützenberger Representation Theorem"
+date = 2025-06-02
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+The Chomksy-Schützenberger Representation Theorem says that any
+context-free language is the homomorphic image of the intersection of
+a regular language and a Dyck language."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.roos]
+email = "roos_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1016/S0049-237X(09)70104-1",
+]
+pubs = [
+  "https://en.wikipedia.org/wiki/Chomsky%E2%80%93Sch%C3%BCtzenberger_representation_theorem",
+]

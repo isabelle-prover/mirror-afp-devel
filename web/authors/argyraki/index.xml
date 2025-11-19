@@ -1,108 +1,121 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>argyraki on Archive of Formal Proofs
-    </title>
-    <link>/authors/argyraki/</link>
-    <description>
-        Recent content in argyraki 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Thu, 10 Aug 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/argyraki/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Polygonal Number Theorem</title>
-          <link>/entries/Polygonal_Number_Theorem.html</link>
-          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Polygonal_Number_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
-          <link>/entries/Kneser_Cauchy_Davenport.html</link>
-          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Kneser_Cauchy_Davenport.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Balog–Szemerédi–Gowers Theorem</title>
-          <link>/entries/Balog_Szemeredi_Gowers.html</link>
-          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Khovanskii&amp;#x27;s Theorem</title>
-          <link>/entries/Khovanskii_Theorem.html</link>
-          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Khovanskii_Theorem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Plünnecke-Ruzsa Inequality</title>
-          <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
-          <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
-          <link>/entries/Roth_Arithmetic_Progressions.html</link>
-          <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Szemerédi&#39;s Regularity Lemma</title>
-          <link>/entries/Szemeredi_Regularity.html</link>
-          <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Szemeredi_Regularity.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Amicable Numbers</title>
-          <link>/entries/Amicable_Numbers.html</link>
-          <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Amicable_Numbers.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Irrationality Criteria for Series by Erdős and Straus</title>
-          <link>/entries/Irrational_Series_Erdos_Straus.html</link>
-          <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/Irrational_Series_Erdos_Straus.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Aristotle&#39;s Assertoric Syllogistic</title>
-          <link>/entries/Aristotles_Assertoric_Syllogistic.html</link>
-          <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Aristotles_Assertoric_Syllogistic.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>The Transcendence of Certain Infinite Series</title>
-          <link>/entries/Transcendence_Series_Hancl_Rucki.html</link>
-          <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/Transcendence_Series_Hancl_Rucki.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Octonions</title>
-          <link>/entries/Octonions.html</link>
-          <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Octonions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Irrational Rapidly Convergent Series</title>
-          <link>/entries/Irrationality_J_Hancl.html</link>
-          <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Irrationality_J_Hancl.html</guid>
-          <description></description>
-        </item>
+    <title>Angeliki Koutsoukou-Argyraki</title>
+    <link>https://isa-afp.org/authors/argyraki/</link>
+    <description>AFP entries of Angeliki Koutsoukou-Argyraki</description><item>
+  <title>Transitive Union-Closed Families</title>
+  <link>https://isa-afp.org/entries/Transitive_Union_Closed_Families.html</link>
+  <pubDate>Mon, 20 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Transitive Union-Closed Families in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Wooley&#39;s Discrete Inequality</title>
+  <link>https://isa-afp.org/entries/Wooley_Elementary_Discrete_Inequality.html</link>
+  <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
+  <description>Wooley&#39;s Discrete Inequality in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Polygonal Number Theorem</title>
+  <link>https://isa-afp.org/entries/Polygonal_Number_Theorem.html</link>
+  <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+  <description>Polygonal Number Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
+  <link>https://isa-afp.org/entries/Kneser_Cauchy_Davenport.html</link>
+  <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+  <description>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Balog–Szemerédi–Gowers Theorem</title>
+  <link>https://isa-afp.org/entries/Balog_Szemeredi_Gowers.html</link>
+  <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+  <description>The Balog–Szemerédi–Gowers Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Khovanskii&amp;#x27;s Theorem</title>
+  <link>https://isa-afp.org/entries/Khovanskii_Theorem.html</link>
+  <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+  <description>Khovanskii&amp;#x27;s Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Plünnecke-Ruzsa Inequality</title>
+  <link>https://isa-afp.org/entries/Pluennecke_Ruzsa_Inequality.html</link>
+  <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
+  <description>The Plünnecke-Ruzsa Inequality in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
+  <link>https://isa-afp.org/entries/Roth_Arithmetic_Progressions.html</link>
+  <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+  <description>Roth&#39;s Theorem on Arithmetic Progressions in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Szemerédi&#39;s Regularity Lemma</title>
+  <link>https://isa-afp.org/entries/Szemeredi_Regularity.html</link>
+  <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
+  <description>Szemerédi&#39;s Regularity Lemma in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Amicable Numbers</title>
+  <link>https://isa-afp.org/entries/Amicable_Numbers.html</link>
+  <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
+  <description>Amicable Numbers in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Irrationality Criteria for Series by Erdős and Straus</title>
+  <link>https://isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
+  <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+  <description>Irrationality Criteria for Series by Erdős and Straus in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Aristotle&#39;s Assertoric Syllogistic</title>
+  <link>https://isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
+  <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
+  <description>Aristotle&#39;s Assertoric Syllogistic in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+</item>
+<item>
+  <title>The Transcendence of Certain Infinite Series</title>
+  <link>https://isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
+  <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
+  <description>The Transcendence of Certain Infinite Series in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Octonions</title>
+  <link>https://isa-afp.org/entries/Octonions.html</link>
+  <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
+  <description>Octonions in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Irrational Rapidly Convergent Series</title>
+  <link>https://isa-afp.org/entries/Irrationality_J_Hancl.html</link>
+  <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+  <description>Irrational Rapidly Convergent Series in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Analysis</category>
+</item>
+
   </channel>
 </rss>

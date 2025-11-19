@@ -8,13 +8,13 @@ begin
 subsection \<open>Specific results about rewriting under a linear variable-separated system\<close>
 (***************** AUX ********************)
 
-lemma card_varposs_ground:
-  "card (varposs s) = 0 \<longleftrightarrow> ground s"
-  by (simp add: finite_varposs varposs_empty_gound)
+lemma card_var_poss_ground:
+  "card (var_poss s) = 0 \<longleftrightarrow> ground s"
+  by (simp add: finite_var_poss var_poss_empty_gound)
 
-lemma poss_of_term_subst_apply_varposs:
+lemma poss_of_term_subst_apply_var_poss:
   assumes "p \<in> poss_of_term (constT c) (s \<cdot> \<sigma>)" "(c, 0) \<notin> funas_term s"
-  shows "\<exists> q. q \<in> varposs s \<and> q \<le>\<^sub>p p" using assms
+  shows "\<exists> q. q \<in> var_poss s \<and> q \<le>\<^sub>p p" using assms
 proof (induct p arbitrary: s)
   case Nil
   then show ?case by (cases s) (auto simp: poss_of_term_def)
@@ -22,8 +22,8 @@ next
   case (Cons i p)
   show ?case using Cons(1)[of "args s ! i"] Cons(2-)
     apply (cases s)
-      apply (auto simp: poss_of_term_def)
-      apply (metis position_less_eq_Cons)+
+     apply (auto simp: poss_of_term_def)
+     apply fastforce+
     done
 qed
 
@@ -33,7 +33,7 @@ lemma poss_of_term_hole_poss:
 proof (induct C arbitrary: p)
   case (More f ss C ts)
   from More(3) obtain ps where [simp]: "p = length ss # ps" and h: "hole_pos C \<le>\<^sub>p ps"
-    by (metis append_Cons hole_pos.simps(2) less_eq_poss_append_itself pos_les_eq_append_diff)
+    using less_eq_pos_def by auto
   show ?case using More(1)[OF _ h] More(2)
     by (auto simp: poss_of_term_def)
 qed auto
@@ -41,21 +41,21 @@ qed auto
 lemma remove_const_subst_from_match:
   assumes "s \<cdot> const_subst c = C\<langle>l \<cdot> \<sigma>\<rangle>" "(c, 0) \<notin> funas_term l" "linear_term l"
   shows "\<exists> D \<tau>. s = D\<langle>l \<cdot> \<tau>\<rangle>" using assms
-proof (induct "card (varposs s)" arbitrary: s)
+proof (induct "card (var_poss s)" arbitrary: s)
   case (Suc x)
-  from Suc(2) obtain p ps where varposs: "varposs s = insert p ps" "p \<notin> ps"
+  from Suc(2) obtain p ps where var_poss: "var_poss s = insert p ps" "p \<notin> ps"
     by (metis card_Suc_eq)
-  let ?s = "s[p \<leftarrow> Fun c []]" have vp: "p \<in> varposs s" using varposs by auto
+  let ?s = "s[p \<leftarrow> Fun c []]" have vp: "p \<in> var_poss s" using var_poss by auto
   then have *: "?s \<cdot> const_subst c = s \<cdot>  const_subst c"
     by (induct s arbitrary: p) (auto simp: nth_list_update map_update intro!: nth_equalityI)
-  have "varposs ?s = ps" using varposs varposs_ground_replace_at[of p s "constT c"]
+  have "var_poss ?s = ps" using var_poss var_poss_ground_replace_at[of p s "constT c"]
     by auto
-  from Suc(1)[of ?s] Suc(2-) varposs obtain D \<tau> where split: "s[p \<leftarrow> constT c] = D\<langle>l \<cdot> \<tau>\<rangle>"
-    by (metis "*" \<open>varposs s[p \<leftarrow> constT c] = ps\<close> card_insert_if diff_Suc_1 finite_varposs)
+  from Suc(1)[of ?s] Suc(2-) var_poss obtain D \<tau> where split: "s[p \<leftarrow> constT c] = D\<langle>l \<cdot> \<tau>\<rangle>"
+    by (metis "*" \<open>var_poss s[p \<leftarrow> constT c] = ps\<close> card_insert_if diff_Suc_1 finite_var_poss)
   have wit: "s =  D\<langle>l \<cdot> \<tau>\<rangle>[p \<leftarrow> s |_ p]" unfolding arg_cong[OF split, of "\<lambda> t. t[p \<leftarrow> s |_ p]", symmetric]
     using vp by simp
   from vp split have cases: "p \<bottom> hole_pos D \<or> hole_pos D \<le>\<^sub>p p"
-    by auto (metis poss_of_term_const_ctxt_apply poss_of_term_replace_term_at varposs_imp_poss)
+    by auto (metis poss_of_term_const_ctxt_apply poss_of_term_replace_term_at var_poss_imp_poss)
   show ?case
   proof (cases "p \<bottom> hole_pos D")
     case True then show ?thesis using wit
@@ -64,17 +64,17 @@ proof (induct "card (varposs s)" arbitrary: s)
     case False
     then have hole: "hole_pos D \<le>\<^sub>p p" using cases by auto
     from vp split have "p \<in> poss_of_term (constT c) s[p \<leftarrow> constT c]"
-      using poss_of_term_replace_term_at varposs_imp_poss by blast
+      using poss_of_term_replace_term_at var_poss_imp_poss by blast
     from poss_of_term_hole_poss[OF this[unfolded split] hole]
     have "p -\<^sub>p hole_pos D \<in> poss_of_term (constT c) (l \<cdot> \<tau>)"
       by simp
-    from poss_of_term_subst_apply_varposs[OF this Suc(4)] obtain q where
-      q: "q \<in> varposs l" "q \<le>\<^sub>p (p -\<^sub>p (hole_pos D))" by blast
+    from poss_of_term_subst_apply_var_poss[OF this Suc(4)] obtain q where
+      q: "q \<in> var_poss l" "q \<le>\<^sub>p (p -\<^sub>p (hole_pos D))" by blast
     show ?thesis using wit Suc(5) hole
-      using linear_term_varposs_subst_replace_term[OF Suc(5) q, of \<tau> "s |_ p"]
+      using linear_term_var_poss_subst_replace_term[OF Suc(5) q, of \<tau> "s |_ p"]
       by auto
   qed
-qed (auto simp: card_varposs_ground ground_subst_apply)
+qed (auto simp: card_var_poss_ground ground_subst_apply)
 
 
 
@@ -94,7 +94,7 @@ lemma ground_NF_srstep_gsrstep:
   by blast
 
 lemma NF_to_fresh_const_subst_NF:
-  assumes lin: "linear_sys \<R>" and fresh_const: "(c, 0) \<notin> funas_rel \<R>" "funas_rel \<R> \<subseteq> \<F>"
+  assumes lin: "linear_sys \<R>" and fresh_const: "(c, 0) \<notin> funas_trs \<R>" "funas_trs \<R> \<subseteq> \<F>"
     and nf_f: "funas_term s \<subseteq> \<F>" "s \<in> NF (srstep \<F> \<R>)"
   shows "s \<cdot> const_subst c \<in> NF (gsrstep \<H> \<R>)"
 proof (rule ccontr)
@@ -109,7 +109,7 @@ qed
 
 
 lemma fresh_const_subst_NF_pres:
-  assumes fresh_const: "(c, 0) \<notin> funas_rel \<R>" "funas_rel \<R> \<subseteq> \<F>"
+  assumes fresh_const: "(c, 0) \<notin> funas_trs \<R>" "funas_trs \<R> \<subseteq> \<F>"
     and nf_f: "funas_term s \<subseteq> \<F>" "\<F> \<subseteq> \<H>" "(c, 0) \<in> \<H>" "s \<cdot> const_subst c \<in> NF (gsrstep \<H> \<R>)"
   shows "s \<in> NF (srstep \<F> \<R>)"
 proof (rule ccontr)
@@ -121,7 +121,7 @@ proof (rule ccontr)
     by (auto simp: subst_compose simp flip: subst_subst_compose intro!: term_subst_eq)
   have funas: "funas_ctxt D \<subseteq> \<H>" "funas_term (l \<cdot> ?\<tau>) \<subseteq> \<H>" "funas_term (r \<cdot> ?\<tau>) \<subseteq> \<H>"
     using step nf_f(1 - 3) fresh_const(2) unfolding D_def
-    by (auto simp: funas_ctxt_subst_apply_ctxt funas_term_subst funas_rel_def split: if_splits)
+    by (auto simp: funas_term_subst funas_rel_def split: if_splits)
   moreover have "ground_ctxt D" "ground (l \<cdot> ?\<tau>)" "ground (r \<cdot> ?\<tau>)" using arg_cong[OF s, of ground] unfolding D_def
     by (auto intro!: ground_substI)
   ultimately have "(D\<langle>l \<cdot> ?\<tau>\<rangle>, D\<langle>r \<cdot> ?\<tau>\<rangle>) \<in> gsrstep \<H> \<R>" using step(1)
@@ -132,8 +132,8 @@ qed
 
 lemma linear_sys_gNF_eq_NF_eq:
   assumes lin: "linear_sys \<R>" "linear_sys \<S>"
-   and well: "funas_rel \<R> \<subseteq> \<F>" "funas_rel \<S> \<subseteq> \<F>"
-   and fresh: "(c, 0) \<notin> funas_rel \<R>" "(c, 0) \<notin> funas_rel \<S>"
+   and well: "funas_trs \<R> \<subseteq> \<F>" "funas_trs \<S> \<subseteq> \<F>"
+   and fresh: "(c, 0) \<notin> funas_trs \<R>" "(c, 0) \<notin> funas_trs \<S>"
    and lift: "\<F> \<subseteq> \<H>" "(c, 0) \<in> \<H>"
    and nf: "NF (gsrstep \<H> \<R>) = NF (gsrstep \<H> \<S>)"
  shows "NF (srstep \<F> \<R>) = NF (srstep \<F> \<S>)"
@@ -241,8 +241,9 @@ lemma llrg_ground_rhs:
 
 lemma llrg_rrsteps_groundness:
   assumes "llrg \<R>" and "(s, t) \<in> (srrstep \<F> \<R>)"
-  shows "ground t" using assms(2) ground_vars_term_empty
-  by (fastforce simp: llrg_def sig_step_def dest!: llrg_ground_rhs[OF assms(1)] split: prod.splits)
+  shows "ground t" using assms(2) 
+  by (auto simp: llrg_def ground_vars_term_empty sig_step_def' vars_term_subst
+    elim!: rrstepE dest!: llrg_ground_rhs[OF assms(1)] split: prod.splits)
 
 lemma llrg_rsteps_pres_groundness:
   assumes "llrg \<R>" "ground s"
@@ -270,7 +271,7 @@ lemma llrg_srsteps_with_root_step_inv_ground:
 
 lemma llrg_funas_term_step_pres:
   assumes "llrg \<R>" and "(s, t) \<in> (rstep \<R>)"
-  shows "funas_term t \<subseteq> funas_rel \<R> \<union> funas_term s"
+  shows "funas_term t \<subseteq> funas_trs \<R> \<union> funas_term s"
 proof -
   have [simp]: "(l, r) \<in> \<R> \<Longrightarrow> r \<cdot> \<sigma> = r" for l r \<sigma>  using assms(1) unfolding llrg_def
     by(auto split: prod.splits intro: ground_subst_apply)
@@ -280,7 +281,7 @@ qed
 
 lemma llrg_funas_term_steps_pres:
   assumes "llrg \<R>" and "(s, t) \<in> (rstep \<R>)\<^sup>*"
-  shows "funas_term t \<subseteq> funas_rel \<R> \<union> funas_term s"
+  shows "funas_term t \<subseteq> funas_trs \<R> \<union> funas_term s"
   using assms(2) llrg_funas_term_step_pres[OF assms(1)]
   by (induct) auto
 
@@ -373,7 +374,7 @@ proof (induct s)
 qed simp
 
 lemma remove_const_lv_mondaic_step_lhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
    and mon: "monadic \<F>"
    and step: "(s \<cdot> const_subst c, t) \<in> (srstep \<F> \<R>)"
  shows "(s, t) \<in> (srstep \<F> \<R>)"
@@ -389,7 +390,7 @@ proof -
   then have mt: "monadic_term s" "monadic_term (s \<cdot> const_subst c)"
     using monadic_sig_funas_term_mt[OF mon] by auto
   then have ml: "monadic_term (l \<cdot> \<sigma>)" unfolding s(2)
-    by (metis funas_ctxt_apply le_sup_iff step mon monadic_sig_funas_term_mt s(2) sig_stepE(1))
+    by (metis funas_term_ctxt_apply le_sup_iff step mon monadic_sig_funas_term_mt s(2) sig_stepE(1))
   show ?thesis
   proof (cases "ground s")
     case True then show ?thesis using step
@@ -401,7 +402,7 @@ proof -
     have ngrl: "\<not> ground l" using s(2) cs mt ng
     proof (induct s arbitrary: C)
       case (Var x) then show ?case using cl cs
-        by (cases C) (auto simp: funas_rel_def ground_subst_apply)
+        by (cases C) (auto simp: funas_trs_def ground_subst_apply)
     next
       case (Fun f ts)
       from Fun(5-) obtain t where [simp]: "ts = [t]" by (cases ts) auto
@@ -433,12 +434,12 @@ proof -
 qed
 
 lemma remove_const_lv_mondaic_step_rhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and step: "(s, t \<cdot> const_subst c) \<in> (srstep \<F> \<R>)"
   shows "(s, t) \<in> (srstep \<F> \<R>)"
 proof -
-  have inv_v: "lv (\<R>\<inverse>)""(c, 0) \<notin> funas_rel (\<R>\<inverse>)" using fresh lv
+  have inv_v: "lv (\<R>\<inverse>)""(c, 0) \<notin> funas_trs (\<R>\<inverse>)" using fresh lv
     by (auto simp: funas_rel_def lv_def)
   have "(t \<cdot> const_subst c, s) \<in> (srstep \<F> (\<R>\<inverse>))" using step
     by (auto simp: rew_converse_outwards)
@@ -448,7 +449,7 @@ proof -
 qed
 
 lemma remove_const_lv_mondaic_steps_lhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and steps: "(s \<cdot> const_subst c, t) \<in> (srstep \<F> \<R>)\<^sup>+"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
@@ -456,7 +457,7 @@ lemma remove_const_lv_mondaic_steps_lhs:
   by (meson converse_tranclE r_into_trancl trancl_into_trancl2)
 
 lemma remove_const_lv_mondaic_steps_rhs:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and steps: "(s, t \<cdot> const_subst c) \<in> (srstep \<F> \<R>)\<^sup>+"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
@@ -465,7 +466,7 @@ lemma remove_const_lv_mondaic_steps_rhs:
 
 
 lemma remove_const_lv_mondaic_steps:
-  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_rel \<R>"
+  assumes lv: "lv \<R>" and fresh: "(c, 0) \<notin> funas_trs \<R>"
     and mon: "monadic \<F>"
     and steps: "(s \<cdot> const_subst c, t \<cdot> const_subst c) \<in> (srstep \<F> \<R>)\<^sup>+"
   shows "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+"
@@ -481,7 +482,7 @@ lemma lv_root_step_idep_subst:
   shows "(s \<cdot> \<sigma>, t \<cdot> \<tau>) \<in>  srrstep \<F> \<R>"
 proof -
   from assms(2) obtain l r \<gamma> where mid: "s = l \<cdot> \<gamma>" "t = r \<cdot> \<gamma>" "(l, r) \<in> \<R>"
-    by (auto simp: sig_step_def)
+    by (auto simp: sig_step_def' elim: rrstepE)
   from mid(3) assms(1) have vs: "x \<in> vars_term l \<Longrightarrow> x \<notin> vars_term r" for x
     by (auto simp: lv_def)
   let ?\<sigma> = "\<lambda> x. if x \<in> vars_term l then (\<gamma> x) \<cdot> \<sigma> else (\<gamma> x) \<cdot> \<tau>"

@@ -1,6 +1,15 @@
+(*<*)
 theory MLSS_Typing_Defs
-  imports MLSS_Semantics "HOL-Library.Adhoc_Overloading"
+  imports MLSS_Semantics
 begin
+(*>*)
+
+chapter \<open>A Tableau Calculus for MLSS\<close>
+text \<open>
+In this chapter, we define a tableau calculus for MLSS.
+Since we want this calculus to be compatible with Isabelle/HOL instead of a set theory, we introduce a typing system with which
+we can define the notion of urelements, i.e.\ elements that are not sets.
+\<close>
 
 section \<open>Typing Rules\<close>
 text \<open>
@@ -37,17 +46,23 @@ definition types_pset_fm :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_fm \<R
   "types_pset_fm v \<phi> \<equiv> (\<forall>a \<in> atoms \<phi>. types_pset_atom v a)"
 
 consts types :: "('a \<Rightarrow> nat) \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 45)
-adhoc_overloading types types_pset_atom types_pset_fm
+adhoc_overloading types \<rightleftharpoons> types_pset_atom types_pset_fm
 
 inductive_cases types_pset_atom_Member_cases:
   "v \<turnstile> s \<in>\<^sub>s t1 \<squnion>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 \<sqinter>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 -\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s Single t"
 
+(*<*)
 context includes no member_ASCII_syntax
 begin
+(*>*)
 abbreviation "urelem' v (\<phi> :: 'a pset_fm) t \<equiv> v \<turnstile> \<phi> \<and> v \<turnstile> t : 0"
+(*<*)
 end
+(*>*)
 
 definition urelem :: "'a pset_fm \<Rightarrow> 'a pset_term \<Rightarrow> bool" where
   "urelem \<phi> t \<equiv> (\<exists>v. urelem' v \<phi> t)"
 
+(*<*)
 end
+(*>*)

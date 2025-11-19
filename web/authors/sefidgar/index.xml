@@ -1,59 +1,53 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>sefidgar on Archive of Formal Proofs
-    </title>
-    <link>/authors/sefidgar/</link>
-    <description>
-        Recent content in sefidgar 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 17 Mar 2021 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/sefidgar/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
-          <link>/entries/Constructive_Cryptography_CM.html</link>
-          <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography_CM.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Constructive Cryptography in HOL</title>
-          <link>/entries/Constructive_Cryptography.html</link>
-          <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
-          <guid>/entries/Constructive_Cryptography.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
-          <link>/entries/Flow_Networks.html</link>
-          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Flow_Networks.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing Push-Relabel Algorithms</title>
-          <link>/entries/Prpu_Maxflow.html</link>
-          <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Prpu_Maxflow.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Game-based cryptography in HOL</title>
-          <link>/entries/Game_Based_Crypto.html</link>
-          <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
-          <guid>/entries/Game_Based_Crypto.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalizing the Edmonds-Karp Algorithm</title>
-          <link>/entries/EdmondsKarp_Maxflow.html</link>
-          <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
-          <guid>/entries/EdmondsKarp_Maxflow.html</guid>
-          <description></description>
-        </item>
+    <title>S. Reza Sefidgar</title>
+    <link>https://isa-afp.org/authors/sefidgar/</link>
+    <description>AFP entries of S. Reza Sefidgar</description><item>
+  <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
+  <link>https://isa-afp.org/entries/Constructive_Cryptography_CM.html</link>
+  <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+  <description>Constructive Cryptography in HOL: the Communication Modeling Aspect in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Constructive Cryptography in HOL</title>
+  <link>https://isa-afp.org/entries/Constructive_Cryptography.html</link>
+  <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
+  <description>Constructive Cryptography in HOL in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Formalizing Push-Relabel Algorithms</title>
+  <link>https://isa-afp.org/entries/Prpu_Maxflow.html</link>
+  <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Formalizing Push-Relabel Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+  <link>https://isa-afp.org/entries/Flow_Networks.html</link>
+  <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+  <description>Flow Networks and the Min-Cut-Max-Flow Theorem in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Game-based cryptography in HOL</title>
+  <link>https://isa-afp.org/entries/Game_Based_Crypto.html</link>
+  <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+  <description>Game-based cryptography in HOL in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
+<item>
+  <title>Formalizing the Edmonds-Karp Algorithm</title>
+  <link>https://isa-afp.org/entries/EdmondsKarp_Maxflow.html</link>
+  <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
+  <description>Formalizing the Edmonds-Karp Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+
   </channel>
 </rss>

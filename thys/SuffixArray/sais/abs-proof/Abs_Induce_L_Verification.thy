@@ -1552,7 +1552,7 @@ proof -
        nor do we need to prove it. \<close>
     assume "l \<ge> length SA"
     hence "SA[l := j] = SA"
-      by simp
+      by (simp add: list_update_beyond)
     with `l_distinct_inv T SA`
     show ?thesis
       by simp
@@ -1864,11 +1864,7 @@ proof (cases "l < length SA")
     then show "x \<in> cur_l_types \<alpha> T (SA[l := j]) b"
       by (simp add: assms(1) bucket_def cur_l_types_def l_bucket_def set_update_mem_neqI)
   qed
-next
-  assume "\<not> l < length SA"
-  then show ?thesis
-    by simp
-qed
+qed (simp add: list_update_beyond)
 
 lemma num_l_types_update_1:
   "\<lbrakk>SA ! l = length T; l < length SA; j \<notin> set SA; suffix_type T j = L_type; j < length T;
@@ -1886,10 +1882,7 @@ lemma num_l_types_update_1:
 lemma num_l_types_update_2:
   "\<lbrakk>SA ! l = length T; \<alpha> (T ! j) \<noteq> b\<rbrakk> \<Longrightarrow>
     num_l_types \<alpha> T (SA[l := j]) b = num_l_types \<alpha> T SA b"
-  apply (cases "l < length SA"; clarsimp?)
-  apply (clarsimp simp: num_l_types_def)
-  apply (intro arg_cong[where f = card])
-  by (erule (1) cur_l_types_update_2)
+  by (simp add: cur_l_types_update_2 num_l_types_def)
 
 lemma l_bucket_ptr_inv_maintained:
   assumes "l_bucket_ptr_inv \<alpha> T B SA"

@@ -631,7 +631,7 @@ fun inductive_def (binding as ((R, T), _)) intrs lthy =
 fun define_graph Gname fvar domT ranT clauses RCss lthy =
   let
     val GT = domT --> ranT --> boolT
-    val (Gvar as (n, T)) = singleton (Variable.variant_frees lthy []) (Gname, GT)
+    val (Gvar as (n, T)) = singleton (Variable.variant_names lthy) (Gname, GT)
 
     fun mk_GIntro (ClauseContext {qs, gs, lhs, rhs, ...}) RCs =
       let
@@ -667,7 +667,7 @@ fun define_function fdefname (fname, mixfix) domT ranT G default lthy =
 fun define_recursion_relation Rname domT qglrs clauses RCss lthy =
   let
     val RT = domT --> domT --> boolT
-    val (Rvar as (n, T)) = singleton (Variable.variant_frees lthy []) (Rname, RT)
+    val (Rvar as (n, T)) = singleton (Variable.variant_names lthy) (Rname, RT)
 
     fun mk_RIntro (ClauseContext {qs, gs, lhs, ...}, (oqs, _, _, _)) (rcfix, rcassm, rcarg) =
       HOLogic.mk_Trueprop (Free Rvar $ rcarg $ lhs)

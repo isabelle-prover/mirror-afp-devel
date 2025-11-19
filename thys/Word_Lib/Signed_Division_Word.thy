@@ -2,7 +2,6 @@
  * Copyright Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
-Proofs tidied by LCP, 2024-09
  *)
 
 section \<open>Signed division on word\<close>
@@ -28,12 +27,12 @@ lift_definition signed_modulo_word :: \<open>'a::len word \<Rightarrow> 'a word 
   is \<open>\<lambda>k l. signed_take_bit (LENGTH('a) - Suc 0) k smod signed_take_bit (LENGTH('a) - Suc 0) l\<close>
   by (simp flip: signed_take_bit_decr_length_iff)
 
-lemma sdiv_word_def [code]:
+lemma sdiv_word_def:
   \<open>v sdiv w = word_of_int (sint v sdiv sint w)\<close>
   for v w :: \<open>'a::len word\<close>
   by transfer simp
 
-lemma smod_word_def [code]:
+lemma smod_word_def:
   \<open>v smod w = word_of_int (sint v smod sint w)\<close>
   for v w :: \<open>'a::len word\<close>
   by transfer simp
@@ -49,6 +48,24 @@ instance proof
 qed
 
 end
+
+lemma signed_divide_word_code [code]: \<^marker>\<open>contributor \<open>Andreas Lochbihler\<close>\<close>
+  \<open>v sdiv w =
+   (let v' = sint v; w' = sint w;
+        negative = (v' < 0) \<noteq> (w' < 0);
+        result = \<bar>v'\<bar> div \<bar>w'\<bar>
+    in word_of_int (if negative then - result else result))\<close>
+  for v w :: \<open>'a::len word\<close>
+  by (simp add: sdiv_word_def signed_divide_int_def sgn_if)
+
+lemma signed_modulo_word_code [code]: \<^marker>\<open>contributor \<open>Andreas Lochbihler\<close>\<close>
+  \<open>v smod w =
+   (let v' = sint v; w' = sint w;
+        negative = (v' < 0);
+        result = \<bar>v'\<bar> mod \<bar>w'\<bar>
+    in word_of_int (if negative then - result else result))\<close>
+  for v w :: \<open>'a::len word\<close>
+  by (simp add: smod_word_def signed_modulo_int_def sgn_if)
 
 lemma sdiv_smod_id:
   \<open>(a sdiv b) * b + (a smod b) = a\<close>
@@ -77,7 +94,7 @@ proof -
   have "sint (- (1::'a word)) = - 1"
     by simp
   then show ?thesis
-    by (metis int_sdiv_simps(1) mult_1 mult_minus_left scast_eq scast_id 
+    by (metis int_sdiv_simps(1) mult_1 mult_minus_left scast_eq scast_id
         sdiv_minus_eq sdiv_word_def signed_1 wi_hom_neg)
 qed
 
@@ -118,7 +135,7 @@ lemma one_smod_word_eq [simp]:
 
 lemma minus_one_sdiv_word_eq [simp]:
   \<open>- 1 sdiv w = - (1 sdiv w)\<close> for w :: \<open>'a::len word\<close>
-  by (metis (mono_tags, opaque_lifting) minus_sdiv_eq of_int_minus sdiv_word_def signed_1 sint_n1  
+  by (metis (mono_tags, opaque_lifting) minus_sdiv_eq of_int_minus sdiv_word_def signed_1 sint_n1
       word_sdiv_div1 word_sdiv_div_minus1)
 
 lemma minus_one_smod_word_eq [simp]:

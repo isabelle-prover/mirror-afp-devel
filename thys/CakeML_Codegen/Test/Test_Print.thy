@@ -26,7 +26,16 @@ embed (eval, skip) f' is Test__Print_f .
 definition result :: prog where
 "result = compile f'.C_info f'"
 
-declare f'.C_info_def[code]
+declare
+  constructors.C_def [code]
+  constructors.as_static_cenv_def [code]
+  constructors.flat_C_info_def [code]
+  f'.C_info_def [code]
+  cakeml.mk_exp.simps [code]
+  cakeml.mk_con.simps [code]
+  cakeml.mk_clauses.simps [code]
+  cakeml.mk_letrec_body_def [code]
+  cakeml.compile_group_def [code]
 
 ML\<open>
   Code_Evaluation.dynamic_value @{context} @{const result}

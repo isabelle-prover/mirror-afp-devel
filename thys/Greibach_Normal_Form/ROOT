@@ -1,0 +1,11 @@
+chapter AFP
+
+session Greibach_Normal_Form = Context_Free_Grammar +
+  options [timeout = 300]
+  sessions
+    Fresh_Identifiers
+  theories
+    Greibach_Normal_Form
+  document_files
+    "root.bib"
+    "root.tex"

@@ -1,31 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>schmoetten on Archive of Formal Proofs
-    </title>
-    <link>/authors/schmoetten/</link>
-    <description>
-        Recent content in schmoetten 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/schmoetten/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Lie Groups and Algebras</title>
-          <link>/entries/Lie_Groups.html</link>
-          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Lie_Groups.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
-          <link>/entries/Schutz_Spacetime.html</link>
-          <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
-          <guid>/entries/Schutz_Spacetime.html</guid>
-          <description></description>
-        </item>
+    <title>Richard Schmoetten</title>
+    <link>https://isa-afp.org/authors/schmoetten/</link>
+    <description>AFP entries of Richard Schmoetten</description><item>
+  <title>Lie Groups and Algebras</title>
+  <link>https://isa-afp.org/entries/Lie_Groups.html</link>
+  <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+  <description>Lie Groups and Algebras in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
+  <link>https://isa-afp.org/entries/Schutz_Spacetime.html</link>
+  <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
+  <description>Schutz&#39; Independent Axioms for Minkowski Spacetime in the AFP</description>
+    <category>Mathematics/Physics</category>
+    <category>Mathematics/Geometry</category>
+</item>
+
   </channel>
 </rss>

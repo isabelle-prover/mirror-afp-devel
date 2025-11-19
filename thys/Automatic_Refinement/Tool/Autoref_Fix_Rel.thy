@@ -96,7 +96,7 @@ ML \<open>
     val thm_pairsD_get: Proof.context -> thm_pairs
 
     val constraints_of_term: term -> (term * term) list
-    val constraints_of_goal: int -> thm -> (term * term) list
+    val constraints_of_goal: Proof.context -> int -> thm -> (term * term) list
 
     val mk_CONSTRAINT: term * term -> term 
     val mk_CONSTRAINT_rl: Proof.context -> constraint -> thm
@@ -192,7 +192,7 @@ ML \<open>
       val constraints_of_term = constraints [] 
     end
 
-    fun constraints_of_goal i st =
+    fun constraints_of_goal ctxt i st =
       case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop ((_,?a)\<in>_)"} => constraints_of_term a
       | _ => raise THM ("constraints_of_goal",i,[st])
@@ -226,7 +226,7 @@ ML \<open>
     end;
 
     fun insert_CONSTRAINTS_tac ctxt i st = let
-      val cs = constraints_of_goal i st 
+      val cs = constraints_of_goal ctxt i st 
       |> map (mk_CONSTRAINT #> HOLogic.mk_Trueprop #> Thm.cterm_of ctxt)
     in
       Refine_Util.insert_subgoals_tac cs i st
@@ -511,7 +511,7 @@ ML \<open>
         val cs' = map (fn (_,(f,R)) => (f,hom_pat_of_rel ctxt R)) cs
         val thms = get_hom_rules ctxt @ map (mk_CONSTRAINT_rl_atom ctxt) cs'
         val thms = map (Thm.cprop_of #> Thm.trivial) thms
-        val net = Tactic.build_net thms
+        val net = Bires.build_net thms
       in
         net
       end
@@ -558,7 +558,7 @@ ML \<open>
         res
       end
   
-      fun add_relators_of_subgoal st i acc = 
+      fun add_relators_of_subgoal ctxt st i acc = 
         case Logic.concl_of_goal (Thm.prop_of st) i of
           @{mpat "Trueprop (CONSTRAINT _ ?R)"} => add_relators R acc
         | _ => acc
@@ -573,7 +573,7 @@ ML \<open>
           res |> HOLogic.mk_Trueprop |> Thm.cterm_of ctxt
         end
         
-        val relators = fold (add_relators_of_subgoal st) (i upto j) []
+        val relators = fold (add_relators_of_subgoal ctxt st) (i upto j) []
         val tyrels = map get_constraint relators
       in
         Refine_Util.insert_subgoals_tac tyrels k st
@@ -599,21 +599,21 @@ ML \<open>
     fun internal_hom_tac ctxt = let
       val hom_net = hom_netD.get ctxt
     in
-      Seq.INTERVAL (TRY o DETERM o resolve_from_net_tac ctxt hom_net)    
+      Seq.INTERVAL (TRY o DETERM o Bires.resolve_from_net_tac ctxt hom_net)    
     end
 
     fun internal_spec_tac ctxt = let
       val pairs = thm_pairsD.get ctxt
       val net = pairs
         |> map_filter (fst #> map_option (snd #> mk_CONSTRAINT_rl_atom ctxt))
-        |> Tactic.build_net
+        |> Bires.build_net
     in 
       fn i => fn j => REPEAT (CHANGED 
         (Seq.INTERVAL (DETERM o Anti_Unification.specialize_net_tac ctxt net) i j)
       )
     end
 
-    fun apply_to_constraints tac = let
+    fun apply_to_constraints ctxt tac = let
       fun no_CONSTRAINT_tac i st = 
         case Logic.concl_of_goal (Thm.prop_of st) i of
           @{mpat "Trueprop (CONSTRAINT _ _)"} => Seq.empty
@@ -627,25 +627,25 @@ ML \<open>
       val pairs = thm_pairsD.get ctxt
       val net = pairs
         |> map_filter (fst #> map_option (mk_CONSTRAINT_rl ctxt))
-        |> Tactic.build_net
+        |> Bires.build_net
 
-      val s_tac = SOLVED' (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
+      val s_tac = SOLVED' (REPEAT_ALL_NEW (Bires.resolve_from_net_tac ctxt net))
     in 
-      apply_to_constraints s_tac
+      apply_to_constraints ctxt s_tac
       ORELSE_INTERVAL 
-      apply_to_constraints (TRY o DETERM o s_tac)
+      apply_to_constraints ctxt (TRY o DETERM o s_tac)
     end
 
     fun guess_relators_tac ctxt = let
       val pairs = thm_pairsD.get ctxt
       val net = pairs
         |> map_filter (fst #> map_option (mk_CONSTRAINT_rl ctxt))
-        |> Tactic.build_net
+        |> Bires.build_net
 
       val hom_net = hom_netD.get ctxt
 
       fun hom_tac i j = Seq.INTERVAL 
-        (TRY o DETERM o resolve_from_net_tac ctxt hom_net) i j
+        (TRY o DETERM o Bires.resolve_from_net_tac ctxt hom_net) i j
 
       fun spec_tac i j = 
         REPEAT (CHANGED 
@@ -653,11 +653,11 @@ ML \<open>
         )
 
       val solve_tac = let 
-        val s_tac = SOLVED' (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
+        val s_tac = SOLVED' (REPEAT_ALL_NEW (Bires.resolve_from_net_tac ctxt net))
       in   
-        apply_to_constraints s_tac
+        apply_to_constraints ctxt s_tac
         ORELSE_INTERVAL 
-        apply_to_constraints (TRY o DETERM o s_tac)
+        apply_to_constraints ctxt (TRY o DETERM o s_tac)
       end
     in
       Seq.INTERVAL (insert_CONSTRAINTS_tac ctxt)
@@ -921,7 +921,7 @@ ML \<open>
 
                 val net = pairs
                   |> map_filter (fst #> map_option (mk_CONSTRAINT_rl ctxt))
-                  |> Tactic.build_net
+                  |> Bires.build_net
 
 
                 val candidates = pairs |> map_filter isc
@@ -935,7 +935,7 @@ ML \<open>
                   val rl = mk_CONSTRAINT_rl ctxt c 
                      |> Drule.zero_var_indexes
                   val res = (SOLVED' (resolve_tac ctxt [rl] 
-                      THEN_ALL_NEW (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net)))
+                      THEN_ALL_NEW (REPEAT_ALL_NEW (Bires.resolve_from_net_tac ctxt net)))
                     ) i st
                     |> Seq.pull |> is_some
 
@@ -960,9 +960,9 @@ ML \<open>
       val pairs = thm_pairsD.get ctxt
       val net = pairs
         |> map_filter (fst #> map_option (mk_CONSTRAINT_rl ctxt))
-        |> Tactic.build_net
+        |> Bires.build_net
     in 
-      resolve_from_net_tac ctxt net
+      Bires.resolve_from_net_tac ctxt net
     end
 
     val phase = {

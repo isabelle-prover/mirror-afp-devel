@@ -30,10 +30,12 @@ definition col_space :: "'a::{field}^'n^'m=>('a^'m) set"
 
 subsubsection\<open>Relationships among them\<close>
 
-lemma left_null_space_eq_null_space_transpose: "left_null_space A = null_space (transpose A)"
+lemma left_null_space_eq_null_space_transpose:
+  "left_null_space (A::'a::{comm_semiring_1}^'n^'m) = null_space (transpose A)"
   unfolding null_space_def left_null_space_def transpose_vector ..
 
-lemma null_space_eq_left_null_space_transpose: "null_space A = left_null_space (transpose A)" 
+lemma null_space_eq_left_null_space_transpose:
+  "null_space (A::'a::{comm_semiring_1}^'n^'m) = left_null_space (transpose A)"
   using left_null_space_eq_null_space_transpose[of "transpose A"]
   unfolding transpose_transpose ..
 

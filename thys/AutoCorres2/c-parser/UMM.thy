@@ -545,27 +545,27 @@ lemma set_field_names_no_padding_all_field_names_no_padding_conv':
  Set.filter
   (\<lambda>f. \<exists>s n. field_lookup (typ_info_t TYPE('a)) f 0 = Some (s, n) \<and> export_uinfo s = t)
   (set (all_field_names_no_padding (typ_info_t TYPE('a))))"
-  by (simp add: set_field_names_no_padding_all_field_names_no_padding_conv Set.filter_def)
+  by (simp add: set_eq_iff set_field_names_no_padding_all_field_names_no_padding_conv)
 
 lemma field_names_no_padding_all_field_names_no_padding_conv':
 "field_names_no_padding (typ_info_t TYPE('a::mem_type)) t =
  filter
   (\<lambda>f. \<exists>s n. field_lookup (typ_info_t TYPE('a)) f 0 = Some (s, n) \<and> export_uinfo s = t)
   (all_field_names_no_padding (typ_info_t TYPE('a)))"
-  by (simp add: field_names_no_padding_all_field_names_no_padding_conv Set.filter_def)
+  by (simp add: field_names_no_padding_all_field_names_no_padding_conv)
 
 lemma set_filter_insert: "Set.filter P (insert x S) =
    (if P x then insert x (Set.filter P S) else Set.filter P S)"
-  by (auto simp add: Set.filter_def)
+  by (auto simp add: set_eq_iff)
 
 lemma set_filter_cons_image: "Set.filter P ((#) x ` S) = (#) x ` Set.filter (\<lambda>fs.  P (x#fs)) S"
-  by (auto simp add: Set.filter_def)
+  by (auto simp add: set_eq_iff)
 
 lemma set_filter_Sup: "Set.filter P (\<Union>x\<in>X. S x) = (\<Union>x\<in>X. Set.filter P (S x))"
-  by (auto simp add: Set.filter_def)
+  by (auto simp add: set_eq_iff)
 
 lemma set_filter_empty: "Set.filter P {} = {}"
-  by (auto simp add: Set.filter_def)
+  by (auto simp add: set_eq_iff)
 
 lemma cons_image_Sup: "(#) x ` (\<Union>xs\<in>X. S xs) = (\<Union>xs\<in>X. ((#) x ` S xs))"
   by (rule image_UN)
@@ -579,11 +579,10 @@ lemma set_filter_image_all:
 lemma set_filter_image_none:
   assumes "\<And>x. x < n \<Longrightarrow> \<not> P (f x)"
   shows "Set.filter P (f ` {0..<n}) =  {}"
-  using assms
-  by fastforce
+  using assms by fastforce
 
 lemma set_filter_union_distrib: "Set.filter P (X \<union> Y) = Set.filter P X \<union> Set.filter P Y"
-  by (auto simp add: Set.filter_def)
+  by (auto simp add: set_eq_iff)
 
 lemma sub_typ_refl [simp]: "TYPE('a) \<le>\<^sub>\<tau> TYPE('a::c_type)"
   by (simp add: sub_typ_def)

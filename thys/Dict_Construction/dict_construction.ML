@@ -161,7 +161,7 @@ fun fun_cert_tac base_thms base_certs simps code_thms =
       val congs = Function_Context_Tree.get_function_congs ctxt @ map safe_mk_meta_eq @{thms cong}
 
       val simp_context = (clear_simpset ctxt) addsimps (certs @ super_certs @ base_certs @ base_thms @ param_dests)
-        addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
+        |> Simplifier.add_loop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
 
       val ihs = map (Simplifier.asm_full_simplify simp_context) ihs
 
@@ -291,8 +291,7 @@ fun prepare_dict_goal (classes, (term, _, class)) lthy =
     | SOME {cert, ...} =>
         cert dummyT
 
-    val names = Name.context
-    val (dict_params, prems, _) = prepare_dicts classes names lthy
+    val (dict_params, prems, _) = prepare_dicts classes Name.context lthy
     val (term_name, _) = dest_Const term
     val dict = list_comb (Const (term_name, dummyT), dict_params)
 
@@ -523,9 +522,7 @@ fun instance consts tyco class lthy =
 
         fun print_info ctxt =
           let
-            val tvars =
-              Name.invent_list [] Name.aT (length tparam_sorts) ~~ tparam_sorts
-              |> map TFree
+            val tvars = map TFree (Name.invent_types_global tparam_sorts)
           in
             [Pretty.str "Defining instance ", Syntax.pretty_typ ctxt (Type (tyco, tvars)),
               Pretty.str " :: ", Syntax.pretty_sort ctxt [class]]
@@ -536,7 +533,7 @@ fun instance consts tyco class lthy =
         val ({make, ...}, lthy) = axclass class lthy
 
         val name = mangle class ^ "__instance__" ^ mangle tyco
-        val tparams = Name.invent_names Name.context Name.aT tparam_sorts
+        val tparams = Name.invent_types_global tparam_sorts
         val ((dict_params, _), lthy) = raw_dict_params tparams lthy
           |>> map fst
           |>> dict_params (Name.make_context [name])
@@ -814,7 +811,7 @@ fun consts consts proof group lthy =
       let
         val termination_ctxt =
           ctxt addsimps (@{thms equal} @ base_thms)
-            addloop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
+            |> Simplifier.add_loop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
         val fallback_tac =
           Function_Common.termination_prover_tac true termination_ctxt
 

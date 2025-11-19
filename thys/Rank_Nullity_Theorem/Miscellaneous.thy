@@ -54,7 +54,7 @@ lemma finite_rows: "finite (rows A)"
 lemma finite_columns: "finite (columns A)"
   using finite_Atleast_Atmost_nat[of "\<lambda>i. column i A"] unfolding columns_def .
 
-lemma transpose_vector: "x v* A = transpose A *v x"
+lemma transpose_vector: "x v* A = transpose A *v (x::'a::comm_semiring_1^'m)"
   by simp
 
 lemma transpose_zero[simp]: "(transpose A = 0) = (A = 0)"
@@ -73,7 +73,8 @@ lemma vector_scalar_matrix_ac:
   shows "x v* (k *k A) = k *s (x v* A)"
   using scalar_vector_matrix_assoc 
   unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff
-  by (auto simp add: sum_distrib_left vector_space_over_itself.scale_scale)
+  by (simp add: sum_distrib_left vector_space_over_itself.scale_scale) 
+   (simp add: mult.commute)
 
 lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
   unfolding transpose_def 

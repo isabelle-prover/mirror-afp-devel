@@ -456,6 +456,39 @@ lemma update_bytes_eq: "\<lbrakk>s = s'; p = p'; bs = bs'\<rbrakk> \<Longrightar
 text \<open>
   Memcpy does what it says on the box.
 \<close>
+
+lemma t_hrs_'_update_pointwise: "t_hrs_'_update f s = t_hrs_'_update (\<lambda>_. f (t_hrs_' s)) s"
+  by simp
+
+lemma t_hrs_'_modify_pointwise: "modify (t_hrs_'_update f) = modify (\<lambda>s. t_hrs_'_update (\<lambda>_. f (t_hrs_' s)) s)"
+  by (simp add: t_hrs_'_update_pointwise[symmetric])
+
+lemma heap_update_legacy:
+  "modify (\<lambda>sa. t_hrs_'_update (hrs_mem_update (heap_update (d +\<^sub>p uint i) (deref sa (s +\<^sub>p uint i)))) sa) =  
+    modify (t_hrs_'_update (\<lambda>h. hrs_mem_update (heap_update (d +\<^sub>p uint i) (h_val (hrs_mem h) (s +\<^sub>p uint i))) h))"
+  supply [[show_abbrevs=false]]
+  apply (subst t_hrs_'_modify_pointwise)
+  apply (subst  t_hrs_'_update_pointwise)
+  apply (rule refl)
+  done
+
+lemma (in ts_definition_memcpy) memcpy'_legacy_def:
+"memcpy' dest srca sz \<equiv> do {
+  d \<leftarrow> return (byte_cast dest);
+  s \<leftarrow> return (byte_cast srca);
+  i \<leftarrow> whileLoop (\<lambda>i s. i < sz)
+         (\<lambda>i. do {
+               x \<leftarrow> guard (\<lambda>_. c_guard (d +\<^sub>p uint i));
+               _ \<leftarrow> guard (\<lambda>_. c_guard (s +\<^sub>p uint i));
+               _ \<leftarrow> modify (\<lambda>sa. t_hrs_'_update (hrs_mem_update (heap_update (d +\<^sub>p uint i) (deref sa (s +\<^sub>p uint i)))) sa);
+               return (i + 1)
+             })
+        0;
+  return dest
+}"
+  unfolding memcpy'_def 
+  by (simp add: heap_update_legacy)
+
 lemma (in ts_definition_memcpy) memcpy_wp':
   fixes src :: "'a::mem_type ptr"
     and dst :: "'b::mem_type ptr"
@@ -464,8 +497,7 @@ lemma (in ts_definition_memcpy) memcpy_wp':
     memcpy' (ptr_coerce dst) (ptr_coerce src) sz \<bullet> s0
   \<lbrace>\<lambda>r s. r = Result (ptr_coerce dst) \<and> bytes_at s dst bs \<and> s = update_bytes s0 dst bs\<rbrace>"
 
-  unfolding memcpy'_def
-  apply clarsimp
+  unfolding memcpy'_legacy_def 
   apply runs_to_vcg
   apply (rule runs_to_whileLoop_res'[where
     I="\<lambda>i s. unat i \<le> unat sz \<and>

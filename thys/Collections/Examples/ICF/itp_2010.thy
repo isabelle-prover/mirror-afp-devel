@@ -2,7 +2,8 @@ section \<open>\isaheader{Examples from ITP-2010 slides (adopted to ICF v2)}\<cl
 theory itp_2010
 imports 
   Collections.Collections 
-  Collections.Code_Target_ICF
+  "HOL-Library.Code_Target_Numeral"
+  "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
 text \<open>

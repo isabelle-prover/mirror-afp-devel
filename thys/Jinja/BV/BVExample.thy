@@ -480,19 +480,7 @@ lemma [code]:
    fold (\<lambda>p A. if \<not>stable r step ss p then insert p A else A) [0..<size ss] {}"
 proof -
   have "unstables r step ss = (UN p:{..<size ss}. if \<not>stable r step ss p then {p} else {})"
-    apply (unfold unstables_def)
-    apply (rule equalityI)
-    apply (rule subsetI)
-    apply (erule CollectE)
-    apply (erule conjE)
-    apply (rule UN_I)
-    apply simp
-    apply simp
-    apply (rule subsetI)
-    apply (erule UN_E)
-    apply (case_tac "\<not> stable r step ss p")
-    apply simp+
-    done
+    by (auto simp: unstables_def)
   also have "\<And>f. (UN p:{..<size ss}. f p) = Union (set (map f [0..<size ss]))" by auto
   also note Sup_set_fold also note fold_map
   also have "(\<union>) \<circ> (\<lambda>p. if \<not> stable r step ss p then {p} else {}) = 
@@ -501,8 +489,7 @@ proof -
   finally show ?thesis .
 qed
 
-definition some_elem :: "'a set \<Rightarrow> 'a" where [code del]:
-  "some_elem = (%S. SOME x. x : S)"
+declare some_elem_def [code del]
 code_printing
   constant some_elem \<rightharpoonup> (SML) "(case/ _ of/ Set/ xs/ =>/ hd/ xs)"
 
@@ -518,16 +505,15 @@ lemma [code]:
     (\<lambda>(ss, w).
         let p = some_elem w in propa f (step p (ss ! p)) ss (w - {p}))
     (ss, w)"
-  unfolding iter_def Set.is_empty_def some_elem_def ..
+  by (simp add: iter_def)
 
 lemma JVM_sup_unfold [code]:
  "JVM_SemiType.sup S m n = lift2 (Opt.sup
        (Product.sup (Listn.sup (SemiType.sup S))
          (\<lambda>x y. OK (map2 (lift2 (SemiType.sup S)) x y))))" 
-  apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
+  by (auto simp: JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def  
          Listn.sl_def upto_esl_def SemiType.esl_def Err.esl_def)
-  by simp
 
 lemmas [code] = SemiType.sup_def [unfolded exec_lub_def] JVM_le_unfold
 
@@ -537,17 +523,31 @@ lemma [code]:
   "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
   by (simp add: is_refT_def split: ty.split)
 
-declare app\<^sub>i.simps [code]
+declare
+  app\<^sub>i_Load [code]
+  app\<^sub>i_Store [code]
+  app\<^sub>i_Push [code]
 
 lemma [code]:
   "app\<^sub>i (Getfield F C, P, pc, mxs, T\<^sub>r, (T#ST, LT)) = 
     Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^sub>f. if P \<turnstile> T \<le> Class C then Predicate.single () else bot))"
-by(auto simp add: Predicate.holds_eq intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
+  by (auto simp add: Predicate.holds_eq intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
 
 lemma [code]:
   "app\<^sub>i (Putfield F C, P, pc, mxs, T\<^sub>r, (T\<^sub>1#T\<^sub>2#ST, LT)) = 
      Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^sub>f. if P \<turnstile> T\<^sub>2 \<le> (Class C) \<and> P \<turnstile> T\<^sub>1 \<le> T\<^sub>f then Predicate.single () else bot))"
-by(auto simp add: Predicate.holds_eq simp del: eval_bind split: if_split_asm elim!: sees_field_i_i_i_o_iE Predicate.bindE intro: Predicate.bindI sees_field_i_i_i_o_iI)
+  by (auto simp add: Predicate.holds_eq simp del: eval_bind split: if_split_asm elim!: sees_field_i_i_i_o_iE Predicate.bindE intro: Predicate.bindI sees_field_i_i_i_o_iI)
+
+declare
+  app\<^sub>i_New [code]
+  app\<^sub>i_Checkcast [code]
+  app\<^sub>i_Pop [code]
+  app\<^sub>i_IAdd [code]
+  app\<^sub>i_CmpEq [code]
+  app\<^sub>i_IfFalse [code]
+  app\<^sub>i_Goto [code]
+  app\<^sub>i_Return [code]
+  app\<^sub>i_Throw [code]
 
 lemma [code]:
   "app\<^sub>i (Invoke M n, P, pc, mxs, T\<^sub>r, (ST,LT)) =
@@ -556,10 +556,12 @@ lemma [code]:
       (case ST!n of
          Class C \<Rightarrow> Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
        | _ \<Rightarrow> False)))"
-by (fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm if_split_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
+  by (fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm if_split_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
+
+declare
+  app\<^sub>i_default [code]
 
 lemmas [code] =
-  SemiType.sup_def [unfolded exec_lub_def]
   widen.equation
   is_relevant_class.simps
 

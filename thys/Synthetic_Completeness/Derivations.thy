@@ -22,7 +22,7 @@ lemma split_list:
 section \<open>Derivations\<close>
 
 locale Derivations =
-  fixes derive :: \<open>'a list \<Rightarrow> 'a \<Rightarrow> bool\<close> (\<open>_ \<turnstile> _\<close> [50, 50] 50)
+  fixes derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)
   assumes derive_assm [simp]: \<open>\<And>A p. p \<in> set A \<Longrightarrow> A \<turnstile> p\<close>
     and derive_set: \<open>\<And>A B r. A \<turnstile> r \<Longrightarrow> set A = set B \<Longrightarrow> B \<turnstile> r\<close>
 begin
@@ -42,33 +42,41 @@ end
 
 section \<open>MCSs and Explosion\<close>
 
-locale Derivations_MCS = Derivations + MCS_Base consistent
-  for consistent :: \<open>'a set \<Rightarrow> bool\<close> +
-  fixes bot :: 'a (\<open>\<^bold>\<bottom>\<close>)
-  assumes consistent_underivable: \<open>\<And>S. consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile> \<^bold>\<bottom>)\<close>
+locale Derivations_MCS = MCS_Base consistent + Derivations derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50) +
+  assumes consistent_underivable: \<open>\<And>S. consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> (\<exists>q. \<not> A \<turnstile> q))\<close>
 begin
 
 theorem MCS_explode:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
-  shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> p # A \<turnstile> \<^bold>\<bottom>)\<close>
-proof -
-  have \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> {p} \<union> S \<and> p \<in> set A \<and> (\<exists>B. set B \<subseteq> set A \<and> B \<turnstile> \<^bold>\<bottom>))\<close>
-    using MCS_inconsistent[OF assms] unfolding consistent_underivable
-    by (metis List.finite_set finite_list)
-  moreover have \<open>\<forall>B. set B \<subseteq> {p} \<union> S \<longrightarrow> B \<turnstile> \<^bold>\<bottom> \<longrightarrow> p \<in> set B\<close>
-    using assms unfolding consistent_underivable by blast
-  then have \<open>\<forall>B. set B \<subseteq> {p} \<union> S \<longrightarrow> B \<turnstile> \<^bold>\<bottom> \<longrightarrow> (\<exists>B'. set B' \<subseteq> S \<and> p # B' \<turnstile> \<^bold>\<bottom>)\<close>
-    using derive_split1 by blast
-  ultimately show \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> p # A \<turnstile> \<^bold>\<bottom>)\<close>
-    using assms(1) unfolding consistent_underivable by auto
+  shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> (\<forall>q. p # A \<turnstile> q))\<close>
+proof safe
+  assume \<open>p \<notin> S\<close>
+  then obtain B where B: \<open>set B \<subseteq> {p} \<union> S\<close> \<open>p \<in> set B\<close> \<open>\<forall>q. B \<turnstile> q\<close>
+    using assms unfolding consistent_underivable maximal_def by blast
+  moreover have \<open>set (p # removeAll p B) = set B\<close>
+    using B(2) by auto
+  ultimately have \<open>\<forall>q. p # removeAll p B \<turnstile> q\<close>
+    using derive_set by metis
+  then show \<open>\<exists>A. set A \<subseteq> S \<and> (\<forall>q. p # A \<turnstile> q)\<close>
+    using B(1) by (metis Diff_subset_conv set_removeAll)
+next
+  fix A
+  assume \<open>set A \<subseteq> S\<close> \<open>\<forall>q. p # A \<turnstile> q\<close> \<open>p \<in> S\<close>
+  then show False
+    using assms unfolding consistent_underivable
+    by (metis (no_types, lifting) insert_subsetI list.simps(15))
 qed
 
 end
 
 section \<open>MCSs and Derivability\<close>
 
-locale Derivations_Cut_MCS = Derivations_MCS +
-  assumes derive_cut: \<open>\<And>A B p. A \<turnstile> p \<Longrightarrow> p # B \<turnstile> \<^bold>\<bottom> \<Longrightarrow> A @ B \<turnstile> \<^bold>\<bottom>\<close>
+locale Derivations_Cut_MCS = Derivations_MCS consistent derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50) +
+  assumes derive_cut: \<open>\<And>A B p q. A \<turnstile> p \<Longrightarrow> p # B \<turnstile> q \<Longrightarrow> A @ B \<turnstile> q\<close>
 begin
 
 theorem MCS_derive:
@@ -82,20 +90,38 @@ next
   fix A
   assume A: \<open>set A \<subseteq> S\<close> \<open>A \<turnstile> p\<close>
 
-  have bot: \<open>\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile> \<^bold>\<bottom>\<close>
+  have bot: \<open>\<forall>A. set A \<subseteq> S \<longrightarrow> (\<exists>q. \<not> A \<turnstile> q)\<close>
     using assms(1) unfolding consistent_underivable by blast
 
   have \<open>consistent ({p} \<union> S)\<close>
     unfolding consistent_underivable
   proof safe
     fix B
-    assume \<open>set B \<subseteq> {p} \<union> S\<close> \<open>B \<turnstile> \<^bold>\<bottom>\<close>
-    then obtain B' where B': \<open>set B' \<subseteq> S\<close> \<open>p # B' \<turnstile> \<^bold>\<bottom>\<close>
-      using bot derive_split1 by (metis insert_is_Un subset_insert)
-    then have \<open>A @ B' \<turnstile> \<^bold>\<bottom>\<close>
-      using A derive_cut by blast
-    then show False
-      using A(1) B'(1) bot by simp
+    assume B: \<open>set B \<subseteq> {p} \<union> S\<close>
+    show \<open>\<exists>q. \<not> B \<turnstile> q\<close>
+    proof (rule ccontr)
+      assume *: \<open>\<nexists>q. \<not> B \<turnstile> q\<close>
+      then have \<open>\<forall>q. B \<turnstile> q\<close>
+        by blast
+      show False
+      proof (cases \<open>p \<in> set B\<close>)
+        case True
+        then have \<open>set (p # removeAll p B) = set B\<close>
+          by auto
+        then have \<open>\<forall>q. p # removeAll p B \<turnstile> q\<close>
+          using \<open>\<forall>q. B \<turnstile> q\<close> derive_set by blast
+        then have \<open>\<forall>q. A @ removeAll p B \<turnstile> q\<close>
+          using A(2) derive_cut by blast
+        moreover have \<open>set (A @ removeAll p B) \<subseteq> S\<close>
+          using A(1) B by auto
+        ultimately show False
+          using bot by blast
+      next
+        case False
+        then show False
+          using * B bot by auto
+      qed
+    qed
   qed
   then show \<open>p \<in> S\<close>
     using assms unfolding maximal_def by auto
@@ -105,11 +131,20 @@ end
 
 section \<open>Proof Rules\<close>
 
-locale Derivations_Bot = Derivations_Cut_MCS +
-  assumes botE: \<open>\<And>A r. A \<turnstile> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile> r\<close>
+locale Derivations_Bot = Derivations_Cut_MCS consistent derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50) +
+  fixes bot :: 'fm (\<open>\<^bold>\<bottom>\<close>)
+  assumes botE: \<open>\<And>A p. A \<turnstile> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile> p\<close>
 begin
 
-corollary MCS_botE [simp]:
+corollary MCS_botE [elim]:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+    and \<open>\<^bold>\<bottom> \<in> S\<close>
+  shows \<open>p \<in> S\<close>
+  using assms botE MCS_derive by blast
+
+corollary MCS_bot [simp]:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
   shows \<open>\<^bold>\<bottom> \<notin> S\<close>
   using assms botE MCS_derive consistent_underivable by blast
@@ -128,33 +163,63 @@ corollary MCS_topI [simp]:
 
 end
 
-locale Derivations_Not = Derivations_Bot +
-  fixes not :: \<open>'a \<Rightarrow> 'a\<close> (\<open>\<^bold>\<not>\<close>)
+locale Derivations_Not = Derivations_Bot consistent derive bot
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)
+    and bot :: 'fm (\<open>\<^bold>\<bottom>\<close>) +
+  fixes not :: \<open>'fm \<Rightarrow> 'fm\<close> (\<open>\<^bold>\<not>\<close>)
   assumes
     notI: \<open>\<And>A p. p # A \<turnstile> \<^bold>\<bottom> \<Longrightarrow> A  \<turnstile> \<^bold>\<not> p\<close> and
     notE: \<open>\<And>A p. A \<turnstile> p \<Longrightarrow> A \<turnstile> \<^bold>\<not> p \<Longrightarrow> A \<turnstile> \<^bold>\<bottom>\<close>
 begin
 
+corollary MCS_not_xor:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+  shows \<open>p \<in> S \<longleftrightarrow> \<^bold>\<not> p \<notin> S\<close>
+proof safe
+  assume \<open>p \<in> S\<close> \<open>\<^bold>\<not> p \<in> S\<close>
+  then have \<open>set [p, \<^bold>\<not> p] \<subseteq> S\<close>
+    by simp
+  moreover have \<open>[p, \<^bold>\<not> p] \<turnstile> \<^bold>\<bottom>\<close>
+    using notE derive_assm by (meson list.set_intros(1) list.set_intros(2))
+  ultimately have \<open>\<^bold>\<bottom> \<in> S\<close>
+    using assms MCS_derive by blast
+  then show False
+    using assms MCS_bot by blast
+next
+  assume *: \<open>\<^bold>\<not> p \<notin> S\<close>
+  show \<open>p \<in> S\<close>
+  proof (rule ccontr)
+    assume \<open>p \<notin> S\<close>
+    then obtain A where A: \<open>set A \<subseteq> S\<close> \<open>\<forall>q. p # A \<turnstile> q\<close>
+      using assms MCS_explode by blast
+    then have \<open>p # A \<turnstile> \<^bold>\<bottom>\<close>
+      by fast
+    then have \<open>A \<turnstile> \<^bold>\<not> p\<close>
+      using notI by blast
+    then have \<open>\<^bold>\<not> p \<in> S\<close>
+      using A(1) assms MCS_derive by blast
+    then show False
+      using * by blast
+  qed
+qed
+    
 corollary MCS_not_both:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
   shows \<open>p \<notin> S \<or> \<^bold>\<not> p \<notin> S\<close>
-  using assms notE
-  by (metis MCS_derive MCS_explode derive_assm insert_subset list.simps(15) set_subset_Cons)
+  using assms MCS_not_xor by blast
 
 corollary MCS_not_neither:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
   shows \<open>p \<in> S \<or> \<^bold>\<not> p \<in> S\<close>
-  using assms notI by (meson MCS_explode MCS_derive derive_assm)
-
-corollary MCS_not_xor:
-  assumes \<open>consistent S\<close> \<open>maximal S\<close>
-  shows \<open>p \<in> S \<longleftrightarrow> \<^bold>\<not> p \<notin> S\<close>
-  using assms MCS_not_both MCS_not_neither by blast
+  using assms MCS_not_xor by blast
 
 end
 
-locale Derivations_Con = Derivations_Cut_MCS +
-  fixes con :: \<open>'a \<Rightarrow> 'a \<Rightarrow> 'a\<close> (\<open>_ \<^bold>\<and> _\<close>)
+locale Derivations_Con = Derivations_Cut_MCS consistent derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)  +
+  fixes con :: \<open>'fm \<Rightarrow> 'fm \<Rightarrow> 'fm\<close> (\<open>_ \<^bold>\<and> _\<close>)
   assumes
     conI: \<open>\<And>A p q. A \<turnstile> p \<Longrightarrow> A \<turnstile> q \<Longrightarrow> A \<turnstile> (p \<^bold>\<and> q)\<close> and
     conE: \<open>\<And>A p q r. A \<turnstile> (p \<^bold>\<and> q) \<Longrightarrow> p # q # A \<turnstile> r \<Longrightarrow> A \<turnstile> r\<close>
@@ -185,8 +250,10 @@ corollary MCS_con:
 
 end
 
-locale Derivations_Dis = Derivations_Cut_MCS +
-  fixes dis :: \<open>'a \<Rightarrow> 'a \<Rightarrow> 'a\<close> (\<open>_ \<^bold>\<or> _\<close>)
+locale Derivations_Dis = Derivations_Cut_MCS consistent derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)  +
+  fixes dis :: \<open>'fm \<Rightarrow> 'fm \<Rightarrow> 'fm\<close> (\<open>_ \<^bold>\<or> _\<close>)
   assumes
     disI1: \<open>\<And>A p q. A \<turnstile> p \<Longrightarrow> A \<turnstile> (p \<^bold>\<or> q)\<close> and
     disI2: \<open>\<And>A p q. A \<turnstile> q \<Longrightarrow> A \<turnstile> (p \<^bold>\<or> q)\<close> and
@@ -210,28 +277,28 @@ corollary MCS_disE [elim]:
     and \<open>(p \<^bold>\<or> q) \<in> S\<close>
   shows \<open>p \<in> S \<or> q \<in> S\<close>
 proof (rule ccontr)
-  have bot: \<open>\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile> \<^bold>\<bottom>\<close>
+  have bot: \<open>\<forall>A. set A \<subseteq> S \<longrightarrow> (\<exists>q. \<not> A \<turnstile> q)\<close>
     using assms(1) unfolding consistent_underivable by blast
 
   assume \<open>\<not> (p \<in> S \<or> q \<in> S)\<close>
   then obtain P Q where
-    P: \<open>set P \<subseteq> S\<close> \<open>p # P \<turnstile> \<^bold>\<bottom>\<close> and
-    Q: \<open>set Q \<subseteq> S\<close> \<open>q # Q \<turnstile> \<^bold>\<bottom>\<close>
+    P: \<open>set P \<subseteq> S\<close> \<open>\<forall>r. p # P \<turnstile> r\<close> and
+    Q: \<open>set Q \<subseteq> S\<close> \<open>\<forall>r. q # Q \<turnstile> r\<close>
     using assms MCS_explode by auto
 
   have \<open>p # (p \<^bold>\<or> q) # Q \<turnstile> p\<close>
     by simp
-  then have \<open>p # (p \<^bold>\<or> q) # Q @ P \<turnstile> \<^bold>\<bottom>\<close>
-    using P derive_cut[of _ p] by fastforce
-  then have \<open>p # (p \<^bold>\<or> q) # P @ Q \<turnstile> \<^bold>\<bottom>\<close>
+  then have \<open>p # (p \<^bold>\<or> q) # Q @ P \<turnstile> r\<close> for r
+    using P derive_cut[of _ p] by (metis append_Cons)
+  then have \<open>p # (p \<^bold>\<or> q) # P @ Q \<turnstile> r\<close> for r
     using derive_set[where B=\<open>p # (p \<^bold>\<or> q) # P @ Q\<close>] by fastforce
   moreover have \<open>q # (p \<^bold>\<or> q) # P \<turnstile> q\<close>
     by simp
-  then have \<open>q # (p \<^bold>\<or> q) # P @ Q \<turnstile> \<^bold>\<bottom>\<close>
-    using Q derive_cut[of _ q] by fastforce
+  then have \<open>q # (p \<^bold>\<or> q) # P @ Q \<turnstile> r\<close> for r
+    using Q derive_cut[of _ q] by (metis append_Cons)
   moreover have \<open>(p \<^bold>\<or> q) # P @ Q \<turnstile> (p \<^bold>\<or> q)\<close>
     by simp
-  ultimately have \<open>(p \<^bold>\<or> q) # P @ Q \<turnstile> \<^bold>\<bottom>\<close>
+  ultimately have \<open>(p \<^bold>\<or> q) # P @ Q \<turnstile> r\<close> for r
     using disE by blast
   moreover have \<open>set ((p \<^bold>\<or> q) # P @ Q) \<subseteq> S\<close>
     using assms(3) P Q by simp
@@ -246,8 +313,10 @@ corollary MCS_dis:
 
 end
 
-locale Derivations_Imp = Derivations_Bot +
-  fixes imp :: \<open>'a \<Rightarrow> 'a \<Rightarrow> 'a\<close> (\<open>_ \<^bold>\<rightarrow> _\<close>)
+locale Derivations_Imp = Derivations_Cut_MCS consistent derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)  +
+  fixes imp :: \<open>'fm \<Rightarrow> 'fm \<Rightarrow> 'fm\<close> (\<open>_ \<^bold>\<rightarrow> _\<close>)
   assumes
     impI: \<open>\<And>A p q. p # A \<turnstile> q \<Longrightarrow> A \<turnstile> (p \<^bold>\<rightarrow> q)\<close> and
     impE: \<open>\<And>A p q. A \<turnstile> p \<Longrightarrow> A \<turnstile> (p \<^bold>\<rightarrow> q) \<Longrightarrow> A \<turnstile> q\<close>
@@ -257,17 +326,8 @@ corollary MCS_impI [intro]:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
     and \<open>p \<in> S \<longrightarrow> q \<in> S\<close>
   shows \<open>(p \<^bold>\<rightarrow> q) \<in> S\<close>
-proof (cases \<open>p \<in> S\<close>)
-  case True
-  then show ?thesis
-    using impI impE MCS_derive[OF assms(1-2)] derive_assm assms(3)
-    by (meson list.set_intros(1) list.set_intros(2))
-next
-  case False
-  then show ?thesis
-    using assms(3) impI botE MCS_derive[OF assms(1-2)] MCS_explode[OF assms(1-2)]
-    by metis
-qed
+    using assms impI derive_assm MCS_derive MCS_explode
+    by (metis insert_subset list.simps(15) subsetI)
 
 corollary MCS_impE [dest]:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
@@ -278,17 +338,79 @@ corollary MCS_impE [dest]:
 
 corollary MCS_imp:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
-  shows \<open>(p \<^bold>\<rightarrow> q) \<in> S \<longleftrightarrow> p \<notin> S \<or> q \<in> S\<close>
+  shows \<open>(p \<^bold>\<rightarrow> q) \<in> S \<longleftrightarrow> (p \<in> S \<longrightarrow> q \<in> S)\<close>
   using assms MCS_impI MCS_impE by blast
 
 end
 
-sublocale Derivations_Imp \<subseteq> Derivations_Not derive consistent bot \<open>\<lambda>p. (p \<^bold>\<rightarrow> \<^bold>\<bottom>)\<close>
-proof
-  show \<open>\<And>A p. p # A \<turnstile> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile> (p \<^bold>\<rightarrow> \<^bold>\<bottom>)\<close>
-    using impI by blast
-  show \<open>\<And>A p. A \<turnstile> p \<Longrightarrow> A \<turnstile> (p \<^bold>\<rightarrow> \<^bold>\<bottom>) \<Longrightarrow> A \<turnstile> \<^bold>\<bottom>\<close>
-    using impE by blast
+locale Derivations_Exi = MCS_Witness consistent witness params + Derivations_Cut_MCS consistent derive
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and witness params
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)  +
+  fixes exi :: \<open>'fm \<Rightarrow> 'fm\<close> (\<open>\<^bold>\<exists>\<close>)
+    and inst :: \<open>'t \<Rightarrow> 'fm \<Rightarrow> 'fm\<close> (\<open>\<langle>_\<rangle>\<close>)
+  assumes
+    exi_witness: \<open>\<And>S S' p. MCS S \<Longrightarrow> witness (\<^bold>\<exists>p) S' \<subseteq> S \<Longrightarrow> \<exists>t. \<langle>t\<rangle>p \<in> S\<close> and
+    exiI: \<open>\<And>A p t. A \<turnstile> \<langle>t\<rangle>p \<Longrightarrow> A \<turnstile> \<^bold>\<exists>p\<close>
+begin
+
+corollary MCS_exiI [intro]:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+    and \<open>\<langle>t\<rangle>p \<in> S\<close>
+  shows \<open>\<^bold>\<exists>p \<in> S\<close>
+  using assms MCS_derive exiI by blast
+
+corollary MCS_exiE [dest]:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>witnessed S\<close>
+    and \<open>\<^bold>\<exists>p \<in> S\<close>
+  shows \<open>\<exists>t. \<langle>t\<rangle>p \<in> S\<close>
+  using assms exi_witness unfolding witnessed_def by blast
+
+corollary MCS_exi:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>witnessed S\<close>
+  shows \<open>\<^bold>\<exists>p \<in> S \<longleftrightarrow> (\<exists>t. \<langle>t\<rangle>p \<in> S)\<close>
+  using assms MCS_exiI MCS_exiE by blast
+
+end
+
+locale Derivations_Uni = MCS_Witness consistent witness params + Derivations_Not consistent derive bot not
+  for consistent :: \<open>'fm set \<Rightarrow> bool\<close>
+    and witness params
+    and derive :: \<open>'fm list \<Rightarrow> 'fm \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<close> 50)
+    and bot :: 'fm (\<open>\<^bold>\<bottom>\<close>)
+    and not :: \<open>'fm \<Rightarrow> 'fm\<close> (\<open>\<^bold>\<not>\<close>) +
+  fixes uni :: \<open>'fm \<Rightarrow> 'fm\<close> (\<open>\<^bold>\<forall>\<close>)
+    and inst :: \<open>'t \<Rightarrow> 'fm \<Rightarrow> 'fm\<close> (\<open>\<langle>_\<rangle>\<close>)
+  assumes
+    uni_witness: \<open>\<And>S S' p. MCS S \<Longrightarrow> witness (\<^bold>\<not> (\<^bold>\<forall>p)) S' \<subseteq> S \<Longrightarrow> \<exists>t. \<^bold>\<not> (\<langle>t\<rangle>p) \<in> S\<close> and
+    uniE: \<open>\<And>A p t. A \<turnstile> \<^bold>\<forall>p \<Longrightarrow> A \<turnstile> \<langle>t\<rangle>p\<close>
+begin
+
+corollary MCS_uniE [dest]:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+    and \<open>\<^bold>\<forall>p \<in> S\<close>
+  shows \<open>\<langle>t\<rangle>p \<in> S\<close>
+  using assms MCS_derive uniE by blast
+
+corollary MCS_uniI [intro]:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>witnessed S\<close>
+    and \<open>\<forall>t. \<langle>t\<rangle>p \<in> S\<close>
+  shows \<open>\<^bold>\<forall>p \<in> S\<close>
+proof (rule ccontr)
+  assume \<open>\<^bold>\<forall>p \<notin> S\<close>
+  then have \<open>\<^bold>\<not> (\<^bold>\<forall>p) \<in> S\<close>
+    using assms MCS_not_xor by blast
+  then have \<open>\<exists>t. \<^bold>\<not> (\<langle>t\<rangle>p) \<in> S\<close>
+    using assms uni_witness unfolding witnessed_def by blast
+  then show False
+    using assms MCS_not_xor by blast
 qed
+
+corollary MCS_uni:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>witnessed S\<close>
+  shows \<open>\<^bold>\<forall>p \<in> S \<longleftrightarrow> (\<forall>t. \<langle>t\<rangle>p \<in> S)\<close>
+  using assms MCS_uniI MCS_uniE by blast
+
+end
 
 end

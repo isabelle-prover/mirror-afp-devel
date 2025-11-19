@@ -1,129 +1,144 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>karayel on Archive of Formal Proofs
-    </title>
-    <link>/authors/karayel/</link>
-    <description>
-        Recent content in karayel 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/karayel/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
-          <link>/entries/Randomized_Closest_Pair.html</link>
-          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Randomized_Closest_Pair.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Derandomization with Conditional Expectations</title>
-          <link>/entries/Derandomization_Conditional_Expectations.html</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Karatsuba Multiplication on Integers</title>
-          <link>/entries/Karatsuba.html</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Karatsuba.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Concentration Inequalities</title>
-          <link>/entries/Concentration_Inequalities.html</link>
-          <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Concentration_Inequalities.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable Randomized Algorithms</title>
-          <link>/entries/Executable_Randomized_Algorithms.html</link>
-          <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Executable_Randomized_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Distributed Distinct Elements</title>
-          <link>/entries/Distributed_Distinct_Elements.html</link>
-          <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Distributed_Distinct_Elements.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Expander Graphs</title>
-          <link>/entries/Expander_Graphs.html</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Expander_Graphs.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Combinatorial Enumeration Algorithms</title>
-          <link>/entries/Combinatorial_Enumeration_Algorithms.html</link>
-          <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Combinatorial_Enumeration_Algorithms.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Finite Fields</title>
-          <link>/entries/Finite_Fields.html</link>
-          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Finite_Fields.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>A Combinator Library for Prefix-Free Codes</title>
-          <link>/entries/Prefix_Free_Code_Combinators.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Prefix_Free_Code_Combinators.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
-          <link>/entries/Frequency_Moments.html</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Frequency_Moments.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal Hash Families</title>
-          <link>/entries/Universal_Hash_Families.html</link>
-          <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Universal_Hash_Families.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Enumeration of Equivalence Relations</title>
-          <link>/entries/Equivalence_Relation_Enumeration.html</link>
-          <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Interpolation Polynomials (in HOL-Algebra)</title>
-          <link>/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
-          <pubDate>Sat, 29 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Interpolation_Polynomials_HOL_Algebra.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Median Method</title>
-          <link>/entries/Median_Method.html</link>
-          <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Median_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
-          <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
-          <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
-          <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
-          <description></description>
-        </item>
+    <title>Emin Karayel</title>
+    <link>https://isa-afp.org/authors/karayel/</link>
+    <description>AFP entries of Emin Karayel</description><item>
+  <title>Verification of the CVM algorithm with a New Recursive Analysis Technique</title>
+  <link>https://isa-afp.org/entries/CVM_Distinct_Elements.html</link>
+  <pubDate>Wed, 05 Feb 2025 00:00:00 +0000</pubDate>
+  <description>Verification of the CVM algorithm with a New Recursive Analysis Technique in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Negatively Associated Random Variables</title>
+  <link>https://isa-afp.org/entries/Negative_Association.html</link>
+  <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+  <description>Negatively Associated Random Variables in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
+  <link>https://isa-afp.org/entries/Randomized_Closest_Pair.html</link>
+  <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+  <description>Rabin&#39;s Closest Pair of Points Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Derandomization with Conditional Expectations</title>
+  <link>https://isa-afp.org/entries/Derandomization_Conditional_Expectations.html</link>
+  <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+  <description>Derandomization with Conditional Expectations in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Karatsuba Multiplication on Integers</title>
+  <link>https://isa-afp.org/entries/Karatsuba.html</link>
+  <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
+  <description>Karatsuba Multiplication on Integers in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Concentration Inequalities</title>
+  <link>https://isa-afp.org/entries/Concentration_Inequalities.html</link>
+  <pubDate>Mon, 13 Nov 2023 00:00:00 +0000</pubDate>
+  <description>Concentration Inequalities in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>Executable Randomized Algorithms</title>
+  <link>https://isa-afp.org/entries/Executable_Randomized_Algorithms.html</link>
+  <pubDate>Mon, 19 Jun 2023 00:00:00 +0000</pubDate>
+  <description>Executable Randomized Algorithms in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Distributed Distinct Elements</title>
+  <link>https://isa-afp.org/entries/Distributed_Distinct_Elements.html</link>
+  <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
+  <description>Distributed Distinct Elements in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Expander Graphs</title>
+  <link>https://isa-afp.org/entries/Expander_Graphs.html</link>
+  <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
+  <description>Expander Graphs in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Computer science/Algorithms/Randomized</category>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Combinatorial Enumeration Algorithms</title>
+  <link>https://isa-afp.org/entries/Combinatorial_Enumeration_Algorithms.html</link>
+  <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+  <description>Combinatorial Enumeration Algorithms in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Finite Fields</title>
+  <link>https://isa-afp.org/entries/Finite_Fields.html</link>
+  <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+  <description>Finite Fields in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>A Combinator Library for Prefix-Free Codes</title>
+  <link>https://isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
+  <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+  <description>A Combinator Library for Prefix-Free Codes in the AFP</description>
+    <category>Computer science/Algorithms</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+  <link>https://isa-afp.org/entries/Frequency_Moments.html</link>
+  <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+  <description>Formalization of Randomized Approximation Algorithms for Frequency Moments in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Universal Hash Families</title>
+  <link>https://isa-afp.org/entries/Universal_Hash_Families.html</link>
+  <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Universal Hash Families in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Enumeration of Equivalence Relations</title>
+  <link>https://isa-afp.org/entries/Equivalence_Relation_Enumeration.html</link>
+  <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+  <description>Enumeration of Equivalence Relations in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
+  <title>Interpolation Polynomials (in HOL-Algebra)</title>
+  <link>https://isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
+  <pubDate>Sat, 29 Jan 2022 00:00:00 +0000</pubDate>
+  <description>Interpolation Polynomials (in HOL-Algebra) in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Median Method</title>
+  <link>https://isa-afp.org/entries/Median_Method.html</link>
+  <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
+  <description>Median Method in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
+  <link>https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
+  <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+  <description>Strong Eventual Consistency of the Collaborative Editing Framework WOOT in the AFP</description>
+    <category>Computer science/Algorithms/Distributed</category>
+</item>
+
   </channel>
 </rss>

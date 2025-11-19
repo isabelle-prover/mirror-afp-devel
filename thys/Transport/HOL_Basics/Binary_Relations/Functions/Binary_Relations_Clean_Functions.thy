@@ -13,7 +13,7 @@ consts crel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle crel_mono_wrt_syntax
 begin
-notation "crel_mono_wrt" (infixr "\<rightarrow>\<^sub>c" 50)
+notation "crel_mono_wrt" (infixr \<open>\<rightarrow>\<^sub>c\<close> 50)
 syntax
   "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow>\<^sub>c (_)\<close> [51, 50, 50] 50)
 end
@@ -23,10 +23,10 @@ translations
   "(x : A) \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_dep_mono_wrt A (\<lambda>x. B)"
 
 definition "crel_dep_mono_wrt_pred (A :: 'a \<Rightarrow> bool) B R \<equiv> ((x : A) \<rightarrow> B x) R \<and> in_dom R = A"
-adhoc_overloading crel_dep_mono_wrt crel_dep_mono_wrt_pred
+adhoc_overloading crel_dep_mono_wrt \<rightleftharpoons> crel_dep_mono_wrt_pred
 
 definition "crel_mono_wrt_pred (A :: 'a \<Rightarrow> bool) B \<equiv> (((_ :: 'a) : A) \<rightarrow>\<^sub>c B)"
-adhoc_overloading crel_mono_wrt crel_mono_wrt_pred
+adhoc_overloading crel_mono_wrt \<rightleftharpoons> crel_mono_wrt_pred
 
 lemma crel_mono_wrt_pred_eq_crel_dep_mono_wrt_pred:
   "(((A :: 'a \<Rightarrow> bool) \<rightarrow>\<^sub>c (B :: 'b \<Rightarrow> bool)) :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) = (((_ :: 'a) : A) \<rightarrow>\<^sub>c B)"

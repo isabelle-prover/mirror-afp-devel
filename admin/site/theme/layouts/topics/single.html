@@ -1,0 +1,27 @@
+{{- define "main" }}
+  {{- with .Params.classification }}
+    <h2>Subject Classification</h2>
+    {{- range . }}
+      <p>{{ .type }}: <a href="{{ .url }}">{{ .desc }}</a></p>
+    {{- end }}
+  {{- end }}
+
+  {{- range .Params.entries }}
+    <h2 class="head">{{ .year }}</h2>
+    {{- range .entries }}
+      {{- $entry := (site.GetPage (printf "entries/%s" .)) }}
+      <article class="entry">
+        <div class="item-text">
+          <h5><a class="title" href="{{ $entry.RelPermalink }}">{{ $entry.Title }}</a></h5>
+          <br>
+          by
+          {{- range $entry.Params.authors }}
+            {{- $author := site.GetPage (printf "authors/%s" .author) }}
+            <a href="{{ $author.RelPermalink }}">{{ $author.Params.name }}</a>{{ .sep }}
+          {{- end }}
+        </div>
+        <span class="date">{{ $entry.Date.Format "Jan 02" }}</span>
+      </article>
+    {{- end }}
+  {{- end }}
+{{- end }}

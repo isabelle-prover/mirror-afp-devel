@@ -82,17 +82,17 @@ proof
     by (auto simp add: less_eq_name_def less_name_def)
 qed
 
-lemma less_name_code[code]:
+lemma less_name_code [code]:
   "Name xs < Name [] \<longleftrightarrow> False"
   "Name [] < Name (x # xs) \<longleftrightarrow> True"
   "Name (x # xs) < Name (y # ys) \<longleftrightarrow> (of_char x::nat) < of_char y \<or> x = y \<and> Name xs < Name ys"
-unfolding less_name_def by auto
+  by (simp_all add: less_name_def)
 
-lemma le_name_code[code]:
+lemma le_name_code [code]:
   "Name (x # xs) \<le> Name [] \<longleftrightarrow> False"
   "Name [] \<le> Name (x # xs) \<longleftrightarrow> True"
   "Name (x # xs) \<le> Name (y # ys) \<longleftrightarrow> (of_char x::nat) < of_char y \<or> x = y \<and> Name xs \<le> Name ys"
-unfolding less_eq_name_def less_name_def by auto
+  by (auto simp add: less_eq_name_def less_name_def)
 
 context begin
 

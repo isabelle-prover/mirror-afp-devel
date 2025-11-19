@@ -230,10 +230,11 @@ apply (subgoal_tac "\<forall>r. marked r s\<down> \<longleftrightarrow> marked r
  apply (subgoal_tac "\<forall>r. valid_null_ref r s\<down> \<longleftrightarrow> valid_null_ref r s'\<down>")
   apply (subgoal_tac "\<forall>r f opt_r'. mw_Mutate r f opt_r' \<notin> set (sys_mem_store_buffers (mutator m) s\<down>)
                                \<longleftrightarrow> mw_Mutate r f opt_r' \<notin> set (sys_mem_store_buffers (mutator m) s'\<down>)")
-   apply (clarsimp cong: option.case_cong)
-  apply (metis (mono_tags, lifting) filter_set member_filter)
- apply (clarsimp simp: obj_at_def valid_null_ref_def split: option.splits)
-apply (clarsimp simp: obj_at_def valid_null_ref_def split: option.splits)
+     apply (clarsimp cong: option.case_cong)
+    apply clarsimp
+    apply (smt (verit) mem_Collect_eq set_filter)
+   apply (clarsimp simp: obj_at_def valid_null_ref_def split: option.splits)
+  apply (clarsimp simp: obj_at_def valid_null_ref_def split: option.splits)
 done
 
 lemmas mut_m_mark_object_invL_niE[nie] =

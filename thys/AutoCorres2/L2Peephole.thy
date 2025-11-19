@@ -11,15 +11,6 @@ theory L2Peephole
 imports L2Defs Tuple_Tools
 begin
 
-definition STOP :: "'a::{} \<Rightarrow> 'a"  
-  where "STOP P  \<equiv> P"
-
-lemma STOP_cong: "STOP P \<equiv> STOP P"
-  by simp
-
-lemma do_STOP: "P \<equiv> STOP P"
-  by (simp add: STOP_def)
-
 lemmas id_def [L2opt]
 
 lemma L2_seq_skip [L2opt]:
@@ -111,6 +102,19 @@ lemma L2_marked_seq_gets_stop:
   unfolding L2_seq_gets_def using bdy_eq
   by (rule  L2_seq_const_stop''')
 
+lemma L2_marked_seq_gets_stop':
+  assumes bdy_eq: "f c \<equiv> g c"
+  shows "L2_seq_gets c n f \<equiv> STOP (L2_seq_gets c n g)"
+  unfolding L2_seq_gets_def STOP_def
+  by (simp add: L2_gets_bind bdy_eq)
+
+lemma L2_marked_seq_gets_stop'':
+  assumes bdy_eta: "f \<equiv> f'"
+  assumes bdy_eq: "\<And>v. v = c \<Longrightarrow> f' v \<equiv> g v"
+  shows "L2_seq_gets c n f \<equiv> STOP (L2_seq_gets c n g)"
+  unfolding L2_seq_gets_def using bdy_eq bdy_eta
+  by (simp add: L2_gets_bind STOP_def)
+
 
 lemma L2_guarded_block_cong: "L2_guarded g c = L2_guarded g c"
   by simp
@@ -128,12 +132,14 @@ shows "L2_guarded g c \<equiv> STOP (L2_guarded g' c')"
 
 lemma L2_seq_guard_cong_stop0: 
 assumes guard_eq: "\<And>s. g s \<equiv> g' s"
-assumes bdy_eq: "\<And>s. g' s \<Longrightarrow> run c s \<equiv> run c' s"
-shows "L2_seq_guard g (\<lambda>_. c) \<equiv> STOP (L2_seq_guard g' (\<lambda>_. c'))"
-  unfolding L2_seq_guard_def
-  using assms
-  by (rule L2_guarded_cong_stop'[simplified L2_guarded_def])
-
+assumes bdy_eq: "\<And>s. g' s \<Longrightarrow> run (c ()) s \<equiv> run c' s"
+shows "L2_seq_guard g c \<equiv> STOP (L2_seq_guard g' (\<lambda>_. c'))"
+  unfolding L2_seq_guard_def STOP_def L2_defs
+  apply (rule eq_reflection)
+  apply (rule spec_monad_ext)
+  using guard_eq bdy_eq
+  apply (auto simp add: run_guard run_bind)
+  done
 
 lemma L2_guarded_cong_stop: 
 assumes guard_eq: "g \<equiv> g'"
@@ -155,6 +161,39 @@ lemma L2_seq_assoc (*[L2opt]*):
 lemma L2_seq_assoc' [L2opt]:
   "L2_seq (L2_seq A B) C = L2_seq A (\<lambda>x. L2_seq (B x) C)"
   apply (clarsimp simp: L2_seq_def bind_assoc)
+  done
+
+lemma L2_seq_rev_assoc': 
+  "L2_seq A (\<lambda>x. (L2_seq (B x) (C x))) = 
+      L2_seq (L2_seq A (\<lambda>x. L2_seq (B x) (\<lambda>y. L2_gets (\<lambda>_. (x, y)) ns))) (\<lambda>(x, y). C x y)"
+  apply (clarsimp simp: L2_seq_def L2_gets_def bind_assoc)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_seq_rev_assoc_accumulated': 
+  "L2_seq A (\<lambda>(a, x). (L2_seq (B a x) (C a x))) = 
+      L2_seq (L2_seq A (\<lambda>(a, x). L2_seq (B a x) (\<lambda>y. L2_gets (\<lambda>_. (a, x, y)) ns))) (\<lambda>(a, x, y). C a x y)"
+  apply (clarsimp simp: L2_seq_def L2_gets_def bind_assoc)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_seq_rev_assoc: 
+  "L2_seq A (\<lambda>a. (L2_seq (B a) (C a))) = 
+      L2_seq (L2_seq A (\<lambda>a. L2_seq (B a) (\<lambda>x. L2_gets (\<lambda>_. (x, a)) ns))) (\<lambda>(x, a). C a x)"
+  apply (clarsimp simp: L2_seq_def L2_gets_def bind_assoc)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+
+lemma L2_seq_rev_assoc_accumulated: 
+  "L2_seq A (\<lambda>(x, a). (L2_seq (B a x) (C a x))) = 
+      L2_seq (L2_seq A (\<lambda>(x, a). L2_seq (B a x) (\<lambda>y. L2_gets (\<lambda>_. (y, x, a)) ns))) (\<lambda>(y, x, a). C a x y)"
+  apply (clarsimp simp: L2_seq_def L2_gets_def bind_assoc)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
   done
 
 lemma L2_trim_after_throw [L2opt]:
@@ -204,6 +243,10 @@ lemma L2_unknown_bind_unbound[L2opt]:
   apply (rule spec_monad_ext)
   apply (simp add: run_bind)
   done
+
+lemma L2_unknown_bind_unbound':
+ "f = (\<lambda>_. g) \<Longrightarrow> L2_seq (L2_unknown ns) f = g"
+  by (simp add: L2_unknown_bind_unbound)
 
 lemma L2_seq_L2_unknown_unit[L2opt]: "L2_seq (L2_unknown ns) (\<lambda>x:: unit. f x) = f ()"
   unfolding L2_defs
@@ -265,6 +308,10 @@ lemma L2_seq_guard_cong_stop''':
   apply (simp add: run_bind run_guard)
   done
 
+lemma L2_marked_seq_guard_block_cong:
+ "L2_seq_guard P X = L2_seq_guard P X"
+  by (rule refl)
+
 lemma L2_marked_seq_guard_cong:
  "\<lbrakk>P = P'; \<And>s. P' s \<Longrightarrow> run (X ()) s = run X' s\<rbrakk>  \<Longrightarrow> L2_seq_guard P X = L2_seq_guard P' (\<lambda>_. X')"
   unfolding L2_seq_guard_def L2_defs
@@ -304,13 +351,8 @@ lemma L2_condition_cong:
   "\<lbrakk> C = C'; \<And>s. C' s \<Longrightarrow> run A s = run A' s;\<And>s. \<not> C' s \<Longrightarrow> run B s = run B' s \<rbrakk> \<Longrightarrow> L2_condition C A B = L2_condition C' A' B'"
   unfolding L2_defs
   apply (rule spec_monad_ext)
-  apply (simp add: run_condition)
+  apply (simp add: run_condition simp_implies_def)
   done
-
-lemma L2_condition_cong_stop:
-  "\<lbrakk> C = C'; \<And>s. C' s \<Longrightarrow> run A s = run A' s;\<And>s. \<not> C' s \<Longrightarrow> run B s = run B' s \<rbrakk> \<Longrightarrow> L2_condition C A B = STOP (L2_condition C' A' B')"
-  unfolding STOP_def
-  by (rule L2_condition_cong)
 
 lemma L2_condition_cong':
   "\<lbrakk> \<And>s. C s = C' s; \<And>s. C' s \<Longrightarrow> run A s = run A' s;\<And>s. \<not> C' s \<Longrightarrow> run B s = run B' s \<rbrakk> \<Longrightarrow> L2_condition C A B = L2_condition C' A' B'"
@@ -482,7 +524,6 @@ lemma L2_while_simp_cong':
   apply (simp add: bdy_eq)
   done
 
-
 lemma L2_while_cong_split: 
   assumes c_eq: "c = c'" 
   assumes bdy_eq: "PROP SPLIT (\<And>r s. c' r s \<Longrightarrow>run (A r) s = run (A' r) s)"  
@@ -494,10 +535,10 @@ lemma L2_while_cong_split:
 lemma L2_while_cong_simp_split: 
   assumes c_eq: "c = c'" 
   assumes bdy_eq: "PROP SPLIT (\<And>r s. c' r s =simp=> run (A r) s = run (A' r) s)"  
-  shows "L2_while c A = L2_while c' A'"
+  shows "L2_while c A = L2_while c' (ETA_TUPLED A')"
   apply (rule L2_while_simp_cong' [OF c_eq])
   using bdy_eq 
-  by (simp add: SPLIT_def simp_implies_def)
+  by (simp add: SPLIT_def simp_implies_def ETA_TUPLED_def)
 
 
 lemma L2_while_cong_split_stop: 
@@ -526,7 +567,11 @@ lemma L2_while_cong'':
   apply (simp add: i_eq)
   using c_eq bdy_eq L2_while_cong
   by metis
-  
+
+lemma L2_while_cong_block: "L2_while c b = L2_while c b"
+  by simp
+lemma L2_while_unbind_STOP: "c \<equiv> c' \<Longrightarrow> b \<equiv> b' \<Longrightarrow> L2_while c b i ns \<equiv> STOP_UNBIND (L2_while c' b' i ns)"
+  by (simp add: STOP_UNBIND_def)
 
 lemma L2_returncall_trivial [L2opt]:
   "\<lbrakk> \<And>s v. f v s = v \<rbrakk> \<Longrightarrow> L2_returncall x f = L2_call x"
@@ -685,4 +730,75 @@ lemma L2_guard_join_nested [L2opt]:
   apply (auto simp add: runs_to_iff)
   done
 
+(* Simplifiy towards \<open>L2_guarded P (L2_call ...)\<close> *)
+lemma L2_guarded_L2_gets[L2opt]: 
+  "L2_guarded (\<lambda>_. P) (L2_seq (L2_gets f ns) g) = L2_seq (L2_gets f ns) (\<lambda>x. L2_guarded (\<lambda>_. P) (g x))"
+  unfolding L2_guarded_def L2_defs
+  by (rule spec_monad_eqI) (auto simp add: runs_to_iff)
+lemma L2_guarded_L2_guard[L2opt]: 
+  "L2_guarded (\<lambda>_. P) (L2_seq (L2_guard Q) g) = L2_seq (L2_guard Q) (\<lambda>x. L2_guarded (\<lambda>_. P) (g x))"
+  unfolding L2_guarded_def L2_defs
+  by (rule spec_monad_eqI) (auto simp add: runs_to_iff)
+
+lemma unbind:
+  assumes eq: "\<And>x. f x = g"
+  shows "f = (\<lambda>_. f ZERO('a::c_type))"
+  apply (rule ext)
+  apply (simp add: eq)
+  done
+
+lemma L2_seq_unknown_block_cong: "L2_seq_unknown ns X = L2_seq_unknown ns X"
+  by (rule refl)
+
+lemma L2_seq_unknown_STOP: "f \<equiv> f' \<Longrightarrow> L2_seq_unknown ns f \<equiv> STOP (L2_seq (L2_unknown ns) f')"
+  by (simp add: STOP_def L2_seq_unknown_def)
+
+lemma L2_seq_unknown_unfold_STOP: "f \<equiv> (\<lambda>_. g) \<Longrightarrow> L2_seq_unknown ns f \<equiv> STOP g"
+  by (simp add: L2_seq_unknown_def STOP_def L2_unknown_bind_unbound)
+
+lemma L2_seq_gets_unfold: "L2_seq_gets c ns f = f c"
+  by (simp add: L2_seq_gets_def L2_gets_bind)
+
+lemma L2_condition_L2_seq_distrib:
+  "L2_seq (L2_condition C L R) (\<lambda>x. L2_seq (X x) Y) \<equiv> 
+   L2_seq 
+     (L2_condition C 
+       (L2_seq L X) 
+       (L2_seq R X)) Y"
+  by (simp add: L2_condition_distrib L2_seq_assoc)
+
+lemma L2_condition_L2_seq_gets_distrib:
+  "L2_seq (L2_condition C L R) (\<lambda>x. STOP (L2_seq_gets (X x) n Y )) \<equiv> 
+   L2_seq 
+     (L2_condition C 
+       (L2_seq L (\<lambda>x. L2_gets (\<lambda>_. X x) n)) 
+       (L2_seq R (\<lambda>x. L2_gets (\<lambda>_. X x) n))) Y"
+  unfolding L2_seq_gets_def STOP_def
+  by (rule L2_condition_L2_seq_distrib) 
+
+lemma L2_condition_L2_seq_gets_distrib':
+  assumes asm: "\<And>x. STOP (L2_seq_gets (X x) n (Y x) ) \<equiv> L2_seq (A x) B"
+  shows "L2_seq (L2_condition C L R) (\<lambda>x. STOP (L2_seq_gets (X x) n (Y x) )) \<equiv> 
+   L2_seq 
+     (L2_condition C 
+       (FUSE (L2_seq L A)) 
+       (FUSE (L2_seq R A))) B"
+  unfolding FUSE_def
+  apply (simp add: asm)
+  by (simp add: L2_condition_distrib L2_seq_assoc)
+
+lemma L2_seq_condition_block_cong: "L2_seq_condition c L R X = L2_seq_condition c L R X"
+  by (rule refl)
+
+lemma L2_seq_condition_unfold_STOP: 
+  "L2_seq L X \<equiv> L' \<Longrightarrow> L2_seq R X \<equiv> R' \<Longrightarrow> 
+    L2_seq_condition c L R X \<equiv> STOP (L2_condition c L' R')"
+  by (simp add: L2_seq_condition_def L2_condition_distrib STOP_def)
+
+thm L2_split_fixups
+(* FIXME: remove *)
+thm L2_condition_L2_seq_distrib [split_tuple X arity : 3, simplified L2_split_fixups]
+thm L2_condition_L2_seq_gets_distrib [split_tuple X arity : 3, simplified L2_split_fixups]
+thm L2_condition_L2_seq_gets_distrib' [split_tuple X and A arity : 2, simplified L2_split_fixups]
+thm L2_seq_assoc
 end

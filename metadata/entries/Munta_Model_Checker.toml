@@ -1,0 +1,32 @@
+title = "Munta: A Verified Model Checker for Timed Automata"
+date = 2025-05-22
+topics = [
+  "Computer science/Automata and formal languages",
+  "Tools",
+]
+abstract = "Munta is a verified model checker for timed automata. It has been described in detail in a PhD thesis [3] and conference publications [4, 2]. This entry supersedes earlier versions of Munta hosted on GitHub."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wimmer]
+email = "wimmer_email"
+
+[contributors]
+
+[notify]
+wimmer = "wimmer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-319-89960-2_4",
+  "10.1007/978-3-030-29662-9_14",
+]
+pubs = [
+  "https://nbn-resolving.org/urn:nbn:de:bvb:91-diss-20201209-1576100-1-0",
+]

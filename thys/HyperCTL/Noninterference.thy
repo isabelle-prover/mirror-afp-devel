@@ -722,7 +722,7 @@ unfolding purgeIdle_def by (metis filter_append)
 lemma purgeIdle_set_isState:
 assumes "s \<in> set (purgeIdle sl)"
 shows "isState s"
-using assms unfolding purgeIdle_def by (metis filter_set member_filter)
+using assms by (simp add: purgeIdle_def)
 
 lemma purgeIdle_Nil_iff:
 "purgeIdle sl = [] \<longleftrightarrow> (\<forall>s\<in>set sl. \<not> isState s)"

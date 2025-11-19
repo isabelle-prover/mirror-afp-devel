@@ -49,10 +49,10 @@ begin
 section\<open>Hoare\<close>
 
 
-definition hoare\<^sub>3 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)" 50)
+definition hoare\<^sub>3 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)\<close> 50)
 where   "\<lbrace>P\<rbrace> M \<lbrace>Q\<rbrace> \<equiv> (\<forall>\<sigma>. P \<sigma> \<longrightarrow> (case M \<sigma> of None => False | Some(x, \<sigma>') => Q x \<sigma>'))" 
 
-definition hoare\<^sub>3' :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)/\<dagger>)" 50)
+definition hoare\<^sub>3' :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> bool" (\<open>(\<lbrace>(1_)\<rbrace>/ (_)/\<dagger>)\<close> 50)
 where   "\<lbrace>P\<rbrace> M \<dagger> \<equiv> (\<forall>\<sigma>. P \<sigma> \<longrightarrow> (case M \<sigma> of None => True | _ => False))" 
 
 subsection\<open>Basic rules\<close> 
@@ -291,12 +291,12 @@ qed
 
 subsection\<open>Experimental Alternative Definitions (Transformer-Style Rely-Guarantee)\<close>
 
-definition  hoare\<^sub>1 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" ("\<turnstile>\<^sub>1 ({(1_)}/ (_)/ {(1_)})" 50)
+definition  hoare\<^sub>1 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>1 ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where  "(\<turnstile>\<^sub>1{P} M {Q} ) = (\<forall>\<sigma>. (\<sigma> \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E P ; x  \<leftarrow> M; assert\<^sub>S\<^sub>E (Q x))))"
 
 (* Problem: Severe Deviation for the case of an unsatisfyable precondition *)
 
-definition  hoare\<^sub>2 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" ("\<turnstile>\<^sub>2 ({(1_)}/ (_)/ {(1_)})" 50)
+definition  hoare\<^sub>2 :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<alpha> \<Rightarrow> '\<sigma> \<Rightarrow> bool) \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>2 ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where  "(\<turnstile>\<^sub>2{P} M {Q} ) = (\<forall>\<sigma>. P \<sigma> \<longrightarrow> (\<sigma> \<Turnstile>  (x \<leftarrow> M; assert\<^sub>S\<^sub>E (Q x))))"
 
   

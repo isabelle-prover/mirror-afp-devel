@@ -1,31 +1,90 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ballenghien on Archive of Formal Proofs
-    </title>
-    <link>/authors/ballenghien/</link>
-    <description>
-        Recent content in ballenghien 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Sun, 24 Dec 2023 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/ballenghien/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Operational Semantics formally proven in HOL-CSP</title>
-          <link>/entries/HOL-CSP_OpSem.html</link>
-          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HOL-CSP_OpSem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
-          <link>/entries/HOL-CSPM.html</link>
-          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HOL-CSPM.html</guid>
-          <description></description>
-        </item>
+    <title>Benoît Ballenghien</title>
+    <link>https://isa-afp.org/authors/ballenghien/</link>
+    <description>AFP entries of Benoît Ballenghien</description><item>
+  <title>Ultrametric Structure for Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Ultrametric.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Ultrametric Structure for Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Examples of Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces-Examples.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Examples of Restriction Spaces in the AFP</description>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Mathematics/Algebra</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Restriction Spaces: a Fixed-Point Theory</title>
+  <link>https://isa-afp.org/entries/Restriction_Spaces.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>Restriction Spaces: a Fixed-Point Theory in the AFP</description>
+    <category>Tools</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Topology</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>CSP Semantics over Restriction Spaces</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_RS.html</link>
+  <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+  <description>CSP Semantics over Restriction Spaces in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+<item>
+  <title>Definition and Elementary Properties of Ultrametric Spaces</title>
+  <link>https://isa-afp.org/entries/Elementary_Ultrametric_Spaces.html</link>
+  <pubDate>Thu, 10 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Definition and Elementary Properties of Ultrametric Spaces in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>Sophie Germain’s Theorem</title>
+  <link>https://isa-afp.org/entries/Sophie_Germain.html</link>
+  <pubDate>Wed, 09 Apr 2025 00:00:00 +0000</pubDate>
+  <description>Sophie Germain’s Theorem in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series</title>
+  <link>https://isa-afp.org/entries/Hilbert_Basis.html</link>
+  <pubDate>Wed, 12 Feb 2025 00:00:00 +0000</pubDate>
+  <description>A Proof of Hilbert Basis Theorem and            an Extension to Formal Power Series in the AFP</description>
+    <category>Mathematics</category>
+</item>
+<item>
+  <title>Operational Semantics formally proven in HOL-CSP</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_OpSem.html</link>
+  <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
+  <description>Operational Semantics formally proven in HOL-CSP in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
+  <link>https://isa-afp.org/entries/HOL-CSPM.html</link>
+  <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
+  <description>HOL-CSPM - Architectural operators for HOL-CSP in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>HOL-CSP Version 2.0</title>
+  <link>https://isa-afp.org/entries/HOL-CSP.html</link>
+  <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+  <description>HOL-CSP Version 2.0 in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+
   </channel>
 </rss>

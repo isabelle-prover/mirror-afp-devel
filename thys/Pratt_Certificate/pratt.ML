@@ -27,12 +27,19 @@ val untermify_cert : term -> cert
 
 val pretty_cert : cert -> Pretty.T
 val read_cert : Input.source -> cert
+val read_certs : Input.source -> cert list
 
-val cert_cartouche : cert parser 
+val cert_cartouche : cert parser
+val cert_cartouches : cert list parser
 val tac_config_parser : tac_config parser
 val tac : tac_config -> cert option -> Proof.context -> int -> tactic
 
 val setup_valid_cert_code_conv : (Proof.context -> conv) -> Context.generic -> Context.generic
+
+type cert_cache = (int * cert) list
+val augment_certs: cert list -> cert_cache
+val reduce_certs: cert list -> cert_cache
+val check_certs_parser: (Toplevel.transition -> Toplevel.transition) parser
 
 end
 
@@ -110,6 +117,8 @@ fun factorise n =
 type prime_thm_cache = (int * thm) list
 
 datatype cert = Pratt_Node of int * int * cert list
+
+type cert_cache = (int * cert) list
 
 exception INVALID_CERT of cert
 
@@ -320,15 +329,19 @@ fun parse toks =
   || !!! nat >> (fn a => Pratt_Node (a, 1, []))
   || Scan.fail_with (err_msg "opening curly brace or natural number")) toks
 
-in
-
-fun read_cert input =
+fun gen_read_cert parse input =
   let val toks = filter_out is_space (tokenize input)
   in #1 (Scan.error (Scan.finite stopper (parse --| !!! (Scan.ahead (one EOF)))) toks) end
+
+in
+
+val read_cert = gen_read_cert parse
+val read_certs = gen_read_cert (Scan.bulk parse)
 
 end
 
 val cert_cartouche = Args.cartouche_input >> read_cert
+val cert_cartouches = Args.cartouche_input >> read_certs
 
 
 val certT = @{typ "Pratt_Certificate.pratt_tree"}
@@ -388,7 +401,7 @@ fun replay_cert_code cert ctxt =
 local
   val pretty_int = Pretty.str o string_of_int
 in
-fun pretty_cert (Pratt_Node (2, _, _)) = pretty_int 2
+fun pretty_cert (Pratt_Node (n, 1, [])) = pretty_int n
   | pretty_cert (Pratt_Node (n, a, ts)) =
       Pretty.list "{" "}"
         [pretty_int n, pretty_int a, Pretty.enum "," "{" "}" (map pretty_cert ts)]
@@ -501,6 +514,103 @@ local
 in
 
 val tac_config_parser = options >> (fn f => f default_config)
+
+end
+
+
+local
+
+fun prime_of (Pratt_Node (p, _, _)) = p
+fun triv_cert_of n = Pratt_Node (prime_of n, 1, [])
+
+fun thms_from_certs is_code ctxt certs =
+  if is_code then
+    map (fn c => replay_cert_code c ctxt) certs
+  else
+    fold_map (fn cert => fn cache => replay_cert cache cert ctxt) certs []
+    |> fst
+
+fun notes_from_certs is_code binding certs lthy =
+  let
+    val thms = thms_from_certs is_code lthy certs
+  in
+    Local_Theory.note ((binding, []), thms) lthy |> snd
+  end
+
+val sort_cert_cache = sort (fn ((k, _), (l, _)) => int_ord (k, l))
+
+fun reduce_certs (certs: cert list): cert_cache =
+  let
+    fun go cache [] = cache
+      | go cache (Pratt_Node (p, a, certs) :: cs) =
+        if AList.lookup (op =) cache p = NONE then
+          go
+            ((p, Pratt_Node (p, a, map triv_cert_of certs))
+             :: fold (fn x => fn y => go y [x]) certs cache)
+            cs
+        else
+          go cache cs
+  in go [] certs |> sort_cert_cache end
+
+fun trans_from_certs (is_code, is_full, is_reduce) binding certs =
+  let
+    val _ =
+      if is_full then
+        map pretty_cert certs |> Pretty.chunks |> Pretty.writeln
+      else ()
+    val _ =
+      if is_reduce then
+        reduce_certs certs |> map snd
+        |> map pretty_cert |> Pretty.chunks |> Pretty.writeln
+      else ()
+  in
+    Toplevel.local_theory NONE NONE (notes_from_certs is_code binding certs)
+  end
+
+val modes_parser =
+  let
+    fun mk_opts modes =
+      let
+        val is_code = member (op =) modes "code"
+        val is_full = member (op =) modes "full"
+        val is_reduce = member (op =) modes "reduce"
+        val _ =
+          if List.all (member (op =) ["code", "full", "reduce"]) modes then ()
+          else error "Unknown option!"
+      in (is_code, is_full, is_reduce) end
+    val parse = (\<^keyword>\<open>(\<close> |-- Parse.!!! (Scan.repeat1 Parse.name --| \<^keyword>\<open>)\<close>))
+  in Scan.optional parse [] >> mk_opts end
+
+fun augment_cert cert_cache cert =
+  case cert of
+    Pratt_Node (2, 1, []) => Pratt_Node (2, 1, [])
+  | Pratt_Node (n, 1, []) => (
+    case AList.lookup (op =) cert_cache n of
+      SOME c => c
+    | NONE => error ("Missing certificate for " ^ string_of_int n))
+  | Pratt_Node (ps, a, certs) =>
+    Pratt_Node (ps, a, map (augment_cert cert_cache) certs)
+
+fun augment_certs0 (cert_cache: cert_cache): cert_cache =
+  let
+    fun go done [] = rev done
+      | go done ((i, c) :: xs) = go ((i, augment_cert done c) :: done) xs
+  in go [] cert_cache end
+
+in
+
+val reduce_certs = reduce_certs
+
+fun augment_certs (certs: cert list): cert_cache =
+  let
+    fun mk_pair n = (prime_of n, n)
+    val cache = map mk_pair certs |> sort_cert_cache
+  in augment_certs0 cache end
+
+val check_certs_parser =
+  modes_parser -- Parse.binding -- cert_cartouches >>
+  (fn ((opts, binding), certs) => 
+    augment_certs certs |> map snd |> trans_from_certs opts binding)
 
 end
 

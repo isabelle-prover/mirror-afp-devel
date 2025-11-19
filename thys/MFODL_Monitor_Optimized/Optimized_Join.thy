@@ -131,7 +131,7 @@ proof -
   define Q_neg where "Q_neg = set (zip A_neg (drop (length A_pos) L))"
   let ?r = "mmulti_join' A_pos A_neg L"
   have "?r = New_max_getIJ_wrapperGenericJoin Q Q_neg"
-    unfolding Q_def Q_neg_def by (simp del: New_max.wrapperGenericJoin.simps)
+    by (simp add: Q_def Q_neg_def)
   moreover have "card Q \<ge> 1"
     unfolding Q_def using assms(1,2)
     by (auto simp: Suc_le_eq card_gt_0_iff zip_eq_Nil_iff)

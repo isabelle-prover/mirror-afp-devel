@@ -1,0 +1,12 @@
+{{- range . -}}
+  {{- with site.GetPage (printf "authors/%s" .author) -}}
+    <a href="{{ .RelPermalink }}">{{ .Params.name | safeHTML }}</a>
+  {{- else -}}
+    {{- .name -}}
+  {{- end -}}
+
+  {{- with .homepage }} <a href="{{ . | safeHTML }}">🌐</a>{{ end -}}
+  {{- with .email }} <a class="obfuscated" data="{{ .base64 }}">📧</a>{{ end -}}
+
+  {{- .sep -}}
+{{- end -}}

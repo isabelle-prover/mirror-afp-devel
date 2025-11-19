@@ -43,9 +43,7 @@
 chapter\<open>Formalization I: OCL Types and Core Definitions \label{sec:focl-types}\<close>
 
 theory    UML_Types
-imports   HOL.Transcendental
-keywords "Assert" :: thy_decl
-     and "Assert_local" :: thy_decl
+imports   Complex_Main
 begin
 
 section\<open>Preliminaries\<close>
@@ -318,6 +316,11 @@ the space of valuation to @{typ "bool option option"}, \ie{} the Boolean base ty
 type_synonym Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e  = "bool option option"
 type_synonym ('\<AA>)Boolean = "('\<AA>,Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
 
+lemma Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e_cases:
+  fixes b :: \<open>Boolean\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<close>
+  obtains \<open>b = \<bottom>\<close> | \<open>b = \<lfloor>\<bottom>\<rfloor>\<close> | \<open>b = \<lfloor>\<lfloor>False\<rfloor>\<rfloor>\<close> | \<open>b = \<lfloor>\<lfloor>True\<rfloor>\<rfloor>\<close>
+  using that by (cases b) auto
+
 text\<open>Because of the previous class definitions, Isabelle type-inference establishes that
 @{typ "('\<AA>)Boolean"} lives actually both in the type class @{term bot} and @{term null};
 this type is sufficiently rich to contain at least these two elements.
@@ -380,7 +383,9 @@ text\<open>The core of an own type construction is done via a type
 
 typedef (overloaded) ('\<alpha>, '\<beta>) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e = "{X::('\<alpha>::null \<times> '\<beta>::null) option option.
                                            X = bot \<or> X = null \<or> (fst\<lceil>\<lceil>X\<rceil>\<rceil> \<noteq> bot \<and> snd\<lceil>\<lceil>X\<rceil>\<rceil> \<noteq> bot)}"
-                            by (rule_tac x="bot" in exI, simp)
+  by (rule_tac x="bot" in exI, simp)
+
+setup_lifting type_definition_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e
 
 text\<open>We ``carve'' out from the concrete type @{typ "('\<alpha>::null \<times> '\<beta>::null) option option"} 
 the new fully abstract type, which will not contain representations like @{term "\<lfloor>\<lfloor>(\<bottom>,a)\<rfloor>\<rfloor>"}
@@ -388,26 +393,44 @@ or @{term "\<lfloor>\<lfloor>(b,\<bottom>)\<rfloor>\<rfloor>"}. The type constuc
 identify these with @{term "invalid"}.
 \<close>
 
-instantiation   Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null,null)bot
+instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null, null) bot
 begin
-   definition bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(bot_class.bot :: ('a::null,'b::null) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e None"
 
-   instance proof show "\<exists>x::('a,'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e. x \<noteq> bot"
-                  apply(rule_tac x="Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>None\<rfloor>" in exI)
-                  by(simp add: bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def  Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject  null_option_def bot_option_def)
-            qed
+lift_definition bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is None
+  by (simp add: bot_option_def)
+
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
 end
 
-instantiation   Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null,null)null
-begin
-   definition null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(null::('a::null,'b::null) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor> None \<rfloor>"
+lemma Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_invalid_eq [simp]:
+  \<open>Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (invalid \<tau>) = invalid \<tau>\<close>
+  by (simp add: invalid_def bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_option_def)
 
-   instance proof show "(null::('a::null,'b::null) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<noteq> bot"
-                  by(simp add: bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject 
-                               null_option_def bot_option_def)
-            qed
+instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null, null) null
+begin
+
+lift_definition null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is "\<lfloor>None\<rfloor>"
+  by (simp add: null_option_def bot_option_def)
+
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
+
 end
 
+instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: ("{null, equal}", "{null, equal}") equal
+begin
+
+lift_definition equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> ('a, 'b) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> bool"
+  is "HOL.equal :: ('a \<times> 'b) option option \<Rightarrow> _"
+  .
+
+instance by (standard; transfer)
+  (simp add: equal)
+
+end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>,'\<beta>) Pair  = "('\<AA>, ('\<alpha>,'\<beta>) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
@@ -508,30 +531,45 @@ typedef (overloaded) '\<alpha> Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e ="{X::('
                                         X = bot \<or> X = null \<or> (\<forall>x\<in>set \<lceil>\<lceil>X\<rceil>\<rceil>. x \<noteq> bot)}"
           by (rule_tac x="bot" in exI, simp)
 
-instantiation   Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null)bot
+setup_lifting type_definition_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e
+
+instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: (null) bot
 begin
 
-   definition bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(bot::('a::null) Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e None"
+lift_definition bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is None
+  by (simp add: null_option_def bot_option_def)
 
-   instance proof show "\<exists>x::'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e. x \<noteq> bot"
-                  apply(rule_tac x="Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>None\<rfloor>" in exI)
-                  by(auto simp:bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject 
-                               null_option_def bot_option_def)
-            qed
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
 end
 
+lemma Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_invalid_eq [simp]:
+  \<open>Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (invalid \<tau>) = invalid \<tau>\<close>
+  by (simp add: invalid_def bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_option_def)
 
-instantiation   Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null)null
+instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (null) null
 begin
 
-   definition null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def: "(null::('a::null) Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<equiv> Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor> None \<rfloor>"
+lift_definition null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e" is "\<lfloor>None\<rfloor>"
+  by (simp add: null_option_def bot_option_def)
 
-   instance proof show "(null::('a::null) Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) \<noteq> bot"
-                  by(auto simp:bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject 
-                               null_option_def bot_option_def)
-            qed
+instance by (standard; transfer)
+  (auto simp add: null_option_def bot_option_def)
+
 end
 
+instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: ("{null, equal}") equal
+begin
+
+lift_definition equal_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e :: "'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<Rightarrow> 'a Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<Rightarrow> bool"
+  is "HOL.equal :: 'a list option option \<Rightarrow> _"
+  .
+
+instance by (standard; transfer)
+  (simp add: equal)
+
+end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>) Sequence  = "('\<AA>, '\<alpha> Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
@@ -584,63 +622,4 @@ text\<open>Note, furthermore, that our construction of ``fully abstract types'' 
 assures that the logical equality to be defined in the next section works correctly and comes
 as element of the ``lingua franca'', \ie{} HOL.\<close>
 
-(*<*)
-section\<open>Miscelleaneous: ML assertions\<close>
-
-text\<open>We introduce here a new command \emph{Assert} similar as \emph{value} for proving
- that the given term in argument is a true proposition. The difference with \emph{value} is that
-\emph{Assert} fails if the normal form of the term evaluated is not equal to @{term True}. 
-Moreover, in case \emph{value} could not normalize the given term, as another strategy of reduction
- we try to prove it with a single ``simp'' tactic.\<close>
-
-ML\<open>
-fun disp_msg title msg status = title ^ ": '" ^ msg ^ "' " ^ status
-
-fun lemma msg specification_theorem concl in_local thy =
-  SOME
-    (in_local (fn lthy =>
-           specification_theorem Thm.theoremK NONE (K I) Binding.empty_atts [] [] 
-             (Element.Shows [(Binding.empty_atts, [(concl lthy, [])])])
-             false lthy
-        |> Proof.global_terminal_proof
-             ((Method.Combinator ( Method.no_combinator_info
-                                 , Method.Then
-                                 , [Method.Basic (fn ctxt => SIMPLE_METHOD (asm_full_simp_tac ctxt 1))]),
-               (Position.none, Position.none)), NONE))
-              thy)
-  handle ERROR s =>
-    (warning s; writeln (disp_msg "KO" msg "failed to normalize"); NONE)
-
-fun outer_syntax_command command_spec theory in_local =
-  Outer_Syntax.command command_spec "assert that the given specification is true"
-    (Parse.term >> (fn elems_concl => theory (fn thy =>
-      case
-        lemma "nbe" (Specification.theorem true)
-          (fn lthy => 
-            let val expr = Nbe.dynamic_value lthy (Syntax.read_term lthy elems_concl)
-                val thy = Proof_Context.theory_of lthy
-                open HOLogic in
-            if Sign.typ_equiv thy (fastype_of expr, @{typ "prop"}) then
-              expr
-            else mk_Trueprop (mk_eq (@{term "True"}, expr))
-            end)
-          in_local
-          thy
-      of  NONE => 
-            let val attr_simp = "simp" in
-            case lemma attr_simp (Specification.theorem_cmd true) (K elems_concl) in_local thy of
-               NONE => raise (ERROR "Assertion failed")
-             | SOME thy => 
-                (writeln (disp_msg "OK" "simp" "finished the normalization");
-                 thy)
-            end
-        | SOME thy => thy)))
-
-val () = outer_syntax_command @{command_keyword Assert} Toplevel.theory Named_Target.theory_map
-val () = outer_syntax_command @{command_keyword Assert_local} (Toplevel.local_theory NONE NONE) I
-\<close>
-(*>*)
-
-
 end
-

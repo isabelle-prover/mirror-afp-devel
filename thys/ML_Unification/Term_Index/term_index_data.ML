@@ -1,7 +1,7 @@
 (*  Title: Term_Index/term_index_data.ML
     Author: Kevin Kappelmann
 
-Term index data stored in generic contexts.
+Term index stored in the generic context.
 *)
 signature TERM_INDEX_DATA_ARGS =
 sig
@@ -12,9 +12,10 @@ end
 
 functor Term_Index_Generic_Data_Args(P : TERM_INDEX_DATA_ARGS) : GENERIC_DATA_ARGS =
 struct
-type T = P.data P.TI.term_index
-val empty = P.TI.empty
-fun merge (ti1, ti2) = P.TI.merge P.data_eq ti1 ti2
+open P
+type T = data TI.term_index
+val empty = TI.empty
+fun merge (ti1, ti2) = TI.merge data_eq ti1 ti2
 end
 
 signature TERM_INDEX_DATA =

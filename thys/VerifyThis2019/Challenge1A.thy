@@ -201,7 +201,7 @@ text \<open>Problem definition:
     apply (auto simp add: take_incr_non_empty) 
     apply (simp add: take_decr_non_empty)
     apply (metis list.distinct(1) take_incr.simps(3))
-    by (smt list.simps(3) take_decr.simps(3))
+    by (smt (verit) list.simps(3) take_decr.simps(3))
     
     
   

@@ -95,35 +95,35 @@ definition cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\
   where
     "cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t node =
 (case RNode.more node of Inl element \<Rightarrow> Some (RNode.extend (RNode.truncate node) element) | _ \<Rightarrow> None)"
-adhoc_overloading cast cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
+adhoc_overloading cast \<rightleftharpoons> cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 
 abbreviation cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) Object \<Rightarrow> (_) Element option"
   where
     "cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t obj \<equiv> (case cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e obj of Some node \<Rightarrow> cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t node | None \<Rightarrow> None)"
-adhoc_overloading cast cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
+adhoc_overloading cast \<rightleftharpoons> cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 
 definition cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e :: "(_) Element \<Rightarrow> (_) Node"
   where
     "cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e element = RNode.extend (RNode.truncate element) (Inl (RNode.more element))"
-adhoc_overloading cast cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading cast \<rightleftharpoons> cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 
 abbreviation cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t :: "(_) Element \<Rightarrow> (_) Object"
   where
     "cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ptr \<equiv> cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t (cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e ptr)"
-adhoc_overloading cast cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
+adhoc_overloading cast \<rightleftharpoons> cast\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 
 consts is_element_kind :: 'a
 definition is_element_kind\<^sub>N\<^sub>o\<^sub>d\<^sub>e :: "(_) Node \<Rightarrow> bool"
   where
     "is_element_kind\<^sub>N\<^sub>o\<^sub>d\<^sub>e ptr \<longleftrightarrow> cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t ptr \<noteq> None"
 
-adhoc_overloading is_element_kind is_element_kind\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading is_element_kind \<rightleftharpoons> is_element_kind\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 lemmas is_element_kind_def = is_element_kind\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def
 
 abbreviation is_element_kind\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t :: "(_) Object \<Rightarrow> bool"
   where
     "is_element_kind\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ptr \<equiv> cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t ptr \<noteq> None"
-adhoc_overloading is_element_kind is_element_kind\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
+adhoc_overloading is_element_kind \<rightleftharpoons> is_element_kind\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 
 lemma element_ptr_kinds_commutes [simp]: 
   "cast element_ptr |\<in>| node_ptr_kinds h \<longleftrightarrow> element_ptr |\<in>| element_ptr_kinds h"
@@ -139,7 +139,7 @@ qed
 definition get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) element_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) Element option"
   where                             
     "get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t element_ptr h = Option.bind (get\<^sub>N\<^sub>o\<^sub>d\<^sub>e (cast element_ptr) h) cast"
-adhoc_overloading get get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
+adhoc_overloading get \<rightleftharpoons> get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 
 locale l_type_wf_def\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 begin
@@ -183,7 +183,7 @@ global_interpretation l_get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^su
 definition put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) element_ptr \<Rightarrow> (_) Element \<Rightarrow> (_) heap \<Rightarrow> (_) heap"
   where                                     
     "put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t element_ptr element = put\<^sub>N\<^sub>o\<^sub>d\<^sub>e (cast element_ptr) (cast element)"
-adhoc_overloading put put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t      
+adhoc_overloading put \<rightleftharpoons> put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t      
 
 lemma put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ptr_in_heap:
   assumes "put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t element_ptr element h = h'"

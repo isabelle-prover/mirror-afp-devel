@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{eufrak}
+\usepackage{amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+\usepackage{hyperref}
+\usepackage{url}
+
+\begin{document}
+
+\title{Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity}
+\author{Jelena Markovi\' c and Filip Mari\' c}
+\maketitle
+
+\begin{abstract}
+  In this paper, we present an Isabelle/HOL formalization of
+  noncommu\-ta\-ti\-ve and nonassociative algebraic structures known
+  as \emph{gyrogroups} and \emph{gyrovector spaces}. These concepts
+  were introduced by Abraham A. Ungar \cite{ungar-analytic} and have deep connections to
+  hyperbolic geometry and special relativity. Gyrovector spaces can be
+  used to define models of hyperbolic geometry. Unlike other models,
+  gyrovector spaces offer the advantage that all definitions exhibit
+  remarkable syntactical similarities to standard Euclidean and
+  Cartesian geometry (e.g., points on the line between $a$ and $b$
+  satisfy the parametric equation
+  $ a \oplus t \otimes(\ominus a \oplus b)$, for $t \in \mathbb{R}$,
+  while the hyperbolic Pythagorean theorem is expressed as
+  $a^2\oplus b^2 = c^2$, where $\otimes$, $\oplus$, and $\ominus$
+  represent gyro operations).
+
+  We begin by formally defining gyrogroups and gyrovector spaces and
+  proving their numerous properties. Next, we formalize M\"obius and
+  Einstein models of these abstract structures (formulated in the
+  two-dimensional, complex plane), and then demonstrate that these are
+  equivalent to the Poincar\'e and Klein-Beltrami models, satisfying
+  Tarski's geometry axioms for hyperbolic geometry.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

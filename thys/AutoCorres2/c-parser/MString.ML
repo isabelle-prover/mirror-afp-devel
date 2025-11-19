@@ -42,12 +42,12 @@ structure CNameTab = Table
                            ((fn1, vn1), (fn2, vn2))
    end)
 
-datatype more_info = MungedVar of {munge : MString.t, owned_by : string option, fname : string option, init : bool}
+datatype more_info = MungedVar of {munge : MString.t, owned_by : string option, fname : string option, init : bool, global: bool}
                    | EnumC
                    | FunctionName
 
-fun map_init f {munge, owned_by, fname, init} = 
-  {munge = munge, owned_by = owned_by, fname = fname, init= f init}
+fun map_init f {munge, owned_by, fname, init, global} = 
+  {munge = munge, owned_by = owned_by, fname = fname, init= f init, global=global}
 
 fun map_munged_var f (MungedVar x) = (MungedVar (f x))
   | map_munged_var _ x = x
@@ -58,15 +58,10 @@ fun dest_munged_var_info (MungedVar {fname=SOME n, ...}) = SOME n
 fun get_init (MungedVar {init, ...} ) = SOME init
   | get_init _ = NONE 
 
-fun munged_var_ord ({munge = m1, owned_by = o1, fname = f1, init = i1}, 
-     {munge = m2, owned_by = o2, fname = f2, init = i2}) =
-    case MString.ord (m1, m2) of
-      EQUAL => (case option_ord string_ord (o1, o2) of
-                 EQUAL => (case option_ord string_ord (f1, f2) of
-                            EQUAL => bool_ord (i1, i2)
-                           | z => z)
-                | y => y)
-    | x => x
+fun munged_var_ord ({munge = m1, owned_by = o1, fname = f1, init = i1, global = g1}, 
+     {munge = m2, owned_by = o2, fname = f2, init = i2, global = g2}) =
+   (prod_ord MString.ord (prod_ord (option_ord string_ord) (prod_ord (option_ord string_ord) (prod_ord bool_ord bool_ord)))) 
+     ((m1, (o1, (f1, (i1, g1)))), (m2, (o2, (f2, (i2, g2)))))
 
 fun more_info_ord (x, y) = 
   case (x, y) of

@@ -1,0 +1,58 @@
+title = "Restriction Spaces: a Fixed-Point Theory"
+date = 2025-05-07
+topics = [
+  "Tools",
+  "Mathematics/Analysis",
+  "Mathematics/Topology",
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+Fixed-point constructions are fundamental to defining recursive and co-recursive functions.
+  However, a general axiom $Y f = f (Y f)$ leads to inconsistency, and definitions
+  must therefore be based on theories guaranteeing existence under suitable conditions.
+  In Isabelle/HOL, these constructions are typically based on sets, well-founded orders
+  or domain-theoretic models such as for example HOLCF.
+  In this submission we introduce a formalization of restriction spaces i.e. spaces
+  equipped with a so-called restriction, denoted by $\\downarrow$,
+  satifying three properties:
+  \\begin{align*}
+    & x \\downarrow 0 = y \\downarrow 0\\\\
+    & x \\downarrow n \\downarrow m = x \\downarrow \\mathrm{min} \\ n \\ m\\\\
+    & x \\not = y \\Longrightarrow \\exists n. \\ x \\downarrow n \\not = y \\downarrow n
+  \\end{align*}
+  They turn out to be cartesian closed and admit natural notions of constructiveness and
+  completeness, enabling the definition of a fixed-point operator under verifiable side-conditions.
+  This is achieved in our entry, from topological definitions to induction principles.
+  Additionally, we configure the simplifier so that it can automatically solve both
+  constructiveness and admissibility subgoals, as long as users write higher-order rules
+  for their operators.
+  Since our implementation relies on axiomatic type classes, the resulting library
+  is a fully abstract, flexible and reusable framework."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[authors.puyobro]
+email = "puyobro_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+puyobro = "puyobro_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

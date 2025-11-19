@@ -333,14 +333,14 @@ definition seqs where "seqs n = {xs :: bool list . length xs = n}"
 lemma length_seqs [dest]: "xs \<in> seqs n \<Longrightarrow> length xs = n"
   by (simp add: seqs_def)
 
-lemma seqs_0 [simp]: "seqs 0 = {[]}"
+lemma seqs_0 [simp, code]: "seqs 0 = {[]}"
   by (auto simp: seqs_def)
 
 text \<open>
   The coin sequences of length \<open>n + 1\<close> are simply what is obtained by appending either \<open>H\<close>
   or \<open>T\<close> to each coin sequence of length \<open>n\<close>.
 \<close>
-lemma seqs_Suc: "seqs (Suc n) = (\<lambda>xs. True # xs) ` seqs n \<union> (\<lambda>xs. False # xs) ` seqs n"
+lemma seqs_Suc [code]: "seqs (Suc n) = (\<lambda>xs. True # xs) ` seqs n \<union> (\<lambda>xs. False # xs) ` seqs n"
   by (auto simp: seqs_def length_Suc_conv)
 
 text \<open>
@@ -380,8 +380,6 @@ proof (induction n)
     by (subst card_Un_disjoint) (auto simp: card_image)
   finally show ?case .
 qed auto
-
-lemmas seqs_code [code] = seqs_0 seqs_Suc
 
 
 text \<open>

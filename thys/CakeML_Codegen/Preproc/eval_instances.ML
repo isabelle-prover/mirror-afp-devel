@@ -63,7 +63,7 @@ fun make typ_name thy =
     val ctxt = Proof_Context.init_global thy
     val {ctrs, T, distincts, injects, ...} = the (Ctr_Sugar.ctr_sugar_of ctxt typ_name)
     val len = length (snd (dest_Type (unvarify_typ T)))
-    val tparams = map (rpair @{sort evaluate}) (Name.invent Name.context Name.aT len)
+    val tparams = map (rpair @{sort evaluate}) (Name.invent_global_types len)
 
     val typ = Embed.eval_typ (Type (typ_name, map TFree tparams))
 
@@ -81,9 +81,9 @@ fun make typ_name thy =
         val (arg_typs, _) = strip_type typ
         val term_params =
           length arg_typs
-          |> Name.invent Name.context "t0"
+          |> Name.invent_global "t0"
           |> map (Free o rpair @{typ term})
-        val ctr_params = map Free (Name.invent_names Name.context "a0" arg_typs)
+        val ctr_params = map Free (Name.invent_names_global "a0" arg_typs)
       in (ctr_name, typ, term_params, ctr_params) end
 
     val parts = map mk_parts ctrs

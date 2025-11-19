@@ -273,7 +273,7 @@ proof -
   have "List.set (map Inf (F n)) \<subseteq> List.set (map Inf (F (Suc n)))" for n
     by auto
   then have map_Inf_subset: "m \<le> n \<Longrightarrow> List.set (map Inf (F m)) \<subseteq> List.set (map Inf (F n))" for m n
-    by (rule order_class.lift_Suc_mono_le) auto
+    by (rule lift_Suc_mono_le) auto
   define mmap where "mmap \<equiv> \<lambda>n. Inf (hd (F (Suc n)))"
   have "mmap n < mmap (Suc n)" for n
     by (metis F_simps(2) \<Phi>F \<Phi>_def list.sel(1) mmap_def)
@@ -296,7 +296,7 @@ proof -
   have "Eps (\<Phi> (F (Suc n))) \<subseteq> Eps (\<Phi> (F n))" for n
     by (metis F_simps(2) \<Phi>F \<Phi>_def list.sel(1))
   then have Eps_\<Phi>_decreasing: "m \<le> n \<Longrightarrow> Eps (\<Phi> (F n)) \<subseteq> Eps (\<Phi> (F m))" for m n
-    by (rule order_class.lift_Suc_antimono_le)
+    by (rule lift_Suc_antimono_le)
   have hd_Suc_eq_Eps: "hd (F (Suc n)) = Eps (\<Phi> (F n))" for n
     by simp
   have "Inf (hd (F n)) \<in> hd (F n)" for n
@@ -306,7 +306,7 @@ proof -
   then have image_mmap_subset_hd_F: "mmap ` {n..} \<subseteq> hd (F (Suc n))" for n
     by (metis hd_Suc_eq_Eps atLeast_iff image_subsetI le_imp_less_Suc mmap_def)
   have "list.set (F k) \<subseteq> list.set (F n)" if "k \<le> n" for k n
-    by (rule order_class.lift_Suc_mono_le) (use that in auto)
+    by (rule lift_Suc_mono_le) (use that in auto)
   then have hd_F_in_F: "hd (F k) \<in> list.set (F n)" if "k \<le> n" for k n
     by (meson F hd_in_set subsetD that)
   show thesis
@@ -539,7 +539,7 @@ proof -
   have "Eps (\<Phi> (F (Suc n))) \<subseteq> Eps (\<Phi> (F n))" for n
     by (metis F_simps(2) \<Phi>F \<Phi>_def list.sel(1))
   then have Eps_\<Phi>_decreasing: "m \<le> n \<Longrightarrow> Eps (\<Phi> (F n)) \<subseteq> Eps (\<Phi> (F m))" for m n
-    by (rule order_class.lift_Suc_antimono_le)
+    by (rule lift_Suc_antimono_le)
   have hd_Suc_eq_Eps: "hd (F (Suc n)) = Eps (\<Phi> (F n))" for n
     by simp
   have "Inf (hd (F n)) \<in> hd (F n)" for n
@@ -549,7 +549,7 @@ proof -
   then have image_mmap_subset_hd_F: "mmap ` {n..} \<subseteq> hd (F (Suc n))" for n
     by (metis hd_Suc_eq_Eps atLeast_iff image_subsetI le_imp_less_Suc mmap_def)
   have "list.set (F k) \<subseteq> list.set (F n)" if "k \<le> n" for k n
-    by (rule order_class.lift_Suc_mono_le) (use that in auto)
+    by (rule lift_Suc_mono_le) (use that in auto)
   then have hd_F_in_F: "hd (F k) \<in> list.set (F n)" if "k \<le> n" for k n
     by (meson F hd_in_set subsetD that)
   show ?thesis

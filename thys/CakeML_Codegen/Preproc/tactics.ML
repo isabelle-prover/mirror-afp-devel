@@ -80,7 +80,7 @@ val beta_reduce_tac = Subgoal.FOCUS_PREMS (fn {context = ctxt, prems, ...} =>
     val replace_bound_eqs =
       gather_wellformed prems
       |> map (fn thm => safe_mk_meta_eq (@{thm wellformed_replace_bound_eq} OF [thm]))
-    val conv = Raw_Simplifier.rewrite ctxt false (replace_bound_eqs @ replace_bound_simps)
+    val conv = Simplifier.rewrite_wrt ctxt false (replace_bound_eqs @ replace_bound_simps)
   in
     HEADGOAL (CHANGED o CONVERSION conv)
   end)
@@ -150,7 +150,7 @@ fun elims_injects ctxt injects thm =
     val thms =
       map (fn i => try (curry op OF @{thm iffD1}) [i, thm]) injects
       |> cat_options
-      |> maps (HOLogic.conj_elims ctxt)
+      |> maps HOLogic.conj_elims
   in
     if null thms then
       [thm]

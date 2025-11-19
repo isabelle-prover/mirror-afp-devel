@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{wasysym}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage{doi}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Path Equivalence and Automation\\ for Integration Contours}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+\noindent 
+In complex analysis, one often has to manipulate \emph{paths}, i.e.\ curves in the complex plane. 
+This entry defines three useful relations on paths:
+\begin{itemize}
+\item an equivalence relation $\equiv_{\text{p}}$ that describes that two paths are the same up to 
+  reparametrisation
+\item a preorder $\leq_{\text{p}}$ that expresses the notion that one path is a subpath of another
+\item an equivalence relation $\equiv_{\ocircle}$ that describes equivalence of closed paths up to 
+  reparametrisation and ``shifting'' (e.g.\ if we have a rectangular path, it does not matter
+  which corner we start in)
+\end{itemize}
+It also provides the \texttt{path} tactic, which proves or simplifies some common proof obligations
+for composite paths. Namely:
+\begin{itemize}
+\item proving $\equiv_{\text{p}}$, $\leq_{\text{p}}$, $\equiv_{\ocircle}$
+\item proving well-definedness of paths (\texttt{path}, \texttt{valid\_path})
+\item determining the \emph{image} of a path (\texttt{path\_image})
+\item showing that a path is not self-intersecting (\texttt{arc}, \texttt{simple\_path})
+\item decomposing integrals on a composite path into the integrals on the constituent paths
+\end{itemize}
+\end{abstract}
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+
+\bibliographystyle{abbrvurl}
+\bibliography{root}
+
+\end{document}
+

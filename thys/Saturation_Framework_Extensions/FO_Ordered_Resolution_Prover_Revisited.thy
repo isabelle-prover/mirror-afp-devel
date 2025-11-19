@@ -273,7 +273,7 @@ proof -
     len_CAs0: "length CAs0 = length CAs" and
     len_ns: "length \<eta>s = length CAs"
     using ord_resolve_rename_lifting[OF _ grounded_res selection_axioms prems_ground] sel_stable
-    by smt
+    by (smt (verit, best))
 
   have "length CAs0 = length \<eta>s"
     using len_CAs0 len_ns by simp
@@ -341,18 +341,17 @@ proof (unfold_locales; (intro ballI)?)
   show "equivp (\<doteq>)"
     unfolding equivp_def by (meson generalizes_refl generalizes_trans)
 next
-  show "po_on (\<prec>\<cdot>) UNIV"
-    unfolding po_on_def irreflp_on_def transp_on_def
-    using strictly_generalizes_irrefl strictly_generalizes_trans by auto
+  show "transp (\<prec>\<cdot>)"
+    using strictly_generalizes_trans transpI by blast
 next
-  show "wfp_on (\<prec>\<cdot>) UNIV"
-    unfolding wfp_on_UNIV by (metis wf_strictly_generalizes)
+  show "wfp (\<prec>\<cdot>)"
+    using wf_strictly_generalizes by auto
 next
-  show "po_on (\<sqsubset>l) UNIV"
-    unfolding po_on_def irreflp_on_def transp_on_def using irrefl_L_Prec trans_L_Prec by blast
+  show "transp (\<sqsubset>l)"
+    using trans_L_Prec transpI by blast
 next
-  show "wfp_on (\<sqsubset>l) UNIV"
-    unfolding wfp_on_UNIV by (rule wf_L_Prec)
+  show "wfp (\<sqsubset>l)"
+    by (rule wf_L_Prec)
 next
   fix C1 D1 C2 D2
   assume
@@ -360,8 +359,7 @@ next
     "C2 \<doteq> D2"
     "C1 \<prec>\<cdot> C2"
   then show "D1 \<prec>\<cdot> D2"
-    by (smt antisym size_mset_mono size_subst strictly_generalizes_def generalizes_def
-        generalizes_trans)
+    by (metis generalizes_trans strictly_generalizes_def)
 next
   fix N C1 C2
   assume "C1 \<doteq> C2"
@@ -545,7 +543,8 @@ proof -
         by (metis (no_types, lifting) G.Red_F_of_subset SUP_upper d_in subset_iff)
       moreover have \<open>\<And>D. D \<in> \<G>_F (fst Cl) \<Longrightarrow> \<forall>E \<in> N. E \<sqsubset> Cl \<longrightarrow> D \<notin> \<G>_F (fst E) \<Longrightarrow> Dl \<sqsubset> Cl \<Longrightarrow>
         D \<in> G.Red_F (\<Union>a \<in> N. \<G>_F (fst a))\<close>
-        by (smt FL.Prec_FL_def FL.equiv_F_grounding FL.prec_F_grounding UNIV_witness d_in in_mono)
+        by (metis (no_types, lifting) FL.Prec_FL_def d_in generalizes_def grounding_of_subst_cls_subset in_mono
+            substitution_ops.strictly_generalizes_def)
       ultimately show \<open>Cl \<in> {C. \<forall>D \<in> \<G>_F (fst C). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` {Dl})) \<or>
         (\<exists>E \<in> {Dl}. E \<sqsubset> C \<and> D \<in> \<G>_F (fst E))} \<or> Dl \<sqsubset> Cl \<Longrightarrow>
         Cl \<in> {C. \<forall>D \<in> \<G>_F (fst C). D \<in> G.Red_F (\<Union> (\<G>_F ` fst ` N)) \<or>
@@ -586,7 +585,7 @@ qed (auto simp: FL.active_subset_def young)
 lemma GC_processing_step: "N \<union> {(C, New)} \<leadsto>GC N \<union> {(C, Processed)}"
 proof (rule FL.step.process[of _ N "{(C, New)}" _ "{(C, Processed)}"])
   have "(C, New) \<in> FL.Red_F {(C, Processed)}"
-    by (rule mem_FL_Red_F_because_Prec_FL) (simp add: FL.Prec_FL_def generalizes_refl)
+    by (rule mem_FL_Red_F_because_Prec_FL) (simp add: FL.Prec_FL_def)
   then show "{(C, New)} \<subseteq> FL.Red_F (N \<union> {(C, Processed)})"
     using FL.Red_F_of_subset by blast
 qed (auto simp: FL.active_subset_def)
@@ -612,7 +611,8 @@ proof (intro set_eqI iffI)
       using e_res cd_sub c_in F_Inf_def by auto
     then show \<open>E \<in> concl_of ` {\<iota> \<in> F_Inf. \<iota> \<in> {\<iota> \<in> F_Inf. set (prems_of \<iota>) \<subseteq> N \<union> {C}} \<and>
       set (prems_of \<iota>) \<inter> {C} \<noteq> {}}\<close>
-      by (smt Un_insert_right boolean_algebra_cancel.sup0 disjoint_insert mem_Collect_eq image_def)
+      by (smt (verit, del_insts) Calculus.inference.sel(1) cd_sub disjoint_insert(1) image_eqI list.set(1) list.simps(15)
+          mem_Collect_eq set_append)
   qed
 next
   fix E
@@ -755,7 +755,7 @@ proof -
     moreover have \<open>chain (\<rhd>L) (lmap lclss_of_state Sts)\<close>
       using deriv RP_derivation_imp_derive_derivation by simp
     moreover have \<open>chain FL.entails_\<G> (lmap lclss_of_state Sts)\<close>
-      by (smt F_entails_\<G>_iff FL.labeled_entailment_lifting RP_model chain_lmap deriv \<G>_Fset_def
+      by (smt (verit) F_entails_\<G>_iff FL.labeled_entailment_lifting RP_model chain_lmap deriv \<G>_Fset_def
         image_hd_lclss_of_state)
     ultimately show \<open>FL.entails_\<G> (lhd (lmap lclss_of_state Sts)) ({{#}} \<times> UNIV)\<close>
       using FL.unsat_limit_iff by blast
@@ -949,7 +949,7 @@ proof -
   qed
   then show ?thesis
     unfolding G_def clst_eq src.saturated_upto_def
-    by clarsimp (smt Diff_subset gd.inferences_from_mono subset_eq \<G>_Fset_def)
+    by clarsimp (smt (verit) Diff_subset gd.inferences_from_mono subset_eq \<G>_Fset_def)
 qed
 
 theorem RP_sound_old_statement:

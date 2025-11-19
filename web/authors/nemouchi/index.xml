@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nemouchi on Archive of Formal Proofs
-    </title>
-    <link>/authors/nemouchi/</link>
-    <description>
-        Recent content in nemouchi 
-        on Archive of Formal Proofs
-    </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-      <lastBuildDate>Fri, 01 Feb 2019 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/nemouchi/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-          <link>/entries/UTP.html</link>
-          <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/entries/UTP.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Formal Specification of a Generic Separation Kernel</title>
-          <link>/entries/CISC-Kernel.html</link>
-          <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
-          <guid>/entries/CISC-Kernel.html</guid>
-          <description></description>
-        </item>
+    <title>Yakoub Nemouchi</title>
+    <link>https://isa-afp.org/authors/nemouchi/</link>
+    <description>AFP entries of Yakoub Nemouchi</description><item>
+  <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+  <link>https://isa-afp.org/entries/UTP.html</link>
+  <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+  <description>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the AFP</description>
+    <category>Computer science/Programming languages/Logics</category>
+</item>
+<item>
+  <title>Formal Specification of a Generic Separation Kernel</title>
+  <link>https://isa-afp.org/entries/CISC-Kernel.html</link>
+  <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+  <description>Formal Specification of a Generic Separation Kernel in the AFP</description>
+    <category>Computer science/Security</category>
+</item>
+
   </channel>
 </rss>

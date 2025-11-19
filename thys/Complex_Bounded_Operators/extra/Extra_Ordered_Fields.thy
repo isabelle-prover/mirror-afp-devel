@@ -14,15 +14,7 @@ requiring weaker type classes (usually the need for a total order is removed).
 Since the lemmas are identical to the originals except for weaker type constraints,
 we use the same names as for the original lemmas. (In fact, the new lemmas could replace
 the original ones in Isabelle/HOL with at most minor incompatibilities.\<close>
-
-subsection \<open>Missing from Orderings.thy\<close>
-
-text \<open>This class is analogous to \<^class>\<open>unbounded_dense_linorder\<close>, except that it does not require a total order\<close>
-
-class unbounded_dense_order = dense_order + no_top + no_bot
-
-instance unbounded_dense_linorder \<subseteq> unbounded_dense_order ..
-
+      
 subsection \<open>Missing from Rings.thy\<close>
 
 text \<open>The existing class \<^class>\<open>abs_if\<close> requires \<^term>\<open>\<bar>a\<bar> = (if a < 0 then - a else a)\<close>.
@@ -36,141 +28,6 @@ but does not require anything if \<^term>\<open>a\<close> is incomparable with \
 class partial_abs_if = minus + uminus + ord + zero + abs +
   assumes abs_neg: "a \<le> 0 \<Longrightarrow> abs a = -a"
   assumes abs_pos: "a \<ge> 0 \<Longrightarrow> abs a = a"
-
-class ordered_semiring_1 = ordered_semiring + semiring_1
-  \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_1\<close> without requiring a total order\<close>
-begin
-
-lemma convex_bound_le:
-  assumes "x \<le> a" and "y \<le> a" and "0 \<le> u" and "0 \<le> v" and "u + v = 1"
-  shows "u * x + v * y \<le> a"
-proof-
-  from assms have "u * x + v * y \<le> u * a + v * a"
-    by (simp add: add_mono mult_left_mono)
-  with assms show ?thesis
-    unfolding distrib_right[symmetric] by simp
-qed
-
-end
-
-subclass (in linordered_semiring_1) ordered_semiring_1 ..
-
-class ordered_semiring_strict = semiring + comm_monoid_add + ordered_cancel_ab_semigroup_add +
-  \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_strict\<close> without requiring a total order\<close>
-  assumes mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
-  assumes mult_strict_right_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
-begin
-
-subclass semiring_0_cancel ..
-
-subclass ordered_semiring
-proof
-  fix a b c :: 'a
-  assume t1: "a \<le> b" and t2: "0 \<le> c"
-  thus "c * a \<le> c * b"
-    unfolding le_less
-    using mult_strict_left_mono by (cases "c = 0") auto
-  from t2 show "a * c \<le> b * c"
-    unfolding le_less
-    by (metis local.antisym_conv2 local.mult_not_zero local.mult_strict_right_mono t1)
-qed
-
-lemma mult_pos_pos[simp]: "0 < a \<Longrightarrow> 0 < b \<Longrightarrow> 0 < a * b"
-  using mult_strict_left_mono [of 0 b a] by simp
-
-lemma mult_pos_neg: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> a * b < 0"
-  using mult_strict_left_mono [of b 0 a] by simp
-
-lemma mult_neg_pos: "a < 0 \<Longrightarrow> 0 < b \<Longrightarrow> a * b < 0"
-  using mult_strict_right_mono [of a 0 b] by simp
-
-text \<open>Strict monotonicity in both arguments\<close>
-lemma mult_strict_mono:
-  assumes t1: "a < b" and t2: "c < d" and t3: "0 < b" and t4: "0 \<le> c"
-  shows "a * c < b * d"
-proof-
-  have "a * c < b * d"
-    by (metis local.dual_order.order_iff_strict local.dual_order.strict_trans2
-        local.mult_strict_left_mono local.mult_strict_right_mono local.mult_zero_right t1 t2 t3 t4)
-  thus ?thesis
-    using assms by blast
-qed
-
-
-text \<open>This weaker variant has more natural premises\<close>
-lemma mult_strict_mono':
-  assumes "a < b" and "c < d" and "0 \<le> a" and "0 \<le> c"
-  shows "a * c < b * d"
-  by (rule mult_strict_mono) (insert assms, auto)
-
-lemma mult_less_le_imp_less:
-  assumes t1: "a < b" and t2: "c \<le> d" and t3: "0 \<le> a" and t4: "0 < c"
-  shows "a * c < b * d"
-  using local.mult_strict_mono' local.mult_strict_right_mono local.order.order_iff_strict
-    t1 t2 t3 t4 by auto
-
-lemma mult_le_less_imp_less:
-  assumes "a \<le> b" and "c < d" and "0 < a" and "0 \<le> c"
-  shows "a * c < b * d"
-  by (metis assms(1) assms(2) assms(3) assms(4) local.antisym_conv2 local.dual_order.strict_trans1
-      local.mult_strict_left_mono local.mult_strict_mono)
-
-end
-
-subclass (in linordered_semiring_strict) ordered_semiring_strict
-  apply standard
-  by (auto simp: mult_strict_left_mono mult_strict_right_mono)
-
-class ordered_semiring_1_strict = ordered_semiring_strict + semiring_1
-  \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_1_strict\<close> without requiring
-  a total order\<close>
-begin
-
-subclass ordered_semiring_1 ..
-
-lemma convex_bound_lt:
-  assumes "x < a" and "y < a" and "0 \<le> u" and "0 \<le> v" and "u + v = 1"
-  shows "u * x + v * y < a"
-proof -
-  from assms have "u * x + v * y < u * a + v * a"
-    by (cases "u = 0") (auto intro!: add_less_le_mono mult_strict_left_mono mult_left_mono)
-  with assms show ?thesis
-    unfolding distrib_right[symmetric] by simp
-qed
-
-end
-
-subclass (in linordered_semiring_1_strict) ordered_semiring_1_strict ..
-
-class ordered_comm_semiring_strict = comm_semiring_0 + ordered_cancel_ab_semigroup_add +
-  \<comment> \<open>missing class analogous to \<^class>\<open>linordered_comm_semiring_strict\<close> without requiring a total order\<close>
-  assumes comm_mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
-begin
-
-subclass ordered_semiring_strict
-proof
-  fix a b c :: 'a
-  assume "a < b" and "0 < c"
-  thus "c * a < c * b"
-    by (rule comm_mult_strict_left_mono)
-  thus "a * c < b * c"
-    by (simp only: mult.commute)
-qed
-
-subclass ordered_cancel_comm_semiring
-proof
-  fix a b c :: 'a
-  assume "a \<le> b" and "0 \<le> c"
-  thus "c * a \<le> c * b"
-    unfolding le_less
-    using mult_strict_left_mono by (cases "c = 0") auto
-qed
-
-end
-
-subclass (in linordered_comm_semiring_strict) ordered_comm_semiring_strict
-  apply standard
-  by (simp add: local.mult_strict_left_mono)
 
 class ordered_ring_strict = ring + ordered_semiring_strict
   + ordered_ab_group_add + partial_abs_if
@@ -895,11 +752,6 @@ proof intro_classes
 qed
 end
 
-lemma less_eq_complexI: "Re x \<le> Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x\<le>y" unfolding less_eq_complex_def
-  by simp
-lemma less_complexI: "Re x < Re y \<Longrightarrow> Im x = Im y \<Longrightarrow> x<y" unfolding less_complex_def
-  by simp
-
 lemma complex_of_real_mono:
   "x \<le> y \<Longrightarrow> complex_of_real x \<le> complex_of_real y"
   unfolding less_eq_complex_def by auto
@@ -919,17 +771,5 @@ lemma complex_of_real_nn_iff[simp]:
 lemma complex_of_real_pos_iff[simp]:
   "0 < complex_of_real y \<longleftrightarrow> 0 < y"
   unfolding less_complex_def by auto
-
-lemma Re_mono: "x \<le> y \<Longrightarrow> Re x \<le> Re y"
-  unfolding less_eq_complex_def by simp
-
-lemma comp_Im_same: "x \<le> y \<Longrightarrow> Im x = Im y"
-  unfolding less_eq_complex_def by simp
-
-lemma Re_strict_mono: "x < y \<Longrightarrow> Re x < Re y"
-  unfolding less_complex_def by simp
-
-lemma complex_of_real_cmod: \<open>complex_of_real (cmod x) = abs x\<close>
-  by (simp add: abs_complex_def)
 
 end

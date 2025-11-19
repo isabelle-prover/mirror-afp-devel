@@ -431,7 +431,7 @@ qed
 
 lemma sum_up_index_split':
   assumes "N \<le> n" shows "(\<Sum>i\<le>n. f i) = (\<Sum>i\<le>n-N. f i) + (\<Sum>i=Suc (n-N)..n. f i)"
-  by (metis assms diff_add sum_up_index_split)
+  by (metis diff_le_self ordered_cancel_comm_monoid_diff_class.add_diff_inverse sum_up_index_split)
 
 lemma sum_invert: "N \<le> n \<Longrightarrow> (\<Sum>i = Suc (n - N)..n. f (n - i)) = (\<Sum>j<N. f j)"
 proof (induction N)
@@ -1141,7 +1141,7 @@ proof -
     also have "\<dots> = sum ((\<lambda>I. (- 1) ^ (card I + 1) * int (card (\<Inter> I))) \<circ> (image (C n))) (Pow X - {{}})"
       by (simp add: sum.reindex inj_on_imageC)
     also have "\<dots> = SUM2"
-      unfolding SUM2_def using subset_inj_on [OF inj_C] by (force simp: card_image intro: sum.cong)
+      unfolding SUM2_def using inj_on_subset [OF inj_C] by (force simp: card_image intro: sum.cong)
     finally have "SUM1 = SUM2" .
 
     have "length_sum_set r n = (length_sum_set r n \<inter> {x. useful x}) \<union> (length_sum_set r n \<inter> {x. useless x})"

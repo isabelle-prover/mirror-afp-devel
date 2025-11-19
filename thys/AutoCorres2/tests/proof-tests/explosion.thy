@@ -142,9 +142,10 @@ val record_ss = RecursiveRecordPackage.get_simpset (Proof_Context.theory_of @{co
 val autocorres_record_ss = (merge_ss (AUTOCORRES_SIMPSET, record_ss));
 
 in
-simp_tac (put_simpset autocorres_record_ss @{context} addsimps @{thms L2_unknown_bind_unbound} 
-  addsimprocs [L2Opt.l2_marked_gets_bind_simproc]  
-  |> Simplifier.add_cong @{thm L2_marked_seq_gets_cong} ) 1
+simp_tac (put_simpset autocorres_record_ss @{context}
+  |> Simplifier.add_simps @{thms L2_unknown_bind_unbound}
+  |> Simplifier.add_proc L2Opt.l2_marked_gets_bind_simproc
+  |> Simplifier.add_cong @{thm L2_marked_seq_gets_cong}) 1
 end
 \<close>)
   done

@@ -99,8 +99,8 @@ lemma del_in_range:
                                  deg newlist summary )
                        )else 
                         (Node (Some (mi, ma)) deg treeList summary))"
-  using vebt_delete.simps(7)[of mi ma "deg-2" treeList summary x] 
-  by (smt (z3) add_2_eq_Suc assms(1) assms(2) assms(3) leD le_add_diff_inverse)
+  using vebt_delete.simps(7)[of mi ma "deg-2" treeList summary x] add_2_eq_Suc
+  by (smt (verit) add_2_eq_Suc assms(1) assms(2) assms(3) leD le_add_diff_inverse)
 
 lemma del_x_not_mia:
   assumes "x > mi \<and> x \<le> ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high x (deg div 2) = h" and
@@ -154,7 +154,7 @@ lemma del_x_not_mi:
                                                             else ma)))
                                  deg newlist summary )
 )" using del_x_not_mia[of mi x ma deg h l treeList summary]
-  by (smt (z3) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8))
+  by (smt (verit) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8))
 
 lemma del_x_not_mi_new_node_nil: 
   assumes "x > mi \<and> x \<le> ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high x (deg div 2) = h" and
@@ -246,7 +246,7 @@ lemma del_x_mi:
                                  deg newlist summary ))
           "
   using del_x_mia[of x mi ma deg treeList summary]
-  by (smt (z3) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7))
+  by (smt (verit) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7))
 
 lemma del_x_mi_lets_in: 
   assumes "x = mi \<and> x < ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high xn (deg div 2) = h" and
@@ -271,7 +271,7 @@ lemma del_x_mi_lets_in:
                                                             else ma)))
                                  deg newlist summary ))"
   using del_x_mi[of x mi ma deg xn h summary treeList l]
-  by (smt (z3) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8) assms(9))
+  by (smt (verit) assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) assms(7) assms(8) assms(9))
 
 lemma del_x_mi_lets_in_minNull: 
   assumes "x = mi \<and> x < ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high xn (deg div 2) = h" and
@@ -443,8 +443,8 @@ next
                     by (simp add: \<open>treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! the (vebt_maxt (vebt_delete summary (high x n))) = treeList ! maxs\<close>)
                   have "\<exists> z. both_member_options(treeList ! maxs) z" 
                     by (simp add: "4.hyps"(5) \<open>both_member_options summary maxs \<and> maxs \<noteq> high x n\<close> \<open>maxs < 2 ^ m\<close>)
-                  moreover have "invar_vebt (treeList ! maxs) n" using 4 
-                    by (metis \<open>maxs < 2 ^ m\<close> inthall member_def)
+                  moreover have "invar_vebt (treeList ! maxs) n"
+                    using 4 \<open>maxs < 2 ^ m\<close> by simp
                   ultimately obtain maxi where "Some maxi  = (vebt_maxt (treeList ! maxs))" 
                     by (metis empty_Collect_eq maxt_corr_help_empty not_None_eq set_vebt'_def valid_member_both_member_options)
                   hence "maxi < 2^n" 
@@ -479,9 +479,9 @@ next
                 case True
                 hence "both_member_options ?newnode (low y (deg div 2)) " using hprolist   by (metis assm) 
                 moreover hence "invar_vebt (treeList ! (high y (deg div 2))) n" 
-                  by (metis "4.IH"(1) True \<open>high x n < length treeList\<close> inthall member_def)
+                  using "4.IH"(1) True \<open>high x n < length treeList\<close> by simp
                 ultimately have "both_member_options (treeList ! ?h) (low y (deg div 2)) \<and> (low y (deg div 2)) \<noteq> (low x (deg div 2))"
-                  by (metis "4.IH"(1) \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> inthall member_def)
+                  using "4.IH"(1) \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> by simp
                 then show ?thesis 
                   by (metis Suc_1 True \<open>high x n < length treeList\<close> add_leD1 both_member_options_from_chilf_to_complete_tree dp plus_1_eq_Suc)
               next
@@ -519,11 +519,11 @@ next
                   moreover hence "?newlist ! (high y n) = ?newnode" 
                     using hprolist by auto
                   hence 0:"invar_vebt (treeList !(high y n)) n" using 4 
-                    by (metis True \<open>high x n < length treeList\<close> inthall member_def)
+                    using True \<open>high x n < length treeList\<close> by simp
                   moreover have 1:"low y n \<noteq> low x n" 
                     by (metis True aa bit_split_inv)
                   moreover have 11:" (treeList !(high y n)) \<in> set treeList"
-                    by (metis True \<open>high x n < length treeList\<close> inthall member_def)
+                    using True \<open>high x n < length treeList\<close> by simp
                   ultimately have "  (\<forall> xa. both_member_options ?newnode xa = 
                          ((low x n) \<noteq> xa \<and> both_member_options (treeList ! ?h) xa))"
                     by (simp add: "4.IH"(1)) 
@@ -539,7 +539,7 @@ next
                   hence "both_member_options (?newlist !(high y n)) (low y n)" 
                     using assmy by presburger
                   then show ?thesis 
-                    by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
+                    by (smt (verit) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
                 qed
               qed
               ultimately show ?thesis using bb by fastforce
@@ -579,11 +579,12 @@ next
                   obtain maxi where maxidef:"Some maxi = vebt_maxt(?newlist ! ?h)"
                     by (metis False hprolist vebt_maxt.elims minNull.simps(1) minNull.simps(4))
                   have aa:"invar_vebt (treeList ! ?h) n" 
-                    by (metis "4.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high x n < length treeList\<close> by simp
                   moreover hence ab:"maxi \<noteq> ?l \<and> both_member_options ?newnode maxi" 
-                    by (metis "4.IH"(1) \<open>high x n < length treeList\<close> hprolist inthall maxbmo maxidef member_def)
+                    using "4.IH"(1) \<open>high x n < length treeList\<close> hprolist maxidef
+                    by (auto simp add: maxbmo) (metis maxbmo nth_mem)
                   ultimately have ac:"maxi \<noteq> ?l \<and> both_member_options (treeList ! ?h)  maxi" 
-                    by (metis "4.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high x n < length treeList\<close> by simp
                   hence ad:"maxi < 2^n" 
                     using \<open>invar_vebt (treeList ! high x n) n\<close> member_bound valid_member_both_member_options by blast
                   then show ?thesis
@@ -603,9 +604,9 @@ next
                   hence "?newlist ! (high y n) = ?newnode" 
                     using hprolist by presburger
                   have "invar_vebt (treeList ! ?h) n"
-                    by (metis "4.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high x n < length treeList\<close> by simp
                   hence "low y n \<noteq> ?l \<and> both_member_options (treeList ! ?h ) (low y n)" 
-                    by (metis "4.IH"(1) True \<open>high x n < length treeList\<close> assmy hprolist inthall member_def)
+                    using "4.IH"(1) True \<open>high x n < length treeList\<close> assmy hprolist by simp
                   then show ?thesis 
                     by (metis Suc_1 True \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> add_leD1 both_member_options_from_chilf_to_complete_tree dp plus_1_eq_Suc)
                 next
@@ -643,9 +644,9 @@ next
                   hence pp:"?newlist ! ?h = ?newnode" 
                     using hprolist by blast
                   hence "invar_vebt (treeList ! ?h) n"
-                    by (metis "4.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high x n < length treeList\<close> by simp
                   hence "both_member_options ?newnode (low y n)" 
-                    by (metis "4.IH"(1) True \<open>high x n < length treeList\<close> \<open>low y n \<noteq> low x n\<close> in_set_member inthall myass)
+                    using "4.IH"(1) True \<open>high x n < length treeList\<close> \<open>low y n \<noteq> low x n\<close> inthall myass by simp
                   then show ?thesis 
                     by (metis One_nat_def Suc_leD True \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> \<open>length treeList = length ?newlist\<close> both_member_options_from_chilf_to_complete_tree dp numerals(2) pp)
                 next
@@ -721,7 +722,7 @@ next
                                                             else ma)))
                                  deg newlist summary ))" 
           using del_x_mi[of x mi ma deg ?xn ?h summary treeList ?l] 
-          by (smt (z3) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>summin * 2 ^ n + lx = (if x = mi then the (vebt_mint summary) * 2 ^ (deg div 2) + the (vebt_mint (treeList ! the (vebt_mint summary))) else x)\<close> \<open>x = mi\<close> add.commute append_Cons append_Nil dp mimapr nat_less_le plus_1_eq_Suc upd_conv_take_nth_drop)
+          by (smt (verit) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>summin * 2 ^ n + lx = (if x = mi then the (vebt_mint summary) * 2 ^ (deg div 2) + the (vebt_mint (treeList ! the (vebt_mint summary))) else x)\<close> \<open>x = mi\<close> add.commute append_Cons append_Nil dp mimapr nat_less_le plus_1_eq_Suc upd_conv_take_nth_drop)
         have minxnrel: "?xn \<noteq> mi" 
           by (metis "4.hyps"(2) "4.hyps"(9) \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>invar_vebt (treeList ! summin) n\<close> both_member_options_equiv_member high_inv less_not_refl low_inv member_bound mimapr)
         then show ?thesis
@@ -786,7 +787,7 @@ next
                   have "\<exists> z. both_member_options(treeList ! maxs) z" 
                     using "4.hyps"(5) \<open>both_member_options summary maxs \<and> maxs \<noteq>?h\<close> \<open>maxs < 2 ^ m\<close> by blast
                   moreover have "invar_vebt (treeList ! maxs) n" using 4 
-                    by (metis \<open>maxs < 2 ^ m\<close> inthall member_def)
+                    using \<open>maxs < 2 ^ m\<close> by simp
                   ultimately obtain maxi where "Some maxi  = (vebt_maxt (treeList ! maxs))" 
                     by (metis empty_Collect_eq maxt_corr_help_empty not_None_eq set_vebt'_def valid_member_both_member_options)
                   hence "maxi < 2^n" 
@@ -829,14 +830,14 @@ next
                 proof(cases "low y n = ?l")
                   case True
                   hence "y = ?xn" 
-                    by (metis "000" "4.IH"(1) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> inthall member_def)
+                    using "000" "4.IH"(1) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close>
+                    by simp
                   then show ?thesis
                     using calculation(2) by blast
                 next
                   case False 
                   hence "both_member_options (treeList ! ?h) (low y (deg div 2)) \<and> (low y (deg div 2)) \<noteq> (low ?xn (deg div 2))"
-                    using  "4.IH"(1) \<open>deg div 2 = n\<close> \<open>high ?xn n < length treeList\<close> inthall member_def 
-                    by (metis "000")
+                    using "4.IH"(1) \<open>deg div 2 = n\<close> \<open>high ?xn n < length treeList\<close> inthall "000" by simp
                   then show ?thesis 
                     by (metis "4.hyps"(2) "4.hyps"(9) Suc_1 Suc_leD True \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> \<open>x = mi\<close> assm both_member_options_from_chilf_to_complete_tree dp less_not_refl mimapr)
                 qed
@@ -866,7 +867,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using False assm by force
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
+                by (smt (verit) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
               moreover have " both_member_options (treeList ! (high y n)) (low y n) \<Longrightarrow> ?thesis"
               proof-
                 assume myass: "both_member_options (treeList ! (high y n)) (low y n) "
@@ -940,15 +941,22 @@ next
                   obtain maxi where maxidef:"Some maxi = vebt_maxt(?newlist ! ?h)"
                     by (metis False hprolist vebt_maxt.elims minNull.simps(1) minNull.simps(4))
                   have aa:"invar_vebt (treeList ! ?h) n" 
-                    by (metis "4.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                   moreover hence ab:"maxi \<noteq> ?l \<and> both_member_options ?newnode maxi" 
-                    by (metis "4.IH"(1) \<open>high ?xn n < length treeList\<close> hprolist inthall maxbmo maxidef member_def)
+                    using "4.IH"(1) \<open>high ?xn n < length treeList\<close> hprolist maxidef
+                    by (auto simp add: maxbmo) (metis maxbmo nth_mem) 
                   ultimately have ac:"maxi \<noteq> ?l \<and> both_member_options (treeList ! ?h)  maxi" 
-                    by (metis "4.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                   hence ad:"maxi < 2^n" 
                     by (meson aa member_bound valid_member_both_member_options)
                   then show ?thesis using  Suc_1 aaa \<open>y = ?newma\<close> ac add_leD1 
-                    by (metis "4.hyps"(2) "4.hyps"(9) Suc_leD \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>x = mi\<close> both_member_options_from_chilf_to_complete_tree dp option.sel high_inv less_not_refl low_inv maxidef mimapr) 
+                    using "4.hyps"(2) "4.hyps"(9) \<open>deg div 2 = n\<close>
+                      \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>x = mi\<close> dp maxidef
+                      mimapr
+                    apply simp
+                    using both_member_options_from_chilf_to_complete_tree high_inv low_inv
+                    apply (metis Suc_1 Suc_leD nat_less_le option.sel)
+                    done
                 next
                   case False
                   then show ?thesis 
@@ -964,7 +972,7 @@ next
                   hence "?newlist ! (high y n) = ?newnode" 
                     using hprolist by presburger
                   have "invar_vebt (treeList ! ?h) n"
-                    by (metis "4.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                    using "4.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                   then show ?thesis
                   proof(cases "low y n= ?l")
                     case True
@@ -975,14 +983,15 @@ next
                   next
                     case False 
                     hence "low y n \<noteq> ?l \<and> both_member_options (treeList ! ?h ) (low y n)" using assmy 
-                      by (metis "4.IH"(1) "4.hyps"(2) \<open>?newlist ! high y n = vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close> high_inv inthall member_bound member_def)
+                      using "4.IH"(1) "4.hyps"(2) \<open>?newlist ! high y n = vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close>
+                      by (auto simp add: high_inv member_bound)
                     then show ?thesis 
                       by (metis "4.hyps"(2) "4.hyps"(9) Suc_1 Suc_leD True \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>mi \<le> x \<and> x \<le> ma\<close> \<open>x = mi\<close> both_member_options_from_chilf_to_complete_tree dp leD mimapr)
                   qed
                 next
                   case False
                   hence "?newlist ! (high y n) = treeList !(high y n)" 
-                    by (smt (z3) "4.hyps"(1) "4.hyps"(2) "4.hyps"(3) "4.hyps"(4) "4.hyps"(8) \<open>length treeList = length ?newlist\<close> \<open>ma \<le> 2 ^ deg\<close> aaaa calculation(2) deg_not_0 exp_split_high_low(1) less_le_trans member_inv mimapr nothprolist tvalid valid_member_both_member_options)
+                    by (smt (verit) "4.hyps"(1) "4.hyps"(2) "4.hyps"(3) "4.hyps"(4) "4.hyps"(8) \<open>length treeList = length ?newlist\<close> \<open>ma \<le> 2 ^ deg\<close> aaaa calculation(2) deg_not_0 exp_split_high_low(1) less_le_trans member_inv mimapr nothprolist tvalid valid_member_both_member_options)
                   hence "both_member_options (treeList !(high y n)) (low y n)" 
                     using assmy by presburger 
                   moreover have "x \<noteq> y" 
@@ -1010,7 +1019,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using \<open>x = mi\<close> assm by blast
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
+                by (smt (verit) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
               moreover have " ( high y n < length treeList \<and> both_member_options (treeList ! (high y n)) (low y n))
                                   \<Longrightarrow> ?thesis"
               proof-
@@ -1022,16 +1031,16 @@ next
                   proof(cases "low y n = ?l")
                     case True
                     then show ?thesis
-                      by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
+                      by (smt (verit) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
                   next
                     case False
                     hence "low y n \<noteq> ?l" by simp
                     hence pp:"?newlist ! ?h = ?newnode" 
                       using hprolist by blast
                     hence "invar_vebt (treeList ! ?h) n"
-                      by (metis "4.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                      using "4.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                     hence "both_member_options ?newnode (low y n)" 
-                      by (metis "4.IH"(1) True \<open>high ?xn n < length treeList\<close> \<open>low y n \<noteq> low ?xn n\<close> in_set_member inthall myass)
+                      using "4.IH"(1) True \<open>high ?xn n < length treeList\<close> \<open>low y n \<noteq> low ?xn n\<close> inthall myass by simp
                     then show ?thesis 
                       by (metis One_nat_def Suc_leD True \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>length treeList = length ?newlist\<close> both_member_options_from_chilf_to_complete_tree dp numerals(2) pp)
                   qed
@@ -1162,7 +1171,7 @@ next
                   have "\<exists> z. both_member_options(treeList ! maxs) z" 
                     by (simp add: "5.hyps"(5) \<open>both_member_options summary maxs \<and> maxs \<noteq> high x n\<close> \<open>maxs < 2 ^ m\<close>)
                   moreover have "invar_vebt (treeList ! maxs) n" using 5 
-                    by (metis \<open>maxs < 2 ^ m\<close> inthall member_def)
+                    using \<open>maxs < 2 ^ m\<close> by simp
                   ultimately obtain maxi where "Some maxi  = (vebt_maxt (treeList ! maxs))" 
                     by (metis empty_Collect_eq maxt_corr_help_empty not_None_eq set_vebt'_def valid_member_both_member_options)
                   hence "maxi < 2^n" 
@@ -1197,9 +1206,9 @@ next
                 case True
                 hence "both_member_options ?newnode (low y (deg div 2)) " using hprolist   by (metis assm) 
                 moreover hence "invar_vebt (treeList ! (high y (deg div 2))) n" 
-                  by (metis "5.IH"(1) True \<open>high x n < length treeList\<close> inthall member_def)
+                  using "5.IH"(1) True \<open>high x n < length treeList\<close> by simp
                 ultimately have "both_member_options (treeList ! ?h) (low y (deg div 2)) \<and> (low y (deg div 2)) \<noteq> (low x (deg div 2))"
-                  by (metis "5.IH"(1) \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> inthall member_def)
+                  using "5.IH"(1) \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> by simp
                 then show ?thesis 
                   by (metis Suc_1 True \<open>high x n < length treeList\<close> add_leD1 both_member_options_from_chilf_to_complete_tree dp plus_1_eq_Suc)
               next
@@ -1237,11 +1246,11 @@ next
                   moreover hence "?newlist ! (high y n) = ?newnode" 
                     using hprolist by auto
                   hence 0:"invar_vebt (treeList !(high y n)) n" using 5 
-                    by (metis True \<open>high x n < length treeList\<close> inthall member_def)
+                    using True \<open>high x n < length treeList\<close> by simp
                   moreover have 1:"low y n \<noteq> low x n" 
                     by (metis True aa bit_split_inv)
                   moreover have 11:" (treeList !(high y n)) \<in> set treeList"
-                    by (metis True \<open>high x n < length treeList\<close> inthall member_def)
+                    using True \<open>high x n < length treeList\<close> by simp
                   ultimately have "  (\<forall> xa. both_member_options ?newnode xa = 
                          ((low x n) \<noteq> xa \<and> both_member_options (treeList ! ?h) xa))"
                     by (simp add: "5.IH"(1)) 
@@ -1257,7 +1266,7 @@ next
                   hence "both_member_options (?newlist !(high y n)) (low y n)" 
                     using assmy by presburger
                   then show ?thesis 
-                    by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
+                    by (smt (verit) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> aa add_leD1 bb both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) plus_1_eq_Suc)
                 qed
               qed
               ultimately show ?thesis using bb by fastforce
@@ -1297,11 +1306,12 @@ next
                   obtain maxi where maxidef:"Some maxi = vebt_maxt(?newlist ! ?h)"
                     by (metis False hprolist vebt_maxt.elims minNull.simps(1) minNull.simps(4))
                   have aa:"invar_vebt (treeList ! ?h) n" 
-                    by (metis "5.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high x n < length treeList\<close> by simp
                   moreover hence ab:"maxi \<noteq> ?l \<and> both_member_options ?newnode maxi" 
-                    by (metis "5.IH"(1) \<open>high x n < length treeList\<close> hprolist inthall maxbmo maxidef member_def)
+                    using "5.IH"(1) \<open>high x n < length treeList\<close> hprolist maxidef
+                    by simp (metis maxbmo nth_mem) 
                   ultimately have ac:"maxi \<noteq> ?l \<and> both_member_options (treeList ! ?h)  maxi" 
-                    by (metis "5.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high x n < length treeList\<close> by simp
                   hence ad:"maxi < 2^n" 
                     using \<open>invar_vebt (treeList ! high x n) n\<close> member_bound valid_member_both_member_options by blast
                   then show ?thesis
@@ -1321,9 +1331,9 @@ next
                   hence "?newlist ! (high y n) = ?newnode" 
                     using hprolist by presburger
                   have "invar_vebt (treeList ! ?h) n"
-                    by (metis "5.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high x n < length treeList\<close> by simp
                   hence "low y n \<noteq> ?l \<and> both_member_options (treeList ! ?h ) (low y n)" 
-                    by (metis "5.IH"(1) True \<open>high x n < length treeList\<close> assmy hprolist inthall member_def)
+                    using "5.IH"(1) True \<open>high x n < length treeList\<close> assmy hprolist by simp
                   then show ?thesis 
                     by (metis Suc_1 True \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> add_leD1 both_member_options_from_chilf_to_complete_tree dp plus_1_eq_Suc)
                 next
@@ -1360,11 +1370,13 @@ next
                   hence pp:"?newlist ! ?h = ?newnode" 
                     using hprolist by blast
                   hence "invar_vebt (treeList ! ?h) n"
-                    by (metis "5.IH"(1) \<open>high x n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high x n < length treeList\<close> by simp
                   hence "both_member_options ?newnode (low y n)" 
-                    by (metis "5.IH"(1) True \<open>high x n < length treeList\<close> \<open>low y n \<noteq> low x n\<close> in_set_member inthall myass)
+                    using "5.IH"(1) True \<open>high x n < length treeList\<close> \<open>low y n \<noteq> low x n\<close> inthall myass by simp
                   then show ?thesis 
-                    by (metis One_nat_def Suc_leD True \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> \<open>length treeList = length ?newlist\<close> both_member_options_from_chilf_to_complete_tree dp numerals(2) pp)
+                    using True \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> \<open>length treeList = length ?newlist\<close> pp dp
+                      both_member_options_from_chilf_to_complete_tree
+                    by (metis Suc_1 Suc_leD) 
                 next
                   case False
                   hence pp:"?newlist ! (high y n) = treeList ! (high y n)" using nothprolist abcv by auto
@@ -1505,7 +1517,7 @@ next
                   have "\<exists> z. both_member_options(treeList ! maxs) z" 
                     using "5.hyps"(5) \<open>both_member_options summary maxs \<and> maxs \<noteq>?h\<close> \<open>maxs < 2 ^ m\<close> by blast
                   moreover have "invar_vebt (treeList ! maxs) n" using 5 
-                    by (metis \<open>maxs < 2 ^ m\<close> inthall member_def)
+                    using \<open>maxs < 2 ^ m\<close> by simp
                   ultimately obtain maxi where "Some maxi  = (vebt_maxt (treeList ! maxs))" 
                     by (metis empty_Collect_eq maxt_corr_help_empty not_None_eq set_vebt'_def valid_member_both_member_options)
                   hence "maxi < 2^n" 
@@ -1548,14 +1560,13 @@ next
                 proof(cases "low y n = ?l")
                   case True
                   hence "y = ?xn" 
-                    by (metis "000" "5.IH"(1) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> inthall member_def)
+                    using "000" "5.IH"(1) \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> by simp
                   then show ?thesis
                     using calculation(2) by blast
                 next
                   case False 
                   hence "both_member_options (treeList ! ?h) (low y (deg div 2)) \<and> (low y (deg div 2)) \<noteq> (low ?xn (deg div 2))"
-                    using  "5.IH"(1) \<open>deg div 2 = n\<close> \<open>high ?xn n < length treeList\<close> inthall member_def 
-                    by (metis "000")
+                    using "5.IH"(1) \<open>deg div 2 = n\<close> \<open>high ?xn n < length treeList\<close>  "000" by simp
                   then show ?thesis 
                     by (metis "5.hyps"(2) "5.hyps"(9) Suc_1 Suc_leD True \<open>deg div 2 = n\<close> \<open>length treeList = length ?newlist\<close> \<open>x = mi\<close> assm both_member_options_from_chilf_to_complete_tree dp less_not_refl mimapr)
                 qed
@@ -1585,7 +1596,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using False assm by force
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
+                by (smt (verit) Suc_le_D both_member_options_def dp membermima.simps(4) nat_1_add_1 plus_1_eq_Suc)
               moreover have " both_member_options (treeList ! (high y n)) (low y n) \<Longrightarrow> ?thesis"
               proof-
                 assume myass: "both_member_options (treeList ! (high y n)) (low y n) "
@@ -1658,11 +1669,12 @@ next
                   obtain maxi where maxidef:"Some maxi = vebt_maxt(?newlist ! ?h)"
                     by (metis False hprolist vebt_maxt.elims minNull.simps(1) minNull.simps(4))
                   have aa:"invar_vebt (treeList ! ?h) n" 
-                    by (metis "5.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                   moreover hence ab:"maxi \<noteq> ?l \<and> both_member_options ?newnode maxi" 
-                    by (metis "5.IH"(1) \<open>high ?xn n < length treeList\<close> hprolist inthall maxbmo maxidef member_def)
+                    using "5.IH"(1) \<open>high ?xn n < length treeList\<close> hprolist maxidef
+                    by simp (metis in_set_conv_nth maxbmo)
                   ultimately have ac:"maxi \<noteq> ?l \<and> both_member_options (treeList ! ?h)  maxi" 
-                    by (metis "5.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                   hence ad:"maxi < 2^n" 
                     using \<open>invar_vebt (treeList ! high ?xn n) n\<close> member_bound valid_member_both_member_options by blast
                   then show ?thesis using  Suc_1 aaa \<open>y = ?newma\<close> ac add_leD1
@@ -1687,7 +1699,7 @@ next
                   hence "?newlist ! (high y n) = ?newnode" 
                     using hprolist by presburger
                   have "invar_vebt (treeList ! ?h) n"
-                    by (metis "5.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                    using "5.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                   then show ?thesis
                   proof(cases "low y n= ?l")
                     case True
@@ -1698,7 +1710,7 @@ next
                   next
                     case False 
                     hence "low y n \<noteq> ?l \<and> both_member_options (treeList ! ?h ) (low y n)" using assmy 
-                      by (metis "5.IH"(1) "5.hyps"(2) \<open>?newlist ! high y n = vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close> high_inv inthall member_bound member_def)
+                      using "5.IH"(1) "5.hyps"(2) \<open>?newlist ! high y n = vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close> high_inv inthall member_bound by simp
                     then show ?thesis 
                       by (metis "5.hyps"(2) "5.hyps"(9) Suc_1 Suc_leD True \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>mi \<le> x \<and> x \<le> ma\<close> \<open>x = mi\<close> both_member_options_from_chilf_to_complete_tree dp leD mimapr)
                   qed
@@ -1732,7 +1744,7 @@ next
               have "y = mi \<Longrightarrow> ?thesis" 
                 using \<open>x = mi\<close> assm by blast
               moreover have " y = ma \<Longrightarrow> ?thesis" 
-                by (smt (z3) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
+                by (smt (verit) Suc_1 Suc_le_D both_member_options_def dp membermima.simps(4))
               moreover have " ( high y n < length treeList \<and> both_member_options (treeList ! (high y n)) (low y n))
                                   \<Longrightarrow> ?thesis"
               proof-
@@ -1744,16 +1756,16 @@ next
                   proof(cases "low y n = ?l")
                     case True
                     then show ?thesis
-                      by (smt (z3) "5.hyps"(3) "5.hyps"(4) Suc_1 \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_Suc_right add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
+                      by (smt (verit) "5.hyps"(3) "5.hyps"(4) Suc_1 \<open>deg div 2 = n\<close> \<open>length treeList = length (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)])\<close> add_Suc_right add_leD1 bit_split_inv both_member_options_def both_member_options_from_chilf_to_complete_tree dp membermima.simps(4) myass nth_list_update_neq plus_1_eq_Suc)
                   next
                     case False
                     hence "low y n \<noteq> ?l" by simp
                     hence pp:"?newlist ! ?h = ?newnode" 
                       using hprolist by blast
                     hence "invar_vebt (treeList ! ?h) n"
-                      by (metis "5.IH"(1) \<open>high ?xn n < length treeList\<close> inthall member_def)
+                      using "5.IH"(1) \<open>high ?xn n < length treeList\<close> by simp
                     hence "both_member_options ?newnode (low y n)" 
-                      by (metis "5.IH"(1) True \<open>high ?xn n < length treeList\<close> \<open>low y n \<noteq> low ?xn n\<close> in_set_member inthall myass)
+                      using "5.IH"(1) True \<open>high ?xn n < length treeList\<close> \<open>low y n \<noteq> low ?xn n\<close> myass by simp
                     then show ?thesis 
                       by (metis One_nat_def Suc_leD True \<open>deg div 2 = n\<close> \<open>high (summin * 2 ^ n + lx) n < length treeList\<close> \<open>length treeList = length ?newlist\<close> both_member_options_from_chilf_to_complete_tree dp numerals(2) pp)
                   qed

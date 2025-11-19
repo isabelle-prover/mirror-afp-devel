@@ -5020,7 +5020,7 @@ fun sig_trd_spp_body :: "(('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarro
           (punit.tail p - punit.monom_mult (punit.lc p / punit.lc b) (punit.lt p - punit.lt b) (punit.tail b), r))"
 
 definition sig_trd_spp_aux :: "(('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b)) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)"
-  where sig_trd_spp_aux_def [code del]: "sig_trd_spp_aux = tailrec.fun (\<lambda>x. fst x = 0) snd sig_trd_spp_body"
+  where sig_trd_spp_aux_def: "sig_trd_spp_aux = tailrec.fun (\<lambda>x. fst x = 0) snd sig_trd_spp_body"
 
 lemma sig_trd_spp_aux_simps [code]:
   "sig_trd_spp_aux (p, r) = (if p = 0 then r else sig_trd_spp_aux (sig_trd_spp_body (p, r)))"
@@ -5610,7 +5610,7 @@ fun rb_spp_body ::
 definition rb_spp_aux ::
       "((('t \<times> ('a \<Rightarrow>\<^sub>0 'b)) list \<times> 't list \<times> ((('t \<times> ('a \<Rightarrow>\<^sub>0 'b)) \<times> ('t \<times> ('a \<Rightarrow>\<^sub>0 'b))) + nat) list) \<times> nat) \<Rightarrow>
        ((('t \<times> ('a \<Rightarrow>\<^sub>0 'b)) list \<times> 't list \<times> ((('t \<times> ('a \<Rightarrow>\<^sub>0 'b)) \<times> ('t \<times> ('a \<Rightarrow>\<^sub>0 'b))) + nat) list) \<times> nat)"
-  where rb_spp_aux_def [code del]: "rb_spp_aux = tailrec.fun (\<lambda>x. snd (snd (fst x)) = []) (\<lambda>x. x) rb_spp_body"
+  where rb_spp_aux_def: "rb_spp_aux = tailrec.fun (\<lambda>x. snd (snd (fst x)) = []) (\<lambda>x. x) rb_spp_body"
 
 lemma rb_spp_aux_Nil [code]: "rb_spp_aux ((bs, ss, []), z) = ((bs, ss, []), z)"
   by (simp add: rb_spp_aux_def tailrec.simps)
@@ -7511,7 +7511,7 @@ lemma rb_aux_domI:
   shows "rb_aux_dom args"
 proof -
   let ?rel = "rb_aux_term <*lex*> ({}::(nat \<times> nat) set)"
-  from wf_rb_aux_term wf_empty have "wf ?rel" ..
+  from wf_rb_aux_term wf_on_bot have "wf ?rel" ..
   thus ?thesis using assms
   proof (induct args)
     case (less args)

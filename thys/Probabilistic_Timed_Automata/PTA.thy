@@ -775,6 +775,7 @@ proof -
   have "valid_region \<X> k ?I ?r"
   proof
     show "{} = {x \<in> \<X>. \<exists>d. Const 0 = Intv d}" by auto
+    show "{} \<subseteq> {} \<times> {}" by simp
     show "refl_on {} {}" and "trans {}" and "total_on {} {}" unfolding trans_def by auto
     show "\<forall>x \<in> \<X>. Regions.valid_intv (k x) (Const 0)" by auto
   qed

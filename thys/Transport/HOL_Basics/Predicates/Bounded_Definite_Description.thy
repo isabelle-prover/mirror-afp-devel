@@ -16,7 +16,7 @@ syntax_consts "_bthe" \<rightleftharpoons> bthe
 translations "THE x : P. Q" \<rightleftharpoons> "CONST bthe P (\<lambda>x. Q)"
 
 definition "bthe_pred P Q \<equiv> The (P \<sqinter> Q)"
-adhoc_overloading bthe bthe_pred
+adhoc_overloading bthe \<rightleftharpoons> bthe_pred
 
 lemma bthe_eqI [intro]:
   assumes "Q a"

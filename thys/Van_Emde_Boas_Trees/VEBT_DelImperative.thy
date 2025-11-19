@@ -158,7 +158,9 @@ partial_function (heap_time) vebt_deletei'::"VEBT \<Rightarrow> VEBTi \<Rightarr
                                                           })}))" 
 
 
-theorem deleti'_rf_abstr: "invar_vebt t n \<Longrightarrow> <vebt_assn_raw t ti> vebt_deletei' t ti x< vebt_assn_raw (vebt_delete t x)>"
+theorem deleti'_rf_abstr: 
+  notes list_update_beyond [simp]
+  shows "invar_vebt t n \<Longrightarrow> <vebt_assn_raw t ti> vebt_deletei' t ti x< vebt_assn_raw (vebt_delete t x)>"
 proof(induction t x arbitrary: ti n rule: vebt_delete.induct)
   case (1 a b)
   then show ?case by(subst vebt_deletei'.simps) (cases ti; sep_auto)

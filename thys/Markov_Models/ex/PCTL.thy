@@ -34,7 +34,8 @@ lemma single_l:
   shows "(\<Sum>s'\<in>S. (if s' = s then 1 else 0) * l s') = x \<longleftrightarrow> l s = x"
   by (simp add: assms if_distrib [of "\<lambda>x. x * a" for a] cong: if_cong)
 
-definition "order = (SOME f. bij_betw f {..< card S} S)"
+definition order  :: "nat \<Rightarrow> 's"
+  where "order \<equiv> (SOME f. bij_betw f {..< card S} S)"
 
 lemma
   shows bij_order[simp]: "bij_betw order {..< card S} S"

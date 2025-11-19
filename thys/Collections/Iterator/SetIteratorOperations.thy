@@ -378,13 +378,9 @@ proof -
           foldli (List.map_filter g xs)"
       unfolding it_eq  set_iterator_image_filter_foldli_conv by simp
   next
-    from dist_xs g_inj_on[unfolded S_eq]
+    from dist_xs g_inj_on [unfolded S_eq]
     show "distinct (List.map_filter g xs)"
-      apply (induct xs)
-      apply (simp add: List.map_filter_simps) 
-      apply (simp add: List.map_filter_def image_iff inj_on_def Ball_def dom_def)
-      apply (metis not_Some_eq option.sel)
-    done
+      by (auto simp add: inj_on_def dom_def List.map_filter_def distinct_map)
   next
     show "{y. \<exists>x. x \<in> S \<and> g x = Some y} =
           set (List.map_filter g xs)"
@@ -392,23 +388,28 @@ proof -
   next
     from sorted_xs R'_prop[unfolded S_eq]
     show "sorted_wrt R' (List.map_filter g xs)"
-    proof (induct xs rule: list.induct)
-      case Nil thus ?case by (simp add: List.map_filter_simps) 
+    proof (induct xs)
+      case Nil
+      then show ?case
+        by simp
     next
       case (Cons x xs)
       note sort_x_xs = Cons(2)
       note R'_x_xs = Cons(3)
-
-      from Cons have ind_hyp: "sorted_wrt R' (List.map_filter g xs)" by auto
-
+      from Cons have ind_hyp: "sorted_wrt R' (List.map_filter g xs)"
+        by auto
       show ?case
-        apply (cases "g x")  
-        apply (simp add: List.map_filter_simps ind_hyp)
-        apply (simp add: List.map_filter_simps set_map_filter Ball_def ind_hyp)
-        apply (insert R'_x_xs[of x] sort_x_xs)
-        apply (simp add: Ball_def)
-        apply metis
-      done
+      proof (cases \<open>g x\<close>)
+        case None
+        with sort_x_xs ind_hyp show ?thesis
+          by simp
+      next
+        case (Some a)
+        moreover have \<open>Ball (set (List.map_filter g xs)) (R' a)\<close>
+          using Some sort_x_xs by (auto simp add: List.map_filter_def intro: R'_x_xs)
+        ultimately show ?thesis
+          using ind_hyp by simp
+      qed
     qed
   qed
 qed

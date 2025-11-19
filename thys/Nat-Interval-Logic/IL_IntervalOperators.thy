@@ -1075,7 +1075,7 @@ by (rule strict_mono_on_imp_inj_on[OF iMODb_div_right_strict_mono_on])
 
 lemma iMODb_mult_div_right_inj_on: "
   inj_on (\<lambda>x. x div (k::nat)) [r, mod (k * m), c]"
-by (rule subset_inj_on[OF iMOD_mult_div_right_inj_on iMODb_iMOD_subset_same])
+by (rule inj_on_subset[OF iMOD_mult_div_right_inj_on iMODb_iMOD_subset_same])
 
 corollary iMODb_mult_div_right_inj_on2: "
   m mod k = 0 \<Longrightarrow> inj_on (\<lambda>x. x div k) [r, mod m, c]"
@@ -2162,7 +2162,7 @@ lemma iT_Plus_neg_card: "card (I \<oplus>- k) = card (I \<down>\<ge> k)"
 apply (simp add: iT_Plus_neg_image_conv)
 apply (rule card_image)
 apply (subst cut_ge_Int_conv)
-apply (rule subset_inj_on[OF _ Int_lower2])
+apply (rule inj_on_subset[OF _ Int_lower2])
 apply (rule sub_left_inj_on)
 done
 
@@ -2177,7 +2177,7 @@ lemma iT_Minus_card: "card (k \<ominus> I) = card (I \<down>\<le> k)"
 apply (simp add: iT_Minus_image_conv)
 apply (rule card_image)
 apply (subst cut_le_Int_conv)
-apply (rule subset_inj_on[OF _ Int_lower2])
+apply (rule inj_on_subset[OF _ Int_lower2])
 apply (rule sub_right_inj_on)
 done
 

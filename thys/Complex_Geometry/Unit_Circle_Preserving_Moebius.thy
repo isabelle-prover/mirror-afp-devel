@@ -275,7 +275,7 @@ proof
     moreover
     have "mat_det (a, b, cnj b, cnj a) \<noteq> 0"
       using \<open>sgn (Re (mat_det (a, b, cnj b, cnj a))) = 1\<close>
-      by (smt sgn_0 zero_complex.simps(1))
+      by (smt (verit) sgn_0 zero_complex.simps(1))
     ultimately
     show "unit_disc_fix_cmat M"
       using unitary11_sgn_det[of k' a b M A B C D]
@@ -563,7 +563,7 @@ proof (transfer, transfer)
       by (metis complex_mod_sqrt_Re_mult_cnj real_sqrt_lt_1_iff)
     hence "1 / Re (a * cnj a) > 1"
       using False
-      by (smt complex_div_gt_0 less_divide_eq_1_pos one_complex.simps(1) right_inverse_eq)
+      by (smt (verit) complex_div_gt_0 less_divide_eq_1_pos one_complex.simps(1) right_inverse_eq)
     hence "Re (1 / (a * cnj a)) > 1"
       by (simp add: complex_is_Real_iff)
     thus ?thesis
@@ -693,7 +693,7 @@ next
     moreover                             
     have "Re (1 - a\<^sup>2) > 0"
       using \<open>is_real a\<close> \<open>cmod a < 1\<close>
-      by (smt Re_power2 minus_complex.simps(1) norm_complex_def one_complex.simps(1) power2_less_0 real_sqrt_lt_1_iff)
+      by (smt (verit) Re_power2 minus_complex.simps(1) norm_complex_def one_complex.simps(1) power2_less_0 real_sqrt_lt_1_iff)
     moreover
     have "Im ((z' - a) / (1 - a * z')) = Re (((1 - a\<^sup>2) * Im z') / (cmod (1 - a*z'))\<^sup>2)"
     proof-
@@ -713,7 +713,7 @@ next
     moreover
     have "0 < (1 - (Re a)\<^sup>2) * Im z' / (cmod (1 - a * z'))\<^sup>2 \<Longrightarrow> Im z' > 0"
       using \<open>is_real a\<close> \<open>0 < Re (1 - a\<^sup>2)\<close> 
-      by (smt Re_power_real divide_le_0_iff minus_complex.simps(1) not_sum_power2_lt_zero one_complex.simps(1) zero_less_mult_pos)
+      by (smt (verit) Re_power_real divide_le_0_iff minus_complex.simps(1) not_sum_power2_lt_zero one_complex.simps(1) zero_less_mult_pos)
     ultimately
     show ?thesis
       unfolding sgn_real_def
@@ -740,7 +740,7 @@ proof-
   ultimately
   show ?thesis
     using blaschke_real_preserve_sgn_Im[OF assms(1) assms(2), of z]
-    by (smt arg_Im_sgn assms(3) circline_set_x_axis_I norm_sgn of_complex_to_complex)
+    by (smt (verit) arg_Im_sgn assms(3) circline_set_x_axis_I norm_sgn of_complex_to_complex)
 qed
 
 (* -------------------------------------------------------------------------- *)
@@ -776,7 +776,7 @@ proof-
   thus ?thesis
     using *
     by (rule_tac x="blaschke c" in exI)
-       (smt blaschke_a_to_zero blaschke_ounit_circle_fix' unit_disc_fix_iff_ounit_circle)
+       (smt (verit) blaschke_a_to_zero blaschke_ounit_circle_fix' unit_disc_fix_iff_ounit_circle)
 qed
 
 lemma wlog_zero:
@@ -786,7 +786,7 @@ lemma wlog_zero:
   shows "P u"
 proof-
   have *: "moebius_pt (blaschke (to_complex u)) u = 0\<^sub>h"
-    by (smt blaschke_a_to_zero in_disc inf_notin_unit_disc of_complex_to_complex unit_disc_iff_cmod_lt_1)
+    by (smt (verit) blaschke_a_to_zero in_disc inf_notin_unit_disc of_complex_to_complex unit_disc_iff_cmod_lt_1)
   thus ?thesis
     using preserving[of u "to_complex u"] in_disc zero
     using inf_or_of_complex[of u]
@@ -800,7 +800,7 @@ lemma wlog_real_zero:
   shows "P u"
 proof-
   have *: "moebius_pt (blaschke (to_complex u)) u = 0\<^sub>h"
-    by (smt blaschke_a_to_zero in_disc inf_notin_unit_disc of_complex_to_complex unit_disc_iff_cmod_lt_1)
+    by (smt (verit) blaschke_a_to_zero in_disc inf_notin_unit_disc of_complex_to_complex unit_disc_iff_cmod_lt_1)
   thus ?thesis
     using preserving[of u "to_complex u"] in_disc zero real
     using inf_or_of_complex[of u]
@@ -869,7 +869,7 @@ proof (simp, transfer, transfer)
     using * *** complex_mult_cnj_cmod[of a']
     by simp
   hence "cmod a' < 1"
-    by (smt less_divide_eq_1_pos norm_zero one_less_power one_power2 pos2)
+    by (smt (verit) less_divide_eq_1_pos norm_zero one_less_power one_power2 pos2)
   thus "\<exists>k. cmod k < 1 \<and>
             (\<exists>\<phi>. moebius_cmat_eq M (moebius_comp_cmat (mk_moebius_cmat (cis \<phi>) 0 0 1) (blaschke_cmat k)))"
     using ***

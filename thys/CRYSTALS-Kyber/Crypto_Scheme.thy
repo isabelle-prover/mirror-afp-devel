@@ -111,8 +111,8 @@ proof auto
     by (metis (no_types, lifting) mult.assoc sum.cong sum_distrib_left)
   finally show "(\<Sum>i\<in>UNIV. (\<Sum>j\<in>UNIV. (vec_nth (vec_nth A i) j) * 
     (vec_nth s j)) * (vec_nth r i)) = (\<Sum>j\<in>UNIV. (vec_nth s j) * 
-    (\<Sum>i\<in>UNIV. (vec_nth (vec_nth A i) j) * (vec_nth r i)))" 
-    by blast
+    (\<Sum>i\<in>UNIV. (vec_nth r i) *  (vec_nth (vec_nth A i) j)))"
+    by (simp add: mult.commute)
 qed
 
 text \<open>Lemma about coeff Poly\<close>

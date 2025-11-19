@@ -102,7 +102,9 @@ function mul_ext_mem :: "'a term_rel_mem_type \<Rightarrow> term_rel_mem \<Right
               then ((True, True), mem_new_3)
               else mul_ext_dom_mem f mem_new_3 xsa (x # xs) y ys)
         | (False, True) \<Rightarrow> (case mul_ext_mem f mem_new_1 (xsa @ xs) ys of 
-              (sns_res_a, mem_new_2) \<Rightarrow> case mul_ext_dom_mem f mem_new_2 xsa (x # xs) y ys of
+              (sns_res_a, mem_new_2) \<Rightarrow> 
+                if sns_res_a = (True,True) then (sns_res_a, mem_new_2) else
+              case mul_ext_dom_mem f mem_new_2 xsa (x # xs) y ys of
               (sns_res_b, mem_new_3) \<Rightarrow>
               (or2 sns_res_a sns_res_b, mem_new_3))
         | (False, False) \<Rightarrow> mul_ext_dom_mem f mem_new_1 xsa (x # xs) y ys))"
@@ -185,9 +187,16 @@ proof -
         have [simp]: "mul_ext_mem f m1 (xs @ xs') ys = mul_ext_mem g m1 (xs @ xs') ys" 
           by (rule IHs(1)[OF fg], auto)
         obtain p2 m2 where rec1[simp]: "mul_ext_mem g m1 (xs @ xs') ys = (p2,m2)" by fastforce
-        have [simp]: "mul_ext_dom_mem f m2 xs (x # xs') y ys = mul_ext_dom_mem g m2 xs (x # xs') y ys" 
-          by (rule IHs(2)[OF rec1[symmetric] fg], auto)
-        show ?thesis using False True by simp
+        show ?thesis
+        proof (cases "p2 = (True,True)")
+          case p2: True
+          thus ?thesis using False True by auto
+        next
+          case p2: False
+          have [simp]: "mul_ext_dom_mem f m2 xs (x # xs') y ys = mul_ext_dom_mem g m2 xs (x # xs') y ys" 
+            by (rule IHs(2)[OF rec1[symmetric] p2 fg], auto)
+          show ?thesis using False True by simp
+        qed
       next
         case b1: False
         hence "b1 = False" by simp
@@ -373,10 +382,18 @@ proof -
       from IHs(1)[OF mem1 refl memoize_fun_mono[OF memo]] 
       have mem2: "valid_memory rel_pair ind mem2" and p2: "p2 = mul_ext_impl rel (map g (xs @ ys)) (map h zs)" 
         by auto
-      from IHs(2)[OF refl mem2 rec3 memoize_fun_mono[OF memo]]
-      have mem3: "valid_memory rel_pair ind mem3" and p3: "p3 = mul_ex_dom rel (map g xs) (map g (x # ys)) (h d) (map h zs)" by auto
-      from wp res[unfolded Let_def split 2 bool.simps rec2 rec3]
-      show ?thesis using mem3 p2 p3 by auto
+      show ?thesis
+      proof (cases "p2 = (True, True)")
+        case True
+        show ?thesis using p2 wp res[unfolded Let_def split 2 bool.simps rec2 rec3] mem2 True
+          by auto
+      next
+        case False  
+        from IHs(2)[OF refl False mem2 rec3 memoize_fun_mono[OF memo]]
+        have mem3: "valid_memory rel_pair ind mem3" and p3: "p3 = mul_ex_dom rel (map g xs) (map g (x # ys)) (h d) (map h zs)" by auto
+        from wp res[unfolded Let_def split 2 bool.simps rec2 rec3]
+        show ?thesis using mem3 p2 p3 False by auto
+      qed
     next
       case 3
       obtain p2 mem2 where rec2: "mul_ext_dom_mem sns mem1 xs (x # ys) d zs = (p2,mem2)" by fastforce
