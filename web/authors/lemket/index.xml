@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tassilo Lemke</title>
+    <link>https://isa-afp.org/authors/lemket/</link>
+    <description>AFP entries of Tassilo Lemke</description><item>
+  <title>Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications</title>
+  <link>https://isa-afp.org/entries/Pre_Star_CFG.html</link>
+  <pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+
+  </channel>
+</rss>

@@ -649,6 +649,7 @@ Posix-Lexing
 Possibilistic_Noninterference
 Power_Sum_Polynomials
 Pratt_Certificate
+Pre_Star_CFG
 Prefix_Free_Code_Combinators
 Presburger-Automata
 Prim_Dijkstra_Simple
