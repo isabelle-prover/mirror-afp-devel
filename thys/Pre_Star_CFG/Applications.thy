@@ -25,14 +25,6 @@ lemma pre_star_lang:
   "Lang P S \<inter> L = {} \<longleftrightarrow> [(Nt S)] \<notin> pre_star P (map Tm ` L)"
   using pre_star_word[where P=P] by blast
 
-(* TODO: rm with next release: rename tms_syms \<rightarrow> Tms_syms elsewehere; rm tms_syms *)
-subsection\<open>Preliminaries\<close>
-
-lemma tms_syms_code[code]:
-  "tms_syms w = \<Union>((\<lambda>A. case A of Tm x \<Rightarrow> {x} | _ \<Rightarrow> {}) ` set w)"
-  by (auto simp: tms_syms_def split: sym.splits)
-
-
 subsection\<open>Derivability\<close>
 
 text\<open>A decision procedure for derivability can be constructed.\<close>
@@ -103,25 +95,10 @@ proof -
   ultimately have "set (map Tm \<beta>) \<subseteq> Syms P"
     using cfg_derives_Syms by force
   moreover have "\<And>t. (t \<in> Tms P) \<longleftrightarrow> Tm t \<in> Syms P"
-    unfolding Tms_def Syms_def tms_syms_def by blast
+    unfolding Tms_def Syms_def Tms_syms_def by blast
   ultimately show "set \<beta> \<subseteq> Tms P"
     by force
 qed
-
-lemma inj_Tm: "inj Tm"
-  by (simp add: inj_def)
-
-(* TODO: rm with next release *)
-lemma finite_tms_syms: "finite (tms_syms w)"
-proof -
-  have "Tm ` {A. Tm A \<in> set w} \<subseteq> set w"
-    by auto
-  from finite_inverse_image[OF _ inj_Tm] show ?thesis
-    unfolding tms_syms_def using finite_inverse_image[OF _ inj_Tm] by auto
-qed
-
-lemma finite_Tms: "finite P \<Longrightarrow> finite (Tms P)"
-  unfolding Tms_def by (rule finite_Union; auto simp: finite_tms_syms)
 
 definition pre_star_emptiness_auto :: "('n, 't) Prods \<Rightarrow> (unit, ('n, 't) sym) auto" where
   "pre_star_emptiness_auto P \<equiv>
