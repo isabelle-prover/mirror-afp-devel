@@ -15,7 +15,6 @@ declare [[ML_print_depth=1000]]
 install_C_file "ternary_conditional_operator.c"
 
 autocorres[ts_force nondet = inc] "ternary_conditional_operator.c"
-context ternary_conditional_operator_all_impl  begin
 
 lemma "ternary3' x1 x2 y z \<equiv> 
   do {
@@ -36,5 +35,4 @@ lemma "ternary3' x1 x2 y z \<equiv>
   }"
   unfolding ternary3'_def
   by (simp)
-end
 end

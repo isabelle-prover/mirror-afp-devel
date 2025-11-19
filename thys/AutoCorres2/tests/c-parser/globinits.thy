@@ -11,9 +11,6 @@ begin
 
 install_C_file "globinits.c"
 
-context globinits_simpl
-begin
-
 thm sptr_def
 thm sval_def
 thm svalprime_def
@@ -30,7 +27,5 @@ term sptr
 
   thm f_body_def
   thm g_body_def
-
-end (* context *)
 
 end (* theory *)

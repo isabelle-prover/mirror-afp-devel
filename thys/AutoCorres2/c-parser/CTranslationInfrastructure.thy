@@ -12,7 +12,6 @@ theory CTranslationInfrastructure
   CTranslation
 begin
 
-term guarded_spec_body
 section \<open>Local Variables\<close>
 
 text \<open>
@@ -151,12 +150,64 @@ schematic_goal "s\<langle>x := \<lambda>_. 2\<rangle> \<cdot> p = ?X"
   apply simp
   done
 
+declare [[single_threaded = false, verbose_timing=2, 
+c_parser_feedback_level=0, 
+c_parser_check_embedded_function_calls=true]]
+
 install_C_file "ex.c"
 
-thm size_td_simps
-thm my_struct_C_update_const 
+
+thm do_write1_body_def
+thm log_bool_body_def
+thm elem_fun_body_def
+thm commas_body_def
+thm for_loops_body_def
+thm pre_post_body_def
+thm call_inc_ptr_assign_body_def
+thm call_inc_ptr_assign1_body_def
+thm call_inc_ptr_assign2_body_def
+thm statement_expr_return_body_def
+thm statement_expr_return1_body_def
+thm statement_expr_typeof_body_def
+thm statement_nested_expr_assign_body_def
+thm statement_expr_stmt1_body_def
+thm statement_expr_assign_ecall_nested_body_def
+print_record globals
+thm call_test_body_def
+thm statement_expr_var_initializer_body_def
+thm statement_expr_while_body_def
+thm statement_expr_stmt_body_def
+thm statement_expr_assign_call_body_def
+ML \<open>
+val embedded_fncall_exprs = ProgramAnalysis.get_embedded_fncall_exprs (the (CalculateState.get_csenv @{theory} "ex.c"))
+\<close>
+ML \<open>
+val deps = ProgramAnalysis.get_variable_dependencies (the (CalculateState.get_csenv @{theory} "ex.c"))
+\<close>
+
+thm statement_expr_while_body_def
+
+thm h2_body_def
+thm h1_body_def
+thm f1_body_def
+thm h2_body_def
+thm \<Gamma>_def
+thm statement_with_paren_body_def
+context ex_global_addresses
+begin
+thm all_distinct
+thm fun_ptr_simps
+thm fun_ptr_guards
+thm fun_ptr_not_NULL
+term g_static
+thm global_const_defs
+thm fun_ptr_map_of_default_eqs
+thm fun_ptr_map_of_default_fallthrough_eqs
+end
+
 text \<open>The root locale storing the global content @{locale ex_global_addresses}. This is also
 the locale ware the bodies of the imported functions are defined.\<close>
+
 
 context ex_global_addresses
 begin
@@ -177,9 +228,9 @@ thm global_const_defs
 term g_static
 term g_ordinary_' term g_ordinary_'_update
 term g_addressed_'
-thm main_body_def
 thm globals.typing.get_upd
 thm state.typing.get_upd
+thm fun_ptr_map_of_default_eqs
 text \<open>
 Functions also result in a declaration of a constant representing the global function pointer.
 @{const ex.add}. They have the type @{typ "unit ptr"}.
@@ -206,51 +257,51 @@ declare [[clocals_short_names]]
 thm  add_body_def
 end
 
-text \<open>The canonical locale to do verification of a procedure is the \<open>impl\<close> locale. This
+text \<open>The canonical locale to do verification of a procedure is the \<open>final_global_addresses\<close> locale. This
 activates the scope of the function and also stores the equation that the lookup of the
 function pointer in the environment \<^const>\<open>\<Gamma>\<close> retrieves the expected body.\<close>
 
-context add_impl
+context ex_global_addresses
 begin
-thm add_body_def
-thm add_impl
+thm add1_body_def
+thm add1_impl
 
 text \<open>
 The symbolic names can be folded and unfolded by an attribute.
 \<close>
-thm add_body_def [unfold_locals]
-thm add_body_def [unfold_locals, fold_locals]
+thm add1_body_def [unfold_locals]
+thm add1_body_def [unfold_locals, fold_locals]
 
 text \<open>These attributes can also take qualifier in case an alternative scope should be added\<close>
-thm call_add_body_def
-thm call_add_body_def [unfold_locals] \<comment> \<open>nothing happens as we are in the wrong scope\<close>
-thm call_add_body_def [unfold_locals call_add] \<comment> \<open>now they are expanded as we qualify the scope\<close>
+thm call_add1_body_def
+thm call_add1_body_def [unfold_locals] \<comment> \<open>nothing happens as we are in the wrong scope\<close>
+thm call_add1_body_def [unfold_locals call_add1] \<comment> \<open>now they are expanded as we qualify the scope\<close>
 
 end
 
 
-context call_add_impl
+context ex_global_addresses
 begin
-thm call_add_body_def
+thm call_add1_body_def
 declare [[hoare_use_call_tr' = false]]
-thm call_add_body_def
+thm call_add1_body_def
 end
 
-text \<open>All the implementations of the program are gathered in the \<open>simpl\<close> locale \<close>
+text \<open>All the implementations of the program are gathered in the \<open>final_global_addresses\<close> locale \<close>
 
-context ex_simpl
+context  ex_global_addresses
 begin
-thm add_impl
-thm call_add_impl
+thm add1_impl
+thm call_add1_impl
 end
 
 section "Infrastructure for states" 
 
 type_synonym state = "(globals, locals, 32 signed word) CProof.state"
 
-context add_impl
+context ex_global_addresses
 begin
-
+unbundle add1_variables
 text \<open>As a final part of the verification generator generator terms containing local and global
 variables are generalised to a 'splitted' view, where each component becomes has a bound variable.\<close>
 
@@ -464,5 +515,7 @@ thm heap_update_fields
 thm fg_cons_simps
 thm fl_ti_simps
 thm fl_Some_simps
+thm typ_name_simps
+thm typ_name_itself
 
 end

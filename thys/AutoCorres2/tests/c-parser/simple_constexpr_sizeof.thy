@@ -11,9 +11,6 @@ begin
 
 install_C_file "simple_constexpr_sizeof.c"
 
-context simple_constexpr_sizeof_simpl
-begin
 thm f_body_def
-end
 
 end

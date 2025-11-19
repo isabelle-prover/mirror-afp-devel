@@ -11,8 +11,6 @@ begin
 
 install_C_file "arrays.c"
 
-context arrays_simpl
-begin
   thm f_body_def
   thm f2_body_def
   thm g_body_def
@@ -22,6 +20,5 @@ begin
   thm ptr_parameter_body_def
   thm pass_array1_body_def
   thm pass_array2_body_def
-end
 
 end

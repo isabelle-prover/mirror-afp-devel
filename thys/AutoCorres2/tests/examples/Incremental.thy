@@ -18,21 +18,20 @@ install_C_file "incremental.c"
 
 (* Translate only opt_j *)
 autocorres [
-  scope_depth = 0,
   scope = opt_j
   ] "incremental.c"
 
-context ts_impl_opt_j
-begin
-thm opt_j'_def
-end
+
+
+thm ts.opt_j'_def
+
+
 
 
 (* Translate st_i, which calls opt_j. Calls to opt_j are translated correctly. *)
 autocorres [
   ts_rules = nondet,
   no_heap_abs = st_i,
-  scope_depth = 0,
   scope = st_i
   ] "incremental.c"
 
@@ -41,32 +40,24 @@ autocorres [
 autocorres [
   ts_rules = nondet,
   no_signed_word_abs = st_h,
-  scope_depth = 0,
   scope = st_h
   ] "incremental.c"
 
-context ts_impl_st_h
-begin
-thm st_h'_def
-end
 
-context ts_impl_st_g
-begin
-thm st_g'_def
-end
+thm ts.st_h'_def
+thm ts.st_g'_def
 
 
 (* Translate the remaining functions. *)
-autocorres [
+autocorres [no_body = opt_none,
   ts_rules = pure option nondet,
   ts_force option = pure_f,
-  scope_depth = 0,
   scope = pure_f pure_f2 pure_g pure_h pure_i pure_j pure_k pure_div_roundup
           gets_f gets_g opt_f opt_g opt_h (* opt_j *) opt_i opt_none opt_l opt_a opt_a2 hax
           st_f (* st_g st_h st_i *) exc_f
   ] "incremental.c"
 
-context incremental_all_impl begin
+
 (* All function defs. *)
 thm pure_f'_def pure_f2'_def
 thm pure_g'_def pure_h'_def
@@ -77,6 +68,5 @@ thm opt_f'_def opt_g'_def opt_h'.simps opt_i'_def
 thm opt_l'_def
 thm st_f'_def st_g'_def st_h'_def st_i'.simps hax'_def
 thm exc_f'_def
-end
 
 end

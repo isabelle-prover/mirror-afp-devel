@@ -12,11 +12,9 @@ theory CTranslationSetup
   "UMM"
   "PackedTypes"
   "PrettyProgs"
-  "StaticFun"
   "IndirectCalls"
   "ModifiesProofs"
   "HOL-Eisbach.Eisbach"
-  "ML_Record_Antiquotation"
   "Option_Scanner"
   "Misc_Antiquotation"
   "MkTermAntiquote"
@@ -29,6 +27,121 @@ and
   "mlyacc":: thy_load 
 begin
 
+ML \<open>
+structure Conj_Elim =
+struct
+
+val ctxt0 = @{context}
+structure Data = Theory_Data (
+  type T = thm Inttab.table
+  val empty = Inttab.empty;
+  fun merge (t1, t2) = if pointer_eq (t1, t2) then t1 else Inttab.merge (K true) (t1, t2)
+)
+
+fun P' i = (("P", i), \<^typ>\<open>bool\<close>)
+fun P i = Var (P' i) |> Thm.cterm_of ctxt0
+val thesis = Var (("thesis", 0), \<^typ>\<open>bool\<close>) |> Thm.cterm_of ctxt0
+
+
+val thm2 = \<^instantiate>\<open>P2 = \<open>P 2\<close> and P1 = \<open>P 1\<close> and thesis = thesis
+  in lemma  "P2 \<and> P1 \<Longrightarrow> (P2 \<Longrightarrow> P1 \<Longrightarrow> thesis) \<Longrightarrow> thesis" by (erule conjE)\<close>
+
+val _ = Theory.setup (Data.put (Inttab.make [(2, thm2)]))
+
+
+fun non_atomic (Const ("Pure.imp", _) $ _ $ _) = true
+  | non_atomic (Const ("Pure.all", _) $ _) = true
+  | non_atomic _ = false;
+
+val assume_rule_tac = CSUBGOAL (fn (goal, i) =>
+  let 
+    val Rs = filter (non_atomic o Thm.term_of) (Drule.strip_imp_prems goal);
+    val tacs = Rs |> map (fn R =>
+      Thm.bicompose NONE {flatten = false, match = true, incremented = true} (false, Thm.trivial R, 0));
+  in fold_rev (curry op APPEND') tacs (K no_tac) i end);
+
+fun ensure_upto n thy =
+  if n <= 1 then error "Conj_Elim: expecting at least 2 conjuncts" 
+  else
+    let
+      val tab = Data.get thy
+    in
+      case Inttab.lookup tab n of 
+        SOME thm => (thm, thy)
+      | NONE => 
+         let
+           val (thm', thy') = ensure_upto (n - 1) thy
+           val start = Timing.start ();
+           val [conj', elim']  = Thm.cprems_of thm'
+           val conj = \<^instantiate>\<open>A = \<open>P n\<close> and B = \<open>HOLogic.dest_judgment conj'\<close> in cterm \<open>A \<and> B\<close>\<close>
+           val elim = \<^instantiate>\<open>A = \<open>P n\<close> and B = elim' in cprop \<open>A \<Longrightarrow> PROP B\<close>\<close>
+           val prop = \<^instantiate>\<open>C = conj and E = elim and thesis = thesis in cprop \<open>C \<Longrightarrow> PROP E \<Longrightarrow> thesis\<close>\<close>
+           val thm = Utils.timeit_msg 2 ctxt0 (fn _ => string_of_int n ^ ": prove: " ) (fn _ =>
+                 Goal.prove_internal ctxt0 [] prop (fn _ =>
+                 ematch_tac ctxt0 @{thms conjE} 1 THEN
+                 ematch_tac ctxt0 [thm'] 1 THEN
+                 assume_rule_tac 1))
+           val thy'' = Utils.timeit_msg 2 ctxt0 (fn _ => string_of_int n ^ ": data: " ) (fn _ =>  
+             Data.map (Inttab.update_new (n, Thm.trim_context thm)) thy')
+           val _ = Utils.timing_msg' 1 ctxt0 (fn _ => string_of_int n ^ ": all") start
+         in
+           (thm, thy'')
+         end
+    end 
+
+fun dest_conjs' ct = ct |> Match_Cterm.switch [
+  @{cterm_match \<open>?P \<and> ?Q\<close>} #> (fn {P, Q, ...} => P :: dest_conjs' Q),
+  (fn _ => [ct])]
+
+fun dest_conjs ct = 
+  case Thm.term_of ct of
+    @{term_pat "?P \<and> ?Q"} => let val (P, X) = Thm.dest_binop ct in P :: dest_conjs X end
+  | _=> [ct]
+
+fun proj ctxt i elim_thm =
+  SINGLE (filter_prems_tac ctxt (fn (_ $ Var ((_, j), _)) => i = j | _ => false) 2) elim_thm
+
+fun dest i elim_thm =
+  let    
+    val inst_thm = Thm.instantiate (TVars.empty, Vars.make1 ((("thesis", 0), \<^typ>\<open>bool\<close>), P i)) elim_thm
+    val dest = SINGLE (eq_assume_tac 2) inst_thm
+  in
+    dest
+  end
+
+fun conj_elims {parallel} ctxt thm =
+  let
+    val start = Timing.start ();
+    val conjs = Utils.timeit_msg 2 ctxt (fn _ => "conj_elims: conjs") (fn _ =>  
+      thm |> Thm.cconcl_of |> HOLogic.dest_judgment |> dest_conjs)
+    val n = length conjs
+    val _ = (n > 1) orelse raise Match
+    val (elim_n, _) = ensure_upto n (Proof_Context.theory_of ctxt)
+    val tagged_conjs = map_index (fn (i, c) => (n - i, c)) conjs
+    val insts = Vars.make (map (fn (i, c) => (P' i, c)) tagged_conjs)
+    fun mk_thm (i, conj) =
+      let
+       val dest = the (Utils.timeit_msg 2 ctxt (fn _ => "conj_elims: dest") (fn _ => dest i elim_n))
+       val dest_inst = Utils.timeit_msg 2 ctxt (fn _ => "conj_elims: dest_inst") (fn _ =>
+        Thm.instantiate (TVars.empty, insts) dest)
+       val dest_inst' =  Utils.timeit_msg 2 ctxt (fn _ => "conj_elims: dest_inst'") (fn _ => Thm.implies_elim dest_inst thm)
+      in
+        Goal.prove_internal ctxt [] (HOLogic.mk_judgment conj) (fn _ =>          
+          Utils.timeap_msg_tac 2 ctxt (fn _ => "conj_elims: match") (match_tac ctxt [dest_inst'] 1))
+      end
+    val map = if parallel then Par_List.map else map
+    val thms = map mk_thm tagged_conjs
+    val _ = Utils.timing_msg' 1 ctxt0 (fn _ => "Conj_Elim.conj_elims " ^ string_of_int n ^ ": ") start
+  in thms end
+  handle Match => [thm]
+
+
+end
+\<close>
+
+setup \<open>
+Conj_Elim.ensure_upto 1500 #> snd
+\<close>
 
 ML \<open>
 structure Coerce_Syntax =
@@ -96,11 +209,12 @@ named_theorems global_const_defs and
   global_const_non_array_selectors and
   global_const_selectors
 
-named_theorems fun_ptr_simps
-named_theorems fun_ptr_intros
-named_theorems fun_ptr_distinct
+named_theorems fun_ptr_distinct 
 named_theorems fun_ptr_subtree
 named_theorems disjoint_\<G>_\<S>
+
+named_bindings fun_ptr_map_of_default_eqs and fun_ptr_map_of_default_fallthrough_eqs and
+  fun_ptr_guards and fun_ptr_not_NULL and fun_ptr_simps and fun_ptr_undefined_simps
 
 text \<open>
 We integrate mllex and mlyacc directly into Isabelle:
@@ -276,6 +390,9 @@ where
   "map_of_default d [] x = d x"
 | "map_of_default d (x # xs) x' = (if fst x = x' then snd x else map_of_default d xs x')"
 
+lemma map_of_default_fun_upd_conv: 
+  "map_of_default d ((p, f)#fs) = (map_of_default d fs)(p := f)"
+  by (auto split: if_split_asm)
 
 lemma map_of_default_append: \<open>map_of_default d (xs @ ys) = map_of_default (map_of_default d ys) xs\<close>
   by (induction xs arbitrary: d ys) auto
@@ -304,13 +421,32 @@ lemma map_of_default_default_conv:
 
 lemma map_of_default_monotone_cons[partial_function_mono]:
   assumes f1 [partial_function_mono]: "monotone R X f1"
-  assumes [partial_function_mono]: "monotone R X (\<lambda>f. map_of_default d (xs f) p)"
-  shows "monotone R X (\<lambda>f. map_of_default d ((p1, f1 f)#xs f) p)"
+  assumes [partial_function_mono]: "monotone R X (\<lambda>f. map_of_default (d f) (xs f) p)"
+  shows "monotone R X (\<lambda>f. map_of_default (d f) ((p1, f1 f)#xs f) p)"
   apply (simp only: map_of_default.simps fst_conv snd_conv cong: if_cong)
   apply (intro partial_function_mono)
   done
 
-hide_const (open)  StaticFun.Node
+lemma monotone_if_fun': "monotone orda (fun_ord ordb) F \<Longrightarrow>
+  monotone orda (fun_ord ordb) G \<Longrightarrow>
+  monotone orda (fun_ord ordb) (\<lambda>f n. if c n then F f n else G f n)"
+  by(simp add: monotone_def fun_ord_def)
+
+lemma map_of_default_monotone_fun_ord_cons[partial_function_mono]:
+  assumes f1 [partial_function_mono]: "monotone R X f1"
+  assumes [partial_function_mono]: "monotone R (fun_ord X) (\<lambda>f. map_of_default (d f) (xs f))"
+  shows "monotone R (fun_ord X) (\<lambda>f. map_of_default (d f) ((p1, f1 f)#(xs f)))"
+  apply (simp only: map_of_default.simps [abs_def] fst_conv snd_conv cong: if_cong)
+  apply (intro monotone_if_fun' partial_function_mono)
+  using f1
+  by (simp add: monotone_def fun_ord_def)
+
+lemma map_of_default_monotone_fun_ord_nil[partial_function_mono]:
+  assumes f1 [partial_function_mono]: "monotone R X d"
+  shows "monotone R X (\<lambda>f. map_of_default (d f) [])"
+  apply (simp only: map_of_default.simps [abs_def] fst_conv snd_conv cong: if_cong)
+  apply (intro monotone_if_fun' partial_function_mono)
+  done
 
 primrec tree_of :: "'a list \<Rightarrow> 'a tree" 
 where
@@ -363,6 +499,12 @@ lemma map_of_default_distinct_lookup_list_all':
   shows "list_all (\<lambda>(p, f). map_of_default d xs p = f) xs"
   using  all_distinct_tree_of' [OF dist t] ps
   by (simp add: map_of_default_distinct_lookup_list_all)
+
+lemma map_of_default_block_cong: "map_of_default d xs p = map_of_default d xs p"
+  by (rule refl)
+
+lemma list_all_block_cong: "list_all P xs = list_all P xs"
+  by (rule refl)
 
 lemma map_of_default_distinct_lookup_list_all'': 
   assumes t: "list_of t \<equiv> ps"
@@ -487,6 +629,34 @@ lemma map_of_default_other_lookup_Ball:
   by (metis disjoint_iff map_fst map_of_default_fallthrough ps set_list_of_set_of_conv sub subtract_Some_dist_res)
 
 
+lemma map_of_default_other_lookup_list_all':
+  assumes ps: "list_of t \<equiv> ps"
+  assumes map_fst: "map fst xs \<equiv> ps"
+  assumes sub: "subtract t t_all = Some t_sub"
+  assumes qs: "list_of t_sub \<equiv> qs"
+  shows "list_all (\<lambda>p. map_of_default d xs p = d p) qs"
+proof -
+  from qs have "set_of t_sub = set qs"
+    by (metis set_list_of_set_of_conv)
+  from map_of_default_other_lookup_Ball [OF ps map_fst sub] this
+  show ?thesis 
+    by (simp add: Ball_set)
+qed
+
+lemma map_of_default_fnptr_guard_NULL:
+  assumes map_fst: "map fst xs \<equiv> ps"
+  assumes guard: "list_all (c_fnptr_guard) ps \<equiv> True"
+  shows "map_of_default d xs NULL = d NULL"
+proof -
+  have "NULL \<notin> set (map fst xs)"
+    using map_fst guard
+    by (metis c_fnptr_guard_NULL list.pred_set)
+  from map_of_default_fallthrough [OF this]
+  show ?thesis
+    by simp
+qed
+
+
 
 lemma subtract_set_of_exchange_first:
   assumes sub1: "subtract t\<^sub>1 t = Some t'" 
@@ -526,6 +696,96 @@ lemma guarded_spec_body_wp [vcg_hoare]:
   apply (erule order_trans)
   apply (auto simp: image_def Bex_def)
   done
+
+lemma spec_pre_post_wp [vcg_hoare]:
+  "P \<subseteq> {s. (\<forall>t. (s,t) \<in> R \<longrightarrow> t \<in> Q) \<and> ((F_pre \<in> F \<or> s \<in> Pre) \<and> (F_exists_post \<in> F \<or> (\<exists>t. (s,t) \<in> R)))}
+  \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub> P (spec_pre_post F_pre F_exists_post Pre R) Q, A"
+  apply (simp add: spec_pre_post_def)
+  apply (cases "F_pre \<in> F ")
+  subgoal
+    apply (erule HoarePartialDef.Guarantee)
+    apply (cases "F_exists_post \<in> F ")
+     apply (erule HoarePartialDef.Guarantee)
+     apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+    subgoal
+      by auto
+    subgoal
+      apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Guard[where P="(Pre \<inter> P)"])
+      subgoal
+        apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+        apply auto
+        done
+      subgoal
+        by auto
+      done
+    done
+  subgoal
+    apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Guard[where P=P])
+    subgoal 
+      apply (cases "F_exists_post \<in> F ")
+       apply (erule HoarePartialDef.Guarantee)
+       apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+      subgoal
+        by auto
+      subgoal
+        apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Guard[where P="(Pre \<inter> P)"])
+        subgoal
+          apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+          apply auto
+          done
+        subgoal
+          by auto
+        done
+      done
+    subgoal by auto
+    done
+  done
+
+lemma guarded_spec_pre_post_wp [vcg_hoare]:
+  "P \<subseteq> {s. (\<forall>t. (s,t) \<in> R \<longrightarrow> t \<in> Q) \<and> ((F_pre \<in> F \<or> s \<in> fst ` R) \<and> (F_post \<in> F \<or> (\<exists>t. (s,t) \<in> R)))}
+  \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub> P (guarded_spec_pre_post F_pre F_post R) Q, A"
+  apply (simp add: guarded_spec_pre_post_def)
+  apply (cases "F_pre \<in> F ")
+  subgoal
+    apply (erule HoarePartialDef.Guarantee)
+    apply (cases "F_post \<in> F ")
+     apply (erule HoarePartialDef.Guarantee)
+     apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+    subgoal
+      by auto
+    subgoal
+      apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Guard[where P="(fst ` R \<inter> P)"])
+      subgoal
+        apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+        apply auto
+        done
+      subgoal
+        by auto
+      done
+    done
+  subgoal
+    apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Guard[where P=P])
+    subgoal 
+      apply (cases "F_post \<in> F ")
+       apply (erule HoarePartialDef.Guarantee)
+       apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+      subgoal
+        by auto
+      subgoal
+        apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Guard[where P="(fst ` R \<inter> P)"])
+        subgoal
+          apply (rule HoarePartialDef.conseqPre, rule HoarePartialDef.Spec)
+          apply auto
+          done
+        subgoal
+          by auto
+        done
+      done
+    subgoal by auto
+    done
+  done
+
+
 
 named_theorems recursive_records_fold_congs and recursive_records_split_all_eqs
 

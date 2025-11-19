@@ -279,7 +279,7 @@ lemma refines_project_guard_right:
 
 named_rules cguard_assms and alloc_assms and modifies_assms and disjoint_assms and
   disjoint_alloc and disjoint_stack_free and stack_ptr and h_val_globals_frame_eq and
-  rel_alloc_independent_globals and keep_non_stack_ptr_eqs
+  rel_alloc_independent_globals and keep_non_stack_ptr_eqs and guard_assms
 synthesize_rules refines_in_out
 add_synthesize_pattern refines_in_out =
 \<open>
@@ -327,9 +327,20 @@ lemma admissible_IOcorres [corres_admissible]:
   unfolding IOcorres_def
   by (rule admissible_nondet_ord_corresXF_post)
 
+lemma admissible_IOcorres_mcont: 
+  "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow>ccpo.admissible Inf (\<ge>)  (\<lambda>f\<^sub>a. IOcorres P Q st rx ex (F f\<^sub>a) f\<^sub>c)"
+  using admissible_IOcorres
+  apply (rule admissible_subst)
+  apply assumption
+  done
+
 lemma IOcorres_top [corres_top]: "IOcorres P Q st rx ex \<top> f\<^sub>c" 
   unfolding IOcorres_def
   by (rule corresXF_post_top)
+
+lemma IOcorres_le_trans[corres_le_trans]:
+  "IOcorres P Q st rx ex f\<^sub>a f\<^sub>c \<Longrightarrow> f\<^sub>a \<le> f\<^sub>a' \<Longrightarrow> IOcorres P Q st rx ex f\<^sub>a' f\<^sub>c"
+  by (auto simp add: IOcorres_def corres_le_trans)
 
 lemma distinct_addresses_ptr_val_lemma: 
   "n < addr_card \<Longrightarrow> ptr_val p + word_of_nat n \<notin> (\<lambda>x. ptr_val p + word_of_nat x) ` {0..<n}"
@@ -1053,6 +1064,15 @@ theorem admissible_refines_rel_stack[corres_admissible]:
   apply (rule admissible_refines_funp)
   apply (rule funp_rel_stack)
   apply (rule funp)
+  done
+
+theorem admissible_refines_rel_stack_mcont:
+  assumes funp: "\<And>h. funp (Q h)"
+  assumes cont: "mcont Inf (\<ge>) Inf (\<ge>) F"
+  shows "ccpo.admissible Inf (\<ge>) (\<lambda>g. refines f (F g) s' t' (rel_stack S M A s t\<^sub>0 Q))"
+  using admissible_refines_rel_stack  [OF funp]
+  apply (rule admissible_subst)
+  apply (rule cont)
   done
 
 lemma admissible_rel_stack_eq: "ccpo.admissible \<Inter> (\<lambda>x y. y \<subseteq> x) (\<lambda>X. \<exists>w \<in> X. (\<lambda>_. (=)) h v w)"
@@ -2047,11 +2067,18 @@ lemma L2_fail_rel_stack:
   using s_t
   by (auto simp add: L2_fail_def refines_def_old rel_stack_def rel_alloc_modifies_antimono)
 
-lemma L2_undefined_function_rel_stack:
+lemma L2_undefined_function_rel_stack':
   assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
   shows "refines ((L2_guard (\<lambda>s. UNDEFINED_FUNCTION))) L2_fail s t (rel_stack \<S> {} A s t\<^sub>0 (rel_xval_stack L R))"
   using s_t L2_fail_rel_stack
   by (auto simp add: L2_guard_false UNDEFINED_FUNCTION_def)
+
+lemma L2_undefined_function_rel_stack:
+  assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
+  shows "refines ((L2_guard (\<lambda>s. UNDEFINED_FUNCTION))) (L2_guard (\<lambda>s. UNDEFINED_FUNCTION)) s t (rel_stack \<S> {} A s t\<^sub>0 (rel_xval_stack L R))"
+  apply (simp add: L2_guard_false UNDEFINED_FUNCTION_def)
+  apply (rule L2_fail_rel_stack [OF s_t])
+  done
 
 
 lemma L2_skip_rel_stack:
@@ -2075,6 +2102,15 @@ lemma L2_spec_rel_stack:
   shows "refines (L2_spec r) (L2_spec r') s t (rel_stack \<S> M A s t\<^sub>0 (rel_xval_stack L (\<lambda>_. (=))))"
   using assms
   by (auto simp add: L2_spec_def refines_def_old rel_stack_def rel_alloc_def succeeds_bind reaches_bind)
+
+lemma L2_spec_rel_stack'':
+  assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes ex: "\<And>t'. (frame A t\<^sub>0 s, t') \<in> r' \<Longrightarrow> \<exists>s'. (s, s') \<in> r"
+  assumes sim: "\<And>s' v. (s, s') \<in> r \<Longrightarrow> 
+    (\<exists>w. (frame A t\<^sub>0 s, frame A t\<^sub>0 s') \<in> r' \<and> rel_stack \<S> M A s t\<^sub>0 R (v, s') (w, frame A t\<^sub>0 s'))" 
+  shows "refines (L2_spec r) (L2_spec r') s t (rel_stack \<S> M A s t\<^sub>0 (rel_xval_stack L R))"
+  using s_t sim ex
+  by (force simp add: L2_spec_def refines_def_old rel_alloc_def rel_stack_def succeeds_bind reaches_bind )
 
 
 lemma L2_spec_rel_stack':
@@ -2148,6 +2184,34 @@ proof -
     done
 qed
 
+lemma L2_spec_rel_stack_heap_agnostic':
+  assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes hmem_unchanged: "\<And>s s'. (s, s') \<in> r \<Longrightarrow> hmem s' = hmem s"
+  assumes htd_unchanged: "\<And>s s'. (s, s') \<in> r \<Longrightarrow> htd s' = htd s"
+  assumes ex: "\<And>s t'. (frame A t\<^sub>0 s, t') \<in> r \<Longrightarrow> \<exists>s'. (s, s') \<in> r"
+  assumes result_sim: "\<And>s s'. (s, s') \<in> r \<Longrightarrow> (frame A t\<^sub>0 s, frame A t\<^sub>0 s') \<in> r"
+  shows "refines (L2_spec r) (L2_spec r) s t (rel_stack \<S> {} A s t\<^sub>0 (rel_xval_stack L (\<lambda>_. (=))))"
+  apply (rule L2_spec_rel_stack'')
+  subgoal
+    using s_t
+    by (auto simp add: L2_spec_def refines_def_old rel_stack_def rel_alloc_def)
+  subgoal for s'
+    using ex by blast
+  subgoal for s' v
+    apply (rule exI[where x=v])
+    apply (intro conjI)
+    subgoal
+      by (rule result_sim)
+    subgoal
+      apply (clarsimp simp: rel_stack_def frame_def)
+      apply (intro conjI)
+      subgoal using \<open>rel_alloc \<S> {} A t\<^sub>0 s t\<close> frame_def htd_unchanged 
+        by (auto simp add: rel_alloc_def)
+      subgoal using hmem_unchanged by force
+      subgoal using htd_unchanged by blast
+      done
+    done
+  done
 
 
 (* FIXME: how to setup automatic refinement proof? Simplified setup for standard cases, e.g. relation
@@ -2177,6 +2241,32 @@ lemma L2_assume_rel_stack_heap_agnostic:
     apply (intro conjI)
     subgoal
       using frame_def heap_irrelevant htd_unchanged by presburger
+    subgoal
+      apply (clarsimp simp: rel_stack_def frame_def)
+      apply (intro conjI)
+      subgoal using \<open>rel_alloc \<S> {} A t\<^sub>0 s t\<close> frame_def htd_unchanged rel_alloc_def by force
+      subgoal using hmem_unchanged by force
+      subgoal using htd_unchanged by blast
+      done
+    done
+  done
+
+lemma L2_assume_rel_stack_heap_agnostic':
+  assumes s_t: "rel_alloc \<S> M A t\<^sub>0 s t"
+  assumes hmem_unchanged: "\<And>a s s'. (a, s') \<in> f s \<Longrightarrow> hmem s' = hmem s"
+  assumes htd_unchanged: "\<And>a s s'. (a, s') \<in> f s \<Longrightarrow> htd s' = htd s"
+  assumes result_sim: "\<And>a s'. (a, s') \<in> f s \<Longrightarrow>  (a, frame A t\<^sub>0 s') \<in> f (frame A t\<^sub>0 s)"
+
+  shows "refines (L2_assume f) (L2_assume f) s t (rel_stack \<S> {} A s t\<^sub>0 (rel_xval_stack L (\<lambda>_. (=))))"
+  apply (rule L2_assume_rel_stack)
+  subgoal
+    using s_t
+    by (auto simp add: L2_assume_def refines_def_old rel_stack_def rel_alloc_def)
+  subgoal for v s'
+    apply (rule exI[where x=v])
+    apply (intro conjI)
+    subgoal
+      by (erule  result_sim)
     subgoal
       apply (clarsimp simp: rel_stack_def frame_def)
       apply (intro conjI)
@@ -4343,7 +4433,7 @@ lemma refines_rel_stack_shuffle_both:
       rel_stack_def rel_alloc_def rel_xval_stack_def rel_exit_def rel_xval.simps default_option_def Exn_def[symmetric]
       split: xval_splits prod.splits)
   subgoal for r s'
-  apply (cases r)
+    apply (cases r)
     subgoal 
       apply (clarsimp simp add: default_option_def  Exn_def[symmetric])
       subgoal for y
@@ -4354,10 +4444,21 @@ lemma refines_rel_stack_shuffle_both:
         by (smt (verit) Exn_def Exn_eq_Exn Result_neq_Exn case_exception_or_result_Exn)
       done
     subgoal for v
-        apply (erule_tac x="Result v" in allE)
-        apply (erule_tac x="s'" in allE)
-        apply clarsimp
-      by (smt (z3) Result_eq_Result Result_neq_Exn case_exception_or_result_Result)
+      apply (erule_tac x="Result v" in allE)
+      apply (erule_tac x="s'" in allE)
+      apply clarsimp
+      subgoal premises prems for v'
+      proof -
+        from prems
+        have "R' (hmem s') v (shuffle v') "
+          by auto
+        with prems show ?thesis
+          apply -
+          apply (rule exI [where x="Result (shuffle v')"])
+          by (smt (verit, best) Exception_eq_Result Exn_def case_exception_or_result_Result
+              default_option_def map_exn_simps(2) option.simps(3))
+      qed
+      done
     done
   done
 
@@ -4388,10 +4489,9 @@ lemma refines_rel_stack_shuffle_no_exit:
     subgoal for v
         apply (erule_tac x="Result v" in allE)
         apply (erule_tac x="s'" in allE)
-        apply clarsimp
-        by (smt (z3) Result_eq_Result Result_neq_Exn case_exception_or_result_Result)
-      done
+      by fastforce
     done
+  done
 
 lemma L2_call_rel_stack_bare': 
   assumes f: "refines f g s t
@@ -4472,8 +4572,8 @@ lemma L2_call_rel_stack_bare_retype_unreachable_exit_extend_modifies':
       apply (erule_tac x="Result v" in allE)
       apply (erule_tac x=s' in allE)
       apply (clarsimp simp add: Exn_def [symmetric] default_option_def)
-      by (smt (z3) case_xval_simps(2) equal_upto_mono map_exn_simps(2) 
-          order_eq_refl sup_mono)
+      by (metis (no_types, opaque_lifting) dual_order.refl equal_upto_mono map_exn_simps(2)
+          sup.mono)
     done
   done
 

@@ -13,21 +13,19 @@ declare sep_conj_ac [simp add]
 
 install_C_file "breakcontinue.c"
 
-context breakcontinue_simpl
-begin
-
 thm f_body_def
 thm g_body_def
 thm h_body_def
 thm i_body_def
 thm dotest_body_def
-end
 
-context h_impl
+
+context breakcontinue_global_addresses
 begin
+unbundle h_variables
 term "\<lbrace> -10 <=s \<acute>e & \<acute>e <s 0 \<rbrace>"
-end
-lemma (in h_impl) h:
+
+lemma h:
   "\<Gamma> \<turnstile> \<lbrace> -10 <=s \<acute>e & \<acute>e <s 0 \<rbrace>
   \<acute>ret' :== PROC h(\<acute>e)
   \<lbrace> \<acute>ret' = \<acute>e \<rbrace>"
@@ -68,9 +66,12 @@ apply (rule HoarePartialDef.While)
 apply vcg
 apply (simp add: subset_iff)
 done
+end
 
-(* another example where vcg fails, generating impossible sub-goals *)
-lemma (in dotest_impl) dotest:
+context breakcontinue_global_addresses
+begin
+unbundle dotest_variables
+lemma dotest:
   "\<Gamma> \<turnstile> \<lbrace> \<acute>x = 4 \<rbrace> \<acute>ret' :== PROC dotest(\<acute>x)
        \<lbrace> \<acute>ret' = 4 \<rbrace>"
 apply (hoare_rule HoarePartial.ProcNoRec1)
@@ -89,4 +90,5 @@ apply (hoare_rule HoarePartial.Catch [where R="\<lbrace> \<acute>ret' = 4 & is_l
 apply (vcg, simp)
 done
 
+end
 end

@@ -193,9 +193,22 @@ thm IOcorres_refines_conv
 thm ac_corres_chain_sims
 end
 
+declare [[c_parser_assume_fnspec=false]]
 install_C_file "in_out_parameters.c"
 
+text \<open>\<close>
+thm globals.frame_def
+term t_hrs_'
+lemma "state_' (globals.frame A t s) = state_' s"
+  apply (cases s)
+  apply (simp add: globals.frame_def)
+  done
 
+lemma "t_hrs_' s = t_hrs_' s' \<Longrightarrow> t_hrs_' (globals.frame A t s) = t_hrs_' (globals.frame A t s')"
+  apply (cases s)
+  apply (cases s')
+  apply (simp add: globals.frame_def)
+  done
 subsection \<open>Options\<close>
 
 text \<open>
@@ -266,7 +279,7 @@ init-autocorres [ in_out_parameters =
     call_deref_ptr_glob_pair() and
     uinc(p:in_out) and
     udec(p:in_out) and
-    call_unop() for p("in_out"); and
+    call_unop() for p("in_out");  and
     call_binop() for p("keep*", "keep*"); and
     f_empty1(p:"in_out") and
     f_empty2(p:"in_out") and
@@ -274,7 +287,6 @@ init-autocorres [ in_out_parameters =
     method_in_out_fun_ptr_specs = 
       object.unop("keep*") and
       object.binop(data, data),
-
     in_out_globals =
       keep_inc_global_array
       inc_global_array
@@ -306,50 +318,6 @@ lemma "typ_uinfo_t TYPE(32 signed word[3]) = typ_uinfo_t (TYPE(32 word[3])))"
    ]"in_out_parameters.c"
 
 text \<open>\<close>
-
-autocorres [ts_force option = fnc1] "in_out_parameters.c"
-
-
-context includes in_out_parameters_wa_impl_corres
-begin
-thm fun_ptr_intros
-term "\<P>_io_ptr_to_unsigned___unsigned"
-end
-
-context includes in_out_parameters_ts_impl_corres
-begin
-thm fun_ptr_intros
-thm known_function
-thm known_function_corres
-end
-
-context in_out_parameters_hl_corres
-begin
-thm known_function
-thm known_function_corres
-end
-
-context in_out_parameters_wa_corres
-begin
-thm known_function
-thm known_function_corres
-end
-context in_out_parameters_ts_corres
-begin
-thm known_function
-thm known_function_corres
-end
-context in_out_parameters_l2_corres
-begin
-thm known_function
-thm known_function_corres
-end
-
-context in_out_parameters_io_corres
-begin
-thm known_function
-thm known_function_corres
-end
 
 
 text \<open>In option \<open>in_out_parameters\<close> you provide a parameter specification for the functions
@@ -395,15 +363,16 @@ lemma gobal_array_contained2[polish]:
 
 end
 
-autocorres  [
+autocorres  [no_body = f_empty1,
     (* base_locale=keep_globals *) (* experimental *)
-    ts_force nondet = shuffle] "in_out_parameters.c"
+    ts_force nondet = shuffle, ts_force option = fnc1] "in_out_parameters.c"
 
-context in_out_parameters_all_corres
+context in_out_parameters_global_addresses
 begin
 
 thm io_corres
 thm ts_def
+thm io_def
 term ptr_valid
 subsubsection \<open>\<^const>\<open>inc'\<close>\<close>
 
@@ -764,7 +733,7 @@ text \<open>In a case where a pointer is not used to access the heap (e.g., \<op
 
   Future work: Automate this analysis to infer which pointer-parameters are treated as pure data.
   \<close>
-context io_corres_set_void begin
+context in_out_parameters_global_addresses begin
 
 lemma "distinct_sets ([]::addr set list)
   \<comment> \<open>should be able to get rid of this assumption, too (for multiple parameters)\<close> \<Longrightarrow>
@@ -774,10 +743,10 @@ refines (l2_set_void' p) (io_set_void' p) s t
    (rel_xval_stack (rel_exit (\<lambda>_ _ _. False)) (\<lambda>_. (=))))"
   by (rule io_set_void'_corres)
 end
-context io_corres_set_void2 begin
+context in_out_parameters_global_addresses begin
 thm io_set_void2'_corres
 end
-context io_corres_set_byte begin
+context in_out_parameters_global_addresses begin
 thm io_set_byte'_corres
 end
 

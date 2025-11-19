@@ -14,12 +14,10 @@ theory nested_struct imports "AutoCorres2_Main.AutoCorres_Main" begin
 install_C_file "nested_struct.c"
 
 autocorres "nested_struct.c"
-context nested_struct_all_impl 
-begin
-thm f'_def test'_def g'_def g1'_def
-end
 
-lemma (in ts_definition_test) "ptr_valid (heap_typing s) p1 \<Longrightarrow> ptr_valid (heap_typing s) p2 \<Longrightarrow>
+thm f'_def test'_def g'_def g1'_def
+
+lemma "ptr_valid (heap_typing s) p1 \<Longrightarrow> ptr_valid (heap_typing s) p2 \<Longrightarrow>
          test' p1 p2 \<bullet> s
        \<lbrace> \<lambda>_ s. num_C.n_C (point1_C.x_C (heap_point1_C s p1)) =
                  index (point2_C.n_C (heap_point2_C s p2)) 0 \<rbrace>"
@@ -28,7 +26,7 @@ lemma (in ts_definition_test) "ptr_valid (heap_typing s) p1 \<Longrightarrow> pt
   done
 
 
-lemma (in ts_definition_g) "ptr_valid (heap_typing h) s \<Longrightarrow>
+lemma "ptr_valid (heap_typing h) s \<Longrightarrow>
              s1_C.x_C (index (s2_C.x_C (s3_C.x_C (index (s4_C.x_C (heap_s4_C h s)) 0))) 0) = v \<Longrightarrow>
          g' s \<bullet> h
        \<lbrace> \<lambda>_ h. index (s4_C.x_C (heap_s4_C h s)) 0 = index (s4_C.x_C (heap_s4_C h s)) 1 \<and>

@@ -13,7 +13,7 @@ sig
 
 datatype valpath = idx of int | fld of string
 type cty = int Absyn.ctype
-type senv = (string * (CType.rcd_kind * (string * (cty * CType.attribute list)) list * Region.t * CType.attribute list)) list
+type senv = (string * (CType.rcd_kind * (string RegionExtras.wrap * (cty * CType.attribute list)) list * Region.t * CType.attribute list)) list
 
 val type_at_path : cty -> senv -> valpath list -> cty
 
@@ -36,7 +36,7 @@ struct
 open Absyn Basics
 datatype valpath = idx of int | fld of string
 type cty = int Absyn.ctype
-type senv = (string * (CType.rcd_kind * (string * (cty * CType.attribute list)) list * Region.t * CType.attribute list)) list
+type senv = (string * (CType.rcd_kind * (string wrap * (cty * CType.attribute list)) list * Region.t * CType.attribute list)) list
 
 fun vpname (idx i) = "["^Int.toString i^"]"
   | vpname (fld s) = "." ^ s
@@ -49,20 +49,20 @@ fun get_fields (senv: senv) snm =
       NONE => raise Fail ("get_fields: no struct called "^snm)
     | SOME (kind, flds, _, _) => flds
 
-fun get_fld_type senv (snm, fldname) =
-    case AList.lookup (op =) (get_fields senv snm) fldname of
+fun get_fld_type (senv:senv) (snm, fldname) =
+    case AList.lookup eq_wrap (get_fields senv snm) fldname of
       NONE => raise Fail ("get_fld_type: no field "^fldname^" in "^snm)
     | SOME (ty, _) => ty
 
 fun get_next_field e list =
     case list of
       [] => NONE
-    | (e',_) :: t => if e' = e then
+    | (e',_) :: t => if node e' = e then
                        case t of [] => NONE
-                               | (e'', _) :: _ => SOME e''
+                               | (e'', _) :: _ => SOME (node e'')
                      else get_next_field e t
 
-fun type_at_path rootty senv pth =
+fun type_at_path rootty (senv:senv) pth =
     case pth of
       [] => rootty
     | idx i :: rest => let
@@ -82,6 +82,7 @@ fun type_at_path rootty senv pth =
       in
         case rootty of
           StructTy snm => type_at_path (get_fld_type senv (snm, s)) senv rest
+        | UnionTy unm => type_at_path (get_fld_type senv (unm, s)) senv rest
         | _ => raise Fail ("type_at_path: bad type ("^tyname rootty^
                            ") for field "^s)
       end
@@ -95,7 +96,7 @@ fun extend_to_leaf rootty senv pth =
       val (hdfld, hdty) = case flds of
                             [] => raise Fail ("extend_to_leaf: struct "^snm^
                                               " has no fields")
-                          | (n, (ty, _))::_ => (n, ty)
+                          | (n, (ty, _))::_ => (node n, ty)
     in
       pth @ [fld hdfld] @ extend_to_leaf hdty senv []
     end
@@ -107,6 +108,11 @@ fun bump_path ty_above senv el =
                                      else NONE
     | (StructTy snm, fld f) => let
         val flds = get_fields senv snm
+      in
+        Option.map fld (get_next_field f flds)
+      end
+    | (UnionTy unm, fld f) => let
+        val flds = get_fields senv unm
       in
         Option.map fld (get_next_field f flds)
       end

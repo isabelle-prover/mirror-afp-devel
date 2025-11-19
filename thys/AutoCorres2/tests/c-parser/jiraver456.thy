@@ -12,8 +12,6 @@ begin
 
 install_C_file "jiraver456.c"
 
-context jiraver456_simpl
-begin
 
 thm f0_body_def
 thm f1_body_def
@@ -34,8 +32,5 @@ val f = count @{const Div_0};
    orelse
    error "FAIL"
 \<close>
-
-
-end
 
 end

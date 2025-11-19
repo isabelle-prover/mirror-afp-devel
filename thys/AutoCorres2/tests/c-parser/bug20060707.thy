@@ -11,11 +11,7 @@ begin
 
 install_C_file "bug20060707.c"
 
-context bug20060707_simpl
-begin
-
   thm f_body_def
   thm f_invs_body_def
-end
 
 end

@@ -221,6 +221,9 @@ lemma ptr_val_inj [simp]:
   "(ptr_val p = ptr_val q) = (p = q)"
   by (cases p, cases q) auto
 
+lemma ptr_eq_iff: "(p = q) = (ptr_val p = ptr_val q)"
+  by (rule ptr_val_inj[symmetric])
+
 lemma ptr_coerce_NULL [simp]:
   "(ptr_coerce p = NULL) = (p = NULL)"
   by (cases p) simp

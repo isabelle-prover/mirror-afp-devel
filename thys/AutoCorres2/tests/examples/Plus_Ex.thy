@@ -14,8 +14,6 @@ begin
 install_C_file "plus.c"
 autocorres [ts_force nondet = plus2] "plus.c"
 
-context ts_definition_plus begin
-
 thm plus'_def
 (* 3 + 2 should be 5 *)
 lemma "plus' 3 2 = 5"
@@ -28,19 +26,17 @@ lemma plus_correct: "plus' a b = a + b"
   apply (rule refl)
   done
 
-end
 
 (* Compare pre-lifting to post-lifting *)
-context plus_all_corres 
-begin
+
 thm plus2_body_def
 thm plus2'_def
-end
+
 
 lemmas runs_to_whileLoop2 =  runs_to_whileLoop_res' [split_tuple C and B arity: 2]
 
 (* plus2 does what it says on the box *)
-lemma (in ts_definition_plus2) plus2_correct: "plus2' a b \<bullet> s \<lbrace> \<lambda>r s. r = Result (a + b)\<rbrace>"
+lemma plus2_correct: "plus2' a b \<bullet> s \<lbrace> \<lambda>r s. r = Result (a + b)\<rbrace>"
   unfolding plus2'_def
   apply (runs_to_vcg)
   apply (rule runs_to_whileLoop2 [
@@ -49,14 +45,14 @@ lemma (in ts_definition_plus2) plus2_correct: "plus2' a b \<bullet> s \<lbrace> 
      by (auto simp: not_less measure_unat)
 
 (* plus2 does what it says on plus's box *)
-lemma (in plus_all_impl) plus2_is_plus: "plus2' a b \<bullet> s\<lbrace> \<lambda>r s. r = Result (plus' a b )\<rbrace>"
+lemma plus2_is_plus: "plus2' a b \<bullet> s\<lbrace> \<lambda>r s. r = Result (plus' a b )\<rbrace>"
   unfolding plus'_def
   supply plus2_correct[runs_to_vcg]
   apply runs_to_vcg
   done
 
 (* Prove plus2 with no failure *)
-lemma (in ts_definition_plus2) plus2_valid:"plus2' a b \<bullet> s \<lbrace> \<lambda>r s. r = Result (a + b) \<rbrace>"
+lemma plus2_valid:"plus2' a b \<bullet> s \<lbrace> \<lambda>r s. r = Result (a + b) \<rbrace>"
   unfolding plus2'_def
   apply (runs_to_vcg)
   apply (rule runs_to_whileLoop2 [

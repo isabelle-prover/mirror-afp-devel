@@ -5,89 +5,20 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *)
 
-structure ExprDatatype =
-struct
-
-type numliteral_info =
-     {value: IntInf.int, suffix : string, base : StringCvt.radix}
-     (* use of IntInf makes no difference in Poly, but is useful in mlton *)
-
-type 'a wrap = 'a RegionExtras.wrap
-type 'a ctype = 'a CType.ctype
-
-datatype literalconstant_node =
-         NUMCONST of numliteral_info
-       | STRING_LIT of string
-type literalconstant = literalconstant_node wrap
-
-datatype binoptype =
-         LogOr | LogAnd | Equals | NotEquals | BitwiseAnd | BitwiseOr
-       | BitwiseXOr
-       | Lt | Gt | Leq | Geq | Plus | Minus | Times | Divides | Modulus
-       | RShift | LShift
-
-datatype unoptype = Negate | Not | Addr | BitNegate
-datatype modifiertype = Plus_Plus | Minus_Minus
-
-type var_info = (int CType.ctype * more_info) option Unsynchronized.ref
-
-fun map_more_info f x =
-  case !x of
-    SOME (ty, info) => Unsynchronized.ref (SOME (ty, f info))
-  | NONE => Unsynchronized.ref NONE
-
-fun var_info_ord (v1, v2) = option_ord (prod_ord (CType.ctype_ord int_ord) more_info_ord) (!v1, !v2)
-
-datatype expr_node =
-         BinOp of binoptype * expr * expr
-       | UnOp of unoptype * expr
-       | PostOp of expr * modifiertype
-       | CondExp of expr * expr * expr
-       | Constant of literalconstant
-       | Var of string * var_info
-       | StructDot of expr * string
-       | ArrayDeref of expr * expr
-       | Deref of expr
-       | TypeCast of expr ctype wrap * expr
-       | Sizeof of expr
-       | SizeofTy of expr ctype wrap
-       | EFnCall of expr * expr list
-       | CompLiteral of expr ctype * (designator list * initializer) list
-       | Arbitrary of expr ctype
-       | MKBOOL of expr
-       | OffsetOf of expr ctype wrap * string list
-and expr = E of expr_node wrap
-and initializer =
-    InitE of expr
-  | InitList of (designator list * initializer) list
-and designator =
-    DesignE of expr
-  | DesignFld of string
-
-datatype ecenv =
-         CE of {enumenv : (IntInf.int * string option) Symtab.table,
-                          (* lookup is from econst name to value and the
-                             name of the type it belongs to, if any
-                             (they can be anonymous) *)
-                typing : expr -> int ctype,
-                structsize : string -> (int * bool),
-                offset_of: string -> string list -> int}
-
-end (* struct *)
 
 signature EXPR =
 sig
 
-  datatype binoptype = datatype ExprDatatype.binoptype
-  datatype unoptype = datatype ExprDatatype.unoptype
-  datatype modifiertype = datatype ExprDatatype.modifiertype
-  datatype expr_node = datatype ExprDatatype.expr_node
-  datatype initializer = datatype ExprDatatype.initializer
-  datatype designator = datatype ExprDatatype.designator
-  datatype literalconstant_node = datatype ExprDatatype.literalconstant_node
+  datatype binoptype = datatype AstDatatype.binoptype
+  datatype unoptype = datatype AstDatatype.unoptype
+  datatype modifiertype = datatype AstDatatype.modifiertype
+  datatype expr_node = datatype AstDatatype.expr_node
+  datatype initializer = datatype AstDatatype.initializer
+  datatype designator = datatype AstDatatype.designator
+  datatype literalconstant_node = datatype AstDatatype.literalconstant_node
   type expr
-  type numliteral_info = ExprDatatype.numliteral_info
-  type literalconstant = ExprDatatype.literalconstant
+  type numliteral_info = AstDatatype.numliteral_info
+  type literalconstant = AstDatatype.literalconstant
 
   val unopname : unoptype -> string
   val unop_ord : unoptype * unoptype -> order
@@ -96,8 +27,8 @@ sig
   val binop_ord : binoptype * binoptype -> order
   val expr_string : expr -> string
 
-  val numconst_type : numliteral_info -> 'a CType.ctype (* can raise Subscript *)
-  val eval_litconst : Proof.context -> literalconstant -> IntInf.int * 'a CType.ctype
+  val numconst_type : numliteral_info -> int CType.ctype (* can raise Subscript *)
+  val eval_litconst : Proof.context -> literalconstant -> IntInf.int * int CType.ctype
 
   val enode : expr -> expr_node
   val eleft : expr -> SourcePos.t
@@ -112,22 +43,45 @@ sig
   val eneeds_sc_protection : expr -> bool
 
   val expr_int : IntInf.int -> expr
+  val expr_int': SourcePos.t -> SourcePos.t -> int -> AstDatatype.expr
   val eval_binop : Proof.context ->
       (SourcePos.t * SourcePos.t) ->
-      binoptype * (IntInf.int * 'a CType.ctype) * (IntInf.int * 'a CType.ctype) ->
-      IntInf.int * 'a CType.ctype
+      binoptype * (IntInf.int * int CType.ctype) * (IntInf.int * int CType.ctype) ->
+      IntInf.int * int CType.ctype
 
 
-  datatype ecenv = datatype ExprDatatype.ecenv (* "enumerated constant environment" *)
+  datatype ecenv = datatype AstDatatype.ecenv (* "enumerated constant environment" *)
   val eclookup : ecenv -> string -> (IntInf.int * string option) option
   val constify_abtype : bool -> Proof.context -> ecenv -> expr CType.ctype -> int CType.ctype
   val consteval : bool -> Proof.context -> ecenv -> expr -> IntInf.int
 
   val fun_of_var_expr: expr -> string option
-  val vars_expr: {typ:bool, addr:bool, post_op:bool} -> expr -> (string * ExprDatatype.var_info) list
+  val vars_expr: {typ:bool, addr:bool, pre_op:bool, post_op:bool} -> expr -> (string * AstDatatype.var_info) list
 
-  val map_var: ((string *  ExprDatatype.var_info) -> (string *  ExprDatatype.var_info)) -> expr_node -> expr_node
+  datatype selector = datatype AstDatatype.selector
+  val norm_index: selector -> selector
+  val selector_ord: selector * selector -> order
+  val selectors_ord: selector list * selector list -> order
+  val ctype_selectors_ord: (int CType.ctype * selector list) * (int CType.ctype * selector list) -> order
+  structure CTypeSelectorsTab: TABLE
+
+
+  datatype more_info = datatype AstDatatype.more_info
+  type var_info = AstDatatype.var_info
+
+  val more_info_ord: more_info * more_info -> order
+  val get_init: more_info -> bool option
+  val map_init: (bool -> bool) -> 
+     {fname: string option, init: bool, kind: variable_kind, munge: MString.t, owned_by: string option} ->
+     {fname: string option, init: bool, kind: variable_kind, munge: MString.t, owned_by: string option}
+  val map_munged_var:  
+    ({fname: string option, init: bool, kind: variable_kind, munge: MString.t, owned_by: string option} ->
+     {fname: string option, init: bool, kind: variable_kind, munge: MString.t, owned_by: string option})-> 
+    more_info -> more_info
+
+  val map_var: ((string *  AstDatatype.var_info) -> (string *  AstDatatype.var_info)) -> expr_node -> expr_node
   val map_enode: (expr_node -> expr_node) -> expr -> expr
+  val map_origin:  (AstDatatype.expr_origin -> AstDatatype.expr_origin) -> expr -> expr
 
   val dest_post_op: expr -> (expr * modifiertype) option
   val dest_post_op': expr_node -> (expr * modifiertype) option
@@ -137,14 +91,18 @@ sig
        (int CType.ctype *
         {fname: string option,
          init: bool,
-         munge: MString.t, owned_by: string option, global: bool})
+         munge: MString.t, owned_by: string option, kind: variable_kind})
       )
       option
-  val extract_post_ops: Proof.context -> expr -> expr * expr_node (* PostOp *) list
+
+  val extract_pre_post_effects: Proof.context -> expr -> expr * expr_node list (* Pre-ops *) * expr_node (* PostOp *) list
+  val has_post_effects: Proof.context -> expr -> bool
 
   val boglit: int -> literalconstant_node RegionExtras.wrap
   val bogint: int -> expr
-  val from_int_ctype: int CType.ctype -> expr CType.ctype     
+  val from_int_ctype: int CType.ctype -> expr CType.ctype  
+
+  val check_pure_ground_expression: Proof.context -> AstDatatype.expr -> unit   
 end
 
 structure Expr : EXPR =
@@ -152,7 +110,44 @@ struct
 
 open RegionExtras
 open CType
-open ExprDatatype
+open AstDatatype
+
+fun abs_unsigned_bits (n : int) : int =
+    let
+        val num_abs = Int.abs(n)
+        fun count value bits =
+            if value = 0 then bits
+            else count (value div 2)  (bits + 1)
+    in
+        if num_abs = 0 then 1
+        else count num_abs 0
+    end
+
+fun required_bits (n : int) =
+    let
+        val u_bits = abs_unsigned_bits(n)
+        (*    Signed bits depend on whether the number is positive or negative.
+         *    We need to find the smallest `k` such that `n` fits in the range
+         *    of a k-bit two's complement integer: [-2^(k-1), 2^(k-1) - 1].
+         *)
+        val s_bits =
+            if n = 0 then
+                (* 0 can be represented by a single bit: `0`. Range for 1 bit is [-1, 0]. *)
+                1
+            else if n > 0 then
+                (* For a positive number, we need a '0' sign bit plus the bits
+                 * for the magnitude. E.g., 7 is `111` (3 bits), but signed is
+                 * `0111` (4 bits). This is `abs_unsigned_bits(n) + 1`. *)
+                u_bits + 1
+            else (* n < 0 *)
+                (* For a negative number `n`, the requirement is that abs(n) <= 2^(k-1).
+                 * This is equivalent to needing `abs_unsigned_bits(abs(n) - 1)` bits for
+                 * the magnitude part. E.g., for -8, we need abs(n)-1=7.
+                 * abs_unsigned_bits(7) is 3. So we need 3+1=4 bits. *)
+                abs_unsigned_bits(~n - 1) + 1
+    in
+        {unsigned = u_bits, signed = s_bits}
+    end
 
 (* can raise Subscript *)
 fun numconst_type {value,base,suffix} = let
@@ -162,6 +157,8 @@ fun numconst_type {value,base,suffix} = let
                  String.isSuffix "ll" suffix
   val suffixL = (String.isPrefix "l" suffix orelse
                  String.isSuffix "l" suffix)
+  val suffixWB = String.isPrefix "wb" suffix orelse
+                 String.isSuffix "wb" suffix
   val type_index = if suffixLL then 4 else if suffixL then 2 else 0
   (* where to start looking in the typesequence *)
   val typesequence = [Signed Int, Unsigned Int,
@@ -171,7 +168,11 @@ fun numconst_type {value,base,suffix} = let
   fun search i = let
     val candidate = List.nth(typesequence, i)
   in
-    if suffixU andalso is_signed candidate then search (i + 1)
+    if suffixWB then
+      let
+        val {unsigned, signed} = required_bits value
+      in if suffixU then Unsigned (BitInt unsigned) else Signed (BitInt signed) end
+    else if suffixU andalso is_signed candidate then search (i + 1)
     else if base = StringCvt.DEC andalso not suffixU andalso
             not (is_signed candidate)
     then search (i + 1)
@@ -226,13 +227,12 @@ val binop_ord = inv_img_ord binopname string_ord
 type var_info = (int ctype * more_info) option Unsynchronized.ref
 
 
-fun eleft (E w) = the (Region.left (Region.Wrap.region w))
-    handle Option => bogus
-fun eright (E w) = the (Region.right (Region.Wrap.region w))
-    handle Option => bogus
-fun enode (E w) = node w
+val eleft = AstDatatype.eleft
+val eright = AstDatatype.eright
+val enode = AstDatatype.enode
 fun eregion (E w) = Region.Wrap.region w
-fun ewrap (n, l, r) = E (wrap(n,l,r))
+val ewrap = AstDatatype.ewrap
+
 fun ebogwrap en = E (bogwrap en)
 fun eFail ctxt (e, s) = Feedback.error_region ctxt (eregion e) s
 
@@ -262,12 +262,16 @@ fun is_number e =
     | _ => false
 
 fun sint i = {value = i, suffix = "", base = StringCvt.DEC}
+
+fun expr_int' l r i = ewrap (Constant (RegionExtras.wrap (NUMCONST (sint i), l, r)), l, r)
 fun expr_int i = ebogwrap (Constant (bogwrap (NUMCONST (sint i))))
 
 fun expr_string e =
     case enode e of
       BinOp _ => "BinOp"
     | UnOp _ => "UnOp"
+    | PostOp _ => "PostOp"
+    | PreOp _ => "PreOp"
     | CondExp _ => "CondExp"
     | Constant _ => "Constant"
     | Var(nm, _) => "Var" ^ nm
@@ -282,6 +286,8 @@ fun expr_string e =
     | Arbitrary _ => "Arbitrary"
     | MKBOOL _ => "MKBOOL"
     | OffsetOf _ => "OffsetOf"
+    | AssignE _ => "AssignE"
+    | StmtExpr _ => "StmtExpr"
     | _ => "[whoa! Unknown expr type]"
 
 fun radn r = let
@@ -314,9 +320,23 @@ fun vi_ord((s1,vi1 : var_info), (s2,vi2)) =
     case string_ord(s1, s2) of
         EQUAL =>
         if vi1 = vi2 then EQUAL
-        else option_ord (inv_img_ord #1 (ctype_ord int_ord))
+        else option_ord (inv_img_ord #1 (ctype_ord int_ord I))
                             (!vi1, !vi2)
       | x => x
+
+fun call_origin_ord (Statement, Statement) = EQUAL
+  | call_origin_ord (Expression, Expression) = EQUAL
+  | call_origin_ord (Statement, Expression) = LESS
+  | call_origin_ord (Expression, Statement) = GREATER
+
+fun boglit i = bogwrap(NUMCONST {value = i, base = StringCvt.DEC, suffix = ""})
+fun bogint i = ebogwrap (Constant (boglit i))
+
+fun int_of_bogint (x:expr) =
+ case enode x of
+   Constant lit => (case node lit of NUMCONST {value, ...} => value
+                   | _ => error ("int_of_boing unexpected: " ^ @{make_string} x))
+ | _ => error ("int_of_boing unexpected: " ^ @{make_string} x)
 
 (* ignores location information *)
 fun expr_ord (e1,e2) =
@@ -340,20 +360,20 @@ fun expr_ord (e1,e2) =
               prod_ord expr_ord  expr_ord (p1,p2)
             | (Deref e1, Deref e2) => expr_ord (e1, e2)
             | (TypeCast p1, TypeCast p2) =>
-              prod_ord (inv_img_ord node (ctype_ord expr_ord)) expr_ord
+              prod_ord (inv_img_ord node (ctype_ord expr_ord int_of_bogint)) expr_ord
                            (p1, p2)
             | (Sizeof e1, Sizeof e2) => expr_ord (e1, e2)
             | (SizeofTy ty1, SizeofTy ty2) =>
-              inv_img_ord node (ctype_ord expr_ord) (ty1, ty2)
-            | (EFnCall(e1, elist1), EFnCall(e2, elist2)) =>
-              list_ord expr_ord (e1::elist1, e2::elist2)
+              inv_img_ord node (ctype_ord expr_ord int_of_bogint) (ty1, ty2)
+            | (EFnCall(o1, e1, elist1), EFnCall(o2, e2, elist2)) =>
+              prod_ord call_origin_ord (list_ord expr_ord) ((o1, (e1::elist1)), (o2, (e2::elist2)))
             | (CompLiteral p1, CompLiteral p2) =>
-              prod_ord (ctype_ord expr_ord) (list_ord (prod_ord (list_ord d_cmp) i_cmp))
+              prod_ord (ctype_ord expr_ord int_of_bogint) (list_ord (prod_ord (list_ord d_cmp) i_cmp))
                            (p1, p2)
-            | (Arbitrary ty1, Arbitrary ty2) => ctype_ord expr_ord (ty1, ty2)
+            | (Arbitrary ty1, Arbitrary ty2) => ctype_ord expr_ord int_of_bogint (ty1, ty2)
             | (MKBOOL e1, MKBOOL e2) => expr_ord (e1, e2)
             | (OffsetOf p1, OffsetOf p2) =>
-              prod_ord (inv_img_ord node (ctype_ord expr_ord)) (list_ord string_ord) (p1, p2)
+              prod_ord (inv_img_ord node (ctype_ord expr_ord int_of_bogint)) (list_ord string_ord) (p1, p2)
             | _ => raise Fail ("expr_compare: can't happen: " ^ expr_string e1)
         end
       | x => x
@@ -506,6 +526,7 @@ in
                ") in consteval")
 end
 and consteval report_error ctxt ecenv e = #1 (consteval0 report_error ctxt ecenv e)
+and const_inttype report_error ctxt ecenv t = BaseCTypes.map_bitint (consteval report_error ctxt ecenv) t
 and constify_abtype report_error ctxt (ecenv as CE {enumenv, typing, structsize, offset_of}) (ty : expr ctype): int ctype = let
   fun recurse ty =
       case ty of
@@ -513,9 +534,9 @@ and constify_abtype report_error ctxt (ecenv as CE {enumenv, typing, structsize,
                                        SOME (IntInf.toInt (consteval report_error ctxt ecenv sz)))
       | Array (ty0, NONE) => Array(recurse ty0, NONE)
       | Ptr ty => Ptr (recurse ty)
-      | Signed x => Signed x
+      | Signed x => Signed (const_inttype report_error ctxt ecenv x)
       | PlainChar => PlainChar
-      | Unsigned x => Unsigned x
+      | Unsigned x => Unsigned (const_inttype report_error ctxt ecenv x)
       | StructTy s => StructTy s
       | UnionTy u => UnionTy u
       | EnumTy x => EnumTy x
@@ -574,11 +595,12 @@ fun fun_of_var_expr (E w) = case node w of
  | _ => NONE
 
 
-fun vars_node (t as {typ, addr, post_op}) e =
+fun vars_node (t as {typ, addr, pre_op, post_op}) e =
   case e of
     BinOp (bop, e1, e2) => vars_expr t e1 @ vars_expr t e2
   | UnOp (uop, e1) => if not addr andalso uop = Addr then [] else vars_expr t e1
   | PostOp (e, _) => if post_op then vars_expr t e else []
+  | PreOp (e, _) => if pre_op then vars_expr t e else []
   | CondExp (e1, e2, e3) => vars_expr t e1 @ vars_expr t e2 @ vars_expr t e3
   | Constant _ => []
   | Var (n, info) => [(n, info)]
@@ -588,7 +610,7 @@ fun vars_node (t as {typ, addr, post_op}) e =
   | TypeCast (T, e1) => vars_type t (node T) @ vars_expr t e1
   | Sizeof e1 => if typ then vars_expr t e1 else []
   | SizeofTy T => vars_type t (node T)
-  | EFnCall (e, es) => vars_expr t e @ flat (map (vars_expr t) es)
+  | EFnCall (_, e, es) => vars_expr t e @ flat (map (vars_expr t) es)
   | CompLiteral (T, dis) =>
        vars_type t T @ flat (map (fn (d, i) => flat (map (vars_designator t) d) @ vars_initializer t i) dis)
   | Arbitrary T => vars_type t T
@@ -603,7 +625,7 @@ and vars_designator t d =
   case d of
     DesignE e1 => vars_expr t e1
   | DesignFld _ => []
-and vars_type (t as {typ, addr, post_op}) T = if not typ then [] else
+and vars_type (t as {typ, addr, pre_op, post_op}) T = if not typ then [] else
   (case T of
     TypeOf e => vars_expr t e
   | Ptr T1 => vars_type t T1
@@ -634,7 +656,10 @@ fun dest_var (name:string, more_info_ref:(int CType.ctype * more_info) option Un
     SOME (ty, MungedVar x) => SOME (name, (ty, x))
   | _ => NONE
 
-fun extract_post_ops ctxt e =
+fun split_list3 [] =  ([], [], [])
+  | split_list3 ((x, y, z)::ts) = let val (xs, ys, zs) = split_list3 ts in (x::xs, y::ys, z::zs) end
+
+fun extract_pre_post_effects ctxt e =
   let
     val l = eleft e
     val r = eright e
@@ -643,81 +668,99 @@ fun extract_post_ops ctxt e =
     case enode e of
       PostOp (e1, m) => 
         let 
-          val (e1', ops) = extract_post_ops ctxt e1
-        in (e1', PostOp (e1', m)::ops) end
+          val (e1', pre_ops, post_ops) = extract_pre_post_effects ctxt e1
+        in (e1', pre_ops, PostOp (e1', m)::post_ops) end
+    | PreOp (e1, m) => 
+        let 
+          val (e1', pre_ops, post_ops) = extract_pre_post_effects ctxt e1
+        in (e1', PostOp (e1', m)::pre_ops, post_ops) end
+    | AssignE (origin, e1, e2) =>
+        let
+          val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+          val (e2', pre_ops2, post_ops2) = extract_pre_post_effects ctxt e2
+        in
+          (e1', pre_ops1 @ pre_ops2 @ [AssignE (origin, e1', e2')], post_ops1 @ post_ops2)
+        end
     | UnOp (uop, e1) => 
         let 
-          val (e1', ops) = extract_post_ops ctxt e1
-        in (w(UnOp(uop, e1')), ops) end
+          val (e1', pre_ops, post_ops) = extract_pre_post_effects ctxt e1
+        in (w(UnOp(uop, e1')), pre_ops, post_ops) end
     | BinOp (bop, e1, e2) => 
         let 
-          val (e1', ops1) = extract_post_ops ctxt e1
-          val (e2', ops2) = extract_post_ops ctxt e2
+          val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+          val (e2', pre_ops2, post_ops2) = extract_pre_post_effects ctxt e2
           val _ = not (member (op = ) [LogOr, LogAnd] bop) orelse
-               (null ops2 orelse Feedback.error_range ctxt (eleft e2) (eright e2) 
-                 "post increment / decrement not supported in right hand side of logical operation")
-        in (w(BinOp (bop, e1', e2')), ops1 @ ops2) end
+               (null (pre_ops2 @ post_ops2) orelse Feedback.error_range ctxt (eleft e2) (eright e2) 
+                 "pre-post increment / decrement not supported in right hand side of logical operation")
+        in (w(BinOp (bop, e1', e2')), pre_ops1 @ pre_ops2, post_ops1 @ post_ops2) end
     | CondExp (c, e1, e2) =>
        let 
-         val (c', opsc) = extract_post_ops ctxt c
-         val (_, ops1) = extract_post_ops ctxt e1
-         val (_, ops2) = extract_post_ops ctxt e2
-         val _ = null ops1 orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
-           "post increment / decrement not supported in conditional branch"
-         val _ = null ops2 orelse Feedback.error_range ctxt (eleft e2) (eright e2) 
-           "post increment / decrement not supported in conditional branch"
-       in (w(CondExp(c', e1, e2)), opsc) end
+         val (c', pre_opsc, post_opsc) = extract_pre_post_effects ctxt c
+         val (_, pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+         val (_, pre_ops2, post_ops2) = extract_pre_post_effects ctxt e2
+         val _ = null (pre_ops1 @ post_ops2) orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
+           "pre-post increment / decrement not supported in conditional branch"
+         val _ = null (pre_ops2 @ post_ops2) orelse Feedback.error_range ctxt (eleft e2) (eright e2) 
+           "pre-post increment / decrement not supported in conditional branch"
+       in (w(CondExp(c', e1, e2)), pre_opsc, post_opsc) end
     | StructDot (e1, fld) =>
         let
-           val (e1', ops1) = extract_post_ops ctxt e1
-        in (w(StructDot(e1', fld)), ops1) end
+           val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+        in (w(StructDot(e1', fld)), pre_ops1, post_ops1) end
     | ArrayDeref (e1, e2) => 
          let 
-           val (e1', ops1) = extract_post_ops ctxt e1
-           val (e2', ops2) = extract_post_ops ctxt e2
-         in (w(ArrayDeref(e1', e2')), ops1 @ ops2) end
+           val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+           val (e2', pre_ops2, post_ops2) = extract_pre_post_effects ctxt e2
+         in (w(ArrayDeref(e1', e2')), pre_ops1 @ pre_ops2, post_ops1 @ post_ops2) end
     | Deref (e1) =>
         let
-           val (e1', ops1) = extract_post_ops ctxt e1
-        in (w(Deref(e1')), ops1) end
+           val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+        in (w(Deref(e1')), pre_ops1, post_ops1) end
     | TypeCast (T, e1) =>
         let
-           val (e1', ops1) = extract_post_ops ctxt e1
-        in (w(TypeCast(T, e1')), ops1) end
+           val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+        in (w(TypeCast(T, e1')), pre_ops1, post_ops1) end
     | Sizeof (e1) =>
         let
-          val (e1', ops1) = extract_post_ops ctxt e1
-          val _ = null ops1 orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
-           "post increment / decrement not supported in sizeof expression"          
-        in (w(Sizeof(e1')), ops1) end
-    | EFnCall (e1, es) => 
+          val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+          val _ = null (pre_ops1 @ post_ops1) orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
+           "pre-post increment / decrement not supported in sizeof expression"          
+        in (w(Sizeof(e1')), pre_ops1, post_ops1) end
+    | EFnCall (o1, e1, es) => 
         let
-          val (e1', ops1) = extract_post_ops ctxt e1
-          val (es', ops') = map (extract_post_ops ctxt) es |> split_list 
+          val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+          val (es', pre_ops', post_ops') = map (extract_pre_post_effects ctxt) es |> split_list3 
         in
-           (w (EFnCall(e1', es')), ops1 @ flat ops')
+           (w (EFnCall(o1, e1', es')), pre_ops1 @ flat pre_ops', post_ops1 @ flat post_ops')
         end
     | MKBOOL (e1) =>
         let
-          val (e1', ops1) = extract_post_ops ctxt e1
-          val _ = null ops1 orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
-           "post increment / decrement not supported in conditional branch"          
-        in (w(MKBOOL(e1')), ops1) end
-    | atomic => (e, [])
+          val (e1', pre_ops1, post_ops1) = extract_pre_post_effects ctxt e1
+          val _ = null (pre_ops1 @ post_ops1) orelse Feedback.error_range ctxt (eleft e1) (eright e1) 
+           "pre-post increment / decrement not supported in conditional branch"          
+        in (w(MKBOOL(e1')), pre_ops1, post_ops1) end
+    | StmtExpr _ => Feedback.error_range ctxt (eleft e) (eright e) "extract_pre_post_effects: unexpected StmtExpr"
+    | atomic => (e, [], [])
   end
+
+fun has_post_effects ctxt e =
+  not (null (#3 (extract_pre_post_effects ctxt e)))
 
 fun map_var f (Var x) = Var (f x)
   | map_var _ e = e
 
 fun map_enode f (E x) = E (apnode f x)
- 
-fun boglit i = bogwrap(NUMCONST {value = i, base = StringCvt.DEC, suffix = ""})
-fun bogint i = ebogwrap (Constant (boglit i))
-       
+fun map_origin f = map_enode (fn (EFnCall(origin, e, es)) => (EFnCall(f origin, e, es))
+  | AssignE(origin, e1, e2) => (AssignE (f origin, e1, e2)) 
+  | e => e)
+
+
+fun from_int_inttype (x: int inttype): expr inttype = BaseCTypes.map_bitint bogint x
+
 fun from_int_ctype (ty:int ctype) : expr ctype =
   case ty of                       
-    Signed x => Signed x
-  | Unsigned x => Unsigned x
+    Signed x => Signed (from_int_inttype x)
+  | Unsigned x => Unsigned (from_int_inttype x)
   | Bool => Bool
   | PlainChar => PlainChar
   | StructTy x => StructTy x
@@ -733,5 +776,17 @@ fun from_int_ctype (ty:int ctype) : expr ctype =
   | Void => Void
   | TypeOf i => error "from_int_ctype: TypeOf not supported" 
 
-         
+fun check_pure_ground_expression ctxt e =
+ let
+   val msg1 = "expecting pure ground expression (no side-effects no function calls)"
+   fun check e _ = 
+     case enode e of
+       PostOp _ => Feedback.error_range ctxt (eleft e) (eright e) msg1
+     | EFnCall _ => Feedback.error_range ctxt (eleft e) (eright e) msg1
+     | StmtExpr _ => Feedback.error_range ctxt (eleft e) (eright e) msg1
+     | _ => ()
+   val _ = AstDatatype.fold_expr {types = false} check (K (K ())) e ()
+ in
+   ()
+ end         
 end (* struct *)

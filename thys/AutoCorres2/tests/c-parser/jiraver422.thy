@@ -11,11 +11,6 @@ begin
 
 install_C_file "jiraver422.c"
 
-context jiraver422_simpl
-begin
-
   thm qux_body_def
-
-end
 
 end

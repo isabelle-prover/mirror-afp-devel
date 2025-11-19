@@ -14,8 +14,6 @@ autocorres [
   unsigned_word_abs = usum2, no_signed_word_abs = isum1
   ] "word_abs_options.c"
 
-context word_abs_options_all_impl begin
-
 lemma "isum1' (a :: sword32) (b :: sword32) \<bullet> s ?\<lbrace> \<lambda>r _. r = Result (a + b) \<rbrace>"
   unfolding isum1'_def
   apply runs_to_vcg
@@ -35,7 +33,5 @@ lemma "usum2' (a :: nat) (b :: nat) \<bullet> s ?\<lbrace> \<lambda>r _. r = Res
   unfolding usum2'_def
   apply runs_to_vcg
   done
-
-end
 
 end

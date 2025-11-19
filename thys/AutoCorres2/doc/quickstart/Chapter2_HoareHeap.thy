@@ -43,7 +43,7 @@ text \<open>
 install_C_file "sources/mult_by_add.c"
 autocorres [ts_rules = nondet] "mult_by_add.c"
 (*<*)
-context mult_by_add_all_corres begin
+context mult_by_add_global_addresses begin
 (*>*)
 
 text \<open>

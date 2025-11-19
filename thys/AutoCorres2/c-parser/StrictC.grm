@@ -77,12 +77,9 @@ val one_const = expr_int 1
 val zero_const = expr_int 0
 fun postinc_expr e = PostOp(e,Plus_Plus)
 fun postdec_expr e = PostOp(e,Minus_Minus)
-fun postop_to_stmt ctxt e =
-  (case enode e of
-     PostOp (e, Plus_Plus) => Assign(e,ebogwrap(BinOp(Plus,e,one_const)))
-   | PostOp (e, Minus_Minus) => Assign(e,ebogwrap(BinOp(Minus,e,one_const)))
-   | _ =>  (errorStr' ctxt (eleft e, eright e,
-                      "Expecting ++ / -- here."); EmptyStmt))
+
+fun preinc_expr e = PreOp(e,Plus_Plus)
+fun predec_expr e = PreOp(e,Minus_Minus)
 
 fun resolve_fnname ctxt e =
     case enode e of
@@ -94,7 +91,7 @@ fun resolve_fnname ctxt e =
 
 fun handle_builtin_fns ctxt e =
     case enode e of
-      EFnCall (fn_e, args) => let
+      EFnCall (_, fn_e, args) => let
       in
         case enode fn_e of
           Var(s,_) =>
@@ -127,7 +124,7 @@ fun parse_stdassignop ctxt (e1,opn,e2) = let
             | SOME abop => ewrap(BinOp(abop,e1,e2), eleft e2, eright e2)
 in
   case enode e2 of
-    EFnCall (f_e, args) => let
+    EFnCall (_, f_e, args) => let
       fun e_ok e =
           case enode e of
             Var _ => true
@@ -137,9 +134,18 @@ in
       if e_ok e1 andalso opn = NONE then
         AssignFnCall(SOME e1, f_e, args)
       else
-        Assign(e1,r_e)
+        Assign(e1,map_origin (K AstDatatype.Statement) r_e)
     end
   | _ => Assign(e1,r_e)
+end
+
+fun parse_stdassignop_expr ctxt (e1,opn,e2) = let
+  val e2 = handle_builtin_fns ctxt e2
+  val r_e = case opn of
+              NONE => e2
+            | SOME abop => ewrap(BinOp(abop,e1,e2), eleft e2, eright e2)
+in
+  AssignE(AstDatatype.Expression, e1, r_e)
 end
 
 fun check_names ctxt (fname:string) plist = let
@@ -186,6 +192,7 @@ datatype typespectok = ts_unsigned
                      | ts_int128
                      | ts_short
                      | ts_void
+                     | ts_bitint of expr
 type struct_or_union_specifier = expr ctype wrap * struct_id_decl wrap list
 type enum_specifier = (string option wrap *
                        (string wrap * expr option) list) wrap
@@ -325,6 +332,7 @@ fun ity_of_tok tstok =
     | ts_long => Long
     | ts_longlong => LongLong
     | ts_int128 => Int128
+    | ts_bitint e => BitInt e
     | x => raise Fail "ty_of_tok: invariant failure"
 
 fun sort_toks (bases, sgnmods) dsl =
@@ -575,7 +583,7 @@ let
                                       "Can't initialise a typedef")
                 | _ => ()
       in
-        wrap(TypeDecl[(finaltype,nm)], left idw, right idw)
+        wrap(TypeDecl[(finaltype,nm,bogwrap (attrs @ fnspec_attrs))], left idw, right idw)
       end
     else
       case finaltype of
@@ -607,17 +615,7 @@ in
   map (parse_siddecl ctxt) sdecls
 end
 
-fun last_blockitem (bilist : block_item list) = let
-  val bi = List.last bilist
-  fun recurse bi =
-    case bi of
-      BI_Stmt st => (case snode st of
-                       Block bilist => last_blockitem bilist
-                     | _ => bi)
-    | _ => bi
-in
-  recurse bi
-end
+val last_blockitem = the o StmtDecl.last_blockitem
 
 fun CaseEndBI bi =
     case bi of
@@ -629,7 +627,9 @@ and CaseEndStmt st =
     | Return _ => true
     | ReturnFnCall _ => true
     | IfStmt(g, t, e) => CaseEndStmt t andalso CaseEndStmt e
-    | Block bilist => CaseEndBI (last_blockitem bilist)
+    | Block (_, bilist) => CaseEndBI (last_blockitem bilist)
+    | Switch _ => true
+    | Trap (BreakT, e) => CaseEndStmt e
     | _ => false
 
 fun front [] = []
@@ -643,8 +643,8 @@ fun removelast_if_break bilist = let
         in
           case snode st of
             Break => []
-          | Block bilist => [BI_Stmt
-                                 (swrap (Block (removelast_if_break bilist),
+          | Block (kind, bilist) => [BI_Stmt
+                                 (swrap (Block (kind, removelast_if_break bilist),
                                          sleft st, sright st))]
           | _ => [bi]
         end
@@ -700,7 +700,7 @@ fun switch_check ctxt scaselist leftp rightp = let
       if not (CaseEndBI (last_blockitem bilist)) then
         errorStr' ctxt (left labs, right labs,
                   "Switch case beginning here does not end with a break \
-                  \or return")
+                  \or return or a nested switch statement")
       else ()
   val _ = app check_for_breaks (front scaselist)
           (* only check front of list, allowing for last case to fall through
@@ -728,7 +728,7 @@ end
 %arg (source, ctxt) : (SourceFile.t * Proof.context)
 %nodefault
 
-%keyword YOFFSETOF YWHILE YDO YIF STRUCT YRETURN YELSE INT CHAR LONG INT128 SHORT UNSIGNED TYPEDEF YSEMI LCURLY RCURLY
+%keyword YOFFSETOF YWHILE YDO YIF STRUCT YRETURN YELSE INT CHAR LONG INT128 BITINT SHORT UNSIGNED TYPEDEF YSEMI LCURLY RCURLY
 %change -> YSEMI
 
 %nonterm  begin of ext_decl list
@@ -767,7 +767,7 @@ end
         | struct_declaration of struct_fields wrap * struct_id_decl wrap list
         | type_definition  of declaration
         | elementary_type of expr ctype
-        | integral_type of inttype wrap
+        | integral_type of expr inttype wrap
         | type_name of expr ctype wrap
         | block_item_list of block_item list
         | block_item of block_item list
@@ -834,6 +834,7 @@ end
 
         | attribute of gcc_attribute
         | attribute_specifier of gcc_attribute list wrap
+        | maybe_attribute_specifier of gcc_attribute list wrap
         | attribute_list of gcc_attribute list
         | attribute_parameter_list1 of expr list
         | asmblock of asmblock
@@ -868,7 +869,7 @@ end
     | LOGICALOR | LOGICALAND | BITWISEOR | BITWISEXOR
     | EQUALS | NOTEQUALS
     | YLE | YGE  | YLESS | YGREATER | LEFTSHIFT | RIGHTSHIFT
-    | INT | BOOL | CHAR | LONG | INT128 | SHORT | SIGNED | UNSIGNED | VOID
+    | INT | BOOL | CHAR | LONG | INT128 | SHORT | BITINT | SIGNED | UNSIGNED | VOID
     | ARROW
     | ID of string | TYPEID of string
     | NUMERIC_CONSTANT of Absyn.numliteral_info
@@ -939,6 +940,8 @@ function_specifiers
 attribute_specifier
 : GCC_ATTRIBUTE LPAREN LPAREN attribute_list RPAREN RPAREN
                 (wrap(attribute_list, GCC_ATTRIBUTEleft, RPAREN2right))
+| LBRACKET LBRACKET attribute_list RBRACKET RBRACKET
+                (wrap(attribute_list, LBRACKET1left, RBRACKET2right))
 | OWNED_BY ID SPEC_BLOCKEND
                 (wrap([OWNED_BY ID], OWNED_BYleft, SPEC_BLOCKENDright))
 
@@ -947,6 +950,10 @@ attribute_list
 | attribute     ([attribute])
 | attribute YCOMMA attribute_list
                 (attribute :: attribute_list)
+
+maybe_attribute_specifier
+:               (bogwrap [])
+| attribute_specifier  (attribute_specifier)
 
 attribute
 : ID            (let val idstr = if String.isPrefix "__" ID andalso
@@ -1228,7 +1235,7 @@ struct_declaration
                              | SOME es => errorStr' ctxt (left es, right es,
                                                     "Don't declare enumerations\
                                                     \ inside structs")
-                     val dummy_field = (node basetype, wrap ("",YSEMIleft,YSEMIleft), NONE, [])
+                     val dummy_field = (node basetype, wrap ("",left specifier_qualifier_list,YSEMIleft), NONE, [])
                  in
                    (wrap([dummy_field],left basetype, YSEMIleft),
                     sdecls)
@@ -1329,7 +1336,7 @@ struct_or_union_specifier
                        STRUCTleft,
                        right struct_id),
                   []))
-| STRUCT struct_id LCURLY struct_declaration_list RCURLY
+| STRUCT struct_id LCURLY struct_declaration_list RCURLY maybe_attribute_specifier
                 (let val (flds, decls) = struct_declaration_list
                      val raw_s_name = node struct_id
                      val munged_name = C_struct_name raw_s_name
@@ -1337,10 +1344,10 @@ struct_or_union_specifier
                                         right struct_id)
                  in
                    (wrap(StructTy munged_name, STRUCTleft, right struct_id),
-                    wrap((sname_w, node flds, bogwrap []),
+                    wrap((sname_w, node flds, maybe_attribute_specifier),
                          STRUCTleft, RCURLYright) :: decls)
                  end)
-| STRUCT struct_id LCURLY struct_declaration_list RCURLY attribute_specifier
+| STRUCT attribute_specifier struct_id LCURLY struct_declaration_list RCURLY maybe_attribute_specifier
                 (let val (flds, decls) = struct_declaration_list
                      val raw_s_name = node struct_id
                      val munged_name = C_struct_name raw_s_name
@@ -1348,36 +1355,27 @@ struct_or_union_specifier
                                         right struct_id)
                  in
                    (wrap(StructTy munged_name, STRUCTleft, right struct_id),
-                    wrap((sname_w, node flds, attribute_specifier),
+                    wrap((sname_w, node flds, RegionExtras.join [attribute_specifier, maybe_attribute_specifier]),
                          STRUCTleft, RCURLYright) :: decls)
                  end)
-| STRUCT LCURLY struct_declaration_list RCURLY
+| STRUCT maybe_attribute_specifier LCURLY struct_declaration_list RCURLY maybe_attribute_specifier
                 (let
                    val (flds, decls) = struct_declaration_list
                    val anonid = gen_struct_id ()
-                   val anonw = wrap(anonid, STRUCTright, LCURLYleft)
+                   val anonw = wrap(anonid, STRUCTleft, LCURLYleft)
                  in
                    (wrap(StructTy anonid, STRUCTleft, LCURLYleft),
-                    wrap((anonw, node flds, bogwrap []), STRUCTleft, RCURLYright) ::
+                    wrap((anonw, node flds, RegionExtras.join [maybe_attribute_specifier1, maybe_attribute_specifier2]), STRUCTleft, RCURLYright) ::
                     decls)
                  end)
-| STRUCT LCURLY struct_declaration_list RCURLY attribute_specifier
-                (let
-                   val (flds, decls) = struct_declaration_list
-                   val anonid = gen_struct_id ()
-                   val anonw = wrap(anonid, STRUCTright, LCURLYleft)
-                 in
-                   (wrap(StructTy anonid, STRUCTleft, LCURLYleft),
-                    wrap((anonw, node flds, attribute_specifier), STRUCTleft, RCURLYright) ::
-                    decls)
-                 end)
+
 | UNION struct_id
                 ((wrap(UnionTy
                            (C_struct_name (node struct_id)),
                        UNIONleft,
                        right struct_id),
                   []))
-| UNION struct_id LCURLY struct_declaration_list RCURLY
+| UNION struct_id LCURLY struct_declaration_list RCURLY maybe_attribute_specifier
                 (let val (flds, decls) = struct_declaration_list
                      val raw_s_name = node struct_id
                      val munged_name = C_struct_name raw_s_name
@@ -1385,10 +1383,10 @@ struct_or_union_specifier
                                         right struct_id)
                  in
                    (wrap(UnionTy munged_name, UNIONleft, right struct_id),
-                    wrap((sname_w, node flds, bogwrap []),
+                    wrap((sname_w, node flds, maybe_attribute_specifier),
                          UNIONleft, RCURLYright) :: decls)
                  end)
-| UNION struct_id LCURLY struct_declaration_list RCURLY attribute_specifier
+| UNION attribute_specifier struct_id LCURLY struct_declaration_list RCURLY maybe_attribute_specifier
                 (let val (flds, decls) = struct_declaration_list
                      val raw_s_name = node struct_id
                      val munged_name = C_struct_name raw_s_name
@@ -1396,27 +1394,17 @@ struct_or_union_specifier
                                         right struct_id)
                  in
                    (wrap(UnionTy munged_name, UNIONleft, right struct_id),
-                    wrap((sname_w, node flds, attribute_specifier),
+                    wrap((sname_w, node flds, RegionExtras.join [attribute_specifier, maybe_attribute_specifier]),
                          UNIONleft, RCURLYright) :: decls)
                  end)
-| UNION LCURLY struct_declaration_list RCURLY
+| UNION maybe_attribute_specifier LCURLY struct_declaration_list RCURLY maybe_attribute_specifier
                 (let
                    val (flds, decls) = struct_declaration_list
                    val anonid = gen_struct_id ()
-                   val anonw = wrap(anonid, UNIONright, LCURLYleft)
+                   val anonw = wrap(anonid, UNIONleft, LCURLYleft)
                  in
                    (wrap(UnionTy anonid, UNIONleft, LCURLYleft),
-                    wrap((anonw, node flds, bogwrap []), UNIONleft, RCURLYright) ::
-                    decls)
-                 end)
-| UNION LCURLY struct_declaration_list RCURLY attribute_specifier
-                (let
-                   val (flds, decls) = struct_declaration_list
-                   val anonid = gen_struct_id ()
-                   val anonw = wrap(anonid, UNIONright, LCURLYleft)
-                 in
-                   (wrap(UnionTy anonid, UNIONleft, LCURLYleft),
-                    wrap((anonw, node flds, attribute_specifier), UNIONleft, RCURLYright) ::
+                    wrap((anonw, node flds, RegionExtras.join [maybe_attribute_specifier1, maybe_attribute_specifier2]), UNIONleft, RCURLYright) ::
                     decls)
                  end)
 
@@ -1439,6 +1427,8 @@ type_specifier
                 (Tstok(wrap(ts_unsigned, UNSIGNEDleft, UNSIGNEDright)))
 | BOOL
                 (Tstok(wrap(ts_bool, BOOLleft, BOOLright)))
+| BITINT LPAREN rexpression RPAREN
+                (Tstok(wrap(ts_bitint rexpression, BITINTleft, RPARENright)))
 | YTYPEOF LPAREN rexpression RPAREN
                 (Tstypeof (wrap(rexpression, LPARENleft, RPARENright)))
 | struct_or_union_specifier
@@ -1559,6 +1549,8 @@ designator
 initializer
 : rexpression
       (wrap(InitE rexpression, eleft rexpression, eright rexpression))
+| LCURLY RCURLY
+      (wrap(InitList [], LCURLYleft, RCURLYright))
 | LCURLY initializer_list RCURLY
       (wrap(InitList initializer_list, LCURLYleft, RCURLYright))
 
@@ -1586,22 +1578,8 @@ statement
              eleft lexpression, YSEMIright))
 | rexpression YSEMI
       (let val e = delvoidcasts (handle_builtin_fns ctxt rexpression)
-           val l = eleft rexpression and r = YSEMIright
-           val empty = swrap (EmptyStmt, l, r)
        in
-         case enode e of
-           EFnCall(fn_e, args) => swrap(AssignFnCall(NONE, fn_e, args),l,r)
-         | PostOp _ => swrap (postop_to_stmt ctxt e, l, r)
-         | _ => if is_number e then empty
-                else if fncall_free e then
-                  (warnStr' ctxt (l, r,
-                            "Ignoring (oddly expressed) expression without \
-                            \side effect" ^ @{make_string} e);
-                   empty)
-                else
-                  (errorStr' ctxt (l, r, "Illegal bare expression containing \
-                                   \function calls");
-                   empty)
+         check_rexpression_statement ctxt e
        end)
 | YWHILE LPAREN rexpression RPAREN invariant_option statement
       (let val body = swrap(Trap(ContinueT, statement), sleft statement,
@@ -1618,7 +1596,7 @@ statement
                             YDOleft, YSEMIright)
        in
          swrap(Trap(BreakT,
-                    swrap(Block [BI_Stmt body, BI_Stmt loop],
+                    swrap(Block (AstDatatype.Closed, [BI_Stmt body, BI_Stmt loop]),
                           sleft statement, YSEMIright)),
                YDOleft, YSEMIright)
        end)
@@ -1626,18 +1604,18 @@ statement
        invariant_option statement
       (let val body0 = swrap(Trap(ContinueT, statement),
                              sleft statement, sright statement)
-           val body = swrap(Block [BI_Stmt body0, BI_Stmt opt_for3_expr],
+           val body = swrap(Block (AstDatatype.Closed, [BI_Stmt body0, BI_Stmt opt_for3_expr]),
                             sleft statement, sright statement)
            val loop = swrap(While(opt_for2_expr, invariant_option, body),
                             YFORleft, sright statement)
            val tp_loop = swrap(Trap(BreakT, loop), YFORleft, sright statement)
        in
-         swrap(Block (opt_for1_bitem @ [BI_Stmt tp_loop]),
+         swrap(Block (AstDatatype.Closed, opt_for1_bitem @ [BI_Stmt tp_loop]),
                YFORleft, sright statement)
        end)
 | YRETURN rexpression YSEMI
       (case enode (handle_builtin_fns ctxt rexpression) of
-         EFnCall(fn_e, args) =>
+         EFnCall(_, fn_e, args) =>
            swrap(ReturnFnCall (fn_e, args), YRETURNleft, YSEMIright)
        | e => swrap(Return (SOME rexpression),YRETURNleft,YSEMIright))
 | YRETURN YSEMI
@@ -1665,16 +1643,16 @@ statement
                                             SWITCHleft RCURLYright),
                         SWITCHleft, RCURLYright)),
              SWITCHleft, RCURLYright))
- | compound_statement
-      (swrap(Block (node compound_statement), left compound_statement,
+| compound_statement
+      (swrap(Block (AstDatatype.Closed, node compound_statement), left compound_statement,
              right compound_statement))
- | statement_label YCOLON statement
+| statement_label YCOLON statement
       (swrap(LabeledStmt (node statement_label, statement), left statement_label, sright statement))
- | AUXUPD STRING_LITERAL SPEC_BLOCKEND
+| AUXUPD STRING_LITERAL SPEC_BLOCKEND
       (swrap(Auxupd STRING_LITERAL, AUXUPDleft, STRING_LITERALright))
- | GHOSTUPD STRING_LITERAL SPEC_BLOCKEND
+| GHOSTUPD STRING_LITERAL SPEC_BLOCKEND
       (swrap(Ghostupd STRING_LITERAL, GHOSTUPDleft, STRING_LITERALright))
- | SPEC_BEGIN STRING_LITERAL SPEC_BLOCKEND statement_list
+| SPEC_BEGIN STRING_LITERAL SPEC_BLOCKEND statement_list
    SPEC_END STRING_LITERAL SPEC_BLOCKEND
      (let
         open Substring
@@ -1687,9 +1665,11 @@ statement
             SPEC_BEGINleft,
             SPEC_ENDright)
       end)
-  | YASM optvolatile LPAREN asmblock RPAREN YSEMI
+| YASM optvolatile LPAREN asmblock RPAREN YSEMI
       (swrap(AsmStmt({volatilep = optvolatile, asmblock = asmblock}),
              YASMleft, YSEMIright))
+| attribute_specifier statement
+      (swrap(AttributeStmt (attribute_specifier, statement), attribute_specifierleft, sright statement))
 
 optvolatile
 :     (false)
@@ -1784,7 +1764,7 @@ opt_for1_expr
 | opt_for1_expr0
       (if length opt_for1_expr0 = 1 then
          hd opt_for1_expr0
-       else swrap(Block(map BI_Stmt opt_for1_expr0),
+       else swrap(Block(AstDatatype.Closed, map BI_Stmt opt_for1_expr0),
                   sleft (hd opt_for1_expr0),
                   sright (List.last opt_for1_expr0)))
 
@@ -1809,7 +1789,7 @@ opt_for3_expr
 | opt_for3_expr0
       (if length opt_for3_expr0 = 1 then
          hd opt_for3_expr0
-       else swrap(Block(map BI_Stmt opt_for3_expr0),
+       else swrap(Block(AstDatatype.Closed, map BI_Stmt opt_for3_expr0),
                   sleft (hd opt_for3_expr0),
                   sright (List.last opt_for3_expr0)))
 
@@ -1825,7 +1805,7 @@ opt_for3_exprbase :
       (swrap(parse_stdassignop ctxt (lexpression, assignop, rexpression),
              eleft lexpression, eright rexpression))
  | lexpression
-        (swrap (postop_to_stmt ctxt lexpression, eleft lexpression, eright lexpression))
+        (swrap (pre_post_op_to_stmt ctxt lexpression, eleft lexpression, eright lexpression))
 
 opt_rexpr_list : (wrap([], defaultPos, defaultPos))
                | rexpr_list (rexpr_list)
@@ -1842,6 +1822,14 @@ rexpression : logical_OR_expression (logical_OR_expression)
                                rexpression2),
                        eleft logical_OR_expression,
                        eright rexpression2))
+            | lexpression assignop rexpression
+                (ewrap(parse_stdassignop_expr ctxt (lexpression, assignop, rexpression),
+                  eleft lexpression, eright rexpression))
+            | LPAREN compound_statement RPAREN
+                (let 
+                  val l = left compound_statement
+                  val r = right compound_statement
+                 in check_statement_expression_blockitems ctxt l r (node compound_statement) end)
 
 logical_OR_expression :
    logical_AND_expression (logical_AND_expression)
@@ -1995,7 +1983,7 @@ postfix_expression
                RBRACKETright))
 | postfix_expression LPAREN  opt_rexpr_list RPAREN
         (let
-           val e = ewrap(EFnCall(postfix_expression, node opt_rexpr_list),
+           val e = ewrap(EFnCall(AstDatatype.Expression, postfix_expression, node opt_rexpr_list),
                          eleft postfix_expression,
                          RPARENright)
          in
@@ -2021,6 +2009,12 @@ postfix_expression
 | postfix_expression MINUSMINUS
          (ewrap(postdec_expr postfix_expression, eleft postfix_expression,
                        MINUSMINUSright))
+| PLUSPLUS postfix_expression
+         (ewrap(preinc_expr postfix_expression, PLUSPLUSleft,
+                       eright postfix_expression))
+| MINUSMINUS postfix_expression
+         (ewrap(predec_expr postfix_expression, MINUSMINUSleft,
+                       eright postfix_expression))
 
 primary_expression
 : ID
@@ -2029,6 +2023,8 @@ primary_expression
        (ewrap(Constant constant, left constant, right constant))
 | LPAREN rexpression RPAREN
        (ewrap(enode rexpression, LPARENleft, RPARENright))
+| LPAREN rexpr_list RPAREN
+       (AstDatatype.comma_exprs (node (rexpr_list)))
 | cstring_literal
        (let val l = left cstring_literal  and r = right cstring_literal
         in

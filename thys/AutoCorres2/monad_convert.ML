@@ -148,35 +148,24 @@ fun check_compound _ @{term_pat \<open>Trueprop (refines ?f _ _ _ _)\<close>} =
    | check_compound _ _ = false
     
 in
-fun sim_nondet ctxt  
+fun sim_nondet prog_info phase ctxt  
      (mt:Monad_Types.monad_type) 
      prev_def goal =
   let
     val mname = #name mt
     val {rules_name, lift_prev, ...} = #refines_nondet mt
-    val fun_ptr_simps = 
-              Named_Theorems.get ctxt @{named_theorems "global_const_selectors"} @
-              Named_Theorems.get ctxt @{named_theorems "fun_ptr_simps"} 
-
     fun get_concr @{term_pat "refines ?f _ _ _ _"} = f
       | get_concr t = error ("prune_unused_bounds_sim_nondet_tac, unexpected term: " ^ @{make_string} t)
 
     val THIN_tac = Utils.THIN_tac (Utils.prune_unused_bounds_from_concr_tac get_concr)
-    fun dyn_call_tac ctxt = EVERY' [
-         K (Utils.verbose_print_tac 4 "sim_nondet_dyncall begin" ctxt), 
-         AutoCorresUtil.dyn_call_split_simp_sidecondition_tac (K true) [] [] ctxt,
-         K (Utils.verbose_print_tac 4 "sim_nondet_dyncall after split_simp_sidecondition_tac" ctxt)]
 
     val ctxt' = ctxt 
-        |> Context.proof_map 
-            (Synthesize_Rules.add_pattern_tac_rule rules_name dyn_call_tac @{binding DYN_CALL} 10 @{pattern \<open>DYN_CALL (PROP ?P)\<close>})
         |> Context.proof_map 
             (Synthesize_Rules.add_pattern_tac_rule rules_name THIN_tac @{binding THIN} 10 @{pattern \<open>THIN (PROP ?P)\<close>}) 
 
     val _ = Utils.verbose_fn 2 ctxt' (fn _ => Synthesize_Rules.print_rules (Context.Proof ctxt') rules_name NONE)
 
     val sim_rules = Synthesize_Rules.get_rules ctxt' rules_name |> the
-    
     fun lift rules goal thm  = 
       case rules of [] => K CT.no_tac  
        | r::rules' => 
@@ -188,7 +177,8 @@ fun sim_nondet ctxt
     val cache = Synthesize_Rules.gen_cond_cache check_compound l2_index (lift lift_prev) sim_rules
 
     val thm = Goal.prove ctxt' [] [] goal (fn {context, ...} => 
-       EqSubst.eqsubst_tac context [0] [prev_def] 1 THEN
+       full_simp_tac (Simplifier.clear_simpset context addsimps @{thms DYN_CALL_def}) 1 THEN
+       EqSubst.eqsubst_tac context [0] [prev_def] 1 THEN       
        Context_Tactic.NO_CONTEXT_TACTIC context (
          CT.cache_deepen_tac (fn ctxt => Config.get ctxt Utils.verbose) cache
            (Synthesize_Rules.resolve_tacs sim_rules context) 1)
@@ -211,7 +201,10 @@ end
  * Return the new theorem.
  *)
 
-fun polish_arg (arg: conv->conv) ctxt (mt : Monad_Types.monad_type) do_polish pretty_bounds_conv thm =
+val d1 = Unsynchronized.ref false;
+fun dprint_conv d msg = if d then Utils.print_conv msg else Conv.all_conv
+
+fun polish_arg (arg: conv->conv) ctxt (mt : Monad_Types.monad_type) do_polish pretty_bounds_conv final_conv thm =
 let
   (* Apply any polishing rules. *)
   val ctxt = Context_Position.set_visible false ctxt
@@ -220,10 +213,11 @@ let
   (* Simplify using polish rules. *)
   val record_ss = RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt)
   val basic_ss = merge_ss (HOL_ss, record_ss)
-  val simp_ctxt = put_simpset basic_ss ctxt
-    |> Simplifier.add_simps simps
-    |> Simplifier.add_proc @{simproc NO_MATCH}
+  val simp_ctxt = put_simpset basic_ss ctxt 
+    |> Simplifier.add_simps simps 
+    |> fold Simplifier.add_proc [@{simproc NO_MATCH}, @{simproc ETA_TUPLED_HINT}]
     |> fold Simplifier.add_cong congs
+
                   
   val simp_conv = Simplifier.rewrite simp_ctxt
 
@@ -239,8 +233,11 @@ let
         (pretty_bounds_conv ctxt') then_conv
         (unit_fun_conv ctxt) then_force_conv
         (pretty_bounds_conv ctxt') force_then_conv
+        (dprint_conv (!d1) "before simp_conv:") then_conv
         simp_conv then_conv
-        (case_prod_eta_conv ctxt)
+        (case_prod_eta_conv ctxt) then_conv
+        (dprint_conv (!d1) "before final_conv:") then_conv
+        (final_conv ctxt) 
     )))  |> single |> Proof_Context.export ctxt' ctxt
 in
   thm_p

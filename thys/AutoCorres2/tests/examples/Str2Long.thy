@@ -13,7 +13,6 @@ begin
 install_C_file "str2long.c"
 autocorres "str2long.c"
 
-context ts_definition_str2long begin
 
 (* When passed a finite string, str2long never fails *)
 lemma "
@@ -24,5 +23,4 @@ lemma "
   (* Need whileLoop invariant preconditions and friends *)
   oops
 
-end
 end

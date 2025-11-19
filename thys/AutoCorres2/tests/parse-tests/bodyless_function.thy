@@ -13,15 +13,11 @@ install_C_file "bodyless_function.c"
 
 autocorres "bodyless_function.c"
 
-context bodyless_function_simpl
-begin
-thm local.bodyless_body_def
-end
-context ts_corres_call_bodyless
-begin
+thm bodyless_body_def
+
+
 thm wa_def
 thm ts_def
 thm ts_corres
-end
 
 end

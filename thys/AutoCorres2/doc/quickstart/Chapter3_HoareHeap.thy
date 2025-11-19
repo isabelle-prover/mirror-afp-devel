@@ -27,7 +27,7 @@ text \<open>
 install_C_file "sources/swap.c"
 autocorres [heap_abs_syntax, ts_rules = nondet] "swap.c"
 (*<*)
-context swap_all_corres begin
+context swap_global_addresses begin
 (*>*)
 
 text \<open>
@@ -212,7 +212,6 @@ text \<open>Options for @{command "init-autocorres"} / @{command "autocorres"},
 
 \<^item> \<^verbatim>\<open>phase\<close>: perform autocorres up to specified phase only (L1, L2, HL, WA, IO, TS)
 \<^item> \<^verbatim>\<open>scope\<close>: space separated list of functions to perform autocorres on. (Default all).
-\<^item> \<^verbatim>\<open>scope_depth\<close>: depth of callees to also also include
 \<^item> \<^verbatim>\<open>single_threaded\<close>: flag to disable parallel processing (e.g. to make more sense out of tracing messages)
 \<^item> \<^verbatim>\<open>no_heap_abs\<close>: space separated list of functions that should be excluded from heap abstraction
 \<^item> \<^verbatim>\<open>in_out_parameters\<close>: 'and' separated list of function specs e.g. \<^verbatim>\<open>inc(y:in_out)\<close>, 

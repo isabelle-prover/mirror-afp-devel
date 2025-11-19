@@ -24,22 +24,15 @@ declare [[c_parser_feedback_level=2]]
 
 autocorres [ts_rules = nondet] "mmio.c"
 
-context mmio_all_corres
-begin
 
-term "step'"
-term "ts_definition_step.step'"
-thm ts_definition_step.step'_def
-end
-
-lemma (in step_impl) "step_body \<equiv>
+lemma "step_body \<equiv>
 guarded_spec_body ImpossibleSpec
  ({(s, t). abs_step (state_' (globals s)) (state_' (globals t))} \<inter>
   {(s, t). t may_only_modify_globals s in [state]})"
   by (rule step_body_def [simplified])
 
 
-lemma (in ts_definition_step) "step' \<equiv>
+lemma "step' \<equiv>
   assert_result_and_state
      (\<lambda>s. {(v, t).
         abs_step (state_'' s) (state_'' t) \<and>
@@ -47,7 +40,7 @@ lemma (in ts_definition_step) "step' \<equiv>
   by (rule step'_def)
 
 
-lemma (in ts_definition_step2) "step2' \<equiv>
+lemma "step2' \<equiv>
   assert_result_and_state
    (\<lambda>s. {(v, t).
         abs_step2 (g1_'' s, g2_'' s) (g1_'' t, g2_'' t) \<and>

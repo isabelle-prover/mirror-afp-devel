@@ -11,7 +11,7 @@ begin
 
 install_C_file "jiraver54.c"
 
-context jiraver54_simpl
+context jiraver54_global_addresses
 begin
 
 thm f_body_def

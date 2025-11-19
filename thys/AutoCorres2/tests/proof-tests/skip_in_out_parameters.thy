@@ -15,14 +15,6 @@ install_C_file "skip_in_out_parameters.c"
 
 autocorres "skip_in_out_parameters.c"
 
-context ts_definition_inc
-begin
 thm ts_def
-end
-
-context ts_definition_call_inc_ptr
-begin
-thm ts_def
-end
 
 end

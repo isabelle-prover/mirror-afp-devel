@@ -401,8 +401,7 @@ text \<open>
 Due to the abstraction layer of derived heap types, the structure of the programs after
 heap lifting is analogous for closed and opened structures.
 \<close>
-context ts_definition_set_c1
-begin
+
 thm ts_def
 
 lemma "set_c1' p c \<equiv> do {guard (\<lambda>s. IS_VALID(closed_C) s p);
@@ -410,22 +409,8 @@ lemma "set_c1' p c \<equiv> do {guard (\<lambda>s. IS_VALID(closed_C) s p);
                  }"
   by (rule ts_def)
 
-end
 
-context ts_definition_outer_fld1_upd
-begin
-thm ts_def
-end
 
-context ts_definition_set_element
-begin
-thm ts_def
-end
-
-context ts_definition_set_matrix_element
-begin
-thm ts_def
-end
 
 text \<open>Of course, when it comes to specifications and proving properties about the programs,
 the user has to take care about aliasing of addressable fields.
@@ -1423,14 +1408,13 @@ thm h_val_heap_update_padding
 thm plift_heap_update_padding_heap_update_pointless_conv
 thm lift_heap_update_padding_heap_update_conv
 
-context open_struct_all_corres
+context open_struct_global_addresses
 begin
 thm ts_def
 thm ac_corres
 end
 
-context ts_definition_access_arr_struct
-begin
+
 thm access_arr_struct'_def [no_vars]
 lemma "access_arr_struct' p \<equiv> do {
   i \<leftarrow> whileLoop (\<lambda>i s. i < 6)
@@ -1445,7 +1429,6 @@ lemma "access_arr_struct' p \<equiv> do {
   return 1
 }"
   unfolding access_arr_struct'_def.
-end
 
 end
 

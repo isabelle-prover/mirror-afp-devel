@@ -11,16 +11,11 @@ begin
 
 install_C_file "jiraver440.c"
 
-context jiraver440_simpl
-begin
 
 thm f_body_def
 thm g_body_def
 
 lemma "f_body = g_body"
   by (simp add: f_body_def g_body_def locals)
-
-
-end
 
 end

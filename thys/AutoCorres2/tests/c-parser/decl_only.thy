@@ -12,11 +12,10 @@ begin
 install_C_file "decl_only.c"
 
 print_locale! decl_only_global_addresses
-print_locale! decl_only_simpl
-context decl_only_simpl
-begin
+print_locale! decl_only_global_addresses
+
 term x
 thm x_def
-end
+
 
 end

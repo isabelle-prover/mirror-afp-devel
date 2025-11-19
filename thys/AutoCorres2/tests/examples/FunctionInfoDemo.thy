@@ -20,7 +20,7 @@ begin
 text \<open>Process a source file to populate our data structures.\<close>
 install_C_file "function_info.c"
 autocorres "function_info.c"
-context function_info_all_corres begin
+context function_info_global_addresses begin
 
 section \<open>Function info\<close>
 text \<open>

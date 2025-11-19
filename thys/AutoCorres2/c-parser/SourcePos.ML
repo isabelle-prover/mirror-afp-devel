@@ -41,7 +41,8 @@ sig
   val is_bogus: t -> bool
   val file: t -> string
   val line: t -> int
-  val make: {column: int, file: string, line: int} -> t
+  val yypos: t -> int
+  val make: {column: int, file: string, line: int, yypos:int} -> t
   val toString: t -> string
   val posToString : t -> string
   val show_c_parser_positions : string
@@ -50,44 +51,42 @@ end
 structure SourcePos : SOURCE_POS =
 struct
 
-datatype t = T of {column: int, file: string, line: int}
+datatype t = T of {column: int, file: string, line: int, yypos:int}
 
 local
    fun f g (T r) = g r
 in
    val column = f #column
    val line = f #line
+   val yypos = f #yypos
 end
 
-fun compare (T {column = c, file = f, line = l},
-             T {column = c', file = f', line = l'}) =
-   case string_ord (f, f') of
-      EQUAL =>
-         (case int_ord (l, l') of
-             EQUAL => int_ord (c, c')
-           | r => r)
-    | r => r
+(* ignore yypos *)
+fun compare (T {column = c, file = f, line = l, ...},
+             T {column = c', file = f', line = l', ...}) =
+  prod_ord string_ord (prod_ord int_ord int_ord) ((f, (l, c)), (f', (l', c')))
 
-fun equals (T r, T r') = r = r'
+val equals = is_equal o compare
 
-fun make {column, file, line} =
+fun make {column, file, line, yypos} =
    T {column = column,
       file = file,
-      line = line}
+      line = line,
+      yypos = yypos}
 
 fun file (T {file, ...}) = file
 
 val bogus = T {column = ~1,
                file = "<bogus>",
-               line = ~1}
+               line = ~1, yypos = ~1 }
 
 fun is_bogus t = equals (t, bogus)
 
 
-fun prettyPos (T {column, line, file}) = 
+fun prettyPos (T {column, line, file, ...}) = 
   Pretty.strs [Int.toString line ^ "." ^ Int.toString column, "in " ^  quote (file) ]
 
-fun toString (p as T {column, line, file}) =
+fun toString (p as T {column, line, file, ...}) =
    String.concat [file, " ", Int.toString line, ".", Int.toString column]
 
 fun posToString (T {column,line,...}) =

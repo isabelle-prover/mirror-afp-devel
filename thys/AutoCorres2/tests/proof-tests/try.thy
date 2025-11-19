@@ -15,7 +15,6 @@ install_C_file "try.c"
 
 autocorres []"try.c"
 
-context ts_definition_w begin
 
 thm w'_def
 print_synthesize_rules exit
@@ -30,10 +29,6 @@ lemma "w' x \<equiv>
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>w'\<close>!\<close>
   by (rule w'_def)
 
-end
-
-context ts_definition_f begin
-
 thm f'_def
 
 lemma "f' x \<equiv>
@@ -44,9 +39,6 @@ lemma "f' x \<equiv>
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>f'\<close>!\<close>
   by (rule f'_def)
 
-end
-
-context ts_definition_g begin
 
 thm g'_def
 
@@ -59,10 +51,6 @@ lemma "g' x \<equiv>
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>g'\<close>!\<close>
   by (rule g'_def)
 
-end
-
-context ts_definition_h begin
-
 thm h'_def
 
 lemma "h' x \<equiv>
@@ -74,12 +62,8 @@ lemma "h' x \<equiv>
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>h'\<close>!\<close>
   by (rule h'_def)
 
-end
 
-context wa_definition_i1 begin
 thm wa_def
-end
-context ts_definition_i1 begin
 
 thm i1'_def
 
@@ -93,10 +77,6 @@ lemma "i1' x \<equiv>
   }"
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>i1'\<close>!\<close>
   by (rule i1'_def)
-
-end
-
-context ts_definition_i2 begin
 
 thm i2'_def
 term i2'
@@ -114,9 +94,6 @@ lemma "i2' x \<equiv> do { assert_0' (sint x);
   
   by (rule i2'_def)
 
-end
-
-context ts_definition_i3 begin
 
 thm i3'_def [no_vars]
 
@@ -131,9 +108,6 @@ lemma "i3' x \<equiv> do {
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>i3'\<close>!\<close>
   by (rule i3'_def)
 
-end
-
-context ts_definition_i4 begin
 
 thm i4'_def
 term i4'
@@ -149,9 +123,6 @@ lemma "i4' x \<equiv>
   \<comment> \<open>we do not want a \<^const>\<open>try\<close> to show up in the definition of \<^const>\<open>i4'\<close>!\<close>
   by (rule i4'_def)
 
-end
-
-context ts_definition_finally_elimination2 begin
 
 thm finally_elimination2'_def
 term finally_elimination2'
@@ -167,7 +138,5 @@ heap_w32.assume_with_fresh_stack_ptr 1 (\<lambda>a. {[x]})
   \<comment> \<open>we do not want a \<^const>\<open>finally\<close> to show up in the definition of
     \<^const>\<open>finally_elimination2'\<close>!\<close>
   by (rule finally_elimination2'_def)
-
-end
 
 end

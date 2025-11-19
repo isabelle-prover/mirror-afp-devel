@@ -18,8 +18,9 @@ begin
 install_C_file "suzuki.c"
 autocorres [heap_abs_syntax] "suzuki.c"
 
-context suzuki_impl
+context suzuki_global_addresses
 begin
+unbundle suzuki_variables
 thm suzuki_body_def
 lemma
   "\<Gamma> \<turnstile>
@@ -30,8 +31,7 @@ lemma
   oops
 end
 
-context ts_definition_suzuki
-begin
+
 thm suzuki'_def
 (* AutoCorres's heap abstraction makes the memory model much simpler. *)
 lemma
@@ -54,6 +54,5 @@ lemma
   apply (blast intro: lifted_globals.fold_congs)
   done
 
-end
 
 end

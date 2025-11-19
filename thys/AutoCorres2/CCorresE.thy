@@ -456,8 +456,11 @@ lemma monotone_with_fresh_stack_ptr_ge[partial_function_mono]:
   unfolding with_fresh_stack_ptr_def on_exit_def
   by (intro partial_function_mono)
 
-
-
+lemma mono_with_fresh_stack_ptr [monad_mono_intros]:
+  "(\<And>p. f p \<le> g p) \<Longrightarrow> with_fresh_stack_ptr n I f \<le> with_fresh_stack_ptr n I g"
+  unfolding with_fresh_stack_ptr_def  on_exit_def on_exit'_def
+  apply (intro monad_mono_intros gfp.leq_refl le_funI)
+  by (simp add: le_fun_def)
 
 ML \<open>
 structure with_fresh_stack_ptr =

@@ -15,7 +15,7 @@ sig
 
   val struct_type :
       csenv ->
-      { struct_type : string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list),
+      { struct_type : string * ((string RegionExtras.wrap * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list * Region.t),
         tag_def_thm: thm, typ_info_t_thm: thm, state : t } ->
       local_theory -> t * local_theory
   val array_type : csenv ->

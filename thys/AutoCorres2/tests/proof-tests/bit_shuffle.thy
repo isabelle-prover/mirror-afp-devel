@@ -13,7 +13,7 @@ install_C_file "bit_shuffle.c"
 
 autocorres "bit_shuffle.c"
 
-context bit_shuffle_all_corres
+context bit_shuffle_global_addresses
 begin
 
 thm bit_shuffle'_def

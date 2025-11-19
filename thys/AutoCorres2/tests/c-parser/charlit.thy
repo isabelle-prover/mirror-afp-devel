@@ -11,11 +11,6 @@ begin
 
 install_C_file "charlit.c"
 
-context charlit_simpl
-begin
-
   thm f_body_def
-
-end
 
 end

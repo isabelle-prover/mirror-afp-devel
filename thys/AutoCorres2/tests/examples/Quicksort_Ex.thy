@@ -20,14 +20,13 @@ declare creturn_def [vcg_simp]
 install_C_file "quicksort.c"
 autocorres "quicksort.c"
 
-context quicksort_all_corres begin
 
 thm partition_body_def
 thm quicksort_body_def
 
 thm partition'_def
 thm quicksort'.simps
-end
+
 
 (* Some rules for pointer addition *)
 
@@ -509,7 +508,7 @@ lemma heap_w32_update_pointwise: "heap_w32_update f s = heap_w32_update (\<lambd
 lemma heap_w32_modify_pointwise: "modify (heap_w32_update f) = (modify (\<lambda>s. heap_w32_update (\<lambda>_. f (heap_w32 s)) s))"
   by (simp add: heap_w32_update_pointwise[symmetric])
 
-lemma (in ts_definition_partition) partition_correct:
+lemma partition_correct:
   "is_array s0 a (unat n) \<Longrightarrow> n > 0 \<Longrightarrow>
         partition' a n \<bullet> s0
         \<lbrace> \<lambda>rv s. \<exists>r. rv = Result r \<and> is_array s a (unat n) \<and>
@@ -917,7 +916,7 @@ lemma unat_inc:
  * Proof of recursive quicksort function!
  *)
 
-lemma (in ts_definition_quicksort) quicksort_correct:
+lemma quicksort_correct:
   assumes "is_array s0 a (unat n)" "unat n < m"
   shows "
          quicksort' a n \<bullet> s0

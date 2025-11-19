@@ -11,9 +11,6 @@ begin
 
 install_C_file "parse_c99block.c"
 
-context parse_c99block_simpl
-begin
 thm f_body_def
-end
 
 end

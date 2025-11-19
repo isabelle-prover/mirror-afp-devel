@@ -359,4 +359,67 @@ proof (induction ms rule: rev_induct)
   qed
 qed simp
 
+lemma parallel_compose_lense_get1_upd2:
+  fixes get1:: "'s \<Rightarrow> 'a"
+    and upd1:: "'a upd \<Rightarrow> 's upd"
+    and get2:: "'s \<Rightarrow> 'b"
+    and upd2:: "'b upd \<Rightarrow> 's upd"
+  assumes lense1: "lense get1 upd1"
+  assumes lense2: "lense get2 upd2"
+  assumes disj: "disjnt_scene (\<lambda>s. upd1 (\<lambda>_. get1 s)) (\<lambda>s. upd2 (\<lambda>_. get2 s))"
+  shows "get1 (upd2 f s) = get1 s"
+  using lense1 lense2 disj
+  by (smt (verit, del_insts) disjnt_scene_def lense_def)
+
+lemma parallel_compose_lense_get2_upd1:
+  fixes get1:: "'s \<Rightarrow> 'a"
+    and upd1:: "'a upd \<Rightarrow> 's upd"
+    and get2:: "'s \<Rightarrow> 'b"
+    and upd2:: "'b upd \<Rightarrow> 's upd"
+  assumes lense1: "lense get1 upd1"
+  assumes lense2: "lense get2 upd2"
+  assumes disj: "disjnt_scene (\<lambda>s. upd1 (\<lambda>_. get1 s)) (\<lambda>s. upd2 (\<lambda>_. get2 s))"
+  shows "get2 (upd1 f s) = get2 s"
+  using lense1 lense2 disj
+  by (smt (verit, del_insts) disjnt_scene_def lense_def)
+
+lemma parallel_compose_lense_upd_commute:
+  fixes get1:: "'s \<Rightarrow> 'a"
+    and upd1:: "'a upd \<Rightarrow> 's upd"
+    and get2:: "'s \<Rightarrow> 'b"
+    and upd2:: "'b upd \<Rightarrow> 's upd"
+  assumes lense1: "lense get1 upd1"
+  assumes lense2: "lense get2 upd2"
+  assumes disj: "disjnt_scene (\<lambda>s. upd1 (\<lambda>_. get1 s)) (\<lambda>s. upd2 (\<lambda>_. get2 s))"
+  shows "upd2 g (upd1 f s) = upd1 f (upd2 g s)"
+  using lense1 lense2 disj
+  by (smt (verit, del_insts) disjnt_scene_def lense_def)
+
+lemma parallel_compose_lense:
+  fixes get1:: "'s \<Rightarrow> 'a"
+    and upd1:: "'a upd \<Rightarrow> 's upd"
+    and get2:: "'s \<Rightarrow> 'b"
+    and upd2:: "'b upd \<Rightarrow> 's upd"
+  assumes lense1: "lense get1 upd1"
+  assumes lense2: "lense get2 upd2"
+  assumes disj: "disjnt_scene (\<lambda>s. upd1 (\<lambda>_. get1 s)) (\<lambda>s. upd2 (\<lambda>_. get2 s))"
+  shows "lense 
+           (\<lambda>s. (get1 s, get2 s)) 
+           (\<lambda>f s. (upd2 (\<lambda>_. snd (f (get1 s, get2 s))) (upd1 (\<lambda>_. fst (f (get1 s, get2 s))) s)))"
+proof -
+  interpret l1: lense get1 upd1 using lense1 .
+  interpret l2: lense get2 upd2 using lense2 .
+  show ?thesis
+    apply (unfold_locales)
+    subgoal for f s
+      by (simp add: parallel_compose_lense_get1_upd2 [OF lense1 lense2 disj])
+    subgoal
+      by (simp)
+    subgoal for f g s
+      apply (simp)
+      apply (simp add: parallel_compose_lense_upd_commute [OF lense1 lense2 disj] comp_def)
+      done
+    done
+qed
+
 end

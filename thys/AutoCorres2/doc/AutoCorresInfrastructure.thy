@@ -269,20 +269,12 @@ end
 text \<open>The implementation locale holds the defining equation of the function in SIMPL and is closed
 under callees. \<close>
 
-context call_add_impl
+context autocorres_infrastructure_ex_global_addresses
 begin
 thm add_impl
 thm call_add_impl
 end
 
-text \<open>In case of a clique there is a clique locale and aliases for each function.\<close>
-print_locale even_odd_impl
-print_locale even_impl
-print_locale odd_impl
-
-text \<open>The locale importing all implementations is named like the file with suffix \<open>_simpl\<close>.\<close>
-
-print_locale "autocorres_infrastructure_ex_simpl"
 
 subsection \<open>Incremental Build\<close>
 
@@ -296,11 +288,9 @@ subsection \<open>All the rest\<close>
 
 autocorres "autocorres_infrastructure_ex.c"
 
-context unsigned_to_signed_impl
-begin
 thm unsigned_to_signed_body_def
-end
-context autocorres_infrastructure_ex_all_corres 
+
+context autocorres_infrastructure_ex_global_addresses 
 begin
 thm unsigned_to_signed'_def
 text \<open>The SIMPL versions produced by c-parser\<close>
@@ -625,12 +615,16 @@ simp_tac ( @{context}
 ) 1\<close>)
   done
 
+ML \<open>
+ val my_prog_info = AutoCorres_Options.get_prog_info @{theory} "autocorres_infrastructure_ex"
+\<close>
+
 text \<open>This is also the setup of @{ML L2Opt.cleanup_ss}\<close>
 lemma "L2_while (\<lambda>(x,y,z) s. 0 < (y::nat)) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. Suc 0 \<le> y \<and> z = a)) (\<lambda>_. X)) x ns 
        = 
        L2_while (\<lambda>(x,y,z) s. 0 < y) (\<lambda>(x,y,z). L2_seq (L2_guard (\<lambda>_. z = a)) (\<lambda>_. X)) x ns"
 apply (tactic \<open>
-  asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
+  asm_full_simp_tac (L2Opt.cleanup_ss my_prog_info @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
  done
 
 lemma 
@@ -640,7 +634,7 @@ lemma
        = 
         XX"
   apply (tactic \<open>
-    asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
+    asm_full_simp_tac (L2Opt.cleanup_ss my_prog_info @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
     apply (tactic \<open>
     asm_full_simp_tac (Simplifier.clear_simpset @{context} |> Simplifier.add_proc @{simproc ETA_TUPLED}) 1\<close>)
   apply (subst XX_def)
@@ -653,7 +647,7 @@ lemma "L2_while (\<lambda>(x, y, z) s. y = 0)
      names =
     L2_while (\<lambda>(x, y, z) s. y = 0) (\<lambda>(x, y, z). L2_seq (L2_gets (\<lambda>s. 0) [\<S> ''ret'']) (\<lambda>r. XXX21 r x)) names"
 apply (tactic \<open>
-  asm_full_simp_tac (L2Opt.cleanup_ss @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
+  asm_full_simp_tac (L2Opt.cleanup_ss my_prog_info @{context} [] FunctionInfo.HL FunctionInfo.PEEP) 1\<close>)
   done
 
 
@@ -787,18 +781,18 @@ text \<open>Propagation of simple constant by unfolding.\<close>
 
 lemma "L2_seq_gets c [\<S> ''r'']  (\<lambda>r. (L2_guard (\<lambda>_. P r ))) =
        L2_guard (\<lambda>_. P c )"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 text \<open>Propagation of term, as it only appears once in the second statement.\<close>
 
 lemma "L2_seq_gets (c + d) [\<S> ''r'']  (\<lambda>r. (L2_guard (\<lambda>_. P r ))) =
        L2_guard (\<lambda>_. P (c + d) )"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 text \<open>As nothing is in the prems yet, marking is just removed and second statement is thus simplified\<close>
 lemma "L2_seq_gets (c + d) [\<S> ''r'']  (\<lambda>r. (L2_guard (\<lambda>_. P r \<and> (P r \<longrightarrow> Q r)))) =
        STOP (L2_seq_gets (c + d) [\<S> ''r''] (\<lambda>r. L2_guard (\<lambda>_. P r \<and> Q r)))"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 text \<open>The first guard condition is propagated to the second guard, via the intermediate
 assignment @{term "r = a + b"}.\<close>
@@ -807,7 +801,7 @@ lemma "L2_seq_guard (\<lambda>_. a + b < 5)
           (\<lambda>r. L2_guard (\<lambda>_. r < 5 \<and> P))) =
        L2_seq_guard (\<lambda>_. a + b < 5)  
          (\<lambda>_. L2_guard (\<lambda>_. P))"
-  by (tactic \<open>simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>simp_tac (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 
 ML \<open>
@@ -819,7 +813,7 @@ ML_val \<open>
 val ct = @{cterm "L2_seq_guard (\<lambda>_. (a::int) + b < 5) 
     (\<lambda>_. L2_seq_gets (a + b) [\<S> ''r'']  
       (\<lambda>r. (L2_guard (\<lambda>_. r < 5 \<and> P))))"}
-val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) ct
+val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) ct
 val _ = assert_rhs test 
  @{cterm "STOP (L2_seq_guard (\<lambda>_. (a::int) + b < 5) (\<lambda>_. L2_guard (\<lambda>_. P)))"}
 \<close>
@@ -829,13 +823,13 @@ lemma "L2_seq_guard (\<lambda>s. V1 + a - (r::int) \<le> 2)
         (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (L2_seq_guard (\<lambda>s. V1 + a - r \<le> 3) (\<lambda>_. X1)) X2) (\<lambda>_. X3)) =
        L2_seq_guard (\<lambda>s. V1 + a - r \<le> 2)
         (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (L2_seq_guard (\<lambda>s. True) (\<lambda>_. X1)) X2) (\<lambda>_. X3))"
-  by (tactic \<open>asm_full_simp_tac (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
+  by (tactic \<open>asm_full_simp_tac (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) 1\<close>)
 
 ML_val \<open>
 val ct = @{cterm "L2_seq_guard (\<lambda>s. (V1 + a - (r::int) \<le> 2))
           (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (L2_seq_guard (\<lambda>s. V1 + a - r \<le> 3) (\<lambda>_. X1)) X2) (\<lambda>_. X3))"}
 
-val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) ct 
+val test = Simplifier.asm_full_rewrite (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP) ct 
 val _ = assert_rhs test
   @{cterm "STOP (L2_seq_guard (\<lambda>s. V1 + a - r \<le> 2)
      (\<lambda>_. L2_seq (L2_condition (\<lambda>s. CC) (STOP (L2_seq_guard (\<lambda>s. True) (\<lambda>_. X1))) X2) (\<lambda>_. X3)))"}
@@ -847,7 +841,7 @@ val ct = @{cterm "L2_seq_guard
           (\<lambda>_. 
             (L2_seq_guard (\<lambda>s. (g k) + a - r \<le> n + 1) (\<lambda>_. X1)))"}
 
-val test = Simplifier.asm_full_rewrite (Variable.set_body true (L2Opt.cleanup_ss @{context} []  FunctionInfo.L2 FunctionInfo.PEEP)) ct
+val test = Simplifier.asm_full_rewrite (Variable.set_body true (L2Opt.cleanup_ss my_prog_info @{context} []  FunctionInfo.L2 FunctionInfo.PEEP)) ct
 val _ = assert_rhs test @{cterm "STOP (L2_seq_guard (\<lambda>_. g k + a - r \<le> n) (\<lambda>_. STOP (L2_seq_guard (\<lambda>s. True) (\<lambda>_. X1))))"}
 \<close>
 
@@ -1185,7 +1179,7 @@ schematic_goal "rel_spec_monad (=) (=)
                                             (L2_gets (\<lambda>_. ret__int) [\<S> ''ret'']))
                                           (\<lambda>ret__int.
                                               L2_seq
-                                               (L2_call (l2_add' undefined p p) (\<lambda>global_exn_var. (Nonlocal (the_Nonlocal global_exn_var), ret__int))
+                                               (L2_call (l2_add'' undefined p p) (\<lambda>global_exn_var. (Nonlocal (the_Nonlocal global_exn_var), ret__int))
                                                  [\<S> ''global_exn_var'', \<S> ''ret''])
                                                (\<lambda>p___int. L2_throw (Return, p) [\<S> ''global_exn_var'', \<S> ''ret''])))
                                         (\<lambda>(global_exn_var, ret__int).
@@ -1587,7 +1581,7 @@ schematic_goal "rel_spec_monad (=) (rel_xval (=) (rel_project (\<lambda>v. v)))
 
 schematic_goal "rel_spec_monad (=) (rel_xval (=) (rel_project (\<lambda>v. v))) 
   (L2_condition (\<lambda>s. n = 0) (L2_gets (\<lambda>s. 0) [\<S> ''ret''])
-    (L2_seq (L2_call (l2_even' (recguard_dec rec_measure') (n - 1)) (\<lambda>e. e) [])
+    (L2_seq (L2_call (l2_even'' (recguard_dec rec_measure') (n - 1)) (\<lambda>e. e) [])
       (\<lambda>x. L2_gets (\<lambda>s. SCAST(32 signed \<rightarrow> 32) (if x = 0 then 1 else 0))
              [\<S> ''ret''])))
 ?X"

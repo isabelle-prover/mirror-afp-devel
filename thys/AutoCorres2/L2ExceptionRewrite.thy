@@ -101,6 +101,12 @@ lemma rel_spec_monad_rel_xval_L2_assume:
   unfolding L2_assume_def
   by (auto simp add: rel_spec_monad_def rel_set_def split: prod.splits )
 
+lemma rel_spec_monad_rel_xval_L2_exec_spec_monad:
+ "rel_spec_monad (=) (rel_xval (=) (=)) (L2_exec_spec_monad st r) (L2_exec_spec_monad st r)"
+  unfolding L2_exec_spec_monad_def
+  by (auto simp add: rel_spec_monad_def rel_set_def prod.rel_eq rel_post_state_eq rel_xval_eq split: prod.splits )
+
+
 lemma rel_spec_monad_rel_xval_L2_guard:
  "rel_spec_monad (=) (rel_xval L (=)) (L2_guard c) (L2_guard c)"
   unfolding L2_guard_def
@@ -210,6 +216,21 @@ lemma rel_spec_monad_rel_project_L2_assume:
   shows "rel_spec_monad (=) (rel_xval L (=)) (L2_assume r) (L2_assume r)"
   unfolding L2_assume_def
   by (auto simp add: rel_spec_monad_def rel_set_def split: prod.splits)
+
+lemma rel_spec_monad_rel_project_L2_assume':
+  shows "rel_spec_monad (=) (rel_xval L (rel_project (\<lambda>v. v))) (L2_assume r) (L2_assume r)"
+  using rel_spec_monad_rel_project_L2_assume
+  by (simp add: rel_project_id(2))
+
+
+lemma rel_spec_monad_rel_project_L2_exec_spec_monad:
+  shows "rel_spec_monad (=) (rel_xval (=) (=)) (L2_exec_spec_monad st r) (L2_exec_spec_monad st r)"
+  by (rule rel_spec_monad_rel_xval_L2_exec_spec_monad)
+
+lemma rel_spec_monad_rel_project_L2_exec_spec_monad':
+  shows "rel_spec_monad (=) (rel_xval (=) (rel_project (\<lambda>v. v))) (L2_exec_spec_monad st r) (L2_exec_spec_monad st r)"
+  using rel_spec_monad_rel_project_L2_exec_spec_monad
+  by (simp add: rel_project_id(2))
 
 lemma rel_spec_monad_rel_project_L2_guard:
  "rel_spec_monad (=) (rel_xval L (rel_project prj)) (L2_guard c) (L2_guard c)"
@@ -1122,6 +1143,7 @@ Context.theory_map (
     (@{binding "L2_throw - rel_xval"}, 10, @{thm rel_spec_monad_L2_throw_sanitize_names}),
     (@{binding "L2_spec - rel_xval"}, 10, @{thm rel_spec_monad_rel_xval_L2_spec}),
     (@{binding "L2_assume - rel_xval"}, 10, @{thm rel_spec_monad_rel_xval_L2_assume}),
+    (@{binding "L2_exec_spec_monad - rel_xval"}, 10, @{thm rel_spec_monad_rel_xval_L2_exec_spec_monad}),
     (@{binding "L2_guard - rel_xval"}, 10, @{thm rel_spec_monad_rel_xval_L2_guard}),
     (@{binding "L2_guarded - rel_xval"}, 10, @{thm rel_spec_monad_rel_xval_L2_guarded}),
     (@{binding "L2_fail"}, 10, @{thm rel_spec_monad_L2_fail}),
@@ -1137,7 +1159,8 @@ Context.theory_map (
     (@{binding "L2_condition - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_condition}),
     (@{binding "L2_throw - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_throw}),
     (@{binding "L2_spec - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_spec}),
-    (@{binding "L2_assume - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_assume}),
+    (@{binding "L2_assume - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_assume'}),
+    (@{binding "L2_exec_spec-monad - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_exec_spec_monad'}),
     (@{binding "L2_guard - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_guard}),
     (@{binding "L2_guarded - rel_project"}, 10, @{thm rel_spec_monad_rel_project_L2_guarded}),
     (@{binding "L2_try - rel_project"}, 20, @{thm rel_spec_monad_rel_project_L2_try}),

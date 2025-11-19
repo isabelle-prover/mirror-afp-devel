@@ -52,10 +52,11 @@ sig
   val exitN : string
   val exit_status_parN : string
 
+  val init_globalsN: string
   val enum_const_name : string -> string
   val enum_const_summary_lemma_sfx : string
   val untouched_global_name : MString.t -> MString.t
-  val global_initializer_name : MString.t -> MString.t
+  val initial_value_name : MString.t -> MString.t
   val global_data_name : string -> string
 
   val state_rcd_name  : string
@@ -204,6 +205,8 @@ val locals_stackN = "locals_stack"
 val exitN = "exit"
 val exit_status_parN = "status"
 
+val init_globalsN = "init'globals"
+
 val initialisation_function = "___special___init"
 
 val bytesN = "bytes'"
@@ -299,8 +302,8 @@ fun fix_underscore s = if String.isPrefix "_" s
 fun untouched_global_name s =
   s |> MString.dest |> fix_underscore |> MString.mk
 
-fun global_initializer_name s =
-  fix_underscore (MString.dest s) ^ "_global_initializer" |> MString.mk
+fun initial_value_name s =
+  fix_underscore (MString.dest s) ^ "_initial_value" |> MString.mk
 fun global_data_name s = fix_underscore s ^ "_global_data"
 
 val state_rcd_name = "state"
@@ -342,7 +345,7 @@ val ensure_C_field_name = ensure C_field_name unC_field_name
 val adglob_rcd_tyname = "adglobs_struct"
 val adglob_struct_var = "adglobs"
 
-val phantom_state_name = "phantom_machine_state"
+val phantom_state_name = AstDatatype.phantom_machine_state
 val ghost_state_name = "ghost'state"
 
 val naming_scheme_name = "\\" ^ "<Gamma>_naming"

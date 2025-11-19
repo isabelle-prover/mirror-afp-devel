@@ -11,9 +11,6 @@ begin
 
 install_C_file "multi_deref.c"
 
-context multi_deref_simpl 
-begin
-
 thm f_body_def   (* only 1 C_Guard; see JIRA VER-85 *)
 thm g_body_def   (* 2 C_Guards, one per deref; see JIRA VER-152 *)
 
@@ -30,7 +27,5 @@ ML \<open>
   fold_aterms incifGuard t 0 = 2 orelse
   OS.Process.exit OS.Process.failure
 \<close>
-
-end
 
 end

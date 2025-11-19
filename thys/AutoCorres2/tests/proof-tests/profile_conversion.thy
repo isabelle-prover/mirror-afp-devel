@@ -15,10 +15,10 @@ text \<open>Some ML profiling for the various optimisation stages. See also the 
 on tracing and timing in \<^file>\<open>../examples/TraceDemo.thy\<close>.\<close>
 
 
-declare [[verbose=1]]
+declare [[verbose=0]]
 declare [[verbose_timing=2]]
 declare [[autocorres_profile_conversion_enabled=true]]
-declare [[autocorres_profile_conversion_verbosity=1]]
+declare [[autocorres_profile_conversion_verbosity=10]]
 declare [[ML_print_depth=10000]]
 
 text \<open>Option \<^verbatim>\<open>trace_opt\<close> has to be set in order for the profiling to step in.\<close>

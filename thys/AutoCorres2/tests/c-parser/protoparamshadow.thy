@@ -11,13 +11,7 @@ begin
 
 install_C_file "protoparamshadow.c"
 
-context protoparamshadow_simpl
-begin
-
   thm f_body_def
   thm realone_body_def
-
-
-end
 
 end

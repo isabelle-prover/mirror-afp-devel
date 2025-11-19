@@ -64,3 +64,23 @@ int k(int z, int *array)
   default: return 5;
   }
 }
+
+unsigned char nested_switch(unsigned char i, unsigned char j)
+{
+  unsigned x = 0;
+  switch (i) {
+    case 0:
+      switch (j) {
+      case 0:
+        return 1;
+      default:
+        return 2;
+      }
+    case 1:
+      x = 2;
+      break;
+    case 2:
+      x = 3; /* last case can fall through*/
+    }
+  return x;
+}

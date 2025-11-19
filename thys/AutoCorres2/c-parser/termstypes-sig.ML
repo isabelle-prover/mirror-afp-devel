@@ -20,6 +20,7 @@ signature INT_INFO = sig
   val INT_MAX : int
   val INT_MIN : int
   val UINT_MAX : int
+  val gen_ity2wty: {bitint_padding:bool} -> int Absyn.ctype -> typ
   val ity2wty : int Absyn.ctype -> typ
   val nat_to_word : int Absyn.ctype -> term -> term
   val word_to_int : int Absyn.ctype -> term -> term
@@ -41,6 +42,14 @@ sig
   val word64 : typ
   val word128 : typ
 
+  val to_unsigned_word: typ -> typ option
+  val to_signed_word: typ -> typ option
+  val is_unsigned_word: typ -> bool
+  val is_signed_word: typ -> bool
+  val coerce_word: typ -> typ -> term -> term
+
+  val mk_word_ty: int -> typ
+  val mk_sword_ty: int -> typ
   val dest_array_type : typ -> typ * typ
   val dest_array_index : typ -> typ * int
   val mk_array_type : typ * int -> typ

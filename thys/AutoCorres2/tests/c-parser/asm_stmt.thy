@@ -18,8 +18,8 @@ typedecl cghost_state
 
 install_C_file "asm_stmt.c"
   [machinety=machine_state, ghostty=cghost_state]
-
-context asm_stmt_simpl begin
+thm combine_body_def
+context asm_stmt_global_addresses begin
 
 thm f_body_def
 thm f_modifies

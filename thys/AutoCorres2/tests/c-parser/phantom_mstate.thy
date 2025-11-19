@@ -11,7 +11,7 @@ begin
 
 install_C_file "phantom_mstate.c" [machinety=bool]
 
-context phantom_mstate_simpl
+context phantom_mstate_global_addresses
 begin
 
   thm machine_proto_body_def

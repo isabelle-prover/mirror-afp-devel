@@ -50,9 +50,6 @@ lemma [word_abs]:
 
 autocorres [unsigned_word_abs = b c] "custom_word_abs.c"
 
-
-context custom_word_abs_all_impl begin
-
 lemma "a' x y = max x y"
   by (unfold a'_def, rule refl)
 
@@ -61,7 +58,5 @@ lemma "b' x 4 s = Some (x mod 16)"
 
 lemma "c' x y = (if UINT_MAX < x + y then 1 else 0)"
   by (unfold c'_def, simp)
-
-end
 
 end

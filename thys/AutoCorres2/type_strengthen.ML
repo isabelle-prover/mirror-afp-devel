@@ -58,33 +58,21 @@ fun get_typ_from_L2 (rule_set : Monad_Types.monad_type) L2_typ =
  * state parameter of the given type.
  *)
 type fn_ptr_infos = (string * (FunctionInfo.phase -> AutoCorresData.fn_ptr_info)) list
-fun get_ts_corres_prop ctxt skips prog_info prev_phase (fn_ptr_infos: fn_ptr_infos) l2_infos fn_name
+fun get_ts_corres_prop dyn_call ctxt skips prog_info prev_phase  l2_infos fn_name
     (rule_set : Monad_Types.monad_type) state args rhs_term =
 let
-
+  (*val dyn_call = false*) (* FIXME *)
   val ts_corres_attr = AutoCorresData.corres_thm_attribute (ProgramInfo.get_prog_name prog_info) skips FunctionInfo.TS fn_name
   val synth_attr = Synthesize_Rules.add_rule_attrib (#rules_name (#refines_nondet rule_set)) {only_schematic_goal = false} 
        (Binding.make (fn_name ^ "_recursion" , \<^here>)) 10
 
-  val (old_fn, new, args, generalise_args) = 
-    case AList.lookup (op =) fn_ptr_infos fn_name of
-      SOME info => 
-        let
-          val prev_info = info prev_phase
-          val ts_info = info FunctionInfo.TS
-          val P_prev = #prog_env prev_info
-          val P_ts = #prog_env ts_info
-          val p = rhs_term
-          val prev_args =  map Free (#args prev_info)  
-        in (P_prev $ p, betapplys (P_ts $ p, prev_args), prev_args, fold Logic.all (rev prev_args)) end
-    | NONE =>
+  val (old_fn, new, args) = 
         let
           val fn_def = the (Symtab.lookup l2_infos fn_name)
-        in (FunctionInfo.get_const fn_def, rhs_term, args, I) end
+        in (FunctionInfo.get_const fn_def, rhs_term, args) end
    
   val lift = #lift (#refines_nondet rule_set)
   val old = betapplys (old_fn, args)
-
   val sT = AutoCorresData.state_type_of_exn_monad old
   val resT = AutoCorresData.res_type_of_exn_monad old
   val exT = AutoCorresData.ex_type_of_exn_monad old
@@ -106,29 +94,10 @@ let
           (Utils.verbose_msg 1 ctxt (fn _ => "type strengthening into " ^ quote (#name rule_set) ^ " failed:\n" ^ str); 
             raise LiftingFailed ()) 
        
-  (* FIXME: I guess recursive functions that also have fun-ptr-params are not correctly handled *)
-  val prems = case Symtab.lookup l2_infos fn_name of 
-        SOME info => (* regular function not a function pointer parameter *)
-          let  (* We add corres preconditions for any function pointer parameter in this function *)
-            val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = #name rule_set} [] info 
-          in    
-            fn_ptr_param_infos 
-            |> map (fn (ptr, ptr_info) => 
-                let
-                  val ts_info = ptr_info FunctionInfo.TS
-                  val p = Free (#ptr_val ts_info)
-                  val (prev_props, (ts_prop, _)) = 
-                     get_ts_corres_prop ctxt skips prog_info prev_phase fn_ptr_param_infos l2_infos ptr
-                        rule_set state [] p
-                  val prev_props = map fst prev_props 
-                  val ts_prop = Logic.all state ts_prop
-                in prev_props @ [ts_prop] end)
-            |> flat
-          end
-      | NONE => []
+
 in
  ([],
-  ((Logic.list_implies (prems, term)) |> generalise_args, [ts_corres_attr, synth_attr]))
+  (term, [ts_corres_attr, synth_attr]))
 end
 
 (*
@@ -144,7 +113,7 @@ end
  *
  * fixme: refactor with AutoCorresUtil.assume_called_functions_corres
  *)
-fun assume_rec_lifted ctxt skips prog_info fn_ptr_infos l2_infos prev_phase make_function_name rule_set 
+fun assume_rec_lifted ctxt skips prog_info l2_infos prev_phase make_function_name rule_set 
       state rec_fn_fixes recursive_calls fn_name =
 let
 
@@ -164,26 +133,15 @@ let
       val state_typ = get_l2_state_typ l2_infos fn_name
       val free = Free (name, T)
       val (prev_props, prop) = 
-        get_ts_corres_prop ctxt skips prog_info prev_phase fn_ptr_infos l2_infos callee
+        get_ts_corres_prop true ctxt skips prog_info prev_phase l2_infos callee
            rule_set state args (betapplys(free, args))
     in
       (free, map (apfst (Thm.cterm_of ctxt)) (prev_props @ [apfst (fold Logic.all (rev (state::args))) prop])) 
     end) (recursive_calls ~~ rec_fn_fixes) 
     |> split_list |> apsnd flat   
 
-   val assumptions_fn_ptr = map (fn (n, ptr_info) => 
-     let
-       val ts_info = ptr_info FunctionInfo.TS
-       val p = Free (#ptr_val ts_info)
-       val (prev_props, prop) = get_ts_corres_prop ctxt skips prog_info prev_phase fn_ptr_infos l2_infos  n
-         rule_set state [] p
-     in 
-       map (apfst (Thm.cterm_of ctxt)) (prev_props @ [apfst (Logic.all state) prop]) 
-     end) fn_ptr_infos 
-     |> flat
  
- 
-  val assumptions = assumptions_rec @ assumptions_fn_ptr
+  val assumptions = assumptions_rec 
   (* Assume the theorems we just generated. *)
   val (thms, ctxt_asms) = Assumption.add_assumes (map fst assumptions) ctxt
   val (thms, ctxt_asms) = ctxt_asms 
@@ -295,8 +253,6 @@ let
   val args = FunctionInfo.get_plain_args f_info;
   val (arg_frees, ctxt3_args) = Utils.fix_variant_frees args ctxt2_state;
 
-  val fn_ptr_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = #name rule_set} arg_frees f_info
-  val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = #name rule_set} [] f_info
   val export_fun_names = Variable.export_morphism ctxt1_fun_names ctxt
   val export_measure = Variable.export_morphism ctxt2_state ctxt1_fun_names
   val export_args = Variable.export_morphism ctxt3_args ctxt2_state
@@ -304,30 +260,19 @@ let
 
   (* Assume recursive calls can be successfully lifted into this type. *)
   val (ctxt4_rec_assms, thms, rec_frees, export_assms)
-      = assume_rec_lifted ctxt3_args skips prog_info fn_ptr_infos l2_infos prev_phase make_function_name rule_set 
+      = assume_rec_lifted ctxt3_args skips prog_info l2_infos prev_phase make_function_name rule_set 
           state rec_fn_fixes recursive_calls fn_name
 
-  val rec_funs = recursive_calls ~~ rec_frees
-  val rec_ptrs = FunctionInfo.get_clique_recursion_fun_ptrs f_info
-
-  val ctxt4_rec_assms = ctxt4_rec_assms 
-      |> AutoCorresData.prove_and_note_fun_ptr_intros false (prev_phase, FunctionInfo.TS) prog_info 
-           (mk_corresTS_fun_ptr_thm prog_info (rec_funs, rec_ptrs))
-
   val fn_def = FunctionInfo.get_definition f_info
-  val fn_def_inst = fn_def |> Drule.infer_instantiate' ctxt4_rec_assms 
-                 (map (SOME o Thm.cterm_of ctxt4_rec_assms) (arg_frees)) 
- 
-  val ct = Thm.prop_of fn_def_inst |> Utils.rhs_of |> Thm.cterm_of ctxt4_rec_assms 
+
   (* Rewrite the term using the given rewrite rules. *)
-  val t = Thm.term_of ct
 
   val synth  = Var (("_p", 0), (fastype_of (FunctionInfo.get_const f_info) |> get_typ_from_L2 rule_set))
   
-  val (_, (goal,_)) = get_ts_corres_prop ctxt4_rec_assms skips prog_info prev_phase fn_ptr_param_infos l2_infos fn_name rule_set 
+  val (_, (goal,_)) = get_ts_corres_prop true ctxt4_rec_assms skips prog_info prev_phase l2_infos fn_name rule_set 
         state arg_frees synth
-  val cgoal = Thm.cterm_of ctxt4_rec_assms goal
-  val rewrite = Monad_Convert.sim_nondet ctxt4_rec_assms rule_set fn_def
+
+  val rewrite = Monad_Convert.sim_nondet prog_info FunctionInfo.TS ctxt4_rec_assms rule_set fn_def
 
 (*
   val rewrite = if is_some (#rel_nondet_monad_rewrite rule_set) 
@@ -335,7 +280,10 @@ let
            (callee_names @ rec_names) (callee_thms @ thms @ more_corres) (mono_thms @ more_mono) (fun_ptr_callee_thms @ more_corres)
     else Monad_Convert.monad_rewrite ctxt4_rec_assms (SOME prog_info) [] rule_set  (callee_thms @ thms @ more_corres) fun_ptr_callee_thms true
   *)
-  val maybe_thm = rewrite goal |> Option.map (Morphism.thm (export_assms $> export_args $> export_measure))
+  val maybe_thm = rewrite goal 
+    |> Option.map (Morphism.thm (export_assms $> export_args $> export_measure))
+
+  val _ = case maybe_thm of NONE => warning ("lifting failed for (" ^ #name rule_set ^ "): " ^ fn_name) | _ => ()
 in
   (* Determine if the lifting succeeded. *)
   maybe_thm |> Option.map (rpair export_fun_names)
@@ -353,10 +301,13 @@ fun perform_lift_and_polish ctxt skips prog_info fn_info prev_phase make_functio
   val fun_names = ProgramInfo.get_csenv prog_info |> ProgramAnalysis.get_functions |> map make_function_name
     |> map (Syntax.read_term ctxt) |> map_filter (try (fst o dest_Const o head_of))  
 
-  fun pretty_bounds_conv ctxt  = PrettyBoundVarNames.pretty_bound_vars_thm keep_going ctxt fun_names 
+  fun pretty_bounds_conv ctxt  = 
+    (PrettyBoundVarNames.pretty_bound_vars_thm keep_going ctxt fun_names)
   (* Apply any polishing rules. *)
   val polish_thm = timeit_msg 1 ctxt (fn _ => "Polish - " ^ fn_name) 
-    (fn _ => Monad_Convert.polish_refines ctxt rule_set do_polish pretty_bounds_conv thm)
+    (fn _ => Monad_Convert.polish_refines ctxt rule_set do_polish 
+       pretty_bounds_conv 
+       map_of_default_args.fold_map_of_default_conv thm)
 in (polish_thm,  export_fun_names) end
 
 
@@ -380,6 +331,25 @@ fun get_body ctxt (mt:Monad_Types.monad_type) @{term_pat "refines ?f ?new _ _ _"
         SOME f' => (f, f')
        | NONE => (f, new))
 
+(* FIXME: move to autocorres_util and integrate also in to prove_functions *)
+fun admissibility_tac ctxt thms i =
+  Seq.INTERVAL 
+    (REPEAT_ALL_NEW  
+      (match_tac ctxt (@{thms admissible_imp admissible_all admissible_imp'} @ thms))) 
+    1 i
+
+(* FIXME: sync with variant in autocorres_util.ML *)
+fun subgoal_intro_tac' thms = Subgoal.FOCUS (fn {context, prems, ...} => 
+  let
+    val n = length thms
+    val hyps = take n prems
+    val inst_thms = map (fn thm => thm OF hyps) thms
+      
+  in
+  (resolve_tac context inst_thms 
+      THEN_ALL_NEW (AutoCorresUtil.subgoal_assm_tac prems context)) 1
+  end)
+
 fun lift_function_rewrite rule_set filename skips prog_info prev_phase l2_infos ts_infos
     fn_names make_function_name do_polish keep_going lthy =
 let
@@ -397,17 +367,6 @@ let
   val is_recursive = exists FunctionInfo.is_function_recursive these_l2_infos
   val _ = if is_recursive andalso #ccpo_name rule_set = "" then raise LiftingFailed () else ()
 
-  (* Fetch relevant callees. *)
-  val callees =
-      map FunctionInfo.get_callees these_l2_infos
-      |> Symset.union_sets
-      |> Symset.dest
-  val callee_infos = map (Symtab.lookup ts_infos #> the) callees
-
-  val fun_ptr_callees = map FunctionInfo.get_fun_ptr_dependencies these_l2_infos 
-    |> Symset.union_sets |> Symset.dest
-   
-  val callee_thms = map FunctionInfo.get_corres_thm callee_infos
 
   (*
    * Attempt to lift all functions into this type.
@@ -420,13 +379,13 @@ let
    *)
   val lifted_functions = 
     map (perform_lift_and_polish lthy skips prog_info l2_infos prev_phase make_function_name rule_set do_polish keep_going) fn_names
-
   val lifted_functions = map (fn x =>
       case x of
           SOME a => a
         | NONE => raise LiftingFailed ())
       lifted_functions
-  val thms = map #1 lifted_functions 
+  fun simplified ctxt thms = Simplifier.full_simplify ((Raw_Simplifier.clear_simpset ctxt) addsimps thms)
+  val thms = map (simplified lthy @{thms DYN_CALL_def} o #1) lifted_functions 
   val morphs = map #2 lifted_functions
 
   (*
@@ -443,7 +402,6 @@ let
     val (((typ_inst, var_inst), [imp_thm]), _) = Variable.import true [thm] lthy
     val (orig, new) = imp_thm |> Thm.concl_of |> HOLogic.dest_Trueprop |> get_body lthy rule_set
     val args = strip_comb orig |> snd |> rev |> take nargs |> rev
-
     (* Extract the body from the conversion theorem.
      * E.g. for "L2_call foo = liftE body" we extract "body". *)
  
@@ -457,16 +415,29 @@ let
   val phase = FunctionInfo.TS
 
   val input_defs = map gen_fun_def_term (fn_names ~~ thms)
-  val defL = AutoCorresData.definition_locale lthy skips FunctionInfo.TS filename fn_names
-
+  fun src_name n = get_first (fn (orig, n', _, _ ) => if n = n' then SOME orig else NONE) input_defs
   val do_guard_simps =  member (op =) ["nondet", "exit"] ts_monad_name
-  val qualify = if do_guard_simps then Binding.qualify true "raw" else I
-  val lthy = lthy |> AutoCorresData.in_locale defL (
-        Utils.define_functions input_defs qualify false is_recursive (#ccpo_name rule_set) 
-          [AutoCorresData.define_function_declaration {concealed_named_theorems = do_guard_simps} filename skips phase] 
-          [AutoCorresData.induct_thms_declaration filename skips phase]
-        #> snd)
+  fun has_fun_pointers b = the_default false (
+    src_name (Binding.name_of b) 
+    |> Option.map (ProgramAnalysis.has_fun_ptr_calls (ProgramInfo.get_csenv prog_info)))
 
+  fun qualify b = 
+    if do_guard_simps then 
+      Binding.qualify true "raw" b 
+    else 
+      Binding.qualify (has_fun_pointers b) "ts" b
+
+  val has_fun_pointers = ProgramAnalysis.program_has_fun_ptr_calls (ProgramInfo.get_csenv prog_info)
+  val final_attr = 
+    if has_fun_pointers orelse do_guard_simps then [] 
+    else 
+      [K (Named_Theorems.add @{named_theorems final_defs})]
+  val lthy = lthy |> AutoCorresData.in_theory' (
+        Utils.define_functions input_defs qualify false is_recursive (#ccpo_name rule_set) 
+          (final_attr @ [AutoCorresData.define_function_attribute {concealed_named_theorems = do_guard_simps} filename skips phase]) 
+          []
+          []
+        #> snd)
   val (fs, ts_defs) =
     let
        val finfos = fn_names |> map_filter (AutoCorresData.get_function_info (Context.Proof lthy) filename phase) 
@@ -474,7 +445,6 @@ let
     in
       split_list finfos
     end
-
   (* TODO: we may want to cleanup callees and rec_callees here, like we do
    *       in other phases. It's not crucial, however, since this is the
    *       final phase. *)
@@ -489,12 +459,12 @@ let
     let
       val finfo = the (Symtab.lookup l2_infos fn_name)
       val args = FunctionInfo.get_plain_args finfo |> (fn xs => Utils.fix_variant_frees xs lthy') |> fst 
-      val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos lthy' prog_info {ts_monad_name= #name rule_set} [] finfo
-      val prop =  get_ts_corres_prop lthy' skips prog_info prev_phase fn_ptr_param_infos l2_infos fn_name
+      val prop =  get_ts_corres_prop false lthy' skips prog_info prev_phase l2_infos fn_name
        rule_set state args (betapplys (fn_trm, args)) |> snd |> fst
     in
       fold Logic.all (rev (args)) prop
     end) (fn_names ~~ fs))
+
 
   (* Convert meta-logic into HOL statements, conjunct them together and setup
    * our goal statement. *)
@@ -505,24 +475,33 @@ let
 
   val exp_thms = map (fn (thm, export_fun_names) => Morphism.thm export_fun_names thm) (thms ~~ morphs)
 
-  val induct_thms = map (FunctionInfo.get_induct_thms o the o (AutoCorresData.get_function_info (Context.Proof lthy) filename phase)) fn_names
-        |> hd
+  fun get_induct_thms () = 
+      let
+        val c = hd ts_defs |> Thm.concl_of |> Utils.lhs_of_eq |> Term.head_of 
+      in
+        Mutual_CCPO_Rec.lookup_info_trimmed (Context.Proof lthy) c |> the_list |> maps #inducts
+      end
+  val induct_thms = get_induct_thms ()
 
   val admissibility_thms = Named_Theorems.get lthy @{named_theorems corres_admissible}
   val top_thms = Named_Theorems.get lthy @{named_theorems corres_top}
 
   val N = length props
-
+  val arbitrary_varss = replicate N [state]
+  val all_varss = map (fn (xs, ys) => xs @ ys) (paramss ~~ arbitrary_varss)
+  fun admissibility_tac ctxt i = Seq.INTERVAL (AutoCorresUtil.corres_admissible_tac ctxt) i (i + N - 1)
+  val bump_unify_bound = Config.map Unify.search_bound (fn n => n * N)
   val rewrite_thms =
     if is_recursive then 
        Goal.prove_common lthy' NONE [] [] props (fn {context,...} =>
-         DETERM (Induct.induct_tac context false 
-           (map (map (fn t => SOME (NONE, (t, true)))) paramss) (* instantiations *)
-           (replicate N [dest_Free state]) (* arbitrary *) [] (SOME induct_thms) [] 1) THEN
-         REPEAT_DETERM_N N (match_tac context @{thms admissible_all} 1 THEN match_tac context admissibility_thms 1) THEN 
+         DETERM (Induct.induct_tac  (bump_unify_bound context) false 
+           [] (* instantiations *)
+           (map (map dest_Free) all_varss) (* arbitrary *) [] (SOME induct_thms) [] 1) THEN
+         admissibility_tac  (bump_unify_bound context) 1 THEN (* FIXME: instantiate admissible_subst_fun_lub_fun_ord instead of bumping unification bound *) 
          REPEAT_DETERM_N N (match_tac context top_thms 1) THEN
           (* solve induction-cases *)
-         REPEAT_DETERM_N N (match_tac context exp_thms 1 THEN (REPEAT_DETERM_N N (Method.assm_tac context 1))))
+          (*ALLGOALS *) REPEAT (subgoal_intro_tac' exp_thms context 1)
+         )
     else
       Goal.prove_common lthy' NONE [] [] props (fn {context,...} =>
         EVERY [
@@ -624,7 +603,7 @@ end
 fun drop_while P [] = []
   | drop_while P (x::xs) = if P x then drop_while P xs else (x::xs)
 
-fun get_unchanged_typing_prop prog_info fn_ptr_infos ts_infos monad_name
+fun get_unchanged_typing_prop prog_info ts_infos monad_name
     ctxt fn_name fn_args  =
 let
   
@@ -644,42 +623,19 @@ let
   val attrs = map (Attrib.attribute ctxt) @{attributes [runs_to_vcg]}
   
   (* Get TS const *)
-  val ts_fun = case AList.lookup (op =) fn_ptr_infos fn_name of
-        SOME info => 
-          let
-            val ts_info = info FunctionInfo.TS
-            val P_ts = #prog_env ts_info 
-            val p = Free (#ptr_val ts_info)
-          in
-            (P_ts $ p)
-          end
-      | NONE => (the (Symtab.lookup ts_infos fn_name) |> FunctionInfo.get_const)
+  val ts_fun = (the (Symtab.lookup ts_infos fn_name) |> FunctionInfo.get_const)
 
   val ts_term = betapplys (ts_fun, fn_args)
-  val prems = case Symtab.lookup ts_infos fn_name of 
-        SOME info => (* regular function not a function pointer parameter *)
-          let  (* We add corres preconditions for any function pointer parameter in this function *)
-            val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = monad_name} fn_args info           
-          in
-            fn_ptr_param_infos 
-            |> map (fn (ptr, ptr_info) => 
-                let
-                  val ts_info = ptr_info FunctionInfo.TS
-                  val args = map Free (#args ts_info)
-                  val (([], prop), _) = 
-                    get_unchanged_typing_prop prog_info fn_ptr_param_infos ts_infos monad_name ctxt ptr args
-                  val hl_prop = fold Logic.all (rev args) prop
-                in  [hl_prop] end)
-            |> flat
-          end
-        | NONE => [] 
+
 
 in
-  ((prems,
+  (([],
     \<^infer_instantiate>\<open>C = ts_term and unchanged = \<open>unchanged_typing_on\<close> 
         in prop \<open>\<And>s. Spec_Monad.runs_to_partial C s (\<lambda>r t. unchanged (UNIV::addr set) s t)\<close>\<close> ctxt), 
    attrs)
 end
+
+
 
 (* Run through every function, attempting to strengthen its type.
  * fixme: this stage is currently completely sequential. Conversions
@@ -711,13 +667,8 @@ let
       let
         val _ = writeln ("Translating (type strengthen) " ^ commas fn_names);
 
-        val lthy = lthy |> AutoCorresData.in_theory (
-            AutoCorresData.add_definition_and_corres_proof_locales prog_info base_locale_opt infos_prev_phase skips phase fn_names 
-            #> snd #> Local_Theory.exit_global
-            #> AutoCorresData.add_final_corres_proof_locale skips prog_info fn_names)
-
         val (monad_name, lthy) = lthy |> AutoCorresUtil.timeit_ts_msg 1 lthy fn_names (fn () => 
-              AutoCorresUtil.in_corres_locale_result skips phase filename fn_names (fn lthy => lthy |>
+              AutoCorresUtil.in_corres_locale_result prog_info skips phase filename fn_names (fn lthy => lthy |>
                 let 
                   val l2_infos = AutoCorresData.get_default_phase_info (Context.Proof lthy) filename prev_phase
                   val ts_infos = AutoCorresData.get_default_phase_info (Context.Proof lthy) filename phase
@@ -743,30 +694,28 @@ let
                  monad_infos
             |> snd |> rev
             |> filter (fn (n, _) => member (op =) (map #name rules) n)
-
-        val lthy = lthy |> AutoCorresData.in_theory (
-          AutoCorresData.add_impl_locales skips prog_info infos_prev_phase phase monad_infos fn_names)
-
-        val def_locale = AutoCorresData.definition_locale lthy skips phase 
-              (ProgramInfo.get_prog_name prog_info) fn_names  
    
-        val lthy = lthy |> member (op =) ["nondet", "exit"] monad_name ? AutoCorresData.in_locale def_locale (fn lthy =>
+        val lthy = lthy |> member (op =) ["nondet", "exit"] monad_name ? (fn lthy =>
           let                                                                                   
             val ts_infos = AutoCorresData.get_default_phase_info (Context.Proof lthy) filename phase
             fun finfo f = (the (Symtab.lookup ts_infos f))
             val is_recursive = FunctionInfo.is_function_recursive (finfo (hd fn_names))
-            val induct_thms = FunctionInfo.get_induct_thms (finfo (hd fn_names))
-            fun check ctxt = AutoCorresUtil.check_dyn_call_goal ctxt prog_info (FunctionInfo.TS, FunctionInfo.TS)
-            fun splitter ctxt = AutoCorresUtil.dyn_call_split_simp_sidecondition_tac (check ctxt) [] [] ctxt
+            fun get_induct_thms () = 
+              let
+                val c = (finfo (hd fn_names)) |>  FunctionInfo.get_const |> Term.head_of 
+              in
+                Mutual_CCPO_Rec.lookup_info_trimmed (Context.Proof lthy) c |> the_list |> maps #inducts
+              end
+            val induct_thms = get_induct_thms ()
+
             fun prop f ctxt =  
               let                     
                 val info = finfo f
                 val args = FunctionInfo.get_plain_args info
                 val def = FunctionInfo.get_definition info
-                val (params, ctxt) = Utils.fix_variant_frees args ctxt;
-                                                        
-                val fn_ptr_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name = monad_name} params info
-                val ((prems, prop), attrs) = get_unchanged_typing_prop prog_info fn_ptr_infos ts_infos monad_name lthy f (map Free args)
+                val (params, ctxt) = Utils.fix_variant_frees args ctxt; 
+                (* FIMXE: remove prems, should be empty all the time *)                                                 
+                val ((prems, prop), attrs) = get_unchanged_typing_prop prog_info ts_infos monad_name lthy f params
                 val ((arbitrary_vars, prop), ctxt) = Utils.import_universal_prop prop ctxt
                 val (prems, ctxt) = Assumption.add_assumes (map (Thm.cterm_of ctxt) prems) ctxt
                 val (_, ctxt) = fold_map (Thm.proof_attributes attrs) prems ctxt
@@ -777,11 +726,11 @@ let
             val heap_syntax_defs = Named_Theorems.get lthy @{named_theorems heap_update_syntax} 
               |> map (Utils.abs_def lthy)
             val (props, ctxt) = lthy |> fold_map prop fn_names
-            val thms = timeit_msg 1 lthy (fn _ => "Trying unchanged typing proof for " ^ commas fn_names) (fn _ => 
+            val thms = Utils.timeit_label 1 lthy ("Trying unchanged typing proof for " ^ commas fn_names) (fn _ => 
                  AutoCorresUtil.prove_functions is_recursive induct_thms 
-                   (fn ctxt => Unchanged_Typing.unchanged_typing_tac (SOME splitter) (ctxt addsimps heap_syntax_defs))
+                   (fn ctxt => Unchanged_Typing.unchanged_typing_tac NONE (ctxt addsimps heap_syntax_defs))
                    (fn attrss => fn ctxt => ALLGOALS (AutoCorresUtil.prove_induction_case 
-                        (K (Unchanged_Typing.unchanged_typing_tac (SOME splitter))) attrss (ctxt addsimps heap_syntax_defs)))
+                        (K (Unchanged_Typing.unchanged_typing_tac NONE)) attrss (ctxt addsimps heap_syntax_defs)))
                    ctxt props 
                    handle ERROR msg => 
                     (warning ("Could not prove 'unchanged_typing' for " ^ commas fn_names ^ "\n " ^ msg); []))
@@ -790,14 +739,17 @@ let
            val lthy = lthy |> not (null thms)?
              (Local_Theory.note ((Binding.make (suffix "_unchanged_typing" (space_implode "_" fn_names), \<^here>), 
                @{attributes [unchanged_typing]}), thms) #> snd)
+
            fun simplify_def f lthy =
              let
+               val has_fun_pointers = ProgramAnalysis.has_fun_ptr_calls (ProgramInfo.get_csenv prog_info) f
+               val final_attr = if has_fun_pointers then [] else [Named_Theorems.add @{named_theorems final_defs}]
                val info = finfo f
                val def = FunctionInfo.get_definition info
                val _ = Utils.verbose_msg 3 ctxt (fn _ => "before guard simplification:\n " ^ Thm.string_of_thm lthy def)
                val size_simps = Named_Theorems.get lthy @{named_theorems size_simps}
                val ctxt = lthy delsimps 
-                      @{thms replicate_0 replicate_Suc replicate_numeral} @ (* Unify with setup in l2_opt.ML ? *)
+                      @{thms map_of_default.simps replicate_0 replicate_Suc replicate_numeral} @ (* Unify with setup in l2_opt.ML ? *)
                       size_simps
                val def' = timeit_msg 1 lthy (fn _ => "Simplifying guards within " ^ f) (fn _ => 
                  Monad_Cong_Simp.monad_simplify_import ctxt def)
@@ -811,8 +763,8 @@ let
 
              in
                lthy 
-               |> Utils.define_lemma' (Binding.set_pos \<^here> b)
-                   [AutoCorresData.define_function_declaration {concealed_named_theorems=false} filename skips phase f]  
+               |> Utils.define_lemma (Binding.qualify has_fun_pointers "ts" (Binding.set_pos \<^here> b))
+                   (final_attr @ [AutoCorresData.define_function_attribute {concealed_named_theorems=false} filename skips phase f]) 
                    def'
                |> snd
              end

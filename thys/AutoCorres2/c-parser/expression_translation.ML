@@ -385,7 +385,7 @@ fun array_decay ctxt (ei : expr_info) =
 fun typecast (ctxt, newtype, ei : expr_info) = let
   val ei = ei |> array_decay ctxt |> strip_kb
   val oldtype = ctype_of ei
-  val new_ty = CalculateState.ctype_to_typ ctxt newtype
+  val new_ty = CalculateState.ctype_to_typ {bitint_padding=false} ctxt newtype
   fun fail () = Feedback.error_range ctxt (eileft ei) (eiright ei) 
        (" can't cast from: " ^ tyname oldtype ^ " to: " ^ tyname newtype)
 in
@@ -417,7 +417,10 @@ in
                typecast(ctxt, ImplementationTypes.ptrval_t, ei),
                newtype, false)
     else if ptr_type oldtype then
-      lmk_comb(@{const_name "ptr_coerce"}, [ei], Known new_ty, newtype, false)
+      if CType.fun_ptr_type oldtype andalso  CType.fun_ptr_type newtype andalso CalculateState.ctype_to_typ {bitint_padding=false} ctxt oldtype = new_ty then 
+        ei (* i.e. function pointer types all get unit ptr, avoid identity coercion *)
+      else
+        lmk_comb(@{const_name "ptr_coerce"}, [ei], Known new_ty, newtype, false)
     else fail()
   else fail()
 end
@@ -612,8 +615,9 @@ in
                      Signed i => (i, true)
                    | Unsigned i => (i, false)
                    | _ => Fail "Bad type for second argument to left-shift"
-        val iwidth = int_sizeof ity1 * CHAR_BIT
+        val iwidth = int_width ity1
         val iwidth_e = literalconstant ctxt (boglit iwidth)
+        
         fun signed_guard s =
             (mk_conj(less_t
                        $ (times_t
@@ -668,7 +672,7 @@ in
                        Signed i => i
                      | Unsigned i => i
                      | _ => Fail "Bad type for first argument to right-shift"
-          val iwidth = int_sizeof ity1 * CHAR_BIT
+          val iwidth = int_width ity1
           val szcheck =
               mk_relbinop ctxt (@{const_name "less"}, @{const_name "word_sless"},
                                ei2', literalconstant ctxt (boglit iwidth))
@@ -703,7 +707,7 @@ end handle TYPE (s, tys, tms) => raise TYPE("binop_term ("^binopname bop^"): "^
                                             s, tys, tms)
 
 
-type senv = (string * (CType.rcd_kind * (string * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
+type senv = (string * (CType.rcd_kind * (string wrap * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
 
 fun zero_term ctxt (senv:senv) cty = let
   val thy = Proof_Context.theory_of ctxt
@@ -712,7 +716,7 @@ fun zero_term ctxt (senv:senv) cty = let
   fun get_fields s =
     case AList.lookup (op =) senv s of
       NONE => raise Fail ("zero_term: no field info for " ^ s)
-    | SOME (Union active, fs, _, _) => map (#1 o #2) (CType.single_variant s active fs) (* FIXME *)
+    | SOME (Union active, fs, _, _) => map (#1 o #2) (single (hd (CType.active_variants s active fs)))
     | SOME (Struct, fs, _, _) => map (#1 o #2) fs
 
   fun zero_fields s flds = 
@@ -730,23 +734,23 @@ in
   (* create a term of the Isabelle type corresponding to cty which is
      everywhere zero at the leaf types *)
     case cty of
-      Signed _ => mk_zero (ctype_to_typ ctxt cty)
-    | Unsigned _ => mk_zero (ctype_to_typ ctxt cty)
+      Signed _ => mk_zero (ctype_to_typ {bitint_padding=true} ctxt cty)
+    | Unsigned _ => mk_zero (ctype_to_typ {bitint_padding=true} ctxt cty)
     | PlainChar => mk_zero IntInfo.char
     | Ptr Void => mk_ptr (mk_zero addr_ty, @{typ unit})
     | Ptr (Function _) => mk_ptr (mk_zero addr_ty, @{typ unit})
-    | Ptr cty0 => mk_ptr (mk_zero addr_ty, ctype_to_typ ctxt cty0)
+    | Ptr cty0 => mk_ptr (mk_zero addr_ty, ctype_to_typ {bitint_padding=true} ctxt cty0)
     | StructTy s => zero_fields s (get_fields s)
     | UnionTy s => zero_fields s (get_fields s)
     | Array(ty, _) => let
-        val ity = ctype_to_typ ctxt cty
-        val ety = ctype_to_typ ctxt ty
+        val ity = ctype_to_typ {bitint_padding=true} ctxt cty
+        val ety = ctype_to_typ {bitint_padding=true} ctxt ty
       in
         Const("Arrays.FCP", (nat --> ety) --> ity) $
              (Abs("_", nat, zero_term ctxt senv ty))
       end
-    | EnumTy _ => mk_zero(ctype_to_typ ctxt (Signed Int))
-    | Bool => mk_zero(ctype_to_typ ctxt  (Unsigned Char))
+    | EnumTy _ => mk_zero(ctype_to_typ {bitint_padding=true} ctxt (Signed Int))
+    | Bool => mk_zero(ctype_to_typ {bitint_padding=true} ctxt  (Unsigned Char))
     | _ => raise Fail ("zero_term: can't handle: " ^ tyname cty)
 end
 
@@ -789,7 +793,7 @@ end
 
 fun dest_flexible_array_access cse (senv:senv) sname fld =
    AList.lookup (op =) senv sname |> Option.mapPartial (fn (_, flds, _, _) =>     
-       AList.lookup (op =) flds fld |> Option.mapPartial (fn fld => 
+       AList.lookup eq_wrap flds fld |> Option.mapPartial (fn fld => 
          (case fld of
            (Array (el_ty, NONE), _) => SOME (el_ty, ProgramAnalysis.sizeof_struct_or_union cse sname)
          | _ => NONE)))
@@ -811,7 +815,7 @@ fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
   val thy = Proof_Context.theory_of ctxt
   val ecenv = ProgramAnalysis.cse2ecenv ctxt cse
   val senv = ProgramAnalysis.get_senv cse
-  val tyinfo = ProgramAnalysis.cse_typing ctxt cse
+  val tyinfo = ProgramAnalysis.cse_typing {report_error=true} ctxt cse
   val error = fn s => Feedback.error_range ctxt (eleft e) (eright e) s;
   val expr_term = expr_term ctxt cse tbuilders varinfo
   val mk_rval = fn (f,cty) => mk_rval(f, cty, false, eleft e, eright e)
@@ -820,6 +824,7 @@ fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
       tbuilders
   fun deref_action (ei : expr_info) : expr_info = let
     val ei = array_decay ctxt ei
+
     val e0_val = rval_of ei
     val heap_vi = (NameGeneration.global_heap_var,
                    MemoryModelExtras.extended_heap_ty,
@@ -837,14 +842,16 @@ fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
                 Ptr x => x
               | _ => error ("deref_action: called on non-ptr value")
     fun rval st =
-        MemoryModelExtras.dereference_ptr {heap = var_accessor heap_vi st,
-                                           ptrval = e0_val st}
+        CalculateState.coerce_bitint_from_padding ctxt cty
+          (MemoryModelExtras.dereference_ptr 
+            {heap = var_accessor heap_vi st, ptrval = e0_val st})
+
     fun lval value st =
         var_updator
             false
             heap_vi
             (MemoryModelExtras.mk_heap_update_extended
-                 (mk_heap_upd (e0_val st, value)))
+                 (mk_heap_upd (e0_val st, CalculateState.coerce_bitint_to_padding ctxt cty value)))
             st
   in
     EI {lval = SOME lval, addr = SOME e0_val, rval = rval, cty = cty,
@@ -868,8 +875,10 @@ fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
           InitE e => let
             val ei0 = expr_term e
             val e_ty = ctype_of ei0
+            val level_ty = type_at_path levelty senv curpath
+            val array_decay = array_type e_ty andalso ptr_type level_ty
           in
-            if aggregate_type e_ty then let
+            if aggregate_type e_ty andalso not array_decay then let
                 (* Though an aggregate the initializer may be for
                    something not an immediate child.
                    This means we have to look along curpath for something
@@ -881,11 +890,17 @@ fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
                 | SOME p => ([(p, ei0)], leaf_inc_path levelty senv p)
               end
             else (* e must be a leaf *) let
-                val leafty = type_at_path levelty senv curpath
+                fun get_first_variant u = (* special case union initialisation without variant, e.g.:  union ... foo = {42} *)
+                  case AList.lookup (op =) senv u of
+                    SOME (Union active, fs, _, _) => map (fld o node o #1) (single (hd (CType.active_variants u active fs)))
+                    | _  => []
+                val first_variant = case level_ty of UnionTy u => get_first_variant u | _ => []
+                val path = curpath @ first_variant
+                val leafty = type_at_path levelty senv path
                 val ei = typecast (ctxt, leafty, ei0)
-                val p' = leaf_inc_path levelty senv curpath
+                val p' = leaf_inc_path levelty senv path
               in
-                ([(curpath, ei)], p')
+                ([(path, ei)], p')
               end
           end
         | InitList dilist => let
@@ -899,7 +914,6 @@ fun expr_term ctxt cse tbuilders varinfo e : expr_info = let
           in
             (map (fn (p,ei) => (hd curpath :: p, ei)) inits, bumped)
           end
-
     and interpret_dilist levelty curpath_opt dinits =
         case dinits of
           [] => ([], curpath_opt)
@@ -1039,9 +1053,11 @@ in
                                      NONE, (* no corresponding C type *)
                                      CalculateState.NSGlobal)
                                 val own_v = var_accessor ownership_vi
+                                val owner_c = Proof_Context.read_const {proper=true, strict=false} ctxt 
+                                  (Long_Name.qualify (ProgramAnalysis.get_prog_name cse) oid)
                               in
                                 [fn s =>
-                                    (mk_eqt(own_v s, Free(oid,nat)),
+                                    (mk_eqt(own_v s, owner_c),
                                      ownership_error)]
                               end
                         end
@@ -1171,7 +1187,7 @@ in
         | _ => 
           let 
             fun ptr_coerce p = 
-              the_default (p, CalculateState.ctype_to_typ ctxt (StructTy sname)) 
+              the_default (p, CalculateState.ctype_to_typ {bitint_padding=true} ctxt (StructTy sname)) 
                 (CalculateState.union_variant {non_canonical=true} thy cse (sname, fld) |> Option.map (fn (union_ty, variant_ty, _) => 
                   (\<^Const>\<open>ptr_coerce union_ty variant_ty\<close> $ p, variant_ty)))
             fun heap_deref a = let     
@@ -1183,7 +1199,7 @@ in
                        (ptr,
                         mk_qualified_field_name fld,
                         ptr_ty,
-                        CalculateState.ctype_to_typ ctxt (tyinfo e))
+                        CalculateState.ctype_to_typ {bitint_padding=true} ctxt (tyinfo e))
                   end
               in
                 deref_action (mk_rval(rval, Ptr (tyinfo e)))
@@ -1216,14 +1232,14 @@ in
   | TypeCast(cty,e0) => typecast (ctxt, constify_abtype true ctxt ecenv (node cty),
                                   expr_term e0)
   | Sizeof e0 => let
-      val ity = CalculateState.ctype_to_typ ctxt (tyinfo e0)
+      val ity = CalculateState.ctype_to_typ {bitint_padding=true} ctxt (tyinfo e0)
       fun rval _ = IntInfo.nat_to_word ImplementationTypes.size_t
                                        (mk_sizeof (mk_TYPE ity))
     in
       mk_rval (rval, ImplementationTypes.size_t)
     end
   | SizeofTy cty => let
-      val ity = CalculateState.ctype_to_typ ctxt (constify_abtype true ctxt ecenv (node cty))
+      val ity = CalculateState.ctype_to_typ {bitint_padding=true} ctxt (constify_abtype true ctxt ecenv (node cty))
       fun rval _ = IntInfo.nat_to_word ImplementationTypes.size_t
                                        (mk_sizeof (mk_TYPE ity))
     in
@@ -1253,19 +1269,21 @@ in
                            Syntax.string_of_term (thy2ctxt thy)
                                                  zero_tm)
       val ei0 = mk_rval((fn _ => zero_tm), cty)
-      val typ = CalculateState.ctype_to_typ ctxt cty
+      val typ = CalculateState.ctype_to_typ {bitint_padding=true} ctxt cty
     in
       ei0 |> fold (mk_complit_upd ctxt cty typ) updates
     end
   | Arbitrary cty0 => let
       val cty = constify_abtype true ctxt ecenv cty0
-      fun rval _ = mk_arbitrary (CalculateState.ctype_to_typ ctxt cty)
+      fun rval _ = mk_arbitrary (CalculateState.ctype_to_typ {bitint_padding=true} ctxt cty)
     in
       mk_rval(rval, cty)
     end
-  | EFnCall _ => Feedback.error_range ctxt (eleft e) (eright e) 
-                        "there shouldn't be an embedded function call here"
+  | EFnCall x => Feedback.error_range ctxt (eleft e) (eright e) 
+                        ("there shouldn't be an embedded function call here: " ^ @{make_string} x)
   | MKBOOL e => strip_kb (mk_isabool ctxt (expr_term e))
+  | _ => Feedback.error_range ctxt (eleft e) (eright e) 
+                        ("cannot handle this expression here" ^ @{make_string} e)
 end
 
 

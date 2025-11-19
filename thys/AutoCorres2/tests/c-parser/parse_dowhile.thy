@@ -11,11 +11,8 @@ begin
 
 install_C_file "parse_dowhile.c"
 
-context parse_dowhile_simpl
-begin
 thm f_body_def
 thm g_body_def
 thm h_body_def
-end
 
 end

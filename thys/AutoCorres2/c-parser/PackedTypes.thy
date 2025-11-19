@@ -991,7 +991,7 @@ lemma td_packed_ti_typ_combine:
   apply simp
   done
 
-lemma td_packed_ti_typ_pad_combine:
+lemma td_packed_ti_typ_pad_combine':
   "\<lbrakk> td_packed (td::'a::c_type xtyp_info) s a;
      align_of TYPE('b::packed_type) dvd s;  algn \<le> align_td (typ_info_t TYPE('b)); fg_cons xf xfu; aggregate td\<rbrakk>
     \<Longrightarrow> td_packed (ti_typ_pad_combine TYPE('b) xf xfu algn nm td)
@@ -1003,7 +1003,20 @@ lemma td_packed_ti_typ_pad_combine:
      max_2_exp max_absorb2)
   done
 
-lemma td_packed_ti_typ_combine_array:
+
+lemma td_packed_ti_typ_pad_combine:
+  "\<lbrakk> td_packed (td::'a::c_type xtyp_info) s a;
+     align_of TYPE('b::packed_type) dvd s;  padup (max (2 ^ algn) (align_of TYPE('b))) (size_td td) = 0;  fg_cons xf xfu; aggregate td\<rbrakk>
+    \<Longrightarrow> td_packed (ti_typ_pad_combine TYPE('b) xf xfu algn nm td)
+                  (s + size_td (typ_info_t TYPE('b)))
+                  (max algn (max a (align_td (typ_info_t TYPE('b)))))"
+   apply (simp add: ti_typ_pad_combine_def Let_def td_packed_ti_typ_combine)
+   apply (auto simp add: padup_dvd td_packed_def packed_type_intro_simps size_td_lt_ti_typ_combine
+     max_2_exp max_absorb2)
+  done
+
+
+lemma td_packed_ti_typ_combine_array':
   "\<lbrakk>td_packed (td::'a::c_type xtyp_info) s a;
     align_of TYPE('b::packed_type) dvd s; 0 < CARD('n); algn \<le> align_td (typ_info_t TYPE('b)); fg_cons xf xfu\<rbrakk>
     \<Longrightarrow> td_packed
@@ -1018,19 +1031,51 @@ lemma td_packed_ti_typ_combine_array:
                      align_td_array_info max_absorb2)
   done
 
+lemma td_packed_ti_typ_combine_array:
+  "\<lbrakk>td_packed (td::'a::c_type xtyp_info) s a;
+    align_of TYPE('b::packed_type) dvd s; 0 < CARD('n); fg_cons xf xfu\<rbrakk>
+    \<Longrightarrow> td_packed
+      (ti_typ_combine TYPE('b ['n :: finite]) xf xfu algn nm td)
+      (s + size_td (typ_info_t TYPE('b)) * CARD('n))
+      (max algn (max a (align_td (typ_info_t TYPE('b)))))"
+  apply (clarsimp simp: ti_typ_combine_def td_packed_def
+                     packed_type_intro_simps td_fafu_idem_extend_ti
+                     td_fa_hi_extend_ti td_fa_hi_adjust_ti
+                     size_td_extend_ti size_of_def
+                     td_fafu_idem_adjust_ti
+                     align_td_array_info max_absorb2 max.left_commute)
+  done
 
-lemma td_packed_ti_typ_pad_combine_array:
+
+lemma td_packed_ti_typ_pad_combine_array':
   "\<lbrakk> td_packed (td::'a::c_type xtyp_info) s a;
      align_of TYPE('b::packed_type) dvd s; 0 < CARD('n); algn \<le> align_td (typ_info_t TYPE('b)); fg_cons xf xfu \<rbrakk>
     \<Longrightarrow> td_packed (ti_typ_pad_combine TYPE('b ['n :: finite]) xf xfu algn nm td)
                   (s + size_td (typ_info_t TYPE('b)) * CARD('n))
                   (max a (align_td (typ_info_t TYPE('b))))"
   apply (subgoal_tac "padup (align_of TYPE('b['n])) (size_td td) = 0")
+   apply (clarsimp simp add: ti_typ_pad_combine_def Let_def 
+    align_td_array_info  align_of_def max_2_exp max_absorb2)
+  subgoal
+    apply (rule td_packed_ti_typ_combine_array')
+        apply (simp_all add: align_of_def padup_dvd td_packed_def align_td_array)
+    done
+  subgoal
+    apply (simp add: align_of_def padup_dvd td_packed_def align_td_array)
+    done
+  done
+
+lemma td_packed_ti_typ_pad_combine_array:
+  "\<lbrakk> td_packed (td::'a::c_type xtyp_info) s a;
+     align_of TYPE('b::packed_type) dvd s; 0 < CARD('n); padup (max (2 ^ algn) (align_of TYPE('b['n]))) (size_td td) = 0; fg_cons xf xfu \<rbrakk>
+    \<Longrightarrow> td_packed (ti_typ_pad_combine TYPE('b ['n :: finite]) xf xfu algn nm td)
+                  (s + size_td (typ_info_t TYPE('b)) * CARD('n))
+                  (max algn (max a (align_td (typ_info_t TYPE('b)))))"
+
    apply (clarsimp simp add: ti_typ_pad_combine_def Let_def td_packed_ti_typ_combine_array
     align_td_array_info  align_of_def max_2_exp max_absorb2)
-   apply (simp add: td_packed_ti_typ_combine_array)
-  apply (simp add: align_of_def padup_dvd td_packed_def align_td_array)
   done
+
 
 lemma td_packed_empty_typ_info:
   "td_packed (empty_typ_info 0 fn) 0 0"

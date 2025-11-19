@@ -149,6 +149,11 @@ lemma succeeds_reaches_spec_monad_eqI:
 lemma succeeds_runs_to_iff: "succeeds f s \<longleftrightarrow> runs_to f s (\<lambda>_ _. True)"
   by (simp add: runs_to_def_old)
 
+lemma le_reachesD: "g \<le> f \<Longrightarrow> succeeds f s \<Longrightarrow> reaches g s r t \<Longrightarrow> reaches f s r t"
+  apply (simp add: succeeds_def reaches_def)
+  apply transfer
+  by (auto simp add: le_post_state_iff le_fun_def less_eq_post_state.simps top_post_state_def)
+
 named_theorems outcomes_spec_monad "Simplification rules for outcomes of Spec monad"
 
 subsection \<open>Relational rewriting for Monads\<close>

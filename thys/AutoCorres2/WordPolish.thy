@@ -74,4 +74,13 @@ lemmas MIN_MAX_lemmas_pre =
 lemmas INT_MIN_MAX_lemmas [simp] =
   MIN_MAX_lemmas_pre[unfolded WORD_MAX_simps WORD_MIN_simps UWORD_MAX_simps]
 
+lemma scast_numeral: "SCAST('a ::len signed \<rightarrow> 'a) (numeral x) = numeral x"
+  by (metis down_cast_same is_up_SCAST_same_signed 
+      is_up_down ucast_down_no)
+
+lemmas scast_numerals = 
+  scast_numeral
+  scast_0
+  scast_1
+
 end

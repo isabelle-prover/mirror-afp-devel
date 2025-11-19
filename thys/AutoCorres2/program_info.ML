@@ -22,6 +22,7 @@ type in_out_fun_ptr_spec = FunctionInfo.in_out_fun_ptr_spec
   skip_heap_abs    : bool,
   skip_word_abs    : bool,
   skip_io_abs      : bool,
+  no_body          : bool,
   in_out_globals : bool,
   in_out_parameters : (string * parameter_kind) list option,
   in_out_disjoint_ptrs : string list option,
@@ -32,6 +33,7 @@ type in_out_fun_ptr_spec = FunctionInfo.in_out_fun_ptr_spec
 
 val default_fun_options = make_function_options {
   heap_abs=true, 
+  no_body = false,
   signed_abs=true, 
   unsigned_abs=false, 
   skip_heap_abs = false, 
@@ -69,6 +71,21 @@ fun in_out_fun_ptr_spec_of opt arg_infos =
     {param_kinds = param_kinds, in_out_globals=in_out_globals, might_exit = might_exit}: FunctionInfo.in_out_fun_ptr_spec
   end
 
+type progenv_info = (string *
+         ((term *
+           (FunctionInfo.phase * string * typ * typ list *
+            int CTypeDatatype.ctype *
+            function_options))
+          *
+          string list)
+        )
+
+fun phase_of ((info:progenv_info)::_) : FunctionInfo.phase =
+  #1 (snd (fst (snd (info))))
+
+fun domain_of ((info:progenv_info)::_) : string list =
+  (snd (snd (info)))
+
 (* Program information type. *)
 @{record \<open>datatype prog_info = Prog_info of 
 {
@@ -84,9 +101,12 @@ fun in_out_fun_ptr_spec_of opt arg_infos =
   method_callers: string list,
   method_io_params: (int CType.ctype * FunctionInfo.in_out_fun_ptr_spec) list,
 
+  progenv_tab: progenv_info list Symtab.table,
+
   state_type : typ,
   globals_type : typ,
   lifted_globals_type : typ option,
+  lift_global_heap : term,
   gamma : term,
 
   var_getters : term Symtab.table,
@@ -137,7 +157,7 @@ fun get_local_variable_info ctxt state_typ csenv_var =
 let
   val munged_name = ProgramAnalysis.get_mname csenv_var;
   val pretty_name = ProgramAnalysis.srcname csenv_var;
-  val hol_type = CalculateState.ctype_to_typ ctxt (ProgramAnalysis.get_vtype csenv_var)
+  val hol_type = CalculateState.ctype_to_typ {bitint_padding=true} ctxt (ProgramAnalysis.get_vtype csenv_var)
   val (getter, setter) = get_record_getter_setter
       ctxt state_typ (HoarePackage.varname (MString.dest munged_name))
 in
@@ -152,7 +172,7 @@ fun get_global_variable_info ctxt csenv_var =
 let
   val munged_name = ProgramAnalysis.get_mname csenv_var;
   val pretty_name = ProgramAnalysis.srcname csenv_var;
-  val hol_type = CalculateState.ctype_to_typ ctxt (ProgramAnalysis.get_vtype csenv_var)
+  val hol_type = CalculateState.ctype_to_typ {bitint_padding=true} ctxt (ProgramAnalysis.get_vtype csenv_var)
 in
   (munged_name, pretty_name, hol_type)
 end
@@ -188,16 +208,19 @@ fun guess_var_name_type_from_setter_term t =
   case HPInter.name_type_from_local_var_update t of
     SOME (Const (n,_), T) => (guess_var_name n, T)
   | NONE => guess_var_name_type_from_record_setter_term t
-                     
-fun dest_var_update t =
- case HPInter.dest_local_var_update' t of
-   SOME (n, T, upd, SOME s) => SOME ((NameGeneration.map_named guess_var_name n, T), upd, s)
+
+fun gen_dest_var_update dest t =
+ case dest t of
+    SOME (n, T, upd, s_opt) => SOME ((NameGeneration.map_named guess_var_name n, T), upd, s_opt)
  | _ => (case t of 
           (Const var $ upd $ s) => 
           let 
             val (n,  T) = guess_var_name_type_from_record_setter_term (Const var)
-          in SOME ((NameGeneration.Named n, T), upd, s)end
+          in SOME ((NameGeneration.Named n, T), SOME upd, SOME s) end
          | _ => NONE)
+                     
+val dest_var_update = gen_dest_var_update HPInter.dest_local_var_update'
+val dest_var_update_bare = gen_dest_var_update HPInter.dest_local_var_update_bare'
     
  
 (*                   
@@ -290,7 +313,13 @@ fun get_prog_info thy fun_options method_io_params mk_fun_name dest_fun_name cfi
     val t_hrs_setter = case (Symtab.lookup global_var_setters "t_hrs") of
         SOME x => x
       | NONE => raise Utils.InvalidInput "'globals' doesn't appear to have a \"t_hrs_'\" field."
-    val method_callers = ProgramAnalysis.method_callers csenv
+    val method_callers = 
+      ProgramAnalysis.method_callers csenv @ 
+      ProgramAnalysis.method_callers_via_fun_ptr_param csenv  @
+      ProgramAnalysis.functions_with_local_fun_ptr_calls csenv @
+      ProgramAnalysis.callers_via_local_fun_ptr_param csenv
+      |> sort_distinct fast_string_ord
+    val lift_global_heap = Const (@{const_name id}, \<^Type>\<open>fun globals_type globals_type\<close>)
 
   in
     make_prog_info
@@ -305,9 +334,11 @@ fun get_prog_info thy fun_options method_io_params mk_fun_name dest_fun_name cfi
       method_callers = method_callers,
       method_io_params = method_io_params,
 
+      progenv_tab = Symtab.empty,
       state_type = state_type,
       globals_type = globals_type,
       lifted_globals_type = NONE,
+      lift_global_heap = lift_global_heap,
       gamma = gamma,
 
       var_getters = var_getters,
@@ -321,7 +352,9 @@ fun get_prog_info thy fun_options method_io_params mk_fun_name dest_fun_name cfi
     }
   end
 
-fun has_method_fun_ptrs prog_info = not (null (get_method_callers prog_info))
+fun has_method_fun_ptrs prog_info = 
+  not (null (get_method_callers prog_info)) orelse
+  ProgramAnalysis.has_fun_ptr_params_called_with_object_method (get_csenv prog_info)
 
 fun all_var_getters ctxt (prog_info: prog_info) state = 
   let

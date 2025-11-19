@@ -17,7 +17,7 @@ declare [[show_types=false, show_sorts=false, goals_limit=40,
 
 autocorres [ts_rules = nondet, unsigned_word_abs=binary_search] "binary_search.c"
 
-context binary_search_all_impl begin
+
 lemma uint_of_nat:
     "uint (of_nat x :: 'a::len word) = (int x) mod 2^ len_of TYPE('a)"
   apply (clarsimp simp only: uint_nat unat_of_nat)
@@ -192,6 +192,4 @@ lemma binary_search_correct:
     done
   done
                   
-end
-
 end

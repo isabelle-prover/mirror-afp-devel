@@ -8,6 +8,7 @@ theory AutoCorres_Utils
   imports 
     Print_Annotated 
     ML_Fun_Cache 
+    Named_Bindings
   keywords "lazy_named_theorems"::thy_decl
 
 begin

@@ -9,6 +9,7 @@ theory test_locality
 imports "AutoCorres2.CTranslation"
 begin
 
+declare [[clang_path=""]]
 install_C_file "test_include2.h"
 
 end

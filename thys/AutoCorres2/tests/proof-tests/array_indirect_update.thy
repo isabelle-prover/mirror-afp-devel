@@ -14,7 +14,6 @@ theory array_indirect_update imports "AutoCorres2_Main.AutoCorres_Main" begin
 install_C_file "array_indirect_update.c"
 autocorres [ignore_addressable_fields_error]"array_indirect_update.c"
 
-context ts_definition_bar begin
 thm foo'_def bar'_def
 
 lemma
@@ -33,5 +32,4 @@ lemma
   apply arith
   done
 
-end
 end

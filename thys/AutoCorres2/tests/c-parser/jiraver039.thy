@@ -11,11 +11,6 @@ begin
 
 install_C_file "jiraver039.c"
 
-context jiraver039_simpl
-begin
-
 thm f_body_def
-
-end
 
 end (* theory *)

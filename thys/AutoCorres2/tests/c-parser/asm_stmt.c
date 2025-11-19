@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-
 int a_global;
 int a_mod_global;
 int b_mod_global;

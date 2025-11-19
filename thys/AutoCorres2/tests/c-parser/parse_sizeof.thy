@@ -11,11 +11,8 @@ begin
 
 install_C_file "parse_sizeof.c"
 
-context parse_sizeof_simpl
-begin
 thm f_body_def
 (* notice how repulsive the above is *)
 thm g_body_def
-end
 
 end

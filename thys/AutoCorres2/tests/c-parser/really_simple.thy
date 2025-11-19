@@ -11,7 +11,7 @@ begin
 
 install_C_file "really_simple.c"
 
-context really_simple_simpl
+context really_simple_global_addresses
 begin
 thm f_body_def
 thm f_impl

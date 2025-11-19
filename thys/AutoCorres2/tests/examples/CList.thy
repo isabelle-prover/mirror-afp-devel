@@ -48,8 +48,6 @@ declare [[verbose=0]]
 autocorres [single_threaded] "list.c"
 
 
-context list_all_impl begin
-
 thm insert'_def
 thm sorted_insert'_def
 thm reverse'_def
@@ -330,7 +328,5 @@ lemma
          apply auto
     done
   done
-
-end (* context list_global_addresses *)
 
 end

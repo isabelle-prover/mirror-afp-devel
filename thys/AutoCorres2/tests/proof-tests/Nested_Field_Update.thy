@@ -13,8 +13,21 @@ record XX =
  fld2::int
 print_theorems
 install_C_file "nested_field_update.c"
-autocorres "nested_field_update.c"
+autocorres [phase=WA]"nested_field_update.c"
+declare [[verbose=3]]
+autocorres [phase=TS, scope=write_globals]"nested_field_update.c"
 
+thm ts_def
+thm state_fold_congs
+(*
+
+nested_field_update_global_addresses \<Longrightarrow>
+sa \<equiv> ?r' \<Longrightarrow>
+g_'' ?r' \<equiv> ?v' \<Longrightarrow>
+(\<And>v. ?v' = v \<Longrightarrow> cs_C_update (c2_C_update (\<lambda>_. c_C 0x2B)) (g_'' sa) \<equiv> ?f' v) \<Longrightarrow>
+sa\<lparr>g_'' := cs_C_update (c2_C_update (\<lambda>_. c_C 0x2B)) (g_'' sa)\<rparr> \<equiv> g_''_update ?f' ?r' 
+*)
+thm unchanged_typing
 thm componets_C_idupdates
 thm cs_C_update_def c2_C_update_def recursive_records_fold_congs
 
@@ -59,9 +72,12 @@ lemma cs_C_update_fld: "cs_C_update (\<lambda>_. f (cs_C r)) r = cs_C_update f r
   by (simp (*add: cs_C_update_def*) cong: recursive_records_fold_congs)
 
 
+thm l2_def
+thm l1_def
+thm hl_def
+thm ts_def
+thm final_defs
 
-context ts_definition_write_globals
-begin
 lemma " (g_''_update (\<lambda>a. globals_C (c2_C_update (\<lambda>a. c_C 0x2B) (cs_C a)))) = g_''_update (cs_C_update (c2_C_update (\<lambda>_. c_C 0x2B)))"
 
   apply (simp add: foo)
@@ -75,6 +91,5 @@ lemma " (g_''_update (\<lambda>a. globals_C (c2_C_update (\<lambda>a. c_C 0x2B) 
 thm ts_def
 lemma "write_globals' \<equiv> modify (g_''_update (cs_C_update (c2_C_update (\<lambda>_. c_C 0x2B))))"
   unfolding ts_def .
-end
 
 end

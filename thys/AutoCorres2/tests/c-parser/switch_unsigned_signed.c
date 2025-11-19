@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-int main(unsigned int x)
+int main1(unsigned int x)
 {
     switch (x) {
         case 2:

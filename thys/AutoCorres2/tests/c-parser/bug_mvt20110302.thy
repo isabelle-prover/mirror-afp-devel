@@ -9,12 +9,9 @@ theory bug_mvt20110302
 imports "AutoCorres2.CTranslation"
 begin
 
+declare [[ML_print_depth=1000]]
 install_C_file "bug_mvt20110302.c"
 
-context bug_mvt20110302_simpl
-begin
-
   thm create_ipcbuf_frame_body_def
-end
 
 end

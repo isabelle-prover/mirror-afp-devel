@@ -13,9 +13,9 @@ begin
 declare [[guarded_integer_conversion=true]]
 install_C_file "guardedsignedoverflow.c"
 
-context f_impl
+context guardedsignedoverflow_global_addresses
 begin
-
+unbundle f_variables
 lemma "\<Gamma> \<turnstile> \<lbrace> c = sint \<acute>c & c \<le> 117 \<rbrace> \<acute>ret' :== CALL f()
            \<lbrace> sint \<acute>ret' = c + 10 \<rbrace>"
   apply vcg

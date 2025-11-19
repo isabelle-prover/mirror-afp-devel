@@ -5,109 +5,25 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *)
 
-structure StmtDeclDatatype =
-struct
-
-type expr = Expr.expr
-type initializer = Expr.initializer
-type 'a ctype = 'a CType.ctype
-type 'a wrap = 'a RegionExtras.wrap
-datatype gcc_attribute = GCC_AttribID of string
-                       | GCC_AttribFn of string * expr list
-                       | OWNED_BY of string
-
-datatype fnspec = fnspec of string wrap
-                | relspec of string wrap
-                | fn_modifies of string list
-                | didnt_translate
-                | gcc_attribs of gcc_attribute list
-
-datatype storage_class =
-         SC_EXTERN | SC_STATIC | SC_AUTO | SC_REGISTER | SC_THRD_LOCAL
-
-datatype declaration =
-         VarDecl of (expr ctype *
-                     string wrap *
-                     storage_class list *
-                     initializer option *
-                     gcc_attribute list)
-         (* VarDecl's bool is true if the declaration is not an extern;
-            if the declaration is "genuine".
-            The accompanying optional initialiser is only used to calculate the
-            size of an array when a declaration like
-              int a[] = {...}
-            is made.
-            Initialisers are translated into subsequent assignment statements
-            by the parser. *)
-       | StructDecl of string wrap * (expr ctype * string wrap * gcc_attribute list) list * gcc_attribute list wrap
-       | UnionDecl of string wrap * (expr ctype * string wrap * gcc_attribute list) list * gcc_attribute list wrap
-       | TypeDecl of (expr ctype * string wrap) list
-       | ExtFnDecl of {rettype : expr ctype, name : string wrap,
-                       params : (expr ctype * string option) list,
-                       specs : fnspec list}
-       | EnumDecl of string option wrap * (string wrap * expr option) list
-
-type namedstringexp = string option * string * expr
-
-type asmblock = {head : string,
-                 mod1 : namedstringexp list,
-                 mod2 : namedstringexp list,
-                 mod3 : string list}
-(* if mod_i is empty, then so too are all mod_j for j > i *)
-
-datatype trappable = BreakT | ContinueT
-
-
-datatype statement_node =
-         Assign of expr * expr
-       | AssignFnCall of expr option * expr * expr list (* lval, fn, args *)
-       | Chaos of expr
-       | EmbFnCall of expr * expr * expr list (* lval, fn, args *)
-       | Block of block_item list
-       | LabeledStmt of string * statement
-       | While of expr * string wrap option * statement
-       | Trap of trappable * statement
-       | Return of expr option
-       | ReturnFnCall of expr * expr list
-       | Break | Continue | Goto of string
-       | IfStmt of expr * statement * statement
-       | Switch of expr * (expr option list * block_item list) list
-       | EmptyStmt
-       | Auxupd of string
-       | Ghostupd of string
-       | Spec of ((string * string) * statement list * string)
-       | AsmStmt of {volatilep : bool, asmblock : asmblock}
-       | LocalInit of expr
-and statement = Stmt of statement_node Region.Wrap.t
-and block_item =
-    BI_Stmt of statement
-  | BI_Decl of declaration wrap
-
-type body = block_item list wrap
-type fn_defn = (expr ctype * string wrap) * (expr ctype * string wrap) list *
-                   fnspec list (* fnspec *) * body
-datatype ext_decl =
-         FnDefn of fn_defn
-       | Decl of declaration wrap
-
-
-fun map_snode f (Stmt sw) = Stmt (Region.Wrap.map_node f sw)
-
-end
 
 signature STMT_DECL =
 sig
-  datatype gcc_attribute = datatype StmtDeclDatatype.gcc_attribute
-  datatype storage_class = datatype StmtDeclDatatype.storage_class
-  datatype fnspec = datatype StmtDeclDatatype.fnspec
-  datatype declaration = datatype StmtDeclDatatype.declaration
-  datatype trappable = datatype StmtDeclDatatype.trappable
-  datatype statement_node = datatype StmtDeclDatatype.statement_node
+  datatype gcc_attribute = datatype AstDatatype.gcc_attribute
+  datatype storage_class = datatype AstDatatype.storage_class
+  datatype fnspec = datatype AstDatatype.fnspec
+  datatype declaration = datatype AstDatatype.declaration
+  datatype trappable = datatype AstDatatype.trappable
+  datatype statement_node = datatype AstDatatype.statement_node
   type statement
-  type asmblock = StmtDeclDatatype.asmblock
-  type namedstringexp = StmtDeclDatatype.namedstringexp
-  datatype block_item = datatype StmtDeclDatatype.block_item
-  datatype ext_decl = datatype StmtDeclDatatype.ext_decl
+  type namedstringexp = string option * string * AstDatatype.expr
+
+  type asmblock = {head : string,
+                 mod1 : namedstringexp list,
+                 mod2 : namedstringexp list,
+                 mod3 : string list}
+
+  datatype block_item = datatype AstDatatype.block_item
+  datatype ext_decl = datatype AstDatatype.ext_decl
 
   val merge_specs : fnspec list -> fnspec list -> fnspec list
   val has_IDattribute : (string -> bool) -> fnspec list -> string option
@@ -118,6 +34,7 @@ sig
   val snode : statement -> statement_node
   val swrap : statement_node * SourcePos.t * SourcePos.t -> statement
   val sbogwrap : statement_node -> statement
+  val block: statement list -> statement
   val sleft : statement -> SourcePos.t
   val sright : statement -> SourcePos.t
 
@@ -129,13 +46,17 @@ sig
   val is_static : storage_class list -> bool
 
   val sub_stmts : statement -> statement list
-
+  val last_blockitem: block_item list -> block_item option
+  val check_statement_expression_blockitems: Proof.context -> SourcePos.t -> SourcePos.t ->
+        block_item list -> Expr.expr
+  val pre_post_op_to_stmt: Proof.context -> Expr.expr -> AstDatatype.statement_node
+  val check_rexpression_statement: Proof.context -> AstDatatype.expr -> AstDatatype.statement
 end
 
 structure StmtDecl : STMT_DECL =
 struct
 
-open StmtDeclDatatype RegionExtras Expr
+open AstDatatype RegionExtras Expr
 
 fun attr2string (GCC_AttribID s) = s
   | attr2string (GCC_AttribFn(s, _)) = s ^ "(...)"
@@ -211,11 +132,13 @@ end
 fun merge_specs sp1 sp2 = collapse_mod_attribs (sp1 @ sp2)
 
 
-fun sleft (Stmt w) = left w
-fun sright (Stmt w) = right w
-fun swrap (s, l, r) = Stmt(wrap(s,l,r))
-fun snode (Stmt w) = node w
+val sleft = AstDatatype.sleft
+val sright = AstDatatype.sright
+val swrap = AstDatatype.swrap
+val snode = AstDatatype.snode
 fun sbogwrap s = Stmt(wrap(s,bogus,bogus))
+fun block stmts =
+  sbogwrap(Block (AstDatatype.Closed, map BI_Stmt stmts))
 
 fun stmt_type s =
     case snode s of
@@ -237,13 +160,14 @@ fun stmt_type s =
     | Spec _ => "Spec"
     | AsmStmt _ => "AsmStmt"
     | LocalInit _ => "LocalInit"
+    | ExprStmt _ => "ExprStmt"
     | _ => "[whoa!  Unknown stmt type]"
 
 fun map_concat f ss = map f ss |> List.concat
 
 fun sub_stmts s =
     case snode s of
-      Block bis => map_concat bi_stmts bis
+      Block (_, bis) => map_concat bi_stmts bis
     | While (_, _, s) => [s]
     | Trap (_, s) => [s]
     | IfStmt (_, l, r) => [l, r]
@@ -258,5 +182,97 @@ fun stmt_fail (Stmt w, msg) =
 
 val is_extern = List.exists (fn x => x = SC_EXTERN)
 val is_static = List.exists (fn x => x = SC_STATIC)
+
+fun last_blockitem [] = NONE 
+  | last_blockitem (bilist : block_item list) = 
+  let
+    val bi = List.last bilist
+    fun recurse bi =
+      case bi of
+        BI_Stmt st => (case snode st of
+                         Block (_, bilist) => last_blockitem bilist
+                      | _ => SOME bi)
+      | _ => SOME bi
+   in
+     recurse bi
+   end
+
+fun split_last_blockitem [] = NONE
+  | split_last_blockitem (bl:block_item list) =
+     let
+        val (bl', last) = split_last bl
+     in 
+       case last of
+         BI_Stmt st => 
+          (case snode st of
+             Block (_, bilist) => 
+               (case split_last_blockitem bilist of
+                 SOME (bl'', last') => SOME (bl'@bl'', last')
+                | NONE => SOME (bl', last))
+           | _ => SOME (bl', last))
+       | _ => SOME (bl', last)
+     end         
+fun dest_nested_statement_expression ctxt e =
+  case enode e of
+    StmtExpr (bl, e_opt) => 
+      let
+        val (bl'', e'', bl_r) = case e_opt of SOME e' => dest_nested_statement_expression ctxt e' | _ => ([], NONE, eleft e)
+      in
+        (bl @ bl'', e'', bl_r)
+      end
+   | _ => ([], SOME e, eleft e)
+
+fun check_statement_expression_blockitems ctxt l r bl = 
+  let
+    val msg1 = "expecting gcc-style expression-statement: compound statement where last statement is an expression"
+  in
+    case bl of 
+      [] => Feedback.error_range ctxt l r msg1
+    | _ => 
+      let 
+        val (bl', last) = the (split_last_blockitem bl)
+        val (bl'', e_opt, bl''_r (* FIMXE: unused *)) = 
+          case last of
+            BI_Stmt st => 
+              (case snode st of 
+                 ExprStmt e => dest_nested_statement_expression ctxt e
+               | AssignFnCall (NONE, e, es) => ([], SOME (ewrap (EFnCall(Statement, e, es), sleft st, sright st)), sleft st)
+               | _ => ([last], NONE, sright st))
+          | _ => Feedback.error_range ctxt l r msg1 
+        val res = ewrap (StmtExpr (bl'@ bl'', e_opt), l, r)
+      in res end
+  end
+
+val one_const = expr_int 1
+
+fun pre_post_op_to_stmt ctxt e =
+  (case enode e of
+     PostOp (e, Plus_Plus) => Assign(e,ebogwrap(BinOp(Plus,e,one_const)))
+   | PostOp (e, Minus_Minus) => Assign(e,ebogwrap(BinOp(Minus,e,one_const)))
+   | PreOp (e, Plus_Plus) => Assign(e,ebogwrap(BinOp(Plus,e,one_const)))
+   | PreOp (e, Minus_Minus) => Assign(e,ebogwrap(BinOp(Minus,e,one_const)))
+   | _ =>  (Feedback.errorStr' ctxt (eleft e, eright e,
+                      "Expecting ++ / -- here."); EmptyStmt))
+
+fun check_rexpression_statement ctxt e =
+  let
+    val l = eleft e
+    val r = eright e
+    val expr_stmt = swrap (ExprStmt e, l, r)
+  in
+    case enode e of
+      EFnCall(_, fn_e, args) => swrap(AssignFnCall(NONE, fn_e, args),l,r)
+    | PostOp _ => swrap (pre_post_op_to_stmt ctxt e, l, r)
+    | PreOp _ => swrap (pre_post_op_to_stmt ctxt e, l, r)
+    | AssignE (_, e1, e2) => swrap (Assign (e1, e2), l, r)
+    | StmtExpr (bl, NONE) => swrap (Block (AstDatatype.Closed, bl), l, r)
+    | StmtExpr (bl, SOME e1) => 
+         let
+           val stmt' = check_rexpression_statement ctxt e1
+           val bi = BI_Stmt stmt'
+           val bl' = bl @ [bi]
+         in swrap (Block (AstDatatype.Closed, bl'), l, r) end              
+    | _ => expr_stmt
+  end
 
 end

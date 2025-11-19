@@ -110,8 +110,10 @@ term factorial_body
 thm factorial_body_def
 end
 end
-locale mem_safe_alloc = alloc_impl + alloc_spec +
-  assumes mem_safe_alloc: "mem_safe (\<acute>ret' :== PROC alloc()) \<Gamma>"
+locale mem_safe_alloc = factorial_global_addresses + alloc_spec 
+  opening alloc_variables +
+assumes mem_safe_alloc: "mem_safe (\<acute>ret' :== PROC alloc()) \<Gamma>"
+
 
 context mem_safe_alloc
 begin
@@ -141,7 +143,8 @@ lemma (in mem_safe_alloc) alloc_spec':
     apply simp+
   done
 
-locale mem_safe_free = free_impl + free_spec +
+locale mem_safe_free = factorial_global_addresses + free_spec 
+  opening free_variables +
   assumes mem_safe_free: "mem_safe (PROC free(\<acute>p)) \<Gamma>"
 
 lemma (in mem_safe_free) sep_frame_free:
@@ -200,14 +203,10 @@ apply(rule intvl_start_le)
 apply simp
 done
 
-context factorial_impl
-begin
-  thm factorial_body_def
-end
-locale specs =  mem_safe_alloc + mem_safe_free + factorial_impl
+locale specs =  mem_safe_alloc + mem_safe_free 
 begin
 declare [[ML_print_depth = 10000]]
-
+unbundle factorial_variables
 interpretation factorial_spec: factorial_spec
   apply (unfold_locales)
   apply(hoare_rule HoarePartial.ProcRec1)

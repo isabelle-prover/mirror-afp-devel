@@ -42,34 +42,26 @@ structure CNameTab = Table
                            ((fn1, vn1), (fn2, vn2))
    end)
 
-datatype more_info = MungedVar of {munge : MString.t, owned_by : string option, fname : string option, init : bool, global: bool}
-                   | EnumC
-                   | FunctionName
+datatype variable_kind = Global | Local | Parameter of int
 
-fun map_init f {munge, owned_by, fname, init, global} = 
-  {munge = munge, owned_by = owned_by, fname = fname, init= f init, global=global}
 
-fun map_munged_var f (MungedVar x) = (MungedVar (f x))
-  | map_munged_var _ x = x
+fun variable_kind_ord (Parameter i1, Parameter i2) = int_ord (i1, i2)
+  | variable_kind_ord (Parameter _ , Global  ) = LESS
+  | variable_kind_ord (Parameter _ , Local  ) = LESS
+  | variable_kind_ord (Global      , Parameter _ ) = GREATER
+  | variable_kind_ord (Global      , Global  ) = EQUAL
+  | variable_kind_ord (Global      , Local  ) = LESS
+  | variable_kind_ord (Local       , Parameter _ ) = GREATER
+  | variable_kind_ord (Local       , Global  ) = GREATER
+  | variable_kind_ord (Local       , Local  ) = EQUAL
 
-fun dest_munged_var_info (MungedVar {fname=SOME n, ...}) = SOME n
-  | dest_munged_var_info _ = NONE
+fun is_global_variable (Global) = true
+  | is_global_variable  _ = false
+  
+fun is_local (Local) = true
+  | is_local _ = false
 
-fun get_init (MungedVar {init, ...} ) = SOME init
-  | get_init _ = NONE 
+fun is_parameter (Parameter _) = true
+  | is_parameter _ = false
 
-fun munged_var_ord ({munge = m1, owned_by = o1, fname = f1, init = i1, global = g1}, 
-     {munge = m2, owned_by = o2, fname = f2, init = i2, global = g2}) =
-   (prod_ord MString.ord (prod_ord (option_ord string_ord) (prod_ord (option_ord string_ord) (prod_ord bool_ord bool_ord)))) 
-     ((m1, (o1, (f1, (i1, g1)))), (m2, (o2, (f2, (i2, g2)))))
-
-fun more_info_ord (x, y) = 
-  case (x, y) of
-     (FunctionName, FunctionName) => EQUAL
-   | (EnumC, EnumC) => EQUAL
-   | (MungedVar m1, MungedVar m2) => munged_var_ord (m1, m2)
-   | (MungedVar _, _) => LESS
-   | (EnumC, MungedVar _) => GREATER
-   | (_, FunctionName) => LESS
-   | (FunctionName, _) => GREATER
   

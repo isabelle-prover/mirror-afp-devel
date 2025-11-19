@@ -28,6 +28,7 @@ foo_ptr_new(foo_t *foo_ptr, uint32_t bar) {
   foo_ptr->words[0] |= bar << 0;
 }
 
+
 unsigned g(unsigned i)
 {
   return f(i) + 3;
@@ -47,4 +48,7 @@ int h(thing_t t)
   return t.size;
 }
 
+void use_types (void) {
+  foo_t x;
+}
 

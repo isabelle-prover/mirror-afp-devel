@@ -12,14 +12,9 @@ begin
 install_C_file "longlong.c"
 
 
-context longlong_simpl
-begin
-
 thm f_body_def
 thm shifts1_body_def
 thm shifts2_body_def
-
-end (* context *)
 
 lemma "(ucast :: 16 word \<Rightarrow> 8 word) 32768 = 0"
 apply simp
@@ -41,14 +36,16 @@ lemma "(scast :: 8 word \<Rightarrow> 16 word) 255 = 65535" by simp
 lemma "(ucast :: 8 word \<Rightarrow> 16 word) 255 = 255" by simp
 
 
-lemma (in callg_impl) g_result:
+lemma (in longlong_global_addresses) includes callg_variables 
+  shows g_result:
   "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL callg() \<lbrace> \<acute>ret' = 0 \<rbrace>"
   apply vcg
   apply (simp add: mask_def )
 done
 
 
-lemma (in literals_impl) literals_result:
+lemma (in longlong_global_addresses) includes literals_variables 
+  shows literals_result:
   "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL literals() \<lbrace> \<acute>ret' = 31 \<rbrace>"
 apply vcg
 apply simp

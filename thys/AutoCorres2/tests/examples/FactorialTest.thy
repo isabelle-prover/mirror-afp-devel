@@ -28,8 +28,7 @@ install_C_file "factorial.c"
 
 autocorres [ts_rules=nondet]"factorial.c"
 
-context ts_definition_factorial
-begin
+
 lemma "factorial' n \<bullet> s \<lbrace>\<lambda>Res r _. r = fact n\<rbrace>"
 proof (induct n arbitrary: s rule: word_induct2)
   case zero
@@ -51,7 +50,6 @@ next
       done
     done
 qed
-end
 
 end
 

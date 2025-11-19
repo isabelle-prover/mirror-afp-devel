@@ -18,11 +18,11 @@ consts
 
 install_C_file "kmalloc.c"
 
-autocorres [phase=L2] "kmalloc.c"
+autocorres [phase=L2, no_body = alloc_aligned] "kmalloc.c"
 autocorres [no_heap_abs = free sep_free sep_alloc] "kmalloc.c"
 
-context kmalloc_all_corres begin
 thm l1_alloc'_def
+thm l1_def
 thm l1_opt_alloc'_def
 
 
@@ -37,7 +37,5 @@ thm alloc'_def \<comment> \<open>lifted into split heap\<close>
 thm sep_alloc'_def \<comment> \<open>not lifted: remains in monolithic byte-level heap\<close>
 thm free'_def \<comment> \<open>not lifted: remains in monolithic byte-level heap\<close>
 thm sep_free'_def \<comment> \<open>not lifted: remains in monolithic byte-level heap\<close>
-
-end
 
 end

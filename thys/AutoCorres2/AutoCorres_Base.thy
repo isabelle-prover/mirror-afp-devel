@@ -25,7 +25,7 @@ lemma THIN_I: "PROP P \<Longrightarrow> PROP THIN (PROP P)"
 
 ML_file \<open>utils.ML\<close>
 
-named_theorems corres_admissible and corres_top
+named_theorems corres_admissible and corres_top and corres_le_trans
 named_theorems funp_intros and fun_of_rel_intros
 
 
@@ -147,7 +147,7 @@ lemma ccpo_prod_gfp_gfp:
     (rel_prod (\<ge>) (\<ge>)) (mk_less (rel_prod (\<ge>) (\<ge>)))"
   by (rule ccpo_rel_prodI ccpo_Inf)+
 
-lemma runs_to_partial_top[corres_top]: "\<top> \<bullet> s ?\<lbrace> Q \<rbrace>"
+lemma runs_to_partial_top[corres_top, runs_to_vcg]: "\<top> \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (simp add: runs_to_partial_def_old)
 
 lemma refines_top[corres_top]: "refines C \<top> s t R"

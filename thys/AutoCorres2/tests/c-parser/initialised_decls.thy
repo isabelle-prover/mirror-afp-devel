@@ -11,11 +11,8 @@ begin
 
 install_C_file "initialised_decls.c"
 
-context initialised_decls_simpl
-begin
 thm f_body_def
 thm g_body_def
-end
 
 text \<open>
   Following proof confirms that we can prove stuff about g without needing
@@ -27,8 +24,9 @@ text \<open>
   at any point in the current translation so the point is a bit moot.
 \<close>
 
-lemma (in g_impl) foo:
-shows  "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== PROC g() \<lbrace> \<acute>ret' = 3 \<rbrace>"
+lemma (in initialised_decls_global_addresses) foo:
+  includes g_variables
+  shows  "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== PROC g() \<lbrace> \<acute>ret' = 3 \<rbrace>"
   apply vcg
   apply simp
 done

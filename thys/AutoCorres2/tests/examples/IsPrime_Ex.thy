@@ -17,9 +17,8 @@ install_C_file "is_prime.c"
 (* Abstract the input file. *)
 autocorres [unsigned_word_abs = is_prime_linear is_prime] "is_prime.c"
 
-context is_prime_all_impl begin
 thm is_prime'_def is_prime_linear'_def
-end
+
 
 definition
   "partial_prime p (n :: nat) \<equiv>
@@ -65,7 +64,7 @@ definition [simp]:
   "is_prime_linear_inv n i s \<equiv> (1 < i \<and> 1 < n \<and> i \<le> n \<and> partial_prime n i)"
 
 
-theorem (in ts_definition_is_prime_linear) is_prime_correct:
+theorem is_prime_correct:
     "n \<le> UINT_MAX \<Longrightarrow> is_prime_linear' n \<bullet> s \<lbrace> \<lambda>r _. (r \<noteq> Result 0) \<longleftrightarrow> prime n \<rbrace>"
   unfolding is_prime_linear'_def
   apply (runs_to_vcg)
@@ -159,7 +158,7 @@ lemma sqr_le_sqr_minus_1 [simp]:
 lemma Suc_USHORT_MAX [simp]: "Suc USHORT_MAX = SQRT_UINT_MAX"
   by (simp add: USHORT_MAX_def SQRT_UINT_MAX_def)
 
-theorem (in ts_definition_is_prime) is_prime_faster_correct:
+theorem is_prime_faster_correct:
   notes times_nat.simps(2) [simp del] mult_Suc_right [simp del]
   shows "n \<le> UINT_MAX \<Longrightarrow> is_prime' n \<bullet> s \<lbrace> \<lambda>r s. (r \<noteq> Result 0) \<longleftrightarrow> prime n \<rbrace>"
   unfolding is_prime'_def
