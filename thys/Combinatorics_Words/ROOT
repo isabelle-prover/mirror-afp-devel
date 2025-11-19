@@ -1,14 +1,14 @@
 chapter AFP
 
-session Combinatorics_Words  = "HOL-Eisbach" +
+session Combinatorics_Words (AFP)  = "HOL-Eisbach" +
   options [timeout = 600]
   sessions
     List_Power  
-  theories
+  theories [document = pdf]
     Arithmetical_Hints
     Border_Array
     Reverse_Symmetry
-    CoWBasic
+    CoWBasic   
     Submonoids
     Morphisms
     Periodicity_Lemma

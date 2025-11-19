@@ -1,4 +1,4 @@
-(*  Title:      Two_Generated_Word_Monoids_Intersection
+(*  Title:      CoW_Binary_Monoids_Intersection
     File:       Two_Generated_Word_Monoids_Intersection.Two_Generated_Word_Monoids_Intersection
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
