@@ -15,7 +15,7 @@ sig
 
   val PDC_entries_from_PD_entries : ('a, 'b, 'c, 'd, 'e) PD.entries -> ('c, 'e) PDC.entries
 
-  type insts = (term option list, (term * term list) option list, (term -> bool) option list)
+  type insts = (term option list, (term * term list) option list, (Term_Zipper.T -> bool) option list)
     PIM.entry
   val insts_ord : insts ord
   val pretty_insts : Proof.context -> insts -> Pretty.T
@@ -63,7 +63,7 @@ structure MCU = ML_Code_Util
 
 fun PDC_entries_from_PD_entries {simp, match,...} = {simp = simp, match = match}
 
-type insts = (term option list, (term * term list) option list, (term -> bool) option list)
+type insts = (term option list, (term * term list) option list, (Term_Zipper.T -> bool) option list)
   PIM.entry
 
 fun term_ord tp = if Term_Util.are_term_variants tp then EQUAL else Term_Ord.fast_term_ord tp
@@ -104,7 +104,7 @@ val parse_inst_pred = Parse.maybe ML_Code_Util.parse_code
 fun maybe' scan = Scan.lift Parse.underscore >> K NONE || scan >> SOME
 val parse_inst_pat = maybe' (PU.term_pattern >> rpair []
   || PU.parens' (Parse.!!!!
-    (PU.term_pattern --| Scan.lift (Parse.$$$ ",") -- Scan.repeat1 PU.term_pattern)))
+    (PU.term_pattern --| Scan.lift (Args.$$$ "-") -- Scan.repeat1 PU.term_pattern)))
 val parse_inst_fix = maybe' PU.term
 fun parse_insts unless =
   Scan.lift (Scan.option (Args.parens PIM.parse_key))
