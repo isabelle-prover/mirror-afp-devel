@@ -265,7 +265,7 @@ fun Triangular :: "'n list \<Rightarrow> ('n \<times> ('n, 't) sym list) set \<R
 
 text \<open>Remove self loops: Removes all productions of the form \<open>A \<rightarrow> A\<close>.\<close>
 definition Rm_self_loops :: "('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
-  "Rm_self_loops P = P - {x\<in>P. \<exists>A. x = (A, [Nt A])}"
+  "Rm_self_loops P = {(A,\<alpha>)\<in>P. \<alpha> \<noteq> [Nt A]}"
 
 text \<open>Expand triangular: Expands all head-Nts of productions with a Lhs in \<open>As\<close> 
 (\<open>Triangular (rev As)\<close>). In each step \<open>A#As\<close> first all Nts in \<open>As\<close> are expanded, then every rule 
@@ -730,14 +730,6 @@ subsection \<open>\<open>Solve_lrec\<close> Preserves Language\<close>
 
 subsubsection \<open>@{prop "Lang (Solve_lrec B B' R) A \<supseteq> Lang R A"}\<close>
 
-text \<open>If there exists a derivation from \<open>u\<close> to \<open>v\<close> then there exists one which does not use
-  productions of the form \<open>A \<rightarrow> A\<close>.\<close>
-lemma Rm_self_loops_derivels: assumes "P \<turnstile> u \<Rightarrow>l(n) v" shows "Rm_self_loops P \<turnstile> u \<Rightarrow>l* v"
-proof -
-  have "Rm_self_loops P = {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))}" unfolding Rm_self_loops_def by auto
-  with no_self_loops_derivels[of n P u v] assms show ?thesis by simp
-qed
-
 text \<open>Restricted to productions with one lhs (\<open>A\<close>), and no \<open>A \<rightarrow> A\<close> productions
       if there is a derivation from \<open>u\<close> to \<open>A # v\<close> then \<open>u\<close> must start with Nt \<open>A\<close>.\<close>
 lemma lrec_lemma1: 
@@ -923,8 +915,8 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
     case True
     have 2: "Rm_self_loops R \<subseteq> R - {(B, [Nt B])}" by (auto simp add: Rm_self_loops_def)
     have "Rm_self_loops R \<turnstile> p \<Rightarrow>* map Tm q" 
-      using Rm_self_loops_derivels "1.prems"(2) deriveln_iff_deriven derivels_imp_derives 
-      by blast
+      using  "1.prems"(2) 
+      by (auto simp: Rm_self_loops_def no_self_loops_derives relpowp_imp_rtranclp)
     then show ?thesis 
       using 2 by (simp add: True derives_mono)
   next
@@ -1009,7 +1001,8 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
             have solved_prod: "(B, w2' @ [Nt B']) \<in> Solve_lrec B B' ?S"
               using w2'_props w2'_prod Solve_lrec_not_R unfolding Solve_lrec_defs by (auto)
             have "Rm_self_loops ?S \<turnstile> [Nt B] \<Rightarrow>l* Nt B # u"
-              using l_decomp Rm_self_loops_derivels by auto
+              apply (unfold Rm_self_loops_def no_self_loops_derivels)
+              using l_decomp by (auto simp: relpowp_imp_rtranclp)
             then have "\<exists>ln. Rm_self_loops ?S \<turnstile> [Nt B] \<Rightarrow>l(ln) Nt B # u"
               by (simp add: rtranclp_power)
             then obtain ln where "Rm_self_loops ?S \<turnstile> [Nt B] \<Rightarrow>l(ln) Nt B # u" by blast
