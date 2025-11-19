@@ -15,8 +15,9 @@ declare sep_conj_ac [simp add]
 thm sep_conj_ac
 install_C_file "swap0.c" [memsafe]
 
-context swap_impl
+context swap0_global_addresses
 begin
+unbundle swap_variables
 interpretation swap_spec
   apply (unfold_locales)
 apply (hoare_rule HoarePartial.ProcNoRec1)
@@ -90,8 +91,9 @@ apply(rule sep_frame_swap)
 done
 end
 
-context test_impl
+context swap0_global_addresses
 begin
+unbundle test_variables
 interpretation test_spec
   apply unfold_locales
   apply(hoare_rule HoarePartial.ProcNoRec1)

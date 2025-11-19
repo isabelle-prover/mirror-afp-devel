@@ -83,6 +83,14 @@ unsigned udec(unsigned *p) {
  return (*p - 1);
 }
 
+unsigned uadd(unsigned* n, unsigned* m) {
+  return *n + *m;
+}
+
+unsigned uminus(unsigned* n, unsigned* m) {
+  return *n - *m;
+}
+
 unsigned call_unop_uinc(unsigned x) {
   return call_unop (uinc, x);
 }
@@ -91,17 +99,25 @@ unsigned call_unop_udec(unsigned x) {
   return call_unop (udec, x);
 }
 
+unsigned call_binnop_uadd(unsigned n, unsigned m) {
+  return call_binop (uadd, n, m);
+}
+
+unsigned call_binnop_uminus(unsigned n, unsigned m) {
+  return call_binop (uminus, n, m);
+}
+
 typedef struct object {
   unop_u * unop;
   binop_u * binop;
 } object_t;
 
 unsigned call_unop_method(object_t * p, unsigned x) {
-  return p->unop(&x);
+  __attribute__((calls(uinc, udec))) return p->unop(&x);
 }
 
 unsigned call_binop_method(object_t * p, unsigned x, unsigned y) {
-  return p->binop(&x, &y);
+  __attribute__((calls(uadd, uminus))) return p->binop(&x, &y);
 }
 
 
@@ -520,7 +536,8 @@ unsigned fac(unsigned n) {
     return 1;
   } else {
     dec(&n);
-    return m * fac(n); 
+    unsigned res = fac(n);
+    return m * res; 
   }
 }
 

@@ -11,11 +11,7 @@ begin
 
 install_C_file "gcc_attribs.c"
 
-context gcc_attribs_simpl
-begin
-
   thm f_body_def
-end
 
 ML \<open>
   val SOME cse = CalculateState.get_csenv @{theory} "gcc_attribs.c"

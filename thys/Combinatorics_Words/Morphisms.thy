@@ -277,7 +277,7 @@ lemma morph_def_on_set: "morphism f \<Longrightarrow> morphism g \<Longrightarro
 lemma morph_compose: "morphism f \<Longrightarrow> morphism g \<Longrightarrow> morphism (f \<circ> g)"
   by (simp add: morphism_def)
 
-subsection \<open>Periodic morphism\<close>
+subsection \<open>periodic morphism\<close>
 
 locale periodic_morphism = morphism +
   assumes ims_comm: "\<And> u v. f u \<cdot> f v = f v \<cdot> f u" and
@@ -989,8 +989,9 @@ qed
 
 
 section \<open>Primitivity preserving morphisms\<close>
-(* by Martin Raška *)
-
+(*
+by Martin Raška
+*)
 
 locale primitivity_preserving_morphism = nonerasing_morphism +
   assumes prim_morph : "2 \<le> \<^bold>|u\<^bold>| \<Longrightarrow> primitive u \<Longrightarrow> primitive (f u)"

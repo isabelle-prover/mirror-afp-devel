@@ -11,13 +11,6 @@ begin
 
 install_C_file "postfixOps.c"
 
-context postfixOps_simpl
-begin
-
 thm doit_body_def
-
-
-end (* context *)
-
 
 end

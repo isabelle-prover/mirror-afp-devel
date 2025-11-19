@@ -14,7 +14,7 @@ declare [[allow_underscore_idents]]
 
 install_C_file "badnames.c"
 
-autocorres "badnames.c"
+autocorres [no_body = StrictC'__assert_fail]"badnames.c"
 
 
 end

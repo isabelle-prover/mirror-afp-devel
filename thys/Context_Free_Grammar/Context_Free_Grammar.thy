@@ -5,7 +5,9 @@ Authors: Tobias Nipkow, Akihisa Yamada
 section "Context-Free Grammars"
 
 theory Context_Free_Grammar
-imports "Fresh_Identifiers.Fresh_Nat" "Regular-Sets.Regular_Set"
+imports
+  "Fresh_Identifiers.Fresh_Nat"
+  "Regular-Sets.Regular_Set"
 begin
 
 lemma insert_conc: "insert w W @@ V = {w @ v | v. v \<in> V} \<union> W @@ V"
@@ -246,12 +248,15 @@ unfolding nts_syms_def by(simp add: distinct_nts_syms_acc)
 lemma distinct_nts: "distinct(nts ps)"
 by(induction ps) (auto simp: nts_def distinct_nts_syms_acc distinct_nts_syms)
 
-lemma set_tms_syms: "set(tms_syms_acc sys ts) = Tms_syms sys \<union> set ts"
+lemma set_tms_syms_acc: "set(tms_syms_acc sys ts) = Tms_syms sys \<union> set ts"
 unfolding tms_syms_acc_def
 by(induction sys arbitrary: ts) (auto split: sym.split)
 
+corollary set_tms_syms: "set(tms_syms sys) = Tms_syms sys"
+unfolding tms_syms_def Tms_syms_def set_tms_syms_acc Tms_syms_def by (auto)
+
 lemma set_tms: "set(tms ps) = Tms (set ps)"
-by(induction ps) (auto simp: tms_def Tms_def set_tms_syms split: prod.splits)
+by(induction ps) (auto simp: tms_def Tms_def set_tms_syms_acc split: prod.splits)
 
 lemma distinct_tms_syms_acc: "distinct(tms_syms_acc sys ts) = distinct ts"
 unfolding tms_syms_acc_def
@@ -402,32 +407,47 @@ by (meson deriven_mono rtranclp_power)
 lemma Lang_mono: "P \<subseteq> P' \<Longrightarrow> Lang P A \<subseteq> Lang P' A"
 by (auto simp: Lang_def derives_mono)
 
+lemma Lang_of_mono: "P \<subseteq> P' \<Longrightarrow> Lang_of P w \<subseteq> Lang_of P' w"
+  using derives_mono by (auto simp: Lang_of_def)
+
 lemma derive_set_subset:
   "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> set v \<subseteq> set u \<union> Syms P"
 by (auto simp: derive_iff Syms_def)
 
+lemma deriven_set_subset:
+  "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> set v \<subseteq> set u \<union> Syms P"
+  by (induction n arbitrary: u)
+    (auto simp: relpowp_Suc_left dest!: derive_set_subset)
+
 lemma derives_set_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> set v \<subseteq> set u \<union> Syms P"
-by(induction rule: rtranclp_induct)
-  (auto dest!:derive_set_subset)
+  by (auto simp: rtranclp_power dest!: deriven_set_subset)
 
 lemma derive_Nts_syms_subset:
   "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
 by(auto simp: Nts_def derive_iff)
 
+lemma deriven_Nts_syms_subset:
+  "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
+  by (induction n arbitrary: u)
+    (auto simp: relpowp_Suc_left dest!: derive_Nts_syms_subset)
+
+lemma derives_Nts_syms_subset:
+  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
+  by (auto simp: rtranclp_power dest!: deriven_Nts_syms_subset)
+
 lemma derive_Tms_syms_subset:
   "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
 by(auto simp: Tms_def derive_iff)
 
-lemma derives_Nts_syms_subset:
-  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
-by(induction rule: converse_rtranclp_induct)
-  (auto dest!: derive_Nts_syms_subset)
+lemma deriven_Tms_syms_subset:
+  "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
+  by (induction n arbitrary: u)
+    (auto simp: relpowp_Suc_left dest!: derive_Tms_syms_subset)
 
 lemma derives_Tms_syms_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
-by(induction rule: converse_rtranclp_induct)
-  (auto dest!: derive_Tms_syms_subset)
+  by (auto simp: rtranclp_power dest!: deriven_Tms_syms_subset)
 
 
 subsubsection "Customized Induction Principles"
@@ -1545,62 +1565,75 @@ proof-
   then show ?thesis by blast
 qed
 
-text \<open>If there exists a derivation from \<open>u\<close> to \<open>v\<close> then there exists one which does not use
-  productions of the form \<open>A \<rightarrow> A\<close>. Also for left-derivation.\<close>
-
-lemma no_self_loops_derives: "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))} \<turnstile> u \<Rightarrow>* v"
-proof(induction n arbitrary: u)
-  case 0
-  then show ?case by simp
-next
-  case (Suc n)
-  then have "\<exists>w. P \<turnstile> u \<Rightarrow> w \<and> P \<turnstile> w \<Rightarrow>(n) v"
-    by (simp add: relpowp_Suc_D2)
-  then obtain w where W: "P \<turnstile> u \<Rightarrow> w \<and> P \<turnstile> w \<Rightarrow>(n) v" by blast
-  then have "\<exists> (A,x) \<in> P. \<exists>u1 u2. u = u1 @ Nt A # u2 \<and> w = u1 @ x @ u2" 
-    by (simp add: derive_iff)
-  then obtain A x u1 u2 where prod: "u = u1 @Nt A#u2 \<and> w = u1 @x@u2 \<and> (A, x) \<in> P"
-    by blast
-  then show ?case
-  proof(cases "x = [Nt A]")
-    case True
-    then have "u = w" using prod by auto
-    then show ?thesis using Suc W by auto
-  next
-    case False
-    then have "(A, x) \<in> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))}" using prod by (auto)
-    then show ?thesis using Suc W
-      by (metis (no_types, lifting) derives_rule prod rtranclp.rtrancl_refl)
-  qed
-qed
-
-lemma no_self_loops_derivels: "P \<turnstile> u \<Rightarrow>l(n) v \<Longrightarrow> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))} \<turnstile> u \<Rightarrow>l* v"
-proof(induction n arbitrary: u)
-  case 0
-  then show ?case by simp
-next
-  case (Suc n)
-  then have "\<exists>w. P \<turnstile> u \<Rightarrow>l w \<and> P \<turnstile> w \<Rightarrow>l(n) v"
-    by (simp add: relpowp_Suc_D2)
-  then obtain w where W: "P \<turnstile> u \<Rightarrow>l w \<and> P \<turnstile> w \<Rightarrow>l(n) v" by blast
-  then have "\<exists> (A,x) \<in> P. \<exists>u1 u2. u = map Tm u1 @ Nt A # u2 \<and> w = map Tm u1 @ x @ u2" 
-    by (simp add: derivel_iff)
-  then obtain A x u1 u2 where prod: "u = map Tm u1 @Nt A#u2 \<and> w = map Tm u1 @x@u2 \<and> (A, x) \<in> P"
-    by blast
-  then show ?case
-  proof(cases "x = [Nt A]")
-    case True
-    then have "u = w" using prod by auto
-    then show ?thesis using Suc W by auto
-  next
-    case False
-    then have "(A, x) \<in> {p\<in>P. \<not>(\<exists>A. p = (A,[Nt A]))}" using prod by (auto)
-    then show ?thesis using Suc W
-      by (metis (lifting) converse_rtranclp_into_rtranclp derivel.intros prod)
-  qed
-qed
-
 subsection \<open>Redundant Productions\<close>
+
+text \<open>Productions of the form \<open>A \<rightarrow> A\<close> are redundant.\<close>
+
+lemma no_self_loops_derive:
+  "reflclp (derive {(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]}) = reflclp (derive P)"
+  by (force simp: fun_eq_iff derive_iff)
+
+lemma no_self_loops_derives:
+  "{(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]} \<turnstile> u \<Rightarrow>* v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>* v"
+  apply (subst rtranclp_reflclp[symmetric])
+  by (simp add: no_self_loops_derive)
+
+lemma Lang_of_no_self_loops:
+  "Lang_of {(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]} = Lang_of P"
+  by (simp add: fun_eq_iff Lang_of_def no_self_loops_derives)
+
+lemma Lang_no_self_loops:
+  "Lang {(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]} = Lang P"
+  by (simp add: Lang_eq_iff_Lang_of_eq Lang_of_no_self_loops)
+
+lemma Lang_eq_Rhss_no_self_loop:
+  "Lang P A = Lang_of_set P (Rhss P A - {[Nt A]})"
+proof-
+  have "Lang P A = Lang {(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]} A"
+    by (simp add: Lang_no_self_loops)
+  also have "\<dots> = Lang_of_set {(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]} (Rhss P A - {[Nt A]})"
+    by (auto simp: Lang_of_set_Rhss[symmetric] Rhss_def)
+  finally show ?thesis by (simp add: Lang_of_no_self_loops)
+qed
+
+lemma no_self_loops_derivel:
+  "reflclp (derivel {(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]}) = reflclp (derivel P)"
+  by (force simp: fun_eq_iff derivel_iff)
+
+lemma no_self_loops_derivels:
+  "{(A,\<alpha>) \<in> P. \<alpha> \<noteq> [Nt A]} \<turnstile> u \<Rightarrow>l* v \<longleftrightarrow> P \<turnstile> u \<Rightarrow>l* v"
+  apply (subst rtranclp_reflclp[symmetric])
+  by (simp add: no_self_loops_derivel)
+
+text \<open>Rules that can be simulated by other rules are redundant.\<close>
+
+lemma derives_redundant:
+  assumes "\<forall>(A,\<alpha>) \<in> R. P \<turnstile> [Nt A] \<Rightarrow>* \<alpha>"
+  shows "P \<union> R \<turnstile> xs \<Rightarrow>* map Tm w \<longleftrightarrow> P \<turnstile> xs \<Rightarrow>* map Tm w" (is "?l \<longleftrightarrow> ?r")
+proof (intro iffI)
+  show "?l \<Longrightarrow> ?r"
+  proof (induction xs rule: converse_derives_induct)
+    case base
+    from assms show ?case by (auto split: prod.splits)
+  next
+    case (step u A v \<alpha>)
+    from assms \<open>(A,\<alpha>) \<in> P \<union> R\<close>
+    have "P \<turnstile> [Nt A] \<Rightarrow>* \<alpha>" by (auto simp: derive_singleton)
+    from derives_append[OF this]
+    have "P \<turnstile> u @ [Nt A] @ v \<Rightarrow>* u @ \<alpha> @ v" by (auto intro!: derives_prepend)
+    also note step.IH
+    finally show ?case by auto
+  qed
+next
+  assume "?r" from derives_mono[OF _ this] show ?l by auto
+qed
+
+lemma Lang_redundant:
+  assumes "\<forall>(A,\<alpha>) \<in> R. P \<turnstile> [Nt A] \<Rightarrow>* \<alpha>"
+  shows "Lang (P \<union> R) = Lang P"
+  by (auto simp: Lang_eq_iff_derives derives_redundant[OF assms])
+
+lemmas Lang_of_redundant = Lang_redundant[unfolded Lang_eq_iff_Lang_of_eq]
 
 text \<open>Productions whose lhss do not appear in other rules are redundant.\<close>
 
@@ -1609,27 +1642,34 @@ lemma derive_Un_disj_Lhss:
   shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow> \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow> \<beta>"
   using \<alpha> by (auto simp: Lhss_def derive_iff)
 
-lemma derives_Un_disj_Lhss:
-  assumes disj: "Nts P \<inter> Lhss Q = {}" and \<alpha>: "Nts_syms \<alpha> \<inter> Lhss Q = {}"
-  shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* \<beta>" (is "?l \<longleftrightarrow> ?r")
+lemma deriven_Un_disj_Lhss:
+  assumes PQ: "Nts P \<inter> Lhss Q = {}" and \<alpha>: "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>(n) \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta>" (is "?l \<longleftrightarrow> ?r")
 proof
   show "?l \<Longrightarrow> ?r"
-  proof (insert \<alpha>, induction rule: converse_rtranclp_induct)
-    case base
-    show ?case by simp
+  proof (induction n arbitrary: \<beta>)
+    case 0
+    then show ?case by simp
   next
-    case (step y z)
-    then have yz: "P \<turnstile> y \<Rightarrow> z" by (simp add: derive_Un_disj_Lhss)
-    from derive_Nts_syms_subset[OF yz] step.prems disj
-    have "Nts_syms z \<inter> Lhss Q = {}" by auto
-    from yz step.IH[OF this]
-    show ?case by auto
+    case (Suc n)
+    from Suc.prems obtain \<beta>' where 1: "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>(n) \<beta>'" and 2: "P \<union> Q \<turnstile> \<beta>' \<Rightarrow> \<beta>"
+      by (auto simp: relpowp_Suc_right)
+    from Suc.IH[OF 1] have P1: "P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta>'".
+    from deriven_Nts_syms_subset[OF P1] \<alpha> PQ
+    have "Nts_syms \<beta>' \<inter> Lhss Q = {}" by auto
+    from P1 2[unfolded derive_Un_disj_Lhss[OF this]]
+    show ?case by (auto simp: relpowp_Suc_right)
   qed
 next
   assume ?r
-  from derives_mono[OF _ this]
+  from deriven_mono[OF _ this]
   show ?l by auto
 qed
+
+lemma derives_Un_disj_Lhss:
+  assumes "Nts P \<inter> Lhss Q = {}" and "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* \<beta>"
+  using deriven_Un_disj_Lhss[OF assms] by (simp add: rtranclp_power)
 
 lemma Lang_Un_disj_Lhss:
   assumes disj: "Nts P \<inter> Lhss Q = {}" and A: "A \<notin> Lhss Q"
@@ -1643,6 +1683,15 @@ lemma Lang_disj_Lhss_Un:
   shows "Lang (P \<union> Q) A = Lang Q A"
   using Lang_Un_disj_Lhss[of Q P A] assms by (simp add: ac_simps)
 
+lemma Lang_of_Un_disj_Lhss:
+  assumes "Nts P \<inter> Lhss Q = {}" and "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  shows "Lang_of (P \<union> Q) \<alpha> = Lang_of P \<alpha>"
+  using derives_Un_disj_Lhss[OF assms] by (simp add: Lang_of_def)
+
+lemma Lang_of_disj_Lhss_Un:
+  assumes disj: "Lhss P \<inter> Nts Q = {}" "Nts_syms \<alpha> \<inter> Lhss P = {}"
+  shows "Lang_of (P \<union> Q) \<alpha> = Lang_of Q \<alpha>"
+  using Lang_of_Un_disj_Lhss[of Q P \<alpha>] assms by (simp add: ac_simps)
 
 subsection \<open>Substitution in Lists\<close>
 

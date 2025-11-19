@@ -31,6 +31,8 @@ fun unfold_constructor_bind_of_string str =
 @{record  \<open>datatype autocorres_options = Autocorres_options of {
   (* Do not lift heaps for these functions. *)
   no_heap_abs : string list option,
+  (* Function prototypes without specifications.  *)
+  no_body : string list option, 
   (* In/Out parameter specs for these functions. *)
   in_out_parameters : ((string * (
     ((string * ProgramInfo.parameter_kind) list ) (* parameter spec *) * 
@@ -75,7 +77,6 @@ fun unfold_constructor_bind_of_string str =
 
   (* Only translate a subset of functions. *)
   scope: string list option,
-  scope_depth: int option,
 
   (* Generate SIMPL wrappers that do not assert termination for the SIMPL.
    * Also generates ac_corres proofs minus the termination flag.
@@ -124,6 +125,7 @@ fun unfold_constructor_bind_of_string str =
 
 val default_opts = make_autocorres_options {
     no_heap_abs = NONE,
+    no_body = NONE,
     in_out_parameters = NONE,
     in_out_globals = NONE,
     method_in_out_fun_ptr_specs = NONE,
@@ -140,7 +142,6 @@ val default_opts = make_autocorres_options {
     heap_abs_syntax = NONE,
     phase = NONE,
     scope = NONE,
-    scope_depth = NONE,
     no_c_termination = NONE,
     do_polish = NONE, 
     L1_opt = NONE,
@@ -161,18 +162,25 @@ val default_opts = make_autocorres_options {
     base_locale = NONE
   }
 
+datatype state = Intermediate | Final
+
 structure Options_Theory = Theory_Data(
-  type T = {options: autocorres_options, prog_info: ProgramInfo.prog_info} Symtab.table * autocorres_options option;
-  val empty = (Symtab.empty, NONE);
-  fun merge ((tab1, _), (tab2, _)) = (Symtab.merge (K true) (tab1, tab2), NONE);
+  type T = {options: autocorres_options, prog_info: ProgramInfo.prog_info, state: state} Symtab.table;
+  val empty = (Symtab.empty);
+  fun merge (tab1, tab2) = Symtab.merge (K true) (tab1, tab2);
 )
 
-fun get_current_options thy = Options_Theory.get thy |> snd
-fun map_current_options f thy = Options_Theory.map (apsnd f) thy 
+fun current_prog_name thy =
+  let
+    val cfilename = C_Files.get_main thy
+    val prog_name =  if cfilename = "" then "" else cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
+  in prog_name end
 
 structure Options_Proof = AC_Proof_Data (
   type T = autocorres_options
-  val init = fn thy => the_default default_opts (get_current_options thy)
+  val init = fn thy => 
+    the_default default_opts 
+      (Symtab.lookup (Options_Theory.get thy) (current_prog_name thy) |> Option.map #options)
 )
 
 val get_unfold_constructor_bind_opt = Options_Proof.get #> get_unfold_constructor_bind #> the_default Selectors 
@@ -217,6 +225,10 @@ val nat_opt = named_option Parse.nat
 val no_heap_abs_parser =
   named_opt "no_heap_abs" "function names" >>
   (fn funcs => none_to_some map_no_heap_abs funcs "autocorres: no_heap_abs option specified multiple times")
+
+val no_body_parser =
+  named_opt "no_body" "function names" >>
+  (fn funcs => none_to_some map_no_body funcs "autocorres: no_body option specified multiple times")
 
 
 fun disjoint_parameter_kind_from_string str =   
@@ -281,14 +293,18 @@ val scope_parser =
   named_opt "scope" "function names" >>
   (fn funcs => none_to_some map_scope funcs "autocorres: scope option specified multiple times")
 
-val scope_depth_parser =
-  nat_opt "scope_depth" "integer" >>
-  (fn value => none_to_some map_scope_depth value "autocorres: scope option specified multiple times")
+val parse_phase = (
+  Parse.reserved "CP" || 
+  Parse.reserved "L1" || 
+  Parse.reserved "L2" || 
+  Parse.reserved "HL" || 
+  Parse.reserved "WA" || 
+  Parse.reserved "TS" || 
+  Parse.reserved "IO") 
+  >> FunctionInfo.phase_of_string
 
 fun gen_phase_parser name map_field = 
-    named_option (((Parse.reserved "CP" || Parse.reserved "L1" || Parse.reserved "L2" || Parse.reserved "HL" || 
-         Parse.reserved "WA" || Parse.reserved "TS" || Parse.reserved "IO") 
-         >> FunctionInfo.phase_of_string) 
+    named_option (parse_phase 
        >> (fn value => none_to_some map_field value ("autocorres: " ^ name ^ "option specified multiple times"))) 
      name ("FuctionInfo " ^ name); 
 
@@ -457,7 +473,7 @@ fun merge_opt old new =
       | override_o merge (SOME x, NONE  ) = NONE
       | override_o merge (SOME x, SOME y) = SOME (merge x y);
 
-    fun merge_lists xs ys = duplicates (op =) (xs @ ys);
+    fun merge_lists xs ys = distinct (op =) (xs @ ys);
     fun take_fst x _ = x
     fun take_snd _ y = y
 
@@ -465,6 +481,7 @@ fun merge_opt old new =
 
     val opt = make_autocorres_options {
       no_heap_abs         = merge_o merge_lists (get_opts get_no_heap_abs old new),
+      no_body             = merge_o merge_lists (get_opts get_no_body old new),
       in_out_parameters   = merge_o merge_in_out_parameters (get_opts get_in_out_parameters old new),
       in_out_globals      = merge_o merge_lists (get_opts get_in_out_globals old new),
       method_in_out_fun_ptr_specs = merge_o merge_method_in_out_fun_ptr_specs (get_opts get_method_in_out_fun_ptr_specs old new),
@@ -481,7 +498,6 @@ fun merge_opt old new =
       heap_abs_syntax     = merge_o take_fst (get_opts get_heap_abs_syntax old new),
       phase               = merge_o take_snd (get_opts get_phase old new),
       scope               = override_o take_snd (get_opts get_scope old new),
-      scope_depth         = merge_o take_snd (get_opts get_scope_depth old new),
       no_c_termination    = merge_o take_fst (get_opts get_no_c_termination old new),
       do_polish           = merge_o take_snd (get_opts get_do_polish old new),
       L1_opt              = merge_o take_snd (get_opts get_L1_opt old new),
@@ -512,6 +528,7 @@ fun upd_opts (opt:autocorres_options) scope phase :autocorres_options =
 local
   val option_parser =
     (no_heap_abs_parser ||
+     no_body_parser ||
      in_out_parameter_parser ||
      in_out_globals_parser ||
      method_in_out_fun_ptr_parser ||
@@ -525,7 +542,6 @@ local
      heap_abs_syntax_parser ||
      phase_parser ||
      scope_parser ||
-     scope_depth_parser ||
      no_c_termination_parser ||
      do_polish_parser ||
      L1_opt_parser ||
@@ -553,4 +569,6 @@ val options_parser =
       >> (fn f => f (default_opts)))
 end
 
+fun get_prog_info thy filename =
+  the (Symtab.lookup (Options_Theory.get thy) filename) |> #prog_info
 end

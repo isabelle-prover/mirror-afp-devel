@@ -38,7 +38,7 @@ fun might_raise trap s =
     | IfStmt(_, s1, s2) => might_raise trap s1 orelse might_raise trap s2
     | Switch(_, cases) =>
         List.exists (List.exists (bi_might_raise trap) o #2) cases
-    | Block bis => List.exists (bi_might_raise trap) bis
+    | Block (_, bis) => List.exists (bi_might_raise trap) bis
     | Trap(trap', s) => trap <> trap' andalso might_raise trap s
     | Spec(_, slist, _) => List.exists (might_raise trap) slist
     | Break => trap = BreakT
@@ -89,14 +89,13 @@ fun gen_update_locals ctxt statety locty (NameGeneration.Positional (pos, ty)) n
   | gen_update_locals ctxt statety locty (NameGeneration.Named name) new_value =
       update_locals ctxt statety locty name new_value
 
-
-
-fun var_updator ctxt globty locty k_upd (name, ty, cty, vsort) newvalue state =
+fun var_updator ctxt globty locty k_upd (name, ty, cty_opt, vsort) newvalue0 state =
   let
     val thy = Proof_Context.theory_of ctxt
     open CalculateState NameGeneration
     val statety = type_of state
-    val newvalue' = if k_upd then K_rec ty $ newvalue else newvalue
+    val newvalue = coerce_bitint' ctxt cty_opt ty newvalue0
+    val newvalue' =  (if k_upd then K_rec ty $ newvalue else newvalue)
   in
     case vsort of
       Local _ =>
@@ -149,7 +148,7 @@ fun lookup_locals_fun ctxt statety locty name =
     Abs ("s", statety, abstract_over (s, lookup_locals ctxt statety locty name s))
   end
 
-fun var_accessor ctxt globty locty (name, ty, _ (*cty *), vsort) state =
+fun var_accessor ctxt globty locty (name, ty, cty_opt, vsort) state =
   let
     val thy = Proof_Context.theory_of ctxt
     open CalculateState NameGeneration
@@ -160,14 +159,16 @@ fun var_accessor ctxt globty locty (name, ty, _ (*cty *), vsort) state =
         then
           Const (Sign.intern_const thy ("CProof.state." ^ name), (type_of state) --> ty) $ state
         else
-          lookup_locals ctxt (type_of state) locty name state
+          coerce_bitint ctxt ty cty_opt
+            (lookup_locals ctxt (type_of state) locty name state)
     | NSGlobal =>
         let
           val glob_t = #acc (get_globals_data (type_of state) globty thy)
         in
-          Const(Sign.intern_const thy (global_rcd_name ^ "." ^ name),
+          coerce_bitint ctxt ty cty_opt
+            (Const(Sign.intern_const thy (global_rcd_name ^ "." ^ name),
                 globty --> ty) $
-          (glob_t $ state)
+              (glob_t $ state))
         end
     | AddressedGlobal => raise Fail "var_updator: shouldn't be called on addressed global"
     | UntouchedGlobal => raise Fail "var_updator: shouldn't be called on untouched global"
@@ -178,7 +179,7 @@ fun mk_callresult_exn ctxt globty locty statety =
   let
     val svar = Free("s", statety)
     val tvar = Free("t", statety)
-    val exn_var_data = (NameGeneration.global_exn_var, c_exntype_ty, true, (* unused parameter *)
+    val exn_var_data = (NameGeneration.global_exn_var, c_exntype_ty, NONE, 
                        CalculateState.Local ("cparser'internal", false))
     val exn_updator = var_updator ctxt globty locty true exn_var_data
     val exn_accessor = var_accessor ctxt globty locty exn_var_data
@@ -294,7 +295,7 @@ fun dest_init_var cse e =
       ProgramAnalysis.get_local_info cse (#munge vinfo, #fname vinfo)
       |> Option.map (fn loc_info => (#init vinfo, x,  loc_info)))
     | _ => NONE
-
+   
 fun stmt_term (ctxt : Proof.context)
               (cse : ProgramAnalysis.csenv)
               (state : CalculateState.mungedb)
@@ -308,15 +309,16 @@ fun stmt_term (ctxt : Proof.context)
               (styargs : Term.typ list)
               (memsafe : bool)
               (skip_asm : bool)
+              (attrss: gcc_attribute list wrap list)
               (stmts : Absyn.statement list) : term =
   case stmts of
     [] => mk_skip_t styargs
   | (stmt::stmts) =>
 
   let
-    val stmt_term =
-        stmt_term ctxt cse state fname termbuilders varinfo fninfo
-                  statetype globty locty styargs memsafe skip_asm
+    val stmt_term_attrs = stmt_term ctxt cse state fname termbuilders varinfo fninfo
+          statetype globty locty styargs memsafe skip_asm
+    val stmt_term = stmt_term_attrs attrss
     val thy = Proof_Context.theory_of ctxt
     val filename = Config.get_global thy HP_TermsTypes.current_C_filename
     val prog_name = HP_TermsTypes.get_program_name ctxt
@@ -327,7 +329,7 @@ fun stmt_term (ctxt : Proof.context)
     val emptystmt = mk_skip_t styargs
     val svar = Free("s", statetype)
     val exn_var_data =  (NameGeneration.global_exn_var, c_exntype_ty,
-                         true, (* unused parameter *)
+                         NONE, 
                          CalculateState.Local ("cparser'internal", false))
     fun exn_assign value = let
     val updator = var_updator ctxt globty locty true exn_var_data
@@ -377,7 +379,7 @@ fun stmt_term (ctxt : Proof.context)
     fun seq_rest stmt = seq_rest' stmt stmts
   in
     case snode stmt of
-      Block bilist => stmt_term (bilist2stmts bilist) |> seq_rest
+      Block (_, bilist) => stmt_term (bilist2stmts bilist) |> seq_rest
 
     | LabeledStmt (l, stmt') =>
         let
@@ -405,7 +407,7 @@ fun stmt_term (ctxt : Proof.context)
         case dest_init_var cse e1 of
            SOME (true, x, {kind = NameGeneration.Loc, addressed = true, ...}) =>
              let
-               val xty = CalculateState.ctype_to_typ ctxt e1_cty
+               val xty = CalculateState.ctype_to_typ {bitint_padding=true} ctxt e1_cty
                val init = mk_abs(svar, HOLogic.mk_set \<^Type>\<open>list xty\<close> [HOLogic.mk_list xty [rval_of e2' svar]])
                val x_ptr = TermsTypes.mk_local_ptr (x, xty)
                val c = stmt_term stmts |> Term.absfree (dest_Free x_ptr)
@@ -437,7 +439,7 @@ fun stmt_term (ctxt : Proof.context)
               end
             | _ => error "Bad variable being initialised"
         val einfo = expr_term v_e
-        val ety = CalculateState.ctype_to_typ ctxt (ctype_of einfo)
+        val ety = CalculateState.ctype_to_typ {bitint_padding=true} ctxt (ctype_of einfo)
         val loc_info = ProgramAnalysis.get_local_info cse (#munge vinfo, #fname vinfo)
       in
         case (#init vinfo, loc_info) of
@@ -566,11 +568,13 @@ fun stmt_term (ctxt : Proof.context)
             handle Empty =>
                    error ("No return parameter for function "^fname)
         val retvar = map_locals ctxt statetype locty retvar_name retvar_ty
-        val e'     = implicit_cast_rval retvar_cty e
+        
+        val e'     = implicit_cast_rval (next_power_of_2_bitint retvar_cty) e
         val value  = mk_abs (svar, rval_of e' svar) (* Is svar safe? *)
+        val ret = mk_creturn thy styargs statetype retvar value
+        val res = guard_it (guards_of e') (ret)
       in
-        guard_it (guards_of e')
-          (mk_creturn thy styargs statetype retvar value)
+        res
         |> seq_rest
       end
 
@@ -580,7 +584,7 @@ fun stmt_term (ctxt : Proof.context)
         val (retvar_name, _, cretty, _) =
             hd (#outparams this_fn_info)
             handle Empty => error ("No return parameter for function "^fname)
-        val mvi = MungedVar {munge = MString.mk retvar_name, owned_by = NONE, fname=SOME fname, init=false, global=false}
+        val mvi = MungedVar {munge = MString.mk retvar_name, owned_by = NONE, fname=SOME fname, init=false, kind=Local}
         val retvar =
             ewrap (Var (retvar_name, Unsynchronized.ref (SOME (cretty, mvi))),
                    eleft s,
@@ -613,13 +617,13 @@ fun stmt_term (ctxt : Proof.context)
     | AssignFnCall(lvalopt, call_e, args) => (case Option.mapPartial (dest_init_var cse) lvalopt of
         SOME (true, x, {kind = NameGeneration.Loc, addressed = true, info = vinfo}) =>
           let
-            val xty = CalculateState.ctype_to_typ ctxt (ProgramAnalysis.get_vtype vinfo)
+            val xty = CalculateState.ctype_to_typ {bitint_padding=true} ctxt (ProgramAnalysis.get_vtype vinfo)
             val init = \<^instantiate>\<open>'s = statetype and 'a = xty in term \<open>\<lambda>s::'s. UNIV::'a list set\<close>\<close>
             val x_ptr = TermsTypes.mk_local_ptr (x, xty)
             val lvalopt_initialised = lvalopt |>
-                 (Option.map o map_enode o map_var o apsnd o ExprDatatype.map_more_info o map_munged_var o map_init)
+                 (Option.map o map_enode o map_var o apsnd o AstDatatype.map_more_info o map_munged_var o map_init)
                    (K false)
-            val stmt' = stmt |> StmtDeclDatatype.map_snode (K (AssignFnCall(lvalopt_initialised, call_e, args)))
+            val stmt' = stmt |> AstDatatype.map_snode (K (AssignFnCall(lvalopt_initialised, call_e, args)))
             val c = stmt_term (stmt':: stmts) |> Term.absfree (dest_Free x_ptr)
             val t = mk_With_Fresh_Stack_Ptr ctxt @{term "1::nat"} init c
           in
@@ -635,7 +639,7 @@ fun stmt_term (ctxt : Proof.context)
           | ret_opt (r::_) = SOME r
 
         val (HP_call_t, fndes_t, informals, outname_info_opt, callname, callgds, direct) =
-            case fndes_callinfo ctxt cse call_e of
+            case fndes_callinfo ctxt fname attrss cse call_e of
               (DirectCall callname, _) =>
                 if callname = NameGeneration.exitN
                 then (Bound 0, Bound 0, [mk_param HP_TermsTypes.c_exit_status_info], NONE, callname, [], true)
@@ -656,11 +660,22 @@ fun stmt_term (ctxt : Proof.context)
                  true)
               end
 
-            | (FnPtrCall((rty, argTs), _, _), _) => let
+            | (FnPtrCall((rty, argTs), callee_infos, _), _) => let
                 val call_ei = expr_term call_e
+                val potential_callees = maps (approx_callees cse) callee_infos |> sort_distinct (fast_string_ord)
+                val _ = 
+                  if null potential_callees andalso 
+                     not (null callee_infos) (* explicit empty annotation: __attribute__((calls())) *) then 
+                    let
+                    
+                      val region' = Region.make{left = eleft call_e, right = eright call_e}
+                    in 
+                      Feedback.error_region ctxt region' ("Could not infer any potential function pointer callees in " ^ fname ^ 
+                        ".\n Maybe annotate call with '__attribute__((calls(...)))'") 
+                    end 
+                  else ()
+                val domain = potential_callees |> map_filter (try (HP_TermsTypes.mk_fun_ptr ctxt prog_name)) |> HOLogic.mk_set (@{typ "unit ptr"})
                 open NameGeneration
-                val naming = Const (Sign.intern_const thy naming_scheme_name,
-                      procT --> mk_option_ty string_ty)
                 val pbody = rval_of call_ei svar
                 val (ins, outs) = HPInter.params_of_fun_type ctxt (CType.Ptr (CType.Function (rty, argTs)))
                                 |> HPfninfo.positional
@@ -678,7 +693,7 @@ fun stmt_term (ctxt : Proof.context)
                     mk_collect_t statetype $ mk_abs(svar, pred)
                   end
               in
-                (mk_dyncall_t styargs (map mk_guard (ptr_guard :: guards_of call_ei)),
+                (mk_dyncall_t styargs domain (map mk_guard (ptr_guard :: guards_of call_ei)),
                  mk_abs(svar, pbody), ins, outopt,
                  "fn. ptr", [], false)
               end
@@ -706,12 +721,12 @@ fun stmt_term (ctxt : Proof.context)
           val coerced_value =
               if actual_cty = pty then actual_info
               else if assignment_compatible(pty, actual_cty, actuale) then
-                typecast(ctxt,pty,actual_info)
+                  typecast(ctxt,pty,actual_info)
               else
                 error ("Actual parameter's type: "^tyname actual_cty^
                        " is not compatible with formal parameter's type: "^
                        tyname pty)
-          val v = rval_of coerced_value svar
+          val v = CalculateState.coerce_bitint_to_padding ctxt pty (rval_of coerced_value svar)
           val rv = if callname = NameGeneration.exitN
             then Const (@{const_name Nonlocal}, @{typ exit_status} --> ipty) $ v
             else v
@@ -753,7 +768,7 @@ fun stmt_term (ctxt : Proof.context)
               val lhs_cty = ctype_of lhs_ei
               val outlval = the (lval_of lhs_ei)
                   handle Option => error "Assigning function call to non-lvalue"
-              val (out_pos, (out_name, out_typ, out_ctyp, _)) = the outname_info_opt
+              val (out_pos, (out_name, out_typ, out_ctyp0, _)) = the outname_info_opt
                   handle Option =>
                          error ("Using return value from void function "^
                                 callname)
@@ -761,6 +776,7 @@ fun stmt_term (ctxt : Proof.context)
               val out_ref = if direct then NameGeneration.Named out_name else NameGeneration.Positional (out_pos, out_typ)
               fun outrval0 st = gen_lookup_locals callee_ctxt statetype locty out_ref st
 
+              val out_ctyp = next_power_of_2_bitint out_ctyp0
               val out_einfo = mk_rval(outrval0, out_ctyp, false, sleft stmt,
                                       sright stmt)
               val outrval =
@@ -844,7 +860,7 @@ fun stmt_term (ctxt : Proof.context)
                  handle Option => error ("Value (" ^ expr_string expr ^
                                          ") without l-value passed to Chaos")
         val cty = ctype_of ei
-        val v = Free("v", CalculateState.ctype_to_typ ctxt cty)
+        val v = Free("v", CalculateState.ctype_to_typ {bitint_padding=true} ctxt cty)
         val f = list_mk_abs([v,svar], lv v svar)
       in
         Const(@{const_name "cchaos"}, type_of f --> mk_com_ty styargs) $ f
@@ -885,27 +901,32 @@ fun stmt_term (ctxt : Proof.context)
         mk_guard guard unspecified_syntax_error1 emptystmt
         |> seq_rest
       end)
+    | AttributeStmt (attrs, stmt1) =>
+       let
+         val stmt1' = stmt_term_attrs (attrs :: attrss) [stmt1]
+       in stmt1' |> seq_rest end
     | _ => error ("Can not yet handle "^stmt_type stmt^" statement forms")
   end
 
 fun lookup_fld alist (s, f) =
     case AList.lookup (op =) alist s of
       NONE => error ("No struct information for type "^s)
-    | SOME (flds, sattrs) => let
+    | SOME (flds, sattrs, region) => let
       in
-        case List.find (fn (fldname, ty, cty, attrs) => fldname = f) flds  of
+        case List.find (fn (fldname, ty, cty, attrs) => node fldname = f) flds  of
           NONE => error ("No type information for field "^f^" in struct "^s)
-        | SOME (_, ty, _, _) => ty
+        | SOME (_, ty, cty, _) => (ty, cty)
       end
 
-fun rcd_accessor thy cse rcdinfo (sname, fldname) rcdterm =
+fun rcd_accessor thy cse (rcdinfo: CalculateState.rcd_info list) (sname, fldname) rcdterm =
   case CalculateState.union_variant {non_canonical=true} thy cse (sname, fldname) of 
     NONE => (* ordinary structure or single variant union or canonical union variant *)
       let
         val fullname = Sign.intern_const thy (sname ^ "." ^ fldname)
-        val fldty = lookup_fld rcdinfo (sname, fldname)
-      in
-        Const(fullname, type_of rcdterm --> fldty) $ rcdterm
+        val (fldty, fldcty) = lookup_fld rcdinfo (sname, fldname)
+      in 
+        CalculateState.coerce_bitint (Proof_Context.init_global thy) fldty (SOME fldcty)                                                             
+          (Const(fullname, type_of rcdterm --> fldty) $ rcdterm)
       end
   | SOME (union_ty, variant_ty, field_ty) => (* non-canonical union variants *)
       let
@@ -916,32 +937,36 @@ fun rcd_accessor thy cse rcdinfo (sname, fldname) rcdterm =
       in 
         sel $ (coerce $ rcdterm)
       end 
-
-fun rcd_updator thy cse (sname, fldname) newvalue rcdterm =
-  case CalculateState.union_variant {non_canonical=true} thy cse (sname, fldname) of
-    NONE => (* ordinary structure or single variant union or canonical union variant *)
-      let
-        val fullname =
-            Sign.intern_const thy (sname ^ "." ^ suffix Record.updateN fldname)
-        val valty = type_of newvalue
-        val rcdty = type_of rcdterm
-        val ty = (valty --> valty) --> (rcdty --> rcdty)
-        val Kupd = K_rec valty $ newvalue
-      in
-        Const(fullname, ty) $ Kupd $ rcdterm
-      end 
-    | SOME (union_ty, variant_ty, _) => (* non-canonical union variants *)
-      let
-        val coerce_map = \<^Const>\<open>coerce_map variant_ty union_ty\<close>
-        val (variant_ty_name, _) = dest_Type variant_ty
-        val upd_name = Sign.intern_const thy (variant_ty_name ^ "." ^ suffix Record.updateN fldname)
-        val val_ty = type_of newvalue
-        val upd_ty = (val_ty --> val_ty) --> (variant_ty --> variant_ty)
-        val upd = Const(upd_name, upd_ty)
-        val Kupd = K_rec val_ty $ newvalue
-      in 
-        (coerce_map $ (upd $ Kupd) $ rcdterm)
-      end 
+                                                  
+fun rcd_updator thy cse rcdinfo (sname, fldname) newvalue rcdterm =
+  let
+  in
+    case CalculateState.union_variant {non_canonical=true} thy cse (sname, fldname) of
+      NONE => (* ordinary structure or single variant union or canonical union variant *)
+        let
+          val fullname =
+              Sign.intern_const thy (sname ^ "." ^ suffix Record.updateN fldname)
+          val rcdty = type_of rcdterm
+          val (fldty, fldcty) = lookup_fld rcdinfo (sname, fldname)
+          val ty = (fldty --> fldty) --> (rcdty --> rcdty)
+          val Kupd = K_rec fldty $ (CalculateState.coerce_bitint' (Proof_Context.init_global thy) (SOME fldcty) fldty newvalue)
+        in
+          Const(fullname, ty) $ Kupd $ rcdterm
+        end 
+      | SOME (union_ty, variant_ty, _) => (* non-canonical union variants *)
+        let                                              
+          val coerce_map = \<^Const>\<open>coerce_map variant_ty union_ty\<close>
+          val variant_ty_name = dest_Type_name variant_ty
+          val (fldty, fldcty) = lookup_fld rcdinfo (Long_Name.base_name variant_ty_name, fldname)
+          val upd_name = Sign.intern_const thy (variant_ty_name ^ "." ^ suffix Record.updateN fldname)
+          val val_ty = type_of newvalue
+          val upd_ty = (val_ty --> val_ty) --> (variant_ty --> variant_ty)
+          val upd = Const(upd_name, upd_ty)
+          val Kupd = K_rec val_ty $ newvalue
+        in 
+          (coerce_map $ (upd $ Kupd) $ rcdterm)
+        end
+  end
 
 fun state_vlookup (fname_opt : string option) (s:MString.t) (state:CalculateState.mungedb) = let
 in
@@ -994,7 +1019,7 @@ fun strip_invs com statetype =
 
 
 
-fun fndefn_term (state : CalculateState.mungedb) cse fninfo rcdinfo memsafe skip_asm globty locty styargs lthy decl = let
+fun fndefn_term (state : CalculateState.mungedb) cse fninfo (rcdinfo: CalculateState.rcd_info list) memsafe skip_asm globty locty styargs lthy decl = let
   val thy = Proof_Context.theory_of lthy
   open CalculateState
   val statetype = hd styargs
@@ -1010,19 +1035,19 @@ fun fndefn_term (state : CalculateState.mungedb) cse fninfo rcdinfo memsafe skip
   val termbuilders : varinfo termbuilder =
       TB { var_updator = var_updator lthy globty locty,
            var_accessor = var_accessor lthy globty locty,
-           rcd_updator = rcd_updator thy cse,
+           rcd_updator = rcd_updator thy cse rcdinfo,
            rcd_accessor = rcd_accessor thy cse rcdinfo}
 
   val stmt_trans = stmt_term lthy cse state fname termbuilders
                              varinfo fninfo
-                             statetype globty locty styargs memsafe skip_asm
+                             statetype globty locty styargs memsafe skip_asm []
 
-  val addressed_params = #inparams info |> filter (#4)
+  val addressed_params = #inparams info |> tag_list 0 |> filter (#4 o snd)
 
-  fun mk_init_addressed_param (n, ty, cty, true) =
+  fun mk_init_addressed_param (idx, (n, ty, cty, true)) =
     let
-      val v = Var (n, Unsynchronized.ref (SOME (cty, MungedVar {fname = SOME fname, init = true, munge = MString.mk n, owned_by = NONE, global=false})))
-            |> RegionExtras.bogwrap |> ExprDatatype.E |> LocalInit |> RegionExtras.bogwrap |> StmtDeclDatatype.Stmt
+      val v = Var (n, Unsynchronized.ref (SOME (cty, MungedVar {fname = SOME fname, init = true, munge = MString.mk n, owned_by = NONE, kind=Parameter idx})))
+            |> RegionExtras.bogwrap |> AstDatatype.E |> LocalInit |> RegionExtras.bogwrap |> AstDatatype.Stmt
     in
       v
     end
@@ -1072,7 +1097,7 @@ fun translate_body (globty, locty, styargs)
                      (vdecls : CalculateState.mungedb)
                      cse
                      fninfo
-                     rcdinfo
+                     (rcdinfo: CalculateState.rcd_info list)
                      ms
                      skip_asm
                      lthy

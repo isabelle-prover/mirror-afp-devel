@@ -11,7 +11,8 @@ int h(int);
 
 int f(void)
 {
-  if (x < 0) return 1 + g(6);
+  int g6 = g(6);
+  if (x < 0) return 1 + g6;
   else {
     int i = h(x);
     return 7 + i;

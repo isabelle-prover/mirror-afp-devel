@@ -10,6 +10,26 @@ fun rev_app x f = f x
 (* FIXME Make Signature*)
 structure Utils =
 struct
+
+fun abs_names (Abs (x,_,bdy)) = (x::abs_names bdy)
+  | abs_names _ = []
+
+val define_gamma = Attrib.setup_config_bool @{binding "define_gamma"} (K true)
+fun declare_const_gamma decl thy = 
+  if Config.get_global thy define_gamma then
+    Sign.declare_const_global decl thy
+  else
+    Theory.specify_const decl thy
+
+fun declare_const decl thy = 
+    Sign.declare_const_global decl thy
+
+fun the_const ctxt n =
+  let
+    val consts = Proof_Context.consts_of ctxt;
+    val name = the (Consts.get_const_name consts (Consts.intern consts n))
+  in (name, Consts.the_const_type consts name) end
+
 (* verbose mode *)
 val indent = Attrib.setup_config_int \<^binding>\<open>verbose_indent\<close> (K ~1);
 fun indent_msg ctxt s = 
@@ -73,7 +93,10 @@ fun is_relevant t ({elapsed, cpu, gc}: Timing.timing) =
 fun threshold_msg t msg (info:('a, 'b) timing_info as {timing=timing, ...}) =
   if is_relevant t timing then msg info else ""
 
-fun timeap_msg level ctxt msg f x =
+fun gen_timeap_msg label level ctxt msg f x =
+  let
+    val _ = if label = "" then () else tracing ("Doing " ^ label ^ " ...")
+  in
   if Config.get ctxt timing >= level 
   then
     let
@@ -84,6 +107,10 @@ fun timeap_msg level ctxt msg f x =
       dep_timeap_msg verbose msg' f x
     end 
   else f x
+  end
+
+fun timeap_msg level ctxt msg f x = gen_timeap_msg "" level ctxt msg f x
+fun timeap_label level ctxt label f x = gen_timeap_msg label level ctxt (fn _ => label) f x
 
 fun cat_lines' xs = xs |> filter_out (fn x => x = "") |> space_implode "\n " 
 
@@ -113,6 +140,7 @@ val tactic_message = gen_tactic_message I 0
 
 
 fun timeit_msg level ctxt msg f = timeap_msg level ctxt msg f ()
+fun timeit_label level ctxt label f = timeap_label level ctxt label f ()
 
 fun timeit_msg_seq level ctxt msg xs =
   Seq.make (fn () => 
@@ -219,7 +247,30 @@ fun print_subgoal_tac msg ctxt = SUBGOAL (fn (t, i) => fn st =>
    in 
      all_tac st 
    end)
+
+fun dprint_subgoal_tac d msg ctxt = if d then print_subgoal_tac msg ctxt else K all_tac
+fun dprint_tac d msg ctxt = if d then print_tac ctxt msg else all_tac
   
+fun error_subgoal_tac label more_info ctxt = SUBGOAL (fn (t, i) => fn st =>
+  let
+    val np = Thm.nprems_of st
+    val show_main_goal = Config.get ctxt Goal_Display.show_main_goal;
+    val _ = error (indent_msg ctxt (label ^ " subgoal " ^ string_of_int i ^ " of " ^ string_of_int np ^ ":\n "  ^ 
+      (Pretty.string_of (Syntax.pretty_term ctxt t))) ^
+      (if show_main_goal then
+         "\n main goal: " ^ Pretty.string_of (pretty_main_goal ctxt st)
+      else "") ^ more_info {solved = false})
+  in
+    no_tac st
+  end)
+  ORELSE' (fn i => fn st =>
+   let 
+     val np = Thm.nprems_of st
+     val _ = tracing (indent_msg ctxt (label ^ " subgoal " ^ string_of_int i ^ " of " ^ string_of_int np ^ 
+               " already solved." ^ more_info {solved = true}))
+   in 
+     all_tac st 
+   end)
 
 fun verbose_print_subgoal_tac level msg ctxt = 
   if level <= Config.get ctxt verbose then print_subgoal_tac msg ctxt else K all_tac
@@ -342,6 +393,64 @@ fun mk_cterm ctxt term cargs =
 fun dest_all_open (Const (@{const_name "Pure.all"}, _) $ Abs (abs as (x, T, b))) = ((x, T), b)
   | dest_all_open t = raise TERM ("dest_all_open", [t]);
 
+(* Different sides of a binary operator. *)
+fun rhs_of (Const _ $ _ $ r) = r
+  | rhs_of t = raise (TERM ("rhs_of", [t]))
+fun lhs_of (Const _ $ l $ _) = l
+  | lhs_of t = raise (TERM ("lhs_of", [t]))
+
+fun rhs_of_eq (Const (@{const_name "Trueprop"}, _) $ eq) = rhs_of_eq eq
+  | rhs_of_eq (Const (@{const_name "Pure.eq"}, _) $ _ $ r) = r
+  | rhs_of_eq (Const (@{const_name "HOL.eq"}, _) $ _ $ r) = r
+  | rhs_of_eq t = raise (TERM ("rhs_of_eq", [t]))
+
+fun lhs_of_eq (Const (@{const_name "Trueprop"}, _) $ eq) = lhs_of_eq eq
+  | lhs_of_eq (Const (@{const_name "Pure.eq"}, _) $ l $ _) = l
+  | lhs_of_eq (Const (@{const_name "HOL.eq"}, _) $ l $ _) = l
+  | lhs_of_eq t = raise (TERM ("lhs_of_eq", [t]))
+
+fun clhs_of ct = nth (Drule.strip_comb ct |> #2) 0
+fun crhs_of ct = nth (Drule.strip_comb ct |> #2) 1
+
+fun dest_eq ct =
+  let
+    val [lhs, rhs] = snd (Drule.strip_comb ct)
+  in (lhs, rhs) end
+
+
+fun crhs_of_eq ct = case Thm.term_of ct of
+      (Const (@{const_name "Trueprop"}, _) $ eq) => crhs_of_eq (snd (Thm.dest_comb ct))
+    | (Const (@{const_name "Pure.eq"}, _) $ _ $ _) => crhs_of ct
+    | (Const (@{const_name "HOL.eq"}, _) $ _ $ _) => crhs_of ct
+    | t => raise (TERM ("crhs_of_eq", [t]))
+
+fun clhs_of_eq ct = case Thm.term_of ct of
+      (Const (@{const_name "Trueprop"}, _) $ eq) => clhs_of_eq (snd (Thm.dest_comb ct))
+    | (Const (@{const_name "Pure.eq"}, _) $ _ $ _) => clhs_of ct
+    | (Const (@{const_name "HOL.eq"}, _) $ _ $ _) => clhs_of ct
+    | t => raise (TERM ("clhs_of_eq", [t]))
+
+fun dest_eq' ct = case Thm.term_of ct of
+      (Const (@{const_name "Trueprop"}, _) $ eq) => dest_eq (snd (Thm.dest_comb ct))
+    | (Const (@{const_name "Pure.eq"}, _) $ _ $ _) => dest_eq ct
+    | (Const (@{const_name "HOL.eq"}, _) $ _ $ _) => dest_eq ct
+    | t => raise (TERM ("dest_eq'", [t]))
+
+fun cdest_Some ct = case Thm.term_of ct of
+      (Const (@{const_name "Some"}, _) $ _) => Thm.dest_arg ct
+  | t => raise (TERM ("the", [t]))
+
+fun chead_of ct = Drule.strip_comb ct |> fst
+fun ctail_of ct = Drule.strip_comb ct |> snd |> hd
+fun cterm_nth_arg ct n =
+  (Drule.strip_comb ct |> snd |> (fn x => nth x n))
+  handle Subscript =>
+    raise CTERM ("Argument " ^ (@{make_string} n) ^ " doesn't exist", [ct])
+fun term_nth_arg t n =
+  (Term.strip_comb t |> snd |> (fn x => nth x n))
+  handle Subscript =>
+    raise TERM ("Argument " ^ (@{make_string} n) ^ " doesn't exist", [t])
+
 fun strip_all t = case try Logic.dest_all_global t of
       SOME (v, t') => let val (vs, r) = strip_all t' in (v::vs, r) end
     | NONE => ([], t)
@@ -386,7 +495,10 @@ fun split_filter P [] = ([], [])
       in 
         if P x then (x::hits, misses) else (hits, x::misses) 
       end  
- 
+
+fun take_while P [] = []
+  | take_while P (x::xs) = if P x then x::take_while P xs else []
+
 fun split_map_filter f [] = ([], [])
   | split_map_filter f (x::xs) = 
       let
@@ -492,24 +604,28 @@ fun derive_unconditional_facts_from_assms solver assms rules =
   end
 
 
+fun pretty_numbered_entity pretty ctxt (i, x) = Pretty.block [Pretty.str (string_of_int i ^ ": "), pretty ctxt x]
+fun pretty_numbered pretty name ctxt rs =  
+  Pretty.block (Pretty.fbreaks (Pretty.str name :: map (pretty_numbered_entity pretty ctxt) (tag_list 1 rs)))
+
 fun pretty_typs ctxt ts =
   Pretty.list "[" "]" (map (Syntax.pretty_typ ctxt) ts)
 fun string_of_typs ctxt ts = pretty_typs ctxt ts |> Pretty.string_of
 fun pretty_terms ctxt ts =
   Pretty.list "[" "]" (map (Syntax.pretty_term ctxt) ts)
 fun string_of_terms ctxt ts = pretty_terms ctxt ts |> Pretty.string_of
+fun big_list_of_terms name ctxt thms = pretty_numbered Syntax.pretty_term name ctxt thms |> Pretty.string_of
+
 fun string_of_cterm ctxt = Thm.term_of #> Syntax.string_of_term ctxt
 fun string_of_cterms ctxt = map Thm.term_of #> string_of_terms ctxt
+fun big_list_of_cterms name ctxt thms = pretty_numbered (fn ctxt => fn ct => Syntax.pretty_term ctxt (Thm.term_of ct)) name ctxt thms |> Pretty.string_of
 
 fun pretty_thms ctxt thms =
   Pretty.list "[" "]" (map (Thm.pretty_thm ctxt) thms)
 fun pretty_big_list_thms name ctxt thms =
   Pretty.big_list name  (map (Thm.pretty_thm_item ctxt) thms)
 
-fun pretty_numbered_rule ctxt (i, rule) = Pretty.block [Pretty.str (string_of_int i ^ ": "), Thm.pretty_thm ctxt rule]
-fun pretty_rules name ctxt rs =  
-  Pretty.block (Pretty.fbreaks (Pretty.str name :: map (pretty_numbered_rule ctxt) (tag_list 1 rs)))
-
+val pretty_rules = pretty_numbered Thm.pretty_thm
 
 fun string_of_thms ctxt thms = pretty_thms ctxt thms |> Pretty.string_of
 fun big_list_of_thms name ctxt thms = pretty_rules name ctxt thms |> Pretty.string_of
@@ -593,20 +709,40 @@ fun can_unify ctxt ct1 ct2 =
       false
   end
 
+fun can_unify_thms ctxt thm1 thm2 =
+  can_unify ctxt (Thm.cprop_of thm1) (Thm.cprop_of thm2)
+
 fun is_reflexive ctxt eq_thm =
   can_unify ctxt (Thm.cprop_of @{thm reflexive}) (Thm.cconcl_of eq_thm)
+
+fun print_resolve_failed ctxt thm i st = 
+  (verbose_print_subgoal_tac 5 ("resolve_tac failed: " ^ Thm.string_of_thm ctxt thm) ctxt i THEN no_tac) st
+
+fun print_resolve_succeed ctxt thm i st_old st = 
+  let
+    val _ = verbose_print_subgoal_tac 5 ("resolve_tac succeeded: " ^ Thm.string_of_thm ctxt thm) ctxt i st_old
+  in all_tac st end
+
+fun resolve_print_tac ctxt thm i st =
+  (resolve_tac ctxt [thm] i 
+  THEN_ELSE (print_resolve_succeed ctxt thm i st, print_resolve_failed ctxt thm i)) st
 
 fun single_resolve_consumes_assm_tac ctxt thm = fn i =>
   let
     val consumes = Int.max (0, Rule_Cases.get_consumes thm)
   in
-    resolve_tac ctxt [thm] i THEN
+    resolve_print_tac ctxt thm i THEN
     (if consumes > 0 then
        EVERY (map (Method.assm_tac ctxt) (i + (consumes - 1) downto i))
      else Tactical.all_tac)
   end
   
 fun resolve_consumes_assm_tac ctxt thms = FIRST' (map (single_resolve_consumes_assm_tac ctxt) thms)
+
+fun import_simplify ctxt thm =
+  let 
+    val ((_, [thm']), ctxt') = Variable.import false [thm] ctxt
+  in simplify ctxt' thm' |> singleton (Variable.export ctxt' ctxt) end
  
 end
 
@@ -700,8 +836,60 @@ val string_of_terms = Utils.string_of_terms
 val string_of_cterm = Utils.string_of_cterm
 val string_of_cterms = Utils.string_of_cterms
 val string_of_thms = Utils.string_of_thms
+val big_list_of_thms = Utils.big_list_of_thms
+val big_list_of_terms = Utils.big_list_of_terms
+val big_list_of_cterms = Utils.big_list_of_cterms
 
 fun assert p msg = if p then () else error msg;
 fun TRY' tac = tac ORELSE' (K all_tac);
-
+fun REPEAT' tac i = REPEAT (tac i)
  
+val single_threaded = Attrib.setup_config_bool @{binding "single_threaded"} (K false)
+
+val PALLGOALS = (fn ctxt => 
+  if Config.get ctxt single_threaded then ALLGOALS else PARALLEL_ALLGOALS)
+
+fun prove_common ctxt = 
+  let 
+    val fork_pri = if Config.get ctxt single_threaded then NONE else SOME ~1;
+  in
+    Goal.prove_common ctxt fork_pri
+  end
+
+fun timeit_prove ctxt fixes assumes prop tac =
+  let
+  in
+    Utils.timeit_msg 3 ctxt (fn _ => "prove: " ^ Syntax.string_of_term ctxt prop) (fn _ => 
+      Goal.prove ctxt fixes assumes prop tac) 
+  end
+
+fun prove ctxt = 
+  if Config.get ctxt single_threaded then Goal.prove ctxt else Goal.prove_future ctxt
+
+fun prove' ctxt = 
+  if Config.get ctxt single_threaded then timeit_prove ctxt else Goal.prove_future ctxt
+
+fun fold_join_thy f xs thy =
+  if Config.get_global thy single_threaded then
+    fold f xs thy
+  else
+    if null xs then thy else
+    let
+      val thys = Par_List.map (fn x => f x thy) xs
+    in
+      Utils.timeit_msg 1 (Proof_Context.init_global thy) (fn _ => "fold_join") (fn _ => 
+        Context.join_thys thys)
+    end
+
+fun fold_map_join_thy f xs thy =
+  if Config.get_global thy single_threaded then
+    fold_map f xs thy
+  else
+    if null xs then ([], thy) else
+    let
+      val (vs, thys) = Par_List.map (fn x => f x thy) xs |> split_list
+    in
+      (vs, Utils.timeit_msg 1 (Proof_Context.init_global thy) (fn _ => "fold_map_join") (fn _ => 
+        Context.join_thys thys))
+    end
+

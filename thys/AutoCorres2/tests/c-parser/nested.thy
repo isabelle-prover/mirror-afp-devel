@@ -11,9 +11,7 @@ begin
 install_C_file "nested.c"
 
 thm heap_update_def
-context nested_simpl
-begin
+
 thm foo_body_def
-end
 
 end

@@ -35,9 +35,6 @@ autocorres
   , ts_rules = nondet
 ] "word_abs.c"
 
-context word_abs_all_impl begin
-
-
 lemma "(ver366' 0) \<bullet> s \<lbrace> \<lambda>r _. r = Result 0\<rbrace>"
   unfolding ver366'_def
   by (runs_to_vcg)
@@ -708,7 +705,5 @@ lemma "0 <=s n \<Longrightarrow> n <s 32 \<Longrightarrow> 0 <=s x \<Longrightar
          S_shiftr_S_no_abs' (x::sword32) (n::sword32) \<bullet> s
        \<lbrace>\<lambda>r s. r = Result (x >> unat n)\<rbrace>"
   unfolding S_shiftr_S_no_abs'_def by runs_to_vcg
-
-end
 
 end

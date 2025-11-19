@@ -11,6 +11,6 @@ begin
 
 install_C_file "test_shifts.c"
 
-print_locale test_shifts_simpl
+print_locale test_shifts_global_addresses
 
 end

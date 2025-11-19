@@ -190,6 +190,27 @@ declare simp_thms [L1opt]
 lemma L1_call_stop_cong: "(L1_call f n g r) = (L1_call f n g r)"
   by simp
 
+lemma L1_call_map_of_default_empty [L1opt]: 
+  "(L1_call f (map_of_default (\<lambda>_. \<top>) [] p) g r c) = L1_fail"
+  apply (simp add: L1_call_def L1_fail_def)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma bind_gets_L1_fail[L1opt]: 
+  "(bind (gets x) (\<lambda>_. L1_fail)) = L1_fail"
+  apply (simp add: L1_fail_def)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L1_guarded_fail [L1opt]: "L1_guarded P L1_fail = L1_fail"
+  apply (simp add: L1_guarded_def L1_guard_def L1_seq_def L1_fail_def)
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+
 lemma L1_merge_assignments (*[L1opt]*): " (L1_seq (L1_modify f)
                                (L1_seq (L1_modify g) X)) \<equiv> L1_seq (L1_modify (\<lambda>s. g (f s))) X"
   apply (subst atomize_eq)

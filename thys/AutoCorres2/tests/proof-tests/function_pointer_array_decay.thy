@@ -19,10 +19,6 @@ end
 
 autocorres [] "function_pointer_array_decay.c"
 
-context function_pointer_array_decay_all_corres
-begin
 thm ts_def
-end
-
 
 end

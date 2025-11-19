@@ -48,6 +48,14 @@ fun check_architecture thy (name, pos) =
   val active = the_default ARM (try (getenv_strict) "L4V_ARCH" |> 
         Option.map (fn n => check_architecture @{theory} (n, \<^here>)))
 
+  val clang_target_architecture =
+    case active of
+      ARM => "arm-unknown-unknown"
+    | ARM64 => "arm64-apple-darwin"
+    | ARM_HYP => "arm-unknown-unknown"
+    | RISCV64 => "riscv64-unknown-unknown"
+    | X64 => "x86_64-unknown-unknown"
+
 end
 \<close>
 

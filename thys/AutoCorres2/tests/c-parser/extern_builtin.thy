@@ -13,8 +13,6 @@ declare [[allow_underscore_idents=true]]
 
 install_C_file "extern_builtin.c"
 
-context extern_builtin_simpl
-begin
 thm foo_body_def
-end
+
 end

@@ -16,7 +16,8 @@ sig
   val right : 'a wrap -> SourcePos.t
   val node : 'a wrap -> 'a
   val apnode : ('a -> 'b) -> 'a wrap -> 'b wrap
-
+  val eq_wrap: ''a * ''a Region.Wrap.t -> bool
+  val join : 'a list wrap list -> 'a list wrap
 end
 
 structure RegionExtras : REGION_EXTRAS =
@@ -48,5 +49,16 @@ fun merge_regions [] = Region.bogus
       Region.make {left = left first, right = right last}
     end
 
+fun eq_wrap (x, xw) = (x = node xw)
+
+fun join ws =
+  let
+    val nodess = map node ws 
+    val l = the_default bogus (find_first (not o SourcePos.is_bogus) (map left ws))
+    val r = the_default bogus (find_first (not o SourcePos.is_bogus) (rev (map right ws)))
+  in
+    wrap (flat nodess, l, r)
+  end
+  
 end (* struct *)
 

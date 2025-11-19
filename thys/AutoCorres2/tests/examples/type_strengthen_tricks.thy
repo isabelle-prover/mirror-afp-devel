@@ -19,13 +19,12 @@ install_C_file "type_strengthen.c"
 (* We can also specify which monads are used for type strengthening.
    Here, we exclude the read-only monad completely, and specify
    rules for some individual functions. *)
-autocorres [
+autocorres [no_body = opt_none,
   ts_rules = pure option nondet,
   ts_force option = pure_f
   ] "type_strengthen.c"
 
 
-context type_strengthen_all_impl begin
 
 (* pure_f (and indirectly, pure_f2) are now lifted to the option monad. *)
 thm pure_f'_def  pure_f2'_def
@@ -55,7 +54,7 @@ term "gets_g' :: lifted_globals \<Rightarrow> word32 option"
 term "opt_f' :: word32 ptr \<Rightarrow> lifted_globals \<Rightarrow> word32 option"
 term "opt_g' :: int \<Rightarrow> lifted_globals \<Rightarrow> int option"
 term "opt_h' :: ure_C ptr \<Rightarrow> lifted_globals \<Rightarrow> word32 option"
-term "opt_i' :: (int, lifted_globals) res_monad"
+term "opt_i' :: lifted_globals \<Rightarrow> int option"
 term "opt_j' :: ure_C ptr \<Rightarrow> ure_C ptr \<Rightarrow> lifted_globals \<Rightarrow> int option"
 term "opt_a' :: word32 \<Rightarrow> word32 \<Rightarrow> lifted_globals \<Rightarrow> word32 option"
 term "opt_a2' :: 32 word \<Rightarrow> lifted_globals \<Rightarrow> 32 word option"
@@ -65,6 +64,5 @@ term "st_g' :: word32 ptr \<Rightarrow> (word32, lifted_globals) res_monad"
 term "st_h' :: word32 \<Rightarrow> (word32, lifted_globals) res_monad"
 term "st_i' :: ure_C ptr \<Rightarrow> ure_C ptr \<Rightarrow> (ure_C ptr, lifted_globals) res_monad"
 term "exc_f' :: char_c ptr \<Rightarrow> 32 signed word ptr \<Rightarrow> (int, lifted_globals) res_monad"
-end
 
 end

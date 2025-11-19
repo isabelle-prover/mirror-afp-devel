@@ -23,6 +23,9 @@ lemmas ptr_val_ptr_add_simps =
   ptr_add_word64
   ptr_add_word64_signed
 
+lemma Collect_block_cong: "Set.Collect f = Set.Collect f"
+  by (rule refl)
+
 (*
  * The "full" simpset used internally within AutoCorres during
  * processing.

@@ -12,7 +12,7 @@ imports Main
   "Misc_Antiquotation"
   TermPatternAntiquote
   ML_Fun_Cache
-
+  Match_Cterm
 begin
 
 section \<open>Tools for handling Tuples\<close>
@@ -101,6 +101,12 @@ definition ETA_TUPLED :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 
 
 lemma ETA_TUPLED_trans: "f \<equiv> g \<Longrightarrow> ETA_TUPLED f \<equiv> g"
   by (simp add: ETA_TUPLED_def)
+
+definition ETA_TUPLED_HINT :: "'c \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b)"
+  where "ETA_TUPLED_HINT hint f  \<equiv> f"
+
+lemma ETA_TUPLED_HINT_trans: "f \<equiv> g \<Longrightarrow> ETA_TUPLED_HINT hint f \<equiv> g"
+  by (simp add: ETA_TUPLED_HINT_def)
 
 text \<open>Add the congruence rule @{thm SPLIT_cong} to the simpset together with the simproc
 to avoid descending into @{term P} before the split.\<close>
@@ -389,24 +395,34 @@ fun num_case_prod t =
 
 val strip_uu = prefix "strip_" Name.uu_
 
-fun strip_case_prod t =
+fun dest_case_prod t =
     case strip_comb t of
-      (Const (@{const_name case_prod},_), Abs (x, xT, (Abs (y, yT, _)))::_) =>
-         [(x,xT), (y, yT)]
+      (Const (@{const_name case_prod},_), Abs (x, xT, (Abs (y, yT, bdy)))::_) =>
+         ([(x,xT), (y, yT)], bdy)
      | (Const (@{const_name case_prod},cpT), Abs (x, xT, cp)::_) =>
           (case strip_comb cp of
-            (Const (@{const_name case_prod},_), _) => (x,xT)::strip_case_prod cp
+            (Const (@{const_name case_prod},_), _) => apfst (cons (x,xT)) (dest_case_prod cp)
            | _ => (* eta expand lost abstraction in case_prod *)
-                 ([(x,xT), (strip_uu, nth (binder_types cpT) 1)]))
+                 (([(x,xT), (strip_uu, nth (binder_types cpT) 1)], cp)))
      | (Const (@{const_name case_prod}, cpT), cp::_) =>
              (* eta expand lost abstractions in case_prod *)
              let
                val [xT, yT] = take 2 (binder_types (domain_type cpT))
-             in [(strip_uu, xT), (strip_uu, yT)] end
-     | _ => [];
+             in ([(strip_uu, xT), (strip_uu, yT)], cp) end
+     | _ => ([], t);
 
+fun dest_case_prod_abs_body t =
+  let
+    val (vars, bdy) = dest_case_prod t
+    fun lam (name, T) t = if name = strip_uu then t else Abs (name, T, t)
+  in
+    fold_rev lam vars bdy
+  end
+
+val strip_case_prod = fst o dest_case_prod
 fun strip_case_prod' (Abs (x, xT, _)) = [(x, xT)]
   | strip_case_prod' t = strip_case_prod t
+
 
 fun mk_split_tupled_all_lhs n =
   Logic.list_all ([(mk_tuple_packed_name, mk_tupleT n 1)], (mk_Prop_P n) $ Bound 0)
@@ -1034,6 +1050,51 @@ fun eta_expand_tupled_conv ctxt ct =
 
 fun eta_expand_tuple ctxt = eta_expand_tupled_conv ctxt #> Thm.rhs_of
 
+fun dest_abs ctxt ct = 
+  Variable.dest_abs_cterm ct ctxt
+  handle CTERM _ => 
+   let
+     val T = Thm.typ_of_cterm ct |> domain_type
+     val ([x], ctxt1) = Utils.fix_variant_cfrees [("x", T)] ctxt 
+   in
+     ((x, Thm.apply ct x), ctxt1)
+   end
+
+fun mk_tuple_cterm [x] = x
+  | mk_tuple_cterm (x::xs) =
+     let val y = mk_tuple_cterm xs 
+     in
+      \<^instantiate>\<open>'a = \<open>Thm.ctyp_of_cterm x\<close> and 'b = \<open>Thm.ctyp_of_cterm y\<close> and
+          x = x and y =\<open>y\<close>
+        in cterm \<open>(x, y)\<close> for x::"'a" and y::"'b"\<close>
+     end
+  | mk_tuple_cterm [] = error ("mk_tuple: empty list")
+
+fun dest_abs_tuple ctxt ct =
+  let
+    val T = Thm.typ_of_cterm ct |> domain_type
+    val Ts = HOLogic.strip_tupleT T
+  in
+    if length Ts <= 1 then
+      dest_abs ctxt ct 
+    else
+      let
+        val fixes = tag_list 1 Ts |> map  (fn (i, T) => (suffix (string_of_int i) "x", T))
+        val (xs, ctxt1) = Utils.fix_variant_cfrees fixes ctxt
+        val y = mk_tuple_cterm xs
+      in
+        ((y, Thm.apply ct y), ctxt1)
+      end
+  end
+
+fun strip_case_prods ctxt ct = ct |> Match_Cterm.switch [
+  @{cterm_match \<open>case_prod ?f\<close>} #> (fn {f, ...} => 
+     let 
+       val ((x, bdy0), ctxt1) = dest_abs ctxt f
+       val ((xs, bdy), ctxt2) = strip_case_prods ctxt1 bdy0
+     in (((x::xs), bdy), ctxt2) end)
+  , dest_abs_tuple ctxt #> apfst (apfst single)]
+
 end
 \<close>
 
@@ -1049,11 +1110,34 @@ simproc_setup ETA_TUPLED (\<open>ETA_TUPLED f\<close>) = \<open>fn _ => fn ctxt 
   end\<close>
 declare [[simproc del: ETA_TUPLED]]
 
+
+text \<open>With @{term "ETA_TUPLED_HINT hint f"} we extract name hints from term @{term hint} to split
+ @{term f}\<close>
+
+simproc_setup ETA_TUPLED_HINT (\<open>ETA_TUPLED_HINT hint f\<close>) = \<open>fn _ => fn ctxt => fn ct =>
+  let
+    val {hint, f, ...} = @{cterm_match (fo) "ETA_TUPLED_HINT ?hint ?f"} ct
+    val T = Thm.typ_of_cterm f |> domain_type
+    val arity = T |> HOLogic.flatten_tupleT |> length
+  in
+    if arity <= 1 then
+      SOME @{thm ETA_TUPLED_HINT_def}
+    else
+      let
+        val name_hints = Tuple_Tools.strip_case_prod' (Thm.term_of hint) |> map fst 
+        val proper_name_hints = map (fn x => if x <> Tuple_Tools.strip_uu then SOME x else NONE) name_hints
+        val thm = Tuple_Tools.get_eta_tupled_eq_thm ctxt arity
+          |> Drule.rename_bvars' proper_name_hints
+      in 
+        SOME (@{thm ETA_TUPLED_HINT_trans} OF [thm])
+      end
+  end\<close>
+declare [[simproc del: ETA_TUPLED_HINT]]
+
+
+ML \<open>Tuple_Tools.get_eta_tupled_eq_thm @{context} 3\<close>
 text \<open>Set up the theorem cache.
 We could use "dynamic programming" here and rewrite "thm n" with one step of "thm (n - 1)" and @{thm split_def}\<close>
-
-
-
 
 
 setup \<open>
@@ -1080,7 +1164,14 @@ end
 
 thm HOL.ext [split_tuple f and g arity: 3]
 
+ML_val \<open>
+val x1 = Tuple_Tools.dest_case_prod_abs_body @{term "\<lambda>(x,y,z). f x y z"} |> Thm.cterm_of @{context}
+val x2 = Tuple_Tools.dest_case_prod_abs_body @{term "\<lambda>(x,(y::('c\<times>'d))). f x y "} |> Thm.cterm_of @{context}
+val x3 = Tuple_Tools.strip_case_prod @{term "\<lambda>(x,(y::('c\<times>'d))). f x y "} 
+val x4 = Tuple_Tools.strip_case_prod @{term "case_prod f"}
+val x5 = Tuple_Tools.dest_case_prod_abs_body @{term "case_prod f"}
 
+\<close>
 ML_val \<open>
 val test = @{pattern "\<And>a b c s. f a b c \<equiv> ?c (a,b,k) s"}
 val x = Tuple_Tools.calc_inst' @{context} 2 test

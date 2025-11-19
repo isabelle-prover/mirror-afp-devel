@@ -11,16 +11,12 @@ begin
 
 install_C_file "jiraver254.c"
 
-context jiraver254_simpl
-begin
 
 thm f_body_def
 thm g_body_def
 thm h_body_def
 thm comp_body_def
 thm ptrconversion_body_def
-
-end
 
 end
 

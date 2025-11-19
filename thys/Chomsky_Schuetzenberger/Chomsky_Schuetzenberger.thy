@@ -1854,7 +1854,7 @@ Therefore we cannot just re-enter \<open>locale_P\<close>. Now we make all the a
 
 text\<open>The theorem for any grammar, but only for languages not containing \<open>\<epsilon>\<close>:\<close>
 lemma Chomsky_Schuetzenberger_not_empty:
-  fixes P :: \<open>('n :: infinite, 't) Prods\<close> and S::"'n"
+  fixes P :: \<open>('n :: fresh0, 't) Prods\<close> and S::"'n"
   defines \<open>L \<equiv> Lang P S - {[]}\<close>
   assumes finiteP: \<open>finite P\<close>
   shows \<open>\<exists>(R::('n,'t) bracket3 list set) h \<Gamma>. regular R \<and> L = h ` (R \<inter> Dyck_lang \<Gamma>) \<and> hom_list h\<close>
@@ -1879,7 +1879,7 @@ qed
 
 text\<open>The Chomsky-Schützenberger theorem that we really want to prove:\<close>
 theorem Chomsky_Schuetzenberger:
-  fixes P :: \<open>('n :: infinite, 't) Prods\<close> and S :: "'n"
+  fixes P :: \<open>('n :: fresh0, 't) Prods\<close> and S :: "'n"
   defines \<open>L \<equiv> Lang P S\<close>
   assumes finite: \<open>finite P\<close>
   shows \<open>\<exists>(R::('n,'t) bracket3 list set) h \<Gamma>. regular R \<and> L = h ` (R \<inter> Dyck_lang \<Gamma>) \<and> hom_list h\<close>

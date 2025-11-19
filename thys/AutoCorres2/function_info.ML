@@ -42,6 +42,10 @@ sig
   type skip_info = {skip_io_abs: bool, skip_heap_abs: bool, skip_word_abs: bool}
   val info_phase : skip_info -> phase -> phase;
   val prev_phase : skip_info -> phase -> phase;
+  val is_skipped : skip_info -> phase -> bool;
+  val skipped_phases : skip_info -> phase list;
+  val phases_upto: phase -> phase list (* including CP *)
+  val active_phases_upto: skip_info -> phase -> phase list (* including CP *)
   val encode_phase : phase -> int;
   val decode_phase : int -> phase;
   structure Phasetab : TABLE; (* currently unused *)
@@ -101,13 +105,10 @@ sig
       (* Function calls. Direct (mutually) recursive calls go in rec_callees. *)
       callees : symset,              (* locale independent, may change in phases (due to dead code)*)
       rec_callees : symset,          (* locale independent, may change in phases (due to dead code)*)
-      fun_ptr_dependencies : symset, 
-      clique_fun_ptr_dependencies : symset, 
       clique : symset,               (* locale independent, fix in all phased*)
 
       (* Definition of the function. *)
-      definition : thm lazy, (* locale dependent, phase dependent *)
-      induct_thms: thm list lazy, (* locale dependent, phase dependent *)
+      definition : thm, (* locale independent, phase dependent *)
 
       (* corres theorem for the function. (TrueI when phase = CP.) *)
       corres_thm : thm, (* locale dependent, phase dependent *)
@@ -128,9 +129,9 @@ sig
     locals: (string * (typ * var_info)) list, 
     returns: (string * (typ * var_info)) list,
     in_out_parameters:  (string * parameter_kind) list,
-    return_type: typ, callees: symset, rec_callees: symset, fun_ptr_dependencies: symset, 
-    clique_fun_ptr_dependencies: symset, clique: symset, 
-    definition : thm lazy, induct_thms : thm list lazy, corres_thm: thm, no_throw_thm: thm option, 
+    return_type: typ, callees: symset, rec_callees: symset, 
+    clique: symset, 
+    definition : thm, corres_thm: thm, no_throw_thm: thm option, 
     is_simpl_wrapper: bool, invented_body : bool} -> function_info;
 
   (* Standard result sequence that is passed between stages *)
@@ -147,7 +148,7 @@ sig
   val get_args             : function_info -> (string * (typ * ProgramAnalysis.var_info)) list;
   val get_args_without_outs: function_info -> (string * (typ * ProgramAnalysis.var_info)) list;
   val get_plain_args       : function_info -> (string * typ) list
-  val get_fn_ptr_args_info: function_info -> (string * (int * (int CType.ctype * int CType.ctype list))) list
+  val get_fn_ptr_args_info: function_info -> (string * (int * string * (int CType.ctype * int CType.ctype list))) list
   val get_locals           : function_info -> (string * (typ * ProgramAnalysis.var_info)) list;
   val get_returns          : function_info -> (string * (typ * ProgramAnalysis.var_info)) list;
   val get_in_out_parameters: function_info -> (string * parameter_kind) list;
@@ -157,14 +158,11 @@ sig
   val get_exn_type         : function_info -> typ;
   val get_callees          : function_info -> symset;
   val get_rec_callees      : function_info -> symset;
-  val get_fun_ptr_dependencies  : function_info -> symset;
-  val get_clique_fun_ptr_dependencies  : function_info -> symset;
-  val get_clique_recursion_fun_ptrs : function_info -> string list;
   val get_recursive_clique : function_info -> symset;
   val get_clique           : function_info -> symset;
   val get_first_clique     : function_info Symtab.table -> string list;
   val get_definition       : function_info -> thm;
-  val get_induct_thms      : function_info -> thm list;
+  val get_proper_definition: function_info -> thm option;
   val get_corres_thm       : function_info -> thm;
   val get_proper_corres_thm: function_info -> thm option;
   val get_no_throw_thm     : function_info -> thm option;
@@ -182,19 +180,12 @@ sig
   val map_return_type      : (typ -> typ) -> function_info -> function_info;
   val map_callees          : (symset -> symset) -> function_info -> function_info;
   val map_rec_callees      : (symset -> symset) -> function_info -> function_info;
-  val map_fun_ptr_dependencies  : (symset -> symset) -> function_info -> function_info;
-  val map_clique_fun_ptr_dependencies  : (symset -> symset) -> function_info -> function_info;
   val map_clique           : (symset -> symset) -> function_info -> function_info;
   val map_definition       : (thm -> thm) -> function_info -> function_info;
-  val map_induct_thms      : (thm list -> thm list) -> function_info -> function_info;
   val map_corres_thm       : (thm -> thm) -> function_info -> function_info;
   val map_no_throw_thm     : (thm option -> thm option) -> function_info -> function_info;
   val map_invented_body    : (bool -> bool) -> function_info -> function_info;
   val map_is_simpl_wrapper : (bool -> bool) -> function_info -> function_info;
-
-  val set_lazy_definition  : thm lazy -> function_info -> function_info
-  val set_lazy_induct_thms : thm list lazy -> function_info -> function_info
-  val add_lazy_induct_thms : thm list lazy -> function_info -> function_info
 
   val merge : function_info -> function_info -> function_info;
   val empty_info : string -> phase -> function_info;
@@ -304,6 +295,19 @@ fun info_phase (skips as {skip_io_abs, skip_heap_abs, skip_word_abs}) phase =
 
 fun prev_phase skips = info_phase skips o prev_phase_raw
 
+fun skipped_phases {skip_io_abs, skip_heap_abs, skip_word_abs} = 
+  let
+    val IOs = if skip_io_abs then [IO] else []
+    val HLs = if skip_heap_abs then [HL] else []
+    val WAs = if skip_word_abs then [WA] else []
+  in IOs @ HLs @ WAs end
+
+fun is_skipped skips =
+  member (op =) (skipped_phases skips)
+
+fun phases_upto x = phases |> (filter_out (fn y => phase_ord (x, y) = LESS))
+fun active_phases_upto skips x = phases_upto x |> filter_out (is_skipped skips)
+
 datatype parameter_kind = In | Out | In_Out | Data | Keep_Ptr
 
 type in_out_fun_ptr_spec = {
@@ -352,7 +356,7 @@ fun default_parameter_kind (CType.Ptr (CType.Function _)) = (Data, false)
 fun mk_default_fun_ptr_param_spec ps = {
   param_kinds = map default_parameter_kind ps, 
   in_out_globals = false, 
-  might_exit = true (* specs with might_exit = true are more general, but ts phase stays in exit monad! *)
+  might_exit = false (* specs with might_exit = true are more general, but ts phase stays in exit monad! *)
   }: in_out_fun_ptr_spec
 
 fun default_fun_ptr_params (CType.Function (_, ps)) = SOME (mk_default_fun_ptr_param_spec ps)
@@ -392,11 +396,8 @@ val stage_ord = int_ord o apply2 encode_stage;
   return_type      : typ,
   callees          : symset,
   rec_callees      : symset,
-  fun_ptr_dependencies  : symset,
-  clique_fun_ptr_dependencies : symset,
   clique           : symset,
-  definition       : thm lazy,
-  induct_thms      : thm list lazy,
+  definition       : thm,
   corres_thm       : thm,
   no_throw_thm     : thm option,
   invented_body    : bool,
@@ -404,27 +405,7 @@ val stage_ord = int_ord o apply2 encode_stage;
 }\<close>
 }
 
-fun set_lazy_definition lazy_thm = map_definition (K lazy_thm)
-val get_definition = get_definition #> Lazy.force
-val map_definition = map_definition o Lazy.map 
 
-fun set_lazy_induct_thms lazy_thms = map_induct_thms (K lazy_thms)
-fun add_lazy_induct_thms lazy_thms = map_induct_thms 
-     (fn thms => Lazy.lazy (fn () => Lazy.force lazy_thms @ Lazy.force thms))
-val get_induct_thms = get_induct_thms #> Lazy.force
-val map_induct_thms = map_induct_thms o Lazy.map
-
-val map_definition' = map_definition
-
-fun map_definition f info =
-  let
-    val info' = map_definition' f info
-    val def' = get_definition info'
-    val _ = if length (Thm.prems_of def') > 1 then
-        error (@{make_string} def') else ()
-  in
-    info'
-  end 
 type phase_results = (function_info Symtab.table) list;
 
 fun dummy_ctxt_thm ctxt = @{thm TrueI}
@@ -436,10 +417,8 @@ fun merge
     args = args1, locals = locals1, returns = returns1,
     in_out_parameters = in_out_parameters1,
     return_type = return_type1, callees = callees1, rec_callees =rec_callees1, 
-    fun_ptr_dependencies = fun_ptr_dependencies1, 
-    clique_fun_ptr_dependencies = clique_fun_ptr_dependencies1, 
     clique = clique1,
-    definition = definition1, induct_thms = induct_thms1,  
+    definition = definition1,  
     corres_thm = corres_thm1, no_throw_thm = no_throw_thm1,
     invented_body = invented_body1, is_simpl_wrapper = is_simpl_wrapper1
   })
@@ -447,9 +426,8 @@ fun merge
     args = args2, locals = locals2, returns = returns2, 
     in_out_parameters = in_out_parameters2,
     return_type = return_type2, callees = callees2, rec_callees =rec_callees2, 
-    fun_ptr_dependencies = fun_ptr_dependencies2, 
-    clique_fun_ptr_dependencies = clique_fun_ptr_dependencies2, clique = clique2,
-    definition = definition2, induct_thms = induct_thms2,
+    clique = clique2,
+    definition = definition2,
     corres_thm = corres_thm2, no_throw_thm = no_throw_thm2,
     invented_body = invented_body2, is_simpl_wrapper = is_simpl_wrapper2
   }) =
@@ -469,16 +447,10 @@ let
                 else error (msg "callees" (fn _ => @{make_string} (callees1, callees2)))
   val rec_callees = if fast_eq Symset.eq (rec_callees1, rec_callees2) then rec_callees1 
                     else error (msg "rec_callees" (fn _ => @{make_string} (rec_callees1, rec_callees2)))
-  val fun_ptr_dependencies = if fast_eq Symset.eq (fun_ptr_dependencies1, fun_ptr_dependencies2) then fun_ptr_dependencies1 
-                    else error (msg "fun_ptr_dependencies" (fn _ => @{make_string} (fun_ptr_dependencies1, fun_ptr_dependencies2)))
-  val clique_fun_ptr_dependencies = if fast_eq Symset.eq (clique_fun_ptr_dependencies1, clique_fun_ptr_dependencies2) then fun_ptr_dependencies1 
-                    else error (msg "clique_fun_ptr_dependencies" (fn _ => @{make_string} (clique_fun_ptr_dependencies1, clique_fun_ptr_dependencies2)))
   val clique = if fast_eq Symset.eq (clique1, clique2) then clique1 
                     else error (msg "clique" (fn _ => @{make_string} (clique1, clique2)))
-  val definition = if Thm.eq_thm_prop (Lazy.force definition1, Lazy.force definition2) then definition1
-                   else error (msg "definition" (fn _ => @{make_string} (Lazy.force definition1, Lazy.force definition2)))
-  val induct_thms = if forall Thm.eq_thm_prop (Lazy.force induct_thms1 ~~ Lazy.force induct_thms2) then induct_thms1 
-                   else error (msg "induct_thms" (fn _ => @{make_string} (Lazy.force induct_thms1, Lazy.force induct_thms2)))
+  val definition = if Thm.eq_thm_prop (definition1, definition2) then definition1
+                   else error (msg "definition" (fn _ => @{make_string} (definition1, definition2)))
   val corres_thm = if Thm.eq_thm_prop (corres_thm1, corres_thm2) then corres_thm1
                    else error (msg "corres_thm" (fn _ => @{make_string} (corres_thm1, corres_thm2)))
   val no_throw_thm = if eq_option Thm.eq_thm (no_throw_thm1, no_throw_thm2) then no_throw_thm1
@@ -492,10 +464,8 @@ in
     args = args, locals = locals, returns = returns,
     in_out_parameters = in_out_parameters,
     return_type = return_type, callees = callees, rec_callees =rec_callees, 
-    fun_ptr_dependencies = fun_ptr_dependencies, 
-    clique_fun_ptr_dependencies = clique_fun_ptr_dependencies, 
     clique = clique,
-    definition = definition, induct_thms = induct_thms, 
+    definition = definition,
     corres_thm = corres_thm, no_throw_thm = no_throw_thm,
     invented_body = invented_body, is_simpl_wrapper = is_simpl_wrapper
   })
@@ -516,7 +486,7 @@ fun get_fn_ptr_args_info (Function_info {args, ...}) =
         CType.Ptr (CType.Function (retT, argTs)) => 
           let
           in 
-            SOME (name, (idx, (retT, argTs)))
+            SOME (name, (idx, ProgramAnalysis.srcname info, (retT, argTs)))
           end
       | _ => NONE)
 
@@ -573,11 +543,8 @@ fun get_first_clique info_tab =
 fun is_function_recursive fi = 
     not (Symset.is_empty (get_rec_callees fi))
     orelse Symset.card (get_clique fi) > 1
-    orelse Symset.contains (get_fun_ptr_dependencies fi) (get_name fi)
 ;
 
-fun get_clique_recursion_fun_ptrs (Function_info {clique, clique_fun_ptr_dependencies, ...}) =
-  Symset.dest clique |>  (filter (member (op =) (Symset.dest clique_fun_ptr_dependencies)))
 
 fun get_recursive_clique fi = 
   if is_function_recursive fi then get_clique fi else Symset.empty
@@ -585,11 +552,11 @@ fun get_recursive_clique fi =
 
 fun performs_indirect_calls (Function_info {phase, definition,...}) = 
  case phase of
-   CP => exists_subterm (fn Const (@{const_name dynCall_exn}, _) => true | _ => false) (Thm.prop_of (Lazy.force definition))
+   CP => exists_subterm (fn Const (@{const_name dynCall_exn}, _) => true | _ => false) (Thm.prop_of (definition))
   | _ => false
 
-fun all_callees (Function_info { rec_callees, callees, fun_ptr_dependencies, ... }) = 
-  Symset.union_sets [callees, rec_callees, fun_ptr_dependencies]
+fun all_callees (Function_info { rec_callees, callees, ... }) = 
+  Symset.union_sets [callees, rec_callees]
 
 
 type call_graph_info = {
@@ -609,6 +576,11 @@ fun phase_of_infos infos =
 fun fold_simpl_calls f t =
   case t of 
      Const (@{const_name "call_exn"}, _) $ init $ p $ return $ result_exn $ c => f p 
+   | Const (@{const_name "dynCall_exn"}, _) $ fault $ g $ init $ p $ return $ result_exn $ c => 
+      (* callees are encoded in fault: UnknownFunction {callee1, callee2, ...} *)
+       let 
+        val res = Term.fold_aterms f fault
+       in res end
    | (u $ v) => fold_simpl_calls f u #> fold_simpl_calls f v
    | Abs (_, _, u) => fold_simpl_calls f u
    | _ => I
@@ -619,7 +591,6 @@ fun calc_call_graph fn_infos = let
     Symtab.dest fn_infos
     |> map (fn (name, info) => (get_raw_const info, name))
     |> Termtab.make;
-
   val phase = phase_of_infos fn_infos;
   val fold_calls = 
     case phase of
@@ -645,7 +616,7 @@ fun calc_call_graph fn_infos = let
     end;
 
   fun get_direct_and_fun_ptr_callees info = 
-        ((get_direct_callees info) @ Symset.dest (get_fun_ptr_dependencies info)) 
+        get_direct_callees info  
         |> distinct (op =)
         |> filter (member (op =) (map fst (Symtab.dest fn_infos)))
 
@@ -825,11 +796,8 @@ fun empty_info name phase = make_function_info {
          const = dummy_const,
          callees = Symset.empty, 
          rec_callees = Symset.empty,
-         fun_ptr_dependencies = Symset.empty, 
-         clique_fun_ptr_dependencies = Symset.empty, 
          clique = Symset.insert name Symset.empty, 
-         definition = Lazy.value dummy_thm,
-         induct_thms = Lazy.value [],
+         definition = dummy_thm,
          corres_thm = dummy_thm,
          no_throw_thm = NONE,
          is_simpl_wrapper = false,
@@ -866,6 +834,13 @@ end
 fun get_proper_corres_thm info =
   let
     val thm = get_corres_thm info
+  in
+    if pointer_eq (dummy_thm, thm) then NONE else SOME thm
+  end
+
+fun get_proper_definition info =
+  let
+    val thm = get_definition info
   in
     if pointer_eq (dummy_thm, thm) then NONE else SOME thm
   end

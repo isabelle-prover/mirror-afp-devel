@@ -11,7 +11,7 @@ volatile int reg;
     MODIFIES: reg */
 int magic(int x)
 {
-    asm volatile("blah blah": "r"(x));
+    asm volatile("blah blah": : "r"(x));
     return x;
 }
 

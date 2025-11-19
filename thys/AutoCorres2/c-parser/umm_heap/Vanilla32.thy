@@ -461,5 +461,4 @@ lemma typ_uinfo_t_signed_word_word_conv: "typ_uinfo_t TYPE(('a::len8) signed wor
   by (simp add: typ_uinfo_t_def field_norm_def 
       len8_bytes word_rsplit_rcat_size word_size fun_eq_iff)
 
-
 end

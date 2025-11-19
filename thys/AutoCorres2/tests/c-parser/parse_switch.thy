@@ -11,8 +11,6 @@ begin
 
 install_C_file "parse_switch.c"
 
-context parse_switch_simpl
-begin
 
 thm f_body_def
 thm g_body_def
@@ -30,7 +28,5 @@ ML \<open>
   member (op =) (map #1 cs) "CProof.strictc_errortype.C_Guard" orelse
   OS.Process.exit OS.Process.failure
 \<close>
-
-end
 
 end

@@ -9,7 +9,7 @@ typedef unsigned char u8_t;
 typedef unsigned int size_t;
 
 u8_t *
-memcpy_u8(void *dst, const void *src, size_t size)
+memcpy_u8(u8_t *dst, const u8_t *src, size_t size)
 {
     for (size_t i = 0; i < size; i++) {
         dst[i] = src[i];

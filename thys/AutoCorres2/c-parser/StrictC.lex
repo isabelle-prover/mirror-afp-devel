@@ -175,8 +175,11 @@ newline="\n" | "\013\n";
 unsignedsuffix = u | U;
 longsuffix = l | L;
 longlongsuffix = ll | LL;
+bitintsuffix = wb | WB;
 intsuffix= {unsignedsuffix}{longsuffix}?
          | {unsignedsuffix}{longlongsuffix}
+         | {unsignedsuffix}{bitintsuffix}
+         | {bitintsuffix}
          | {longsuffix}{unsignedsuffix}?
          | {longlongsuffix}{unsignedsuffix}?;
 integer=([1-9]{digit}*|0){intsuffix}?;
@@ -196,10 +199,10 @@ attr_start = "__attribute__"{ws}*"((";
 <TDEF,TSS,TS>","  => (if !tokpdepth = 0 then tokidseen := false else ();
                       tok(Tokens.YCOMMA,source,yypos,yypos+size yytext-1));
 <INITIAL,TSI>"("  => (tok(Tokens.LPAREN,source,yypos,yypos+size yytext-1));
-<TDEF,TSS>"("     => (tokpdepth := !tokpdepth + 1;
+<TDEF,TSS,TS>"("     => (tokpdepth := !tokpdepth + 1;
                       tok(Tokens.LPAREN,source,yypos,yypos+size yytext-1));
 <INITIAL,TSI>")"  => (tok(Tokens.RPAREN,source,yypos,yypos+size yytext-1));
-<TDEF,TSS>")"     => (tokpdepth := !tokpdepth - 1;
+<TDEF,TSS,TS>")"     => (tokpdepth := !tokpdepth - 1;
                       if !typeof_paren_depth = !tokpdepth then typeof_paren_depth := ~1 else ();
                       if !attribute_paren_depth = !tokpdepth then attribute_paren_depth := ~1 else ();
                       tok(Tokens.RPAREN,source,yypos,yypos+size yytext-1));
@@ -403,6 +406,8 @@ attr_start = "__attribute__"{ws}*"((";
      (tok(Tokens.CHAR,source,yypos,yypos+size yytext-1));
 <INITIAL,TDEF,TS,TSS,TSI>"_Bool"   =>
      (tok(Tokens.BOOL,source,yypos,yypos+size yytext-1));
+<INITIAL,TDEF,TS,TSS,TSI>"_BitInt"   =>
+     (tok(Tokens.BITINT,source,yypos,yypos+size yytext-1));
 <INITIAL,TDEF,TS,TSS,TSI>"void"   =>
      (tok(Tokens.VOID,source,yypos,yypos+size yytext-1));
 <INITIAL,TDEF,TS,TSS,TSI>"inline"    =>

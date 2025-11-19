@@ -136,13 +136,11 @@ fun get_abs_inv_fn (rules : WARules list) t =
  * From a list of abstract arguments to a function, derive a list of
  * concrete arguments and types and a precondition that links the two.
  *)
-fun get_wa_conc_args prev_phase rules fn_ptr_infos l2_infos fn_name fn_args lthy =
+fun get_wa_conc_args prev_phase rules l2_infos fn_name fn_args lthy =
 let
   (* Construct arguments for the concrete body. We use the abstract names
    * with a prime ('), but with the concrete types. *)
-  val args0 = case AList.lookup (op =) fn_ptr_infos fn_name of
-         SOME info => #args (info prev_phase)
-      | NONE => the (Symtab.lookup l2_infos fn_name) |> FunctionInfo.get_plain_args;
+  val args0 = the (Symtab.lookup l2_infos fn_name) |> FunctionInfo.get_plain_args;
   val conc_types = map snd args0;
   val (conc_names, lthy) = Variable.variant_fixes (map (fn Free (n, T) => n ^ "'") fn_args) lthy;
   val conc_args = map Free (conc_names ~~ conc_types)
@@ -159,12 +157,9 @@ in
 end
 
 (* Get the expected type of a function from its name;  *)
-fun get_monad_type rules fn_ptr_infos l2_infos fn_name =
+fun get_monad_type rules l2_infos fn_name =
 let
-  val (retT, exitT, stateT) = case AList.lookup (op =) fn_ptr_infos fn_name of 
-         SOME info => let val wa_info = info FunctionInfo.WA 
-                      in (AutoCorresData.retT_from_fn_ptr_info wa_info, @{typ "exit_status c_exntype"}, AutoCorresData.state_type_of_exn_monad (#prog_env wa_info)) end
-      | NONE =>
+  val (retT, exitT, stateT) =
           let
             val fn_info = the (Symtab.lookup l2_infos fn_name)
           in 
@@ -178,82 +173,43 @@ end
 
 
 (* Get the expected type of a function from its name; excluding the *)
-fun get_expected_fn_type rules fn_ptr_infos l2_infos fn_name =
+fun get_expected_fn_type rules l2_infos fn_name =
 let
-  val (argTs) = case AList.lookup (op =) fn_ptr_infos fn_name of 
-        SOME info => map snd (#args (info FunctionInfo.WA))
-      | NONE =>
+  val (argTs) =
           let
            val fn_info = the (Symtab.lookup l2_infos fn_name)
           in  map ((get_abs_type rules) o snd) (FunctionInfo.get_plain_args fn_info) end
 in
-  argTs ---> get_monad_type rules fn_ptr_infos l2_infos fn_name
+  argTs ---> get_monad_type rules l2_infos fn_name
 end
 
-
-fun mk_fn_ptr_infos ctxt prog_info fn_args info =
-  AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} fn_args info
-
 (* Get the expected theorem that will be generated about a function. *)
-fun get_wa_corres_prop skips prog_info rules prev_phase fn_ptr_infos l2_infos ctxt assume fn_name
+fun get_wa_corres_prop skips prog_info rules prev_phase l2_infos ctxt assume fn_name
                         function_free fn_args =
 let
 
   val wa_corres_attr = AutoCorresData.corres_thm_attribute (ProgramInfo.get_prog_name prog_info) skips FunctionInfo.WA fn_name
-  val (old_fn, new_fn, old_retT, old_errT, prev_props) = case AList.lookup (op =) fn_ptr_infos fn_name of
-    SOME info => 
-      let 
-        val prev_info = info prev_phase
-        val wa_info = info FunctionInfo.WA
-        val P_prev = #prog_env prev_info
-        val P_wa = #prog_env wa_info
-        val p = Free (#ptr_val wa_info)
-        val prev_args = map Free (#args prev_info)
-      in (P_prev $ p, P_wa $ p, AutoCorresData.retT_from_fn_ptr_info prev_info, AutoCorresData.ex_type_of_exn_monad P_prev, []) end 
-    | NONE => let val info = the (Symtab.lookup l2_infos fn_name) 
+  val (old_fn, new_fn, old_retT, old_errT) =  let val info = the (Symtab.lookup l2_infos fn_name) 
               in (FunctionInfo.get_const info, function_free, 
-                  FunctionInfo.get_return_type info, FunctionInfo.get_exn_type info, []) end
+                  FunctionInfo.get_return_type info, FunctionInfo.get_exn_type info) end
 
   val (old_arg_types, old_args, precond, arg_pairs, _)
-      = get_wa_conc_args prev_phase rules fn_ptr_infos l2_infos fn_name fn_args ctxt
+      = get_wa_conc_args prev_phase rules l2_infos fn_name fn_args ctxt
   val old_term = betapplys (old_fn, old_args)
   val new_term = betapplys (new_fn, fn_args)
 
-  val prems = case Symtab.lookup l2_infos fn_name of 
-        SOME info => (* regular function not a function pointer parameter *)
-          let  (* We add corres preconditions for any function pointer parameter in this function *)
-            val fn_ptr_param_infos = mk_fn_ptr_infos ctxt prog_info fn_args info           
-          in
-            fn_ptr_param_infos 
-            |> map (fn (ptr, ptr_info) => 
-                let
-                  val wa_info = ptr_info FunctionInfo.WA
-                  val p = Free (#ptr_val wa_info)
-                  val args = map Free (#args wa_info)
-                  val (prev_props, (wa_prop, _)) = 
-                     get_wa_corres_prop skips prog_info rules prev_phase fn_ptr_param_infos l2_infos ctxt false ptr
-                        p args
-                  val prev_props = map fst prev_props  
-                  val wa_prop = fold Logic.all (rev args) wa_prop
-                in  prev_props @ [wa_prop] end)
-            |> flat
-          end
-        | NONE => [] 
-
 in
- (prev_props,
-  (Logic.list_implies (prems, \<^infer_instantiate>\<open>rt = \<open>get_abs_fn rules old_retT\<close> and 
+ ((\<^infer_instantiate>\<open>rt = \<open>get_abs_fn rules old_retT\<close> and 
        ex = \<open>get_abs_fn_exit rules old_errT\<close> and A = new_term and 
        C = old_term  and P = precond
-     in prop \<open>corresTA (%x. P) rt ex A C\<close>\<close> ctxt)
-    |> fold (fn t => fn v => Logic.all t v) (rev (map fst arg_pairs)), [wa_corres_attr]))
+     in prop \<open>corresTA (%x. P) rt ex A C\<close>\<close> ctxt
+    |> fold (fn t => fn v => Logic.all t v) (rev (map fst arg_pairs)), [wa_corres_attr]), 
+  NONE)
 end
 
 (* Get arguments passed into the function. *)
-fun get_expected_fn_args rules fn_ptr_infos l2_infos fn_name =
-  case AList.lookup (op =) fn_ptr_infos fn_name of 
-    SOME info => #args (info FunctionInfo.WA)
-   | NONE => map (apsnd (get_abs_type rules)) (FunctionInfo.get_plain_args (the (Symtab.lookup l2_infos fn_name)))
+fun get_expected_fn_args rules l2_infos fn_name =
+   map (apsnd (get_abs_type rules)) (FunctionInfo.get_plain_args (the (Symtab.lookup l2_infos fn_name)))
 
 (*
  * Convert a theorem of the form:
@@ -469,14 +425,6 @@ fun thin_abs_var_tac ctxt st i = CSUBGOAL (fn (cgoal, i) =>
        Utils.verbose_print_subgoal_tac 4 "after thin_abs_var_tac" ctxt]) i  
   end) st i
   handle THM ("nothing to be done", _, _) => K all_tac st i
-      
- 
-
-
-fun wa_fn_ptr info =
-  let
-    val wa_info = info FunctionInfo.WA
-  in (#prog_env wa_info $ Free (#ptr_val wa_info)) end
 
 fun mk_corresTA_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Const (_, T_prev), _) , (P as Const (Pname, T), _)) =
  let
@@ -529,7 +477,7 @@ fun mk_corresTA_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Cons
    [("", thm)]
  end
  handle Match => []
-
+ 
 (* Convert a program by abstracting words. *)
 fun translate
       (skips: FunctionInfo.skip_info)
@@ -575,30 +523,22 @@ let
 
 
     (* Fix argument variables. *)
-    val new_fn_args = get_expected_fn_args wa_rules [] l2_infos f;
+    val new_fn_args = get_expected_fn_args wa_rules l2_infos f;
     val (arg_frees, lthy') = Utils.fix_variant_frees new_fn_args lthy;
 
-    val fn_ptr_infos = mk_fn_ptr_infos lthy' prog_info arg_frees old_fn_info
 
     (* Add callee assumptions. *)
     val (lthy'', callee_terms) =
-      AutoCorresUtil.assume_called_functions_corres lthy' (map (apsnd wa_fn_ptr) (fn_ptr_infos))
+      AutoCorresUtil.assume_called_functions_corres lthy'
         (FunctionInfo.get_recursive_clique old_fn_info)
-        (fn f => get_expected_fn_type (rules_for f) fn_ptr_infos l2_infos f)
-        (fn lthy => fn assume => fn f => get_wa_corres_prop skips prog_info (rules_for f) prev_phase fn_ptr_infos l2_infos lthy assume f)
-        (fn f => get_expected_fn_args (rules_for f) fn_ptr_infos l2_infos f)
+        (fn f => get_expected_fn_type (rules_for f) l2_infos f)
+        (fn lthy => fn assume => fn f => get_wa_corres_prop skips prog_info (rules_for f) prev_phase l2_infos lthy assume f)
+        (fn f => get_expected_fn_args (rules_for f) l2_infos f)
         (wa_function_name "");
-
-    val rec_funs = map (fn (n, (t, _)) => (n, t)) callee_terms
-    val rec_ptrs = FunctionInfo.get_clique_recursion_fun_ptrs old_fn_info
-
-    val lthy'' = lthy'' 
-      |> AutoCorresData.prove_and_note_fun_ptr_intros false (prev_phase, phase) prog_info 
-           (mk_corresTA_fun_ptr_thm prog_info (rec_funs, rec_ptrs))
 
      (* Construct free variables to represent our concrete arguments. *)
     val (conc_types, conc_args, precond, arg_pairs, lthy'')
-        = get_wa_conc_args prev_phase wa_rules fn_ptr_infos l2_infos f arg_frees lthy''
+        = get_wa_conc_args prev_phase wa_rules l2_infos f arg_frees lthy''
 
     (* Fetch the function definition, and instantiate its arguments. *)
     val old_body_def = FunctionInfo.get_definition old_fn_info
@@ -606,7 +546,7 @@ let
     (* Get old body definition with function arguments. *)
     val old_term = betapplys (FunctionInfo.get_const old_fn_info, conc_args)
     (* Get a schematic variable accepting new arguments. *)
-    val new_var = Var (("A", 0), get_monad_type wa_rules [] l2_infos f)
+    val new_var = Var (("A", 0), get_monad_type wa_rules l2_infos f)
 
     (*
      * Generate a schematic goal.
@@ -636,16 +576,14 @@ let
         |> Utils.apply_tac lthy'' "create schematic precond" (resolve_tac lthy'' @{thms corresTA_precond_to_guard} 1) 
         |> Utils.apply_tac lthy'' "unfold RHS" (CHANGED (Utils.unfold_once_tac lthy'' old_body_def 1))
     val more_corres = Named_Theorems.get lthy'' @{named_theorems wa_corres} |> map (wa_corres_normal_form lthy'') 
-    val known_function_corres = Named_Theorems.get lthy'' @{named_theorems known_function_corres} |> map (wa_corres_normal_form lthy'') 
     val rules = Utils.get_rules lthy'' @{named_theorems word_abs}
                 @ List.concat (sword_heap_rules @ map #rules wa_rules)
                 @ @{thms word_abs_default}
                 @ more_corres
-                @ known_function_corres
-    val fo_rules = [@{thm abstract_val_fun_app}] 
-    val fun_ptr_intros = Named_Theorems.get lthy'' @{named_theorems "fun_ptr_intros"}
+    val word_abs_fo = Named_Theorems.get lthy'' @{named_theorems word_abs_fo}
+    val fo_rules = [@{thm abstract_val_fun_app}] @ word_abs_fo
+
     val rules = ((map (snd #> #2 #> hd #> wa_corres_normal_form lthy'' ) callee_terms)) @ 
-                fun_ptr_intros @
                 (rev rules)
     (* Apply a conversion to the abstract/concrete side of the given "abstract_val" term. *)
     fun wa_conc_body_conv conv =
@@ -683,16 +621,12 @@ let
 
     val rules_tac = wa_resolve_match_rules (Context.Proof lthy'') rules 1 
 
-    val check = AutoCorresUtil.check_dyn_call_goal lthy prog_info (prev_phase, FunctionInfo.WA)
-
     (* All tactics we try, in the order we should try them. *)
     fun step_tacs ctxt ct = 
         [(@{thm thin_rl}, thin_prems ctxt 1)]
         @ rules_tac ctxt ct
         @ abs_var_tac ctxt 1 ct 
-        @ [(@{thm corresTA_L2_guarded_simple}, AutoCorresUtil.dyn_call_split_simp_sidecondition_tac check
-                  @{thms fold_id fold_id_unit} \<comment> \<open>undo unexpected application of @{thm id_apply} to eta expanded@{term "\<lambda>x. id x"}\<close>
-                [] ctxt 1)]
+        @ [(@{thm notinI}, AutoCorresUtil.notin_tac ctxt 1)]
         @ (map (fn thm => (thm, Utils.fo_arg_resolve_tac lthy'' thm ctxt 1)) fo_rules)
         @ [(@{thm abstract_val_lambda}, lambda_tac 1)] 
         @ [(@{thm eq_trivI}, resolve_tac ctxt @{thms eq_trivI} 1
@@ -701,7 +635,7 @@ let
         @ [(@{thm reflexive}, 
             fn st => 
             (if Config.get ctxt ML_Options.exception_trace then
-              warning ("Could not solve subgoal: " ^
+              warning ("Could not solve subgoal 1 of " ^ f ^ ": " ^
                 (Goal_Display.print_goal ctxt "" st))
             else (); no_tac st))]
 
@@ -733,10 +667,11 @@ let
     val _ = writeln ("Simplifying (WA) " ^ f)
     val _ = verbose_msg 1 lthy'' (fn _ => "WA (raw) - " ^ f ^ ": " ^ Thm.string_of_thm lthy'' thm);
     val thm = timeit_msg 1 lthy'' (fn _ => "Simplification (WA) - " ^ f) (fn _ =>
-      L2Opt.cleanup_thm_tagged 
+      L2Opt.cleanup_thm_tagged prog_info
         (lthy'' |> AutoCorresTrace.put_trace_info f phase FunctionInfo.RAW)
         []
         []
+        NONE
         thm WA_opt 4 trace_opt FunctionInfo.WA);
     val _ = verbose_msg 1 lthy'' (fn _ => "WA (opt) - " ^ f ^ ": " ^ Thm.string_of_thm lthy'' thm);
 
@@ -797,9 +732,9 @@ let
           AutoCorresUtil.define_funcs
               skips
               phase prog_info I {concealed_named_theorems=false} (wa_function_name "")
-              (fn f => get_expected_fn_type (rules_for f) [] l2_infos f)
-              (fn lthy => fn assume => fn f => get_wa_corres_prop skips prog_info (rules_for f) prev_phase [] l2_infos lthy assume f)
-              (fn f => get_expected_fn_args (rules_for f) [] l2_infos f)
+              (fn f => get_expected_fn_type (rules_for f) l2_infos f)
+              (fn lthy => fn assume => fn f => get_wa_corres_prop skips prog_info (rules_for f) prev_phase l2_infos lthy assume f)
+              (fn f => get_expected_fn_args (rules_for f) l2_infos f)
               funcs'
               lthy;
 

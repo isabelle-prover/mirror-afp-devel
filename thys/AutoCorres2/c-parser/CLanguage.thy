@@ -3353,6 +3353,17 @@ where
 definition
   "guarded_spec_body F R = Guard F (fst ` R) (Spec R)"
 
+definition
+  "guarded_spec_pre_post F_pre F_exists_post R = 
+     Guard F_pre (fst ` R) 
+      (Guard F_exists_post {s. \<exists>t. (s,t) \<in> R} 
+        (Spec R))"
+
+definition
+  "spec_pre_post F_pre F_exists_post P R = 
+     Guard F_pre P 
+      (Guard F_exists_post {s. \<exists>t. (s,t) \<in> R} 
+        (Spec R))"
 
 
 end

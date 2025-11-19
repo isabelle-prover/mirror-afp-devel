@@ -9,13 +9,19 @@ theory parse_struct_array
 imports "AutoCorres2.CTranslation"
 begin
 
+declare [[ML_print_depth=1000,
+c_parser_check_embedded_function_calls=true]]
 install_C_file "parse_struct_array.c"
+
+ML \<open>
+
+val deps = ProgramAnalysis.get_variable_dependencies (the (CalculateState.get_csenv @{theory} "parse_struct_array.c"))
+val embedded_fncall_exprs = ProgramAnalysis.get_embedded_fncall_exprs (the (CalculateState.get_csenv @{theory} "parse_struct_array.c"))
+
+\<close>
 
 term "globk2_'"
 
-
-context parse_struct_array_simpl
-begin
 
   thm f_body_def
   thm g_body_def
@@ -32,6 +38,5 @@ ML \<open>
 ML \<open>member (op =) (map #1 cs) "CProof.strictc_errortype.C_Guard" orelse
       OS.Process.exit OS.Process.failure\<close>
 
-end
 
 end

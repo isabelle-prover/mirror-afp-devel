@@ -134,14 +134,19 @@ fun transfer_slots slots from to =
 (* Note that the result is the raw-result from the locale 'name' *)
 fun gen_in_locale_result slots name f lthy =
   let
+    val start = Timing.start ();
     val bottom_locale = Named_Target.bottom_locale_of lthy
-    val (reenter, inner_lthy) = 
+    val ((reenter, inner_lthy), transfer) = 
       if bottom_locale = SOME name (* if we are already in the locale, stay there *)
-      then (Local_Theory.end_nested, snd (Local_Theory.begin_nested lthy))
-      else Target_Context.switch_named_cmd (SOME (name, Position.none)) (Context.Proof lthy) |> apfst (fn exit => Context.proof_of o exit)
-    val (res, inner_lthy') = f (transfer_slots slots lthy inner_lthy)
+      then  ((I, lthy), (K (K I))) 
+      else (Target_Context.switch_named_cmd (SOME (name, Position.none)) (Context.Proof lthy) |> apfst (fn exit => Context.proof_of o exit), 
+             transfer_slots)
+    val _ = Utils.timing_msg' 2 lthy (fn _ => "gen_in_locale_result enter") start
+    val (res, inner_lthy') = f (transfer slots lthy inner_lthy)
+    val after = Timing.start ();
     val lthy' = inner_lthy' 
-      |> reenter |> transfer_slots slots inner_lthy'
+      |> reenter |> transfer slots inner_lthy'
+    val _ = Utils.timing_msg' 2 lthy (fn _ => "gen_in_locale_result back") after
   in
       (res, lthy') 
   end
@@ -157,10 +162,11 @@ fun gen_eval_in_locale slots name f lthy =
     res
   end
 
+
 fun gen_in_theory_result slots f lthy =
   let
     val reinit = if Named_Target.is_theory lthy 
-      then Named_Target.theory_init else Named_Target.init [] (the (Named_Target.locale_of lthy))
+      then Named_Target.theory_init else Named_Target.init [] (the (Named_Target.bottom_locale_of lthy))
     val thy = lthy |> Local_Theory.exit_global
     val (res, thy') = f thy
     val lthy' = thy' |> reinit |> transfer_slots slots lthy
@@ -172,17 +178,19 @@ fun gen_in_theory slots f lthy =
   lthy |> gen_in_theory_result slots (fn thy => ((), f thy)) |> snd
 
 fun gen_in_theory_result' slots f lthy =
-  let
-    val reinit = if Named_Target.is_theory lthy 
-      then Named_Target.theory_init else Named_Target.init [] (the (Named_Target.locale_of lthy))
-    val (res, lthy') = lthy |> Local_Theory.exit_global 
-      |> Named_Target.theory_init 
-      |> transfer_slots slots lthy 
-      |> f 
-    val lthy'' = lthy' |> Local_Theory.exit_global |> reinit |> transfer_slots slots lthy'
-  in
+  if Named_Target.is_theory lthy then
+    f lthy
+  else
+    let
+      val reinit = Named_Target.init [] (the (Named_Target.bottom_locale_of lthy))
+      val (res, lthy') = lthy |> Local_Theory.exit_global 
+        |> Named_Target.theory_init 
+        |> transfer_slots slots lthy 
+        |> f 
+      val lthy'' = lthy' |> Local_Theory.exit_global |> reinit |> transfer_slots slots lthy'
+    in
       (res, lthy'') 
-  end
+    end
 
 fun gen_in_theory' slots f lthy =
   lthy |> gen_in_theory_result' slots (fn thy => ((), f thy)) |> snd
@@ -202,7 +210,6 @@ fun define_const_args name qualify concealed term args decls attrs lthy =
     (* Generate a header for the term. *)
     val head = betapplys (Free (name, (map snd args) ---> fastype_of term), args |> map Free)
     val new_term = Logic.mk_equals (head, term)
-
     val def_binding = Binding.make (name ^ "_def", \<^here>) |> maybe_hide |> qualify
     (* Define the constant. *)
    val lthy = lthy 
@@ -238,6 +245,8 @@ fun define_global_const binding concealed term args attribs lthy =
     ((Morphism.term export lhs, Morphism.thm export thm), Local_Theory.end_nested lthy)
   end
 
+val src_attr = Attrib.internal \<^here> o K
+
 (*
  * Define a (possibly recursive) set of functions.
  *
@@ -264,24 +273,15 @@ fun define_global_const binding concealed term args attribs lthy =
  *
  *   (<list of function definition thms>, <new context>)
  *)
-fun define_functions func_defs (qualify: binding -> binding) concealed is_recursive ccpo_name name_decls induct_decls lthy =
+fun define_functions func_defs (qualify: binding -> binding) concealed is_recursive ccpo_name name_attrs name_decls induct_decls lthy =
 let
   fun maybe_hide x = if concealed then Binding.concealed x else x
-
+  fun attrs name = map (src_attr o rev_app name) name_attrs
   (* Define a set of mutually recursive functions. The function package
    * refuses to make a definition that doesn't take any arguments, so we
    * use this strictly for functions with at least one argument. *)
   fun define_recursive_function func_defs lthy =
   let
-    (* Automatic pattern completeness / termination methods from
-     * the "function" package. *)
-    fun pat_completeness_auto ctxt =
-      Pat_Completeness.pat_completeness_tac ctxt 1
-      THEN auto_tac ctxt
-    fun prove_termination lthy =
-      Function.prove_termination NONE
-        (Function_Common.termination_prover_tac false lthy) lthy
-
     (* Get the list of function bindings. *)
     val function_bindings = map (fn (name, bname, _, _) =>
         (ccpo_name, (maybe_hide (Binding.name bname), NONE, NoSyn))) func_defs
@@ -293,10 +293,11 @@ let
       val fun_free = Free (name, fastype_of body)
 
       (* Create a head of the function, with appropriate arguments. *)
-      val fun_head = betapplys (fun_free, map Free args)
-      val fun_body = betapplys (body, map Free args)
+      val fun_head = fun_free
+      val fun_body = body
+      val def_eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (fun_head, fun_body))
     in
-      HOLogic.mk_Trueprop (HOLogic.mk_eq (fun_head, fun_body))
+      def_eq
     end
     fun simps_binding bname = 
       let
@@ -312,7 +313,7 @@ let
     val (info, lthy) = 
       lthy 
       |> Mutual_CCPO_Rec.add_fixed_point function_bindings
-          (map (fn (name, (b, body)) => (((b, []), body), [], [])) function_bodies)
+          (map (fn (name, (b, body)) => (((b, attrs name), body), [], [])) function_bodies)
           (subsingleton_solver) 
    
     val rec_simps = (#simps info) |> map (the_single o snd)
@@ -327,11 +328,11 @@ let
 in
   case (is_recursive, func_defs) of
       (* Single non-recursive function. *)
-      (false, [(name,bname, args, body)]) => 
-        define_const_args bname qualify concealed (betapplys (body, map Free args)) args (map (rev_app name) name_decls) [] lthy
+      (false, [(name,bname, args, body)]) =>
+        define_const_args bname qualify concealed (betapplys (body, map Free args)) args (map (rev_app name) name_decls) (attrs name) lthy
         |> (fn ((lhs, _, ctxt_thm), def_lthy) => (([lhs],[ctxt_thm], []), def_lthy))
 
-    | (true, _) =>
+    | (true, _) => 
       (* Recursion or mutual recursion. *)
       define_recursive_function func_defs lthy
 end
@@ -367,7 +368,14 @@ fun define_lemmas name thm_list attribs lthy =
 (* Define a single lemma into the local theory. *)
 fun define_lemma binding attribs thm lthy =
   let
-    val ((name, [thm]), lthy) = Local_Theory.note ((binding, map (Attrib.internal \<^here> o K) attribs), [thm]) lthy
+    val ((name, [thm]), lthy) = Local_Theory.note ((binding, map src_attr attribs), [thm]) lthy
+  in
+    (thm, lthy)
+  end
+
+fun define_lemma'' binding attribs thm lthy =
+  let
+    val ((name, [thm]), lthy) = Local_Theory.note ((binding, attribs), [thm]) lthy
   in
     (thm, lthy)
   end
@@ -837,14 +845,13 @@ end
 (*
  * A tactic like "rtac", but only performs first-order matching.
  *)
-fun first_order_rule_tac thm n goal_thm =
+fun first_order_rule_tac thm = SUBGOAL (fn (goal_term, n) => fn st =>
 let
-  val thy = Thm.theory_of_thm goal_thm
+  val thy = Thm.theory_of_thm st
   val ctxt = Proof_Context.init_global thy
 
   (* First-order match "thm" against the n'th premise of our goal. *)
   val thm_term = Thm.concl_of thm
-  val goal_term = Logic.nth_prem (n, Thm.prop_of goal_thm)
   val tenv = Pattern.first_order_match thy (thm_term, goal_term)
       (Vartab.empty, Vartab.empty) |> snd
 
@@ -854,9 +861,9 @@ let
       (Vartab.dest tenv)
   val new_thm = infer_instantiate ctxt inst thm
 in
-  resolve_tac ctxt [new_thm] n goal_thm
+  resolve_tac ctxt [new_thm] n st
 end
-handle Pattern.MATCH => Seq.empty
+handle Pattern.MATCH => Seq.empty)
 
 (*
  * Unfold all instances of the given theorem once, but don't
@@ -937,6 +944,7 @@ fun subst_conv ctxt thm =
 
 val eta_conv = Thm.eta_conversion
 val eta_norm = Conv.fconv_rule eta_conv
+val eta_contract = eta_conv #> Thm.rhs_of
 
 (* A conversion to wade through any Isabelle/Pure or Isabelle/HOL
  * logical gunf. *)
@@ -1027,10 +1035,6 @@ fun mk_simproc' ctxt (name : string, pats : string list, proc : Proof.context ->
 fun get_rules ctxt = Named_Theorems.get ctxt #> rev
 
 fun symmetric ctxt thm = fst (Thm.apply_attribute Calculation.symmetric thm (Context.Proof ctxt))
-
-fun split_conj thm =
-  (thm RS @{thm conjunct1}) :: split_conj (thm RS @{thm conjunct2})
-  handle THM _ => [thm]
 
 (* As Substring.position but searches from the end *)
 fun positionr pat s = let
@@ -1374,7 +1378,7 @@ fun fo_arg_resolve_tac ctxt rule =
         then
           if exists_fun_app (nth args n) then resolve_tac ctxt [rule] i st 
           else 
-            let         
+            let  
               val rule = timeit_msg 2 ctxt (fn _ => "fo_arg_resolve_tac lift_rule: ") (fn _ => Thm.lift_rule ct rule)
               val (all_bounds, _) = strip_all_open [] (Thm.term_of ct)
               val pat_arg = match_arg (Thm.prop_of rule)
@@ -1385,7 +1389,6 @@ fun fo_arg_resolve_tac ctxt rule =
                 |> fold (Pattern.match (Proof_Context.theory_of ctxt)) match_trms
                 |> mk_match_insts ctxt
                 |> (fn (Ts, Vs) => (TVars.make Ts, Vars.make Vs)))
-             
               val rule' =  timeit_msg 2 ctxt (fn _ => "fo_arg_resolve_tac lift rule': ") (fn _ => Thm.lift_rule ct rule')
               (* We deliberately do unfold_fun_app on the unlifted rule for performance reasons. Unfolding
                * the definition under a lot of bound variables can become expensive. The
@@ -1544,6 +1547,14 @@ fun THIN_tac prune_tac ctxt = CSUBGOAL (fn (ct, i) =>
      )
 
 
+fun conjs [] = @{term True}
+  | conjs [P] = P
+  | conjs (P::Ps) = \<^instantiate>\<open>P = P and Q = \<open>conjs Ps\<close> in term \<open>P \<and> Q\<close>\<close>
+
+fun conjs_cterm [] = @{cterm True}
+  | conjs_cterm [P] = P
+  | conjs_cterm (P::Ps) = \<^instantiate>\<open>P = P and Q = \<open>conjs_cterm Ps\<close> in cterm \<open>P \<and> Q\<close>\<close>
+
 end (* structure Utils *)
 
 (* Memoization using a serialized cache. *)
@@ -1611,6 +1622,9 @@ struct
     (Binding.make (Args.name ^ "_verbosity", Binding.pos_of @{binding here})) (K 0);
   fun get ctxt = Synchronized.value (Prf_Data.get ctxt);
   fun transfer ctxt thy = Thy_Data.put (Synchronized.value (Prf_Data.get ctxt)) thy;
+  fun transfer' ctxt0 ctxt1 =
+    let val _ = Synchronized.change (Prf_Data.get ctxt1) (K (Synchronized.value (Prf_Data.get ctxt0)))
+    in ctxt1 end
   fun lookup ctxt key = Table.lookup (Synchronized.value (Prf_Data.get ctxt)) key;
   fun tracing_msg ctxt maybe_key t x r =
     let 

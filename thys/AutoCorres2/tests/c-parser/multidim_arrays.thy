@@ -11,13 +11,7 @@ begin
 
 install_C_file "multidim_arrays.c"
 
-context multidim_arrays_simpl
-begin
-
 thm h1_body_def
 thm h2_body_def
-
-
-end
 
 end

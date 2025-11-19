@@ -11,14 +11,9 @@ begin
 
 install_C_file "ptr_diff.c"
 
-  context ptr_diff_simpl
-  begin
 
   thm pdiff1_body_def
   thm pdiff2_body_def
   thm pdiff3_body_def[simplified, unfolded ptr_add_def', simplified]
-
-
-  end
 
 end

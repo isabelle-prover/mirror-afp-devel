@@ -13,8 +13,9 @@ install_C_file "builtins.c"
 
 
 declare [[hoare_trace=1]]
-context f_impl
+context builtins_global_addresses
 begin
+unbundle f_variables
 
 lemma "\<Gamma> \<turnstile> \<lbrace>\<acute>i = 3 \<rbrace> Call builtins.f \<lbrace> \<acute>ret' = 6 \<rbrace>" 
 apply (hoare_rule HoarePartial.ProcNoRec1)

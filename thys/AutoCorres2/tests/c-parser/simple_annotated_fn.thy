@@ -20,7 +20,7 @@ primrec
 
 install_C_file "simple_annotated_fn.c"
 
-context simple_annotated_fn_simpl
+context simple_annotated_fn_global_addresses
 begin
 thm fact_body_def
 thm fact_impl

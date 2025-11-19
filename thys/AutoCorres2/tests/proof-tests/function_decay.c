@@ -18,10 +18,10 @@ fun_t select1(void) {
   return (fun_t) foo;
 }
 
-unsigned main(unsigned n) {
+unsigned main1(unsigned n) {
 
   unsigned result = 0;
   fun_t f = select1();
-  result = f(n);
+  [[calls(foo)]] result = f(n);
   return result;
 }

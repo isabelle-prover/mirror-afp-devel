@@ -11,8 +11,6 @@ begin
 
 install_C_file "jiraver310.c"
 
-context jiraver310_simpl
-begin
 
   thm f_body_def
   thm g_body_def
@@ -22,7 +20,5 @@ begin
   oops
 
   thm h_body_def
-
-end (* context *)
 
 end (* theory *)

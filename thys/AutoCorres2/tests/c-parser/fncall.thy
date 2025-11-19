@@ -20,7 +20,7 @@ where
 
 install_C_file "fncall.c"
 
-context fncall_simpl
+context fncall_global_addresses
 begin
 
 
@@ -53,26 +53,29 @@ thm g_modifies_def
 print_locale f_spec
 thm f_spec_def
 
-lemma (in g_impl)
+lemma (in fncall_global_addresses)
+  includes g_variables
   shows "\<Gamma> \<turnstile> \<lbrace> \<acute>t_hrs = t \<rbrace> \<acute>ret' :== PROC g() \<lbrace> \<acute>t_hrs = t \<rbrace>"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg, simp)
 done
 
 
-lemma (in f_impl) f_impl_result:
+lemma (in fncall_global_addresses) f_impl_result:
   "\<Gamma> fncall.f = Some f_body"
   apply (rule f_impl)
   done
 
-lemma (in g_impl) g_spec:
+lemma (in fncall_global_addresses) g_spec:
+  includes g_variables
   shows
   "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== PROC g() \<lbrace> \<acute>ret' = 257 \<rbrace>"
   apply vcg
   apply simp
   done
 
-lemma (in f_impl) foo:
+lemma (in fncall_global_addresses) foo:
+  includes f_variables
   shows
    "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== PROC f(n) \<lbrace> \<acute>ret' = 1 \<rbrace>"
 apply vcg
@@ -86,7 +89,8 @@ shows
 apply vcg
 done
 
-lemma (in fact_impl) bar:
+lemma (in fncall_global_addresses) bar:
+  includes fact_variables
 shows "\<Gamma> \<turnstile> \<lbrace> 1\<le> \<acute>n & \<acute>n \<le> 12 \<rbrace> \<acute>ret' :== CALL fact(\<acute>n) \<lbrace> \<acute>ret' = of_nat (fac (unat \<acute>n)) \<rbrace>"
 apply vcg
     apply unat_arith
@@ -95,7 +99,7 @@ apply vcg
 oops
 
 
-context h_impl 
+context fncall_global_addresses 
 begin
 interpretation h_modif: h_modifies
   apply (unfold_locales)
@@ -115,7 +119,8 @@ solver mode...
  *)
 
 
-lemma (in i_impl) baz:
+lemma (in fncall_global_addresses) baz:
+  includes i_variables
 notes h_modifies = h_modifies'
 shows "\<Gamma> \<turnstile>\<^bsub>/UNIV\<^esub> \<lbrace> \<acute>t_hrs = t \<rbrace> \<acute>ret' :== PROC i() \<lbrace> \<acute>t_hrs = t \<rbrace>"
 
@@ -124,7 +129,7 @@ shows "\<Gamma> \<turnstile>\<^bsub>/UNIV\<^esub> \<lbrace> \<acute>t_hrs = t \<
   apply simp
 done
 
-locale ih = i_impl + i_modifies + h_modifies
+locale ih = fncall_global_addresses + i_modifies + h_modifies opening i_variables
 lemma (in ih) qux:
 shows "\<Gamma> \<turnstile> \<lbrace>\<acute>t_hrs = t\<rbrace> \<acute>ret' :== CALL i() \<lbrace> t = \<acute>t_hrs \<rbrace>"
   apply vcg
@@ -144,13 +149,17 @@ shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL has_
 apply vcg
 done
 
-lemma (in has_bogus_spec_impl) toldyou:
+lemma (in fncall_global_addresses) toldyou:
+  includes has_bogus_spec_variables
 shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL has_bogus_spec() \<lbrace> \<acute>ret' = 3 \<rbrace>"
   apply vcg
   apply simp
 done
 
-locale calls_bogus_impl_bogus_spec = has_bogus_spec_spec + calls_bogus_impl
+locale calls_bogus_impl_bogus_spec = has_bogus_spec_spec + fncall_global_addresses
+begin
+unbundle calls_bogus_variables
+end
 
 lemma (in calls_bogus_impl_bogus_spec) bogus3:
 shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL calls_bogus() \<lbrace> \<acute>ret' = 4 \<rbrace>"

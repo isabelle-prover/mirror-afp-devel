@@ -9,8 +9,5 @@ begin
 install_C_file "pointers_to_locals_skip_hl.c"
 autocorres [skip_heap_abs] "pointers_to_locals_skip_hl.c"
 
-context ts_corres_g
-begin
 thm ts_def
-end
 end

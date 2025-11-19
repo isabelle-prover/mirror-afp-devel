@@ -16,12 +16,10 @@ install_C_file "test_spec_translation.c" [ghostty="nat"]
 
 autocorres [ts_rules = nondet] "test_spec_translation.c"
 
-context test_spec_translation_simpl begin
 thm abort_body_def
 thm ghost_upd_body_def
 thm abort_body_def
-end
-context test_spec_translation_all_impl begin
+
 
 thm ghost_upd'_def
 
@@ -61,7 +59,5 @@ lemma abort'_spec:
   "abort' = fail"
   apply (simp add: abort'_def)
   done
-
-end
 
 end

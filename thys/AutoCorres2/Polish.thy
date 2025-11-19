@@ -210,12 +210,6 @@ lemma condition_to_when [polish]:
   "condition (\<lambda>s. C) A skip = when C A"
   by (simp add: when_def)
 
-lemma condition_to_unless [polish]:
-  "condition (\<lambda>s. C) skip A = unless C A"
-  apply (simp add: when_def )
-  apply (rule condition_swap)
-  done
-
 lemma bind_skip [simp, polish]:
   "(x >>= (\<lambda>_. skip)) = x"
   by simp
@@ -313,7 +307,117 @@ lemma simple_bind_fail [simp]:
      apply (rule spec_monad_ext, simp add: run_bind run_guard)+
   done
 
-declare condition_fail_rhs [polish]
+definition "FUN_PTR (b::bool) = b"
+
+lemma condition_to_unless:
+  "condition (\<lambda>s. C) skip A = unless C A"
+  apply (simp add: when_def )
+  apply (rule condition_swap)
+  done
+
+lemma condition_to_unless' [polish]:
+  "NO_MATCH (\<lambda>_. FUN_PTR b) C \<Longrightarrow> condition (\<lambda>s. C) skip A = unless C A"
+  apply (simp add: when_def )
+  apply (rule condition_swap)
+  done
+
+lemma condition_fail_rhs_no_fun_ptr: "NO_MATCH (\<lambda>_. FUN_PTR b) C \<Longrightarrow> 
+  (condition C X fail) = (guard C >>= (\<lambda>_. X))"
+  by (rule condition_fail_rhs)
+
+
+
+lemma condition_common_guard_prefix:
+  "condition (\<lambda>_. FUN_PTR b) (do {guard x; f} ) (do {guard x; g}) =
+   do {guard x; condition (\<lambda>_. FUN_PTR b) f g}"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+lemma condition_guard_bind_fail:
+  "condition (\<lambda>_. FUN_PTR b) (do {guard x; f} ) fail = 
+  do {guard x; condition (\<lambda>_. FUN_PTR b) f fail}"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+lemma condition_common_liftE_guard_prefix:
+  "condition (\<lambda>_. FUN_PTR b) (bind (liftE (do {guard x; f})) f1) (do {guard x; g}) =
+   do {guard x; condition (\<lambda>_. FUN_PTR b) (bind (liftE f) f1) g}"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+lemma condition_liftE_guard_bind_fail:
+  "condition (\<lambda>_. FUN_PTR b) (bind (liftE (do {guard x; f} )) f1) fail = 
+  do {guard x; condition (\<lambda>_. FUN_PTR b) (bind (liftE f) f1) fail}"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma condition_guard_fail:
+  "condition (\<lambda>_. FUN_PTR b) (guard x) fail = 
+  do {guard x; condition (\<lambda>_. FUN_PTR b) skip fail}"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma condition_common_gets_prefix:
+  "condition (\<lambda>_. FUN_PTR b) (bind (gets x) f)  (bind (gets x) g) =
+   bind (gets x) (ETA_TUPLED_HINT f (\<lambda>v. condition (\<lambda>_. FUN_PTR b) (f v) (g v)))"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff ETA_TUPLED_HINT_def)
+  done
+lemma condition_gets_fail:
+  "condition (\<lambda>_. FUN_PTR b) (bind (gets x) f) fail =
+   bind (gets x) (\<lambda>v. condition (\<lambda>_. FUN_PTR b) (f v) fail)"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma condition_common_suffix: 
+  "condition (\<lambda>_. FUN_PTR b) (bind f g) (bind h g) = bind (condition (\<lambda>_. FUN_PTR b) f h) g"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma condition_bind_fail': 
+  "NO_MATCH (gets x) f \<Longrightarrow> 
+   NO_MATCH (guard y) f \<Longrightarrow> 
+   NO_MATCH (bind (liftE (do {guard z; f1})) f2) f \<Longrightarrow>
+  condition (\<lambda>_. FUN_PTR b) (bind f g) fail = bind (condition (\<lambda>_. FUN_PTR b) f fail) g"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma condition_common_catch: 
+  "condition (\<lambda>_. FUN_PTR b) (catch f g) (catch h g) = catch (condition (\<lambda>_. FUN_PTR b) f h) g"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma condition_catch_fail: 
+  "condition (\<lambda>_. FUN_PTR b) (catch f g) fail = catch (condition (\<lambda>_. FUN_PTR b) f fail) g"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+
+lemmas prepare_fold_map_of_default[polish] =
+  \<comment> \<open>These lemmas are used as preparation for folding function pointer calls to \<^const>\<open>map_of_default\<close>, the 
+  complex structure of nested @{const condition}, @{const guard}, @{const gets} and @{const fail}, @{const bind} and @{const catch}
+  might evolve during the IO phase. This collection tries to factor out the common wrapper parts and isolate the core
+  function calls that should result in \<^const>\<open>map_of_default\<close> and in a program environment \<^term>\<open>\<P>\<close>\<close>
+  condition_fail_rhs_no_fun_ptr
+  condition_common_guard_prefix
+  condition_guard_bind_fail
+  condition_common_liftE_guard_prefix
+  condition_liftE_guard_bind_fail
+  condition_guard_fail
+  condition_common_gets_prefix
+  condition_gets_fail
+  condition_common_suffix
+  condition_bind_fail'
+  condition_common_catch
+  condition_catch_fail
+
 declare condition_fail_lhs [polish]
 declare simple_bind_fail [polish]
 declare condition_bind_fail [polish]
@@ -637,6 +741,11 @@ lemma sint_1_eq_1_x [polish, simp]:
     "sint (1 :: (('a::len) bit1) signed word) = 1"
   by auto
 
+declare ucast_up_ucast_id[simp, polish]
+declare le_unat_uoi[simp, polish]
+declare is_up[simp, polish]
+declare is_down[simp, polish]
+
 lemma if_P_then_t_else_f_eq_t [L2opt, polish]:
     "((if P then t else f) = t) = (P \<or> t = f)"
   by auto
@@ -738,11 +847,7 @@ lemmas finally_simps =
  finally_liftE_bind
  finally_guardE
  finally_condition_distrib
- condition_fail_rhs condition_fail_lhs 
 
- bind_assoc 
-
-thm finally_simps
 declare finally_simps [polish]
 
 declare finally_bindE_liftE_throw [simplified L2_VARS_def, polish]
@@ -1809,7 +1914,6 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val derived_facts0 = derive_facts ctxt' preserved
                  fun prover ctxt =
                    let
-                      val ctxt = ctxt (*|> Config.put Simplifier.simp_trace true*)
                    in
                        Method.insert_tac ctxt [preserved] 1 THEN
                        (SOLVED_DETERM_verbose "preserved" ctxt 

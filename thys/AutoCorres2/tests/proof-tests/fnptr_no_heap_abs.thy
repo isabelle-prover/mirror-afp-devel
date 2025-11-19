@@ -19,20 +19,25 @@ init-autocorres [ignore_addressable_fields_error,
     no_heap_abs = obj1_f1 obj2_f1 obj1_f2 obj1_f3] "fnptr_no_heap_abs.c"
 
 autocorres [
-    scope_depth=0, single_threaded,
+    single_threaded,
     scope=obj1_f1 obj1_f2 obj1_f3, 
     (*no_heap_abs = obj1_f1 obj2_f1 obj1_f2 obj1_f3,*)
     ts_force nondet = obj1_f1 obj2_f1 obj1_f2 obj1_f3
   ] "fnptr_no_heap_abs.c"
 
 autocorres [
-    scope_depth=0, 
     scope=f1,
     ts_force nondet = f1
   ] "fnptr_no_heap_abs.c"
 
-context fnptr_no_heap_abs_all_corres
+
+context fnptr_no_heap_abs_global_addresses
 begin
 thm ts_def
+thm final_defs
+thm \<P>_defs
+
 end
+
+
 end

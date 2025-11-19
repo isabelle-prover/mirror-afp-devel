@@ -399,7 +399,7 @@ val l1_merge_assignments_simproc =
          | get_upd upd = upd
 
        fun get_loc_var t = case HPInter.dest_local_var_update (get_upd t) of
-               SOME (Const (n,_), _, value, _) => get_loc n value
+               SOME (Const (n,_), _, SOME value, _) => get_loc n value
              | NONE => NONE
 
       val l1 = get_loc_var f

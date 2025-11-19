@@ -17,7 +17,6 @@ install_C_file  "swap.c"
 (* Abstract the input file. *)
 autocorres "swap.c"
 
-context ts_definition_swap begin
 
 (* Direct proof on the heap. *)
 lemma
@@ -30,7 +29,5 @@ lemma
   apply runs_to_vcg
   apply (auto simp: fun_upd_apply upd_fun_def)
   done
-
-end
 
 end

@@ -82,7 +82,7 @@ definition "reverse_inv xs list' rev' s =
 
 lemmas runs_to_whileLoop2 =  runs_to_whileLoop_res' [split_tuple C and B arity: 2]
 
-lemma (in ts_definition_reverse) reverse_correct:
+lemma reverse_correct:
   "list s p xs \<Longrightarrow>
      reverse' p \<bullet> s
    \<lbrace> \<lambda>r s. \<exists>rv. r = Result rv \<and> list s rv (rev xs) \<rbrace>"

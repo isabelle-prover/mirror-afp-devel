@@ -13,7 +13,9 @@ int proto2(int);
 
 int f(int i)
 {
-  return i + machine_proto() + proto2(i);
+  int x1 = machine_proto();
+  int x2 = proto2(i);
+  return i + x1 + x2;
 }
 
 int g(void)

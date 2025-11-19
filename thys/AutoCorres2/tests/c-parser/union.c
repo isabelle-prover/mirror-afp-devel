@@ -17,9 +17,35 @@ typedef union myunion {
 */
 
 
+unsigned const gu = 42;
+myunion globu1 = {1};
+myunion globu2 = {.y = 1};
+myunion globu3 = {};
+myunion globu4 = {gu};
+
+
+int foo() {
+  myunion u;
+  int k;
+  u.x = 42;
+  //u.y = "c";
+  k = u.x;
+  globu4.y = 3;
+  return k;
+}
+
+int foo1() {
+  myunion u;
+  int k;
+  u.y = 42;
+  //u.y = "c";
+  k = u.y;
+  return k;
+}
+
+
+
 typedef enum color {red, green, blue} color;
-
-
 
 typedef struct my_struct {
   int fld_i; 
@@ -27,7 +53,11 @@ typedef struct my_struct {
   color c;
 } my_struct;
 
+my_struct const globs1 = {.fld_i = 1};
+my_struct globs2 = {1,2, blue};
+my_struct globs3 = globs1;
 
+const my_struct* glob3_ref = (&globs3); 
 
 typedef union reg { 
    unsigned int all; 
@@ -116,7 +146,7 @@ typedef union mystruct_array_union {
 } mystruct_array_union;
 
 
-int foo() {
+int foo2() {
   myunion u;
   int k;
   u.x = 42;
@@ -125,7 +155,7 @@ int foo() {
   return k;
 }
 
-void bar () {
+void bar2 () {
   mybitfield_union ub;
   ub.all = 42;
   mybitfield_union1 ub1;
@@ -209,7 +239,7 @@ unsigned access4 (my_union * u) {
   return x; // + y ;
 }
 
-unsigned access3 (my_union u) {
+unsigned access5 (my_union u) {
   return u.g.x1;
 }
 

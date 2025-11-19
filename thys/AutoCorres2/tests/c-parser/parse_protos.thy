@@ -11,13 +11,8 @@ begin
 
 install_C_file "parse_protos.c"
 
-context parse_protos_simpl
-begin
-
 thm f_body_def
 thm g_body_def
 thm k_body_def
-
-end
 
 end

@@ -11,7 +11,7 @@ begin
 
 install_C_file "ptr_modifies.c"
 
-context ptr_modifies_simpl
+context ptr_modifies_global_addresses
 begin
   thm foo_ptr_new_modifies
   thm f_modifies
@@ -20,9 +20,13 @@ begin
   thm h_modifies
 end
 
-locale g_impl' = f_spec + g_impl  
+locale g_impl' = f_spec + ptr_modifies_global_addresses
+begin
+unbundle g_variables
+end
 
-lemma (in g_impl') g_spec:
+lemma (in g_impl') 
+  shows g_spec:
   "\<forall> i. \<Gamma> \<turnstile> \<lbrace> \<acute>i = i \<rbrace> \<acute>ret' :== CALL g(\<acute>i) \<lbrace> \<acute>ret' = i + 4 \<rbrace>"
   apply vcg
   apply simp

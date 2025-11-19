@@ -57,6 +57,13 @@ lemma corresXF_refines_iff:
     done
   done
 
+lemma corresXF_trans[corres_le_trans]: "corresXF st ret_xf ex_xf P A C \<Longrightarrow> A \<le> A' 
+  \<Longrightarrow> corresXF st ret_xf ex_xf P A' C"
+  by (auto simp add: corresXF_refines_iff refines_le_trans)
+
+lemma corresXF_trans': "corresXF st ret_xf ex_xf P A C' \<Longrightarrow> C \<le> C' 
+  \<Longrightarrow> corresXF st ret_xf ex_xf P A C"
+  by (auto simp add: corresXF_refines_iff le_refines_trans)
 (*
 * Stronger variant with postcondition
 *)
@@ -79,6 +86,10 @@ lemma corresXF_post_refines_iff:
     apply (fastforce simp add: corresXF_post_def refines_def_old rel_XF_def rel_xval.simps split: xval_splits)
     done
   done
+
+lemma corresXF_post_trans[corres_le_trans]: "corresXF_post st ret_xf ex_xf P Q A C \<Longrightarrow> A \<le> A' 
+  \<Longrightarrow> corresXF_post st ret_xf ex_xf P Q A' C"
+  by (auto simp add: corresXF_post_refines_iff refines_le_trans)
 
 lemma corresXF_post_to_corresXF: 
   "corresXF_post st ret_xf ex_xf P Q A C \<Longrightarrow> corresXF st ret_xf ex_xf P A C"

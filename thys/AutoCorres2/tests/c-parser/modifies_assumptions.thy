@@ -11,7 +11,7 @@ begin
 
 install_C_file "modifies_assumptions.c"
 
-context modifies_assumptions_simpl
+context modifies_assumptions_global_addresses
 begin
 
 thm f_body_def

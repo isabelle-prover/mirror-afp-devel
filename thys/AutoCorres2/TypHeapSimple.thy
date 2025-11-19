@@ -548,11 +548,6 @@ lemma typ_name_neq:
   apply (metis typ_uinfo_t_def)
   done
 
-lemma of_nat_mod_div_decomp:
-  "of_nat k
-        = of_nat (k div size_of TYPE('b)) * of_nat (size_of TYPE('b::mem_type)) +
-              of_nat (k mod size_of TYPE('b))"
-  by (metis mod_div_decomp of_nat_add of_nat_mult)
 
 lemma c_guard_array_c_guard:
   "\<lbrakk> \<And>x. x < CARD('a) \<Longrightarrow> c_guard (ptr_coerce p +\<^sub>p int x :: 'b ptr) \<rbrakk> \<Longrightarrow> c_guard ( p :: ('b :: mem_type, 'a :: finite) array ptr)"

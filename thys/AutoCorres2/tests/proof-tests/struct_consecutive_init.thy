@@ -28,21 +28,14 @@ require a liveness analysis on the level of struct components and not only on th
 
 autocorres [] "struct_consecutive_init.c"
 
-context l1_corres_in_loop
+context struct_consecutive_init_global_addresses
 begin
 thm l1_in_loop'_def
 thm l1_in_loop'_corres
 thm l1_opt_in_loop'_def
 end
 
-context l1_definition_string_of_vars
-begin
 thm l1_opt_string_of_vars'_def
-end
-
-
-context struct_consecutive_init_all_impl
-begin
 
 thm nested'_def
 thm in_loop_partial'_def [of n m k]
@@ -91,10 +84,7 @@ thm partial_declare_before_use'_def
 thm nested'_def
 thm nested_partial'_def
 
-end
 
-context ts_definition_crosswise_init
-begin
 thm ts_def
 lemma "crosswise_init' \<equiv> do {
   i \<leftarrow> owhile (\<lambda>i s. i \<le> (2::32 word)) (\<lambda>i. oreturn (i + 1)) 0;
@@ -102,24 +92,15 @@ lemma "crosswise_init' \<equiv> do {
 }"
   unfolding crosswise_init'_def .
 
-end
 
-context ts_definition_cond_init
-begin
 thm ts_def [no_vars]
 lemma "cond_init' i \<equiv> if i < 0x2A then POINT_C 0x21 0x2C else POINT_C 0x21 0x2A"
   unfolding ts_def .
-end
 
-context ts_definition_cond_init1
-begin
 thm ts_def [no_vars]
 lemma "cond_init1' i \<equiv> if i < 0x2A then POINT_C 0x21 0x2C else POINT_C 0x21 0x2A"
   unfolding ts_def .
-end
 
-context ts_definition_cond_init_while
-begin
 thm ts_def [no_vars]
 lemma "cond_init_while' i \<equiv> do {
   (i, y) \<leftarrow>
@@ -139,10 +120,7 @@ lemma "cond_init_while' i \<equiv> do {
   oreturn y
 }"
   unfolding ts_def .
-end
 
-context ts_definition_cond_init_while4
-begin
 thm ts_def [no_vars]
 lemma "cond_init_while4' i \<equiv> do {
   (i, y) \<leftarrow>
@@ -171,10 +149,7 @@ lemma "cond_init_while4' i \<equiv> do {
   oreturn y
 }"
   unfolding ts_def .
-end
 
-context ts_definition_cond_init_while_nested
-begin
 thm ts_def [no_vars]
 lemma "cond_init_while_nested' i \<equiv> do {
   (i, y) \<leftarrow>
@@ -199,6 +174,5 @@ lemma "cond_init_while_nested' i \<equiv> do {
   oreturn y
 }"
   unfolding ts_def .
-end
 
 end

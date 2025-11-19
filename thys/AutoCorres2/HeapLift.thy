@@ -189,8 +189,18 @@ lemma admissible_nondet_ord_L2Tcorres [corres_admissible]:
   apply (rule admissible_nondet_ord_corresXF)
   done
 
+lemma admissible_nondet_ord_L2Tcorres_mcont:
+  "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow> ccpo.admissible Inf (\<ge>) (\<lambda>A. L2Tcorres st (F A) C)"
+  using admissible_nondet_ord_L2Tcorres
+  apply (rule admissible_subst)
+  apply assumption
+  done
+
 lemma L2Tcorres_top [corres_top]: "L2Tcorres st \<top> C"
   by (auto simp add: L2Tcorres_def corresXF_def)
+
+lemma L2Tcorres_le_trans[corres_le_trans]: "L2Tcorres st A C \<Longrightarrow> A \<le> A' \<Longrightarrow> L2Tcorres st A' C"
+  by (auto simp add: L2Tcorres_def corres_le_trans)
 
 (* Abstraction predicates for inner expressions. *)
 definition "abs_guard    st   A C \<equiv> \<forall>s. A (st s) \<longrightarrow> C s"
@@ -208,14 +218,26 @@ definition "struct_rewrite_modifies P A C \<equiv> \<forall>s. P s \<longrightar
 
 
 (* Standard heap abstraction rules. *)
-named_theorems heap_abs
+named_theorems heap_abs and more_heap_abs
 (* Rules that require first-order matching. *)
 named_theorems heap_abs_fo
+
 
 named_theorems derived_heap_defs and
  valid_array_defs and
  heap_upd_cong and
  valid_same_typ_descs
+
+locale heap_abs_known_function_upto =
+  fixes st:: "'s \<Rightarrow> 't" 
+  fixes known_function_upto_prev:: "unit ptr \<Rightarrow> bool"
+  fixes known_function_upto_hl:: "unit ptr \<Rightarrow> bool"
+  assumes strengthen: "\<And>p. known_function_upto_hl p \<Longrightarrow> known_function_upto_prev p"
+begin
+lemma abs_guard_known_function_upto [more_heap_abs]:
+  "abs_guard st (\<lambda>_. known_function_upto_hl p) (\<lambda>_. known_function_upto_prev p)"
+  by (auto simp add: strengthen abs_guard_def)
+end
 
 lemma deepen_heap_upd_cong: "f = f' \<Longrightarrow> upd f s = upd f' s"
   by simp
@@ -410,11 +432,11 @@ lemma L2Tcorres_seq [heap_abs]:
 lemma L2Tcorres_guarded_simple [heap_abs]:
   assumes b_c: "struct_rewrite_guard b c"
   assumes a_b: "abs_guard st a b"
-  assumes f_g: "\<And>s s'. c s \<Longrightarrow> s' = st s \<Longrightarrow> L2Tcorres st f g"
+  assumes f_g: "\<And>s s'. c s \<Longrightarrow> a (st s) \<Longrightarrow> s' = st s \<Longrightarrow> L2Tcorres st f g"
   shows "L2Tcorres st (L2_guarded a f) (L2_guarded c g)"
   unfolding L2_guarded_def L2_defs L2Tcorres_def corresXF_refines_conv
   using b_c a_b f_g
-  by (fastforce simp add: refines_def_old L2Tcorres_def corresXF_refines_conv reaches_bind succeeds_bind 
+  by  (fastforce simp add: refines_def_old L2Tcorres_def corresXF_refines_conv reaches_bind succeeds_bind 
       struct_rewrite_guard_def abs_guard_def abs_expr_def split: xval_splits)
 
 lemma L2Tcorres_catch [heap_abs]:
@@ -2139,6 +2161,7 @@ lemma heap_update_signed_word:
 
 lemma heap_update_padding_signed_word:
     "heap_update_padding (ptr_coerce p :: 'a word ptr) (scast v) bs  = heap_update_padding (p :: ('a::len8) signed word ptr) v bs"
+    "heap_update_padding (ptr_coerce p :: 'a word ptr) (ucast v) bs  = heap_update_padding (p :: ('a::len8) signed word ptr) v bs"
     "heap_update_padding (ptr_coerce p' :: 'a signed word ptr) (ucast v') bs = heap_update_padding (p' :: ('a::len8) word ptr) v' bs"
   by (auto simp: heap_update_padding_def to_bytes_def typ_info_word word_rsplit_def cast_simps uint_scast)
 
@@ -2193,7 +2216,7 @@ lemma typ_heap_simulation_signed_word:
               v t_hrs t_hrs_update \<rbrakk>
     \<Longrightarrow> typ_heap_simulation st
               (\<lambda>s p. ucast (r s (ptr_coerce p)) :: 'a signed word)
-              (\<lambda>p f.  (w (ptr_coerce p) ((\<lambda>x. scast (f (ucast x)))) ))
+              (\<lambda>p f.  (w (ptr_coerce p) ((\<lambda>x. ucast (f (ucast x)))) ))
               (\<lambda>s p. v s (ptr_coerce p))
               t_hrs t_hrs_update"
   apply (clarsimp simp: typ_heap_simulation_def
@@ -2212,7 +2235,7 @@ lemma typ_heap_simulation_signed_word:
       apply clarsimp
       apply (erule_tac x=bs in allE)
       apply clarsimp
-      apply (erule_tac x= " SCAST('a signed \<rightarrow> 'a) x" in allE)
+      apply (erule_tac x= " UCAST('a signed \<rightarrow> 'a) x" in allE)
       using heap_update_padding_signed_word
       by (metis (mono_tags, lifting) hrs_mem_update_cong)
     done
@@ -2228,9 +2251,18 @@ lemma typ_heap_simulation_signed_word:
     apply (simp (no_asm_use) add: valid_only_typ_desc_dependent_def)
     by blast
   subgoal
-    apply (simp (no_asm_use) add: pointer_lense_def)
-    apply clarsimp
-    by (metis comp_apply ucast_scast_id)
+    supply scast_ucast_norm[simp del]
+    supply ucast_ucast_id[simp]
+    apply (unfold_locales)
+    subgoal
+      by (simp add: pointer_lense.read_write_same)
+    subgoal
+      by (simp add: pointer_lense.write_same)
+    subgoal
+      by (simp add: pointer_lense.write_comp comp_def)
+    subgoal
+      by (simp add: pointer_lense.write_other_commute)
+    done
   done
 
 lemma c_guard_ptr_ptr_coerce:
@@ -4786,12 +4818,38 @@ lemma (in open_types) ptr_valid_unsigned[simp]:
     PTR_VALID('a::len8 word) h (PTR_COERCE('a signed word \<rightarrow> 'a word) p)"
   by (simp add: typ_uinfo_t_signed_word_word_conv ptr_valid_def)
 
+lemma typ_uinfo_t_ptr_same_name: "typ_name_itself TYPE('a) = typ_name_itself TYPE('b) \<Longrightarrow> 
+  typ_uinfo_t TYPE('a::c_type_name ptr) = typ_uinfo_t TYPE('b::c_type_name ptr)"
+  by (simp add: typ_uinfo_t_def field_norm_def 
+      len8_bytes word_rsplit_rcat_size word_size fun_eq_iff typ_info_ptr)
+
+named_theorems ptr_valid_ptr_coerce_conv
+lemma (in open_types) ptr_valid_ptr_coerce_conv[ptr_valid_ptr_coerce_conv]:
+  assumes  "typ_name_itself TYPE('a) = typ_name_itself TYPE('b)"
+  shows "PTR_VALID('b::c_type ptr) h (PTR_COERCE('a ptr \<rightarrow> 'b ptr) p) \<longleftrightarrow> PTR_VALID('a::c_type ptr) h p"
+  by (simp add: typ_uinfo_t_signed_word_word_conv ptr_valid_def typ_uinfo_t_ptr_same_name[OF assms(1)] )
+
 lemma ucast_zero_word:
   "UCAST('a::len8 \<rightarrow> 'a signed) ZERO('a word) = ZERO('a signed word)"
   using len8_bytes[where 'a='a]
   apply (simp add: zero_def)
   apply (subst from_bytes_signed_word)
   apply (simp_all add: size_of_def typ_info_word ucast_ucast_id)
+  done
+
+lemma scast_zero_word:
+  "SCAST('a::len8 signed \<rightarrow> 'a ) ZERO('a signed word) = ZERO('a word)"
+  using len8_bytes[where 'a='a]
+  apply (simp add: zero_def)
+  apply (subst from_bytes_signed_word)
+  apply (simp_all add: size_of_def typ_info_word ucast_ucast_id)
+  done
+
+lemma ptr_coerce_zero: "PTR_COERCE('a::c_type \<rightarrow> 'b::c_type) ZERO('a ptr) = ZERO('b ptr)"
+  apply (simp add: zero_def from_bytes_def)
+  apply (simp add: from_bytes_def to_bytes_def typ_info_ptr 
+                typ_info_word word_size
+                length_word_rsplit_exp_size' word_rcat_rsplit update_ti_t_def)
   done
 
 definition signed_heap:: 
@@ -4830,7 +4888,7 @@ proof -
     apply unfold_locales 
     apply (simp_all add: ptr_valid_unsigned ptr_valid_imp_v
         read_commutes h_val_signed_word write_padding_commutes heap_typing_upd_write_commute)
-    apply (subst heap_update_padding_signed_word(1)[symmetric])
+    apply (subst heap_update_padding_signed_word(2)[symmetric])
     apply (subst write_padding_commutes)
     apply (simp_all add: size_of_signed_word scast_ucast_down_same valid_implies_c_guard)
     apply (rule valid_same_typ_desc, simp)
@@ -4839,6 +4897,64 @@ proof -
     done
 qed
 
+lemma signed_typ_heap_simulation_of_typ_heap_simulation':
+  fixes r :: "_ \<Rightarrow> _ \<Rightarrow> 'a::len8 word"
+  assumes r :
+    "typ_heap_simulation_open_types \<T> st r w v t_hrs t_hrs_update heap_typing heap_typing_upd"
+  shows "typ_heap_simulation_open_types \<T> st
+    (\<lambda>s p. ucast (r s (ptr_coerce p)) :: 'a signed word)
+    (\<lambda>p m. w (PTR_COERCE('a signed word \<rightarrow> 'a word) p) (\<lambda>w. UCAST('a signed \<rightarrow> 'a) (m (UCAST('a \<rightarrow> 'a signed) w))))
+    (\<lambda>h p. v h (PTR_COERCE('a signed word \<rightarrow> 'a word) p))
+    t_hrs t_hrs_update heap_typing heap_typing_upd"
+  apply (rule signed_typ_heap_simulation_of_typ_heap_simulation [unfolded signed_heap_def comp_def])
+  apply (rule r)
+  done
+
+text "The next lemma is intended to convert pointers to signed words to pointers to unsigned words. 
+We only have dedicated heaps for unsigned words pointers to signed words are retrieved from the
+unsigned heap inserting the necessary coercision."
+lemma ptr_coerce_typ_heap_simulation_open_types:
+  assumes r: "typ_heap_simulation_open_types \<T> st
+        (r :: 's \<Rightarrow> ('a::c_type) ptr ptr  \<Rightarrow> 'a ptr) w
+              v t_hrs t_hrs_update heap_typing heap_typing_upd"
+  assumes same_name: "typ_name_itself TYPE('a) = typ_name_itself TYPE('b)" \<comment> \<open>signed words and unsigned words
+   have the same name, this also propagates to pointers to words, and pointers to pointers to words, and so on.\<close>
+  shows "typ_heap_simulation_open_types \<T> st
+             (\<lambda>s p. ptr_coerce (r s (ptr_coerce p)) :: ('b::c_type) ptr)
+              (\<lambda>p f.  (w (ptr_coerce p) ((\<lambda>x. ptr_coerce (f (ptr_coerce x))))))
+              (\<lambda>s p. v s (ptr_coerce p))
+    t_hrs t_hrs_update heap_typing heap_typing_upd"
+proof -
+  interpret typ_heap_simulation_open_types \<T> st r w v t_hrs t_hrs_update heap_typing heap_typing_upd
+    by fact
+  show ?thesis
+    apply (rule typ_heap_simulation_open_types.intro)
+    subgoal
+      apply (rule typ_heap_simulation_ptr_coerce)
+      using r 
+      by (simp add: typ_heap_simulation_open_types_def)
+    subgoal
+      using r
+      by (simp add: typ_heap_simulation_open_types_def)
+    subgoal
+      apply (unfold_locales)
+      subgoal
+        by (simp)
+      subgoal 
+        by (simp add: heap_typing_upd_write_commute)
+      subgoal
+        using ptr_valid_ptr_coerce_conv [OF same_name] ptr_valid_imp_v
+        by fastforce
+      subgoal
+
+        using sim_stack_stack_byte_zero'
+          ptr_coerce_zero
+        by fastforce
+      done
+    done
+qed
+
+   
 lemma array_typ_heap_simulation_of_typ_heap_simulation:
   fixes r :: "_ \<Rightarrow> _ \<Rightarrow> 'a::{stack_type, xmem_type, array_outer_max_size}"
   assumes "typ_heap_simulation_open_types \<T> st r w v t_hrs t_hrs_update heap_typing heap_typing_upd"

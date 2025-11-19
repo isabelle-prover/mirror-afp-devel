@@ -16,6 +16,28 @@ static const unop_u_ptr_t odd_even_dispatcher[2] = {
  even_disp
 };
 
+unsigned call_even_disp(word_t n) {
+ /* return even_disp(n);*/
+ unsigned f = 0;
+ if (n > 22) {
+   f = 1;
+ }
+ return (odd_even_dispatcher[f])(n - 1);
+}
+
+unsigned call1_even_disp(word_t n) {
+  return call_even_disp(n);
+}
+
+unsigned odd_disp(word_t n) {
+  return call1_even_disp(n - 1);
+}
+
+unsigned even_disp(word_t n) {
+  return call1_even_disp(n + 1);
+}
+
+/*
 unsigned even_disp(word_t n) {
   if (n==0) {
     return 1;
@@ -28,10 +50,14 @@ unsigned odd_disp(word_t n) {
   if (n==0) {
     return 0;
   } else {
-    return (odd_even_dispatcher[1])(n - 1);
+    if (n > 42) {
+      return (odd_even_dispatcher[1])(n - 1);
+    } else {
+      return (call_even_disp(n - 1));
+    }
   } 
 }
-
+*/
 
 void loop(void) {loop();}
 
@@ -127,11 +153,17 @@ int inc(int n) {
   return n + 1;
 }
 
-
 int dec(int n) {
   return n - 1;
 }
 
+unsigned uinc(unsigned n) {
+  return n + 1;
+}
+
+unsigned udec(unsigned n) {
+  return n - 1;
+}
 
 unsigned add_u(unsigned n, unsigned m) {
   return n + m;
@@ -270,19 +302,19 @@ int callintcaller(void)
 
 int call_object_binop_return(object_t * p, int x, int y)
 {
-  return p->binop(x,y);
+  __attribute__((calls(add, minus, mul))) return p->binop(x,y);
 }
 
 int call_object_binop_assign(object_t * p, int x, int y)
 {
-  int t1 = p->binop(x,y);
-  int t2 = p->binop(x,y);
+  int t1 __attribute__((calls(minus, mul))) = p->binop(x,y);
+  int t2 __attribute__((calls(minus, mul))) = p->binop(x,y);
   return (t1 + t2);
 }
 
 int call_object_binop_emb(object_t * p, int x, int y)
 {
-  int t = add (p->binop(x,y), p->binop(x,y));
+  int t  __attribute__((calls(add, minus))) = add ( p->binop(x,y), p->binop(x,y)) ;
   return (t + x + y);
 }
 
@@ -303,17 +335,18 @@ struct object1 {
 unsigned call_object0(const object1_t *  p)
 {
   unsigned n = 0;
-  n = p->unop(0);
+  [[calls(odd, even, odd_disp, even_disp)]] n  = p->unop(0);
   return n;
 }
 
 unsigned call_object1(const object1_t *  p)
 {
   Return n = 0;
-  n = p->unop(0);
+  [[calls(odd, even, odd_disp, even_disp)]] n = p->unop(0);
   return n;
 }
 
-
-
+void touch_types (void) {
+  object1_t x;
+}
 

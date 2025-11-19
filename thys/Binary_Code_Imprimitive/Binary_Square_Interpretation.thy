@@ -85,11 +85,11 @@ proof (cases "r = \<epsilon>")
   hence "r \<le>s x"
     using \<open>s \<le>s x\<close> by auto
   obtain k where "p \<le>p r\<^sup>@k" "0 < k"
-    using per_root_powE[OF per_rootI[OF \<open>p \<le>p r \<cdot> p\<close> \<open>r \<noteq> \<epsilon>\<close>]] sprefD1 by metis
+    using per_root_powE[OF \<open>p \<le>p r \<cdot> p\<close> \<open>r \<noteq> \<epsilon>\<close>] sprefD1 by metis
   hence "p1 \<cdot> ov \<le>f r\<^sup>@k"
     unfolding \<open>p1 \<cdot> ov = p\<close> by blast
   obtain l where "s \<le>s r\<^sup>@ l" \<open>0 < l\<close>
-    using per_root_powE[reversed, OF per_rootI[reversed, OF \<open>s \<le>s s \<cdot> r\<close> \<open>r \<noteq> \<epsilon>\<close>]] ssufD1 by metis
+    using per_root_powE[reversed, OF \<open>s \<le>s s \<cdot> r\<close> \<open>r \<noteq> \<epsilon>\<close>] ssufD1 by metis
   hence "ov \<cdot> s1 \<le>f r\<^sup>@ l"
     unfolding \<open>ov \<cdot> s1 = s\<close> by blast
   from per_glue_facs[OF \<open>p1 \<cdot> ov \<le>f r\<^sup>@ k\<close> \<open>ov \<cdot> s1 \<le>f r\<^sup>@ l\<close> \<open>\<^bold>|r\<^bold>| \<le> \<^bold>|ov\<^bold>|\<close>, unfolded \<open>p1 \<cdot> ov \<cdot> s1 = x\<close>]
@@ -739,7 +739,7 @@ proof (rule notE[OF vu_x_non_comm])
   have "v \<cdot> (u \<cdot> v) \<^sup>@ l \<noteq> \<epsilon>"
     using v_nemp by force
   obtain exp where "x \<le>p (v \<cdot> (u \<cdot> v) \<^sup>@ l)\<^sup>@exp" "0 < exp"
-    using per_root_powE[OF per_rootI[OF \<open>x \<le>p (v \<cdot> (u \<cdot> v) \<^sup>@ l) \<cdot> x\<close> \<open>v \<cdot> (u \<cdot> v) \<^sup>@ l \<noteq> \<epsilon>\<close>], of thesis] by blast
+    using per_root_powE[OF \<open>x \<le>p (v \<cdot> (u \<cdot> v) \<^sup>@ l) \<cdot> x\<close> \<open>v \<cdot> (u \<cdot> v) \<^sup>@ l \<noteq> \<epsilon>\<close>, of thesis] by blast
 
   have "x \<le>s x \<cdot> u"
       using fst_x[unfolded \<open>m = 0\<close>  pow_zero emp_simps] by (simp add: suffix_def)
@@ -895,7 +895,7 @@ proof-
   have "u \<noteq> \<epsilon>"
     using p_nemp px_xu by force
   obtain expu where "x <s u\<^sup>@ expu" "0 < expu"
-    using per_root_powE[reversed, OF per_rootI[reversed, OF \<open> x \<le>s x \<cdot> u\<close> \<open>u \<noteq> \<epsilon>\<close>]].
+    using per_root_powE[reversed, OF  \<open> x \<le>s x \<cdot> u\<close> \<open>u \<noteq> \<epsilon>\<close>].
   hence "x \<le>f u\<^sup>@ expu"
     using ssufD1 by blast
 
@@ -903,7 +903,7 @@ proof-
   have "v \<noteq> \<epsilon>"
     using s_nemp vx_xs by force
   obtain expv where "x <p v\<^sup>@expv" "0 < expv"
-    using per_root_powE[OF per_rootI[OF \<open>x \<le>p v \<cdot> x\<close> \<open>v \<noteq> \<epsilon>\<close>]].
+    using per_root_powE[OF \<open>x \<le>p v \<cdot> x\<close> \<open>v \<noteq> \<epsilon>\<close>].
   hence "x \<le>f v\<^sup>@expv"  by blast
 
   show "\<rho> u \<sim> \<rho> v"

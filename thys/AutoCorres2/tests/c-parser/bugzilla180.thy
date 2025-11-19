@@ -11,9 +11,9 @@ begin
 
 install_C_file "bugzilla180.c"
 
-context "g_impl"
+context bugzilla180_global_addresses
 begin
-
+unbundle g_variables
 thm g_body_def
 
 lemma "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g() \<lbrace> \<acute>ret' = 15 \<rbrace>"
@@ -22,8 +22,9 @@ apply simp
 done
 end
 
-context "h_impl"
+context bugzilla180_global_addresses
 begin
+unbundle h_variables
 thm h_body_def
 
 lemma "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL h() \<lbrace> \<acute>ret' = 15 \<rbrace>"

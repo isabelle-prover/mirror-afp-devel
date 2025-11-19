@@ -60,7 +60,7 @@ lemma heap_update_heap_update_list:
 
 lemmas runs_to_whileLoop2 =  runs_to_whileLoop_res' [split_tuple C and B arity: 2]
 
-lemma (in ts_definition_memset) memset:
+lemma memset:
 
 "n < addr_card \<Longrightarrow> 0 \<notin> {ptr_val p ..+ n} \<Longrightarrow>
                 memset' p c n \<bullet> s0
@@ -128,7 +128,7 @@ lemma (in memset_global_addresses) is_valid_node_C_non_NULL [simplified, simp]:
   "ptr_valid (heap_typing (lift_global_heap s)) (p::node_C ptr) \<Longrightarrow> 0 \<notin> {ptr_val p ..+ size_of TYPE(node_C)}"
   by (meson c_guard_def c_null_guard_def heap_node_C.valid_implies_c_guard)
 
-lemma (in ts_definition_zero_node) zero_node:
+lemma (in memset_global_addresses) zero_node:
   "ptr_valid (heap_typing s\<^sub>0 ) p \<Longrightarrow> zero_node' p \<bullet> s\<^sub>0 \<lbrace> \<lambda>rv s. s = s\<^sub>0[p := (node_C NULL 0) ] \<rbrace> "
   thm zero_node'_def
   apply (clarsimp simp: zero_node'_def )

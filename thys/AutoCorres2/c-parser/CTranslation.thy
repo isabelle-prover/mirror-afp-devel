@@ -13,7 +13,8 @@ keywords
 and
   "include_C_file"
   "install_C_types"
-  "install_C_file" :: thy_load
+  "install_C_file"
+  "install_C_file_expect_reject" :: thy_load
 
 begin
   ML_file "isar_install.ML"

@@ -16,9 +16,6 @@ begin
 thm f_spec
 end
 
-context spec_annotated_voidfn_simpl
-begin
 thm f_body_def
-end
 
 end

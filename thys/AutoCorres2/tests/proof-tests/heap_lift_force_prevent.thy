@@ -26,20 +26,20 @@ lemma heap_w32_hrs_mem [simp]:
       \<Longrightarrow> h_val (hrs_mem (t_hrs_' s)) p = a"
   by (simp add: heap_w32.read_commutes)
 
-lemma (in ts_definition_lifted_a) lifted_a_wp [runs_to_vcg]:
+lemma lifted_a_wp [runs_to_vcg]:
     "ptr_valid (heap_typing s) p \<Longrightarrow> heap_w32 s p = a \<Longrightarrow> P (Result a) s \<Longrightarrow> lifted_a' p \<bullet> s \<lbrace> \<lambda>r s. P r s \<rbrace>"
   unfolding lifted_a'_def
   apply runs_to_vcg
   apply simp
   done
 
-lemma (in ts_definition_unlifted_a) unlifted_a_wp [runs_to_vcg]:
+lemma unlifted_a_wp [runs_to_vcg]:
     "c_guard p \<Longrightarrow> P (Result (h_val (hrs_mem (t_hrs_' s)) p)) s ==>
                   unlifted_a' p \<bullet> s \<lbrace> \<lambda>r s. P r s \<rbrace>"
   unfolding unlifted_a'_def
   by runs_to_vcg
 
-lemma (in ts_definition_lifted_b) lifted_b_wp [runs_to_vcg]:
+lemma lifted_b_wp [runs_to_vcg]:
     "ptr_valid (heap_typing s) p \<Longrightarrow>  heap_w32 s p = a \<Longrightarrow> P (Result (a * 3)) s \<Longrightarrow> lifted_b' p \<bullet> s \<lbrace> \<lambda>r s. P r s \<rbrace>"
   unfolding lifted_b'_def
   apply runs_to_vcg
@@ -47,7 +47,7 @@ lemma (in ts_definition_lifted_b) lifted_b_wp [runs_to_vcg]:
       intro: ptr_valid_h_t_valid h_t_valid_c_guard)
   done
 
-lemma  (in ts_definition_unlifted_b) unlifted_b_wp [runs_to_vcg]:
+lemma unlifted_b_wp [runs_to_vcg]:
     "ptr_valid (hrs_htd (t_hrs_' s)) p \<Longrightarrow>
       \<forall>t. lift_global_heap t = lift_global_heap s \<longrightarrow> P (Result (h_val (hrs_mem (t_hrs_' t)) p * 3)) t \<Longrightarrow>
               unlifted_b' p \<bullet> s \<lbrace> \<lambda>r s. P r s \<rbrace>"

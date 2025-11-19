@@ -1,9 +1,9 @@
 chapter AFP
 
-session Combinatorics_Words_Lyndon = Combinatorics_Words +
-  options [timeout = 300]
+session Combinatorics_Words_Lyndon (AFP) = Combinatorics_Words +
+  options [timeout = 600]
   sessions
-    Szpilrajn
+    Szpilrajn  
   theories
     Lyndon
     Lyndon_Addition

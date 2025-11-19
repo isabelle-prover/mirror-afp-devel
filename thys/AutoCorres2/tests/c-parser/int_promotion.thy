@@ -11,12 +11,11 @@ begin
 
 install_C_file "int_promotion.c"
 
-context int_promotion_simpl
-begin
 
 thm f_body_def
-end
-lemma (in f_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL f() \<lbrace> \<acute>ret' = 1 \<rbrace>"
+
+lemma (in int_promotion_global_addresses) includes f_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL f() \<lbrace> \<acute>ret' = 1 \<rbrace>"
   apply vcg
   apply simp
   done

@@ -12,8 +12,9 @@ struct foo {
     struct bar *x;
 };
 
-int main(void)
+int main1(void)
 {
     struct foo y = {0};
+    struct bar x;
     return 0;
 }

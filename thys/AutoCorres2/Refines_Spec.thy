@@ -13,6 +13,8 @@ theory Refines_Spec
 begin
 
 
+declare refines_le_trans [corres_le_trans]
+
 (* TODO: where to put these? *)
 
 lemma gets_the_ocondition: 
@@ -31,11 +33,14 @@ lemma gets_the_obind:
 
 setup \<open>
 let open Mutual_CCPO_Rec in
-  add_ccpo "spec_monad_gfp" (fn ctxt => fn (T as \<^Type>\<open>spec_monad E A S\<close>)  => 
-    let
-    in 
-      synth_gfp ctxt T
-    end) 
+  add_ccpo "spec_monad_gfp" (fn ctxt => fn T => 
+    (case (strip_type T) of
+     (argTs, resT as \<^Type>\<open>spec_monad E A S\<close>)  => 
+      let
+      in 
+        synth_funs ctxt (argTs, synth_gfp ctxt resT)
+      end
+    | _ => error ("spec_monad_gfp: unexpected type: " ^ @{make_string} T))) 
   |> Context.theory_map
 end
 \<close>
@@ -159,22 +164,53 @@ lemma admissible_refines_spec_res[corres_admissible]:
            (\<lambda>(A::('a, 's) res_monad) . refines C A s t (rel_prod (rel_liftE ) (=)))"
   by (rule admissible_refines_spec_funp) (intro funp_intros)
 
+lemma admissible_refines_spec_res_mcont:
+  shows "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow> ccpo.admissible Inf (\<ge>)
+           (\<lambda>(A::('a, 's) res_monad) . refines C (F A) s t (rel_prod (rel_liftE ) (=)))"
+  using admissible_refines_spec_res
+  apply (rule admissible_subst)
+  apply assumption
+  done
+
 lemma admissible_refines_spec_exit_eq[corres_admissible]:
   shows "ccpo.admissible Inf (\<ge>)
            (\<lambda>(A::('e, 'a, 's) exn_monad) . refines C A s t (rel_prod (rel_xval (=) (=)) (=)))"
   by (rule admissible_refines_spec_funp) (intro funp_intros)
+
+lemma admissible_refines_spec_exit_eq_mcont:
+  shows "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow> ccpo.admissible Inf (\<ge>)
+           (\<lambda>(A::('e, 'a, 's) exn_monad) . refines C (F A) s t (rel_prod (rel_xval (=) (=)) (=)))"
+  using admissible_refines_spec_exit_eq
+  apply (rule admissible_subst)
+  apply assumption
+  done
 
 lemma admissible_refines_spec_exit_the_Nonlocal[corres_admissible]:
   shows "ccpo.admissible Inf (\<ge>)
            (\<lambda>(A::('e, 'a, 's) exn_monad) . refines C A s t (rel_prod ((rel_xval (rel_Nonlocal) (=))) (=)))"
   by (rule admissible_refines_spec_funp) (intro funp_intros)
 
+lemma admissible_refines_spec_exit_the_Nonlocal_mcont:
+  shows "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow> ccpo.admissible Inf (\<ge>)
+           (\<lambda>(A::('e, 'a, 's) exn_monad) . refines C (F A) s t (rel_prod ((rel_xval (rel_Nonlocal) (=))) (=)))"
+  using admissible_refines_spec_exit_the_Nonlocal
+  apply (rule admissible_subst)
+  apply assumption
+  done
 
 lemma gen_admissible_refines_gets_the[corres_admissible]:
   shows "ccpo.admissible option.lub_fun option.le_fun (\<lambda>A. refines C (gets_the A) s t (rel_prod (rel_liftE) (=)))"
   apply (clarsimp simp add: refines_def_old relcompp.simps rel_liftE_def rel_map_def
     split: option.splits)
   by (smt (verit) ccpo.admissibleI chain_fun flat_lub_in_chain fun_lub_def mem_Collect_eq option.discI)
+
+lemma gen_admissible_refines_gets_the_mcont:
+  shows "mcont option.lub_fun option.le_fun option.lub_fun option.le_fun F \<Longrightarrow> 
+    ccpo.admissible option.lub_fun option.le_fun (\<lambda>A. refines C (gets_the (F A)) s t (rel_prod (rel_liftE) (=)))"
+  using gen_admissible_refines_gets_the
+  apply (rule admissible_subst)
+  apply assumption
+  done
 
 theorem refines_option_top [corres_top]: "refines f (gets_the Map.empty) s t R"
   by (auto simp add: refines_def_old)
@@ -423,7 +459,7 @@ section \<open>Option (Reader) Monad \<close>
 lemma refines_lift_reader_option:
   assumes f: "refines f (gets f') s s (rel_prod rel_liftE (=))"
   shows "refines f (gets_the (ogets f')) s s (rel_prod rel_liftE (=))"
-  using f 
+  using f
   apply (auto simp add: refines_def_old rel_liftE_def ogets_def)
   done
 
@@ -575,11 +611,18 @@ lemma refines_L2_guard_option:
   unfolding L2_defs
   by (auto simp add: refines_def_old oguard_def)
 
-lemma refines_L2_guarded:
+lemma refines_L2_guarded':
   assumes f: "g s \<Longrightarrow> refines f (gets_the f') s s (rel_prod rel_liftE (=))"
   shows "refines (L2_guarded g f) (gets_the (oguard g |>> (\<lambda>_. f'))) s s (rel_prod rel_liftE  (=))"
   unfolding L2_defs L2_guarded_def using f
   by (auto simp add: refines_def_old reaches_bind succeeds_bind obind_def oguard_def split: option.splits)
+
+lemma refines_L2_guarded:
+  assumes f: "g s \<Longrightarrow> refines f (gets_the f') s s (rel_prod rel_liftE (=))"
+  shows "refines (L2_guarded g f) (gets_the (oguard g |>> (\<lambda>_. f'))) s s (rel_prod rel_liftE  (=))"
+  unfolding L2_defs L2_guarded_def using f
+  by (auto simp add: refines_def_old 
+      reaches_bind succeeds_bind obind_def oguard_def split: option.splits)
 
 lemmas refines_monad_option =
   refines_lift_reader_option [synthesize_rule option priority:350]
@@ -632,6 +675,23 @@ lemma refines_liftE_exn:
   using f
   by (fastforce simp add: refines_def_old reaches_map_value map_exn_def reaches_liftE
       rel_liftE_def rel_xval.simps split: xval_splits)
+
+lemma refines_liftE_return_exn:
+  assumes "refines f (return g) s s (rel_prod rel_liftE (=))"
+  shows "refines f (return g) s s (rel_prod (rel_xval L (=)) (=))"
+  using assms
+  by (metis gets_the_oreturn liftE_gets_the refines_liftE_exn)
+
+lemma refines_liftE_gets_exn:
+  assumes "refines f (gets g) s s (rel_prod rel_liftE (=))"
+  shows "refines f (gets g) s s (rel_prod (rel_xval L (=)) (=))"
+  using assms
+  by (metis liftE_gets refines_liftE_exn)
+
+lemma refines_liftE_gets_the_exn:
+  assumes "refines f (gets_the g) s s (rel_prod rel_liftE (=))"
+  shows "refines f (gets_the g) s s (rel_prod (rel_xval L (=)) (=))"
+  using assms refines_liftE_exn by fastforce
 
 lemma refines_L2_seq_nondet_polymorphic:
   assumes r [unfolded THIN_def, rule_format]: "PROP THIN (\<And>v t. refines (g v) (g' v) t t (rel_prod rel_liftE  (=)))"
@@ -818,9 +878,23 @@ lemma refines_L2_guard_nondet:
   unfolding L2_defs
   by (auto intro: refines_guard)
 
+lemma refines_L2_guarded_nondet':
+  assumes f: "c s \<Longrightarrow> refines f f' s s (rel_prod rel_liftE (=))"
+  shows "refines (L2_guarded c f) (bind (guard c) (\<lambda>_. f')) s s (rel_prod rel_liftE (=))"
+  unfolding L2_guarded_def L2_seq_def L2_guard_def using f
+  apply (auto simp add: refines_def_old succeeds_bind reaches_bind)
+  done
+
 lemma refines_L2_guarded_nondet:
   assumes f: "c s \<Longrightarrow> refines f f' s s (rel_prod rel_liftE (=))"
   shows "refines (L2_guarded c f) (bind (guard c) (\<lambda>_. f')) s s (rel_prod rel_liftE (=))"
+  unfolding L2_guarded_def L2_seq_def L2_guard_def using f 
+  apply (auto simp add: refines_def_old succeeds_bind reaches_bind)
+  done
+
+lemma refines_L2_guarded_exn':
+  assumes f: "c s \<Longrightarrow> refines f f' s s (rel_prod (rel_xval L (=)) (=))"
+  shows "refines (L2_guarded c f) (bind (guard c) (\<lambda>_. f')) s s (rel_prod (rel_xval L (=)) (=))"
   unfolding L2_guarded_def L2_seq_def L2_guard_def using f
   apply (auto simp add: refines_def_old succeeds_bind reaches_bind)
   done

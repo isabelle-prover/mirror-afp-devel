@@ -62,6 +62,7 @@ signature AUTOCORRES_TRACE = sig
       val tracing_msg:
          Proof.context -> (string * FunctionInfo.phase * FunctionInfo.stage) option -> Timing.timing -> cterm -> thm -> unit
       val transfer: Proof.context -> theory -> theory
+      val transfer': Proof.context -> Proof.context -> Proof.context
       val verbosity: int Config.T
     end
 
@@ -98,6 +99,8 @@ signature AUTOCORRES_TRACE = sig
       val unchanged_eq: 'a * ('b * ('c * thm)) -> bool
       val unchanged_thm: thm -> bool
     end
+
+  val print_statistics: Proof.context -> unit
 end;
 
 structure AutoCorresTrace: AUTOCORRES_TRACE = struct
@@ -332,12 +335,12 @@ fun insert_rule ctxt mk_patterns rule (rule_net, raw_rules) =
    case try_make_pattern (~1) mk_patterns concl of
      SOME p => 
        let 
-         val _ = verbose_msg 1 ctxt (fn _ => "adding rule for pattern: " ^ 
+         val _ = verbose_msg 4 ctxt (fn _ => "adding rule for pattern: " ^ 
                    Pretty.string_of (Syntax.pretty_term ctxt p) ^ "\n rule: " ^
                    Pretty.string_of (Thm.pretty_thm ctxt rule))
          val _ = case Item_Net.retrieve_matching rule_net p of
                    [] => ()
-                  | rs => verbose_msg 1 ctxt (fn _ =>  
+                  | rs => verbose_msg 4 ctxt (fn _ =>  
                        Utils.big_list_of_thms "the following rules match the same pattern:" ctxt rs)
        in       
          (Item_Net.update rule rule_net, raw_rules)
@@ -611,11 +614,18 @@ struct
     tracing (cat_lines (map mk_group_msg stats)) 
   end
 end
+
+fun print_statistics ctxt =
+  let
+    val data = ProfileConv.get ctxt
+  in 
+    Statistics.statistics (ProfileConv.Table.dest data)
+  end
                              
 fun fconv_rule_traced ctxt conv thm =
   let val ct = Thm.cprop_of thm
       val maybe_key = Option.map dest_trace_info (TraceInfo.get ctxt)
-      val eq_thm = ProfileConv.timeit ctxt maybe_key conv ct 
+      val eq_thm = ProfileConv.timeit ctxt maybe_key conv ct
       val _ = verbose_msg 2 ctxt (fn _ => "fconv_rule_traced: " ^ Thm.string_of_thm ctxt eq_thm)
   in 
     if Thm.is_reflexive eq_thm then thm else Thm.equal_elim eq_thm thm (* Pure/conv.ML *)

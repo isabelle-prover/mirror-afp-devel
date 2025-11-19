@@ -16,12 +16,7 @@ declare [[hoare_trace=0]]
 install_C_file "plus0.c"
 
 
-context plus0_simpl
-begin
 thm main_body_def
 thm plus_body_def
-
-
-end
 
 end

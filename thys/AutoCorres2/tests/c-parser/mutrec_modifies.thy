@@ -11,7 +11,7 @@ begin
 
 install_C_file "mutrec_modifies.c"
 
-context mutrec_modifies_simpl
+context mutrec_modifies_global_addresses
 begin
 
 thm f_modifies

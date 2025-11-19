@@ -11,7 +11,7 @@ begin
 
 install_C_file "emptystmt.c"
 
-context emptystmt_simpl
+context emptystmt_global_addresses
 begin
   term emptystmt.g
   thm f_body_def

@@ -212,7 +212,7 @@ fun munge_tactic ctxt goal msgf tac = let
       NONE => Seq.empty
     | SOME (t, _) => (msgf (); Seq.single t)
 in
-  Goal.prove_future ctxt [] [] (TermsTypes.mk_prop goal) tacticmsg
+  prove ctxt [] [] (TermsTypes.mk_prop goal) tacticmsg
 end
 
 val debug = false
@@ -318,7 +318,7 @@ fun get_mod_inv_prop ctxt post_abs mod_inv_props = let
     in
       REPEAT_ALL_NEW (resolve_tac ctxt (mi_refl :: mi_incl :: @{thms modifies_inv_prop})) 1
     end
-    val mi_prop = Goal.prove_future ctxt [] [] (mi_goal @{const_name modifies_inv_prop}) mi_prop_tac
+    val mi_prop = prove ctxt [] [] (mi_goal @{const_name modifies_inv_prop}) mi_prop_tac
   in
     (mi_prop, Termtab.update (post_abs, mi_prop) mod_inv_props)
   end
@@ -343,10 +343,8 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
 
     val {callees,callers} = ProgramAnalysis.compute_callgraphs csenv
 
-    fun do_one fname (failedsofar, mod_inv_props, thy) =
+    fun do_one fname (failedsofar, mod_inv_props, lthy) =
       let
-        val lthy = Named_Target.init [] (NameGeneration.intern_impl_locale_name thy fname) thy
-          |> Context_Position.set_visible false
         val _ = Feedback.informStr lthy (0, "Beginning modifies proof for singleton " ^ fname)
         val timer = Timer.startCPUTimer ()
 
@@ -391,16 +389,15 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
                     (Binaryset.add(failedsofar, fname), mod_inv_props, lthy)
                   end
               end
-         val thy' = lthy' |> Local_Theory.exit_global
       in
-        (failedsofar', mod_inv_props', thy')
+        (failedsofar', mod_inv_props', lthy')
       end
 
     exception NoMods of string Binaryset.set
 
-    fun do_recgroup fnlist (failedsofar, mod_inv_props, thy) =
+    fun do_recgroup fnlist (failedsofar, mod_inv_props, lthy) =
       let
-        val ctxt = Proof_Context.init_global thy
+        val ctxt = lthy
         val n = length fnlist (* >= 1 *)
 
         val rec_thm = HoarePackage.gen_proc_rec ctxt HoarePackage.Partial n
@@ -409,8 +406,6 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
                               raise NoMods (Binaryset.addList(failedsofar, fnlist)))
         val mvlist = Binaryset.listItems mods
         val heap = exists (fn TheHeap => true | _ => false) mvlist
-        val lthy = Named_Target.init [] (NameGeneration.intern_impl_clique_locale_name thy fnlist) thy
-          |> Context_Position.set_visible false
         fun gen_modgoal (fname : string) : (term * term) =
           let
             val calls = case Symtab.lookup callees fname of
@@ -448,11 +443,11 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
                                       [th])
                                      lthy))
           val noted_lthy = lthy |> fold2 note_it fnlist nway_thms
-          val thy' = noted_lthy |> Local_Theory.exit_global
+       
         in
-          (failedsofar, mod_inv_props, thy')
+          (failedsofar, mod_inv_props, noted_lthy)
         end
-      end handle NoMods newset => (newset, mod_inv_props, thy)
+      end handle NoMods newset => (newset, mod_inv_props, lthy)
 
 
     fun do_scc fnlist acc =
@@ -467,8 +462,11 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
                         else acc
         | _ => raise Fail "SCC with empty list!"
 
-    val acc_init = (Binaryset.empty string_ord, Termtab.empty, thy)
-    val (_, _, thy) = acc_init |> fold do_scc cliques
+    val lthy = Named_Target.init [] (NameGeneration.intern_globals_locale_name thy prog_name) thy
+        |> Context_Position.set_visible false
+    val acc_init = (Binaryset.empty string_ord, Termtab.empty, lthy)
+    val (_, _, lthy) = acc_init |> fold do_scc cliques
+    val thy = lthy |> Local_Theory.exit_global
     val _ = Feedback.informStr ctxt (0, "Modifies proofs done")
   in
     thy

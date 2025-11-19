@@ -29,7 +29,7 @@ begin
 thm halt_spec
 end
 
-context jiraver464_simpl
+context jiraver464_global_addresses
 begin
   thm f_body_def
   thm f_modifies

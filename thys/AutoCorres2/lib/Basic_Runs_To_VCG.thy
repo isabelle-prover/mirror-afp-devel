@@ -143,10 +143,15 @@ sig
        int -> (Proof.context -> (unit -> string) -> tactic) -> bool ->
            {do_nosplit: bool, no_unsafe_hyp_subst: bool} ->
              (Proof.context -> tactic) -> Proof.context -> tactic
+  val runs_to_vcg_tac':
+     (Proof.context -> int -> tactic) option ->
+       int -> (Proof.context -> (unit -> string) -> tactic) -> bool ->
+           {do_nosplit: bool, no_unsafe_hyp_subst: bool} ->
+             (Proof.context -> tactic) -> Proof.context -> int -> tactic
   val split_paired_all: Proof.context -> int -> tactic
   val trace_tac: 'a -> (unit -> string) -> 'b -> 'b Seq.seq
   val no_trace_tac: Proof.context -> (unit -> string) -> tactic
-  val trace_print_tac: Proof.context -> (unit -> string) -> thm -> thm Seq.seq
+  val trace_print_tac: Proof.context -> (unit -> string) -> tactic
 end
 
 structure Runs_To_VCG : RUNS_TO_VCG =
@@ -277,6 +282,8 @@ in
   runs_to_vcg_loop n trace ctxt []
 end
 
+fun runs_to_vcg_tac' splitter_opt n trace add_tags options solver ctxt = 
+  Goal.SELECT_GOAL (runs_to_vcg_tac splitter_opt n trace add_tags options solver ctxt)
 end
 \<close>
 

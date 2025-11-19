@@ -11,11 +11,7 @@ begin
 
 install_C_file "jiraver315.c"
 
-context jiraver315_simpl
-begin
 
 thm f_body_def
-
-end
 
 end

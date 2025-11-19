@@ -11,22 +11,20 @@ begin
 
 install_C_file "locvarfncall.c"
 
-context locvarfncall_simpl
-begin
-
 thm something_body_def
 thm something_else_body_def
 thm another_body_def
-end
 
  
-lemma (in something_impl) foo: "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL something() \<lbrace> \<acute>ret' = 112 \<rbrace>"
+lemma (in locvarfncall_global_addresses) includes something_variables 
+    shows foo: "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL something() \<lbrace> \<acute>ret' = 112 \<rbrace>"
 apply vcg
 apply simp
 
 done
 
-lemma (in something_else_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL something_else(4)
+lemma (in locvarfncall_global_addresses) includes something_else_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL something_else(4)
            \<lbrace> \<acute>ret' = 50 \<rbrace>"
 apply vcg
 apply simp
@@ -40,7 +38,7 @@ However, the calling conventions encoded in SIMPL procedure calls maintain the e
 \<close>
 
 
-lemma (in another_impl) 
+lemma (in locvarfncall_global_addresses) includes another_variables
   shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL another(4)
            \<lbrace> \<acute>ret' = 51 \<rbrace>"
 apply vcg

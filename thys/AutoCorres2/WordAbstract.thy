@@ -605,7 +605,7 @@ lemma introduce_typ_abs_fn_sum:
 
 section "Refinement Lemmas"
 
-named_theorems word_abs
+named_theorems word_abs and word_abs_fo
 
 definition
   "corresTA P rx ex A C \<equiv> corresXF (\<lambda>s. s) (\<lambda>r s. rx r) (\<lambda>r s. ex r) P A C"
@@ -645,8 +645,18 @@ lemma admissible_nondet_ord_corresTA [corres_admissible]:
   apply (rule admissible_nondet_ord_corresXF)
   done
 
+lemma admissible_nondet_ord_corresTA_mcont:
+  "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow>ccpo.admissible Inf (\<ge>) (\<lambda>A. corresTA P rx ex (F A) C)"
+  using admissible_nondet_ord_corresTA
+  apply (rule admissible_subst)
+  apply assumption
+  done
+
 lemma corresTA_top [corres_top]: "corresTA P rx st \<top> C"
   by (auto simp add: corresTA_def corresXF_def)
+
+lemma corresTA_le_trans[corres_le_trans]: "corresTA P rx ex f\<^sub>a f\<^sub>c \<Longrightarrow> f\<^sub>a \<le> f\<^sub>a' \<Longrightarrow> corresTA P rx ex f\<^sub>a' f\<^sub>c"
+  by (auto simp add: corresTA_def corres_le_trans)
 
 lemma corresTA_assume_and_weaken_pre:
   assumes A_C: "\<And>s. P s \<Longrightarrow> corresTA Q rt ex A C"
@@ -1517,9 +1527,27 @@ lemmas [L2opt] =
 
 lemma eq_trivI: "x = y \<Longrightarrow> x = y"
   by simp
+
+
+locale word_abs_known_function_upto =
+  fixes st:: "'s \<Rightarrow> 't" 
+  fixes known_function_upto_prev:: "unit ptr \<Rightarrow> bool"
+  fixes known_function_upto_wa:: "unit ptr \<Rightarrow> bool"
+  assumes strengthen: "\<And>p. known_function_upto_wa p \<Longrightarrow> known_function_upto_prev p"
+begin
+
+lemma known_function_upto_wa_id [consumes 2, word_abs]: 
+  "abs_var p id p' \<Longrightarrow> known_function_upto_wa p ==> known_function_upto_wa p'"
+  by (simp add: abstract_val_def abs_var_def)
+lemma strengthen_known_function [word_abs]:
+  "abs_var p id p' \<Longrightarrow> abstract_val (known_function_upto_wa p) (True) id (known_function_upto_prev p')"
+  by (simp add: abstract_val_def abs_var_def strengthen)
+
+end
 (*
  * Setup word abstraction rules.
  *)
+
 
 
 (* Common word abstraction rules. *)

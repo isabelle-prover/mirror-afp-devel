@@ -11,9 +11,6 @@ begin
 
 install_C_file "guard_while.c"
 
-print_locale guard_while_simpl
-context guard_while_simpl
-begin
 thm f_body_def
-end
+
 end

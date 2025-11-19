@@ -7,6 +7,9 @@
 structure In_Out_Parameters =
 struct
 
+fun try_OF rule thms = try (fn thms => rule OF thms) thms
+fun map_filter_try f = map_filter (fn x => try f x)
+
 val cterm_eq = Utils.cterm_eq
 
 datatype local_kind = Parameter of ProgramInfo.parameter_kind | Stack
@@ -33,7 +36,7 @@ fun is_in_out FunctionInfo.In = true
   | is_in_out FunctionInfo.In_Out = true
   | is_in_out _ = false
   
-type params_of = string -> term list option -> (cterm * (xlocal_kind * term option)) list
+type params_of = string -> term list option -> (cterm * (xlocal_kind * (term option * string (* orig source name *)))) list
 
 fun kind_of params x: xlocal_kind option = 
   AList.lookup cterm_eq params x |> Option.map fst
@@ -46,7 +49,7 @@ val named = map (fn ct => (name_of_cterm ct, ct))
 
 fun name_hint_of params x =
   case AList.lookup cterm_eq params x of
-    SOME (_, SOME hint) => hint
+    SOME (_, (SOME hint, _)) => hint
   | _ => CLocals.embedded_name_hint (name_of_cterm x)
 
 fun is_param params x = AList.defined cterm_eq params x
@@ -75,32 +78,32 @@ fun is_keep params x =
 type disjnt_params_opt = string list option
 
 type ('a, 'b) fixes = {M:'a, A:'a, t0:'a, s: 'a, t: 'a, 
-  params:  ('b * (xlocal_kind * term option)) list, 
+  params:  ('b * (xlocal_kind * (term option * string))) list, 
   disjnt_params_opt: disjnt_params_opt, 
   in_out_globals:bool}
 
-type params = (cterm * (xlocal_kind * term option (* name hint *))) list
+type params = (cterm * (xlocal_kind * (term option (* name hint *) * string (* orig source name *)))) list
 type l2_progenv = (term * int CType.ctype)
 type static = {
    name: string,
    prog_info: ProgramInfo.prog_info,
-   l2_progenvs: l2_progenv list,
    disjnt_params_opt: disjnt_params_opt,
    params_of: params_of,
    in_out_globals: bool,
    fun_ptr_params : (string * ProgramInfo.in_out_fun_ptr_spec) list,
-
+   fun_params: params,
+   rec_funs: (string * term) list,
    M: cterm,
    A: cterm 
 }
 
 type args = {
   t0: cterm, s: cterm, t: cterm,
-  params: params,
+  params: params, (* fun_params + get extended with local variables *)
   cguards: thm list, (* FIXME: do I use these? they are in simp set and named theorems *)
   rel_alloc: thm,
   modified: cterm list,            (* modified upto current location *)
-  try_modified: (cterm list * return_kind) list,   (* modified upto try location (nested Inl), bool indicates return *)
+  try_modified: {modified: cterm list, kind: return_kind, params: params} list,   (* modified upto try location (nested Inl), params upto try location *)
   return: return_kind,
   params_ctxt: Proof.context,
   addrs_fix_ctxt: Proof.context,
@@ -115,8 +118,8 @@ type operations = {
        cguards: thm list, 
        rel_alloc: thm} * Proof.context), (* FIXME: hide this? *)
   mk_refines_cprop:  {closed: bool, apply_f: bool, might_exit: bool, in_out_globals: bool} -> Proof.context -> cterm -> 
-    cterm option -> {M:cterm, A:cterm, t0:cterm, s:cterm, t:cterm} option -> params -> disjnt_params_opt -> (cterm * Proof.context),
-  IO_fn_ptr_cprop: ProgramInfo.in_out_fun_ptr_spec -> term -> term -> term -> Proof.context -> cterm * Proof.context,
+    cterm option -> {M:cterm, A:cterm, t0:cterm, s:cterm, t:cterm} option -> params -> disjnt_params_opt -> (cterm * cterm list * Proof.context),
+  IO_fn_ptr_cprop: ProgramInfo.prog_info -> (string * term) list -> string list -> ProgramInfo.in_out_fun_ptr_spec -> term -> term -> term -> Proof.context -> cterm * Proof.context,
   mk_lifted_type: Proof.context -> cterm -> params -> typ,
   in_out_expression: bool -> Proof.context -> (cterm * local_kind -> bool) -> args -> cterm ->
     {e': cterm, Q: cterm, result_rel_thm: thm, outs: cterm list, out_vals: (string * cterm) list,
@@ -267,24 +270,6 @@ fun check_subterms_open check t =
   handle Early_Bad => Known_Bad;
 
 
-fun fold_opt f []     a = NONE
-  | fold_opt f [x]    a = f x a
-  | fold_opt f (x::xs) a = 
-      (case f x a of
-         SOME y => SOME (the_default y (fold_opt f xs y))
-       | NONE   => fold_opt f xs a)
-
-fun fold_subterms_open f t x =
-  (case f t x of
-     SOME y => SOME y
-   | NONE => (case t of 
-                Abs (_, T, t') => fold_subterms_open f t' x
-              | (_ $ _) => 
-                  let
-                    val (head, args) = strip_comb t
-                  in x |> fold_opt (fold_subterms_open f) (head::args) end
-              | _ => NONE))
-
 fun dest_sumT \<^Type>\<open>sum L R\<close> = SOME (L, R)
   | dest_sumT _ = NONE
 
@@ -313,8 +298,7 @@ fun mk_exn_stack_rel ctxt L_typ R_typ 1 true Q =
   | mk_exn_stack_rel ctxt _ _ n _ _ = error ("mk_exn_stack_rel: level " ^ string_of_int n ^ " unexpected")
 
 fun Trueprop P = @{make_judgment} P
-
-val dest_Trueprop = @{cterm_match \<open>Trueprop ?P\<close>} #> (fn {P,...} => P)
+val dest_Trueprop = CalculateState.dest_Trueprop
 
 fun dest_rel_xval_stack ctxt = 
   @{cterm_match \<open>rel_xval_stack ?L ?R ?h ?x ?y\<close>} #> 
@@ -474,14 +458,6 @@ fun comps ctxt [] = error "comps: empty"
       in 
        \<^infer_instantiate>\<open>f=f and g = comps_fs in term \<open>f o g\<close>\<close> ctxt
       end
- 
-fun conjs [] = @{term True}
-  | conjs [P] = P
-  | conjs (P::Ps) = \<^instantiate>\<open>P = P and Q = \<open>conjs Ps\<close> in term \<open>P \<and> Q\<close>\<close>
-
-fun conjs_cterm [] = @{cterm True}
-  | conjs_cterm [P] = P
-  | conjs_cterm (P::Ps) = \<^instantiate>\<open>P = P and Q = \<open>conjs_cterm Ps\<close> in cterm \<open>P \<and> Q\<close>\<close>
 
 fun dest_conjs ct = ct |> Match_Cterm.switch [
   @{cterm_match \<open>?P \<and> ?Q\<close>} #> (fn {P, Q, ...} => dest_conjs P @ dest_conjs Q),
@@ -561,7 +537,7 @@ fun ptr_to_lense ctxt ct =
          val fieldT = sel |> Thm.typ_of_cterm |> range_type |> Thm.ctyp_of ctxt
          val upd = lenses |> map #upd |> comps ctxt |> Thm.cterm_of ctxt
          val thy_ss = Proof_Context.theory_of ctxt |> Proof_Context.init_global |> Simplifier.simpset_of
-         val grd = lenses |> map #grd |> flat |> conjs |> Thm.cterm_of ctxt 
+         val grd = lenses |> map #grd |> flat |> Utils.conjs |> Thm.cterm_of ctxt 
            |> simplified_cterm (Simplifier.put_simpset thy_ss ctxt) (* avoid solving a guard that is in temp context *)
          val path = path_from_accesses accesses |> Thm.cterm_of ctxt
          val orig_trm = Thm.cterm_of ctxt t
@@ -581,15 +557,15 @@ fun ptr_to_lense ctxt ct =
       end
    end
 
-val eta_contract = Utils.eta_conv #> Thm.rhs_of
 
 fun assume_grds grds ctxt =
  if null grds then ({grd = NONE, grds = []}, ctxt)
  else
    let
-     val simp_ctxt = ctxt delsimps (Named_Theorems.get ctxt @{named_theorems size_simps})
+     val simp_ctxt = ctxt 
+        delsimps (Named_Theorems.get ctxt @{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def}
        |> Simplifier.add_cong @{thm HOL.conj_cong}
-     val grd = conjs_cterm grds |> simplified_cterm simp_ctxt
+     val grd = Utils.conjs_cterm grds |> simplified_cterm simp_ctxt
      val ([grd_thm], ctxt) = Assumption.add_assumes [Utils.Trueprop_cterm grd] ctxt
      val grd_thms = grds |> map (fn grd => Goal.prove_internal ctxt [] (Utils.Trueprop_cterm grd) (fn _ => 
             Method.insert_tac ctxt [grd_thm] 1 THEN asm_full_simp_tac ctxt 1))
@@ -602,31 +578,42 @@ fun assume_grds grds ctxt =
      ({grd = SOME grd_thm, grds = grd_thms}, ctxt)
  end
 
-fun dest_known_function ctxt thm = 
-  try (@{cterm_match (fo) \<open>Trueprop (?known_function (?p::unit ptr))\<close>}) (Thm.cconcl_of thm)
-  |> Option.mapPartial (fn {known_function, p, ...} => 
-      if Thm.term_of known_function aconv HP_TermsTypes.known_function ctxt then SOME p else NONE)
+
+fun note thms attrs ctxt =
+  let val ((_, thms), ctxt) = Proof_Context.note_thms "" ((Binding.empty, []), [(thms, attrs)]) ctxt
+  in (thms, ctxt) end
+
+fun note' thms attrs ctxt =
+ note thms (map (Attrib.attribute ctxt) attrs) ctxt
+
+fun assume_and_note cts attrs ctxt =
+  let
+    val (thms, ctxt) = Assumption.add_assumes cts ctxt
+    val (thms, ctxt) = note thms attrs ctxt
+  in
+    (thms, ctxt)
+  end
+
+fun assume_and_note' cts attrs ctxt =
+ assume_and_note cts (map (Attrib.attribute ctxt) attrs) ctxt
 
 fun assume_guarded g g' s t ctxt =
   let
     val g_s = Utils.apply_beta_conv g s
     val g'_t = Utils.apply_beta_conv g' t
-    val ([grd_thm, grd'_thm], ctxt1) = Assumption.add_assumes (map Utils.Trueprop_cterm [g_s, g'_t]) ctxt
-    val grds = grd_thm |> Thm.cprop_of |> dest_Trueprop |> dest_conjs
-    val g_thms =  grds |> map (fn grd => Goal.prove_internal ctxt [] (Utils.Trueprop_cterm grd) (fn _ => 
-            Method.insert_tac ctxt [grd_thm] 1 THEN asm_full_simp_tac ctxt 1))
-    val known_functions = filter (is_some o dest_known_function ctxt1) g_thms
-    fun mk_insts rule = map (fn thm => rule OF [thm]) known_functions
- 
-    val known_function_corres = Named_Theorems.get ctxt @{named_theorems known_function_corres}
-    val known_function_insts = maps mk_insts known_function_corres
-    val (_, ctxt2) = ctxt1 |> fold_map 
-          (Thm.proof_attributes (map (Attrib.attribute ctxt1) @{attributes [synthesize_rule refines_in_out]})) known_function_insts
+    val ([grd_s_thm, grd_t_thm], ctxt1) = Assumption.add_assumes (map Utils.Trueprop_cterm [g_s, g'_t]) ctxt
+    val g_t_thms = Utils.split_conj grd_t_thm
+    val g_s_thms = Utils.split_conj grd_s_thm
+    val g_thms = g_s_thms @ g_t_thms |> sort_distinct Thm.thm_ord
+    val (g_thms', ctxt2) = note' g_thms @{attributes [guard_assms]} ctxt1
   in
-    (known_function_insts, g_thms, ctxt2)
+    (g_thms', ctxt2)
   end
 
 fun cterm_lambda x = Thm.lambda_name (name_of_cterm x, x)
+
+fun guard_conj ctxt g1 g2 =
+  \<^infer_instantiate>\<open>g1 = g1 and g2 = g2 in cterm "\<lambda>s. g1 s \<and> g2 s"\<close> ctxt
 
 fun ctyp_from_ptr ctxt p = 
   let
@@ -1037,21 +1024,6 @@ fun unchecked_instantiate_thm maxidx ctxt insts (ordered_vars, thm) =
 fun partial_instantiate_thm maxidx ctxt insts (ordered_vars, thm) =
   gen_instantiate_thm {unchecked=false} maxidx ctxt insts (ordered_vars, thm) |> apsnd (Goal.norm_result ctxt)
     
-fun note thms attrs ctxt =
-  let val ((_, thms), ctxt) = Proof_Context.note_thms "" ((Binding.empty, []), [(thms, attrs)]) ctxt
-  in (thms, ctxt) end
-
-fun assume_and_note cts attrs ctxt =
-  let
-    val (thms, ctxt) = Assumption.add_assumes cts ctxt
-    val (thms, ctxt) = note thms attrs ctxt
-  in
-    (thms, ctxt)
-  end
-
-fun assume_and_note' cts attrs ctxt =
- assume_and_note cts (map (Attrib.attribute ctxt) attrs) ctxt
-
 fun retrieve_exact rules_name ct ctxt =
   let
     val thms = Named_Rules.retrieve ctxt rules_name (Thm.term_of ct) 
@@ -1152,10 +1124,12 @@ fun ensure_disjoint_globals phi A s ctxt =
     val (disj_stack, ctxt2) = ensure_disjoint_stack_free_globals phi s ctxt1
     val h_val_frame_disjoint_globals = (Morphism.thm phi @{thm h_val_frame_disjoint_globals}) 
          OF [disj_alloc, disj_stack]
-    val ([hval_eq], ctxt') = note [h_val_frame_disjoint_globals] 
+    val of_buffer_frame_disjoint_globals = (Morphism.thm phi @{thm of_buffer_frame_disjoint_globals}) 
+         OF [disj_alloc, disj_stack]    
+    val ([hval_eq, of_buffer_frame_disjoint_globals], ctxt') = note [h_val_frame_disjoint_globals, of_buffer_frame_disjoint_globals] 
       [Named_Rules.add @{named_rules h_val_globals_frame_eq}] ctxt2  
   in 
-    ([disj_alloc, disj_stack, hval_eq], ctxt')
+    ([disj_alloc, disj_stack, hval_eq, of_buffer_frame_disjoint_globals], ctxt')
   end
 fun ensure_modifies M p ctxt = ctxt |> ensure @{named_rules modifies_assms}
  (\<^infer_instantiate>\<open>X = \<open>addr_set ctxt p\<close> and M = M in cprop \<open>X \<subseteq> M\<close>\<close> ctxt)
@@ -1305,6 +1279,7 @@ fun instantiate_normalise_thm maxidx prems ctxt insts rule =
   end
 
 fun dprint_tac b ctxt msg = if b then print_tac ctxt msg else all_tac
+fun dprint_subgoal_tac b ctxt msg = if b then Utils.print_subgoal_tac ctxt msg else (K all_tac)
 
 val empty_names = \<^cterm>\<open>[]::nat list\<close>
 
@@ -1531,6 +1506,8 @@ val d9 = Unsynchronized.ref false;
 val d10 = Unsynchronized.ref false;
 val d11 = Unsynchronized.ref false;
 val d12 = Unsynchronized.ref false;
+val d13 = Unsynchronized.ref false;
+val d14 = Unsynchronized.ref false;
 val sd1 = Unsynchronized.ref true;
 val sd2 = Unsynchronized.ref true;
 val sd3 = Unsynchronized.ref true;
@@ -1544,7 +1521,7 @@ val sd10 = Unsynchronized.ref true;
 val sd11 = Unsynchronized.ref true;
 val sd12 = Unsynchronized.ref true;
 val sd13 = Unsynchronized.ref true;
-
+val sd14 = Unsynchronized.ref true;
 
 fun sidecondition_simp_tac ctxt =
   SOLVED' (asm_simp_tac ctxt) ORELSE' (
@@ -1600,42 +1577,6 @@ fun check_selector ctxt (c as (Const (sel, \<^Type>\<open>fun \<open>Type (recor
       then Long_Name.base_name sel else error ("check_selector: not a record selector: " ^ Syntax.string_of_term ctxt c)
   | check_selector ctxt t = error ("check_selector: not a record selector: " ^ Syntax.string_of_term ctxt t)
 
-local
-  open ProgramAnalysis
-in
-
-fun dest_selection ctxt  @{term_pat "Arrays.index ?a ?n"} = 
-      let 
-        val {root, path} = dest_selection ctxt a
-      in {root = root, path = path @ [Index (dest_index n)]} end
-  | dest_selection ctxt ((c as (Const _)) $ x) =
-      let
-        val {root, path} = dest_selection ctxt x
-      in
-        {root = root, path = path @ [Field (check_selector ctxt c)] }
-      end
-  | dest_selection _ t = {root = Term.term_name t, path = []}
-
-
-  fun match_access (Field x) (Field y) = x = y
-    | match_access (Index (SOME x)) (Index (SOME y)) = x = y
-    | match_access (Index _) (Index _) = true
-    | match_access _ _ = false
-
-  fun match_accesses (xs, ys) = length xs = length ys andalso forall (uncurry match_access) (xs ~~ ys)
-end
-
-fun approx_global_fun_ptrs ctxt cse e =
- case try (dest_selection ctxt) e of
-   NONE => []
- | SOME {root, path} => 
-     let
-      val globals = ProgramAnalysis.approx_globals' cse
-     in
-       AList.lookup (op =) globals root 
-       |> Option.mapPartial (fn xs => AList.lookup match_accesses xs path) 
-       |> these
-     end 
 
 fun operations phi: operations =
 let
@@ -1670,7 +1611,7 @@ let
   val refines_rel_stack_project_result = morph_check_vars phi @{thm refines_rel_stack_project_result}
   val refines_rel_stack_adjust_result = morph_check_vars phi @{thm refines_rel_stack_adjust_result}
   val L2_spec_rel_stack_heap_agnostic = morph_check_vars phi @{thm L2_spec_rel_stack_heap_agnostic}
-  val L2_assume_rel_stack_heap_agnostic = morph_check_vars phi @{thm L2_assume_rel_stack_heap_agnostic}
+  val L2_assume_rel_stack_heap_agnostic = morph_check_vars phi @{thm L2_assume_rel_stack_heap_agnostic'}
   val rel_alloc_def = Morphism.thm phi @{thm rel_alloc_def}
 
   val L2_call_rel_stack_bare = morph_check_vars phi @{thm L2_call_rel_stack_bare}
@@ -1830,7 +1771,7 @@ let
 
           val vs0 = Ord_List.make ord []
           val vs = vs0
-            |> fold_subterms_open merge (Thm.term_of g)
+            |> Utils.fold_subterms_open merge (Thm.term_of g)
             |> these
 
           val simp_ctxt = context addsimps (disjoint_alloc_subset @ disj_hvals)
@@ -1846,7 +1787,7 @@ let
           val all_eqs =  (eqs @ hval_eq_prems)
           val _ = if !L2_seq_debug then tracing ("all_eqs: " ^ string_of_thms context all_eqs) else ()
           val lhs = Utils.timeit_msg 2 context (fn _ => "resolve_refines_g2_normalise lhs: ") (fn _ => 
-                  g |> eta_contract)
+                  g |> Utils.eta_contract)
           val hvals = map (Utils.clhs_of_eq o Thm.cconcl_of) all_eqs
           val lhs' = lhs |> fold (fn v => Thm.lambda v) hvals
           val ([g_fix], ctxt0) = Utils.fix_variant_cfrees [("g", Thm.typ_of_cterm lhs')] ctxt
@@ -1861,44 +1802,40 @@ let
           val [eq_thm1] = Utils.timeit_msg 2 ctxt1 (fn _ => "resolve_refines_g2_normalise export: ") (fn _ => 
                  Proof_Context.export ctxt1 context [eq_thm])
           val rule'' = refines_rewr_g eq_thm1 rule_inst
+          val _ = if !L2_seq_debug then tracing ("rule'': " ^ Thm.string_of_thm context rule'') else ()
+          val ctxt = context |> (!L2_seq_debug)? Config.put Pattern.unify_trace_failure true 
         in
-          resolve_tac context [rule''] 1
+          dprint_tac (!L2_seq_debug) ctxt "before resolve rule''" THEN
+          resolve_tac ctxt [rule''] 1
         end
     in
       Subgoal.FOCUS_PREMS tac ctxt
     end
 
-  fun options_from_fun_call ({prog_info, fun_ptr_params, l2_progenvs,...}: static) ctxt f = 
+  fun is_map_of_default @{term_pat "map_of_default"} = true
+    | is_map_of_default _ = false
+
+  fun gen_strip_fun_call {apply, term_of, strip_comb} ctxt prog_info f = 
     let 
-       val insts = map fst l2_progenvs
        val (f0, f_args) = strip_comb f
-    in 
-      if member (op =) insts f0 then
-        (* function pointer call *)
-        let
-          val p = hd f_args
-          val args = tl f_args
-        in 
-          (case AList.lookup (op =) fun_ptr_params (Term.term_name p) of
-            SOME spec => (* function pointer parameter case *)
-              (AutoCorresData.options_of_in_out_params prog_info spec, args)
-          | _ => (case approx_global_fun_ptrs ctxt (ProgramInfo.get_csenv prog_info) p of
-                  ((g, _)::_) => (* global dispatcher case *)
-                    (ProgramInfo.get_fun_options prog_info g, args)
-                 | _ => (* object method case *)
-                   let
-                     val cty = the (AList.lookup (op =) l2_progenvs f0)
-                   in (case AList.lookup (op =) (ProgramInfo.get_method_io_params prog_info) cty of
-                       SOME spec => (AutoCorresData.options_of_in_out_params prog_info spec, args)
-                      | NONE => 
-                         (Utils.verbose_msg 4 ctxt (fn _ => "options_from_fun_call: no options for " ^ Syntax.string_of_term ctxt f);  
-                         raise Early_Bad))
-                   end)) 
-        end
-      else (* ordinary function call *)
-        (ProgramInfo.get_fun_options prog_info 
-          (ProgramInfo.get_dest_fun_name prog_info FunctionInfo.L2 "" (Term.term_name f0)), f_args)
+    in
+        (f0, f_args) 
     end
+
+  val strip_fun_call = gen_strip_fun_call {apply = Thm.apply, term_of=Thm.term_of, strip_comb = Utils.strip_comb_cterm}
+  val strip_fun_call_term = gen_strip_fun_call {apply = curry (op $), term_of=I, strip_comb = strip_comb}
+
+  fun options_from_fun_call ({prog_info, fun_ptr_params,...}: static) ctxt f = 
+    let 
+       val insts = []
+       val (f0, args) = strip_fun_call_term ctxt prog_info f
+    in 
+       (* ordinary function call *)
+        (ProgramInfo.get_fun_options prog_info 
+          (ProgramInfo.get_dest_fun_name prog_info FunctionInfo.L2 "" (Term.term_name f0)), args)
+    end
+
+
   fun check_in_out static ctxt ps @{term_pat \<open>h_val _ ?p\<close>} = 
       if member (op =) ps (root_ptr p) then 
         Known_Good 
@@ -1942,7 +1879,7 @@ let
   val ensure_stack_ptr = ensure_stack_ptr phi
   val ensure_disjoint_globals = ensure_disjoint_globals phi
 
-  fun enter_block (fixed as {M, A, params, in_out_globals:bool}) (fresh as {t0, s, t}) ctxt =
+  fun enter_block (fixed as {M, A, params:params, in_out_globals:bool}) (fresh as {t0, s, t}) ctxt =
     let
       val ([t0, s, t], states_fix_ctxt) = Utils.fix_variant_cfrees ([t0, s, t]) ctxt
       val (_, ptr_allocs_ctxt) = states_fix_ctxt 
@@ -1979,7 +1916,7 @@ let
   fun abstract_params ctxt s params g =
     let
       val cparam_vals = map (in_param_val phi ctxt s) params |> flat |> map (fn (x, t) => (name_of_cterm x, t))
-      val g' = g |> eta_contract |> fold_rev Thm.lambda_name cparam_vals
+      val g' = g |> Utils.eta_contract |> fold_rev Thm.lambda_name cparam_vals
     in 
       {g' = g', vals = map snd cparam_vals}
     end
@@ -1996,7 +1933,6 @@ let
       val e' = e_s |> fold Thm.lambda_name cparam_vals |> Thm.lambda_name (name_of_cterm s, s)
         |> reverse_abs n |> Utils.beta_applies (map snd cparam_vals)
         |> result_tuple p_opt phi ctxt s outs
-  
       val dest_hval = dest_hval' (Proof_Context.theory_of ctxt)
       val ord = Term_Ord.fast_term_ord
       val ptr_params = maps ptr_param params |> map Thm.term_of |> Ord_List.make ord
@@ -2011,7 +1947,7 @@ let
         dest trm |> Option.map (fn ps' => Ord_List.union ord ps' ps)
         handle TERM _ => NONE
       val ps0 = Ord_List.make ord []
-      val ps = ps0 |> fold_subterms_open merge (Thm.term_of e_s) |> these |> map (Thm.cterm_of ctxt)
+      val ps = ps0 |> Utils.fold_subterms_open merge (Thm.term_of e_s) |> these |> map (Thm.cterm_of ctxt)
     in
       {e' = e', n = n, outs = outs, 
         out_vals = map (fn p => (name_of_cterm p, h_val phi ctxt s p)) outs, 
@@ -2021,7 +1957,7 @@ let
   fun abstract_ptr_vals ctxt ptrs s g =
     let
       val ptr_vals = map (ptr_val phi ctxt s) ptrs
-      val g' = g |> eta_contract |> fold_rev Thm.lambda_name ptr_vals
+      val g' = g |> Utils.eta_contract |> fold_rev Thm.lambda_name ptr_vals
     in
       {g' = g', ptr_vals = ptr_vals}
     end
@@ -2029,7 +1965,7 @@ let
   fun abstract_vals ctxt vals g =
     let
       val named_vals = map (fn x => (name_of_cterm x, x)) vals
-      val g' = g |> eta_contract |> fold_rev Thm.lambda_name named_vals
+      val g' = g |> Utils.eta_contract |> fold_rev Thm.lambda_name named_vals
     in
       g'
     end
@@ -2051,26 +1987,55 @@ let
   fun abstract_unmodified ctxt modified s params g =
     let
       val cparam_vals = unmodified_param_vals ctxt modified s params
-      val g' = g |> eta_contract |> fold_rev Thm.lambda_name (map (apsnd snd) cparam_vals)
+      val g' = g |> Utils.eta_contract |> fold_rev Thm.lambda_name (map (apsnd snd) cparam_vals)
     in
       {g' = g', vals = cparam_vals}
     end
 
-  fun global_guard ctxt params other_ptrs s t =
+  val is_rel_alloc_eq = Match_Cterm.switch [
+    @{cterm_morph_match (fo) \<open>rel_alloc \<S> ?M ?A ?t_0 ?s ?t \<equiv> True\<close>} phi #> (fn _ => true), 
+    fn x => false]
+
+  fun dest_rel_alloc_thm thm = Thm.cprop_of thm |> Match_Cterm.switch [
+    @{cterm_morph_match (fo) \<open>rel_alloc \<S> ?M ?A ?t_0 ?s ?t \<equiv> True\<close>} phi #> (fn _ => 
+       SOME (Utils.eq_TrueD OF [thm])),
+    @{cterm_morph_match (fo) \<open>Trueprop (rel_alloc \<S> ?M ?A ?t_0 ?s ?t)\<close>} phi #> (fn _ => 
+       SOME thm),
+    fn _ => NONE 
+   ]
+
+  fun discharge thm cond_thm = cond_thm OF [thm]
+
+  fun derived_rel_alloc_simps ctxt thm =
+    (case dest_rel_alloc_thm thm of
+       SOME rel_alloc =>
+         let
+          val rel_alloc_independent_globals = Named_Rules.get ctxt @{named_rules rel_alloc_independent_globals}
+          val eqs = map (discharge rel_alloc) rel_alloc_independent_globals 
+            |> map_filter (try Simpdata.mk_eq)
+         in
+          eqs
+         end 
+    | _ => [])
+
+  fun global_guard ctxt rel_alloc params other_ptrs s t =
     let
       val global_grds = other_ptrs |> map (ptr_span_contained ctxt G)
       val needs_guard = not (null global_grds)
       val (contained_thms, abs_guard, guard_ctxt) = 
         if needs_guard then
          let
+            val state_eqs = derived_rel_alloc_simps ctxt rel_alloc
+            val state_substs = state_eqs |> map (swap o Thm.dest_equals o Thm.cprop_of)
             val keep_substs = filter (is_keep_non_stack params o fst) params |> map fst 
               |> map (fn p => (h_val' ctxt s p, h_val' ctxt t p))
-            val global_grds' = map (fold (cterm_subst ctxt) keep_substs) global_grds
+            val global_grds' = map (fold (cterm_subst ctxt) (keep_substs @ state_substs)) global_grds
+
             val keep_eqs = Named_Rules.get ctxt @{named_rules keep_non_stack_ptr_eqs} 
             val ({grd, grds=grds'}, guard_ctxt) = assume_grds global_grds' ctxt
             val grds = grds' 
             |> map (Utils.eta_norm o 
-                Simplifier.simplify (Simplifier.clear_simpset guard_ctxt addsimps keep_eqs)) 
+                Simplifier.simplify (Simplifier.clear_simpset guard_ctxt addsimps (keep_eqs @ state_eqs)))
             val grd' = Thm.cprop_of (the grd) |> dest_Trueprop
             val abs_guard = cterm_lambda t grd'
          in
@@ -2081,8 +2046,32 @@ let
       (contained_thms, abs_guard, needs_guard, guard_ctxt)
     end
  
+
+  val mk_disjoint_global_simps = Match_Cterm.switch [
+    @{cterm_morph_match \<open>(?p \<subseteq> \<G> \<equiv> True)\<close>} phi #> (fn {...} => fn p_G_True => fn ctxt =>  
+        let
+          val p_G = @{thm Eq_TrueD} OF [p_G_True]
+          val h_val_globals_frame_eq = Named_Rules.get ctxt @{named_rules h_val_globals_frame_eq}
+          val disjoint_globals_simps = h_val_globals_frame_eq
+            |> map_filter_try (fn rule => safe_mk_meta_eq (rule OF [p_G]))
+        in disjoint_globals_simps end),
+    (fn _ => K (K []))]
+
+  fun add_mk_disjoint_global_simps ctxt =
+    let
+      val current_mk_simps = Raw_Simplifier.get_mksimps_context ctxt
+      fun new_mk_simps thm ctxt =
+        let
+          val (thms, ctxt1) = current_mk_simps thm ctxt
+          val more_thms = maps (fn thm => mk_disjoint_global_simps (Thm.cconcl_of thm) thm ctxt) thms
+        in (thms @ more_thms, ctxt1) end
+    in
+      ctxt |> Raw_Simplifier.set_mksimps_context new_mk_simps
+    end
+
   fun expr_simp_ctxt contained_thms ctxt =
     let
+      val size_simps = Named_Theorems.get ctxt @{named_theorems size_simps}
       val disjoint_alloc = Named_Rules.get ctxt @{named_rules disjoint_alloc}  
       val disjoint_stack_free = Named_Rules.get ctxt @{named_rules disjoint_stack_free}
       val h_val_globals_frame_eq = Named_Rules.get ctxt @{named_rules h_val_globals_frame_eq}
@@ -2094,23 +2083,24 @@ let
         |> map_filter (Utils.first_OF disjoint_stack_free)
 
       val disjoint_globals_simps = h_val_globals_frame_eq
-        |> maps (fn rule => (map (fn p_G => rule OF [p_G]) contained_thms))
+        |> maps (fn rule => (map_filter (fn p_G => try_OF rule [p_G])) contained_thms)
 
       val simp_ctxt = 
         ctxt addsimps (disjoint_globals_simps @ disjoint_simps @ [frame_heap_independent_selector])
-          delsimps @{thms ptr_add_0_id}
+          delsimps (@{thms ptr_add_0_id} @ size_simps)
+          |> add_mk_disjoint_global_simps
     in
       simp_ctxt
     end
 
-  fun in_out_expression export_guard ctxt return {params, t0, s, t, static= {A, ...}, ...} e =
+  fun in_out_expression export_guard ctxt return {params, t0, s, t, static= {A, ...}, rel_alloc, ...} e =
     let
       val {e', outs, out_vals, other_ptrs, ...} = fix_params_state ctxt return s t params NONE e
       val orig_resT = Thm.typ_of_cterm e |> strip_type |> snd
       val (Q, unit_seed) = stack_rel ctxt orig_resT (map Thm.term_of outs) |> apfst (Thm.cterm_of ctxt)
       val goal = \<^morph_infer_instantiate>\<open>Q = Q and e = e and e' = e' and A = A and t\<^sub>0 = t0 and s = s in 
         cprop \<open>Q (hmem s) (e s) (e' (frame A t\<^sub>0 s))\<close>\<close> phi ctxt
-      val (contained_thms, abs_guard, needs_guard, guard_ctxt) = global_guard ctxt params other_ptrs s t
+      val (contained_thms, abs_guard, needs_guard, guard_ctxt) = global_guard ctxt rel_alloc params other_ptrs s t
       val rel_stack_intros = Named_Theorems.get ctxt @{named_theorems rel_stack_intros}
       val simp_ctxt = expr_simp_ctxt contained_thms guard_ctxt
 
@@ -2137,18 +2127,19 @@ let
       else
         refines_thm
     end  
-  fun in_out_exn ctxt {exit_unreachable, seed_rel_opt} ({params, modified, try_modified, t0, s, static={A, ...}, ...}:args) v =
+  fun in_out_exn ctxt {exit_unreachable, seed_rel_opt} ({params, modified, try_modified, t0, s, static={A, fun_params, ...}, ...}:args) v =
     let
       val level = exn_level v
       val try_level = length try_modified
-      val (outer_modified, return) = 
+      val {modified = outer_modified, kind = return, params = outer_params} = 
        if try_level <= level (* exit *) then
-            ([], Final) 
+            {modified = [], kind = Final, params = fun_params} 
        else 
          nth try_modified (level - 1)
       val modified = union_ptrs outer_modified modified
       fun relevant_out (p, kind) = returns_throw modified return (p, kind) 
-      val outs = map (out_param relevant_out) params |> flat   
+      val outs = map (out_param relevant_out) outer_params |> flat
+      val outs_legacy = map (out_param relevant_out) params |> flat
       fun make_seed_rel exit_unreachable is_left x =
         let
           val xT = Thm.typ_of_cterm x
@@ -2188,12 +2179,22 @@ let
       {L = L, result_rel_thm = result_rel_thm, outs = outs, unit_seed = unit_seed, seed_rel = seed_rel}
     end
 
-  fun in_out_guard ctxt (args as {t0, params, s, t, cguards, static={A, ...},...}: args) e =
+  fun in_out_guard ctxt0 (args as {t0, params, s, t, cguards, static={A, ...},rel_alloc, ...}: args) e =
     let
-      val ctxt = expr_simp_ctxt [] ctxt |> Context_Position.set_visible false 
-      val eq = Simplifier.asm_full_rewrite (ctxt addsimps cguards) e
+      val eq_simp_ctxt = expr_simp_ctxt [] ctxt0 |> Context_Position.set_visible false 
+      val eq = Simplifier.asm_full_rewrite (eq_simp_ctxt addsimps cguards) e
       val e' = eq |> Thm.rhs_of
-      val {e', ...} = fix_params_state ctxt (K false) s t params NONE e'
+      val {e', other_ptrs, ...} = fix_params_state ctxt0 (K false) s t params NONE e'
+      val (contained_thms, global_grd, needs_guard, _) = global_guard ctxt0 rel_alloc params other_ptrs s t
+      val ctxt = expr_simp_ctxt [] ctxt0
+          (*  sic []: we don't add contained_thms here as they have the global_grd as hyp. 
+           *  instead we add the global_grd to the new guard itself. 
+           *  conj_cong + add_mk_disjoint_global_simps then do the job. 
+           *) 
+        delsimps (Named_Theorems.get ctxt0 @{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def}
+        |> Simplifier.add_cong @{thm HOL.conj_cong} 
+        |> Context_Position.set_visible false
+      val e' = if needs_guard then guard_conj ctxt global_grd e' else e'
       val goal = \<^morph_infer_instantiate>\<open>e'= e' and e = e and A = A and t\<^sub>0 = t0 and s = s in 
         cprop \<open>e' (frame A t\<^sub>0 s) ==> e s\<close>\<close> phi ctxt
 
@@ -2203,7 +2204,7 @@ let
       {e' = e', implication_thm = thm}
     end
 
-  fun in_out_ptr_modify ctxt return (args as {params, t0, s, t, static={A, ...}, ...}) p v =
+  fun in_out_ptr_modify ctxt return (args as {params, t0, s, t, static={A, ...}, rel_alloc, ...}) p v =
     let
       val {e', outs, other_ptrs, ...} = fix_params_state ctxt return s t params (SOME p) v
       val orig_resT = @{typ unit}
@@ -2212,7 +2213,7 @@ let
       val goal = \<^morph_infer_instantiate>\<open>R = R and p = p and v = v and e' = e' and A = A and t\<^sub>0 = t0 and s = s in 
         cprop \<open>R (heap_update p (v s) (hmem s)) () (e' (frame A t\<^sub>0 s))\<close>\<close> phi ctxt
 
-      val (contained_thms, _, needs_guard, guard_ctxt) = global_guard ctxt params other_ptrs s t
+      val (contained_thms, _, needs_guard, guard_ctxt) = global_guard ctxt rel_alloc params other_ptrs s t
       val rel_stack_intros = Named_Theorems.get ctxt @{named_theorems rel_stack_intros}
       val simp_ctxt = expr_simp_ctxt contained_thms guard_ctxt
               addsimps @{thms h_val_update_regions_disjoint}
@@ -2226,24 +2227,6 @@ let
       {e' = e', R = R, result_rel_thm = result_rel_thm, outs = outs, 
         needs_guard = needs_guard, guard_ctxt = guard_ctxt}
     end
-
-  val is_rel_alloc_eq = Match_Cterm.switch [
-    @{cterm_morph_match (fo) \<open>rel_alloc \<S> ?M ?A ?t_0 ?s ?t \<equiv> True\<close>} phi #> (fn _ => true), 
-    fn x => false]
-
-  fun discharge thm cond_thm = cond_thm OF [thm]
-
-  fun derived_rel_alloc_simps ctxt thm =
-    if is_rel_alloc_eq (Thm.cprop_of thm) then 
-      let
-        val rel_alloc = Utils.eq_TrueD OF [thm]
-        val rel_alloc_independent_globals = Named_Rules.get ctxt @{named_rules rel_alloc_independent_globals}
-        val eqs = map (discharge rel_alloc) rel_alloc_independent_globals 
-          |> map_filter (try Simpdata.mk_eq)
-      in
-        eqs
-      end 
-    else []
     
   fun add_derived_rel_alloc_mksimps mksimps = (fn ctxt => fn thm =>
     let 
@@ -2281,30 +2264,37 @@ let
 
         val all_disj_G_S = maps (fn G_S => (map (fn subs => @{thm disjoint_globals_stack} OF [G_S, subs]) stack_ptr)) disj_G_S
         val rel_alloc_disj_G_S' = map (fn G_S => rel_alloc_disj_G_S OF [G_S]) disj_G_S
+        val guard_assms = Named_Rules.get ctxt @{named_rules guard_assms}
+        val h_val_globals_frame_eq = Named_Rules.get ctxt @{named_rules h_val_globals_frame_eq}
+        val frame_eqs = maps (fn rule => map_filter (fn thm => try_OF rule [thm]) guard_assms) h_val_globals_frame_eq
 
         val _ = if silent then () else
           let
-            val _ = tracing ("disj_G_S: " ^ string_of_thms ctxt disj_G_S)
-            val _ = tracing ("all_disj_G_S: " ^ string_of_thms ctxt all_disj_G_S)
-            val _ = tracing ("rel_alloc_disj_G_S': " ^ string_of_thms ctxt rel_alloc_disj_G_S')
-            val _ = tracing ("cguard_assms: " ^ string_of_thms ctxt cguard_assms)
-            val _ = tracing ("alloc_assms: " ^ string_of_thms ctxt alloc_assms)
-            val _ = tracing ("all_disjoint_alloc: " ^ string_of_thms ctxt all_disjoint_alloc)
-            val _ = tracing ("disjoint_alloc_subset: " ^ string_of_thms ctxt disjoint_alloc_subset)
-            val _ = tracing ("all_disjoint_stack_free: " ^ string_of_thms ctxt all_disjoint_stack_free)
-            val _ = tracing ("disjoint_stack_free_subset: " ^ string_of_thms ctxt disjoint_stack_free_subset)
-            val _ = tracing ("stack_ptr: " ^ string_of_thms ctxt stack_ptr)
-            val _ = tracing ("modifies_assms: " ^ string_of_thms ctxt modifies_assms)
-            val _ = tracing ("disjoint_assms: " ^ string_of_thms ctxt disjoint_assms)
-
+            val _ = tracing (big_list_of_thms "disj_G_S:" ctxt disj_G_S)
+            val _ = tracing (big_list_of_thms "all_disj_G_S:" ctxt all_disj_G_S)
+            val _ = tracing (big_list_of_thms "rel_alloc_disj_G_S':" ctxt rel_alloc_disj_G_S')
+            val _ = tracing (big_list_of_thms "cguard_assms:" ctxt cguard_assms)
+            val _ = tracing (big_list_of_thms "alloc_assms:" ctxt alloc_assms)
+            val _ = tracing (big_list_of_thms "all_disjoint_alloc:" ctxt all_disjoint_alloc)
+            val _ = tracing (big_list_of_thms "disjoint_alloc_subset:" ctxt disjoint_alloc_subset)
+            val _ = tracing (big_list_of_thms "all_disjoint_stack_free:" ctxt all_disjoint_stack_free)
+            val _ = tracing (big_list_of_thms "disjoint_stack_free_subset:" ctxt disjoint_stack_free_subset)
+            val _ = tracing (big_list_of_thms "stack_ptr:" ctxt stack_ptr)
+            val _ = tracing (big_list_of_thms "modifies_assms" ctxt modifies_assms)
+            val _ = tracing (big_list_of_thms "disjoint_assms:" ctxt disjoint_assms)
+            val _ = tracing (big_list_of_thms "guard_assms:" ctxt guard_assms)
+            val _ = tracing (big_list_of_thms "h_val_globals_frame_eq:" ctxt h_val_globals_frame_eq)
+            val _ = tracing (big_list_of_thms "frame_eqs:" ctxt frame_eqs)
           in
             ()
           end 
 
         val simp_ctxt = (ctxt |> silent ? Context_Position.set_visible false 
               |> set_derived_rel_alloc_mksimps) 
-              delsimps (size_simps @ @{thms ptr_val_ptr_add_simps})
-              addsimps (alloc_assms @ 
+              delsimps (size_simps @ @{thms ptr_val_ptr_add_simps replicate_0 replicate_Suc})
+              addsimps (guard_assms @ 
+                        frame_eqs @
+                        alloc_assms @ 
                         all_disjoint_alloc @ 
                         all_disjoint_stack_free @ 
                         stack_ptr @ 
@@ -2327,11 +2317,11 @@ let
        simp_ctxt
      end
 
-  fun root_h_val_conv ctxt field_lvalue_eqs thm =
+  fun root_h_val_conv prog_info ctxt field_lvalue_eqs thm =
     let
       val ctxt = Context_Position.set_visible false ctxt
-      val h_val_ctxt = L2Opt.cleanup_ss ctxt [] FunctionInfo.IO FunctionInfo.PEEP
-            delsimps (Named_Theorems.get ctxt (@{named_theorems size_simps}) @ @{thms ptr_val_ptr_add_simps guard_triv})
+      val h_val_ctxt = L2Opt.cleanup_ss prog_info ctxt [] FunctionInfo.IO FunctionInfo.PEEP
+            delsimps (Named_Theorems.get ctxt (@{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def ptr_val_ptr_add_simps guard_triv})
             addsimps
             field_lvalue_eqs 
             |> Simplifier.add_cong @{thm L2_seq_guard_cong_stateless}
@@ -2524,23 +2514,7 @@ let
        val disj_ptrs = case disjnt_params_opt of NONE => ps | SOME ds => filter (is_stack orf (member ptr_name_eq ds)) ps
      in map fst disj_ptrs end
 
-  fun strip_fun_call ctxt l2_progenvs prog_info f = 
-    let 
-       val insts = map fst l2_progenvs
-       val (f0, f_args) = Utils.strip_comb_cterm f
-    in 
-      if member (op =) insts (Thm.term_of f0) then
-        let
-          val p = hd f_args
-          val args = tl f_args
-        in 
-          (Thm.apply f0 p, args, true, SOME p, SOME f0)
-        end
-      else 
-        (f0, f_args, false, NONE, NONE) 
-    end
-
-  fun build_context ({M, A, t0, s, t, params, disjnt_params_opt, in_out_globals}:(string, cterm) fixes) ctxt  = 
+  fun build_context ({M, A, t0, s, t, params:params, disjnt_params_opt, in_out_globals}:(string, cterm) fixes) ctxt  = 
     let
       val ((cguards,_), params_ctxt) = ctxt |>
         assume_and_note' (map guard_param params |> flat) @{attributes [simp, cguard_assms]}
@@ -2554,7 +2528,7 @@ let
     end
 
 
-  fun mk_refines_cprop phi {closed, apply_f, might_exit, in_out_globals} ctxt f g_opt fixes_opt params disjnt_params_opt =
+  fun mk_refines_cprop phi {closed, apply_f, might_exit, in_out_globals} ctxt f g_opt fixes_opt (params:params) disjnt_params_opt =
     let
       val ({M, A, s, t, t0}, ctxt') = 
         case fixes_opt of 
@@ -2576,12 +2550,13 @@ let
       val exitT' =   
             stack_rel ctxt exitT (map Thm.term_of outs) |> fst |> Thm.cterm_of ctxt |> Thm.typ_of_cterm |> binder_types 
             |> (fn ts => nth ts 2) |> Thm.ctyp_of ctxt
-      val concl = case g_opt of
+      val (concl, params')  = case g_opt of
         SOME g => 
           let
-             val g = Utils.applies (map (in_param_val phi ctxt s) params |> flat |> map snd) g
+             val (ptrs, params') = map (in_param_val phi ctxt s) params |> flat |> split_list
+             val g = Utils.applies params' g
           in
-           if might_exit then
+           (if might_exit then
             \<^morph_infer_instantiate>\<open>g = g and f = f and M_res = M_res and A = A and s = s and t = t and t\<^sub>0 = t0 and 
               L = L and R = R 
               in cprop \<open>refines f g s t (rel_stack \<S> M_res A s t\<^sub>0 (rel_xval_stack (rel_exit L) R))\<close> \<close> phi ctxt'
@@ -2589,9 +2564,10 @@ let
             \<^morph_infer_instantiate>\<open>g = g and f = f and M_res = M_res and A = A and s = s and t = t and t\<^sub>0 = t0 and 
               R = R and 'b = exitT'
               in cprop \<open>refines f g s t (rel_stack \<S> M_res A s t\<^sub>0 (rel_xval_stack (rel_exit (\<lambda>_ (_::'a) (_::'b). False)) R))\<close>\<close> phi ctxt'
+           , ptrs)
           end
       |  NONE =>
-          if might_exit then
+          (if might_exit then
            \<^morph_infer_instantiate>\<open>f = f and M_res = M_res and A = A and s = s and t = t and t\<^sub>0 = t0 and 
               L = L and R = R
               in cprop (schematic) \<open>refines f g s t (rel_stack \<S> M_res A s t\<^sub>0 (rel_xval_stack (rel_exit L) R))\<close> \<close> phi ctxt'
@@ -2599,34 +2575,60 @@ let
            \<^morph_infer_instantiate>\<open>f = f and M_res = M_res and A = A and s = s and t = t and t\<^sub>0 = t0 and 
               R = R and 'b = exitT'
               in cprop (schematic) \<open>refines f g s t (rel_stack \<S> M_res A s t\<^sub>0 (rel_xval_stack (rel_exit (\<lambda>_ (_::'a) (_::'b). False)) R))\<close> \<close> phi ctxt'
+          , [])
     in
       if is_none fixes_opt then 
-        (Utils.export_prop {closed=closed} ctxt' ctxt concl, ctxt)
+        (Utils.export_prop {closed=closed} ctxt' ctxt concl, params', ctxt)
       else 
-        (concl, ctxt')
+        (concl, params', ctxt')
     end
 
 
-  fun gen_IO_fn_ptr_cprop closed (fun_ptr_spec:ProgramInfo.in_out_fun_ptr_spec) p (P_prev as Const (_, T_prev)) (P as Const (Pname, T)) ctxt =
+  fun gen_IO_fn_ptr_cprop closed (prog_info:ProgramInfo.prog_info) (rec_funs:(string*term) list) (rec_ptrs:string list) (* Sy, if unused *) (fun_ptr_spec:ProgramInfo.in_out_fun_ptr_spec) p (P_prev) (P as Const (Pname, T)) ctxt =
     let  
+      (* FIXME: add the map_of_default stuff for the recursive functions in P *)
+      val domain = Symtab.lookup (ProgramInfo.get_progenv_tab prog_info) (Term.term_name P) |> Option.map (ProgramInfo.domain_of) |> these
+      val T_prev = fastype_of P_prev
       val (ptrT::argTs, ret_prevT) = strip_type T_prev
-      val stateT = T |> strip_type |> fst |> split_last |> snd
+      val (_::argTs', retT') = strip_type T
+      val funT = argTs' ---> retT'
       val args = map (fn T => ("x", T)) argTs
       val (args', ctxt1) = Utils.fix_variant_frees args ctxt
       val arg_specs = args' ~~ (#param_kinds fun_ptr_spec)
-      val params = map (fn (arg, (kind, _)) => (Thm.cterm_of ctxt arg, (from_parameter_kind kind, NONE))) arg_specs
+      val params = map (fn (arg, (kind, _)) => (Thm.cterm_of ctxt arg, (from_parameter_kind kind, (NONE, "x")))) arg_specs
+      fun mk_fun_ptr fname = HP_TermsTypes.mk_fun_ptr ctxt (ProgramInfo.get_prog_name prog_info) fname
+      val (empty, ptr_assoc) = map_filter (fn fname => find_first (fn (n, _) => n = fname) rec_funs) domain    
+        |> `null
+        ||> map (apfst mk_fun_ptr)
+        ||> map HOLogic.mk_prod
+        ||> HOLogic.mk_list (HOLogic.mk_prodT (@{typ "unit ptr"}, funT))
+      val P = if empty then P else \<^infer_instantiate>\<open>P = P and xs = ptr_assoc in term \<open>map_of_default P xs\<close>\<close> ctxt1
       val f = Thm.cterm_of ctxt (P_prev $ p)
       val g = Thm.cterm_of ctxt (P $ p)
       val might_exit = #might_exit fun_ptr_spec
       val in_out_globals = #in_out_globals fun_ptr_spec
       val disjnt_params_opt = SOME (map_filter (fn (arg, (_, true)) => SOME (Term.term_name arg) | _ => NONE) arg_specs) 
-      val (prop, ctxt2) = mk_refines_cprop phi {closed = closed, apply_f = true, might_exit = might_exit, in_out_globals = in_out_globals}
+      val (prop, _, ctxt2) = mk_refines_cprop phi {closed = closed, apply_f = true, might_exit = might_exit, in_out_globals = in_out_globals}
             ctxt1 f (SOME g) NONE params disjnt_params_opt 
     in
       (prop, ctxt2)
     end
 
   val IO_fn_ptr_cprop = gen_IO_fn_ptr_cprop false
+
+  fun assume_spec_tac M ctxt = 
+    let
+      val simp_ctxt = mk_simp {silent = !sd14, M = M} ctxt addsimps [h_val_frame_disjoint]
+      fun heap_unchanged_tac ctxt = Record.split_simp_tac ctxt [] (K ~1) THEN_ALL_NEW
+             clarsimp_tac (simp_ctxt addsimps @{thms mex_def meq_def}) 
+    in
+      SOLVED' (heap_unchanged_tac ctxt) 1 THEN
+      SOLVED' (heap_unchanged_tac ctxt) 1 THEN
+      dprint_tac (!d14) ctxt "assume_spec_tac 0" THEN
+      (clarsimp_tac (simp_ctxt addsimps @{thms mex_def meq_def}) THEN_ALL_NEW
+       REPEAT_ALL_NEW (resolve_tac ctxt @{thms exI refl conjI} ORELSE' Method.assm_tac ctxt)) 1 THEN
+       dprint_tac (!d14) ctxt "assume_spec_tac 1" 
+    end
     
   fun in_out_statement () = Match_Cterm.switch [
     @{cterm_morph_match \<open>L2_fail\<close>} phi #> (fn {...} => fn ctxt => fn 
@@ -2750,10 +2752,10 @@ let
           (thm, ctxt)
         end),
     @{cterm_morph_match \<open>L2_try ?f\<close>} phi #> (fn {f, ...} => fn ctxt => fn 
-        args as {rel_alloc, return, ...} =>
+        args as {rel_alloc, return, params, ...} =>
         let
           val args' = args 
-            |> map_try_modified (cons (#modified args, return))
+            |> map_try_modified (cons {modified = #modified args, kind = return, params = params})
             |> map_modified (K [])
           val (f_thm, ctxt) = in_out_statement () f ctxt args'
           fun inst_rule f_thm =
@@ -2764,7 +2766,7 @@ let
             in thm end
           val thm = 
             case try inst_rule f_thm of 
-              SOME thm => thm
+              SOME thm => adjust_result false ctxt args thm
             | NONE =>
                let
                  (* Exn (Inr ...) might overapproximate result tuples also with unmodified
@@ -2796,71 +2798,21 @@ let
           (thm, ctxt)
         end),
     @{cterm_morph_match \<open>L2_assume ?f\<close>} phi #> (fn {f, ...} => fn ctxt => fn 
-        args as {rel_alloc, return, ...} =>
+        args as {rel_alloc, return, static={M, ...}, ...} =>
         let
           val thm = instantiate_thm (~1) ctxt [("f", f)] L2_assume_rel_stack_heap_agnostic OF [rel_alloc]
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement: L2_assume (thm) \n " ^ Thm.string_of_thm ctxt thm)
-          val thm = Utils.solve_sideconditions ctxt thm (
-                ALLGOALS (Record.split_simp_tac ctxt [] (K ~1) THEN_ALL_NEW
-                  clarsimp_tac (ctxt addsimps @{thms mex_def meq_def})))
+          val thm = Utils.solve_sideconditions ctxt thm (assume_spec_tac M ctxt)
           val _ = Utils.verbose_msg 3 ctxt (fn _ => "in_out_statement: L2_assume:\n " ^ Thm.string_of_thm ctxt thm)
         in
           (thm, ctxt)
         end),
-    @{cterm_morph_match \<open>L2_guarded ?g ?fun_ptr_call \<close>} phi #> (fn {g, fun_ptr_call, ...} => fn ctxt => fn 
-      args as {t0, params, s, t, rel_alloc, static={M, prog_info, fun_ptr_params, l2_progenvs, ...}, ...} =>
+    @{cterm_morph_match \<open>L2_guarded ?g ?call \<close>} phi #> (fn {g, call, ct_, ...} => fn ctxt => fn 
+      args as {t0, params, s, t, rel_alloc, static={M, prog_info, fun_ptr_params, rec_funs, ...}, ...} =>
       let
-        val {f=f0, emb, ns, ... } = @{cterm_match "L2_call ?f ?emb ?ns"} fun_ptr_call
-        val (f, f_args, true, SOME p, SOME P_prev) = strip_fun_call ctxt l2_progenvs prog_info f0
         val {e'=g', implication_thm} = in_out_guard ctxt args g
-        val (known_function_insts, g_thms, ctxt1) = assume_guarded g g' s t ctxt
-        val ctxt1a = if not (null known_function_insts) then ctxt1 else 
-            (case AList.lookup (op =) fun_ptr_params (Term.term_name (Thm.term_of p)) of
-              SOME _ => ctxt1
-            | NONE => (* global dispatch case *)
-               let
-                  val (possible_funs, thms) = 
-                    let
-                      val prop = \<^infer_instantiate>\<open>f0 = f0 and s=s and t=t in cprop (schematic) \<open>refines f0 g s t Q\<close> for g Q\<close> ctxt1
-                      val fs = (Goal.prove_internal ctxt1 [] prop (fn _ => 
-                        Method.insert_tac ctxt1 g_thms 1 THEN
-                        AutoCorresUtil.dyn_call_split_simp_sidecondition_tac (K true) [] [] ctxt 1
-                        ); ([], []))
-                        handle THM (_, _, thms) => 
-                          let
-                            val subgoals = thms |> maps (map cconcl_of o Thm.cprems_of)
-                            val fs = subgoals |> map (Thm.term_of o #f o dest_refines'')
-                            val names = fs |> map (ProgramInfo.get_dest_fun_name prog_info  FunctionInfo.L2 "" o 
-                                  Long_Name.base_name o fst o dest_Const o fst o strip_comb)
-                            val specs = fs |> map (get_spec ctxt1)
-                            val fs' = (names ~~ specs) |> distinct ((op =) o apply2 fst)
-                            in split_list fs' end
-                    in fs end
-                  val _ = if null possible_funs then error ("L2_guarded: could not infer possible functions" ) else ()
-                  fun fun_ptr_spec f = 
-                    let
-                      val opt = ProgramInfo.get_fun_options prog_info f
-                      val arg_names = the (ProgramAnalysis.get_params (hd possible_funs) (ProgramInfo.get_csenv prog_info)) 
-                    in ProgramInfo.in_out_fun_ptr_spec_of opt arg_names end
-                  val fun_ptr_specs = map (fn f => (f, fun_ptr_spec f)) possible_funs 
-                    |> distinct ((op =) o apply2 snd)
-                  val fun_ptr_spec = 
-                    if length fun_ptr_specs = 1 then snd (hd fun_ptr_specs) 
-                    else
-                      error ("function pointer call via global variable must have same in_out specification: " ^
-                       @{make_string} fun_ptr_specs)
-                  val (_, P) = AutoCorresData.get_progenv_for ctxt1 prog_info FunctionInfo.IO {ts_monad_name=""} (hd possible_funs)
-                  val (prop, ctxt2) = gen_IO_fn_ptr_cprop true fun_ptr_spec (Thm.term_of p) (Thm.term_of P_prev) P ctxt1
-                  val simp_ctxt = ctxt2 delsimps (Named_Theorems.get ctxt2 @{named_theorems size_simps})
-                  val rule =  Goal.prove_internal simp_ctxt [] prop (fn _ => 
-                        Method.insert_tac simp_ctxt g_thms 1 THEN
-                        AutoCorresUtil.dyn_call_split_simp_sidecondition_tac (K true) [] [] simp_ctxt 1 THEN
-                        ALLGOALS ( resolve_tac simp_ctxt thms THEN_ALL_NEW asm_simp_tac simp_ctxt)) 
-                        |> singleton (Proof_Context.export simp_ctxt ctxt1) |> Goal.norm_result ctxt1
-                  val attribs = @{attributes [synthesize_rule refines_in_out]} |> map (Attrib.attribute ctxt)
-                  val ctxt2 = Thm.proof_attributes attribs rule ctxt1 |> snd
-               in ctxt2 end)
-        val (fun_ptr_call_thm0, ctxt2) = in_out_statement () fun_ptr_call ctxt1a args
+        val (g_thms, ctxt1) = assume_guarded g g' s t ctxt
+        val (fun_ptr_call_thm0, ctxt2) = in_out_statement () call ctxt1 args
         val _ = Utils.verbose_msg 3 ctxt (fn _ => "fun_ptr_call_thm0: " ^ Thm.string_of_thm ctxt fun_ptr_call_thm0)
         val fun_ptr_call_thm = Assumption.export ctxt1 ctxt fun_ptr_call_thm0
         val ctxt3 = transfer_all_assms [] ctxt2 ctxt
@@ -2875,39 +2827,21 @@ let
       end),
     @{cterm_morph_match \<open>L2_call ?f ?emb ?ns\<close>} phi #> (fn {f, emb, ns, ...} => fn ctxt => fn 
         args as {rel_alloc, params, s, t, t0, addrs_fix_ctxt, params_ctxt, 
-          try_modified, modified, return, static = static as {M, A, prog_info, params_of, fun_ptr_params, l2_progenvs,...},...} =>
+          try_modified, modified, return, static = static as {M, A, prog_info, params_of, fun_ptr_params,...},...} =>
         let
           val (f_options, _) = options_from_fun_call static ctxt (Thm.term_of f)
           val arg_kinds = ProgramInfo.get_in_out_parameters f_options |> map snd
           val f_thm = get_spec ctxt (Thm.term_of f)
-          val (f, f_args, is_fun_ptr_call, p_opt, P_prev_opt) = strip_fun_call ctxt l2_progenvs prog_info f
+          val (f, f_args) = strip_fun_call ctxt prog_info f
           val _ = Utils.verbose_msg 5 ctxt (fn _ => 
-            "L2_call: (f, f_args, is_fun_ptr_call, p_opt, P_prev_opt): " ^ @{make_string} (f, f_args, is_fun_ptr_call, p_opt, P_prev_opt))
+            "L2_call: (f, f_args): " ^ @{make_string} (f, f_args))
           val {f = f_spec, A = A_var, s = s_var, t = t_var, t0 = t0_var, g = g_spec, ...} = f_thm |> Thm.cconcl_of |> dest_refines
           val [M_var] = Thm.cprems_of f_thm |> map_filter (dest_rel_alloc) |> map (#M)
           val [A_name, s_name, t_name, t0_name, M_name] = map (fst o dest_Var o Thm.term_of) [A_var, s_var, t_var, t0_var, M_var]
           val orig_resT = f_spec |> Thm.typ_of_cterm |> body_type |> AutoCorresData.dest_exn_monad_result_type |> #resT
-          val f_arg_vars = strip_fun_call ctxt l2_progenvs prog_info f_spec |> #2 |> map (fst o dest_Var o Thm.term_of)
+          val f_arg_vars = strip_fun_call ctxt prog_info f_spec |> #2 |> map (fst o dest_Var o Thm.term_of)
           val f_thm_call = Drule.infer_instantiate ctxt (f_arg_vars ~~ f_args) f_thm
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "f_thm_call (0): " ^ Thm.string_of_thm ctxt f_thm_call)
-          fun refines_precond thm = 
-            thm |> Thm.prems_of |> exists is_refines
-          val try_solve_fun_ptr_refines = SUBGOAL (fn (t, i) => 
-            if is_refines t then 
-              SOLVED' (Subgoal.FOCUS_PARAMS_FIXED (fn {context, ...} => 
-                dprint_tac (!d2) context "try_solve_fun_ptr_refines (1)" THEN
-                AutoCorresUtil.dyn_call_split_simp_sidecondition_tac (K true) [] [] context 1 THEN
-                 dprint_tac (!d2) context "try_solve_fun_ptr_refines (2)" THEN
-                ALLGOALS (resolve_spec_tac context THEN_ALL_NEW asm_full_simp_tac context) THEN
-                 dprint_tac (!d2) context "try_solve_fun_ptr_refines (3)") 
-              (ctxt delsimps (Named_Theorems.get ctxt @{named_theorems size_simps}))) i
-            else all_tac)
-          val f_thm_call = 
-            if refines_precond f_thm_call then 
-              Utils.check_solve_sideconditions (not o refines_precond) ctxt f_thm_call (
-              ALLGOALS try_solve_fun_ptr_refines)
-            else f_thm_call
-          val _ = Utils.verbose_msg 5 ctxt (fn _ => "f_thm_call (1): " ^ Thm.string_of_thm ctxt f_thm_call)
           val {L, R, M = f_M, g, ...} = f_thm_call |> Thm.cconcl_of |> dest_refines
 
           val f_args_in_out = filter (is_in_out o snd) (f_args ~~ arg_kinds) |> map fst
@@ -3008,8 +2942,11 @@ let
             in res_thm end
           val f_args_kind =
            let
-             val kinds = ProgramInfo.get_in_out_parameters f_options |> map (from_parameter_kind o snd)
-             val f_args_kind = f_args ~~ kinds |> filter_out (fn (_, Other) => true | _ => false)
+             val disjoints = ProgramInfo.get_in_out_disjoint_ptrs f_options
+             fun is_disjoint n = case disjoints of NONE => true | SOME xs => member (op =) xs n
+             val kinds = ProgramInfo.get_in_out_parameters f_options 
+               |> map (fn (name, kind) => (from_parameter_kind kind, is_disjoint name))
+             val f_args_kind = f_args ~~ kinds |> filter_out (fn (_, (Other,_)) => true | _ => false)
            in
              f_args_kind
            end
@@ -3021,14 +2958,14 @@ let
           val globals = not (null global_grds)
 
           val global_grds1 = global_grds @
-            (if not globals orelse length global_args <= 1 then [] else [distinct_spans (map fst global_args) ctxt])
+            (if not globals orelse length global_args <= 1 then [] else [distinct_spans (map fst (filter (snd o snd) global_args)) ctxt])
 
           val bare_rule =
             (case is_bottom_L of
                false => L2_call_rel_stack_bare
              | true  => L2_call_rel_stack_bare_retype_unreachable_exit)
 
-          val bare_insts = [("ns", ns'), ("ns_exit", ns_exit'), ("P", conjs_cterm (grds @ global_grds1))]
+          val bare_insts = [("ns", ns'), ("ns_exit", ns_exit'), ("P", Utils.conjs_cterm (grds @ global_grds1))]
 
           val bare_thm = instantiate_thm (~1) ctxt bare_insts bare_rule OF [f_thm_call]
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "bare_thm: " ^ Thm.string_of_thm ctxt bare_thm)
@@ -3278,12 +3215,12 @@ let
           val thm = thm |> Simplifier.asm_full_simplify ((Simplifier.clear_simpset ctxt) 
                  addsimps @{thms L2_call_final_convs})
           val _ = Utils.verbose_msg 6 ctxt (fn _ => "thm (1): " ^ Thm.string_of_thm ctxt thm)
-          val root_h_val_thm = root_h_val_conv ctxt (map #eq (filter_out #trivial_eq lenses)) thm
+          val root_h_val_thm = root_h_val_conv prog_info ctxt (map #eq (filter_out #trivial_eq lenses)) thm
           val _ = Utils.verbose_msg 6 ctxt (fn _ => "root_h_val_thm: " ^ Thm.string_of_thm ctxt root_h_val_thm)
 
           val {g, ...} = root_h_val_thm |> Thm.cconcl_of |> dest_refines
           val gt = Thm.term_of g
-          val keep_global_ptrs = global_args |> map_filter (fn (p, Eliminate _) => SOME p | _ => NONE)
+          val keep_global_ptrs = global_args |> map_filter (fn (p, (Eliminate _, _)) => SOME p | _ => NONE)
           val keep_heap_params = filter (is_keep params o fst) params 
             |> map fst |> append keep_global_ptrs |> map (fn p => (p, h_val phi ctxt s p))
             |> filter (fn (p, v) => exists_subterm (fn t => t = Thm.term_of v) gt)
@@ -3464,7 +3401,7 @@ let
                [("f", f_arity), ("g", g_arity), ("c", f_arity), ("c'", g_arity)]))
           |> recheck_vars
           |> instantiate_normalise_thm maxidx [3, 4] thy_ctxt 
-                [("R", eta_contract R (* avoid simplification in conclusion of 4 *))]
+                [("R", Utils.eta_contract R (* avoid simplification in conclusion of 4 *))]
           |> recheck_vars
 
         val _ = Utils.verbose_msg 4 ctxt (fn _ => "in_out_statement: L2_while rule:\n " ^ Thm.string_of_thm ctxt (snd splitted_thm))
@@ -3528,7 +3465,7 @@ let
                       @{term_pat "[?n]"} => SOME n
                     | _ => NONE 
 
-         val p_param = (p, (if eliminate_ptr then Eliminate Stack else Keep true, hint))
+         val p_param = (p, (if eliminate_ptr then Eliminate Stack else Keep true, (hint, p_name)))
          val params = p_param :: params0
          val (([cguard],_), params_ctxt') = params_ctxt'
            |> assume_and_note' (guard_param p_param) @{attributes [simp, cguard_assms]} 
@@ -3638,7 +3575,6 @@ let
              (g', keep_with_fresh_stack_ptr_rel_stack_g_normalised)
 
          val thm = instantiate_thm maxidx ctxt [("f", f), ("g", g'), ("ns", ns), ("M1", M1)] thm
-
          val unmodified_ptrs = unmodified_params [p] params0
 
          val thm =  Utils.timeit_msg 2 ctxt (fn _ => "with_fresh_stack_ptr thm: ") (fn _ => Utils.check_solve_sideconditions check_domain_bound ctxt thm (
@@ -3685,6 +3621,7 @@ let
 
   fun in_out_statement_internal {might_exit:bool} ctxt (args as {t0, s, t, params, rel_alloc, static={M, A, name, disjnt_params_opt, in_out_globals, prog_info, ...}, ...}:args) f =
     let
+
       val (thm, res_ctxt) = Utils.timeit_msg 1 ctxt (fn _ => "in_out_statement: ") (fn _ => 
         in_out_statement f ctxt args)
       val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement_internal: thm (0):\n " ^ Thm.string_of_thm res_ctxt thm)
@@ -3693,7 +3630,6 @@ let
            (* instantiates remaining "domain_bound A ?X" with \<lambda>_. (=) or  \<lambda>_ _ _. False*)
       val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement_internal: thm (1):\n " ^ Thm.string_of_thm res_ctxt thm)
         (* Make prop explicit to instantiate schematics types in g and schematics L / R *)
-
 
       fun refines_prog_conv conv = Conv.fconv_rule (Utils.remove_meta_conv (fn ctxt =>
         Utils.nth_arg_conv 2 (conv ctxt)) ctxt)
@@ -3705,7 +3641,7 @@ let
       val cleanup_del = @{thms ptr_coerce.simps ptr_add_0_id}
       val res_ctxt = res_ctxt |> AutoCorresTrace.put_trace_info name FunctionInfo.IO FunctionInfo.PEEP;
       val thm = Utils.timeit_msg 1 res_ctxt (fn _ => "Simplification (IOopt): " ^ name) (fn _ =>
-        L2Opt.cleanup_thm_tagged (res_ctxt delsimps cleanup_del) [] [] thm
+        L2Opt.cleanup_thm_tagged prog_info (res_ctxt delsimps cleanup_del) [] [] NONE thm
         FunctionInfo.PEEP 2 false FunctionInfo.IO)
 
       val thm = thm |> ProgramInfo.get_skip_word_abs (ProgramInfo.get_fun_options prog_info name) ? (fn thm =>
@@ -3734,7 +3670,7 @@ let
             val thm = (Drule.infer_instantiate res_ctxt [(("P", 0), P)] @{thm refines_L2_guard_right_unconditional'}) OF [thm]
           in thm end
 
-      val (prop, res_ctxt) = mk_refines_cprop phi {closed=false, apply_f=false, might_exit = might_exit, in_out_globals = in_out_globals} res_ctxt f 
+      val (prop, _, res_ctxt) = mk_refines_cprop phi {closed=false, apply_f=false, might_exit = might_exit, in_out_globals = in_out_globals} res_ctxt f 
                    NONE (SOME {M = M, A = A, t0 = t0, s = s, t = t}) params NONE
       val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement_internal: prop:\n " ^ string_of_cterm res_ctxt prop)
       val widen_modifies = refines_widen_modifies_weaken OF [rel_alloc, thm]
@@ -3763,38 +3699,13 @@ in
    refines_to_IOcorres_conv = refines_to_IOcorres_conv}
 end
 
-
-fun fn_ptr_info phase prog_info l2_infos ctxt base_fn_name_opt cliques fn_name =
-  let
-    val base_fn_name = (case base_fn_name_opt of SOME n => n | _ => 
-      (if member (op =) (flat cliques) fn_name then 
-        fn_name 
-       else
-        error ("fn_ptr_info cannot infer base_fn_name: " ^ @{make_string} 
-          (base_fn_name_opt, fn_name, cliques))))
-
-    val l2_info = the (Symtab.lookup l2_infos base_fn_name); 
-    val fn_ptr_infos' = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} [] l2_info
-    val fn_ptr_infos = (map (apsnd (fn info => info phase)) fn_ptr_infos')
-  in
-    AList.lookup (op =) fn_ptr_infos fn_name
-  end
-
-
-val l2_fn_ptr_info = fn_ptr_info FunctionInfo.L2
-
-fun io_fn_ptr info =
-  let
-    val io_info = info FunctionInfo.IO
-  in (#prog_env io_info $ Free (#ptr_val io_info)) end
-
-fun mk_param ctxt fn_name param_spec (name, t) =
+fun mk_param ctxt fn_name param_spec (name, (orig_name, t)) =
   let
     val hint_ctxt = ctxt |> Context.proof_map (CLocals.Data.map (CLocals.enter_scope fn_name))
     val T = fastype_of t
     val (xspec, name_hint) = 
       if is_ptr_and_not_fun_ptrT T then
-        case AList.lookup (op =) param_spec name of
+        case AList.lookup (op =) param_spec orig_name of
           SOME FunctionInfo.Data => (Other, NONE)
         | SOME FunctionInfo.Keep_Ptr => (Keep false, SOME (CLocals.name_hint hint_ctxt name))
         | SOME x => (Eliminate (Parameter x), SOME (CLocals.name_hint hint_ctxt name))
@@ -3802,7 +3713,7 @@ fun mk_param ctxt fn_name param_spec (name, t) =
       else (Other, NONE)
    val _ = Proof_Context.export
   in
-    (Thm.cterm_of ctxt t, (xspec, name_hint))
+    (Thm.cterm_of ctxt t, (xspec, (name_hint, orig_name)))
   end
 
 
@@ -3810,100 +3721,55 @@ fun mk_params prog_info l2_infos ctxt fn_name fn_arg_terms_opt =
   let
     val (info: FunctionInfo.function_info) = the (Symtab.lookup l2_infos fn_name)
     val args = FunctionInfo.get_args info
+    val orig_names = map (ProgramAnalysis.srcname o snd o snd) args
     val default_args = map (fn (x, (T, _)) => (x, T)) args
     val fn_arg_terms = the_default (map Free default_args) fn_arg_terms_opt
     val arg_names = args |> map fst
     val param_spec = ProgramInfo.get_fun_options prog_info fn_name |> ProgramInfo.get_in_out_parameters
-    val _ = tracing ("param_spec: " ^ @{make_string} param_spec)
-    val params = map (mk_param ctxt fn_name param_spec) (arg_names ~~ fn_arg_terms)
+    val params = map (mk_param ctxt fn_name param_spec) (arg_names ~~ (orig_names ~~ fn_arg_terms))
     val disjnt_params_opt = ProgramInfo.get_fun_options prog_info fn_name |> ProgramInfo.get_in_out_disjoint_ptrs
   in (params, disjnt_params_opt) end
 
-  
-fun get_io_corres_prop ops prog_info l2_infos base_fn_name_opt cliques ctxt (assume:bool) fn_name fn_free fn_arg_terms = 
+fun get_io_corres_prop ops prog_info l2_infos ctxt (assume:bool) fn_name fn_free fn_arg_terms = 
   let
     val attribs = @{attributes [synthesize_rule refines_in_out]} |> map (Attrib.attribute ctxt)
   in
-    if member (op =) (flat cliques) fn_name (* ordinary function call *) then
+    (* ordinary function call *)
       let 
         val (info: FunctionInfo.function_info) = the (Symtab.lookup l2_infos fn_name)
         val (params, disjnt_params_opt) = mk_params prog_info l2_infos ctxt fn_name (SOME fn_arg_terms)
         val f = FunctionInfo.get_const info |> Thm.cterm_of ctxt
-        val csenv = ProgramInfo.get_csenv prog_info
         val might_exit = ProgramInfo.get_fun_options (prog_info) fn_name |> ProgramInfo.get_might_exit
         val in_out_globals = ProgramInfo.get_fun_options prog_info fn_name |> ProgramInfo.get_in_out_globals
-        val (concl, ctxt') = #mk_refines_cprop ops {closed = false, apply_f = true, might_exit = might_exit, in_out_globals = in_out_globals}
+        val (concl, params', ctxt') = #mk_refines_cprop ops {closed = false, apply_f = true, might_exit = might_exit, in_out_globals = in_out_globals}
               ctxt f (SOME (Thm.cterm_of ctxt fn_free)) NONE params disjnt_params_opt 
-        val prems = the_default [] (Symtab.lookup l2_infos fn_name |> Option.map (fn info => 
-              let
-                val fn_ptr_param_infos = AutoCorresData.mk_fn_ptr_infos ctxt prog_info {ts_monad_name=""} [] info
-                val props = fn_ptr_param_infos |> (map (fn (ptr, ptr_info) =>
-                     let
-                       val io_info = ptr_info FunctionInfo.IO
-                       val l2_info = ptr_info FunctionInfo.L2
-                       val p = Free (#ptr_val io_info)
-                       val args_l2 = map Free (#args l2_info) (* io args are derived fom l2 args *)
-                       val f = (#prog_env io_info $ p)
-                       val (_, (prop, _)) = get_io_corres_prop ops prog_info l2_infos (SOME fn_name) cliques ctxt assume ptr f args_l2
-                       val closed_prop = fold Logic.all (rev args_l2) prop
-                     in
-                       closed_prop
-                     end))
-              in props end))
-        val prop = Logic.list_implies (prems, Thm.term_of concl) 
+
+        val prop = Thm.term_of concl 
           |> Utils.export_prop_term {closed=true} ctxt' ctxt
       in
-        ([], (prop, attribs))
+        ((prop, attribs), SOME (map Thm.term_of params'))
       end
-    else (* function pointer call *)
-      let
-        val info = the (l2_fn_ptr_info prog_info l2_infos ctxt base_fn_name_opt cliques fn_name)
-        val in_out_spec = #in_out_spec info
-        val arg_specs = fn_arg_terms ~~ (#param_kinds in_out_spec)
-        val params = map (fn (arg, (kind, _)) => (Thm.cterm_of ctxt arg, (from_parameter_kind kind, NONE))) arg_specs
-        val f = Thm.cterm_of ctxt (#prog_env info $ Free (#ptr_val info))
-        val might_exit = #might_exit in_out_spec
-        val in_out_globals = #in_out_globals in_out_spec
-        val disjnt_params_opt = SOME (map_filter (fn (arg, (_, true)) =>  SOME (Term.term_name arg) | _ => NONE) arg_specs) 
-        val prop = #mk_refines_cprop ops {closed = true, apply_f = true, might_exit = might_exit, in_out_globals = in_out_globals}
-              ctxt f (SOME (Thm.cterm_of ctxt fn_free)) NONE params disjnt_params_opt |> fst |> Thm.term_of
-      in
-        ([], (prop, attribs))
-      end
+   end
+
+
+fun get_fn_args_def prog_info l2_infos ctxt fn_name =
+  (* only used for ordinary function calls not for function pointer parameters *)
+  let
+    val (params, _) = mk_params prog_info l2_infos ctxt fn_name NONE
+    val args = map (in_arg ctxt) params |> flat |> map Thm.term_of |> map Term.dest_Free
+  in
+   args
   end
 
-fun get_fn_args_def prog_info l2_infos ctxt cliques fn_name =
-  if member (op =) (flat cliques) fn_name  (* ordinary function call *)
-  then
-    let
-      val (params, _) = mk_params prog_info l2_infos ctxt fn_name NONE
-      val args = map (in_arg ctxt) params |> flat |> map Thm.term_of |> map Term.dest_Free
-    in
-      args
-    end
-  else (* function pointer call *)
-    let
-      val _ = error ("get_fn_args_def not expected to be called for function pointers: " ^ @{make_string} (cliques, fn_name))
-    in
-      []
-    end
-
-fun get_fn_args_prop prog_info l2_infos ctxt base_fn_name_opt cliques fn_name =
-  if  member (op =) (flat cliques) fn_name (* ordinary function call *)
-  then
+     
+fun get_fn_args_prop prog_info l2_infos ctxt fn_name =
     let
       val (params, _) = mk_params prog_info l2_infos ctxt fn_name NONE
       val args = map fst params |> map Thm.term_of |> map Term.dest_Free
     in
       args
     end
-  else (* function pointer call *)
-    let
-      val fn_ptr_info = the (l2_fn_ptr_info prog_info l2_infos ctxt base_fn_name_opt cliques fn_name)
-    in
-      #args fn_ptr_info
-    end
-                  
+           
 
 fun get_fn_type (ops: operations) prog_info l2_infos ctxt fn_name = 
   let
@@ -3916,6 +3782,12 @@ fun get_fn_type (ops: operations) prog_info l2_infos ctxt fn_name =
     gT
   end
 
+fun rename mapping assoc =
+  let
+    fun ren x = the_default x (AList.lookup (op =) mapping x)
+  in
+    map (apfst ren) assoc
+  end
 fun translate 
       (skips: FunctionInfo.skip_info)
       (base_locale_opt: string option)
@@ -3947,23 +3819,25 @@ fun translate
         val in_out_globals = fun_opts |> ProgramInfo.get_in_out_globals
         val fun_ptr_params = fun_opts |> ProgramInfo.get_in_out_fun_ptr_params
         val ctxt = lthy |> Context.proof_map (CLocals.Data.map (CLocals.enter_scope fn_name))
-        val (paramfixes, params_fix_ctxt) = Utils.fix_variant_cfrees (map (Term.dest_Free o Thm.term_of o fst) params) ctxt
-        val f_def = FunctionInfo.get_definition f_l2_info
+        val params' = (map (Term.dest_Free o Thm.term_of o fst) params)
+        val orig_names = map (#2 o #2 o #2) params
+        val (paramfixes, params_fix_ctxt) = Utils.fix_variant_cfrees params' ctxt
+        val param_mapping = orig_names ~~ map ( fst o Term.dest_Free o Thm.term_of ) paramfixes
+        val fun_ptr_params' = rename param_mapping fun_ptr_params
+        val f_def = Thm.transfer' lthy (FunctionInfo.get_definition f_l2_info)
         val f = f_def
           |> Utils.inst_args params_fix_ctxt paramfixes |> Thm.cconcl_of |> Utils.crhs_of
         val might_exit = fun_opts |> ProgramInfo.get_might_exit
         val params = paramfixes ~~ map snd params
         val fixes = {M = "M", A = "A", t0 = "t0", s = "s", t = "t", params = params, disjnt_params_opt = disjnt_params_opt, in_out_globals=in_out_globals}
-        val fn_ptr_infos' = AutoCorresData.mk_fn_ptr_infos params_fix_ctxt prog_info {ts_monad_name=""} (map Thm.term_of paramfixes) f_l2_info
-        val fn_ptr_infos = (map (apsnd io_fn_ptr) fn_ptr_infos')   
         val (rec_ctxt, callee_terms) =
-          AutoCorresUtil.assume_called_functions_corres params_fix_ctxt fn_ptr_infos
+          AutoCorresUtil.assume_called_functions_corres params_fix_ctxt
             (FunctionInfo.get_recursive_clique f_l2_info)
             get_fn_type
-            (get_fn_prop (SOME fn_name) cliques)
-            (get_fn_args_prop (SOME fn_name) cliques)
+            (get_fn_prop )
+            (get_fn_args_prop)
             (io_function_name "")
-
+        val rec_funs = map (fn (n, (t, _)) => (n, t)) callee_terms
         val ({M, A, t0, s, t, rel_alloc, params_ctxt, addrs_fix_ctxt, cguards}, alloc_ctxt) = 
           rec_ctxt |> #build_context ops fixes
 
@@ -3973,9 +3847,10 @@ fun translate
           return = Final, 
           params_ctxt = params_ctxt, addrs_fix_ctxt = addrs_fix_ctxt, alloc_ctxt = alloc_ctxt,
           static = {M = M, A = A, name = fn_name, prog_info = prog_info, disjnt_params_opt = disjnt_params_opt, 
-            params_of = params_of, in_out_globals = in_out_globals, fun_ptr_params = fun_ptr_params,
-            l2_progenvs = AutoCorresData.progenv_insts_with_cty ctxt prog_info FunctionInfo.L2}} f 
-        val args = get_fn_args_def cliques fn_name
+            params_of = params_of, in_out_globals = in_out_globals, fun_ptr_params = fun_ptr_params',
+            rec_funs = rec_funs, fun_params = params}} f 
+
+        val args = get_fn_args_def fn_name
         val bdy = betapplys (Thm.term_of g, map Free args)
         val thm = refines_fold_f res_ctxt f_def thm
         val [thm] = Proof_Context.export res_ctxt lthy [thm]
@@ -4006,9 +3881,9 @@ fun translate
               skips
               phase prog_info I {concealed_named_theorems=false} (io_function_name "")
               get_fn_type
-              (get_fn_prop NONE cliques)
-              (get_fn_args_def cliques)
-              (get_fn_args_prop NONE cliques)
+              (get_fn_prop )
+              (get_fn_args_def)
+              (get_fn_args_prop)
               funcs'
               lthy;
       in lthy' end; 

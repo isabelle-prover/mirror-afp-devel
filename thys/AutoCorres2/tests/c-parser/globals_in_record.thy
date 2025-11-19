@@ -12,8 +12,6 @@ begin
 
 install_C_file "globals_in_record.c"
 
-context globals_in_record_simpl 
-begin
 
 thm globals.equality
 
@@ -24,7 +22,5 @@ find_theorems "zozo_'"
 term "zozo_'"
 find_theorems "zyzy"
 thm zyzy_def
-
-end
 
 end

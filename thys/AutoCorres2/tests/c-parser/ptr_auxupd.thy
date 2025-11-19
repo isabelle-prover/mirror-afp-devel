@@ -17,7 +17,7 @@ definition
 install_C_file "ptr_auxupd.c"
 
 
-context ptr_auxupd_simpl 
+context ptr_auxupd_global_addresses 
 begin
 
 thm alloc_body_def

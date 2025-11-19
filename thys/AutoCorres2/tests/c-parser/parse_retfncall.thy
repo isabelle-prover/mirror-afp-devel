@@ -11,10 +11,7 @@ begin
 
 install_C_file "parse_retfncall.c"
 
-context parse_retfncall_simpl
-begin
 thm add1_body_def
 thm add2_body_def
-end
 
 end

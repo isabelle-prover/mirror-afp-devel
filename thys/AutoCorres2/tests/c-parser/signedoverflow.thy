@@ -11,8 +11,6 @@ begin
 
 install_C_file "signedoverflow.c"
 
-context signedoverflow_simpl
-begin
 
 thm f_body_def
 
@@ -24,19 +22,21 @@ apply auto
 *)
 
 thm g_body_def
-end
 
-lemma (in g_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g(1) \<lbrace> \<acute>ret' = - 1 \<rbrace>"
+lemma (in signedoverflow_global_addresses) includes g_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g(1) \<lbrace> \<acute>ret' = - 1 \<rbrace>"
 apply vcg
 apply (simp add: word_sle_def)
 done
 
-lemma (in g_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g(- 2147483648) \<lbrace> \<acute>ret' = - 1 \<rbrace>"
+lemma (in signedoverflow_global_addresses) includes g_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g(- 2147483648) \<lbrace> \<acute>ret' = - 1 \<rbrace>"
 apply vcg
 apply (simp add: word_sle_def)
 done
 
-lemma (in g_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g(- 2147483647) \<lbrace> \<acute>ret' = 2147483647 \<rbrace>"
+lemma (in signedoverflow_global_addresses) includes g_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL g(- 2147483647) \<lbrace> \<acute>ret' = 2147483647 \<rbrace>"
 apply vcg
 apply (simp add: word_sle_def)
 done

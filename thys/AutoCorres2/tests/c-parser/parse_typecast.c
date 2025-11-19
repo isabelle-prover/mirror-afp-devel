@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-unsigned main(unsigned int j, int d)
+unsigned main1(unsigned int j, int d)
 {
   int *c = (int *)j;
   return (unsigned) (c + d);

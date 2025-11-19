@@ -17,7 +17,6 @@ lemmas runs_to_whileLoop5 =  runs_to_whileLoop_res' [split_tuple C and B arity: 
 lemmas runs_to_partial_whileLoop5 =  runs_to_partial_whileLoop_res [split_tuple C and B arity: 5]
 
 
-context while_loop_vars_preserved_all_impl begin
 lemma "loop' var1 var2 var3 var4 \<bullet> s ?\<lbrace> \<lambda>r s. r = Result (var1 + var2 + var3 + var4) \<rbrace>"
   unfolding loop'_def
   apply (runs_to_vcg (trace))
@@ -53,8 +52,5 @@ lemma "loop' var1 var2 var3 var4 \<bullet> s \<lbrace> \<lambda>r s. r = Result 
     apply (metis measure_unat word_not_simps(1))+
     done
   done
-
-end
-
 
 end

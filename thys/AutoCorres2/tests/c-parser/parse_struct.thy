@@ -9,6 +9,7 @@ theory parse_struct
 imports "AutoCorres2.CTranslation"
 begin
 
+declare [[c_parser_check_packed_align=false]]
 install_C_file "parse_struct.c"
 
 (* mem_type instances proved automatically.  If you remove the additional
@@ -26,10 +27,8 @@ thm typ_tag_defs
 thm allinclusive_C_tag_def
 thm allinclusive_C_typ_info
 
-context parse_struct_simpl
-begin
+
 thm mkall_body_def
-end
 
 (* fold congruences proved in creation of these records help us
    by reducing the doubling of syntax on the lhs *)

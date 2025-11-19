@@ -233,9 +233,9 @@ setup \<open>
 let open Mutual_CCPO_Rec in
   add_ccpo "option_state_monad" (fn ctxt => fn T =>
     let
-      val oT = range_type T
+      val (argTs, oT) = strip_type T
     in
-      synth_fun ctxt (domain_type T) (synth_option ctxt oT)
+      synth_funs ctxt (argTs, synth_option ctxt oT)
     end)
   |> Context.theory_map
 end

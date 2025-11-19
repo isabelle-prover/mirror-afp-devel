@@ -57,7 +57,7 @@ abbreviation "byte_cast x \<equiv> ((ptr_coerce x)::8 word ptr)"
 
 
 
-lemma (in ts_definition_memcpy) memcpy_char:
+lemma memcpy_char:
   "c_guard (x::8 word ptr) \<Longrightarrow>
          c_guard (y::8 word ptr) \<Longrightarrow>
          unat sz = size_of TYPE(8 word) \<Longrightarrow>
@@ -83,7 +83,7 @@ lemma (in ts_definition_memcpy) memcpy_char:
 lemma of_nat_prop_exp: "n < 32 \<Longrightarrow> of_nat (2 ^ n) = 2 ^ (of_nat n)"
   by clarsimp
 
-lemma (in ts_definition_memcpy) memcpy_word:
+lemma memcpy_word:
   "c_guard (x::32 word ptr) \<Longrightarrow>
          c_guard (y::32 word ptr) \<Longrightarrow>
          unat sz = size_of TYPE(32 word) \<Longrightarrow>
@@ -472,7 +472,7 @@ lemma heap_update_legacy:
   apply (rule refl)
   done
 
-lemma (in ts_definition_memcpy) memcpy'_legacy_def:
+lemma memcpy'_legacy_def:
 "memcpy' dest srca sz \<equiv> do {
   d \<leftarrow> return (byte_cast dest);
   s \<leftarrow> return (byte_cast srca);
@@ -489,7 +489,7 @@ lemma (in ts_definition_memcpy) memcpy'_legacy_def:
   unfolding memcpy'_def 
   by (simp add: heap_update_legacy)
 
-lemma (in ts_definition_memcpy) memcpy_wp':
+lemma memcpy_wp':
   fixes src :: "'a::mem_type ptr"
     and dst :: "'b::mem_type ptr"
   shows "c_guard src \<Longrightarrow> c_guard dst \<Longrightarrow> sz = of_nat (length bs) \<Longrightarrow> bytes_at s0 src bs \<Longrightarrow>
@@ -714,7 +714,7 @@ text \<open>
   c_guard/no_overlap/no_wrap.
 \<close>
 
-lemma (in ts_definition_memcpy_int)  memcpy_int_wp': "deref s src = x \<Longrightarrow>
+lemma memcpy_int_wp': "deref s src = x \<Longrightarrow>
              {ptr_val src..+4} \<inter> {ptr_val dst..+4} = {} \<Longrightarrow>
              c_guard src \<Longrightarrow> c_guard dst \<Longrightarrow>
              no_wrap src 4 \<Longrightarrow> no_wrap dst 4 \<Longrightarrow>
@@ -767,7 +767,7 @@ lemma (in ts_definition_memcpy_int)  memcpy_int_wp': "deref s src = x \<Longrigh
 
 
 text \<open>memcpying a typed variable is equivalent to assignment.\<close>
-lemma (in ts_definition_memcpy) memcpy_type_wp':
+lemma memcpy_type_wp':
   fixes dst :: "'a::mem_type ptr"
     and src :: "'a::mem_type ptr"
   shows "
@@ -790,7 +790,7 @@ lemma (in ts_definition_memcpy) memcpy_type_wp':
   by (simp_all add: bytes_of_def)
 
 text \<open>Confirm that we can also prove memcpy_int using the previous generic lemma.\<close>
-lemma (in ts_definition_memcpy_int) memcpy_int_wp'': "deref s src = x \<Longrightarrow>
+lemma memcpy_int_wp'': "deref s src = x \<Longrightarrow>
              {ptr_val src..+4} \<inter> {ptr_val dst..+4} = {} \<Longrightarrow>
              c_guard src \<Longrightarrow> c_guard dst \<Longrightarrow>
              no_wrap src 4 \<Longrightarrow> no_wrap dst 4 \<Longrightarrow>
@@ -858,7 +858,7 @@ text \<open>
   intermediate pointer is irrelevant and we don't need to assume that the source and final
   destination do not overlap.
 \<close>
-lemma (in ts_definition_memcpy) memcpy_seq:
+lemma memcpy_seq:
   fixes x :: "'a::mem_type ptr"
     and y :: "'b::mem_type ptr"
     and z :: "'a::mem_type ptr"
@@ -924,7 +924,7 @@ text \<open>
   The memcpy_int proof can now be completed more elegantly. Note that the body of this proof is more
   generic than the previous attempts and doesn't involve manually reasoning about each byte.
 \<close>
-lemma (in ts_definition_memcpy_int) memcpy_int_wp''': "deref s src = x \<Longrightarrow>
+lemma memcpy_int_wp''': "deref s src = x \<Longrightarrow>
              {ptr_val src..+4} \<inter> {ptr_val dst..+4} = {} \<Longrightarrow>
              c_guard src \<Longrightarrow> c_guard dst \<Longrightarrow>
              no_wrap src 4 \<Longrightarrow> no_wrap dst 4 \<Longrightarrow>
@@ -1028,7 +1028,7 @@ text \<open>
 lemma updates_bytes_preserves_typing[simp]: "hrs_htd (t_hrs_' (update_bytes s p bs)) = hrs_htd (t_hrs_' s)"
   by (simp add: update_bytes_def)
 
-lemma (in ts_definition_memcpy)
+lemma
   fixes dst :: "32word ptr"
     and src :: "32word ptr"
   shows "
@@ -1060,7 +1060,7 @@ lemma (in ts_definition_memcpy)
 text \<open>
   Again, we can now trivially transfer Hoare triple properties.
 \<close>
-lemma (in ts_definition_memcpy_struct)
+lemma
   fixes dst :: "my_structure_C ptr"
     and src :: "my_structure_C ptr"
   shows "ptr_valid (heap_typing s) dst \<Longrightarrow> ptr_valid (heap_typing s) src \<Longrightarrow>

@@ -11,9 +11,6 @@ begin
 
   install_C_file "jiraver384.c"
 
-  context jiraver384_simpl
-  begin
   thm foo_body_def
-  end
 
 end

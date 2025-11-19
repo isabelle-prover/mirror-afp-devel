@@ -130,11 +130,25 @@ fun get_var_names_ret ctxt callee_names t =
       get_var_names_ret ctxt callee_names f
   | (Const (@{const_name "exec_abstract"}, _) $ _ $ f) =>
       get_var_names_ret ctxt callee_names f
+  | (Const (@{const_name "typ_heap_typing.assume_with_fresh_stack_ptr"}, _) $ _ $ _ $ _ $ _ $ _ $ n $ init $ (Const (@{const_name "L2_VARS"}, _) $ c $ _)) =>
+      let
+        val res = get_var_names_ret ctxt callee_names c
+      in res end 
+  | (Const (@{const_name "typ_heap_typing.guard_with_fresh_stack_ptr"}, _) $ _ $ _ $ _ $ _ $ _ $ n $ init $ (Const (@{const_name "L2_VARS"}, _) $ c $ _)) =>
+      let
+        val res = get_var_names_ret ctxt callee_names c
+      in res end 
+ | (Const (@{const_name "typ_heap_typing.with_fresh_stack_ptr"}, _) $ _ $ _ $ _ $ _ $ _ $ n $ init $ (Const (@{const_name "L2_VARS"}, _) $ c $ _)) =>
+      let
+        val res = get_var_names_ret ctxt callee_names c
+      in res end 
   | other => 
     let
       val {c, ...} = with_fresh_stack_ptr.match ctxt other
-    in get_var_names_ret ctxt callee_names c end
+      val (Const (@{const_name "L2_VARS"}, _) $ c' $ _) = c
+    in get_var_names_ret ctxt callee_names c' end
     handle Match => ret_vars_call ctxt callee_names other
+         | Bind => ret_vars_call ctxt callee_names other
 
 (* Get a list of names that the given block of code throws. *)
 fun get_var_names_throw ctxt t =

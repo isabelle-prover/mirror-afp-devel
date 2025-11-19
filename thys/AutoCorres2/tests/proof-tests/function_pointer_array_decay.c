@@ -5,7 +5,10 @@
  */
 
 struct t { void (*p)(int x[128]); };
+
+void some_function(int x[128]) {};
+
 void unique_test (struct t *a, int x[128])
 {
-  a->p(x);
+  [[calls(some_function)]] a->p(x);
 }

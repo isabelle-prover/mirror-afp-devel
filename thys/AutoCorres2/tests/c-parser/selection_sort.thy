@@ -11,11 +11,8 @@ begin
 
 install_C_file "selection_sort.c"
 
-context selection_sort_simpl
-begin
 thm len_body_def
 thm lmin_body_def
 thm ssort_body_def
-end
 
 end

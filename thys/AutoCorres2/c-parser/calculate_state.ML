@@ -24,8 +24,12 @@ sig
   val populate_globals : bool Config.T
   val record_globinits : bool Config.T
 
-  val ctype_to_typ : Proof.context -> int ctype -> typ
-  val ctype_to_typ_flexible_array : Proof.context -> int ctype -> typ
+  val ctype_to_typ : {bitint_padding: bool} -> Proof.context -> int ctype -> typ
+  val ctype_to_typ_flexible_array : {bitint_padding: bool} -> Proof.context -> int ctype -> typ
+  val coerce_bitint: Proof.context -> typ -> int ctype option -> term -> term
+  val coerce_bitint': Proof.context -> int ctype option -> typ -> term -> term
+  val coerce_bitint_from_padding: Proof.context -> int CTypeDatatype.ctype -> term -> term
+  val coerce_bitint_to_padding: Proof.context -> int CTypeDatatype.ctype -> term -> term
   datatype var_sort = Local of (string * bool)
                     | NSGlobal
                     | AddressedGlobal
@@ -33,9 +37,11 @@ sig
 
   val create_state : csenv -> staterep
 
+  type rcd_info = string * ((string RegionExtras.wrap * typ * int ctype * CType.attribute list) list * CType.attribute list * Region.t)
+
   val mk_thy_types :
       csenv -> bool -> bool -> local_theory ->
-      (string * ((string * typ * int ctype * CType.attribute list) list * CType.attribute list)) list * local_theory
+      rcd_info list * local_theory
       
 
   val mk_thy_decls : string -> staterep -> 
@@ -91,10 +97,16 @@ sig
    [mk_thy_decls decls] translates such a series into an operation on
    an Isabelle theory, creating various records ('myvars', 'globals',
    with fields corresponding to the variables
-
+                                                                
 *)
   val union_variant: {non_canonical:bool} -> theory -> csenv -> xstring * string -> (typ * typ * typ) option
   val union_variant_types: {non_canonical:bool} -> theory -> csenv -> typ list
+
+  val dest_Trueprop: cterm -> cterm
+  val gen_eqs_from_all_distinct: thm list -> thm -> term list -> Proof.context -> 
+    {eqs:thm list, fallthrough_eqs: thm list, distinct_thm: thm, subtree_thm: thm option}
+  val add_locale : binding -> binding -> Expression.expression_i -> Element.context_i list ->
+            theory -> string * local_theory
 end;
 
 
@@ -105,9 +117,11 @@ val generate_umm_types_file = Attrib.setup_config_bool @{binding "c_parser_gener
 
 open Basics Absyn TermsTypes NameGeneration ProgramAnalysis Feedback
 
+type rcd_info = string * ((string RegionExtras.wrap * typ * int ctype * CType.attribute list) list * CType.attribute list * Region.t)
+
 val globals_all_addressed = Attrib.setup_config_bool \<^binding>\<open>globals_all_addressed\<close> (K false)
 val populate_globals = Attrib.setup_config_bool \<^binding>\<open>populate_globals\<close> (K false)
-val record_globinits = Attrib.setup_config_bool \<^binding>\<open>record_globinits\<close> (K false)
+val record_globinits = Attrib.setup_config_bool \<^binding>\<open>record_globinits\<close> (K true)
 
 
  
@@ -120,10 +134,10 @@ fun define_enum_consts (CE {enumenv, ...}) lthy = let
                          Int.toString value^" (signed int)")
     val nm' = NameGeneration.enum_const_name nm
     val binding = Binding.name nm'
-    val ((_, (_, th)), lthy) =
-        Local_Theory.define ((binding, NoSyn),
-                             ((Thm.def_binding binding, @{attributes [enum_defs]}), rhs_v))
-                            lthy
+    val ((_, th), lthy) =
+        Utils.define_theory_target ((binding, NoSyn),
+          ((Thm.def_binding binding, @{attributes [enum_defs]}), rhs_v))
+          lthy
     fun upd th t = th :: t
     val acc = case tyname_opt of
                 NONE => acc
@@ -160,10 +174,10 @@ fun isa_type_to_cty (refty (_, c)) = c
   | isa_type_to_cty (array (_, _, c)) = c
   | isa_type_to_cty (existing(_, c)) = c
 
-fun gen_translate_inttype (options as {empty_array_decay}) (ty : int ctype) =
+fun gen_translate_inttype (options as {empty_array_decay, bitint_padding}) (ty : int ctype) =
   case ty of
-    Signed x => existing (IntInfo.ity2wty (Signed x), ty)
-  | Unsigned x => existing (IntInfo.ity2wty (Unsigned x), ty)
+    Signed x => existing (IntInfo.gen_ity2wty {bitint_padding=bitint_padding} (Signed x), ty)
+  | Unsigned x => existing (IntInfo.gen_ity2wty {bitint_padding=bitint_padding} (Unsigned x), ty)
   | PlainChar => existing (IntInfo.ity2wty PlainChar, ty)
   | Bool => existing (IntInfo.ity2wty Bool, ty)
   | Ptr Void => refty (NONE, ty)
@@ -180,10 +194,12 @@ fun gen_translate_inttype (options as {empty_array_decay}) (ty : int ctype) =
   | _ =>
     raise Fail ("translate_type: can't cope with "^tyname ty)
 
-val translate_inttype = gen_translate_inttype {empty_array_decay=false}
-val translate_inttype_flexible_array = gen_translate_inttype {empty_array_decay=true}
+fun translate_inttype {bitint_padding} = gen_translate_inttype {empty_array_decay=false, bitint_padding=bitint_padding}
 
-val translate_type = translate_inttype
+fun translate_inttype_flexible_array {bitint_padding} = gen_translate_inttype {empty_array_decay=true, bitint_padding=bitint_padding}
+
+
+val translate_type = translate_inttype {bitint_padding=true}
 
 (* translate_vi creates a list of variables that need to be declared
    in the isabelle environment.  The information provided is the name
@@ -200,7 +216,7 @@ val translate_type = translate_inttype
 
  *)
 fun translate_vi csenv = let
-  val untoucheds = calc_untouched_globals csenv
+  val untoucheds = get_untouched_globals csenv
   fun doit vi = let
   in
     case get_vtype vi of
@@ -228,7 +244,7 @@ in
   doit
 end
 
-fun isa_type_to_typ ctxt (ity : isa_type) = let
+fun isa_type_to_typ  ctxt (ity : isa_type) = let
   fun m s = let
     val thy = Proof_Context.theory_of ctxt
     val known = (Syntax.parse_typ ctxt s; true) handle ERROR _ => false
@@ -241,17 +257,29 @@ fun isa_type_to_typ ctxt (ity : isa_type) = let
 in
   case ity of
     refty (NONE, _) => mk_ptr_ty unit
-  | refty (SOME ity0, _) => mk_ptr_ty (isa_type_to_typ ctxt ity0)
+  | refty (SOME ity0, _) => mk_ptr_ty (isa_type_to_typ  ctxt ity0)
   | recd (s, _) => Type (m s, [])
   | array (ity, sz, _) =>
-    Type("Arrays.array", [isa_type_to_typ ctxt ity, mk_array_size_ty sz])
+    Type("Arrays.array", [isa_type_to_typ  ctxt ity, mk_array_size_ty sz])
   | existing (ty, _) => ty
 end
 
-fun ctype_to_typ ctxt cty =
-    isa_type_to_typ ctxt (translate_inttype cty)
-fun ctype_to_typ_flexible_array ctxt cty =
-  isa_type_to_typ ctxt (translate_inttype_flexible_array cty)
+
+fun ctype_to_typ {bitint_padding} ctxt cty =
+    isa_type_to_typ ctxt (translate_inttype {bitint_padding=bitint_padding} cty)
+fun ctype_to_typ_flexible_array {bitint_padding} ctxt cty =
+  isa_type_to_typ ctxt (translate_inttype_flexible_array {bitint_padding=bitint_padding} cty)
+
+fun coerce_bitint ctxt ty NONE t = t
+  | coerce_bitint ctxt ty (SOME cty) t = coerce_word ty (ctype_to_typ {bitint_padding=false} ctxt cty) t
+
+fun coerce_bitint' ctxt NONE ty t = t
+  | coerce_bitint' ctxt (SOME cty) ty t = coerce_word (ctype_to_typ {bitint_padding=false} ctxt cty) ty t
+
+fun coerce_bitint_from_padding ctxt cty =
+  coerce_word (ctype_to_typ {bitint_padding=true} ctxt cty) (ctype_to_typ {bitint_padding=false} ctxt cty)
+fun coerce_bitint_to_padding ctxt cty =
+  coerce_word (ctype_to_typ {bitint_padding=false} ctxt cty) (ctype_to_typ {bitint_padding=true} ctxt cty)
 
 fun create_state cse = let
   val trans = translate_vi cse
@@ -272,8 +300,8 @@ fun union_variant {non_canonical} thy cse (name, fldname) =
       let
         val union_ty = Type (Sign.intern_type thy name, [])
         val (variant, (_, flds, _ , _)) = the (AList.lookup (op =) struct_variants fldname) |> hd
-        val fld = the (AList.lookup (op =) flds fldname)
-        val fld_ty = ctype_to_typ (Proof_Context.init_global thy) (fst fld)
+        val fld = the (AList.lookup eq_wrap flds fldname)
+        val fld_ty = ctype_to_typ {bitint_padding=true} (Proof_Context.init_global thy) (fst fld)
         val variant_ty = Type (Sign.intern_type thy variant, [])
       in if non_canonical andalso variant = name then NONE else SOME (union_ty, variant_ty, fld_ty) end
 
@@ -308,21 +336,21 @@ fun listvars f vns =
 fun mk_fix ty n = (Binding.name n, SOME ty, NoSyn)
 
 datatype umm_decl = umm_array of int ctype * int
-                  | umm_struct of string * (string * (int ctype * CType.attribute list)) list * CType.attribute list * thm * thm
-                  | umm_union of string * (string * (int ctype * CType.attribute list)) list * CType.attribute list * thm * thm
+                  | umm_struct of string * (string wrap * (int ctype * CType.attribute list)) list * CType.attribute list * Region.t * thm * thm
+                  | umm_union of string * (string wrap * (int ctype * CType.attribute list)) list * CType.attribute list * Region.t * thm * thm
 structure UMMKey =
 struct
   type key = umm_decl
   fun ord (umm_array _, umm_struct _) = LESS
     | ord (umm_array _, umm_union _) = LESS
-    | ord (umm_array p1, umm_array p2) = prod_ord (ctype_ord int_ord) int_ord (p1, p2)
+    | ord (umm_array p1, umm_array p2) = prod_ord (ctype_ord int_ord I) int_ord (p1, p2)
     | ord (umm_union _, umm_array _) = GREATER
     | ord (umm_union _, umm_struct _) = LESS
-    | ord (umm_union (u1, _, _, _, _), umm_union (u2, _, _, _, _)) = string_ord (u1, u2)
+    | ord (umm_union (u1, _, _, _, _, _), umm_union (u2, _, _, _, _, _)) = string_ord (u1, u2)
  
     | ord (umm_struct _, umm_array _) = GREATER
     | ord (umm_struct _, umm_union _) = GREATER
-    | ord (umm_struct (s1, _, _, _, _), umm_struct (s2, _, _, _, _)) = string_ord (s1, s2)
+    | ord (umm_struct (s1, _, _, _, _, _), umm_struct (s2, _, _, _, _, _)) = string_ord (s1, s2)
 end
 structure UMMTab = Table(UMMKey)
 local
@@ -392,10 +420,27 @@ let
           map (map (the o Symtab.lookup rcdmap)) sorted1
         end
   val used_types = ProgramAnalysis.get_usedtypes cse
-  val res = sorted_structs
+
+  val all_sorted = flat sorted_structs
+  (* UnionTy s might become StructTy s. Propagate this consistently *)
+  fun kind_of s = #1 (the (AList.lookup (op =) all_sorted s))
+  fun typ_of kind s = case kind of Struct => StructTy s | Union _ => UnionTy s
+  fun canonical_union_struct_type (StructTy s) = typ_of (kind_of s) s
+    | canonical_union_struct_type (UnionTy s) = typ_of (kind_of s) s
+    | canonical_union_struct_type T = T
+  val canonical_ctype = map_atomic_ctype canonical_union_struct_type
+  fun canonical_union_struct_kind_field (s, (ty, attrs)) = (s, (canonical_ctype ty, attrs))
+  fun cononical_union_struct (kind, flds, reg, attrs) = (kind, map canonical_union_struct_kind_field flds, reg, attrs)
+
+  val canonical_sorted_structs = map (map (apsnd (cononical_union_struct))) sorted_structs
+  val emp = Binaryset.empty (ctype_ord int_ord I)
+  val canonical_used_types = Binaryset.listItems used_types |> map canonical_ctype 
+    |> (fn ts => Binaryset.addList (emp, ts))
+  val canonical_union_structs = (map (apsnd (cononical_union_struct))) union_structs
+  val res = canonical_sorted_structs
     |> burrow_split (List.partition (fn item => not prune 
-       orelse Binaryset.member (used_types, CType.type_of_rcd item) 
-       orelse member (op =) union_structs item))
+       orelse Binaryset.member (canonical_used_types, CType.type_of_rcd item) 
+       orelse member (op =) canonical_union_structs item))
 in
   res
 end
@@ -431,10 +476,10 @@ let
     fun do_one_fld kind (fldname, (fldty, _)) =
       let
         val is_inactive = case kind of 
-           Union active => if member (op =) active fldname then "" else " (* inactive *)"
+           Union active => if member (op =) active (node fldname) then "" else " (* inactive *)"
          | _ => ""
       in
-        File_Stream.output strm ("\t" ^ fldname ^ ":" ^
+        File_Stream.output strm ("\t" ^ (node fldname) ^ ":" ^
                              isa_to_string (translate_type fldty) ^ is_inactive ^ "\n")
       end
 
@@ -511,20 +556,20 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
        end
     | single_variant_union_fields n _ flds = flds
  
-  fun new_rcdinfo' ctxt (recname,(kind,flds, _, attrs)) = 
+  fun new_rcdinfo' ctxt (recname,(kind,flds, region, attrs)) = 
     let
       val flds = single_variant_union_fields recname kind flds
       fun fldtys (fldname, (cty, attrs)) = 
-        if flexible_array_type cty then NONE else SOME (fldname, ctype_to_typ ctxt cty, cty, attrs)
+        if flexible_array_type cty then NONE else SOME (fldname, ctype_to_typ {bitint_padding=true} ctxt cty, cty, attrs)
     in
-      (recname, (map_filter fldtys flds, attrs))
+      (recname, (map_filter fldtys flds, attrs, region:Region.t))
     end
 
-  fun new_rcdinfo ctxt (recname,flds, attrs)  = let
+  fun new_rcdinfo ctxt (recname,flds, attrs, region)  = let
     fun fldtys (fldname, (cty, attrs)) = 
-      if flexible_array_type cty then NONE else SOME (fldname, ctype_to_typ ctxt cty, cty, attrs)
+      if flexible_array_type cty then NONE else SOME (fldname, ctype_to_typ {bitint_padding=true} ctxt cty, cty, attrs)
   in
-    (recname, (map_filter fldtys flds, attrs))
+    (recname, (map_filter fldtys flds, attrs, region:Region.t))
   end
 
   fun rcddecls_phase0 recflds lthy = 
@@ -534,17 +579,17 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
                          \struct group:")
         val _ = app (fn (recname, (Struct, flds, _ , _)) =>
                         informStr lthy (2, "  struct " ^ recname ^ ", with fields: " ^
-                                      listvars #1 flds)
+                                      listvars (node o #1) flds)
                        | (recname, (Union active, flds, _, _)) =>
                         informStr lthy (2, " union " ^ recname ^ ", with variant: " ^ 
-                                      listvars #1 (canonical_union_variant recname active flds)))
+                                      listvars (node o #1) (canonical_union_variant recname active flds)))
                     recflds
 
         fun mk_rp_fld ctxt (fldname,(cty,_)) = 
           if flexible_array_type cty then 
             NONE 
           else 
-            SOME {fldname = fldname, fldty = ctype_to_typ ctxt cty}
+            SOME {fldname = node fldname, fldty = ctype_to_typ {bitint_padding=true} ctxt cty}
         fun mk_rp_recd ctxt (recname, (Struct, flds, _, _)) =
               {record_name = recname, fields = map_filter (mk_rp_fld ctxt) flds}
           | mk_rp_recd ctxt (recname, (Union active, flds, _, _)) =
@@ -563,12 +608,12 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
   val flat_structs_and_unions = flat (zip_nested structs_and_unions thms)
 
   val structs = flat_structs_and_unions |> map_filter 
-       (fn ((n, (kind, flds, _, attrs)), (tag_def_thm, typtag_thm)) => case kind of Struct => 
-         SOME (n, flds, attrs, tag_def_thm, typtag_thm) | _ => NONE);
+       (fn ((n, (kind, flds, region, attrs)), (tag_def_thm, typtag_thm)) => case kind of Struct => 
+         SOME (n, flds, attrs, region, tag_def_thm, typtag_thm) | _ => NONE);
 
   val unions = flat_structs_and_unions |> map_filter 
-       (fn ((n, (kind, flds, _, attrs)), (tag_def_thm, typtag_thm)) => case kind of Union active => 
-         SOME (n, single_variant_union_fields n kind flds, attrs, tag_def_thm, typtag_thm) | _ => NONE);
+       (fn ((n, (kind, flds, region, attrs)), (tag_def_thm, typtag_thm)) => case kind of Union active => 
+         SOME (n, single_variant_union_fields n kind flds, attrs, region, tag_def_thm, typtag_thm) | _ => NONE);
 
   (* Yuck, sorry *)
   val () = gen_umm_types_file lthy prune cse outfilename
@@ -582,9 +627,9 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
     if null evs then []
     else let
         val umm_struct_map = Symtab.empty 
-          |> fold (fn (r as (s, _, _, _, _)) => Symtab.update (s,umm_struct r)) structs
+          |> fold (fn (r as (s, _, _, _, _, _)) => Symtab.update (s,umm_struct r)) structs
         val umm_union_map = Symtab.empty
-          |> fold (fn (r as (s, _, _, _, _)) => Symtab.update (s,umm_union r)) unions
+          |> fold (fn (r as (s, _, _, _, _, _)) => Symtab.update (s,umm_union r)) unions
         val umm_array_set = (Binaryset.empty UMMKey.ord)
           |> fold (fn a => fn acc => Binaryset.add(acc,umm_array a)) arrays
         fun toEv ty =
@@ -600,8 +645,8 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
         fun umm_included uev =
             case uev of
               umm_array (ty, _) => [ty]
-            | umm_struct(_, flds, _, _, _) => map (#1 o #2) flds
-            | umm_union(_, flds, _, _, _) => map (#1 o #2) flds
+            | umm_struct(_, flds, _, _, _, _) => map (#1 o #2) flds
+            | umm_union(_, flds, _, _, _, _) => map (#1 o #2) flds
         val inclusion = UMMTab.empty
           |>  fold (fn u => UMMTab.update (u, List.mapPartial toEv (umm_included u))) evs
         val converse = ummflip inclusion
@@ -616,8 +661,8 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
       end
   end
 
-  fun structdecl_phase1 (p as (recname, flds, attrs, tag_def_thm, typ_info_t_thm), (lthy, st, rcdacc)) = let
-    val rcdinfo = new_rcdinfo lthy (recname, flds, attrs) 
+  fun structdecl_phase1 (p as (recname, flds, attrs, region, tag_def_thm, typ_info_t_thm), (lthy, st, rcdacc)) = let
+    val rcdinfo = new_rcdinfo lthy (recname, flds, attrs, region) 
     val (st, lthy1) =
         if install then
           (informStr lthy (2, "Proving UMM properties for struct "^recname);
@@ -632,7 +677,7 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
       val (st', lthy') =
           if install then
               array_type cse
-                         {element_type = ctype_to_typ lthy cty, array_size =  n,
+                         {element_type = ctype_to_typ {bitint_padding=true} lthy cty, array_size =  n,
                           state = st}
                          lthy
           else
@@ -641,7 +686,7 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
       (lthy', st', rcdacc)
   end
 
-  fun uniondecl_phase1 (p as (recname, _ (* flds *), _,_,_), (lthy, st, rcdacc)) = 
+  fun uniondecl_phase1 (p as (recname, _ (* flds *), _,_,_,_), (lthy, st, rcdacc)) = 
     structdecl_phase1 (p, (lthy, st, rcdacc))
    
 
@@ -669,6 +714,7 @@ fun pretty_recdef thy nm vars =
              vars)
     |> Pretty.string_of |> tracing;
 
+
 fun categorise_globals (alladdressed, popglobs) l = let
   fun recurse (acc as (ut, ns, ad)) l =
     case l of
@@ -695,8 +741,142 @@ in
   recurse ([],[],[]) l
 end
 
-fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, addressed_funs, all_funs} thy = let
+val dest_Trueprop = @{cterm_match \<open>Trueprop ?P\<close>} #> (fn {P,...} => P)
+val case_prod_beta_pair = @{lemma "case_prod f (x, y) = f x y" by simp}
+ 
+
+fun gen_eqs_from_all_distinct fnptr_guard_thms all_distinct_thm subset_ptrs ctxt =
+  let
+    val (distinct_thm, subtree_thm_opt) = 
+      if null subset_ptrs then (all_distinct_thm, NONE) 
+      else
+        let
+          val subset_tree = DistinctTreeProver.mk_tree I @{typ "unit ptr"} subset_ptrs
+          val csubset_tree = Thm.cterm_of ctxt subset_tree
+          val subtree_thm = DistinctTreeProver.subtractProver ctxt subset_tree csubset_tree all_distinct_thm
+          val distinct_thm = @{thm subtract_Some_all_distinct} OF [subtree_thm, all_distinct_thm]
+          val subtree = Thm.cconcl_of subtree_thm |> Utils.crhs_of_eq |> Utils.cdest_Some
+        in (distinct_thm, SOME (subtree_thm, subtree))  end
+          
+    val tree = distinct_thm |> Thm.cprop_of |> dest_Trueprop |> Thm.dest_arg
+    val eq_list_of = Utils.timeit_label 3 ctxt " eq_list_of" (fn _ =>
+      \<^infer_instantiate>\<open>t = tree in cterm \<open>list_of t\<close>\<close> ctxt |> Simplifier.rewrite ctxt)
+    val ps = eq_list_of |> Thm.rhs_of |> Thm.term_of
+    val ptrs = ps |> HOLogic.dest_list
+    val ([T], ctxt1) = Variable.invent_types [@{sort type}] ctxt |>> map TFree
+    fun mk_assoc (i, p) ctxt =
+      let
+        val ([f], ctxt') = Utils.fix_variant_frees [("f" ^ string_of_int i, T)] ctxt
+      in (HOLogic.mk_prod (p, f), ctxt') end
+    val (xs, ctxt2) = ctxt1 |> fold_map mk_assoc (tag_list 1 ptrs)
+         |>> HOLogic.mk_list (HOLogic.mk_prodT (@{typ "unit ptr"}, T))
+    val eq_map_fst = Utils.timeit_label 3 ctxt2 " eq_map_fst" (fn _ =>
+      \<^infer_instantiate>\<open>xs = xs in term \<open>map fst xs\<close>\<close> ctxt2
+      |> Thm.cterm_of ctxt2  |> Simplifier.rewrite ctxt2)
+
+    val simp_ctxt = Simplifier.clear_simpset ctxt2 
+      addsimps (case_prod_beta_pair:: @{thms list_all_Nil_iff list_all_Cons_iff fst_conv snd_conv})
+      |> Simplifier.add_cong @{thm map_of_default_block_cong}
+      |> Simplifier.add_cong @{thm list_all_block_cong}
+      
+    fun export ctxt' thms = Utils.timeit_label 3 ctxt " export'" (fn _ =>
+       Par_List.map (Drule.zero_var_indexes o singleton (Proof_Context.export ctxt' ctxt)) thms) 
+
+    fun import ctxt thm =  
+      let 
+        val ((_, [thm']), ctxt') = Variable.import false [thm] ctxt
+      in (thm', ctxt') end
+    val (eqs_raw, ctxt3) = Utils.timeit_label 3 ctxt2 " eqs_raw" (fn _ => 
+      (@{thm map_of_default_distinct_lookup_list_all''} OF [eq_list_of, eq_map_fst, distinct_thm])
+      |> import ctxt2 
+      |>> Conv.fconv_rule (Simplifier.rewrite simp_ctxt))
+    val eqs = Utils.timeit_label 3 ctxt3 " eqs" (fn _ => 
+      eqs_raw
+      |> Conj_Elim.conj_elims {parallel=false} ctxt2
+      |> export ctxt3)
+    val fallthrough_eqs =
+      case subtree_thm_opt of NONE => [] 
+      | SOME (subtree_thm, subtree) =>
+       let
+         val eq_list_of' = Utils.timeit_label 3 ctxt " eq_list_of'" (fn _ =>
+           \<^infer_instantiate>\<open>t = subtree in cterm \<open>list_of t\<close>\<close> ctxt |> Simplifier.rewrite ctxt)
+         val (fallthrough_eqs_raw, ctxt3) =  Utils.timeit_label 3 ctxt2 " fallthrough_eqs_raw" (fn _ => 
+           (@{thm map_of_default_other_lookup_list_all'} OF [eq_list_of, eq_map_fst, subtree_thm, eq_list_of'])
+           |> import ctxt2
+           |>> Conv.fconv_rule (Simplifier.rewrite simp_ctxt))
+       in
+         Utils.timeit_label 3 ctxt3 " fallthrough_eqs" (fn _ =>
+           fallthrough_eqs_raw
+           |> Conj_Elim.conj_elims {parallel=false} ctxt3 
+           |> export ctxt3)
+       end
+     val NULL_eqs = if null fnptr_guard_thms then [] else
+       let
+         val simp_ctxt = Simplifier.put_simpset HOL_ss ctxt2 addsimps @{thms list_all_Nil_iff list_all_Cons_iff} @ fnptr_guard_thms 
+         val guard = \<^instantiate>\<open>ps = \<open>Thm.cterm_of ctxt ps\<close> 
+           in cterm "list_all c_fnptr_guard ps"\<close> |> Simplifier.rewrite simp_ctxt
+         val NULL_eq = (@{thm map_of_default_fnptr_guard_NULL} OF [eq_map_fst, guard])
+           |> singleton (Proof_Context.export ctxt2 ctxt)
+       in
+         [NULL_eq]
+       end
+  in {eqs=eqs, fallthrough_eqs=NULL_eqs @ fallthrough_eqs, distinct_thm = distinct_thm, 
+    subtree_thm = Option.map fst subtree_thm_opt} end
+  
+fun eqs_from_all_distinct fnptr_guard_thms all_distinct_thm ctxt = 
+  gen_eqs_from_all_distinct fnptr_guard_thms all_distinct_thm [] ctxt 
+
+fun fun_ptr_not_NULL lthy =
+  let    
+    val fnptr_guard_thms = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_guards}
+    val fnptr_guard_not_NULL = map (fn thm => @{thm c_fnptr_guard_not_NULL} OF [thm]) fnptr_guard_thms
+  in 
+    lthy 
+    |> Named_Bindings.note ((Binding.make ("c_fnptr_not_NULL", \<^here> ), [@{named_bindings fun_ptr_not_NULL}]), fnptr_guard_not_NULL)
+    |> snd
+  end
+
+fun fun_ptr_map_of_default_eqs lthy =       
+  let
+    val all_distinct_thm = hd (Named_Theorems.get lthy @{named_theorems fun_ptr_distinct})
+    val fnptr_guard_thms = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_guards}
+    val {eqs, fallthrough_eqs, ...} = Utils.timeit_label 2 lthy "eqs_from_all_distinct" (fn _ =>  
+      eqs_from_all_distinct fnptr_guard_thms all_distinct_thm lthy)
+  in
+    lthy 
+    |> Named_Bindings.note ((Binding.make ("fun_ptr_map_of_default", \<^here> ), [@{named_bindings fun_ptr_map_of_default_eqs}]), eqs)
+    |> snd
+    |> Named_Bindings.note ((Binding.make ("fun_ptr_map_of_default_fallthrough", \<^here> ), [@{named_bindings fun_ptr_map_of_default_fallthrough_eqs}]), fallthrough_eqs)
+    |> snd
+  end
+
+fun trace_locale thy name =
+ tracing (Pretty.string_of (Locale.pretty_locale thy true name))
+
+fun add_locale binding predicate_binding import body thy =
+ let
+   val ctxt = Proof_Context.init_global thy;
+   val _ = Feedback.informStr ctxt (0, "Defining locale " ^ Binding.print binding)
+   val import_names = map fst (fst import)
+   val _ = Feedback.informStr ctxt (1, "importing: " ^ @{make_string} import_names)
+   val _ = Feedback.informStr ctxt (2, (Pretty.string_of (Pretty.block (Pretty.fbreaks  
+             (map (Pretty.block o Pretty.fbreaks o Element.pretty_ctxt ctxt) body)))))
+   val (name, lthy) = thy |> (Utils.timeap_msg 1 ctxt (fn _ => "locale " ^ Binding.print binding)
+         (Expression.add_locale binding predicate_binding [] import body))
+   val _ = if Config.get ctxt Feedback.verbose then trace_locale (Proof_Context.theory_of lthy) name else ()
+ in
+   (name, lthy)
+ end
+
+(* cf. record.ML *)
+fun recname name =
+  let val (nm :: _ :: rst) = rev (Long_Name.explode (unsuffix Record.ext_typeN name))
+  in Long_Name.implode (rev (nm :: rst)) end;
+
+fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, addressed_funs, all_funs, ...} thy0 = let
   val rest = state
+  val n = length all_funs
+  val thy = thy0 |> (n > 1) ? (Conj_Elim.ensure_upto n #> snd)
   fun declare_vars thy = let
     val (lvars, gvars) = split_vars thy ([], []) rest
     open NameGeneration
@@ -724,11 +904,9 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
                             gflds thy
       val fullrecname = Sign.intern_type thy NameGeneration.global_ext_type
       val thy = MemoryModelExtras.check_global_record_type fullrecname thy
-      val ((((S, G), known_function)), thy) = thy
+      val ((((S, G))), thy) = thy
         |> Theory.specify_const (((Binding.make (NameGeneration.stack_addrs, \<^here>), @{typ "addr set"})), Mixfix.NoSyn)
         ||>> Theory.specify_const (((Binding.make (NameGeneration.global_addrs, \<^here>), @{typ "addr set"})), Mixfix.NoSyn)
-        ||>> Theory.specify_const (((Binding.make (NameGeneration.known_function, \<^here>), @{typ "unit ptr \<Rightarrow> bool"})), Mixfix.NoSyn)
-
 
       val ctxt = Proof_Context.init_global thy
       val params = globals_stack_heap_raw_state_params State ctxt
@@ -783,21 +961,25 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
 
       val thy = thy |> fold interpret_global_field globals
      
-      fun declare_fun_ptr fname thy =
+      fun declare_fun_ptr fname0 thy =
         let
-          val fname = NameGeneration.fun_ptr_name fname
+          val fname = NameGeneration.fun_ptr_name fname0
           val b = Binding.make (fname, \<^here>) |> Binding.qualify true prog_name
+          val (t, thy') = Theory.specify_const ((b, @{typ "unit ptr"}), Mixfix.NoSyn) thy
         in
-          thy |> Theory.specify_const ((b, @{typ "unit ptr"}), Mixfix.NoSyn)
+          ((fname0, t), thy')
         end
-      val (fun_ptrs, thy) = thy |> fold_map declare_fun_ptr addressed_funs
-      val remaining_funs = filter_out (member (op =) addressed_funs) all_funs
-      val (_, thy) = thy |> fold_map declare_fun_ptr remaining_funs
 
-      fun mk_fun_ptr_guard (p, fname) = ((Binding.make (fname ^ "_fnptr_guard", \<^here>), @{attributes [fun_ptr_simps]}), 
-            [(\<^instantiate>\<open>p = \<open>p\<close> in prop \<open>c_fnptr_guard (p::unit ptr)\<close>\<close>, [])])
+      val (all_fun_ptrs0, thy) = thy |> fold_map declare_fun_ptr all_funs
+      val fun_ptrs = all_fun_ptrs0 |> filter (member (op =) addressed_funs o fst) |> map snd
+      val all_fun_ptrs = map snd all_fun_ptrs0
 
-      val all_distinct = ((Binding.make ("all_distinct", \<^here>), @{attributes [fun_ptr_distinct]}), 
+      val fun_ptr_guard_binding = Binding.make ("fnptr_guard", \<^here>)
+      fun mk_fun_ptr_guard ptrs = ((fun_ptr_guard_binding, []), 
+            (map (fn p =>( \<^instantiate>\<open>p = \<open>p\<close> in prop \<open>c_fnptr_guard (p::unit ptr)\<close>\<close>, [])) ptrs))
+
+
+      fun all_distinct fun_ptrs = ((Binding.make ("all_distinct", \<^here>), @{attributes [fun_ptr_distinct]}), 
             [(\<^instantiate>\<open>t = \<open>DistinctTreeProver.mk_tree I @{typ "unit ptr"} fun_ptrs\<close> 
                in prop \<open>all_distinct t\<close> for t:: \<open>unit ptr tree\<close>\<close>, 
              [])])
@@ -806,6 +988,19 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
             [(\<^instantiate>\<open>G = G and S = S 
                in prop \<open>(G::addr set) \<inter> S = {}\<close>\<close>, 
              [])])
+
+      fun mk_assumes ptrs funs = [Element.Assumes [mk_fun_ptr_guard ptrs],
+             Element.Assumes [all_distinct ptrs],
+             Element.Assumes [disjnt_G_S]]
+
+      val global_addresses_locale = Binding.make (NameGeneration.globals_locale_name prog_name, \<^here>)
+      val glob_loc_elems = mk_assumes all_fun_ptrs all_funs
+      val (glob_loc, thy) = thy 
+        |> add_locale global_addresses_locale global_addresses_locale ([], []) glob_loc_elems
+        ||> Named_Bindings.binding_declaration (fun_ptr_guard_binding, [@{named_bindings fun_ptr_guards}]) 
+        ||> fun_ptr_not_NULL
+        ||> fun_ptr_map_of_default_eqs 
+        ||> Local_Theory.exit_global
 
       fun declare_addressed_global g thy =
         let
@@ -816,11 +1011,12 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
           thy |> Theory.specify_const ((b, T), Mixfix.NoSyn)
         end
       val (global_ptrs, thy) = thy |> fold_map declare_addressed_global adglobs
+      fun declare_owner n thy =
+        thy |> Theory.specify_const ((Binding.qualify true prog_name (Binding.make (n, \<^here>)), nat), NoSyn)
+
+      val (owners', thy) = thy |> fold_map declare_owner owners
     in
-      (thy, [Element.Fixes (map (mk_fix nat) owners), 
-             Element.Assumes (map mk_fun_ptr_guard (fun_ptrs ~~ addressed_funs)),
-             Element.Assumes [all_distinct],
-             Element.Assumes [disjnt_G_S]])
+      (thy, glob_loc_elems)
     end
     val lvars = lvars
     val (thy, globs) = mk_globals_rcd thy
@@ -835,7 +1031,7 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
         val b = Binding.make (HP_TermsTypes.gammaN, \<^here>) |> Binding.qualify false prog_name
         val T = HP_TermsTypes.mk_gamma_ty styargs
       in 
-        thy |> Theory.specify_const ((b, T), Mixfix.NoSyn)
+        thy |> Utils.declare_const_gamma ((b, T), Mixfix.NoSyn)
       end
     val (gamma, thy) = declare_gamma thy
   in

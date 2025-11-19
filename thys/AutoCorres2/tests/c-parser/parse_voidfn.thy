@@ -11,10 +11,6 @@ begin
 
 install_C_file "parse_voidfn.c"
 
-context parse_voidfn_simpl
-begin
 thm f_body_def
 thm g_body_def
-end
-
 end

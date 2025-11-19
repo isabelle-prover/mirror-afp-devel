@@ -1,0 +1,14 @@
+chapter AFP
+
+session Pre_Star_CFG = Context_Free_Grammar +
+  options [timeout=300]
+  theories
+    Pre_Star
+    Pre_Star_Example
+    Applications
+    Applications_Example
+    Finiteness
+    Pre_Star_CNF
+  document_files
+    root.bib
+    root.tex

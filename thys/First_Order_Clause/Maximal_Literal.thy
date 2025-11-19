@@ -19,7 +19,8 @@ lemmas is_maximal_def = order.is_maximal_in_mset_iff
 
 lemmas is_strictly_maximal_def = order.is_strictly_maximal_in_mset_iff
 
-lemmas is_maximal_if_is_strictly_maximal = order.is_maximal_in_mset_if_is_strictly_maximal_in_mset
+lemmas is_maximal_if_is_strictly_maximal =
+  order.is_maximal_in_mset_if_is_strictly_maximal_in_mset
 
 lemma maximal_in_clause:
   assumes "is_maximal l C"

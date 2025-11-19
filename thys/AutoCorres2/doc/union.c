@@ -116,7 +116,7 @@ typedef union mystruct_array_union {
 } mystruct_array_union;
 
 
-int foo() {
+int foo2() {
   myunion u;
   int k;
   u.x = 42;
@@ -125,7 +125,7 @@ int foo() {
   return k;
 }
 
-void bar () {
+void bar2 () {
   mybitfield_union ub;
   ub.all = 42;
   mybitfield_union1 ub1;
