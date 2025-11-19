@@ -211,7 +211,7 @@ qed
 subsection\<open>Reachable States\<close>
 
 definition reachable_from :: "('s, 'l) lts \<Rightarrow> 's \<Rightarrow> 's set" where
-  "reachable_from T q \<equiv> {q'. \<exists>w. q' \<in> steps_lts T w q}"
+  "reachable_from T q = {q'. \<exists>w. q' \<in> steps_lts T w q}"
 
 lemma reachable_from_computable: "reachable_from T q \<subseteq> {q} \<union> (snd ` snd ` T)"
 proof

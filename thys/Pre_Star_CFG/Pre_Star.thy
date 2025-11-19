@@ -19,7 +19,7 @@ A closely related formalization is \<open>AFP/Pushdown_Systems\<close>where \<op
 \<close>
 
 definition pre_star :: "('n,'t)Prods \<Rightarrow> ('n,'t) syms set \<Rightarrow> ('n,'t) syms set" where
-"pre_star P L \<equiv> {\<alpha>. \<exists>\<beta> \<in> L. P \<turnstile> \<alpha> \<Rightarrow>* \<beta>}"
+"pre_star P L = {\<alpha>. \<exists>\<beta> \<in> L. P \<turnstile> \<alpha> \<Rightarrow>* \<beta>}"
 
 
 subsection \<open>Definition on LTS as Fixpoint\<close>
@@ -44,7 +44,7 @@ lemma pre_lts_code[code]: "pre_lts P Q T =
 
 definition pre_star_lts :: "('n, 't) Prods \<Rightarrow> 's set
     \<Rightarrow> ('s, ('n, 't) sym) lts \<Rightarrow> ('s, ('n, 't) sym) lts option" where
-"pre_star_lts P Q \<equiv> while_option (\<lambda>T. T \<union> pre_lts P Q T \<noteq> T) (\<lambda>T. T \<union> pre_lts P Q T)"
+"pre_star_lts P Q = while_option (\<lambda>T. T \<union> pre_lts P Q T \<noteq> T) (\<lambda>T. T \<union> pre_lts P Q T)"
 
 lemma pre_star_lts_rule:
   assumes "\<And>T. H T \<Longrightarrow> T \<union> pre_lts P Q T \<noteq> T \<Longrightarrow> H (T \<union> pre_lts P Q T)"
@@ -332,7 +332,7 @@ qed
 subsection \<open>The Automaton Level\<close>
 
 definition pre_star_auto :: "('n, 't) Prods \<Rightarrow> ('s, ('n, 't) sym) auto \<Rightarrow> ('s, ('n, 't) sym) auto" where
-  "pre_star_auto P M \<equiv> (
+  "pre_star_auto P M = (
     let Q = {auto.start M} \<union> states_lts (auto.lts M) in
     case pre_star_lts P Q (auto.lts M) of
       Some T' \<Rightarrow> M \<lparr> auto.lts := T' \<rparr>

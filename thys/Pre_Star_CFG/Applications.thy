@@ -60,7 +60,7 @@ lemma pre_star_membership[code_unfold]: "(w \<in> Lang P S) = (P \<turnstile> [N
 subsection\<open>Nullable Variables\<close>
 
 definition is_nullable :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> bool" where
-  "is_nullable P X \<equiv> (P \<turnstile> [Nt X] \<Rightarrow>* [])"
+  "is_nullable P X = (P \<turnstile> [Nt X] \<Rightarrow>* [])"
 
 \<comment> \<open>Directly follows from derivability:\<close>
 lemma pre_star_nullable[code]: "is_nullable P X = (P \<turnstile> [Nt X] \<Rightarrow>* [])"
@@ -101,9 +101,9 @@ proof -
 qed
 
 definition pre_star_emptiness_auto :: "('n, 't) Prods \<Rightarrow> (unit, ('n, 't) sym) auto" where
-  "pre_star_emptiness_auto P \<equiv>
-    let T = Tm ` \<Union>((\<lambda>A. case A of Nt X \<Rightarrow> {} | Tm x \<Rightarrow> {x}) ` \<Union>(set ` snd ` P)) :: ('n, 't) sym set in
-    \<lparr> auto.lts = {()} \<times> T \<times> {()}, start = (), finals = {()} \<rparr>"
+  "pre_star_emptiness_auto P =
+    (let T = Tm ` \<Union>((\<lambda>A. case A of Nt X \<Rightarrow> {} | Tm x \<Rightarrow> {x}) ` \<Union>(set ` snd ` P)) :: ('n, 't) sym set in
+    \<lparr> auto.lts = {()} \<times> T \<times> {()}, start = (), finals = {()} \<rparr>)"
 
 theorem pre_star_emptiness:
   fixes P :: "('n, 't) Prods"
@@ -138,14 +138,14 @@ subsection\<open>Useless Variables\<close>
 
 definition is_reachable_from :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> bool"
     ("(2_ \<turnstile>/ (_/ \<Rightarrow>\<^sup>? / _))" [50, 0, 50] 50) where
-  "(P \<turnstile> X \<Rightarrow>\<^sup>? Y) \<equiv> (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt X] \<Rightarrow>* (\<alpha>@[Nt Y]@\<beta>))"
+  "(P \<turnstile> X \<Rightarrow>\<^sup>? Y) = (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt X] \<Rightarrow>* (\<alpha>@[Nt Y]@\<beta>))"
 
 \<comment>\<open>\<open>X \<in> V\<close> is useful, iff \<open>V\<close> can be reached from \<open>S\<close> and it is productive:\<close>
 definition is_useful :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> bool" where
-  "is_useful P S X \<equiv> (P \<turnstile> S \<Rightarrow>\<^sup>? X) \<and> Lang P X \<noteq> {}"
+  "is_useful P S X = (P \<turnstile> S \<Rightarrow>\<^sup>? X \<and> Lang P X \<noteq> {})"
 
 definition pre_star_reachable_auto :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> (nat, ('n, 't) sym) auto" where
-  "pre_star_reachable_auto P X \<equiv> (
+  "pre_star_reachable_auto P X = (
     let T = \<Union>(set ` snd ` P) in
     \<lparr> auto.lts = ({0} \<times> T \<times> {0}) \<union> ({1} \<times> T \<times> {1}) \<union> {(0, Nt X, 1)}, start = 0, finals = {1} \<rparr>
   )"

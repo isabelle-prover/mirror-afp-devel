@@ -137,7 +137,7 @@ subsubsection \<open>Universe over specific Alphabet\<close>
 text\<open>This automaton accepts exactly the words that only contains letters from a given alphabet \<open>\<Sigma>\<close>.\<close>
 
 definition loop_lts :: "'s \<Rightarrow> 'a set \<Rightarrow> ('s \<times> 'a \<times> 's) set" where
-  "loop_lts q \<Sigma> \<equiv> {q} \<times> \<Sigma> \<times> {q}"
+  "loop_lts q \<Sigma> = {q} \<times> \<Sigma> \<times> {q}"
 
 lemma loop_lts_fin: "finite \<Sigma> \<Longrightarrow> finite (loop_lts q \<Sigma>)"
   by (simp add: loop_lts_def)
@@ -189,7 +189,7 @@ qed
 lemmas loop_lts_correct = loop_lts_correct1 loop_lts_correct2
 
 definition auto_univ :: "'a set \<Rightarrow> (unit, 'a) auto" where
-  "auto_univ \<Sigma> \<equiv> \<lparr>
+  "auto_univ \<Sigma> = \<lparr>
     lts = loop_lts () \<Sigma>,
     start = (),
     finals = {()}
@@ -213,7 +213,7 @@ text\<open>
 \<close>
 
 definition pcs_lts :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> (nat \<times> 'a \<times> nat) set" where
-  "pcs_lts \<Sigma>p c \<Sigma>s \<equiv> loop_lts 0 \<Sigma>p \<union> {(0, c, 1)} \<union> loop_lts 1 \<Sigma>s"
+  "pcs_lts \<Sigma>p c \<Sigma>s = loop_lts 0 \<Sigma>p \<union> {(0, c, 1)} \<union> loop_lts 1 \<Sigma>s"
 
 lemma pcs_lts_fin: "finite \<Sigma>p \<Longrightarrow> finite \<Sigma>s \<Longrightarrow> finite (pcs_lts \<Sigma>p c \<Sigma>s)"
   by (auto intro: loop_lts_fin simp: pcs_lts_def)
@@ -256,7 +256,7 @@ qed
 lemmas pcs_lts_correct = pcs_lts_correct1 pcs_lts_correct2
 
 definition cps_auto :: "'a \<Rightarrow> 'a set \<Rightarrow> (nat, 'a) auto" where
-  "cps_auto c \<Sigma> \<equiv> \<lparr>
+  "cps_auto c \<Sigma> = \<lparr>
     lts = pcs_lts \<Sigma> c \<Sigma>,
     start = 0,
     finals = {1}
@@ -297,7 +297,7 @@ lemma word_lts_domain:
   by (induction ws) auto
 
 definition word_auto :: "'a list \<Rightarrow> (nat, 'a) auto" where
-  "word_auto ws \<equiv> \<lparr> lts = word_lts ws, start = length ws, finals = {0} \<rparr>"
+  "word_auto ws = \<lparr> lts = word_lts ws, start = length ws, finals = {0} \<rparr>"
 
 lemma word_lts_correct1:
   "0 \<in> steps_lts (word_lts ws) ws (length ws)"
