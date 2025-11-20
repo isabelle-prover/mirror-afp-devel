@@ -95,22 +95,8 @@ qed
 lemma steps_lts_mono: "T\<^sub>1 \<subseteq> T\<^sub>2 \<Longrightarrow> steps_lts T\<^sub>1 w q \<subseteq> steps_lts T\<^sub>2 w q"
   using Steps_lts_mono2[of T\<^sub>1 T\<^sub>2 "{q}" "{q}" w] by simp
 
-lemma steps_lts_mono': "T\<^sub>1 \<subseteq> T\<^sub>2 \<Longrightarrow> q' \<in> steps_lts T\<^sub>1 w q \<Longrightarrow> q' \<in> steps_lts T\<^sub>2 w q"
-proof -
-  assume "T\<^sub>1 \<subseteq> T\<^sub>2"
-  then have "steps_lts T\<^sub>1 w q \<subseteq> steps_lts T\<^sub>2 w q"
-    by (rule steps_lts_mono)
-  then show "q' \<in> steps_lts T\<^sub>1 w q \<Longrightarrow> q' \<in> steps_lts T\<^sub>2 w q"
-    by blast
-qed
-
 lemma steps_lts_union: "q' \<in> steps_lts T w q \<Longrightarrow> q' \<in> steps_lts (T \<union> T') w q"
-proof -
-  have "T \<subseteq> (T \<union> T')"
-    by simp
-  then show "q' \<in> steps_lts T w q \<Longrightarrow> q' \<in> steps_lts (T \<union> T') w q"
-    by (rule steps_lts_mono')
-qed
+using steps_lts_mono[of T "T \<union> T'"] by blast
 
 lemma Steps_lts_path:
   assumes "q\<^sub>f \<in> Steps_lts T w s"
@@ -327,36 +313,5 @@ abbreviation accepts_lts :: "('s, 'l) lts \<Rightarrow> 's \<Rightarrow> 's set 
 
 abbreviation Lang_lts :: "('s, 'l) lts \<Rightarrow> 's \<Rightarrow> 's set \<Rightarrow> ('l list) set" where
   "Lang_lts T S F \<equiv> { w. accepts_lts T S F w }"
-
-(* unused
-lemma Lang_lts_trans:
-  assumes "s' \<in> steps_lts T w\<^sub>1 s" and "w\<^sub>2 \<in> Lang_lts T s' F"
-  shows "(w\<^sub>1@w\<^sub>2) \<in> Lang_lts T s F"
-proof -
-  obtain q\<^sub>f where "q\<^sub>f \<in> steps_lts T w\<^sub>2 s'" and "q\<^sub>f \<in> F"
-    using assms(2) by blast
-  moreover have "q\<^sub>f \<in> steps_lts T (w\<^sub>1@w\<^sub>2) s"
-    using assms(1) \<open>q\<^sub>f \<in> steps_lts T w\<^sub>2 s'\<close> by (rule Steps_lts_join)
-  ultimately show ?thesis
-    using \<open>q\<^sub>f \<in> F\<close> by blast
-qed
-
-lemma Lang_lts_split:
-  assumes "(w\<^sub>1@w\<^sub>2) \<in> Lang_lts T q F"
-  obtains q' where "q' \<in> steps_lts T w\<^sub>1 q" and "w\<^sub>2 \<in> Lang_lts T q' F"
-proof -
-  obtain q\<^sub>f where "q\<^sub>f \<in> steps_lts T (w\<^sub>1@w\<^sub>2) q" and "q\<^sub>f \<in> F"
-    using assms by blast
-  then obtain q' where "q' \<in> steps_lts T w\<^sub>1 q" and "q\<^sub>f \<in> steps_lts T w\<^sub>2 q'"
-    using Steps_lts_split by fast
-  moreover then have "w\<^sub>2 \<in> Lang_lts T q' F"
-    using \<open>q\<^sub>f \<in> F\<close> by blast
-  ultimately show ?thesis
-    using that by blast
-qed
-
-lemma Lang_steps_lts_mono: "T\<^sub>1 \<subseteq> T\<^sub>2 \<Longrightarrow> Lang_lts T\<^sub>1 s f \<subseteq> Lang_lts T\<^sub>2 s f"
-  using steps_lts_mono[of T\<^sub>1 T\<^sub>2] by fast
-*)
 
 end

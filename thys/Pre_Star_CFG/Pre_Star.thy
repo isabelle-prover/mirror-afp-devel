@@ -44,16 +44,16 @@ lemma pre_lts_code[code]: "pre_lts P Q T =
 
 definition pre_star_lts :: "('n, 't) Prods \<Rightarrow> 's set
     \<Rightarrow> ('s, ('n, 't) sym) lts \<Rightarrow> ('s, ('n, 't) sym) lts option" where
-"pre_star_lts P Q = while_option (\<lambda>T. T \<union> pre_lts P Q T \<noteq> T) (\<lambda>T. T \<union> pre_lts P Q T)"
+"pre_star_lts P Q = while_saturate (pre_lts P Q)"
 
 lemma pre_star_lts_rule:
-  assumes "\<And>T. H T \<Longrightarrow> T \<union> pre_lts P Q T \<noteq> T \<Longrightarrow> H (T \<union> pre_lts P Q T)"
+  assumes "\<And>T. H T \<Longrightarrow> \<not> pre_lts P Q T \<subseteq> T \<Longrightarrow> H (T \<union> pre_lts P Q T)"
     and "pre_star_lts P Q T = Some T'" and "H T"
   shows "H T'"
-  using assms unfolding pre_star_lts_def by (rule while_option_rule)
+  using assms unfolding pre_star_lts_def while_saturate_def by (rule while_option_rule)
 
-lemma pre_star_lts_fp: "pre_star_lts P Q T = Some T' \<Longrightarrow> T' \<union> (pre_lts P Q T') = T'"
-  unfolding pre_star_lts_def using while_option_stop by fast
+lemma pre_star_lts_fp: "pre_star_lts P Q T = Some T' \<Longrightarrow> pre_lts P Q T' \<subseteq> T'"
+  unfolding pre_star_lts_def while_saturate_def using while_option_stop by fast
 
 lemma pre_star_lts_mono: "pre_star_lts P Q T = Some T' \<Longrightarrow> T \<subseteq> T'"
   by (rule pre_star_lts_rule) blast+
@@ -78,20 +78,8 @@ lemma pre_star_lts_reachable:
 lemma states_pre_lts: assumes "states_lts T \<subseteq> Q" shows "states_lts (pre_lts P Q T) \<subseteq> Q"
 using steps_states_lts[OF assms] unfolding pre_lts_def states_lts_def by auto
 
-lemma states_pre_star_lts:
-  assumes "pre_star_lts P Q T = Some T'" and "states_lts T \<subseteq> Q"
-  shows "states_lts T' \<subseteq> Q"
-apply (rule pre_star_lts_rule[OF _ assms(1)])
- apply (simp add: states_lts_Un states_pre_lts)
-by(fact assms(2))
-
 
 subsection\<open>Correctness\<close>
-
-lemma pre_lts_keeps:
-  assumes "q' \<in> steps_lts T \<beta> q"
-  shows "q' \<in> steps_lts (T \<union> pre_lts P Q T) \<beta> q"
-  using assms steps_lts_mono by (metis insert_absorb insert_subset sup_ge1)
 
 lemma pre_lts_prod:
   assumes "(A, \<beta>) \<in> P" and "q \<in> Q" and "q' \<in> Q" and "q' \<in> steps_lts T \<beta> q"
@@ -120,7 +108,7 @@ proof -
     by (rule pre_lts_prod; use q1_reach q2_reach assms(2) prod step_\<beta> in blast)
   moreover have "q1 \<in> steps_lts (T \<union> pre_lts P Q T) w\<^sub>p q"
       and "q' \<in> steps_lts (T \<union> pre_lts P Q T) w\<^sub>s q2"
-    using step_w\<^sub>p step_w\<^sub>s pre_lts_keeps by fast+
+    using step_w\<^sub>p step_w\<^sub>s steps_lts_union by fast+
   ultimately have "q' \<in> steps_lts (T \<union> pre_lts P Q T) w\<^sub>\<alpha> q"
     unfolding w\<^sub>\<alpha>_split using Steps_lts_join3 by fast
   then show ?thesis .
@@ -128,29 +116,14 @@ qed
 
 lemma pre_lts_fp:
   assumes "P \<turnstile> w\<^sub>\<alpha> \<Rightarrow>* w\<^sub>\<beta>" and "reachable_from T q \<subseteq> Q" and "q' \<in> steps_lts T w\<^sub>\<beta> q"
-    and fp: "T \<union> pre_lts P Q T = T"
+    and fp: "pre_lts P Q T \<subseteq> T"
   shows "q' \<in> steps_lts T w\<^sub>\<alpha> q"
 proof (insert assms, induction rule: converse_rtranclp_induct[where r="derive P"])
   case base thus ?case by simp
 next
   case (step y z)
   then show ?case
-    using pre_lts_pre by fastforce
-qed
-
-lemma pre_lts_while:
-  assumes "P \<turnstile> w\<^sub>\<alpha> \<Rightarrow>* w\<^sub>\<beta>" and "reachable_from T q \<subseteq> Q" and "q' \<in> steps_lts T w\<^sub>\<beta> q"
-    and "pre_star_lts P Q T = Some T'"
-  shows "q' \<in> steps_lts T' w\<^sub>\<alpha> q"
-proof -
-  have "T' \<union> pre_lts P Q T' = T'"
-    using assms(4) by (rule pre_star_lts_fp)
-  moreover have "reachable_from T' q \<subseteq> Q"
-    using assms(2,4) pre_star_lts_reachable by fast
-  moreover have "q' \<in> steps_lts T' w\<^sub>\<beta> q"
-    by (rule steps_lts_mono'[where T\<^sub>1=T]; use assms(3,4) pre_star_lts_mono in blast)
-  ultimately show ?thesis
-    using assms(1) pre_lts_fp by fast
+    using pre_lts_pre by (metis sup.order_iff)
 qed
 
 lemma pre_lts_sub_aux:
@@ -252,7 +225,7 @@ next
     using steps_lts_mono pre_star_lts_mono assms by (metis in_mono)
   moreover have "reachable_from T' q\<^sub>0 \<subseteq> Q"
     using assms pre_star_lts_reachable by fast
-  moreover have "T' \<union> pre_lts P Q T' = T'"
+  moreover have "pre_lts P Q T' \<subseteq> T'"
     by (rule pre_star_lts_fp; use assms(2) in simp)
   moreover note \<open>P \<turnstile> w \<Rightarrow>* w'\<close>
   ultimately have "q\<^sub>f \<in> steps_lts T' w q\<^sub>0"
@@ -264,36 +237,22 @@ qed
 
 subsection\<open>Termination\<close>
 
-lemma while_option_finite_subset_Some':
-  fixes C :: "'a set"
-  assumes "mono f" and "\<And>X. X \<subseteq> C \<Longrightarrow> f X \<subseteq> C" and "finite C" and "S \<subseteq> C" and "\<And>X. X \<subseteq> f X"
-  shows "\<exists>P. while_option (\<lambda>A. f A \<noteq> A) f S = Some P"
-proof (rule measure_while_option_Some[where
-    f= "%A::'a set. card C - card A" and P= "%A. A \<subseteq> C \<and> A \<subseteq> f A" and s=S])
-  fix A assume A: "A \<subseteq> C \<and> A \<subseteq> f A" "f A \<noteq> A"
-  show "(f A \<subseteq> C \<and> f A \<subseteq> f (f A)) \<and> card C - card (f A) < card C - card A"
-    (is "?L \<and> ?R")
-  proof
-    show ?L by (metis A(1) assms(2) monoD[OF \<open>mono f\<close>])
-    show ?R by (metis A assms(2,3) card_seteq diff_less_mono2 equalityI linorder_le_less_linear rev_finite_subset)
-  qed
-qed (simp add: assms)
-
 lemma pre_star_lts_terminates:
   fixes P :: "('n, 't) Prods" and Q :: "'s set" and T\<^sub>0 :: "('s, ('n, 't) sym) lts"
   assumes "finite P" and "finite Q" and "finite T\<^sub>0" and "states_lts T\<^sub>0 \<subseteq> Q"
   shows "\<exists>T. pre_star_lts P Q T\<^sub>0 = Some T"
 proof -
   define b :: "('s, ('n, 't) sym) lts \<Rightarrow> bool" where
-    [simp]: "b = (\<lambda>T. T \<union> pre_lts P Q T \<noteq> T)"
+    [simp]: "b = (\<lambda>T. \<not> pre_lts P Q T \<subseteq> T)"
   define f :: "('s, ('n, 't) sym) lts \<Rightarrow> ('s, ('n, 't) sym) lts" where
-    [simp]: "f = (\<lambda>T. T \<union> pre_lts P Q T)"
+    [simp]: "f = pre_lts P Q"
   then have "mono f"
     unfolding mono_def pre_lts_def
     by (smt (verit, ccfv_threshold) UnCI UnE in_mono mem_Collect_eq Steps_lts_mono2 subsetI)
 
   define U :: "('s, ('n, 't) sym) lts" where
     "U = { (q, Nt A, q') | q q' A. q \<in> Q \<and> (\<exists>\<beta>. (A, \<beta>) \<in> P \<and> q' \<in> Q)} \<union> T\<^sub>0"
+  have "T\<^sub>0 \<subseteq> U" by(simp add: U_def)
   have "\<And>p a q. (p,a,q) \<in> T\<^sub>0 \<Longrightarrow> p \<in> Q \<and> q \<in> Q"
     using assms(4) unfolding states_lts_def by auto
   then have "pre_lts P Q T \<subseteq> U" if asm: "T \<subseteq> U" for T
@@ -322,12 +281,12 @@ proof -
       by (simp add: U_def assms)
   qed
 
-  note criteria = \<open>finite U\<close> U_def f_def U_bounds \<open>mono f\<close>
-  have "\<exists>P. while_option (\<lambda>A. f A \<noteq> A) f T\<^sub>0 = Some P"
-    by (rule while_option_finite_subset_Some'[where C=U]; use criteria in blast)
-  then show ?thesis
-    by (simp add: pre_star_lts_def)
+  show ?thesis
+    unfolding pre_star_lts_def
+    using while_saturate_finite_subset_Some[of f U, OF \<open>mono f\<close> U_bounds \<open>finite U\<close> \<open>T\<^sub>0 \<subseteq> U\<close>]
+    by (simp)
 qed
+
 
 subsection \<open>The Automaton Level\<close>
 
@@ -405,5 +364,5 @@ proof -
   ultimately show ?thesis
     by blast
 qed
-
+unused_thms
 end
