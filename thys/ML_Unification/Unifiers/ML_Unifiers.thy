@@ -17,8 +17,8 @@ ML_file\<open>var_higher_order_pattern_unification.ML\<close>
 subparagraph \<open>Unification via Simplification\<close>
 
 lemma eq_if_SIMPS_TO_UNIF_if_SIMPS_TO_UNIF:
-  assumes "PROP SIMPS_TO_UNIF t t'"
-  and "PROP SIMPS_TO_UNIF s t'"
+  assumes "t \<equiv>\<^sup>?> t'"
+  and "s \<equiv>\<^sup>?> t'"
   shows "s \<equiv> t"
   using assms by (simp add: SIMPS_TO_eq SIMPS_TO_UNIF_eq)
 

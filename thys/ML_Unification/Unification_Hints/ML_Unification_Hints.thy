@@ -43,8 +43,8 @@ when looking for hints are accessible via @{attribute rec_uhint}.
 \<^emph>\<open>Note:\<close> when we retrieve a potential unification hint with conclusion \<open>lhs \<equiv> rhs\<close> for a goal
 \<open>lhs' \<equiv> rhs'\<close>, we consider those hints whose lhs or rhs potentially higher-order unifies with
 lhs' or rhs' \<^emph>\<open>without using hints\<close>. For otherwise, any hint \<open>lhs \<equiv> rhs\<close> applied to a goal
-\<open>rhs \<equiv> lhs\<close> leads to an immediate loop. The retrieval can be further restricted and modified by
-via the retrieval setting of @{attribute rec_uhint}.\<close>
+\<open>rhs \<equiv> lhs\<close> leads to an immediate loop. The retrieval can be further restricted and modified with
+the retrieval setting of @{attribute rec_uhint}.\<close>
 
 declare [[ucombine \<open>Standard_Unification_Combine.eunif_data
   (Standard_Unification_Combine.metadata Standard_Unification_Hints_Rec.binding Prio.LOW,

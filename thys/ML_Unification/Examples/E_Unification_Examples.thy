@@ -21,11 +21,11 @@ inductive_set even :: "nat set" where
 zero: "0 \<in> even" |
 step: "n \<in> even \<Longrightarrow> Suc (Suc n) \<in> even"
 
-text \<open>Premises of the form @{term "SIMPS_TO_UNIF lhs rhs"} are solved by
+text \<open>Premises of the form @{term "lhs \<equiv>\<^sup>?> rhs"} are solved by
 @{ML_structure Simplifier_Unification}. It first normalises @{term lhs} and then unifies the
 normalisation with @{term rhs}. See also @{theory ML_Unification.ML_Unification_HOL_Setup}.\<close>
 
-lemma [uhint prio: Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> PROP SIMPS_TO_UNIF (n - 1) m \<Longrightarrow> n \<equiv> Suc m"
+lemma [uhint prio: Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> n - 1 \<equiv>\<^sup>?> m \<Longrightarrow> n \<equiv> Suc m"
   unfolding SIMPS_TO_UNIF_eq by linarith
 
 text \<open>By default, below unification methods use

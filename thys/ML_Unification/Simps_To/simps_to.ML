@@ -31,7 +31,7 @@ val dest_SIMPS_TO = \<^Const_fn>\<open>SIMPS_TO _ for lhs rhs => \<open>(lhs, rh
 val cdest_SIMPS_TO = Thm.dest_comb #>> Thm.dest_arg
 
 fun mk_SIMPS_TO_cprop (clhs, crhs) = \<^instantiate>\<open>'a = \<open>Thm.ctyp_of_cterm clhs\<close> and clhs and crhs
-  in cprop\<open>PROP (SIMPS_TO clhs crhs)\<close> for clhs :: 'a\<close>
+  in cprop\<open>clhs \<equiv>> crhs\<close> for clhs :: 'a\<close>
 
 val finish_thm = @{thm SIMPS_TOI}
 
