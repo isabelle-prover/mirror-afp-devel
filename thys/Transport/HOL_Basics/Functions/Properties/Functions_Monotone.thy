@@ -60,7 +60,7 @@ lemma mono_wrt_rel_eq_dep_mono_wrt_rel:
 
 lemma mono_wrt_rel_eq_dep_mono_wrt_rel_uhint [uhint]:
   assumes "R \<equiv> R'"
-  and "S' \<equiv> (\<lambda>(_ :: 'a) (_ :: 'a). S)"
+  and "\<And>x y. S' x y \<equiv> S"
   shows "((R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (S :: 'b \<Rightarrow> 'b \<Rightarrow> bool)) = ((x y \<Colon> R') \<Rightarrow> S' x y)"
   using assms by (simp add: mono_wrt_rel_eq_dep_mono_wrt_rel)
 
@@ -200,6 +200,20 @@ corollary Dep_Fun_Rel_pred_self_iff_dep_mono_wrt_pred:
   using dep_mono_wrt_pred_if_Dep_Fun_Rel_pred_self
     Dep_Fun_Rel_pred_self_if_dep_mono_wrt_pred by blast
 
+lemma dep_mono_wrt_rel_eq_Dep_Fun_Rel_rel [uhint]:
+  assumes "R \<equiv> R'"
+  and "\<And>x y. S x y \<equiv> S' x y"
+  and "f \<equiv> f'"
+  shows "((x y \<Colon> R) \<Rightarrow> S x y) f \<equiv> ((x y \<Colon> R') \<Rrightarrow> S' x y) f' f'"
+  using assms unfolding Dep_Fun_Rel_rel_self_iff_dep_mono_wrt_rel atomize_eq by auto
+
+lemma dep_mono_wrt_pred_eq_Dep_Fun_Rel_pred [uhint]:
+  assumes "P \<equiv> P'"
+  and "\<And>x y. Q x y \<equiv> Q' x y y"
+  and "f \<equiv> f'"
+  shows "((x : P) \<Rightarrow> Q x) f \<equiv> ((x : P') \<Rrightarrow> Q' x) f' f'"
+  using assms unfolding Dep_Fun_Rel_pred_self_iff_dep_mono_wrt_pred atomize_eq by auto
+
 lemma dep_mono_wrt_rel_inv_eq [simp]:
   "((y x \<Colon> R\<inverse>) \<Rightarrow> (S x y)\<inverse>) = ((x y \<Colon> R) \<Rightarrow> S x y)"
   by (intro ext) force
@@ -215,6 +229,20 @@ end
 context
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b"
 begin
+
+lemma mono_wrt_rel_eq_Fun_Rel_rel [uhint]:
+  assumes "R \<equiv> R'"
+  and "S \<equiv> S'"
+  and "f \<equiv> f'"
+  shows "(R \<Rightarrow> S) f \<equiv> (R' \<Rrightarrow> S') f' f'"
+  using assms by (urule dep_mono_wrt_rel_eq_Dep_Fun_Rel_rel)
+
+lemma mono_wrt_pred_eq_Fun_Rel_pred [uhint]:
+  assumes "P :: _ \<Rightarrow> bool \<equiv> P'"
+  and "\<And>y. Q y \<equiv> Q' y y"
+  and "f \<equiv> f'"
+  shows "(P \<Rightarrow> Q) f \<equiv> (P' \<Rrightarrow> Q') f' f'"
+  using assms by (urule dep_mono_wrt_pred_eq_Dep_Fun_Rel_pred)
 
 corollary in_dom_if_in_dom_if_mono_wrt_rel:
   assumes "(R \<Rightarrow> S) f"
