@@ -512,7 +512,7 @@ declare [[zip_init_gc \<open>
       NONE)
     (*FIXME: why is the simplifier raising Option.Option and ERROR exceptions in some cases?*)
     fun handle_exn ctxt exn = (@{log Logger.WARN Zip.Simp.logger} ctxt
-      (fn _ => "Simplifier raised unexpected " ^ exn ^ "exception. Returning NONE instead.");
+      (fn _ => "Simplifier raised unexpected " ^ exn ^ " exception. Returning NONE instead.");
       NONE)
     fun handle_exns_sq ctxt sq = Seq.make (fn _ =>
       sq |> Seq.pull |> Option.map (apsnd (handle_exns_sq ctxt))

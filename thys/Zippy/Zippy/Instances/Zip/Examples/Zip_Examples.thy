@@ -104,11 +104,40 @@ fun foo :: "nat \<Rightarrow> nat" where
 lemma "foo n + foo m < 4"
   by (zip cases n rule: foo.cases and m rule: foo.cases)
 
-text \<open>You may also use patterns of the shape (pattern - anti-patterns):\<close>
+text \<open>You may also use patterns of the shape (pattern - anti-patterns). All terms occurring in the
+goal that (1) satisfy the pattern and (2) do not satisfy any of the anti-patterns are then taken as
+instantiation candidates:\<close>
 
 lemma "foo n + foo m < 4"
   \<comment> \<open>matches natural numbers, but no applications (e.g. @{term "foo n"})\<close>
   by (zip cases (pat) ("_ :: nat" - "_ _") rule: foo.cases)
+
+text \<open>Note that for a function \<open>f\<close> with multiple arguments, the function package creates a cases
+rule \<open>f.cases\<close> where \<open>f\<close>'s arguments are tupled and equated to a single variable. Example:\<close>
+
+fun bar :: "nat \<Rightarrow> bool \<Rightarrow> nat" where
+  "bar 0 _ = 0"
+| "bar (Suc 0) True = 1"
+| "bar (Suc 0) False = 0"
+| "bar (Suc (Suc n)) b = 1"
+
+thm bar.cases (*put your cursor on the theorem*)
+
+text \<open>As a result \<open>cases "n :: nat" "b :: bool" rule: bar.cases\<close> will raise an error:
+The cases rule requires a @{typ "nat \<times> bool"} pair for instantiation. The right invocation is
+\<open>cases "(n, b)" rule: bar.cases\<close>.
+
+Moreover, the invocation \<open>cases (pat) "(?n :: nat, ?b :: nat)" rule: bar.cases\<close> will not find any
+matches in a goal term @{term "bar n b < 2"} since no @{typ "nat \<times> bool"} pair occurs in the goal.
+The solution is to transform the cases rule to the desired form with @{attribute deprod_cases}:
+\<close>
+
+thm bar.cases[deprod_cases] (*put your cursor on the theorem*)
+
+lemma "bar n b < 2"
+  by (zip cases (pat) "_ :: nat" "_ :: bool" rule: bar.cases[deprod_cases])
+  (*below invocation does not work, as explained above*)
+  (* by (zip cases (pat) "(?n :: nat, ?b :: nat)" rule: bar.cases) *)
 
 text \<open>You may even use predicates on term zippers (see @{ML_structure Term_Zipper}):\<close>
 
