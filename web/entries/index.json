@@ -38,6 +38,22 @@
   "year": "2025"
  },
  {
+  "abstract": "This project formally verifies the Discrete Upper Confidence Bound (UCB) algorithm in Isabelle/Higher-order Logic (HOL), focusing on its probabilistic guarantees and regret bounds. The work extends Isabelle/HOLs probabilistic framework and explores verification of discrete-time bandit models following [1]. This research advances the formal verification of probabilistic algorithms in reinforcement learning.",
+  "authors": [
+   "Arjan Faber"
+  ],
+  "link": "/entries/Discrete-UCB.html",
+  "shortname": "Discrete-UCB",
+  "title": "Discrete Upper Confidence Bound Algorithm in HOL",
+  "topic_links": [
+   "/topics/computer-science/machine-learning/"
+  ],
+  "topics": [
+   "Computer science/Machine learning"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "In complex analysis, one often has to manipulate paths, i.e. curves in the complex plane. This entry defines three useful relations on paths:\nan equivalence relation $\\equiv_{\\text{p}}$ that describes that two paths are the same up to reparametrisation a preorder $\\leq_{\\text{p}}$ that expresses the notion that one path is a subpath of another an equivalence relation $\\equiv_{\\bigcirc}$ that describes equivalence of closed paths up to reparametrisation and “shifting” (e.g. if we have a rectangular path, it does not matter which corner we start in) It also provides the path tactic, which proves or simplifies some common proof obligations for composite paths. Namely:\nproving $\\equiv_{\\text{p}}$, $\\leq_{\\text{p}}$, $\\equiv_{\\bigcirc}$ proving well-definedness of paths (path, valid_path) determining the image of a path (path_image) showing that a path is not self-intersecting (arc, simple_path) decomposing integrals on a composite path into the integrals on the constituent paths ",
   "authors": [
    "Manuel Eberl"

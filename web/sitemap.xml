@@ -14,6 +14,9 @@
     <loc>https://isa-afp.org/entries/Neural_Networks.html</loc>
     <lastmod>2025-11-09T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Discrete-UCB.html</loc>
+    <lastmod>2025-10-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Path_Automation.html</loc>
     <lastmod>2025-10-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -2979,6 +2982,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/arith_prog_rel_primes/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/faber/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/heller/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/weidner/</loc>
@@ -3618,6 +3623,8 @@
     <loc>https://isa-afp.org/sessions/dirichlet_series/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/discrete_summation/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/discrete-ucb/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/discretepricing/</loc>
   </url><url>
