@@ -504,7 +504,7 @@ text
 
 lemma uppr_rlin2:
   assumes rlinbin: "rlin_bin ps'"
-    and uppr_ps': "unit_elim_rel ps' ps"
+    and uppr_ps': "Unit_elim_rel ps' ps"
   shows "rlin2 ps"
 proof - 
   from rlinbin have "rlin2 (ps' - {(A,w) \<in> ps'. \<exists>B. w = [Nt B]})"
@@ -518,7 +518,7 @@ proof -
   from 1 2 have "rlin2 (Unit_rm ps' \<union> New_prods ps')"
     unfolding rlin2_def by auto
   with uppr_ps' have "rlin2 ps"
-    by (simp add: unit_elim_rel_def)
+    by (simp add: Unit_elim_rel_def)
   thus ?thesis .
 qed
 
