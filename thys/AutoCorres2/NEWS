@@ -3,6 +3,45 @@ AutoCorres / C-Parser NEWS -- history of user-relevant changes
 
 (Note: Isabelle/jEdit shows a tree-view of the NEWS file in Sidekick.)
 
+New in Version for Isabelle2025-1
+
+*** CParser ***
+* Support for some forms of "statement-expressions", cf:
+  tests/proof-tests/statement_expression.thy
+* More support for side-effects in expressions:
+  * side-effets like ++/-- and assignment like (x = y = z) allowed only
+  for local variables. Checks for non-overlapping local variables
+  are performed by the c parser.
+  * More rigorous checks for function calls in expressions:
+  Global variables my not overlap.
+  - tests/proof-tests/side_effect_assignment.thy
+  - test/cparser/sideeffects_reject
+* Crosscheck struct / union layout with clang:
+  When clang is detected on the system (configured by option:
+    clang_path) we check that the sizes / alignment and field offsets 
+  of structs and unions coincide with the calculations of our c parser.
+  You can completely omit these checks by: declare [[clang_path=""]]
+  As clang only emits the layout data for structs / unions that it 
+  considers to be actually used you might have to add some wrapper
+  function to your C file that uses these types, e.g. as local variable.
+* Support for BitInt types (C23).
+  Bit precise arithmetic is used within expressions. Whenever
+  BitInt types are stored to memory (or used as local variables) 
+  they are coerced to the correspoining larger integer type of the next 
+  power of 2; cf:
+  tests/proof-tests/bitint.thy
+
+
+*** CParser / AutoCorres ***
+* Renovated and unified treatment of function pointer use cases.
+  Less excessive use of locales to avoid performance issues. We
+  now adopt a "closed-world" approach. Function pointers can only
+  call functions that are visible in the C files. To handle 
+  "unknown" targets you can use C function prototypes. You
+  can define specifications for those function porototypes for
+  autocorres by overloading and command declare_prototype, cf:
+  tests/proof-tests/fnptr_proto.thy.
+
 
 New in Version for Isabelle2025
 

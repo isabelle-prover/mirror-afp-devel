@@ -11,11 +11,6 @@ begin
 
 install_C_file "jiraver443a.c"
 
-context jiraver443a_simpl
-begin
-
 thm get_body_def
-
-end (* context *)
 
 end

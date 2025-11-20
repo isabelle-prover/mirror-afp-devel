@@ -22,7 +22,7 @@ const fnptr_t array[] =
     inc, dec, inc, dec, inc, dec, inc, dec, inc, dec,
   };
 
-void main(int *x) {
+void main1(int *x) {
   int i = *x;
   if (i < sizeof(array))
     array[i](x);

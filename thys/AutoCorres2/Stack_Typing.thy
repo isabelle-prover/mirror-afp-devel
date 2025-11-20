@@ -10,6 +10,19 @@ theory Stack_Typing
 imports L2Defs Runs_To_VCG
 begin
 
+definition of_buffer_heap ::
+  "heap_mem \<Rightarrow> 'a::c_type ptr \<Rightarrow> nat \<Rightarrow> 'a::c_type list"
+  where
+    "of_buffer_heap h (ptr::'a::c_type  ptr) (len::nat) =
+      map (\<lambda>i. h_val h (ptr +\<^sub>p (int i))) [0 ..< len]"
+
+lemma buffer_ptrs_eq_of_buffer_heap_eq:  
+  assumes dom_eq: "\<And>q. q \<in> buffer_ptrs p n \<Longrightarrow> h_val h1 q = h_val h2 q "
+  shows "of_buffer_heap h1 p n = of_buffer_heap h2 p n"
+  using dom_eq index_in_buffer_ptrs
+  by (force simp add: of_buffer_heap_def)
+
+
 definition equal_upto:: "'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool" where
  "equal_upto S f g = (\<forall>x. x \<notin> S \<longrightarrow> f x = g x)"
 
@@ -62,15 +75,26 @@ declare meq_def [unchanged_typing_on_simps]
 ML \<open>
 structure Unchanged_Typing =
 struct
+val d1 = Unsynchronized.ref false;
+val d2 = Unsynchronized.ref false;
 fun unchanged_typing_tac splitter ctxt =
   let
     val unchanged_typing_on_simps = Named_Theorems.get ctxt @{named_theorems unchanged_typing_on_simps}
     val unchanged_typing = Named_Theorems.get ctxt @{named_theorems unchanged_typing}
+    val _ = if not (!d1) then () else
+      let
+        val runs_to_vcg = Named_Rules.get ctxt @{named_rules runs_to_vcg}
+        val _ = tracing (big_list_of_thms "unchanged_typing_on_simps" ctxt unchanged_typing_on_simps)
+        val _ = tracing (big_list_of_thms "unchanged_typing" ctxt unchanged_typing)
+        val _ = tracing (big_list_of_thms "runs_to_vcg" ctxt runs_to_vcg)
+      in () end
+      
     val vcg_attrs = map (Attrib.attribute ctxt) @{attributes [runs_to_vcg]}
     val (_, ctxt) = ctxt |> fold_map (Thm.proof_attributes vcg_attrs) unchanged_typing
     val ctxt = ctxt addsimps unchanged_typing_on_simps
+         |> !d2 ? Config.put Simplifier.simp_trace true
 
-    val trace_tac = Runs_To_VCG.no_trace_tac
+    val trace_tac = if !d1 then Runs_To_VCG.trace_print_tac else Runs_To_VCG.no_trace_tac
     fun solver_tac ctxt = ALLGOALS (asm_full_simp_tac ctxt)
   in
     Runs_To_VCG.runs_to_vcg_tac splitter (~1) trace_tac false
@@ -447,6 +471,30 @@ lemma h_val_frame_disjoint_globals:
   subgoal using assms by blast
   subgoal using assms by blast
   done
+
+lemma of_buffer_heap_frame_disjoint: 
+  fixes p::"'a::mem_type ptr"
+  assumes disj_A: "ptr_span_buffer p n \<inter> A = {}"
+  assumes disj_stack: "ptr_span_buffer p n \<inter> stack_free (htd s) = {}"
+  shows "of_buffer_heap (hmem (frame A s\<^sub>0 s)) p n = of_buffer_heap (hmem s) p n"
+  apply (rule buffer_ptrs_eq_of_buffer_heap_eq)
+  apply (rule h_val_frame_disjoint)
+  subgoal
+    using disj_A buffer_ptrs_ptr_span_buffer by blast
+  subgoal
+    using disj_stack buffer_ptrs_ptr_span_buffer by blast
+  done
+
+lemma of_buffer_frame_disjoint_globals: 
+  fixes p::"'a::mem_type ptr"
+  assumes "\<G> \<inter> A = {}" "\<G> \<inter> stack_free (htd s) = {}" 
+  assumes "ptr_span_buffer p n \<subseteq> \<G>"
+  shows "of_buffer_heap (hmem (frame A s\<^sub>0 s)) p n = of_buffer_heap (hmem s) p n"
+  apply (rule of_buffer_heap_frame_disjoint)
+  subgoal using assms by blast
+  subgoal using assms by blast
+  done
+
 
 lemma frame_heap_update_padding: 
   fixes p::"'a::mem_type ptr"

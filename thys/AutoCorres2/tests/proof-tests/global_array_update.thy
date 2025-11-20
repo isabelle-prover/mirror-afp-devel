@@ -12,12 +12,9 @@ autocorres [ignore_addressable_fields_error]"global_array_update.c"
 
 print_record lifted_globals
 
-context global_array_update_all_impl 
-begin
 thm bar'_def bar2'_def
-end
 
-lemma (in ts_definition_bar) "\<forall>a\<in>set (array_addrs (PTR_COERCE(32 signed word[1024] \<rightarrow> 32 signed word) foo_') 1024).
+lemma "\<forall>a\<in>set (array_addrs (PTR_COERCE(32 signed word[1024] \<rightarrow> 32 signed word) foo_') 1024).
                ptr_valid (heap_typing s) ((ptr_coerce a)::32 word ptr) \<Longrightarrow>
           bar' \<bullet> s
        \<lbrace> \<lambda>_ s. heap_w32 s (ptr_coerce ( (PTR_COERCE(32 signed word[1024] \<rightarrow> 32 signed word) foo_') +\<^sub>p 3)) = 42 \<rbrace>"

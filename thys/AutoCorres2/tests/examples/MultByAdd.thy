@@ -21,7 +21,7 @@ lemmas runs_to_whileLoop2 =  runs_to_whileLoop_res' [split_tuple C and B arity: 
  * Prove the function returns the correct result, and (simultaneously)
  * does not fail and terminates.
  *)
-lemma (in ts_definition_mult_by_add) "mult_by_add' a b \<bullet> s\<lbrace> \<lambda>r s. r = Result (a * b) \<rbrace>"
+lemma "mult_by_add' a b \<bullet> s\<lbrace> \<lambda>r s. r = Result (a * b) \<rbrace>"
   (* Unfold function definition. *)
   apply (clarsimp simp: mult_by_add'_def)
   apply runs_to_vcg
@@ -41,7 +41,9 @@ lemma (in ts_definition_mult_by_add) "mult_by_add' a b \<bullet> s\<lbrace> \<la
 (*
  * Equivalent partial-correctness proof using Simpl framework.
  *)
-lemma (in mult_by_add_impl) "\<Gamma> \<turnstile> {s. s = t} \<acute>ret' :== CALL mult_by_add(\<acute>a, \<acute>b) \<lbrace> (\<acute>ret' = \<^bsup>t\<^esup>a * \<^bsup>t\<^esup>b) \<rbrace>"
+lemma (in mult_by_add_global_addresses)
+  includes mult_by_add_variables
+  shows "\<Gamma> \<turnstile> {s. s = t} \<acute>ret' :== CALL mult_by_add(\<acute>a, \<acute>b) \<lbrace> (\<acute>ret' = \<^bsup>t\<^esup>a * \<^bsup>t\<^esup>b) \<rbrace>"
   (* Unfold the body. *)
   apply vcg_step
    defer

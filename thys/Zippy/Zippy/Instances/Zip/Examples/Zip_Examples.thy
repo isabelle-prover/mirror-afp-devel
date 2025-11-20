@@ -26,7 +26,8 @@ Like @{method auto}, @{method zip} supports non-terminal calls and interactive p
 
 subsection \<open>Examples\<close>
 
-text \<open>Note: some examples in this files are adapted from @{theory HOL.List}.\<close>
+text \<open>Note: some examples in this files are adapted from @{theory HOL.List}. Some original proofs
+from @{theory HOL.List} are left in comments and tagged with "ORIG" for comparison.\<close>
 
 experiment
 begin
@@ -97,21 +98,51 @@ lemma "tl xs \<noteq> [] \<longleftrightarrow> xs \<noteq> [] \<and> \<not>(\<ex
 
 fun foo :: "nat \<Rightarrow> nat" where
   "foo 0 = 0"
-| "foo (Suc _) = 1"
+| "foo (Suc 0) = 1"
+| "foo (Suc (Suc n)) = 1"
 
 lemma "foo n + foo m < 4"
-  by (zip cases n and m)
+  by (zip cases n rule: foo.cases and m rule: foo.cases)
 
-text \<open>You may also use patterns of the shape (pattern, anti-patterns):\<close>
+text \<open>You may also use patterns of the shape (pattern - anti-patterns). All terms occurring in the
+goal that (1) satisfy the pattern and (2) do not satisfy any of the anti-patterns are then taken as
+instantiation candidates:\<close>
 
 lemma "foo n + foo m < 4"
   \<comment> \<open>matches natural numbers, but no applications (e.g. @{term "foo n"})\<close>
-  by (zip cases (pat) ("_ :: nat", "_ _"))
+  by (zip cases (pat) ("_ :: nat" - "_ _") rule: foo.cases)
 
-text \<open>You may even use predicates:\<close>
+text \<open>Note that for a function \<open>f\<close> with multiple arguments, the function package creates a cases
+rule \<open>f.cases\<close> where \<open>f\<close>'s arguments are tupled and equated to a single variable. Example:\<close>
+
+fun bar :: "nat \<Rightarrow> bool \<Rightarrow> nat" where
+  "bar 0 _ = 0"
+| "bar (Suc 0) True = 1"
+| "bar (Suc 0) False = 0"
+| "bar (Suc (Suc n)) b = 1"
+
+thm bar.cases (*put your cursor on the theorem*)
+
+text \<open>As a result \<open>cases "n :: nat" "b :: bool" rule: bar.cases\<close> will raise an error:
+The cases rule requires a @{typ "nat \<times> bool"} pair for instantiation. The right invocation is
+\<open>cases "(n, b)" rule: bar.cases\<close>.
+
+Moreover, the invocation \<open>cases (pat) "(?n :: nat, ?b :: nat)" rule: bar.cases\<close> will not find any
+matches in a goal term @{term "bar n b < 2"} since no @{typ "nat \<times> bool"} pair occurs in the goal.
+The solution is to transform the cases rule to the desired form with @{attribute deprod_cases}:
+\<close>
+
+thm bar.cases[deprod_cases] (*put your cursor on the theorem*)
+
+lemma "bar n b < 2"
+  by (zip cases (pat) "_ :: nat" "_ :: bool" rule: bar.cases[deprod_cases])
+  (*below invocation does not work, as explained above*)
+  (* by (zip cases (pat) "(?n :: nat, ?b :: nat)" rule: bar.cases) *)
+
+text \<open>You may even use predicates on term zippers (see @{ML_structure Term_Zipper}):\<close>
 
 lemma "foo n + foo m < 4"
-  by (zip cases (pred) "member (op =) [@{term n}, @{term m}]")
+  by (zip cases (pred) "fst #> member (op =) [@{term n}, @{term m}]" rule: foo.cases)
 
 text \<open>You can use induction:\<close>
 
@@ -121,16 +152,17 @@ lemma "foo n + foo m < 4"
 text \<open>Again, you may also use patterns and predicates:\<close>
 
 lemma "foo n + foo m < 4"
-  by (zip induct (pat) ("_ :: nat", "_ _"))
+  by (zip induct (pat) ("_ :: nat" - "_ _") rule: foo.induct)
 
-text \<open>Here are some more complex combinations (original codes are marked with ORIG in the following).
-Note that configurations for different actions are separated by \<^emph>\<open>where\<close>.\<close>
+text \<open>Here are some more complex combinations (the original code from the standard library is marked
+with ORIG in the following).  Note that configurations for different actions are separated by
+\<^emph>\<open>where\<close>.\<close>
 
 lemma list_induct2:
   "length xs = length ys \<Longrightarrow> P [] [] \<Longrightarrow>
    (\<And>x xs y ys. length xs = length ys \<Longrightarrow> P xs ys \<Longrightarrow> P (x#xs) (y#ys))
    \<Longrightarrow> P xs ys"
-  by (zip induct xs arbitrary: ys where cases (pat) "_ :: _ list")
+  by (zip induct xs arbitrary: ys where cases (pat) ("_ :: _ list" - "[]" "_ _"))
 (*ORIG*)
 (* proof (induct xs arbitrary: ys)
   case (Cons x xs ys) then show ?case by (cases ys) simp_all
@@ -142,7 +174,7 @@ lemma list_induct2':
   \<And>y ys. P [] (y#ys);
    \<And>x xs y ys. P xs ys  \<Longrightarrow> P (x#xs) (y#ys) \<rbrakk>
  \<Longrightarrow> P xs ys"
-  by (zip induct xs arbitrary: ys where cases (pat) ("_ :: _ list", "[]" "_ _"))
+  by (zip induct xs arbitrary: ys where cases (pat) ("_ :: _ list" - "[]" "_ _"))
   (*ORIG*)
   (* by (induct xs arbitrary: ys) *)
   (* (case_tac x, auto) *)
@@ -154,7 +186,7 @@ fun gauss :: "nat \<Rightarrow> nat" where
 | "gauss (Suc n) = n + 1 + gauss n"
 
 (*Note: induction rules are always applicable and should hence only be locally registered*)
-context notes gauss.induct[zip_induct (pat) ("_ :: nat", "_ _")]
+context notes gauss.induct[zip_induct (pat) ("_ :: nat" - "_ _")]
 begin
 lemma "gauss n = (n * (n + 1)) div 2" by zip
 
@@ -171,7 +203,7 @@ lemma list_induct3:
    (\<And>x xs y ys z zs. length xs = length ys \<Longrightarrow> length ys = length zs \<Longrightarrow> P xs ys zs \<Longrightarrow> P (x#xs) (y#ys) (z#zs))
    \<Longrightarrow> P xs ys zs"
   by (induct xs arbitrary: ys zs)
-  (zip cases (pat) ("_ :: _ list", "[]") where run exec: Zip.Breadth_First.all')
+  (zip cases (pat) ("_ :: _ list" - "[]") where run exec: Zip.Breadth_First.all')
 (*ORIG*)
 (* proof (induct xs arbitrary: ys zs)
   case Nil then show ?case by simp
@@ -263,7 +295,6 @@ lemma longest_common_prefix:
   (*sledgehammer*)
   (*3. Sledgehammer proposes: "metis append_eq_Cons_conv list.sel(1) self_append_conv"*)
   (*4. We integrate the call into zip. Result:*)
-  (* apply (zip metis append_eq_Cons_conv list.sel(1) self_append_conv) *)
   apply (zip metis append_eq_Cons_conv list.sel(1) self_append_conv)
   done
   (*ORIG*)

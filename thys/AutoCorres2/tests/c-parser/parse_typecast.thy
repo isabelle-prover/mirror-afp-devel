@@ -11,8 +11,5 @@ begin
 
 install_C_file "parse_typecast.c"
 
-context parse_typecast_simpl
-begin
-thm main_body_def
-end
+thm main1_body_def
 end

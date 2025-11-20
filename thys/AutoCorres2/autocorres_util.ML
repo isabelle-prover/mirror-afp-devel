@@ -180,90 +180,133 @@ fun maybe_dest_Trueprop t =
 
 fun prev_phase_pair skips phase = (FunctionInfo.prev_phase skips phase, phase)
 
-fun check_dyn_call_goal ctxt prog_info (prev_phase, phase) = 
-  let
-     val insts = AutoCorresData.progenv_insts ctxt prog_info prev_phase |> map (AutoCorresData.dest_progenv_inst o snd)
-     fun check_head phase            (Const (@{const_name "DYN_CALL"}, _)) = true
-       | check_head FunctionInfo.L1  (Const (@{const_name "L1corres"}, _))  = true
-       | check_head FunctionInfo.L2  (Const (@{const_name "L2corres"}, _))  = true
-       | check_head FunctionInfo.L2  (Const (@{const_name "runs_to_partial"}, _))  = true
-       | check_head FunctionInfo.HL  (Const (@{const_name "L2Tcorres"}, _))  = true
-       | check_head FunctionInfo.WA  (Const (@{const_name "corresTA"}, _))  = true
-       | check_head _                _                                      = false
-  in
-    fn t =>
-      let
-        val concl = Utils.concl_of_subgoal_open t |> maybe_dest_Trueprop
-        val consts = Term.add_consts concl []
-        val head = Term.head_of concl
-      in
-        check_head phase head andalso exists (member (op =) insts) (consts) 
-      end
-      handle TERM _ => false
-  end
+fun dest_corres_progs @{term_pat "L1corres _ _ ?new ?old"} = SOME {new=new, old=old}
+  | dest_corres_progs @{term_pat "L2corres _ _ _ _ ?new ?old"} = SOME {new=new, old=old}
+  | dest_corres_progs @{term_pat "IOcorres _ _ _ _ _ ?new ?old"} = SOME {new=new, old=old}
+  | dest_corres_progs @{term_pat "L2Tcorres _ ?new ?old"} = SOME {new=new, old=old}
+  | dest_corres_progs @{term_pat "corresTA _ _ _ ?new ?old"} = SOME {new=new, old=old}
+  | dest_corres_progs @{term_pat "refines ?old ?new _ _ _"} = SOME {new=new, old=old}
+  | dest_corres_progs _ = NONE
+
+fun is_var_new (_, schematic_vars:cterm Vars.table) concl =
+  case (try HOLogic.dest_Trueprop concl) |> Option.mapPartial dest_corres_progs of
+    SOME {new, ...} => Vars.exists (fn (_, v) => Thm.term_of v = new) schematic_vars
+  | NONE => false
 
 
 fun EVERY_UNSOLVED [] i = all_tac
   | EVERY_UNSOLVED (tac::tacs) i = (tac THEN_UNSOLVED (EVERY_UNSOLVED tacs)) i
 
-fun dyn_call_split_simp_sidecondition_tac check simps intros ctxt = SUBGOAL (fn (t, i) =>
-  if check t then
-    let
-      val fun_ptr_simps = 
-              Named_Theorems.get ctxt @{named_theorems "global_const_selectors"} @
-              Named_Theorems.get ctxt @{named_theorems "fun_ptr_simps"} @
-              @{thms arr_fupdate_simps less_numeral_nat_iff_disj} @
-              @{thms c_fnptr_guard_NULL} @
-              @{thms sint_ucast_signed_eq_uint sint_ucast_eq_uint'} @
-              @{thms Numeral_Type.card_num0 Numeral_Type.card_num1 
-                     Numeral_Type.card_bit0 Numeral_Type.card_bit1
-                     unat_signed_ucast_less_ucast unat_ucast_up_simp}
+fun add_matches match (t as (u $ v)) (xs, ctxt) = (case match ctxt t of SOME x => (x::xs, ctxt) | NONE => add_matches match v (add_matches match u (xs, ctxt)))
+  | add_matches match (t as (Abs _)) (xs, ctxt) = (case match ctxt t of SOME x => (x::xs, ctxt) | NONE => 
+      let 
+        val ((_, bdy), ctxt') = Variable.dest_abs t ctxt 
+     in add_matches match bdy (xs, ctxt') end)
+  | add_matches match t (xs, ctxt) = (case match ctxt t of SOME x => (x::xs, ctxt) | NONE => (xs, ctxt))
 
-      val _ = Utils.verbose_msg 4 ctxt (fn _ => "dyn_call_split_simp_sidecondition_tac: intros:" ^ string_of_thms ctxt intros)      
-      val _ = Utils.verbose_msg 4 ctxt (fn _ => "dyn_call_split_simp_sidecondition_tac: simps:" ^ string_of_thms ctxt simps)
-      val _ = Utils.verbose_msg 4 ctxt (fn _ => "dyn_call_split_simp_sidecondition_tac: fun_ptr_simps:" ^ string_of_thms ctxt fun_ptr_simps)
-  
-      val ctxt = ctxt addsimps (fun_ptr_simps @ simps) delsimps @{thms map_of_default.simps}
-                 |> Config.get ctxt Utils.verbose >= 100 ? Config.map (Simplifier.simp_trace) (K true)
+fun notin_tac ctxt = SUBGOAL (fn (t,i) =>
+ case t |> Utils.concl_of_subgoal_open of
+  @{term_pat "Trueprop (_ \<notin> _)"} => SOLVED' (asm_full_simp_tac ctxt THEN' Utils.print_subgoal_tac "notin end" ctxt) i
+ | _ => no_tac)
 
-      val bound_rules = @{thms 
-           signed_bounds_to_nat_boundsF signed_bounds_one_to_nat
-           word_bounds_to_nat_boundsF word_bounds_one_to_nat
-           int_bounds_to_nat_boundsF int_bounds_one_to_nat}
+val d1 = Unsynchronized.ref false
+val d2 = Unsynchronized.ref false
 
-      fun dtac1 rules i = dresolve_tac ctxt rules i THEN assume_tac ctxt i
-      val guarded_prems = Assumption.all_prems_of ctxt 
-        |> filter ((fn @{term_pat "Trueprop (GUARDED_ASSM _)"} => true | _ => false) o Thm.prop_of)
-        |> map (fn thm => @{thm GUARDED_ASSM_D} OF [thm])
+val dest_map_of_default = map_of_default_args.dest_map_of_default
+val dest_assoc = map_of_default_args.dest_assoc
 
-      val known_function =  HP_TermsTypes.known_function ctxt
-      val is_known_function_case = Term.exists_subterm (fn t => t aconv known_function) t
-    in  
-      EVERY [
-        Utils.verbose_print_subgoal_tac 4 "dyn_call_split_simp_sidecondition_tac begin" ctxt i, 
-        Method.insert_tac ctxt guarded_prems i,
-        TRY (resolve_tac ctxt (@{thms DYN_CALL_I} @ intros)  i), 
-        REPEAT (eresolve_tac ctxt @{thms conjE} i),
-        REPEAT (dtac1 bound_rules i),
-        if is_known_function_case then asm_full_simp_tac ctxt i (* there was no case split *) else
-        REPEAT_ALL_NEW (CHANGED' (EVERY_UNSOLVED [
-          Utils.verbose_print_subgoal_tac 7 "dyn_call_split_simp_sidecondition_tac before simp" ctxt,
-          asm_full_simp_tac ctxt,
-          Utils.verbose_print_subgoal_tac 7 "dyn_call_split_simp_sidecondition_tac after simp" ctxt,
-          TRY' (eresolve_tac ctxt @{thms exE}),
-          TRY' (eresolve_tac ctxt @{thms conjE}),
-          TRY' (resolve_tac ctxt intros),
-          TRY' (eresolve_tac ctxt @{thms disjE})
-         ])) i,
-        Utils.verbose_print_subgoal_tac 4 "dyn_call_split_simp_sidecondition_tac end" ctxt i]
-    end
-  else no_tac)  
+fun mk_assoc (xs as ((p,f)::_)) = 
+     let
+       val pT = @{typ "unit ptr"}
+       val fT = fastype_of f
+     in
+       {xs = xs |> map HOLogic.mk_prod |> HOLogic.mk_list (HOLogic.mk_prodT (pT, fT)), pT = pT, fT = fT}
+     end
+  | mk_assoc [] = error ("mk_assoc: empty")
 
+fun mk_map_of_default {xs, fT, ...} =
+  let
+    val d = AutoCorresData.mk_default fT
+  in
+     \<^instantiate>\<open>'a = fT and d=d and xs = xs in term \<open>map_of_default (\<lambda>_::unit ptr. d) xs\<close>\<close>
+  end
 
+fun subst_atomic ctxt substs t =
+  let
+
+    val thy = Proof_Context.theory_of ctxt
+    fun rew t = case AList.lookup (op =) substs t of SOME rhs => rhs | _ => Same.same t 
+    fun do_rew t = case t of Const _ => rew t | Free _ => rew t | _ => Same.same t 
+  in Term.map_aterms do_rew t end
+
+val head_name = Term.head_of #> Term.term_name
+
+type corres_funs = {old: term, new: term}
+fun get_first_corres {dest_corres_funs: term -> corres_funs} thms old =
+  let
+    val old_name = head_name old
+  in
+    get_first (fn thm => 
+      Thm.concl_of thm |> dest_corres_funs |> (fn {new, old} => 
+        if head_name old = old_name then SOME (Term.head_of new, thm) else NONE)) 
+     thms
+  end
+
+fun check_map_of_default ct = ct |> Thm.term_of |> Utils.concl_of_subgoal_open |> 
+  exists_subterm (fn @{term_pat "map_of_default ?d ?xs ?p"} => true | _ => false)
+
+fun map_of_default_core t = 
+  case try dest_map_of_default t of 
+    SOME {map_of_default, d, fs, p, ...} => map_of_default $ d $ fs $ p
+  | _ => t
+
+fun strip_args n t =
+  let
+    val (head, args) = strip_comb t
+    val args' = rev (drop n (rev args))
+  in
+    list_comb (head, args')
+  end
+
+fun replace_arg t x = fst (Term.dest_comb t) $ x 
+ 
+
+fun mk_corres_map_of_default_thm {get_first_corres} ctxt thms map_of_default_old =
+  let
+    val {fs, d, args, ...} = map_of_default_old |> dest_map_of_default
+    val arity = length args
+    val (ptrs, olds) = dest_assoc fs |> split_list |> apsnd (map (strip_args arity))
+    val (news, relevant_thms) = map_filter (get_first_corres thms) olds |> split_list
+    val corres_top = Named_Theorems.get ctxt @{named_theorems corres_top}
+    val _ = @{assert} (length news = length olds)
+    val assoc = (ptrs ~~ news) |> mk_assoc
+    val fs' = #xs assoc
+    val d' = AutoCorresData.mk_default (@{typ  "unit ptr"} --> #fT assoc)
+    val map_of_default_new = mk_map_of_default assoc
+    val ([p], ctxt1) = Utils.fix_variant_frees [("p", @{typ "unit ptr"})] ctxt
+    val rewrs = [(hd olds, replace_arg (map_of_default_core map_of_default_old) p ), (hd news, map_of_default_new $ p)]
+    val prop = hd relevant_thms |> Thm.prop_of |> subst_atomic ctxt rewrs
+    val rule = Drule.infer_instantiate ctxt1 
+      [ (("ys", 0), Thm.cterm_of ctxt1 fs'), (("d'", 0),  Thm.cterm_of ctxt1 d'), (("p", 0), Thm.cterm_of ctxt1 p), 
+        (("xs", 0), Thm.cterm_of ctxt1 fs), (("d", 0),  Thm.cterm_of ctxt1 d)]
+      @{thm map_of_default_list_all2_cases}
+    val intros = corres_top @ @{thms list_all2_prod_cons list_all2_prod_nil conjI refl} 
+    val ([prop'], ctxt2) = Variable.import_terms false [prop] ctxt1
+    val thm = prove ctxt2 [] [] prop' (fn {context, ...} => 
+          Utils.dprint_tac (!d1) "init:" context THEN
+          ( resolve_tac context [rule] THEN_ALL_NEW 
+          REPEAT_ALL_NEW (Utils.dprint_subgoal_tac (!d1) "repeat:" context THEN' resolve_tac context (relevant_thms @ intros))) 1 THEN
+          Utils.dprint_tac (!d1) "after intros:" context) 
+      |> singleton (Proof_Context.export ctxt2 ctxt) 
+      |> Goal.norm_result ctxt
+    val _ = if (!d2) then tracing ("mk_corres_map_of_default_thm: " ^ Thm.string_of_thm ctxt thm) else ()
+  in
+    (map_of_default_new, thm)
+  end
 
 (* Measure variables are currently hardcoded as nats. *)
-val measureT = @{typ nat};
 
+val measureT = @{typ nat};
 fun split_Ball_attr phase = Thm.declaration_attribute (fn thm => fn context =>
   let
     val ctxt = Context.proof_of context
@@ -293,7 +336,7 @@ fun split_Ball_attr phase = Thm.declaration_attribute (fn thm => fn context =>
  *
  *)
 
-fun assume_called_functions_corres ctxt fn_ptr_param_callees rec_callees
+fun assume_called_functions_corres ctxt rec_callees
     get_fn_type get_fn_prop get_fn_args get_const_name  =
 let
   (* Assume the existence of a function, along with a theorem about its
@@ -321,7 +364,7 @@ let
     (* Create our assumption. *)
     val assumptions =
         get_fn_prop ctxt'' true fn_name fn_free fn_arg_terms
-        |> (fn (more_props, current_phase_prop) => (more_props @ 
+        |> (fn (current_phase_prop, params_opt) => ( 
              [current_phase_prop |> apfst 
                (fold Logic.all (rev fn_arg_terms))]))
         |> map (apfst (Sign.no_vars ctxt' #> Thm.cterm_of ctxt'))
@@ -343,8 +386,7 @@ let
         in
           ((fn_name, (free, thms)), ctxt')
         end)
-    (map (fn (f, info) => (f,  SOME info)) fn_ptr_param_callees @
-     map (fn f => (f, NONE)) (Symset.dest rec_callees))
+     (map (fn f => (f, NONE)) (Symset.dest rec_callees))
 in
   (ctxt', res)
 end
@@ -378,9 +420,6 @@ fun get_rec_callees
           |> Termtab.make;
     in get_body_callees callee_lookup body end;
 
-fun string_of_thms ctxt thms =
-  Pretty.string_of (Pretty.list "[" "]" (map (Thm.pretty_thm ctxt) thms))
-
 fun is_recursive_group infos group =
   let
     val recursive = null group orelse FunctionInfo.is_function_recursive (the (Symtab.lookup infos (hd group))) 
@@ -395,16 +434,46 @@ fun prove_induction_case tac (attrss:attribute list list) ctxt i = Subgoal.FOCUS
      tac thms ctxt
    end) ctxt i
 
-fun prove_functions is_recursive induct_thms solve_non_recursive solve_recursive ctxt props  =
+
+fun mcont_tac ctxt i =
+  REPEAT (
+  resolve_tac ctxt @{thms mcont_id'} i
+  ORELSE 
+  (resolve_tac ctxt @{thms mcont2mcont_call} i THEN 
+   TRY (EqSubst.eqsubst_tac ctxt [0]  @{thms gfp_lub_fun [symmetric]} i) THEN 
+   TRY (EqSubst.eqsubst_tac ctxt [0]  @{thms gfp_le_fun [symmetric]} i)))
+
+
+fun gen_corres_admissible_tac basic_rules ctxt = 
+  (REPEAT' (resolve_tac ctxt basic_rules)) THEN_UNSOLVED
+(*  simp_tac (Simplifier.clear_simpset ctxt addsimps @{thms gfp_lub_fun gfp_le_fun})  THEN' *)
+  (Utils.dprint_subgoal_tac (!d1) "after simp" ctxt) THEN_UNSOLVED
+  ( (REPEAT' (resolve_tac ctxt (@{thms admissible_subst_fun_lub_fun_ord} @ basic_rules)))  THEN_ALL_NEW 
+    ((Utils.dprint_subgoal_tac (!d1) "after resolve admissible_subst_fun_lub_fun_ord" ctxt) THEN' SOLVED' (mcont_tac ctxt) ORELSE' 
+      REPEAT_ALL_NEW (resolve_tac ctxt basic_rules THEN' (Utils.dprint_subgoal_tac (!d1) "after solve resolve" ctxt)))) 
+
+
+
+
+fun corres_admissible_tac ctxt =
   let
+    val structural_rules = @{thms admissible_imp admissible_all admissible_imp'}
+    val corres_rules = Named_Theorems.get ctxt @{named_theorems corres_admissible}
+    val basic_rules = structural_rules @ corres_rules
+  in
+    gen_corres_admissible_tac basic_rules ctxt
+  end
+
+fun prove_functions is_recursive induct_thms solve_non_recursive solve_recursive ctxt props  =
+  let                  
     val defs = map (#1) props
     val paramss = map (#2) props
     val arbitrary_varss = map (#3) props
     val preds = map (#1 o #4) props 
     val attrss = map (#2 o #4) props
 
+    val all_varss = map (fn (xs, ys) => xs @ ys) (paramss ~~ arbitrary_varss)
     val N = length props
-    val admissibility_thms = Named_Theorems.get ctxt @{named_theorems corres_admissible}
     val top_thms = Named_Theorems.get ctxt @{named_theorems corres_top}
 
     val defs = defs |> map (Local_Defs.abs_def_rule ctxt)
@@ -413,31 +482,34 @@ fun prove_functions is_recursive induct_thms solve_non_recursive solve_recursive
             EqSubst.eqsubst_tac context [1] defs 1 THEN
             solve_non_recursive context)
 
-    fun admissibility_tac ctxt i =
-        map length arbitrary_varss  
-        |> map (fn n =>
-             REPEAT (match_tac ctxt @{thms admissible_imp} i) THEN (* in out parameter abstraction, assumptions on params like distinct *)
-             REPEAT_DETERM_N n (match_tac ctxt @{thms admissible_all} i) THEN
-             REPEAT (match_tac ctxt @{thms admissible_imp} i) THEN (* in out parameter abstraction: assumptions on arbitrary vars, like rel_alloc *)
-             REPEAT (match_tac ctxt @{thms admissible_imp'} i) THEN
-             REPEAT (match_tac ctxt admissibility_thms i))
-        |> EVERY
-
+    fun admissibility_tac ctxt i = Seq.INTERVAL (corres_admissible_tac ctxt) i (i + N - 1)
+    val bump_unify_bound = Config.map Unify.search_bound (fn n => n * N)
+    val _ = if not (!d1) then () else
+      let
+        val _ = tracing (big_list_of_terms "prove_functions preds:" ctxt preds)
+        val _ = tracing ("all_varss: " ^ @{make_string} all_varss)
+        val _ = if (!d2) then tracing (big_list_of_thms "induct_thms:" ctxt induct_thms) else ()
+      in () end
     val thms = 
       if is_recursive then
         let
         in
           Goal.prove_common ctxt NONE [] [] preds (fn {context, prems = _} =>
-          DETERM (Induct.induct_tac context false 
-            (map (map (fn t => SOME (NONE, (t, true)))) paramss) 
-            (map (map dest_Free) arbitrary_varss) []
+          Utils.dprint_tac (!d1) "prove_functions before induct" context THEN
+          DETERM (Induct.induct_tac (bump_unify_bound context) false 
+            []
+            (map (map_filter (try dest_Free)) all_varss) []
             (SOME induct_thms) [] 1) THEN
+          Utils.dprint_tac (!d1) "prove_functions after induct" context THEN
           (* solve admissibility *)
-          admissibility_tac context 1 THEN
+          admissibility_tac (bump_unify_bound context) 1 THEN (* FIXME: instantiate admissible_subst_fun_lub_fun_ord instead of bumping unification bound *) 
+          Utils.dprint_tac (!d1) "prove_functions after admissiblity_tac" context THEN
           (* solve base-(top)-cases *)
           REPEAT_DETERM_N N (match_tac context top_thms 1) THEN
+          Utils.dprint_tac (!d1) "prove_functions after top" context THEN
           (* solve induction-cases *)
-          solve_recursive attrss context)
+          solve_recursive attrss context THEN 
+          Utils.dprint_tac (!d1) "prove_functions after solve_recursive" context)
         end
       else
         map prove_non_recursive props
@@ -448,6 +520,61 @@ fun prove_functions is_recursive induct_thms solve_non_recursive solve_recursive
 fun WITH_NSUBGOALS tac st = 
    tac (Thm.nprems_of st) st 
 
+fun subgoal_assm_tac all_prems = Subgoal.FOCUS_PREMS (fn {context, prems, ...} =>
+  let
+    val all_prems' = prems @ all_prems
+  in
+    (DETERM' (resolve_tac context all_prems') THEN_ALL_NEW subgoal_assm_tac all_prems' context) 1
+  end)
+
+fun subgoal_intro_tac thms = Subgoal.FOCUS (fn {context, prems, ...} => 
+  let
+    val n = length thms
+  in
+  (DETERM' (resolve_tac context thms)
+    THEN_ALL_NEW (
+      (DETERM' (resolve_tac context prems)) 
+      THEN_ALL_NEW ( 
+        ((*Method.assm_tac context ORELSE' *)subgoal_assm_tac prems context)))) 1
+  end)
+
+(* FIXME: remove clone in TS phase? *)
+fun subgoal_intro_tac' thms = Subgoal.FOCUS (fn {context, prems, ...} => 
+  let
+    val n = length thms
+    val hyps = take n prems
+    val inst_thms = map (fn thm => thm OF hyps) thms
+      
+  in
+  (resolve_tac context inst_thms 
+      THEN_ALL_NEW (subgoal_assm_tac prems context)) 1
+  end)
+
+fun subgoal_intro_tac'' {instantiate} thms = 
+  (if instantiate then Subgoal.FOCUS else Subgoal.FOCUS_PREMS) (fn {context, prems, ...} => 
+  let
+    val (thm_insts, other_prems) = 
+      if instantiate then 
+        let 
+          val n = length thms
+          val hyps = take n prems
+          val rest = drop n prems
+          val inst_thms = map (fn thm => thm OF hyps) thms
+        in
+          (inst_thms, rest)
+
+        end
+      else (thms, [])
+
+  in
+  (DETERM' (resolve_tac context thm_insts)
+    THEN_ALL_NEW (
+      (subgoal_intro_tac'' {instantiate=false} (prems@other_prems) context))) 1
+  end)
+
+fun apply f params = fold (fn x => fn f => f $ x) params f
+fun lambdas [] t = t
+   | lambdas (x::xs) t = Term.lambda x (lambdas xs t)
 
 (*
  * Given one or more function specs, define them and instantiate corres proofs.
@@ -484,7 +611,7 @@ fun define_funcs_single_recursive_group
     (get_const_name : string -> string)
     (get_fn_type : string -> typ)
     (get_fn_prop : Proof.context -> bool -> string -> term -> term list ->  
-       ((term * attribute list) list * (term * attribute list)))
+       ((term * attribute list) * term list option))
     (get_fn_args_def : string -> (string * typ) list)
     (get_fn_args_prop : string -> (string * typ) list)
     (functions : (string * (term * thm * (string * typ) list)) list)
@@ -501,8 +628,8 @@ fun define_funcs_single_recursive_group
  
     val fn_names_str = commas (map get_const_name fn_names);
     val filename = ProgramInfo.get_prog_name prog_info
-    val def_loc = AutoCorresData.definition_locale lthy skips phase filename fn_names;
-    val _ = writeln ("Defining (" ^ FunctionInfo.string_of_phase phase ^ ") " ^ fn_names_str ^ " in locale " ^ def_loc)
+
+    val _ = writeln ("Defining (" ^ FunctionInfo.string_of_phase phase ^ ") " ^ fn_names_str)
 
     (*
      * Determine if we are in a recursive case by checking to see if the
@@ -552,36 +679,45 @@ fun define_funcs_single_recursive_group
                 fill_body fn_name fn_body) end)
         (fn_names ~~ fn_bodies)
 
-    val lthy = lthy |> AutoCorresData.in_locale def_loc 
-      (Utils.define_functions defs qualify true is_recursive "spec_monad_gfp"
-         [AutoCorresData.define_function_declaration concealed filename skips phase] 
-         [AutoCorresData.induct_thms_declaration filename skips phase]
-          #> snd)
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before definition") else ()
+    val lthy = lthy |>  AutoCorresData.in_theory'
+      (fn lthy => 
+        let 
+           val (_, lthy') = lthy |> Utils.define_functions defs qualify true is_recursive "spec_monad_gfp"
+             [AutoCorresData.define_function_attribute concealed filename skips phase] [] []
+        in lthy' end)
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before fn_defs (0)") else ()
 
     val fn_def_thms = map (FunctionInfo.get_definition o the o (AutoCorresData.get_function_info (Context.Proof lthy) filename phase)) fn_names
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before fn_defs (1)") else ()
     val fn_def_thms = fn_def_thms |> map (safe_mk_meta_eq) 
-    val induct_thms = map (FunctionInfo.get_induct_thms o the o (AutoCorresData.get_function_info (Context.Proof lthy) filename phase)) fn_names
-        |> hd
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before induct_thms") else ()
+    fun get_induct_thms () = 
+      let
+        val c = hd fn_def_thms |> Thm.lhs_of |> Thm.term_of |> Term.head_of 
+      in
+        Mutual_CCPO_Rec.lookup_info_trimmed (Context.Proof lthy) c |> the_list |> maps #inducts
+      end
+
+    val induct_thms = timeit_msg 1 lthy (fn _ => "induct_thms") (get_induct_thms)
 
     (*
      * Instantiate schematic function calls in our theorems with their
      * concrete definitions.
      *)
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before combined_thms") else ()
     val combined_callees = map (get_callees o get_prev_info lthy) (map fst functions)
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before combined_normal_calls") else ()
     val combined_normal_calls =
         map fst combined_callees |> flat |> sort_distinct fast_string_ord
-    val combined_recursive_calls =
-        map snd combined_callees |> flat |> sort_distinct fast_string_ord
-    val callee_terms =
-        (combined_recursive_calls @ combined_normal_calls)
-        |> map (fn x => (get_const_name x, Utils.get_term lthy (get_const_name x)))
-        |> Symtab.make
 
     (* The non-recursive callee's correspondence theorems *)
     fun get_corres_thm name = AutoCorresData.get_function_info (Context.Proof lthy) filename phase name 
       |> the |> FunctionInfo.get_corres_thm
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before nrec_corres_thms") else ()
     val nrec_corres_thms = map get_corres_thm combined_normal_calls
 
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before props") else ()
     (* Generate corres predicates for each function. *)
     val (props, ctxt') = lthy |> fold_map (
       fn (fn_name, def) => fn ctxt =>
@@ -591,15 +727,15 @@ fun define_funcs_single_recursive_group
         (* Fetch parameters to this function. *)
         val (params, ctxt') = Utils.fix_variant_frees (get_fn_args_prop fn_name) ctxt
         (* Generate the prop. *)
-        val (_, (corres_prop_current_phase, attrs)) = get_fn_prop ctxt' false fn_name fn_const params 
+        val ((corres_prop_current_phase, attrs), params_opt) = get_fn_prop ctxt' false fn_name fn_const params
+        val params' = the_default params params_opt
+        val changed_params = filter_out (member (op =) params) params'
         val ((arbitrary_vars, corres_prop_current_phase), ctxt') = Utils.import_universal_prop corres_prop_current_phase ctxt'
       in       
-        ((def, params, arbitrary_vars, (corres_prop_current_phase, attrs)), ctxt')
+        ((def, params', arbitrary_vars @ changed_params, (corres_prop_current_phase, attrs)), ctxt')
       end) (fn_names ~~ fn_def_thms)
  
-    fun solve_recursive _ ctxt = WITH_NSUBGOALS (fn N =>         
-           REPEAT_DETERM_N N ((match_tac ctxt fn_thms THEN_ALL_NEW (Method.assm_tac ctxt)) 1))
-
+    fun solve_recursive _ ctxt = (*ALLGOALS *) REPEAT (subgoal_intro_tac'' {instantiate=false} fn_thms ctxt 1)
     fun solve_non_recursive ctxt =  (             
       match_tac ctxt fn_thms
       THEN_ALL_NEW 
@@ -610,8 +746,9 @@ fun define_funcs_single_recursive_group
       ORELSE' (K (print_tac ctxt "define_funcs_single_recursive_group final proof failed")))
       1
 
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before corres_thms") else ()
     val corres_thms = prove_functions is_recursive induct_thms solve_non_recursive solve_recursive ctxt' props
-
+                          
     (*
      * Export the correspondence theorems in the original context.
      *)
@@ -620,10 +757,12 @@ fun define_funcs_single_recursive_group
       |> Variable.export ctxt' lthy
       |> map (Goal.norm_result lthy) 
 
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: before define_lemma") else ()
     val (corres_thms, lthy) = lthy 
       |> fold_map (fn (name, thm) => Utils.define_lemma (Binding.name (AutoCorresData.corres_thm_name prog_info phase name)) 
              [AutoCorresData.corres_thm_attribute filename skips phase name] thm)
            (fn_names ~~ corres_thms)
+    val _ = if (!d1) then tracing ("define_funcs_single_recursive_group: end") else ()
   in
     (fn_names, lthy)
   end
@@ -637,7 +776,7 @@ fun gen_define_funcs
     (get_const_name : string -> string)
     (get_fn_type : string -> typ)
     (get_fn_prop: Proof.context -> bool -> string -> term -> term list -> 
-       ((term * attribute list) list * (term * attribute list)))
+       ((term * attribute list) * term list option))
     (get_fn_args_def : string -> (string * typ) list)
     (get_fn_args_prop : string -> (string * typ) list)
     (functions : (string * (term * thm * (string * typ) list)) list)
@@ -671,7 +810,7 @@ fun define_funcs
     (get_const_name : string -> string)
     (get_fn_type : string -> typ)
     (get_fn_prop: Proof.context -> bool -> string -> term -> term list -> 
-       ((term * attribute list) list * (term * attribute list)))
+       ((term * attribute list) * term list option))
     (get_fn_args : string -> (string * typ) list)
     (functions : (string * (term * thm * (string * typ) list)) list)
     (lthy : local_theory) = 
@@ -691,15 +830,15 @@ type convert_result = {
      }
 
 
-fun in_corres_locale_result skips phase filename clique f lthy =
+fun in_corres_locale_result prog_info skips phase filename clique f lthy =
   let
-    val loc = AutoCorresData.corres_proof_locale lthy skips phase filename clique
+    val loc = NameGeneration.intern_globals_locale_name (Proof_Context.theory_of lthy) filename
   in AutoCorresData.in_locale_result loc f lthy end
 
 
-fun in_corres_locale skips phase filename clique f lthy =
+fun in_corres_locale prog_info skips phase filename clique f lthy =
   let
-    val loc = AutoCorresData.corres_proof_locale lthy skips phase filename clique
+    val loc = NameGeneration.intern_globals_locale_name (Proof_Context.theory_of lthy) filename
    in AutoCorresData.in_locale_result loc (fn lthy => f lthy) lthy end
 
 (* Given a function body containing arguments and assumed function calls,
@@ -755,16 +894,10 @@ fun do_prepare skips prog_info phase prepare clique lthy =
   else
      let
        val prev_phase = FunctionInfo.prev_phase skips phase
-       val def_locale = AutoCorresData.definition_locale lthy skips prev_phase 
-                          (ProgramInfo.get_prog_name prog_info) clique
        val filename = ProgramInfo.get_prog_name prog_info 
+       val infos = AutoCorresData.get_default_phase_info (Context.Proof lthy) filename prev_phase
      in
-       lthy |> AutoCorresData.in_locale def_locale (fn lthy =>
-         let
-           val infos = AutoCorresData.get_default_phase_info (Context.Proof lthy) filename prev_phase
-         in
-             timeit_prepare_msg' 1 lthy phase clique (fn _ => prepare infos clique lthy)
-         end)
+       timeit_prepare_msg' 1 lthy phase clique (fn _ => prepare infos clique lthy)   
      end
      
 fun convert_and_define_clique 
@@ -802,10 +935,8 @@ fun convert_and_define_clique
       |> par_map (fn fname =>
         (fname, timeit_conversion_msg' 1 lthy phase fname (fn () => convert lthy existing_infos_prev_phase fname)))
       |> Symtab.make;
-
     val lthy = if Symtab.is_empty conv_results then lthy else
       define lthy conv_results;
-
     val new_infos = AutoCorresData.get_phase_info (Context.Proof lthy) filename phase 
       |> the |> restrict_domain todo_clique
 
@@ -815,7 +946,7 @@ fun convert_and_define_clique
     val new_groups = map (map fst o Symtab.dest) new_infoss
     val lthy = lthy
       |> fold (fn group => 
-           AutoCorresData.in_locale (AutoCorresData.definition_locale lthy skips phase filename group) (
+           AutoCorresData.in_theory' (
              Local_Theory.declaration {pervasive=true, syntax=false, pos=\<^here>} (fn phi => 
                  AutoCorresData.map_default_phase_info filename phase 
                       (FunctionInfo.transfer_call_graph_infoss new_infoss))
@@ -862,15 +993,10 @@ let
       val (groups_next_phase, lthy) = 
         if todo_clique = clique 
         then 
-           
-          lthy |> do_prepare skips prog_info phase prepare clique 
-            |> AutoCorresData.in_theory_result (fn thy =>
-            thy 
-            |> AutoCorresData.add_definition_and_corres_proof_locales prog_info base_locale_opt infos_prev_phase skips phase clique 
-            |> snd |> AutoCorresData.transfer_ac_slots lthy
-            |> convert_and_define_clique skips prog_info phase parallel convert define clique 
-            ||> Local_Theory.exit_global
-            ||> AutoCorresData.add_impl_locales skips prog_info infos_prev_phase phase [] clique)
+          lthy 
+          |> do_prepare skips prog_info phase prepare clique 
+          |> in_corres_locale_result prog_info skips phase filename clique 
+              (convert_and_define_clique skips prog_info phase parallel convert define clique) 
         else 
           let
             val _ = @{assert} (null todo_clique)

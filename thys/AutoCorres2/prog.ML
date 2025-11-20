@@ -39,6 +39,7 @@ datatype ('a, 'e, 'm, 'c) prog =
   | Guarded of ('a * 'e * 'e * ('a, 'e, 'm, 'c) prog) 
   | Throw of 'a
   | Call of ('a * 'e * 'e list * 'e * 'm * 'c)
+  | Exec_Spec_Monad of ('a * 'e list * 'm)
   | Spec of ('a * 'e)
   | Assume of ('a * 'e)
   | Fail of 'a
@@ -59,6 +60,7 @@ fun get_node_data prog =
     | Guarded (a, _ ,_ , _) => a
     | Throw a => a
     | Call (a, _, _, _, _, _) => a
+    | Exec_Spec_Monad (a, _, _) => a
     | Spec (a, _) => a
     | Assume (a, _) => a
     | Fail a => a
@@ -83,6 +85,8 @@ fun zip_progs progA progB =
         Throw ((a1, a2))
     | (Call (a1, f1, e1, ee1, m1, c1), Call (a2, f2, e2, ee2, m2, c2)) =>
         Call ((a1, a2), (f1, f2),  Utils.zip e1 e2, (ee1, ee2), (m1, m2), (c1, c2))
+    | (Exec_Spec_Monad (a1, e1, m1), Exec_Spec_Monad (a2, e2, m2)) =>
+        Exec_Spec_Monad ((a1, a2), Utils.zip e1 e2, (m1, m2)) 
     | (Spec (a1, e1), Spec (a2, e2)) =>
         Spec ((a1, a2), (e1, e2))
     | (Assume (a1, e1), Assume (a2, e2)) =>
@@ -112,6 +116,7 @@ fun map_prog node_fn expr_fn mod_fn call_fn prog =
         Guarded (node_fn a, expr_fn e, expr_fn dest, map_prog node_fn expr_fn mod_fn call_fn body)
     | Throw a => Throw (node_fn a)
     | Call (a, f, e, ee, m, c) => Call (node_fn a, expr_fn f, map expr_fn e, expr_fn ee, mod_fn m, call_fn c)
+    | Exec_Spec_Monad (a, es, m) => Exec_Spec_Monad (node_fn a, map expr_fn es, mod_fn m)
     | Spec (a, e) => Spec (node_fn a, expr_fn e)
     | Assume (a, e) => Assume (node_fn a, expr_fn e)
     | Fail a => Fail (node_fn a)
@@ -143,6 +148,7 @@ fun fold_prog node_fn expr_fn mod_fn call_fn prog v =
     | Throw a => (node_fn a) v
     | Call (a, f, e, ee, m, c) =>
         (node_fn a #> expr_fn f #> fold expr_fn e #> expr_fn ee #> mod_fn m #> call_fn c) v
+    | Exec_Spec_Monad (a, es, m) => (node_fn a #> fold expr_fn es #> mod_fn m) v
     | Spec (a, e) => (node_fn a #> expr_fn e) v
     | Assume (a, e) => (node_fn a #> expr_fn e) v
     | Fail a => (node_fn a) v
@@ -170,7 +176,7 @@ fun fold_prog node_fn expr_fn mod_fn call_fn prog v =
  * being executed. That means the (initial) value of those variables is preserved throughout the block
  * and the value *might* still be needed after the block. Note that the analysis goes backwards, starting
  * with the values we want to be live at the end of the block 
- * (initially the return / exception variable variable of a procedure)
+ * (initially the return / exception variables of a procedure)
  * Later on for a variable-value that is *live* within a block, and which value is still *needed* after
  * the block we have to do a preservation proof for that value within the L1-block, as it will become
  * a lambda abstracted value in the corresponding L2-block.
@@ -208,6 +214,11 @@ fun calc_live_vars exn_var prog output_vars throw_vars =
                 UNION (succ_live MINUS written_vars)
                 UNION (throw_live MINUS exn_var),
                 read_f, read_vars, ret_read_vars, written_vars, call_data)
+        | Exec_Spec_Monad (old, read_vars, written_vars) =>
+            Exec_Spec_Monad (old UNION (union_sets read_vars) 
+                  UNION (succ_live MINUS written_vars)
+                  UNION (throw_live MINUS exn_var),
+                  read_vars, written_vars)
         | Guard (old, read_vars) =>
             Guard (old UNION succ_live UNION read_vars, read_vars)
         | Guarded (old, read_vars, read_vars_dest, body) =>
@@ -287,6 +298,8 @@ fun get_read_vars term =
         Modify (read_vars, read_vars, written_vars)
     | Call (_, read_f, read_vars, ret_read_vars, written_vars, call_data) =>
         Call (union_sets (read_f::read_vars), read_f, read_vars, ret_read_vars, written_vars, call_data)
+    | Exec_Spec_Monad (_, read_vars, written_vars) => 
+        Exec_Spec_Monad (union_sets read_vars, read_vars, written_vars)
     | Guard (_, read_vars) =>
         Guard (read_vars, read_vars)
     | Throw _ =>
@@ -359,6 +372,8 @@ in
         Modify (SOME written_vars, read_vars, written_vars)
     | Call (_, read_f, read_vars, ret_read_vars, written_vars, call_data) =>
         Call (SOME written_vars, read_f, read_vars, ret_read_vars, written_vars, call_data)
+    | Exec_Spec_Monad (_, read_vars, written_vars) => 
+        Exec_Spec_Monad (SOME written_vars, read_vars, written_vars)
     | Guard (_, read_vars) =>
         Guard (SOME empty_set, read_vars)
     | Guarded (_, read_vars, read_vars_dest, body) =>

@@ -36,7 +36,7 @@ In addition, we give a full parametric solution of the equation for any $a$, $b$
 
 section "The original result"
 
-text\<open>If $x^a$ or $y^b$ is sufficiently long, then the claim follows from the Periodicity Lemma.\<close>
+text\<open>If $x^a$ or $y^b$ is sufficiently long, then the claim follows from the periodicity Lemma.\<close>
 
 lemma LS_per_lemma_case1:
   assumes eq: "x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c" and "0 < a" and "0 < b" and "\<^bold>|z\<^bold>| + \<^bold>|x\<^bold>| - 1 \<le> \<^bold>|x\<^sup>@a\<^bold>|"
@@ -131,9 +131,9 @@ proof-
     using pref_cancel by auto
 
 \<comment> \<open>Double period of uwv\<close>
-  from period_fac[OF _ \<open>u\<cdot>w\<cdot>v \<noteq> \<epsilon>\<close>, of v u "\<^bold>|y\<^bold>|", unfolded rassoc, folded this]
+  from period_fac_period[of v "u \<cdot> w \<cdot> v" u "\<^bold>|y\<^bold>|", unfolded rassoc, folded this]
   have "period (u\<cdot>w\<cdot>v) \<^bold>|y\<^bold>|"
-    using pow_per[OF \<open>y \<noteq> \<epsilon>\<close> \<open>0 < b\<close>] by blast
+    using pow_per[of b y].
   have "u\<cdot>w\<cdot>v = x \<cdot>v"
     by (simp add: \<open>x = u \<cdot> w\<close>)
   have "u\<cdot>w\<cdot>v = u\<cdot> x"
@@ -177,11 +177,12 @@ proof-
 \<comment> \<open>x and y commute\<close>
   have "x \<le>p u\<cdot>w\<cdot>v"
     by (simp add: \<open>x = u \<cdot> w\<close>)
-  have "period x d" using per_pref'[OF \<open>x\<noteq>\<epsilon>\<close>  \<open>period (u\<cdot>w\<cdot>v) d \<close> \<open>x \<le>p u \<cdot>w\<cdot>v\<close>].
+  have "period x d"
+    using \<open>period (u\<cdot>w\<cdot>v) d \<close> \<open>x \<le>p u \<cdot> w \<cdot> v\<close> period_pref_period by blast
   hence "x \<in> \<langle>{take d x}\<rangle>"
     using \<open>d dvd \<^bold>|x\<^bold>|\<close>  by (rule root_divisor)
 
-  hence "period u d " using \<open>x = u \<cdot> w\<close> per_pref'
+  hence "period u d " using \<open>x = u \<cdot> w\<close> period_pref_period
     using \<open>period x d\<close> \<open>u \<noteq> \<epsilon>\<close> by blast
   have " take d x = take d u" using \<open>u\<noteq>\<epsilon>\<close>  \<open>x = u \<cdot> w\<close> pref_share_take
     by (simp add: \<open>d = gcd  \<^bold>|y\<^bold>| \<^bold>|u\<^bold>|\<close>)
@@ -240,26 +241,26 @@ proof (induction "\<^bold>|z\<^bold>| + b* \<^bold>|y\<^bold>|" arbitrary: x y z
         unfolding rev_append[symmetric] rev_is_rev_conv by simp
     next
       assume " \<not> \<^bold>|x\<^sup>@a\<^bold>| < \<^bold>|y\<^sup>@b\<^bold>|" hence "\<^bold>|y\<^sup>@b\<^bold>| \<le> \<^bold>|x\<^sup>@a\<^bold>|" by force
-          \<comment> \<open>case solved by the Periodicity lemma\<close>
+          \<comment> \<open>case solved by the periodicity lemma\<close>
       note minus =  Suc_minus2[OF \<open>2 \<le> a\<close>] Suc_minus2[OF \<open>2 \<le> b\<close>]
-      consider (with_Periodicity_lemma)
+      consider (with_periodicity_lemma)
         "\<^bold>|z\<^bold>| + \<^bold>|x\<^bold>| \<le> \<^bold>|x \<^sup>@ Suc(Suc (a-2))\<^bold>| \<or> \<^bold>|z\<^bold>| + \<^bold>|y\<^bold>| \<le> \<^bold>|y \<^sup>@ Suc(Suc (b-2))\<^bold>|" |
-        (without_Periodicity_lemma)
+        (without_periodicity_lemma)
         "\<^bold>|x\<^sup>@Suc(Suc (a-2))\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|x\<^bold>|" and "\<^bold>|y\<^sup>@Suc(Suc (b-2))\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|y\<^bold>|"
         unfolding minus
         using not_le_imp_less by blast
       thus "x \<cdot> y = y \<cdot> x"
       proof (cases)
-        case with_Periodicity_lemma
+        case with_periodicity_lemma
         have "x = \<epsilon> \<or> rev y = \<epsilon> \<Longrightarrow> x \<cdot> y = y \<cdot> x"
           by auto
         thus "x \<cdot> y = y \<cdot> x"
           using LS_per_lemma_case[OF \<open>x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c\<close> \<open>0 < a\<close> \<open>0 < b\<close>]
-            LS_per_lemma_case[OF LSrev_eq \<open>0 < b\<close> \<open>0 < a\<close>] with_Periodicity_lemma[unfolded minus]
+            LS_per_lemma_case[OF LSrev_eq \<open>0 < b\<close> \<open>0 < a\<close>] with_periodicity_lemma[unfolded minus]
           unfolding length_rev rev_append[symmetric] rev_is_rev_conv rev_pow[symmetric]
           by linarith
       next
-        case without_Periodicity_lemma
+        case without_periodicity_lemma
         assume lenx: "\<^bold>|x\<^sup>@Suc (Suc (a-2))\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|x\<^bold>|" and leny: "\<^bold>|y\<^sup>@Suc (Suc (b-2))\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|y\<^bold>|"
         have "Suc (Suc (a-2)) * \<^bold>|x\<^bold>| + Suc (Suc (b-2))*\<^bold>|y\<^bold>| < 4 * \<^bold>|z\<^bold>|"
           using  lenx leny unfolding pow_len by fastforce
@@ -599,8 +600,7 @@ proof-
   have "v <p y"
     using prefI[OF \<open>y\<^sup>@k = v\<cdot>z\<close>[symmetric]]
     unfolding pow_pos[OF \<open>0 < k\<close>]
-    using pref_prod_less[OF _ \<open>\<^bold>|v\<^bold>| < \<^bold>|y\<^bold>|\<close>]
-    by blast
+    using \<open>\<^bold>|v\<^bold>| < \<^bold>|y\<^bold>|\<close> less_or_eq_imp_le by blast
   obtain u where "v\<cdot>u = y" "u \<noteq> \<epsilon>"
     using \<open>v <p y\<close> spref_exE by blast
 

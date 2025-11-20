@@ -14,10 +14,10 @@ declare sep_conj_ac [simp add]
 install_C_file "spec_annotated_fn.c"
 
 
-print_locale spec_annotated_fn_simpl
+print_locale spec_annotated_fn_global_addresses
 print_locale Square_spec
 
-context f_impl
+context spec_annotated_fn_global_addresses
 begin
 declare [[show_types=false]]
 ML \<open>
@@ -33,7 +33,7 @@ context Square_spec
 begin
 thm Square_spec
 end
-context spec_annotated_fn_simpl
+context spec_annotated_fn_global_addresses
 begin
 
 thm Square_body_def
@@ -50,14 +50,14 @@ apply vcg
 apply simp
 done
 
-lemma (in Square_impl)
+lemma (in spec_annotated_fn_global_addresses) includes Square_variables
 shows "\<forall>n. \<Gamma> \<turnstile> \<lbrace> \<acute>n = n \<rbrace> \<acute>ret' :== PROC Square(\<acute>n)
                \<lbrace>\<acute>ret' = n * n \<rbrace>"
   apply vcg
   apply simp
 done
 
-lemma (in f_impl)
+lemma (in spec_annotated_fn_global_addresses) includes f_variables
 shows "\<forall>n. \<Gamma> \<turnstile> \<lbrace> \<acute>n = n \<rbrace> \<acute>ret' :== PROC f(\<acute>n) \<lbrace> \<acute>ret' = n * n \<rbrace>"
 apply vcg
   apply (clarsimp simp add: mex_def meq_def)

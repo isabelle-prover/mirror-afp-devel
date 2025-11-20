@@ -16,13 +16,13 @@ sig
   val integer_type : 'a ctype -> bool
   val assignment_compatible : (int ctype * int ctype * expr) -> bool
 
-  val constant_type : Absyn.literalconstant -> 'a ctype
+  val constant_type : Absyn.literalconstant -> int ctype
   val fndes_convert : 'a ctype -> 'a ctype
   val binop_type : Proof.context ->
       SourcePos.t * SourcePos.t * Absyn.binoptype * int ctype * int ctype -> int ctype
   val unop_type : Absyn.unoptype * 'a ctype -> 'a ctype
-  type senv = (string * (CType.rcd_kind * (string * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
-  val expr_type : Proof.context -> Absyn.ecenv ->
+  type senv = (string * (CType.rcd_kind * (string RegionExtras.wrap * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
+  val expr_type : {report_error:bool} -> Proof.context -> Absyn.ecenv ->
                   senv ->
                   (string -> int ctype option) ->
                   Absyn.expr -> int ctype
@@ -31,8 +31,8 @@ sig
   val compound_record_name:  {union: bool} -> string list -> string
   val unsuffix_compound_record: string -> (string * bool) option
   val expand_anonymous_fields: senv -> string -> string list -> string list
-  val expand_anonymous_field : senv -> string   -> Absyn.expr -> string -> ExprDatatype.expr option
-  val expand_anonymous_field': senv -> 'a ctype -> Absyn.expr -> string -> ExprDatatype.expr option
+  val expand_anonymous_field : senv -> string   -> Absyn.expr -> string -> AstDatatype.expr option
+  val expand_anonymous_field': senv -> 'a ctype -> Absyn.expr -> string -> AstDatatype.expr option
 end
 
 
@@ -41,7 +41,7 @@ struct
 
 open Basics Absyn
 
-type senv = (string * (CType.rcd_kind * (string * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
+type senv = (string * (CType.rcd_kind * (string RegionExtras.wrap * (int ctype * CType.attribute list)) list * Region.t * CType.attribute list)) list
 fun cast_compatible fromty toty = 
   scalar_type fromty andalso scalar_type toty
   orelse
@@ -153,21 +153,17 @@ fun unop_type (unop, ty) =
     | BitNegate => if integer_type ty then ty
                    else raise Fail "Bad type to bitwise complement"
 
-fun dest_rcd_name (StructTy name) = SOME name
-  | dest_rcd_name (UnionTy name) = SOME name
-  | dest_rcd_name _ = NONE
-
-fun find_field (senv: senv) path rname fld =
+fun find_field (senv: senv) path rname (fld: string) =
   case AList.lookup (op =) senv rname of
     NONE => []
   | SOME (_, flds, _ , _)  => 
-      (case AList.lookup (op =) flds fld of 
+      (case AList.lookup (eq_wrap) flds fld of 
         SOME x => [{path = path @ [{rname=rname, fld=fld}], entry=x}] 
        | NONE => 
           let 
-            fun find (fld', (ty, _)) = case dest_rcd_name ty of
+            fun find (fld', (ty, _)) = case dest_rcd_type ty of
                   NONE => []
-                | SOME sname' => find_field senv (path @ [{rname=rname, fld=fld'}]) sname' fld 
+                | SOME sname' => find_field senv (path @ [{rname=rname, fld=node fld'}]) sname' fld 
           in maps find flds end)
 
 fun mk_field_access e [] = e
@@ -225,7 +221,7 @@ fun check_anonymous_path ps =
 
 fun gen_expand_anonymous_field {strict_expansion:bool} senv sname fld = 
   AList.lookup (op =) senv sname |> Option.mapPartial (fn sinfo => 
-    case AList.lookup (op =) (#2 sinfo) fld of
+    case AList.lookup (eq_wrap) (#2 sinfo) fld of
       SOME entry => if strict_expansion then NONE else SOME {entry=entry, path= [{rname=sname, fld=fld}]}
     | NONE => 
        let 
@@ -242,10 +238,11 @@ fun expand_anonymous_fields _ _ [] = []
   | expand_anonymous_fields senv sname (fld::flds) = 
      case gen_expand_anonymous_field {strict_expansion = false} senv sname fld of
        NONE => fld::flds
-     | SOME {path=path1,...} =>
+     | SOME {path=path1,entry=(rty1,_),...} =>
         let
-          val (_, {rname,...}) = split_last path1
-          val flds' = expand_anonymous_fields senv rname flds
+          val flds' = case dest_rcd_type rty1 of
+              NONE => flds
+            | SOME rname => expand_anonymous_fields senv rname flds
         in
           map #fld path1 @ flds'
         end
@@ -255,12 +252,14 @@ fun expand_anonymous_field senv sname e fld =
   |> Option.map (fn flds => mk_field_access e (map #fld (#path flds)))
 
 fun expand_anonymous_field' senv e_ty e fld = 
-  dest_rcd_name e_ty |> Option.mapPartial (fn sname => expand_anonymous_field senv sname e fld)
+  dest_rcd_type e_ty |> Option.mapPartial (fn sname => expand_anonymous_field senv sname e fld)
 
-fun expr_type ctxt ecenv senv varinfo e = let
-  val expr_type = expr_type ctxt ecenv senv varinfo
-  fun Fail s = (Feedback.errorStr' ctxt (eleft e, eright e, "expr-typing: " ^ s);
-                raise Feedback.WantToExit "Can't continue")
+fun expr_type (re as {report_error}) ctxt ecenv (senv: senv) varinfo e = let
+  val expr_type = expr_type re ctxt ecenv senv varinfo
+  fun Fail s = if report_error then
+                 (Feedback.errorStr' ctxt (eleft e, eright e, "expr-typing: " ^ s);
+                  raise Feedback.WantToExit "Can't continue")
+                else error ("expr-typing: " ^ s);
   fun get_varinfo s = 
       case varinfo s of
         NONE => let
@@ -276,6 +275,7 @@ in
                                        expr_type e1, expr_type e2)
   | UnOp(unop, e0) => unop_type (unop, expr_type e0)
   | PostOp(e0, modifier) => expr_type e0
+  | PreOp(e0, modifier) => expr_type e0
   | Constant c => constant_type c
   | Var (s, Unsynchronized.ref NONE) => get_varinfo s
   | Var (_, Unsynchronized.ref (SOME (cty, _))) => cty
@@ -285,7 +285,7 @@ in
        let
           val sinfo = (#2 (the (AList.lookup (op =) senv name)))
           val fld_type =
-              #1 (the (AList.lookup (op =) sinfo fld))
+              #1 (the (AList.lookup (eq_wrap) sinfo fld))
               handle Option =>
                        Fail ("Field \""^fld^"\" invalid fieldname")
        in
@@ -338,7 +338,7 @@ in
   | Sizeof _ => ImplementationTypes.size_t
   | SizeofTy _ => ImplementationTypes.size_t
   | CompLiteral(ty, _) => Absyn.constify_abtype true ctxt ecenv ty
-  | EFnCall(fn_e, args) => let
+  | EFnCall(_,  fn_e, args) => let
       val fty = fndes_convert (expr_type fn_e)
       val (rettype, parameter_types) =
           case fty of
@@ -367,6 +367,8 @@ in
       if scalar_type ty then Signed Int
       else Fail "Expression can't be boolean"
     end
+  | AssignE (_, e1, e2) => expr_type e1
+  | Comma (_, e2) => expr_type e2
   | _ => Fail ("expr_type: encountered unexpected expression form("
                ^expr_string e^ ")")
 end

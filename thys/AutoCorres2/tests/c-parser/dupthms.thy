@@ -11,9 +11,6 @@ begin
 
 install_C_file "dupthms.c"
 
-context dupthms_simpl
-begin
 thm f_body_def
-end
 
 end

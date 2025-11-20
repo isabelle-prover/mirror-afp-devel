@@ -8,9 +8,10 @@ theory aligned
   imports AutoCorres2.CTranslation
 begin
 
+declare [[ML_print_depth=1000, c_parser_feedback_level=1]]
 install_C_file "aligned.c"
 
-(* On a 64 Bit MacOS:
+(* On a 64 Bit architecture:
 
 gcc -D GCC=1 aligned.c
 
@@ -89,9 +90,7 @@ lemma "snd (the (field_lookup (typ_info_t TYPE(my_struct4_C)) [''next_C''] 0)) =
   by (simp add: fl_Some_simps field_offset_def field_offset_untyped_def)
 
 term test_bit
-context aligned_simpl
-begin
+
 thm foo_body_def
-end
 
 end

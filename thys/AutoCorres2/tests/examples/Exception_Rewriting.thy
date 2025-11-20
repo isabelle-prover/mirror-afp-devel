@@ -16,18 +16,16 @@ install_C_file "Exception_Rewriting.c"
 autocorres "Exception_Rewriting.c"
 
 
-context ts_definition_goo
-begin
+
 thm ts_def [no_vars]
-end
+
 
 ML \<open>
 val stats = Fun_Cache.cache_statistics ()
 \<close>
 
 
-context Exception_Rewriting_all_impl
-begin
+
 term "foo':: int \<Rightarrow> int \<Rightarrow> lifted_globals \<Rightarrow> int option"
 thm foo'_def [no_vars]
 
@@ -366,7 +364,6 @@ lemma "goo' a b c \<equiv> finally (do {
                          throw 0
                        })"
   by (simp add: goo'_def)
-end
 
 end
 

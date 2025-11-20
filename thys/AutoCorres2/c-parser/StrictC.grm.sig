@@ -37,6 +37,7 @@ val ARROW:  'a * 'a -> (svalue,'a) token
 val VOID:  'a * 'a -> (svalue,'a) token
 val UNSIGNED:  'a * 'a -> (svalue,'a) token
 val SIGNED:  'a * 'a -> (svalue,'a) token
+val BITINT:  'a * 'a -> (svalue,'a) token
 val SHORT:  'a * 'a -> (svalue,'a) token
 val INT128:  'a * 'a -> (svalue,'a) token
 val LONG:  'a * 'a -> (svalue,'a) token

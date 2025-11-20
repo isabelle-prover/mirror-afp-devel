@@ -77,7 +77,7 @@ proof (rule nemp_comm)
       using mult_le_mono1[OF \<open>2 \<le> m\<close>, of "\<^bold>|r\<^bold>| + \<^bold>|s\<^bold>|"]
       unfolding lenmorph pow_len add.commute[of "\<^bold>|s\<^bold>|"] by force
   qed
-    \<comment> \<open>we can therefore use the Periodicity lemma\<close>
+    \<comment> \<open>we can therefore use the periodicity lemma\<close>
   hence "2 \<le> l"
     using \<open>0 < l\<close> by force
   let ?w = "(v \<cdot> u)\<^sup>@l \<cdot> v"
@@ -790,9 +790,8 @@ proof-
     using per_rootI[OF _ \<open>r'' \<noteq> \<epsilon>\<close>, of w] \<open>w = r \<cdot> v\<close> \<open>w = r' \<cdot> v \<^sup>@ j \<cdot> t'\<close> \<open>r'' \<cdot> r' = r\<close>
     unfolding pow_pos[OF \<open>0 < j\<close>] using rassoc triv_pref  by metis
   thus "period w ?per_r"
-    using lenarg[OF \<open>r'' \<cdot> r' = r\<close>]  periodI[OF \<open>w \<noteq> \<epsilon>\<close> \<open>w <p r'' \<cdot> w\<close>]
-    unfolding lenmorph
-    by (metis add_diff_cancel_right')
+    using lenarg[OF \<open>r'' \<cdot> r' = r\<close>] sprefD1[OF \<open>w <p r'' \<cdot> w\<close>] diff_add_inverse2 periodI_pref'
+    unfolding lenmorph by metis
   have "\<^bold>|r'\<^bold>| < \<^bold>|r\<^bold>|"
     using suffix_length_less[OF \<open>r' <s r\<close>].
   have "\<^bold>|t'\<^bold>| < \<^bold>|t\<^bold>|"
@@ -803,10 +802,9 @@ proof-
     using per_rootI[reversed, OF _ \<open>t'' \<noteq> \<epsilon>\<close>, of w]
      \<open>w = v \<cdot> t\<close> \<open>w = r' \<cdot> v \<^sup>@ j \<cdot> t'\<close> \<open>t' \<cdot> t'' = t\<close>
      unfolding pow_pos2[OF \<open>0 < j\<close>] using rassoc triv_suf by metis
-   thus "period w ?per_t"
-    using lenarg[OF \<open>t' \<cdot> t'' = t\<close>]  periodI[reversed, OF \<open>w \<noteq> \<epsilon>\<close> \<open>w <s w \<cdot> t''\<close>]
-    unfolding lenmorph
-    by (metis add_diff_cancel_left')
+   show "period w ?per_t"
+    using lenarg[OF \<open>t' \<cdot> t'' = t\<close>] ssufD1[OF \<open>w <s w \<cdot> t''\<close>] periodI_suf' diff_add_inverse
+    unfolding lenmorph  by metis
   show eq: "?per_t + ?per_r = \<^bold>|w\<^bold>| + j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>|"
     using lenarg[OF \<open>w = r' \<cdot> v\<^sup>@ j \<cdot> t'\<close>]
       lenarg[OF \<open>w = v \<cdot> t\<close>] lenarg[OF \<open>w = r \<cdot> v\<close>] \<open>\<^bold>|t'\<^bold>| < \<^bold>|t\<^bold>|\<close> \<open>\<^bold>|r'\<^bold>| < \<^bold>|r\<^bold>|\<close>
@@ -846,15 +844,15 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
     proof (cases)
       have local_rule: "a - c \<le> b \<Longrightarrow> k + a - c - b \<le> k" for a b c k :: nat
         by simp
-      assume "j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>| \<le> ?gcd" \<comment> \<open>Condition allowing to use the Periodicity lemma\<close>
+      assume "j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>| \<le> ?gcd" \<comment> \<open>Condition allowing to use the periodicity lemma\<close>
       from local_rule[OF this]
       have len: "?per_t + ?per_r - ?gcd \<le> \<^bold>|w\<^bold>|"
         unfolding eq.
       show "period w ?gcd"
         using per_lemma[OF \<open>period w ?per_t\<close> \<open>period w ?per_r\<close> len].
     next
-      assume "\<not> j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>| \<le> ?gcd"  \<comment> \<open>Periods are too long for the Periodicity lemma\<close>
-      hence "?gcd \<le> \<^bold>|v\<^sup>@j\<^bold>| - 2*\<^bold>|v\<^bold>|"  \<comment> \<open>But then we have a potential for using the Periodicity lemma on the power of v's\<close>
+      assume "\<not> j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>| \<le> ?gcd"  \<comment> \<open>Periods are too long for the periodicity lemma\<close>
+      hence "?gcd \<le> \<^bold>|v\<^sup>@j\<^bold>| - 2*\<^bold>|v\<^bold>|"  \<comment> \<open>But then we have a potential for using the periodicity lemma on the power of v's\<close>
         unfolding pow_len by linarith
                                    hence "?gcd + \<^bold>|v\<^bold>| \<le> \<^bold>|v \<^sup>@  j\<^bold>|"
         using \<open>?gcd \<noteq> 0\<close> by linarith
@@ -938,11 +936,7 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
           obtain g where g: "g*\<^bold>|v\<^bold>| = ?gcd"
             unfolding dift difr mult.commute[of _ "\<^bold>|v\<^bold>|"]
               gcd_mult_distrib_nat[symmetric] by blast
-          hence "0 < g"
-            using  nemp_len[OF \<open>v \<noteq> \<epsilon>\<close>] per_not_zero[OF \<open>period w (\<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>|)\<close>]
-            gcd_nat.neutr_eq_iff[of "\<^bold>|t\<^bold>| - \<^bold>|t'\<^bold>|" "\<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>|"] mult_is_0[of g "\<^bold>|v\<^bold>|"]
-            by force
-          from per_mult[OF \<open>period w \<^bold>|v\<^bold>|\<close> this]
+          from per_mult[OF \<open>period w \<^bold>|v\<^bold>|\<close>, of g]
           show ?thesis
             unfolding g.
         next
@@ -1016,7 +1010,7 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
             find_theorems "?v\<^sup>@?n" "?w = \<epsilon>"
             have "v \<^sup>@ j \<noteq> \<epsilon>"
                using  \<open>0 < j\<close> \<open>v \<noteq> \<epsilon>\<close> by blast
-            from period_fac[OF per_vp[unfolded \<open>v \<cdot> p = ri' \<cdot> v \<^sup>@ j \<cdot> t'\<close>] this]
+            from period_fac_period[OF per_vp[unfolded \<open>v \<cdot> p = ri' \<cdot> v \<^sup>@ j \<cdot> t'\<close>]]
             show "period (v \<^sup>@ j) ?gcd".
           qed
 
@@ -1046,8 +1040,7 @@ proof (induct "\<^bold>|w\<^bold>|" arbitrary: w t r t' r' v rule: less_induct)
             using gcd_dvd2 unfolding dvd_def mult.commute[of _ "gcd \<^bold>|v\<^bold>| ?gcd"] by blast
           hence "k \<noteq> 0"
             using \<open>?gcd \<noteq> 0\<close> by algebra
-
-          from per_mult[OF \<open>period w (gcd \<^bold>|v\<^bold>| ?gcd)\<close> this[unfolded neq0_conv], folded k]
+          from per_mult[OF \<open>period w (gcd \<^bold>|v\<^bold>| ?gcd)\<close>, of k, folded k]
           show ?thesis.
         qed
       qed
@@ -1079,7 +1072,7 @@ proof-
     proof (cases)
       assume "j \<le> 1"
       hence "(j = 0 \<Longrightarrow> P) \<Longrightarrow> (j = 1 \<Longrightarrow> P) \<Longrightarrow> P" for P by force
-      hence "\<^bold>|w\<^bold>| + j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>| - ?gcd \<le> \<^bold>|w\<^bold>|" \<comment> \<open>Condition allowing to use the Periodicity lemma\<close>
+      hence "\<^bold>|w\<^bold>| + j*\<^bold>|v\<^bold>| - 2*\<^bold>|v\<^bold>| - ?gcd \<le> \<^bold>|w\<^bold>|" \<comment> \<open>Condition allowing to use the periodicity lemma\<close>
         by (cases, simp_all)
       thus "period w ?gcd"
         using per_lemma[OF \<open>period w ?per_t\<close> \<open>period w ?per_r\<close>] unfolding len by blast
@@ -1156,7 +1149,7 @@ qed
 
 thm per_root_modE'
 
-lemma assumes "w <p r \<cdot> w"
+lemma assumes "w \<le>p r \<cdot> w" "r \<noteq> \<epsilon>"
   obtains p q i where "w = (p \<cdot> q)\<^sup>@i \<cdot> p" "p \<cdot> q = r"
   using assms by blast
 
@@ -1180,10 +1173,13 @@ proof-
     using assms by force+
   have "0 < ?d"
     using nemp_len[OF \<open>r' \<noteq> \<epsilon>\<close>] by simp
-  have "\<^bold>|t\<^bold>| - \<^bold>|t'\<^bold>| = \<^bold>|r'\<^bold>|" "\<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>| = \<^bold>|t'\<^bold>|"
+  have diffs_eq: "\<^bold>|t\<^bold>| - \<^bold>|t'\<^bold>| = \<^bold>|r'\<^bold>|" "\<^bold>|r\<^bold>| - \<^bold>|r'\<^bold>| = \<^bold>|t'\<^bold>|"
     using lenarg[OF \<open>w = v \<cdot> t\<close>] lenarg[OF \<open>w = r \<cdot> v\<close>]
     unfolding lenarg[OF \<open>w = r' \<cdot> v \<cdot> t'\<close>] lenmorph by simp_all
-  note three_covers_per[of _ _ _ _1, unfolded cow_simps, OF assms order.refl, unfolded this period_def]
+  have "take (gcd \<^bold>|r'\<^bold>| \<^bold>|t'\<^bold>|) w \<noteq> \<epsilon>"
+    by (simp add: \<open>r' \<noteq> \<epsilon>\<close> assms(2))
+  hence "w <p take (gcd \<^bold>|r'\<^bold>| \<^bold>|t'\<^bold>|) w \<cdot> w"
+    using three_covers_per[of _ _ _ _1, unfolded cow_simps, OF assms order.refl, unfolded  diffs_eq period_def] by blast
   from per_root_mod_primE[OF \<open>w <p take (gcd \<^bold>|r'\<^bold>| \<^bold>|t'\<^bold>|) w \<cdot> w\<close>]
   obtain l p q  where "p \<cdot> q = \<rho> (take ?d w)" "(p \<cdot> q)\<^sup>@l \<cdot> p = w" "q \<noteq> \<epsilon>".
   hence "primitive (p \<cdot> q)" by auto
@@ -1212,10 +1208,10 @@ proof-
     using pref_keeps_per_root[OF sprefD1[OF \<open>w <p take ?d w \<cdot> w\<close>]]
     unfolding  \<open>(p \<cdot> q)\<^sup>@e = take (gcd \<^bold>|r'\<^bold>| \<^bold>|t'\<^bold>|) w\<close>
     using \<open>w = r' \<cdot> v \<cdot> t'\<close> by blast
-  then obtain m where "r' = (p \<cdot> q)\<^sup>@m"
-    using per_div[OF gcd_dvd1 period_I', OF  \<open>r' \<noteq> \<epsilon>\<close> \<open>0 < ?d\<close>, folded \<open>(p \<cdot> q)\<^sup>@e = take ?d  r'\<close>]
-    unfolding pow_mult[symmetric] by metis
-
+  define m where "m = e*(\<^bold>|r'\<^bold>| div gcd \<^bold>|r'\<^bold>| \<^bold>|t'\<^bold>|)"
+  have "(p \<cdot> q)\<^sup>@m = r'"
+    using per_div[OF gcd_dvd1 periodI[OF \<open>r' \<le>p (p \<cdot> q)\<^sup>@e \<cdot> r'\<close>[unfolded \<open>(p \<cdot> q)\<^sup>@e = take ?d  r'\<close>]]]
+    unfolding \<open>(p \<cdot> q)\<^sup>@e = take ?d  r'\<close>[symmetric] pow_list_mult m_def.
   have "p \<le>s (q \<cdot> p) \<^sup>@ e"
     unfolding pow_Suc2[of "e-1" "q \<cdot> p", unfolded Suc_minus[OF \<open>e \<noteq> 0\<close>] lassoc] by blast
   note \<open>\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| \<le> \<^bold>|w\<^bold>|\<close>[unfolded swap_e, folded \<open>(p \<cdot> q)\<^sup>@l \<cdot> p = w\<close>, unfolded shift_pow]
@@ -1241,10 +1237,10 @@ proof-
   have t_drop: "(q \<cdot> p)\<^sup>@e = drop (\<^bold>|t'\<^bold>| - ?d) t'"
     using \<open>\<^bold>|(p \<cdot> q)\<^sup>@e\<^bold>| = ?d\<close>[unfolded swap_e, symmetric] \<open>(q \<cdot> p)\<^sup>@e \<le>s t'\<close>[unfolded suf_drop_conv, symmetric]
     by argo
-  obtain k where "t' = (q \<cdot> p)\<^sup>@k"
-    using per_div[reversed, OF gcd_dvd2 period_I'[reversed], OF \<open>t'\<noteq> \<epsilon>\<close> \<open>0 < ?d\<close>,
-          folded t_drop, OF \<open>t' \<le>s  t' \<cdot> (q \<cdot> p)\<^sup>@e\<close> ] pow_mult by metis
-
+  define k where "k = (e * (\<^bold>|t'\<^bold>| div gcd \<^bold>|r'\<^bold>| \<^bold>|t'\<^bold>|))"
+  have "(q \<cdot> p)\<^sup>@k = t'"
+    using per_div[reversed, OF gcd_dvd2, OF periodI[reversed], OF \<open>t' \<le>s  t' \<cdot> (q \<cdot> p)\<^sup>@e\<close>[unfolded t_drop]]
+    unfolding t_drop[symmetric] pow_mult[symmetric] k_def.
   have "m + k \<le> l"
     unfolding linorder_not_less[symmetric]
   proof (rule notI)
@@ -1253,7 +1249,7 @@ proof-
       by force
     from trans_le_add1[OF mult_le_mono1[OF this]]
     have "(l + 1)* \<^bold>|p \<cdot> q\<^bold>| \<le> (m + k) * \<^bold>|p\<cdot>q\<^bold>| + \<^bold>|v\<^bold>|".
-    with lenarg[OF \<open>w = r' \<cdot> v \<cdot> t'\<close>[folded \<open>(p \<cdot> q)\<^sup>@l \<cdot> p = w\<close>, unfolded \<open>t' = (q \<cdot> p)\<^sup>@k\<close> \<open>r' = (p \<cdot> q)\<^sup>@m\<close>],
+    with lenarg[OF \<open>w = r' \<cdot> v \<cdot> t'\<close>[folded \<open>(p \<cdot> q)\<^sup>@l \<cdot> p = w\<close>, folded \<open>(q \<cdot> p)\<^sup>@k = t'\<close> \<open>(p \<cdot> q)\<^sup>@m = r'\<close>],
         unfolded lenmorph, unfolded pow_len add.assoc[symmetric], symmetric]
     show False
       unfolding distrib_right add.commute[of _ "\<^bold>|v\<^bold>|"] lenmorph
@@ -1264,7 +1260,7 @@ proof-
 
   have "v = (p \<cdot> q)\<^sup>@i \<cdot> p"
     using \<open>w = r' \<cdot> v \<cdot> t'\<close>
-    unfolding \<open>(p \<cdot> q)\<^sup>@l \<cdot> p = w\<close>[symmetric] \<open>t' = (q \<cdot> p)\<^sup>@k\<close> \<open>r' = (p \<cdot> q)\<^sup>@m\<close> \<open>l = m + i + k\<close> pow_add
+    unfolding \<open>(p \<cdot> q)\<^sup>@l \<cdot> p = w\<close>[symmetric] \<open>(q \<cdot> p)\<^sup>@k = t'\<close>[symmetric] \<open>(p \<cdot> q)\<^sup>@m = r'\<close>[symmetric] \<open>l = m + i + k\<close> pow_add
               rassoc cancel cancel_right
     unfolding lassoc shift_pow cancel_right by simp
 
@@ -1279,12 +1275,12 @@ proof-
     unfolding pows_comm by simp
 
   have "0 < m"
-    using \<open>r' = (p \<cdot> q)\<^sup>@m\<close> \<open>r' \<noteq> \<epsilon>\<close> by blast
+    using \<open>(p \<cdot> q)\<^sup>@m = r'\<close> \<open>r' \<noteq> \<epsilon>\<close> by blast
 
   have "0 < k"
-    using \<open>t' = (q \<cdot> p)\<^sup>@k\<close> \<open>t' \<noteq> \<epsilon>\<close> by blast
+    using \<open>(q \<cdot> p)\<^sup>@k = t'\<close> \<open>t' \<noteq> \<epsilon>\<close> by blast
   thm that
-  from that[OF \<open>t = (q \<cdot> p)\<^sup>@(m + k)\<close> \<open>r = (p \<cdot> q)\<^sup>@(m + k)\<close> \<open>t' = (q \<cdot> p)\<^sup>@k\<close> \<open>r' = (p \<cdot> q)\<^sup>@m\<close> \<open>v = (p \<cdot> q)\<^sup>@i \<cdot> p\<close>
+  from that[OF \<open>t = (q \<cdot> p)\<^sup>@(m + k)\<close> \<open>r = (p \<cdot> q)\<^sup>@(m + k)\<close> \<open>(q \<cdot> p)\<^sup>@k = t'\<close>[symmetric] \<open>(p \<cdot> q)\<^sup>@m = r'\<close>[symmetric] \<open>v = (p \<cdot> q)\<^sup>@i \<cdot> p\<close>
        \<open>(p \<cdot> q)\<^sup>@l \<cdot> p = w\<close>[symmetric, unfolded \<open>l = m + i + k\<close>] \<open>primitive (p \<cdot> q)\<close> \<open>q \<noteq> \<epsilon>\<close> \<open>0 < m\<close> \<open>0 < k\<close>]
   show thesis.
 qed
@@ -1671,6 +1667,5 @@ proof
   show False
     using g.non_comm_morph[of bina] by simp
 qed
-
 
 end

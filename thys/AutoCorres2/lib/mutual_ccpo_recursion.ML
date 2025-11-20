@@ -69,6 +69,13 @@ type result = {
   inducts: (string * thm list)
 }
 
+type info = 
+ {const: term,
+  consts: term list,
+  simps: thm list list,
+  inducts: thm list,
+  strong_induct: thm}
+
 val mutual_ccpo_fixed_point :
   functional list -> Proof.context -> (term list * thm list * thm * thm list) * Proof.context
 
@@ -88,10 +95,22 @@ val add_fixed_point_cmd :
   (string * (binding * string option * mixfix)) list ->
     Specification.multi_specs_cmd ->  (Proof.context -> tactic) -> local_theory -> (result * local_theory)
 
+val lookup_info_trimmed : Context.generic -> term -> info option
+val lookup_info : Context.generic -> term -> info option
+val single_threaded: bool Config.T
 end
 
-structure Mutual_CCPO_Rec : MUTUAL_CCPO_REC =
+structure Mutual_CCPO_Rec: MUTUAL_CCPO_REC  =
 struct
+
+val single_threaded = Attrib.setup_config_bool \<^binding>\<open>fixed_point_single_threaded\<close> (K false);
+
+fun prove ctxt = if Config.get ctxt single_threaded then Goal.prove ctxt else Goal.prove_future ctxt
+fun prove_common ctxt = 
+  if Config.get ctxt single_threaded then
+    Goal.prove_common ctxt NONE
+  else
+    Goal.prove_common ctxt (SOME ~1)
 
 (*** BEGIN copied ***)
 
@@ -160,16 +179,21 @@ val apply_abs_tac = Subgoal.FOCUS_PARAMS (fn {context = ctxt, ...} =>
 
 (*monotonicity proof: apply rules + split case expressions*)
 fun mono_tac ctxt =
+  let
+    val partial_function_mono = Named_Theorems.get ctxt \<^named_theorems>\<open>partial_function_mono\<close>
+  in
   SOLVED_DETERM_verbose "mono_tac" ctxt (
     REPEAT_CHANGED_ALL_NEW
-      (resolve_tac ctxt (rev (Named_Theorems.get ctxt \<^named_theorems>\<open>partial_function_mono\<close>))
+      ((
+       resolve_tac ctxt (rev partial_function_mono)
         ORELSE' split_cases_tac ctxt
         ORELSE' (resolve_tac ctxt [@{thm monotone_abs}] THEN' split_cases_tac ctxt)
                 (* ^- case for eta contracted splitters *)
         ORELSE' apply_app_tac ctxt
         ORELSE' apply_abs_tac ctxt
-        ))
-
+        ORELSE' (Utils.error_subgoal_tac "mono_tac" (K "") ctxt) 
+        )))
+   end
 
 (*** END ***)
 
@@ -210,18 +234,124 @@ type result = {
   inducts: (string * thm list)
 }
 
+type info = 
+ {const: term,
+  consts: term list,
+  simps: thm list list,
+  inducts: thm list,
+  strong_induct: thm}
+
+fun const_name (Const (x, _)) = x
+  | const_name t = Term.term_name t
+
+type data = {
+  ccpo_tab: (Proof.context -> typ -> ccpo_data) Symtab.table, 
+  info_tab: info Symtab.table}
+
+fun map_ccpo_tab f ({ccpo_tab, info_tab}:data) = {ccpo_tab = f ccpo_tab, info_tab = info_tab}:data;
+fun map_info_tab f ({ccpo_tab, info_tab}:data) = {ccpo_tab = ccpo_tab, info_tab = f info_tab}:data;
+
 structure Data = Generic_Data
 (
-  type T = (Proof.context -> typ -> ccpo_data) Symtab.table;
-  val empty = Symtab.empty;
-  val merge = Symtab.merge (K true)
+  type T = data;
+  val empty = {ccpo_tab = Symtab.empty, info_tab = Symtab.empty};
+  fun merge 
+    ({ccpo_tab = ccpo_tab1, info_tab = info_tab1}, 
+     {ccpo_tab = ccpo_tab2, info_tab = info_tab2}) = {
+    ccpo_tab = Symtab.merge (K true) (ccpo_tab1, ccpo_tab2),
+    info_tab = Symtab.merge (K true) (info_tab1, info_tab2)}
 );
 
-fun add_ccpo name synth = Data.map (Symtab.update_new (name, synth))
-val get_ccpo = Data.get
+val get_info = Data.get #> #info_tab
+fun transfer_info'' context ({const, consts, simps, inducts, strong_induct}:info) =
+  {const = const, consts = consts, 
+   simps = map (map (Thm.transfer'' context)) simps, 
+   inducts = map (Thm.transfer'' context) inducts,
+   strong_induct = Thm.transfer'' context strong_induct}:info
+
+val transfer_info = transfer_info'' o Context.Theory
+val transfer_info' = transfer_info'' o Context.Proof
+
+fun lookup_info_trimmed context t = Symtab.lookup (get_info context) (const_name t)
+fun lookup_info context = lookup_info_trimmed context #> Option.map (transfer_info'' context) 
+
+fun add_ccpo name synth = Data.map (map_ccpo_tab (Symtab.update_new (name, synth)))
+val get_ccpo = Data.get #> #ccpo_tab
 fun synth_ccpo ctxt name =
   (Symtab.lookup (get_ccpo ctxt) name |> the) (Context.proof_of ctxt)
 
+fun consts_from_strong_induct_thm thm =
+  thm |> Thm.concl_of |> Term.dest_comb |> snd |> Term.strip_comb |> snd |> map head_of
+
+fun const_from_induct_thm thm =
+  thm |> Thm.concl_of |> Term.dest_comb |> snd |> Term.dest_comb |> snd |> Term.head_of
+
+fun const_from_eq thm = thm |> Thm.concl_of |> Utils.lhs_of_eq |> Term.head_of
+
+fun add_strong_induct thm0 context =
+  let
+    val cs = consts_from_strong_induct_thm thm0
+    val thm = Thm.trim_context thm0
+    fun mk c = {const = c, consts = cs, simps = [], inducts = [], strong_induct = thm}
+  in
+    Data.map (map_info_tab (fold (fn c => Symtab.update_new (const_name c, mk c)) cs)) context
+  end
+
+val add_strong_induct_attr = Thm.declaration_attribute add_strong_induct
+val add_strong_induct_attr' = Attrib.internal \<^here> (K add_strong_induct_attr)
+
+fun add_simp eq0 context = 
+  let
+    val c = const_from_eq eq0
+    val cn = const_name c
+    val eq = Thm.trim_context eq0
+  in
+    case lookup_info context c of
+      NONE => 
+        error ("Mutual_CCPO_Rec.add_simp: empty, should be initilised by add_strong_induct")
+    | SOME {consts, ...} =>
+        let
+          fun simps' [] = [[eq]]
+            | simps' (eqs::eqss) = 
+                case eqs of [] => error ("Mutual_CCPO_Rec.add_simp: empty")
+                | (eq':: _) => 
+                  if const_name (const_from_eq eq') = cn andalso not (member (Thm.eq_thm) eqs eq) then
+                    (eqs@ [eq])::eqss
+                  else eqs::simps' eqss
+          fun upd_simps {const, consts, simps, inducts, strong_induct} = 
+            {const=const, consts=consts, simps=simps' simps, inducts = inducts, strong_induct = strong_induct}
+        in
+          Data.map (map_info_tab (fold (fn key => fn entry => 
+            Symtab.map_entry key upd_simps entry) (map const_name consts))) context
+        end
+  end
+
+val add_simp_attr = Thm.declaration_attribute add_simp
+val add_simp_attr' = Attrib.internal \<^here> (K add_simp_attr)
+
+fun add_induct thm0 context = 
+  let
+    val c = const_from_induct_thm thm0
+    val thm = Thm.trim_context thm0
+  in
+    case lookup_info context c of
+      NONE => 
+        error ("Mutual_CCPO_Rec.add_induct: empty, should be initilised by add_strong_induct")
+    | SOME {consts, inducts, ...} =>
+        let
+          val inducts' = if member Thm.eq_thm inducts thm then inducts else inducts @ [thm]
+          fun upd_inducts {const, consts, simps, inducts, strong_induct} = 
+            {const=const, consts=consts, simps=simps, inducts = inducts', strong_induct=strong_induct}
+        in
+          Data.map (map_info_tab (fold (fn key => fn entry => 
+            Symtab.map_entry key upd_inducts entry) (map const_name consts))) context
+        end
+  end
+
+val add_induct_attr = Thm.declaration_attribute add_induct
+val add_induct_attr' = Attrib.internal \<^here> (K add_induct_attr)
+
+       
 fun ordT a = a --> a --> HOLogic.boolT
 fun lubT a = HOLogic.mk_setT a --> a
 
@@ -454,7 +584,7 @@ fun mutual_ccpo_fixed_point (fs : functional list) ctxt =
 val _ = TRACE ("prove mono thm ")
 
     val mono_thm =
-      Goal.prove ctxt [] []
+      prove ctxt [] []
         (HOLogic.mk_Trueprop (ccpo_mono ccpo_struct ccpo_struct $ functional))
         (fn {context = ctxt, ...} =>
           WRAP_BTREE
@@ -497,7 +627,7 @@ val _ = TRACE "prepare strong induction"
 
 val _ = TRACE "strong induction"
         
-        val induct_thm = Goal.prove ctxt []
+        val induct_thm = prove ctxt []
           [HOLogic.mk_Trueprop (ccpo_admissible ccpo_struct $ motive),
             HOLogic.mk_Trueprop (list_comb (motiveF,
               map (fn f => ccpo_bot (synth_funs ctxt (map #2 (#params f), #ccpo f))) fs)),
@@ -533,7 +663,6 @@ val _ = TRACE "prepare weak induction"
         val proj_thms =
           map2 (fn t => fn f => fold (K (fn t => @{thm mcont2mcont_call} OF [t])) (#params f) t)
             (gen_proj_cont (mcont_id ctxt ccpo_struct) b_fs |> btree_to_list) fs
-
         type motiv_data = { f : functional, P : term, F : term, args : term list }
         val (motiv_data, ctxt') =
           fold_map (fn f : functional =>
@@ -549,36 +678,32 @@ val _ = TRACE "prepare weak induction"
             ccpo_admissible (#ccpo (#f m)) $ list_comb (#P m, #args m)
             |> HOLogic.mk_Trueprop
             |> fold_rev Logic.all (#args m))
-
         val inits = motiv_data
           |> map (fn m : motiv_data =>
             list_comb (#P m, #args m) $ ccpo_bot (#ccpo (#f m))
             |> HOLogic.mk_Trueprop
             |> fold_rev Logic.all (#args m))
-
         val branches = motiv_data
           |> map (fn m : motiv_data => list_comb (#P m, #args m) $ (list_comb (#F m, #args m)))
         val hyps = map2 (fn b => fn m =>
           b |> HOLogic.mk_Trueprop |> fold_rev Logic.all (#args m)) branches motiv_data
-
         fun case_of (m : motiv_data) =
           Logic.list_implies (hyps,
             list_comb (#P m, #args m) $ #rhs (#f m) |> HOLogic.mk_Trueprop)
           |> fold_rev Logic.all (#args m)
           |> fold_rev Logic.all (map #F motiv_data)
-
+        val cases = map case_of motiv_data
         val motive =
           map2 (#args #> map dest_Free #> fold_rev (fn (x, T) => fn t => HOLogic.mk_all (x, T, t)))
             motiv_data branches
           |> foldr1 HOLogic.mk_conj
           |> fold_rev (#F #> dest_Free #> absfree) motiv_data
-
         val raw_induct =
           infer_instantiate' ctxt' [SOME (Thm.cterm_of ctxt' motive)] induct_thm
 
 val _ = TRACE "weak induction"
         val induction_thms =
-          Goal.prove_common ctxt' NONE []
+          prove_common ctxt' []
             (admissibles @ inits @ map case_of motiv_data)
             hyps
             (fn {context, prems} =>
@@ -636,7 +761,7 @@ val _ = TRACE "conversions"
             Conv.rewr_conv (Simpdata.mk_meta_eq @{thm prod.inject[symmetric]})
 val _ = TRACE "simp rules"
         val simps =
-          Goal.prove_common ctxt NONE [] []
+          prove_common ctxt [] []
           (fs |> map (fn (f, _, c, _) =>
             HOLogic.mk_eq
               (c,
@@ -852,7 +977,7 @@ val _ = TRACE (" ** mono_thms")
               ccpo_mono ccpo_struct (#ccpo spec)
             val mono_thms = #equations spec
               |> map (fn (params, _, _, rhs, _) =>
-                Goal.prove ctxt (map #1 params) []
+                prove ctxt (map #1 params) []
                   (HOLogic.mk_Trueprop (mono_const $
                     (rhs |> Term_Subst.instantiate_frees (TFrees.empty, Frees.make projs) |> absfree recF)))
                   (fn {context, ...} => mono_tac context 1))
@@ -872,7 +997,7 @@ val _ = TRACE (" * prove equations")
 
 val _ = TRACE (" ** eq_thms")
             val eq_thms = #equations spec |> map_index (fn (i, (params, prems, args, rhs, _)) =>
-              Goal.prove ctxt' (map #1 recs @ map #1 params) (map HOLogic.mk_Trueprop prems)
+              prove ctxt' (map #1 recs @ map #1 params) (map HOLogic.mk_Trueprop prems)
                 (HOLogic.mk_eq (list_comb (functional, map Free recs @ args), rhs)
                   |> HOLogic.mk_Trueprop)
                 (fn {context, prems, ...} =>
@@ -891,9 +1016,7 @@ val _ = TRACE (" ** eq_thms")
 
 val _ = TRACE (" ** note")
             val binding = Binding.suffix_name "_functional" (#binding spec)
-            val binding = Binding.qualify true
-              (Binding.name_of binding)
-              (Binding.set_pos (Binding.pos_of binding) (Binding.name "simps"))
+            val binding = Binding.qualify_name true binding "simps"
             val ((_, eq_thms), ctxt'') = Local_Theory.note ((binding, []), eq_thms) ctxt'
 val _ = TRACE (" * DONE")
           in ((functional, (assm, functional_def), recs, eq_thms, mono_tac), ctxt'') end
@@ -915,7 +1038,7 @@ val _ = TRACE ("= construct =")
           mutual_ccpo_fixed_point fs lthy'
 
         fun prove_eq ctxt const def_rule simp_thm (params, guards, args, rhs, binding) =
-          (Goal.prove ctxt (map #1 params) (map HOLogic.mk_Trueprop guards)
+          (prove ctxt (map #1 params) (map HOLogic.mk_Trueprop guards)
             ((list_comb (const, args), rhs) |> HOLogic.mk_eq |> HOLogic.mk_Trueprop |>
               Term_Subst.instantiate_frees (TFrees.empty, Frees.make (fixes ~~ consts)))
             (fn {context, prems} =>
@@ -946,18 +1069,15 @@ val _ = TRACE ("= construct =")
                 ccpo_admissible (#ccpo (#f m)) $ list_comb (#P m, #args m)
                 |> HOLogic.mk_Trueprop
                 |> fold_rev Logic.all (#args m))
-
             val inits = motiv_data
               |> map (fn m : motiv_data =>
                 list_comb (#P m, #args m) $ ccpo_bot (#ccpo (#f m))
                 |> HOLogic.mk_Trueprop
                 |> fold_rev Logic.all (#args m))
-
             val branches = motiv_data
               |> map (fn m : motiv_data => list_comb (#P m, #args m) $ (list_comb (#F m, #args m)))
             val hyps = map2 (fn b => fn m =>
               b |> HOLogic.mk_Trueprop |> fold_rev Logic.all (#args m)) branches motiv_data
-
             fun case_of (m : motiv_data) (params, guards, args, rhs, _) =
               Logic.list_implies (hyps @ map HOLogic.mk_Trueprop guards,
                 list_comb (#P m, args) $ rhs |> HOLogic.mk_Trueprop)
@@ -965,11 +1085,10 @@ val _ = TRACE ("= construct =")
               |> fold_rev Logic.all (map #F motiv_data)
 
             val cases = maps (fn (m, s) => #equations s |> map (case_of m)) (motiv_data ~~ specs)
-
             val raw_inducts = induct_thms |> map
               (infer_instantiate' ctxt' (motiv_data |> map (#P #> Thm.cterm_of ctxt' #> SOME)))
           in
-          Goal.prove_common ctxt NONE
+          prove_common ctxt
             (map (#P #> dest_Free #> #1) motiv_data)
             (admissibles @ inits @ cases) hyps
             (fn {context, prems} =>
@@ -1026,25 +1145,27 @@ val _ = TRACE "install"
             Binding.qualify_name true b "simps"
           else
             Binding.empty
-        val _ = tracing ("attribs: " ^ @{make_string} (maps (map snd)  final_simps))
-        val ((((simps, _), inducts), _), lthy''') =
+        val ((((strong_induct, simps),_ ), inducts) , lthy''') =
           lthy''
-          |> Local_Theory.notes (map2 (fn s => fn simps =>
-              ((opt_binding (#binding s), []),
-                map (fn (thm, _) => ([thm], [])) simps)) specs final_simps)
-          ||>> fold_map (fn (thm, bnd) => Local_Theory.note (bnd, [thm])) (maps I final_simps)
-          ||>> Local_Theory.note
-                ((Binding.qualify_name true (Binding.conglomerate (map #binding specs)) "induct", []),
-                  final_inducts)
-          ||>> Local_Theory.note
-                ((Binding.qualify_name true (Binding.conglomerate (map #binding specs)) "strong_induct", []),
+          |> Local_Theory.note
+                ((Binding.qualify_name true (Binding.conglomerate (map #binding specs)) "strong_induct", [add_strong_induct_attr']),
                   [strong_induct])
 
+          ||>> Local_Theory.notes (map2 (fn s => fn simps =>
+              ((opt_binding (#binding s), []),
+                map (fn (thm, _) => ([thm], [add_simp_attr'])) simps)) specs final_simps)
 
+          ||>> fold_map (fn (thm, bnd) => Local_Theory.note (bnd, [thm])) (maps I final_simps)
+
+          ||>> Local_Theory.note
+                ((Binding.qualify_name true (Binding.conglomerate (map #binding specs)) "induct", [add_induct_attr']),
+                  final_inducts)
+
+        val result = {consts = consts, simps = simps, inducts =  inducts}
 val _ = TRACE "done"
 val _ = reset_timing ()
-
-      in ({consts = consts, simps = simps, inducts =  inducts}, lthy''') end
+        
+      in (result, lthy''') end
   in
     (ss_goals, after_qed)
   end
@@ -1063,7 +1184,7 @@ fun gen_add_fixed_point prepare fixes_raw eqns_raw ctxt_tac lthy =
   let
     val (ss_goals, after_qed) = prepare_fixed_point prepare fixes_raw eqns_raw lthy
     val goals = ss_goals |> flat |> map fst
-    val thms = Goal.prove_common lthy NONE [] [] goals (fn {context, ...} =>
+    val thms = prove_common lthy [] [] goals (fn {context, ...} =>
           Goal.conjunction_tac 1 THEN
           ctxt_tac context)
   in

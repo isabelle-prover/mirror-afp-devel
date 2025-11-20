@@ -16,15 +16,15 @@ sig
 
   val umm_empty_state : T
   val umm_finalise : T -> local_theory -> local_theory
-
+  type fld = string RegionExtras.wrap * typ * int Absyn.ctype * CType.attribute list
   val umm_struct_calculation : csenv ->
-      ((string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list)) * thm * thm * T * local_theory) ->
+      ((string * (fld list * CType.attribute list * Region.t)) * thm * thm * T * local_theory) ->
       T * local_theory
 
   val umm_array_calculation : typ -> int -> T -> local_theory -> T * local_theory
 
   val c_type_name_instantiation : string -> local_theory -> local_theory
-  val c_type_instantiation : csenv -> (string * ((string * typ * int Absyn.ctype * CType.attribute list) list * CType.attribute list)) -> local_theory -> ((thm * thm) * local_theory)
+  val c_type_instantiation : csenv -> (string * (fld list * CType.attribute list * Region.t)) -> local_theory -> ((thm * thm) * local_theory)
 
   val set_array_bound_mksimps: Proof.context -> Proof.context
 
@@ -45,11 +45,14 @@ sig
   val field_lookup_aux_ctxt: Proof.context -> Proof.context
   val typinfo_aux_ctxt: Proof.context -> Proof.context
 
+  val d1 : bool Unsynchronized.ref
 end
 
 structure UMM_Proofs : UMM_PROOFS =
 struct
 
+type fld = string RegionExtras.wrap * typ * int Absyn.ctype * CType.attribute list
+val d1 = Unsynchronized.ref false
 fun par_map_filter f = Par_List.map f #> map_filter I
 
 (* cached calculations *)
@@ -864,8 +867,25 @@ in if ProgramAnalysis.is_packed_struct_or_union cse recname
        (fn _ => DETERM ((
                 (resolve_tac lthy [packed_type_class_intro]
                  THEN' K (unfold_tac lthy [typtag_thm, tag_def_thm])
-                 THEN' REPEAT_ALL_NEW (resolve_tac lthy td_packed_intros))
-                 THEN_ALL_NEW (asm_simp_tac pt_ss)) 1))
+                 THEN' (K (Utils.dprint_tac (!d1) "packed DEBUG (0)" lthy))
+                 THEN' REPEAT_ALL_NEW (resolve_tac lthy td_packed_intros THEN' (K (Utils.dprint_tac (!d1) "packed DEBUG (1)" lthy))))
+                 THEN_ALL_NEW (asm_simp_tac pt_ss THEN' (K (Utils.dprint_tac (!d1) "packed DEBUG (2)" lthy)))) 1))
+       handle ERROR err => 
+         let
+           val size_simps = Named_Theorems.get lthy @{named_theorems size_simps}
+           val size_align_simps = #size_align_thms st
+           val _ = tracing ("packed proof failed for " ^ recname)
+           val predicted_packed = ProgramAnalysis.is_packed_struct_or_union_trace cse recname
+           val _ = tracing ("predicted_packed: " ^ @{make_string} predicted_packed)
+           val _ = tracing ("typetag_thm: " ^ Thm.string_of_thm lthy typtag_thm)
+           val _ = tracing ("tag_def_thm: " ^ Thm.string_of_thm lthy tag_def_thm)
+           val _ = tracing (big_list_of_thms "size_simps: " lthy size_simps)
+           val _ = tracing (big_list_of_thms "size_align_simps: " lthy size_align_simps)
+           val _ = tracing (big_list_of_thms "simp_thms: " lthy simp_thms)
+           val _ = tracing (big_list_of_thms "td_packed_intros: " lthy td_packed_intros)
+  
+         in raise ERROR err
+         end
     in
       (add_packed_done (Syntax.string_of_typ lthy recty, true) st,
         lthy
@@ -982,7 +1002,83 @@ fun c_type_instance recname = gen_c_type_instantiation @{sort c_type}
           ALLGOALS (asm_full_simp_tac (ctxt addsimps [thm])))
         recname
 
-fun c_type_instantiation cse (recname, (flds, attrs)) lthy =
+val node = RegionExtras.node
+
+fun pos_of_record_name (ProgramAnalysis.Anonymous p) = SOME p 
+  | pos_of_record_name _ = NONE
+
+fun pos_of_field_kind (ProgramAnalysis.Strct {record_name = n, ...}) = pos_of_record_name n
+  | pos_of_field_kind (ProgramAnalysis.Un {record_name = n, ...}) = pos_of_record_name n
+  | pos_of_field_kind _ = NONE
+
+fun pos_of (info: ProgramAnalysis.clang_record_info) =
+  pos_of_field_kind (#kind (#field (#header info))) 
+
+val opt_pos_ord = option_ord SourcePos.compare    
+fun find_by_pos (infos: ProgramAnalysis.clang_record_info list) pos = 
+  find_first (fn info => is_equal (opt_pos_ord (pos_of info, SOME pos))) infos
+
+fun name_of_record_name (ProgramAnalysis.Named n) = SOME n 
+  | name_of_record_name _ = NONE
+
+fun name_of_field_kind (ProgramAnalysis.Strct {field_name = SOME n, ...}) = SOME n
+  | name_of_field_kind (ProgramAnalysis.Un {field_name = SOME n, ...}) = SOME n
+  | name_of_field_kind (ProgramAnalysis.Strct {record_name = n, ...}) = name_of_record_name n
+  | name_of_field_kind (ProgramAnalysis.Un {record_name = n, ...}) = name_of_record_name n
+  | name_of_field_kind (ProgramAnalysis.Fld {name, ...}) = SOME name
+
+fun name_of (info: ProgramAnalysis.clang_record_info) =
+  name_of_field_kind (#kind (#field (#header info))) 
+
+fun find_by_name (infos: ProgramAnalysis.clang_record_info list) name = 
+  find_first (fn info => name_of info = SOME name) infos
+
+fun toplevel_flds ({header, flds, size, align}:ProgramAnalysis.clang_record_info) =
+ {header = header, flds = filter (fn fld => #level (#field fld) = 1) flds, size=size, align=align}:ProgramAnalysis.clang_record_info
+
+fun get_record_ctyp cse recname0 =
+  let
+    val recname = the_default recname0 (ProgramAnalysis.variant_origin cse recname0)
+    val senv = ProgramAnalysis.get_senv cse
+  in
+    case AList.lookup (op =) senv recname of
+      NONE => error ("get_record_ctyp: unknown record: " ^ recname)
+    | SOME (kind, _, _, _) => case kind of CType.Struct => CType.StructTy recname | CType.Union _ => CType.UnionTy recname 
+  end
+
+fun get_clang_record_info cse region recname0 =
+  let
+    val infos = ProgramAnalysis.get_clang_record_infos cse
+    val recname = the_default recname0 (ProgramAnalysis.variant_origin cse recname0)
+    val plain_name = recname |> unC_struct_name |> rmUScoreSafety
+    val res = 
+      case Region.left region of
+        SOME pos => (case find_by_pos infos pos of NONE => find_by_name infos plain_name | some => some)
+      | _ => find_by_name infos plain_name
+    val _ = null infos orelse is_some res orelse
+      error ("could not retrieve clang record information for: " ^ recname ^ " at:\n " ^ SourcePos.toString (the (Region.left region)))
+  in
+    res
+  end
+
+fun contains_packed_attr cse recname =
+  ProgramAnalysis.contains_packed_attr (ProgramAnalysis.get_senv cse) (get_record_ctyp cse recname)
+    
+fun find_field_by_pos (info: ProgramAnalysis.clang_record_info) pos =
+  find_first (fn fld_info => is_equal (opt_pos_ord (pos_of_field_kind (#kind (#field fld_info)), SOME pos))) (#flds info)
+
+fun find_field_by_name (info: ProgramAnalysis.clang_record_info) name =
+  find_first (fn fld_info => name_of_field_kind (#kind (#field fld_info)) = SOME name) (#flds info)
+
+fun get_field info (name_wrap: string RegionExtras.wrap) =
+  let
+    val (name, left, _) =  RegionExtras.unwrap name_wrap
+    val plain_name = name |> unC_struct_name |> rmUScoreSafety
+    val res = (case find_field_by_pos info left of NONE => find_field_by_name info plain_name | some => some)
+  in
+     res
+  end
+fun c_type_instantiation cse (recname, (flds:fld list, attrs, region)) lthy =
   let
     val align_exp = IntInf.log2 (ProgramAnalysis.alignof_struct_or_union cse recname)
     fun trac s = Feedback.informStr lthy (1, recname ^ ": " ^ s)
@@ -996,9 +1092,9 @@ fun c_type_instantiation cse (recname, (flds, attrs)) lthy =
     fun gen_tag_pad flds tag =
       case flds of
         [] => error ("Record ("^recname^") with no fields??")
-      | [(fldnm, ty, _, attrs)] => mk_tag_pad_tm (get_align attrs) recty ty fldnm lthy $ tag
+      | [(fldnm, ty, _, attrs)] => mk_tag_pad_tm (get_align attrs) recty ty (node fldnm) lthy $ tag
       | (fldnm, ty, _, attrs)::rest =>
-          gen_tag_pad rest (mk_tag_pad_tm (get_align attrs) recty ty fldnm lthy$ tag)
+          gen_tag_pad rest (mk_tag_pad_tm (get_align attrs) recty ty (node fldnm) lthy$ tag)
     val tag_rhs =
       final_pad_tm align_exp recty $ gen_tag_pad flds (empty_tag_tm recty 0 recname)
     val tag_nm = recname^"_tag"
@@ -1019,7 +1115,7 @@ fun c_type_instantiation cse (recname, (flds, attrs)) lthy =
     ((tag_def_thm, typ_info_t_thm), lthy)
   end
 
-fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_t_thm, st, lthy) = let
+fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.t)), tag_def_thm, typ_info_t_thm, st, lthy) = let
   val _ = not (member (op =) (#records_done st) recname) orelse
           (Feedback.informStr lthy (1, "UMM Proof for "^recname^" already done");
            raise AlreadyDone)
@@ -1136,20 +1232,44 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
               ((Binding.name(recname^"_align_td"), align_td_thm), []),
               ((Binding.name(recname^"_align_of"), align_of_thm), [])]
 
-  fun err_msg rname kind int_val thm_val () =
-      "UMM proof error: mismatch of internal value and theorem for " ^
+  fun err_msg config_opt other rname kind int_val other_val () =
+      "UMM proof error: mismatch of internal value and " ^ other ^ " for " ^
        quote kind ^ " of " ^ quote rname ^ ": " ^
-       quote (string_of_int int_val) ^ " vs. " ^ quote (string_of_int thm_val);
+       quote (string_of_int int_val) ^ " vs. " ^ quote (string_of_int other_val) ^ 
+       (case config_opt of SOME config => "\n Maybe consider option " ^ Config.name_of config ^ "=false" | NONE => "");
 
+  val clang_record_info_opt = get_clang_record_info cse region recname
+  val packed_attr = contains_packed_attr cse recname
   val _ =
     let
       val pa_sz = ProgramAnalysis.sizeof_struct_or_union cse recname
       val thm_sz = Utils.rhs_of_eq (Thm.concl_of size_td_thm) |> Utils.dest_nat_or_number
-      val _ = @{assert_msg} (pa_sz = thm_sz) (err_msg recname "sizeof" pa_sz thm_sz)
+      val _ = @{assert_msg} (pa_sz = thm_sz) (err_msg NONE "theorem" recname "sizeof" pa_sz thm_sz)
 
       val pa_al = ProgramAnalysis.alignof_struct_or_union cse recname
       val thm_al = Utils.rhs_of_eq (Thm.concl_of align_of_thm) |> Utils.dest_nat_or_number
-      val _ = @{assert_msg} (pa_sz = thm_sz) (err_msg recname "alignof" pa_al thm_al)
+      val _ = @{assert_msg} (pa_sz = thm_sz) (err_msg NONE "theorem" recname "alignof" pa_al thm_al)
+      val _ = case clang_record_info_opt of NONE => () | SOME {size, align, header, ...} =>
+        let
+
+          val _ = Feedback.informStr lthy (1, recname ^ " (" ^ @{make_string} (#kind (#field (header))) ^ ")" ^ "\n " ^
+            "size: "^ @{make_string} pa_sz ^ ", align: " ^ @{make_string} pa_al ^
+            " clang: " ^ "size: "^ @{make_string} size ^ ", align: " ^ @{make_string} align ^ "\n " ^
+            @{make_string} attrs ^ "\n " ^
+            @{make_string} flds)
+          val _ = if packed_attr andalso not (Config.get lthy ProgramAnalysis.check_packed_sizeof) then 
+              Feedback.informStr lthy (1, recname ^ " contains packed attribute, ommiting sizeof crosscheck with clang")
+            else
+            let
+              val _ = @{assert_msg} (pa_sz = size) (err_msg (SOME ProgramAnalysis.check_packed_sizeof) "clang" recname "sizeof" pa_sz size)
+            in () end
+          val _ = if packed_attr andalso not (Config.get lthy ProgramAnalysis.check_packed_align) then 
+              Feedback.informStr lthy (1, recname ^ " contains packed attribute, ommiting align crosscheck with clang")
+            else
+            let
+              val _ = @{assert_msg} (pa_al = align) (err_msg (SOME ProgramAnalysis.check_packed_align) "clang" recname "alignof" pa_al align)
+            in () end
+        in () end
     in () end
 
 
@@ -1194,9 +1314,9 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
              ] 1)
 
     fun fl_thm f = let
-      val thmname = Binding.name(recname^"_"^(#1 f) ^"_fl")
+      val thmname = Binding.name(recname^"_"^(node (#1 f)) ^"_fl")
       val idx = Variable.maxidx_of lthy + 1
-      val tm  = HOLogic.mk_eq (mk_field_lookup_nofs (recty, #1 f),
+      val tm  = HOLogic.mk_eq (mk_field_lookup_nofs (recty, node (#1 f)),
                                (Var (("x", idx), mk_option_ty (mk_prod_ty (mk_tag_type recty, nat)))))
       val lthy' = Variable.declare_maxidx idx lthy
       val cterm = Thm.cterm_of lthy' (HOLogic.mk_Trueprop tm)
@@ -1214,7 +1334,7 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
   val _ = trac "About to fg..."
   val fgthms = let
     fun fg_thm f = Goal.prove_future lthy [] []
-      (mk_prop (mk_fg_cons_tm recty (#2 f) (#1 f) lthy))
+      (mk_prop (mk_fg_cons_tm recty (#2 f) (node (#1 f)) lthy))
       (fn _ => asm_full_simp_tac
           (lthy addsimps [@{thm "fg_cons_def"}, @{thm comp_def}]) 1)
   in
@@ -1226,9 +1346,11 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
 
   val _ = phase "FLSOME"
   val _ = trac "About to type/field fl_Some ..."
+  val clang_record_info_toplevel_opt = Option.map toplevel_flds clang_record_info_opt
   val fl_Some_thms = let
-      fun fl_thm' (fl, (name, _, _, _)) =
+      fun fl_thm' (fl, (name_wrap, _, _, _)) =
         let
+          val name = node name_wrap
           val concl_lhs = mk_field_lookup_nofs (recty, name)
           val thm =
               Simplifier.asm_full_rewrite (lthy addsimps [fl, @{thm TWO}])
@@ -1238,8 +1360,17 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
           val pa_off = ProgramAnalysis.offsetof cse recname name
           val thm_off = Utils.rhs_of_eq (Thm.concl_of thm)
             |> dest_Some |> HOLogic.dest_prod |> #2 |> Utils.dest_nat_or_number
-          val _ = @{assert_msg} (pa_off = thm_off) (err_msg recname kind pa_off thm_off)
-
+          val _ = @{assert_msg} (pa_off = thm_off) (err_msg NONE "theorem" recname kind pa_off thm_off)
+          val _ = case clang_record_info_toplevel_opt of NONE => () | SOME info =>
+            (case get_field info name_wrap of
+               NONE => error ("can't find " ^ recname ^ "." ^ name ^ "at\n " ^ SourcePos.toString (RegionExtras.left name_wrap) ^ 
+                 "\n in clang record info:\n " ^ @{make_string} info)
+             | SOME {offset, ...} =>
+                if packed_attr andalso not (Config.get lthy ProgramAnalysis.check_packed_offsets) then               
+                  Feedback.informStr lthy (1, recname ^ " contains packed attribute, ommiting offset crosscheck with clang for field " ^ name) else
+                let
+                  val _ = @{assert_msg} (pa_off = offset) (err_msg (SOME ProgramAnalysis.check_packed_offsets) "clang" recname kind pa_off offset)
+                in () end)
         in
            ((Binding.name(recname^ "_" ^ name ^ "_fl_Some"), thm), [])
         end
@@ -1256,7 +1387,7 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
       fun fl_thm' (fl_Some, (name, _, _, _)) = let
           val thm = rl OF [fl_Some]
       in
-          ((Binding.name(recname^ "_" ^ name ^ "_fl_ti"), thm), [])
+          ((Binding.name(recname^ "_" ^ node name ^ "_fl_ti"), thm), [])
       end
   in
       Par_List.map fl_thm' (fl_Some_thms ~~ flds)
@@ -1313,7 +1444,7 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
 
   val h_val_field_eqs =
     let
-      val h_val_field_eq_trms = map (fn (fldnm, ty, _, _) => mk_h_val_field_eq lthy recty ty "h" "p" fldnm ) flds
+      val h_val_field_eq_trms = map (fn (fldnm, ty, _, _) => mk_h_val_field_eq lthy recty ty "h" "p" (node fldnm) ) flds
       fun prove eq = Goal.prove_future lthy ["h", "p"] [] eq (fn {context,...} =>
            asm_full_simp_tac (context addsimps fl_ti_thms @
                 @{thms h_val_field_from_bytes' }) 1)
@@ -1332,7 +1463,7 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
 
   val heap_update_field_eqs =
     let
-      val heap_update_field_eq_trms = map (fn (fldnm, ty, _, _) => mk_heap_update_field_eq lthy recty ty "h" "p" "v" fldnm ) flds
+      val heap_update_field_eq_trms = map (fn (fldnm, ty, _, _) => mk_heap_update_field_eq lthy recty ty "h" "p" "v" (node fldnm) ) flds
       val root_convs =  map (fn fl_Some => @{thm heap_update_field_root_conv''} OF [@{thm meta_eq_to_obj_eq} OF [fl_Some]]) fl_Some_thms
        |> map (Simplifier.simplify lthy)
 
@@ -1351,10 +1482,9 @@ fun umm_struct_calculation cse ((recname, (flds, attrs)), tag_def_thm, typ_info_
   val _ = phase "h_val_unfolds"
   val _ = trac "About to h_val_unfold ..."
 
-   fun symmetric ctxt thm = fst (Thm.apply_attribute Calculation.symmetric thm (Context.Proof ctxt))
    val h_val_unfold =
      let
-       val fs = map (fn (fldnm, ty, _, _) => (fldnm, ty)) flds
+       val fs = map (fn (fldnm, ty, _, _) => (node fldnm, ty)) flds
        val unfold = mk_h_val_unfold lthy recty "h" "p" fs
        val idupdates = Proof_Context.get_thms lthy (recname ^ "_idupdates")
        fun prove eq = Goal.prove_future lthy ["h", "p"] [] eq (fn {context,...} =>

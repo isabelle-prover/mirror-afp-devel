@@ -36,11 +36,10 @@ in
 
 fun SYNCHRONIZED name = Multithreading.synchronized name lock;
 
-fun parse_raw ctxt docpp error_lookahead (includes : string list) path lines = let
-  val cpped_lines = docpp {includes=includes,src_path=path, lines=lines}
+fun parse_raw ctxt error_lookahead path cpp_output = let
   val fname = Path.file_name (Path.base path)
   val lexarg = StrictCLex.UserDeclarations.new_state ctxt fname
-  val lexer = StrictCParser.makeLexer (single_shot (suffix "\n" (cat_lines cpped_lines))) lexarg
+  val lexer = StrictCParser.makeLexer (single_shot (suffix "\n" (cat_lines cpp_output))) lexarg
   val source = #source lexarg
   val result = invoke ctxt error_lookahead source lexer
   val included = SourceFile.get_included source
@@ -48,8 +47,8 @@ in
   (result, included)
 end
 
-fun parse ctxt docpp error_lookahead (includes : string list) path lines =
-  SYNCHRONIZED "cparser" (fn () => parse_raw ctxt docpp error_lookahead (includes : string list) path lines)
+fun parse ctxt error_lookahead path cpp_output =
+  SYNCHRONIZED "cparser" (fn () => parse_raw ctxt  error_lookahead path cpp_output)
 end
 
 end;

@@ -21,7 +21,7 @@ thm setHardwareASID_modifies
 end
 
 
-context dc_20081211_simpl 
+context dc_20081211_global_addresses 
 begin
 
 thm setCurrentPD_impl

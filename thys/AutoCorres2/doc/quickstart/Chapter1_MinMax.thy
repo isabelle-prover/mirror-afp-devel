@@ -104,14 +104,12 @@ text \<open>
 
 \<close>
 
-context minmax_simpl begin
 
   thm min_body_def
   text \<open>@{thm [display] min_body_def}\<close>
   thm max_body_def
   text \<open>@{thm [display] max_body_def}\<close>
 
-end
 
 text \<open>
 
@@ -163,7 +161,7 @@ text \<open>
   our \texttt{min} function is defined as follows:
 
 \<close>
-context minmax_all_corres begin
+context minmax_global_addresses begin
 thm min'_def
 text \<open>@{thm [display] min'_def}\<close>
 

@@ -226,7 +226,8 @@ in
 
 fun name_from_type x =
   case (dest_Type x) of
-       (@{type_name "Word.word"}, [x])
+       (@{type_name "Word.word"}, [Type (@{type_name Signed_Words.signed}, [x])]) => "sw" ^ (string_of_int (get_num_type x))
+     | (@{type_name "Word.word"}, [x])
          => "w" ^ (string_of_int (get_num_type x))
      | (@{type_name "ptr"}, [x])
          => (name_from_type x) ^ "'ptr"
@@ -249,6 +250,78 @@ end
 fun is_word (Type (@{type_name "Word.word"}, _)) = true
   | is_word _ = false
 
+fun to_signed_type T = 
+  case T of
+    \<^Type>\<open>ptr T\<close> => to_signed_type T |> Option.map (fn T' => \<^Type>\<open>ptr T'\<close>)
+  | _ => TermsTypes.to_signed_word T
+
+fun to_unsigned_type T = 
+  case T of
+    \<^Type>\<open>ptr T\<close> => to_unsigned_type T |> Option.map (fn T' => \<^Type>\<open>ptr T'\<close>)
+  | _ => TermsTypes.to_unsigned_word T
+
+fun to_signed_type_arr T =
+  case T of
+  \<^Type>\<open>Arrays.array T' iT\<close> => to_signed_type_arr T' |> Option.map (fn T'' => \<^Type>\<open>Arrays.array T'' iT\<close>)
+  | _ => to_signed_type T
+
+fun to_unsigned_type_arr T =
+  case T of
+  \<^Type>\<open>Arrays.array T' iT\<close> => to_unsigned_type_arr T' |> Option.map (fn T'' => \<^Type>\<open>Arrays.array T'' iT\<close>)
+  | _ => to_unsigned_type T
+
+fun binTs_of_wordT T =
+  if Word_Lib.is_wordT T then
+    let
+      val (_, [aT]) = dest_Type T
+      val (unsignedT, signedT) = case aT of \<^Type>\<open>signed binT\<close> => (binT, aT) | _ => (aT, \<^Type>\<open>signed aT\<close>)
+    in SOME {unsigned = unsignedT, signed = signedT} end
+  else NONE
+   
+val is_signed_type = is_some o to_unsigned_type
+val innermost_signed = is_signed_type o TermsTypes.innermost_element_type
+val is_unsigned_type = is_some o to_signed_type
+val word_related = Term.exists_subtype (Word_Lib.is_wordT)
+fun is_array_type \<^Type>\<open>Arrays.array _ _\<close> = true
+  | is_array_type _ = false
+
+fun is_array_type_ptr \<^Type>\<open>ptr \<^Type>\<open>Arrays.array _ _\<close>\<close> = true
+  | is_array_type_ptr _ = false
+
+fun to_signed_coerce T =
+  if is_signed_type T orelse not (word_related T) orelse is_array_type T orelse is_array_type_ptr T then
+   \<^instantiate>\<open>'a = T in term "\<lambda>x::'a. x"\<close> 
+  else 
+    (case T of \<^Type>\<open>ptr T'\<close> => 
+      \<^instantiate>\<open>'a=\<open>T'\<close> and 'b=\<open>the (to_signed_type T')\<close> in
+        term "ptr_coerce::'a::mem_type ptr => 'b::mem_type ptr"\<close>
+     | _ => 
+       case binTs_of_wordT T of
+        SOME {unsigned, signed} =>
+          \<^instantiate>\<open>'a=\<open>unsigned\<close> and 'b=\<open>signed\<close> in
+            term "ucast::'a::len word => 'b::len word"\<close>
+       | _ => raise TYPE("to_signed_coerce: ", [T], []))
+
+fun to_signed_coerce_ptr T =
+  to_signed_coerce \<^Type>\<open>ptr T\<close>
+
+fun to_unsigned_coerce T =
+  if is_unsigned_type T orelse not (word_related T) orelse is_array_type T orelse is_array_type_ptr T then
+   \<^instantiate>\<open>'a = T in term "\<lambda>x::'a. x"\<close> 
+  else 
+    (case T of \<^Type>\<open>ptr T'\<close> => 
+      \<^instantiate>\<open>'a=\<open>T'\<close> and 'b=\<open>the (to_unsigned_type T')\<close> in
+        term "ptr_coerce::'a::mem_type ptr => 'b::mem_type ptr"\<close>
+     | _ => 
+       case binTs_of_wordT T of
+        SOME {unsigned, signed} =>
+          \<^instantiate>\<open>'a=\<open>signed\<close> and 'b=\<open>unsigned\<close> in
+            term "ucast::'a::len word => 'b::len word"\<close> 
+        | _ => raise TYPE("to_unsigned_coerce: ", [T], []))
+
+fun to_unsigned_coerce_ptr T =
+  to_unsigned_coerce \<^Type>\<open>ptr T\<close>
+
 fun pointwise ctxt setter =
   \<^infer_instantiate>\<open>setter = setter in term \<open>\<lambda>p f. setter (\<lambda>h. h(p := f (h p)))\<close>\<close> ctxt
 
@@ -257,7 +330,12 @@ fun pointwise_upd ctxt setter =
 
 fun dest_pointwise @{term_pat \<open>\<lambda>p f. ?setter (\<lambda>h. h(p := f (h p)))\<close>} = SOME setter
   | dest_pointwise @{term_pat \<open>\<lambda>p f. ?setter (upd_fun p f)\<close>} = SOME setter
+  | dest_pointwise @{term_pat \<open>\<lambda>p f. ?setter (\<lambda>h. h(ptr_coerce p := _))\<close>} = SOME setter
   | dest_pointwise _ = NONE
+
+fun plain_getter @{term_pat \<open>\<lambda>s p. ptr_coerce (?getter s (ptr_coerce p))\<close>} = getter
+  | plain_getter @{term_pat \<open>\<lambda>s p. ucast (?getter s (ptr_coerce p))\<close>} = getter
+  | plain_getter t = t
 
 (*
  * Determine what types we will need for the split heap to support the given
@@ -284,24 +362,10 @@ fun typ_of_path [] = error ("type_of_path: empty path")
 (* Determine what heap types the given program accesses. *)
 fun get_program_heap_types prog_info addressable_fields fn_infos gen_word_heaps lthy =
 let
+  val init_globals_heap_lifting = ProgramInfo.get_heap_abs (ProgramInfo.get_fun_options prog_info NameGeneration.init_globalsN)
   (* Map the type "T" into a (possibly different) type that should appear in
    * our new heap. *)
-  fun map_heap_type T =
-    case T of
-      (* Signed words are converted to standard words on the heap. *)
-        Type (@{type_name "Word.word"},
-          [Type (@{type_name "Signed_Words.signed"}, x)]) =>
-            Type (@{type_name "Word.word"}, x)
 
-      (* Pointers are valid if their inner type is valid. *)
-      | Type (@{type_name "ptr"}, [x])
-          => Type (@{type_name "ptr"}, [map_heap_type x])
-
-      (* Arrays are valid if their inner type is valid. *)
-      | Type (@{type_name "array"}, [x, _])
-          => map_heap_type x
-
-      | _ => T
 
   (* Process a function. *)
   fun process fn_name =
@@ -313,15 +377,12 @@ let
 
       (* Fetch types from function body. *)
       |> get_term_heap_types lthy
-
-      (* Fiddle with types if necessary. *)
-      |> map map_heap_type
       |> Typset.make
 
       (* Remove the "void" heap if it exists. *)
       |> Typset.subtract (Typset.make [@{typ "unit"}])
 
-  val addressableTs = fold (fn (_, {addressable = addrs, ...}) => fold (fn path =>
+  val explicit_addressableTs = fold (fn (_, {addressable = addrs, ...}) => fold (fn path =>
       let
         val (_, (_, T)) = split_last path
       in
@@ -333,10 +394,36 @@ let
                       Typset.make [@{typ word8}, @{typ word16}, @{typ word32}, @{typ word64}]
   val union_variants = CalculateState.union_variant_types {non_canonical=true} (Proof_Context.theory_of lthy) (ProgramInfo.get_csenv prog_info)
         |> Typset.make
-  val _ = tracing ("union_variants: " ^ @{make_string} union_variants)
-  val all = Typset.union
-    (Typset.union_sets (word_typs :: map process (Symtab.keys fn_infos)))
-    (Typset.map map_heap_type addressableTs)
+  val all_body_types = Typset.union_sets (word_typs :: map process (Symtab.keys fn_infos))
+  val cse = ProgramInfo.get_csenv prog_info
+  val touched_array_init_types = 
+    if init_globals_heap_lifting then 
+      ProgramAnalysis.get_touched_globinit_var_infos cse 
+      |> map (CalculateState.ctype_to_typ {bitint_padding=true} lthy o ProgramAnalysis.get_vtype)
+      |> filter (is_array_type) |> Typset.make
+    else Typset.empty
+
+  val _ = if Typset.is_empty touched_array_init_types then ()
+    else warning ("The following array types are added to heap lifting because of initialisation.\n " ^
+      "This can be avoided by setting option no_heap_abs for init'globals:\n " ^ @{make_string} touched_array_init_types)
+  val all_body_array_types = Typset.filter (is_array_type) all_body_types
+  val unsigned_body_array_types = Typset.dest all_body_array_types 
+    |> map_filter to_unsigned_type_arr |> Typset.make
+  val unsigned_touched_array_init_types = Typset.dest touched_array_init_types 
+    |> map_filter to_unsigned_type_arr |> Typset.make
+  val array_types = Typset.union_sets [all_body_array_types, unsigned_body_array_types, 
+    touched_array_init_types, unsigned_body_array_types]
+  val element_types = Typset.dest array_types
+   |> map TermsTypes.innermost_element_type |> Typset.make
+
+  val addressableTs = Typset.union_sets [explicit_addressableTs,
+    touched_array_init_types, unsigned_touched_array_init_types]
+  val element_types' = Typset.dest explicit_addressableTs |> filter is_array_type 
+    |> map TermsTypes.innermost_element_type |> Typset.make
+  val all' = Typset.union_sets
+    [all_body_types, element_types, element_types', addressableTs]
+  val unsigned_types = Typset.dest all' |> map_filter to_unsigned_type_arr
+  val all = Typset.union all' (Typset.make unsigned_types)
   val all_but_union_variants = Typset.subtract union_variants all
 
   (* the array elements of an addressable array need to be addressable *)
@@ -354,7 +441,6 @@ let
           if null na
             then All_Addressable (map the_single addrs)
             else Some_Addressable addrs))
-
   val ordered_Ts =
     let
       val all_Ts = map #1 types
@@ -371,6 +457,7 @@ let
   val atomic_Ts = all_but_union_variants
     |> Typset.subtract (Typset.make (map fst addressable_fields))
     |> Typset.dest
+    |> filter_out (is_array_type)
 
   val _ = Utils.verbose_msg 3 lthy (fn _ => "all: " ^ @{make_string} types)
   val _ = Utils.verbose_msg 3 lthy (fn _ => "virtual heaps: " ^ @{make_string} ordered_Ts)
@@ -432,39 +519,31 @@ fun get_interpretation ctxt prop =
   handle ERROR msg =>
     error ("No interpretation found (" ^ Syntax.string_of_term ctxt prop ^ ") error: " ^ msg)
 
-fun check_interpretation ctxt prop =
+fun check_interpretation ctxt {eager} prop =
   try (Goal.prove ctxt [] [] prop) (fn {context, ...} =>
-        DETERM (Locale.intro_locales_tac {strict = false, eager = true} context []))
+        DETERM (Locale.intro_locales_tac {strict = false, eager = eager} context []))
 
 (* Generate "typ_heap_simulation" predicates for each heap type we have. *)
 fun gen_mk_typ_heap_simulation_thm prog_info (heap_info:heap_info)
       getter setter valid heap_typing heap_typing_update open_types_T
       typ_name typ lthy =
   let
+    val signed_type = is_signed_type typ
     val st =  #lift_fn_full heap_info
     val t_hrs = ProgramInfo.get_t_hrs_getter prog_info
     val t_hrs_update = ProgramInfo.get_t_hrs_setter prog_info
 
-    val res_thms =
-      if TermsTypes.is_array_type typ then [] else
-             let
-        val prop = lthy
-          |> \<^infer_instantiate>\<open>st and getter and setter and valid and t_hrs and t_hrs_update
-            in prop \<open>typ_heap_simulation st getter setter valid t_hrs t_hrs_update\<close> for valid\<close>
-             in
-      case check_interpretation lthy prop of
-          SOME thm => [thm]
-        | NONE => error "no typ_heap_simulation instance found"
-      end
     val lthy =
       let
         val loc = @{locale stack_simulation_heap_typing}
         val _ = Utils.verbose_msg 0 lthy (fn _ => "Proving interpretation " ^ quote loc ^ " for " ^ quote typ_name)
         val simps = [#lift_fn_thm heap_info, @{thm hrs_htd_update}] @
           Named_Theorems.get lthy @{named_theorems stack_the_default_plift}
+        val intro_rule = Drule.infer_instantiate lthy [(("v", 0), Thm.cterm_of lthy valid)] 
+          @{thm typ_heap_simulation_open_types.stack_simulation_heap_typingI}
       in
-        lthy
-        |> interpret {
+        lthy 
+          |> interpret {
             locale = loc,
             qualifier = typ_name,
             qualifier_mandatory = true,
@@ -472,11 +551,22 @@ fun gen_mk_typ_heap_simulation_thm prog_info (heap_info:heap_info)
               HP_TermsTypes.S lthy, open_types_T]
           }
           (fn ctxt =>
-            match_tac ctxt @{thms typ_heap_simulation_open_types.stack_simulation_heap_typingI} 1 THEN
-            DETERM (Locale.intro_locales_tac {strict = false, eager = true} ctxt []) THEN
-            ALLGOALS (asm_full_simp_tac (ctxt addsimps simps)))
+              match_tac ctxt [intro_rule ] 1 THEN
+              DETERM (Locale.intro_locales_tac {strict = false, eager = true} ctxt []) THEN
+              ALLGOALS (asm_full_simp_tac (ctxt addsimps simps )))
       end
-
+    val res_thms0 = 
+        let
+          val prop = lthy
+            |> \<^infer_instantiate>\<open>st and getter and setter and valid and t_hrs and t_hrs_update
+            in prop \<open>typ_heap_simulation st getter setter valid t_hrs t_hrs_update\<close> for valid\<close>
+        in
+          case check_interpretation lthy {eager=not (TermsTypes.is_array_type typ)} prop of
+            SOME thm => 
+              [thm]
+            | NONE => error "no typ_heap_simulation instance found"
+        end
+    val res_thms = res_thms0
   in
     (res_thms, lthy)
   end
@@ -513,19 +603,15 @@ fun interpret_hrs_lense prog_info thy =
 fun mk_typ_heap_simulation_thm prog_info (heap_info : heap_info) typ lthy =
   let
     val heap_tab = #heap_tab heap_info
-    val {getter, setter, ...} = Typtab.lookup heap_tab typ |> the
-    val heap_typing = #heap_typing heap_info
-    val T = typ
-    val ptr_valid = AList.lookup (op =) (#ptr_valids heap_info) T |> the |> #1
-    val valid = \<^infer_instantiate>\<open>ptr_valid = ptr_valid and heap_typing=heap_typing
-           in term \<open>\<lambda>s. ptr_valid (heap_typing s)\<close>\<close> lthy
-    val typ_name = name_from_type T
+    val {getter, setter,valid, ...} = Typtab.lookup heap_tab typ |> the
+    val typ_name = name_from_type typ
     val heap_typing = #heap_typing heap_info
     val heap_typing_update = #heap_typing_update heap_info
     val open_types_T = #open_types_T heap_info
-  in
-    gen_mk_typ_heap_simulation_thm prog_info heap_info getter setter valid
+    val res =  gen_mk_typ_heap_simulation_thm prog_info heap_info getter setter valid
       heap_typing heap_typing_update open_types_T typ_name typ lthy
+  in
+    res
   end
 
 
@@ -565,19 +651,8 @@ fun lifted_globals_lemmas prog_info heap_info lthy = let
 
   (* Make thms for all types. *)
   val all_heap_types = #heap_types heap_info
-
-  val (typ_heap_simulation_thmss, lthy) = lthy |> fold_map (mk_typ_heap_simulation_thm prog_info heap_info) all_heap_types
-
+  val (typ_heap_simulation_thmss, lthy) = lthy |> fold_map (mk_typ_heap_simulation_thm prog_info heap_info) (all_heap_types)
   val typ_heap_simulation_thms = flat typ_heap_simulation_thmss
-  (* Generate "typ_heap_simulation" thms for signed words. *)
-  val typ_heap_simulation_thms =
-      typ_heap_simulation_thms
-      @ (map_product
-            (fn a => fn b => try (fn _ => a OF [b]) ())
-            @{thms signed_typ_heap_simulations}
-            typ_heap_simulation_thms
-        |> map_filter I)
-
   (* Generate "valid_struct_field" for each field of each struct. *)
   fun mk_valid_struct_field_thm struct_name _ (field_info : field_info) =
     \<^infer_instantiate>\<open>fname = \<open>Utils.encode_isa_string (#name field_info)\<close> and fgetter = \<open>#getter field_info\<close> and
@@ -783,8 +858,9 @@ let
       | (T, Some_Addressable _) =>
           SOME (Binding.name ("dedicated_heap_" ^ name_from_type T), Utils.mk_ptrT T --> T, NoSyn)
       | (T, None_Addressable) =>
+          if is_signed_type T then NONE else
           SOME (Binding.name ("heap_" ^ name_from_type T), Utils.mk_ptrT T --> T, NoSyn))
-
+ 
   val heap_typing =
      (Binding.name AC_Names.heap_typingN, @{typ heap_typ_desc}, NoSyn)
 
@@ -874,8 +950,10 @@ let
       else
         [(typ_uinfo_t T, fields)]
     end
-
-  val open_types = addressable_fields |> map open_type |> flat
+ 
+  val open_types = addressable_fields |> filter_out (innermost_signed o fst) |> map open_type
+    |> flat
+    |> distinct (is_equal o (prod_ord Term_Ord.fast_term_ord Term_Ord.fast_term_ord))
     |> map HOLogic.mk_prod
     |> HOLogic.mk_list @{typ "(typ_uinfo * qualified_field_name list)"}
 
@@ -983,7 +1061,7 @@ let
       (rest $ (Const (name, globalsT --> t) $ dummy_old_globals)))
         existing_fields
     |> fold (fn Tk => fn rest => rest $ lift_heap Tk)
-         (filter_out (is_All_Addressable o snd) heapTs)
+         (filter_out ((is_All_Addressable o snd) orf (is_signed_type o fst)) heapTs)
     |> (fn rest => rest $ (@{const hrs_htd} $ (t_hrs $ dummy_old_globals)))
     |> (fn t => t $ @{term "()"})
     |> Syntax.check_term lthy
@@ -1019,8 +1097,11 @@ let
       (T, (All_Addressable k, NONE)) :: merge_heap_fields Ts hs
     | merge_heap_fields ((T, Some_Addressable k)::Ts) (h :: hs) =
       (T, (Some_Addressable k, SOME h)) :: merge_heap_fields Ts hs
-    | merge_heap_fields ((T, No_Addressable)::Ts) (h :: hs) =
-      (T, (No_Addressable, SOME h)) :: merge_heap_fields Ts hs
+    | merge_heap_fields ((T, No_Addressable)::Ts) hs =
+       if is_signed_type T then
+         (T, (No_Addressable, NONE)) :: merge_heap_fields Ts hs 
+       else 
+         (T, (No_Addressable, SOME (hd hs))) :: merge_heap_fields Ts (tl hs)
     | merge_heap_fields _ _ = []
 
   fun typ_heap_simulation_open_types_params_stack r w v =
@@ -1164,7 +1245,7 @@ let
           |> typ_heap_simulation T hget hupd hvalid
             (fn ctxt =>
               match_tac ctxt [@{thm array_typ_heap_simulation_of_typ_heap_simulation}] 1 THEN
-              Locale.intro_locales_tac {strict = false, eager = true} ctxt [] THEN
+              DETERM (Locale.intro_locales_tac {strict = false, eager = true} ctxt []) THEN
               asm_simp_tac ctxt 1)
         val array_data = {
           hget = hget,
@@ -1181,34 +1262,38 @@ let
 
   fun construct_signed_heap T (tab : heap_field_info Typtab.table) lthy =
     let
-      val data = Typtab.lookup tab T |> the
-      val (_, [aT]) = dest_Type T
-      val sT = Type (@{type_name Word.word}, [Type (@{type_name Signed_Words.signed}, [aT])])
+      val _ = @{assert} (is_signed_type T)
+      val unsignedT = the (to_unsigned_type T)
+      val data = Typtab.lookup tab unsignedT |> the
+      val to_unsigned = to_unsigned_coerce T
+      val from_unsigned = to_signed_coerce unsignedT
+      val to_unsigned_ptr = to_unsigned_coerce_ptr T
+      val {hget = ugetter, hupd = usetter, hvalid = uvalid, ...} = data
+      val getter = \<^infer_instantiate>\<open>ugetter = ugetter and from_unsigned = from_unsigned and to_unsigned_ptr = to_unsigned_ptr in
+         term "\<lambda>s p. from_unsigned (ugetter s (to_unsigned_ptr p))"\<close> lthy
+      val setter = \<^infer_instantiate>\<open>usetter = usetter and from_unsigned = from_unsigned and to_unsigned = to_unsigned and to_unsigned_ptr = to_unsigned_ptr in
+         term "\<lambda>p f. (usetter (to_unsigned_ptr p) ((\<lambda>x. to_unsigned (f (from_unsigned x)))))"\<close> lthy
+      val valid = \<^infer_instantiate>\<open>uvalid = uvalid and to_unsigned_ptr = to_unsigned_ptr in
+         term "\<lambda>s p. uvalid s (to_unsigned_ptr p)"\<close> lthy
     in Utils.timeit_msg 0 lthy
-      (fn _ => "Construct typ simulation for " ^ Syntax.string_of_typ lthy sT)
+      (fn _ => "Construct typ simulation for " ^ Syntax.string_of_typ lthy T)
       (fn _ => let
-        val hget = \<^infer_instantiate>\<open>r = "#hget data" and 'a=aT in term \<open>signed_heap (r::('s \<Rightarrow> 'a::len word ptr \<Rightarrow> 'a word))\<close>\<close> lthy
-        val hupd = \<^infer_instantiate>\<open>w = "#hupd data" and 'a=aT in term \<open>\<lambda>p m.
-            w (PTR_COERCE('a::len signed word \<rightarrow> 'a word) p)
-              (\<lambda>w. UCAST('a signed \<rightarrow> 'a) (m (UCAST('a \<rightarrow> 'a signed) w)))\<close>\<close> lthy
-        val hvalid = \<^infer_instantiate>\<open>v = "#hvalid data" and 'a=aT in term \<open>\<lambda>h p.
-            v h (PTR_COERCE('a::len signed word \<rightarrow> 'a word) p)\<close>\<close> lthy
-
         val lthy = lthy
-          |> typ_heap_simulation sT hget hupd hvalid
+          |> typ_heap_simulation T getter setter valid
             (fn ctxt =>
-              match_tac ctxt [@{thm signed_typ_heap_simulation_of_typ_heap_simulation}] 1 THEN
-              Locale.intro_locales_tac {strict = false, eager = true} ctxt [])
+              match_tac ctxt @{thms signed_typ_heap_simulation_of_typ_heap_simulation' ptr_coerce_typ_heap_simulation_open_types} 1 THEN
+              DETERM (Locale.intro_locales_tac {strict = false, eager = true} ctxt []) THEN
+              IF_UNSOLVED (simp_tac ctxt 1))
         val signed_word_data = {
-          hget = hget,
-          hupd = hupd,
-          hvalid = hvalid,
-          atomic_upds = #atomic_upds data,
+          hget = getter,
+          hupd = setter,
+          hvalid = valid,
+          atomic_upds = Ord_List.insert Term_Ord.fast_term_ord setter (#atomic_upds data),
           pointer_lense_axiom =
-            get_interpretation lthy (\<^infer_instantiate>\<open>g = hget and u = hupd in
+            get_interpretation lthy (\<^infer_instantiate>\<open>g = getter and u = setter in
                 prop \<open>pointer_lense g u\<close>\<close> lthy) }
       in
-        (Typtab.update_new (sT, signed_word_data) tab, lthy)
+        (Typtab.update_new (T, signed_word_data) tab, lthy)
       end)
     end
 
@@ -1505,9 +1590,14 @@ let
         pointer_lense_axiom =
           get_interpretation lthy (\<^infer_instantiate>\<open>g = g and u = u in
               prop \<open>pointer_lense g u\<close>\<close> lthy) }) tab, lthy)
-      |> (fn (tab, lthy) =>
-        if is_word T then construct_signed_heap T tab lthy else (tab, lthy))
+
     end)
+    | construct_heap_typ (T, (None_Addressable, NONE)) (tab, lthy) =
+      Utils.timeit_msg 0 lthy
+      (fn _ => "Construct signed typ simulation for " ^ Syntax.string_of_typ lthy T ^ " (nothing addressable)")
+      (fn _ =>
+        construct_signed_heap T tab lthy)
+
     | construct_heap_typ _ _ = error "construct_heap_typ"
 
   fun construct_lense (g, s) =
@@ -1543,12 +1633,14 @@ let
 
   fun overlapping_thms d1 d2 lthy =
     let
+      val pointer_writer_disjnt_intros = Named_Theorems.get lthy @{named_theorems pointer_writer_disjnt_intros} @
+          @{thms pointer_writer_disjnt_ptr_corce_signed pointer_writer_disjnt_ptr_corce_signed'}
       val disj_thm = Goal.prove lthy [] []
         (\<^infer_instantiate>\<open>w1 = \<open>#hupd d2\<close> and w2 = \<open>#hupd d1\<close> in
           prop \<open>\<And>f g. pointer_writer_disjnt (\<lambda>p. w1 p f) (\<lambda>p. w2 p g)\<close>\<close> lthy)
         (fn { context, ... } => REPEAT_ALL_NEW (match_tac context
-          (Named_Theorems.get context @{named_theorems pointer_writer_disjnt_intros}) ORELSE'
-          SOLVED' (asm_full_simp_tac (context addsimps @{thms pointer_writer_disjntI}))) 1)
+          pointer_writer_disjnt_intros ORELSE'
+          SOLVED' (asm_full_simp_tac (context addsimps @{thms pointer_writer_disjntI})))  1)
     in
       ([@{thm pointer_writer_disjntD} OF [disj_thm]],
        [@{thm pointer_lense.read_commute_of_pointer_writer_disjnt'} OF [#pointer_lense_axiom d1, disj_thm],
@@ -1563,8 +1655,9 @@ let
       fun independent lthy =
         let
           val atomic_setter = dest_pointwise (#hupd d1) |> the
+          val plain_getter = plain_getter (#hget d1)
           val atomic_lense = get_interpretation lthy
-            (\<^infer_instantiate>\<open>getter=\<open>#hget d1\<close> and setter=atomic_setter
+            (\<^infer_instantiate>\<open>getter=plain_getter and setter=atomic_setter
               in prop \<open>lense getter setter\<close>\<close> lthy)
 
           val disj_thm = Goal.prove lthy [] []
@@ -1580,7 +1673,7 @@ let
         end
 
       val (update_thms, read_thms) =
-        if Ord_List.member Term_Ord.fast_term_ord (#atomic_upds d2) (#hupd d1) then
+        if not (null (Ord_List.inter Term_Ord.fast_term_ord (#atomic_upds d2) (#atomic_upds d1))) then
           overlapping_thms d1 d2 lthy
         else
           independent lthy
@@ -1664,13 +1757,14 @@ let
   (* Given the name of a struct ("struct foo" would be "foo_C"), return
    * the type of that structure. *)
   fun get_struct_type name =
-    CalculateState.ctype_to_typ ctxt (CTypeDatatype.StructTy name)
+    CalculateState.ctype_to_typ {bitint_padding=true} ctxt (CTypeDatatype.StructTy name)
 
   (* Generate information relating to a field of a single struct. *)
-  fun get_field_info struct_name struct_type (field_name, (field_type, _)) = 
+  fun get_field_info struct_name struct_type (field_name_wrap, (field_type, _)) = 
   if CType.flexible_array_type field_type then NONE else SOME
   let
-    val hol_field_type = CalculateState.ctype_to_typ ctxt field_type
+    val hol_field_type = CalculateState.ctype_to_typ {bitint_padding=true} ctxt field_type
+    val field_name = RegionExtras.node field_name_wrap
   in
     {
       name = field_name,
@@ -1685,7 +1779,7 @@ let
   end
 
   fun active_fields CType.Struct flds = flds
-    | active_fields (CType.Union active) flds = filter (member (op =) active o fst) flds
+    | active_fields (CType.Union active) flds = filter (member (op =) active o RegionExtras.node o fst) flds
 
   (* Generate info relating to a single struct. *)
   fun get_struct_info (struct_name, (kind, fields, _, _)) =
@@ -1807,15 +1901,28 @@ let
       val getter = #hget d
       val setter = #hupd d
     in
-    case dest_pointwise setter of SOME setter =>
-      let
-          val eq = \<^infer_instantiate>\<open>setter = setter and getter = getter
-              in prop (schematic) \<open>(\<lambda>s. setter (\<lambda>h. h (p := f (getter s p))) s) = (setter (\<lambda>h. h (p := f (h p))))\<close>\<close> lthy
-      in
-        SOME (autofix_prove_future lthy [] [] eq (fn {context, ...} =>
-          resolve_tac context @{thms ext} 1 THEN asm_full_simp_tac context 1))
-      end
-    | _ => NONE
+      case dest_pointwise setter of SOME usetter =>
+        if is_signed_type T then 
+          let   
+            val unsignedT = the (to_unsigned_type T)
+            val from_unsigned = to_signed_coerce unsignedT
+            val to_unsigned = to_unsigned_coerce T
+            val to_unsigned_ptr = to_unsigned_coerce_ptr T
+            val eq = \<^infer_instantiate>\<open>usetter = usetter and getter = getter and 
+                   to_unsigned_ptr = to_unsigned_ptr and from_unsigned = from_unsigned and to_unsigned = to_unsigned
+                  in prop (schematic) \<open>(\<lambda>s. usetter (\<lambda>h. h (to_unsigned_ptr p := to_unsigned (f (getter s p)))) s) = 
+                    (usetter (\<lambda>h. h (to_unsigned_ptr p := to_unsigned (f (from_unsigned (h (to_unsigned_ptr p)))))))\<close>\<close> lthy
+        in SOME (autofix_prove_future lthy [] [] eq (fn {context, ...} =>
+             resolve_tac context @{thms ext} 1 THEN asm_full_simp_tac context 1)) end
+        else
+          let
+              val eq = \<^infer_instantiate>\<open>setter = usetter and getter = getter
+                  in prop (schematic) \<open>(\<lambda>s. setter (\<lambda>h. h (p := f (getter s p))) s) = (setter (\<lambda>h. h (p := f (h p))))\<close>\<close> lthy
+          in
+            SOME (autofix_prove_future lthy [] [] eq (fn {context, ...} =>
+              resolve_tac context @{thms ext} 1 THEN asm_full_simp_tac context 1))
+          end
+        | _ => NONE
     end
 
   val pointwise_to_heapwide_thms = map_filter mk_pointwise_to_heapwide (fst heapTs)
@@ -2119,9 +2226,6 @@ let
               val rewrite_thms = map (fn thm => @{thm symmetric} OF [thm])
                                      (getter_thms @ eta_setter_thms)
               val aux_thms = map (Simplifier.rewrite_rule lthy rewrite_thms) aux_thms
-              val _ = tracing ("thms: " ^ string_of_thms lthy thms) 
-              val _ = tracing ("rewrite_thms: " ^ string_of_thms lthy rewrite_thms) 
-              val _ = tracing ("aux_thms: " ^ string_of_thms lthy aux_thms) 
             in (rewrite_thms @ aux_thms, lthy) end;
         val HL_setup = {heap_info = #heap_info HL_setup,
               lifted_heap_lemmas = #lifted_heap_lemmas HL_setup,

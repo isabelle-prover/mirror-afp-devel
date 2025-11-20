@@ -11,11 +11,6 @@ begin
 
 install_C_file "jiraver092.c"
 
-context jiraver092_simpl
-begin
-
 thm test_body_def
-
-end
 
 end

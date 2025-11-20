@@ -15,10 +15,8 @@ new_C_include_dir "includes"
 
 install_C_file "parse_include.c"
 
-context parse_include_simpl
-begin
 thm g_body_def
 thm h_body_def
 thm included_fn_body_def
-end
+
 end

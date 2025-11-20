@@ -9,28 +9,29 @@ theory final_autocorres
 begin
 install_C_file "final_autocorres.c"
 
-autocorres [scope = add] "final_autocorres.c"
+declare [[ML_print_depth=1000]]
+init-autocorres [skip_word_abs]"final_autocorres.c"
+autocorres [ scope = add] "final_autocorres.c"
+autocorres [ scope = minus] "final_autocorres.c"
+autocorres [ scope = call_add_minus] "final_autocorres.c"
 
-text \<open>When not yet all functions are processed  the wrap up locales
- \<open>final_autocorres_all_impl\<close> and \<open>final_autocorres_all_corres\<close> are not generated.
+text \<open>When not yet all functions are processed the definition of function pointer 
+environments are not generated.
 
-To generate these locale you can use the @{command "final-autocorres"} which simply wraps up all
-functions that are processed up to now in those locales.
+To generate those definitions ands propagate them to the functions use the @{command "final-autocorres"} 
 
 This might be useful for development or debugging to avoid @{command autocorres} running on all functions and
-still having the locales around.
+still having everything around.
 \<close>
 
 final-autocorres "final_autocorres.c"
 
 
 
-context final_autocorres_all_impl
-begin
 thm ts_def
-end
-
-context final_autocorres_all_corres
+thm final_defs
+thm \<P>_defs
+context final_autocorres_global_addresses
 begin
 thm ts_corres
 end
@@ -39,19 +40,14 @@ text \<open>Process the rest.\<close>
 autocorres "final_autocorres.c"
 
 text \<open>Note the warning that @{command autocorres} is already finalised. 
-Locales @{locale final_autocorres_all_impl} and @{locale final_autocorres_all_corres} do not change, 
-as they were already defined before. 
+@{thm final_defs} and @{thm \<P>_defs} are not updated.
+
+So calling @{command autocorres} after @{command "final-autocorres"} is unexpected. Also note that
+when @{command autocorres} detects that all functions are processed it automatically calls
+@{command "final-autocorres"}.
 \<close>
-
-context final_autocorres_all_impl
-begin
 thm ts_def
-end
-
-context final_autocorres_all_corres
-begin
-thm ts_corres
-end
-
+thm final_defs
+thm \<P>_defs
 
 end

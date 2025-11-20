@@ -25,7 +25,6 @@ autocorres [
   ]
   "signed_word_abs_heap.c"
 
-context signed_word_abs_heap_all_impl begin
 text \<open>
   Previously, lifted word heap accesses would always be translated to
   unsigned @{type nat}s, instead of signed @{typ int}s where appropriate.
@@ -49,7 +48,5 @@ lemma bar_n123_456:
    \<lbrace>\<lambda>r s. r = Result 333 \<and> heap_w32 s p = 333\<rbrace>"
   unfolding bar'_def
   by (runs_to_vcg \<open>simp add: fun_upd_apply INT_MAX_def\<close>)
-
-end
 
 end

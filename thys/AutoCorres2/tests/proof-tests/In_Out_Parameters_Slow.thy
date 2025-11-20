@@ -17,7 +17,7 @@ init-autocorres [ in_out_parameters =
 
 autocorres  [] "in_out_parameters_slow.c"
 
-context in_out_parameters_slow_all_corres
+context in_out_parameters_slow_global_addresses
 begin
 thm io_corres
 thm ts_def

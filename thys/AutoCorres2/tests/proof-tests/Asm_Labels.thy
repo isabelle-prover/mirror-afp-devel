@@ -30,26 +30,12 @@ text \<open>The axiomatic setup of named theorems @{thm L1opt} skips primitive a
 autocorres [ts_rules = nondet,
     scope = asm_labels] "asm_labels.c"
 
-context asm_labels_simpl
-begin
 thm asm_labels_body_def
 thm asm_unsupported_body_def
-end
 
-context l1_definition_asm_labels
-begin
 thm l1_def
-end
-
-context l2_definition_asm_labels
-begin
 thm l2_def
-end
-
-context ts_definition_asm_labels
-begin
 thm ts_def
-end
 
 text \<open>Function \<open>asm_unsupported\<close> also contains more complex assembler statements. These
 are not removed. Currently they are propagated up to phase L1. Phase L2 fails as it not
@@ -57,9 +43,6 @@ handle \<^term>\<open>L1_spec (asm_spec a b c d e f)\<close> yet.\<close>
 
 autocorres [phase=L1, scope = asm_unsupported] "asm_labels.c"
 
-context l1_definition_asm_unsupported
-begin
 thm l1_def
-end
 
 end

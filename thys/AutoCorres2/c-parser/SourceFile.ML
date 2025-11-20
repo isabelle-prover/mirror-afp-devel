@@ -35,10 +35,10 @@ datatype t = T of {file: string Unsynchronized.ref,
                    main_file: string,
                    included: string list Unsynchronized.ref}
 
-fun getPos (T {file, lineNum, lineStart, ...}, n) =
-   SourcePos.make {column = n - !lineStart,
+fun getPos (T {file, lineNum, lineStart, ...}, yypos) =
+   SourcePos.make {column = yypos - !lineStart,
                    file = !file,
-                   line = !lineNum}
+                   line = !lineNum, yypos=yypos}
 
 fun lineStart (s as T {lineStart, ...}) = getPos (s, !lineStart)
 

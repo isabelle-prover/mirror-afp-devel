@@ -415,7 +415,7 @@ lemma case_finiteD': "case_finite_2 (f \<aa>) (f \<bb>) u = f\<^sup>\<C> u"
   using case_finiteD by metis
 
 lemma bin_morph_of_maps: "bin_morph_of x y = List.maps (case_finite_2 x y)"
-  by (simp add: bin_morph_of_def fun_eq_iff case_finite_2_if_else)
+  unfolding bin_morph_of_def List.maps_eq unfolding case_finite_2_if_else by simp
 
 lemma bin_morph_ofD: "(bin_morph_of x y) \<aa> = x" "(bin_morph_of x y) \<bb> = y"
   unfolding bin_morph_of_def by simp_all
@@ -986,9 +986,11 @@ lemma per_comp:
   assumes "r <p f w \<cdot> r"
   shows "r \<bowtie> f w \<cdot> \<alpha>"
   using assms
-proof-
-  obtain n where "r <p f w\<^sup>@n" "0 < n"
-    using per_root_powE[OF assms].
+proof
+  have "r \<le>p f w \<cdot> r" "f w \<noteq> \<epsilon>"
+    using assms by force+
+  from per_root_powE[OF this]
+  obtain n where "r <p f w\<^sup>@n" "0 < n".
   have "f w \<cdot> \<alpha> \<le>p f w \<cdot> f w \<^sup>@ (n - 1) \<cdot> \<alpha>"
     using bin_lcp_pref_all[of "w\<^sup>@(n-1)"]
     unfolding pref_cancel_conv pow_morph.
@@ -1457,8 +1459,12 @@ lemma  alphas_pref: assumes "\<^bold>|\<alpha>\<^sub>h\<^bold>| \<le> \<^bold>|\
 proof-
   have "s \<noteq> \<epsilon>" and "r \<noteq> \<epsilon>"
     using min_coinD'[OF \<open>g r =\<^sub>m h s\<close>]  by force+
+  have "\<alpha>\<^sub>h \<le>p h s \<cdot> \<alpha>\<^sub>h" "h s \<noteq> \<epsilon>"
+    using h.bin_lcp_spref_all[OF \<open>s \<noteq> \<epsilon>\<close>] by blast+
+  have "\<alpha>\<^sub>g \<le>p h s \<cdot> \<alpha>\<^sub>g"
+    using g.bin_lcp_spref_all[OF \<open>r \<noteq> \<epsilon>\<close>, unfolded min_coinD[OF \<open>g r =\<^sub>m h s\<close>]] by force
   from
-    root_ruler[OF h.bin_lcp_spref_all[OF \<open>s \<noteq> \<epsilon>\<close>] g.bin_lcp_spref_all[OF \<open>r \<noteq> \<epsilon>\<close>, unfolded min_coinD[OF \<open>g r =\<^sub>m h s\<close>]]]
+    root_ruler[OF \<open>\<alpha>\<^sub>h \<le>p h s \<cdot> \<alpha>\<^sub>h\<close> \<open>\<alpha>\<^sub>g \<le>p h s \<cdot> \<alpha>\<^sub>g\<close> \<open>h s \<noteq> \<epsilon>\<close>]
   show "\<alpha>\<^sub>h \<le>p \<alpha>\<^sub>g"
     unfolding prefix_comparable_def using ruler_le[OF self_pref _ assms(1)] by blast
 qed

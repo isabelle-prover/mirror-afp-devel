@@ -3552,13 +3552,6 @@ lemma wf_field_descs_final_pad: "wf_field_descs (set (field_descs t)) \<Longrigh
 lemma (in wf_xfield) padding_lift:
 shows "complement_padding (xto_bytes \<circ> acc) (upd \<circ> xfrom_bytes) (size_of TYPE('a))"
 proof -
-(* FIXME: remove
-  have "wf_field_desc (component_desc (typ_info_t TYPE('a)))"
-    using xmem_type_class.wf_field_desc_component_desc by blast
-  then interpret wf_field_desc "(component_desc (typ_info_t TYPE('a)))" .
-*)
-  thm xmem_type_wf_field_desc.access_update
-  thm xmem_type_wf_field_desc.is_padding_byte_acc_upd_compose
   show ?thesis
   proof
     fix i

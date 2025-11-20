@@ -12,13 +12,8 @@ begin
 install_C_file "ummbug20100217.c"
 
 
-context ummbug20100217_simpl
-begin
-
 thm g_body_def
 thm h_body_def
 thm j_body_def
-
-end
 
 end

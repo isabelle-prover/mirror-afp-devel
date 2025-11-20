@@ -143,16 +143,17 @@ lemma fibo32_rec: "\<lbrakk> a < a + 2; b = a + 1; c = a + 2 \<rbrakk> \<Longrig
 install_C_file "fib.c"
 
 
-context fib_simpl begin
 (* fib_linear\<^bsub>C\<^esub> is the linear-time implementation. *)
 thm fib_linear_body_def
 (* fib\<^bsub>C\<^esub> is the pretty (inefficient) recursive implementation. *)
 thm fib_body_def
 (* First, let us prove that they implement fibo32. *)
-end
+
 
 (* First, the linear version. *)
-lemma (in fib_linear_impl) fib_linear_simpl_spec:
+lemma (in fib_global_addresses) fib_linear_simpl_spec:
+  includes fib_linear_variables
+  shows
 "\<Gamma> \<turnstile> {s. s = t}
      \<acute>ret' :== CALL fib_linear(\<acute>n)
      \<lbrace> (\<acute>ret' = fibo32 \<^bsup>t\<^esup>n) \<rbrace>"
@@ -194,8 +195,10 @@ done
 
 (* And the recursive version. *)
 
-
-lemma (in fib_impl) fib_simpl_spec: "\<forall>n. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<lbrace>\<acute>n=n\<rbrace>  PROC fib(\<acute>n,\<acute>ret') \<lbrace>\<acute>ret' = fibo32 n\<rbrace>"
+context fib_global_addresses 
+begin
+unbundle fib_variables
+lemma  fib_simpl_spec: "\<forall>n. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<lbrace>\<acute>n=n\<rbrace>  PROC fib(\<acute>n,\<acute>ret') \<lbrace>\<acute>ret' = fibo32 n\<rbrace>"
   apply (hoare_rule HoareTotal.ProcRec1[where r = "measure (\<lambda>(s, d). unat \<^bsup>s\<^esup>n)"])
   supply fibo32_0 [simp del]
   supply fibo32_1 [simp del]
@@ -205,6 +208,7 @@ lemma (in fib_impl) fib_simpl_spec: "\<forall>n. \<Gamma>,\<Theta>\<turnstile>\<
   apply (subst fibo32.simps[where n = n])
   apply unat_arith
   done
+end
 
 (*
  * We need to temporarily leave the local context to run autocorres.
@@ -214,12 +218,12 @@ lemma (in fib_impl) fib_simpl_spec: "\<forall>n. \<Gamma>,\<Theta>\<turnstile>\<
 
 autocorres [unsigned_word_abs = fib_linear, ts_rules=nondet] "fib.c"
 
-context fib_all_impl begin
+
 
 thm fib_linear'_def
 thm fib'.simps fib'.simps[unfolded fun_app_def, folded One_nat_def]
 thm call_fib'_def call_fib'_def[simplified]
-end
+
 
 (*
  * fib_linear\<^bsub>C\<^esub> has been lifted to fib_linear', using the option monad.
@@ -237,7 +241,7 @@ end
 (* Here we prove that fib_linear' implements fibo, assuming that
  * no calculations wrap around. *)
 
-lemma (in ts_definition_fib_linear) fib_linear'_correct: 
+lemma fib_linear'_correct: 
   assumes bound: "fibo (Suc n) < UINT_MAX" shows "fib_linear' n \<bullet> s \<lbrace>\<lambda>Res r t. t = s \<and> r = fibo n\<rbrace>"
   unfolding fib_linear'_def
   supply runs_to_whileLoop_res  [where I = "\<lambda>(a, b, i) t. t=s \<and> i \<le> n \<and> a = fibo (n - i) \<and> (i \<noteq> 0 \<longrightarrow> (b = fibo (n - i + 1)))" and 
@@ -251,10 +255,8 @@ lemma (in ts_definition_fib_linear) fib_linear'_correct:
   done
 
 
-context ts_definition_fib
-begin
 thm fib'.simps (* Just a reminder *)
-end
+
 
 (*
  * Like fib_linear\<^bsub>C\<^esub>, fib\<^bsub>C\<^esub> is lifted to the option monad. If the measure parameter
@@ -276,7 +278,7 @@ thm nat_less_induct
 thm word_induct_less 
 thm measure_induct[where f="\<lambda>x. x::'a::len word"]
 
-lemma (in ts_definition_fib)
+lemma
   shows "fib' n \<bullet> s \<lbrace>\<lambda>Res r t. t = s \<and> r = fibo32 n\<rbrace>"
 proof (induction n arbitrary: rule: measure_induct[where f="\<lambda>x. x::'a::len word"])
   case (1 n)

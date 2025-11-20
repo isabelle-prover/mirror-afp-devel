@@ -11,9 +11,7 @@ begin
 
 install_C_file "varinit.c"
 
-context varinit_simpl 
-begin
+
 thm f_body_def
-end
 
 end

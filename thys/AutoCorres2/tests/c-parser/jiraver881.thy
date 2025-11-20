@@ -13,8 +13,6 @@ begin
 
 install_C_file "jiraver881.c"
 
-context jiraver881_simpl 
-begin
 
 (* note that x is assigned directly from f(),
    but that compound lvars and y (different notional type) are
@@ -73,7 +71,5 @@ check_ret "test3" "ret'int'1_'";
 check_ret "test4" "ret'int'1_'";
 check_ret "test5" "ret'int'1_'";
 \<close>
-
-end
 
 end

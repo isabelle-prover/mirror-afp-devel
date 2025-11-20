@@ -11,8 +11,6 @@ begin
 
 install_C_file "parse_complit.c"
 
-context parse_complit_simpl
-begin
 thm simple1_body_def
 thm simple2_body_def
 thm simple3_body_def
@@ -27,20 +25,22 @@ thm function3_body_def
 thm sjw_body_def
 thm enum_test_body_def
 thm main_body_def
-end
 
-context main_impl 
+
+context includes main_variables 
 begin
 term "s \<cdot> aa :: 32 signed word[11]"  (* should have an 11-wide array of ints as its range *)
 end
 
-lemma (in function2_impl) f2_test:
+lemma (in parse_complit_global_addresses) includes function2_variables 
+  shows f2_test:
   "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL function2() \<lbrace> \<acute>ret' = 3 \<rbrace>"
 apply vcg
 apply simp
 done
 
-lemma (in enum_test_impl) foo:
+lemma (in parse_complit_global_addresses) includes enum_test_variables
+ shows foo:
   "\<forall>x. \<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL enum_test(x) \<lbrace> \<acute>ret' = -1 \<rbrace>"
 apply vcg
 apply (simp add: val2_def)

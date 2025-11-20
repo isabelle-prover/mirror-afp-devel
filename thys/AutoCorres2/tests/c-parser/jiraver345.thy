@@ -11,19 +11,18 @@ begin
 
 install_C_file "jiraver345.c"
 
-context jiraver345_simpl
-begin
 
 thm good_body_def
 thm bad_body_def
-end
 
-lemma (in good_impl) "\<Gamma> \<turnstile> \<lbrace> \<acute>p = Ptr 0 \<rbrace> \<acute>ret' :== CALL good(\<acute>p) \<lbrace> \<acute>ret' = 0 \<rbrace>"
+lemma (in jiraver345_global_addresses) includes good_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> \<acute>p = Ptr 0 \<rbrace> \<acute>ret' :== CALL good(\<acute>p) \<lbrace> \<acute>ret' = 0 \<rbrace>"
 apply vcg
 apply simp
 done
 
-lemma (in bad_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL bad(Ptr 0) \<lbrace> \<acute>ret' = 0 \<rbrace>"
+lemma (in jiraver345_global_addresses) includes bad_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== CALL bad(Ptr 0) \<lbrace> \<acute>ret' = 0 \<rbrace>"
 apply vcg
 apply simp
 done

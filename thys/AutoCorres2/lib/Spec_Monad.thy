@@ -1025,14 +1025,17 @@ lemma the_Exception_Result:
 
 definition undefined_unit::"unit \<Rightarrow> 'b" where "undefined_unit x \<equiv> undefined"
 
+open_bundle spec_monad_syntax
+begin
 syntax "_Res" :: "pttrn \<Rightarrow> pttrn" (\<open>(\<open>open_block notation=\<open>prefix Res\<close>\<close>Res _)\<close>)
 syntax_consts "_Res" \<rightleftharpoons> case_exception_or_result
 translations "\<lambda>Res x. b" \<rightleftharpoons> "CONST case_exception_or_result (CONST undefined_unit) (\<lambda>x. b)"
 
+
 term "\<lambda>Res x. f x"
 term "\<lambda>Res (x, y, z). f x y z"
 term "\<lambda>Res (x, y, z) s. P x y s z"
-
+end
 
 lifting_update exception_or_result.lifting
 lifting_forget exception_or_result.lifting
@@ -1420,6 +1423,7 @@ where
 lift_definition always_progress :: "('e::default, 'a, 's) spec_monad \<Rightarrow> bool" is
   "\<lambda>p. \<forall>s. p s \<noteq> bot" .
 
+named_theorems monad_mono_intros
 named_theorems run_spec_monad "Simplification rules to run a Spec monad"
 named_theorems runs_to_iff "Equivalence theorems for runs to predicate"
 named_theorems always_progress_intros "intro rules for always_progress predicate"
@@ -2476,7 +2480,7 @@ lemma runs_to_partial_lift_state[runs_to_vcg]:
      (auto simp: runs_to_partial_alt run_lift_state lift_post_state_Sup image_image
                  image_iff runs_to_lift_state_iff top_post_state_def)
 
-lemma mono_lift_state: "f \<le> f' \<Longrightarrow> lift_state R f \<le> lift_state R f'"
+lemma mono_lift_state[monad_mono_intros]: "f \<le> f' \<Longrightarrow> lift_state R f \<le> lift_state R f'"
   by transfer (auto simp: le_fun_def intro!: lift_post_state_mono SUP_mono)
 
 subsection \<open>const\<open>exec_concrete\<close>\<close>
@@ -2498,7 +2502,7 @@ lemma runs_to_partial_exec_concrete[runs_to_vcg]:
   "(\<And>t. s = st t \<Longrightarrow> f \<bullet> t ?\<lbrace>\<lambda>r t.  Q r (st t)\<rbrace>) \<Longrightarrow> exec_concrete st f \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (simp add: exec_concrete_def runs_to_partial_lift_state)
 
-lemma mono_exec_concrete: "f \<le> f' \<Longrightarrow> exec_concrete st f \<le> exec_concrete st f'"
+lemma mono_exec_concrete[monad_mono_intros]: "f \<le> f' \<Longrightarrow> exec_concrete st f \<le> exec_concrete st f'"
   unfolding exec_concrete_def by (rule mono_lift_state)
 
 lemma monotone_exec_concrete_le[partial_function_mono]:
@@ -2530,7 +2534,7 @@ lemma runs_to_partial_exec_abstract[runs_to_vcg]:
   "f \<bullet> (st s) ?\<lbrace>\<lambda>r t. \<forall>s'. t = st s' \<longrightarrow> Q r s'\<rbrace> \<Longrightarrow> exec_abstract st f \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (simp add: runs_to_partial.rep_eq run_exec_abstract split_beta' prod_eq_iff eq_commute)
 
-lemma mono_exec_abstract: "f \<le> f' \<Longrightarrow> exec_abstract st f \<le> exec_abstract st f'"
+lemma mono_exec_abstract[monad_mono_intros]: "f \<le> f' \<Longrightarrow> exec_abstract st f \<le> exec_abstract st f'"
   unfolding exec_abstract_def by (rule mono_lift_state)
 
 lemma monotone_exec_abstract_le[partial_function_mono]:
@@ -2566,8 +2570,8 @@ lemma refines_bind_exception_or_result':
   shows "refines (bind_exception_or_result f g) (bind_exception_or_result f' g') s s' R"
   by (auto intro: refines_bind_exception_or_result refines_mono[OF _ f] g)
 
-lemma mono_bind_exception_or_result:
-  "f \<le> f' \<Longrightarrow> g \<le> g' \<Longrightarrow> bind_exception_or_result f g \<le> bind_exception_or_result f' g'"
+lemma mono_bind_exception_or_result[monad_mono_intros]:
+  "g \<le> g' \<Longrightarrow> f \<le> f' \<Longrightarrow> bind_exception_or_result f g \<le> bind_exception_or_result f' g'"
   unfolding le_fun_def
   by transfer (auto simp add: le_fun_def intro!: mono_bind_post_state)
 
@@ -2650,8 +2654,8 @@ lemma runs_to_partial_bind_handle_res_monad[runs_to_vcg]:
   by (rule runs_to_partial_bind_handle[OF runs_to_partial_weaken[OF f]])
      (auto simp: default_option_def)
 
-lemma mono_bind_handle:
-  "f \<le> f' \<Longrightarrow> g \<le> g' \<Longrightarrow> h \<le> h' \<Longrightarrow> bind_handle f g h \<le> bind_handle f' g' h'"
+lemma mono_bind_handle[monad_mono_intros]:
+  "(\<And>x. h x \<le> h' x) \<Longrightarrow> (\<And>x. g x \<le> g' x) \<Longrightarrow> f \<le> f' \<Longrightarrow> bind_handle f g h \<le> bind_handle f' g' h'"
   unfolding le_fun_def
   by transfer
      (auto simp add: le_fun_def intro!: mono_bind_post_state split: exception_or_result_splits)
@@ -2872,7 +2876,7 @@ lemma bind_assoc: "bind (bind f g) h = bind f (\<lambda>x. bind (g x) h)"
               split: exception_or_result_splits)
   done
 
-lemma mono_bind: "f \<le> f' \<Longrightarrow> g \<le> g' \<Longrightarrow> bind f g \<le> bind f' g'"
+lemma mono_bind[monad_mono_intros]: "(\<And>x. g x \<le> g' x) \<Longrightarrow> f \<le> f' \<Longrightarrow> bind f g \<le> bind f' g'"
   unfolding bind_def
   by (auto intro: mono_bind_handle)
 
@@ -3602,6 +3606,12 @@ lemma runs_to_partial_gets_the[runs_to_vcg]:
   "(\<And>v. f s = Some v \<Longrightarrow> Q (Result v) s) \<Longrightarrow> gets_the f \<bullet> s ?\<lbrace>Q\<rbrace>"
   by (auto simp add: runs_to_partial.rep_eq split: option.split)
 
+lemma gfp_le_fun_gets_the_mono[partial_function_mono]:
+  "monotone R (option.le_fun) (\<lambda>f'. f f') \<Longrightarrow> monotone R (\<ge>) (\<lambda>f'. gets_the (f f'))"
+  apply (simp add: monotone_def fun_ord_def flat_ord_def)
+  apply (auto simp add: spec_monad_le_iff runs_to_gets_the_iff)
+  by (metis option.simps(3))
+
 subsection \<open>\<^const>\<open>modify\<close>\<close>
 
 lemma run_modify[run_spec_monad, simp]: "run (modify f) s = pure_post_state (Result (), f s)"
@@ -3683,7 +3693,7 @@ lemma mono_condition_spec_monad:
   "mono T \<Longrightarrow> mono F \<Longrightarrow> mono (\<lambda>x. condition C (F x) (T x))"
   by (auto simp: condition_def intro!: mono_bind_spec_monad mono_const)
 
-lemma mono_condition: "f \<le> f' \<Longrightarrow> g \<le> g' \<Longrightarrow> condition c f g \<le> condition c f' g'"
+lemma mono_condition[monad_mono_intros]: "f \<le> f' \<Longrightarrow> g \<le> g' \<Longrightarrow> condition c f g \<le> condition c f' g'"
   by (simp add: le_fun_def less_eq_spec_monad.rep_eq run_condition)
 
 lemma monotone_condition_le[partial_function_mono]:
@@ -3837,7 +3847,7 @@ lemma runs_to_partial_when[runs_to_vcg]:
   "(c \<Longrightarrow> f \<bullet> s ?\<lbrace> Q \<rbrace>) \<Longrightarrow> (\<not> c \<Longrightarrow> Q (Result ()) s) \<Longrightarrow> when c f \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (auto simp add: runs_to_partial.rep_eq run_when)
 
-lemma mono_when: "f \<le> f' \<Longrightarrow> when c f \<le> when c f'"
+lemma mono_when[monad_mono_intros]: "f \<le> f' \<Longrightarrow> when c f \<le> when c f'"
   unfolding when_def by (simp add: mono_condition)
 
 lemma monotone_when_le[partial_function_mono]:
@@ -4246,13 +4256,24 @@ lemma runs_to_partial_whileLoop_exn:
 notation (output)
   whileLoop  (\<open>(\<open>notation=\<open>prefix whileLoop\<close>\<close>whileLoop (_)//  (_))\<close> [1000, 1000] 1000)
 
-lemma whileLoop_mono: "b \<le> b' \<Longrightarrow> whileLoop c b i \<le> whileLoop c b' i"
-  unfolding whileLoop_def
+lemma whileLoop_mono[monad_mono_intros]: 
+  assumes b: "\<And>x. b x \<le> b' x" shows "whileLoop c b i \<le> whileLoop c b' i"
+proof -
+  from b have "b \<le> b'" 
+    by (simp add: le_funI)
+  then show ?thesis unfolding  whileLoop_def
   by (simp add: gfp_mono le_funD le_funI mono_bind mono_condition)
+qed
 
-lemma whileLoop_finite_mono: "b \<le> b' \<Longrightarrow> whileLoop_finite c b i \<le> whileLoop_finite c b' i"
-  unfolding whileLoop_finite_def
-  by (simp add: le_funD le_funI lfp_mono mono_bind mono_condition)
+lemma whileLoop_finite_mono[monad_mono_intros]: 
+  assumes b: "\<And>x. b x \<le> b' x" 
+  shows"whileLoop_finite c b i \<le> whileLoop_finite c b' i"
+proof -
+  from b have "b \<le> b'" 
+    by (simp add: le_funI)
+  then show ?thesis unfolding  whileLoop_finite_def
+  by  (simp add: le_funD le_funI lfp_mono mono_bind mono_condition)
+qed
 
 lemma monotone_whileLoop_le[partial_function_mono]:
   "(\<And>x. monotone R (\<le>) (\<lambda>f. b f x)) \<Longrightarrow> monotone R (\<le>) (\<lambda>f. whileLoop c (b f) i)"
@@ -4633,7 +4654,7 @@ lemma runs_to_partial_map_value[runs_to_vcg]:
   "g \<bullet> s ?\<lbrace>\<lambda>r t. Q (f r) t\<rbrace> \<Longrightarrow> map_value f g \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (auto simp add: runs_to_partial.rep_eq run_map_value split_beta')
 
-lemma mono_map_value: "g \<le> g' \<Longrightarrow> map_value f g \<le> map_value f g'"
+lemma mono_map_value[monad_mono_intros]: "g \<le> g' \<Longrightarrow> map_value f g \<le> map_value f g'"
   by transfer (simp add: le_fun_def mono_map_post_state)
 
 lemma monotone_map_value_le[partial_function_mono]:
@@ -4751,7 +4772,7 @@ lemma runs_to_partial_liftE[runs_to_vcg]:
   assumes [runs_to_vcg]: "f \<bullet> s ?\<lbrace> \<lambda>Res r. Q (Result r)\<rbrace>" shows "liftE f \<bullet> s ?\<lbrace> Q \<rbrace>"
   supply runs_to_partial_liftE'[runs_to_vcg] by runs_to_vcg
 
-lemma mono_lifE: "f \<le> f' \<Longrightarrow> liftE f  \<le> liftE f'"
+lemma mono_liftE[monad_mono_intros]: "f \<le> f' \<Longrightarrow> liftE f  \<le> liftE f'"
   unfolding liftE_def by (rule mono_map_value)
 
 lemma monotone_liftE_le[partial_function_mono]:
@@ -4880,7 +4901,7 @@ lemma runs_to_try_iff[runs_to_iff]: "try f \<bullet> s \<lbrace> Q \<rbrace> \<l
 lemma runs_to_partial_try[runs_to_vcg]: "f \<bullet> s ?\<lbrace>\<lambda>r t. Q (unnest_exn r) t\<rbrace> \<Longrightarrow> try f \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (simp add: try_def runs_to_partial_map_value)
 
-lemma mono_try: "f \<le> f' \<Longrightarrow> try f \<le> try f'"
+lemma mono_try[monad_mono_intros]: "f \<le> f' \<Longrightarrow> try f \<le> try f'"
   unfolding try_def
   by (rule mono_map_value)
 
@@ -4934,7 +4955,7 @@ lemma runs_to_partial_finally[runs_to_vcg]:
   finally f \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (simp add: runs_to_partial_finally_iff)
 
-lemma mono_finally: "f \<le> f' \<Longrightarrow> finally f \<le> finally f'"
+lemma mono_finally[monad_mono_intros]: "f \<le> f' \<Longrightarrow> finally f \<le> finally f'"
   unfolding finally_def
   by (rule mono_map_value)
 
@@ -4981,7 +5002,7 @@ lemma runs_to_partial_catch[runs_to_vcg]:
   by (rule holds_partial_bind_post_state)
      (simp add: split_beta' ac_simps split: xval_splits prod.splits)
 
-lemma mono_catch: "f \<le> f' \<Longrightarrow> h \<le> h' \<Longrightarrow> catch f h \<le> catch f' h'"
+lemma mono_catch[monad_mono_intros]: "f \<le> f' \<Longrightarrow> (\<And>x. h x \<le> h' x) \<Longrightarrow> catch f h \<le> catch f' h'"
   unfolding catch_def
   apply (rule mono_bind_handle)
   by (simp_all add: le_fun_def)
@@ -5121,7 +5142,7 @@ lemma runs_to_partial_ignoreE[runs_to_vcg]:
   "f \<bullet> s ?\<lbrace> \<lambda>r t. (\<forall>v. r = Result v \<longrightarrow>  Q (Result v) t)\<rbrace> \<Longrightarrow> (ignoreE f) \<bullet> s ?\<lbrace> Q \<rbrace>"
   by (simp add: runs_to_partial_ignoreE_iff)
 
-lemma mono_ignoreE: "f \<le> f' \<Longrightarrow> ignoreE f \<le> ignoreE f'"
+lemma mono_ignoreE[monad_mono_intros]: "f \<le> f' \<Longrightarrow> ignoreE f \<le> ignoreE f'"
   unfolding ignoreE_def
   apply (rule mono_catch)
   by simp_all
@@ -5319,12 +5340,20 @@ lemma runs_to_partial_run_bind[runs_to_vcg]:
   by (auto simp: runs_to_partial.rep_eq run_run_bind split_beta'
            intro!: holds_partial_bind_post_state)
 
-lemma mono_run_bind: "f \<le> f' \<Longrightarrow> g \<le> g' \<Longrightarrow> run_bind f t g \<le> run_bind f' t g' "
-  apply (rule le_spec_monad_runI)
-  apply (simp add: run_run_bind)
-  apply (rule mono_bind_post_state)
-   apply (auto simp add: le_fun_def less_eq_spec_monad.rep_eq split: exception_or_result_splits)
-  done
+lemma mono_run_bind[monad_mono_intros]: 
+  assumes g: "\<And>x. g x \<le> g' x"  
+  assumes f: "f \<le> f'" 
+  shows "run_bind f t g \<le> run_bind f' t g'"
+proof -
+  from g have "g \<le> g'" by (simp add: le_fun_def)
+  with f show ?thesis
+    apply -
+    apply (rule le_spec_monad_runI)
+    apply (simp add: run_run_bind)
+    apply (rule mono_bind_post_state)
+     apply (auto simp add: le_fun_def less_eq_spec_monad.rep_eq split: exception_or_result_splits)
+    done
+qed
 
 lemma monotone_run_bind_le[partial_function_mono]:
   "monotone R (\<le>) (\<lambda>f'. f f') \<Longrightarrow> (\<And>r t. monotone R (\<le>) (\<lambda>f'. g f' r t))

@@ -16,13 +16,10 @@ begin
 thm c_def
 end
 
-context parse_addr_simpl
-begin
 thm f_body_def
 thm f2_body_def
 thm g_body_def
 thm h_body_def
 thm c_def
-end
 
 end

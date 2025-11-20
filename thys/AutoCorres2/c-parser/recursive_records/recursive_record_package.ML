@@ -370,7 +370,6 @@ fun prove_record_rewrites {record_name, fields} thy = let
          val thm = Goal.prove_global_future thy [] [] (mk_prop (mk_eqt(lhs, rhs)))
             (fn {context,...} => case_tac context "r" [] NONE 1 THEN
                  asm_full_simp_tac context 1)
-         val _ = tracing ("single_field_constr_update: "  ^ Thm.string_of_thm (Proof_Context.init_global thy) thm)
        in
          [thm]
        end

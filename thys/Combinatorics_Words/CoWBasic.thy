@@ -5,6 +5,7 @@
 
 Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 
+
 *)
 
 theory CoWBasic
@@ -241,7 +242,7 @@ lemmas map_rev_involution[simp] = list.map_comp[of rev rev, unfolded rev_involut
 
 lemma map_rev_lists_rev:  "map rev ` (lists (rev ` A)) = lists A"
   unfolding lists_image[of rev] image_comp
-  by (simp add: rev_involution')
+  by simp
 
 lemma inj_on_map_lists: assumes "inj_on f A"
   shows "inj_on (map f) (lists A)"
@@ -434,7 +435,7 @@ lemma last_sing[simp]: "last [c] = c"
 
 lemma hd_hdE: "(u = \<epsilon> \<Longrightarrow> thesis) \<Longrightarrow> (u = [hd u] \<Longrightarrow> thesis) \<Longrightarrow> (u = [hd u, hd (tl u)] \<cdot> tl (tl u) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
   using Cons_eq_appendI[of "hd u" "[hd (tl u)]" _ "tl u" "tl (tl u)"] hd_tl[of u] hd_tl[of "tl u"] hd_word
-   by fastforce
+    by fastforce
 
 lemma same_sing_pref: "u \<cdot> [a] \<le>p v \<Longrightarrow> u \<cdot> [b] \<le>p v \<Longrightarrow> a = b"
   using prefix_same_cases by fastforce
@@ -939,6 +940,10 @@ lemma pref_index: assumes "u \<le>p w" "i < \<^bold>|u\<^bold>|" shows "u!i = w!
 lemma pref_drop: "u \<le>p v \<Longrightarrow> drop p u \<le>p drop p v"
   using prefI[OF sym[OF drop_append]] unfolding prefix_def by blast
 
+lemma pref_prod_short: "u \<le>p v \<cdot> w \<Longrightarrow> \<^bold>|u\<^bold>| < \<^bold>|v\<^bold>| \<Longrightarrow> u <p v"
+  using sprefI2 prefix_same_cases[of u] order.asym prefix_length_less prefix_order.less_le_not_le prefix_same_cases
+      triv_pref by metis
+
 subsection "Prefix comparability"
 
 lemma pref_comp_sym[sym]: "u \<bowtie> v \<Longrightarrow> v \<bowtie> u"
@@ -1052,21 +1057,14 @@ lemma spref_cancel_right_len: assumes "u \<cdot> z <p v \<cdot> z'"  "\<^bold>|z
 lemmas pref_cancel_right = pref_cancel_right_len[OF _ refl] and
        spref_cancel_right = spref_cancel_right_len[OF _ refl]
 
-lemma pref_prod_less: "u \<le>p v \<cdot> w \<Longrightarrow> \<^bold>|u\<^bold>| < \<^bold>|v\<^bold>| \<Longrightarrow> u <p v"
-  using pref_prod_le[OF _ less_imp_le, THEN sprefI2].
 
 lemma eq_le_pref[elim]: "x \<cdot> y = u \<cdot> v \<Longrightarrow> \<^bold>|x\<^bold>| \<le> \<^bold>|u\<^bold>| \<Longrightarrow> x \<le>p u"
   using pref_prod_le[OF prefI].
 
-lemma eq_less_spref: "x \<cdot> y = u \<cdot> v \<Longrightarrow> \<^bold>|x\<^bold>| < \<^bold>|u\<^bold>| \<Longrightarrow> x <p u"
-  using pref_prod_less[OF prefI].
 
 lemma pref_less_spref: "u \<cdot> w \<le>p v \<cdot> z \<Longrightarrow> \<^bold>|u\<^bold>| < \<^bold>|v\<^bold>| \<Longrightarrow> u <p v"
   using prod_pref_prod_le[OF _ less_imp_le, THEN sprefI2].
 
-lemma eq_less_suf: assumes "x \<cdot> y = u \<cdot> v" shows "\<^bold>|x\<^bold>| < \<^bold>|u\<^bold>| \<Longrightarrow> v <s y"
-  using eq_less_spref[reversed, folded strict_suffix_to_prefix, OF \<open>x \<cdot> y = u \<cdot> v\<close>[symmetric]]
-  unfolding eq_len_iff_less[OF \<open>x \<cdot> y = u \<cdot> v\<close>].
 
 lemma pref_prod_cancel: assumes "u \<le>p p\<cdot>w\<cdot>q" and "\<^bold>|p\<^bold>| \<le> \<^bold>|u\<^bold>|" and "\<^bold>|u\<^bold>| \<le> \<^bold>|p\<cdot>w\<^bold>|"
   obtains r where "p \<cdot> r = u" and "r \<le>p w"
@@ -1268,8 +1266,6 @@ lemma pref_rev_suf_iff: "u \<le>p v \<longleftrightarrow> rev u \<le>s rev v"
 lemma spref_rev_suf_iff: "s <p w \<longleftrightarrow> rev s <s rev w"
   using strict_suffix_to_prefix[of "rev s" "rev w", unfolded rev_rev_ident, symmetric].
 
-
-
 lemmas [reversal_rule] =
   suf_rev_pref_iff[symmetric]
   pref_rev_suf_iff[symmetric]
@@ -1295,7 +1291,6 @@ lemmas ssuf_ext = spref_ext[reversed] and
   long_suf = long_pref[reversed] and
   strict_suffixE' = strict_prefixE'[reversed] and
   ssuf_tl_suf  = spref_butlast_pref[reversed]
-
 
 lemma ssuf_Cons_iff [simp]: "u <s a # v \<longleftrightarrow> u \<le>s v"
   by (auto simp only: strict_suffix_def suffix_Cons) (simp add: suffix_def)
@@ -1336,8 +1331,7 @@ lemmas suf_ruler_eq_len = ruler_eq_len[reversed] and
   suf_prod_le = pref_prod_le[reversed] and
   prod_suf_prod_le = prod_pref_prod_le[reversed] and
   suf_prod_eq = pref_prod_eq[reversed] and
-  suf_prod_less = pref_prod_less[reversed] and
-  suf_prod_cancel = pref_prod_cancel[reversed] and
+    suf_prod_cancel = pref_prod_cancel[reversed] and
   suf_prod_cancel' = pref_prod_cancel'[reversed] and
   suf_prod_suf_short = pref_prod_pref_short[reversed] and
   suf_prod_suf = pref_prod_pref[reversed] and
@@ -1384,7 +1378,6 @@ text\<open>A useful function of left quotient is given. Note that the function i
 definition left_quotient:: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"   ("(_\<inverse>\<^sup>>)(_)" [75,74] 74)
   where  "left_quotient u v  = drop \<^bold>|u\<^bold>| v"
 notation (latex output) left_quotient  ("\<^latex>\<open>\\ensuremath{ {\<close>_ \<^latex>\<open>}^{-1} \\cdot {\<close> _ \<^latex>\<open>}}\<close>")
-
 
 text\<open>Analogously, we define the right quotient.\<close>
 
@@ -1517,7 +1510,6 @@ lemma conjug_lq: "x \<cdot> z = z \<cdot> y \<Longrightarrow> y = z\<inverse>\<^
 lemma conjug_emp_emp: "p \<le>p u \<cdot> p \<Longrightarrow> p\<inverse>\<^sup>>(u \<cdot> p) = \<epsilon> \<Longrightarrow> u = \<epsilon>"
   using lq_ne by blast
 
-
 lemma hd_lq_conv_nth: assumes "u <p v" shows "hd(u\<inverse>\<^sup>>v) = v!\<^bold>|u\<^bold>|"
   using prefix_length_less[OF assms, THEN hd_drop_conv_nth] unfolding lq_def.
 
@@ -1533,7 +1525,6 @@ proof-
    \<open>s \<le>s u\<close>[unfolded suf_drop_conv]]
   show ?thesis.
 qed
-
 
 lemma pref_cancel_lq: assumes "u \<le>p x \<cdot> y"
   shows "x\<inverse>\<^sup>>u \<le>p y"
@@ -1716,7 +1707,6 @@ lemma eqd_linear_cases [elim]: assumes "x \<cdot> y = u \<cdot> v" and
    "x = u \<Longrightarrow> y = v \<Longrightarrow> thesis"
  shows thesis
  using eqd_or[OF assms(1)] assms(2-) by blast
-
 
 lemmas eqd_comp' = eqd_comp[reversed]
 
@@ -2312,7 +2302,7 @@ qed
 
 section "Power and its properties"
 
-text\<open>The core facts about iterated concatenation of a list are given in the theory @{theory List_Power.List_Power}. Word powers are an important research topic in Combinatorics on Words.
+text\<open>The core facts about iterated concatenation of a list are given in the AFP theory @{theory List_Power.List_Power}. Word powers are an important research topic in Combinatorics on Words.
  We adopt a specific notation for the word power.
 \<close>
 
@@ -2356,7 +2346,7 @@ lemmas [cow_simps] = emp_simps exp_simps
 
 
 
-lemma nemp_pref_nemp[intro]: "u \<le>p v \<Longrightarrow> u \<noteq> \<epsilon> \<Longrightarrow> v \<noteq> \<epsilon>"
+lemma nemp_pref_nemp: "u \<le>p v \<Longrightarrow> u \<noteq> \<epsilon> \<Longrightarrow> v \<noteq> \<epsilon>"
   by force
 
 lemma pref_concat_emp[intro]: "us \<le>p vs \<Longrightarrow> concat vs  = \<epsilon> \<Longrightarrow> concat us = \<epsilon>"
@@ -2742,7 +2732,7 @@ lemmas[shifts] = pows_comm
 lemma[shifts]: "m < l \<Longrightarrow> x\<^sup>@m \<cdot> w \<le>p x\<^sup>@l \<cdot>w' \<longleftrightarrow> w \<le>p x\<^sup>@(l-m) \<cdot> w'"
   by (metis append_assoc nless_le pop_pow same_prefix_prefix)
 lemma[shifts]: "x \<cdot> x\<^sup>@m \<cdot> w \<le>p x\<^sup>@m \<cdot> w' \<longleftrightarrow> x \<cdot> w \<le>p  w'"
-  by (metis append.assoc pow_comm same_prefix_prefix)
+  unfolding lassoc pow_comm[symmetric] by force
 
 lemmas shifts_rev = shifts[reversed]
 
@@ -3037,7 +3027,7 @@ qed
 
 section Commutation
 
-text\<open>The solution of the easiest nontrivial word equation, @{term "x \<cdot> y = y \<cdot> x"}, is contained in @{theory List_Power.List_Power}  as @{thm comm_append_pow_list_iff[no_vars]}.\<close>
+text\<open>The solution of the easiest nontrivial word equation, @{term "x \<cdot> y = y \<cdot> x"}, is contained AFP theory @{theory List_Power.List_Power} as @{thm comm_append_pow_list_iff[no_vars]}.\<close>
 
 lemmas comm = comm_append_pow_list_iff
 
@@ -3095,12 +3085,12 @@ qed
 
 section \<open>Periods\<close>
 
-text\<open>Periodicity is probably the most studied property of words. It captures the fact that a word overlaps with itself.
+text\<open>periodicity is probably the most studied property of words. It captures the fact that a word overlaps with itself.
 Another possible point of view is that the periodic word is a prefix of an (infinite) power of some nonempty
 word, which can be called its period word. Both these points of view are expressed by the following definition.
 \<close>
 
-subsection "Periodic root"
+subsection "periodic root"
 
 
 lemma "u <p r \<cdot> u \<longleftrightarrow> u \<le>p r \<cdot> u \<and> r \<noteq> \<epsilon>"
@@ -3126,7 +3116,7 @@ text\<open>"Short roots are prefixes"\<close>
 lemma "w <p r \<cdot> u \<Longrightarrow> \<^bold>|r\<^bold>| \<le> \<^bold>|w\<^bold>| \<Longrightarrow>  r \<le>p w"
   using pref_prod_long[OF sprefD1].
 
-text \<open>Periodic words are prefixes of the power of the root, which motivates the notation\<close>
+text \<open>periodic words are prefixes of the power of the root, which motivates the notation\<close>
 
 lemma pref_pow_ext_take: assumes "u \<le>p r\<^sup>@k" shows "u \<le>p take \<^bold>|r\<^bold>| u \<cdot> r\<^sup>@k"
 proof (rule le_cases[of "\<^bold>|u\<^bold>|" "\<^bold>|r\<^bold>|"])
@@ -3138,25 +3128,28 @@ qed simp
 lemma pref_pow_take: assumes "u \<le>p r\<^sup>@k" shows "u \<le>p take \<^bold>|r\<^bold>| u \<cdot> u"
   using pref_prod_pref[of u "take \<^bold>|r\<^bold>| u" "r\<^sup>@k", OF pref_pow_ext_take \<open>u \<le>p r\<^sup>@k\<close>, OF \<open>u \<le>p r\<^sup>@k\<close>].
 
-lemma per_root_powE: assumes "u <p r \<cdot> u"
+lemma per_root_powE: assumes "u \<le>p r \<cdot> u" "r \<noteq> \<epsilon>"
   obtains k where "u <p r\<^sup>@k" and "0 < k"
-  using pref_prod_less[OF per_exp_pref[OF sprefD1]
-  long_pow_exp'[OF per_root_nemp], OF assms assms] by blast
+proof-
+  show thesis
+  proof (rule that[of "Suc \<^bold>|u\<^bold>|"])
+    show "u <p r \<^sup>@ Suc \<^bold>|u\<^bold>|"
+      using  per_exp_pref[OF \<open>u \<le>p r \<cdot> u\<close>, of "Suc \<^bold>|u\<^bold>|"]
+      long_pow_exp'[OF \<open>r \<noteq> \<epsilon>\<close>, of "\<^bold>|u\<^bold>|"] nless_le by blast
+  qed simp
+qed
 
 thm per_rootI per_rootI'
 
-lemma per_root_powE': assumes "x <p r \<cdot> x"
-  obtains k where "x \<le>p r\<^sup>@k" and "0 < k"
-  using per_root_powE[OF assms] sprefD1 by metis
 
-lemma per_root_modE' [elim]: assumes "u <p r \<cdot> u"
+lemma per_root_modE' [elim]: assumes "u \<le>p r \<cdot> u" "r \<noteq> \<epsilon>"
   obtains p where "p <p r" and "r\<^sup>@(\<^bold>|u\<^bold>| div \<^bold>|r\<^bold>|) \<cdot> p = u"
 proof-
   have "r \<noteq> \<epsilon>"
     using assms by blast
   obtain m where "u <p r\<^sup>@m"
-    using per_root_powE[OF \<open>u <p r \<cdot> u\<close>].
-  from pref_mod_pow[OF sprefD1[OF this] per_root_nemp[OF assms]]
+    using per_root_powE[OF assms].
+  from pref_mod_pow[OF sprefD1[OF this] \<open>r \<noteq> \<epsilon>\<close>]
   obtain k z where "k \<le> m" and "z <p r" and "r \<^sup>@ k \<cdot> z = u".
   have "k = (\<^bold>|u\<^bold>| div \<^bold>|r\<^bold>|)"
     using lenarg[OF \<open>r \<^sup>@ k \<cdot> z = u\<close>, unfolded lenmorph pow_len]
@@ -3165,18 +3158,18 @@ proof-
     using that \<open>r \<^sup>@ k \<cdot> z = u\<close> \<open>z <p r\<close> by blast
 qed
 
-lemma per_root_modE [elim]: assumes "u <p r \<cdot> u"
+lemma per_root_modE [elim]: assumes "u \<le>p r \<cdot> u" "r \<noteq> \<epsilon>"
   obtains n p s where "p \<cdot> s = r" and "r\<^sup>@n \<cdot> p = u" and "s \<noteq> \<epsilon>"
   using per_root_modE'[OF assms] spref_exE by metis
 
 lemma nemp_per_root_conv: "r \<noteq> \<epsilon> \<Longrightarrow> u <p r \<cdot> u \<longleftrightarrow> u \<le>p r \<cdot> u"
    by force
 
-lemma root_ruler: assumes "w <p u\<cdot>w" "v <p u\<cdot>v"
+lemma root_ruler: assumes "w \<le>p u \<cdot> w" "v \<le>p u \<cdot> v" "u \<noteq> \<epsilon>" "v \<noteq> \<epsilon>"
   shows "w \<bowtie> v"
 proof-
   obtain k l where "w <p u\<^sup>@k" "v <p u\<^sup>@l"
-    using assms per_root_powE by metis
+    using assms per_root_powE by meson
   moreover have "u\<^sup>@k \<bowtie> u\<^sup>@l"
     using conjug_pow eqd_comp by metis
   ultimately show ?thesis
@@ -3196,7 +3189,7 @@ proof (induct m)
  qed simp
 
 theorem per_root_pow_conv: "x <p r \<cdot> x \<longleftrightarrow> (\<exists> k. x \<le>p r\<^sup>@k) \<and> r \<noteq> \<epsilon>"
-  by (rule iffI) (use per_root_powE' per_root_nemp in metis, use per_rootI' in blast)
+  by (rule iffI) (metis per_root_powE self_append_conv2 sprefD, blast)
 
 lemma [intro]: "r = \<epsilon> \<Longrightarrow> u \<le>p r \<Longrightarrow> u = \<epsilon>"
   by simp
@@ -3272,8 +3265,6 @@ lemma comm_pow_roots:
   by (rule, use comm_drop_exps[OF assms] in blast)
   (use comm_pows_comm in blast)
 
-
-
 lemma pow_comm_comm': assumes comm: "u\<^sup>@(Suc k) = v\<^sup>@(Suc l)" shows "u \<cdot> v = v \<cdot> u"
   using comm pow_list_comm_comm by blast
 
@@ -3294,8 +3285,8 @@ proof -
   qed simp+
 qed
 
-lemma drop_per_pref: assumes "w <p u \<cdot> w" shows "drop \<^bold>|u\<^bold>| w \<le>p w"
-  using pref_drop[OF sprefD1[OF \<open>w <p u \<cdot> w\<close>], of "\<^bold>|u\<^bold>|", unfolded drop_pref[of u w]].
+lemma drop_per_pref: assumes "w \<le>p u \<cdot> w" shows "drop \<^bold>|u\<^bold>| w \<le>p w"
+  using assms drop_pref pref_drop by metis
 
 text\<open>Note that
 @{term "w <p u \<cdot> w \<Longrightarrow> u <p t \<cdot> u \<Longrightarrow> w <p t \<cdot> w"}
@@ -3303,12 +3294,12 @@ does not hold.
 \<close>
 
 lemma per_root_same_prefix:"w <p r \<cdot> w \<Longrightarrow> w' \<le>p r \<cdot> w' \<Longrightarrow>  w \<bowtie> w'"
-  using root_ruler by auto
+  using root_ruler per_root_nemp pref_comp_sym ruler' sprefD by metis
 
-lemma take_after_drop:  "\<^bold>|u\<^bold>| + q \<le> \<^bold>|w\<^bold>| \<Longrightarrow> w <p u \<cdot> w \<Longrightarrow> take q (drop \<^bold>|u\<^bold>| w) = take q w"
+lemma take_after_drop:  "\<^bold>|u\<^bold>| + q \<le> \<^bold>|w\<^bold>| \<Longrightarrow> w \<le>p u \<cdot> w \<Longrightarrow> take q (drop \<^bold>|u\<^bold>| w) = take q w"
   using pref_share_take[OF drop_per_pref[of w u] len_after_drop[of "\<^bold>|u\<^bold>|" q w]].
 
-text\<open>The following lemmas are a weak version of the Periodicity lemma\<close>
+text\<open>The following lemmas are a weak version of the periodicity lemma\<close>
 
 lemma two_pers:
   assumes pu: "w \<le>p u \<cdot> w" and pv: "w \<le>p v \<cdot> w" and len: "\<^bold>|u\<^bold>| + \<^bold>|v\<^bold>| \<le> \<^bold>|w\<^bold>|"
@@ -3329,8 +3320,6 @@ proof-
     by meson
 qed
 
-lemma two_pers_root: assumes "w <p u \<cdot> w" and  "w <p v \<cdot> w" and "\<^bold>|u\<^bold>| + \<^bold>|v\<^bold>| \<le> \<^bold>|w\<^bold>|" shows "u\<cdot>v = v\<cdot>u"
-  using two_pers[OF sprefD1[OF assms(1)] sprefD1[OF assms(2)] assms(3)].
 
 subsection \<open>Maximal root-prefix\<close>
 
@@ -3402,42 +3391,92 @@ text\<open>Definition of a period as the length of the periodic root is often of
 it is secondary, and less convenient for reasoning.\<close>
 
 definition period :: "'a list \<Rightarrow> nat \<Rightarrow> bool"
-  where [simp]: "period w n \<equiv> w <p (take n w) \<cdot> w"
+  where [simp]: "period w n \<equiv> w \<le>p (take n w) \<cdot> w"
 
-lemma period_I': "w \<noteq> \<epsilon> \<Longrightarrow> 0 < n \<Longrightarrow> w \<le>p (take n w) \<cdot> w \<Longrightarrow> period w n"
-  unfolding period_def  by fastforce
 
-lemma periodI[intro]: "w \<noteq> \<epsilon> \<Longrightarrow> w <p r \<cdot> w \<Longrightarrow> period w \<^bold>|r\<^bold>|"
-  by (elim period_I'[of _ "\<^bold>|r\<^bold>|", OF _ nemp_len])
-     (blast, use pref_pow_take per_root_powE' in metis)
+lemma periodI: "w \<le>p (take n w) \<cdot> w \<Longrightarrow> period w n"
+  unfolding period_def by blast
+
+lemma periodI_pref:  assumes "\<^bold>|r\<^bold>| = n" "w \<le>p r \<cdot> w"
+  shows "period w n"
+proof  (rule periodI)
+  show "w \<le>p take n w \<cdot> w"
+  proof (rule disjE[OF linear, of "\<^bold>|w\<^bold>|" n], force)
+    assume "n \<le> \<^bold>|w\<^bold>|"
+    hence "take n w = r"
+      using \<open>w \<le>p r \<cdot> w\<close> \<open>\<^bold>|r\<^bold>| = n\<close> pref_prod_long[THEN pref_take] by blast
+    thus "w \<le>p take n w \<cdot> w"
+      using \<open>w \<le>p r \<cdot> w\<close> by blast
+  qed
+qed
+
+lemma periodI_pref':  assumes "w \<le>p r \<cdot> w"
+  shows "period w \<^bold>|r\<^bold>|"
+  using periodI_pref[OF refl] \<open>w \<le>p r \<cdot> w\<close> by auto
 
 text\<open>The numeric definition respects the following convention about empty words and empty periods.\<close>
 
-lemma emp_no_period: "\<not> period \<epsilon> n"
+lemma emp_all_periods: "period \<epsilon> n"
   by simp
 
-lemma period_nemp: "period w n \<Longrightarrow> w \<noteq> \<epsilon>"
+
+lemma zero_period:  "period w 0"
   by simp
 
-lemma "\<not> period w 0"
-  by simp
 
-lemma per_nemp: "period w n \<Longrightarrow>  w \<noteq> \<epsilon>"
-  by simp
 
-lemma per_not_zero: "period w n \<Longrightarrow>  0 < n"
-  by simp
-
-lemma per_pref: "period w n \<Longrightarrow>  w \<le>p take n w \<cdot> w"
+lemma periodD: "period w n \<Longrightarrow>  w \<le>p take n w \<cdot> w"
   by simp
 
 text\<open>A nonempty word has all "long" periods\<close>
 
-lemma all_long_pers: "\<lbrakk> w \<noteq> \<epsilon>; \<^bold>|w\<^bold>| \<le> n \<rbrakk> \<Longrightarrow> period w n"
+lemma all_long_pers: "\<^bold>|w\<^bold>| \<le> n \<Longrightarrow> period w n"
   by simp
 
-lemma len_is_per: "w \<noteq> \<epsilon> \<Longrightarrow> period w \<^bold>|w\<^bold>|"
+lemma len_is_per: "period w \<^bold>|w\<^bold>|"
   by simp
+
+text \<open>Period is preserved by reversal and taking factors\<close>
+
+lemma period_rev:  assumes "period w p" shows "period (rev w) p"
+proof (rule disjE[OF linear, of "\<^bold>|w\<^bold>|" p], use assms in force)
+  assume "p \<le> \<^bold>|w\<^bold>|"
+  obtain s where s: "take p w \<cdot> w = w \<cdot> s"
+    using  prefixE[OF periodD[OF assms]].
+  have "\<^bold>|rev s\<^bold>| = p"
+    using lenarg[OF s, unfolded lenmorph] \<open>p \<le> \<^bold>|w\<^bold>|\<close> by force
+  have "rev w \<le>p rev s \<cdot> rev w"
+    using s using prefI rev_append by metis
+  from periodI_pref[OF refl this]
+  show "period (rev w) p"
+    using \<open>\<^bold>|rev s\<^bold>| = p\<close>  by blast
+qed
+
+lemma period_rev_conv [reversal_rule]: "period (rev w) n \<longleftrightarrow> period w n"
+  using period_rev period_rev[of "rev w"] unfolding rev_rev_ident by (intro iffI)
+
+lemma period_pref_period: assumes "period w n" "v \<le>p w"
+  shows "period v n"
+proof (rule disjE[OF linear, of "\<^bold>|v\<^bold>|" n], use all_long_pers in blast)
+  assume "n \<le> \<^bold>|v\<^bold>|"
+  hence same_take: "take n v = take n w"
+    using  pref_share_take[OF assms(2)] by metis
+  hence "v \<le>p take n v \<cdot> v"
+    using pref_keeps_per_root[OF periodD \<open>v \<le>p w\<close>, OF \<open>period w n\<close>] by argo
+  show ?thesis
+    by (rule periodI) fact
+qed
+
+lemmas period_suf_period = period_pref_period[reversed] and
+       periodI_suf = periodI_pref[reversed] and
+       periodI_suf' = periodI_pref'[reversed]
+
+lemma period_fac_period: assumes "period (u\<cdot>w\<cdot>v) p"
+  shows "period w p"
+  using period_suf_period[OF assms(1), of "w \<cdot> v", THEN period_pref_period] by blast
+
+lemma period_fac_period': "period v p \<Longrightarrow> u \<le>f v  \<Longrightarrow> period u p"
+  by (elim facE, hypsubst, rule period_fac_period)
 
 text\<open>The standard numeric definition of a period uses indeces.\<close>
 
@@ -3447,48 +3486,62 @@ proof-
     using nth_append_length_plus[of "take n w" w i, symmetric]
     unfolding take_len[OF less_imp_le[OF add_lessD2[OF \<open>i + n < \<^bold>|w\<^bold>|\<close>]]].
   also have "... = w ! (i + n)"
-    using pref_index[OF per_pref[OF \<open>period w n\<close>] \<open>i + n < \<^bold>|w\<^bold>|\<close>, symmetric] unfolding add.commute[of n i].
+    using pref_index[OF periodD[OF \<open>period w n\<close>] \<open>i + n < \<^bold>|w\<^bold>|\<close>, symmetric] unfolding add.commute[of n i].
   finally show ?thesis.
 qed
 
+lemma period_mod: "period w n \<Longrightarrow> i < \<^bold>|w\<^bold>| \<Longrightarrow> w!i = w!(i mod n)"
+proof (cases "n = 0", force)
+  assume "n \<noteq> 0"
+  show "period w n \<Longrightarrow> i < \<^bold>|w\<^bold>| \<Longrightarrow> w!i = w!(i mod n)"
+  proof (induct i rule: less_induct)
+    case (less i)
+    then show ?case
+    proof (cases "i < n", unfold mod_less[of i n], blast)
+      assume "\<not> i < n"
+      hence "i - n + n = i" "i - n < i" "i - n < \<^bold>|w\<^bold>|" "(i - n) mod n = i mod n"
+        using \<open>i < \<^bold>|w\<^bold>|\<close> \<open>n \<noteq> 0\<close> mod_add_self2[of "i-n" n] by force+
+      from less.hyps[OF \<open>i - n < i\<close> \<open>period w n\<close> \<open>i - n < \<^bold>|w\<^bold>|\<close>]
+      show "w ! i = w ! (i mod n)"
+        unfolding period_indeces[OF \<open>period w n\<close>, of "i-n", unfolded \<open>i - n + n = i\<close>, OF \<open>i < \<^bold>|w\<^bold>|\<close>] \<open>(i - n) mod n = i mod n\<close>.
+    qed
+  qed
+qed
+
 lemma indeces_period:
-  assumes  "w \<noteq> \<epsilon>" and "0 < n" and  forall: "\<And> i. i + n < \<^bold>|w\<^bold>| \<Longrightarrow> w!i = w!(i+n)"
+  assumes  forall: "\<And> i. i + n < \<^bold>|w\<^bold>| \<Longrightarrow> w!i = w!(i+n)"
   shows "period w n"
 proof-
   have "\<^bold>|w\<^bold>| \<le> \<^bold>|take n w \<cdot> w\<^bold>|"
     by auto
-  {fix j assume "j < \<^bold>|w\<^bold>|"
-    have "w ! j = (take n w \<cdot> w) ! j"
-    proof (cases "j < \<^bold>|take n w\<^bold>|")
-      assume "j < \<^bold>|take n w\<^bold>|" show "w ! j = (take n w \<cdot> w) ! j"
-        using pref_index[OF take_is_prefix \<open>j < \<^bold>|take n w\<^bold>|\<close>, symmetric]
-        unfolding pref_index[OF triv_pref \<open>j < \<^bold>|take n w\<^bold>|\<close>, of w].
-    next
-      assume "\<not> j < \<^bold>|take n w\<^bold>|"
-      from leI[OF this] \<open>j < \<^bold>|w\<^bold>|\<close>
-      have "\<^bold>|take n w\<^bold>| = n"
-        by force
-      hence "j = (j - n) + n" and "(j - n) + n < \<^bold>|w\<^bold>|"
-        using  leI[OF \<open>\<not> j < \<^bold>|take n w\<^bold>|\<close>] \<open>j < \<^bold>|w\<^bold>|\<close> by simp+
-      hence "w!j = w!(j - n)"
-        using forall by simp
-      from this[folded nth_append_length_plus[of "take n w" w "j-n", unfolded \<open>\<^bold>|take n w\<^bold>| = n\<close>]]
-      show "w ! j = (take n w \<cdot> w) ! j"
-        using \<open>j = (j - n) + n\<close> by simp
-    qed}
+  have "w ! j = (take n w \<cdot> w) ! j" if "j < \<^bold>|w\<^bold>|" for j
+  proof (cases "j < \<^bold>|take n w\<^bold>|")
+    assume "j < \<^bold>|take n w\<^bold>|" show "w ! j = (take n w \<cdot> w) ! j"
+      using pref_index[OF take_is_prefix \<open>j < \<^bold>|take n w\<^bold>|\<close>, symmetric]
+      unfolding pref_index[OF triv_pref \<open>j < \<^bold>|take n w\<^bold>|\<close>, of w].
+  next
+    assume "\<not> j < \<^bold>|take n w\<^bold>|"
+    from leI[OF this] \<open>j < \<^bold>|w\<^bold>|\<close>
+    have "\<^bold>|take n w\<^bold>| = n"
+      by force
+    hence "j = (j - n) + n" and "(j - n) + n < \<^bold>|w\<^bold>|"
+      using  leI[OF \<open>\<not> j < \<^bold>|take n w\<^bold>|\<close>] \<open>j < \<^bold>|w\<^bold>|\<close> by simp+
+    hence "w!j = w!(j - n)"
+      using forall by simp
+    from this[folded nth_append_length_plus[of "take n w" w "j-n", unfolded \<open>\<^bold>|take n w\<^bold>| = n\<close>]]
+    show "w ! j = (take n w \<cdot> w) ! j"
+      using \<open>j = (j - n) + n\<close> by simp
+  qed
   with index_pref[OF \<open>\<^bold>|w\<^bold>| \<le> \<^bold>|take n w \<cdot> w\<^bold>|\<close>]
   have "w \<le>p take n w \<cdot> w" by blast
   thus ?thesis
     using assms by force
 qed
 
-text\<open>In some cases, the numeric definition is more useful than the definition using the period root.\<close>
+text \<open>Alternative proof of @{thm period_rev} using indeces\<close>
 
-lemma period_rev: assumes "period w p" shows "period (rev w) p"
-proof (rule indeces_period[of "rev w" p, OF _ per_not_zero[OF assms]])
-  show "rev w \<noteq> \<epsilon>"
-    using assms[unfolded period_def] by force
-next
+lemma assumes "period w p" shows "period (rev w) p"
+proof (rule indeces_period[of p "rev w"])
   fix i assume "i + p < \<^bold>|rev w\<^bold>|"
   from this[unfolded length_rev] add_lessD1
   have "i < \<^bold>|w\<^bold>|" and "i + p < \<^bold>|w\<^bold>|" by blast+
@@ -3500,48 +3553,21 @@ next
   show "rev w ! i = rev w !(i+p)" by presburger
 qed
 
-lemma period_rev_conv [reversal_rule]: "period (rev w) n \<longleftrightarrow> period w n"
-  using period_rev period_rev[of "rev w"] unfolding rev_rev_ident by (intro iffI)
+lemma pow_per[intro]: "period (y\<^sup>@k) \<^bold>|y\<^bold>|"
+  using periodI[OF pref_pow_ext_take, OF self_pref] by blast
 
-lemma period_fac: assumes "period (u\<cdot>w\<cdot>v) p" and "w \<noteq> \<epsilon>"
-  shows "period w p"
-proof (rule indeces_period)
-  show "0 < p" using per_not_zero[OF \<open>period (u\<cdot>w\<cdot>v) p\<close>].
-  fix i assume "i + p < \<^bold>|w\<^bold>|"
-  hence "\<^bold>|u\<^bold>| + i + p  < \<^bold>|u\<cdot>w\<cdot>v\<^bold>|"
-    by simp
-  from period_indeces[OF \<open>period (u\<cdot>w\<cdot>v) p\<close> this]
-  have "(u\<cdot>w\<cdot>v)!(\<^bold>|u\<^bold>| + i) = (u\<cdot>w\<cdot>v)! (\<^bold>|u\<^bold>| + (i + p))"
-    by (simp add: add.assoc)
-  thus "w!i = w!(i+p)"
-    using nth_append_length_plus[of u "w\<cdot>v" i, unfolded lassoc] \<open>i + p < \<^bold>|w\<^bold>|\<close> add_lessD1[OF \<open>i + p < \<^bold>|w\<^bold>|\<close>]
-      nth_append[of w v] by auto
-qed (simp add: \<open>w \<noteq> \<epsilon>\<close>)
+lemma per_fac: assumes "w \<le>f y\<^sup>@k" shows "period w \<^bold>|y\<^bold>|"
+   using pow_per period_fac_period  facE[OF \<open>w \<le>f y\<^sup>@k\<close>] by metis
 
-lemma period_fac': "period v p \<Longrightarrow> u \<le>f v \<Longrightarrow> u \<noteq> \<epsilon> \<Longrightarrow> period u p"
-  by (elim facE, hypsubst, rule period_fac)
+(* text\<open>The numeric definition is equivalent to being prefix of a power.\<close>
 
-lemma pow_per[intro]: assumes "y \<noteq> \<epsilon>" and "0 < k" shows "period (y\<^sup>@k) \<^bold>|y\<^bold>|"
-  using period_I'[OF _ nemp_len[OF \<open>y \<noteq> \<epsilon>\<close>] pref_pow_ext_take, OF _ self_pref]
-  assms by blast
-
-lemma per_fac: assumes "w \<noteq> \<epsilon>" and "w \<le>f y\<^sup>@k" shows "period w \<^bold>|y\<^bold>|"
-proof-
-  have "y \<noteq> \<epsilon>"
-    by (rule nemp_pow_nemp[of k y]) (use assms[folded sublist_Nil_right] in fastforce)
-  have "0 < k"
-    using assms nemp_exp_pos sublist_Nil_right by metis
-  from pow_per[OF \<open>y \<noteq> \<epsilon>\<close> this] period_fac  facE[OF \<open>w \<le>f y\<^sup>@k\<close>] \<open>w \<noteq> \<epsilon>\<close>
-  show "period w \<^bold>|y\<^bold>|" by metis
-qed
-
-text\<open>The numeric definition is equivalent to being prefix of a power.\<close>
-
-theorem period_pref: "period w n \<longleftrightarrow> (\<exists>k r. w \<le>p r\<^sup>@k \<and> w \<noteq> \<epsilon> \<and> \<^bold>|r\<^bold>| = n)" (is "_ \<longleftrightarrow> ?R")
-proof(cases "w = \<epsilon>")
-  assume "w \<noteq> \<epsilon>"
-  show "period w n \<longleftrightarrow> ?R"
-  proof
+theorem period_pref_power: "period w n \<longleftrightarrow> (\<exists>k r. w \<le>p r\<^sup>@k \<and> \<^bold>|r\<^bold>| = n)" (is "_ \<longleftrightarrow> ?R")
+  unfolding period_def
+proof (rule iffI)
+  assume  "w \<le>p take n w \<cdot> w"
+  show "\<exists>k r. w \<le>p r \<^sup>@ k \<and> \<^bold>|r\<^bold>| = n"
+  proof (rule exI, rule exI, cases "n \<le> \<^bold>|w\<^bold>|")
+    show "w \<le>p (take n w)\<^sup>@(Suc \<^bold>|take n w\<^bold>|) \<and> \<^bold>|take n w\<^bold>| = n"
     assume "period w n"
     consider (short) "\<^bold>|w\<^bold>| \<le> n" |  (long) "n < \<^bold>|w\<^bold>|"
       by linarith
@@ -3552,12 +3578,12 @@ proof(cases "w = \<epsilon>")
       obtain z where "\<^bold>|w \<cdot> z\<^bold>| = n"
         unfolding lenmorph using exE[OF Ex_list_of_length[of "n - \<^bold>|w\<^bold>|"]] by metis
       thus ?R
-        using  pow_list_1 \<open>w \<noteq> \<epsilon>\<close>  by blast
+        using  pow_list_1  by blast
     next
       assume "n < \<^bold>|w\<^bold>|"
       then show ?R
-        using \<open>w \<noteq> \<epsilon>\<close> take_len[OF less_imp_le[OF \<open>n < \<^bold>|w\<^bold>|\<close>]]
-        per_root_powE[OF \<open>period w n\<close>[unfolded period_def]]
+        using take_len[OF less_imp_le[OF \<open>n < \<^bold>|w\<^bold>|\<close>]]
+        per_root_powE'[OF \<open>period w n\<close>[unfolded period_def]]
         sprefD1 by metis
     qed
   next
@@ -3575,40 +3601,33 @@ proof(cases "w = \<epsilon>")
       unfolding period_def using \<open>w \<le>p take n w \<cdot> w\<close> by blast
   qed
 qed simp
+*)
 
-lemma per_drop [intro]: assumes "period w n" shows "drop n w <p w"
-proof (rule sprefI)
+
+lemma per_drop [intro]: assumes "period w n" shows "drop n w \<le>p w"
+proof-
   show "drop n w \<le>p w"
     using drop_per_pref[OF \<open>period w n\<close>[unfolded period_def]]
       append_take_drop_id[of n w, unfolded append_eq_conv_conj] by argo
-  show "drop n w \<noteq> w"
-    using assms unfolding period_def using append_take_drop_id strict_prefix_def by metis
-qed
+      qed
 
 text \<open>Two more characterizations of a period\<close>
 
 theorem per_shift:
-  shows "period w n \<longleftrightarrow> drop n w <p w"
-proof
-  assume "drop n w <p w"
-  then show "period w n"
-    unfolding period_def using spref_cancel'[OF \<open>drop n w <p w\<close>, of "take n w"] by force
-qed (simp only: per_drop sprefD)
-
-theorem per_shift': assumes "w \<noteq> \<epsilon>" "0 < n"
   shows "period w n \<longleftrightarrow> drop n w \<le>p w"
 proof
   assume "drop n w \<le>p w"
-  show "period w n"
-    using conjI[OF pref_cancel'[OF \<open>drop n w \<le>p w\<close>, of "take n w"] take_nemp[OF \<open>w \<noteq> \<epsilon>\<close> \<open>0 < n\<close>]]
-    unfolding  append_take_drop_id  by force
-qed (simp only: per_drop sprefD)
+  then show "period w n"
+    unfolding period_def using append_take_drop_id pref_cancel' by metis
+qed (simp only: per_drop)
 
-lemma rotate_per_root: assumes "w \<noteq> \<epsilon>" and "0 < n" and "w = rotate n w"
+
+
+lemma rotate_per_root: assumes "w = rotate n w"
   shows "period w n"
 proof (cases "\<^bold>|w\<^bold>| \<le> n")
   assume "\<^bold>|w\<^bold>| \<le> n"
-  from all_long_pers[OF \<open>w \<noteq> \<epsilon>\<close>, OF this]
+  from all_long_pers[OF  this]
   show "period w n".
 next
   assume not: "\<not> \<^bold>|w\<^bold>| \<le> n"
@@ -3617,16 +3636,10 @@ next
     unfolding \<open>w = rotate n w\<close>[symmetric].
   from this[unfolded mod_less[OF not[unfolded not_le]]]
   show "period w n"
-    unfolding per_shift strict_prefix_def
-    using \<open>w \<noteq> \<epsilon>\<close> \<open>0 < n\<close> drop_neq by blast
+    unfolding per_shift strict_prefix_def drop_neq by blast
 qed
 
 subsubsection \<open>Various lemmas on periods\<close>
-
-lemma period_drop: assumes "period w p" and "p < \<^bold>|w\<^bold>|"
-  shows "period (drop p w) p"
-  using period_fac[of "take p w" "drop p w" \<epsilon> p] \<open>p < \<^bold>|w\<^bold>|\<close> \<open>period w p\<close>
-  unfolding append_take_drop_id drop_eq_Nil not_le append_Nil2 by blast
 
 lemma ext_per_left: assumes "period w p" and  "p \<le> \<^bold>|w\<^bold>|"
   shows "period (take p w \<cdot> w) p"
@@ -3644,7 +3657,7 @@ proof (induction k)
   case (Suc k)
   show ?case
     using ext_per_left[OF Suc.IH[OF \<open>period w p\<close> \<open>p \<le> \<^bold>|w\<^bold>|\<close>]] \<open>p \<le> \<^bold>|w\<^bold>|\<close>
-    unfolding pref_share_take[OF per_exp_pref[OF per_pref[OF \<open>period w p\<close>]] \<open>p \<le> \<^bold>|w\<^bold>|\<close>,symmetric]
+    unfolding pref_share_take[OF per_exp_pref[OF periodD[OF \<open>period w p\<close>]] \<open>p \<le> \<^bold>|w\<^bold>|\<close>,symmetric]
       lassoc pow_Suc[symmetric] by fastforce
 qed auto
 
@@ -3657,7 +3670,7 @@ proof (cases "m = 0")
   have "(take n w)\<^sup>@m \<le>p w"
     using  \<open>period w n\<close>[unfolded period_def]
         ruler_le[of "take n w\<^sup>@m" "take n w\<^sup>@m \<cdot> w" w, OF triv_pref] \<open>m * n \<le> \<^bold>|w\<^bold>|\<close>[folded \<open>\<^bold>|take n w\<^sup>@m\<^bold>| = m * n\<close>]
-        per_exp_pref sprefD by metis
+        per_exp_pref by metis
   show ?thesis
     using pref_take[OF \<open>take n w\<^sup>@m \<le>p w\<close>, unfolded  \<open>\<^bold>|take n w\<^sup>@m\<^bold>| = m * n\<close>, symmetric].
 qed simp
@@ -3666,46 +3679,46 @@ lemma per_div: assumes "n dvd \<^bold>|w\<^bold>|" and "period w n"
   shows "(take n w)\<^sup>@(\<^bold>|w\<^bold>| div n) = w"
   using take_several_pers[OF \<open>period w n\<close> div_times_less_eq_dividend] unfolding dvd_div_mult_self[OF \<open>n dvd \<^bold>|w\<^bold>|\<close>] take_self.
 
-lemma per_mult: assumes "period w n" and "0 < m" shows "period w (m*n)"
+lemma per_mult: assumes "period w n" shows "period w (m*n)"
 proof (cases "m*n \<le> \<^bold>|w\<^bold>|")
-  have "w \<noteq> \<epsilon>" using per_nemp[OF \<open>period w n\<close>].
   assume "\<not> m * n \<le> \<^bold>|w\<^bold>|" thus "period w (m*n)"
-    using all_long_pers[of  w "m * n", OF \<open>w \<noteq> \<epsilon>\<close>] by linarith
+    using all_long_pers[of  w "m * n"] by linarith
 next
   assume "m * n \<le> \<^bold>|w\<^bold>|"
   show "period w (m*n)"
     using  \<open>period w n\<close>
     unfolding period_def
-    using per_root_add_exp[of w "take n w"] \<open>0 < m\<close>
+    using per_exp_pref[of w "take n w"]
      take_several_pers[OF \<open>period w n\<close> \<open>m*n \<le> \<^bold>|w\<^bold>|\<close>, symmetric]
     by presburger
 qed
 
-
 theorem  two_periods:
   assumes "period w p" "period w q"  "p + q \<le> \<^bold>|w\<^bold>|"
   shows "period w (gcd p q)"
-proof-
-  have p1: "w <p take p w \<cdot> w" and p2: "w <p take q w \<cdot> w"
+proof (cases "p = 0 \<or> q = 0 \<or> w = \<epsilon>", use assms(1,2) in fastforce)
+  assume "\<not> (p = 0 \<or> q = 0 \<or> w = \<epsilon>)"
+  hence "p \<noteq> 0" "q \<noteq> 0" "w \<noteq> \<epsilon>"
+    by blast+
+  have p1: "w \<le>p take p w \<cdot> w" and p2: "w \<le>p take q w \<cdot> w"
    using \<open>period w p\<close>[unfolded period_def] \<open>period w q\<close>[unfolded period_def].
   have "\<^bold>|take p w\<^bold>| + \<^bold>|take q w\<^bold>| \<le> \<^bold>|w\<^bold>|"
     using \<open>p + q \<le> \<^bold>|w\<^bold>|\<close> add_leD1 add_leD2 take_len by metis
-  from two_pers_root[OF p1 p2 this, unfolded comm]
+  from two_pers[OF p1 p2 this, unfolded comm]
   obtain t k m where "take p w = t\<^sup>@k" "take q w = t\<^sup>@m"
      by blast
-   have "w <p t \<cdot> w"
-    using per_root_drop_exp[OF \<open>w <p take p w \<cdot> w\<close>[unfolded \<open>take p w = t\<^sup>@k\<close>]].
-  have "period w \<^bold>|t\<^bold>|"
-    using  periodI[OF  per_nemp[OF \<open>period w p\<close>] \<open>w <p t \<cdot> w\<close>].
+   hence "0 < k" "m \<noteq> 0"
+     using \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> \<open>w \<noteq> \<epsilon>\<close> \<open>take p w = t \<^sup>@ k\<close> by force+
+   have "w \<le>p t \<cdot> w"
+    using per_drop_exp[OF \<open>0 < k\<close> \<open>w \<le>p take p w \<cdot> w\<close>[unfolded \<open>take p w = t\<^sup>@k\<close>]].
+  hence "period w \<^bold>|t\<^bold>|"
+    using periodI_pref by blast
   have "\<^bold>|t\<^bold>| dvd (gcd p q)"
     using lenarg[OF \<open>take p w = t\<^sup>@k\<close>] lenarg[OF \<open>take q w = t\<^sup>@m\<close>]
     unfolding lenmorph pow_len
       take_len[OF add_leD1[OF \<open>p + q \<le> \<^bold>|w\<^bold>|\<close>]] take_len[OF add_leD2[OF \<open>p + q \<le> \<^bold>|w\<^bold>|\<close>]]
     using dvd_triv_right gcd_nat.boundedI by meson
-  from dvd_div_eq_0_iff[OF this]
-  have "0 < gcd p q div \<^bold>|t\<^bold>|"
-    using per_not_zero[OF \<open>period w p\<close>] unfolding  gcd_nat.eq_neutr_iff by blast
-  from per_mult[OF \<open>period w \<^bold>|t\<^bold>|\<close> this]
+  from per_mult[OF \<open>period w \<^bold>|t\<^bold>|\<close>, of "gcd p q div \<^bold>|t\<^bold>|"]
   show ?thesis
     unfolding dvd_div_mult_self[OF \<open>\<^bold>|t\<^bold>| dvd (gcd p q)\<close>].
 qed
@@ -3723,31 +3736,35 @@ qed
 lemma index_pref_pow_mod: "w \<le>p r\<^sup>@k \<Longrightarrow> i < \<^bold>|w\<^bold>| \<Longrightarrow>  w!i = r!(i mod \<^bold>|r\<^bold>| )"
   using  index_pow_mod[of i k r] less_le_trans[of i "\<^bold>|w\<^bold>|" "\<^bold>|r\<^sup>@k\<^bold>|"] prefix_length_le[of w "r\<^sup>@k"] pref_index[of w "r\<^sup>@k" i] by argo
 
-lemma index_per_root_mod: "w <p r \<cdot> w \<Longrightarrow> i < \<^bold>|w\<^bold>| \<Longrightarrow>  w!i = r!(i mod \<^bold>|r\<^bold>|)"
-  using index_pref_pow_mod[of w _ r i] per_root_powE' by metis
+lemma index_per_root_mod: assumes "w \<le>p r \<cdot> w" "r \<noteq> \<epsilon>" "i < \<^bold>|w\<^bold>|"
+  shows "w!i = r!(i mod \<^bold>|r\<^bold>|)"
+  using index_pref_pow_mod[OF _ assms(3)] per_root_powE[OF assms(1,2)] sprefD1 by meson
 
-lemma per_pref': assumes "u \<noteq> \<epsilon>" and "period v k" and  "u \<le>p v" shows "period u k"
-proof-
-  { assume "k \<le> \<^bold>|u\<^bold>|"
-    have "take k v = take k u"
-      using  pref_share_take[OF \<open>u \<le>p v\<close> \<open>k \<le> \<^bold>|u\<^bold>|\<close>]  by auto
-    hence "take k v \<noteq> \<epsilon>"
-      using \<open>period v k\<close> by auto
-    hence "take k u \<noteq> \<epsilon>"
-      by (simp add: \<open>take k v = take k u\<close>)
-    have "u \<le>p take k u \<cdot> v"
-      using  \<open>period v k\<close>
-      unfolding period_def   \<open>take k v = take k u\<close>
-      using pref_trans[OF \<open>u \<le>p v\<close>, of "take k u \<cdot> v"]
-      by blast
-    hence "u \<le>p take k u \<cdot> u"
-      using \<open>u \<le>p v\<close> pref_prod_pref by blast
-    hence ?thesis
-      using \<open>take k u \<noteq> \<epsilon>\<close> period_def by blast
-  }
-  thus ?thesis
-    using \<open>u \<noteq> \<epsilon>\<close> all_long_pers nat_le_linear by metis
+
+lemma prepend_periods:  assumes "p dvd n" "n \<le> \<^bold>|w\<^bold>|" "period w p"
+   shows "period ((take n w) \<cdot> w) p"
+proof (cases "n = 0 \<or> w = \<epsilon>", use \<open>period w p\<close> in force)
+  assume ntriv: "\<not> (n =  0 \<or> w = \<epsilon>)"
+  have len: "\<^bold>|take n w\<^bold>| = n"
+    using \<open>n \<le> \<^bold>|w\<^bold>|\<close> by simp
+  have "p - n = 0"
+    using \<open>p dvd n\<close> ntriv by auto
+  have "take n w \<noteq> \<epsilon>"
+    using ntriv by force
+  define r where "r = take p (take n w)"
+  define e where "e = n div p"
+  have r: "take p w = r"
+    unfolding r_def using \<open>p dvd n\<close> ntriv by auto
+  from period_pref_period[OF \<open>period w p\<close>  take_is_prefix]
+  have r_e: "take n w = r\<^sup>@e"
+    using per_div[of p "take n w", symmetric] unfolding e_def r_def len using \<open>p dvd n\<close> by blast
+  have r': "take p (take n w \<cdot> w) = r"
+    unfolding take_append r_def len \<open>p - n = 0\<close> by simp
+  show ?thesis
+    using \<open>period w p\<close>  unfolding period_def r'
+    unfolding r r_e lassoc pow_Suc[symmetric] pow_Suc2 by force
 qed
+
 
 subsection "Period: overview"
 notepad
@@ -3761,11 +3778,11 @@ begin
     by simp
   have "\<epsilon> <p r \<cdot> \<epsilon>"
     using \<open>r \<noteq> \<epsilon>\<close> by blast
-  have "\<not> period w 0"
+  have "period w 0"
     by simp
-  have "\<not> period \<epsilon> 0"
+  have "period \<epsilon> 0"
     by simp
-  have "\<not> period \<epsilon> n"
+  have "period \<epsilon> n"
     by simp
 end
 
@@ -3932,8 +3949,8 @@ lemma distinct_letter_in_suf: assumes "\<not> set w \<subseteq> {a}"
   using distinct_letter_in[reversed, unfolded rassoc, OF assms]
   unfolding suffix_def by metis
 
-lemma per_sing_one: assumes "w \<noteq> \<epsilon>" "w <p [a] \<cdot> w" shows "period w 1"
-  using periodI[OF \<open>w \<noteq> \<epsilon>\<close> \<open>w <p [a] \<cdot> w\<close>] unfolding sing_len[of a].
+lemma per_sing_one: assumes "w \<le>p [a] \<cdot> w" shows "period w 1"
+  using periodI_pref'[OF assms, unfolded sing_len].
 
 lemma sing_pow_exp: "set w \<subseteq> {a} \<longleftrightarrow> w = [a]\<^sup>@\<^bold>|w\<^bold>|"
   using sing_pow_set_sub sing_set_word by metis
@@ -4172,16 +4189,15 @@ qed
 lemma border_per: "x \<le>b w \<Longrightarrow> period w (\<^bold>|w\<^bold>|-\<^bold>|x\<^bold>|)"
   unfolding  border_def using pref_suf_neq_per by blast
 
-lemma per_border: assumes "n < \<^bold>|w\<^bold>|" and "period w n"
+lemma per_border: assumes "n < \<^bold>|w\<^bold>|" and "n \<noteq> 0" and "period w n"
   shows "take (\<^bold>|w\<^bold>| - n) w  \<le>b w"
 proof-
   have eq: "take (\<^bold>|w\<^bold>| - n) w = drop n w"
-    using pref_take[OF \<open>period w n\<close>[unfolded
-   per_shift'[OF per_nemp[OF \<open>period w n\<close>] per_not_zero[OF \<open>period w n\<close>]]], unfolded length_drop].
+    using \<open>period w n\<close> length_drop per_shift  pref_take_conv by metis
   have "take (\<^bold>|w\<^bold>| - n) w \<noteq> \<epsilon>"
     using \<open>n < \<^bold>|w\<^bold>|\<close> take_eq_Nil by fastforce
   moreover have "take (\<^bold>|w\<^bold>| - n) w \<noteq> w"
-    using  per_not_zero[OF \<open>period w n\<close>] \<open>n < \<^bold>|w\<^bold>|\<close> unfolding take_all_iff[of "\<^bold>|w\<^bold>|-n" w] by fastforce
+    using  \<open>n < \<^bold>|w\<^bold>|\<close> \<open>n \<noteq> 0\<close> unfolding take_all_iff[of "\<^bold>|w\<^bold>|-n" w] by fastforce
   ultimately show ?thesis
     unfolding border_def using take_is_prefix[of "\<^bold>|w\<^bold>|-n" w] suffix_drop[of n w, folded eq] by blast
 qed
@@ -4332,7 +4348,7 @@ qed
 subsection \<open>The shortest period\<close>
 
 definition min_period_root :: "'a list \<Rightarrow> 'a list" ("\<pi>") where
-  "min_period_root w = take (LEAST n. period w n) w"
+  "min_period_root w = take (LEAST n. 0 < n \<and> period w n) w"
 
 definition min_period :: "'a list \<Rightarrow> nat" where
   "min_period w = \<^bold>|\<pi> w\<^bold>|"
@@ -4343,23 +4359,46 @@ lemma min_per_emp[simp]: "\<pi> \<epsilon> = \<epsilon>"
 lemma min_per_zero[simp]: "min_period \<epsilon> = 0"
   by (simp add: min_period_def)
 
-lemma min_per_per: "w \<noteq> \<epsilon> \<Longrightarrow> period w (min_period w)"
-  unfolding min_period_def min_period_root_def
-  using len_is_per LeastI_ex period_def periodI by metis
+lemma min_per_per: "period w (min_period w)" and
+      min_per_pos: "w \<noteq> \<epsilon> \<Longrightarrow> 0 < min_period w"
+proof (cases "w = \<epsilon>", simp)
+  assume "w \<noteq> \<epsilon>"
+  let ?P = "\<lambda> x. 0 < x \<and> period w x"
+  have ex: "?P \<^bold>|w\<^bold>|"
+    using len_is_per[of w] \<open>w \<noteq> \<epsilon>\<close> by auto
+  have le: "(LEAST x. 0 < x \<and> period w x) \<le> \<^bold>|w\<^bold>|"
+    using Least_le[of ?P, OF ex].
+  have len: "\<^bold>|take (LEAST x. 0 < x \<and> period w x) w\<^bold>| = (LEAST x. 0 < x \<and> period w x)"
+    using take_len[OF le].
+  show "period w (min_period w)" "0 < min_period w"
+  using LeastI_ex[OF exI, of ?P, OF ex]
+  unfolding min_period_def min_period_root_def len by blast+
+qed
 
-lemma min_per_pos: "w \<noteq> \<epsilon> \<Longrightarrow> 0 < min_period w"
-  using min_per_per by auto
+lemma "n \<le> \<^bold>|w\<^bold>| \<Longrightarrow> \<^bold>|take n w\<^bold>| = n"
+  using take_len.
+
+lemma "u \<le>p w \<Longrightarrow> take \<^bold>|u\<^bold>| w = u"
+  using pref_take.
+
+lemma min_per_root_take_eq : "take \<^bold>|\<pi> w\<^bold>| w = \<pi> w"
+  by (rule pref_take, unfold min_period_root_def) (rule take_is_prefix)
 
 lemma min_per_len:  "min_period w \<le> \<^bold>|w\<^bold>|"
-  unfolding min_period_def min_period_root_def using len_is_per Least_le by simp
+  unfolding min_period_def min_period_root_def by simp
 
 lemmas min_per_root_len = min_per_len[unfolded min_period_def]
 
 lemma min_per_sing: "min_period [a] = 1"
   using min_per_pos[of "[a]"] min_per_len[of "[a]"] by simp
 
+lemma min_per_root_per: assumes "w \<noteq> \<epsilon>" shows "w \<le>p (\<pi> w) \<cdot> w"
+  using min_per_per[of w] unfolding period_def min_period_def
+  min_per_root_take_eq.
+
 lemma min_per_root_per_root: assumes "w \<noteq> \<epsilon>" shows "w <p (\<pi> w) \<cdot> w"
-  using LeastI_ex assms len_is_per period_def unfolding min_period_root_def by metis
+  by (rule sprefI[OF min_per_root_per[OF assms]])
+  (use min_per_pos[OF assms, unfolded min_period_def] in blast)
 
 lemma min_per_pref: "\<pi> w \<le>p w"
   unfolding  min_period_root_def using take_is_prefix by blast
@@ -4371,10 +4410,10 @@ lemma min_per_min: assumes "w <p r \<cdot> w" shows "\<pi> w \<le>p r"
 proof (cases "w = \<epsilon>")
   assume "w \<noteq> \<epsilon>"
   have "period w \<^bold>|\<pi> w\<^bold>|"
-    using \<open>w \<noteq> \<epsilon>\<close> min_per_root_per_root periodI by metis
-  have "period w \<^bold>|r\<^bold>|"
-    using \<open>w \<noteq> \<epsilon>\<close> assms periodI by blast
-  from Least_le[of "\<lambda> n. period w n", OF this]
+    using  sprefD1[OF min_per_root_per_root[OF \<open>w \<noteq> \<epsilon>\<close>]] unfolding period_def min_per_root_take_eq.
+  have "0 < \<^bold>|r\<^bold>| \<and> period w \<^bold>|r\<^bold>|"
+    using periodI_pref'[OF sprefD1[OF assms]] assms by fast
+  from Least_le[of "\<lambda> n. 0 < n \<and>  period w n", OF this]
   have "\<^bold>|\<pi> w\<^bold>| \<le> \<^bold>|r\<^bold>|"
     unfolding  min_period_root_def using dual_order.trans len_take1 by metis
   with pref_trans[OF  min_per_pref sprefD1[OF \<open>w <p r \<cdot> w\<close>]]
@@ -4422,7 +4461,7 @@ lemma min_per_len_diff: "min_period w = \<^bold>|w\<^bold>| - \<^bold>|max_borde
   unfolding min_period_def  using lenarg[OF min_per_max_border,unfolded lenmorph,of w] by linarith
 
 lemma min_per_root_take [code]: "\<pi> w = take (\<^bold>|w\<^bold>| - \<^bold>|max_border w\<^bold>|) w"
-  using cancel_right max_border_suf min_per_max_border suffix_take by metis
+  using cancel_right  min_per_max_border suffix_take[OF max_border_suf] by metis
 
 section \<open>Primitive words\<close>
 
@@ -4993,7 +5032,7 @@ qed
 
 lemma per_root_mod_primE [elim]: assumes "u <p r \<cdot> u"
   obtains n p s where "p \<cdot> s = \<rho> r" and "(p\<cdot>s)\<^sup>@n \<cdot> p = u" and "s \<noteq> \<epsilon>"
-  using per_root_modE[OF per_root_primroot[OF assms]] primroot_prim[OF per_root_nemp[OF assms]]
+  using per_root_modE[OF sprefD1[OF per_root_primroot[OF assms]]] primroot_prim[OF per_root_nemp[OF assms]]
    emp_not_prim by metis
 
 lemmas[shifts] = pows_comm
@@ -5046,7 +5085,7 @@ proof-
     unfolding lenarg[OF \<open>(\<rho> w)\<^sup>@k =w\<close>, unfolded pow_len, symmetric] using
      mult_le_mono1[OF \<open>2 \<le> k\<close>, of "\<^bold>|\<rho> w\<^bold>|"] unfolding one_add_one[symmetric] distrib_right mult_1
     by simp
-  from two_pers_root[OF \<open>w <p (\<pi> w) \<cdot> w\<close> \<open>w <p (\<rho> w) \<cdot> w\<close> this]
+  from two_pers[OF sprefD1[OF \<open>w <p (\<pi> w) \<cdot> w\<close>] sprefD1[OF \<open>w <p (\<rho> w) \<cdot> w\<close>] this]
   have "\<pi> w \<cdot> \<rho> w = \<rho> w \<cdot> \<pi> w".
   from this[unfolded comm_primroots[OF per_root_nemp[OF \<open>w <p (\<pi> w) \<cdot> w\<close>] per_root_nemp[OF \<open>w <p (\<rho> w) \<cdot> w\<close>]]]
   show "\<pi> w = \<rho> w"
@@ -5198,8 +5237,8 @@ lemma conjug_eqE [elim, consumes 2]:
   obtains u v k where "u \<cdot> v = x" and "v \<cdot> u = y" and "(u \<cdot> v)\<^sup>@k \<cdot> u = z" and "v \<noteq> \<epsilon>"
 proof -
   have "z \<le>p x \<cdot> z" using eq[symmetric]..
-  from this and \<open>x \<noteq> \<epsilon>\<close> have "z <p x \<cdot> z"..
-  then obtain k u v where "x\<^sup>@k \<cdot> u = z" and x: "u \<cdot> v = x" and "v \<noteq> \<epsilon>"..
+  from this and \<open>x \<noteq> \<epsilon>\<close>
+  obtain k u v where "x\<^sup>@k \<cdot> u = z" and x: "u \<cdot> v = x" and "v \<noteq> \<epsilon>"..
   have z: "(u\<cdot>v)\<^sup>@k \<cdot> u = z" unfolding x \<open>x\<^sup>@k \<cdot> u = z\<close>..
   have "z \<cdot> y = (u\<cdot>v) \<cdot> ((u\<cdot>v)\<^sup>@k \<cdot> u)" unfolding z unfolding x eq..
   also have "\<dots> = (u\<cdot>v)\<^sup>@k \<cdot> u \<cdot> (v \<cdot> u)" unfolding lassoc pow_comm[symmetric]..
@@ -5241,7 +5280,7 @@ lemma conjug_eq_primrootE' [elim, consumes 2]:
   have "z <p x \<cdot> z" using prefI[OF \<open>x \<cdot> z = z \<cdot> y\<close>[symmetric]] \<open>x \<noteq> \<epsilon>\<close>..
   from per_root_primroot[OF this]
   have "z <p (\<rho> x) \<cdot> z".
-  from per_root_modE[OF this]
+  from per_root_modE[OF sprefD1[OF this] primroot_nemp[OF \<open>x \<noteq> \<epsilon>\<close>]]
   obtain n r s where "r \<cdot> s = \<rho> x" "\<rho> x \<^sup>@ n \<cdot> r = z" "s \<noteq> \<epsilon>".
   have x: "(r\<cdot>s)\<^sup>@i = x" unfolding \<open>r \<cdot> s = \<rho> x\<close> \<open>(\<rho> x)\<^sup>@i = x\<close>..
   have z: "(r\<cdot>s)\<^sup>@n \<cdot> r = z" unfolding \<open>r \<cdot> s = \<rho> x\<close> using  \<open>(\<rho> x)\<^sup>@n \<cdot> r = z\<close>.
@@ -5802,13 +5841,21 @@ qed
 
 lemma fac_per_conjug: assumes "period w n" and  "v \<le>f w" and "\<^bold>|v\<^bold>| = n"
   shows "v \<sim> take n w"
-proof-
+proof (cases "n = 0")
+  assume "n = 0"
+  then show "v \<sim> take n w"
+    using \<open>\<^bold>|v\<^bold>| = n\<close> by auto
+next
+  assume "n \<noteq> 0"
   have "\<^bold>|take n w\<^bold>| = \<^bold>|v\<^bold>|"
     using fac_len[OF \<open>v \<le>f w\<close>] \<open>\<^bold>|v\<^bold>| = n\<close> take_len by blast
-  from per_root_powE'[OF \<open>period w n\<close>[unfolded period_def]]
-  obtain k where "w \<le>p take n w \<^sup>@ k".
+  have "take n w \<noteq> \<epsilon>"
+    using \<open>\<^bold>|v\<^bold>| = n\<close> \<open>n \<noteq> 0\<close> \<open>v \<le>f w\<close> by force
+  with per_root_powE[OF \<open>period w n\<close>[unfolded period_def] this]
+  obtain k where "w <p take n w \<^sup>@ k"
+    by metis
   from fac_pow_len_conjug[OF \<open>\<^bold>|take n w\<^bold>| = \<^bold>|v\<^bold>|\<close>[symmetric], THEN conjug_sym]
-       fac_trans[OF  \<open>v \<le>f w\<close> pref_fac, OF this]
+       fac_trans[OF  \<open>v \<le>f w\<close> pref_fac, OF sprefD1[OF this]]
   show ?thesis.
 qed
 
@@ -6038,8 +6085,7 @@ proof-
     using conjug_nemp_iff \<open>w \<sim> w'\<close> by blast
 
   obtain s where  "s <p w'" and  "w' \<^sup>@ (\<^bold>|u\<^bold>| div \<^bold>|w'\<^bold>|) \<cdot> s = u"
-    using per_root_modE'[OF per_rootI', OF \<open>u \<le>p w' \<^sup>@ l\<close> \<open>w' \<noteq> \<epsilon>\<close>].
-
+    using per_root_modE'[OF pref_pow_root, OF \<open>u \<le>p w' \<^sup>@ l\<close> \<open>w' \<noteq> \<epsilon>\<close> ].
   have "w\<^sup>@((\<^bold>|u\<^bold>| div \<^bold>|w\<^bold>|) - 1) \<le>f w' \<^sup>@ (\<^bold>|u\<^bold>| div \<^bold>|w'\<^bold>|)"
     unfolding conjug_len[OF \<open>w \<sim> w'\<close>]
     using conjug_fac_Suc[OF \<open>w \<sim> w'\<close>]
@@ -6118,6 +6164,13 @@ lemma per_in_lists: "w <p r \<cdot> w \<Longrightarrow> r \<in> lists A \<Longri
 
 lemma nth_in_lists: "j < \<^bold>|w\<^bold>| \<Longrightarrow> w \<in> lists A \<Longrightarrow> w ! j \<in> A"
   using in_lists_conv_set nth_mem by force
+
+(*TODO revise the whole approach to \<open>w \<in> lists A\<close>.
+  Probably using named theorems.
+  Note that the equivalent \<open>set w \<subseteq> A\<close> is fragile, since
+   \<^item> \<open>\<subseteq>\<close> is an abbreviation for \<open>\<le>\<close>
+   \<^item> subsetI is intro!
+*)
 
 method inlists =
  (insert method_facts, use nothing in \<open>
@@ -6674,10 +6727,6 @@ lemma per_glue: assumes "period u n" and "period v n" and "u \<le>p w" and "v \<
               "\<^bold>|w\<^bold>| + n \<le> \<^bold>|u\<^bold>| + \<^bold>|v\<^bold>|"
             shows "period w n"
 proof (rule indeces_period)
-  show  "w \<noteq> \<epsilon>"
-    using \<open>period u n\<close> \<open>u \<le>p w\<close> by force
-  show "0 < n"
-    using \<open>period u n\<close> per_not_zero by metis
   fix i assume "i + n < \<^bold>|w\<^bold>|"
   show "w ! i = w ! (i + n)"
   proof (cases)
@@ -6735,13 +6784,17 @@ proof (cases "k = 0")
   show thesis.
 qed simp
 
-lemma per_fac_pow_fac: assumes "period w n" and "v \<le>f w" and "\<^bold>|v\<^bold>| = n"
+lemma per_fac_pow_fac: assumes "period w n" and "v \<le>f w" and "\<^bold>|v\<^bold>| = n" and "n \<noteq> 0"
   obtains k where "w \<le>f v\<^sup>@k"
 proof-
-  obtain m where "w \<le>f (take n w)\<^sup>@m"
-    using  per_root_powE[OF \<open>period w n\<close>[unfolded  period_def]] pref_fac sprefD1 by metis
+  have "take n w \<noteq> \<epsilon>"
+    using assms(2-4) by force
+  obtain m where "w <p (take n w)\<^sup>@m"
+    using  per_root_powE[OF \<open>period w n\<close>[unfolded  period_def], OF \<open>take n w \<noteq> \<epsilon>\<close>].
+  hence "w \<le>f (take n w)\<^sup>@m"
+    by simp
   obtain r s where "r \<cdot> s = v" and "s \<cdot> r = take n w"
-    using fac_per_conjug[OF assms, THEN conjugE].
+    using fac_per_conjug[OF assms(1,2,3), THEN conjugE].
   hence "r \<cdot> (take n w)\<^sup>@m \<cdot> s = v\<^sup>@Suc m"
     by (metis pow_list_slide)
   from that[OF fac_trans, OF \<open>w \<le>f (take n w)\<^sup>@m\<close>] sublist_appendI[of "(take n w)\<^sup>@m" r s, unfolded this]
@@ -6749,27 +6802,21 @@ proof-
     by blast
 qed
 
-lemma refine_per: assumes "period w n" and "v \<le>f w" and "n \<le> \<^bold>|v\<^bold>|" and "period v k" and "k dvd n"
+lemma refine_per: assumes "period w n" and "v \<le>f w" and "n \<le> \<^bold>|v\<^bold>|" and "period v k" and "k dvd n" and "n \<noteq> 0"
   shows "period w k"
 proof-
-  have "n \<noteq> 0"
-    using \<open>period w n\<close> by auto
-  have "w \<noteq> \<epsilon>"
-    using \<open>period w n\<close> by auto
-  have "v \<noteq> \<epsilon>"
-    using \<open>period v k\<close> by auto
   have "\<^bold>|take n w\<^bold>| = n"
     using take_len[OF le_trans[OF \<open>n \<le> \<^bold>|v\<^bold>|\<close> fac_len[OF \<open>v \<le>f w\<close>]]].
   have "\<^bold>|take n v\<^bold>| = n"
     using take_len[OF \<open>n \<le> \<^bold>|v\<^bold>|\<close>].
   have "period v n"
-    using  period_fac'[OF \<open>period w n\<close> \<open>v \<le>f w\<close> \<open>v \<noteq> \<epsilon>\<close>] by blast
+    using  period_fac_period'[OF \<open>period w n\<close> \<open>v \<le>f w\<close>] by blast
   have "take n v \<le>f w"
     using \<open>v \<le>f w\<close> \<open>n \<le> \<^bold>|v\<^bold>|\<close> sublist_order.dual_order.trans sublist_take by metis
   have "period (take n v) k"
-    using \<open>period w n\<close> \<open>period v k\<close> per_not_zero per_pref' take_is_prefix take_nemp by metis
+    using \<open>period w n\<close> \<open>period v k\<close> period_pref_period take_is_prefix by metis
   have "k \<le> n"
-    using \<open>k dvd n\<close> \<open>n \<noteq> 0\<close> by auto
+    using \<open>k dvd n\<close> \<open>n \<noteq> 0\<close> by force
   hence "take k (take n v) =  take k v"
     using take_le_take by blast
   hence "(take k v)\<^sup>@(n div k) = take n v"
@@ -6777,8 +6824,8 @@ proof-
   have "\<^bold>|take k v\<^bold>| = k"
     using  order.trans[OF \<open>k \<le> n\<close> \<open>n \<le> \<^bold>|v\<^bold>|\<close>, THEN take_len].
   obtain e where  "w \<le>f (take n v)\<^sup>@e"
-    using per_fac_pow_fac[OF \<open>period w n\<close> \<open>take n v \<le>f w\<close> \<open>\<^bold>|take n v\<^bold>| = n\<close>].
-  from per_fac[OF \<open>w \<noteq> \<epsilon>\<close> this[folded \<open>(take k v)\<^sup>@(n div k) = take n v\<close>, folded  pow_mult]]
+    using per_fac_pow_fac[OF \<open>period w n\<close> \<open>take n v \<le>f w\<close> \<open>\<^bold>|take n v\<^bold>| = n\<close>] \<open>n \<noteq> 0\<close> by blast
+  from per_fac[OF this[folded \<open>(take k v)\<^sup>@(n div k) = take n v\<close>, folded  pow_mult]]
   show ?thesis
     unfolding \<open>\<^bold>|take k v\<^bold>| = k\<close> by blast
 qed

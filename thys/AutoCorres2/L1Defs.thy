@@ -71,6 +71,47 @@ begin
 end
 
 
+lemma L1_dyn_call_const:
+  "(gets (\<lambda>_. dest) >>= (\<lambda>p. L1_call scope_setup (\<P> p) scope_teardown result_exn return_xf)) =  
+  L1_call scope_setup (\<P> dest) scope_teardown result_exn return_xf"
+  unfolding L1_call_def
+  by (rule spec_monad_eqI) (auto simp add: runs_to_iff )
+
+definition "assume_Spec R = guarded_spec_body AssumeError R"
+definition exec_spec_monad:: 
+  "('s \<Rightarrow> exit_status c_exntype) \<Rightarrow> ((exit_status c_exntype \<Rightarrow> exit_status c_exntype) \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> 
+    ('s \<Rightarrow> 't) \<Rightarrow> ('s \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> (exit_status, 'a, 't) exn_monad) \<Rightarrow> (('a \<Rightarrow> 'a) \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('s,'p,strictc_errortype) com" where 
+  "exec_spec_monad get_x upd_x st args f res \<equiv> 
+     Guard Fail {s. succeeds (f (args s)) (st s)} 
+     (Seq
+       (assume_Spec {(s0, s1). 
+         \<exists>x t s. reaches (f (args s0)) (st s0) x t \<and> t = st s \<and> 
+           (case x of 
+             Exn e \<Rightarrow> s1 = upd_x (\<lambda>_. Nonlocal e) s 
+           | Result r \<Rightarrow> s1 = upd_x (\<lambda>_. Return) (res (\<lambda>_. r) s))})
+       (Cond {s. is_local (get_x s)} SKIP THROW))"
+
+lemma terminates_Guard': 
+  assumes c: "s\<in>g \<Longrightarrow> \<Gamma>\<turnstile>c\<down>(Normal s)"
+  shows "\<Gamma>\<turnstile>Guard f g c\<down>(Normal s)"
+proof (cases "s \<in> g")
+  case True
+  from True c [OF True] show ?thesis by (rule terminates.Guard) 
+next
+  case False
+  then show ?thesis by (rule terminates.GuardFault)
+qed
+
+definition L1_exec_spec_monad:: 
+  "((exit_status c_exntype \<Rightarrow> exit_status c_exntype) \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> 
+    ('s \<Rightarrow> 't) \<Rightarrow> ('s \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> (exit_status, 'a, 't) exn_monad) \<Rightarrow> (('a \<Rightarrow> 'a) \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> 's L1_monad" where 
+  "L1_exec_spec_monad upd_x st args f res \<equiv> 
+     do {
+      a <- gets (args);
+      bind_handle (exec_abstract st (f a)) 
+       (\<lambda>r. L1_seq (L1_modify (res (\<lambda>_. r))) (L1_modify (upd_x (\<lambda>_. Return)))) 
+       (\<lambda>e. L1_seq (L1_modify (upd_x (\<lambda>_. Nonlocal (the e)))) L1_throw)} "
+
 (* Our corres rule converting from the deeply-embedded SIMPL to a shallow embedding. *)
 definition
   L1corres :: "bool \<Rightarrow> ('p \<Rightarrow> ('s, 'p, strictc_errortype) com option)  
@@ -160,6 +201,18 @@ lemma admissible_nondet_ord_L1corres [corres_admissible]:
 
 lemma L1corres_top [corres_top]: "L1corres ct P \<top> C"
   by (auto simp add: L1corres_def)
+
+lemma L1corres_le_trans[corres_le_trans]: "L1corres ct \<Gamma> A C \<Longrightarrow> A \<le> A' \<Longrightarrow> L1corres ct \<Gamma> A' C"
+  apply (auto simp add: L1corres_def)
+  subgoal
+    using le_succeedsD le_reachesD
+    by (fastforce split: xstate.splits )
+  subgoal
+    using le_succeedsD le_reachesD
+    by (fastforce split: xstate.splits simp add: )
+  done
+
+
 
 lemma L1corres_guard_DynCom:
   "\<lbrakk>\<And>s. s \<in> g \<Longrightarrow> L1corres ct \<Gamma> (B s) (B' s)\<rbrakk> \<Longrightarrow>
@@ -254,6 +307,11 @@ lemma L1corres'_Guard_maybe_guard:
   apply (simp add: L1corres'_def maybe_guard_def)
   by (meson exec.Guard iso_tuple_UNIV_I terminates_Normal_elim_cases(2))
 
+lemma L1corres_Guard_maybe_guard: 
+"L1corres ct \<Gamma> B (Guard f g B') \<Longrightarrow> L1corres ct \<Gamma> B (maybe_guard f g B')"
+  apply (simp add: L1corres_def maybe_guard_def)
+  by (meson exec.Guard iso_tuple_UNIV_I terminates_Normal_elim_cases(2))
+
 lemma L1corres'_guarded_DynCom_conseq:
   assumes conseq: "\<And>s. P s \<Longrightarrow> g s \<Longrightarrow> s \<in> g'"
   assumes corres_B: "\<And>s. P s \<Longrightarrow> g s \<Longrightarrow> L1corres' ct \<Gamma> (\<lambda>s. P s \<and> g s) (B s) (B' s)"
@@ -308,6 +366,43 @@ lemma L1corres_guarded_DynCom:
   apply simp
   done
 
+lemma L1corres_guarded: 
+  assumes B: "L1corres ct \<Gamma> B B'"
+  shows "L1corres ct \<Gamma> (L1_guarded g B) B'"
+  using B
+  by (auto simp add: L1corres_def L1_guarded_def L1_seq_def L1_guard_def 
+      succeeds_bind reaches_bind split: xstate.splits)
+
+lemma L1corres_guarded_DynCom_conseq1:
+  assumes corres_B: "\<And>s. g s \<Longrightarrow> L1corres ct \<Gamma> (B s) (Guard f {s'. s \<in> g'} (B' s))"
+  shows "L1corres ct \<Gamma> (L1_guarded g (gets B \<bind> (\<lambda>b. b))) (Guard f g' (DynCom B'))"
+  using corres_B
+  apply (simp add: L1corres_def L1_guarded_def L1_seq_def L1_guard_def)
+  apply (auto simp add: succeeds_bind reaches_bind split: xstate.splits )
+  subgoal
+    by (fastforce elim!: exec_Normal_elim_cases intro: exec.intros simp add: exec_Guard)
+  subgoal
+    by (fastforce elim!: exec_Normal_elim_cases intro: exec.intros simp add: exec_Guard)
+  subgoal
+    by (fastforce elim!: exec_Normal_elim_cases intro: exec.intros simp add: exec_Guard)
+  subgoal
+    by (fastforce elim!: exec_Normal_elim_cases intro: exec.intros simp add: exec_Guard)
+  subgoal for s
+    apply (cases "s \<in> g'")
+    apply (fastforce elim!:  terminates_Normal_elim_cases  
+        elim: terminates.GuardFault intro: terminates.intros)+
+    done
+  done
+
+lemma L1corres_guarded_DynCom_conseq2:
+  assumes corres_B: "\<And>s. g s \<Longrightarrow> L1corres ct \<Gamma> (B s) (Guard f {s'. s \<in> g'} (B' s))"
+  shows "L1corres ct \<Gamma> (L1_guarded g (gets B \<bind> (\<lambda>b. b))) (maybe_guard f g' (DynCom B'))"
+  apply (rule L1corres_Guard_maybe_guard)
+  using corres_B
+  by (rule L1corres_guarded_DynCom_conseq1)
+
+
+
 (* Wrapper for calling un-translated functions. *)
 definition
   "L1_call_simpl check_term Gamma proc
@@ -317,7 +412,7 @@ definition
          case xs :: (_, strictc_errortype) xstate of
              Normal s \<Rightarrow> set_state s
            | Abrupt s \<Rightarrow> do {set_state s; throw () }
-           | Fault ft \<Rightarrow> fail
+           | Fault ft \<Rightarrow> if ft \<in> {AssumeError, StackOverflow} then bot else fail
            | Stuck \<Rightarrow> fail
       }"
 
@@ -332,10 +427,29 @@ lemma L1corres_call_simpl:
         intro: terminates.intros exec.intros
  
         simp add: succeeds_bind reaches_bind Exn_def )+
+    subgoal
+      apply (auto split: xstate.splits simp add: reaches_bind succeeds_bind)
+      apply (smt (verit, ccfv_threshold) image_eqI mem_Collect_eq succeeds_fail_iff)+
+      done
+    subgoal
+      apply (auto split: xstate.splits simp add: reaches_bind succeeds_bind)
+      done
     done
   subgoal for s
     apply (auto intro!: terminates.intros simp add: succeeds_bind reaches_bind)
     done
+  done
+
+lemma L1_call_simpl_le_trans:
+  assumes "L1corres ct \<Gamma> P (Call proc)"
+  shows "(L1_call_simpl ct \<Gamma> proc) \<le> P"
+  using assms
+  apply (simp add: le_spec_monad_le_refines_iff L1corres_def L1_call_simpl_def)
+  apply (auto simp add: refines_def_old)
+  subgoal
+    by (fastforce simp add: succeeds_bind split: xstate.splits)
+  subgoal
+    by (auto simp add: succeeds_bind reaches_bind split: xstate.splits)
   done
 
 lemma L1corres_skip:
@@ -452,6 +566,38 @@ lemma L1corres_assume:
       simp add: succeeds_bind reaches_bind Exn_def)
   done
 
+lemma L1corres_guarded_spec_pre_post:
+  "L1corres ct \<Gamma> (L1_spec R) (guarded_spec_pre_post F_pre F_post R)"
+  apply (clarsimp simp: L1corres_alt_def ccorresE_def L1_spec_def guarded_spec_pre_post_def)
+  apply (force simp: liftE_def bind_def
+               elim: exec_Normal_elim_cases intro: terminates.Guard terminates.Spec)
+  done
+
+lemma L1corres_assume_guarded_spec_pre_post:
+  "L1corres ct \<Gamma> 
+    (L1_seq (L1_guard (\<lambda>s. s \<in> fst ` R)) ((L1_assume (L1_rel_to_fun R)))) 
+    (guarded_spec_pre_post F_pre AssumeError R)"
+  apply (clarsimp simp: L1corres_alt_def ccorresE_def L1_assume_def 
+      L1_seq_def L1_guard_def L1_rel_to_fun_alt guarded_spec_pre_post_def)
+  apply (force elim!:  exec_Normal_elim_cases 
+      intro: terminates.intros 
+      split: xstate.splits 
+      simp add: succeeds_bind reaches_bind Exn_def)
+  done
+
+lemma L1corres_assume_spec_pre_post:
+  "L1corres ct \<Gamma> 
+    (L1_seq (L1_guard (\<lambda>s. s \<in> P)) ((L1_assume (L1_rel_to_fun R)))) 
+    (spec_pre_post F_pre AssumeError P R)"
+  apply (clarsimp simp: L1corres_alt_def ccorresE_def L1_assume_def 
+      L1_seq_def L1_guard_def L1_rel_to_fun_alt spec_pre_post_def)
+  apply (auto elim!:  exec_Normal_elim_cases 
+      intro: terminates.intros 
+      split: xstate.splits 
+      simp add: succeeds_bind reaches_bind Exn_def terminates.Spec terminates_Guard')
+  done
+
+
 lemma pred_conj_apply[simp]: "(P and Q) s \<longleftrightarrow> P s \<and> Q s"
   by (auto simp add: pred_conj_def)
 
@@ -512,7 +658,7 @@ qed
 
 
 lemma (in L1_functions) L1corres_dyn_call_same_guard:
-  assumes eq: "L1_set_to_pred g \<equiv>  g'"
+  assumes eq: "L1_set_to_pred g \<equiv> g'"
   assumes corres_dest: "\<And>s. g' s \<Longrightarrow>  L1corres ct \<Gamma> (\<P> (dest s)) (Call (dest s))"
   shows
     "L1corres ct \<Gamma> 
@@ -535,6 +681,100 @@ lemma (in L1_functions) L1corres_dyn_call_add_and_select_guard:
   apply (simp)
   done
 
+definition "L1_dyn_call_simpl ct \<Gamma> g scope_setup (dest :: 's \<Rightarrow> unit ptr) scope_teardown result_exn return_xf \<equiv>
+   L1_guarded g (gets dest >>= (\<lambda>p. L1_call scope_setup (L1_call_simpl ct \<Gamma> p) scope_teardown result_exn return_xf))"
+
+lemma L1corres_dyn_call_simpl_conseq:
+  assumes conseq: "\<And>s. g s \<Longrightarrow> s \<in> g'"
+  shows
+    "L1corres ct \<Gamma> 
+        (L1_dyn_call_simpl ct \<Gamma> g scope_setup dest scope_teardown_norm scope_teardown_exn result)
+        (dynCall_exn f g' scope_setup dest scope_teardown_norm scope_teardown_exn (\<lambda>_ t. Basic (result t)))"
+proof -
+  have eq: "(gets (\<lambda>s. L1_call scope_setup (L1_call_simpl ct \<Gamma> (dest s)) scope_teardown_norm scope_teardown_exn result) \<bind> (\<lambda>b. b)) = 
+    (gets dest \<bind> (\<lambda>p. L1_call scope_setup (L1_call_simpl ct \<Gamma> p) scope_teardown_norm scope_teardown_exn result))"
+    apply (rule spec_monad_ext)
+    apply (simp add: run_bind)
+    done
+  show ?thesis
+    apply (simp add: L1_dyn_call_simpl_def dynCall_exn_def)
+    apply (rule L1corres_guarded_DynCom_conseq [where B = "\<lambda>s. L1_call scope_setup (L1_call_simpl ct \<Gamma> (dest s)) scope_teardown_norm scope_teardown_exn result", simplified eq])
+     apply (simp add: conseq)
+    apply (rule L1corres_call)
+    apply (rule L1corres_call_simpl)
+    done
+qed
+
+definition "L1_dyn_call_map_of_default g scope_setup (dest :: 's \<Rightarrow> unit ptr) ps scope_teardown result_exn return_xf \<equiv>
+   L1_guarded g (gets dest >>= (\<lambda>p. L1_call scope_setup (map_of_default (\<lambda>_. \<top>) ps p) scope_teardown result_exn return_xf))"
+
+
+lemma map_of_default_witness: "p \<in> set (map fst ps) \<Longrightarrow> \<exists>f.  (p,f) \<in> set ps \<and> map_of_default d ps p = f"
+  by (induct ps) auto
+
+lemma list_all_prod_witness: "list_all (\<lambda>(x, v). P x v) xs \<Longrightarrow> (x, v) \<in> set xs \<Longrightarrow> P x v"
+  by (induct xs) auto
+
+lemma L1corres_Guard_UNIV: "L1corres ct \<Gamma> X C ==> L1corres ct \<Gamma> X (Guard f UNIV C)"
+  by (simp add: L1corres_alt_def ccorresE_Guard)
+
+lemma L1corres_dyn_call_map_of_default_conseq:
+  assumes conseq: "\<And>s. g' s \<Longrightarrow> dest s \<in> set (map fst ps) \<Longrightarrow> s \<in> g"
+  assumes ps: "list_all (\<lambda>(p, f). L1corres ct \<Gamma> f (Call p)) ps"
+  shows
+    "L1corres ct \<Gamma> 
+        (L1_dyn_call_map_of_default g' scope_setup dest ps scope_teardown_norm scope_teardown_exn result)
+        (dynCall_exn f g scope_setup dest scope_teardown_norm scope_teardown_exn (\<lambda>_ t. Basic (result t)))"
+proof -
+  have eq: "(gets (\<lambda>s. L1_call scope_setup (map_of_default (\<lambda>_. \<top>) ps (dest s)) scope_teardown_norm scope_teardown_exn result) \<bind> (\<lambda>b. b)) = 
+    (gets dest \<bind> (\<lambda>p. L1_call scope_setup (map_of_default (\<lambda>_. \<top>) ps p) scope_teardown_norm scope_teardown_exn result))"
+    apply (rule spec_monad_ext)
+    apply (simp add: run_bind)
+    done
+  show ?thesis
+    apply (simp add: L1_dyn_call_map_of_default_def dynCall_exn_def)
+    apply (rule L1corres_guarded_DynCom_conseq2 [where B = "\<lambda>s. L1_call scope_setup (map_of_default (\<lambda>_. \<top>) ps (dest s)) scope_teardown_norm scope_teardown_exn result", simplified eq])
+    subgoal premises prems for s
+    proof (cases "dest s \<in> set (map fst ps)")
+      case True
+      from map_of_default_witness [OF True] obtain f where 
+        elem: "(dest s,f) \<in> set ps" and eq: "map_of_default (\<lambda>_. \<top>) ps (dest s) = f"
+        by blast
+      from list_all_prod_witness [OF ps elem]
+      have "L1corres ct \<Gamma> f (Call (dest s))" .
+      moreover from True prems conseq have "s \<in> g" by blast
+      ultimately show ?thesis 
+        apply (simp add: eq)
+        apply (rule L1corres_Guard_UNIV)
+        apply (rule L1corres_call)
+        apply assumption
+        done
+    next
+      case False
+      then have "(map_of_default (\<lambda>_. \<top>) ps (dest s)) = \<top>"
+        by (simp add: map_of_default_fallthrough)
+      hence "(L1_call scope_setup (map_of_default (\<lambda>_. \<top>) ps (dest s)) scope_teardown_norm
+               scope_teardown_exn result) = \<top>"
+        apply simp
+        apply (simp add: L1_call_def)
+        apply (rule spec_monad_eqI)
+        apply (auto simp add: runs_to_iff)
+        done  
+      then show ?thesis by (simp add: L1corres_top) 
+    qed
+    done
+qed
+
+
+lemma L1corres_dyn_call_simpl:
+  assumes eq: "L1_set_to_pred g \<equiv> g'"
+  shows
+    "L1corres ct \<Gamma> 
+        (L1_dyn_call_simpl ct \<Gamma> g' scope_setup dest scope_teardown_norm scope_teardown_exn result)
+        (dynCall_exn f g scope_setup dest scope_teardown_norm scope_teardown_exn (\<lambda>_ t. Basic (result t)))"
+  apply (rule L1corres_dyn_call_simpl_conseq)
+  apply (simp add: eq [symmetric])
+  done
 
 lemma L1_seq_guard_merge: "L1_seq (L1_guard P) (L1_seq (L1_guard Q) c) = L1_seq (L1_guard (P and Q)) c"
   unfolding L1_defs
@@ -1180,6 +1420,91 @@ lemma L1corres_with_fresh_stack_ptr[L1corres_with_fresh_stack_ptr]:
   done
 end
 
+lemma L1corres_exec_spec_monad:
+  assumes l: "lense get_x upd_x"
+  shows "L1corres ct \<Gamma> (L1_exec_spec_monad upd_x st args f res) (exec_spec_monad get_x upd_x st args f res)"
+proof -
+  from l interpret l: lense get_x upd_x .
+  show ?thesis
+  proof (clarsimp simp add: L1corres_def; safe)
+    fix s t 
+    assume succeeds: "succeeds (L1_exec_spec_monad upd_x st args f res) s"
+    assume exec: "\<Gamma>\<turnstile> \<langle>exec_spec_monad get_x upd_x st args f res,Normal s\<rangle> \<Rightarrow> t" 
+    show  "case t of
+           Normal x \<Rightarrow>
+             reaches (L1_exec_spec_monad upd_x st args f res) s (Result ()) x
+           | Abrupt x \<Rightarrow> reaches (L1_exec_spec_monad upd_x st args f res) s (Exn ()) x
+           | Fault e \<Rightarrow> e \<in> {AssumeError, StackOverflow} | Stuck \<Rightarrow> False"
+    proof -
+      from succeeds exec show ?thesis
+        apply (simp add: L1_exec_spec_monad_def exec_spec_monad_def)
+        apply (erule exec_Normal_elim_cases)
+        subgoal 
+          apply (auto simp add: succeeds_bind succeeds_bind_handle)
+          apply (erule exec_Normal_elim_cases)
+          apply (simp add: assume_Spec_def guarded_spec_body_def)
+          apply (erule exec_Normal_elim_cases)
+          subgoal for s'
+            apply auto
+            apply (erule exec_Normal_elim_cases)
+            subgoal for b x1 s1 t1
+              apply clarsimp
+              subgoal for x2 s2
+                apply (erule allE [where x="x2"])
+                apply (erule allE [where x="s2"])
+                apply (clarsimp simp add: reaches_exec_abstract)
+                apply (fastforce split: xval_splits 
+                    simp add: default_option_def L1_exec_spec_monad_def reaches_bind 
+                    L1_modify_def L1_seq_def L1_throw_def
+                    case_exception_or_result_iff succeeds_bind
+                    reaches_exec_abstract reaches_bind_handle succeeds_bind succeeds_bind_handle
+                    elim!: exec_Normal_elim_cases)
+                done
+              done
+            subgoal
+              by clarsimp
+            done
+          subgoal
+            apply clarsimp
+            apply (erule exec_Normal_elim_cases)
+            apply (auto simp add: L1_exec_spec_monad_def reaches_bind )
+            done
+          done
+        subgoal
+          by (auto simp add: succeeds_bind succeeds_bind_handle)
+        done
+    qed
+  next
+    fix s 
+    assume succeeds: "succeeds (L1_exec_spec_monad upd_x st args f res) s" 
+    assume "ct"  
+    show "\<Gamma>\<turnstile>exec_spec_monad get_x upd_x st args f res \<down> Normal s"
+    proof -
+      from succeeds show ?thesis
+        apply (auto simp add: L1_exec_spec_monad_def exec_spec_monad_def succeeds_bind_handle succeeds_bind reaches_exec_abstract)
+        apply (rule terminates.intros)
+        subgoal by blast
+        apply (rule terminates.intros)
+        subgoal 
+          apply (simp add: assume_Spec_def guarded_spec_body_def) 
+          apply (rule terminates_Guard')
+          apply (rule terminates.intros)
+          done
+        subgoal
+          apply (clarsimp simp add: assume_Spec_def guarded_spec_body_def)
+
+          apply (erule exec_Normal_elim_cases)
+          subgoal 
+            apply (auto split: xval_splits)
+            by (metis (lifting) Abrupt Fault Stuck terminates.CondFalse terminates.CondTrue
+                terminates.Throw terminates_Skip' terminates_elim_cases(1))
+          subgoal
+            by (auto)
+          done
+        done
+    qed
+  qed 
+qed
 
 
 (*
@@ -1195,7 +1520,7 @@ definition "UNDEFINED_FUNCTION \<equiv> False"
 definition
   undefined_function_body :: "('a, int, strictc_errortype) com"
 where
-  "undefined_function_body \<equiv> Guard UndefinedFunction {x. UNDEFINED_FUNCTION} SKIP"
+  "undefined_function_body \<equiv> Guard (UndefinedFunction {}) {x. UNDEFINED_FUNCTION} SKIP"
 
 
 
@@ -1203,7 +1528,7 @@ definition
   init_return_undefined_function_body::"(('a \<Rightarrow> 'a) \<Rightarrow> (('g, 'l, 'e, 'z) state_scheme \<Rightarrow> ('g, 'l, 'e, 'z) state_scheme))
       \<Rightarrow> (('g, 'l, 'e, 'z) state_scheme, int, strictc_errortype) com" 
 where
-  "init_return_undefined_function_body ret \<equiv> Seq (lvar_nondet_init ret) (Guard UndefinedFunction {x. UNDEFINED_FUNCTION} SKIP)"
+  "init_return_undefined_function_body ret \<equiv> Seq (lvar_nondet_init ret) (Guard (UndefinedFunction {}) {x. UNDEFINED_FUNCTION} SKIP)"
 
 
 lemma L1corres_undefined_call:
@@ -1243,10 +1568,10 @@ lemma signed_bounds_one_to_nat: "n <s 1 \<Longrightarrow> 0 \<le>s n \<Longright
 lemma signed_bounds_to_nat_boundsF: "n <s numeral B \<Longrightarrow> 0 \<le>s n \<Longrightarrow> unat n < numeral B"
   by (metis linorder_not_less of_nat_numeral signed.leD unat_less_helper word_msb_0 word_sle_msb_le)
 
-lemma word_bounds_to_nat_boundsF: "(n::'a::len word) < numeral B \<Longrightarrow> 0 \<le>s n \<Longrightarrow> unat n < numeral B"
+lemma word_bounds_to_nat_boundsF: "(n::'a::len word) < numeral B \<Longrightarrow> unat n < numeral B"
   by (simp add: unat_less_helper)
 
-lemma word_bounds_one_to_nat: "(n::'a::len word) < 1 \<Longrightarrow> 0 \<le>s n \<Longrightarrow> unat n = 0"
+lemma word_bounds_one_to_nat: "(n::'a::len word) < 1 \<Longrightarrow> unat n = 0"
   by (simp add: unat_less_helper)
 
 lemma monotone_L1_seq_le [partial_function_mono]:
@@ -1271,6 +1596,11 @@ lemma monotone_L1_seq_ge [partial_function_mono]:
   apply (rule mono_Y)
   done
 
+lemma L1_seq_mono [monad_mono_intros]:
+  assumes [monad_mono_intros]:"g1 \<le> g2" "f1 \<le> f2"  shows "L1_seq f1 g1 \<le> L1_seq f2 g2"
+  unfolding L1_defs
+  by (intro monad_mono_intros le_funI)
+
 lemma monotone_L1_catch_le [partial_function_mono]:
   assumes mono_X: "monotone R (\<le>) X"
   assumes mono_Y: "monotone R (\<le>) Y"
@@ -1292,6 +1622,11 @@ lemma monotone_L1_catch_ge [partial_function_mono]:
    apply (rule mono_X)
   apply (rule mono_Y)
   done
+
+lemma L1_catch_mono [monad_mono_intros]:
+  assumes [monad_mono_intros]:"f1 \<le> f2" "g1 \<le> g2" shows "L1_catch f1 g1 \<le> L1_catch f2 g2"
+  unfolding L1_defs
+  by (intro monad_mono_intros le_funI)
 
 lemma monotone_L1_condition_le [partial_function_mono]:
   assumes mono_X: "monotone R (\<le>) X"
@@ -1315,23 +1650,85 @@ lemma monotone_L1_condition_ge [partial_function_mono]:
   apply (rule mono_Y)
   done
 
+lemma L1_condition_mono [monad_mono_intros]:
+  assumes [monad_mono_intros]:"f1 \<le> f2" "g1 \<le> g2" shows "L1_condition c f1 g1 \<le> L1_condition c f2 g2"
+  unfolding L1_defs
+  by (intro monad_mono_intros le_funI)
+
+lemma monotone_guard: "monotone R (\<ge>) C \<Longrightarrow> monotone R (\<le>) (\<lambda>f. guard (C f))"
+  apply (auto simp add: monotone_def guard_def assert_def)
+  apply (rule mono_bind)
+  apply (auto simp add: le_fun_def )
+  done
+
+lemma monotone_L1_guard: "monotone R (\<ge>) C \<Longrightarrow> monotone R (\<le>) (\<lambda>f. L1_guard (C f))"
+  unfolding L1_guard_def
+  by (rule monotone_guard)
 
 lemma monotone_L1_guarded_le [partial_function_mono]:
-  assumes mono_X [partial_function_mono]: "monotone R (\<le>) X"
+  assumes mono_X [partial_function_mono]: "monotone R (\<ge>) C" "monotone R (\<le>) X"
   shows "monotone R (\<le>) 
-    (\<lambda>f. (L1_guarded C (X f)))"
+    (\<lambda>f. (L1_guarded (C f) (X f)))"
   unfolding L1_guarded_def
-  apply (rule partial_function_mono)+
+  apply (rule partial_function_mono monotone_L1_guard)+
   done
 
-lemma monotone_L1_guarded_ge [partial_function_mono]:
-  assumes mono_X [partial_function_mono]: "monotone R (\<ge>) X"
+(*
+monotone (%x. guard (%s. P x s)) und dann !!x. monotone (%x. P x s) aber bei P bin ich mir nicht sicher ob es monotone oder antitone sein muss
+3:06
+
+*)
+thm monotone_def
+lemma monotone_guard': "(\<And>s. monotone R (\<le>) (\<lambda>f. C f s)) \<Longrightarrow>  monotone R (\<ge>) (\<lambda>f. guard (C f))"
+  apply (auto simp add: monotone_def guard_def assert_def)
+  apply (rule mono_bind)
+   apply (auto simp add: le_fun_def )
+  done
+
+lemma monotone_guard'': "(monotone R (fun_ord (\<le>)) (\<lambda>f s. C f s)) \<Longrightarrow>  monotone R (\<ge>) (\<lambda>f. guard (C f))"
+  apply (auto simp add: monotone_def guard_def assert_def)
+  apply (rule mono_bind)
+   apply (auto simp add: le_fun_def fun_ord_def)
+  done
+
+
+lemma monotone_L1_guard': "(\<And>s. monotone R (\<le>) (\<lambda>f. C f s)) \<Longrightarrow> monotone R (\<ge>) (\<lambda>f. L1_guard (C f))"
+  unfolding L1_guard_def
+  by (rule monotone_guard')
+
+lemma monotone_L1_guard'': "(monotone R (fun_ord (\<le>)) (\<lambda>f s. C f s)) \<Longrightarrow> monotone R (\<ge>) (\<lambda>f. L1_guard (C f))"
+  unfolding L1_guard_def
+  by (rule monotone_guard'')
+
+lemma monotone_L1_guarded_ge' [partial_function_mono ]: (* FIXME *)
+  assumes mono_X [partial_function_mono]: "(\<And>s. monotone R (\<le>) (\<lambda>f. C f s))" "monotone R (\<ge>) X"
   shows "monotone R (\<ge>) 
-    (\<lambda>f. (L1_guarded C (X f)))"
+    (\<lambda>f. (L1_guarded (C f) (X f)))"
   unfolding L1_guarded_def
-  apply (rule partial_function_mono)+
+  apply (rule partial_function_mono monotone_L1_guard')+
   done
-
+(*
+lemma monotone_L1_guarded_ge'' [partial_function_mono]:
+  assumes mono_X [partial_function_mono]: "(monotone R (fun_ord (\<le>)) (\<lambda>f s. C f s))" "monotone R (\<ge>) X"
+  shows "monotone R (\<ge>) 
+    (\<lambda>f. (L1_guarded (C f) (X f)))"
+  unfolding L1_guarded_def
+  apply (rule partial_function_mono monotone_L1_guard'')+
+  done
+*)
+(*
+lemma monotone_L1_guarded_ge [partial_function_mono]:
+  assumes mono_X [partial_function_mono]: "monotone R (\<le>) C" "monotone R (\<ge>) X"
+  shows "monotone R (\<ge>) 
+    (\<lambda>f. (L1_guarded (C f) (X f)))"
+  unfolding L1_guarded_def
+  apply (rule partial_function_mono monotone_L1_guard')+
+  done
+*)
+lemma L1_guarded_mono [monad_mono_intros]:
+  assumes [monad_mono_intros]:"f \<le> g" shows "L1_guarded c f \<le> L1_guarded c g"
+  unfolding L1_defs L1_guarded_def
+  by (intro monad_mono_intros le_funI order.refl)
 
 
 lemma monotone_L1_while_le [partial_function_mono]:
@@ -1350,6 +1747,10 @@ lemma monotone_L1_while_ge [partial_function_mono]:
   apply (rule mono_B)
   done
 
+lemma L1_while_mono [monad_mono_intros]:
+  assumes [monad_mono_intros]:"f \<le> g" shows "L1_while c f \<le> L1_while c g"
+  unfolding L1_defs
+  by (intro monad_mono_intros le_funI)
 
 lemma monotone_L1_call_le [partial_function_mono]: 
   assumes X[partial_function_mono]:  "monotone R (\<le>) X" 
@@ -1366,5 +1767,31 @@ lemma monotone_L1_call_ge [partial_function_mono]:
   unfolding L1_call_def
   apply (rule partial_function_mono)+
   done
+
+lemma L1_call_mono [monad_mono_intros]:
+  assumes [monad_mono_intros]:"f \<le> g" 
+  shows "L1_call scope_setup f scope_teardown result_exn result_xf \<le> L1_call scope_setup g scope_teardown result_exn result_xf"
+  unfolding L1_defs L1_call_def
+  by (intro monad_mono_intros le_funI order.refl)
+
+lemma monotone_L1_dyn_call_map_of_default_le [partial_function_mono]:
+  assumes [partial_function_mono]: "\<And>x. monotone R (\<le>) (\<lambda>f. map_of_default (\<lambda>_. \<top>) (ps f) x)"
+  shows "monotone R (\<le>) 
+    (\<lambda>f. L1_dyn_call_map_of_default g scope_setup dest (ps f) scope_teardown result_exn return_xf)"
+  unfolding L1_dyn_call_map_of_default_def 
+  by (intro partial_function_mono)
+
+lemma monotone_L1_dyn_call_map_of_default_ge [partial_function_mono]:
+  assumes [partial_function_mono]: "\<And>x. monotone R (\<ge>) (\<lambda>f. map_of_default (\<lambda>_. \<top>) (ps f) x)"
+  shows "monotone R (\<ge>) 
+    (\<lambda>f. L1_dyn_call_map_of_default g scope_setup dest (ps f) scope_teardown result_exn return_xf)"
+  unfolding L1_dyn_call_map_of_default_def 
+  by (intro partial_function_mono)
+
+lemma L1_dyn_call_map_of_default [monad_mono_intros]:
+  assumes [monad_mono_intros]: "\<And>x. map_of_default (\<lambda>_. \<top>) ps x \<le> map_of_default (\<lambda>_. \<top>) qs x" 
+  shows "L1_dyn_call_map_of_default g scope_setup dest ps scope_teardown result_exn result_xf \<le> L1_dyn_call_map_of_default g scope_setup dest qs scope_teardown result_exn result_xf"
+  unfolding L1_dyn_call_map_of_default_def 
+  by (intro monad_mono_intros le_funI order.refl)
 
 end

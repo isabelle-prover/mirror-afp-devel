@@ -12,14 +12,11 @@ begin
 include_C_file "includes/accentéd1.h" for "jiraver224.c"
 include_C_file "includes/accented大学.h" for "jiraver224.c"
 include_C_file "includes/accentedだいがく.h" for "jiraver224.c"
-install_C_file "jiraver224.c"
 
-context jiraver224_simpl
-begin
+declare [[c_parser_assume_prototypes_pure]]
+install_C_file "jiraver224.c"
 
 thm g_body_def
 thm h_body_def
-
-end
 
 end

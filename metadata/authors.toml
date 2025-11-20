@@ -4306,6 +4306,23 @@ host = [
 
 [lemke.homepages]
 
+[lemket]
+name = "Tassilo Lemke"
+
+[lemket.emails]
+
+[lemket.emails.lemket_email]
+user = [
+  "tassilo",
+  "lemke",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[lemket.homepages]
+
 [leustean]
 name = "Laurentiu Leustean"
 

@@ -12,11 +12,13 @@ imports
   "umm_heap/StructSupport"
   "umm_heap/ArrayAssertion"
   "AutoCorres_Utils"
+  "ML_Record_Antiquotation"
 begin
 
 
 (* name generation is the only thing this theory wants, but that
    depends on Absyn, which depends on a bunch of other stuff. *)
+ML_file "Univ_Set.ML"
 ML_file "General.ML"
 ML_file "SourcePos.ML"
 ML_file "SourceFile.ML"
@@ -36,10 +38,10 @@ ML_file "./umm_heap/TargetNumbers.ML"
 
 ML_file "RegionExtras.ML"
 ML_file "Absyn-CType.ML"
+ML_file "Absyn-Ast.ML"
 ML_file "Absyn-Expr.ML"
 ML_file "Absyn-StmtDecl.ML"
 ML_file "Absyn.ML"
-ML_file "Absyn-Serial.ML"
 ML_file "../lib/ml-helpers/StringExtras.ML"
 ML_file "name_generation.ML"
 
@@ -50,6 +52,7 @@ setup \<open>
 \<close>
 
 
+
 (* Syntax for apply antiquotation parsing explicitly *)
 syntax
   "_quote"  :: "'b => ('a => 'b)"  (\<open>(\<open>notation=\<open>mixfix quote\<close>\<close>[.[_].])\<close> [0] 1000)
@@ -58,14 +61,20 @@ syntax
    and add \<star> syntax. *)
 syntax
   "_heap" :: "'b \<Rightarrow> ('a \<Rightarrow> 'b)"
+translations
+  "{|b|}" => "CONST Collect (_quote (_heap b))"
+
+
+open_bundle c_parser_separation_logic
+begin 
+syntax
   "_heap_state" :: "'a" (\<open>\<zeta>\<close>) (* fixme: horrible syntax *)
   "_heap_stateOld" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>(\<open>open_block notation=\<open>mixfix heap_state old\<close>\<close>\<^bsup>_\<^esup>\<zeta>)\<close> [100] 100) (* fixme: horrible syntax *)
 
   "_derefCur" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>(\<open>open_block notation=\<open>prefix deref\<close>\<close>\<star>_)\<close> [100] 100)
   "_derefOld" :: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>(\<open>open_block notation=\<open>prefix deref old\<close>\<close>\<^bsup>_\<^esup>\<star>_)\<close> [100,100] 100)
+end
 
-translations
-  "{|b|}" => "CONST Collect (_quote (_heap b))"
 
 definition sep_app :: "(heap_state \<Rightarrow> bool) \<Rightarrow> heap_state \<Rightarrow> bool" where
   "sep_app P s \<equiv> P s"
@@ -186,6 +195,9 @@ c_fnptr_guard_def: "c_fnptr_guard (fnptr::unit ptr) \<equiv> ptr_val fnptr \<not
 lemma c_fnptr_guard_NULL [simp]: "c_fnptr_guard NULL = False"
   by (simp add: c_fnptr_guard_def)
 
+lemma c_fnptr_guard_not_NULL: "c_fnptr_guard p \<Longrightarrow> p \<noteq> NULL"
+  by (simp add:c_fnptr_guard_def ptr_eq_iff)
+
 lemma c_guardD:
   "c_guard (p::'a::mem_type ptr) \<Longrightarrow> ptr_aligned p \<and> p \<noteq> NULL"
   by (clarsimp simp: c_guard_def c_null_guard)
@@ -251,6 +263,9 @@ lemma c_guard_ptr_aligned_fl:
 
 (* StrictC guard separation syntax translations *)
 
+open_bundle c_parser_separation_logic_more
+begin 
+
 (* fixme: make these abbreviations *)
 syntax
   "_sep_map" :: "'a::c_type ptr \<Rightarrow> 'a \<Rightarrow> heap_assert"
@@ -275,6 +290,7 @@ term "x \<mapsto> y"
 term "(x \<mapsto> y \<and>\<^sup>* y \<mapsto> z) s"
 term "(x \<mapsto> y \<and>\<^sup>* y \<mapsto> z) \<and>\<^sup>* x \<mapsto> y"
 term "\<turnstile>\<^sub>s p"
+end
 
 lemma sep_map_NULL [simp]:
   "NULL \<mapsto> (v::'a::mem_type) = sep_false"
@@ -400,11 +416,12 @@ datatype strictc_errortype =
        | GhostStateError
        | UnspecifiedSyntax
        | OwnershipError
-       | UndefinedFunction
+       | UndefinedFunction "unit ptr set"
        | AdditionalError string
        | ImpossibleSpec
        | AssumeError
        | StackOverflow
+       | Fail
 
 definition unspecified_syntax_error :: "string \<Rightarrow> bool" where
   "unspecified_syntax_error s = False"
@@ -742,6 +759,59 @@ lemma disj_ptr_span_ptr_neq:
 
 lemma field_lvalue_same_conv': "&(p::'a:: c_type ptr\<rightarrow>f) = &(q::'a:: c_type ptr\<rightarrow>f) \<longleftrightarrow> p = q"
   by (simp add: field_lvalue_def)
+
+abbreviation
+  ptr_span_buffer :: "'a::c_type ptr \<Rightarrow> nat \<Rightarrow> addr set" where
+  "ptr_span_buffer p n \<equiv> {ptr_val p ..+ size_of TYPE('a) * n}"
+
+
+definition buffer_ptrs :: "'a::c_type ptr \<Rightarrow> nat \<Rightarrow> 'a::c_type ptr set" where
+  "buffer_ptrs ptr len = ((+\<^sub>p) ptr o int) ` {0 ..< len}"
+
+lemma in_buffer_ptrs_witness: "q \<in> buffer_ptrs p n \<Longrightarrow> \<exists>i < n. q = p +\<^sub>p (int i)"
+  by (auto simp add: buffer_ptrs_def)
+
+lemma index_in_buffer_ptrs: "i < n \<Longrightarrow> p +\<^sub>p (int i) \<in> buffer_ptrs p n"
+  by (auto simp add: buffer_ptrs_def)
+ 
+lemma ptr_span_buffer_ptr_span: 
+  "ptr_span_buffer p 1 = ptr_span p"
+  by simp
+
+lemma buffer_ptrs_ptr_span_buffer: "q \<in> buffer_ptrs p n \<Longrightarrow> ptr_span q \<subseteq> ptr_span_buffer p n"
+  apply (auto simp add: buffer_ptrs_def ptr_add_def)
+  by (smt (verit, best) Abs_fnat_hom_mult
+      group_cancel.add1 intvlD intvlI nat_index_bound
+      of_nat_add)
+
+lemma subset_buffer_ptrs_ptr_span_buffer: 
+  "(\<Union>q \<in> buffer_ptrs p n. ptr_span q) \<subseteq> ptr_span_buffer p n"
+  using buffer_ptrs_ptr_span_buffer
+  by blast
+
+lemma of_nat_mod_div_decomp:
+  "of_nat k
+        = of_nat (k div size_of TYPE('b)) * of_nat (size_of TYPE('b::mem_type)) +
+              of_nat (k mod size_of TYPE('b))"
+  by (metis mod_div_decomp of_nat_add of_nat_mult)
+
+lemma ptr_span_buffer_witness: "x \<in> ptr_span_buffer (p::'a:: mem_type ptr) n \<Longrightarrow> (\<exists>i < n. x \<in> ptr_span (p +\<^sub>p (int i))) "
+  apply (auto simp add: intvl_def ptr_add_def)
+  by (metis less_mult_imp_div_less
+      mem_type_class.mem_type_simps(3) mod_less_divisor
+      mult.commute of_nat_mod_div_decomp)
+
+lemma subset_ptr_span_buffer_buffer_ptrs: 
+  "ptr_span_buffer (p::'a:: mem_type ptr) n \<subseteq> (\<Union>q \<in> buffer_ptrs p n. ptr_span q)"
+  using ptr_span_buffer_witness index_in_buffer_ptrs
+  by (smt (verit, del_insts) UN_iff subset_iff)
+
+lemma ptr_span_buffer_buffer_ptrs_conv: 
+  "ptr_span_buffer (p::'a:: mem_type ptr) n = (\<Union>q \<in> buffer_ptrs p n. ptr_span q)"
+  apply rule
+   apply (rule subset_ptr_span_buffer_buffer_ptrs)
+  apply (rule subset_buffer_ptrs_ptr_span_buffer)
+  done
 
 section \<open>(Partial) Pointer Lenses\<close>
 

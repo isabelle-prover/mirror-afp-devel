@@ -239,8 +239,11 @@ ML_file \<open>positional_symbol_table.ML\<close>
 
 named_theorems locals
 
-consts clocals_string_embedding :: "string \<Rightarrow> nat" 
-consts exit_'::nat
+definition clocals_string_embedding :: "string \<Rightarrow> nat" where
+"clocals_string_embedding = undefined"
+
+definition exit_'::nat where
+"exit_' = undefined"
 
 definition "global_exn_var_clocal = clocals_string_embedding ''global_exn_var''"
 
@@ -339,6 +342,13 @@ fun info_from_term ctxt t =
            |> Option.mapPartial (fn p =>
                 Locals.lookup_positional locals scope p
                 |> Option.map (fn (name, x) => (name, (p, x))))
+  end
+
+fun info_from_position ctxt p =
+  let
+    val {scope, locals} = Data.get (Context.Proof ctxt)
+  in
+    Locals.lookup_positional locals scope p
   end
 
 fun kind_from_term ctxt t = info_from_term ctxt t
@@ -666,7 +676,9 @@ end
 
 print_translation \<open>
 let
+  val show_clocals = Attrib.setup_config_bool @{binding show_clocals} (K true)
 
+  fun cond_tr' tr' ctxt ts = if Config.get ctxt show_clocals  then tr' ctxt ts else raise Match
   fun dest_number (Const (\<^const_syntax>\<open>Groups.zero\<close>, _)) = 0
     | dest_number (Const (\<^const_syntax>\<open>Groups.one\<close>, _)) = 1
     | dest_number (Const (\<^const_syntax>\<open>numeral\<close>, _) $ n) = Numeral.dest_num_syntax n
@@ -717,10 +729,10 @@ let
 
 
 in
-  [(\<^const_syntax>\<open>clookup\<close>, lookup_tr'),
-   (\<^const_syntax>\<open>cupdate\<close>, update_tr'),
-   (\<^const_syntax>\<open>locals_update\<close>, locals_update_tr'),
-   (\<^syntax_const>\<open>_Assign\<close>, assign_tr')]
+  [(\<^const_syntax>\<open>clookup\<close>, cond_tr' lookup_tr'),
+   (\<^const_syntax>\<open>cupdate\<close>, cond_tr' update_tr'),
+   (\<^const_syntax>\<open>locals_update\<close>, cond_tr' locals_update_tr'),
+   (\<^syntax_const>\<open>_Assign\<close>, cond_tr' assign_tr')]
 
 end
 \<close>

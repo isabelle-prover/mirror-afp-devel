@@ -367,7 +367,7 @@ to solve the new subgoals that are introduced by @{method runs_to_vcg}.
 \<close>
 
 
-theorem (in ts_definition_schorr_waite) SchorrWaiteAlgorithm:
+theorem SchorrWaiteAlgorithm:
   assumes Pre: "R = reachable (relS {\<lambda>x. s0[x]\<rightarrow>l, \<lambda>x. s0[x]\<rightarrow>r}) {root_ptr} \<and> (\<forall>x. s0[x]\<rightarrow>m = 0) \<and> (\<forall>x\<in>R. ptr_valid (heap_typing s0) x)"
     (is "?Pre root_ptr s0")
   shows "

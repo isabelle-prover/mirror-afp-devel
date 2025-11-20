@@ -13,8 +13,6 @@ install_C_file "globals_fn.c"
 
 print_locale globals_fn_global_addresses
 
-context globals_fn_simpl
-begin
   thm f_body_def
   thm gupdate_body_def
   thm update_body_def
@@ -22,10 +20,9 @@ begin
   thm test2_body_def
   thm test3_body_def
 
-end
-
-lemma (in test2_impl) returns40:
-  "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== PROC test2() \<lbrace> \<acute>ret' = 40 \<rbrace>"
+lemma (in globals_fn_global_addresses) returns40:
+  includes test2_variables
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>ret' :== PROC test2() \<lbrace> \<acute>ret' = 40 \<rbrace>"
   apply vcg
   apply auto
 done

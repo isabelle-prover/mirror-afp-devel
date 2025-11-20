@@ -17,11 +17,7 @@ consts
 
 install_C_file "kmalloc0.c"
 
-context kmalloc0_simpl begin
-
 thm alloc_body_def
 thm free_body_def
-
-end
 
 end

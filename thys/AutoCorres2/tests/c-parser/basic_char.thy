@@ -11,12 +11,7 @@ begin
 
 install_C_file "basic_char.c"
 
-context basic_char_simpl
-begin
-
   thm f_body_def
   thm g_body_def
-
-end
 
 end

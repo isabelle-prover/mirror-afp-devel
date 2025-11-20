@@ -10,10 +10,8 @@ install_C_file "globals.c"
 
 
 autocorres "globals.c"
-context globals_all_corres
-begin
+
 thm ts_def
 thm l2_def
-end
 
 end

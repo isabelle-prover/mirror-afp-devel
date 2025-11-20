@@ -11,10 +11,8 @@ begin
 
 install_C_file "dc_embbug.c"
 
-context dc_embbug_simpl
-begin
+
 thm f_body_def
 thm h_body_def
-end
 
 end

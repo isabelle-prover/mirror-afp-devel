@@ -11,12 +11,10 @@ begin
 
 install_C_file "parse_enum.c"
 
-context parse_enum_simpl
-begin
+
 thm f_body_def
 thm g_body_def
 thm h_body_def
-end
 
 term winedark
 

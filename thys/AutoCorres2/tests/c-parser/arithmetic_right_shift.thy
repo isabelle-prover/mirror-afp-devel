@@ -11,16 +11,17 @@ begin
 declare [[arithmetic_right_shift]]
 install_C_file "arithmetic_right_shift.c"
 
-context f_impl
+context arithmetic_right_shift_global_addresses
 begin
-
+unbundle f_variables
 lemma "\<Gamma> \<turnstile> \<lbrace> -1 = \<acute>c \<rbrace> \<acute>ret' :== CALL f() \<lbrace> \<acute>ret' = -1 \<rbrace>"
   by vcg (auto simp: sshiftr_n1)
 
 end
 
-context g_impl
+context arithmetic_right_shift_global_addresses
 begin
+unbundle g_variables
 
 lemma "\<Gamma> \<turnstile> \<lbrace> u = \<acute>u \<rbrace> \<acute>ret' :== CALL g() \<lbrace> \<acute>ret' = u >> 5 \<rbrace>"
   by vcg simp_all

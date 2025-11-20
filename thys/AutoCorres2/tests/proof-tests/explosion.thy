@@ -20,10 +20,6 @@ autocorres [] "explosion.c"
 text \<open>Now it takes around 10-12 seconds on a 2,6 GHz Intel Core i7 Mac Pro. \<close>
 
 
-context explosion_all_impl
-
-begin
-
 lemma "caller' n m k = do { ret <- return (same' n);
                     reta <- return (same' n);
                     retb <- return (same' n);
@@ -51,7 +47,6 @@ lemma "caller' n m k = do { ret <- return (same' n);
                     gets (\<lambda>s. sint (G_'' s))
                  }"
   by (simp add:  caller'_def)
-end
 
 section \<open>What was going wrong before?\<close>
 
@@ -80,11 +75,11 @@ lemma "
      (L2_seq (L2_unknown [\<S> ''ret__int''])
        (\<lambda>ret__int.
            L2_seq (L2_unknown [\<S> ''p0''])
-            (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_same' undefined n) (\<lambda>x. x) []) (\<lambda>ret. L2_gets (\<lambda>s. ret) [\<S> ''retval'']))
+            (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_same'' undefined n) (\<lambda>x. x) []) (\<lambda>ret. L2_gets (\<lambda>s. ret) [\<S> ''retval'']))
                    (\<lambda>ret__int.
                        L2_seq (L2_gets (\<lambda>s. a_C_update (\<lambda>_. ret__int) p0) [\<S> ''p0''])
                         (\<lambda>p0. L2_seq (L2_gets (\<lambda>s. b_C_update (\<lambda>_. 1) p0) [\<S> ''p0''])
-                               (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_glob_add' undefined (A_C p0) (B_C p0)) (\<lambda>x. x) []) (\<lambda>ret. L2_skip))
+                               (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_glob_add'' undefined (A_C p0) (B_C p0)) (\<lambda>x. x) []) (\<lambda>ret. L2_skip))
                                       (\<lambda>_. L2_seq (L2_gets G_' [\<S> ''ret''])
                                             (\<lambda>ret__int.
                                                 L2_seq (L2_gets (\<lambda>s. Return) [\<S> ''global_exn_var''])
@@ -121,20 +116,20 @@ thm L2_unknown_bind_unbound
 lemma "(L2_seq (L2_unknown [\<S> ''ret__int''])
        (\<lambda>ret__int.
            L2_seq (L2_unknown [\<S> ''p0''])
-            (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_same' undefined n) (\<lambda>x. x) []) (\<lambda>ret. L2_gets (\<lambda>s. ret) [\<S> ''retval'']))
+            (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_same'' undefined n) (\<lambda>x. x) []) (\<lambda>ret. L2_gets (\<lambda>s. ret) [\<S> ''retval'']))
                    (\<lambda>ret__int.
                        L2_seq_gets (a_C_update (\<lambda>_. ret__int) p0) [\<S> ''p0'']
                         (\<lambda>p0. L2_seq_gets (b_C_update (\<lambda>_. 1) p0) [\<S> ''p0'']
-                               (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_glob_add' undefined (a_C p0) (b_C p0)) (\<lambda>x. x) []) (\<lambda>ret. L2_skip))
+                               (\<lambda>p0. L2_seq (L2_seq (L2_call (l2_glob_add'' undefined (a_C p0) (b_C p0)) (\<lambda>x. x) []) (\<lambda>ret. L2_skip))
                                       (\<lambda>_. L2_seq (L2_gets G_' [\<S> ''ret''])
                                             (\<lambda>ret__int.
                                                 L2_seq_gets (\<lambda>s. Return) [\<S> ''global_exn_var'']
                                                  (\<lambda>global_exn_var. L2_gets (\<lambda>_. ret__int) [\<S> ''ret''])))))))))
      = 
-    L2_seq (L2_seq (L2_call (l2_same' undefined n) (\<lambda>x. x) []) (\<lambda>ret. L2_gets (\<lambda>s. ret) [\<S> ''retval'']))
+    L2_seq (L2_seq (L2_call (l2_same'' undefined n) (\<lambda>x. x) []) (\<lambda>ret. L2_gets (\<lambda>s. ret) [\<S> ''retval'']))
      (\<lambda>ret__int.
          L2_seq
-          (L2_seq (L2_call (l2_glob_add' undefined (a_C (POINT_C ret__int 1)) (b_C (POINT_C ret__int 1))) (\<lambda>x. x) []) (\<lambda>ret. L2_skip))
+          (L2_seq (L2_call (l2_glob_add'' undefined (a_C (POINT_C ret__int 1)) (b_C (POINT_C ret__int 1))) (\<lambda>x. x) []) (\<lambda>ret. L2_skip))
           (\<lambda>_. L2_seq (L2_gets G_' [\<S> ''ret'']) (\<lambda>ret__int. L2_gets (\<lambda>_. ret__int) [\<S> ''ret''])))"
   apply (tactic \<open>
 let

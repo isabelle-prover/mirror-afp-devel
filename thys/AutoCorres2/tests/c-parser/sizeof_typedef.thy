@@ -11,9 +11,7 @@ begin
 
 install_C_file "sizeof_typedef.c"
 
-context sizeof_typedef_simpl
-begin
+
 thm f_body_def
-end
 
 end

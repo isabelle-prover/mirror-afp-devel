@@ -310,7 +310,7 @@ ML \<open>
 fun trace_rule_prems_proof ctxt rule goals rule_prems rule' =
   if not (Config.get ctxt reversed_trace) then () else
     let
-      val ctxt_prems = Simplifier.prems_of ctxt
+      val ctxt_prems = Raw_Simplifier.prems_of ctxt
       val np = Thm.nprems_of rule
       val np' = Thm.nprems_of rule'
       val pretty_term = Syntax.pretty_term ctxt
@@ -356,7 +356,7 @@ fun full_resolve ctxt prem i =
 
 fun prover method ss ctxt rule =
   let
-    val ctxt_prems = Simplifier.prems_of ctxt
+    val ctxt_prems = Raw_Simplifier.prems_of ctxt
     val rule_prems' = Logic.strip_imp_prems (Thm.prop_of rule)
     val goals = rule_prems' |> map (fn prem =>
       Logic.list_implies (map Thm.prop_of ctxt_prems, prem));
@@ -380,9 +380,9 @@ fun rewrite _ _ [] = Thm.reflexive
   | rewrite method ctxt thms =
       let
         val p = prover method (simpset_of ctxt)
-        val ctxt' = Simplifier.init_simpset thms ctxt
+        val ctxt' = Raw_Simplifier.init_simpset thms ctxt
       in
-        Simplifier.rewrite_cterm (true, true, true) p ctxt'
+        Raw_Simplifier.rewrite_cterm (true, true, true) p ctxt'
       end
 
 fun rewrite_rule method ctxt = Conv.fconv_rule o rewrite method ctxt;
@@ -404,9 +404,9 @@ fun reverse method extra_rules context th =
     val th_init = th_import |> Conv.fconv_rule (initiate_cv ctxt')
     val th_rev = th_init |> rewrite_rule method ctxt' rules
     val th_corr = th_rev
-          |> Simplifier.rewrite_rule ctxt' final_correct1
-          |> Simplifier.rewrite_rule ctxt' final_correct2
-          |> Simplifier.rewrite_rule ctxt' final_correct3
+          |> Raw_Simplifier.rewrite_rule ctxt' final_correct1
+          |> Raw_Simplifier.rewrite_rule ctxt' final_correct2
+          |> Raw_Simplifier.rewrite_rule ctxt' final_correct3
     val th_export = th_corr |> singleton (Variable.export ctxt' ctxt)
   in
     Drule.zero_var_indexes th_export

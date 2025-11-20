@@ -36,9 +36,8 @@ install_C_file "single_auxupd.c"
 
 autocorres [no_heap_abs = ISABELLE_mark_free] "single_auxupd.c"
 
-context single_auxupd_all_corres
-begin
+
 thm ISABELLE_mark_free_body_def
 thm ISABELLE_mark_free'_def
-end
+
 end

@@ -11,9 +11,6 @@ begin
 
 install_C_file "jiraver808.c"
 
-context jiraver808_simpl
-begin
 thm bar_body_def
-end
 
 end

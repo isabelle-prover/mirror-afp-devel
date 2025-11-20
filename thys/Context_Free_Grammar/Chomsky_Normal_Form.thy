@@ -17,8 +17,18 @@ begin
 text \<open>The conversion to Chomsky Normal Form (CNF) is achieved by, in that order,
 epsilon and unit elimination, uniformization and binarization.
 A production \<open>A \<rightarrow> \<alpha>\<close> is
-\<^descr> uniform if \<open>\<alpha>\<close> contains no terminal unless it is of length 1,
+\<^descr> uniform if \<open>\<alpha>\<close> contains no terminal unless \<^prop>\<open>length \<alpha> = 1\<close>,
 \<^descr> binary if \<^prop>\<open>length \<alpha> \<le> 2\<close>.
+
+The start symbol \<open>S\<close> is passed around explicitly to avoid generating \<open>S\<close> as a fresh name.
+Of course the nonterminals in the productions \<open>ps\<close> are avoided. However,
+if \<^prop>\<open>S \<notin> Nts(set ps)\<close> or \<^prop>\<open>lang ps S = {[]}\<close>
+ (in which case epsilon elimination eliminates \<open>S\<close>),
+\<open>S\<close> could accidentally be generated as a fresh name.
+One could perform the CNF conversion without avoiding \<open>S\<close> explicitly.
+As a result one would get a CNF that is independent of \<open>S\<close> (in contrast to now),
+but would need to add the preconditions \<^prop>\<open>S \<in> Nts(set ps)\<close> and \<^prop>\<open>lang ps S \<noteq> {[]}\<close>,
+which would also be inherited by any application of the CNF conversion.
 \<close>
 
 definition CNF :: "('n, 't) Prods \<Rightarrow> bool" where
@@ -426,7 +436,7 @@ proof (induction rhs rule: rtranclp_induct)
     using lemma1Nt[of A B\<^sub>1 B\<^sub>2 S P P' y z] by auto
 qed simp
 
-lemma lemma4Nt:
+lemma Lang_binarizeStep1:
   assumes "binarizeStep A B\<^sub>1 B\<^sub>2 S P P'"
   shows "Lang P' S \<subseteq> Lang P S"
 proof
@@ -451,7 +461,7 @@ lemma slemma5_1Nt:
   shows "P' \<turnstile> u \<Rightarrow>* v"
   using assms by (induction v rule: rtranclp_induct) (auto simp: cnf_r1Nt rtranclp_trans)
 
-lemma lemma5Nt: 
+lemma Lang_binarizeStep2: 
   assumes "binarizeStep A B\<^sub>1 B\<^sub>2 S P P'"
   shows "Lang P S \<subseteq> Lang P' S"
 proof 
@@ -463,25 +473,25 @@ proof
     using assms slemma5_1Nt Lang_def by fast
 qed 
 
-lemma cnf_lemma1Nt: "binarizeStep A B\<^sub>1 B\<^sub>2 S P P' \<Longrightarrow> Lang P S = Lang P' S"
-  using lemma4Nt lemma5Nt by fast
+lemma Lang_binarizeStep: "binarizeStep A B\<^sub>1 B\<^sub>2 S P P' \<Longrightarrow> Lang P S = Lang P' S"
+  using Lang_binarizeStep1 Lang_binarizeStep2 by fast
 
-lemma binarizeStepRtc_Eps_free:
+lemma Eps_free_binarizeStepRtc:
   assumes "(\<lambda>x y. \<exists>A t B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)^** P P'"
     and "Eps_free P"
   shows "Eps_free P'"
   using assms by (induction rule: rtranclp_induct) (auto simp: binarizeStep_Eps_free)
 
-lemma binarizeStepRtc_Unit_free:
+lemma Unit_free_binarizeStepRtc:
   assumes "(\<lambda>x y. \<exists>A t B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)^** P P'"
     and "Unit_free P"
   shows "Unit_free P'"
   using assms by (induction rule: rtranclp_induct) (auto simp: binarizeStep_Unit_free)
 
-theorem cnf_lemma2Nt: 
-  assumes "(\<lambda>x y. \<exists>A t B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)^** P P'"
+theorem Lang_binarizeStepRtc: 
+  assumes "(\<lambda>x y. \<exists>A B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)^** P P'"
   shows "Lang P S = Lang P' S"
-  using assms by (induction rule: rtranclp_induct) (fastforce simp: cnf_lemma1Nt)+
+  using assms by (induction rule: rtranclp_induct) (fastforce simp: Lang_binarizeStep)+
 
 text \<open>Termination\<close>
 
@@ -673,7 +683,7 @@ lemma binarize1_binarizes:
   qed
 qed simp
 
-lemma binarize1_binarized:
+lemma binarizeStep_binarize1:
   assumes 
     "A \<notin> Nts (set ps) \<union> {S}"
     "binarize1 A ps ps \<noteq> ps"
@@ -697,7 +707,7 @@ lemma binarize1_dec_badNtsCount:
   assumes "binarize1 A ps ps \<noteq> ps" 
           "A \<notin> Nts (set ps) \<union> {S}"
   shows "badNtsCount (set (binarize1 A ps ps)) < badNtsCount (set ps)"
-  using lemma6_b assms binarize1_binarized 
+  using lemma6_b assms binarizeStep_binarize1 
   by (metis list.set_finite)
 
 lemma badNts_impl_binarize1_not_id_unif:
@@ -762,11 +772,10 @@ lemma badNts_impl_binarize1_not_id_unif:
 qed simp
 
 
-lemma binarize1_preserves_uniform:
+lemma uniform_binarize1:
   fixes ps :: "('n::fresh0, 't) prods"
   assumes ps_uniform: "uniform (set ps)"
-      and ps'_def: "ps' = binarize1 A ps ps"
-    shows "uniform (set ps')"
+    shows "uniform (set( binarize1 A ps ps))"
 proof -
   consider (id) "binarize1 A ps ps = ps" | (not_id) "binarize1 A ps ps \<noteq> ps" by blast
   then show ?thesis
@@ -783,7 +792,7 @@ proof -
         "r = p@[Nt B\<^sub>1,Nt B\<^sub>2]@q" "r' = p@[Nt A]@q" .
       with lr_defs ps_uniform show ?thesis unfolding uniform_def by fastforce
     qed
-    ultimately show ?thesis using ps'_def unfolding uniform_def by auto
+    ultimately show ?thesis unfolding uniform_def by auto
   qed (use assms in simp)
 qed
 
@@ -806,7 +815,7 @@ proof
     using binarize1_dec_badNtsCount by force
 qed
 
-lemma binarize_binRtc:
+lemma binarize_binarizeStep:
   "(\<lambda>x y. \<exists>A B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)\<^sup>*\<^sup>* (set ps) (set (binarize S ps))"
 proof (induction "badNtsCount (set ps)" arbitrary: ps rule: less_induct)
   case less
@@ -824,14 +833,14 @@ proof (induction "badNtsCount (set ps)" arbitrary: ps rule: less_induct)
     with less have "(\<lambda>x y. \<exists>A B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)\<^sup>*\<^sup>* (set ?ps') (set (binarize S ?ps'))"
       by blast
     moreover from neq A_notin_nts obtain B\<^sub>1 B\<^sub>2 where "binarizeStep ?A B\<^sub>1 B\<^sub>2 S (set ps) (set ?ps')"
-      using binarize1_binarized by blast
+      using binarizeStep_binarize1 by blast
     ultimately show ?thesis 
       by (smt (verit, best) binarize.simps
           converse_rtranclp_into_rtranclp)
   qed simp
 qed
 
-lemma binarize_preserves_uniform:
+lemma uniform_binarize:
   fixes ps :: "('n::fresh0, 't) prods"
   assumes ps_uniform: "uniform (set ps)"
     shows "uniform (set (binarize S ps))"
@@ -846,15 +855,14 @@ using assms proof (induction "badNtsCount (set ps)" arbitrary: ps rule: less_ind
     from rec have "binarize S ps = binarize S ?ps'" 
       by (smt (verit) binarize.elims)
     with less binarize1_dec_badNtsCount[OF rec] freshA_notin_set 
-      binarize1_preserves_uniform
+      uniform_binarize1
       show ?thesis by metis
   qed (use less in simp)
 qed
 
-lemma binarize_preserves_binary:
+lemma binary_binarize:
   assumes binary: "binary (set ps)"
-      and ps'_def: "ps' = binarize S ps"
-    shows "binary (set ps')"
+    shows "binary (set (binarize S ps))"
 proof -
   from binary have "badNtsCount (set ps) = 0"
     by (metis badNtsCountNot0 binary_def bot_nat_0.not_eq_extremum leD le_imp_less_Suc numeral_2_eq_2
@@ -866,21 +874,20 @@ qed
 
 lemma binarize_binary_if_uniform:
   fixes ps :: "('n::fresh0, 't) prods"
-  assumes ps'_def: "ps' = binarize S ps"
-      and uniform: "uniform (set ps)"
-    shows "binary (set ps')"
+  assumes uniform: "uniform (set ps)"
+    shows "binary (set (binarize S ps))"
 proof -
   consider (bin) "binary (set ps)" | (not_bin) "\<not>binary (set ps)" by blast
   then show ?thesis
   proof cases
     case bin
-    then show ?thesis using ps'_def binarize_preserves_binary by blast
+    then show ?thesis using binary_binarize by blast
   next
     case not_bin
     with uniform binary_badNtsCount obtain n where Suc_badNts: "badNtsCount (set ps) = Suc n" 
       using not0_implies_Suc by blast
-    with uniform ps'_def show ?thesis 
-    proof (induction "badNtsCount (set ps)" arbitrary: ps ps' n rule: less_induct)
+    with uniform show ?thesis 
+    proof (induction "badNtsCount (set ps)" arbitrary: ps n rule: less_induct)
       case less
       let ?A = "freshA ps S"
       from less badNts_impl_binarize1_not_id_unif have "binarize1 ?A ps ps \<noteq> ps"
@@ -893,16 +900,16 @@ proof -
       then show ?case
       proof cases
         case zero_badNts
-        moreover from less.prems(1) binarize1_preserves_uniform have "uniform ?ps'" 
+        moreover from less.prems(1) uniform_binarize1 have "uniform ?ps'" 
           by blast
         ultimately show ?thesis using binary_badNtsCount
-          by (smt (verit, ccfv_threshold) List.finite_set binarize.elims binarize_preserves_binary
+          by (smt (verit, ccfv_threshold) List.finite_set binarize.elims binary_binarize
               freshA_def less.prems(2))
       next
         case Suc_badNts
-        moreover from less.prems(1) binarize1_preserves_uniform have unif: "uniform ?ps'"
+        moreover from less.prems(1) uniform_binarize1 have unif: "uniform ?ps'"
           by blast
-        ultimately show ?thesis using less(1)[OF badNtsCount_dec _ _ Suc_badNts] 
+        ultimately show ?thesis using less(1)[OF badNtsCount_dec _ Suc_badNts] 
           by (smt (verit, best) binarize.simps freshA_def less.prems(2))
       qed
     qed
@@ -973,12 +980,6 @@ qed
 definition cnf_of :: "('n::fresh0, 't) prods \<Rightarrow> 'n \<Rightarrow> ('n,'t) prods" where
   "cnf_of ps S = (binarize S \<circ> uniformize S \<circ> unit_elim \<circ> eps_elim) ps"
 
-theorem cnf_lemma: 
-  assumes "(\<lambda>x y. \<exists>A B\<^sub>1 B\<^sub>2. binarizeStep A B\<^sub>1 B\<^sub>2 S x y)^** (set (uniformize S ps)) P''"
-  shows "lang ps S = Lang P'' S"
-  using assms cnf_lemma2Nt
-  by (metis (mono_tags, lifting) Un_insert_right insert_iff lang_uniformize)
-
 theorem cnf_of_CNF_Lang:
   fixes ps :: "('n::fresh0, 't) prods"
   shows "CNF (set(cnf_of ps S))" "lang (cnf_of ps S) S = lang ps S - {[]}"
@@ -986,24 +987,24 @@ proof -
   let ?ps1 = "eps_elim ps" let ?ps2 = "unit_elim ?ps1"
   let ?ps3 = "uniformize S ?ps2" let ?ps4 = "binarize S ?ps3"
   have "eps_free ?ps1" by (rule eps_free_eps_elim)
-  hence "eps_free ?ps2" by (meson unit_elim_correct unit_elim_rel_Eps_free)
-  have "Unit_free(set ?ps2)" by (metis unit_elim_correct Unit_free_if_unit_elim_rel)
+  hence "eps_free ?ps2" by (meson unit_elim_correct Unit_elim_rel_Eps_free)
+  have "Unit_free(set ?ps2)" by (metis unit_elim_correct Unit_free_if_Unit_elim_rel)
   have "eps_free ?ps3" by(rule eps_free_uniformize[OF \<open>eps_free ?ps2\<close>])
   have "Unit_free(set ?ps3)" by (rule Unit_free_uniformize[OF \<open>Unit_free(set ?ps2)\<close>])
   have "uniform (set ?ps3)" by (rule uniform_uniformize)
 
   have "eps_free ?ps4"
-    using binarize_binRtc binarizeStepRtc_Eps_free[OF _ \<open>eps_free ?ps3\<close>] by meson
+    using binarize_binarizeStep Eps_free_binarizeStepRtc[OF _ \<open>eps_free ?ps3\<close>] by meson
   moreover have "Unit_free(set ?ps4)"
-    using binarize_binRtc binarizeStepRtc_Unit_free[OF _ \<open>Unit_free(set ?ps3)\<close>] by meson
+    using binarize_binarizeStep Unit_free_binarizeStepRtc[OF _ \<open>Unit_free(set ?ps3)\<close>] by meson
   moreover have "uniform (set ?ps4)"
-    by(rule binarize_preserves_uniform[OF \<open>uniform (set ?ps3)\<close>])
+    by(rule uniform_binarize[OF \<open>uniform (set ?ps3)\<close>])
   moreover have "binary (set ?ps4)"
-    by (rule binarize_binary_if_uniform[OF refl \<open>uniform (set ?ps3)\<close>])
+    by (rule binarize_binary_if_uniform[OF \<open>uniform (set ?ps3)\<close>])
   ultimately show "CNF (set(cnf_of ps S))" unfolding CNF_eq cnf_of_def
     by(simp only: Let_def comp_def)
 
-  have "lang ?ps4 S = lang ?ps3 S" using cnf_lemma binarize_binRtc by blast
+  have "lang ?ps4 S = lang ?ps3 S" using Lang_binarizeStepRtc[OF binarize_binarizeStep, symmetric] .
   also have "\<dots> = lang ?ps2 S" by (simp add: lang_uniformize)
   also have "\<dots> = lang ?ps1 S" by (rule lang_unit_elim)
   also have "\<dots> = lang ps S - {[]}" by (rule lang_eps_elim)
@@ -1093,7 +1094,5 @@ proof -
   ultimately show ?thesis
     using AB append_eq_map_conv[of u v Tm w] list.simps(8)[of Tm] by fastforce
 qed
-
-unused_thms
 
 end

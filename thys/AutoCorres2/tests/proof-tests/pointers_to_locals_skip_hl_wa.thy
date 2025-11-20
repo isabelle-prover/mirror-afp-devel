@@ -12,8 +12,6 @@ autocorres [
   skip_word_abs
 ] "pointers_to_locals_skip_hl_wa.c"
 
-context ts_corres_g
-begin
 thm ts_def
-end
+
 end

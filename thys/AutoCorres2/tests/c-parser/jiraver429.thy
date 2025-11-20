@@ -11,11 +11,6 @@ begin
 
   install_C_file "jiraver429.c"
 
-  context jiraver429_simpl
-  begin
-
   thm foo_body_def
-
-  end
 
 end

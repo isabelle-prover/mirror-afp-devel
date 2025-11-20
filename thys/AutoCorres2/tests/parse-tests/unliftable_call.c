@@ -29,6 +29,8 @@ void rec_untyp(int *ptr) {
   rec_typ(ptr);
 }
 
+
 void call_all(void) {
-  rec_untyp(call_f(0));
+  int * x = call_f(0);
+  rec_untyp(x);
 }

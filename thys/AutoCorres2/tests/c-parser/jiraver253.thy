@@ -11,12 +11,7 @@ begin
 
 install_C_file "jiraver253.c"
 
-context jiraver253_simpl
-begin
-
 thm f_body_def
 thm g_body_def
-
-end
 
 end

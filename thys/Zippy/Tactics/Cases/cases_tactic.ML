@@ -8,7 +8,7 @@ sig
   include HAS_LOGGER
   val cases_lifted_insts_tac : bool -> thm option -> term option list -> thm list ->
     Proof.context -> int -> tactic
-  val cases_find_insts_tac : bool -> thm option -> (term -> bool) option list -> thm list ->
+  val cases_find_insts_tac : bool -> thm option -> (Term_Zipper.T -> bool) option list -> thm list ->
     Proof.context -> int -> tactic
 
   val cases_pattern_tac : bool ->
@@ -101,9 +101,9 @@ fun cases_find_insts_tac simp opt_rule ps facts ctxt =
       fun merge [] [] = []
         | merge (NONE :: _) [] = []
         | merge (NONE :: ps) ts = NONE :: merge ps ts
-        | merge (SOME _ :: ps) (t :: ts) = SOME t :: merge ps ts
+        | merge (SOME _ :: ps) ((t, _) :: ts) = SOME t :: merge ps ts
         | merge _ _ = error "unreachable code in cases_find_insts_tac"
-      val insts = ZTac_Util.find_subterms_comb (map_filter I ps) subgoal
+      val insts = ZTac_Util.find_subterms_comb Term_Zipper_Search.all_td_lr (map_filter I ps) subgoal
     in
       Seq.of_list insts
       |> Seq.map (merge ps)
@@ -124,7 +124,7 @@ fun cases_pattern_tac simp match opt_rule patterns facts ctxt =
       val patterns = patterns
         |> map (Option.map (fn (p, no_ps) => (prepare_pattern p, map prepare_pattern no_ps)))
       fun matches ((env, p), t) = match binders ctxt (p, t) env
-      fun select (p, no_ps) t = not (loose_bvar (t, nbinders)) andalso matches (p, t)
+      fun select (p, no_ps) (t, _) = not (loose_bvar (t, nbinders)) andalso matches (p, t)
         andalso forall (fn p => not (matches (p, t))) no_ps
       val ps = map (Option.map select) patterns
     in cases_find_insts_tac simp opt_rule ps facts ctxt i st end

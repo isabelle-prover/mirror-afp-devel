@@ -199,7 +199,7 @@ next
 qed simp
 
 
-subsection \<open>Compatibility with First_Order_Term\<close> \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
+subsection \<open>Compatibility with First\_Order\_Term\<close> \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
 
 text \<open>Prefer @{thm [source] term.subst_id_subst} to @{thm [source] subst_apply_term_empty}.\<close>
 declare subst_apply_term_empty[no_atp]

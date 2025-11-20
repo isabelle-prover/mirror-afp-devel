@@ -33,6 +33,11 @@ abbreviation "L2_skip \<equiv> L2_gets (\<lambda>_. ()) []"
 definition "L2_VARS f (names::nat list) \<equiv> f" \<comment> \<open>Auxilliary construct to preserve names, 
   like in @{const L2_unknown}, @{const L2_gets}, ...\<close> 
 
+abbreviation "L2_pre_post P R \<equiv> L2_guarded (\<lambda>_. P) (L2_assume R)"
+abbreviation "L2_pre_post_read_write r w Pre Post \<equiv> 
+  L2_guarded (\<lambda>_. Pre) 
+  (L2_assume (\<lambda>s. {(v, s'). \<exists>t'. (v, t') \<in> Post (r s) \<and> s' = w (\<lambda>_. t') s}))"
+
 definition gets_theE :: "('s \<Rightarrow> 'a option) \<Rightarrow> ('e, 'a, 's) exn_monad" where 
   "gets_theE \<equiv> \<lambda>x. gets_the x" \<comment> \<open>Lifting into exception monad\<close>
 
@@ -59,10 +64,18 @@ definition "L2_seq_gets c n A \<equiv> L2_seq (L2_gets (\<lambda>_. c) n) A"
 definition "L2_seq_unknown ns A \<equiv> L2_seq (L2_unknown ns) A"
 definition "L2_seq_condition c L R X \<equiv> L2_seq (L2_condition c L R) X"
 
+definition L2_exec_spec_monad:: 
+  "('s \<Rightarrow> 't) \<Rightarrow> (exit_status, 'a, 't) exn_monad \<Rightarrow> (exit_status c_exntype, 'a, 's) exn_monad" where 
+  "L2_exec_spec_monad st f \<equiv> 
+     map_value (map_exn Nonlocal) (exec_abstract st f)"
+
 definition "SANITIZE_NAMES prj ns ns' = True"
 
 lemma sanitize_namesI: "SANITIZE_NAMES prj ns ns'"
   by (simp add: SANITIZE_NAMES_def)
+
+lemma L2_fail_top: "L2_fail = \<top>"
+  by (simp add: L2_fail_def top_eq_fail)
 
 definition DYN_CALL :: "prop \<Rightarrow> prop" where "PROP DYN_CALL (PROP P) \<equiv> PROP P"
 
@@ -72,8 +85,11 @@ lemma DYN_CALL_I: "PROP P \<Longrightarrow> PROP DYN_CALL (PROP P)"
 lemma DYN_CALL_D: "PROP DYN_CALL (PROP P) \<Longrightarrow> PROP P"
   by (simp add: DYN_CALL_def)
 
-lemma runs_to_partial_top[corres_top]: "\<top> \<bullet> s ?\<lbrace> Q \<rbrace>"
-  by (simp add: runs_to_partial_def_old)
+lemma mono_L2_VARS[monad_mono_intros]: "f \<le> g \<Longrightarrow> L2_VARS f ns \<le> L2_VARS g ns"
+  unfolding L2_VARS_def .
+
+lemma mono_L2_VARS'[monad_mono_intros]: "f p \<le> g p \<Longrightarrow> L2_VARS f ns p \<le> L2_VARS g ns p"
+  unfolding L2_VARS_def .
 
 lemma admissible_runs_to_partial[corres_admissible]: "ccpo.admissible Inf (\<ge>) (\<lambda>f . f \<bullet> s ?\<lbrace>Q\<rbrace>)"
   unfolding runs_to_partial_def_old 
@@ -111,7 +127,6 @@ lemma L2_call_throw_names: "L2_call x emb ns = (x <catch> (\<lambda>r. L2_throw 
   apply (clarsimp simp add: runs_to_iff)
   apply (auto simp add: runs_to_def_old map_exn_def split: xval_splits)
   done
-
 
 (* fixme: we can merge these *)
 lemmas L2_remove_scaffolding_1 =
@@ -164,8 +179,20 @@ lemma admissible_nondet_ord_L2corres [corres_admissible]:
   apply (rule admissible_nondet_ord_corresXF)
   done
 
+lemma admissible_nondet_ord_L2corres_mcont:
+  "mcont Inf (\<ge>) Inf (\<ge>) F \<Longrightarrow> ccpo.admissible Inf (\<ge>) (\<lambda>A. L2corres st ret_xf ex_xf P (F A) C)"
+  using admissible_nondet_ord_L2corres
+  apply (rule admissible_subst)
+  apply assumption
+  done
+
+
 lemma L2corres_top [corres_top]: "L2corres st ret_xf ex_xf P \<top> C"
   by (auto simp add: L2corres_def corresXF_def)
+
+lemma L2corres_le_trans [corres_le_trans]:
+  "L2corres st ret_xf ex_xf P A C \<Longrightarrow> A \<le> A' \<Longrightarrow> L2corres st ret_xf ex_xf P A' C"
+  by (auto simp add: L2corres_def corres_le_trans)
 
 (* Wrapper for calling un-translated functions. *)
 
@@ -295,6 +322,34 @@ lemma L2corres_guarded'':
   by (auto simp add: L2corres_def L2_defs L1_defs L2_guarded_def L1_guarded_def corresXF_def
       succeeds_bind reaches_bind  split: xval_splits)
 
+lemma L2corres_guarded_impl'': 
+  assumes bdy: "\<And>s' s. g s \<Longrightarrow> s = st s' \<Longrightarrow> P s' \<Longrightarrow> L2corres st ret ex P (c (dest s)) (c' (dest' s'))" 
+  assumes g_g': "\<And>s'. P s' \<Longrightarrow> g (st s') \<Longrightarrow> g' s'"
+  assumes dest: "\<And>s' s. g' s' \<Longrightarrow> s = st s' \<Longrightarrow> P s' \<Longrightarrow> dest' s' = dest (st s')"
+  shows "L2corres st ret ex P (L2_guarded g (L2_seq (L2_gets dest ns) c)) (L1_guarded g' (gets dest' \<bind> c'))"
+  using assms
+  by (auto simp add: L2corres_def L2_defs L1_defs L2_guarded_def L1_guarded_def corresXF_def
+      succeeds_bind reaches_bind  split: xval_splits)
+
+lemma L2corres_guarded: 
+  assumes bdy: "\<And>s' s. g' s' \<Longrightarrow> s = st s' \<Longrightarrow> P s' \<Longrightarrow> L2corres st ret ex P c c'" 
+  assumes g_g': "\<And>s'. P s' \<Longrightarrow> g' s' = g (st s')"
+  shows "L2corres st ret ex P (L2_guarded g c) (L1_guarded g' c')"
+  using assms
+  apply (fastforce simp add: L2corres_def L2_defs L1_defs L2_guarded_def L1_guarded_def corresXF_def
+      succeeds_bind reaches_bind  split: xval_splits)
+  done
+
+lemma L2corres_guarded_impl: 
+  assumes bdy: "\<And>s' s. g s \<Longrightarrow> s = st s' \<Longrightarrow> P s' \<Longrightarrow> L2corres st ret ex P c c'" 
+  assumes g_g': "\<And>s'. P s' \<Longrightarrow> g (st s') \<Longrightarrow> g' s'"
+  shows "L2corres st ret ex P (L2_guarded g c) (L1_guarded g' c')"
+  using assms
+  apply (fastforce simp add: L2corres_def L2_defs L1_defs L2_guarded_def L1_guarded_def corresXF_def
+      succeeds_bind reaches_bind  split: xval_splits)
+  done
+
+
 lemma L2corres_catch:
   "\<lbrakk> L2corres st V E P L L';
     \<And>x. L2corres st V E' (P' x) (R x) R';
@@ -393,7 +448,8 @@ lemma L2corres_returncall:
   subgoal
     apply (clarsimp simp add: corresXF_def succeeds_bind succeeds_catch reaches_catch 
         reaches_map_value reaches_bind default_option_def Exn_def split: xval_splits exception_or_result_splits)
-    by (smt (z3) Exn_def Result_neq_Exn map_exn_simps(2) the_Result_simp)
+    by (metis Exn_def Exn_neq_Result[of _ "ret' _"] Result_eq_Result[of "ret' _"]
+        map_exn_simps(2)[of emb "ret' _"])
   subgoal
     apply (clarsimp simp add: corresXF_def succeeds_bind succeeds_catch reaches_catch 
         reaches_map_value reaches_bind default_option_def Exn_def split: xval_splits exception_or_result_splits)
@@ -420,6 +476,16 @@ lemma L2corres_l2_propagate_fixed_cong:
   unfolding L2corres_def corresXF_def simp_implies_def
   by (auto split: sum.splits prod.splits) 
 
+lemma L2corres_l2_propagate_fixed_cong': 
+"P = P' \<Longrightarrow> (\<And>s. P' s \<Longrightarrow> A = A') \<Longrightarrow> (\<And>s. P' s \<Longrightarrow> C = C') \<Longrightarrow> L2corres st ret ex P A C = L2corres st ret ex P' A' C'"
+  unfolding L2corres_def corresXF_def simp_implies_def
+  by (auto split: sum.splits prod.splits) 
+
+lemma L2corres_l2_propagate_fixed_cong'': 
+"P = P' \<Longrightarrow> (A = A') \<Longrightarrow> (C = C') \<Longrightarrow> L2corres st ret ex P A C = L2corres st ret ex P' A' C'"
+  unfolding L2corres_def corresXF_def simp_implies_def
+  by (auto split: sum.splits prod.splits) 
+
 lemma L2corres_modifycall:
   "\<lbrakk> L2corres st ret' ex' P' Z dest_fn;
      \<And>s. P s \<Longrightarrow> P' (scope_setup s);
@@ -435,7 +501,8 @@ lemma L2corres_modifycall:
   subgoal
     apply (clarsimp simp add: corresXF_def succeeds_bind succeeds_catch reaches_catch 
         reaches_map_value reaches_bind default_option_def Exn_def split: xval_splits exception_or_result_splits)
-    by (smt (z3) Exn_def Result_neq_Exn map_exn_simps(2) the_Result_simp)
+    by (metis Exn_def Exn_neq_Result[of _ "ret' _"] Result_eq_Result[of "ret' _"]
+        map_exn_simps(2)[of emb "ret' _"])
   subgoal
     apply (clarsimp simp add: corresXF_def succeeds_bind succeeds_catch reaches_catch 
         reaches_map_value reaches_bind default_option_def Exn_def split: xval_splits exception_or_result_splits)
@@ -485,7 +552,7 @@ lemma L2corres_call:
   subgoal
     apply (clarsimp simp add: corresXF_def succeeds_bind succeeds_catch reaches_catch 
         reaches_map_value reaches_bind default_option_def Exn_def split: xval_splits exception_or_result_splits)
-    by (smt (z3) Exn_def Result_neq_Exn map_exn_simps(2) the_Result_simp)
+    by (metis map_exn_simps(2)[of emb "ret' _"])
   subgoal
     apply (clarsimp simp add: corresXF_def succeeds_bind succeeds_catch reaches_catch 
         reaches_map_value reaches_bind default_option_def Exn_def split: xval_splits exception_or_result_splits)
@@ -502,6 +569,112 @@ lemma (in L1_functions) L2corres_dyn_call:
  L2corres st ret ex P X (L1_dyn_call g scope_setup dest scope_teardown result_exn return_xf)"
   by (simp add: L1_dyn_call_def)
 
+
+lemma L2corres_le_trans':
+  "L2corres st ret_xf ex_xf P A C' \<Longrightarrow> C \<le> C' \<Longrightarrow> L2corres st ret_xf ex_xf P A C"
+  by (auto simp add: L2corres_def corresXF_trans')
+
+lemma L2corres_call_simpl:
+  assumes L1: "L1corres ct \<Gamma> p' (Call p)"
+  assumes L2: "L2corres st ret ex P X p'"
+  shows "L2corres st ret ex P X (L1_call_simpl ct \<Gamma> p)"
+proof - 
+  from L1_call_simpl_le_trans [OF L1] have "L1_call_simpl ct \<Gamma> p \<le> p'" .
+  from L2corres_le_trans' [OF L2 this] show ?thesis .
+qed
+
+term list_all2
+
+lemma L2corres_map_of_default: 
+  assumes "list_all2 (\<lambda>(p, f) (p', f'). (p = p'\<and> L2corres st ret ex P f' (L1_call scope_setup f scope_teardown result_exn result_xf))) ps ps'"
+  shows "L2corres st ret ex P 
+    (map_of_default (\<lambda>_. \<top>) ps' p) (L1_call scope_setup 
+    (map_of_default (\<lambda>_. \<top>) ps p) scope_teardown result_exn result_xf)"
+  using assms proof (induct ps arbitrary: ps')
+  case Nil
+  then show ?case by (auto simp add: L2corres_top)
+next
+  case (Cons x1 ps)
+  then show ?case 
+    apply (cases ps')
+     apply (auto split: )
+    done
+qed
+
+lemma map_value_Nonlocal_assume_result_and_state: 
+  "map_value (map_exn Nonlocal) (assume_result_and_state r) = assume_result_and_state r"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma exec_abstract_id: "exec_abstract id f = f"
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2corres_exec_spec_monad:
+  assumes x: "lense get_x upd_x"
+  assumes glbls_upd_x_commute: "\<And>f s. glbls (upd_x f s) = glbls s"
+  assumes res[simp]: "\<And>f s. get_res (upd_res f s) = f (get_res s)"
+  assumes res_commute: "\<And>f s. get_res (upd_x f s) = get_res s" "\<And>f s. glbls (upd_res f s) = glbls s" 
+  assumes f: "\<And>s. P s \<Longrightarrow> refines (f (args s)) g (st (glbls s)) (st (glbls s)) (=)" 
+  shows "L2corres glbls get_res get_x P (L2_exec_spec_monad st g) (L1_exec_spec_monad upd_x (st o glbls) args f upd_res)"
+proof -
+  from x interpret lense_x: lense get_x upd_x .
+
+  show ?thesis 
+  proof (clarsimp simp add: L2corres_def corresXF_refines_iff rel_XF_def)
+    fix s
+    assume P:  "P s" 
+    show "refines (L1_exec_spec_monad upd_x (st \<circ> glbls) args f upd_res) (L2_exec_spec_monad st g) s (glbls s)
+          (\<lambda>(r, t) (r', t').
+              t' = glbls t \<and> rel_xval (\<lambda>e e'. e' = get_x t) (\<lambda>v v'. v' = get_res t) r r')"
+
+      apply (simp add: L1_exec_spec_monad_def L2_exec_spec_monad_def)
+      using f [OF P]
+      apply (auto simp add: refines_def_old succeeds_bind reaches_bind succeeds_bind_handle reaches_bind_handle 
+          L1_seq_def L1_modify_def L1_throw_def default_option_def map_exn_def  
+          reaches_exec_abstract reaches_map_value rel_xval.simps split: xval_splits exception_or_result_splits)
+
+  
+      subgoal for r s' r' s1'
+        apply (cases r')
+        subgoal    
+          apply (auto simp add: default_option_def Exn_def)   
+          using glbls_upd_x_commute 
+          by (metis Exn_def Exn_neq_Result the_Exn_Exn(2))
+        subgoal
+          apply (auto simp add: glbls_upd_x_commute res_commute) 
+          by (metis Exn_neq_Result the_Result_simp)
+        done
+      done
+  qed
+qed
+
+
+
+lemma L2corres_exec_spec_monad_globals:
+  assumes x: "lense get_x upd_x"
+  assumes glbls_upd_x_commute: "\<And>f s. glbls (upd_x f s) = glbls s" 
+  assumes res[simp]: "\<And>f s. get_res (upd_res f s) = f (get_res s)"
+  assumes res_commute: "\<And>f s. get_res (upd_x f s) = get_res s" "\<And>f s. glbls (upd_res f s) = glbls s" 
+  assumes f: "\<And>s. P s \<Longrightarrow> refines (f (args s)) g (glbls s) (glbls s) (=)" 
+  shows "L2corres glbls get_res get_x P (L2_exec_spec_monad id g) (L1_exec_spec_monad upd_x (glbls) args f upd_res)"
+  using x glbls_upd_x_commute res res_commute 
+  apply (rule L2corres_exec_spec_monad [where st=id, simplified])
+  by (rule f)
+
+lemma lense_global_exn_var: "lense global_exn_var'_' global_exn_var'_'_update"
+  by (unfold_locales) auto
+lemmas L1corres_exec_spec_monad' = L1corres_exec_spec_monad [OF lense_global_exn_var]
+
+lemma globals_global_exn_var_commutes: "globals (global_exn_var'_'_update f s) = globals s"
+  by simp
+
+lemmas L2corres_exec_spec_monad' = 
+  L2corres_exec_spec_monad [where glbls = globals, OF lense_global_exn_var globals_global_exn_var_commutes]
+lemmas L2corres_exec_spec_monad_globals' = 
+  L2corres_exec_spec_monad_globals [where glbls = globals, OF lense_global_exn_var globals_global_exn_var_commutes]
 
 lemma L2_gets_bind: "\<lbrakk> \<And>s s'. V s = V s' \<rbrakk> \<Longrightarrow> L2_seq (L2_gets V n) f = f (V undefined)"
   unfolding L2_defs
@@ -699,6 +872,10 @@ lemma monotone_nondet_monad_L2_seq_le [partial_function_mono]:
   apply (rule mono_Y)
   done
 
+lemma mono_L2_seq [monad_mono_intros]: "(\<And>x. f2 x \<le> g2 x) \<Longrightarrow> f1 \<le> g1 \<Longrightarrow> L2_seq f1 f2 \<le> L2_seq g1 g2"
+  unfolding L2_defs
+  by (auto intro: monad_mono_intros)
+
 lemma monotone_nondet_monad_L2_seq_ge [partial_function_mono]:
   assumes mono_X: "monotone R (\<ge>) X"
   assumes mono_Y: "\<And>r. monotone R (\<ge>) (\<lambda>f. Y f r)"
@@ -728,6 +905,10 @@ lemma monotone_nondet_monad_L2_try_ge [partial_function_mono]:
   apply (rule mono_X)
   done
 
+lemma mono_L2_try[monad_mono_intros]: "f \<le> g \<Longrightarrow> L2_try f \<le> L2_try g"
+  unfolding L2_defs
+  by (auto intro: monad_mono_intros)
+
 lemma monotone_nondet_monad_L2_catch_le [partial_function_mono]:
   assumes mono_X: "monotone R (\<le>) X"
   assumes mono_Y: "\<And>r. monotone R (\<le>) (\<lambda>f. Y f r)"
@@ -749,6 +930,10 @@ lemma monotone_nondet_monad_L2_catch_ge [partial_function_mono]:
    apply (rule mono_X)
   apply (rule mono_Y)
   done
+
+lemma mono_L2_catch[monad_mono_intros]: "f1 \<le> g1 \<Longrightarrow> (\<And>x. f2 x \<le> g2 x) \<Longrightarrow> L2_catch f1 f2 \<le> L2_catch g1 g2"
+  unfolding L2_defs
+  by (auto intro: monad_mono_intros)
 
 lemma monotone_nondet_monad_L2_condition_le [partial_function_mono]:
   assumes mono_X: "monotone R (\<le>) X"
@@ -772,6 +957,11 @@ lemma monotone_nondet_monad_L2_condition_ge [partial_function_mono]:
   apply (rule mono_Y)
   done
 
+lemma mono_L2_condition[monad_mono_intros]: 
+  "f1 \<le> g1 \<Longrightarrow> f2 \<le> g2 \<Longrightarrow> L2_condition c f1 f2 \<le> L2_condition c g1 g2"
+  unfolding L2_defs
+  by (auto intro: monad_mono_intros)
+
 lemma monotone_nondet_monad_L2_guarded_le [partial_function_mono]:
   assumes mono_X[partial_function_mono]: "monotone R (\<le>) X"
   shows "monotone R (\<le>) 
@@ -788,6 +978,12 @@ lemma monotone_nondet_monad_L2_guarded_ge [partial_function_mono]:
   apply (rule partial_function_mono)+
   done
 
+lemma mono_L2_guarded[monad_mono_intros]: "f \<le> g \<Longrightarrow> L2_guarded c f \<le> L2_guarded c g"
+  unfolding L2_defs L2_guarded_def
+  apply (intro monad_mono_intros)
+   apply simp
+  apply (simp add: le_fun_def)
+  done
 
 lemma monotone_nondet_monad_L2_while_le [partial_function_mono]:
   assumes mono_B: "\<And>r. monotone R (\<le>) (\<lambda>f. B f r)"
@@ -804,6 +1000,11 @@ lemma monotone_nondet_monad_L2_while_ge [partial_function_mono]:
   apply (rule partial_function_mono)
   apply (rule mono_B)
   done
+
+lemma mono_L2_while [monad_mono_intros]:
+  "(\<And>x. b1 x \<le> b2 x) \<Longrightarrow> L2_while c b1 i ns \<le> L2_while c b2 i ns"
+  unfolding L2_defs L2_guarded_def
+  by (auto intro: monad_mono_intros)
 
 lemma monotone_nondet_monad_map_exn_le [partial_function_mono]: 
   assumes X[partial_function_mono]:  "monotone R (\<le>) X" 
@@ -835,6 +1036,10 @@ lemma monotone_nondet_monad_L2_call_ge [partial_function_mono]:
   unfolding L2_call_def
   apply (rule partial_function_mono)+
   done
+
+lemma mono_L2_call [monad_mono_intros]: "f \<le> g \<Longrightarrow> L2_call f emb ns \<le> L2_call g emb ns"
+  unfolding L2_call_def
+  by (auto intro: monad_mono_intros)
 
 section \<open>Some Relators\<close>
 
@@ -1659,6 +1864,12 @@ lemma monotone_guard_with_fresh_stack_ptr_ge[partial_function_mono]:
   unfolding guard_with_fresh_stack_ptr_def
   by (intro partial_function_mono)
 
+lemma mono_guard_with_fresh_stack_ptr [monad_mono_intros]:
+  "(\<And>p. f p  \<le> g p) \<Longrightarrow> guard_with_fresh_stack_ptr n I f \<le> guard_with_fresh_stack_ptr n I g"
+  unfolding guard_with_fresh_stack_ptr_def assume_stack_alloc_def on_exit'_def
+  apply (intro monad_mono_intros gfp.leq_refl le_funI)
+  by (simp add: le_fun_def)
+
 lemma monotone_assume_with_fresh_stack_ptr_le[partial_function_mono]:
   assumes [partial_function_mono]: "\<And>p. monotone R (\<le>) (\<lambda>f. c f p)"  
   shows "monotone R (\<le>) (\<lambda>f. assume_with_fresh_stack_ptr n I (c f))"
@@ -1671,6 +1882,12 @@ lemma monotone_assume_with_fresh_stack_ptr_ge[partial_function_mono]:
   unfolding assume_with_fresh_stack_ptr_def
   by (intro partial_function_mono)
 
+lemma mono_assume_with_fresh_stack_ptr [monad_mono_intros]:
+  "(\<And>p. f p \<le> g p) \<Longrightarrow> assume_with_fresh_stack_ptr n I f \<le> assume_with_fresh_stack_ptr n I g"
+  unfolding assume_with_fresh_stack_ptr_def assume_stack_alloc_def on_exit'_def
+  apply (intro monad_mono_intros gfp.leq_refl le_funI)
+  by (simp add: le_fun_def)
+
 lemma monotone_with_fresh_stack_ptr_le[partial_function_mono]:
   assumes [partial_function_mono]: "\<And>p. monotone R (\<le>) (\<lambda>f. c f p)"  
   shows "monotone R (\<le>) (\<lambda>f. with_fresh_stack_ptr n I (c f))"
@@ -1682,6 +1899,12 @@ lemma monotone_with_fresh_stack_ptr_ge[partial_function_mono]:
   shows "monotone R (\<ge>) (\<lambda>f. with_fresh_stack_ptr n I (c f))"
   unfolding with_fresh_stack_ptr_def on_exit_def
   by (intro partial_function_mono)
+
+lemma mono_with_fresh_stack_ptr [monad_mono_intros]:
+  "(\<And>p. f p \<le> g p) \<Longrightarrow> with_fresh_stack_ptr n I f \<le> with_fresh_stack_ptr n I g"
+  unfolding with_fresh_stack_ptr_def assume_stack_alloc_def on_exit_def on_exit'_def
+  apply (intro monad_mono_intros gfp.leq_refl le_funI)
+  by (simp add: le_fun_def)
 
 lemma refines_rel_xval_guard_with_fresh_stack_ptr:
   assumes init_eq: "init\<^sub>c s = init\<^sub>a s"

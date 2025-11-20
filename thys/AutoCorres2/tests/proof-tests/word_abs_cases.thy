@@ -67,7 +67,6 @@ autocorres [
              caller_flat_u_an
 ] "word_abs_cases.c"
 
-context word_abs_cases_all_impl begin
 
   thm callee_flat_s'_def caller_flat_s'_def
 
@@ -92,6 +91,5 @@ context word_abs_cases_all_impl begin
   thm gcd_s_loop'_def gcd_s_loop'_def [simplified int_min int_max oguard_True]
 
   thm sum'_def sum'_def[simplified, folded INT_MAX_def[simplified] INT_MIN_def[simplified]]
-end
 
 end

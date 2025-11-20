@@ -164,6 +164,30 @@ lemma runs_to_init_local_variables_and_parameters:
   apply (simp add: assms)
   by (drule bspec [where x=0], simp, rule assms(1), simp add: ptr_add_def) (rule assms)+
 
+lemma runs_to_guard_init_local_variables_and_parameters:
+  assumes
+    "n > 0"
+    "distinct_span params"
+    "\<forall>(v, sz)\<in>set params. disjnt {v..+sz} (stack_free (heap_typing s))"
+    "\<forall>(v, sz)\<in>set params. 0 < sz"
+    "\<And>d ptr vs.
+        (ptr, d) \<in> stack_allocs n \<S> TYPE('a) (heap_typing s) \<Longrightarrow>
+        vs \<in> init s \<Longrightarrow>
+        length vs = n \<Longrightarrow>
+        \<forall>i\<in>{0..<n}. r s (ptr +\<^sub>p int i) = ZERO('a) \<Longrightarrow>
+        \<forall>i\<in>{0..<n}. root_ptr_valid d (ptr +\<^sub>p int i) \<Longrightarrow>
+        lvp_distinct ((d, ptr_val ptr, n, size_td (typ_uinfo_t TYPE('a)))#(map (\<lambda>(v, sz). (heap_typing s, v, 1, sz)) params)) \<Longrightarrow>
+        f ptr \<bullet> (stack_ptr_acquire n vs ptr d s) \<lbrace> \<lambda>r u.
+                    (\<forall>i<n. root_ptr_valid (heap_typing u) (ptr +\<^sub>p int i)) \<and>
+                    Q r (stack_ptr_release n ptr u) \<rbrace>"
+  shows "guard_with_fresh_stack_ptr n init f \<bullet> s \<lbrace> Q \<rbrace>"
+  apply (rule runs_to_guard_with_fresh_stack_ptr)
+  apply (rule assms(5))
+  apply (assumption)+
+  apply (rule lvp_distinct_singleton_local_with_params)
+  apply (simp add: assms)
+  by (drule bspec [where x=0], simp, rule assms(1), simp add: ptr_add_def) (rule assms)+
+
 lemma lvp_distinct_add_stack_allocs:
   fixes p::"'a ptr"
   assumes "(p, d') \<in> stack_allocs n \<S> TYPE('a) (fst (hd xs))"
@@ -229,6 +253,30 @@ lemma runs_to_add_local_variable:
         (f ptr) \<bullet> (stack_ptr_acquire n vs ptr d s) \<lbrace> \<lambda>r u. Q r (stack_ptr_release n ptr u) \<rbrace>"
   shows "(assume_with_fresh_stack_ptr n init f) \<bullet> s \<lbrace> Q \<rbrace>"
   apply (rule runs_to_with_fresh_stack_ptr)
+  apply (rule assms(4))
+  apply (assumption)+
+  apply (rule lvp_distinct_add_stack_allocs)
+  apply (simp add: assms)
+  apply (rule assms(3))
+  by (drule bspec [where x=0], simp, rule assms(3), simp add: ptr_add_def) (rule assms(1))
+
+lemma runs_to_guard_add_local_variable:
+  assumes
+    "lvp_distinct xs"
+    "heap_typing s = fst (hd xs)"
+    "n > 0"
+    "\<And>d ptr vs.
+        (ptr, d) \<in> stack_allocs n \<S> TYPE('a) (heap_typing s) \<Longrightarrow>
+        vs \<in> init s \<Longrightarrow>
+        length vs = n \<Longrightarrow>
+        \<forall>i\<in>{0..<n}. r s (ptr +\<^sub>p int i) = ZERO('a) \<Longrightarrow>
+        \<forall>i\<in>{0..<n}. root_ptr_valid d (ptr +\<^sub>p int i) \<Longrightarrow>
+        lvp_distinct ((d, ptr_val ptr, n, size_td (typ_uinfo_t TYPE('a)))#xs) \<Longrightarrow>
+        (f ptr) \<bullet> (stack_ptr_acquire n vs ptr d s) \<lbrace> \<lambda>r u. 
+                        (\<forall>i<n. root_ptr_valid (heap_typing u) (ptr +\<^sub>p int i)) \<and>
+                        Q r (stack_ptr_release n ptr u) \<rbrace>"
+  shows "(guard_with_fresh_stack_ptr n init f) \<bullet> s \<lbrace> Q \<rbrace>"
+  apply (rule runs_to_guard_with_fresh_stack_ptr)
   apply (rule assms(4))
   apply (assumption)+
   apply (rule lvp_distinct_add_stack_allocs)

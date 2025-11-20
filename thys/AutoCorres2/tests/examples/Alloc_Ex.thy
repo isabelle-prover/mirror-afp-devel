@@ -17,7 +17,6 @@ install_C_file  "alloc.c"
 
 autocorres "alloc.c"
 
-context alloc_all_impl begin
 
 (* Bodies of translated functions. *)
 thm max'_def
@@ -26,7 +25,5 @@ thm alloc'_def
 thm dealloc'_def
 thm add_mem_pool'_def
 thm init_allocator'_def
-
-end
 
 end

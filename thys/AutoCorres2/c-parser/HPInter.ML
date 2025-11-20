@@ -39,16 +39,14 @@ sig
 
   type csenv = ProgramAnalysis.csenv
   type fninfo = HPfninfo.T
-
-  val asm_to_string : (term -> string) -> ('typ,term,'fact) Element.ctxt -> string
   val mk_fninfo : local_theory -> csenv -> (string -> bool) ->
-                  Absyn.ext_decl list -> (fninfo list list * ProgramAnalysis.callgraph)
+                  Absyn.ext_decl list -> (fninfo list list * ProgramAnalysis.callgraph * string list)
   val define_state_spaces : string -> typ list -> string -> fninfo list -> theory -> theory
   val make_function_definitions :
       csenv ->                   (* result of ProgramAnalysis over declarations *)
       typ list ->                (* type arguments to state type operator *)
       fninfo list list ->             (* result of mk_fninfo above *)
-      (Proof.context -> StmtDeclDatatype.fn_defn -> (string * term * term)) ->
+      (Proof.context -> AstDatatype.fn_defn -> (string * term * term)) ->
                                  (* compilation/translation function *)
       string ->                  (* name of globals locale *)
       (typ,'a,'b) Element.ctxt list ->
@@ -62,16 +60,16 @@ sig
   val get_actual_locvar: Proof.context -> NameGeneration.local_ref -> term -> term * typ
   val name_type_from_local_var_update:  term -> (term * typ) option
   val dest_local_var_lookup: term -> (term * typ * term) option
-  val dest_local_var_update: term -> (term * typ * term * term option) option
-  val dest_local_var_update': term -> (NameGeneration.local_ref * typ * term * term option) option
+  val dest_local_var_update: term -> (term * typ * term option * term option) option
+  val dest_local_var_update': term -> (NameGeneration.local_ref * typ * term option * term option) option
+  val dest_local_var_update_bare': term -> (NameGeneration.local_ref * typ * term option * term option) option
   val raw_abs_update_actual_locvar: typ -> Proof.context -> string -> term
   val subst_var_update: Proof.context -> string -> term -> term
   val enter_scope: string -> string -> Proof.context -> Proof.context
   val params_of_fun_type: Proof.context -> int CType.ctype -> (HPfninfo.vars * HPfninfo.vars)
 
-  val add_locale : binding -> binding -> Expression.expression_i -> Element.context_i list ->
-            theory -> string * local_theory
   val sublocale: xstring -> (Proof.context -> tactic) -> local_theory -> local_theory
+  val sublocale_positional: xstring -> term option list -> (Proof.context -> tactic) -> local_theory -> local_theory
   val immediate_sublocale: xstring -> local_theory -> local_theory
   val global_sublocale: xstring -> xstring -> (Proof.context -> tactic) -> theory -> theory
   val immediate_global_sublocale: xstring -> xstring -> theory -> theory
@@ -367,8 +365,8 @@ fun in_positional deco params =
    (NameGeneration.positional_name deco "in" i cty, ty, cty, addressed))
 
 fun params_of_fun_signature ctxt (retT, argTs) =
-      (map (fn cty => ("", CalculateState.ctype_to_typ ctxt cty, cty, false)) argTs |> in_positional false,
-       [(MString.dest NameGeneration.return_var_name, CalculateState.ctype_to_typ ctxt retT, retT, false)])
+      (map (fn cty => ("", CalculateState.ctype_to_typ {bitint_padding=true} ctxt cty, cty, false)) argTs |> in_positional false,
+       [(MString.dest NameGeneration.return_var_name, CalculateState.ctype_to_typ {bitint_padding=true} ctxt retT, retT, false)])
 
 fun params_of_fun_type ctxt T =
   case T of
@@ -378,22 +376,44 @@ fun params_of_fun_type ctxt T =
 
 fun params_of_fun_types ctxt ctys = map (params_of_fun_type ctxt) ctys
 
+val empty = Binaryset.empty String.compare
 (* make function information - perform a preliminary analysis on the
    abstract syntax to extract function names, parameters and specifications *)
 
-fun mk_fninfo ctxt csenv includeP decllist: (fninfo list list * ProgramAnalysis.callgraph) =
+fun mk_fninfo ctxt csenv includeP decllist: (fninfo list list * ProgramAnalysis.callgraph * string list) =
 let
   val cg as {callees,callers} = ProgramAnalysis.compute_callgraphs csenv
-  fun lift f fnm = case Symtab.lookup f fnm of
-                     NONE => []
-                   | SOME s => Binaryset.listItems s
+  val funs_in_fun_ptr_environment = 
+    Binaryset.addList (empty, ProgramAnalysis.get_functions_used_via_fun_ptr csenv)
+  val funs_with_fun_ptr_calls = ProgramAnalysis.functions_with_fun_ptr_calls csenv
+  val funs_with_fun_ptr_calls' = Binaryset.addList (empty, funs_with_fun_ptr_calls)
+  val funs_depending_on_fun_ptr_environment = ProgramAnalysis.closure callers funs_with_fun_ptr_calls
+  val fun_ptr_clique = Binaryset.intersection (funs_in_fun_ptr_environment, funs_depending_on_fun_ptr_environment)
+
+  fun depends_on_fun_ptr_clique fnm =
+    Binaryset.member (fun_ptr_clique, fnm) orelse Binaryset.member (funs_with_fun_ptr_calls', fnm)
+
+
+  fun lookup f fnm = the_default empty (Symtab.lookup f fnm)
+  datatype kind = Caller | Callee
+
+
+  fun mk_list f fnm = 
+    let
+      val directs = lookup f fnm
+    in
+       Binaryset.listItems directs
+    end
 
   val cliques = ProgramAnalysis.get_functions csenv
-    |> Topo_Sort.topo_sort {cmp = string_ord,
-                            graph = lift callees,
-                            converse = lift callers}
+    |> Topo_Sort.topo_sort {cmp = String.compare,
+                            graph = mk_list callees,
+                            converse = mk_list callers}
 
   val cliques = map (filter includeP) cliques |> filter_out null
+  val n = 0 |> fold (curry op +) (map length cliques)
+  val _ = Feedback.informStr ctxt (0, "Number of functions: " ^ string_of_int n)
+  val _ = Feedback.informStr ctxt (2, "fun_ptr_clique: " ^ @{make_string} (Binaryset.listItems fun_ptr_clique))
   val _ = Feedback.informStr ctxt (2, "cliques: " ^ @{make_string} cliques)
 
   fun get_clique' fname =
@@ -442,12 +462,12 @@ let
   fun mk_ret rettype =
       if rettype = Void then []
       else [(MString.dest return_var_name,
-             CalculateState.ctype_to_typ ctxt rettype,
+             CalculateState.ctype_to_typ {bitint_padding=true} ctxt rettype,
              rettype, false)]
   fun to_param fname vi = let
     open CalculateState ProgramAnalysis
     val cty = get_vtype vi
-    val typ = ctype_to_typ ctxt cty
+    val typ = ctype_to_typ {bitint_padding=true} ctxt cty
     val addressed = is_addressed csenv (get_mname vi, SOME fname)
   in
     (MString.dest (get_mname vi), typ, cty, addressed)
@@ -515,7 +535,7 @@ let
      the (find_first (fn info => #fname info = fname) fninfos);
   val fninfo_cliques = map (map get_info) cliques;
 in
-  (fninfo_cliques, cg)
+  (fninfo_cliques, cg, Binaryset.listItems fun_ptr_clique)
 end
 
 fun extract_element_asms e =
@@ -597,7 +617,7 @@ fun mkSpecFunction lthy cse styargs (f : fninfo) = let
           val Pexists = list_mk_exists(vs, mk_IN(s,P))
           val res = collect_t $ list_mk_pabs([s,t], mk_conj(body_imp, Pexists))
         in
-          SOME res
+          SOME (res, mk_collect_t state_ty $ list_mk_pabs ([s], Pexists))
         end
     end
   in
@@ -605,11 +625,10 @@ fun mkSpecFunction lthy cse styargs (f : fninfo) = let
   end
 
   val mod_spec = collect_t $ list_mk_pabs([s,t], relbody)
-  val otherspecs = List.concat (map parse_spec (#spec f))
-  val errortype =
-    if Config.get lthy c_parser_assume_fnspec
-    then @{const "AssumeError"}
-    else @{const "ImpossibleSpec"}
+
+  val otherspecs_pres = List.concat (map parse_spec (#spec f))
+  val (otherspecs, pres) = split_list otherspecs_pres
+  val assume = Config.get lthy c_parser_assume_fnspec
   val fbody =
     if null otherspecs then
       mk_Spec(styargs, mod_spec)
@@ -618,10 +637,17 @@ fun mkSpecFunction lthy cse styargs (f : fninfo) = let
         val _ = appi (fn n => fn t => Feedback.informStr lthy (0,
                        "spec#" ^ Int.toString n ^ ": " ^ typedterm t)) otherspecs
         val spec_t = mod_spec |> fold (curry mk_inter) otherspecs
+        val True = \<^instantiate>\<open>'s = state_ty in term \<open>{(s::'s). True}\<close>\<close>
+        val pre_t = case pres of [] => True | (p:: ps) => p |> fold (curry mk_inter) ps
       in
-        Const(@{const_name "guarded_spec_body"},
+       if assume then
+         Const(@{const_name "spec_pre_post"},
+                    @{typ "strictc_errortype"} --> @{typ "strictc_errortype"} --> type_of pre_t --> type_of spec_t -->
+                    mk_com_ty styargs) $ @{const "ImpossibleSpec"} $ @{const "AssumeError"} $ pre_t $ spec_t
+       else 
+         Const(@{const_name "guarded_spec_body"},
                     @{typ "strictc_errortype"} --> type_of spec_t -->
-                    mk_com_ty styargs) $ errortype $ spec_t
+                    mk_com_ty styargs) $ @{const "ImpossibleSpec"} $ spec_t
       end
 in
   (fname, fbody, fbody)
@@ -700,25 +726,6 @@ fun add_syntax (name, recp, inpars, outpars) lthy =
     lthy_decl
   end
 
-
-fun asm_to_string tmw e =
-    case e of
-      Element.Assumes asms => let
-        fun asm_element pfx ((nm, _ (*attrs*)), ttmlist) =
-            pfx ^ Binding.name_of nm ^ ": " ^
-            commas (map (tmw o #1) ttmlist) ^ "\n"
-      in
-        "Assumes:" ^ (if length asms = 1 then
-                        " " ^ String.concat (map (asm_element "") asms)
-                      else
-                        "\n" ^ String.concat (map (asm_element "  ") asms))
-      end
-    | Element.Fixes stysynlist =>
-        "Fixes: " ^ commas (map (Binding.name_of o #1) stysynlist) ^ "\n"
-    | _ => "??\n"
-;
-
-
 fun intern_locale thy = Locale.intern thy #> perhaps Long_Name.dest_hidden;
 
 fun dest_local_var_lookup \<^Const_>\<open>clookup T for n \<open>@{term_pat \<open>locals ?s\<close>}\<close>\<close> =
@@ -726,11 +733,27 @@ fun dest_local_var_lookup \<^Const_>\<open>clookup T for n \<open>@{term_pat \<o
   | dest_local_var_lookup (Abs (_, _, bdy)) = dest_local_var_lookup bdy
   | dest_local_var_lookup _ = NONE
 
+fun dest_local_var_update_bare (t as @{term_pat "locals_update o (cupdate ?n)"}) =
+      let
+        val cupd = Term.dest_comb t |> snd
+        val T = fastype_of cupd |> strip_type |> fst |> hd |> range_type
+      in
+        SOME (n, T, NONE, NONE)
+      end
+  | dest_local_var_update_bare (t as @{term_pat "(\<lambda>upd. locals_update (cupdate ?n upd))"}) =
+      let
+        val Abs (upd, updT, _) = t 
+        val T = updT |> range_type
+      in
+        SOME (n, T, NONE, NONE)
+      end
+  | dest_local_var_update_bare _ = NONE
+
 
 fun dest_local_var_update @{term_pat "locals_update (cupdate ?n ?upd) ?s"} =
-      SOME (n, range_type (fastype_of upd), upd, SOME s)
+      SOME (n, range_type (fastype_of upd), SOME upd, SOME s)
   | dest_local_var_update @{term_pat "locals_update (cupdate ?n ?upd)"} =
-      SOME (n, range_type (fastype_of upd), upd, NONE)
+      SOME (n, range_type (fastype_of upd), SOME upd, NONE)
   | dest_local_var_update _ = NONE
 
 fun subst_var_update ctxt value_name term =
@@ -775,11 +798,18 @@ fun subst_var_update ctxt value_name term =
     |  NONE => mk_bdy bdy'
   end
 
-fun dest_local_var_update' t = dest_local_var_update t
+fun gen_dest_local_var_update' dest t = dest t
   |> Option.mapPartial (fn (t, T, upd, s) =>
-       case try Utils.dest_nat_or_number t of
-         SOME i => SOME (NameGeneration.Positional (i, T), T, upd, s)
-       | NONE => (case t of Const (n, _) => SOME (NameGeneration.Named n, T, upd, s) | _ => NONE))
+       let
+       in
+         case try Utils.dest_nat_or_number t of
+           SOME i => SOME (NameGeneration.Positional (i, T), T, upd, s)
+         | NONE => (case t of Const (n, _) => SOME (NameGeneration.Named n, T, upd, s) | _ => NONE) 
+       end)
+
+
+val dest_local_var_update' = gen_dest_local_var_update' dest_local_var_update
+val dest_local_var_update_bare' = gen_dest_local_var_update' dest_local_var_update_bare
 
 fun name_type_from_local_var_update @{term_pat "locals_update (cupdate ?n ?upd) ?s"} =
       SOME (n, range_type (fastype_of upd))
@@ -795,9 +825,6 @@ fun enter_scope_declaration prog_name fname phi =
 
 fun enter_scope prog_name fname =
  Context.proof_map (enter_scope_declaration prog_name fname Morphism.identity)
-
-fun trace_locale thy name =
- tracing (Pretty.string_of (Locale.pretty_locale thy true name))
 
 fun mk_locals ctxt state =
   Const(@{const_name locals}, dummyT) $ state
@@ -856,25 +883,15 @@ fun fold_term f (t as Abs (_, _, b)) = f t  #> fold_term f b
 
 fun collect_positional state t = [] |> fold_term (add_positional state) t;
 
-fun add_locale binding predicate_binding import body thy =
- let
-   val ctxt = Proof_Context.init_global thy;
-   val _ = Feedback.informStr ctxt (0, "Defining locale " ^ Binding.print binding)
-   val import_names = map fst (fst import)
-   val _ = Feedback.informStr ctxt (1, "importing: " ^ @{make_string} import_names)
-   val (name, lthy) = thy |> (Utils.timeap_msg 1 ctxt (fn _ => "locale " ^ Binding.print binding)
-         (Expression.add_locale binding predicate_binding [] import body))
-   val _ = if Config.get ctxt Feedback.verbose then trace_locale (Proof_Context.theory_of lthy) name else ()
- in
-   (name, lthy)
- end
-
-
 fun import named_fixes thy name =
   let
     val term_map =  Expression.Named named_fixes
   in (NameGeneration.intern_locale thy name, (("", false), (term_map,[]))) end
 
+fun import_positional fixes thy name =
+  let
+    val term_map =  Expression.Positional fixes
+  in (NameGeneration.intern_locale thy name, (("", false), (term_map,[]))) end
 
 fun import_impl_locale thy args name =
   let
@@ -896,18 +913,37 @@ fun sublocale super_loc tac lthy =
           ((Method.Basic (fn ctxt => SIMPLE_METHOD (tac ctxt)), Position.no_range), NONE)
   end
 
+fun sublocale_positional super_loc fixes tac lthy =
+  let
+    val current_locale = the (Named_Target.locale_of lthy)
+    val _ = Feedback.informStr lthy (1, "establishing " ^ quote current_locale ^ " as sublocale of: " ^ quote super_loc)
+  in
+    lthy
+    |> Interpretation.sublocale ([import_positional fixes (Proof_Context.theory_of lthy) super_loc],[]) []
+    |> Proof.global_terminal_proof
+          ((Method.Basic (fn ctxt => SIMPLE_METHOD (tac ctxt)), Position.no_range), NONE)
+  end
+
 fun immediate_sublocale super_loc =
   sublocale super_loc (fn ctxt => Locale.intro_locales_tac {strict = false, eager = true} ctxt [])
 
 fun global_sublocale loc super_loc tac thy =
-  thy
-  |> Interpretation.global_sublocale (intern_locale thy loc) ([import [] thy super_loc],[]) []
-  |> Proof.global_terminal_proof
+  let
+    val ctxt = Proof_Context.init_global thy
+    val _ = Feedback.informStr ctxt (1, "establishing " ^ quote loc ^ " as sublocale of: " ^ quote super_loc)
+  in
+    Utils.timeit_msg 1 ctxt (fn _ => quote loc ^ " sublocale of: " ^ quote super_loc) (fn _ => 
+    thy
+    |> Interpretation.global_sublocale (intern_locale thy loc) ([import [] thy super_loc],[]) []
+    |> Proof.global_terminal_proof
          ((Method.Basic (fn ctxt => SIMPLE_METHOD (tac ctxt)), Position.no_range), NONE)
-  |> Proof_Context.theory_of
+    |> Proof_Context.theory_of)
+  end
 
 fun immediate_global_sublocale loc super_loc =
-  global_sublocale loc super_loc (fn ctxt => Locale.intro_locales_tac {strict = false, eager = true} ctxt [])
+  global_sublocale loc super_loc (fn ctxt => 
+    Utils.timeap_msg_tac 2 ctxt (fn _ => "immediate_sublocale intro_locales")  
+     (Locale.intro_locales_tac {strict = false, eager = true} ctxt []))
 
 
 fun define_state_spaces prog_name styargs globloc fninfos thy =
@@ -974,6 +1010,7 @@ fun check_const_name check ctxt name =
     c
   end
 
+val add_locale = CalculateState.add_locale
 
 (* The following is modelled on the code in HoarePackage.procedures_definition
 *)
@@ -989,16 +1026,12 @@ let
   val informStr = Feedback.informStr lthy
   open HoarePackage
 
+  val gamma = HP_TermsTypes.mk_gamma lthy prog_name
+  val gammaT = fastype_of gamma
+  val opt_comT = range_type gammaT
+  val comT = IsabelleTermsTypes.dest_option_ty opt_comT
+
   val fninfos = flat fninfo_cliques;
-
-  fun get_callees name =
-    case find_first (fn info => #fname info = name) fninfos of
-      SOME info => #callees info
-    | NONE => [];
-  fun get_callees_clique clique =
-    clique |> map get_callees |> flat |> filter_out (member (op =) clique) |> distinct (op =)
-
-  val cliques = map (map #fname) fninfo_cliques;
 
   val name_pars =
       map (fn {fname,inparams,outparams,recursivep,...} =>
@@ -1021,103 +1054,102 @@ let
           | _ => error ("define_body: neither prototype nor body found for '" ^ fname ^ "'")
 
       val vars_bundle = NameGeneration.intern_variables_bundle_name thy fname
+      datatype 'e def_info = Def of 'e | Decl of string 
       fun def e =
         let
           val _ = Feedback.informStr lthy (1, "Adding body_def for " ^ Binding.name_of (#1 (#1 e)))
-        in Local_Theory.define e end
-
+        in Local_Theory.define e #> snd end
+      fun decl name lthy =
+        let
+          val _ = Feedback.informStr lthy (1, "Adding body declaration for " ^ name)
+        in
+          lthy |> Local_Theory.background_theory 
+            (Sign.declare_const_global (((Binding.make (name ^ "_body", \<^here>), comT)), Mixfix.NoSyn)  
+            #> snd)
+        end
+      fun decl_or_defs (Def es) lthy = fold def es lthy
+        | decl_or_defs (Decl n) lthy = decl n lthy
+ 
       fun def_elem lthy =
         let
-          val defines =
+          val defines =            
             translate lthy
-            |> Option.map (create_bodyloc_elems globs lthy #> fst)
-            |> the_default []
-        in fold_map def defines lthy end
+            |> Option.map (create_bodyloc_elems globs lthy #> fst #> Def)
+            |> the_default (Decl fname)
+        in decl_or_defs defines lthy end
     in
       thy
-      |> Named_Target.init [(true, vars_bundle)] globloc
-      |> def_elem |> snd
+      |> Named_Target.theory_init
+      |> Local_Theory.begin_nested |> snd
+      |> Bundle.unbundle [(true, vars_bundle)] 
+      |> def_elem 
+      |> Local_Theory.end_nested
       |> Local_Theory.exit_global
     end
 
 
   val lthy = lthy |> More_Local_Theory.in_theory (
-       fold define_body fninfos)
+       fold define_body fninfos) (* fold_join_thy, seems to be less efficient for large number of functions *)
 
   val _ = Feedback.informStr lthy (0, "Translated all functions")
 
-  fun impl_locale clique thy =
+  fun define_gamma_and_interprete_progL thy =
     let
-      val clique_implL = NameGeneration.impl_clique_locale_name clique;
-      val defN = NameGeneration.impl_locale_name;
-      val callees = get_callees_clique clique;
+      val ctxt = Proof_Context.init_global thy
+      val gamma_fullN = dest_Const gamma |> fst
+      val gammaN = Long_Name.base_name gamma_fullN 
+      fun mk_free (Const (x, T)) = Free (Long_Name.base_name x, T)
+      fun fn_ptr fname = Proof_Context.read_const {proper=true, strict=false} ctxt 
+        (Long_Name.qualify prog_name (NameGeneration.fun_ptr_name fname))
+      fun fn_body fname = Proof_Context.read_const {proper=true, strict=false} ctxt (fname ^ "_body")
+      fun mk_bdy {fname,...} =
+        case try fn_body fname of
+          SOME bdy => \<^instantiate>\<open>'a = comT and bdy = bdy in term \<open>Some bdy\<close>\<close>
+        | NONE => \<^Const>\<open>None comT\<close>
 
-      fun eq fname =
-        try_apply_in_locale thy globloc (fn lthy =>
-            check_const_name (TermsTypes.dest_com_ty) lthy (fname ^ "_body"))
-        |> Option.map (fn body_const_name =>
-             let
-               val pname = HP_TermsTypes.mk_fun_ptr lthy prog_name fname
-
-             in HOLogic.Trueprop $ (HOLogic.eq_const dummyT $
-                  (HP_TermsTypes.mk_gamma (Proof_Context.init_global thy) prog_name $ pname) $
-                  (Const (@{const_name Some},dummyT) $ Const(body_const_name, dummyT)))
-             end)
-        |> the_list;
-
-      fun assume_eq fname = eq fname
-        |> map (fn eq => ((Binding.name (defN fname), []), [(eq, [])]));
-
-      fun alias_impl_locale fname thy =
+      fun mk_ptr {fname, ...} = fn_ptr fname
+      fun mk_pair x y = \<^infer_instantiate>\<open>x = x and y = y in term \<open>(x, y)\<close>\<close> ctxt
+      fun mk_assoc fninfo = mk_pair (mk_ptr fninfo) (mk_bdy fninfo)
+      fun mk_fun_ptr_eq fninfo = (#fname fninfo, HOLogic.Trueprop $ (HOLogic.mk_eq (gamma $ mk_ptr fninfo, mk_bdy fninfo)))
+      val fun_ptr_eqs = map mk_fun_ptr_eq fninfos
+      val xs = map mk_assoc fninfos |> HOLogic.mk_list (HOLogic.mk_prodT (@{typ "unit ptr"}, opt_comT))
+      val rhs = \<^instantiate>\<open>'a = comT and xs = xs in term \<open>map_of_default (\<lambda>_::unit ptr. None) xs\<close>\<close>
+      val eq = Logic.mk_equals (mk_free gamma, rhs)
+      fun define lthy =
         let
-          val implL = NameGeneration.impl_locale_name fname
-        in
-          thy
-          |> add_locale (Binding.name implL) (Binding.name implL)
-            ([import [] thy clique_implL], []) []
-          ||> Local_Theory.declaration {syntax = true, pervasive = false, pos = \<^here>}
-               (enter_scope_declaration prog_name fname)
-          ||> Local_Theory.exit_global
-          ||> immediate_global_sublocale clique_implL implL
-         end;
+          val _ = Feedback.informStr ctxt (0, "defining \<Gamma>")
+          val ((_,(_, def_eq)), lthy') = 
+             Specification.definition NONE [] [] ((Binding.empty, []), eq) lthy
+          val _ = Feedback.informStr ctxt (2, Thm.string_of_thm lthy' def_eq)
+        in (def_eq, lthy') end
 
-
-      val callee_imports = map (import_impl_locale thy styargs) callees
-      val assumes = maps assume_eq clique
-
-    in
-      thy
-      (* body imported before callees to enable namespace distinct_thm of body to be found *)
-      |> add_locale (Binding.name clique_implL) (Binding.name clique_implL)
-        (import [] thy globloc :: callee_imports, [])
-        [Element.Assumes assumes]
-      ||> length clique = 1 ? Local_Theory.declaration {syntax = true, pervasive = false, pos = \<^here>}
-             (enter_scope_declaration prog_name (hd clique))
-      ||> Local_Theory.exit_global
-      ||>> fold_map alias_impl_locale (if length clique > 1 then clique else [])
-      |> (fn (((cliqueL, implLs)), thy) => (cliqueL::implLs, thy))
+      fun prove_and_note_fun_ptr_simps def_eq thy =
+        let
+          val lthy = thy |> Named_Target.init [] globloc
+          val eqs = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_map_of_default_eqs}
+          val disj_G_S = Named_Theorems.get lthy @{named_theorems disjoint_\<G>_\<S>}
+          val simp_ctxt = lthy 
+            addsimps (def_eq::disj_G_S @ eqs)
+            delsimps @{thms map_of_default.simps}
+          val fun_ptr_thms = Utils.timeit_label 3 lthy "fun_ptr_thms" (fn _ => 
+            map snd fun_ptr_eqs |> map (fn prop => prove' lthy [] [] prop (fn {context, ...} => 
+                asm_full_simp_tac simp_ctxt 1)))
+          val eqs = (map fst fun_ptr_eqs) ~~ fun_ptr_thms
+          val implN = NameGeneration.impl_locale_name; (* NB: this theorem name is used by Hoare tactic in modifies proof *)
+          val notes_data = map (fn (fname, thm) => ((Binding.make (implN fname, \<^here>), []), [thm])) eqs
+          val (_, lthy) = lthy 
+            |> fold_map (Local_Theory.note) notes_data
+            ||> Named_Bindings.binding_declarations (map (fst o fst) notes_data, [@{named_bindings fun_ptr_simps}])
+        in lthy |> Local_Theory.exit_global end
+    in 
+      thy 
+      |> Overloading.theory_map_result [(gammaN, (gamma_fullN, gammaT), true)] Morphism.thm define
+      |> (fn (def_eq, thy) => prove_and_note_fun_ptr_simps def_eq thy)
     end
 
-
-  val (implLs, lthy) = lthy |> More_Local_Theory.in_theory_result (
-       fold_map impl_locale cliques) |>> flat
-
-  fun program_locale implLs prog_name thy =
-    let
-      val lname = NameGeneration.simpl_locale_name prog_name
-    in
-      thy
-      |> add_locale (Binding.name lname) (Binding.name lname)
-        (import [] thy globloc (* sic: explicit import to support corner case without any procedure *) ::
-          map (import [] thy) implLs, [])
-         []
-      ||> Local_Theory.declaration {pervasive=false, syntax=true, pos = \<^here>} (fn _ =>
-            CLocals.scope_map (K [prog_name]))
-      ||> Local_Theory.exit_global
-    end
-
-  val (progL, lthy) = lthy |>  More_Local_Theory.in_theory_result (
-    program_locale implLs prog_name)
+  val lthy = lthy 
+    |> Config.get lthy Utils.define_gamma ? 
+        More_Local_Theory.in_theory (define_gamma_and_interprete_progL)
 
   (* Speclocale imports sigN*)
 

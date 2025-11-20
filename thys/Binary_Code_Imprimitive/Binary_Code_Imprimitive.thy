@@ -210,8 +210,8 @@ proof-
   have "y \<le>p t \<cdot> y"
     using \<open>p \<cdot> t = t \<cdot> p\<close> \<open>p \<cdot> t \<cdot> y \<cdot> s = t \<cdot> p \<cdot> t \<cdot> y\<close> pref_cancel' suf_marker_per_root triv_pref by metis
   show "x = y"
-    using same_len_nemp_root_eq[OF per_rootI[OF \<open>x \<le>p t \<cdot> x\<close> \<open>t \<noteq> \<epsilon>\<close>]
-          per_rootI[OF \<open>y \<le>p t \<cdot> y\<close> \<open>t \<noteq> \<epsilon>\<close>]  \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>].
+    using same_len_nemp_root_eq[OF \<open>x \<le>p t \<cdot> x\<close>
+           \<open>y \<le>p t \<cdot> y\<close> \<open>t \<noteq> \<epsilon>\<close> _ \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>] \<open>\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|\<close>  by force
 qed
 
 lemma cover_xy_xyy: assumes "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|" and "p \<noteq> \<epsilon>" and eq: "p \<cdot> x \<cdot> y \<cdot> s = x \<cdot> y \<cdot> y"

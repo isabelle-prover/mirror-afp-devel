@@ -6,7 +6,17 @@
 
 structure BaseCTypes =
 struct
-  datatype base_inttype = Char | Short | Int | Long | LongLong | Int128 (* | ITY_Word of int *)
+  datatype 'a base_inttype = Char | Short | Int | Long | LongLong | Int128 (* | ITY_Word of int *) 
+  | BitInt of 'a
+
+  fun map_bitint f t = 
+    (case t of BitInt n => BitInt (f n)
+     | Char => Char
+     | Short => Short
+     | Int => Int
+     | Long => Long
+     | LongLong => LongLong
+     | Int128 => Int128)
 end
 
 signature IMPLEMENTATION_NUMBERS =
@@ -47,7 +57,7 @@ sig
   val llongWidth : int
   val int128Width : int
   val ptrWidth : int
-  val ptr_t : BaseCTypes.base_inttype
+  val ptr_t : int BaseCTypes.base_inttype
 
   exception BadChar
   val charliteral_conversion : int -> int

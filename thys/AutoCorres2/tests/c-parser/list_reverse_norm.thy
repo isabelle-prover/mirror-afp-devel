@@ -83,7 +83,7 @@ declare typ_simps [simp]
 
 install_C_file "list_reverse_norm.c"
 
-context list_reverse_norm_simpl
+context list_reverse_norm_global_addresses
 begin
 interpretation "reverse_spec"
   apply (unfold_locales)

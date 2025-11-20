@@ -23,7 +23,7 @@ get_raw_interpretation_data (Context.Proof @{context})
 
 (* There should be no heap lift phase. *)
 
-context skip_heap_abs_simpl 
+context skip_heap_abs_global_addresses 
 begin
 ML \<open>
 val fn_infos = the (Symtab.lookup (AutoCorresData.FunctionInfo.get (Context.Proof @{context})) "skip_heap_abs");

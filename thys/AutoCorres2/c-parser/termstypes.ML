@@ -11,6 +11,60 @@ struct
 open IsabelleTermsTypes
 open HP_TermsTypes
 
+fun mk_word_ty n = Word_Lib.mk_wordT n
+fun mk_sword_ty n =
+  let
+    val Type(w, [binT]) = Word_Lib.mk_wordT n
+  in Type (w, [Type (@{type_name "Signed_Words.signed"}, [binT])]) end
+
+
+fun to_unsigned_word T = 
+  if Word_Lib.is_wordT T then
+    (let
+      val (_, [aT]) = dest_Type T
+      val binT = case aT of (Type (@{type_name Signed_Words.signed}, [binT])) => binT | _ => raise Match
+  
+      val wT = Type (@{type_name Word.word}, [binT])
+    in
+      SOME wT
+    end
+    handle Match => NONE)
+  else NONE
+
+fun to_signed_word T = 
+  if Word_Lib.is_wordT T then
+    (let
+      val (_, [binT]) = dest_Type T
+      val _ = case binT of (Type (@{type_name Signed_Words.signed}, _)) => raise Match | _ => ()
+
+      val sT = Type (@{type_name Word.word}, [Type (@{type_name Signed_Words.signed}, [binT])])
+    in
+      SOME sT
+    end
+    handle Match => NONE)
+ else NONE     
+
+val is_signed_word = is_some o to_unsigned_word
+val is_unsigned_word = is_some o to_signed_word
+
+fun binT_of_wordT T =
+  if Word_Lib.is_wordT T then
+    let
+      val (_, [aT]) = dest_Type T
+    in SOME aT end
+  else NONE
+
+fun coerce_word fromT toT t =
+  if fromT = toT then t
+  else
+    let
+      val from = the (binT_of_wordT fromT)
+      val to = the (binT_of_wordT toT)
+      val res = \<^instantiate>\<open>'a = from and 'b =to and t = t in term "(ucast::'a::len word \<Rightarrow> 'b::len word) t"\<close>
+    in
+      res
+    end
+    handle Option => t
 fun word_ty arg = Type(@{type_name "Word.word"}, [arg])
 val word8 = word_ty @{typ "8"}
 val word16 = word_ty @{typ "16"}
@@ -126,7 +180,7 @@ fun width_to_ity n =
     | 32 => word32
     | 64 => word64
     | 128 => word128
-    | _ => raise Fail ("width_to_ity: bad width "^Int.toString n)
+    | n => mk_word_ty n
 
 fun width_to_sity n =
     case n of
@@ -135,11 +189,12 @@ fun width_to_sity n =
     | 32 => sword32
     | 64 => sword64
     | 128 => sword128
-    | _ => raise Fail ("width_to_sity: bad width "^Int.toString n)
+    | n => mk_sword_ty n
+
 
 structure IntInfo : INT_INFO =
 struct
-  open Absyn
+  open Absyn  
   val bool = width_to_ity ImplementationNumbers.boolWidth
   val char = if CType.is_signed PlainChar then
                width_to_sity ImplementationNumbers.charWidth
@@ -157,23 +212,27 @@ struct
   val UINT_MAX = ImplementationNumbers.UINT_MAX
   fun intify t = @{term "Int.int"} $ t
 
-  fun ity2wty PlainChar = char
-    | ity2wty Bool = bool
-    | ity2wty (Unsigned Char) = width_to_ity ImplementationNumbers.charWidth
-    | ity2wty (Unsigned Short) = width_to_ity ImplementationNumbers.shortWidth
-    | ity2wty (Unsigned Int) = width_to_ity ImplementationNumbers.intWidth
-    | ity2wty (Unsigned Long) = width_to_ity ImplementationNumbers.longWidth
-    | ity2wty (Unsigned LongLong) = width_to_ity ImplementationNumbers.llongWidth
-    | ity2wty (Unsigned Int128) = width_to_ity ImplementationNumbers.int128Width
-    | ity2wty (Signed Char) = width_to_sity ImplementationNumbers.charWidth
-    | ity2wty (Signed Short) = width_to_sity ImplementationNumbers.shortWidth
-    | ity2wty (Signed Int) = width_to_sity ImplementationNumbers.intWidth
-    | ity2wty (Signed Long) = width_to_sity ImplementationNumbers.longWidth
-    | ity2wty (Signed LongLong) = width_to_sity ImplementationNumbers.llongWidth
-    | ity2wty (Signed Int128) = width_to_sity ImplementationNumbers.int128Width
-    | ity2wty (EnumTy _) = width_to_sity ImplementationNumbers.intWidth
-    | ity2wty ty = raise Fail ("ity2wty: argument "^tyname ty^
-                               " not integer type")
+  fun gen_ity2wty {bitint_padding} PlainChar = char
+    | gen_ity2wty {bitint_padding} Bool = bool
+    | gen_ity2wty {bitint_padding} (Unsigned Char) = width_to_ity ImplementationNumbers.charWidth
+    | gen_ity2wty {bitint_padding} (Unsigned Short) = width_to_ity ImplementationNumbers.shortWidth
+    | gen_ity2wty {bitint_padding} (Unsigned Int) = width_to_ity ImplementationNumbers.intWidth
+    | gen_ity2wty {bitint_padding} (Unsigned Long) = width_to_ity ImplementationNumbers.longWidth
+    | gen_ity2wty {bitint_padding} (Unsigned LongLong) = width_to_ity ImplementationNumbers.llongWidth
+    | gen_ity2wty {bitint_padding} (Unsigned Int128) = width_to_ity ImplementationNumbers.int128Width
+    | gen_ity2wty {bitint_padding} (Unsigned (BitInt n)) = width_to_ity (if bitint_padding then next_power_of_2 n else n)
+    | gen_ity2wty {bitint_padding} (Signed Char) = width_to_sity ImplementationNumbers.charWidth
+    | gen_ity2wty {bitint_padding} (Signed Short) = width_to_sity ImplementationNumbers.shortWidth
+    | gen_ity2wty {bitint_padding} (Signed Int) = width_to_sity ImplementationNumbers.intWidth
+    | gen_ity2wty {bitint_padding} (Signed Long) = width_to_sity ImplementationNumbers.longWidth
+    | gen_ity2wty {bitint_padding} (Signed LongLong) = width_to_sity ImplementationNumbers.llongWidth
+    | gen_ity2wty {bitint_padding} (Signed Int128) = width_to_sity ImplementationNumbers.int128Width
+    | gen_ity2wty {bitint_padding} (Signed (BitInt n)) = width_to_sity (if bitint_padding then next_power_of_2 n else n)
+    | gen_ity2wty {bitint_padding} (EnumTy _) = width_to_sity ImplementationNumbers.intWidth
+    | gen_ity2wty {bitint_padding} ty = raise Fail ("ity2wty: argument "^tyname ty^
+                                      " not integer type")
+
+  val ity2wty = gen_ity2wty {bitint_padding = false}
   val ptrdiff_ity = ity2wty ImplementationTypes.ptrdiff_t
   fun numeral2w ty = mk_numeral (ity2wty ty)
   fun nat_to_word PlainChar n = mk_i2w_t char $ intify n

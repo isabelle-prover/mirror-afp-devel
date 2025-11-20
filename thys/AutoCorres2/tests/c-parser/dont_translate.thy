@@ -9,9 +9,10 @@ theory dont_translate
 imports "AutoCorres2.CTranslation"
 begin
 
+declare [[clang_path=""]]
 install_C_file "dont_translate.c"
 
-context dont_translate_simpl
+context dont_translate_global_addresses
 begin
 
 thm f_modifies

@@ -14,11 +14,11 @@ sig
   val PDC_entries_from_PD_entries : ('a, 'b, 'c, 'd, 'e, 'f, 'g) PD.entries -> ('e, 'g) PDC.entries
 
   type insts = (Induction_Tactic_Base.def_inst option list, (term * term list) option list,
-    (term -> bool) option list) Cases_Data_Args.PIM.entry
+    (Term_Zipper.T -> bool) option list) Cases_Data_Args.PIM.entry
   val insts_ord : insts ord
   val pretty_insts : Proof.context -> insts -> Pretty.T
 
-  type arbitrary = ((string * typ) list, term list * term list, term -> bool)
+  type arbitrary = ((string * typ) list, term list * term list, Term_Zipper.T -> bool)
     Cases_Data_Args.PIM.entry
   val arbitrary_ord : arbitrary ord
   val pretty_arbitrary : Proof.context -> arbitrary -> Pretty.T
@@ -74,7 +74,7 @@ structure IHB = Induction_Tactic_Base
 
 fun PDC_entries_from_PD_entries {simp, match,...} = {simp = simp, match = match}
 
-type insts = (IHB.def_inst option list, (term * term list) option list, (term -> bool) option list)
+type insts = (IHB.def_inst option list, (term * term list) option list, (Term_Zipper.T -> bool) option list)
   PIM.entry
 
 fun term_ord tp = if Term_Util.are_term_variants tp then EQUAL else Term_Ord.fast_term_ord tp
@@ -94,7 +94,7 @@ fun pretty_insts _ (PIM.pred x) = Show.list (Show.option (K pretty_pred)) x
       Show.list (Show.option (Show.zip (Show.term ctxt) (Show.list (Show.term ctxt)))) x
   | pretty_insts ctxt (PIM.fix x) = Show.list (Show.option (IHB.pretty_def_inst ctxt)) x
 
-type arbitrary = ((string * typ) list, term list * term list, term -> bool) CDA.PIM.entry
+type arbitrary = ((string * typ) list, term list * term list, Term_Zipper.T -> bool) CDA.PIM.entry
 fun arbitrary_ord (PIM.fix x, PIM.fix y) =
       list_ord (prod_ord fast_string_ord Term_Ord.typ_ord) (x, y)
   | arbitrary_ord (PIM.fix _, _) = LESS

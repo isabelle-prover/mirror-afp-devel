@@ -28,17 +28,15 @@ declare sep_conj_left_com [simp del]
 
 install_C_file "list_reverse.c" [memsafe]
 
-context reverse_impl
-begin
+
 thm reverse_body_def
-end
 
 context reverse_spec
 begin
 thm reverse_spec
 end
 
-context list_reverse_simpl 
+context list_reverse_global_addresses 
 begin
 interpretation  reverse_spec
 apply unfold_locales

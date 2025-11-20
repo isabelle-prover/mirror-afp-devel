@@ -12,12 +12,7 @@ begin
 declare [[c_parser_feedback_level=2]]
 install_C_file "jiraver400.c" [machinety=bool,roots=[h,indep1]]
 
-context jiraver400_simpl
-begin
-
   thm f_body_def
   thm indep1_body_def
-
-end
 
 end

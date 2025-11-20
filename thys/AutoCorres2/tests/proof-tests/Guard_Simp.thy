@@ -359,8 +359,7 @@ This is done in a staged approach:
 \<close>
 
 
-context guard_simp_all_corres
-begin
+
 thm ts_def
 thm raw.inc2_loop'_def inc2_loop'_def
 thm raw.inc2_while'_def inc2_while'_def
@@ -397,26 +396,7 @@ lemma " heap_w32.assume_with_fresh_stack_ptr 1 (\<lambda>a. {[n]})
   apply monad_simp
   done
 
-lemma " heap_s32.with_fresh_stack_ptr 1 (\<lambda>a. {[n]})
-   (\<lambda>n\<^sub>p. heap_s32.with_fresh_stack_ptr 1 (\<lambda>s. {[m]})
-            (\<lambda>m\<^sub>p. do {
-  
-                  x \<leftarrow> guard (\<lambda>s. IS_VALID(32 signed word) s n\<^sub>p);
-                  _ \<leftarrow> guard (\<lambda>s. IS_VALID(32 signed word) s m\<^sub>p);
-                  gets (\<lambda>s. heap_s32 s n\<^sub>p + heap_s32 s m\<^sub>p)
-                })) = 
-    heap_s32.with_fresh_stack_ptr 1 (\<lambda>a. {[n]})
-     (\<lambda>n\<^sub>p. heap_s32.with_fresh_stack_ptr 1 (\<lambda>s. {[m]}) (\<lambda>m\<^sub>p. gets (\<lambda>s. heap_s32 s n\<^sub>p + heap_s32 s m\<^sub>p)))"
-  supply [[verbose=0]]
-  apply monad_simp
-  done
 
-
-end
-
-
-context ts_definition_shuffle
-begin
 thm shuffle'_def
 
 text \<open>Here we use @{method monad_simp} to remove the nested guard about
@@ -556,8 +536,6 @@ lemma "(bind (return (0,0)) (
     }"
   apply monad_simp
   done
-
-end
 
 lemma "condition (\<lambda>s. x < (5::nat)) (case v of (x, y) \<Rightarrow> (g x y::('a, 's) res_monad)) (h x) = 
        condition (\<lambda>s. x < (5::nat)) (case v of (x, y) \<Rightarrow> (g x y::('a, 's) res_monad)) (h x) "

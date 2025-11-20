@@ -133,6 +133,7 @@ theory CParserTest imports
   "retprefix"
   "selection_sort"
   "shortcircuit"
+  "sideeffects_reject"
   "signed_div"
   "signedoverflow"
   "simple_annotated_fn"

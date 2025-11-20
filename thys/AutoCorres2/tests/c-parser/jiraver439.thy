@@ -11,16 +11,13 @@ begin
 
 install_C_file "jiraver439.c"
 
-context jiraver439_simpl
-begin
-
 thm f_body_def
 thm g1_body_def
 thm g2_body_def
 thm h3_body_def
-end
 
-lemma (in f_impl) "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>z :== CALL f();; \<acute>ret' :== CALL f() \<lbrace> \<acute>ret' = \<acute>z + 1 \<rbrace>"
+lemma (in jiraver439_global_addresses) includes f_variables 
+  shows "\<Gamma> \<turnstile> \<lbrace> True \<rbrace> \<acute>z :== CALL f();; \<acute>ret' :== CALL f() \<lbrace> \<acute>ret' = \<acute>z + 1 \<rbrace>"
 apply vcg
 apply simp
 done

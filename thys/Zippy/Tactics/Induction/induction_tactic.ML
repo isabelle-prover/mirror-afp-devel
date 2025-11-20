@@ -39,15 +39,15 @@ sig
   val induct_tac : bool -> bool -> thm list option -> def_inst option list list ->
     (string * typ) list list -> term option list -> thm list -> Proof.context -> int -> tactic
 
-  val prepare_preds : (term -> bool) option list option -> (term -> bool) option ->
+  val prepare_preds : (Term_Zipper.T -> bool) option list option -> (Term_Zipper.T -> bool) option ->
     Proof.context -> int -> thm -> def_inst option list Seq.seq * (string * typ) list
-  val induct_find_tac : bool -> bool -> thm option -> (term -> bool) option list ->
-    (term -> bool) -> term option list -> thm list -> Proof.context -> int -> tactic
+  val induct_find_tac : bool -> bool -> thm option -> (Term_Zipper.T -> bool) option list ->
+    (Term_Zipper.T -> bool) -> term option list -> thm list -> Proof.context -> int -> tactic
 
   val prepare_patterns :
     (term Binders.binders -> Proof.context -> term * term -> Envir.env -> bool) ->
     (term * term list) option list option -> (term list * term list) option -> Proof.context ->
-    int -> thm -> (term -> bool) option list * (term -> bool)
+    int -> thm -> (Term_Zipper.T -> bool) option list * (Term_Zipper.T -> bool)
   val induct_pattern_tac : bool -> bool ->
     (term Binders.binders -> Proof.context -> term * term -> Envir.env -> bool) -> thm option ->
     (term * term list) option list -> term list * term list -> term option list ->
@@ -204,19 +204,20 @@ end
 fun prepare_preds inst_ps arbitrary_p ctxt i st =
   let
     val subgoal = Thm.prem_of st i
+    val search = Term_Zipper_Search.all_td_lr
     fun merge [] [] = []
       | merge (NONE :: _) [] = []
       | merge (NONE :: ps) ts = NONE :: merge ps ts
-      | merge (SOME _ :: ps) (t :: ts) = SOME (NONE, (t, false)) :: merge ps ts
+      | merge (SOME _ :: ps) ((t, _) :: ts) = SOME (NONE, (t, false)) :: merge ps ts
       | merge _ _ = error "unreachable code in prepare_preds"
     val instssq = case inst_ps of
         NONE => Seq.empty
-      | SOME inst_ps => ZTac_Util.find_subterms_comb (map_filter I inst_ps) subgoal
+      | SOME inst_ps => ZTac_Util.find_subterms_comb search (map_filter I inst_ps) subgoal
           |> Seq.of_list |> Seq.map (merge inst_ps)
     val arbitrary = case arbitrary_p of
         NONE => []
-      | SOME arbitrary_p =>singleton (fn ps => ZTac_Util.find_subterms ps subgoal) arbitrary_p
-          |> map (fn x => dest_Free x handle exn as TERM _ =>
+      | SOME arbitrary_p => singleton (fn ps => ZTac_Util.find_subterms search ps subgoal) arbitrary_p
+          |> map (fn (t, _) => dest_Free t handle exn as TERM _ =>
             (@{log Logger.ERR} ctxt (fn _ => "Can only set free variables as arbitrary");
             Exn.reraise exn))
     in (instssq, arbitrary) end
@@ -242,11 +243,11 @@ fun prepare_patterns match inst_patterns arbitrary_pattern ctxt i st =
     fun matches ((env, p), t) = match binders ctxt (p, t) env
     fun matches_pattern (ps, no_ps) t = exists (fn p => (matches (p, t))) ps
       andalso forall (fn p => not (matches (p, t))) no_ps
-    fun inst_select p t = not (Term.is_open t) andalso not (exists_subterm is_Var t)
+    fun inst_select p (t, _) = not (Term.is_open t) andalso not (exists_subterm is_Var t)
       andalso matches_pattern p t
     val inst_ps = the_default [] inst_patterns
       |> map (Option.map (apfst single #> prepare_entry #> inst_select))
-    fun arbitrary_select p t = can dest_Free t andalso matches_pattern p t
+    fun arbitrary_select p (t, _) = can dest_Free t andalso matches_pattern p t
     val arbitrary_p = \<^if_none>\<open>([], [])\<close> arbitrary_pattern |> prepare_entry |> arbitrary_select
   in (inst_ps, arbitrary_p) end
 

@@ -22,7 +22,7 @@ IsarInstall.install_C_file ((((NONE, NONE), NONE), "ghoststate2.c"),
 
 install_C_file "ghoststate2.c" [ghostty="nat"]
 
-context ghoststate2_simpl
+context ghoststate2_global_addresses
 begin
 
 thm f_body_def

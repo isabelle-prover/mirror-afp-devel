@@ -84,8 +84,7 @@ include_C_file "union.h" for union.c
 install_C_file "union.c" 
 autocorres [addressable_fields = open_union.u]union.c
 
-context union_all_corres 
-begin
+
 thm ts_def
 thm l2_def
 subsubsection \<open>Names\<close>
@@ -153,9 +152,6 @@ thm heap_update_field_ptr_coerce_from_bytes_packed
 thm heap_state.L2_modify_heap_update_ptr_coerce_packed_conv
 thm heap_state.L2_modify_heap_update_ptr_coerce_packed_field_root_conv
 thm L2_modify_heap_update_field_root_conv
-
-end
-
 
 
 end

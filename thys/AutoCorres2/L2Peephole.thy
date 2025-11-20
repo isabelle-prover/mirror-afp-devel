@@ -152,6 +152,16 @@ shows "L2_guarded g c \<equiv> STOP (L2_guarded g' c')"
   apply (auto simp add: run_guard run_bind)
   done
 
+lemma L2_guarded_L2_seq[(*L2opt*)]: "L2_guarded g (L2_seq X Y) = L2_seq (L2_guarded g X) Y"
+  apply (rule spec_monad_eqI)
+  unfolding L2_seq_def L2_guard_def L2_guarded_def
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_guarded_L2_seq_L2_call[L2opt]: "L2_guarded g (L2_seq (L2_call x emb ns) Y) = L2_seq (L2_guarded g (L2_call x emb ns)) Y"
+  by (rule L2_guarded_L2_seq)
+
+
 lemma L2_seq_assoc (*[L2opt]*):
   "L2_seq (L2_seq A (\<lambda>x. B x)) C = L2_seq A (\<lambda>x. L2_seq (B x) C)"
   apply (clarsimp simp: L2_seq_def bind_assoc)
@@ -220,6 +230,23 @@ lemma L2_guard_false [L2opt]: "L2_guard (\<lambda>_. False) = L2_fail"
   apply (rule spec_monad_ext)
   apply (simp add: run_guard)
   done
+
+lemma L2_seq_UNDEFINED_FUNCTION [L2opt]: "NO_MATCH (\<lambda>_. L2_gets (\<lambda>_. undefined) [clocals_string_embedding ''r'']) X \<Longrightarrow> L2_seq (L2_guard (\<lambda>_. UNDEFINED_FUNCTION)) X = 
+  L2_seq (L2_guard (\<lambda>_. UNDEFINED_FUNCTION)) (\<lambda>_. L2_gets (\<lambda>_. undefined) [clocals_string_embedding ''r''])"
+  unfolding L2_defs UNDEFINED_FUNCTION_def
+  by (simp add: guard_False_fail)
+
+lemma L2_guard_UNDEFINED_FUNCTION_canonical': "L2_guard (\<lambda>_. UNDEFINED_FUNCTION) = 
+  L2_seq (L2_guard (\<lambda>_. UNDEFINED_FUNCTION)) (\<lambda>_. L2_gets (\<lambda>_. undefined) [clocals_string_embedding ''r''])"
+  unfolding L2_defs UNDEFINED_FUNCTION_def
+  apply simp
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_guard_UNDEFINED_FUNCTION_canonical: "L2_guard (\<lambda>_. UNDEFINED_FUNCTION) \<equiv> 
+  L2_seq (L2_guard (\<lambda>_. UNDEFINED_FUNCTION)) (\<lambda>_. L2_gets (\<lambda>_. undefined) [clocals_string_embedding ''r''])"
+  by (subst L2_guard_UNDEFINED_FUNCTION_canonical')
 
 text \<open>This rule can be too expensive in simplification as it might invoke the 
 arithmetic solver\<close>
@@ -450,7 +477,7 @@ lemma L2_condition_fail_lhs [L2opt]:
   apply (auto simp add: runs_to_iff default_option_def Exn_def)
   done
 
-lemma L2_condition_fail_rhs [L2opt]:
+lemma L2_condition_fail_rhs (* [L2opt] *):
   "L2_condition C A L2_fail = L2_seq (L2_guard (\<lambda>s. C s)) (\<lambda>_. A)"
   unfolding L2_defs
   apply (rule spec_monad_eqI)
@@ -475,6 +502,64 @@ lemma L2_while_fail [L2opt]: "L2_while C (\<lambda>_. L2_fail) i n = (L2_seq (L2
   apply (subst whileLoop_unroll)
   apply (auto simp add: run_condition run_bind run_guard)
   done
+
+lemma L2_exec_spec_monad_L2_assume[L2opt]:
+  "L2_exec_spec_monad id (L2_assume r) = L2_assume r"
+  unfolding L2_exec_spec_monad_def L2_assume_def exec_abstract_id
+  by (rule map_value_Nonlocal_assume_result_and_state)
+
+lemma L2_exec_spec_monad_L2_assume'[L2opt]:
+  "L2_exec_spec_monad (\<lambda>x. x) (L2_assume r) = L2_assume r"
+  using L2_exec_spec_monad_L2_assume
+  by (simp add: id_def)
+
+lemma L2_exec_spec_monad_L2_guard_assume[L2opt]:
+  "L2_exec_spec_monad id (L2_seq (L2_guard P) (\<lambda>_. (L2_assume r))) = (L2_seq (L2_guard P) (\<lambda>_. (L2_assume r)))"
+  unfolding L2_exec_spec_monad_def L2_assume_def L2_seq_def L2_guard_def exec_abstract_id
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_exec_spec_monad_L2_Seq_L2_guard[L2opt]:
+  "L2_exec_spec_monad id (L2_seq (L2_guard P) (\<lambda>_. X)) = (L2_seq (L2_guard P) (\<lambda>_. L2_exec_spec_monad id X))"
+  unfolding L2_exec_spec_monad_def L2_assume_def L2_seq_def L2_guard_def exec_abstract_id
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_exec_spec_monad_L2_Seq_L2_guard'[L2opt]:
+  "L2_exec_spec_monad (\<lambda>x. x) (L2_seq (L2_guard P) (\<lambda>_. X)) = (L2_seq (L2_guard P) (\<lambda>_. L2_exec_spec_monad id X))"
+  using L2_exec_spec_monad_L2_Seq_L2_guard
+  by (simp add: id_def)
+
+lemma L2_exec_spec_monad_L2_Seq_L2_gets[L2opt]:
+  "L2_exec_spec_monad id (L2_seq (L2_gets f ns) X) = (L2_seq (L2_gets f ns) (\<lambda>x. L2_exec_spec_monad id (X x)))"
+  unfolding L2_exec_spec_monad_def L2_assume_def L2_seq_def L2_guard_def L2_gets_def exec_abstract_id
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_exec_spec_monad_L2_Seq_L2_gets'[L2opt]:
+  "L2_exec_spec_monad (\<lambda>x. x) (L2_seq (L2_gets f ns) X) = (L2_seq (L2_gets f ns) (\<lambda>x. L2_exec_spec_monad id (X x)))"
+  using L2_exec_spec_monad_L2_Seq_L2_gets
+  by (simp add: id_def)
+
+lemma L2_exec_spec_monad_L2_guard_assume'[L2opt]:
+  "L2_exec_spec_monad (\<lambda>x. x) (L2_seq (L2_guard P) (\<lambda>_. (L2_assume r))) = (L2_seq (L2_guard P) (\<lambda>_. (L2_assume r)))"
+  using L2_exec_spec_monad_L2_guard_assume
+  by (simp add: id_def)
+
+lemma L2_exec_spec_monad_L2_guarded_assume'[L2opt]:
+  "L2_exec_spec_monad id (L2_guarded P (L2_assume r)) = (L2_guarded P (L2_assume r))"
+  unfolding L2_exec_spec_monad_def L2_assume_def L2_seq_def L2_guarded_def L2_guard_def exec_abstract_id
+  apply (rule spec_monad_eqI)
+  apply (auto simp add: runs_to_iff)
+  done
+
+lemma L2_exec_spec_monad_L2_guarded_assume[L2opt]:
+  "L2_exec_spec_monad (\<lambda>x. x) (L2_guarded P (L2_assume r)) = (L2_guarded P (L2_assume r))"
+  using L2_exec_spec_monad_L2_guarded_assume'
+  by (simp add: id_def)
 
 lemma unit_bind: "(\<lambda>x. f (x::unit)) = (\<lambda>_. f ())"
   apply (rule ext)
@@ -796,7 +881,6 @@ lemma L2_seq_condition_unfold_STOP:
   by (simp add: L2_seq_condition_def L2_condition_distrib STOP_def)
 
 thm L2_split_fixups
-(* FIXME: remove *)
 thm L2_condition_L2_seq_distrib [split_tuple X arity : 3, simplified L2_split_fixups]
 thm L2_condition_L2_seq_gets_distrib [split_tuple X arity : 3, simplified L2_split_fixups]
 thm L2_condition_L2_seq_gets_distrib' [split_tuple X and A arity : 2, simplified L2_split_fixups]

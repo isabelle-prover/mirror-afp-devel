@@ -12,7 +12,7 @@ begin
 declare [[ML_print_depth = 1000]]
 install_C_file "simple_fn.c"
 
-context simple_fn_simpl
+context simple_fn_global_addresses
 begin
 thm fact_body_def
 thm fact_impl

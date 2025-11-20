@@ -9,22 +9,22 @@ theory Periodicity_Lemma
   imports CoWBasic
 begin
 
-chapter "The Periodicity Lemma"
+chapter "The periodicity Lemma"
 
-text\<open>The Periodicity Lemma says that if a sufficiently long word has two periods p and q,
+text\<open>The periodicity Lemma says that if a sufficiently long word has two periods p and q,
 then the period can be refined to @{term "gcd p q"}.
 The consequence is equivalent to the fact that the corresponding periodic roots commute.
 ``Sufficiently long'' here means at least @{term "p + q - gcd p q"}.
 It is also known as the Fine and Wilf theorem due to its authors \cite{ FineWilf}.\<close>
 
 text\<open>
-If we relax the requirement to @{term "p + q"}, then the claim becomes easy, and it is proved in theory @{theory Combinatorics_Words.CoWBasic} as @{term two_pers_root}: @{thm[names_long] two_pers_root[no_vars]}.
+If we relax the requirement to @{term "p + q"}, then the claim becomes easy, and it is proved in theory @{theory Combinatorics_Words.CoWBasic} as @{term two_pers}: @{thm[names_long] two_pers[no_vars]}.
 \<close>
 
 theorem per_lemma_relaxed:
   assumes "period w p" and  "period w q" and  "p + q \<le> \<^bold>|w\<^bold>|"
   shows "(take p w)\<cdot>(take q w) = (take q w)\<cdot>(take p w)"
-  using   two_pers_root[OF
+  using   two_pers[OF
       \<open>period w p\<close>[unfolded period_def[of w p]]
       \<open>period w q\<close>[unfolded period_def[of w q]], unfolded
       take_len[OF add_leD1[OF \<open>p + q \<le> \<^bold>|w\<^bold>|\<close>]]
@@ -32,29 +32,28 @@ theorem per_lemma_relaxed:
 
 section \<open>Main claim\<close>
 
-text\<open>We first formulate the claim of the Periodicity lemma in terms of commutation of two periodic roots.
+text\<open>We first formulate the claim of the periodicity lemma in terms of commutation of two periodic roots.
 For trivial reasons we can also drop the requirement that the roots are nonempty.
 
 The proof is by induction which mimics the Euclidean algorithm. The step is given by the following lemma:
 \<close>
 
 lemma per_lemma_step:
-  fixes u v' w' :: "'a list"
-  defines "w \<equiv> u \<cdot> w'" and "v \<equiv> u \<cdot> v'"
-  shows
-  per_lemma_step_pers: "w \<le>p u \<cdot> w \<and> w \<le>p v \<cdot> w \<longleftrightarrow>  w' \<le>p u \<cdot> w' \<and> w' \<le>p v' \<cdot> w'"
+  fixes u v w :: "'a list"
+  defines "w' \<equiv> u \<cdot> w" and "v' \<equiv> u \<cdot> v"
+  shows "w' \<le>p u \<cdot> w' \<and> w' \<le>p v' \<cdot> w' \<longleftrightarrow>  w \<le>p u \<cdot> w \<and> w \<le>p v \<cdot> w"
         proof
-  assume a1: "w' \<le>p u \<cdot> w' \<and> w' \<le>p v' \<cdot> w'"
-  show "w \<le>p u \<cdot> w \<and> w \<le>p v \<cdot> w"
-    unfolding w_def v_def
+  assume a1: "w \<le>p u \<cdot> w \<and> w \<le>p v \<cdot> w"
+  show "w' \<le>p u \<cdot> w' \<and> w' \<le>p v' \<cdot> w'"
+    unfolding w'_def v'_def
     by (rule conjI, unfold pref_cancel_conv rassoc) (use a1 pref_prolong in blast)+
 next
-  assume a2: "w \<le>p u \<cdot> w \<and> w \<le>p v \<cdot> w"
-  hence "w' \<le>p u \<cdot> w'" "w' \<le>p v' \<cdot> w"
-    unfolding w_def v_def
+  assume a2: "w' \<le>p u \<cdot> w' \<and> w' \<le>p v' \<cdot> w'"
+  hence "w \<le>p u \<cdot> w" "w \<le>p v \<cdot> w'"
+    unfolding w'_def v'_def
     by force+
-  then show "w' \<le>p u \<cdot> w' \<and> w' \<le>p v' \<cdot> w'"
-    unfolding w_def
+  then show "w \<le>p u \<cdot> w \<and> w \<le>p v \<cdot> w"
+    unfolding w'_def
     using pref_prod_pref by blast
 qed
 
@@ -120,31 +119,30 @@ text\<open>We can now prove the numeric version.\<close>
 
 theorem per_lemma: assumes "period w p" and "period w q" and len: "p + q - gcd p q \<le> \<^bold>|w\<^bold>|"
   shows  "period w (gcd p q)"
-proof-
+proof (cases "p = 0 \<or> q = 0 \<or> w = \<epsilon>", use assms(1-2) in force)
+  assume pos: "\<not> (p = 0 \<or> q = 0 \<or> w = \<epsilon>)"
   have takep: "w \<le>p (take p w) \<cdot> w" and takeq: "w \<le>p (take q w) \<cdot> w"
-    using \<open>period w p\<close> \<open>period w q\<close> per_pref by blast+
+    using \<open>period w p\<close> \<open>period w q\<close> periodD by blast+
   have "p \<le> \<^bold>|w\<^bold>|"
-    using per_lemma_len_le[OF len] per_not_zero[OF \<open>period w q\<close>].
-  have lenp: "\<^bold>|take p w\<^bold>| = p"
-    using gcd_le2_pos[OF per_not_zero[OF \<open>period w q\<close>], of p] len take_len
-    by auto
+    using per_lemma_len_le[OF len] pos by blast
+  from take_len[OF this]
+  have lenp: "\<^bold>|take p w\<^bold>| = p".
   have lenq: "\<^bold>|take q w\<^bold>| = q"
-    using gcd_le1_pos[OF per_not_zero[OF \<open>period w p\<close>], of q] len take_len
-    by simp
+    using gcd_le1_pos[of p q] pos len take_len[of q w] by fastforce
   obtain t k m where "take p w = t\<^sup>@k" and "take q w = t\<^sup>@m" and "t \<noteq> \<epsilon>"
     using commE[OF per_lemma_comm[OF takep takeq, unfolded lenp lenq, OF len]].
   have "w <p t \<cdot> w"
-    using per_root_drop_exp[OF \<open>period w p\<close>[unfolded period_def \<open>take p w = t\<^sup>@k\<close>]].
-  with per_nemp[OF \<open>period w q\<close>]
+    using \<open>t \<noteq> \<epsilon>\<close> \<open>take q w = t \<^sup>@ m\<close> conjug_pow per_rootI pos root_comm_root
+        take_eq_Nil takeq by metis
   have "period w \<^bold>|t\<^bold>|"
-    by (rule periodI)
+    using \<open>w <p t \<cdot> w\<close> periodI_pref' strict_prefix_def by metis
   have "\<^bold>|t\<^bold>| dvd (gcd p q)"
     using lenp[unfolded \<open>take p w = t\<^sup>@k\<close>] lenq[unfolded \<open>take q w = t\<^sup>@m\<close>] nemp_len[OF \<open>t \<noteq> \<epsilon>\<close>]
     unfolding lenmorph pow_len by force
   from dvd_div_mult_self[OF this]
   have "gcd p q div \<^bold>|t\<^bold>| * \<^bold>|t\<^bold>| = gcd p q".
   have "gcd p q \<noteq> 0"
-    using \<open>period w p\<close> by auto
+    using pos by auto
   from this[folded dvd_div_eq_0_iff[OF \<open>\<^bold>|t\<^bold>| dvd (gcd p q)\<close>]]
   show "period w (gcd p q)"
     using  per_mult[OF \<open>period w \<^bold>|t\<^bold>|\<close>, of "gcd p q div \<^bold>|t\<^bold>|", unfolded dvd_div_mult_self[OF \<open>\<^bold>|t\<^bold>| dvd (gcd p q)\<close>]] by blast
@@ -152,7 +150,7 @@ qed
 
 section \<open>Optimality of the bound by construction of the Fine and Wilf word.\<close>
 
-text\<open>\<open>FW_word\<close> (where FW stands for  Fine and Wilf) yields a word which shows the optimality of the bound in the Periodicity lemma.\<close>
+text\<open>\<open>FW_word\<close> (where FW stands for  Fine and Wilf) yields a word which shows the optimality of the bound in the periodicity lemma.\<close>
 
 definition "fw_per k d \<equiv> [0..<d]\<^sup>@k \<cdot> [0..<(d-1)]"
 definition "fw_base k d \<equiv> fw_per k d \<cdot> [d] \<cdot> fw_per k d"
@@ -225,8 +223,7 @@ proof-
 qed
 
 lemma fw_base_per2: assumes "0 < d"
-  shows "period (fw_base k d) ((k+1)*d + d)"
-  unfolding period_def
+  shows " (fw_base k d) <p  take ((k+1)*d + d) (fw_base k d) \<cdot> (fw_base k d)"
 proof (rule per_rootI)
   show "take ((k+1)*d + d) (fw_base k d) \<noteq> \<epsilon>"
     using \<open>0 < d\<close> unfolding fw_base_def by simp
@@ -264,23 +261,8 @@ proof
     using \<open>0 < d\<close> unfolding suc cancel by fastforce
 qed
 
-lemma per_mod: "period w n \<Longrightarrow> i < \<^bold>|w\<^bold>| \<Longrightarrow> w!i = w!(i mod n)"
-proof (induct i rule: less_induct)
-  case (less i)
-  then show ?case
-  proof (cases "i < n", unfold mod_less[of i n], blast)
-    assume "\<not> i < n"
-    with per_not_zero[OF \<open>period w n\<close>]
-    have "i - n + n = i" "i - n < i" "i - n < \<^bold>|w\<^bold>|" "(i - n) mod n = i mod n"
-      using \<open>i < \<^bold>|w\<^bold>|\<close> mod_add_self2[of "i-n" n] by force+
-    from less.hyps[OF \<open>i - n < i\<close> \<open>period w n\<close> \<open>i - n < \<^bold>|w\<^bold>|\<close>]
-    show "w ! i = w ! (i mod n)"
-      unfolding period_indeces[OF \<open>period w n\<close>, of "i-n", unfolded \<open>i - n + n = i\<close>, OF \<open>i < \<^bold>|w\<^bold>|\<close>] \<open>(i - n) mod n = i mod n\<close>.
-  qed
-qed
-
 lemma fw_per_per: assumes "fw_per k d \<noteq> \<epsilon>"
-  shows "period (fw_per k d) d"
+  shows "(fw_per k d) <p take d (fw_per k d) \<cdot> (fw_per k d)"
   unfolding period_def
 proof (rule per_rootI[OF fw_per_pref])
   show "take d (fw_per k d) \<noteq> \<epsilon>"
@@ -301,7 +283,9 @@ next
     using assms by fastforce
   hence "0 < d"
     unfolding fw_per_def by force
-  from per_mod[OF fw_per_per[OF \<open>fw_per k d \<noteq> \<epsilon>\<close>] assms]
+  have "period (fw_per k d) d"
+    unfolding period_def using fw_per_per[OF \<open>fw_per k d \<noteq> \<epsilon>\<close>] by blast
+  from period_mod[OF this assms]
   have mod: "fw_per k d ! i = fw_per k d ! (i mod d)".
   show ?thesis
     using assms nth_upt[of 0 "i mod d" d, unfolded add_0] mod_less_divisor[OF \<open>0 < d\<close>]
@@ -386,7 +370,7 @@ proof-
     unfolding take_add  by (simp add: \<open>p \<le> \<^bold>|w\<^bold>|\<close>)
   show ?thesis
     unfolding period_def sum rassoc
-    using pref_spref_prolong[OF self_pref spref_spref_prolong[OF assms(2,1)[unfolded period_def]]].
+    using assms(1,2) per_lemma_step by auto
 qed
 
 lemma drop_per_diff: assumes "period w p" and "period w q" and "p < q" and "p < \<^bold>|w\<^bold>|"
@@ -404,7 +388,7 @@ proof-
   hence "drop p w <p take (q - p) (drop p w) \<cdot> drop p w"
     using nemp by blast
   thus ?thesis
-    unfolding period_def.
+    unfolding period_def by blast
 qed
 
 theorem fw_word: assumes "\<not> p dvd q" "\<not> q dvd p"
@@ -473,16 +457,16 @@ proof (atomize (full),  induction "p + p + q" arbitrary: p q rule: less_induct)
         show "period ?w p"
           unfolding fw_base using fw_base_per1[OF \<open>0 < ?d\<close>, of ?k, unfolded kdp].
         show "period ?w q"
-          unfolding fw_base using
-          fw_base_per2[OF \<open>0 < ?d\<close>, of ?k, unfolded kdp \<open>p + gcd p q = q\<close>].
+          unfolding fw_base period_def using
+          fw_base_per2[OF \<open>0 < ?d\<close>, of ?k, unfolded kdp \<open>p + gcd p q = q\<close>] by blast
         show "\<not> period ?w ?d"
-          using fw_base_not_per[OF \<open>0 < ?d\<close> \<open>0 < ?k\<close>] unfolding fw_base.
+          unfolding fw_base using fw_base_not_per[OF \<open>0 < ?d\<close> \<open>0 < ?k\<close>].
       qed
     next
       assume "gcd p q \<noteq> q - p"
       hence "q - p > gcd p q"
          using \<open>q - p \<ge> gcd p q\<close> by force
-      let ?w' = "FW_word p (q-p)"
+       let ?w' = "FW_word p (q-p)"
       have "gcd p (q-p) = ?d"
         using  gcd_add2[of p "q-p", unfolded le_add_diff_inverse[OF less_imp_le[OF \<open>p < q\<close>]], symmetric].
       have fw: "?w = take p ?w' \<cdot> ?w'"
@@ -519,13 +503,11 @@ proof (atomize (full),  induction "p + p + q" arbitrary: p q rule: less_induct)
         have "p \<le> \<^bold>|?w'\<^bold>|"
           unfolding  len_w' using \<open>q - p > gcd p q\<close> by force
         have "?w' \<noteq> \<epsilon>"
-          using period_nemp[OF \<open>period ?w' p\<close>].
-
+          using \<open>\<not> period ?w' (gcd p (q - p))\<close> emp_all_periods by metis
         show "\<not> period ?w ?d"
           using \<open>\<not> period (FW_word p (q -p)) (gcd p (q-p))\<close>
           unfolding \<open>gcd p (q-p) = ?d\<close>
-          using period_fac[of "take p ?w'" "?w'" \<epsilon> "?d", unfolded append_Nil2,
-              OF _ \<open>?w' \<noteq> \<epsilon>\<close>, folded fw] by blast
+          using period_fac_period[of "take p ?w'" "?w'" \<epsilon> "?d", unfolded append_Nil2, folded fw] by blast
 
         show "\<^bold>|?w\<^bold>| = p + q - ?d - 1"
           unfolding fw lenmorph len_w' take_len[OF \<open>p \<le> \<^bold>|?w'\<^bold>|\<close>] \<open>p + (q - p) = q\<close>
@@ -545,6 +527,17 @@ qed
 
 
 text\<open>Calculation examples\<close>
+
+value "FW_word 0 4"
+value "FW_word 3 4"
+value "FW_word 4 7"
+value "FW_word 3 7"
+value "FW_word 5 7"
+value "FW_word 5 13"
+value "FW_word 4 6"
+value "FW_word 12 18"
+value "FW_word 6 10"
+value "FW_word 10 16"
 
 
 section \<open>Optimality of the Fine and Wilf word.\<close>
@@ -579,10 +572,12 @@ proof (induct "p + p + q" arbitrary: w i j p q rule: less_induct)
   \<comment> \<open>preliminaries\<close>
   have "FW_word p q \<noteq> \<epsilon>"
     using \<open>j < \<^bold>|w\<^bold>|\<close>  \<open>\<^bold>|w\<^bold>| = \<^bold>|FW_word p q\<^bold>|\<close> emp_len[of "FW_word p q"] by linarith+
-  hence "\<not> p dvd q" "0 < p"
-    using FW_dvd per_not_zero[OF less.prems(1)] by blast+
+  have "0 < p"
+    by (rule ccontr) (use \<open>FW_word p q \<noteq> \<epsilon>\<close> in force)
+  have "\<not> p dvd q"
+    using FW_dvd \<open>FW_word p q \<noteq> \<epsilon>\<close> by blast
   hence "1 < p"
-    using less_one nat_neq_iff one_dvd by metis
+    using \<open>0 < p\<close> less_one nat_neq_iff one_dvd by metis
   have "\<not> q dvd p"
     using FW_dvd \<open>FW_word p q \<noteq> \<epsilon>\<close>[unfolded FW_sym[of p]] by blast
   note fw_word[OF \<open>\<not> p dvd q\<close> \<open>\<not> q dvd p\<close>]
@@ -651,15 +646,14 @@ proof (induct "p + p + q" arbitrary: w i j p q rule: less_induct)
 
         \<comment> \<open>Therefore letters can be mapped to the first period.\<close>
         have mod_pref_reduce: "?pref ! (i mod p) = ?pref ! (i mod ?d)" "?pref ! (j mod p) = ?pref ! (j mod ?d)"
-          using per_mod[OF \<open>period ?pref ?d\<close>, unfolded \<open>\<^bold>|?pref\<^bold>| = p - 1\<close>, OF \<open>i mod p < p-1\<close>, unfolded mod_mod_cancel[OF gcd_nat.cobounded1]]
-          per_mod[OF \<open>period ?pref ?d\<close>, unfolded \<open>\<^bold>|?pref\<^bold>| = p - 1\<close>, OF \<open>j mod p < p-1\<close>, unfolded mod_mod_cancel[OF gcd_nat.cobounded1]].
-
-
+          using period_mod[OF \<open>period ?pref ?d\<close>, unfolded \<open>\<^bold>|?pref\<^bold>| = p - 1\<close>, OF \<open>i mod p < p-1\<close>, unfolded mod_mod_cancel[OF gcd_nat.cobounded1]]
+          period_mod[OF \<open>period ?pref ?d\<close>, unfolded \<open>\<^bold>|?pref\<^bold>| = p - 1\<close>, OF \<open>j mod p < p-1\<close>, unfolded mod_mod_cancel[OF gcd_nat.cobounded1]].
         have "?pref ! (i mod p) = ?pref ! (j mod p)" \<comment> \<open>Hence they are the same, because the indeces coincide modulo d\<close>
+
           unfolding mod_pref_reduce mod_d_eq..
         thus "w ! i = w ! j"
           unfolding nth_take[OF \<open>i mod p < p-1\<close>, of w] nth_take[OF \<open>j mod p < p-1\<close>, of w] \<comment> \<open>Since w has period p, equality for the prefix is equality for the whole word\<close>
-          unfolding per_mod[OF \<open>period w p\<close> \<open>i < \<^bold>|w\<^bold>|\<close>] per_mod[OF \<open>period w p\<close> \<open>j < \<^bold>|w\<^bold>|\<close>].  \<comment> \<open>Equality in the whole word can be tested modulo p\<close>
+          unfolding period_mod[OF \<open>period w p\<close> \<open>i < \<^bold>|w\<^bold>|\<close>] period_mod[OF \<open>period w p\<close> \<open>j < \<^bold>|w\<^bold>|\<close>].  \<comment> \<open>Equality in the whole word can be tested modulo p\<close>
       next
         assume "gcd p q \<noteq> q - p" \<comment> \<open>Non-base case\<close>
         hence step: "FW_word p q = take p (FW_word p (q-p)) \<cdot> FW_word p (q-p)"
@@ -684,23 +678,24 @@ proof (induct "p + p + q" arbitrary: w i j p q rule: less_induct)
           using \<open>0 < p\<close> by fastforce
 
         have "FW_word p (q - p) <p FW_word p q"
-          using \<open>period (FW_word p q) p\<close> unfolding per_shift fw'.
+          using \<open>period (FW_word p q) p\<close> \<open>0 < p\<close> \<open>FW_word p q \<noteq> \<epsilon>\<close> drop_neq
+          unfolding per_shift fw'  by blast
         from sprefD1[OF this]
         have "FW_word p (q - p) ! (i mod p) = FW_word p q ! (i mod p)" "FW_word p (q - p) ! (j mod p) = FW_word p q ! (j mod p)"
           using  pref_index[OF \<open>FW_word p (q - p) \<le>p FW_word p q\<close>] less_le_trans[OF  mod_less_divisor[OF \<open>0 < p\<close>] \<open>p \<le> \<^bold>|FW_word p (q-p)\<^bold>|\<close>]
           by blast+
-        with per_mod[OF \<open>period (FW_word p q) p\<close> \<open>j < \<^bold>|w\<^bold>|\<close>[unfolded \<open>\<^bold>|w\<^bold>| = \<^bold>|FW_word p q\<^bold>|\<close>]]
-             per_mod[OF \<open>period (FW_word p q) p\<close> \<open>i < \<^bold>|w\<^bold>|\<close>[unfolded \<open>\<^bold>|w\<^bold>| = \<^bold>|FW_word p q\<^bold>|\<close>]]
+        with period_mod[OF \<open>period (FW_word p q) p\<close> \<open>j < \<^bold>|w\<^bold>|\<close>[unfolded \<open>\<^bold>|w\<^bold>| = \<^bold>|FW_word p q\<^bold>|\<close>]]
+             period_mod[OF \<open>period (FW_word p q) p\<close> \<open>i < \<^bold>|w\<^bold>|\<close>[unfolded \<open>\<^bold>|w\<^bold>| = \<^bold>|FW_word p q\<^bold>|\<close>]]
         have reduce_fw: "FW_word p (q - p) ! (j mod p) = (FW_word p q) ! j" "FW_word p (q - p) ! (i mod p) = (FW_word p q) ! i"
           by argo+
 
         have "drop p w <p w"
-          using \<open>period w p\<close> unfolding per_shift.
+          using \<open>period w p\<close> \<open>0 < p\<close> \<open>p < \<^bold>|w\<^bold>|\<close> unfolding per_shift by fastforce
         from sprefD1[OF this]
         have "drop p w ! (i mod p) = w ! (i mod p)" "drop p w ! (j mod p) = w ! (j mod p)"
           using  pref_index[OF \<open>drop p w \<le>p w\<close>] less_le_trans[OF  mod_less_divisor[OF \<open>0 < p\<close>] \<open>p \<le> \<^bold>|drop p w\<^bold>|\<close>]
           by blast+
-        with per_mod[OF \<open>period w p\<close> \<open>j < \<^bold>|w\<^bold>|\<close>] per_mod[OF \<open>period w p\<close> \<open>i < \<^bold>|w\<^bold>|\<close>]
+        with period_mod[OF \<open>period w p\<close> \<open>j < \<^bold>|w\<^bold>|\<close>] period_mod[OF \<open>period w p\<close> \<open>i < \<^bold>|w\<^bold>|\<close>]
         have reduce_w: "w ! j = drop p w ! (j mod p)" "w ! i = drop p w ! (i mod p)"
           by argo+
 
@@ -710,7 +705,8 @@ proof (induct "p + p + q" arbitrary: w i j p q rule: less_induct)
           show " p + p + (q - p) < p + p + q"
             using \<open>p < q\<close> \<open>0 < p\<close> by linarith
           show "period (drop p w) p"
-            using   period_drop[OF \<open>period w p\<close> \<open>p < \<^bold>|w\<^bold>|\<close>].
+            using \<open>p < \<^bold>|w\<^bold>|\<close> period_suf_period[OF \<open>period w p\<close> suffix_drop, of p]
+            less_le_trans[OF \<open>0 < p\<close> \<open>p \<le> \<^bold>|drop p w\<^bold>|\<close>] by blast
           show "period (drop p w) (q - p)"
             using  drop_per_diff[OF \<open>period w p\<close> \<open>period w q\<close> \<open>p < q\<close> \<open>p < \<^bold>|w\<^bold>|\<close>].
           show "\<^bold>|drop p w\<^bold>| = \<^bold>|FW_word p (q - p)\<^bold>|"
@@ -744,7 +740,7 @@ qed
 
 section "Other variants of the periodicity lemma"
 
-text \<open>Periodicity lemma is one of the most frequent tools in Combinatorics on words.
+text \<open>periodicity lemma is one of the most frequent tools in Combinatorics on words.
    Here are some useful variants.\<close>
 
 text\<open>Note that the following lemmas are stronger versions of @{thm per_lemma_pref_suf fac_two_conjug_primroot fac_two_conjug_primroot  fac_two_prim_conjug} that have a relaxed length assumption @{term "\<^bold>|p\<^bold>| + \<^bold>|q\<^bold>| \<le> \<^bold>|w\<^bold>|"} instead of @{term "\<^bold>|p\<^bold>| + \<^bold>|q\<^bold>| - (gcd \<^bold>|p\<^bold>| \<^bold>|q\<^bold>|) \<le> \<^bold>|w\<^bold>|"} (and which follow from the relaxed version of periodicity lemma @{thm two_pers}.\<close>

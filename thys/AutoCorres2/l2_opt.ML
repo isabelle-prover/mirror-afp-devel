@@ -262,7 +262,7 @@ val l2_marked_gets_bind_simproc =
 local
 structure  Enabled = Proof_Data(type T = bool val init = K true);
 in
-val c_fnptr_guard_simproc =
+fun c_fnptr_guard_simproc prog_info phase =
  Simplifier.make_simproc @{context} {name = "c_fnptr_guard_simproc", kind = Simproc, identifier = [],
     lhss = [Proof_Context.read_term_pattern @{context} "c_fnptr_guard ?P"],
     proc = fn phi => fn ctxt => fn ct =>
@@ -285,7 +285,7 @@ val c_fnptr_guard_simproc =
       val ctxt = Enabled.map (K false) ctxt (* avoid recursive call *)
       val maybe_eq = try (Goal.prove_internal ctxt [] goal) (fn _ =>
            EVERY [Method.insert_tac ctxt relevant_prems 1,
-             AutoCorresUtil.dyn_call_split_simp_sidecondition_tac (K true) [] [] ctxt 1])
+             asm_full_simp_tac ctxt 1])
            |> Option.map mk_meta_eq
     in
        maybe_eq
@@ -294,7 +294,7 @@ val c_fnptr_guard_simproc =
 }
 end
 
-fun L2_guarded_local_simproc orig_ctxt =
+fun L2_guarded_local_simproc prog_info phase orig_ctxt =
  Simplifier.make_simproc orig_ctxt {name = "L2_guarded_simproc", kind = Simproc, identifier = [],
    lhss =  [Proof_Context.read_term_pattern orig_ctxt "L2_guarded ?g ?c", 
             Proof_Context.read_term_pattern orig_ctxt "L2_seq_guard ?g ?c"],
@@ -308,10 +308,9 @@ fun L2_guarded_local_simproc orig_ctxt =
        val ([s'], ctxt') = Utils.fix_variant_cfrees [("s", stateT)] ctxt
        val guard_ctxt = 
          if seq_guard then ctxt'
-         else
-           put_simpset (simpset_of orig_ctxt) ctxt'
-           |> Simplifier.add_proc c_fnptr_guard_simproc
-           |> Simplifier.add_cong @{thm "HOL.conj_cong"}
+         else (put_simpset (simpset_of orig_ctxt) ctxt') 
+            |> Simplifier.add_proc (c_fnptr_guard_simproc prog_info phase)
+            |> Simplifier.add_cong @{thm "HOL.conj_cong"}
 
        val g_eq = Thm.apply g s' |> Cached_Theory_Simproc.rewrite_solve guard_ctxt
       
@@ -665,51 +664,6 @@ val L2_while_unbind_simproc = \<^simproc_setup>\<open>passive L2_while_unbind ("
   end)\<close>\<close>
 
 
-fun dest_abs ctxt ct = 
-  Variable.dest_abs_cterm ct ctxt
-  handle CTERM _ => 
-   let
-     val T = Thm.typ_of_cterm ct |> domain_type
-     val ([x], ctxt1) = Utils.fix_variant_cfrees [("x", T)] ctxt 
-   in
-     ((x, Thm.apply ct x), ctxt1)
-   end
-
-fun mk_tuple [x] = x
-  | mk_tuple (x::xs) =
-     let val y = mk_tuple xs 
-     in
-      \<^instantiate>\<open>'a = \<open>Thm.ctyp_of_cterm x\<close> and 'b = \<open>Thm.ctyp_of_cterm y\<close> and
-          x = x and y =\<open>y\<close>
-        in cterm \<open>(x, y)\<close> for x::"'a" and y::"'b"\<close>
-     end
-  | mk_tuple [] = error ("mk_tuple: empty list")
-
-fun dest_abs_tuple ctxt ct =
-  let
-    val T = Thm.typ_of_cterm ct |> domain_type
-    val Ts = HOLogic.strip_tupleT T
-  in
-    if length Ts <= 1 then
-      dest_abs ctxt ct 
-    else
-      let
-        val fixes = tag_list 1 Ts |> map  (fn (i, T) => (suffix (string_of_int i) "x", T))
-        val (xs, ctxt1) = Utils.fix_variant_cfrees fixes ctxt
-        val y = mk_tuple xs
-      in
-        ((y, Thm.apply ct y), ctxt1)
-      end
-  end
-
-fun strip_case_prods ctxt ct = ct |> Match_Cterm.switch [
-  @{cterm_match \<open>case_prod ?f\<close>} #> (fn {f, ...} => 
-     let 
-       val ((x, bdy0), ctxt1) = dest_abs ctxt f
-       val ((xs, bdy), ctxt2) = strip_case_prods ctxt1 bdy0
-     in (((x::xs), bdy), ctxt2) end)
-  , dest_abs_tuple ctxt #> apfst (apfst single)]
-
 datatype seq_kind = Seq_gets | Gets | Other 
 
 val classify = Match_Cterm.switch [
@@ -768,7 +722,7 @@ fun split ctxt names arity thm =
 fun assoc_conv ctxt = Match_Cterm.switch [
   @{cterm_match  "L2_seq ?A ?X"} #> (fn {A, X, ct_,...} =>
     let
-      val ((bounds, bdy), ctxt1) = strip_case_prods ctxt X
+      val ((bounds, bdy), ctxt1) = Tuple_Tools.strip_case_prods ctxt X
       val arity = length bounds
       val rule = bdy |> Match_Cterm.switch [
           @{cterm_match "L2_seq ?B ?C"} #> (fn {B, C, ...} => 
@@ -823,7 +777,7 @@ val L2_condition_distrib_simproc = \<^simproc_setup>\<open>passive L2_condition_
     K (fn ctxt => fn ct =>
       let
         val {c, L, R, X, ...} = @{cterm_match \<open>L2_seq (L2_condition ?c ?L ?R) ?X\<close>} ct
-        val ((bounds, X_bdy), ctxt1) = strip_case_prods ctxt X
+        val ((bounds, X_bdy), ctxt1) = Tuple_Tools.strip_case_prods ctxt X
         val bounds' = map Thm.term_of bounds
         fun dependent ct = exists_subterm (member (op aconv) bounds') (Thm.term_of ct)
         fun done ct = ct |> Match_Cterm.switch [
@@ -862,7 +816,7 @@ val L2_condition_distrib_simproc = \<^simproc_setup>\<open>passive L2_condition_
       end)
   end\<close>\<close>
 
-fun cleanup_ss ctxt guard_simps phase opt =
+fun cleanup_ss prog_info ctxt guard_simps phase opt =
 let
   val record_ss = 
     if FunctionInfo.phase_ord (phase, FunctionInfo.WA) = LESS 
@@ -873,7 +827,9 @@ let
   val size_simps = Named_Theorems.get ctxt @{named_theorems size_simps}
 
   val word_simps = @{thms WORD_values WORD_signed_to_unsigned [symmetric]}
-  val guarded_ctxt = put_simpset autocorres_record_ss ctxt addsimps (guard_simps @ word_simps) delsimps size_simps
+  val guarded_ctxt = put_simpset autocorres_record_ss ctxt 
+       addsimps (guard_simps @ word_simps) 
+       delsimps size_simps @ @{thms ptr_val.ptr_val_def}
   (* normalise pointer accesses towards operations on the root pointer *)
   val h_val_fields = Named_Theorems.get ctxt @{named_theorems h_val_fields}
   val fl_ti_simps = Named_Theorems.get ctxt @{named_theorems fl_ti_simps}
@@ -908,13 +864,13 @@ let
   fun basic_ss ctxt = ctxt
       |> put_simpset autocorres_record_ss
       |> UMM_Proofs.set_array_bound_mksimps
-      |> not (opt = FunctionInfo.RAW) ?
-         (Simplifier.add_simps (Utils.get_rules ctxt @{named_theorems L2opt}) #>
-          Simplifier.add_simps ptr_access_thms #>
-          Simplifier.del_simps size_simps #>
-          Simplifier.del_proc @{simproc case_prod_beta} #>
-          fold Simplifier.add_proc ([
-            L2_guarded_local_simproc guarded_ctxt,
+      |> not (opt = FunctionInfo.RAW) ?  
+          (Simplifier.add_simps (Utils.get_rules ctxt @{named_theorems L2opt}) #>
+           Simplifier.add_simps ptr_access_thms #>
+           Simplifier.del_simps size_simps #> 
+           Simplifier.del_proc  (@{simproc case_prod_beta}) #>
+          fold Simplifier.add_proc  ([
+            L2_guarded_local_simproc prog_info phase guarded_ctxt,
             l2_marked_gets_bind_simproc,
             Tuple_Tools.SPLIT_simproc, Tuple_Tools.tuple_case_simproc, FUSE_simproc] @ 
             (if phase = FunctionInfo.L2 then 
@@ -951,16 +907,17 @@ end
  *  "opt" is PEEP, apply L2Peephole and L2Opt simplification rules.
  * If RAW, do not use AutoCorres' simplification rules at all.
  *)
-fun cleanup_thm ctxt guard_simps aux_simps thm (phase: FunctionInfo.phase) opt n do_trace =
+fun cleanup_thm prog_info ctxt guard_simps aux_simps aux_conv thm (phase: FunctionInfo.phase) opt n do_trace =
 let
   val depth = strip_comb_depth_of_term (Thm.prop_of thm)
   (* Don't print out warning messages. *)
   val ctxt = ctxt |> Context_Position.set_visible false
              |> Config.map simp_depth_limit (K (depth + 20))
 
+  val final_conv = the_default (K Conv.all_conv) aux_conv
   val l2opt_conv =
     (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt
-      |> fold Simplifier.add_proc [@{simproc ETA_TUPLED}, @{simproc Product_Type.unit_eq}]
+      |> fold Simplifier.add_proc  [@{simproc ETA_TUPLED}, @{simproc NO_MATCH}, @{simproc Product_Type.unit_eq}]
       |> Simplifier.add_simps
         (Utils.get_rules ctxt 
           @{named_theorems L2opt} @ 
@@ -972,9 +929,11 @@ let
     then_conv (fix_L2_while_loop_splits_conv ctxt)
     then_conv l2opt_conv
     then_conv (Utils.verbose_conv 3 ctxt (fn _ => "after mark_seq_conv") (mark_seq_conv phase ctxt))
-    then_conv (Simplifier.asm_full_rewrite (cleanup_ss ctxt guard_simps phase opt))
+    then_conv (Simplifier.asm_full_rewrite (cleanup_ss prog_info ctxt guard_simps phase opt))
     then_conv l2opt_conv
     then_conv (fix_L2_while_loop_splits_conv ctxt)
+    then_conv (Conv.try_conv (Conv.rewr_conv @{thm L2_guard_UNDEFINED_FUNCTION_canonical}))
+    then_conv (final_conv ctxt)
 
   fun l2conv conv =
     Utils.remove_meta_conv (fn ctxt => Utils.nth_arg_conv n (conv ctxt)) ctxt
@@ -1015,7 +974,7 @@ in
 end
 
 (* Also tag the traces in a suitable format to be stored in AutoCorresData. *)
-fun cleanup_thm_tagged ctxt guard_simps aux_simps thm opt n do_trace phase =
-  cleanup_thm ctxt guard_simps aux_simps thm phase opt n do_trace
+fun cleanup_thm_tagged prog_info ctxt guard_simps aux_simps aux_conv thm opt n do_trace phase =
+  cleanup_thm prog_info ctxt guard_simps aux_simps aux_conv thm phase opt n do_trace
 
 end

@@ -24,12 +24,8 @@ begin
 declare [[ML_print_depth=10000]]
   install_C_file "jiraver443.c"
 
-  context jiraver443_simpl
-begin
     thm echo_char_unmarshal_inputs_body_def
     thm get__camkes_ret_tls_var_from_244_body_def
     (* observe the UnspecifiedSyntax issue in seL4_Send, if you so desire *)
     thm seL4_Send_body_def
-  end
-
 end

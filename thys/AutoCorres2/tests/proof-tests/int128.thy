@@ -8,12 +8,10 @@ theory int128
   imports AutoCorres2_Main.AutoCorres_Main
 begin
 
+declare [[clang_path=""]]
 install_C_file "int128.c"
 
 autocorres [skip_word_abs] "int128.c"
-
-context int128_all_corres
-begin
 
 lemma "u' i j \<equiv> UCAST(32 \<rightarrow> 128) i * UCAST(32 \<rightarrow> 128) j"
   by (fact u'_def)
@@ -28,7 +26,5 @@ lemma "i' i j \<equiv>
   oreturn (UCAST(32 \<rightarrow> 128 signed) (SCAST(32 signed \<rightarrow> 32) i * SCAST(32 signed \<rightarrow> 32) j))
 }"
   by (fact i'_def)
-
-end
 
 end

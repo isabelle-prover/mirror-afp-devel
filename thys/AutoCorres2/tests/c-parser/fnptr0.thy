@@ -26,9 +26,6 @@ thm global_const_non_array_selectors
 thm global_const_selectors
 end
 
-context fnptr0_simpl
-begin
-
   thm f_body_def
   thm callthem_body_def
   thm callable1_body_def
@@ -39,14 +36,12 @@ begin
   thm intcaller_body_def
   thm intcallable1_body_def
 
-end
-
 definition
   "symbols_ok ==  c_fnptr_guard (fnptr0.callable1)
         \<and> c_fnptr_guard (fnptr0.intcallable2)"
 
 
-lemma  (in fnptr0_simpl)
+lemma  (in fnptr0_global_addresses)
   includes callvoidcaller_scope
   shows cvc_updates_global1: "!!x. \<Gamma> \<turnstile> \<lbrace> \<acute>global1 = x  \<and> symbols_ok\<rbrace>
     \<acute>ret' :== PROC callvoidcaller() \<lbrace> \<acute>global1 = x + 1 \<rbrace>"
@@ -82,7 +77,7 @@ apply vcg_step
   apply (clarsimp simp add: symbols_ok_def)
 done
 
-lemma (in fnptr0_simpl) cic_returns_4:
+lemma (in fnptr0_global_addresses) cic_returns_4:
   includes callintcaller_scope
   shows "\<Gamma>\<turnstile> {| symbols_ok |} \<acute>ret' :== PROC callintcaller()
                         {| \<acute>ret' = 4 |}"

@@ -10,9 +10,7 @@ imports "AutoCorres2.CTranslation"
 begin
 
 install_C_file "hexliteral.c"
-context hexliteral_simpl
-begin
+
 thm f_body_def
 thm g_body_def
-end
 end

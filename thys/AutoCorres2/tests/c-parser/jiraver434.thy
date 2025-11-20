@@ -13,8 +13,6 @@ begin
 install_C_file "jiraver434.c"
 
 typ "seL4_UserContext_C"
-context jiraver434_simpl
-begin
 
 
 ML \<open>
@@ -25,8 +23,5 @@ val _ = @{assert} (defined_struct @{typ seL4_UserContext_C})
 val _ = @{assert} (defined_struct @{typ foo_C})
 val _ = @{assert} (defined_struct @{typ AnonStruct1'})
 \<close>
-
-
-end (* context *)
 
 end

@@ -12,11 +12,6 @@ begin
 include_C_file "jira ver307.h" for "jira ver307.c"
 install_C_file "jira ver307.c"
 
-context "jira ver307_simpl"
-begin
-
 thm f_body_def
-
-end
 
 end

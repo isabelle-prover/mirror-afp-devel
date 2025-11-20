@@ -55,7 +55,7 @@ sig
   val mk_cond_t : typ list -> term
   val mk_creturn : theory -> typ list -> typ -> term -> term -> term
   val mk_creturn_void : theory -> typ list -> typ -> term
-  val mk_dyncall_t : typ list -> term list -> term
+  val mk_dyncall_t : typ list -> term -> term list -> term
   val mk_empty_INV : typ -> term
   val mk_guard : term -> term -> term -> term
   val mk_skip_t : typ list -> term
@@ -158,7 +158,7 @@ fun intersects T ts =
     | (t::ts') =>  t |> fold (mk_inter T) ts'
   end
 
-fun mk_dyncall_t tyargs grds = let
+fun mk_dyncall_t tyargs dom grds = let
   val [sarg, parg, farg] = tyargs
   val s2p_arg = sarg --> parg
   val sarg2 = sarg --> sarg
@@ -170,7 +170,7 @@ fun mk_dyncall_t tyargs grds = let
 in
   Const(@{const_name "dynCall_exn"},
         farg --> guard_ty --> sarg2 --> (s2p_arg --> (sarg3 --> sarg3 --> (s2_to_com --> com_ty)))) $ 
-    @{term UndefinedFunction} $ grd
+    (@{term UndefinedFunction} $ dom) $ grd
 end
 
 fun mk_exit_t tyargs = let
@@ -391,18 +391,12 @@ fun mk_empty_INV ty = mk_collect_t ty $ Abs("x", ty, mk_arbitrary bool)
 
 datatype state_kind = State | Globals
 
-fun the_const ctxt n =
-  let
-    val consts = Proof_Context.consts_of ctxt;
-    val name = the (Consts.get_const_name consts (Consts.intern consts n))
-  in (name, Consts.the_const_type consts name) end
-
 fun globals_stack_heap_state_params kind ctxt =
   let
-    val S = the_const ctxt NameGeneration.stack_addrs
-    val G = the_const ctxt NameGeneration.global_addrs
-    val t_hrs = the_const ctxt NameGeneration.global_heap_var
-    val t_hrs_upd = the_const ctxt (suffix Record.updateN NameGeneration.global_heap_var)
+    val S = Utils.the_const ctxt NameGeneration.stack_addrs
+    val G = Utils.the_const ctxt NameGeneration.global_addrs
+    val t_hrs = Utils.the_const ctxt NameGeneration.global_heap_var
+    val t_hrs_upd = Utils.the_const ctxt (suffix Record.updateN NameGeneration.global_heap_var)
     val (htd, htd_upd, hmem, hmem_upd) = case kind of
           State => 
            (\<^infer_instantiate>\<open>t_hrs = \<open>Const t_hrs\<close> in 
@@ -430,10 +424,10 @@ fun globals_stack_heap_state_params kind ctxt =
 
 fun globals_stack_heap_raw_state_params kind ctxt =
   let
-    val S = the_const ctxt NameGeneration.stack_addrs
-    val G = the_const ctxt NameGeneration.global_addrs
-    val t_hrs = the_const ctxt NameGeneration.global_heap_var
-    val t_hrs_upd = the_const ctxt   
+    val S = Utils.the_const ctxt NameGeneration.stack_addrs
+    val G = Utils.the_const ctxt NameGeneration.global_addrs
+    val t_hrs = Utils.the_const ctxt NameGeneration.global_heap_var
+    val t_hrs_upd = Utils.the_const ctxt   
           (suffix Record.updateN NameGeneration.global_heap_var)
     val (hrs, hrs_upd) = case kind of
           State => 
@@ -455,5 +449,5 @@ fun globals_stack_heap_raw_state_params kind ctxt =
 fun S ctxt = #S (globals_stack_heap_state_params State ctxt)
 fun G ctxt = #G (globals_stack_heap_state_params State ctxt)
 
-fun known_function ctxt = Const (the_const ctxt NameGeneration.known_function)
+fun known_function ctxt = Const (Utils.the_const ctxt NameGeneration.known_function)
 end

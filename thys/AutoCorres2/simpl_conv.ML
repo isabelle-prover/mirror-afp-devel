@@ -77,8 +77,32 @@ fun is_h_val_fun_ptr thy = Match_Cterm.switch [
  @{match "\<lambda>s. h_val (?h s) (?p s)"} thy #> (fn _  => true),
  fn _ => false]
 
+fun dest_init ctxt (t as (Abs (s, T, upds))) =
+ let
+   val ((s, T), bdy) = Term.dest_abs_global t
+   fun value_from_const_upd (t as (Abs (v, vT, const))) = 
+     if Term.is_dependent const then 
+       error ("dest_init: " ^ Syntax.string_of_term ctxt t) 
+     else Term.absfree (s, T) const 
+   fun dest bdy = 
+     case HPInter.dest_local_var_update bdy of
+      SOME (n, T, SOME upd, SOME s) => ((n, T, value_from_const_upd upd):: dest s)
+    | SOME (n, T, SOME upd, NONE) => [(n, T, value_from_const_upd upd)]
+    | _  => []
+
+ in
+   dest bdy
+ end
+   | dest_init ctxt t = error ("dest_init: unexpected term: " ^ Syntax.string_of_term ctxt t)
 
 
+fun mk_guard_fun _ [] = error ("mk_guard: empty")
+  | mk_guard_fun _ [g] = g
+  | mk_guard_fun ctxt (g::gs) = \<^infer_instantiate>\<open>g = g and gs = \<open>mk_guard_fun ctxt gs\<close>
+                 in term \<open>\<lambda>s. (g s) \<and> (gs s)\<close>\<close> ctxt
+
+val d1 = Unsynchronized.ref (false)
+fun dprint_tac d ctxt msg = if d then print_tac ctxt msg else all_tac 
 (*
  * Convert a SIMPL fragment into a monadic term.
  *
@@ -86,21 +110,22 @@ fun is_h_val_fun_ptr thy = Match_Cterm.switch [
  * to prove correspondence.
  *)
 fun simpl_conv'
+    (fn_name: string)
     (prog_info : ProgramInfo.prog_info)
     (simpl_defs : FunctionInfo.function_info Symtab.table)
-    (prog_env : term option)
     (ctxt : Proof.context)
     (callee_terms : (term * thm list) Symtab.table)
+    (check_termination: bool)
     (simpl_term : term) =
   let
     fun prove_term subterms base_thm result_term =
       let
-        val subterms' = map (simpl_conv' prog_info simpl_defs prog_env ctxt callee_terms) subterms;
+        val subterms' = map (simpl_conv' fn_name prog_info simpl_defs ctxt callee_terms check_termination) subterms;
         val converted_terms = map fst subterms';
         val subproofs = map snd subterms';
         val new_term = (result_term converted_terms);
       in
-        (new_term, (resolve_tac ctxt [base_thm] 1) THEN (EVERY subproofs))
+        (new_term, (resolve_tac ctxt [base_thm] 1) THEN dprint_tac (!d1) ctxt "prove_term" THEN (EVERY subproofs))
       end
 
     val state_type = ProgramInfo.get_state_type prog_info
@@ -180,6 +205,14 @@ fun simpl_conv'
           prove_term [] @{thm L1corres_guarded_spec}
             (fn _ => mk_l1 @{term "L1_spec"} [s])
 
+      | (Const (@{const_name spec_pre_post}, _) $ @{const ImpossibleSpec} $ @{const AssumeError} $ P $ R) =>
+         let
+           val l1 = \<^infer_instantiate>\<open>P = P and R = R in term \<open>(L1_seq (L1_guard (\<lambda>s. s \<in> P)) ((L1_assume (L1_rel_to_fun R)))) \<close>\<close> ctxt
+         in
+           prove_term [] @{thm L1corres_assume_spec_pre_post}
+             (fn _ => l1)
+         end
+
       (*
        * "call": This is primarily what is output by the C parser. We
        * accept input terms of the form:
@@ -191,7 +224,7 @@ fun simpl_conv'
        * the last argument.  In practice, the C parser only outputs
        * the form above, and supporting more would be a pain.
        *)
-      | (Const (@{const_name call_exn}, _) $ a $ (fn_const as Const (b, _)) $ c1 $ c2 $ (Abs (_, _, Abs (_, _, (Const (@{const_name Basic}, _) $ d))))) =>
+      | (Const (@{const_name call_exn}, _) $ init $ (fn_const as Const (b, _)) $ c1 $ c2 $ (Abs (_, _, Abs (_, _, (Const (@{const_name Basic}, _) $ d))))) =>
           let
             val target_fn_name = guess_function_name b
           in
@@ -206,59 +239,58 @@ fun simpl_conv'
                   prove_term [] @{thm L1corres_fail} (fn _ => mk_l1 @{term "L1_fail"} [])
                 end
               | SOME (term, [thm]) =>
-                  (* Generate the term. *)
-                  (mk_l1 @{term "L1_call"} [a, term, c1, c2, absdummy state_type d],
-                   resolve_tac ctxt @{thms L1corres_call} 1
-                   THEN resolve_tac ctxt [thm] 1)
+                  let 
+                    val (call_trm, tac) = (mk_l1 @{term "L1_call"} [init, term, c1, c2, absdummy state_type d],
+                          resolve_tac ctxt @{thms L1corres_call} 1
+                          THEN resolve_tac ctxt [thm] 1 THEN dprint_tac (!d1) ctxt "L1_call")
+                  in
+                     (call_trm, tac)
+                  end
           end
 
-      | dyncom as (Const (@{const_name dynCall_exn}, _) $ f $ g $ init $ proc $ return $ result_exn $ (Abs (_, _, Abs (_, _, (Const (@{const_name Basic}, _) $ result))))) => 
+      | dyncom as (Const (@{const_name dynCall_exn}, _) $ (Const (@{const_name UndefinedFunction}, _) $ dom) $ g $ init $ proc $ return $ result_exn $ (Abs (_, sT, Abs (_, _, (Const (@{const_name Basic}, _) $ result))))) => 
           let
-            val P = the prog_env
-            val proc_kind = HPInter.dest_local_var_lookup proc |> Option.mapPartial (CLocals.kind_from_term ctxt o #1)
-            val is_proc_parameter = case proc_kind of
-                  SOME (NameGeneration.In _) => true
-                | _ => false
-            val is_method_call = case proc_kind of
-                  SOME (NameGeneration.Loc) => true (* p->foo(...) is transformed to tmp = p->foo; tmp(...) *)
-                | _ => false
- 
+            val callee_ptrs = dom |> HOLogic.dest_set
+            val callee_infos = callee_ptrs |> map (fn ptr => (ptr , the (Symtab.lookup callee_terms (Term.term_name ptr))))
+            val T = \<^Type>\<open>spec_monad \<open>@{typ "unit option"}\<close> \<open>@{typ unit}\<close> sT\<close>
+            val assoc = callee_infos |> map (fn (p, (v, _)) => HOLogic.mk_prod (p,v)) |> HOLogic.mk_list \<^Type>\<open>prod \<open>@{typ "unit ptr"}\<close> T\<close>
             val g' = \<^infer_instantiate>\<open>g = g in term \<open>L1_set_to_pred g\<close>\<close> ctxt
             val ghost_ss = (put_simpset HOL_basic_ss ctxt) addsimps 
-               @{thms list.map comp_apply snd_conv L1_set_to_pred_def in_set_to_pred}
+               @{thms list.map comp_apply snd_conv L1_set_to_pred_def in_set_to_pred 
+                 Int_iff mem_Collect_eq} 
             val eq = Simplifier.rewrite ghost_ss (Thm.cterm_of ctxt g')
-            val g' =  eq |> Thm.rhs_of |> Thm.term_of
-            val parameter_guard = 
-              if is_method_call then
-               \<^infer_instantiate>\<open>known_function = \<open>HP_TermsTypes.known_function ctxt\<close> and proc = proc 
-                 in term \<open>\<lambda>s. known_function (proc s)\<close>\<close> ctxt
-              else 
-               \<^infer_instantiate>\<open>G = Gamma and P = P and proc = proc 
-                 in term \<open>\<lambda>s. (L1corres True G ((P (proc s))) (Call (proc s)))\<close>\<close> ctxt
-            val g' = if is_proc_parameter orelse is_method_call then
-                      \<^infer_instantiate>\<open>corres = parameter_guard and g' = g' in term \<open>corres and g'\<close>\<close> ctxt 
-                     else g'
-            val l1 = mk_l1 @{const "L1_functions.L1_dyn_call"('s)} [P, g', init, proc, return, result_exn, absdummy state_type result]
-            val rule = if is_proc_parameter orelse is_method_call
-                       then @{thm L1_functions.L1corres_dyn_call_add_and_select_guard} OF [eq]
-                       else @{thm L1_functions.L1corres_dyn_call_same_guard} OF [eq]
-            val known_function_corres = Named_Theorems.get ctxt @{named_theorems known_function_corres}
-            val simp_ctxt = Splitter.add_split @{thm if_split_asm} ctxt 
-            val dyncall_tac = SOLVES_debug ctxt "L1 dyn_call" (
+            fun remove_fnptr_guard @{term_pat "c_fnptr_guard ?x"} = SOME \<^term>\<open>True\<close>
+              | remove_fnptr_guard _ = NONE 
+            val g'0 =  eq |> Thm.rhs_of |> Thm.term_of 
+            val g' = g'0
+              |> Pattern.rewrite_term (Proof_Context.theory_of ctxt) [] [remove_fnptr_guard] 
+
+            val l1 = mk_l1 @{const "L1_dyn_call_map_of_default"('s)}  [g', init, proc, assoc, return, result_exn, absdummy state_type result]
+
+            val rule = @{thm L1corres_dyn_call_map_of_default_conseq}
+            val simp_ctxt = Splitter.add_split @{thm if_split_asm} ctxt
+            val fun_ptr_simps = Named_Bindings.get_thms ctxt @{named_bindings fun_ptr_simps}
+            val fun_ptr_guards = Named_Bindings.get_thms ctxt @{named_bindings fun_ptr_guards}
+            fun solve_guards ctxt = asm_full_simp_tac ctxt 
+              THEN_ALL_NEW 
+              (REPEAT_ALL_NEW (eresolve_tac ctxt @{thms disjE} THEN_ALL_NEW asm_full_simp_tac ctxt))
+            val callee_thms = maps (#2 o #2) callee_infos
+            val dyncall_tac = SOLVES_debug ctxt ("L1 dyn_call in " ^ fn_name ) (
              EVERY [
               resolve_tac ctxt [rule] 1,
-              asm_full_simp_tac simp_ctxt 1,
-              if is_proc_parameter then 
-                all_tac 
-              else if is_method_call then 
-                eresolve_tac ctxt known_function_corres 1
-              else 
-                AutoCorresUtil.dyn_call_split_simp_sidecondition_tac 
-                (AutoCorresUtil.check_dyn_call_goal ctxt prog_info
-                  (FunctionInfo.CP, FunctionInfo.L1))
-                (indirect_callee_thms @ callee_thms) [] ctxt 1])
+              dprint_tac (!d1) ctxt ("L1 dyn_call after resolve in " ^ fn_name),
+              solve_guards (simp_ctxt addsimps (fun_ptr_simps @ fun_ptr_guards)) 1,
+              dprint_tac (!d1) ctxt ("L1 dyn_call after simp (1) in " ^ fn_name),
+              asm_full_simp_tac (simp_ctxt addsimps callee_thms) 1,
+              dprint_tac (!d1) ctxt ("L1 dyn_call after simp (2) in " ^ fn_name),
+              dprint_tac (!d1) ctxt ("L1 dyn_call in " ^ fn_name)])
 
           in (l1, dyncall_tac) end
+       | exec_spec_monad as (Const (@{const_name exec_spec_monad}, _) $ get_x $ upd_x $ st $ args $ f $ res) => 
+           let 
+             val l1 = mk_l1 @{const "L1_exec_spec_monad"('s,'t,'b,'a)} [upd_x, st, args, f, res]
+             val rule = @{thm L1corres_exec_spec_monad'}
+           in (l1, match_tac ctxt [rule ] 1) end
        | other => 
           let
             val {n, init, c, ...} = With_Fresh_Stack_Ptr.match ctxt other
@@ -266,14 +298,14 @@ fun simpl_conv'
             val sT = fastype_of init |> domain_type
             val ((p, pT), bdy) = Term.dest_abs_fresh p c
             val ([p], ctxt') = Utils.gen_fix_variant_frees true [(p, pT)] ctxt
-            val (l1_bdy, bdy_tac) = simpl_conv' prog_info simpl_defs prog_env ctxt' callee_terms bdy
+            val (l1_bdy, bdy_tac) = simpl_conv' fn_name prog_info simpl_defs ctxt' callee_terms check_termination bdy
             val l1_bdy = Term.absfree (dest_Free p) l1_bdy
             val with_fresh_stack_ptr = with_fresh_stack_ptr.term ctxt sT
             val l1 = \<^infer_instantiate>\<open>w = with_fresh_stack_ptr and init = init and bdy = l1_bdy and n = n
                   in term \<open>w n init bdy\<close>\<close> ctxt
             val rules = Named_Theorems.get ctxt @{named_theorems L1corres_with_fresh_stack_ptr}
           in 
-            (l1, resolve_tac ctxt rules 1 THEN bdy_tac)
+            (l1, resolve_tac ctxt rules 1 THEN dprint_tac (!d1) ctxt "other" THEN bdy_tac)
           end handle Match => Utils.invalid_term' ctxt "a SIMPL term" other)
        
 
@@ -290,18 +322,20 @@ let
 
   (* Conversion to simplify guards. *)
   fun guard_ctxt ctxt = put_simpset simpl_conv_ss ctxt 
-       |> Simplifier.add_simps @{thms L1_functions.L1_dyn_call_def pred_conj_def}
-       |> Simplifier.del_proc Record.upd_simproc
+       addsimps @{thms L1_functions.L1_dyn_call_def L1_dyn_call_map_of_default_def pred_conj_def}
+       delsimprocs [Record.upd_simproc]
 
   fun guard_conv' ctxt c =
     case (Thm.term_of c) of
       (Const (@{const_name "L1_guard"}, _) $ _) => Simplifier.asm_full_rewrite (guard_ctxt ctxt) c
     | (Const (@{const_name "L1_functions.L1_dyn_call"}, _) $ P $ g $ scope_setup $ dest $ scope_teardown_norm $ scope_teardown_exn $ f)
         => Simplifier.asm_full_rewrite (guard_ctxt ctxt) c
+    | (Const (@{const_name "L1_dyn_call_map_of_default"}, _) $ g $ scope_setup $ dest $ ps $ scope_teardown_norm $ scope_teardown_exn $ f)
+        => Simplifier.asm_full_rewrite (guard_ctxt ctxt) c
     | _ =>
         Conv.all_conv c
   val guard_conv = Conv.top_conv (guard_conv') ctxt
-
+  val simp_ctxt = put_simpset HOL_basic_ss ctxt addsimps @{thms scast_numerals}
   (* Apply all the conversions on the generated term. *)
   val _ = verbose_msg 1 ctxt (fn _ => "L1 (raw) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt thm);
   val _ = ctxt |> AutoCorresTrace.put_trace_info fn_name FunctionInfo.L1 FunctionInfo.RAW;
@@ -312,7 +346,7 @@ let
   val _ = ctxt |> AutoCorresTrace.put_trace_info_stage FunctionInfo.PEEP;
   val thm = timeit_msg 1 ctxt (fn _ => "L1 (peephole-opt) - " ^ fn_name)  (fn _ =>
     AutoCorresTrace.fconv_rule_maybe_traced ctxt
-      (l1conv (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
+      (l1conv (Simplifier.rewrite (simp_ctxt addsimps
                      (if not (L1_opt = FunctionInfo.RAW) then Utils.get_rules ctxt @{named_theorems L1opt} else []))))
       thm trace_opt);
   val _ = verbose_msg 1 ctxt (fn _ => "L1 (peephole-opt) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt thm);
@@ -350,7 +384,7 @@ let
   val impl_thm =
     if FunctionInfo.get_invented_body info then NONE
     else 
-      Proof_Context.get_thm ctxt (Long_Name.implode [Long_Name.localN, fn_name ^ "_impl"])
+      Proof_Context.get_thm ctxt (fn_name ^ "_impl")
       |> Local_Defs.unfold ctxt [unfolded_simpl_thm]
       |> SOME
       handle (ERROR _) => NONE
@@ -358,20 +392,25 @@ in
   (unfolded_simpl_term, unfolded_simpl_thm, impl_thm)
 end
 
-fun get_l1corres_thm prog_info simpl_defs prog_env
+fun get_l1corres_thm prog_info simpl_defs
                      check_termination ctxt L1_opt trace_opt
                      fn_name callee_terms = 
   let
-    val ctxt = ctxt delsimps @{thms map_of_default.simps}
+    val ctxt = ctxt delsimps @{thms map_of_default.simps} 
+      |> HPInter.enter_scope (ProgramInfo.get_prog_name prog_info) fn_name
     val fn_def = Utils.the' ("SimplConv.get_l1corres_thm: no such function: " ^ fn_name)
                    (Symtab.lookup simpl_defs fn_name);
     val (simpl_term, simpl_thm, impl_thm) = get_simpl_body ctxt simpl_defs fn_name
-  
     (*
      * Do the conversion.  We receive a new monadic version of the SIMPL
      * term and a tactic for proving correspondence.
      *)
-    val (monad, tactic) = simpl_conv' prog_info simpl_defs prog_env ctxt callee_terms simpl_term
+    val options = ProgramInfo.get_fun_options prog_info fn_name
+    val _ = is_some impl_thm 
+      orelse ProgramInfo.get_no_body options 
+      orelse error ("No implementation or specification for function prototype: " ^ fn_name ^ 
+        ". \n Use option 'no_body' or provide a specification by overloaded definition of: " ^ (fn_name ^ "_body")) 
+    val (monad, tactic) = simpl_conv' fn_name prog_info simpl_defs ctxt callee_terms check_termination simpl_term
    
     (*
      * Return a new theorem of correspondence between the original
@@ -383,11 +422,11 @@ fun get_l1corres_thm prog_info simpl_defs prog_env
     |> Goal.init
     |> (case impl_thm of
             NONE     => if null (FunctionInfo.get_returns fn_def) 
-                        then apply_tac ctxt "unfold SIMPL body (1)" (resolve_tac ctxt @{thms L1corres_undefined_call} 1)
-                        else apply_tac ctxt "unfold SIMPL body (2)" (resolve_tac ctxt @{thms L1corres_init_return_undefined_call} 1)
-          | SOME def => apply_tac ctxt "unfold SIMPL body (3)" (resolve_tac ctxt @{thms L1corres_Call} 1 THEN
+                        then apply_tac ctxt ("unfold SIMPL body (1): "  ^ fn_name) (resolve_tac ctxt @{thms L1corres_undefined_call} 1)
+                        else apply_tac ctxt ("unfold SIMPL body (2): "  ^ fn_name) (resolve_tac ctxt @{thms L1corres_init_return_undefined_call} 1)
+          | SOME def => apply_tac ctxt ("unfold SIMPL body (3): " ^ fn_name) (resolve_tac ctxt @{thms L1corres_Call} 1 THEN
                                                        resolve_tac ctxt [def] 1)
-                        #> apply_tac ctxt "solve L1corres" tactic)
+                        #> apply_tac ctxt ("solve L1corres: " ^ fn_name) tactic)
     |> Goal.finish ctxt
     (* Apply simplifications to the L1 term. *)
     |> cleanup_thm ctxt L1_opt trace_opt prog_info fn_name
@@ -426,28 +465,8 @@ fun get_l1_corres_prop prog_info check_termination simpl_infos ctxt assume fn_na
   let
     val concl = get_l1_fn_assumption prog_info check_termination simpl_infos ctxt fn_name free 
   in
-    ([], concl)
+    (concl, NONE)
   end
-
-
-
-fun l1_prog_env ctxt prog_info rec_funs fun_info =
- let
-   val (_, P as Const (_, T)) = AutoCorresData.progenv_insts ctxt prog_info FunctionInfo.L1 |> the_single
-   val (ptrT::argTs, retT) = strip_type T
-   val funT = argTs ---> retT
-   fun mk_fun_ptr fname = HP_TermsTypes.mk_fun_ptr ctxt (ProgramInfo.get_prog_name prog_info) fname
-   val rec_ptrs = FunctionInfo.get_clique_recursion_fun_ptrs fun_info
-   val (empty, ptr_assoc) = map_filter (fn fname => find_first (fn (n, _) => n = fname) rec_funs) rec_ptrs 
-     |> `null 
-     ||> map (apfst mk_fun_ptr) ||> map HOLogic.mk_prod 
-     ||> HOLogic.mk_list (HOLogic.mk_prodT (@{typ "unit ptr"}, funT))
-   val ([p], ctxt') = Utils.fix_variant_frees [("p", @{typ "unit ptr"})] ctxt
-   val P = if empty then P else \<^infer_instantiate>\<open>P = P and xs = ptr_assoc in term \<open>map_of_default P xs\<close>\<close> ctxt'
- in 
-   SOME P 
- end
- handle List.Empty => NONE 
 
 (*
  * Convert a single function. Returns a thm that looks like
@@ -476,16 +495,12 @@ let
 
   (* Add callee assumptions. Note that our define code has to use the same assumption order. *)
   val (lthy', callee_terms) =
-    AutoCorresUtil.assume_called_functions_corres lthy []
+    AutoCorresUtil.assume_called_functions_corres lthy
       rec_clique
       (K (l1_fn_type prog_info))
       (get_l1_corres_prop prog_info check_termination simpl_infos)
       (K [])    
       l1_function_name;
-
-  val rec_funs = map (fn (name, (term, _)) => (name, term)) callee_terms
-
-  val prog_env = l1_prog_env lthy' prog_info rec_funs f_info
 
   val more_callee_terms = callees |> Symset.dest |> map (fn name => 
     let
@@ -497,7 +512,7 @@ let
   val thm =
       if FunctionInfo.get_is_simpl_wrapper f_info
       then mk_l1corres_call_simpl_thm check_termination lthy' f_info
-      else get_l1corres_thm prog_info simpl_infos prog_env check_termination lthy'
+      else get_l1corres_thm prog_info simpl_infos check_termination lthy'
                             L1_opt trace_opt f_name (Symtab.make (callee_terms @ more_callee_terms));
 
   val f_body = get_L1corres_monad (HOLogic.dest_Trueprop (Thm.concl_of thm));
@@ -556,8 +571,6 @@ let
 
   (* Rewrite exceptions. *)
 
-  val def_loc = AutoCorresData.definition_locale lthy skips FunctionInfo.L1 (ProgramInfo.get_prog_name prog_info) clique;
-
   fun make_no_throw_thms ctxt fun_names fun_consts fun_defs =
     let 
       fun no_throw f = \<^infer_instantiate>\<open>f = f in prop \<open>no_throw (\<lambda>_. True) f\<close>\<close> ctxt
@@ -577,7 +590,7 @@ let
     end
     handle ERROR _ => (warning ("could not prove no_throws for " ^ @{make_string} fun_names); [])
 
-  val lthy = lthy |> AutoCorresData.in_locale def_loc (fn lthy =>
+  val lthy = lthy |> AutoCorresData.in_theory' (fn lthy =>
     let
       (* In case of of a recursive function group, funcs and thus fun_names will only contain those
        * (mutually) recursive functions. We can thus consider all the callees of every function together. 
@@ -610,14 +623,16 @@ let
             simplify_bdy lthy def_eq)
           val _ = verbose_msg 1 lthy (fn _ => "L1 (exn-opt) - " ^ f_name ^ ": " ^ Thm.string_of_thm lthy opt_eq);
           val (def', lthy) = lthy 
-            |> Utils.define_lemma' (Binding.name (l1_function_name "opt_" f_name ^ "_def")) [AutoCorresData.define_function_declaration {concealed_named_theorems=false} filename skips phase f_name] opt_eq
+            |> Utils.define_lemma (Binding.name (l1_function_name "opt_" f_name ^ "_def")) [AutoCorresData.define_function_attribute {concealed_named_theorems=false} filename skips phase f_name] opt_eq
           val no_throw_thm = 
             if recursive then ExceptionRewrite.get_callee_thm no_throw_thms const
             else if List.all is_some (no_throw_callees f_name) 
                  then try hd (make_no_throw_thms lthy [f_name] [const] [opt_eq])
                  else NONE
+          val no_throw_attr = map (Attrib.attribute lthy) @{attributes [no_throw]}
           val (no_throw_thm, lthy) = lthy |> option_fold
-             (Utils.define_lemma (Binding.name (l1_function_name "" f_name ^ "_no_throw")) [AutoCorresData.no_throw_thm_attribute filename skips phase f_name]) no_throw_thm
+             (Utils.define_lemma (Binding.name (l1_function_name "" f_name ^ "_no_throw")) 
+               ([AutoCorresData.no_throw_thm_attribute filename skips phase f_name] @ no_throw_attr)) no_throw_thm
         in
           lthy  
         end) (new_funs ~~ (fun_consts ~~ fun_defs))   

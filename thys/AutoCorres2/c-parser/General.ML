@@ -8,7 +8,24 @@
 val foldl = List.foldl 
 val foldr = List.foldr 
 
+fun split_while P [] = ([], [])
+  | split_while P (x:: xs) = 
+      if P x then 
+        let val (ps, xs') = split_while P xs in (x::ps, xs') end
+      else ([], (x::xs))
 
+fun buckets eq [] = []
+  | buckets eq [x] = [[x]]
+  | buckets eq (x::xs) = 
+     let val (ps, ys) = split_while (fn y => eq (x, y)) xs
+     in (x::ps) :: buckets eq ys end
+
+fun sort_group_by ord xs =
+  let
+    val sorted = sort ord xs
+  in
+    buckets (is_equal o ord) sorted
+  end
 
 fun group_by eq xs =
   let
@@ -123,6 +140,25 @@ structure Utils =
 struct
 open Utils
 
+fun symmetric ctxt thm = fst (Thm.apply_attribute Calculation.symmetric thm (Context.Proof ctxt))
+
+fun define_theory_target arg lthy =
+  let
+    val _ = @{assert} (Named_Target.is_theory lthy)
+    (* Define the constant. *)
+    (* The begin_nested / end_nested block removes hypothesis 
+     * Free def_name \<equiv> Const global_const from the lthy 
+     *)
+    val ((lhs, (_, thm)), lthy) = lthy |> Local_Theory.begin_nested |> snd |>
+        Local_Theory.define arg
+    val export = Local_Theory.target_morphism lthy 
+  in
+    ((Morphism.term export lhs, Morphism.thm export thm), Local_Theory.end_nested lthy)
+  end
+
+fun split_conj thm =
+  split_conj (thm RS @{thm conjunct1}) @ split_conj (thm RS @{thm conjunct2})
+  handle THM _ => [thm]
 
 fun first_match [] t = raise Match
   | first_match (f::fs) t = f t handle Match => first_match fs t
@@ -244,59 +280,6 @@ fun sanitized_path thy tmp_dir orig_path =
        (make_relative (Path.append (Path.expand master_dir) orig_path))
   end
 
-(* Different sides of a binary operator. *)
-fun rhs_of (Const _ $ _ $ r) = r
-  | rhs_of t = raise (TERM ("rhs_of", [t]))
-fun lhs_of (Const _ $ l $ _) = l
-  | lhs_of t = raise (TERM ("lhs_of", [t]))
-
-fun rhs_of_eq (Const (@{const_name "Trueprop"}, _) $ eq) = rhs_of_eq eq
-  | rhs_of_eq (Const (@{const_name "Pure.eq"}, _) $ _ $ r) = r
-  | rhs_of_eq (Const (@{const_name "HOL.eq"}, _) $ _ $ r) = r
-  | rhs_of_eq t = raise (TERM ("rhs_of_eq", [t]))
-
-fun lhs_of_eq (Const (@{const_name "Trueprop"}, _) $ eq) = lhs_of_eq eq
-  | lhs_of_eq (Const (@{const_name "Pure.eq"}, _) $ l $ _) = l
-  | lhs_of_eq (Const (@{const_name "HOL.eq"}, _) $ l $ _) = l
-  | lhs_of_eq t = raise (TERM ("lhs_of_eq", [t]))
-
-fun clhs_of ct = nth (Drule.strip_comb ct |> #2) 0
-fun crhs_of ct = nth (Drule.strip_comb ct |> #2) 1
-
-fun dest_eq ct =
-  let
-    val [lhs, rhs] = snd (Drule.strip_comb ct)
-  in (lhs, rhs) end
-
-
-fun crhs_of_eq ct = case Thm.term_of ct of
-      (Const (@{const_name "Trueprop"}, _) $ eq) => crhs_of_eq (snd (Thm.dest_comb ct))
-    | (Const (@{const_name "Pure.eq"}, _) $ _ $ _) => crhs_of ct
-    | (Const (@{const_name "HOL.eq"}, _) $ _ $ _) => crhs_of ct
-    | t => raise (TERM ("crhs_of_eq", [t]))
-
-fun clhs_of_eq ct = case Thm.term_of ct of
-      (Const (@{const_name "Trueprop"}, _) $ eq) => clhs_of_eq (snd (Thm.dest_comb ct))
-    | (Const (@{const_name "Pure.eq"}, _) $ _ $ _) => clhs_of ct
-    | (Const (@{const_name "HOL.eq"}, _) $ _ $ _) => clhs_of ct
-    | t => raise (TERM ("clhs_of_eq", [t]))
-
-fun dest_eq' ct = case Thm.term_of ct of
-      (Const (@{const_name "Trueprop"}, _) $ eq) => dest_eq (snd (Thm.dest_comb ct))
-    | (Const (@{const_name "Pure.eq"}, _) $ _ $ _) => dest_eq ct
-    | (Const (@{const_name "HOL.eq"}, _) $ _ $ _) => dest_eq ct
-    | t => raise (TERM ("dest_eq'", [t]))
-
-fun chead_of ct = Drule.strip_comb ct |> fst
-fun ctail_of ct = Drule.strip_comb ct |> snd |> hd
-fun cterm_nth_arg ct n =
-  (Drule.strip_comb ct |> snd |> (fn x => nth x n))
-  handle Subscript =>
-    raise CTERM ("Argument " ^ (@{make_string} n) ^ " doesn't exist", [ct])
-fun term_nth_arg t n =
-  (Term.strip_comb t |> snd |> (fn x => nth x n))
-  handle Subscript =>
-    raise TERM ("Argument " ^ (@{make_string} n) ^ " doesn't exist", [t])
 
 fun dest_nat_or_number t =
   case try HOLogic.dest_number t of
@@ -374,6 +357,24 @@ fun add_ariths thms ctxt =
     ctxt |> Context.proof_map (
       fold (Named_Theorems.add_thm @{named_theorems arith}) thms)
   end
+
+fun fold_opt f []     a = NONE
+  | fold_opt f [x]    a = f x a
+  | fold_opt f (x::xs) a = 
+      (case f x a of
+         SOME y => SOME (the_default y (fold_opt f xs y))
+       | NONE   => fold_opt f xs a)
+
+fun fold_subterms_open f t x =
+  (case f t x of
+     SOME y => SOME y
+   | NONE => (case t of 
+                Abs (_, T, t') => fold_subterms_open f t' x
+              | (_ $ _) => 
+                  let
+                    val (head, args) = strip_comb t
+                  in x |> fold_opt (fold_subterms_open f) (head::args) end
+              | _ => NONE))
 
 end
 

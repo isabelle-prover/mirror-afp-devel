@@ -12,7 +12,7 @@ typedef long tcb_t;
   */
 __attribute__((noreturn))
 static inline void
-fastpath_restore(word_t badge, word_t msgInfo, tcb_t *cur_thread)
+fastpath_restore(word_t badge, word_t msgInfo, tcb_t *cur_thread, long PT_LR_svc)
 {
     register word_t r0 asm ("r0") = badge;
     register word_t r1 asm ("r1") = msgInfo;

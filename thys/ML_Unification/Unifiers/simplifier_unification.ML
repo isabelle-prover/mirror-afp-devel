@@ -6,11 +6,11 @@ Solving equations for unification problems with the simplifier.
 signature SIMPLIFIER_UNIFICATION =
 sig
   include HAS_LOGGER
-  (*solves "SIMPS_TO s t \<equiv> rhs" via simplification of s when given a theorem
-  "SIMPS_TO s t \<Longrightarrow> SIMPS_TO s t \<equiv> rhs"*)
+  (*solves "(s \<equiv>> t) \<equiv> rhs" via simplification of s when given a theorem
+  "s \<equiv>> t \<Longrightarrow> (s \<equiv>> t) \<equiv> rhs"*)
   val SIMPS_TO_unify : thm -> Unification_Base.unifier
-  (*solves "SIMPS_TO_UNIF s t \<equiv> rhs" via simplification of s to s', followed by unification of
-  "s' \<equiv>\<^sup>? t", when given a theorem "SIMPS_TO_UNIF s t \<Longrightarrow> SIMPS_TO_UNIF s t \<equiv> rhs"*)
+  (*solves "s \<equiv>\<^sup>?> t \<equiv> rhs" via simplification of s to s', followed by unification of
+  "s' \<equiv>\<^sup>? t", when given a theorem "s \<equiv>\<^sup>?> t \<Longrightarrow> (s \<equiv>\<^sup>?> t) \<equiv> rhs"*)
   val SIMPS_TO_UNIF_unify : thm -> Unification_Base.normalisers -> Unification_Base.unifier ->
     Unification_Base.unifier
   (*solves "s \<equiv>\<^sup>? t" via simplification followed by unification*)
