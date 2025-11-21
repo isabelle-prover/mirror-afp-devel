@@ -4,6 +4,15 @@
     <title>Computer science/Programming languages/Logics</title>
     <link>https://isa-afp.org/topics/computer-science/programming-languages/logics/</link>
     <description>AFP entries in Logics</description><item>
+  <title>Rely-Guarantee Extensions and Locks</title>
+  <link>https://isa-afp.org/entries/RG_Locks.html</link>
+  <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Extensions and Locks in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Algorithms/Concurrent</category>
+</item>
+<item>
   <title>Shallow Expressions</title>
   <link>https://isa-afp.org/entries/Shallow_Expressions.html</link>
   <pubDate>Fri, 16 May 2025 00:00:00 +0000</pubDate>

@@ -1475,6 +1475,13 @@ host = [
 
 [cohen.homepages]
 
+[colvin]
+name = "Robert J. Colvin"
+
+[colvin.emails]
+
+[colvin.homepages]
+
 [connor]
 name = "Liam O'Connor"
 orcid = "0000-0003-2765-4269"
@@ -2979,6 +2986,13 @@ host = [
 ]
 
 [heimes.homepages]
+
+[heiner]
+name = "Scott Heiner"
+
+[heiner.emails]
+
+[heiner.homepages]
 
 [helke]
 name = "Steffen Helke"
@@ -7574,6 +7588,25 @@ name = "Daniel Stüwe"
 [stuewe.emails]
 
 [stuewe.homepages]
+
+[su]
+name = "Roger C. Su"
+orcid = "0000-0003-0176-3264"
+
+[su.emails]
+
+[su.emails.su_email]
+user = [
+  "roger",
+  "c",
+  "su",
+]
+host = [
+  "proton",
+  "me",
+]
+
+[su.homepages]
 
 [suarez]
 name = "Fabián Fernando Serran Suárez"

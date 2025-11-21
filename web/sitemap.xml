@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/RG_Locks.html</loc>
+    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Pre_Star_CFG.html</loc>
     <lastmod>2025-11-18T00:00:00+00:00</lastmod>
@@ -4124,6 +4127,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-hoare/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/hol-hoare_parallel/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/hol-imp/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/hol-imperative_hol/</loc>
@@ -5438,6 +5443,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/rewriting_z/</loc>
   </url><url>
+    <loc>https://isa-afp.org/sessions/rg_locks/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/ribbon_proofs/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/gay/</loc>
@@ -5456,6 +5463,8 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/robdd/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/colvin/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/sachtleben/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/sison/</loc>
@@ -5467,6 +5476,8 @@
     <loc>https://isa-afp.org/authors/raya/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/oosterhuis/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/su/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/rogers_ramanujan/</loc>
   </url><url>
@@ -5535,6 +5546,8 @@
     <loc>https://isa-afp.org/sessions/schwartz_zippel/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/scl_simulates_ground_resolution/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/heiner/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/sds_impossibility/</loc>
   </url><url>
