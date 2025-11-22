@@ -1164,6 +1164,10 @@
   "name": "Karen Zee"
  },
  {
+  "link": "/authors/mattes/",
+  "name": "Karl P. P. Mattes"
+ },
+ {
   "link": "/authors/kreuzer/",
   "name": "Katharina Kreuzer"
  },
@@ -1224,12 +1228,20 @@
   "name": "Lei Yu"
  },
  {
+  "link": "/authors/mollenkopf/",
+  "name": "Lenard Mollenkopf"
+ },
+ {
   "link": "/authors/beringer/",
   "name": "Lennart Beringer"
  },
  {
   "link": "/authors/oldenburg/",
   "name": "Lennart Oldenburg"
+ },
+ {
+  "link": "/authors/huebner/",
+  "name": "Leonard M. Hübner"
  },
  {
   "link": "/authors/lima/",
@@ -1242,6 +1254,10 @@
  {
   "link": "/authors/ye/",
   "name": "Lina Ye"
+ },
+ {
+  "link": "/authors/barthel/",
+  "name": "Lisa A. Barthel"
  },
  {
   "link": "/authors/chevalier/",

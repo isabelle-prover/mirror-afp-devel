@@ -14,6 +14,9 @@
     <loc>https://isa-afp.org/entries/Pre_Star_CFG.html</loc>
     <lastmod>2025-11-18T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Weak_Spectroscopy.html</loc>
+    <lastmod>2025-11-17T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Neural_Networks.html</loc>
     <lastmod>2025-11-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -4453,6 +4456,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/zee/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/mattes/</loc>
+  </url><url>
     <loc>https://isa-afp.org/sessions/kat_and_dra/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/kreuzer/</loc>
@@ -4557,9 +4562,13 @@
   </url><url>
     <loc>https://isa-afp.org/sessions/lem/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/mollenkopf/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/beringer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/oldenburg/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/huebner/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lima/</loc>
   </url><url>
@@ -4590,6 +4599,8 @@
     <loc>https://isa-afp.org/sessions/linearquantifierelim/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/liouville_numbers/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/barthel/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/list_interleaving/</loc>
   </url><url>
@@ -6029,6 +6040,8 @@
     <loc>https://isa-afp.org/sessions/vydra_mdl/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/guttmann/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/sessions/weak_spectroscopy/</loc>
   </url><url>
     <loc>https://isa-afp.org/sessions/webassembly/</loc>
   </url><url>

@@ -1475,6 +1475,13 @@ host = [
 
 [cohen.homepages]
 
+[colvin]
+name = "Robert J. Colvin"
+
+[colvin.emails]
+
+[colvin.homepages]
+
 [connor]
 name = "Liam O'Connor"
 orcid = "0000-0003-2765-4269"
@@ -1697,17 +1704,18 @@ host = [
 [derrick.homepages]
 
 [desharnais]
-name = "Martin Desharnais"
+name = "Martin Desharnais-Schäfer"
 
 [desharnais.emails]
 
 [desharnais.emails.desharnais_email]
 user = [
-  "desharnais",
+  "martin",
+  "desharnais-schaefer",
 ]
 host = [
-  "mpi-inf",
-  "mpg",
+  "ifi",
+  "lmu",
   "de",
 ]
 
@@ -2047,6 +2055,22 @@ host = [
 ]
 
 [essmann.homepages]
+
+[faber]
+name = "Arjan Faber"
+
+[faber.emails]
+
+[faber.emails.faber_email]
+user = [
+  "arjan-faber",
+]
+host = [
+  "hotmail",
+  "com",
+]
+
+[faber.homepages]
 
 [fan]
 name = "Zixuan Fan"
@@ -2829,6 +2853,14 @@ host = [
 
 [hall.homepages]
 
+[hansen]
+name = "René Rydhof Hansen"
+orcid = "0000-0002-5688-6432"
+
+[hansen.emails]
+
+[hansen.homepages]
+
 [haslbeck]
 name = "Max W. Haslbeck"
 
@@ -2954,6 +2986,13 @@ host = [
 ]
 
 [heimes.homepages]
+
+[heiner]
+name = "Scott Heiner"
+
+[heiner.emails]
+
+[heiner.homepages]
 
 [helke]
 name = "Steffen Helke"
@@ -4281,6 +4320,23 @@ host = [
 
 [lemke.homepages]
 
+[lemket]
+name = "Tassilo Lemke"
+
+[lemket.emails]
+
+[lemket.emails.lemket_email]
+user = [
+  "tassilo",
+  "lemke",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[lemket.homepages]
+
 [leustean]
 name = "Laurentiu Leustean"
 
@@ -5430,6 +5486,14 @@ host = [
 ]
 
 [nielsen.homepages]
+
+[nielson]
+name = "Flemming Nielson"
+orcid = "0000-0001-7362-6176"
+
+[nielson.emails]
+
+[nielson.homepages]
 
 [nikiforov]
 name = "Denis Nikiforov"
@@ -6726,15 +6790,16 @@ name = "Anders Schlichtkrull"
 
 [schlichtkrull.emails.schlichtkrull_email]
 user = [
-  "andschl",
+  "andsch",
 ]
 host = [
-  "dtu",
+  "cs",
+  "aau",
   "dk",
 ]
 
 [schlichtkrull.homepages]
-schlichtkrull_homepage = "https://people.compute.dtu.dk/andschl/"
+schlichtkrull_homepage = "https://people.cs.aau.dk/~andsch/"
 
 [schmaltz]
 name = "Julien Schmaltz"
@@ -7523,6 +7588,25 @@ name = "Daniel Stüwe"
 [stuewe.emails]
 
 [stuewe.homepages]
+
+[su]
+name = "Roger C. Su"
+orcid = "0000-0003-0176-3264"
+
+[su.emails]
+
+[su.emails.su_email]
+user = [
+  "roger",
+  "c",
+  "su",
+]
+host = [
+  "proton",
+  "me",
+]
+
+[su.homepages]
 
 [suarez]
 name = "Fabián Fernando Serran Suárez"

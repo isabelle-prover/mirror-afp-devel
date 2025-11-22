@@ -40,6 +40,33 @@
   "year": "2025"
  },
  {
+  "abstract": " We provide an Isabelle/HOL formalization of Bisping and Jansen's weak spectroscopy game (2024), which can be used to simultaneously characterize and decide a hierarchy of behavioral equivalences for systems with internal behavior. This is valuable for applications in concurrency theory and formal verification where equivalences and distinctions of the “linear-time–branching-time spectrum” are a recurring topic. This entry contains a game characterization of most behavioral equivalences from stability-respecting branching bisimilarity to weak trace equivalence. Technically, the results link distinguishing sublanguages of Hennessy–Milner logic to winning attacker budgets in an energy game through an eight-dimensional measurement of syntactic features appearing in formulas. ",
+  "authors": [
+   "Lisa A. Barthel",
+   "Leonard M. Hübner",
+   "Caroline Lemke",
+   "Karl P. P. Mattes",
+   "Lenard Mollenkopf",
+   "Benjamin Bisping"
+  ],
+  "link": "/entries/Weak_Spectroscopy.html",
+  "shortname": "Weak_Spectroscopy",
+  "title": "The Weak Spectroscopy Game to Characterize Behavioral Equivalences",
+  "topic_links": [
+   "/topics/computer-science/concurrency/",
+   "/topics/computer-science/semantics-and-reasoning/",
+   "/topics/logic/general-logic/modal-logic/",
+   "/topics/mathematics/games-and-economics/"
+  ],
+  "topics": [
+   "Computer science/Concurrency",
+   "Computer science/Semantics and reasoning",
+   "Logic/General logic/Modal logic",
+   "Mathematics/Games and economics"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "Deep learning, i.e., machine learning using neural networks, is used successfully in many application areas. Still, their use in safety-critical or security-critical applications is limited, due to the lack of testing and verification techniques.   We address this problem by formalizing  an important class of neural networks, feed-forward neural networks, in Isabelle/HOL. We present two different approaches of formalizing feed-forward networks and show their equivalence as well as demonstrate their use in verifying certain safety and correctness properties of various example. Moreover, we do not only provide a formal model that allows to reason over feed-forward neural networks, we also provide a datatype package for Isabelle/HOL that supports importing models from TensorFlow.js.",
   "authors": [
    "Achim D. Brucker",

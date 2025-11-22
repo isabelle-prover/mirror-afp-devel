@@ -338,6 +338,13 @@ name = "Damián Barsotti"
 [barsotti.homepages]
 barsotti_homepage = "http://www.cs.famaf.unc.edu.ar/~damian/"
 
+[barthel]
+name = "Lisa A. Barthel"
+
+[barthel.emails]
+
+[barthel.homepages]
+
 [bauer]
 name = "Gertrud Bauer"
 
@@ -3286,6 +3293,13 @@ host = [
 
 [hu.homepages]
 
+[huebner]
+name = "Leonard M. Hübner"
+
+[huebner.emails]
+
+[huebner.homepages]
+
 [huffman]
 name = "Brian Huffman"
 
@@ -4908,6 +4922,13 @@ name = "Yuri Matiyasevich"
 
 [matiyasevich.homepages]
 
+[mattes]
+name = "Karl P. P. Mattes"
+
+[mattes.emails]
+
+[mattes.homepages]
+
 [maximova]
 name = "Alexandra Maximova"
 
@@ -5202,6 +5223,13 @@ name = "Bernhard Möller"
 
 [moeller.homepages]
 moeller_homepage = "https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/"
+
+[mollenkopf]
+name = "Lenard Mollenkopf"
+
+[mollenkopf.emails]
+
+[mollenkopf.homepages]
 
 [montanari]
 name = "Luisa Montanari"

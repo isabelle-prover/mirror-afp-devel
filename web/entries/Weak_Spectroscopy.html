@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Weak Spectroscopy Game to Characterize Behavioral Equivalences - Archive of Formal Proofs</title>
+    <meta name="description" content="The Weak Spectroscopy Game to Characterize Behavioral Equivalences in the Archive of Formal Proofs" />
+    <meta property="og:description" content="The Weak Spectroscopy Game to Characterize Behavioral Equivalences in the Archive of Formal Proofs" />
+
+  <meta property="og:title" content="The Weak Spectroscopy Game to Characterize Behavioral Equivalences" />
+  <meta property="og:url" content="https://isa-afp.org/entries/Weak_Spectroscopy.html" />
+  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
+    <meta property="og:type" content="article" />
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >Home</li>
+          </a>
+          <a href="../topics/">
+            <li >Topics</li>
+          </a>
+          <a href="../download/">
+            <li >Download</li>
+          </a>
+          <a href="../help/">
+            <li >Help</li>
+          </a>
+          <a href="../submission/">
+            <li >Submission</li>
+          </a>
+          <a href="../statistics/">
+            <li >Statistics</li>
+          </a>
+          <a href="../about/">
+            <li >About</li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search">
+      <div class="form-container">
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search" />
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1 ><span class='first'>T</span>he <span class='first'>W</span>eak <span class='first'>S</span>pectroscopy <span class='first'>G</span>ame to <span class='first'>C</span>haracterize <span class='first'>B</span>ehavioral <span class='first'>E</span>quivalences
+  </h1>
+  <div>
+      <p><a href="../authors/barthel/">Lisa A. Barthel</a>, <a href="../authors/huebner/">Leonard M. Hübner</a>, <a href="../authors/lemke/">Caroline Lemke</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNhcm9saW5lIiwibGVta2UiXSwiaG9zdCI6WyJ1bmktb2xkZW5idXJnIiwiZGUiXX0=">📧</a>, <a href="../authors/mattes/">Karl P. P. Mattes</a>, <a href="../authors/mollenkopf/">Lenard Mollenkopf</a> and <a href="../authors/bisping/">Benjamin Bisping</a> <a href="https://bbisping.de">🌐</a>
+      </p>
+      <p class="date">November 17, 2025</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process"><p>
+We provide an Isabelle/HOL formalization of Bisping and Jansen's <em>weak spectroscopy game</em> (2024), which can be used to simultaneously characterize and decide a hierarchy of behavioral equivalences for systems with internal behavior. This is valuable for applications in concurrency theory and formal verification where equivalences and distinctions of the “linear-time–branching-time spectrum” are a recurring topic.
+</p>
+
+<p>
+This entry contains a game characterization of most behavioral equivalences from stability-respecting branching bisimilarity to weak trace equivalence. Technically, the results link distinguishing sublanguages of Hennessy–Milner logic to winning attacker budgets in an energy game through an eight-dimensional measurement of syntactic features appearing in formulas.
+</p></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/concurrency/">Computer science/Concurrency</a></li>
+          <li><a href="../topics/computer-science/semantics-and-reasoning/">Computer science/Semantics and reasoning</a></li>
+          <li><a href="../topics/logic/general-logic/modal-logic/">Logic/General logic/Modal logic</a></li>
+          <li><a href="../topics/mathematics/games-and-economics/">Mathematics/Games and economics</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Bisping, B., & Jansen, D. N. (2024). One Energy Game for the Spectrum between Branching Bisimilarity and Weak Trace Semantics. Electronic Proceedings in Theoretical Computer Science, 412, 71–88. https://doi.org/10.4204/eptcs.412.6
+</li>
+        <li>Bisping, B., &amp; Jansen, D. N. (2023). <i>Linear-Time--Branching-Time Spectroscopy Accounting for Silent Steps</i> (Version 3). arXiv. https://doi.org/10.48550/ARXIV.2305.17671</li>
+        <li>Bisping, B. (2023). Process Equivalence Problems as Energy Games. Computer Aided Verification, 85–106. <a href="https://doi.org/10.1007/978-3-031-37706-8_5">https://doi.org/10.1007/978-3-031-37706-8_5</a>
+</li>
+        <li>van Glabbeek, R. J. (1990). The linear time - branching time spectrum. CONCUR ’90 Theories of Concurrency: Unification and Extension, 278–297. https://doi.org/10.1007/bfb0039066
+</li>
+        <li>Benjamin Bisping. Generalized Equivalence Checking of Concurrent Programs. PhD thesis, Technische Universität Berlin, 2025. <a href="https://generalized-equivalence-checking.equiv.io/">https://generalized-equivalence-checking.equiv.io/</a></li>
+      </ul>
+      <h3>Session Weak_Spectroscopy</h3>
+      <ul>
+          <li><a href="../sessions/weak_spectroscopy/#Labeled_Transition_Systems">Labeled_Transition_Systems</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#LTS_Semantics">LTS_Semantics</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#HML_SRBB">HML_SRBB</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Energy_Games">Energy_Games</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Energy">Energy</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Spectroscopy_Game">Spectroscopy_Game</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Expressiveness_Price">Expressiveness_Price</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Distinction_Implies_Winning_Budgets">Distinction_Implies_Winning_Budgets</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Strategy_Formulas">Strategy_Formulas</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Silent_Step_Spectroscopy">Silent_Step_Spectroscopy</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Weak_Traces">Weak_Traces</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Eta_Bisimilarity">Eta_Bisimilarity</a></li>
+          <li><a href="../sessions/weak_spectroscopy/#Branching_Bisimilarity">Branching_Bisimilarity</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Weak_Spectroscopy/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Weak_Spectroscopy/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Weak_Spectroscopy/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Weak_Spectroscopy-AFP</p>
+        <pre id="copy-text">@article{Weak_Spectroscopy-AFP,
+  author  = {Lisa A. Barthel and Leonard M. Hübner and Caroline Lemke and Karl P. P. Mattes and Lenard Mollenkopf and Benjamin Bisping},
+  title   = {The Weak Spectroscopy Game to Characterize Behavioral Equivalences},
+  journal = {Archive of Formal Proofs},
+  month   = {November},
+  year    = {2025},
+  note    = {\url{https://isa-afp.org/entries/Weak_Spectroscopy.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Weak_Spectroscopy-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>
