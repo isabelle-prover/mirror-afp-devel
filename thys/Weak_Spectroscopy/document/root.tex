@@ -1,0 +1,105 @@
+% License: LGPL
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{
+  left=3cm,
+  right=3cm,
+  top=2cm,
+  bottom=4cm
+}
+\usepackage{authblk}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\AddToHook{cmd/section/before}{\clearpage}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+
+\isabellestyle{tt}
+\renewcommand{\isakeyword}[1]{\textbf{#1}}
+\renewcommand{\isacommand}[1]{\isakeywordONE{#1}}
+\renewcommand{\isakeywordONE}[1]{\isakeyword{\color[RGB]{0,102,153}#1}}
+\renewcommand{\isakeywordTWO}[1]{\isakeyword{\color[RGB]{0,153,102}#1}}
+\renewcommand{\isakeywordTHREE}[1]{\isakeyword{\color[RGB]{0,153,255}#1}}
+
+\title{The \textbf{Weak Spectroscopy Game} \\ to Characterize Behavioral Equivalences}
+\author[1,2]{Lisa A. Barthel}
+\author[1]{Leonard M. Hübner}
+\author[1,3]{Caroline Lemke}
+\author[1]{Karl P. P. Mattes}
+\author[1]{Lenard Mollenkopf}
+\author[1,4]{Benjamin Bisping}
+%
+\affil[1]{Technische Universität Berlin, Germany}
+\affil[2]{Technische Universität Ilmenau, Germany}
+\affil[3]{Carl von Ossietzky Universität Oldenburg, Germany}
+\affil[4]{Télécom SudParis, Institut Polytechnique de Paris, France}
+\renewcommand\Affilfont{\small}
+%
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  \noindent
+  We provide an Isabelle/HOL formalization of Bisping and Jansen's weak spectroscopy game~\cite{bj2024silentStepSpectroscopyExpress},
+  which can be used to simultaneously characterize and decide a hierarchy of behavioral equivalences for systems with internal behavior.
+  This is valuable for applications in concurrency theory and formal verification where equivalences and distinctions of the ``linear-time--branching-time spectrum'' are a recurring topic.
+
+  This entry contains a game characterization of most behavioral equivalences from stability-respecting branching bisimilarity to weak trace equivalence.
+  Technically, the results link distinguishing sublanguages of Hennessy--Milner logic to winning attacker budgets in an energy game through an eight-dimensional measurement of syntactic features appearing in formulas.
+\end{abstract}
+
+\paragraph{Overview.}
+This formalization provides theoretical underpinnings of \url{https://equiv.io}, a tool to \emph{decide all behavioral equivalences at once}.
+By phrasing \emph{equivalences as energy games}, one obtains a uniform way to handle a wide range of equivalences in van Glabbeek's \emph{linear-time--branching-time spectrum}~\cite{glabbeek1990ltbt1,glabbeek1993ltbt2}.
+In particular, we treat systems with \emph{silent} $\tau$-steps, which usually arise because of abstraction from internal behavior, for instance, when modeling communication protocols or distributed systems using transition systems.
+
+This formalization follows Bisping and Jansen's \emph{weak spectroscopy game}~\cite{bj2024silentStepSpectroscopyExpress}, respectively the proofs from the arXiv version~\cite{bj2023silentStepSpectroscopyArxiv}.
+
+\begin{itemize}
+  \item Section 1 provides some basics on transition systems with internal behavior.
+  \item Sections 2 and 3 define a version of Hennessy--Milner logic for systems with internal behavior and a syntactic metric to select sublanguages of it through coordinates.
+  \item Sections 4 to 6 prove certain coordinates to correspond to weak trace equivalence, $\eta$-bi\-si\-mi\-la\-ri\-ty, $\eta$-similarity and branching bisimilarity as well as their stable variants. (As the relationship is established through modal logics, the results can be understood as Hennessy--Milner theorems~\cite{hm1980hml}.)
+  \item Sections 7 to 9 introduce the weak spectroscopy game and prove that winning attacker energies in the game correspond to coordinates of distinguishing formulas according to the syntactic expressiveness metric.
+\end{itemize}
+
+\noindent
+The broader project of \emph{deciding all equivalences at once} is outlined in Bisping's PhD thesis~\cite{bisping2025generalizedEqChecking}.
+There, one can also find more gentle introductions to the topic and to the game-theoretic approach in general.
+The energy game approach is due to~\cite{bisping2023equivalenceEnergyGames}.
+
+\paragraph{Acknowledgments.}
+Several proofs in this document follow pen-and-paper proofs by David N. Jansen.
+
+% do not indent paragraphs
+\setlength\parindent{0pt}
+\setlength\parskip{4pt}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{Labeled_Transition_Systems}
+\input{LTS_Semantics}
+\input{HML_SRBB}
+\input{Energy}
+\input{Expressiveness_Price}
+\input{Weak_Traces}
+\input{Eta_Bisimilarity}
+\input{Branching_Bisimilarity}
+\input{Energy_Games}
+\input{Spectroscopy_Game}
+\input{Distinction_Implies_Winning_Budgets}
+\input{Strategy_Formulas}
+\input{Silent_Step_Spectroscopy}
+
+\bibliographystyle{plainurl}
+\bibliography{root}
+
+\end{document}
