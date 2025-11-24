@@ -338,27 +338,21 @@ It will be true iff each \<open>]\<^sup>1\<^sub>p\<close> is directly followed b
 
 text\<open>But first we define a helper function, that only captures the neighbouring condition for two strings:\<close>
 fun P1' :: \<open>('n,'t) bracket3 \<Rightarrow> ('n,'t) bracket3 \<Rightarrow> bool\<close> where
-  \<open>P1' ]\<^sup>1\<^sub>p [\<^sup>2\<^sub>p' = (p = p')\<close> | 
-  \<open>P1' ]\<^sup>1\<^sub>p y  = False\<close> | 
+  \<open>P1' ]\<^sup>1\<^sub>p b' = (b' = [\<^sup>2\<^sub>p)\<close> | 
   \<open>P1' x y = True\<close>
 
 text\<open>A version of @{term \<open>P1'\<close>} for symbols, i.e. strings that may still contain Nt's:\<close>
 fun P1'_sym :: \<open>('n, ('n,'t) bracket3) sym \<Rightarrow> ('n, ('n,'t) bracket3) sym \<Rightarrow> bool\<close> where
-  \<open>P1'_sym (Tm ]\<^sup>1\<^sub>p) (Tm [\<^sup>2\<^sub>p')  = (p = p')\<close> | 
-  \<open>P1'_sym (Tm ]\<^sup>1\<^sub>p) y  = False\<close> | 
+  \<open>P1'_sym (Tm ]\<^sup>1\<^sub>p) s' = (s' = (Tm [\<^sup>2\<^sub>p))\<close> | 
   \<open>P1'_sym x y = True\<close>
-
-lemma P1'D[simp]:
-  \<open>P1' ]\<^sup>1\<^sub>p r \<longleftrightarrow> r = [\<^sup>2\<^sub>p\<close> 
-by(induction \<open>]\<^sup>1\<^sub>p\<close> \<open>r\<close> rule: P1'.induct) auto
 
 text\<open>Asserts that \<open>P1'\<close> holds for every pair in xs, and that xs doesnt end in \<open>]\<^sup>1\<^sub>p\<close>:\<close>
 fun P1 :: "('n, 't) bracket3 list \<Rightarrow> bool" where
-  \<open>P1 xs = ((successively P1' xs) \<and> (if xs \<noteq> [] then (\<nexists>p. last xs = ]\<^sup>1\<^sub>p) else True))\<close>
+  \<open>P1 u = ((successively P1' u) \<and> (u \<noteq> [] \<longrightarrow> (\<nexists>p. last u = ]\<^sup>1\<^sub>p)))\<close>
 
 text\<open>Asserts that \<open>P1'\<close> holds for every pair in xs, and that xs doesnt end in \<open>Tm ]\<^sup>1\<^sub>p\<close>:\<close>
 fun P1_sym where
-  \<open>P1_sym xs = ((successively P1'_sym xs) \<and> (if xs \<noteq> [] then (\<nexists>p. last xs = Tm ]\<^sup>1\<^sub>p) else True))\<close>
+  \<open>P1_sym xs = ((successively P1'_sym xs) \<and> (xs \<noteq> [] \<longrightarrow> (\<nexists>p. last xs = Tm ]\<^sup>1\<^sub>p)))\<close>
 
 lemma P1_for_tm_if_P1_sym[dest!]: \<open>P1_sym (map Tm x) \<Longrightarrow> P1 x\<close>
 proof(induction x rule: induct_list012)
@@ -570,64 +564,64 @@ subsection\<open>\<open>Reg\<close> and \<open>Reg_sym\<close>\<close>
 
 text\<open>This is the regular language, where one takes the Start symbol as a parameter, and then has the searched for \<open>R := R\<^sub>A\<close>:\<close>
 definition Reg :: \<open>'n \<Rightarrow> ('n,'t) bracket3 list set\<close> where
-  \<open>Reg A = {x. (P1 x) \<and> 
-    (successively P2 x) \<and> 
-    (successively P3 x) \<and> 
-    (successively P4 x) \<and> 
-    (P5 A x)}\<close>
+  \<open>Reg A = {u. P1 u \<and> 
+    successively P2 u \<and> 
+    successively P3 u \<and> 
+    successively P4 u \<and> 
+    P5 A u}\<close>
 
 lemma RegI[intro]:
-  assumes \<open>(P1 x)\<close> 
-    and \<open>(successively P2 x)\<close> 
-    and \<open>(successively P3 x)\<close> 
-    and \<open>(successively P4 x)\<close> 
-    and \<open>(P5 A x)\<close>
-  shows \<open>x \<in> Reg A\<close>
+  assumes \<open>P1 u\<close> 
+    and \<open>successively P2 u\<close> 
+    and \<open>successively P3 u\<close> 
+    and \<open>successively P4 u\<close> 
+    and \<open>P5 A u\<close>
+  shows \<open>u \<in> Reg A\<close>
   using assms unfolding Reg_def by blast
 
 lemma RegD[dest]:
-  assumes \<open>x \<in> Reg A\<close>
-  shows \<open>(P1 x)\<close> 
-    and \<open>(successively P2 x)\<close> 
-    and \<open>(successively P3 x)\<close> 
-    and \<open>(successively P4 x)\<close> 
-    and \<open>(P5 A x)\<close>
+  assumes \<open>u \<in> Reg A\<close>
+  shows \<open>P1 u\<close> 
+    and \<open>successively P2 u\<close> 
+    and \<open>successively P3 u\<close> 
+    and \<open>successively P4 u\<close> 
+    and \<open>P5 A u\<close>
   using assms unfolding Reg_def by blast+
 
 text\<open>A version of \<open>Reg\<close> for symbols, i.e. strings that may still contain Nt's. 
 It has 2 more Properties \<open>P7\<close> and \<open>P8\<close> that vanish for pure terminal strings:\<close>
 definition Reg_sym :: \<open>'n \<Rightarrow> ('n, ('n,'t) bracket3) syms set\<close> where
-  \<open>Reg_sym A = {x. (P1_sym x) \<and> 
-     (successively P2_sym x) \<and> 
-     (successively P3_sym x) \<and> 
-     (successively P4_sym x) \<and> 
-     (P5_sym A x) \<and> 
-     (successively P7_sym x) \<and> 
-     (successively P8_sym x)}\<close>
+  \<open>Reg_sym A = {u. P1_sym u \<and> 
+     successively P2_sym u \<and> 
+     successively P3_sym u \<and> 
+     successively P4_sym u \<and> 
+     P5_sym A u \<and> 
+     successively P7_sym u \<and> 
+     successively P8_sym u}\<close>
 
 lemma Reg_symI[intro]:
-  assumes \<open>P1_sym x\<close> 
-    and \<open>successively P2_sym x\<close> 
-    and \<open>successively P3_sym x\<close> 
-    and \<open>successively P4_sym x\<close> 
-    and \<open>P5_sym A x\<close> 
-    and \<open>(successively P7_sym x)\<close> 
-    and \<open>(successively P8_sym x)\<close>
-  shows \<open>x \<in> Reg_sym A\<close>
+  assumes \<open>P1_sym u\<close> 
+    and \<open>successively P2_sym u\<close> 
+    and \<open>successively P3_sym u\<close> 
+    and \<open>successively P4_sym u\<close> 
+    and \<open>P5_sym A u\<close> 
+    and \<open>successively P7_sym u\<close> 
+    and \<open>successively P8_sym u\<close>
+  shows \<open>u \<in> Reg_sym A\<close>
   using assms unfolding Reg_sym_def by blast
 
 lemma Reg_symD[dest]:
-  assumes \<open>x \<in> Reg_sym A\<close>
-  shows \<open>P1_sym x\<close> 
-    and \<open>successively P2_sym x\<close> 
-    and \<open>successively P3_sym x\<close> 
-    and \<open>successively P4_sym x\<close> 
-    and \<open>P5_sym A x\<close> 
-    and \<open>(successively P7_sym x)\<close> 
-    and \<open>(successively P8_sym x)\<close>
+  assumes \<open>u \<in> Reg_sym A\<close>
+  shows \<open>P1_sym u\<close> 
+    and \<open>successively P2_sym u\<close> 
+    and \<open>successively P3_sym u\<close> 
+    and \<open>successively P4_sym u\<close> 
+    and \<open>P5_sym A u\<close> 
+    and \<open>successively P7_sym u\<close> 
+    and \<open>successively P8_sym u\<close>
   using assms unfolding Reg_sym_def by blast+
 
-lemma Reg_for_tm_if_Reg_sym[dest]: \<open>(map Tm x) \<in> Reg_sym A \<Longrightarrow> x \<in> Reg A\<close> 
+lemma Reg_for_tm_if_Reg_sym[dest]: \<open>map Tm u \<in> Reg_sym A \<Longrightarrow> u \<in> Reg A\<close> 
 by(rule RegI) auto
 
 
@@ -1414,7 +1408,7 @@ proof(induction \<open>length (map Tm x)\<close> arbitrary: A x rule: less_induc
       using p1x using P1D_not_empty split1 by blast
   qed
   from p1x have hd_r1: \<open>hd r1 = [\<^sup>2\<^bsub>\<pi>\<^esub>\<close> 
-    using split1 \<open>r1 \<noteq> []\<close> by (metis (no_types, lifting) List.list.discI List.successively.elims(1) P1'D P1.simps successively_Cons successively_append_iff)
+    using split1 \<open>r1 \<noteq> []\<close> by(simp add: successively_Cons successively_append_iff)
   from bal_r1 have \<open>\<exists>z r2. bal z \<and> bal r2 \<and> [\<^sup>2\<^bsub>\<pi>\<^esub> # tl r1 = [\<^sup>2\<^bsub>\<pi>\<^esub> # z @ ]\<^sup>2\<^bsub>\<pi>\<^esub>  # r2\<close> 
     using bal_Open_split[of \<open>[\<^sup>2\<^bsub>\<pi>\<^esub>\<close> \<open>tl r1\<close>] hd_r1 \<open>r1 \<noteq> []\<close>
     by(clarsimp simp add: neq_Nil_conv)
