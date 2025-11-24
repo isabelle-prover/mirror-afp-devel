@@ -1399,7 +1399,7 @@ lemma relto_trancl_subset: assumes "a \<subseteq> c" and "b \<subseteq> c" shows
 proof -
   have "relto a b \<subseteq> (a \<union> b)^+" by regexp
   also have "\<dots> \<subseteq> c^+"
-    by (rule trancl_mono_set, insert assms, auto)
+    by (rule trancl_mono_subset, insert assms, auto)
   finally show ?thesis .
 qed
 

@@ -95,7 +95,7 @@ proof -
   next
     case False
     have "R' \<subseteq> R" unfolding R'_def by auto 
-    then have "R'^+ \<subseteq> R^+" by (rule trancl_mono_set)
+    then have "R'^+ \<subseteq> R^+" by (rule trancl_mono_subset)
     also have "\<dots> \<subseteq> R^*" by auto
     finally have mono: "R'^+ \<subseteq> R^*" .
     have "B \<union> R'\<^sup>+ `` B = R\<^sup>+ `` A"  
