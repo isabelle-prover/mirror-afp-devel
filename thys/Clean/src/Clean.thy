@@ -591,6 +591,9 @@ fun mk_Some t = let val some = \<^const_name>\<open>Option.option.Some\<close>
 
 fun dest_listTy (Type(\<^type_name>\<open>List.list\<close>, [T])) = T;
 
+fun is_listTy t = case t of (Type(\<^type_name>\<open>List.list\<close>, [T])) => true
+                        | _ => false
+
 fun mk_hdT t = let val ty = fastype_of t 
                in  Const(\<^const_name>\<open>List.hd\<close>, ty --> (dest_listTy ty)) $ t end
 
@@ -607,7 +610,10 @@ fun mk_meta_eq (t, u) = meta_eq_const (fastype_of t) $ t $ u;
 
 fun   mk_pat_tupleabs [] t = t
     | mk_pat_tupleabs [(s,ty)] t = absfree(s,ty)(t)
-    | mk_pat_tupleabs ((s,ty)::R) t = HOLogic.mk_case_prod(absfree(s,ty)(mk_pat_tupleabs R t));
+    | mk_pat_tupleabs ((s,ty)::R) t = HOLogic.mk_case_prod(absfree(s,ty)(mk_pat_tupleabs R t))
+fun   mk_pat_tupleabs_wrapper [] t = absfree("unitparam",@{typ unit}) t
+    | mk_pat_tupleabs_wrapper R t = mk_pat_tupleabs R t 
+
 
 fun read_constname ctxt n = fst(dest_Const(Syntax.read_term ctxt n))
 
@@ -891,7 +897,7 @@ fun typ_2_string_raw (Type(s,[TFree _])) = if String.isSuffix "_scheme" s
 fun new_state_record0 add_record_cmd is_global_kind (aS, raw_fields) thy =
     let val state_index = (Int.toString o length o Symtab.dest)
                                 (StateMgt_core.get_state_field_tab_global thy)
-        val state_pos = (Binding.pos_of o #1 o hd) raw_fields
+        val state_pos = (Binding.pos_of o #1 o hd) raw_fields (*This hd is probably the reason why we cant have empty local vars*)
         val ((raw_params, binding), res_ty) = case aS of 
                                                 SOME d => d
                                               | NONE => (([], Binding.make(state_index,state_pos)), NONE)
@@ -899,8 +905,6 @@ fun new_state_record0 add_record_cmd is_global_kind (aS, raw_fields) thy =
                       then mk_global_state_name binding
                       else mk_local_state_name binding
         val raw_parent = SOME(typ_2_string_raw (StateMgt_core.get_state_type_global thy))
-        val _ = writeln("XXXXX " ^ @{make_string} raw_params ^ "CCC " ^  @{make_string} binding 
-                                 ^ @{make_string} raw_fields)
         val pos = Binding.pos_of binding
         fun upd_state_typ thy =  StateMgt_core.upd_state_type_global 
                                   (K (parse_typ_'a (Proof_Context.init_global thy) binding)) thy
@@ -1414,11 +1418,28 @@ fun mk_seq_C C C' = let val t = fastype_of C
                      val t' =  fastype_of C'
                  in  Const(\<^const_name>\<open>bind_SE'\<close>, t --> t' --> t') $ C $ C' end;
 
+fun mk_seq_assign_C rhs lhs varname vartyp= let
+                    val t1 = fastype_of rhs
+                    val t2 = fastype_of lhs
+                in Const(\<^const_name>\<open>bind_SE\<close>, t1 --> (vartyp --> t2) --> t2 ) $ rhs $ absfree (varname, vartyp) lhs end;
+
 fun mk_skip_C sty = Const(\<^const_name>\<open>skip\<^sub>S\<^sub>E\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty)
 
 fun mk_break sty = 
     Const(\<^const_name>\<open>break\<close>, StateMgt_core.MON_SE_T HOLogic.unitT sty )
 
+(* From dev-branch: don't know which version is better. bu 25.11.25 *)
+fun mk_return_C upd rhs =
+    let val upd_ty = fastype_of upd
+        val (rty, sty) = case upd_ty of Type("fun",[Type("fun", [Type(_(*list*),[r_ty]),_]),
+                                                    Type ("fun",[s_ty,_])]) => (r_ty, s_ty)
+                                      | _=>error "mk_return_C: illegal type for update func"
+
+        val rhs_ty = sty --> rty
+        val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
+    in Const(\<^const_name>\<open>return\<^sub>C\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
+
+(* overridden by afp version. *)
 fun mk_return_C upd rhs =
     let val ty = fastype_of rhs 
         val (sty,rty) = case ty of 
@@ -1429,6 +1450,17 @@ fun mk_return_C upd rhs =
         val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
     in Const(\<^const_name>\<open>return\<^sub>C\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
 
+(* From dev-branch: don't know which version is better. bu 25.11.25 *)
+fun mk_assign_global_C upd rhs =
+    let val upd_ty = fastype_of upd
+        val (rty, sty) = case upd_ty of Type("fun",[Type("fun", [r_ty,_]),
+                                                    Type ("fun",[s_ty,_])]) => (r_ty, s_ty)
+                                       | _=>error "mk_assign_global_C: illegal type for update func"
+        val rhs_ty = sty --> rty
+        val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
+    in Const(\<^const_name>\<open>assign_global\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
+
+(* overridden by afp version. *)
 fun mk_assign_global_C upd rhs =
     let val ty = fastype_of rhs 
         val (sty,rty) = case ty of 
@@ -1439,6 +1471,17 @@ fun mk_assign_global_C upd rhs =
         val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
     in Const(\<^const_name>\<open>assign_global\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
 
+(* From dev-branch: don't know which version is better. bu 25.11.25 *)
+fun mk_assign_local_C upd rhs =
+    let val upd_ty = fastype_of upd
+        val (rty, sty) = case upd_ty of Type("fun",[Type("fun", [Type(_(*list*),[r_ty]),_]),
+                                                    Type ("fun",[s_ty,_])]) => (r_ty, s_ty)
+                                       | _=>error "mk_assign_local_C: illegal type for update func"
+        val rhs_ty = sty --> rty
+        val mty = StateMgt_core.MON_SE_T HOLogic.unitT sty
+    in Const(\<^const_name>\<open>assign_local\<close>, upd_ty --> rhs_ty --> mty) $ upd $ rhs end
+
+(* overridden by afp version. *)
 fun mk_assign_local_C upd rhs =
     let val ty = fastype_of rhs 
         val (sty,rty) = case ty of 
@@ -1499,17 +1542,19 @@ end;\<close>
 
 section\<open>Function-calls in Expressions\<close>
 
-text\<open>The precise semantics of function-calls appearing inside expressions is underspecified in C,
+text\<open>The precise semantics of function-calls appearing inside expressions is under-specified in C,
 which is a notorious problem for compilers and analysis tools. In Clean, it is impossible by 
-construction --- and the type displine --- to have function-calls inside expressions.
+construction --- and the type discipline --- to have function-calls inside expressions.
 However, there is a somewhat \<^emph>\<open>recommended coding-scheme\<close> for this feature, which leaves this
 issue to decisions in the front-end:
-\begin{verbatim}
-  a = f() + g();
-\end{verbatim}
+
+@{verbatim [indent=10, indent=70] \<open>a = f() + g();\<close>}
+
 can be represented in Clean by:
-\<open>x \<leftarrow> f(); y \<leftarrow> g(); \<open>a := x + y\<close> \<close> or 
-\<open>x \<leftarrow> g(); y \<leftarrow> f(); \<open>a := y + x\<close> \<close>
+
+@{cartouche [indent=10, indent=70] \<open>x \<leftarrow> f(); y \<leftarrow> g(); \<open>a := x + y\<close> \<close>} or 
+@{cartouche [indent=10, indent=70] \<open>x \<leftarrow> g(); y \<leftarrow> f(); \<open>a := y + x\<close> \<close>}
+
 which makes the evaluation order explicit without introducing
 local variables or any form of explicit trace on the state-space of the Clean program. We assume, 
 however, even in this coding scheme, that \<^verbatim>\<open>f()\<close> and \<^verbatim>\<open>g()\<close> are atomic actions; note that this 

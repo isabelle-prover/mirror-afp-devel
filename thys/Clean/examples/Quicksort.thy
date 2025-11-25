@@ -88,6 +88,7 @@ section\<open>Clean Encoding of the Global State of Quicksort\<close>
 
 global_vars (state)
     A :: "int list"
+    B :: "int list list"
 
 function_spec swap (i::nat,j::nat) \<comment> \<open>TODO: the hovering on parameters produces a number of report equal to the number of \<^ML>\<open>Proof_Context.add_fixes\<close> called in \<^ML>\<open>Function_Specification_Parser.checkNsem_function_spec\<close>\<close>
 pre          "\<open>i < length A \<and> j < length A\<close>"    
