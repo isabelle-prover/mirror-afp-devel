@@ -55,7 +55,7 @@ lemma srstep_monp:
 
 lemma srsteps_monp:
   "\<F> \<subseteq> \<G> \<Longrightarrow> (srstep \<F> \<R>)\<^sup>+ \<subseteq> (srstep \<G> \<R>)\<^sup>+"
-  by (simp add: sig_step_mono trancl_mono_set)
+  by (simp add: sig_step_mono trancl_mono_subset)
 
 lemma srsteps_eq_monp:
   "\<F> \<subseteq> \<G> \<Longrightarrow> (srstep \<F> \<R>)\<^sup>* \<subseteq> (srstep \<G> \<R>)\<^sup>*"
@@ -91,7 +91,7 @@ lemma srstepD:
 
 lemma srstepsD:
   "(s, t) \<in> (srstep \<F> \<R>)\<^sup>+ \<Longrightarrow> (s, t) \<in> (rstep \<R>)\<^sup>+ \<and> funas_term s \<subseteq> \<F> \<and> funas_term t \<subseteq> \<F>"
-  unfolding sig_step_def' using trancl_mono_set[OF Restr_mono] 
+  unfolding sig_step_def' using trancl_mono_subset[OF Restr_mono] 
   by (auto simp: sig_step_def dest: subsetD[OF Restr_trancl_mono_set])
 
 

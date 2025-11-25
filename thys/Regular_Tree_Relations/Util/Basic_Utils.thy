@@ -194,7 +194,7 @@ proof -
        (force simp: comp_def map_prod_def image_def split: prod.splits)+
   have [simp]:
     "map_prod (f \<circ> inv_into X f) (f \<circ> inv_into X f) ` (map_both f ` Restr R X)\<^sup>+ = (map_both f ` Restr R X)\<^sup>+"
-    using f_inv_into_f[of _ f X] subsetD[OF trancl_mono_set[OF image_mono[of "Restr R X" "X \<times> X" "map_both f"]]]
+    using f_inv_into_f[of _ f X] subsetD[OF trancl_mono_subset[OF image_mono[of "Restr R X" "X \<times> X" "map_both f"]]]
     by (intro equalityI subrelI) (auto simp: map_prod_surj_on trancl_full_on comp_def rev_image_eqI)
   show ?thesis using assms trancl_map_prod_mono[of f "Restr R X"]
       image_mono[OF trancl_map_prod_mono[of "inv_into X f" "map_both f ` Restr R X"], of "map_both f"]

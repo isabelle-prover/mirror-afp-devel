@@ -430,7 +430,7 @@ proof -
     by (intro gmctxtex_onp_substep_tranclE[of _ "\<lambda> C. funas_gmctxt C \<subseteq> \<F>"])
       (auto simp: gtrancl_rel_aux[OF assms(1)] assms(3, 4) intro: funas_gmctxt_poss_gmctxt_subgm_at_funas)
   then show ?thesis using subset_trans[OF fst snd]
-    using trancl_mono_set by fastforce
+    using trancl_mono_subset by fastforce
 qed
 
 lemma gtrancl_rel_subseteq_trancl_gctxtcl_funas:
@@ -639,7 +639,7 @@ lemma relax_pos_lift_root_step:
 
 lemma relax_pos_lift_root_steps:
   "(lift_root_step \<F> W X R)\<^sup>+ \<subseteq> (lift_root_step \<F> PAny X R)\<^sup>+"
-  by (simp add: relax_pos_lift_root_step trancl_mono_set)
+  by (simp add: relax_pos_lift_root_step trancl_mono_subset)
 
 lemma relax_ext_lift_root_step:
   "lift_root_step \<F> W X R \<subseteq> lift_root_step \<F> W EParallel R"
@@ -670,8 +670,8 @@ qed (auto intro: trancl_mono)
 lemma lift_root_step_Parallels_single:
   assumes "R \<subseteq> \<T>\<^sub>G \<F> \<times> \<T>\<^sub>G \<F>"
   shows "(lift_root_step \<F> PAny EParallel R)\<^sup>+ = (lift_root_step \<F> PAny ESingle R)\<^sup>+ \<union> Restr Id (\<T>\<^sub>G \<F>)"
-  using trancl_mono_set[OF lift_root_step_Parallel_seq[OF assms]]
-  using trancl_mono_set[OF lift_root_step_Single_to_Parallel, of \<F> R]
+  using trancl_mono_subset[OF lift_root_step_Parallel_seq[OF assms]]
+  using trancl_mono_subset[OF lift_root_step_Single_to_Parallel, of \<F> R]
   by (auto simp: lift_root_step_Parallel_conv trancl_partial_reflcl)
 
 

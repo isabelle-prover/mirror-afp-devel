@@ -910,4 +910,90 @@ proof-
     using us by (simp add: mgu_def) 
 qed
 
+lemma unifiers_var_left: assumes x: "x \<notin> vars_term t" 
+  shows "unifiers (set_mset (add_mset (Var x, t) E)) = (\<circ>\<^sub>s) (subst x t) ` unifiers (set_mset (subst_mset (subst x t) E))" 
+  (is "?L = ?R")
+proof
+  show "?L \<supseteq> ?R" unfolding subst_mset_def unifiers_def using assms by fastforce
+  show "?L \<subseteq> ?R"
+  proof
+    fix \<sigma>
+    assume sig: "\<sigma> \<in> ?L" 
+    hence xt: "\<sigma> x = t \<cdot> \<sigma>" and unifE: "\<And> l r. (l,r) \<in># E \<Longrightarrow> l \<cdot> \<sigma> = r \<cdot> \<sigma>" 
+      by (auto simp: unifiers_def)
+    show "\<sigma> \<in> ?R" 
+    proof
+      show id: "\<sigma> = subst x t \<circ>\<^sub>s \<sigma>" using x xt by auto
+      show "\<sigma> \<in> unifiers (set_mset (subst_mset (subst x t) E))"  using sig 
+        by (subst (asm) id, auto simp: subst_mset_def unifiers_def)
+    qed
+  qed
+qed
+  
+  
+lemma UNIF1_reflects_unifiers: assumes "UNIF1 \<sigma> E F" 
+  shows "unifiers (set_mset E) = (\<circ>\<^sub>s) \<sigma> ` unifiers (set_mset F)" 
+  using assms
+proof cases
+  case *: (decomp ss ts f E)
+  show ?thesis unfolding *(1-3) by (auto simp: unifiers_def, induct rule: list_induct2[OF *(4)], auto)
+next
+  case *: (Var_left x t E)
+  show ?thesis unfolding * 
+    by (rule unifiers_var_left[OF *(4)])
+next
+  case *: (Var_right x t E)
+  have swap: "unifiers (set_mset (add_mset (t, Var x) E)) = unifiers (set_mset (add_mset (Var x,t) E))" 
+    unfolding unifiers_def by auto
+  show ?thesis unfolding * swap 
+    by (rule unifiers_var_left[OF *(4)])
+qed auto
+
+lemma is_mgu_UNIF1: assumes "UNIF1 \<sigma> E F" 
+shows "is_mgu \<delta> (set_mset E) \<Longrightarrow> \<exists> \<tau> \<delta>'. is_mgu \<delta>' (set_mset E) \<and> \<delta>' = \<sigma> \<circ>\<^sub>s \<tau> \<and> is_mgu \<tau> (set_mset F)" 
+  using assms
+proof (cases, goal_cases)
+  case 1
+  thus ?case by (intro exI[of _ \<delta>], auto)
+next
+  case 2
+  thus ?case by (intro exI[of _ \<delta>], auto)
+next
+  case *: (3 x t G)
+  from * have "\<delta> \<in> unifiers (set_mset E)" unfolding is_mgu_def by auto
+  from this[unfolded unifiers_var_left[OF *(5)] *] * 
+  have unif: "unifiers (set_mset F) \<noteq> {}" by auto
+  obtain Fl where Fl: "set_mset F = set Fl"
+    by (metis ex_mset set_mset_mset)
+  with unif have "unifiers (set Fl) \<noteq> {}" by auto
+  with unify_complete obtain cs where "unify Fl [] = Some cs" by (cases "unify Fl []", auto)
+  from unify_sound[OF this] obtain \<gamma> where gam: "is_imgu \<gamma> (set_mset F)" unfolding Fl by auto
+  hence gam': "is_mgu \<gamma> (set_mset F)" by (rule is_imgu_imp_is_mgu)
+  hence "is_mgu \<gamma> (subst_set (subst x t) (set_mset G))" 
+    unfolding * by auto
+  from is_mgu_subst_set_subst[OF *(5) this]
+  have sig_gam: "is_mgu (\<sigma> \<circ>\<^sub>s \<gamma>) (set_mset E)" unfolding * by auto
+  show ?case 
+    by (intro exI conjI, rule sig_gam, rule refl, rule gam')
+next
+  case *: (4 x t G)
+  define E' where "E' = add_mset (Var x, t) G" 
+  from * have "\<delta> \<in> unifiers (set_mset E')" unfolding E'_def is_mgu_def by auto
+  from this[unfolded unifiers_var_left[OF *(5)] * E'_def] *  E'_def
+  have unif: "unifiers (set_mset F) \<noteq> {}" by auto
+  obtain Fl where Fl: "set_mset F = set Fl"
+    by (metis ex_mset set_mset_mset)
+  with unif have "unifiers (set Fl) \<noteq> {}" by auto
+  with unify_complete obtain cs where "unify Fl [] = Some cs" by (cases "unify Fl []", auto)
+  from unify_sound[OF this] obtain \<gamma> where gam: "is_imgu \<gamma> (set_mset F)" unfolding Fl by auto
+  hence gam': "is_mgu \<gamma> (set_mset F)" by (rule is_imgu_imp_is_mgu)
+  hence "is_mgu \<gamma> (subst_set (subst x t) (set_mset G))" 
+    unfolding * by auto
+  from is_mgu_subst_set_subst[OF *(5) this]
+  have sig_gam: "is_mgu (\<sigma> \<circ>\<^sub>s \<gamma>) (set_mset E)" unfolding * by auto
+  show ?case 
+    by (intro exI conjI, rule sig_gam, rule refl, rule gam')
+qed
+
+
 end

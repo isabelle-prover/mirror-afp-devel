@@ -10,6 +10,11 @@ imports
   "Regular-Sets.Regular_Set"
 begin
 
+lemma append_Cons_eq_append_Cons:
+  "y' \<notin> set xs \<Longrightarrow> y \<notin> set xs' \<Longrightarrow>
+   xs @ y # zs = xs' @ y' # zs' \<longleftrightarrow> xs = xs' \<and> y = y' \<and> zs = zs'"
+  by (induction xs arbitrary: xs'; force simp: Cons_eq_append_conv)
+
 lemma insert_conc: "insert w W @@ V = {w @ v | v. v \<in> V} \<union> W @@ V"
   by auto
 
@@ -201,6 +206,9 @@ by (auto simp add: Nts_def)
 lemma Nts_Un: "Nts (P1 \<union> P2) = Nts P1 \<union> Nts P2"
 by (simp add: Nts_def)
 
+lemma Rhs_Nts_Un: "Rhs_Nts (P \<union> Q) = Rhs_Nts P \<union> Rhs_Nts Q"
+  by (simp add: Rhs_Nts_def)
+
 lemma Rhss_Un: "Rhss (P \<union> Q) A = Rhss P A \<union> Rhss Q A"
   by (auto simp: Rhss_def)
 
@@ -230,6 +238,15 @@ lemma Lhss_simps[simp]:
   "Lhss(insert (A,w) P) = {A} \<union> Lhss P"
   "Lhss(P \<union> P') = Lhss P \<union> Lhss P'"
 by(auto simp: Lhss_def)
+
+lemma in_LhssI: "(A,\<alpha>) \<in> P \<Longrightarrow> A \<in> Lhss P"
+by (auto simp: Lhss_def)
+
+lemma Lhss_Collect: "Lhss {p. X p} = {A. \<exists>\<alpha>. X (A,\<alpha>)}"
+  by (auto simp: Lhss_def)
+
+lemma in_Rhs_NtsI: "(A,\<alpha>) \<in> P \<Longrightarrow> B \<in> Nts_syms \<alpha> \<Longrightarrow> B \<in> Rhs_Nts P"
+by (auto simp: Rhs_Nts_def)
 
 lemma set_nts_syms: "set(nts_syms_acc sys ns) = Nts_syms sys \<union> set ns"
 unfolding nts_syms_acc_def
@@ -424,16 +441,16 @@ lemma derives_set_subset:
   by (auto simp: rtranclp_power dest!: deriven_set_subset)
 
 lemma derive_Nts_syms_subset:
-  "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
-by(auto simp: Nts_def derive_iff)
+  "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Rhs_Nts P"
+by(auto simp: Rhs_Nts_def derive_iff)
 
 lemma deriven_Nts_syms_subset:
-  "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
+  "P \<turnstile> u \<Rightarrow>(n) v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Rhs_Nts P"
   by (induction n arbitrary: u)
     (auto simp: relpowp_Suc_left dest!: derive_Nts_syms_subset)
 
 lemma derives_Nts_syms_subset:
-  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Nts P"
+  "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Rhs_Nts P"
   by (auto simp: rtranclp_power dest!: deriven_Nts_syms_subset)
 
 lemma derive_Tms_syms_subset:
@@ -979,6 +996,16 @@ lemma deriven_Nt_map_Tm: "P \<turnstile> \<alpha> @ Nt B # \<gamma> \<Rightarrow
   n = Suc (m + l + k) \<and> w = v @ u @ t)"
   by (force simp: deriven_append_map_Tm deriven_Nt_Cons_map_Tm)
 
+lemma map_Tm_Nt_eq_map_Tm_Nt:
+  "map Tm xs @ Nt y # zs = map Tm xs' @ Nt y' # zs' \<longleftrightarrow> xs = xs' \<and> y = y' \<and> zs = zs'"
+  apply (subst append_Cons_eq_append_Cons)
+  by auto
+
+lemma deriven_Suc_map_Tm_decomp: "P \<turnstile> \<alpha> \<Rightarrow>(Suc n) map Tm w \<longleftrightarrow>
+(\<exists>v B \<beta> \<gamma> u t m l. (B,\<beta>) \<in> P \<and> P \<turnstile> \<beta> \<Rightarrow>(m) map Tm u \<and> P \<turnstile> \<gamma> \<Rightarrow>(l) map Tm t \<and>
+  n = m + l \<and> \<alpha> = map Tm v @ Nt B # \<gamma> \<and> w = v @ u @ t)"
+  by (fastforce simp: deriven_Suc_decomp_left map_eq_append_conv map_Tm_Nt_eq_map_Tm_Nt append_eq_map_conv)
+
 lemma derives_append_map_Tm:
   "P \<turnstile> \<alpha> @ \<beta> \<Rightarrow>* map Tm w \<longleftrightarrow>
   (\<exists>v u. P \<turnstile> \<alpha> \<Rightarrow>* map Tm v \<and> P \<turnstile> \<beta> \<Rightarrow>* map Tm u \<and> w = v @ u)"
@@ -1000,30 +1027,6 @@ lemma derives_Nt_Cons_Lang:
 "P \<turnstile> Nt A # \<alpha> \<Rightarrow>* map Tm w \<longleftrightarrow> (\<exists>v u. v \<in> Lang P A \<and> P \<turnstile> \<alpha> \<Rightarrow>* map Tm u \<and> w = v @ u)"
   by (force simp: derives_Cons_decomp Lang_def map_eq_Cons_conv map_eq_append_conv)
 
-lemma Lang_eq_iff_derives:
-"Lang P = Lang P' \<longleftrightarrow> (\<forall>\<alpha> w. P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<longleftrightarrow> P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w)"
-proof-
-  { fix P P' \<alpha> w
-    assume L: "Lang P = Lang P'"
-      and "P \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
-      then have "P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
-      proof (induction \<alpha> arbitrary: w)
-        case Nil
-        then show ?case by simp
-      next
-        case (Cons x \<alpha>)
-        show ?case proof (cases x)
-          case (Nt A)
-          with Cons show ?thesis by (auto simp: derives_Nt_Cons_Lang L)
-        next
-          case (Tm a)
-          with Cons show ?thesis by (auto simp: derives_Tm_Cons)
-        qed
-      qed
-  }
-  from this[of P P'] this[of P' P] show ?thesis by (auto intro!: Lang_eqI_derives)
-qed
-
 lemma Lang_of_Nil[simp]: "Lang_of P [] = {[]}"
   by (auto simp: Lang_of_def)
 
@@ -1034,9 +1037,6 @@ lemma Lang_ofE_deriven:
   assumes "w \<in> Lang_of P \<alpha>" and "\<And>n. P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm w \<Longrightarrow> thesis"
   shows thesis
   using assms by (auto simp: Lang_of_iff_derives rtranclp_power)
-
-lemma Lang_eq_iff_Lang_of_eq: "Lang P = Lang P' \<longleftrightarrow> Lang_of P = Lang_of P'"
-  by (unfold Lang_eq_iff_derives, auto simp: fun_eq_iff Lang_of_def)
 
 lemma Lang_of_Tm_Cons: "Lang_of P (Tm a # \<alpha>) = {[a]} @@ Lang_of P \<alpha>"
   by (auto simp: Lang_of_def derives_Tm_Cons conc_def)
@@ -1062,6 +1062,39 @@ lemma Lang_of_set_Rhss: "Lang_of_set P (Rhss P A) = Lang P A"
 
 lemma Lang_of_prod_subset: "(A,\<alpha>) \<in> P \<Longrightarrow> Lang_of P \<alpha> \<subseteq> Lang P A"
   apply (fold Lang_of_set_Rhss) by (auto simp: Rhss_def)
+
+lemma Lang_le_iff_Lang_of_le: "Lang P \<le> Lang P' \<longleftrightarrow> Lang_of P \<le> Lang_of P'"
+proof (safe intro!: le_funI)
+  fix \<alpha> w
+  assume le: "Lang P \<le> Lang P'" and w: "w \<in> Lang_of P \<alpha>"
+  from w show "w \<in> Lang_of P' \<alpha>"
+    apply (induction \<alpha> arbitrary: w)
+    using le[THEN le_funD, THEN subsetD]
+    by (auto simp: Lang_of_Cons insert_conc split: sym.splits)
+next
+  fix A w
+  assume le: "Lang_of P \<le> Lang_of P'" and w: "w \<in> Lang P A"
+  from le[THEN le_funD, of "[Nt A]"] w
+  show "w \<in> Lang P' A" by (auto simp: Lang_of_Cons)
+qed
+
+lemma Lang_eq_iff_Lang_of_eq: "Lang P = Lang P' \<longleftrightarrow> Lang_of P = Lang_of P'"
+  apply (subst eq_iff) by (auto simp: Lang_le_iff_Lang_of_le)
+
+lemma Lang_of_le_iff_derives:
+  "Lang_of P \<le> Lang_of P' \<longleftrightarrow> (\<forall>\<alpha> w. P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<longrightarrow> P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w)"
+  by (auto simp: Lang_of_def le_fun_def)
+
+lemma Lang_le_iff_derives:
+  "Lang P \<le> Lang P' \<longleftrightarrow> (\<forall>\<alpha> w. P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<longrightarrow> P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w)"
+  by (simp only: Lang_le_iff_Lang_of_le Lang_of_le_iff_derives)
+
+lemma Lang_eq_iff_derives:
+  "Lang P = Lang P' \<longleftrightarrow> (\<forall>\<alpha> w. P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<longleftrightarrow> P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w)"
+  apply (subst eq_iff) by (auto simp: Lang_le_iff_derives)
+
+lemma Rhss_le_Ders: "Rhss P \<le> Ders P"
+  by (auto simp: le_fun_def Rhss_def Ders_def derive_singleton)
 
 lemma Lang_of_set_pow: "Lang_of_set P (X ^^ n) = Lang_of_set P X ^^ n"
   by (induction n, simp_all add: Lang_of_set_conc)
@@ -1607,33 +1640,51 @@ lemma no_self_loops_derivels:
 
 text \<open>Rules that can be simulated by other rules are redundant.\<close>
 
-lemma derives_redundant:
-  assumes "\<forall>(A,\<alpha>) \<in> R. P \<turnstile> [Nt A] \<Rightarrow>* \<alpha>"
-  shows "P \<union> R \<turnstile> xs \<Rightarrow>* map Tm w \<longleftrightarrow> P \<turnstile> xs \<Rightarrow>* map Tm w" (is "?l \<longleftrightarrow> ?r")
-proof (intro iffI)
-  show "?l \<Longrightarrow> ?r"
-  proof (induction xs rule: converse_derives_induct)
-    case base
-    from assms show ?case by (auto split: prod.splits)
-  next
-    case (step u A v \<alpha>)
-    from assms \<open>(A,\<alpha>) \<in> P \<union> R\<close>
-    have "P \<turnstile> [Nt A] \<Rightarrow>* \<alpha>" by (auto simp: derive_singleton)
-    from derives_append[OF this]
-    have "P \<turnstile> u @ [Nt A] @ v \<Rightarrow>* u @ \<alpha> @ v" by (auto intro!: derives_prepend)
-    also note step.IH
-    finally show ?case by auto
+lemma Rhss_le_Ders_imp_Lang_le: assumes "Rhss P \<le> Ders P'" shows "Lang P \<le> Lang P'"
+  apply (unfold Lang_le_iff_derives)
+proof (intro allI impI)
+  fix \<alpha> w
+  assume "P \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
+  then obtain n where "P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm w" by (auto simp: rtranclp_power)
+  then show "P' \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
+  proof (induction n arbitrary: \<alpha> w rule: less_induct)
+    case (less n')
+    show ?case
+    proof (cases n')
+      case 0
+      with less.prems show ?thesis by simp
+    next
+      case [simp]: (Suc n)
+      from less.prems[unfolded this deriven_Suc_map_Tm_decomp]
+      obtain B \<beta> \<gamma> v u t m l where B: "(B,\<beta>) \<in> P"
+        and lb: "P \<turnstile> \<beta> \<Rightarrow>(m) map Tm u" and lc: "P \<turnstile> \<gamma> \<Rightarrow>(l) map Tm t"
+        and [simp]: "\<alpha> = map Tm v @ Nt B # \<gamma>" "w = v @ u @ t" "n = m+l"
+        by blast
+      from less.IH[OF _ lc] have c: "P' \<turnstile> \<gamma> \<Rightarrow>* map Tm t" by simp
+      from assms[THEN le_funD, of B] B
+      have "\<beta> \<in> Ders P' B" by (auto simp: Rhss_def)
+      then have "P' \<turnstile> [Nt B] \<Rightarrow>* \<beta>" by (auto simp: Ders_def)
+      from derives_prepend[OF derives_append[OF this]]
+      have "P' \<turnstile> \<alpha> \<Rightarrow>* map Tm v @ \<beta> @ \<gamma>" by simp
+      also from less.IH[OF _ lb] c have "P' \<turnstile> \<dots> \<Rightarrow>* map Tm w"
+        by (auto intro!: derives_append_append)
+      finally show ?thesis.
+    qed
   qed
-next
-  assume "?r" from derives_mono[OF _ this] show ?l by auto
 qed
 
-lemma Lang_redundant:
-  assumes "\<forall>(A,\<alpha>) \<in> R. P \<turnstile> [Nt A] \<Rightarrow>* \<alpha>"
-  shows "Lang (P \<union> R) = Lang P"
-  by (auto simp: Lang_eq_iff_derives derives_redundant[OF assms])
+lemma Lang_Un_redundant: assumes "Rhss R \<le> Ders P" shows "Lang (P \<union> R) = Lang P"
+proof (rule antisym)
+  show "Lang (P \<union> R) \<le> Lang P"
+    apply (rule Rhss_le_Ders_imp_Lang_le)
+    using assms Rhss_le_Ders[of P] by (simp add: le_fun_def Rhss_Un)
+next
+  show "Lang P \<le> Lang (P \<union> R)"
+    apply (rule le_funI)
+    apply (rule Lang_mono) by simp
+qed
 
-lemmas Lang_of_redundant = Lang_redundant[unfolded Lang_eq_iff_Lang_of_eq]
+lemmas Lang_of_Un_redundant = Lang_Un_redundant[unfolded Lang_eq_iff_Lang_of_eq]
 
 text \<open>Productions whose lhss do not appear in other rules are redundant.\<close>
 
@@ -1643,7 +1694,7 @@ lemma derive_Un_disj_Lhss:
   using \<alpha> by (auto simp: Lhss_def derive_iff)
 
 lemma deriven_Un_disj_Lhss:
-  assumes PQ: "Nts P \<inter> Lhss Q = {}" and \<alpha>: "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  assumes PQ: "Rhs_Nts P \<inter> Lhss Q = {}" and \<alpha>: "Nts_syms \<alpha> \<inter> Lhss Q = {}"
   shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>(n) \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta>" (is "?l \<longleftrightarrow> ?r")
 proof
   show "?l \<Longrightarrow> ?r"
@@ -1667,31 +1718,47 @@ next
 qed
 
 lemma derives_Un_disj_Lhss:
-  assumes "Nts P \<inter> Lhss Q = {}" and "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  assumes "Rhs_Nts P \<inter> Lhss Q = {}" and "Nts_syms \<alpha> \<inter> Lhss Q = {}"
   shows "P \<union> Q \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<longleftrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* \<beta>"
   using deriven_Un_disj_Lhss[OF assms] by (simp add: rtranclp_power)
 
 lemma Lang_Un_disj_Lhss:
-  assumes disj: "Nts P \<inter> Lhss Q = {}" and A: "A \<notin> Lhss Q"
+  assumes disj: "Rhs_Nts P \<inter> Lhss Q = {}" and A: "A \<notin> Lhss Q"
   shows "Lang (P \<union> Q) A = Lang P A"
   apply (rule Lang_eqI_derives)
   apply (rule derives_Un_disj_Lhss)
   using assms by auto
 
 lemma Lang_disj_Lhss_Un:
-  assumes disj: "Lhss P \<inter> Nts Q = {}" and A: "A \<notin> Lhss P"
+  assumes disj: "Lhss P \<inter> Rhs_Nts Q = {}" and A: "A \<notin> Lhss P"
   shows "Lang (P \<union> Q) A = Lang Q A"
   using Lang_Un_disj_Lhss[of Q P A] assms by (simp add: ac_simps)
 
 lemma Lang_of_Un_disj_Lhss:
-  assumes "Nts P \<inter> Lhss Q = {}" and "Nts_syms \<alpha> \<inter> Lhss Q = {}"
+  assumes "Rhs_Nts P \<inter> Lhss Q = {}" and "Nts_syms \<alpha> \<inter> Lhss Q = {}"
   shows "Lang_of (P \<union> Q) \<alpha> = Lang_of P \<alpha>"
   using derives_Un_disj_Lhss[OF assms] by (simp add: Lang_of_def)
 
 lemma Lang_of_disj_Lhss_Un:
-  assumes disj: "Lhss P \<inter> Nts Q = {}" "Nts_syms \<alpha> \<inter> Lhss P = {}"
+  assumes disj: "Lhss P \<inter> Rhs_Nts Q = {}" "Nts_syms \<alpha> \<inter> Lhss P = {}"
   shows "Lang_of (P \<union> Q) \<alpha> = Lang_of Q \<alpha>"
   using Lang_of_Un_disj_Lhss[of Q P \<alpha>] assms by (simp add: ac_simps)
+
+lemma Lang_of_set_Un_disj_Lhss:
+  assumes PQ: "Rhs_Nts P \<inter> Lhss Q = {}" and VQ: "\<Union>(Nts_syms ` V) \<inter> Lhss Q = {}"
+  shows "Lang_of_set (P \<union> Q) V = Lang_of_set P V"
+proof-
+  { fix v assume "v \<in> V"
+    with VQ have "Nts_syms v \<inter> Lhss Q = {}" by auto
+    note Lang_of_Un_disj_Lhss[OF PQ this]
+  }
+  then show ?thesis by auto
+qed
+
+lemma Lang_of_set_disj_Lhss_Un:
+  assumes disj: "Lhss P \<inter> Rhs_Nts Q = {}" "\<Union>(Nts_syms ` V) \<inter> Lhss P = {}"
+  shows "Lang_of_set (P \<union> Q) V = Lang_of_set Q V"
+  using Lang_of_set_Un_disj_Lhss[of Q P V] assms by (simp add: ac_simps)
 
 subsection \<open>Substitution in Lists\<close>
 

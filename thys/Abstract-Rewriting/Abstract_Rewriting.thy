@@ -33,10 +33,6 @@ imports
 begin
 
 (*FIXME: move*)
-lemma trancl_mono_set:
-  "r \<subseteq> s \<Longrightarrow> r\<^sup>+ \<subseteq> s\<^sup>+"
-  by (blast intro: trancl_mono)
-
 lemma relpow_mono:
   fixes r :: "'a rel"
   assumes "r \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
@@ -127,15 +123,8 @@ lemma conversion_refl [simp]: "(a, a) \<in> A\<^sup>\<leftrightarrow>\<^sup>*"
   by (simp add: conversion_def)
 
 lemma conversionI':
-  assumes "(a, b) \<in> A\<^sup>*" shows "(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>*"
-using assms
-proof (induct)
-  case base then show ?case by simp
-next
-  case (step b c)
-  then have "(b, c) \<in> A\<^sup>\<leftrightarrow>" by simp
-  with \<open>(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>*\<close> show ?case unfolding conversion_def by (rule rtrancl.intros)
-qed
+  assumes "(a, b) \<in> A\<^sup>*" shows "(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>*"  
+  using assms unfolding conversion_def by regexp
 
 lemma rtrancl_comp_trancl_conv:
   "r\<^sup>* O r = r\<^sup>+" by regexp
@@ -685,6 +674,12 @@ proof -
   then have "y = z" using rtranclD [OF \<open>(y, z) \<in> r\<^sup>*\<close>] by auto
   with \<open>x = z\<close> show ?thesis by simp
 qed
+
+lemma CR_on_same_NF: assumes "CR_on R A" 
+  and "a \<in> A" and "(a,b) \<in> R\<^sup>!" and "(a,c) \<in> R\<^sup>!" 
+shows "b = c" 
+  by (meson CR_onE assms(1,2,3,4) join_NF_imp_eq normalizability_E)
+
 
 lemma rtrancl_Restr:
   assumes "(x, y) \<in> (Restr r A)\<^sup>*"

@@ -619,7 +619,7 @@ lemma gmctxtex_onp_substep_tranclE:
     and "\<And> C D. P C \<Longrightarrow> P D \<Longrightarrow> (C, D) \<in> comp_gmctxt \<Longrightarrow> P (C \<sqinter> D)"
   shows "(gmctxtex_onp P \<R>)\<^sup>+ = gmctxtex_onp P \<R>" (is "?Ls = ?Rs")
 proof
-  show "?Rs \<subseteq> ?Ls" using trancl_mono_set by fastforce
+  show "?Rs \<subseteq> ?Ls" using trancl_mono_subset by fastforce
 next
   {fix s t assume "(s, t) \<in> ?Ls" then have "(s, t) \<in> ?Rs"
     proof induction

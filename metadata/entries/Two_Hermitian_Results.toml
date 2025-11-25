@@ -26,6 +26,10 @@ homepage = "jiangz_homepage"
 binder = "binder_email"
 
 [history]
+2025-11-23 = """
+In Cauchy_Eigenvalue_Interlacing.thy, improved some proofs and definitions, and extracted some specialized subproofs to more general reusable lemmas (placed in Misc_Matrix_Results.thy). Also, in Sylvester_Criterion.thy, added computable definition to check if the smallest eigenvalue of a matrix is less than a given value (along with proof of correctness).
+(revision 981ea49ca51a)<br>
+"""
 
 [extra]
 

@@ -11,6 +11,13 @@ begin
 (* Import of additional theories undoes this deletion in \<open>Context_Free_Grammar\<close>: *)
 declare relpowp.simps(2)[simp del] 
 
+lemma set_fold_union: "set (fold List.union xss ys) = \<Union>(set ` set xss) \<union> set ys"
+  apply (induction xss arbitrary: ys)
+  by auto
+
+lemma distinct_fold_union: "distinct (fold List.union xss ys) \<longleftrightarrow> distinct ys"
+  by (induction xss arbitrary: ys; simp)
+
 text \<open>Lemmas for @{const Option.these}:\<close>
 
 lemma these_eq_Collect: "Option.these X = {x. Some x \<in> X}"
@@ -1945,101 +1952,110 @@ section \<open>Full Greibach Normal Form\<close>
 text \<open>One can easily convert head GNF into full GNF by replacing tail terminals
 by fresh nonterminals.\<close>
 
+definition Bad_Tms_GNF :: "('n,'t) Prods \<Rightarrow> 't set" where
+  "Bad_Tms_GNF P = \<Union>{Tms_syms \<alpha> | \<alpha>. \<exists>A x. (A,x#\<alpha>) \<in> P}"
+
+definition bad_tms_gnf :: "('n,'t) prods \<Rightarrow> 't list" where
+  "bad_tms_gnf P = fold List.union [tms_syms \<alpha>. (A,x#\<alpha>) \<leftarrow> P] []"
+
+lemma set_bad_tms_gnf: "set (bad_tms_gnf P) = Bad_Tms_GNF (set P)"
+  by (force simp: Bad_Tms_GNF_def bad_tms_gnf_def set_fold_union image_Collect set_tms_syms)
+
+lemma distinct_bad_tms_gnf: "distinct (bad_tms_gnf P)"
+  by (simp add: bad_tms_gnf_def distinct_fold_union)
+
 lemma GNF_Replace_Tm_tl:
-  assumes P: "GNF_hd P"
+  assumes P: "GNF_hd P" and Pf: "Bad_Tms_GNF P \<subseteq> dom f"
   shows "GNF (Replace_Tm_tl f P)"
   apply (unfold Replace_Tm_tl_def Replace_Tm_def set_append GNF_Un)
 proof (intro conjI GNF_I)
   fix A \<alpha>' assume "(A,\<alpha>') \<in> {(A, replace_Tm_tl_syms f \<alpha>) | A \<alpha>. (A,\<alpha>) \<in> P}"
-  then obtain \<alpha> where "(A,\<alpha>) \<in> P" and \<alpha>': "\<alpha>' = replace_Tm_tl_syms f \<alpha>" by auto
-  with P obtain a \<beta> where "\<alpha> = Tm a # \<beta>" by (auto simp: GNF_hd_def)
-  with \<alpha>' have \<alpha>': "\<alpha>' = Tm a # map (replace_Tm_sym f) \<beta>" by (auto simp: replace_Tm_tl_syms_def)
-  define Bs where "Bs \<equiv> [case x of Nt B \<Rightarrow> B | Tm b \<Rightarrow> f b. x \<leftarrow> \<beta>]"
-  have "map (replace_Tm_sym f) \<beta> = map Nt Bs"
-    by (unfold Bs_def, induction \<beta>, auto simp: replace_Tm_sym_simps split: sym.splits)
+  then obtain \<alpha> where AP: "(A,\<alpha>) \<in> P" and \<alpha>': "\<alpha>' = replace_Tm_tl_syms f \<alpha>" by auto
+  from AP P obtain a \<beta> where [simp]: "\<alpha> = Tm a # \<beta>" by (auto simp: GNF_hd_def)
+  from \<alpha>' have [simp]: "\<alpha>' = Tm a # map (replace_Tm_sym f) \<beta>" by (auto simp: replace_Tm_tl_syms_def)
+  define Bs where "Bs \<equiv> [case x of Nt B \<Rightarrow> B | Tm b \<Rightarrow> the (f b). x \<leftarrow> \<beta>]"
+  from Pf AP have "Tms_syms \<beta> \<subseteq> dom f" by (force simp: Bad_Tms_GNF_def)
+  then have "map (replace_Tm_sym f) \<beta> = map Nt Bs"
+    by (unfold Bs_def, induction \<beta>, auto simp: replace_Tm_sym_simps split: sym.splits option.splits)
   with \<alpha>' have "\<alpha>' = Tm a # map Nt Bs" by simp
   then show "\<exists>a Bs. \<alpha>' = Tm a # map Nt Bs" by blast
-qed auto
+qed (auto simp: Replace_Tm_new_def)
 
 definition GNF_of :: "'n list \<Rightarrow> 't list \<Rightarrow> ('n::fresh0,'t)Prods \<Rightarrow> ('n,'t)Prods" where
-"GNF_of As as P =
+[code_unfold]: "GNF_of As as P =
  (let As' = freshs (set As) As;
-      P' = Expand_tri (As' @ rev As) (Solve_tri As As' (Eps_elim P));
-      f = fresh_fun (set As \<union> set As') as
-  in Replace_Tm_tl f P')"
-
-definition gnf_of :: "('n::fresh0,'t)prods \<Rightarrow> ('n,'t)prods" where
-"gnf_of P =
- (let As = nts P;
-      As' = freshs (set As) As;
-      P' = expand_tri (As' @ rev As) (solve_tri As As' (eps_elim P));
-      f = fresh_fun (set As \<union> set As') (tms P)
-  in replace_Tm_tl f P')"
-
-lemma set_gnf_of: "set (gnf_of P) = GNF_of (nts P) (tms P) (set P)"
-  by (simp add: gnf_of_def GNF_of_def Let_def set_replace_Tm_tl set_expand_tri set_solve_tri set_eps_elim)
-
-lemma GNF_of_via_GNF_hd_of:
-  "GNF_of As as P =
-  (let As' = freshs (set As) As;
-       f = fresh_fun (set As \<union> set As') as
-   in Replace_Tm_tl f (GNF_hd_of As P))"
-  by (auto simp: GNF_of_def GNF_hd_of_def Let_def)
-
-theorem GNF_GNF_of:
-  assumes "distinct As" and "Nts P \<subseteq> set As"
-  shows "GNF (GNF_of As as P)"
-  apply (unfold GNF_of_via_GNF_hd_of Let_def)
-  apply (rule GNF_Replace_Tm_tl)
-  using GNF_hd_GNF_hd_of[OF assms].
-
-theorem Lang_GNF_of:
-  assumes As: "distinct As" and PAs: "Nts P \<subseteq> set As" and Pas: "Tms P \<subseteq> set as"
-    and AAs: "A \<in> set As"
-  shows "Lang (GNF_of As as P) A = Lang P A - {[]}"
-proof-
-  define As' where "As' = freshs (set As) As"
-  define f where "f = fresh_fun (set As \<union> set As') as"
-  show ?thesis
-    apply (unfold GNF_of_via_GNF_hd_of Let_def)
-    apply (fold As'_def)
-    apply (fold f_def)
-    apply (fold Lang_GNF_hd_of[OF As PAs AAs])
-  proof (rule Lang_Replace_Tm_tl[OF _ _ ])
-    have as: "Tms (GNF_hd_of As P) \<subseteq> set as"
-      using subset_trans[OF Tms_GNF_hd_of Pas].
-    show "inj_on f (Tms (GNF_hd_of As P))"
-      apply (unfold f_def)
-      apply (rule inj_on_subset[OF fresh_fun_inj_on])
-      by (simp_all add: finite_Nts as)
-    have "(set As \<union> set As') \<inter> f ` Tms (GNF_hd_of As P) = {}"
-      apply (unfold f_def)
-      apply (rule fresh_fun_disj)
-      by (simp_all add: as)
-    with AAs as PAs
-    show "A \<notin> f ` Tms (GNF_hd_of As P)"
-      and "Nts (GNF_hd_of As P) \<inter> f ` Tms (GNF_hd_of As P) = {}"
-      by (auto simp: As'_def dest!: subsetD[OF Nts_GNF_hd_of])
-  qed
-qed
+      P' = Expand_tri (As' @ rev As) (Solve_tri As As' (Eps_elim P))
+  in Replace_Tm_tl (fresh_map (set As \<union> set As') as) P')"
 
 value "GNF_of [1,2,3] [0,1] {
 (1::nat, [Nt 2, Nt 3]),
 (2,[Nt 3, Nt 1]), (2, [Tm (1::int)]),
 (3,[Nt 1, Nt 2]), (3,[Tm 0])}"
 
+definition gnf_of :: "('n::fresh0,'t)prods \<Rightarrow> ('n,'t)prods" where
+"gnf_of P =
+ (let As = nts P;
+      As' = freshs (set As) As;
+      P' = expand_tri (As' @ rev As) (solve_tri As As' (eps_elim P));
+      f = fresh_assoc (set As \<union> set As') (bad_tms_gnf P')
+  in replace_Tm_tl f P')"
+
+lemma set_gnf_of: "set (gnf_of P) = GNF_of (nts P) (bad_tms_gnf (gnf_hd_of P)) (set P)"
+  by (simp add: gnf_of_def GNF_of_def Let_def set_replace_Tm_tl set_expand_tri
+      set_solve_tri set_eps_elim distinct_fold_union map_fst_fresh_assoc distinct_bad_tms_gnf
+      map_of_fresh_assoc gnf_hd_of_def)
+
+lemma GNF_of_via_GNF_hd_of:
+  "GNF_of As as P =
+  (let As' = freshs (set As) As;
+       f = fresh_map (set As \<union> set As') as
+   in Replace_Tm_tl f (GNF_hd_of As P))"
+  by (auto simp: GNF_of_def GNF_hd_of_def Let_def)
+
+theorem GNF_GNF_of:
+  assumes As: "distinct As" and PAs: "Nts P \<subseteq> set As"
+    and Pas: "Bad_Tms_GNF (GNF_hd_of As P) \<subseteq> set as"
+  shows "GNF (GNF_of As as P)"
+  apply (unfold GNF_of_via_GNF_hd_of Let_def)
+  apply (rule GNF_Replace_Tm_tl)
+  using GNF_hd_GNF_hd_of[OF As PAs] Pas
+  by (simp_all add: dom_fresh_map)
+
+theorem Lang_GNF_of:
+  assumes As: "distinct As" and PAs: "Nts P \<subseteq> set As"
+    and Pas: "Bad_Tms_GNF (GNF_hd_of As P) \<subseteq> set as"
+    and AAs: "A \<in> set As"
+  shows "Lang (GNF_of As as P) A = Lang P A - {[]}"
+proof-
+  define As' where "As' = freshs (set As) As"
+  define f where "f = fresh_map (set As \<union> set As') as"
+  show ?thesis
+    apply (unfold GNF_of_via_GNF_hd_of Let_def)
+    apply (fold As'_def)
+    apply (fold f_def)
+    apply (fold Lang_GNF_hd_of[OF As PAs AAs])
+  proof (rule Lang_Replace_Tm_tl[OF _ _ ])
+    show "inj_on f (dom f)"
+      apply (unfold f_def dom_fresh_map)
+      apply (rule fresh_map_inj_on)
+      by simp
+    from fresh_map_disj[of "set As \<union> set As'" as, simplified, folded f_def]
+      Nts_GNF_hd_of[of As P, folded As'_def] AAs PAs
+    show "A \<notin> ran f" and "ran f \<inter> Nts (GNF_hd_of As P) = {}" by auto
+  qed
+qed
 
 corollary gnf_gnf_of: "gnf (gnf_of P)"
   apply (unfold set_gnf_of)
   apply (rule GNF_GNF_of)
-  using distinct_nts by (auto simp: set_nts)
+  using distinct_nts by (auto simp: set_nts set_bad_tms_gnf set_gnf_hd_of)
 
 theorem lang_gnf_of:
   assumes A: "A \<in> set (nts P)"
   shows "lang (gnf_of P) A = lang P A - {[]}"
   apply (unfold set_gnf_of)
   apply (rule Lang_GNF_of)
-  using distinct_nts A by (auto simp: set_nts set_tms)
+  using distinct_nts A by (auto simp: set_nts set_bad_tms_gnf set_gnf_hd_of)
 
 value "remdups (gnf_of [
 (1::nat, [Nt 2, Nt 3]),
