@@ -8,7 +8,7 @@ imports
   Amortized_Framework
   Priority_Queue_ops_merge
   Lemmas_log
-  "HOL-Data_Structures.Define_Time_Function"
+  "HOL-Library.Time_Commands"
 begin
 
 text

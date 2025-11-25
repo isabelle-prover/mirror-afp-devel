@@ -6,7 +6,7 @@ imports
   "HOL-Library.Pattern_Aliases"
   "HOL-Data_Structures.Priority_Queue_Specs"
   "HOL-Data_Structures.Braun_Tree"
-  "HOL-Data_Structures.Define_Time_Function"
+  "HOL-Library.Time_Commands"
 begin
 
 subsection "Introduction"
