@@ -53,112 +53,138 @@ by (auto simp: set_tms_syms split: if_splits)
 definition replace_Tm_2_syms where
 "replace_Tm_2_syms f xs = (if length xs < 2 then xs else map (replace_Tm_sym f) xs)"
 
-abbreviation Replace_Tm_2_old where
-"Replace_Tm_2_old f P \<equiv> {(A, replace_Tm_2_syms f \<alpha>) | A \<alpha>. (A,\<alpha>) \<in> P}"
+definition Replace_Tm_2 :: "('t \<rightharpoonup> 'n) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
+[code_unfold]: "Replace_Tm_2 f = Replace_Tm f (replace_Tm_2_syms f)"
 
-definition Replace_Tm_2 where
-"Replace_Tm_2 f P = Replace_Tm_2_old f P \<union> Replace_Tm_new f (Bad_tms P)"
+definition replace_Tm_2 :: "('t \<times> 'n) list \<Rightarrow> ('n,'t) prods \<Rightarrow> ('n,'t) prods" where
+"replace_Tm_2 f = replace_Tm f (replace_Tm_2_syms (map_of f))"
 
-definition replace_Tm_2 where
-"replace_Tm_2 f P = [(A, replace_Tm_2_syms f \<alpha>). (A,\<alpha>) \<leftarrow> P] @ [(f a, [Tm a]). a \<leftarrow> bad_tms P]"
+lemma set_replace_Tm_2:
+  "distinct (map fst f) \<Longrightarrow> set (replace_Tm_2 f ps) = Replace_Tm_2 (map_of f) (set ps)"
+by (auto simp add: replace_Tm_2_def Replace_Tm_2_def set_replace_Tm)
 
-lemma set_replace_Tm_2: "set (replace_Tm_2 f ps) = Replace_Tm_2 f (set ps)"
-by (auto simp add: replace_Tm_2_def Replace_Tm_2_def set_bad_tms)
-
-lemma Expand_all_syms_Replace_Tm_2:
-  assumes inj: "inj_on f as" and L: "L \<inter> f ` as = {}"
-    and \<alpha>: "length \<alpha> \<ge> 2 \<Longrightarrow> Tms_syms \<alpha> \<subseteq> as" "Nts_syms \<alpha> \<subseteq> L"
-  shows "Expand_all_syms (Replace_Tm_new f as) L (replace_Tm_2_syms f \<alpha>) = {\<alpha>}"
+lemma replace_Tm_2_syms_ops:
+  "replace_Tm_2_syms f \<alpha> \<in> Replace_Tm_syms_ops f \<alpha>"
 proof (cases "length \<alpha> < 2")
   case False
-  thus ?thesis using assms
-    by (simp add: replace_Tm_2_syms_def Expand_all_syms_Replace_Tm_ops map_replace_Tm_sym_ops)
+  thus ?thesis
+    by (simp add: replace_Tm_2_syms_def map_replace_Tm_sym_ops)
 next
   case True
-  thus ?thesis using assms
+  thus ?thesis
     by(cases \<alpha>)
-      (auto simp: replace_Tm_2_syms_def Expand_sym_Replace_Tm_Tm Expand_sym_Replace_Tm_Nt
-            split: sym.splits)
+      (auto simp: replace_Tm_2_syms_def Replace_Tm_sym_ops_def)
 qed
 
-lemma Expand_all_Replace_Tm_2:
-  assumes inj: "inj_on f as" and L: "L \<inter> f ` as = {}"
-    and P: "Bad_tms P \<subseteq> as" "Rhs_Nts P \<subseteq> L"
-  shows "Expand_all (Replace_Tm_new f as) L (Replace_Tm_2_old f P) = P"
-proof-
-  have *: "(A,\<alpha>) \<in> P \<Longrightarrow> Expand_all_syms (Replace_Tm_new f as) L (replace_Tm_2_syms f \<alpha>) = {\<alpha>}" for A \<alpha>
-    apply (rule Expand_all_syms_Replace_Tm_2[OF inj L])
-    using P by (force simp: Bad_tms_def Rhs_Nts_def)+
-  then show ?thesis by (force simp: Expand_def)
-qed
+lemma replace_Tm_2_ops:
+  "replace_Tm_2_syms f \<in> Replace_Tm_ops f"
+  by (simp add: Replace_Tm_ops_def replace_Tm_2_syms_ops)
 
-lemma Lang_Replace_Tm_2:
-  assumes inj: "inj_on f (Bad_tms P)"
-    and disj: "Nts P \<inter> f ` Bad_tms P = {}"
-    and A: "A \<notin> f ` Bad_tms P"
+corollary Lang_Replace_Tm_2:
+  assumes "inj_on f (dom f)" "ran f \<inter> Nts P = {}" "A \<notin> ran f"
   shows "Lang (Replace_Tm_2 f P) A = Lang P A"
-    (is "?l = ?r")
-proof-
-  let ?B = "Bad_tms P"
-  from disj have L: "Lhss P \<inter> f ` ?B = {}" and R: "Rhs_Nts P \<inter> f ` ?B = {}"
-    by (auto simp: Nts_Lhss_Rhs_Nts)
-  have "?l = Lang (Replace_Tm_2_old f P \<union> Replace_Tm_new f ?B) A"
-    by (simp add: Replace_Tm_2_def)
-  also have "\<dots> = Lang (Expand_all (Replace_Tm_new f ?B) (Nts P)
-                         (Replace_Tm_2_old f P) \<union> Replace_Tm_new f ?B) A"
-    apply (subst Lang_Expand_all)
-    by (auto simp: Nts_def Lhss_def)
-  also have "\<dots> = Lang (P \<union> Replace_Tm_new f ?B) A"
-    using Expand_all_Replace_Tm_2[OF inj disj]
-    by (simp add: Nts_Lhss_Rhs_Nts)
-  also have "\<dots> = ?r"
-    apply (rule Lang_Un_disj_Lhss) using disj A by (auto simp: Lhss_image_Pair)
-  finally show ?thesis.
-qed
+  using Lang_Replace_Tm[OF replace_Tm_2_ops assms] by (simp add: Replace_Tm_2_def)
 
 corollary lang_replace_Tm_2:
-  assumes inj: "inj_on f (Bad_tms (set ps))" and disj: "Nts(set ps) \<inter> f ` Bad_tms(set ps) = {}"
-    and A: "A \<notin> f ` Bad_tms (set ps)"
+  assumes dist: "distinct (map fst f)"
+    and inj: "inj_on (map_of f) (fst ` (set f))" and disj: "snd ` set f \<inter> Nts(set ps) = {}"
+    and A: "A \<notin> snd ` set f"
   shows "lang (replace_Tm_2 f ps) A = lang ps A"
-using Lang_Replace_Tm_2[OF assms] by(simp add: set_replace_Tm_2)
+  apply (unfold set_replace_Tm_2[OF dist])
+  apply (rule Lang_Replace_Tm_2)
+  using assms
+  by(simp_all add: dom_map_of_conv_image_fst ran_distinct)
 
-lemma map_replace_Tm_sym_id: "\<alpha> = map (replace_Tm_sym f) \<alpha> \<longleftrightarrow> Tms_syms \<alpha> = {}"
+lemma map_replace_Tm_sym_id: "\<alpha> = map (replace_Tm_sym f) \<alpha> \<longleftrightarrow> Tms_syms \<alpha> \<inter> dom f = {}"
 by(induction \<alpha>)(auto simp: replace_Tm_sym_def split: sym.split)
 
-lemma uniform_Replace_Tm: "uniform (Replace_Tm_2 f P)"
-unfolding Replace_Tm_2_def uniform_def replace_Tm_2_syms_def
-by(auto simp: replace_Tm_sym_def map_replace_Tm_sym_id Tms_syms_def
-              numeral_2_eq_2 less_Suc_eq_le le_Suc_eq length_Suc_conv
-        split: sym.splits)
+lemma uniform_Replace_Tm_2:
+  assumes Pf: "Bad_tms P \<subseteq> dom f" shows "uniform (Replace_Tm_2 f P)"
+  unfolding uniform_def
+proof (safe del: disjCI)
+  fix A \<beta> assume A\<beta>: "(A,\<beta>) \<in> Replace_Tm_2 f P"
+  show "(\<nexists>t. Tm t \<in> set \<beta>) \<or> (\<exists>t. \<beta> = [Tm t])"
+  proof(cases "(A,\<beta>) \<in> Replace_Tm_new f")
+    case True
+    then show ?thesis by (auto simp: Replace_Tm_new_def)
+  next
+    case False
+    with A\<beta> obtain \<alpha> where A\<alpha>: "(A,\<alpha>) \<in> P"
+      and [simp]: "\<beta> = (if length \<alpha> < 2 then \<alpha> else map (replace_Tm_sym f) \<alpha>)"
+      by (auto simp: Replace_Tm_2_def Replace_Tm_def replace_Tm_2_syms_def)
+    show ?thesis
+    proof (cases "length \<alpha> < 2")
+      case True
+      then show ?thesis
+        by (auto simp: numeral_2_eq_2 less_Suc_eq_le le_Suc_eq length_Suc_conv
+            replace_Tm_sym_def)
+    next
+      case False
+      { fix a assume "Tm a \<in> set \<alpha>"
+        with False A\<alpha> have "a \<in> Bad_tms P"
+          by (auto simp: Bad_tms_def Tms_syms_def split: prod.splits)
+        with Pf have "a \<in> dom f" by auto
+      } note * = this
+      show ?thesis
+        by (auto simp: False replace_Tm_sym_def dest!: * split: sym.splits)
+    qed
+  qed
+qed
+
+definition Uniformize :: "('n::fresh0) \<Rightarrow> 't list \<Rightarrow> ('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
+[code_unfold]: "Uniformize S ts P = Replace_Tm_2 (fresh_map (insert S (Nts P)) ts) P"
+
+lemma "Uniformize 0 [1,2] {(0::nat, [Tm 1, Tm (2::int)])} =
+  {(0, [Nt 1, Nt 2]), (1, [Tm 1]), (2, [Tm 2])}"
+by eval
 
 definition uniformize :: "('n::fresh0) \<Rightarrow> ('n, 't) prods \<Rightarrow> ('n, 't) prods" where
 "uniformize S ps =
   (let ts = bad_tms ps;
-       tmap = fresh_fun (insert S (Nts(set ps))) ts
+       tmap = fresh_assoc (insert S (Nts(set ps))) ts
    in replace_Tm_2 tmap ps)"
 
 lemma "uniformize 0 [(0::nat, [Tm 1, Tm (2::int)])] =
   [(0, [Nt 1, Nt 2]), (1, [Tm 1]), (2, [Tm 2])]"
 by eval
 
-lemma uniform_uniformize: "uniform (set (uniformize S ps))"
-unfolding uniformize_def by (simp add: set_replace_Tm_2 uniform_Replace_Tm)
+lemma distinct_bad_tms: "distinct (bad_tms ps)"
+  by (simp add: bad_tms_def)
 
-lemma lang_uniformize: "A \<in> Nts(set ps) \<union> {S} \<Longrightarrow> lang (uniformize S ps) A = lang ps A"
-apply (simp add: uniformize_def)
-apply(rule lang_replace_Tm_2)
-  apply (metis finite_insert finite_nts fresh_fun_inj_on set_bad_tms)
- apply (simp add: finite_nts fresh_fun_disj set_bad_tms subset_insertI)
-using finite_nts fresh_fun_notIn set_bad_tms
-  by (smt (verit, best) finite_insert imageE insert_iff)
+lemma set_uniformize: "set (uniformize S ps) = Uniformize S (bad_tms ps) (set ps)"
+  by (simp add: uniformize_def Uniformize_def
+      set_replace_Tm_2 map_fst_fresh_assoc distinct_bad_tms map_of_fresh_assoc)
+
+lemma uniform_Uniformize: "Bad_tms P \<subseteq> set ts \<Longrightarrow> uniform (Uniformize S ts P)"
+  by (simp add: Uniformize_def uniform_Replace_Tm_2 dom_fresh_map)
+
+lemma uniform_uniformize: "uniform (set (uniformize S ps))"
+  by (simp add: set_uniformize uniform_Uniformize set_bad_tms)
+
+lemma Lang_Uniformize:
+  assumes fin: "finite (Nts P)"
+  shows "A \<in> Nts P \<union> {S} \<Longrightarrow> Lang (Uniformize S ts P) A = Lang P A"
+  apply (unfold Uniformize_def)
+  apply (subst Lang_Replace_Tm_2)
+  using fresh_map_disj[of "insert S (Nts P)" ts, simplified, OF fin]
+  by (auto simp: dom_fresh_map fresh_map_inj_on fin)
+
+lemma lang_uniformize: "A \<in> Nts (set ps) \<union> {S} \<Longrightarrow> lang (uniformize S ps) A = lang ps A"
+  by (auto simp: set_uniformize Lang_Uniformize finite_Nts)
+
+lemma Eps_free_Uniformize: "Eps_free P \<Longrightarrow> Eps_free (Uniformize S ts P)"
+  by (auto simp: Eps_free_def Uniformize_def
+      Replace_Tm_2_def Replace_Tm_def replace_Tm_2_syms_def Replace_Tm_new_def)
 
 lemma eps_free_uniformize: "eps_free ps \<Longrightarrow> eps_free (uniformize S ps)"
-unfolding uniformize_def Eps_free_def
-by (auto simp add: set_replace_Tm_2 Replace_Tm_2_def replace_Tm_2_syms_def)
+  by (simp add: set_uniformize Eps_free_Uniformize)
 
-lemma Unit_free_uniformize: "Unit_free (set ps) \<Longrightarrow> Unit_free (set(uniformize S ps))"
-unfolding uniformize_def Unit_free_def
-by (auto simp add: set_replace_Tm_2 Replace_Tm_2_def replace_Tm_2_syms_def)
+lemma Unit_free_Uniformize: "Unit_free P \<Longrightarrow> Unit_free (Uniformize S ts P)"
+  apply (unfold Unit_free_def)
+  by (auto simp add: Uniformize_def Replace_Tm_2_def Replace_Tm_def Replace_Tm_new_def replace_Tm_2_syms_def)
+
+lemma Unit_free_uniformize: "Unit_free (set ps) \<Longrightarrow> Unit_free (set (uniformize S ps))"
+  by (simp add: set_uniformize Unit_free_Uniformize)
 
 text \<open>The following is used to prove that binarization preserves uniformity.
 The latter is characterized in terms of \<open>badTmsCount = 0\<close>.\<close>
