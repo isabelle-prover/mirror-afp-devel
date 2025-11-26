@@ -1241,7 +1241,8 @@ using assms proof(induct A arbitrary:r p)
   next
     case 2
     then obtain j r' where r:"r = j#r'" 
-      unfolding p by (metis parallel_pos.elims(2)) 
+      unfolding p
+      by (metis Nil_not_par parallel_pos_sym proper_prefix_list.cases)
     then show ?thesis proof(cases "i = j")
       case True
       from Fun(1) 2 i have "get_label ((ctxt_of_pos_term p' (As!i))\<langle>labeled_source B\<rangle> |_ r') = get_label ((As!i) |_ r')"
