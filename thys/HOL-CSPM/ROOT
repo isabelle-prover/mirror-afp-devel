@@ -64,7 +64,7 @@ session "HOL-CSPM" (AFP) = "HOL-CSP" +
     CSPM_Laws
     Events_Ticks_CSPM_Laws
     CSPM_Deadlock_Results
-    CSPM
+    "HOL-CSPM" (global)
     DiningPhilosophers
     POTS
     Conclusion

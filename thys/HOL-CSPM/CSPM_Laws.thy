@@ -873,9 +873,9 @@ proof -
              s = trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) (ev ` f ` S) @ map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2 \<and>
              map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t \<in> \<D> (Renaming P f g)\<close>
         apply (simp add: "*"(3) "**"(2, 3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree, intro conjI)
-        apply (metis "*"(1, 2) "**"(1) "**"(3) front_tickFree_append_iff
+          apply (metis "*"(1, 2) "**"(1) "**"(3) front_tickFree_append_iff
             map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
-        apply (simp add: trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+         apply (simp add: trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
         by (metis (mono_tags, lifting) "**"(2) CollectI D_Renaming append.right_neutral front_tickFree_Nil)
       thus \<open>s \<in> \<D> ?rhs\<close> by (simp add: D_Hiding) blast
     next
@@ -887,11 +887,11 @@ proof -
              isInfHiddenRun (\<lambda>i. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (h i)) (Renaming P f g) (f ` S) \<and> 
              map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t \<in> range (\<lambda>i. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (h i))\<close>
         apply (simp add: "*"(3) "**"(2, 3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree, intro conjI)
-        apply (metis "*"(1, 2) "**"(3) front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
-        apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, symmetric])
-        apply (solves \<open>rule strict_mono_map, simp\<close>)
-        apply (solves \<open>auto simp add: T_Renaming\<close>)
-        apply (subst (1 2) trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
+             apply (metis "*"(1, 2) "**"(3) front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+            apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, symmetric])
+           apply (solves \<open>rule strict_mono_map, simp\<close>)
+          apply (solves \<open>auto simp add: T_Renaming\<close>)
+         apply (subst (1 2) trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
         by metis blast
       thus \<open>s \<in> \<D> ?rhs\<close> by (simp add: D_Hiding) blast
     qed
@@ -917,7 +917,7 @@ proof -
         apply (simp, intro conjI)
         using "**"(1) Hiding_tickFree apply blast
         using "*"(1, 2) "**"(3) Hiding_tickFree front_tickFree_append tickFree_append_iff apply blast
-        apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
+         apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
         using "**"(4) mem_D_imp_mem_D_Hiding by blast
       thus \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Renaming "*"(3) "**"(3)) blast
     next
@@ -942,13 +942,13 @@ proof -
                        isInfHiddenRun (\<lambda>i. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (inv f) (inv g)) (h i)) P S \<and> 
                        t1 \<in> range (\<lambda>i. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (inv f) (inv g)) (h i))\<close>
           apply (simp add: "***"(1) strict_mono_map, intro conjI)
-          apply (subst Renaming_inv[where f = f and g = g, symmetric])
-          apply (solves \<open>simp add: bij_is_inj bij_f\<close>)
-          apply (solves \<open>simp add: bij_is_inj bij_g\<close>)
+            apply (subst Renaming_inv[where f = f and g = g, symmetric])
+              apply (solves \<open>simp add: bij_is_inj bij_f\<close>)
+             apply (solves \<open>simp add: bij_is_inj bij_g\<close>)
 
           using "***"(1) apply (subst T_Renaming, blast)
-          apply (subst (1 2) inv_S, subst (1 2) trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inv])
-          apply (metis "***"(1))
+           apply (subst (1 2) inv_S, subst (1 2) trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inv])
+           apply (metis "***"(1))
           using "***"(2) "*****" by blast
         have \<open>tickFree (trace_hide t1 (ev ` S)) \<and> front_tickFree t1 \<and>
               trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1) (ev ` f ` S) @ u = 
@@ -957,7 +957,7 @@ proof -
           apply (simp, intro conjI)
           using "*"(2) "****"(2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree Hiding_tickFree apply blast
           using "****"(1) is_processT2_TR apply blast
-          apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
+           apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
           apply (simp add: D_Renaming D_Hiding)
           using "*"(2) "*****" "******" map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree front_tickFree_Nil by blast
         with "*"(1) show \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Renaming "*"(3) "****"(2)) blast
@@ -972,7 +972,7 @@ proof -
           apply (simp, intro conjI)
           using "****"(1) Hiding_tickFree apply blast
           using "*"(1, 2) "****"(3) Hiding_tickFree front_tickFree_append tickFree_append_iff apply blast
-          apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
+           apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
           using "****"(4) mem_D_imp_mem_D_Hiding by blast
         thus \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Renaming "*"(3) "****"(3)) blast
       qed
@@ -1033,7 +1033,7 @@ proof -
               trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) (ev ` f ` S) \<and>
               (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t, X \<union> ev ` f ` S) \<in> \<F> (Renaming P f g)\<close>
           apply (intro conjI)
-          apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, symmetric])
+           apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, symmetric])
           apply (simp add: F_Renaming)
           using "**"(2) "***" by auto
         show \<open>(s, X) \<in> \<F> ?rhs\<close>
@@ -1082,7 +1082,7 @@ proof -
           apply (simp add: F_Renaming "*"(1), intro conjI)
           using Hiding_tickFree apply blast
           using Hiding_front_tickFree apply blast
-          apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
+           apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
           using mem_D_imp_mem_D_Hiding by blast
         show \<open>(s, X) \<in> \<F> ?lhs\<close>
           apply (simp add: F_Renaming)
@@ -1404,6 +1404,6 @@ proof -
   qed
 qed
 
-(*>*)
+(*<*)
 end 
 (*>*)

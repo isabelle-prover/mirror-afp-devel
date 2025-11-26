@@ -45,7 +45,7 @@ section \<open>Multiple Sequential Composition\<close>
 
 (*<*)
 theory Multi_Sequential_Composition
-  imports "HOL-CSP.CSP"
+  imports "HOL-CSP"
 begin
   (*>*)
 

@@ -44,7 +44,7 @@ section\<open> The Throw Operator \<close>
 
 (*<*)
 theory  Throw
-  imports "HOL-CSP.CSP"
+  imports "HOL-CSP"
 begin
   (*>*)
 
@@ -642,7 +642,6 @@ next
       by (auto simp add: limproc_is_thelub chain_Throw_right \<open>chain Y\<close> D_LUB)
     moreover from \<open>(s, X) \<in> \<F> ?rhs\<close> have \<open>(s, X) \<in> \<F> (P \<Theta> a \<in> A. Y j a)\<close>
       by (simp add: limproc_is_thelub chain_Throw_right \<open>chain Y\<close> F_LUB)
-    find_theorems \<open>chain (\<lambda>a. ?P)\<close>
     ultimately show \<open>(s, X) \<in> \<F> ?lhs\<close>
       by (metis (mono_tags, lifting) below_refl le_approx2 mono_Throw)
   qed

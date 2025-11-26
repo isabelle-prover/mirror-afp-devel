@@ -387,34 +387,101 @@ qed
 
 subsection \<open>Multiple Synchronization Product\<close>
 
-lemma MultiSync_Mprefix_pseudo_distrib:
-  \<open>(\<^bold>\<lbrakk>S\<^bold>\<rbrakk> B \<in># M. \<box> x \<in> B \<rightarrow> P B x) =
-   \<box> x \<in> (\<Inter>B \<in> set_mset M. B) \<rightarrow> (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> B \<in># M. P B x)\<close>
-  if nonempty: \<open>M \<noteq> {#}\<close> and hyp: \<open>\<And>B. B \<in># M \<Longrightarrow> B \<subseteq> S\<close>
-proof-
-  from nonempty obtain b M' where \<open>b \<in># M - M'\<close>
-    \<open> M = add_mset b M'\<close> \<open>M' \<subseteq># M\<close>
-    by (metis add_diff_cancel_left' diff_subset_eq_self insert_DiffM
-        insert_DiffM2 multi_member_last multiset_nonemptyE)
-  show ?thesis
-    apply (subst (1 2 3) \<open>M = add_mset b M'\<close>)
-    using \<open>b \<in># M - M'\<close> \<open>M' \<subseteq># M\<close>
-  proof (induct rule: msubset_induct_singleton')
-    case m_singleton show ?case by fastforce
-  next
-    case (add x F) show ?case
-      apply (simp, subst Mprefix_Sync_Mprefix_subset[symmetric])
-      apply (meson add.hyps(1) hyp in_diffD,
-          metis \<open>b \<in># M - M'\<close> hyp in_diffD le_infI1)
-      using add.hyps(3) by fastforce
-  qed
+definition distinct_mset :: \<open>'a multiset \<Rightarrow> bool\<close>
+  where \<open>distinct_mset M \<equiv> \<forall>m \<in># M. \<forall>n \<in># M - {#m#}. m \<noteq> n\<close>
+
+lemma distinct_mset_iff_count :
+  \<open>distinct_mset M \<longleftrightarrow> (\<forall>m \<in># M. count M m = 1)\<close>
+  unfolding distinct_mset_def
+  by (induct M, simp_all, metis not_in_iff)
+
+lemma distinct_mset_iff_mset_distinct :
+  \<open>distinct_mset M \<longleftrightarrow> (\<forall>L. M = mset L \<longrightarrow> distinct L)\<close>
+  by (metis count_mset_0_iff distinct_count_atmost_1 distinct_mset_iff_count ex_mset set_mset_mset)
+
+lemma distinct_mset_iff_mset_set :
+  \<open>distinct_mset M \<longleftrightarrow> (\<exists>S. finite S \<and> M = mset_set S)\<close>
+  by (metis count_mset_set(1) distinct_mset_iff_count distinct_mset_iff_mset_distinct
+            ex_mset finite_set_mset finite_set_mset_mset_set mset_set_set set_mset_mset)
+
+
+
+lemma MultiSync_Mprefix_subset :
+  \<open>(\<And>m. m \<in># M \<Longrightarrow> A m \<subseteq> S) \<Longrightarrow>
+   (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># M. \<box>a \<in> A m \<rightarrow> P m a) = (if M = {#} then STOP else
+   \<box>a \<in> (\<Inter>m \<in> set_mset M. A m) \<rightarrow> (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># M. P m a))\<close>
+proof (induct M rule: induct_subset_mset_empty_single)
+  case 1 show ?case by simp
+next
+  case (2 m) show ?case by simp
+next
+  case (3 M m)
+  have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m\<in>#add_mset m M. Mprefix (A m) (P m) =
+        Mprefix (A m) (P m) \<lbrakk>S\<rbrakk> \<^bold>\<lbrakk>S\<^bold>\<rbrakk> m'\<in># M. Mprefix (A m') (P m')\<close>
+    by (simp add: \<open>M \<noteq> {#}\<close>)
+  also have \<open>\<dots> = Mprefix (A m) (P m) \<lbrakk>S\<rbrakk> \<box>a \<in> (\<Inter>m' \<in> set_mset M. A m') \<rightarrow> (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> n \<in># M. P n a)\<close>
+    by (simp add: "3.hyps"(3, 4) "3.prems")
+  also have \<open>\<dots> = \<box>a\<in>(\<Inter> (A ` set_mset (add_mset m M))) \<rightarrow> (P m a \<lbrakk>S\<rbrakk> \<^bold>\<lbrakk>S\<^bold>\<rbrakk> n\<in>#M. P n a)\<close>
+    by (subst Mprefix_Sync_Mprefix_subset, simp_all add: "3.prems")
+      (metis "3.hyps"(3) "3.prems" INF_lower2 insertI2 multiset_nonemptyE set_mset_add_mset_insert)
+  also have \<open>\<dots> = \<box>a\<in>(\<Inter> (A ` set_mset (add_mset m M))) \<rightarrow> (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> n\<in>#add_mset m M. P n a)\<close>
+    by (simp add: \<open>M \<noteq> {#}\<close>)
+  finally show ?case by simp
 qed
 
 
-lemmas MultiPar_Mprefix_pseudo_distrib =
-  MultiSync_Mprefix_pseudo_distrib[where S = \<open>UNIV\<close>, simplified]
+lemmas MultiPar_Mprefix_subset = MultiSync_Mprefix_subset[where S = UNIV, simplified]
 
 
+lemma MultiSync_Mprefix_indep :
+  \<open>\<lbrakk>finite M; \<And>m. m \<in> M \<Longrightarrow> A m \<inter> S = {}\<rbrakk> \<Longrightarrow>
+   \<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># mset_set M. \<box>a \<in> (A m) \<rightarrow> P m a =
+   \<box>a \<in> (\<Union>m \<in> M. A m) \<rightarrow> \<sqinter>m \<in> {m \<in> M. a \<in> A m}. (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> n \<in># mset_set M. (if n = m then P m a else \<box>b \<in> (A n) \<rightarrow> P n b))\<close>
+proof (induct M rule: induct_subset_empty_single)
+  case 1 show ?case by simp
+next
+  case (2 m)
+  have \<open>a \<in> A m \<Longrightarrow> {n. n = m \<and> a \<in> A n} = {m}\<close> for a by auto 
+  thus ?case by (auto intro: mono_Mprefix_eq)
+next
+  case (3 M m)
+  let ?f = \<open>\<lambda>n m x. if n = m then P m x else \<box>a \<in> (A n) \<rightarrow> P n a\<close>
+  have * : \<open>mset_set (insert m M) = add_mset m (mset_set M)\<close> \<open>mset_set M \<noteq> {#}\<close>
+    by (simp_all add: "3"(2, 3, 5) mset_set_empty_iff)
+  have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m\<in>#mset_set (insert m M). Mprefix (A m) (P m) =
+         \<box>a \<in> A m \<rightarrow> P m a \<lbrakk>S\<rbrakk> \<^bold>\<lbrakk>S\<^bold>\<rbrakk> m\<in>#mset_set M. Mprefix (A m) (P m)\<close>
+    by (simp add: "*")
+  also have \<open>\<dots> = (\<box>a\<in>A m \<rightarrow> (P m a \<lbrakk>S\<rbrakk> \<box>a\<in>\<Union> (A ` M) \<rightarrow> \<sqinter>m'\<in>{m' \<in> M. a \<in> A m'}. \<^bold>\<lbrakk>S\<^bold>\<rbrakk> n\<in>#mset_set M. ?f n m' a)) \<box>
+                  (\<box>b\<in>\<Union> (A ` M) \<rightarrow> (Mprefix (A m) (P m) \<lbrakk>S\<rbrakk> \<sqinter>m'\<in>{m' \<in> M. b \<in> A m'}. \<^bold>\<lbrakk>S\<^bold>\<rbrakk> n\<in>#mset_set M. ?f n m' b))\<close>
+    (is \<open>_ = (\<box>a\<in>A m \<rightarrow> ?rhs1 a) \<box> (\<box>b\<in>\<Union> (A ` M) \<rightarrow> ?rhs2 b)\<close>)
+    by (subst Mprefix_Sync_Mprefix_indep[symmetric])
+      (use "3"(6, 7) in \<open>auto simp flip: Mprefix_Sync_Mprefix_indep\<close>)
+  also have \<open>\<dots> = \<box>x\<in>(\<Union> (A ` insert m M)) \<rightarrow> (if x \<in> A m \<inter> \<Union> (A ` M) then ?rhs1 x \<sqinter> ?rhs2 x
+                                            else if x \<in> A m then ?rhs1 x else ?rhs2 x)\<close>
+    by (simp add: Mprefix_Det_Mprefix)
+  also have \<open>\<dots> = \<box>a\<in>\<Union> (A ` insert m M)
+                     \<rightarrow> \<sqinter>m'\<in>{m' \<in> insert m M. a \<in> A m'}. \<^bold>\<lbrakk>S\<^bold>\<rbrakk> n\<in>#mset_set (insert m M). ?f n m' a\<close>
+  proof (rule mono_Mprefix_eq)
+    fix x assume $ : \<open>x \<in> \<Union> (A ` insert m M)\<close>
+    have $$ : \<open>{m' \<in> insert m M. x \<in> A m'} =
+               (if x \<in> A m then insert m {m' \<in> M. x \<in> A m'} else {m' \<in> M. x \<in> A m'})\<close> by auto
+    have $$$ : \<open>\<forall>m\<in>M. x \<notin> A m \<Longrightarrow> {m' \<in> M. x \<in> A m'} = {}\<close> by auto
+    have $$$$ : \<open>{m' \<in> M. x \<in> A m'} - {m} = {m' \<in> M. x \<in> A m'}\<close> by (simp add: "3.hyps"(2))
+    from "$"
+    show \<open>(if x \<in> A m \<inter> \<Union> (A ` M) then ?rhs1 x \<sqinter> ?rhs2 x
+           else if x \<in> A m then ?rhs1 x else ?rhs2 x) =
+          \<sqinter>m'\<in>{m' \<in> insert m M. x \<in> A m'}. \<^bold>\<lbrakk>S\<^bold>\<rbrakk> n\<in>#mset_set (insert m M). ?f n m' x\<close>
+      by (subst (1 2) "3"(6)[symmetric], use "3.prems" in blast, unfold "$$")
+        (auto simp add: "$$$" "$$$$" "*"(2) "3"(2, 3)
+                        GlobalNdet_distrib_unit_bis Sync_distrib_GlobalNdet_left
+                intro!: mono_GlobalNdet_eq mono_MultiSync_eq
+                        arg_cong[where f = \<open>\<lambda>P. _ \<lbrakk>S\<rbrakk> P\<close>] arg_cong2[where f = \<open>(\<sqinter>)\<close>] )
+  qed
+  finally show ?case .
+qed
+
+
+lemmas MultiInter_Mprefix_indep = MultiSync_Mprefix_indep[where S = \<open>{}\<close>, simplified]
 
 
 

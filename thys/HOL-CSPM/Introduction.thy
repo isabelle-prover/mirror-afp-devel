@@ -45,7 +45,7 @@ chapter\<open> Introduction \<close>
 
 (*<*)
 theory Introduction                                               
-  imports "HOL-CSP.CSP"
+  imports "HOL-CSP"
 begin 
   (*>*)
 

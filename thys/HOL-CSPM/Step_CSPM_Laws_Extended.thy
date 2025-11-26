@@ -67,6 +67,9 @@ lemma Interrupt_Mndetprefix:
 
 
 
+text \<open>For \<^const>\<open>Mndetprefix\<close>, we will directly write the results with \<^const>\<open>ndet_write\<close>.\<close>
+
+
 (*<*)
 end
   (*>*)

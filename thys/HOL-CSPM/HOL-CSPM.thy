@@ -4,7 +4,7 @@
  *
  * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
- * This file       : Entry point
+ * This file       : Entry Point
  *
  * Copyright (c) 2025 Université Paris-Saclay, France
  *
@@ -41,15 +41,15 @@
 (*>*)
 
 
-chapter\<open> The Main Entry Point \<close>
+chapter\<open> Main Entry Point \<close>
 
 (*<*)
-theory CSPM
+theory "HOL-CSPM"
   imports Read_Write_CSPM_Laws CSPM_Laws CSPM_Deadlock_Results Events_Ticks_CSPM_Laws
 begin
   (*>*)
 
-text \<open>This is the theory \<^session>\<open>HOL-CSPM\<close> should be imported from.\<close>
+text \<open>This is where the theory \<^session>\<open>HOL-CSPM\<close> should be imported from.\<close>
 
 
 (*<*)

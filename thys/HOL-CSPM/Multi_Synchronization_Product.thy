@@ -45,7 +45,7 @@ section \<open>Multiple Synchronization Product\<close>
 
 (*<*)
 theory Multi_Synchronization_Product
-  imports Induction_Rules_CSPM "HOL-CSP.CSP"
+  imports Induction_Rules_CSPM "HOL-CSP"
 begin
   (*>*)
 
@@ -137,7 +137,7 @@ abbreviation MultiPar :: \<open>['b multiset, 'b \<Rightarrow> ('a, 'r) process\
   where \<open>MultiPar M P \<equiv> MultiSync UNIV M P\<close> 
 
 syntax "_MultiPar" :: \<open>[pttrn, 'b multiset, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>|\<^bold>| _\<in>#_. / _)\<close> [78,78,77] 77)
+  (\<open>(3\<^bold>|\<^bold>| _\<in>#_./ _)\<close> [78,78,77] 77)
 syntax_consts "_MultiPar" \<rightleftharpoons> MultiPar
 translations "\<^bold>|\<^bold>| p \<in># M. P" \<rightleftharpoons> "CONST MultiPar M (\<lambda>p. P)"
 

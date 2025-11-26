@@ -63,7 +63,7 @@ text\<open>The "Plain Old Telephone Service is a standard medium-size example fo
 
 (*<*)
 theory POTS                                               
-  imports CSPM_Laws 
+  imports "HOL-CSPM" 
 begin
   (*>*)
 

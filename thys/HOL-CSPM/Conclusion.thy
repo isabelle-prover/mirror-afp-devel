@@ -45,7 +45,7 @@ chapter\<open> Conclusion \<close>
 
 (*<*)
 theory Conclusion                                               
-  imports CSPM "HOL-Library.LaTeXsugar"
+  imports "HOL-CSPM" "HOL-Library.LaTeXsugar"
 begin 
   (*>*)
 
@@ -95,7 +95,7 @@ text \<open>We did this in a fully-abstract way, that is:
 
 
 
-text \<open>We presented two examples: Dining philosophers, and POTS.
+text \<open>We presented two examples: Dining philosophers, and the 'Plain old telephone system' POTS.
 
       In both, we underlined the usefulness of the architectural operators
       for modeling complex systems.\<close>

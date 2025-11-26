@@ -45,7 +45,7 @@ chapter\<open> Example: Dining Philosophers \<close>
 
 (*<*)
 theory DiningPhilosophers                                               
-  imports CSPM_Laws
+  imports "HOL-CSPM"
 begin 
   (*>*)
 

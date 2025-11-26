@@ -95,7 +95,6 @@ lemma D_DF: \<open>\<D> (DF A) = (if A = {} then {} else {ev a # s| a s. a \<in>
   by (subst DF_unfold DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold; 
       auto simp add: D_Mndetprefix D_Mprefix write0_def D_Ndet D_SKIPS)+
 
-thm T_SKIPS[of R]
 lemma T_DF: 
   \<open>\<T> (DF A) = (if A = {} then {[]} else insert [] {ev a # s| a s. a \<in> A \<and> s \<in> \<T> (DF A)})\<close>
   and T_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S: 
@@ -205,11 +204,10 @@ lemma \<open>deadlock_free (P \<box> Q) \<longleftrightarrow> P = STOP \<and> de
 
 
 
-
-lemma deadlock_free_GlobalDet_iff :
-  \<open>\<lbrakk>A \<noteq> {}; finite A; \<forall>a\<in>A. deadlock_free (P a)\<rbrakk> \<Longrightarrow> deadlock_free (\<box>a \<in> A. P a)\<close>
-  and deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_MultiDet:
-  \<open>\<lbrakk>A \<noteq> {}; finite A; \<forall>a\<in>A. deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (P a)\<rbrakk> \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (\<box>a \<in> A. P a)\<close>
+lemma deadlock_free_GlobalDet :
+  \<open>\<lbrakk>A \<noteq> {}; \<And>a. a \<in> A \<Longrightarrow> deadlock_free (P a)\<rbrakk> \<Longrightarrow> deadlock_free (\<box>a \<in> A. P a)\<close>
+  and deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_GlobalDet:
+  \<open>\<lbrakk>A \<noteq> {}; \<And>a. a \<in> A \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (P a)\<rbrakk> \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (\<box>a \<in> A. P a)\<close>
   by (metis GlobalNdet_FD_GlobalDet deadlock_free_GlobalNdet_iff deadlock_free_def trans_FD)
     (metis GlobalNdet_FD_GlobalDet deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_FD deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_GlobalNdet_iff trans_FD)
 
@@ -624,7 +622,6 @@ next
   next
     case (3 x)
     have \<open>(\<sqinter>a \<in> A \<rightarrow> x) \<lbrakk>S\<rbrakk> P \<sqsubseteq>\<^sub>F\<^sub>D (a \<rightarrow> DF A)\<close> if \<open>a \<in> A\<close> for a
-      find_theorems  Mndetprefix name: set 
       apply (rule trans_FD[OF mono_Sync_FD
             [OF Mndetprefix_FD_subset
               [of \<open>{a}\<close>, simplified, OF that] idem_FD]])
@@ -639,8 +636,7 @@ next
 qed
 
 
-
-lemmas DF_FD_DF_Sync_STOP_iff = 
+lemmas DF_FD_DF_Sync_STOP_iff =
   DF_FD_DF_Sync_STOP_or_SKIP_iff[of STOP, simplified]
   and DF_FD_DF_Sync_SKIP_iff =
   DF_FD_DF_Sync_STOP_or_SKIP_iff[of \<open>SKIP r\<close>, simplified]
