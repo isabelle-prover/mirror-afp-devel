@@ -101,7 +101,7 @@ section\<open>The Global Architecture of CSP\_RefTk\<close>
 text\<open>
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.60\textwidth]{figures/session_graph.pdf}
+  \includegraphics[width=0.60\textwidth]{session_graph.pdf}
 	\caption{The overall architecture: HOLCF, HOL-CSP, and CSP\_RefTk}
 	\label{fig:fig1}
 \end{figure}
