@@ -47,7 +47,7 @@ chapter\<open>Conclusion\<close>
 
 (*<*)
 theory Conclusion
-  imports CSP
+  imports "HOL-CSP"
 begin
   (*>*)
 

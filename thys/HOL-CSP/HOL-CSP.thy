@@ -6,7 +6,7 @@
  * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff, Lina Ye.
  *                   (Based on HOL-CSP 1.0 by Haykal Tej and Burkhart Wolff)
  *
- * This file       : Main entry point
+ * This file       : Main Entry Point
  *
  * Copyright (c) 2009 Université Paris-Sud, France
  * Copyright (c) 2025 Université Paris-Saclay, France
@@ -44,15 +44,16 @@
 (*>*)
 
 
-chapter\<open> The Main Entry Point \<close>
+chapter\<open> Main Entry Point \<close>
 
 (*<*)
-theory CSP
+theory "HOL-CSP"
   imports Read_Write_CSP_Laws CSP_Laws Induct_CSP_Rules CSP_Assertions
 begin
   (*>*)
 
-text \<open>This is the theory \<^session>\<open>HOL-CSP\<close> should be imported from.\<close>
+text \<open>This is where the session \<^session>\<open>HOL-CSP\<close> should be imported from.\<close>
+
 
 
 (*<*)

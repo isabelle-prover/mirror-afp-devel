@@ -717,7 +717,6 @@ proof (subst Process_eq_spec_optimized, safe)
         using KoenigLemma by blast
       from "$"(2) assms(3) is_processT3_TR have \<open>range ft' \<subseteq> \<T> P\<close> by blast
       define ft'' where \<open>ft'' i \<equiv> ft' (i + length t)\<close> for i
-      find_theorems name: unifo
       from \<open>range ft' \<subseteq> \<T> P\<close> have \<open>range ft'' \<subseteq> \<T> P\<close> and \<open>strict_mono ft''\<close>
         by (auto simp add: ft''_def "$"(1) strict_monoD strict_monoI)
       have $$ : \<open>?trH_A (ft'' i) = ?trH_A (ft'' 0)\<close> for i

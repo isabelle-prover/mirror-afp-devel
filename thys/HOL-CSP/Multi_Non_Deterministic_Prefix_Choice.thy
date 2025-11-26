@@ -241,7 +241,7 @@ syntax
 syntax_consts "_ndet_write"  \<rightleftharpoons> ndet_write
   and         "_ndet_writeX" \<rightleftharpoons> ndet_write
   and         "_ndet_writeS" \<rightleftharpoons> ndet_write
-  and         "_write"       \<rightleftharpoons> ndet_write
+  and         "_write"       \<rightleftharpoons> "write"
 
 
 translations
@@ -259,6 +259,15 @@ term \<open>c\<^bold>!\<^bold>!x\<^bold>|(0<x) \<rightarrow> P x\<close>
 term \<open>(c \<circ> c')\<^bold>!\<^bold>!a\<in>A \<rightarrow> d\<^bold>?b\<in>B \<rightarrow> event \<rightarrow> e\<^bold>!a' \<rightarrow> P a b\<close>
 
 term \<open>c\<^bold>!x \<rightarrow> P\<close>
+
+
+lemma read_id [simp] : \<open>id\<^bold>?a \<in> A \<rightarrow> P a = \<box>a \<in> A \<rightarrow> P a\<close>
+  by (auto simp add: read_def intro!: mono_Mprefix_eq)
+    (metis f_inv_into_f id_apply image_id)
+
+lemma ndet_write_id [simp] : \<open>id\<^bold>!\<^bold>!a \<in> A \<rightarrow> P a = \<sqinter>a \<in> A \<rightarrow> P a\<close>
+  by (auto simp add: ndet_write_def intro!: mono_Mndetprefix_eq)
+    (metis f_inv_into_f id_apply image_id)
 
 
 lemma mono_ndet_write: \<open>(\<And>a. a \<in> A \<Longrightarrow> P a \<sqsubseteq> Q a) \<Longrightarrow> (c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a) \<sqsubseteq> (c\<^bold>!\<^bold>!a\<in>A \<rightarrow> Q a)\<close>
@@ -284,6 +293,17 @@ lemma ndet_write_singl[simp] : \<open>c\<^bold>!\<^bold>!a\<in>{x} \<rightarrow>
 
 lemma write_is_write0 : \<open>c\<^bold>!x \<rightarrow> P = c x \<rightarrow> P\<close>
   by (simp add: write0_def write_def)
+
+
+lemma read_id_is_Mprefix : \<open>read id A P = Mprefix A P\<close>
+  by (auto simp add: read_def intro!: mono_Mprefix_eq)
+    (metis f_inv_into_f id_apply image_id)
+
+lemma ndet_write_id_is_Mndetprefix : \<open>ndet_write id A P = Mndetprefix A P\<close>
+  by (auto simp add: ndet_write_def intro!: mono_Mndetprefix_eq)
+    (metis f_inv_into_f id_apply image_id)
+
+
 
 (*<*)
 end

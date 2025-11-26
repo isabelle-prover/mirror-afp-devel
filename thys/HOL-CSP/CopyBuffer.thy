@@ -43,13 +43,13 @@
  ******************************************************************************\<close>
 (*>*)
 
-chapter\<open> Annex: Refinement Example with Buffer over infinite Alphabet\<close>
+chapter\<open> Annex: Running Example with Buffer over infinite Alphabet\<close>
 
 (*<*)
-theory     CopyBuffer 
-  imports   CSP
+theory      CopyBuffer 
+  imports   "HOL-CSP"
 begin 
-  (*>*)
+(*>*)
 
 section\<open> Defining the Copy-Buffer Example \<close>
 
@@ -340,6 +340,83 @@ lemma spec_equal_impl' :
   done
 
 
+
+subsection\<open>Proof-techniques over alphabets of processes:\<close>
+
+text\<open>An elementary proof technique to determine the alphabet \<open>\<alpha>(P)\<close> of a process \<open>P\<close> (which is 
+in general a true subset of the set of possible events \<open>\<Sigma>\<close>) is based on a noetherian induction
+principle over the length of lists:\<close>
+
+lemma alphabet_of_COPY : \<open>\<alpha>(COPY::('\<alpha> channel) process) = range left \<union> range right\<close>
+proof(intro equalityI)
+  show "\<alpha>(COPY::('\<alpha> channel) process) \<subseteq> range left \<union> range right" 
+  proof -
+    have * : "size t \<le> n \<Longrightarrow> t \<in> \<T> COPY \<Longrightarrow> x \<notin> range right \<Longrightarrow> ev x \<in> set t \<Longrightarrow> x \<in> range left"  
+      for n::nat and x::\<open>'\<alpha> channel\<close> and t:: \<open>'\<alpha> channel trace\<close>
+      proof(induct n  arbitrary : x t)
+        case 0
+        then show ?case by simp 
+      next
+        case (Suc n)
+        then show ?case
+        proof -
+          assume 1 : \<open>t \<in> \<T> COPY\<close>
+          have  ** : \<open>t \<in> \<T> (left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY)\<close> by (metis COPY_rec Suc.prems(2))
+          assume 2 : \<open>x \<notin> range right\<close>
+          assume 3 : \<open>ev x \<in> set t\<close>
+          show       \<open>x \<in> range left\<close>
+            apply(insert **) 
+            apply(subst (asm) T_read_inj_on, meson channel.inject(1) injI)
+            apply(auto) using 3 apply force
+            apply(subst (asm) T_write, auto) 
+            using 3 apply auto[1] 
+            by (metis Suc.hyps Suc.prems(1) 2 3 Suc_leD Suc_le_mono event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.inject(1) 
+                      insertE length_Cons list.simps(15) range_eqI)
+        qed
+      qed
+    show ?thesis
+      unfolding events_of_def 
+      using * by blast
+  qed
+next
+  show "range left \<union> range right \<subseteq> \<alpha>(COPY::('\<alpha> channel) process)"
+  proof - 
+    have * : " \<exists>x\<in>\<T> (COPY::('\<alpha> channel) process). ev (left xa) \<in> set x" for xa
+               apply(subst COPY_rec) 
+               by (metis (mono_tags, lifting) Mprefix_projs(3) Nil_elem_T insert_iff 
+                         list.simps(15) mem_Collect_eq rangeI  read_def)
+    have **: " \<exists>x\<in>\<T> (COPY::('\<alpha> channel) process). ev (right xa) \<in> set x" for xa
+               apply(subst COPY_rec) 
+               apply(subst T_read_inj_on,meson channel.inject(1) injI)
+               by (metis (mono_tags, lifting) T_write UNIV_I insert_iff 
+                          is_processT1_TR list.simps(15) mem_Collect_eq)
+   show ?thesis
+     unfolding events_of_def using * ** by auto
+  qed   
+qed
+
+text\<open> A more advanced technique promising a higher degree of automation is requiring a 
+restriction space  argument, which is not yet at our disposition here. \<close>
+
+section\<open>More on CopyBuffer\<close>
+
+text\<open>The CopyBuffer is a running example in the HOL-CSP theory and will be reused as a demonstrator
+in various contexts, be it in proofs or model-checking. With respect to the former, the reader is
+referred to the session \<^verbatim>\<open>CSP_RefTK\<close> where specific support for deadlock and lifelock refinement
+proofs is developed, such that goals of the form:
+
+@{theory_text [indent=10,margin=70] 
+\<open>corollary df_COPY: "deadlock_free COPY"
+      and  lf_COPY: "lifelock_free COPY"\<close>}
+
+can be solved with a reasonable degree of automation.
+
+With respect to model-checking, the reader is referred to the session  \<^verbatim>\<open>FDR\<close> where techniques for
+finitised model-checking of HOL-CSP processes is introduced. 
+\<close>
+
+
+
 (*<*)
 end
-  (*>*)
+(*>*)
