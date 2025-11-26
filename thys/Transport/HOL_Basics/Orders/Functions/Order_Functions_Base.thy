@@ -26,12 +26,11 @@ begin
 syntax
   "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) \<equiv>\<^bsub>(_)\<^esub> (_)\<close> [51,51,51] 50)
 notation bi_related (\<open>'(\<equiv>(\<^bsub>_\<^esub>)')\<close>)
-end
-
 syntax_consts
   "_bi_related" \<rightleftharpoons> bi_related
 translations
   "x \<equiv>\<^bsub>R\<^esub> y" \<rightleftharpoons> "CONST bi_related R x y"
+end
 
 lemma bi_relatedI [intro]:
   assumes "R x y"

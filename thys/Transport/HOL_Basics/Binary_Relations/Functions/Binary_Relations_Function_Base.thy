@@ -16,10 +16,10 @@ begin
 notation "rel_mono_wrt" (infixr \<open>\<rightarrow>\<close> 40)
 syntax
   "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow> (_)\<close> [41, 41, 40] 40)
-end
 syntax_consts "_rel_dep_mono_wrt_pred" \<rightleftharpoons> rel_dep_mono_wrt
 translations
   "(x : A) \<rightarrow> B" \<rightleftharpoons> "CONST rel_dep_mono_wrt A (\<lambda>x. B)"
+end
 
 definition "rel_dep_mono_wrt_pred (A :: 'a \<Rightarrow> bool) (B :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<equiv>
   left_total_on A R \<and> right_unique_on A R \<and> ((x : A) \<Rightarrow> B x) (eval R)"

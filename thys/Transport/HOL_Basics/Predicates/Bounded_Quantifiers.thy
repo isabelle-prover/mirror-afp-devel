@@ -9,54 +9,68 @@ begin
 
 consts ball :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 
-open_bundle ball_syntax
+(*FIXME: why can ball_syntax_aux and ball_syntax not be merged? There's an error with _ball2 when
+the bundles are merged (as of 26.11.2025)*)
+open_bundle ball_syntax_aux
 begin
+notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 syntax
   "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<forall>_ : _./ _)\<close> 10)
   "_ball2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 end
 
+open_bundle ball_syntax
+begin
+unbundle ball_syntax_aux
 syntax_consts
   "_ball" "_ball2" \<rightleftharpoons> ball
 translations
   "\<forall>x xs : P. Q" \<rightharpoonup> "CONST ball P (\<lambda>x. _ball2 xs P Q)"
   "_ball2 x P Q" \<rightharpoonup> "\<forall>x : P. Q"
   "\<forall>x : P. Q" \<rightleftharpoons> "CONST ball P (\<lambda>x. Q)"
+end
 
 consts bex :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 
-open_bundle bex_syntax
+open_bundle bex_syntax_aux
 begin
+notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 syntax
   "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>_ : _./ _)\<close> 10)
   "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 end
 
+open_bundle bex_syntax
+begin
+unbundle bex_syntax_aux
 syntax_consts
   "_bex" "_bex2" \<rightleftharpoons> bex
 translations
   "\<exists>x xs : P. Q" \<rightharpoonup> "CONST bex P (\<lambda>x. _bex2 xs P Q)"
   "_bex2 x P Q" \<rightharpoonup> "\<exists>x : P. Q"
   "\<exists>x : P. Q" \<rightleftharpoons> "CONST bex P (\<lambda>x. Q)"
+end
 
 consts bex1 :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 
-open_bundle bex1_syntax
+open_bundle bex1_syntax_aux
 begin
+notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 syntax
   "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>!_ : _./ _)\<close> 10)
   "_bex12" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 end
 
+open_bundle bex1_syntax
+begin
+unbundle bex1_syntax_aux
 syntax_consts
   "_bex1" "_bex12" \<rightleftharpoons> bex1
 translations
   "\<exists>!x xs : P. Q" \<rightharpoonup> "CONST bex1 P (\<lambda>x. _bex12 xs P Q)"
   "_bex12 x P Q" \<rightharpoonup> "\<exists>!x : P. Q"
   "\<exists>!x : P. Q" \<rightleftharpoons> "CONST bex1 P (\<lambda>x. Q)"
+end
 
 bundle bounded_quantifier_syntax
 begin

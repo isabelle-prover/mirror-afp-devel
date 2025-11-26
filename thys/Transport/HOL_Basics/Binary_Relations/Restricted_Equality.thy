@@ -18,14 +18,13 @@ begin
 syntax
   "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) =(\<^bsub>_\<^esub>) (_)\<close> [51,51,51] 50)
   "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>'(=(\<^bsub>_\<^esub>)')\<close>)
-end
-
 syntax_consts
   "_eq_restrict_infix" \<rightleftharpoons> rel_restrict_left and
   "_eq_restrict" \<rightleftharpoons> rel_restrict_left
 translations
   "(=\<^bsub>P\<^esub>)" \<rightleftharpoons> "CONST rel_restrict_left (=) P"
   "x =\<^bsub>P\<^esub> y" \<rightleftharpoons> "CONST rel_restrict_left (=) P x y"
+end
 
 lemma in_dom_eq_restrict_eq [simp]: "in_dom (=\<^bsub>P\<^esub>) = P" by auto
 lemma in_codom_eq_restrict_eq [simp]: "in_codom (=\<^bsub>P\<^esub>) = P" by auto

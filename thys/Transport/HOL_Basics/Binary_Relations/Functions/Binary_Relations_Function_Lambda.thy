@@ -13,13 +13,12 @@ open_bundle rel_lambda_syntax
 begin
 syntax
   "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>(2\<lambda>_ : _./ _)\<close> 60)
-end
-
 syntax_consts
   "_rel_lambda" \<rightleftharpoons> rel_lambda
 translations
   "\<lambda>x xs : A. f" \<rightharpoonup> "CONST rel_lambda A (\<lambda>x. (\<lambda>xs : A. f))"
   "\<lambda>x : A. f" \<rightleftharpoons> "CONST rel_lambda A (\<lambda>x. f)"
+end
 
 lemma rel_lambdaI [intro]:
   assumes "A x"
