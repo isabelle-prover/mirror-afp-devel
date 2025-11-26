@@ -348,7 +348,7 @@ fun P1'_sym :: \<open>('n, ('n,'t) bracket3) sym \<Rightarrow> ('n, ('n,'t) brac
 
 text\<open>Asserts that \<open>P1'\<close> holds for every pair in xs, and that xs doesnt end in \<open>]\<^sup>1\<^sub>p\<close>:\<close>
 fun P1 :: "('n, 't) bracket3 list \<Rightarrow> bool" where
-  \<open>P1 u = ((successively P1' u) \<and> (u \<noteq> [] \<longrightarrow> (\<nexists>p. last u = ]\<^sup>1\<^sub>p)))\<close>
+  \<open>P1 u = ((successively P1' u) \<and> (u \<noteq> [] \<longrightarrow> (\<nexists>\<pi>. last u = ]\<^sup>1\<^sub>\<pi>)))\<close>
 
 text\<open>Asserts that \<open>P1'\<close> holds for every pair in xs, and that xs doesnt end in \<open>Tm ]\<^sup>1\<^sub>p\<close>:\<close>
 fun P1_sym where
@@ -635,7 +635,7 @@ abbreviation brackets::\<open>('n,'t) bracket3 list set\<close> where
   \<open>brackets \<equiv> {bs. \<forall>(_,p,_) \<in> set bs. p \<in> P}\<close>
 
 text\<open>This is needed for the construction that shows P2,P3,P4 regular.\<close>
-datatype 'a state = start | garbage |  letter 'a
+datatype 'a state = start | garbage | letter 'a
 
 definition allStates :: \<open>('n,'t) bracket3 state set \<close>where
   \<open>allStates = { letter (br,(p,v)) | br p v. p \<in> P } \<union> {start, garbage}\<close>

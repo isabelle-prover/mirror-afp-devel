@@ -17,12 +17,12 @@ syntax
     ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)
   "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
-end
 syntax_consts
   "_Mono_Dep_Fun_Rel_rel" "_Mono_Dep_Fun_Rel_rel_if" \<rightleftharpoons> Mono_Dep_Fun_Rel
 translations
   "(x y \<Colon> R) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. S)"
   "(x y \<Colon> R | B) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. CONST rel_if B S)"
+end
 
 text \<open>The monotone function relator is the function relator restricted to monotone functions:\<close>
 

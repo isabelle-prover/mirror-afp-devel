@@ -46,10 +46,10 @@ notation "fun_map" (infixr \<open>\<leadsto>\<close> 40)
 syntax
   "_dep_fun_map" :: "idt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow>
     ('a \<Rightarrow> 'd)" (\<open>'(_/ : / _') \<leadsto> (_)\<close> [41, 41, 40] 40)
-end
 syntax_consts "_dep_fun_map" \<rightleftharpoons> dep_fun_map
 translations
   "(x : f) \<leadsto> g" \<rightleftharpoons> "CONST dep_fun_map f (\<lambda>x. g)"
+end
 
 lemma fun_map_eq_dep_fun_map: "(f \<leadsto> g) = ((_ :  f) \<leadsto> (\<lambda>_. g))"
   unfolding fun_map_def by simp

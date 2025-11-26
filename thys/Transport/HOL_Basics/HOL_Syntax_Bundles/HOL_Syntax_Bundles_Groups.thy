@@ -10,9 +10,9 @@ notation Groups.zero (\<open>0\<close>)
 notation Groups.one (\<open>1\<close>)
 notation Groups.plus (infixl \<open>+\<close> 65)
 notation Groups.minus (infixl \<open>-\<close> 65)
-notation Groups.uminus (\<open>(\<open>open_block notation=\<open>prefix -\<close>\<close>- _)\<close> [81] 80)
+unbundle uminus_syntax
 notation Groups.times (infixl \<open>*\<close> 70)
-notation abs (\<open>\<bar>_\<bar>\<close>)
+unbundle abs_syntax
 end
 
 end

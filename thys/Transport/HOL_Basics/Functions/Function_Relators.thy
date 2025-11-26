@@ -28,7 +28,6 @@ syntax
     (\<open>'(_/ :/ _') \<Rrightarrow> (_)\<close> [51, 50, 50] 50)
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
-end
 syntax_consts
   "_Dep_Fun_Rel_rel" "_Dep_Fun_Rel_rel_if" "_Dep_Fun_Rel_pred" "_Dep_Fun_Rel_pred_if" \<rightleftharpoons> Dep_Fun_Rel
 translations
@@ -36,6 +35,7 @@ translations
   "(x y \<Colon> R | B) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel R (\<lambda>x y. CONST rel_if B S)"
   "(x : P) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. R)"
   "(x : P | B) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. CONST rel_if B R)"
+end
 
 definition "Dep_Fun_Rel_rel R S f g \<equiv> \<forall>x y. R x y \<longrightarrow> S x y (f x) (g y)"
 adhoc_overloading Dep_Fun_Rel \<rightleftharpoons> Dep_Fun_Rel_rel

@@ -4,6 +4,7 @@ theory Transport_White_Box
     Transport_Equality
     Transport_Existential_Quantifier
     Transport_Galois_Relator_Properties
+    Transport_Implies
     Transport_Universal_Quantifier
 begin
 
