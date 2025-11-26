@@ -45,7 +45,7 @@ lemma less_pos_eq_strict_prefix: \<^marker>\<open>contributor \<open>Martin Desh
   "less_pos = Sublist.strict_prefix"
   unfolding less_pos_def less_eq_pos_def Sublist.strict_prefix_def Sublist.prefix_def by metis
 
-interpretation order_pos: order less_eq_pos less_pos
+interpretation order_pos: order "(\<le>\<^sub>p)" "(<\<^sub>p)"
   by (standard) (auto simp: less_eq_pos_def less_pos_def)
 
 lemma less_eq_pos_induct [consumes 1]:
