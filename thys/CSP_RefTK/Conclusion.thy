@@ -44,18 +44,19 @@
 chapter\<open>Conclusion\<close>
   (*<*)
 theory Conclusion
-  imports HOLCF
+  imports DiningPhilosophers 
 begin
   (*>*)
 
-text\<open> We presented a formalisation of the most comprehensive semantic model for CSP, a 'classical' 
+text\<open> We presented an analysis of the connection of the refinement notions for CSP, a 'classical'
 language for the specification and analysis of concurrent systems studied in a rich body of 
-literature. For this purpose, we ported @{cite "tej.ea:corrected:1997"} to a modern version
-of Isabelle, restructured the proofs, and extended the resulting theory of the language 
-substantially. The result HOL-CSP 2 has been submitted to the Isabelle AFP @{cite "HOL-CSP-AFP"}, 
-thus a fairly sustainable format accessible to other researchers and tools.
+literature. A modern formalisation of CSP, called HOL-CSP2.0 or just HOL-CSP and 
+available in the Isabelle AFP @{cite "HOL-CSP-AFP"}, is the basis of this
+work. In particular, we introduced the theory of the \<open>Trace-Divergence-Refinement\<close> \<^term>\<open>P \<sqsubseteq>\<^sub>D\<^sub>T Q\<close>,
+which is an alternative to the standard refinements known from the literature.
+[\<^bold>\<open>NOTE: This part of the theory development has meanwhile been integrated in HOL-CSP2.0.\<close>]
 
-We developed a novel set of deadlock - and livelock inference proof principles based on 
+We developed  a novel set of deadlock - and livelock inference proof principles based on
 classical and denotational characterizations. In particular, we formally investigated the relations
 between different refinement notions in the presence of deadlock - and livelock; an area where
 traditional CSP literature skates over the nitty-gritty details. Finally, we demonstrated how to
@@ -66,6 +67,9 @@ concrete verification technologies for generalized classical problems, which hav
 so far from the perspective of data-independence or structural parametricity. The underlying novel
 principle of ``trading rich structure against rich state'' allows one to convert processes 
 into classical transition systems for which established invariant techniques become applicable.
+We present a first example using these proof methods, notably for Dijkstra's Dining Philosophers;
+we show that our techniques allow for proving that this cyclic proof architecture is deadlock free
+for an arbitrary number of philosopher processes.
 
 Future applications of HOL-CSP 2 could comprise a combination with model checkers, where our theory
 with its derived rules can be used to certify the output of a model-checker over CSP. In our experience,

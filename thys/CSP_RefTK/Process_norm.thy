@@ -45,7 +45,7 @@ chapter\<open> Normalisation of Deterministic CSP Processes \<close>
 
 theory Process_norm
 
-imports "HOL-CSP.CSP"
+imports "HOL-CSP.HOL-CSP"
 
 begin
 
@@ -161,7 +161,7 @@ proof -
       by (intro adm_all le_FD_adm) (simp_all add: cont2cont_fun monofunI)
   next
     case base:2
-    then show ?case by (simp add: Sync_BOT)
+    then show ?case by simp
   next
     case step:(3 x y)
     then show ?case (is "\<forall> s\<^sub>1 s\<^sub>2. ?C s\<^sub>1 s\<^sub>2")
