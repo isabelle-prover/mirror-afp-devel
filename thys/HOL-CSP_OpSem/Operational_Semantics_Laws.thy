@@ -96,21 +96,21 @@ text \<open>This locale needs to be instantiated with:
 
 text \<open>From the \<open>\<tau>\<close> transition \<^term>\<open>P \<leadsto>\<^sub>\<tau> Q\<close> we derive the event transition as follows:\<close>
 
-abbreviation ev_trans :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+definition ev_trans :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
   where \<open>P \<leadsto>\<^bsub>e\<^esub> Q \<equiv> ev e \<in> P\<^sup>0 \<and> P after\<^sub>\<checkmark> ev e \<leadsto>\<^sub>\<tau> Q\<close>
 
-abbreviation tick_trans :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
+definition tick_trans :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (\<open>_ \<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
   where \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q \<equiv> \<checkmark>(r) \<in> P\<^sup>0 \<and> P after\<^sub>\<checkmark> \<checkmark>(r) \<leadsto>\<^sub>\<tau> Q\<close>
 
 lemma ev_trans_is: \<open>P \<leadsto>\<^bsub>e\<^esub> Q \<longleftrightarrow> ev e \<in> initials P \<and> P after e \<leadsto>\<^sub>\<tau> Q\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
+  by (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
 
 lemma tick_trans_is: \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q \<longleftrightarrow> \<checkmark>(r) \<in> P\<^sup>0 \<and> \<Omega> P r \<leadsto>\<^sub>\<tau> Q\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
+  by (simp add: tick_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
 
 lemma reverse_event_trans_is:
   \<open>e \<in> P\<^sup>0 \<and> P after\<^sub>\<checkmark> e \<leadsto>\<^sub>\<tau> Q \<longleftrightarrow> (case e of \<checkmark>(r) \<Rightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q | ev x \<Rightarrow> P \<leadsto>\<^bsub>x\<^esub> Q)\<close>
-  by (simp split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
+  by (simp add: ev_trans_def tick_trans_def split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
 
 
 
@@ -126,7 +126,8 @@ lemma \<tau>_trans_eq: \<open>P \<leadsto>\<^sub>\<tau> P\<close>
 
 lemma BOT_ev_trans_anything: \<open>\<bottom> \<leadsto>\<^bsub>e\<^esub> P\<close>
   and BOT_tick_trans: \<open>\<bottom> \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> \<bottom> r\<close>
-  by (simp_all add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT \<tau>_trans_eq BOT_\<tau>_trans_anything)
+  by (simp_all add: ev_trans_def tick_trans_def
+      After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT \<tau>_trans_eq BOT_\<tau>_trans_anything)
 
 
 
@@ -135,10 +136,11 @@ text \<open>As immediate consequences of the axioms, we prove that event transit
 
 lemma   ev_trans_\<tau>_trans: \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P' \<leadsto>\<^sub>\<tau> P'' \<Longrightarrow> P \<leadsto>\<^bsub>e\<^esub> P''\<close>
   and tick_trans_\<tau>_trans: \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P' \<leadsto>\<^sub>\<tau> P'' \<Longrightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P''\<close>
-  by (meson \<tau>_trans_transitivity)+
+  by (meson ev_trans_def tick_trans_def \<tau>_trans_transitivity)+
 
 lemma   \<tau>_trans_ev_trans: \<open>P \<leadsto>\<^sub>\<tau> P' \<Longrightarrow> P' \<leadsto>\<^bsub>e\<^esub> P'' \<Longrightarrow> P \<leadsto>\<^bsub>e\<^esub> P''\<close>
   and \<tau>_trans_tick_trans: \<open>P \<leadsto>\<^sub>\<tau> P' \<Longrightarrow> P' \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P'' \<Longrightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P''\<close>
+  unfolding ev_trans_def tick_trans_def
   using \<tau>_trans_mono_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<tau>_trans_transitivity \<tau>_trans_anti_mono_initials by blast+
 
 
@@ -153,7 +155,7 @@ proof -
 qed
 
 lemma exists_tick_trans_is_initial_tick: \<open>(\<exists>P'. P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P') \<longleftrightarrow> \<checkmark>(r) \<in> P\<^sup>0\<close>
-  using \<tau>_trans_eq by blast
+  unfolding tick_trans_def using \<tau>_trans_eq by blast
 
 
 
@@ -203,7 +205,7 @@ inductive trace_trans :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c
 lemma trace_trans_\<tau>_trans: \<open>P \<leadsto>\<^sup>*s P' \<Longrightarrow> P' \<leadsto>\<^sub>\<tau> P'' \<Longrightarrow> P \<leadsto>\<^sup>*s P''\<close>
   apply (induct rule: trace_trans.induct)
   using \<tau>_trans_transitivity trace_\<tau>_trans apply blast
-  using \<tau>_trans_transitivity trace_tick_trans apply blast
+  using \<tau>_trans_transitivity trace_tick_trans unfolding tick_trans_def apply blast
   using trace_Cons_ev_trans by blast
 
 lemma \<tau>_trans_trace_trans:  \<open>P \<leadsto>\<^sub>\<tau> P' \<Longrightarrow> P' \<leadsto>\<^sup>*s P'' \<Longrightarrow> P \<leadsto>\<^sup>*s P''\<close>
@@ -224,7 +226,7 @@ next
   obtain a where \<open>e = ev a\<close> by (meson is_ev_def prem tickFree_Cons_iff)
   thus \<open>\<bottom> \<leadsto>\<^sup>*e # s P\<close>
     by simp (rule trace_Cons_ev_trans[OF _ hyp];
-        simp add: * After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT BOT_\<tau>_trans_anything)
+        simp add: * ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT BOT_\<tau>_trans_anything)
 qed
 
 
@@ -239,13 +241,13 @@ proof (induct rule: trace_trans.induct)
     by (meson failure_refine_def in_mono Refusals_iff that)
 next
   show \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q \<Longrightarrow> X \<in> \<R> Q \<Longrightarrow> ([\<checkmark>(r)], X) \<in> \<F> P\<close> for P Q r
-    by (metis append_Nil mem_Collect_eq initials_def tick_T_F)
+    by (metis append_Nil mem_Collect_eq initials_def tick_T_F tick_trans_def)
 next
   fix P e Q s Q'
   assume * : \<open>P \<leadsto>\<^bsub>e\<^esub> Q\<close> \<open>X \<in> \<R> Q' \<Longrightarrow> (s, X) \<in> \<F> Q\<close> \<open>X \<in> \<R> Q'\<close>
-  have \<open>P after\<^sub>\<checkmark> ev e \<sqsubseteq>\<^sub>F Q\<close> using *(1) that by blast
+  have \<open>P after\<^sub>\<checkmark> ev e \<sqsubseteq>\<^sub>F Q\<close> using *(1) that unfolding ev_trans_def by blast
   hence \<open>(s, X) \<in> \<F> (P after\<^sub>\<checkmark> ev e)\<close> by (simp add: failure_refine_def subsetD *(2, 3))
-  thus \<open>(ev e # s, X) \<in> \<F> P\<close> by (simp add: F_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k *(1))
+  with *(1) show \<open>(ev e # s, X) \<in> \<F> P\<close>  by (simp add: ev_trans_def F_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 qed
 
 
@@ -254,14 +256,14 @@ proof (induct rule: trace_trans.induct)
   show \<open>P \<leadsto>\<^sub>\<tau> Q \<Longrightarrow> [] \<in> \<T> P\<close> for P Q by simp
 next
   show \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> P\<close> for P Q r
-    by (simp add: initials_def)
+    by (simp add: initials_def tick_trans_def)
 next
   fix P e Q s Q'
   assume * : \<open>P \<leadsto>\<^bsub>e\<^esub> Q\<close> \<open>s \<in> \<T> Q\<close>
-  have \<open>P after\<^sub>\<checkmark> ev e \<sqsubseteq>\<^sub>T Q\<close> using *(1) \<tau>_trans_imp_leT by blast
+  have \<open>P after\<^sub>\<checkmark> ev e \<sqsubseteq>\<^sub>T Q\<close> using *(1) \<tau>_trans_imp_leT unfolding ev_trans_def by blast
   hence \<open>s \<in> \<T> (P after\<^sub>\<checkmark> ev e)\<close> by (simp add: *(2) subsetD trace_refine_def)
   with *(1) list.collapse show \<open>ev e # s \<in> \<T> P\<close> 
-    by (force simp add: T_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k initials_def)
+    by (force simp add: ev_trans_def T_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k initials_def)
 qed
 
 
@@ -282,11 +284,11 @@ next
   from prems(1) have \<open>tickFree s\<close> by simp
   from prems(2) have \<open>P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s \<bottom>\<close>
     by (cases rule: trace_trans.cases)
-      (auto simp add:  trace_\<tau>_trans intro: \<tau>_trans_trace_trans)
+      (auto simp add: ev_trans_def tick_trans_def trace_\<tau>_trans intro: \<tau>_trans_trace_trans)
   show \<open>e # s \<in> \<D> P\<close>
     apply (rule trace_trans.cases[OF prems(2)])
     using hyp[OF \<open>tickFree s\<close> \<open>P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s \<bottom>\<close>] prems(1)
-    by (simp_all add: D_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+    by (simp_all add: ev_trans_def D_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 qed
 
 
@@ -316,13 +318,13 @@ proof -
     proof (induct s arbitrary: P)
       case Nil
       thus ?case 
-        apply (subst (asm) trace_trans.simps, cases f; simp)
+        apply (subst (asm) trace_trans.simps, cases f; simp add: ev_trans_def)
         using \<tau>_trans_eq \<tau>_trans_transitivity f1 by blast+
     next
       case (Cons e s)
       from Cons.prems have * : \<open>e \<in> initials P \<and> P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s @ [f] Q'\<close>
         by (subst (asm) trace_trans.simps)
-          (auto simp add:  intro: \<tau>_trans_trace_trans)
+          (auto simp add: ev_trans_def intro: \<tau>_trans_trace_trans)
       with Cons.hyps obtain Q
         where ** : \<open>P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s Q\<close> 
           \<open>(case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q')\<close> by blast
@@ -332,10 +334,11 @@ proof -
         assume \<open>e = ev e'\<close>
         thus \<open>P \<leadsto>\<^sup>*e # s Q\<close>
           apply simp
-          by (rule trace_Cons_ev_trans[OF _ **(1)]) (use * \<tau>_trans_eq in blast)
+          by (rule trace_Cons_ev_trans[OF _ **(1)]) (use * \<tau>_trans_eq ev_trans_def in blast)
       next
         from Cons.prems have \<open>e = \<checkmark>(r) \<Longrightarrow> s = []\<close> for r by (subst (asm) trace_trans.simps) auto
-        thus \<open>e = \<checkmark>(r) \<Longrightarrow> P \<leadsto>\<^sup>*e # s Q\<close> for r using * **(1) f1 f2 trace_tick_trans by auto
+        thus \<open>e = \<checkmark>(r) \<Longrightarrow> P \<leadsto>\<^sup>*e # s Q\<close> for r
+          using * **(1) f1 f2 trace_tick_trans by (auto simp add: tick_trans_def)
       qed
       with "**"(2) show \<open>\<exists>Q. P \<leadsto>\<^sup>* e # s Q \<and> (case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q')\<close> by blast
     qed
@@ -352,15 +355,14 @@ proof -
       case (Cons e s)
       from Cons.prems(2) have * : \<open>e \<in> initials P \<and> P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s Q\<close>
         by (subst (asm) trace_trans.simps)
-          (auto simp add: f1 intro: \<tau>_trans_trace_trans)
+          (auto simp add: f1 ev_trans_def tick_trans_def intro: \<tau>_trans_trace_trans)
       show ?case
       proof (cases e)
         fix e'
         assume \<open>e = ev e'\<close>
-        thus \<open>P \<leadsto>\<^sup>*(e # s) @ [f] Q'\<close> 
+        with "*" Cons.hyps Cons.prems(1, 3) show \<open>P \<leadsto>\<^sup>*(e # s) @ [f] Q'\<close> 
           by (cases f; simp)
-            (metis (no_types, lifting) "*" Cons.hyps Cons.prems(1, 3) 
-              \<tau>_trans_eq tickFree_Cons_iff trace_trans.simps)+
+             (use \<tau>_trans_eq ev_trans_def trace_Cons_ev_trans in blast)+
       next
         show \<open>e = \<checkmark>(r) \<Longrightarrow> P \<leadsto>\<^sup>*(e # s) @ [f] Q'\<close> for r using Cons.prems(1) by auto
       qed
@@ -419,9 +421,9 @@ proof -
       show \<open>(\<And>P Q. P \<leadsto>\<^sup>*s Q \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> P after\<^sub>\<T> s \<leadsto>\<^sub>\<tau> Q) \<Longrightarrow> 
             P \<leadsto>\<^sup>*e # s Q \<Longrightarrow> e # s \<in> \<T> P \<Longrightarrow> P after\<^sub>\<T> (e # s) \<leadsto>\<^sub>\<tau> Q\<close> for s e P Q
         apply (cases e; simp)
-        by (meson \<tau>_trans_trace_trans trace_trans_iff(3) trace_trans_imp_T)
-          (metis After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e.simps(1) T_imp_front_tickFree front_tickFree_Cons_iff
-            non_tickFree_tick tickFree_Cons_iff tickFree_Nil trace_trans_iff(2))
+        by (meson \<tau>_trans_trace_trans ev_trans_def trace_trans_iff(3) trace_trans_imp_T)
+          (metis AfterExt.After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e.simps(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(4) list.inject list.simps(3)
+            trace_trans.cases[unfolded tick_trans_def])
     qed
   next
     show \<open>P after\<^sub>\<T> s \<leadsto>\<^sub>\<tau> Q \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> P \<leadsto>\<^sup>*s Q\<close>
@@ -439,7 +441,7 @@ proof -
       proof (cases e)
         fix e'
         assume ** : \<open>e = ev e'\<close>
-        from * ** have \<open>P \<leadsto>\<^bsub>e'\<^esub> P after\<^sub>\<checkmark> (ev e')\<close> by (simp add: \<tau>_trans_eq)
+        from * ** have \<open>P \<leadsto>\<^bsub>e'\<^esub> P after\<^sub>\<checkmark> (ev e')\<close> by (simp add: \<tau>_trans_eq ev_trans_def)
         thus \<open>P \<leadsto>\<^sup>*e # s Q\<close>
           by (subst **, rule trace_Cons_ev_trans[OF _ hyp[OF prems(1)[simplified] 
                   *[THEN conjunct2], simplified **]])
@@ -447,7 +449,7 @@ proof -
         have \<open>e = \<checkmark>(r) \<Longrightarrow> s = []\<close> for r
           by (metis T_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff prems(2))
         with "*" prems(1) trace_tick_trans
-        show \<open>e = \<checkmark>(r) \<Longrightarrow> P \<leadsto>\<^sup>*e # s Q\<close> for r by auto
+        show \<open>e = \<checkmark>(r) \<Longrightarrow> P \<leadsto>\<^sup>*e # s Q\<close> for r by (simp add: tick_trans_def)
       qed
     qed
   qed
@@ -496,7 +498,7 @@ text \<open>When we have more information on \<^term>\<open>P \<leadsto>\<^sub>\
 
 lemma STOP_trace_trans_iff: \<open>STOP \<leadsto>\<^sup>*s P \<longleftrightarrow> s = [] \<and> P = STOP\<close>
   using STOP_T_iff \<tau>_trans_imp_leT 
-  by (subst trace_trans.simps) (auto simp add: \<tau>_trans_eq) 
+  by (subst trace_trans.simps) (auto simp add: \<tau>_trans_eq ev_trans_def tick_trans_def) 
 
 
 lemma \<Omega>_SKIP_is_STOP_imp_\<tau>_trans_imp_leF_imp_SKIP_trace_trans_iff: 
@@ -504,7 +506,7 @@ lemma \<Omega>_SKIP_is_STOP_imp_\<tau>_trans_imp_leF_imp_SKIP_trace_trans_iff:
    (SKIP r \<leadsto>\<^sup>*s P) \<longleftrightarrow> s = [] \<and> P = SKIP r \<or> s = [\<checkmark>(r)] \<and> P = STOP\<close>
   using SKIP_F_iff STOP_F_iff
   apply (subst trace_trans.simps)
-  apply (auto simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP \<tau>_trans_eq)
+  apply (auto simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP \<tau>_trans_eq ev_trans_def tick_trans_def)
   by fastforce blast+
 
 
@@ -529,7 +531,7 @@ lemma ev_trans_adm_weak[simp]:
     and \<Psi>_cont_hyp : \<open>cont (\<lambda>P. \<Psi> P e)\<close>
     and cont_u: \<open>cont (u :: 'b \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close> and monofun_v : \<open>monofun v\<close>
   shows \<open>adm(\<lambda>x. u x \<leadsto>\<^bsub>e\<^esub> (v x))\<close>
-  apply (intro adm_conj)
+  apply (unfold ev_trans_def, intro adm_conj)
   by (fact initial_adm[OF cont_u])
     (rule \<tau>_trans_adm[OF _ monofun_v], simp add: \<Psi>_cont_hyp cont_u)
 
@@ -539,7 +541,7 @@ lemma tick_trans_adm_weak[simp]:
     and \<Omega>_cont_hyp : \<open>cont (\<lambda>P. \<Omega> P r)\<close>
     and cont_u: \<open>cont (u :: 'b \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close> and monofun_v : \<open>monofun v\<close>
   shows \<open>adm(\<lambda>x. u x \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> (v x))\<close>
-  apply (intro adm_conj)
+  apply (unfold tick_trans_def, intro adm_conj)
   by (fact initial_adm[OF cont_u])
     (rule \<tau>_trans_adm[OF _ monofun_v], simp add: \<Omega>_cont_hyp cont_u)
 
@@ -566,7 +568,7 @@ text \<open>We can now derive some rules or the operational semantics that we ar
    not really useful yet, we will just put \<Omega> SKIP instead of STOP *)
 
 lemma SKIP_trans_tick_\<Omega>_SKIP: \<open>SKIP r \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP \<tau>_trans_eq)
+  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP \<tau>_trans_eq tick_trans_def)
 
 lemmas SKIP_OpSem_rule = SKIP_trans_tick_\<Omega>_SKIP
 
@@ -577,7 +579,7 @@ lemma initial_tick_imp_tick_trans_\<Omega>_SKIP: \<open>\<checkmark>(r) \<in> P\
     initial_tick_imp_\<tau>_trans_SKIP by blast
 
 lemma tick_trans_imp_tick_trans_\<Omega>_SKIP : \<open>\<exists>P'. P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P\<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-  using initial_tick_imp_tick_trans_\<Omega>_SKIP by blast
+  using initial_tick_imp_tick_trans_\<Omega>_SKIP tick_trans_def by blast
 
 
 (* lemma tick_trans_imp_BOT_L_or_STOP_R: \<open>P \<leadsto>\<^sub>\<checkmark> Q \<Longrightarrow> P = \<bottom> \<or> Q = STOP\<close>
@@ -599,16 +601,17 @@ lemma tick_trans_iff : \<open>P \<leadsto>\<^sub>\<checkmark> P' \<longleftright
 
 lemma SKIP_cant_ev_trans:   \<open>\<not> SKIP r \<leadsto>\<^bsub>e\<^esub> P\<close>
   and STOP_cant_ev_trans:   \<open>\<not> STOP \<leadsto>\<^bsub>e\<^esub> P\<close>
-  and STOP_cant_tick_trans: \<open>\<not> STOP \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P\<close> by simp_all
+  and STOP_cant_tick_trans: \<open>\<not> STOP \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P\<close>
+  by (simp_all add: ev_trans_def tick_trans_def)
 
 
 
 
 lemma ev_trans_Mprefix: \<open>e \<in> A \<Longrightarrow> \<box>a \<in> A \<rightarrow> P a \<leadsto>\<^bsub>e\<^esub> (P e)\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def After_Mprefix \<tau>_trans_eq initials_Mprefix)
+  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def After_Mprefix \<tau>_trans_eq initials_Mprefix ev_trans_def)
 
 lemma ev_trans_Mndetprefix: \<open>e \<in> A \<Longrightarrow> \<sqinter>a \<in> A \<rightarrow> P a \<leadsto>\<^bsub>e\<^esub> (P e)\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def After_Mndetprefix \<tau>_trans_eq initials_Mndetprefix)
+  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def After_Mndetprefix \<tau>_trans_eq initials_Mndetprefix ev_trans_def)
 
 lemma ev_trans_prefix: \<open>e \<rightarrow> P \<leadsto>\<^bsub>e\<^esub> P\<close>
   by (metis ev_trans_Mprefix insertI1 write0_def)
@@ -638,13 +641,14 @@ lemmas fix_point_OpSem_rule = \<tau>_trans_fix_point
 
 
 lemma ev_trans_DetL: \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P \<box> Q \<leadsto>\<^bsub>e\<^esub> P'\<close>
-  by (metis After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Det_is_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Ndet UnCI \<tau>_trans_NdetL \<tau>_trans_ev_trans initials_Det)
+  by (metis (no_types, lifting) AfterExt.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Det_is_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Ndet
+      Ndet_OpSem_rules(1) Un_iff \<tau>_trans_ev_trans ev_trans_def initials_Det)
 
 lemma ev_trans_DetR: \<open>Q \<leadsto>\<^bsub>e\<^esub> Q' \<Longrightarrow> P \<box> Q \<leadsto>\<^bsub>e\<^esub> Q'\<close>
   by (metis Det_commute ev_trans_DetL)
 
 lemma tick_trans_DetL: \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P \<box> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-  by (metis UnCI initials_Det initial_tick_imp_tick_trans_\<Omega>_SKIP)
+  by (metis Un_iff initial_tick_imp_tick_trans_\<Omega>_SKIP initials_Det tick_trans_is)
 
 lemma tick_trans_DetR: \<open>Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q' \<Longrightarrow> P \<box> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
   by (metis Det_commute tick_trans_DetL)
@@ -667,7 +671,7 @@ lemma tick_trans_GlobalDet:
   \<open>\<box>a \<in> A. P a \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close> if \<open>a \<in> A\<close> and \<open>P a \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q\<close>
 proof (cases \<open>A = {a}\<close>)
   show \<open>A = {a} \<Longrightarrow> \<box>a \<in> A. P a \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-    by (simp add: initial_tick_imp_tick_trans_\<Omega>_SKIP \<open>P a \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q\<close>)
+    using \<open>P a \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q\<close> tick_trans_imp_tick_trans_\<Omega>_SKIP by auto
 next
   assume \<open>A \<noteq> {a}\<close>
   with \<open>a \<in> A\<close> obtain A' where \<open>a \<notin> A'\<close> \<open>A = {a} \<union> A'\<close>
@@ -685,7 +689,7 @@ lemma ev_trans_SlidingL: \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarro
     (meson \<tau>_trans_NdetL \<tau>_trans_ev_trans ev_trans_DetL)
 
 lemma tick_trans_SlidingL: \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P \<rhd> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-  by (metis UnCI initials_Sliding initial_tick_imp_tick_trans_\<Omega>_SKIP)
+  by (metis Un_iff initial_tick_imp_tick_trans_\<Omega>_SKIP initials_Sliding tick_trans_is)
 
 lemma \<tau>_trans_SlidingR: \<open>P \<rhd> Q \<leadsto>\<^sub>\<tau> Q\<close>
   by (simp add: Sliding_def \<tau>_trans_NdetR)
@@ -695,7 +699,7 @@ lemma \<tau>_trans_SlidingR: \<open>P \<rhd> Q \<leadsto>\<^sub>\<tau> Q\<close>
 (* a very good surprise *)
 lemma \<tau>_trans_SeqR: \<open>P \<^bold>; Q \<leadsto>\<^sub>\<tau> Q'\<close> if \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P'\<close> and \<open>Q \<leadsto>\<^sub>\<tau> Q'\<close>
 proof -
-  from that(1) have \<open>P \<sqsubseteq>\<^sub>F\<^sub>D SKIP r\<close> by (simp add: initial_tick_iff_FD_SKIP)
+  from that(1) have \<open>P \<sqsubseteq>\<^sub>F\<^sub>D SKIP r\<close> by (simp add: tick_trans_def initial_tick_iff_FD_SKIP)
   with FD_iff_eq_Ndet have \<open>P = P \<sqinter> SKIP r\<close> ..
   hence \<open>P \<^bold>; Q = (P \<^bold>; Q) \<sqinter> (SKIP r \<^bold>; Q)\<close> by (metis Seq_distrib_Ndet_right)
   also have \<open>\<dots> = (P \<^bold>; Q) \<sqinter> Q\<close> by simp
@@ -705,14 +709,14 @@ qed
 
 (* obvious now *)
 lemma \<open>\<checkmark>(r) \<in> P\<^sup>0 \<Longrightarrow> Q \<leadsto>\<^bsub>e\<^esub> Q' \<Longrightarrow> P \<^bold>; Q \<leadsto>\<^bsub>e\<^esub> Q'\<close>
-  using \<tau>_trans_SeqR \<tau>_trans_eq \<tau>_trans_ev_trans by blast
+  using \<tau>_trans_SeqR \<tau>_trans_eq \<tau>_trans_ev_trans unfolding tick_trans_def by blast
 
 (* we can't recover the rules for left side yet *)
 
 
 
 lemma tick_trans_Hiding: \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P \ B \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-  by (simp add: initial_tick_imp_tick_trans_\<Omega>_SKIP initial_tick_imp_initial_tick_Hiding)
+  by (meson initial_tick_imp_initial_tick_Hiding initial_tick_imp_tick_trans_\<Omega>_SKIP tick_trans_is)
 
 
 (* of course we can't recover \<tau>_trans yet, and idem for inside and not inside rules*)
@@ -721,7 +725,7 @@ lemma tick_trans_Hiding: \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub>
 
 lemma \<tau>_trans_SKIP_SyncL: \<open>P \<lbrakk>S\<rbrakk> Q \<leadsto>\<^sub>\<tau> SKIP r \<lbrakk>S\<rbrakk> Q\<close> if \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P'\<close>
 proof -
-  from that have \<open>P \<sqsubseteq>\<^sub>F\<^sub>D SKIP r\<close> by (simp add: initial_tick_iff_FD_SKIP)
+  from that have \<open>P \<sqsubseteq>\<^sub>F\<^sub>D SKIP r\<close> by (simp add: tick_trans_def initial_tick_iff_FD_SKIP)
   with FD_iff_eq_Ndet have \<open>P = P \<sqinter> SKIP r\<close> ..
   hence \<open>P \<lbrakk>S\<rbrakk> Q = (P \<lbrakk>S\<rbrakk> Q) \<sqinter> (SKIP r \<lbrakk>S\<rbrakk> Q)\<close> by (metis Sync_distrib_Ndet_right)
   also have \<open>\<dots> \<leadsto>\<^sub>\<tau> (SKIP r \<lbrakk>S\<rbrakk> Q)\<close> by (rule \<tau>_trans_NdetR)
@@ -741,16 +745,16 @@ lemma \<open>SKIP r \<lbrakk>S\<rbrakk> SKIP r \<leadsto>\<^sub>\<tau> SKIP r\<c
 
 lemma tick_trans_InterruptL : \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P \<triangle> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
   and tick_trans_InterruptR : \<open>Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q' \<Longrightarrow> P \<triangle> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
-  by (rule initial_tick_imp_tick_trans_\<Omega>_SKIP, simp add: initials_Interrupt)+
+  by (rule initial_tick_imp_tick_trans_\<Omega>_SKIP, simp add: tick_trans_def initials_Interrupt)+
 
 
 lemma tick_trans_ThrowL : \<open>P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> P \<Theta> a \<in> A. Q a \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> (SKIP r) r\<close>
   by (rule initial_tick_imp_tick_trans_\<Omega>_SKIP)
-    (simp add: initials_Throw)
+    (simp add: initials_Throw tick_trans_def)
 
 lemma ev_trans_ThrowR_inside:
   \<open>e \<in> A \<Longrightarrow> P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P \<Theta> a \<in> A. Q a \<leadsto>\<^bsub>e\<^esub> (Q e)\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Throw initials_Throw BOT_\<tau>_trans_anything \<tau>_trans_eq)
+  by (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Throw initials_Throw BOT_\<tau>_trans_anything \<tau>_trans_eq)
 
 end
 
@@ -815,7 +819,7 @@ begin
 
 lemma ev_trans_SeqL: \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P \<^bold>; Q \<leadsto>\<^bsub>e\<^esub> P' \<^bold>; Q\<close>
   apply (cases \<open>P = \<bottom>\<close>, solves \<open>simp add: BOT_ev_trans_anything\<close>)
-  apply (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq initials_Seq image_iff disjoint_iff)
+  apply (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq initials_Seq image_iff disjoint_iff ev_trans_def)
   by (meson \<tau>_trans_NdetL \<tau>_trans_SeqL \<tau>_trans_transitivity ev_trans_is)
 
 lemmas Seq_OpSem_rules = \<tau>_trans_SeqL ev_trans_SeqL \<tau>_trans_SeqR
@@ -846,8 +850,9 @@ notation OpSemTransitions\<^sub>\<beta>.ev_trans   (\<open>_ \<^sub>\<beta>\<lea
 notation OpSemTransitions\<^sub>\<beta>.tick_trans (\<open>_ \<^sub>\<beta>\<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
 
 lemma tick_trans_Renaming: \<open>P \<^sub>\<alpha>\<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P' \<Longrightarrow> Renaming P f g \<^sub>\<beta>\<leadsto>\<^sub>\<checkmark>\<^bsub>g r\<^esub> (\<Omega>\<^sub>\<beta> (SKIP (g r)) (g r))\<close>
-  by (metis OpSemTransitions\<^sub>\<beta>.initial_tick_imp_tick_trans_\<Omega>_SKIP
-      Renaming_SKIP mono_Renaming_FD initial_tick_iff_FD_SKIP)
+  by (metis OpSemTransitions\<^sub>\<alpha>.exists_tick_trans_is_initial_tick
+      OpSemTransitions\<^sub>\<beta>.initial_tick_imp_tick_trans_\<Omega>_SKIP
+      Renaming_SKIP initial_tick_iff_FD_SKIP mono_Renaming_FD)
 
 end
 
@@ -876,9 +881,10 @@ proof (cases \<open>P = \<bottom>\<close>)
         OpSemTransitions\<^sub>\<beta>.BOT_ev_trans_anything)
 next
   assume non_BOT: \<open>P \<noteq> \<bottom>\<close>
-  from that have initial : \<open>\<exists>a. ev a \<in> initials P \<and> f a = b\<close> by blast
+  from that have initial : \<open>\<exists>a. ev a \<in> initials P \<and> f a = b\<close>
+    unfolding OpSemTransitions\<^sub>\<alpha>.ev_trans_is by blast
   show \<open>Renaming P f g \<^sub>\<beta>\<leadsto>\<^bsub>b\<^esub> (Renaming P' f g)\<close>
-  proof (intro conjI)
+  proof (unfold OpSemTransitions\<^sub>\<beta>.ev_trans_def, intro conjI)
     from initial show \<open>ev b \<in> (Renaming P f g)\<^sup>0\<close>
       by (force simp add: initials_Renaming image_iff) 
   next
@@ -886,8 +892,7 @@ next
       apply (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Renaming non_BOT initial)
       apply (rule OpSemTransitions\<^sub>\<beta>.\<tau>_trans_transitivity
           [OF OpSemTransitions\<^sub>\<beta>.\<tau>_trans_GlobalNdet[of a] \<tau>_trans_Renaming])
-       apply (solves \<open>simp add: that\<close>)
-      using OpSemTransitions\<^sub>\<alpha>.ev_trans_is that(2) by blast
+      using OpSemTransitions\<^sub>\<alpha>.ev_trans_is that by blast+
   qed
 qed
 
@@ -909,24 +914,27 @@ begin
 lemma \<tau>_trans_Hiding_inside: \<open>P \ A \<leadsto>\<^sub>\<tau> P' \ A\<close> if \<open>e \<in> A\<close> and \<open>P \<leadsto>\<^bsub>e\<^esub> P'\<close>
 proof -
   have \<open>P \ A \<sqsubseteq>\<^sub>F\<^sub>D P after\<^sub>\<checkmark> ev e \ A\<close>
-    by (simp add: Hiding_FD_Hiding_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_if_initial_inside that)
+    by (meson AfterExt.Hiding_FD_Hiding_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_if_initial_inside ev_trans_is that)
   with FD_iff_eq_Ndet have \<open>P \ A = (P \ A) \<sqinter> (P after\<^sub>\<checkmark> ev e \ A)\<close> ..
   moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> P after\<^sub>\<checkmark> ev e \ A\<close> by (simp add: \<tau>_trans_NdetR)
-  moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> P' \ A\<close> by (simp add: \<tau>_trans_Hiding that(2))
+  moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> P' \ A\<close> using \<tau>_trans_Hiding ev_trans_def that(2) by blast
   ultimately show \<open>P \ A \<leadsto>\<^sub>\<tau> P' \ A\<close> by (metis \<tau>_trans_transitivity)
 qed
 
 
 lemma ev_trans_Hiding_notin: \<open>P \ A \<leadsto>\<^bsub>e\<^esub> P' \ A\<close> if \<open>e \<notin> A\<close> and \<open>P \<leadsto>\<^bsub>e\<^esub> P'\<close>
 proof -
-  note initial = initial_notin_imp_initial_Hiding[OF that(2)[THEN conjunct1] that(1)]
+  note initial = initial_notin_imp_initial_Hiding
+    [OF that(2)[unfolded ev_trans_def, THEN conjunct1] that(1)]
   have \<open>(P \ A) after\<^sub>\<checkmark> ev e \<sqsubseteq>\<^sub>F\<^sub>D P after\<^sub>\<checkmark> ev e \ A\<close>
-    by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Hiding_FD_Hiding_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_if_initial_notin that)
+    by (meson AfterExt.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Hiding_FD_Hiding_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_if_initial_notin ev_trans_is that)
   with FD_iff_eq_Ndet
   have \<open>(P \ A) after\<^sub>\<checkmark> ev e = (P \ A) after\<^sub>\<checkmark> ev e \<sqinter> (P after\<^sub>\<checkmark> ev e \ A)\<close> ..
   moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> P after\<^sub>\<checkmark> ev e \ A\<close> by (simp add: \<tau>_trans_NdetR)
-  moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> P' \ A\<close> by (simp add: \<tau>_trans_Hiding that(2))
-  ultimately show \<open>P \ A \<leadsto>\<^bsub>e\<^esub> P' \ A\<close> by (metis (no_types) \<tau>_trans_transitivity initial)
+  moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> P' \ A\<close>
+    using \<tau>_trans_Hiding ev_trans_def that(2) by blast
+  ultimately show \<open>P \ A \<leadsto>\<^bsub>e\<^esub> P' \ A\<close>
+    by (metis \<tau>_trans_transitivity ev_trans_def initial)
 qed
 
 lemmas Hiding_OpSem_rules = \<tau>_trans_Hiding tick_trans_Hiding
@@ -950,7 +958,7 @@ lemma \<tau>_trans_SyncR : \<open>Q \<leadsto>\<^sub>\<tau> Q' \<Longrightarrow>
 
 
 lemma ev_trans_SyncL : \<open>e \<notin> S \<Longrightarrow> P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P \<lbrakk>S\<rbrakk> Q \<leadsto>\<^bsub>e\<^esub> P' \<lbrakk>S\<rbrakk> Q\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync initials_Sync BOT_\<tau>_trans_anything image_iff)
+  by (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync initials_Sync BOT_\<tau>_trans_anything image_iff)
     (meson \<tau>_trans_NdetL \<tau>_trans_SyncL \<tau>_trans_transitivity ev_trans_is)
 
 lemma ev_trans_SyncR : \<open>e \<notin> S \<Longrightarrow> Q \<leadsto>\<^bsub>e\<^esub> Q' \<Longrightarrow> P \<lbrakk>S\<rbrakk> Q \<leadsto>\<^bsub>e\<^esub> P \<lbrakk>S\<rbrakk> Q'\<close>
@@ -958,7 +966,7 @@ lemma ev_trans_SyncR : \<open>e \<notin> S \<Longrightarrow> Q \<leadsto>\<^bsub
 
 lemma ev_trans_SyncLR :
   \<open>e \<in> S \<Longrightarrow> P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> Q \<leadsto>\<^bsub>e\<^esub> Q' \<Longrightarrow> P \<lbrakk>S\<rbrakk> Q \<leadsto>\<^bsub>e\<^esub> P' \<lbrakk>S\<rbrakk> Q'\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync BOT_\<tau>_trans_anything initials_Sync)
+  by (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync BOT_\<tau>_trans_anything initials_Sync)
     (meson \<tau>_trans_SyncL \<tau>_trans_SyncR \<tau>_trans_transitivity ev_trans_is)
 
 
@@ -1025,7 +1033,7 @@ locale OpSemTransitionsInterruptL = OpSemTransitions \<Psi> \<Omega> \<open>(\<l
 begin
 
 lemma ev_trans_InterruptL: \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P \<triangle> Q \<leadsto>\<^bsub>e\<^esub> P' \<triangle> Q\<close>
-  apply (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Interrupt initials_Interrupt)
+  apply (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Interrupt initials_Interrupt)
   using \<tau>_trans_InterruptL \<tau>_trans_NdetR \<tau>_trans_transitivity by blast
 
 
@@ -1034,7 +1042,7 @@ lemma ev_trans_InterruptL: \<open>P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightar
 (* same issue as everywhere with \<Omega>, we need to split *)
 
 lemma ev_trans_InterruptR: \<open>Q \<leadsto>\<^bsub>e\<^esub> Q' \<Longrightarrow> P \<triangle> Q \<leadsto>\<^bsub>e\<^esub> Q'\<close>
-  apply (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Interrupt initials_Interrupt)
+  apply (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Interrupt initials_Interrupt)
   using \<tau>_trans_NdetL \<tau>_trans_transitivity by blast
 
 end
@@ -1070,7 +1078,7 @@ begin
 
 lemma ev_trans_ThrowL_notin:
   \<open>e \<notin> A \<Longrightarrow> P \<leadsto>\<^bsub>e\<^esub> P' \<Longrightarrow> P \<Theta> a \<in> A. Q a \<leadsto>\<^bsub>e\<^esub> (P' \<Theta> a \<in> A. Q a)\<close>
-  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Throw initials_Throw BOT_\<tau>_trans_anything \<tau>_trans_ThrowL)
+  by (simp add: ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Throw initials_Throw BOT_\<tau>_trans_anything \<tau>_trans_ThrowL)
 
 lemmas Throw_OpSem_rules = \<tau>_trans_ThrowL tick_trans_ThrowL
   ev_trans_ThrowL_notin ev_trans_ThrowR_inside

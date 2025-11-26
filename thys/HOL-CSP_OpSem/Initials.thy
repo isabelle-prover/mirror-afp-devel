@@ -44,7 +44,7 @@ chapter \<open> The Initials Notion \<close>
 
 (*<*)
 theory  Initials
-  imports "HOL-CSPM.CSPM"
+  imports "HOL-CSPM"
 begin
   (*>*)
 
@@ -173,7 +173,7 @@ lemma \<open>\<exists>P. P\<^sup>0 = {\<checkmark>(r)} \<and> P \<noteq> (SKIP r
 proof (intro exI)
   show \<open>(STOP \<sqinter> SKIP r)\<^sup>0 = {\<checkmark>(r)} \<and> STOP \<sqinter> SKIP r \<noteq> SKIP r\<close>
     by (simp add: initials_def T_Ndet T_STOP T_SKIP)
-      (metis Ndet_FD_self_left SKIP_FD_iff SKIP_Neq_STOP)
+      (metis Ndet_FD_self_left SKIP_FD_iff SKIP_neq_STOP)
 qed
 
 lemma \<open>\<exists>P. P\<^sup>0 = UNIV \<and> P \<noteq> \<bottom>\<close>

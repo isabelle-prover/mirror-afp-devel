@@ -1,12 +1,10 @@
-chapter AFP
-
 (*<*)
 \<comment>\<open> ******************************************************************** 
  * Project         : HOL-CSP_OpSem - Operational semantics for HOL-CSP
  *
  * Author          : Benoît Ballenghien, Burkhart Wolff.
  *
- * This file       : ROOT file
+ * This file       : Main Entry Point
  *
  * Copyright (c) 2025 Université Paris-Saclay, France
  *
@@ -42,27 +40,19 @@ chapter AFP
  ******************************************************************************\<close>
 (*>*)
 
-session "HOL-CSP_OpSem" = "HOL-CSPM" +
-  options [timeout = 1200] 
-  theories
-    Introduction
 
-    Initials
-    After_Operator
-    After_Ext_Operator
-    After_Trace_Operator
+chapter\<open> Main Entry Point \<close>
 
-    Motivations
-    Operational_Semantics_Laws
-    Recovered_Laws
-    Comparison_He_Hoare
-    
-    OpSem_Deadlock_Results
-    CSP_New_Laws
-    "HOL-CSP_OpSem" (global)
+(*<*)
+theory "HOL-CSP_OpSem"
+  imports Operational_Semantics_Laws OpSem_Deadlock_Results CSP_New_Laws
+begin
+  (*>*)
 
-    Conclusion
-         
-  document_files
-    "root.tex"
-    "root.bib"
+text \<open>This is where the session \<^session>\<open>HOL-CSP_OpSem\<close> should be imported from.\<close>
+
+
+
+(*<*)
+end
+  (*>*)
