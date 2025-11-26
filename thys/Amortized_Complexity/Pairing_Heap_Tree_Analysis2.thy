@@ -4,7 +4,7 @@ subsection \<open>Binary Tree Representation (Simplified)\<close>
 
 theory Pairing_Heap_Tree_Analysis2
 imports
-  "HOL-Data_Structures.Define_Time_Function"
+  "HOL-Library.Time_Commands"
   Pairing_Heap.Pairing_Heap_Tree
   Amortized_Framework
   Priority_Queue_ops_merge

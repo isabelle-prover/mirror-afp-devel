@@ -6,7 +6,7 @@ theory Splay_Tree_Analysis_Base
 imports
   Lemmas_log
   Splay_Tree.Splay_Tree
-  "HOL-Data_Structures.Define_Time_Function"
+  "HOL-Library.Time_Commands"
 begin
 
 declare size1_size[simp]

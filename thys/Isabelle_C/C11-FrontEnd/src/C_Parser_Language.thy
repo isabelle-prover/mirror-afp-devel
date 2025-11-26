@@ -207,7 +207,7 @@ sig
                            C_Env.env_tree ->
                            C_Env.env_lang * C_Env.env_tree
   val shadowTypedef0' : C_Ast.CDeclSpec list C_Env.parse_status ->
-                        bool ->
+                        C_Env.variable_scope ->
                         C_Ast.ident * C_Ast.CDerivedDeclr list ->
                         C_Env.env_lang ->
                         C_Env.env_tree ->
@@ -251,6 +251,7 @@ sig
   val ident_of_decl : (Ident list, CDecl list * bool) C_Ast.either ->
                       (Ident * CDerivedDeclr list * CDeclSpec list) list
   val doFuncParamDeclIdent : CDeclr -> unit monad
+  val extractFunctionArgs: 'a C_Ast.cDerivedDeclarator list -> ((string * 'a C_Ast.cDeclaration) list) C_Ast.optiona
 end
 
 structure C_Grammar_Rule_Lib : C_GRAMMAR_RULE_LIB =
@@ -322,14 +323,41 @@ struct
       #> (case typing of NONE => I | SOME x => cons x))
        (map (markup_init o Position.make_entity_markup {def = def} id varN o pair name) ps)
     end)
-
+  fun extractFunctionArgs ident =
+    let fun getVarName nameDecl = case nameDecl of Some (Ident0 (SS_base (ST name),_,_)) => name
+                                              | _ => "unknown"
+        fun getTypeSuffix potentialArrDeclaration = case potentialArrDeclaration of ((CArrDeclr0 (_,(CNoArrSize0 false),_)):: Rest) => "[]"^(getTypeSuffix ( Rest))
+                                                                                | ((CArrDeclr0 (_,(CArrSize0 _),_)):: Rest) => "[somesize]"^(getTypeSuffix ( Rest))
+                                                                                | ((CPtrDeclr0 _):: Rest) => "*"^(getTypeSuffix Rest)
+                                                                                | [] => ""
+                                                                                | _ => "unknown"
+        fun transformDeclaration decl =
+                  case decl of 
+                    (CDecl0 ([CTypeSpec0 (typespec)],[((Some (CDeclr0 (nameIdent,potentialArrDeclarations,_,_,_)),_),_)],_)) => (getVarName nameIdent,decl) 
+                  | (CDecl0 ([_,CTypeSpec0 (typespec)],[((Some (CDeclr0 (nameIdent,potentialArrDeclarations,_,_,_)),_),_)],_)) => (getVarName nameIdent,decl)
+                  | (CDecl0 ([CTypeSpec0 (CEnumType0 (CEnum0 (nameIdent, _,_,_),_))], [], _)) => (getVarName nameIdent,decl) 
+                  | (CDecl0 ([CTypeSpec0 (CVoidType0 _)], [], _)) => ("void",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CCharType0 _)], [], _)) => ("char",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CShortType0 _)], [], _)) => ("short",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CLongType0 _)], [], _)) => ("long",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CFloatType0 _)], [], _)) => ("float",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CSignedType0 _)], [], _)) => ("signed",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CUnsigType0 _)], [], _)) => ("unsigned",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CBoolType0 _)], [], _)) => ("bool",decl) 
+                  | (CDecl0 ([CTypeSpec0 (CIntType0 _)], [], _)) => ("int",decl) 
+                  | dd => error ("unknown declaration format : "^ @{make_string} dd)
+    in
+    case ident of [CFunDeclr0 (Right (declarations,_),_,_)] => Some (map transformDeclaration declarations)
+                                               | _ => None
+    end
   fun markup_make' typing get_global desc report =
     markup_make
       typing
       get_global
       (fn global =>
-        "C " ^ (case global of SOME true => "global "
-                             | SOME false => "local "
+        "C " ^ (case global of SOME C_Env.Global => "global "
+                             | SOME C_Env.Local => "local "
+                             | SOME C_Env.Parameter => "parameter "
                              | NONE => "")
              ^ desc)
       (fn cons' => fn def =>
@@ -344,8 +372,8 @@ struct
       I
       desc
       (fn cons' => fn def =>
-       fn true => cons' (if def then Markup.free else Markup.ML_keyword3)
-        | false => cons' Markup.skolem)
+       fn C_Env.Global => cons' (if def then Markup.free else Markup.ML_keyword3)
+        | _ => cons' Markup.skolem)
 
   val markup_tvar = markup_tvar0 "type variable"
   val markup_var_enum = markup_tvar0 "enum tag"
@@ -411,20 +439,20 @@ struct
   val markup_var =
     markup_make'
       typing
-      #global
+      #scope
       "variable"
       (fn cons' => fn def =>
-       fn true => if def then cons' Markup.free else cons' Markup.delimiter (*explicit black color,
+       fn C_Env.Global => if def then cons' Markup.free else cons' Markup.delimiter (*explicit black color,
                                                      otherwise the default color of constants might
                                                      be automatically chosen (especially in term
                                                      cartouches)*)
-        | false => cons' Markup.bound)
+        | _ => cons' Markup.bound)
 
   val markup_var_bound =
-    markup_make' typing #global "variable" (fn cons' => K (K (cons' Markup.bound)))
+    markup_make' typing #scope "variable" (fn cons' => K (K (cons' Markup.bound)))
 
   val markup_var_improper =
-    markup_make' typing #global "variable" (fn cons' => K (K (cons' Markup.improper)))
+    markup_make' typing #scope "variable" (fn cons' => K (K (cons' Markup.improper)))
 
   (**)
   val return = pair
@@ -528,7 +556,7 @@ struct
   fun addTypedef (Ident0 (_, i, node)) env =
     let val name = ident_decode i
         val pos1 = [decode_error' node |> #1]
-        val data = (pos1, serial (), null (C_Env_Ext.get_scopes env))
+        val data = (pos1, serial (), if null (C_Env_Ext.get_scopes env) then C_Env.Global else C_Env.Local)
     in ((), env |> C_Env_Ext.map_idents (Symtab.delete_safe name)
                 |> C_Env_Ext.map_tyidents_typedef (Symtab.update (name, data))
                 |> C_Env_Ext.map_reports_text
@@ -540,8 +568,8 @@ struct
   fun shadowTypedef0''' name pos data0 env_lang env_tree =
     let val data = (pos, serial (), data0)
         val update_id = Symtab.update (name, data)
-    in ( env_lang |> C_Env_Ext.map_tyidents'_typedef (Symtab.delete_safe name)
-                  |> C_Env_Ext.map_idents' update_id
+    in (env_lang |> C_Env_Ext.map_tyidents'_typedef (Symtab.delete_safe name)
+                  |> C_Env_Ext.map_idents' update_id (*In this line entries get added to the var table*)
        , update_id
        , env_tree
           |> C_Env.map_reports_text
@@ -553,25 +581,25 @@ struct
   fun shadowTypedef0'''' name pos data0 env_lang env_tree =
     let val (env_lang, _, env_tree) = shadowTypedef0''' name pos data0 env_lang env_tree
     in ( env_lang, env_tree) end
-  fun shadowTypedef0'' ret global (Ident0 (_, i, node), params) =
+  fun shadowTypedef0'' ret scope (Ident0 (a, i, node), params) =
     shadowTypedef0''' (ident_decode i)
                       [decode_error' node |> #1]
-                      {global = global, params = params, ret = ret}
+                      {scope = scope, params = params, ret = ret, functionArgs = extractFunctionArgs params }
   fun shadowTypedef0' ret global ident env_lang env_tree =
-    let val (env_lang, _, env_tree) = shadowTypedef0'' ret global ident env_lang env_tree 
+    let val (env_lang, _, env_tree) = shadowTypedef0'' ret global ident env_lang env_tree
     in (env_lang, env_tree) end
   fun shadowTypedef0 ret global f ident env =
     let val (update_id, env) =
           C_Env.map_env_lang_tree'
             (fn env_lang => fn env_tree => 
               let val (env_lang, update_id, env_tree) =
-                        shadowTypedef0'' ret global ident env_lang env_tree 
+                        shadowTypedef0'' ret global ident env_lang env_tree
               in (update_id, (env_lang, env_tree)) end)
             env
     in ((), f update_id env) end
   fun shadowTypedef_fun ident env =
-    shadowTypedef0 C_Env.Previous_in_stack
-                   (case C_Env_Ext.get_scopes env of _ :: [] => true | _ => false)
+                   shadowTypedef0 C_Env.Previous_in_stack
+                   (case C_Env_Ext.get_scopes env of _ :: [] => C_Env.Global | _ => C_Env.Local)
                    (fn update_id =>
                     C_Env_Ext.map_scopes
                      (fn (NONE, x) :: xs => (SOME (fst ident), C_Env.map_idents update_id x) :: xs
@@ -579,8 +607,10 @@ struct
                        | [] => error "Not expecting an empty scope"))
                    ident
                    env
+  fun shadowTypedef_function_param (i,params, ret) env =
+      shadowTypedef0 (C_Env.Parsed ret) C_Env.Parameter (K I) (i, params) env
   fun shadowTypedef (i, params, ret) env =
-    shadowTypedef0 (C_Env.Parsed ret) (List.null (C_Env_Ext.get_scopes env)) (K I) (i, params) env
+    shadowTypedef0 (C_Env.Parsed ret) (if List.null (C_Env_Ext.get_scopes env) then C_Env.Global else C_Env.Local) (K I) (i, params) env (*This line is relevant. From here the parameters call origins*)
   fun isTypeIdent s0 = Symtab.exists (fn (s1, _) => s0 = s1) o C_Env_Ext.get_tyidents_typedef
   fun enterScope env =
     ((), C_Env_Ext.map_scopes (cons (NONE, C_Env_Ext.get_var_table env)) env)
@@ -588,7 +618,7 @@ struct
     case C_Env_Ext.get_scopes env of
       [] => error "leaveScope: already in global scope"
     | (_, var_table) :: scopes => ((), env |> C_Env_Ext.map_scopes (K scopes)
-                                           |> C_Env_Ext.map_var_table (K var_table))
+                                           |> C_Env_Ext.map_var_table (K var_table)) (*This line is responsible for scoped vars from the var_table (replacing it with I keeps the vars)*)
   val getCurrentPosition = return NoPosition
 
   (* Language.C.Parser.Tokens *)
@@ -709,7 +739,7 @@ struct
     | _ => rappend declspecs (liftCAttrs new_attrs)
   val emptyDeclr = CDeclrR Nothing empty Nothing [] undefNode
   fun mkVarDeclr ident = CDeclrR (Some ident) empty Nothing []
-  fun doDeclIdent declspecs (decl as CDeclrR0 (mIdent, _, _, _, _)) =
+  fun doDeclIdent declspecs (decl as CDeclrR0 (mIdent, _,_,_,_)) =
     case mIdent of
       None => return ()
     | Some ident =>
@@ -750,7 +780,7 @@ struct
       (case mIdent0 of None => return ()
                      | Some mIdent0 => shadowTypedef_fun (mIdent0, param0))
       >>
-      sequence_ shadowTypedef
+      sequence_ shadowTypedef_function_param
                 (maps (fn CFunDeclr0 (params, _, _) => ident_of_decl params | _ => []) param_fun)
       >>
       sequence_
@@ -764,7 +794,7 @@ struct
                       val pos = [decode_error' node |> #1]
                       val data = ( pos
                                  , serial ()
-                                 , {global = false, params = params, ret = C_Env.Parsed ret})
+                                 , {scope = C_Env.Local, params = params, ret = C_Env.Parsed ret, functionArgs = extractFunctionArgs params})
                     in
                       ( env_lang |> Symtab.update (name, data)
                       , env_tree
@@ -947,7 +977,7 @@ val declarator1 : (CDeclrR) -> unit monad =
                       val pos = [decode_error' node |> #1]
                       val data = ( pos
                                  , serial ()
-                                 , {global = false, params = params, ret = C_Env.Parsed ret})
+                                 , {scope = C_Env.Local, params = params, ret = C_Env.Parsed ret, functionArgs = extractFunctionArgs params})
                     in
                       ( env_lang |> Symtab.update (name, data)
                       , env_tree
@@ -1019,7 +1049,7 @@ val declaration : (CDecl) -> unit monad =
                     fn (env_lang, env_tree) =>
                      let val name = ident_decode i
                          val pos1 = [decode_error' node |> #1]
-                         val data = (pos1, serial (), null (C_Env.get_scopes env_lang))
+                         val data = (pos1, serial (), if null (C_Env.get_scopes env_lang) then C_Env.Global else C_Env.Local)
                      in
                        ( C_Env_Ext.map_tyidents'_enum (Symtab.update (name, data)) env_lang
                        , C_Env.map_reports_text
@@ -1053,7 +1083,7 @@ val enumerator : ( ( Ident * CExpr Maybe ) ) -> unit monad =
         fn (ident as Ident0 (_, _, node), _) =>
           C_Grammar_Rule_Lib.shadowTypedef0'
             (C_Env.Parsed [CTypeSpec0 (CIntType0 node)])
-            (null (C_Env.get_scopes env_lang))
+            (if null (C_Env.get_scopes env_lang) then C_Env.Global else C_Env.Local)
             (ident, [])
             env_lang
       end

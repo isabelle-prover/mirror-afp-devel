@@ -7,7 +7,7 @@ imports
   Complex_Main
   Skew_Heap.Skew_Heap
   Amortized_Framework
-  "HOL-Data_Structures.Define_Time_Function"
+  "HOL-Library.Time_Commands"
   Priority_Queue_ops_merge
 begin
 

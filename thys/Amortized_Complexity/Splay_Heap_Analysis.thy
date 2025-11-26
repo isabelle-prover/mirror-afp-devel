@@ -6,7 +6,7 @@ imports
   Amortized_Framework
   Priority_Queue_ops
   Lemmas_log
-  "HOL-Data_Structures.Define_Time_Function"
+  "HOL-Library.Time_Commands"
 begin
 
 text \<open>Timing functions must be kept in sync with the corresponding functions

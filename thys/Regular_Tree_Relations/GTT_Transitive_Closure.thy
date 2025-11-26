@@ -133,7 +133,7 @@ lemma Restr_rtrancl_gtt_lang_eq_trancl_gtt_lang:
 lemma GTT_trancl_complete:
   "(gtt_lang G)\<^sup>+ \<subseteq> gtt_lang (GTT_trancl G)"
   using GTT_trancl_base subset_trans[OF gtt_comp_lang_complete GTT_trancl_trans]
-  by (metis trancl_id trancl_mono_set trans_O_iff)
+  by (metis trancl_id trancl_mono_subset trans_O_iff)
 
 lemma trancl_gtt_lang_arg_closed:
   assumes "length ss = length ts" "\<forall>i < length ts. (ss ! i, ts ! i) \<in> (gtt_lang \<G>)\<^sup>+"

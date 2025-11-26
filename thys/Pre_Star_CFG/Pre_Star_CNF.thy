@@ -566,7 +566,7 @@ proof -
       by (simp add: Q_def)
   qed
 
-  define b where "b \<equiv> (\<lambda>T::('s, 'n, 't) trans. T \<union> pre_lts P Q T \<noteq> T)"
+  define b where "b \<equiv> (\<lambda>T::('s, 'n, 't) trans. \<not> pre_lts P Q T \<subseteq> T)"
   define c where "c \<equiv> (\<lambda>T::('s, 'n, 't) trans. T \<union> pre_lts P Q T)"
 
   have "\<And>t T. Q = {q\<^sub>0} \<union> states_lts T \<Longrightarrow> T \<subseteq> rel S' \<Longrightarrow> t \<in> pre_lts P Q T \<Longrightarrow> t \<in> rel S'"
@@ -621,7 +621,7 @@ proof -
   moreover have "\<And>T. Q = {q\<^sub>0} \<union> states_lts T \<Longrightarrow> Q = {q\<^sub>0} \<union> states_lts (T \<union> pre_lts P Q T)"
     using states_pre_lts unfolding states_lts_Un
     by (metis Un_assoc Un_upper2 sup.order_iff)
-  ultimately have step: "\<And>T. (T \<subseteq> rel S' \<and> Q = {q\<^sub>0} \<union> states_lts T) \<Longrightarrow> T \<union> pre_lts P Q T \<noteq> T
+  ultimately have step: "\<And>T. (T \<subseteq> rel S' \<and> Q = {q\<^sub>0} \<union> states_lts T) \<Longrightarrow> \<not> pre_lts P Q T \<subseteq> T
       \<Longrightarrow> (T \<union> pre_lts P Q T \<subseteq> rel S' \<and> Q = {q\<^sub>0} \<union> states_lts (T \<union> pre_lts P Q T))"
     by (smt (verit, del_insts) Un_iff subset_eq)
 

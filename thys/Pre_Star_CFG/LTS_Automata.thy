@@ -229,7 +229,9 @@ proof -
   moreover have "1 \<in> steps_lts (pcs_lts \<Sigma>p c \<Sigma>s) [c] 0"
     unfolding pcs_lts_def steps_lts_defs by force
   moreover have "1 \<in> steps_lts (pcs_lts \<Sigma>p c \<Sigma>s) s 1"
-    by (metis calculation(3) inf_sup_ord(3) insertI1 pcs_lts_def steps_lts_mono' loop_lts_correct1 sup_commute)
+    unfolding pcs_lts_def
+    using calculation(3) steps_lts_mono loop_lts_correct1
+    by (metis UnCI insert_subset subsetI)
   ultimately show "1 \<in> steps_lts (pcs_lts \<Sigma>p c \<Sigma>s) w 0"
     using Steps_lts_join by meson
 qed
@@ -310,7 +312,7 @@ next
   have "0 \<in> steps_lts (word_lts ws) ws (length ws)"
     using Cons.IH(1) by blast
   then have "0 \<in> steps_lts (word_lts (w#ws)) ws (length ws)"
-    using steps_lts_mono' by (metis word_lts.simps(1) sup_ge1)
+    using steps_lts_mono by (metis word_lts.simps(1) sup_ge1 subset_iff)
   moreover have "length ws \<in> steps_lts (word_lts (w#ws)) [w] (Suc (length ws))"
   proof -
     have "(Suc (length ws), w, length ws) \<in> word_lts (w#ws)"

@@ -1003,6 +1003,9 @@ next
   with map_idI [of ts "\<lambda>t. t \<cdot> (\<sigma> |s V)"] show ?case by simp
 qed
 
+lemma vars_ctxt_subst: "vars_ctxt (C \<cdot>\<^sub>c \<sigma>) = (\<Union> ((vars_term o \<sigma>) ` vars_ctxt C))" 
+  by (induct C, auto simp: vars_term_subst)
+
 lemma subst_apply_ctxt_id:
   assumes "vars_ctxt C \<inter> V = {}" 
   shows "C \<cdot>\<^sub>c (\<sigma> |s V) = C"
@@ -3535,6 +3538,68 @@ proof (induct p arbitrary: q l2)
     then show ?thesis by (simp add: term_subst_eq)
   qed
 qed auto
+
+
+fun vars_ctxt_ms :: "('f, 'v) ctxt \<Rightarrow> 'v multiset"
+where
+  "vars_ctxt_ms Hole = {#}" |
+  "vars_ctxt_ms (More f ss C ts) =
+    \<Sum>\<^sub># (mset (map vars_term_ms ss)) +
+    vars_ctxt_ms C + \<Sum>\<^sub># (mset (map vars_term_ms ts))"
+
+lemma vars_term_ms_ctxt_apply:
+  "vars_term_ms (C\<langle>t\<rangle>) = vars_ctxt_ms C + vars_term_ms t"
+by (induct C) (auto simp: multiset_eq_iff)
+
+lemma vars_ctxt_ms_subst: 
+  "vars_ctxt_ms (C \<cdot>\<^sub>c \<sigma>) = sum_mset (image_mset (vars_term_ms o \<sigma>) (vars_ctxt_ms C))" 
+proof (induct C)
+  case (More f b C a)
+  have "(\<Sum>a\<in>#\<Sum>\<^sub># (image_mset vars_term_ms (mset b)). vars_term_ms (\<sigma> a)) 
+    = \<Sum>\<^sub># (image_mset (vars_term_ms \<circ> (\<lambda>t. t \<cdot> \<sigma>)) (mset b))" for b
+    by (induct b, auto)
+  thus ?case 
+    by (simp add: More)
+qed auto
+
+lemma fun_poss_poss: "(p \<in> fun_poss s) = (p \<in> poss s \<and> is_Fun (s |_p))"
+  by (metis fun_poss_fun_conv fun_poss_imp_poss is_FunI poss_is_Fun_fun_poss)
+
+lemma fun_poss_subst_sub: "fun_poss s \<subseteq> fun_poss (s \<cdot> \<gamma>)" 
+  by (induct s, auto simp: set_conv_nth)
+
+lemma possc_alt_def: "possc C = poss (C \<langle>Var undefined\<rangle>)"
+ unfolding possc_def using ctxt_poss_imp_ctxt_subst_poss by fastforce
+
+lemma poss_ctxt_apply: "poss (C \<langle>t\<rangle>) = possc C \<union> (@) (hole_pos C) ` poss t"
+proof
+ show "poss C\<langle>t\<rangle> \<subseteq> possc C \<union> (@) (hole_pos C) ` poss t"
+   by (smt (verit) Un_iff hole_pos_poss_conv image_eqI less_eq_hole_pos_in_possc less_eq_pos_def order_pos.less_le
+       par_hole_pos_in_possc pos_cases subsetI)
+ show "possc C \<union> (@) (hole_pos C) ` poss t \<subseteq> poss C\<langle>t\<rangle>"
+   using poss_imp_possc by fastforce
+qed
+
+lemma linear_term_unique_var_pos: assumes "x \<in> vars_term t" 
+  and lin: "linear_term t" 
+  shows "\<exists>! p. p \<in> poss t \<and> t |_ p = Var x" 
+proof -
+  from assms obtain p where p: "p \<in> poss t" "t |_ p = Var x" 
+    by (metis vars_term_poss_subt_at)
+  {
+    fix q
+    assume q: "q \<in> poss t" "t |_ q = Var x" 
+    from linear_subterms_disjoint_vars[OF lin p(1) q(1), unfolded p(2) q(2)]
+    have "\<not> (p \<bottom> q)" by auto
+    with p q have "p = q" by (metis var_poss_iff var_poss_parallel)
+  }
+  with p show ?thesis by blast
+qed
+
+lemma ctxt_subst_subt_with_poss_in_ctxt: "hole_pos C \<bottom> p \<Longrightarrow>
+    p \<in> poss C\<langle>u\<rangle> \<Longrightarrow> C\<langle>u\<rangle> |_ p = t \<Longrightarrow> (C \<cdot>\<^sub>c \<sigma>)\<langle>s\<rangle> |_ p = t \<cdot> \<sigma>" 
+  by (metis ctxt_of_pos_term_hole_pos ctxt_of_pos_term_subst hole_pos_poss
+      parallel_replace_at_subt_at poss_imp_subst_poss subt_at_subst)
 
 
 end

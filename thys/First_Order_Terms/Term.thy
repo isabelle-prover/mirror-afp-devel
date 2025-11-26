@@ -215,6 +215,9 @@ proof -
   show ?thesis unfolding vars_term_ms_subst unfolding t by auto
 qed
 
+lemma trans_mult: "trans (mult R)" 
+  by (simp add: mult_def)
+
 
 text \<open>The variables introduced by a substitution.\<close>
 definition range_vars :: "('f, 'v) subst \<Rightarrow> 'v set"

@@ -219,7 +219,8 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
         |> C_Hook.advance stack
         |> f
         |> (fn (arg, stack_ml) => rpair ((stack, stack_ml, stack_pos, stack_tree), arg))
-      fun return0 x = \<comment> \<open>Warning: \<open>C_Hook.advance\<close> must not be early evaluated here, as it might
+      fun return0 x = \<comment> \<open>Warning: \<open>C_Hook.advance\<close> must not be early evae
+luated here, as it might
                                    generate undesirable markup reporting (in annotation commands).\<close>
                       \<comment> \<open>Todo: Arrange \<open>C_Hook.advance\<close> as a pure function, so that the overall could
                                 be eta-simplified.\<close>
@@ -760,26 +761,27 @@ fun eval env start err accept (ants, ants_err) {context, reports_text, error_lin
       val () = if Config.get ctxt C_Options.lexer_trace andalso Context_Position.is_visible ctxt
                then print (map_filter (fn Right x => SOME x | _ => NONE) ants_stack)
                else ()
-  in
-   C_Language.eval env
+      val v =   C_Language.eval env
                    start
                    err
                    accept
                    ants_stack
                    {context = context, reports_text = reports_text, error_lines = error_lines}
-  end
+  in 
+    v 
+ end
 
 
 (* derived versions *)
 
 fun eval' env start err accept ants =
   Context.>>> (fn context =>
-               C_Env_Ext.context_map'
+              let val v =C_Env_Ext.context_map'
                  (eval (env context) (start context) err accept ants
                   #> apsnd (Context_Position.reports_enabled_generic context ? tap (Position.reports_text o #reports_text)
                             #> tap (#error_lines #> (fn [] => () | l => error (cat_lines (rev l))))
                             #> (C_Env.empty_env_tree o #context)))
-                 context)
+                 context in v end)
 end;
 
 fun eval_source env start err accept source =

@@ -11,6 +11,7 @@ theory Unification
     Option_Monad
     Renaming2
     Subterm_and_Context
+    Fun_More2
 begin
 
 definition
@@ -1137,6 +1138,202 @@ proof -
   show ?thesis 
     by (rule exI[of _ \<mu>], rule exI[of _ ?\<sigma>], insert \<mu> ids idt \<sigma>, auto)
 qed
+
+lemma subst_variants_to_var_subst: assumes "\<sigma> \<circ>\<^sub>s \<sigma>' = \<tau>" "\<tau> \<circ>\<^sub>s \<tau>' = \<sigma>" 
+  shows "\<exists> \<sigma>''. \<sigma> \<circ>\<^sub>s (Var o \<sigma>'') = \<tau>" 
+proof -
+  from assms(2)[folded assms(1)]
+  have id: "\<sigma> \<circ>\<^sub>s \<sigma>' \<circ>\<^sub>s \<tau>' = \<sigma>" by simp
+  define \<sigma>'' where "\<sigma>'' = the_Var o \<sigma>'" 
+  show ?thesis
+  proof (rule exI[of _ \<sigma>''], unfold assms(1)[symmetric], intro ext, unfold subst_compose_def,
+      intro term_subst_eq)
+    fix x y
+    assume y: "y \<in> vars_term (\<sigma> x)"     
+    show "(Var \<circ> \<sigma>'') y = \<sigma>' y"  
+    proof (cases "\<sigma>' y")
+      case (Var z)
+      thus ?thesis unfolding \<sigma>''_def by simp
+    next
+      case (Fun f ts)
+      from arg_cong[OF id, of "\<lambda> \<sigma>. \<sigma> x"]
+      have "\<sigma> x \<cdot> (\<sigma>' \<circ>\<^sub>s \<tau>') = \<sigma> x" 
+        by (metis eval_subst_def subst_subst_compose)
+      hence "\<sigma> x \<cdot> (\<sigma>' \<circ>\<^sub>s \<tau>') = \<sigma> x \<cdot> Var" by simp
+      with y have "(\<sigma>' \<circ>\<^sub>s \<tau>') y = Var y"
+        using term_subst_eq_rev by blast 
+      with Fun have False unfolding subst_compose_def by auto
+      thus ?thesis by auto
+    qed
+  qed
+qed
+
+lemma subst_variants_to_renaming: fixes \<sigma> \<tau> :: "('f,'v)subst" 
+  assumes "\<sigma> \<circ>\<^sub>s \<sigma>' = \<tau>" and "\<tau> \<circ>\<^sub>s \<tau>' = \<sigma>" 
+    and fin: "finite (subst_domain \<sigma> \<union> subst_domain \<tau>)" 
+  shows "\<exists> \<gamma>. \<tau> = \<sigma> \<circ>\<^sub>s (Var o \<gamma>) \<and> bij \<gamma>" 
+proof - 
+  from subst_variants_to_var_subst[OF assms(1,2)] 
+  obtain \<sigma>' where one: "\<sigma> \<circ>\<^sub>s (Var \<circ> \<sigma>') = \<tau>" by auto  
+  from subst_variants_to_var_subst[OF assms(2,1)] 
+  obtain \<tau>' where two: "\<tau> \<circ>\<^sub>s (Var \<circ> \<tau>') = \<sigma>" by auto
+  let ?\<sigma>' = "Var o \<sigma>' :: ('f,'v)subst"  
+  let ?\<tau>' = "Var o \<tau>' :: ('f,'v)subst" 
+  define D where "D = subst_domain \<sigma> \<union> subst_domain \<tau>"
+  have finD: "finite D" unfolding D_def by fact
+  {
+    fix x
+    assume x: "x \<notin> D" 
+    have "?\<sigma>' x = (\<sigma> \<circ>\<^sub>s ?\<sigma>') x" 
+      using x by (simp add: subst_compose_def D_def subst_domain_def)
+    also have "\<dots> = \<tau> x" using one by simp
+    also have tau: "\<dots> = Var x" using x
+      by (simp add: subst_compose_def D_def subst_domain_def)
+    finally have sigma': "\<sigma>' x = x" by simp
+    have "?\<tau>' x = (\<tau> \<circ>\<^sub>s ?\<tau>') x" 
+      using x by (simp add: subst_compose_def D_def subst_domain_def)
+    also have "\<dots> = \<sigma> x" using two by simp
+    also have sigma: "\<dots> = Var x" using x
+      by (simp add: subst_compose_def D_def subst_domain_def)
+    finally have tau': "\<tau>' x = x" by simp
+    note sigma sigma' tau tau'
+  } note notD = this
+  define ID where "ID \<sigma> = \<Union> (vars_term ` \<sigma> ` D)" for \<sigma> :: "('f,'v)subst" 
+  have finID: "finite (ID \<sigma>)" unfolding ID_def
+    by (intro finite_Union finite_imageI finD, auto)
+  have ID1: "\<sigma>' ` ID \<sigma> = ID \<tau>" 
+    unfolding one[symmetric] ID_def subst_compose_def o_def
+    by (auto simp: vars_term_subst)
+  have ID2: "\<tau>' ` ID \<tau> = ID \<sigma>" 
+    unfolding two[symmetric] ID_def subst_compose_def o_def
+    by (auto simp: vars_term_subst)
+  have ID: "\<tau>' ` \<sigma>' ` ID \<sigma> = ID \<sigma>" using ID1 ID2 by auto
+  {
+    fix x
+    assume "x \<in> ID \<sigma>" 
+    from this[unfolded ID_def] obtain y where 
+      x: "x \<in> vars_term (\<sigma> y)" by blast
+    from arg_cong[OF two[folded one], of "\<lambda> \<sigma>. \<sigma> y"]
+    have "\<sigma> y \<cdot> (Var \<circ> \<sigma>') \<circ>\<^sub>s (Var \<circ> \<tau>') = \<sigma> y" 
+      unfolding subst_compose_def
+      by (metis (no_types, lifting) ext eval_o eval_term.simps(1) map_vars_term_eq)
+    hence "\<sigma> y \<cdot> ?\<sigma>' \<circ>\<^sub>s ?\<tau>' = \<sigma> y \<cdot> Var" by simp
+    from term_subst_eq_rev[OF this, rule_format, OF x]
+    have "(?\<sigma>' \<circ>\<^sub>s ?\<tau>') x = Var x" by simp
+    hence "\<tau>' (\<sigma>' x) = x" by (auto simp: subst_compose_def)
+  } note tau_sig' = this
+  have "inj_on \<sigma>' (ID \<sigma>)" using tau_sig' 
+    using inj_on_inverseI by blast
+  hence "bij_betw \<sigma>' (ID \<sigma>) (ID \<tau>)"
+    unfolding bij_betw_def using ID1 by auto
+  from bij_betw_to_bij[OF this finID] obtain \<rho>
+    where bijRho: "bij \<rho>" and sig_rho: "\<And> x. x \<in> ID \<sigma> \<Longrightarrow> \<sigma>' x = \<rho> x" 
+     and rho_id: "\<And> x. x \<notin> ID \<sigma> \<union> ID \<tau> \<Longrightarrow> \<rho> x = x" by auto
+  let ?\<rho> = "Var o \<rho>" 
+  show ?thesis
+  proof (intro exI[of _ \<rho>] conjI bijRho ext, unfold subst_compose_def, rule sym)
+    fix x
+    show "\<sigma> x \<cdot> ?\<rho> = \<tau> x" 
+    proof (cases "x \<in> D")
+      case True
+      hence *: "vars_term (\<sigma> x) \<subseteq> ID \<sigma>" unfolding ID_def by auto
+      have "\<sigma> x \<cdot> ?\<rho> = \<sigma> x \<cdot> ?\<sigma>'" 
+        by (rule term_subst_eq, insert * sig_rho, auto)
+      also have "\<dots> = \<tau> x" by (metis one subst_compose)
+      finally show ?thesis .
+    next
+      case D: False
+      note Dx = notD[OF D]
+      from D 
+      have "\<sigma> x \<cdot> ?\<rho> = Var (\<rho> x)" unfolding D_def subst_domain_def by auto
+      also have "\<rho> x = x" 
+      proof (cases "x \<in> ID \<sigma>")
+        case True
+        have "\<rho> x = \<sigma>' x" using True sig_rho by simp
+        also have "\<sigma>' x = x" by fact
+        finally show ?thesis .
+      next
+        case False
+        hence "x \<in> ID \<tau> \<or> x \<notin> ID \<sigma> \<union> ID \<tau>" by auto
+        thus ?thesis
+        proof
+          assume "x \<notin> ID \<sigma> \<union> ID \<tau>" 
+          thus ?thesis by (rule rho_id)
+        next
+          assume "x \<in> ID \<tau>"
+          thus ?thesis by (metis Dx(4) False ID2 imageI)
+        qed
+      qed
+      also have "Var x = \<tau> x" using Dx by simp
+      finally show ?thesis .
+    qed
+  qed
+qed
+
+
+lemma is_mgu_is_mgu_var_renaming: fixes \<sigma> \<tau> :: "('f,'v)subst"  
+  assumes "is_mgu \<sigma> E" 
+    and "is_mgu \<tau> E" 
+  shows "\<exists> \<gamma>. \<sigma> = \<tau> \<circ>\<^sub>s (Var o \<gamma>) \<and> inj_on \<gamma> (\<Union> (vars_term ` range \<tau>))"
+proof -
+  let ?V = "\<Union> (vars_term ` range \<tau>)" 
+  from assms(1)[unfolded is_mgu_def] have sig: "\<sigma> \<in> unifiers E" "\<And> \<tau>. \<tau> \<in> unifiers E \<Longrightarrow> \<exists> \<gamma>. \<tau> = \<sigma> \<circ>\<^sub>s \<gamma>" by auto
+  from assms(2)[unfolded is_mgu_def] have tau: "\<tau> \<in> unifiers E" "\<And> \<tau>'. \<tau>' \<in> unifiers E \<Longrightarrow> \<exists> \<gamma>. \<tau>' = \<tau> \<circ>\<^sub>s \<gamma>" by auto
+  from tau(2)[OF sig(1)] obtain \<gamma>' where sig_tau_gam': "\<sigma> = \<tau> \<circ>\<^sub>s \<gamma>'" by auto
+  from sig(2)[OF tau(1)] obtain \<delta>' where tau_sig_delt': "\<tau> = \<sigma> \<circ>\<^sub>s \<delta>'" by auto
+  from subst_variants_to_var_subst[OF sig_tau_gam'[symmetric] tau_sig_delt'[symmetric]]
+  obtain \<gamma> where sig_tau_gam': "\<sigma> = \<tau> \<circ>\<^sub>s (Var o \<gamma>)" by auto
+  let ?\<gamma> = "Var o \<gamma> :: ('f,'v)subst" 
+  from subst_variants_to_var_subst[OF tau_sig_delt'[symmetric] sig_tau_gam'[symmetric]]
+  obtain \<delta> where tau_sig_delt: "\<tau> = \<sigma> \<circ>\<^sub>s (Var o \<delta>)" by auto
+  let ?\<delta> = "Var o \<delta> :: ('f,'v)subst"   
+  have taux: "\<tau> x = \<tau> x \<cdot> ?\<gamma> \<cdot> ?\<delta>" for x using fun_cong[OF tau_sig_delt[unfolded sig_tau_gam'], of x] 
+    by (auto simp: subst_compose_def)
+  {
+    fix y
+    assume "y \<in> ?V" 
+    then obtain x where y: "y \<in> vars_term (\<tau> x)" by auto
+    from taux[of x] have "\<tau> x \<cdot> Var = \<tau> x \<cdot> (?\<gamma> \<circ>\<^sub>s ?\<delta>)" by auto
+    from term_subst_eq_rev[OF this, rule_format, OF y]
+    have "Var y = (?\<gamma> \<circ>\<^sub>s ?\<delta>) y" .
+    from this[unfolded subst_compose_def o_def]
+    have "\<delta> (\<gamma> y) = y" by simp
+  } note main = this
+  show ?thesis
+  proof (intro exI[of _ \<gamma>], intro conjI)
+    show "\<sigma> = \<tau> \<circ>\<^sub>s ?\<gamma>" unfolding sig_tau_gam' by simp
+    show "inj_on \<gamma> ?V" using main by (rule inj_on_inverseI)
+  qed
+qed
+
+lemma is_imgu_finite_domain: 
+  assumes "is_imgu \<sigma> E" "finite E" 
+  shows "finite (subst_domain \<sigma>)" 
+proof -
+  from imgu_subst_domain_subset[OF assms]
+  have sub: "subst_domain \<sigma> \<subseteq> (\<Union>e\<in>E. vars_term (fst e) \<union> vars_term (snd e))" by auto
+  show ?thesis
+    by (rule finite_subset[OF sub finite_Union[OF finite_imageI]], insert assms, auto)
+qed
+
+lemma is_imgu_is_imgu_var_renaming: fixes \<sigma> \<tau> :: "('f,'v)subst"  
+  assumes "is_imgu \<sigma> E" 
+    and "is_imgu \<tau> E" 
+    and "finite E" 
+  shows "\<exists> \<gamma>. \<sigma> = \<tau> \<circ>\<^sub>s (Var o \<gamma>) \<and> bij \<gamma>"
+proof -
+  from assms have mgu: "is_mgu \<sigma> E" "is_mgu \<tau> E" 
+    by (metis is_imgu_imp_is_mgu)+
+  from mgu(1)[unfolded is_mgu_def] have sig: "\<sigma> \<in> unifiers E" "\<And> \<tau>. \<tau> \<in> unifiers E \<Longrightarrow> \<exists> \<gamma>. \<tau> = \<sigma> \<circ>\<^sub>s \<gamma>" by auto
+  from mgu(2)[unfolded is_mgu_def] have tau: "\<tau> \<in> unifiers E" "\<And> \<tau>'. \<tau>' \<in> unifiers E \<Longrightarrow> \<exists> \<gamma>. \<tau>' = \<tau> \<circ>\<^sub>s \<gamma>" by auto
+  from tau(2)[OF sig(1)] obtain \<gamma>' where sig_tau_gam: "\<tau> \<circ>\<^sub>s \<gamma>' = \<sigma>" by auto
+  from sig(2)[OF tau(1)] obtain \<delta>' where tau_sig_delt': "\<sigma> \<circ>\<^sub>s \<delta>' = \<tau>" by auto
+  show ?thesis
+  proof (rule subst_variants_to_renaming[OF sig_tau_gam tau_sig_delt' finite_UnI])
+    show "finite (subst_domain \<tau>)" using assms(2,3) by (rule is_imgu_finite_domain)
+    show "finite (subst_domain \<sigma>)" using assms(1,3) by (rule is_imgu_finite_domain)
+  qed
+qed    
 
 
 end

@@ -59,11 +59,13 @@ signature C_ENV =
     type 'a stream = ('a, C_Lex.token) C_Scan.either list
     datatype 'a parse_status = Parsed of 'a | Previous_in_stack
 
+    datatype variable_scope = Global | Local | Parameter
     eqtype markup_global
-
-    type markup_ident = {global         : markup_global,
+                                              
+    type markup_ident = {scope          : markup_global,
                          params         : C_Ast.CDerivedDeclr list, 
-                         ret            : C_Ast.CDeclSpec list parse_status}
+                         ret            : C_Ast.CDeclSpec list parse_status,
+                         functionArgs   : ((string*(C_Ast.NodeInfo C_Ast.cDeclaration)) list) C_Ast.optiona}
     type 'a markup_store = Position.T list * serial * 'a
 
     type var_table =    {idents         : markup_ident markup_store Symtab.table,
@@ -200,11 +202,14 @@ type env_directives =
 
 datatype 'a parse_status = Parsed of 'a | Previous_in_stack
 
-type markup_global = bool (*true: global*)
+datatype variable_scope = Global | Local | Parameter
 
-type markup_ident = { global : markup_global
+type markup_global = variable_scope (*true: global*)
+
+type markup_ident = { scope : markup_global
                     , params : C_Ast.CDerivedDeclr list
-                    , ret : C_Ast.CDeclSpec list parse_status }
+                    , ret : C_Ast.CDeclSpec list parse_status 
+                    , functionArgs   : ((string*(C_Ast.NodeInfo C_Ast.cDeclaration)) list) C_Ast.optiona}
 
 type var_table = { tyidents : markup_global markup_store Symtab.table (*ident name*)
                                                                       Symtab.table (*internal
@@ -406,9 +411,9 @@ fun map_idents f {tyidents, idents} =
 (**)
 
 fun map_var_table f {var_table, scopes, namesupply, stream_ignored, env_directives} =
-                                  {var_table = f
+                                  ({var_table = f
                                                var_table, scopes = scopes, namesupply = namesupply, 
-                                   stream_ignored = stream_ignored, env_directives = env_directives}
+                                   stream_ignored = stream_ignored, env_directives = env_directives})
 
 fun map_scopes f {var_table, scopes, namesupply, stream_ignored, env_directives} =
                                   {var_table = var_table, scopes = f
@@ -503,7 +508,9 @@ fun string_of (env_lang : env_lang) =
   let fun dest0 x f = x |> Symtab.dest |> map f
       fun dest {tyidents, idents} =
             (dest0 tyidents #1, dest0 idents (fn (i, (_,_,v)) =>
-                                               (i, if #global v then "global" else "local")))
+                                               (i, case #scope v of Global => "global"
+                                                                  | Local => "local"
+                                                                  | Parameter => "parameter")))
   in \<^make_string> ( ("var_table", dest (#var_table env_lang))
                  , ("scopes", map (fn (id, i) =>
                                     ( Option.map (fn C_Ast.Ident0 (i, _, _) =>

@@ -71,6 +71,27 @@ proof -
   ultimately show ?thesis by blast
 qed
 
+lemma bij_betw_to_bij: assumes "bij_betw f A B" 
+  and "finite A" 
+  shows "\<exists> r. bij r \<and> (\<forall> x \<in> A. f x = r x) \<and> (\<forall> x. x \<notin> A \<union> B \<longrightarrow> r x = x)" 
+proof -
+  define S where "S = A \<union> B" 
+  have "A \<subseteq> S" "B \<subseteq> S" by (auto simp: S_def)
+  from bij_betw_extend[OF assms(1) this assms(2), folded S_def]
+  obtain g where g: "(\<forall>x\<in>UNIV - S. g x = x)" "(\<forall>x\<in>A. g x = f x)" "bij_betw g S S" 
+    by blast
+  show ?thesis 
+  proof (rule exI[of _ g], intro conjI)
+    show "\<forall>x. x \<notin> A \<union> B \<longrightarrow> g x = x" using g S_def by auto
+    show "\<forall>x\<in>A. f x = g x" using g by auto
+    have "bij_betw g (UNIV - S) (UNIV - S)" using g(1)
+      unfolding bij_betw_def by (auto simp: inj_on_def)
+    from bij_betw_combine[OF this g(3)]
+    show "bij g" by auto
+  qed
+qed
+
+
 
 subsection \<open>Merging Functions\<close>
 (* Copied and canonized from IsaFoR's Term theory and Polynomial Factorization in the AFP. *)
@@ -114,5 +135,34 @@ proof -
     by (rule exI[of _ ?\<sigma>], intro allI impI ballI,
       insert fun_merge_part[OF part, of _ _ ?\<tau>], auto)
 qed
+
+
+lemma dependent_nat_choice_start:
+  assumes 1: "P 0 x0"
+    and 2: "\<And>x n. P n x \<Longrightarrow> \<exists>y. P (Suc n) y \<and> Q n x y"
+  shows "\<exists>f. f 0 = x0 \<and> (\<forall>n. P n (f n) \<and> Q n (f n) (f (Suc n)))"
+proof (intro exI allI conjI)
+  fix n
+  define f where "f = rec_nat x0 (\<lambda>n x. SOME y. P (Suc n) y \<and> Q n x y)"
+  then have "P 0 (f 0)" "\<And>n. P n (f n) \<Longrightarrow> P (Suc n) (f (Suc n)) \<and> Q n (f n) (f (Suc n))"
+    using 1 someI_ex[OF 2] by simp_all
+  then show "P n (f n)" "Q n (f n) (f (Suc n))"
+    by (induct n) auto
+qed auto
+
+lemma dependent_nat_choice2_start:
+  assumes 1: "P 0 x0 y0"
+    and 2: "\<And>x y n. P n x y \<Longrightarrow> \<exists>x' y'. P (Suc n) x' y' \<and> Q n x y x' y'"
+  shows "\<exists> x y. x 0 = x0 \<and> y 0 = y0 \<and> (\<forall>n. P n (x n) (y n) \<and> Q n (x n) (y n) (x (Suc n)) (y (Suc n)))"
+proof -
+  have "\<exists>f. f 0 = (x0, y0) \<and>
+      (\<forall>n. P n (fst (f n)) (snd (f n)) \<and>
+           Q n (fst (f n)) (snd (f n)) (fst (f (Suc n))) (snd (f (Suc n))))" (is "\<exists> f. ?Prop f")
+    by (rule dependent_nat_choice_start[of "\<lambda> i xy. P i (fst xy) (snd xy)" "(x0,y0)" 
+      "\<lambda> i xy xy'. Q i (fst xy) (snd xy) (fst xy') (snd xy')"], insert 1 2, auto)
+  then obtain f where f: "?Prop f" by blast
+  show ?thesis by (rule exI[of _ "\<lambda> i. fst (f i)"], rule exI[of _ "\<lambda> i. snd (f i)"], insert f, auto)
+qed
+
 
 end

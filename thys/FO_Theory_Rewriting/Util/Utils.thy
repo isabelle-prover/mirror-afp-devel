@@ -272,7 +272,7 @@ lemma Restr_simps:
   "R \<subseteq> X \<times> X \<Longrightarrow> R O Restr Id X = R"
   "R \<subseteq> X \<times> X \<Longrightarrow> S \<subseteq> X \<times> X \<Longrightarrow> Restr (R O S) X = R O S"
   "R \<subseteq> X \<times> X \<Longrightarrow> R\<^sup>+ \<subseteq> X \<times> X"
-  subgoal using trancl_mono_set[of R "X \<times> X"] by (auto simp: trancl_full_on)
+  subgoal using trancl_mono_subset[of R "X \<times> X"] by (auto simp: trancl_full_on)
   subgoal by auto
   subgoal by auto
   subgoal by auto
