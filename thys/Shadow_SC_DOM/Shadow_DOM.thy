@@ -144,7 +144,7 @@ lemma get_child_nodes_reads: "reads (get_child_nodes_locs ptr) (get_child_nodes 
    apply(auto)[1]
   apply(auto simp add: get_child_nodes\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def
       intro: reads_subset[OF reads_singleton] reads_subset[OF check_in_heap_reads]
-      intro!: reads_bind_pure reads_subset[OF return_reads] split: option.splits)[1]
+      intro!: reads_bind_pure reads_subset[OF return_reads] split: option.splits)
   done
 end
 
@@ -445,7 +445,7 @@ lemma set_child_nodes_types_preserved:
   shows "type_wf h = type_wf h'"
   using assms(1) type_wf_preserved[OF writes_singleton2 assms(2)] type_wf_impl
   by(auto simp add: all_args_def a_set_child_nodes_tups_def set_child_nodes_locs_def CD.set_child_nodes_locs_def
-      split: if_splits option.splits)
+      split: if_splits)
 end
 
 interpretation
@@ -456,13 +456,11 @@ interpretation
   by (auto simp add: set_child_nodes_def set_child_nodes_locs_def)
 declare l_set_child_nodes\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
-lemma set_child_nodes_is_l_set_child_nodes [instances]: "l_set_child_nodes type_wf
-set_child_nodes set_child_nodes_locs"
-  apply(auto simp add: l_set_child_nodes_def instances)[1]
-  using  set_child_nodes_writes apply fast
-  using set_child_nodes_pointers_preserved apply(fast, fast)
-  using set_child_nodes_types_preserved apply(fast, fast)
-  done
+lemma set_child_nodes_is_l_set_child_nodes [instances]: 
+  "l_set_child_nodes type_wf set_child_nodes set_child_nodes_locs"
+  using Shadow_DOM.i_set_child_nodes.set_child_nodes_pointers_preserved
+    Shadow_DOM.i_set_child_nodes.set_child_nodes_writes i_set_child_nodes.set_child_nodes_types_preserved
+    l_set_child_nodes_def by blast
 
 
 
@@ -1456,7 +1454,7 @@ end
 
 interpretation i_get_mode?: l_get_mode\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_mode get_mode_locs type_wf
   using instances
-  by (auto simp add: l_get_mode\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def)
+  by (metis l_get_mode\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def)
 declare l_get_mode\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
 
 locale l_get_mode = l_type_wf + l_get_mode_defs +
@@ -1467,11 +1465,8 @@ h \<turnstile> ok (get_mode shadow_root_ptr)"
   assumes get_mode_pure [simp]: "pure (get_mode shadow_root_ptr) h"
 
 lemma get_mode_is_l_get_mode [instances]: "l_get_mode type_wf get_mode get_mode_locs"
-  apply(auto simp add: l_get_mode_def instances)[1]
-  using get_mode_reads apply blast
-  using get_mode_ok apply blast
-  using get_mode_ptr_in_heap apply blast
-  done
+  by (smt (verit, best) ShadowRootMonad.get_M_ptr_in_heap a_get_mode_def get_mode_ok get_mode_pure get_mode_reads
+      l_get_mode_def)
 
 
 
@@ -2852,9 +2847,10 @@ locale l_set_mode_get_disconnected_nodes\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o
 begin
 lemma set_mode_get_disconnected_nodes:
   "\<forall>w \<in> set_mode_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_disconnected_nodes_locs ptr'. r h h'))"
-  by(auto simp add: set_mode_locs_def
+  apply (simp add: set_mode_locs_def
       CD.get_disconnected_nodes_locs_impl[unfolded CD.a_get_disconnected_nodes_locs_def]
       all_args_def)
+  by (meson cast_document_disconnected_nodes_shadow_root_mode get_M_document_put_M_shadow_root)
 end
 
 interpretation
@@ -4751,9 +4747,8 @@ lemma remove_shadow_root_preserves:
   shows "known_ptrs h'" and "type_wf h'" "heap_is_wellformed h'"
 proof -
   obtain shadow_root_ptr h2 where
-    "h \<turnstile> get_shadow_root ptr \<rightarrow>\<^sub>r Some shadow_root_ptr" and
-    "h \<turnstile> get_child_nodes (cast shadow_root_ptr) \<rightarrow>\<^sub>r []" and
-    "h \<turnstile>  get_disconnected_nodes (cast shadow_root_ptr) \<rightarrow>\<^sub>r []" and
+    get_shadow_root: "h \<turnstile> get_shadow_root ptr \<rightarrow>\<^sub>r Some shadow_root_ptr" and
+    shadow_root_ptr: "h \<turnstile> get_child_nodes (cast shadow_root_ptr) \<rightarrow>\<^sub>r []" "h \<turnstile>  get_disconnected_nodes (cast shadow_root_ptr) \<rightarrow>\<^sub>r []" and
     h2: "h \<turnstile> set_shadow_root ptr None \<rightarrow>\<^sub>h h2" and
     h': "h2 \<turnstile> delete_M shadow_root_ptr \<rightarrow>\<^sub>h h'"
     using assms(4)
@@ -4827,8 +4822,8 @@ proof -
 
 
   have disconnected_nodes_eq_h:
-    "\<And>doc_ptr disc_nodes. h \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes =
-h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    "\<And>doc_ptr disc_nodes. h \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes
+                     \<longleftrightarrow>  h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
     using get_disconnected_nodes_reads set_shadow_root_writes h2 set_shadow_root_get_disconnected_nodes
     by(rule reads_writes_preserved)
   then have disconnected_nodes_eq2_h:
@@ -4836,19 +4831,20 @@ h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
     using select_result_eq by force
 
   have disconnected_nodes_eq_h2:
-    "\<And>doc_ptr disc_nodes. doc_ptr \<noteq> cast shadow_root_ptr \<Longrightarrow> h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes =
-h' \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    "\<And>doc_ptr disc_nodes. doc_ptr \<noteq> cast shadow_root_ptr \<Longrightarrow> 
+           h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes
+       \<longleftrightarrow> h' \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
     using get_disconnected_nodes_reads get_disconnected_nodes_delete_shadow_root[rotated, OF h']
-    apply(auto simp add: reads_def reflp_def transp_def preserved_def)[1]
-    by(metis (no_types, lifting))+
+    apply(simp add: reads_def reflp_def transp_def preserved_def)
+    by(metis (no_types, lifting))
   then have disconnected_nodes_eq2_h2:
-    "\<And>doc_ptr. doc_ptr \<noteq> cast shadow_root_ptr \<Longrightarrow> |h2 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r =
-|h' \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r"
+    "\<And>doc_ptr. doc_ptr \<noteq> cast shadow_root_ptr \<Longrightarrow> 
+       |h2 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r = |h' \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r"
     using select_result_eq by force
 
   have tag_name_eq_h:
-    "\<And>doc_ptr disc_nodes. h \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes =
-h2 \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    "\<And>doc_ptr disc_nodes. h \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes 
+                      \<longleftrightarrow> h2 \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes"
     using get_tag_name_reads set_shadow_root_writes h2 set_shadow_root_get_tag_name
     by(rule reads_writes_preserved)
   then have tag_name_eq2_h: "\<And>doc_ptr. |h \<turnstile> get_tag_name doc_ptr|\<^sub>r = |h2 \<turnstile> get_tag_name doc_ptr|\<^sub>r"
@@ -4857,8 +4853,8 @@ h2 \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes"
   have tag_name_eq_h2:
     "\<And>doc_ptr disc_nodes. h2 \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes = h' \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes"
     using get_tag_name_reads get_tag_name_delete_shadow_root[OF h']
-    apply(auto simp add: reads_def reflp_def transp_def preserved_def)[1]
-    by blast+
+    apply(simp add: reads_def reflp_def transp_def preserved_def)
+    by blast
   then have tag_name_eq2_h2: "\<And>doc_ptr. |h2 \<turnstile> get_tag_name doc_ptr|\<^sub>r = |h' \<turnstile> get_tag_name doc_ptr|\<^sub>r"
     using select_result_eq by force
 
@@ -4873,16 +4869,16 @@ h2 \<turnstile> get_tag_name doc_ptr \<rightarrow>\<^sub>r disc_nodes"
 
 
   have children_eq_h2:
-    "\<And>ptr' children. ptr' \<noteq> cast shadow_root_ptr \<Longrightarrow> h2 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children =
-h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
+    "\<And>ptr' children. ptr' \<noteq> cast shadow_root_ptr \<Longrightarrow> h2 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children
+                          \<longleftrightarrow> h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
     using get_child_nodes_reads h' get_child_nodes_delete_shadow_root
-    apply(auto simp add: reads_def reflp_def transp_def preserved_def)[1]
-    by blast+
+    apply(simp add: reads_def reflp_def transp_def preserved_def)
+    by blast
   then have children_eq2_h2:
     "\<And>ptr'. ptr' \<noteq> cast shadow_root_ptr \<Longrightarrow> |h2 \<turnstile> get_child_nodes ptr'|\<^sub>r = |h' \<turnstile> get_child_nodes ptr'|\<^sub>r"
     using select_result_eq by force
 
-  have "cast shadow_root_ptr |\<notin>| object_ptr_kinds h'"
+  have shadow_root_ptr_notin: "cast shadow_root_ptr |\<notin>| object_ptr_kinds h'"
     using h' delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M_ptr_not_in_heap
     by auto
 
@@ -4895,11 +4891,10 @@ h2 \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
     by fast
 
   have get_shadow_root_eq_h2:
-    "\<And>shadow_root_opt ptr'. h2 \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt =
-h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
+    "\<And>shadow_root_opt ptr'. h2 \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt \<longleftrightarrow> h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
     using get_shadow_root_reads get_shadow_root_delete_shadow_root[OF h']
-    apply(auto simp add: reads_def reflp_def transp_def preserved_def)[1]
-    by blast+
+    apply(simp add: reads_def reflp_def transp_def preserved_def)
+    by blast
   then
   have get_shadow_root_eq2_h2: "\<And>ptr'. |h2 \<turnstile> get_shadow_root ptr'|\<^sub>r = |h' \<turnstile> get_shadow_root ptr'|\<^sub>r"
     using select_result_eq by force
@@ -4915,8 +4910,8 @@ h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
   moreover
   have "parent_child_rel h' \<subseteq> parent_child_rel h2"
     using object_ptr_kinds_eq_h2
-    apply(auto simp add: CD.parent_child_rel_def)[1]
-    by (metis \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close> children_eq2_h2)
+    apply(clarsimp simp add: CD.parent_child_rel_def)
+    by (metis (no_types, lifting) children_eq2_h2 fsubsetD shadow_root_ptr_notin)
   ultimately
   have "CD.a_acyclic_heap h'"
     using acyclic_subset
@@ -5129,19 +5124,18 @@ local.a_ptr_disconnected_node_rel h)\<close> acyclic_subset subset_refl sup_mono
     by(simp add: heap_is_wellformed_def)
   then
   have "a_shadow_root_valid h'"
-    apply(auto simp add: a_shadow_root_valid_def shadow_root_ptr_kinds_eq_h element_ptr_kinds_eq_h
-        tag_name_eq2_h)[1]
+    apply(clarsimp simp add: a_shadow_root_valid_def shadow_root_ptr_kinds_eq_h element_ptr_kinds_eq_h
+        tag_name_eq2_h)
     apply(simp add: shadow_root_ptr_kinds_eq2_h2 element_ptr_kinds_eq_h2 tag_name_eq2_h2)
-    using get_shadow_root_eq_h get_shadow_root_eq_h2
-    by (smt (z3) \<open>cast\<^sub>s\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>r\<^sub>o\<^sub>o\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close>
-        \<open>h \<turnstile> get_shadow_root ptr \<rightarrow>\<^sub>r Some shadow_root_ptr\<close> assms(2) document_ptr_kinds_commutes
-        element_ptr_kinds_eq_h element_ptr_kinds_eq_h2 local.get_shadow_root_ok
-        option.inject returns_result_select_result select_result_I2 shadow_root_ptr_kinds_commutes)
+    using get_shadow_root_eq_h get_shadow_root get_shadow_root_eq_h2 returns_result_select_result element_ptr_kinds_eq_h2
+    by (smt (verit) \<open>type_wf h2\<close> delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M_ptr_not_in_heap h' is_OK_returns_result_I
+        local.get_shadow_root_ok option.sel returns_result_eq)
 
   ultimately show "heap_is_wellformed h'"
     by(simp add: heap_is_wellformed_def)
 qed
 end
+
 interpretation i_remove_shadow_root_wf?: l_remove_shadow_root_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M
   type_wf get_tag_name get_tag_name_locs get_disconnected_nodes get_disconnected_nodes_locs
   set_shadow_root set_shadow_root_locs known_ptr get_child_nodes get_child_nodes_locs get_shadow_root
@@ -5404,9 +5398,9 @@ proof -
   obtain host where host: "host |\<in>| element_ptr_kinds h"
     and "|h \<turnstile> get_tag_name host|\<^sub>r \<in> safe_shadow_root_element_types"
     and shadow_root: "h \<turnstile> get_shadow_root host \<rightarrow>\<^sub>r Some shadow_root_ptr"
-    using assms(1) assms(4) get_shadow_root_ok assms(2)
-    apply(auto simp add: heap_is_wellformed_def a_shadow_root_valid_def)[1]
-    by (smt (z3) returns_result_select_result)
+    using assms
+    unfolding heap_is_wellformed_def a_shadow_root_valid_def
+    by (metis get_shadow_root_ok returns_result_select_result)
 
 
   obtain host_candidates where
@@ -6142,10 +6136,8 @@ proof -
         intro!: bind_pure_returns_result_I)
   then show ?thesis
     using candidates  \<open>node_ptr |\<in>| node_ptr_kinds h\<close>
-    apply(auto simp add: get_disconnected_document_def intro!: bind_is_OK_pure_I filter_M_pure_I bind_pure_I
-        split: list.splits)[1]
-     apply (meson not_Cons_self2 returns_result_eq)
-    by (meson list.distinct(1) list.inject returns_result_eq)
+    apply(auto simp add: get_disconnected_document_def intro!: bind_is_OK_pure_I filter_M_pure_I bind_pure_I)[1]
+    by (metis list.simps(4,5) return_ok returns_result_eq)
 qed
 end
 
@@ -6249,7 +6241,7 @@ proof (insert assms(1), induct rule: heap_wellformed_induct_rev_si)
         intro!: bind_pure_I reads_bind_pure reads_subset[OF check_in_heap_reads] reads_subset[OF return_reads]
         reads_subset[OF get_parent_reads] reads_subset[OF get_child_nodes_reads]
         reads_subset[OF get_host_reads] reads_subset[OF get_disconnected_document_reads]
-        split: option.splits list.splits
+        split: option.splits
         )
 
 qed
@@ -9469,7 +9461,7 @@ h'2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
         apply(rule reads_writes_preserved)
         by (simp add: set_disconnected_nodes_get_child_nodes)
       then have children_eq2_h'2: "\<And>ptr. |h'2 \<turnstile> get_child_nodes ptr|\<^sub>r = |h'3 \<turnstile> get_child_nodes ptr|\<^sub>r"
-        using select_result_eq by force
+        by (meson select_result_eq)
 
       have object_ptr_kinds_h'3_eq3: "object_ptr_kinds h'3 = object_ptr_kinds h2"
         apply(rule writes_small_big[where P="\<lambda>h h2. object_ptr_kinds h = object_ptr_kinds h2",
@@ -9485,7 +9477,7 @@ h'2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
       then have node_ptr_kinds_eq3_h'3: "node_ptr_kinds h'3 = node_ptr_kinds h2"
         by auto
       have document_ptr_kinds_eq2_h'3: "|h'3 \<turnstile> document_ptr_kinds_M|\<^sub>r = |h2 \<turnstile> document_ptr_kinds_M|\<^sub>r"
-        using object_ptr_kinds_eq_h'3 document_ptr_kinds_M_eq by auto
+        using document_ptr_kinds_M_eq object_ptr_kinds_eq_h'3 by blast
       then have document_ptr_kinds_eq3_h'3: "document_ptr_kinds h'3 = document_ptr_kinds h2"
         using object_ptr_kinds_eq_h'3 document_ptr_kinds_M_eq by auto
       have children_eq_h'3: "\<And>ptr children. h'3 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children =
