@@ -1,7 +1,9 @@
 chapter AFP
 
-session "Core_SC_DOM" = "HOL-Library" +
+session "Core_SC_DOM" = HOL +
   options [timeout = 1500]
+  sessions
+    "HOL-Library"
   directories
     "common"
     "common/classes"
