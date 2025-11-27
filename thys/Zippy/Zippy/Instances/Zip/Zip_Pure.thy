@@ -139,6 +139,29 @@ structure AStar = Zippy.Run.AStar
 structure Depth_First = Zippy.Run.Depth_First
 structure Breadth_First = Zippy.Run.Breadth_First
 structure Best_First = Zippy.Run.Best_First
+(** try all executors in parallel **)
+structure Try =
+struct
+local open Zippy; open MU
+  fun exec_all fs ctxt =
+    let fun run (who, f) = Timing.timing
+        (Seq_From_Monad.seq_from_monad {ctxt = ctxt} #> Seq.filter Thm.no_prems #> Seq.pull) f
+      |> (fn (_, NONE) => NONE
+        | (timing, x) => (warning (who ^ " finished. Timing: " ^ Timing.message timing); x))
+      |> Library.K |> Seq.make
+    in Par_List.map run fs |> Seq.of_list |> Seq.flat |> (fn sq => Mo.pure sq ctxt) end
+  val execs = ["AStar", "Depth_First", "Breadth_First", "Best_First"]
+in
+fun gen post depth fuel c = [AStar.gen, Depth_First.gen, Breadth_First.gen, Best_First.gen]
+  |> List.map (fn f => f post depth fuel c) |> curry (op ~~) execs |> exec_all
+fun gen_all depth fuel c = [AStar.gen_all, Depth_First.gen_all, Breadth_First.gen_all, Best_First.gen_all]
+  |> List.map (fn f => f depth fuel c) |> curry (op ~~) execs |> exec_all
+fun all depth fuel c = [AStar.all, Depth_First.all, Breadth_First.all, Best_First.all]
+  |> List.map (fn f => f depth fuel c) |> curry (op ~~) execs |> exec_all
+fun all' fuel c = [AStar.all', Depth_First.all', Breadth_First.all', Best_First.all']
+  |> List.map (fn f => f fuel c) |> curry (op ~~) execs |> exec_all
+end
+end
 end
 \<close>
 local_setup\<open>Zip.Context_Parsers.setup_attribute NONE\<close>

@@ -196,13 +196,19 @@ lemma "gauss n > 0 \<longleftrightarrow> n > 0" by zip
 end
 
 text \<open>In some cases, it is necessary (or advisable for performance reasons) to change the search
-strategy from the default \<open>A\<^sup>*\<close> search to breadth-first, depth-first, or best-first search:\<close>
+strategy from the default \<open>A\<^sup>*\<close> (@{ML_structure Zip.AStar}) search to breadth-first
+(@{ML_structure Zip.Breadth_First}), depth-first (@{ML_structure Zip.Depth_First}),
+or best-first (@{ML_structure Zip.Best_First}) search. You can either try them individually or use
+@{ML_structure Zip.Try} to search for the fastest one in parallel.  Note that
+@{ML_structure Zip.Try} is only meant for exploration. It should be replaced by the discovered,
+most efficient strategy in the final proof document!\<close>
 
 lemma list_induct3:
   "length xs = length ys \<Longrightarrow> length ys = length zs \<Longrightarrow> P [] [] [] \<Longrightarrow>
    (\<And>x xs y ys z zs. length xs = length ys \<Longrightarrow> length ys = length zs \<Longrightarrow> P xs ys zs \<Longrightarrow> P (x#xs) (y#ys) (z#zs))
    \<Longrightarrow> P xs ys zs"
   by (induct xs arbitrary: ys zs)
+  (* (zip cases (pat) ("_ :: _ list" - "[]") where run exec: Zip.Try.all') *) \<comment>\<open>this suggests Breadth_First\<close>
   (zip cases (pat) ("_ :: _ list" - "[]") where run exec: Zip.Breadth_First.all')
 (*ORIG*)
 (* proof (induct xs arbitrary: ys zs)
