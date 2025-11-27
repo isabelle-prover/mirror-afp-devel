@@ -35,7 +35,7 @@ section \<open>Non Destructiveness of Choices\<close>
 
 (*<*)
 theory Choices_Non_Destructive
-  imports Process_Restriction_Space "HOL-CSPM.CSPM_Laws"
+  imports Process_Restriction_Space "HOL-CSPM"
 begin
   (*>*)
 

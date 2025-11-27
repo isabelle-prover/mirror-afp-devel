@@ -78,9 +78,10 @@ session "HOL-CSP" (AFP) = HOLCF +
     Events_Ticks_CSP_Laws
     CSP_Assertions
     Induct_CSP_Rules
-    CSP
+    "HOL-CSP" (global)
     Conclusion
     CopyBuffer
+    MergeAnomaly
   document_files
     "root.tex"
     "adb-long.bib"

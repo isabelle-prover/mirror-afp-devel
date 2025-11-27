@@ -36,7 +36,7 @@ section \<open>Non Destructiveness of Synchronization Product\<close>
 
 (*<*)
 theory Synchronization_Product_Non_Destructive
-  imports Process_Restriction_Space "HOL-CSPM.CSPM"
+  imports Process_Restriction_Space "HOL-CSPM"
 begin
   (*>*)
 
@@ -507,145 +507,27 @@ corollary restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_MultiPar :
 subsection \<open>Non Destructiveness\<close>
 
 lemma Sync_non_destructive :
-  \<open>non_destructive (\<lambda>(P, Q). P \<lbrakk>A\<rbrakk> Q)\<close>
+  \<open>non_destructive (\<lambda>(P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, Q). P \<lbrakk>A\<rbrakk> Q)\<close>
 proof (rule order_non_destructiveI, clarify)
   fix P P' Q Q' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and n
-  assume \<open>(P, Q) \<down> n = (P', Q') \<down> n\<close>
+  assume \<open>(P, Q) \<down> n = (P', Q') \<down> n\<close> \<open>0 < n\<close>
   hence \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
     by (simp_all add: restriction_prod_def)
   show \<open>P \<lbrakk>A\<rbrakk> Q \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P' \<lbrakk>A\<rbrakk> Q' \<down> n\<close>
   proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-    show div : \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk> Q') \<Longrightarrow> t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> if \<open>length t \<le> n\<close> for t
-    proof (unfold D_Sync_optimized, safe)
-      fix u v t_P t_Q
-      assume * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves ((t_P, t_Q), range tick \<union> ev ` A)\<close>
-        \<open>t_P \<in> \<D> P'\<close> \<open>t_Q \<in> \<T> Q'\<close>
-      from "*"(1) \<open>length t \<le> n\<close> have \<open>length u \<le> n\<close> by simp
-      from \<open>length u \<le> n\<close> interleave_imp_lengthLR_le[OF "*"(4)]
-      have \<open>length t_P \<le> n\<close> \<open>length t_Q \<le> n\<close> by simp_all
-      from \<open>t_Q \<in> \<T> Q'\<close> \<open>length t_Q \<le> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> have \<open>t_Q \<in> \<T> Q\<close>
-        by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-      proof (cases \<open>length u = n\<close>)
-        assume \<open>length u = n\<close>
-        from \<open>t_P \<in> \<D> P'\<close> \<open>length t_P \<le> n\<close> \<open>P \<down> n = P' \<down> n\<close> have \<open>t_P \<in> \<T> P\<close>
-          by (simp add: D_T D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>t_Q \<in> \<T> Q\<close> "*"(4) have \<open>u \<in> \<T> (P \<lbrakk>A\<rbrakk> Q)\<close>
-          unfolding T_Sync by blast
-        with \<open>length u = n\<close> "*"(2, 3) show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-          by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7)
-      next
-        assume \<open>length u \<noteq> n\<close>
-        with \<open>length u \<le> n\<close> have \<open>length u < n\<close> by simp
-        with interleave_imp_lengthLR_le[OF "*"(4)]
-        have \<open>length t_P < n\<close> by simp
-        with \<open>t_P \<in> \<D> P'\<close> \<open>P \<down> n = P' \<down> n\<close> have \<open>t_P \<in> \<D> P\<close>
-          by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI
-              length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>t_Q \<in> \<T> Q\<close> "*"(2-4) have \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close>
-          unfolding D_Sync by blast
-        thus \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-          by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-      qed
-    next
-      fix u v t_P t_Q
-      assume * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves ((t_Q, t_P), range tick \<union> ev ` A)\<close>
-        \<open>t_P \<in> \<T> P'\<close> \<open>t_Q \<in> \<D> Q'\<close>
-      from "*"(1) \<open>length t \<le> n\<close> have \<open>length u \<le> n\<close> by simp
-      from \<open>length u \<le> n\<close> interleave_imp_lengthLR_le[OF "*"(4)]
-      have \<open>length t_P \<le> n\<close> \<open>length t_Q \<le> n\<close> by simp_all
-      from \<open>t_P \<in> \<T> P'\<close> \<open>length t_P \<le> n\<close> \<open>P \<down> n = P' \<down> n\<close> have \<open>t_P \<in> \<T> P\<close>
-        by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-      proof (cases \<open>length u = n\<close>)
-        assume \<open>length u = n\<close>
-        from \<open>t_Q \<in> \<D> Q'\<close> \<open>length t_Q \<le> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> have \<open>t_Q \<in> \<T> Q\<close>
-          by (simp add: D_T D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>t_P \<in> \<T> P\<close> "*"(4) have \<open>u \<in> \<T> (P \<lbrakk>A\<rbrakk> Q)\<close>
-          unfolding T_Sync using setinterleaving_sym by blast
-        with \<open>length u = n\<close> "*"(2, 3) show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-          by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7)
-      next
-        assume \<open>length u \<noteq> n\<close>
-        with \<open>length u \<le> n\<close> have \<open>length u < n\<close> by simp
-        with interleave_imp_lengthLR_le[OF "*"(4)]
-        have \<open>length t_Q < n\<close> by simp
-        with \<open>t_Q \<in> \<D> Q'\<close> \<open>Q \<down> n = Q' \<down> n\<close> have \<open>t_Q \<in> \<D> Q\<close>
-          by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI
-              length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>t_P \<in> \<T> P\<close> "*"(2-4) have \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close>
-          unfolding D_Sync by blast
-        thus \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-          by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-      qed
-    qed
-
-    fix t X assume \<open>(t, X) \<in> \<F> (P' \<lbrakk>A\<rbrakk> Q')\<close> \<open>length t \<le> n\<close>
-    then consider \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk> Q')\<close>
-      | (fail) t_P t_Q X_P X_Q
-      where \<open>(t_P, X_P) \<in> \<F> P'\<close> \<open>(t_Q, X_Q) \<in> \<F> Q'\<close>
-        \<open>t setinterleaves ((t_P, t_Q), range tick \<union> ev ` A)\<close>
-        \<open>X = (X_P \<union> X_Q) \<inter> (range tick \<union> ev ` A) \<union> X_P \<inter> X_Q\<close>
-      unfolding Sync_projs by blast
-    thus \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-    proof cases
-      from div \<open>length t \<le> n\<close> D_F
-      show \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk> Q') \<Longrightarrow> (t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> by blast
-    next
-      case fail
-      show \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-      proof (cases \<open>length t = n\<close>)
-        assume \<open>length t = n\<close>
-        from \<open>length t \<le> n\<close> interleave_imp_lengthLR_le[OF fail(3)]
-        have \<open>length t_P \<le> n\<close> \<open>length t_Q \<le> n\<close> by simp_all
-        with fail(1, 2) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-        have \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close>
-          by (metis F_T T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI
-              length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)+
-        from F_imp_front_tickFree \<open>(t, X) \<in> \<F> (P' \<lbrakk>A\<rbrakk> Q')\<close>
-        have \<open>ftF t\<close> by blast
-        with fail(3) consider \<open>tF t\<close>
-          | r s t_P' t_Q' where \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> \<open>t_Q = t_Q' @ [\<checkmark>(s)]\<close>
-          by (metis F_imp_front_tickFree SyncWithTick_imp_NTF
-              fail(1-2) nonTickFree_n_frontTickFree)
-        thus \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-        proof cases
-          assume \<open>tF t\<close>
-          from \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> fail(3)
-          have \<open>t \<in> \<T> (P \<lbrakk>A\<rbrakk> Q)\<close> unfolding T_Sync by blast
-          hence \<open>t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-            by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI \<open>length t = n\<close> \<open>tF t\<close>)
-          thus \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> by (simp add: is_processT8)
-        next
-          fix r s t_P' t_Q' assume \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> \<open>t_Q = t_Q' @ [\<checkmark>(s)]\<close>
-          have \<open>(t_P, X_P) \<in> \<F> P\<close>
-            by (metis \<open>t_P \<in> \<T> P\<close> \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> tick_T_F)
-          moreover have \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-            by (metis \<open>t_Q \<in> \<T> Q\<close> \<open>t_Q = t_Q' @ [\<checkmark>(s)]\<close> tick_T_F)
-          ultimately have \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q)\<close>
-            using fail(3, 4) unfolding F_Sync by fast
-          thus \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-            by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-        qed
-      next
-        assume \<open>length t \<noteq> n\<close>
-        with \<open>length t \<le> n\<close> have \<open>length t < n\<close> by simp
-        with interleave_imp_lengthLR_le[OF fail(3)]
-        have \<open>length t_P < n\<close> \<open>length t_Q < n\<close> by simp_all
-        with fail(1, 2) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-        have \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-          by (metis F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI
-              length_less_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)+
-        with fail(3, 4) have \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q)\<close>
-          unfolding F_Sync by fast
-        thus \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-          by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-      qed
-    qed
+    show \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk> Q') \<Longrightarrow> t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> for t
+      by (metis (mono_tags, opaque_lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
+                in_mono le_ref1 mono_Sync_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+                restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD)
+  next
+    show \<open>(s, X) \<in> \<F> (P' \<lbrakk>A\<rbrakk> Q') \<Longrightarrow> (s, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> for s X
+      by (metis (mono_tags, opaque_lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
+                failure_refine_def leFD_imp_leF mono_Sync_FD
+                restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+                restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD subset_iff)
   qed
 qed
+
 
 
 (*>*)

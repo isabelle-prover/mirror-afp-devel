@@ -41,15 +41,15 @@
  ******************************************************************************\<close>
 (*>*)
 
-chapter\<open>Examples\<close>
-
-section\<open>CopyBuffer Refinement over an infinite alphabet\<close>
+chapter\<open>Examples: CopyBuffer Revisited, Dining Philosophers\<close>
 
 theory     CopyBuffer_props
-  imports   "HOL-CSP.CopyBuffer" "HOL-CSP.CSP"
+  imports "HOL-CSP.CopyBuffer"
 begin 
 
-subsection\<open> The Copy-Buffer vs. reference processes \<close>
+section\<open>CopyBuffer Refinement over an Infinite Alphabet\<close>
+
+subsection\<open> The Copy-Buffer vs. Reference Processes \<close>
 
 thm DF_COPY
 

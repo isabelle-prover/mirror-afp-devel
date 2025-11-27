@@ -250,25 +250,6 @@ lemma \<open>\<not> \<alpha>(P) \<subseteq> A \<Longrightarrow> \<not> DF A \<sq
     (metis anti_mono_events_of_FD events_of_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
 
 
-lemma \<open>chain Y \<Longrightarrow> \<alpha>(\<Squnion>i. Y i) = (\<Union>i. \<alpha>(Y i))\<close>
-  apply (simp add: events_of_def limproc_is_thelub T_LUB D_LUB)
-  apply auto
-
-(* not provable as expected *)
-  oops
-
-lemma f1 : \<open>chain Y \<Longrightarrow> \<^bold>\<alpha>(\<Squnion>i. Y i) = (\<Union>i. \<^bold>\<alpha>(Y i))\<close>
-  apply (simp add: strict_events_of_def limproc_is_thelub T_LUB D_LUB)
-  apply auto
-    (* TODO: break this smt *)
-  by (smt (verit, ccfv_threshold) D_T DiffI INT_iff Inter_iff le_approx2T lim_proc_is_ub rangeI ub_rangeD)
-
-find_theorems Lub 
-
-lemma f2 : \<open>chain Y \<Longrightarrow> \<D> (Y i) = {} \<Longrightarrow> (\<Union>i. \<^bold>\<alpha>(Y i)) = \<^bold>\<alpha>(Y i)\<close>
-  apply (auto simp add: strict_events_of_def)
-  by (meson ND_F_dir2' chain_lemma)
-
 (*<*)
 end
   (*>*)

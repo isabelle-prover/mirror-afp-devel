@@ -866,7 +866,6 @@ begin
 text\<open> declares approximation ordering $\_ \sqsubseteq \_$ also written 
         \verb+_ << _+. \<close>
 
-(* TODO: rename this with \<open>below\<close> ? *)
 
 definition le_approx_def : \<open>P \<sqsubseteq> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and>
                                     (\<forall>s. s \<notin> \<D> P \<longrightarrow> \<R>\<^sub>a P s = \<R>\<^sub>a Q s) \<and> 

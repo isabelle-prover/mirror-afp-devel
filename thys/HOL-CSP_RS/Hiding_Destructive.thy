@@ -36,7 +36,7 @@ section \<open>Destructiveness of Hiding\<close>
 
 (*>*)
 theory Hiding_Destructive
-  imports "HOL-CSPM.CSPM_Laws" Prefixes_Constructive
+  imports "HOL-CSPM" Prefixes_Constructive
 begin
   (*>*)
 
@@ -109,7 +109,7 @@ proof -
 
   have \<open>P \<down> n = Q \<down> n \<and> (P \ S) \<down> Suc 0 \<noteq> (Q \ S) \<down> Suc 0\<close>
     by (simp add: \<open>P \<down> n = Q \<down> n\<close> \<open>(P \ S) \<down> Suc 0 = SKIP undefined\<close>
-        \<open>(Q \ S) \<down> Suc 0 = STOP\<close> SKIP_Neq_STOP)
+        \<open>(Q \ S) \<down> Suc 0 = STOP\<close>)
   thus ?thesis by blast
 qed
 

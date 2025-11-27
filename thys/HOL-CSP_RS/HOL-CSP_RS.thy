@@ -48,8 +48,7 @@ theory "HOL-CSP_RS"
 begin
   (*>*)
 
-text \<open>This is the main entry point.
-      We configure the simplifier below.\<close>
+text \<open>This is the main entry point. We configure the simplifier below.\<close>
 
 
 named_theorems restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simpset
@@ -279,6 +278,26 @@ notepad begin
       (simp_all add: case_prod_beta')
 
 end
+
+
+text \<open>Finally, we add the following new law.
+      A similar result involving the least fixed-point operator inherited
+      from \<^session>\<open>HOLCF\<close> was already available: @{thm [source] Renaming_fix}.\<close>
+
+lemma Renaming_restriction_fix :
+  \<open>Renaming (\<upsilon> X. \<phi> X) f g = (\<upsilon> X. ((\<lambda>P. Renaming P f g) \<circ> \<phi> \<circ> (\<lambda>P. Renaming P (inv f) (inv g))) X)\<close>
+  (is \<open>Renaming (\<upsilon> X. \<phi> X) f g = (\<upsilon> X. ?\<phi>' X)\<close>) if \<open>constructive \<phi>\<close>
+  and \<open>inj f\<close> and \<open>inj g\<close> for \<phi> :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+proof (rule restriction_fix_unique[symmetric])
+  show \<open>constructive ?\<phi>'\<close>
+    by (simp add: comp_def constructiveD constructiveI
+                  restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Renaming \<open>constructive \<phi>\<close>)
+next
+  from \<open>inj f\<close> \<open>inj g\<close>
+  have \<open>inv f \<circ> f = id\<close> \<open>inv g \<circ> g = id\<close> unfolding inj_iff .
+  thus \<open>?\<phi>' (Renaming (\<upsilon> X. \<phi> X) f g) = Renaming (\<upsilon> X. \<phi> X) f g\<close>
+    by (simp add: Renaming_id flip: Renaming_comp restriction_fix_eq[OF \<open>constructive \<phi>\<close>])
+qed
 
 
 

@@ -916,6 +916,17 @@ corollary Mprefix_Sync_Mprefix:
     (simp_all add: Int_commute inf_left_commute)
 
 
+lemma Mprefix_Sync_Mprefix_eq_Mprefix :
+  \<open>\<box>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk> \<box>b\<in>B \<rightarrow> Q b =
+   \<box>x\<in>(A \<union> B - S \<union> A \<inter> B \<inter> S) \<rightarrow>
+       (   if x\<in>(A \<inter> B - S) then (P x \<lbrakk>S\<rbrakk> \<box>b\<in>B \<rightarrow> Q b) \<sqinter> (\<box>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk> Q x)
+        else if x \<in> (A - S) then P x \<lbrakk>S\<rbrakk> \<box>b\<in>B \<rightarrow> Q b
+        else if x \<in> (B - S) then \<box>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk> Q x
+        else P x \<lbrakk>S\<rbrakk> Q x)\<close>
+  by (unfold Mprefix_Sync_Mprefix Mprefix_Det_Mprefix)
+    (auto simp add: Un_Diff intro: mono_Mprefix_eq)
+
+
 
 subsubsection \<open>Renaming\<close>
 

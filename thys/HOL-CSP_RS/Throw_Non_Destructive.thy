@@ -243,177 +243,18 @@ proof (rule order_non_destructiveI, clarify)
   assume \<open>(P, Q) \<down> n = (P', Q') \<down> n\<close> \<open>0 < n\<close>
   hence \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
     by (simp_all add: restriction_prod_def)
-
-  { let ?lhs = \<open>P \<Theta> a \<in> A. Q a \<down> n\<close>
-    fix t u v assume \<open>t = u @ v\<close> \<open>u \<in> \<T> (Throw P' A Q')\<close> \<open>length u = n\<close> \<open>tF u\<close> \<open>ftF v\<close>
-    from this(2) consider \<open>u \<in> \<T> P'\<close> \<open>set u \<inter> ev ` A = {}\<close>
-      | (divL) t1 t2 where \<open>u = t1 @ t2\<close> \<open>t1 \<in> \<D> P'\<close> \<open>tF t1\<close>
-        \<open>set t1 \<inter> ev ` A = {}\<close> \<open>ftF t2\<close>
-      | (traces) t1 a t2 where \<open>u = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P'\<close>
-        \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>t2 \<in> \<T> (Q' a)\<close>
-      unfolding T_Throw by blast
-    hence \<open>t \<in> \<D> ?lhs\<close>
-    proof cases
-      assume \<open>u \<in> \<T> P'\<close> \<open>set u \<inter> ev ` A = {}\<close>
-      from \<open>u \<in> \<T> P'\<close> \<open>length u = n\<close> \<open>P \<down> n = P' \<down> n\<close> have \<open>u \<in> \<T> P\<close>
-        by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI dual_order.refl
-            length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      with \<open>set u \<inter> ev ` A = {}\<close> have \<open>u \<in> \<T> (Throw P A Q)\<close>
-        by (simp add: T_Throw)
-      with \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>tF u\<close> \<open>length u = n\<close> show \<open>t \<in> \<D> ?lhs\<close>
-        by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7)
-    next
-      case divL
-      show \<open>t \<in> \<D> ?lhs\<close>
-      proof (cases \<open>length t1 = n\<close>)
-        assume \<open>length t1 = n\<close>
-        with \<open>P \<down> n = P' \<down> n\<close> divL(2,4) have \<open>t1 \<in> \<T> (Throw P A Q)\<close>
-          by (simp add: T_Throw)
-            (metis D_T T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI dual_order.refl
-              length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>ftF v\<close> \<open>length t1 = n\<close> \<open>t = u @ v\<close> \<open>tF u\<close>
-          divL(1,3,5) \<open>length u = n\<close> show \<open>t \<in> \<D> ?lhs\<close>
-          by (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k is_processT7)
-      next
-        assume \<open>length t1 \<noteq> n\<close>
-        with \<open>length u = n\<close> divL(1) have \<open>length t1 < n\<close> by simp
-        with \<open>P \<down> n = P' \<down> n\<close> divL(2,3,4) have \<open>t1 \<in> \<D> P\<close>
-          by (simp add: D_Throw)
-            (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>ftF v\<close> \<open>t = u @ v\<close> divL(1,3,4) show \<open>t \<in> \<D> ?lhs\<close>
-          by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k T_Throw)
-            (metis \<open>length u = n\<close> \<open>tF u\<close> append.assoc divL(5))
-      qed
-    next
-      case traces
-      from \<open>length u = n\<close> traces(1)
-      have \<open>length (t1 @ [ev a]) \<le> n\<close> \<open>length t2 \<le> n\<close> by simp_all
-      from \<open>P \<down> n = P' \<down> n\<close> \<open>t1 @ [ev a] \<in> \<T> P'\<close> \<open>length (t1 @ [ev a]) \<le> n\<close>
-      have \<open>t1 @ [ev a] \<in> \<T> P\<close>
-        by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      moreover from \<open>length t2 \<le> n\<close> \<open>t2 \<in> \<T> (Q' a)\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-      have \<open>t2 \<in> \<T> (Q a)\<close>
-        by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI restriction_fun_def
-            length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      ultimately have \<open>u \<in> \<T> (P \<Theta> a \<in> A. Q a)\<close>
-        using traces(1,3,4) unfolding T_Throw by blast
-      with \<open>ftF v\<close> \<open>length u = n\<close> \<open>t = u @ v\<close> \<open>tF u\<close>
-      show \<open>t \<in> \<D> ?lhs\<close> by (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-    qed
-  } note * = this
-
-  show \<open>P \<Theta> a \<in> A. Q a \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P' \<Theta> a \<in> A. Q' a \<down> n\<close> (is \<open>?lhs \<sqsubseteq>\<^sub>F\<^sub>D ?rhs\<close>)
-  proof (unfold refine_defs, safe)
-    show div : \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t
-    proof (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
-      assume \<open>t \<in> \<D> (P' \<Theta> a \<in> A. Q' a)\<close> \<open>length t \<le> n\<close>
-      from this(1) consider (divL) t1 t2 where \<open>t = t1 @ t2\<close> \<open>t1 \<in> \<D> P'\<close>
-        \<open>tF t1\<close> \<open>set t1 \<inter> ev ` A = {}\<close> \<open>ftF t2\<close>
-      | (divR) t1 a t2 where \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P'\<close>
-        \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>t2 \<in> \<D> (Q' a)\<close>
-        unfolding D_Throw by blast
-      thus \<open>t \<in> \<D> ?lhs\<close>
-      proof cases
-        case divL
-        show \<open>t \<in> \<D> ?lhs\<close>
-        proof (cases \<open>length t1 = n\<close>)
-          assume \<open>length t1 = n\<close>
-          have \<open>t1 \<in> \<T> P'\<close> by (simp add: D_T divL(2))
-          with \<open>P \<down> n = P' \<down> n\<close> \<open>length t1 = n\<close> have \<open>t1 \<in> \<T> P\<close>
-            by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI dual_order.eq_iff
-                length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-          with divL(4) have \<open>t1 \<in> \<T> (Throw P A Q)\<close> by (simp add: T_Throw)
-          with \<open>length t1 = n\<close> divL(1,3,5) show \<open>t \<in> \<D> ?lhs\<close>
-            by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7)
-        next
-          assume \<open>length t1 \<noteq> n\<close>
-          with \<open>length t \<le> n\<close> divL(1) have \<open>length t1 < n\<close> by simp
-          with \<open>t1 \<in> \<D> P'\<close> \<open>P \<down> n = P' \<down> n\<close> have \<open>t1 \<in> \<D> P\<close>
-            by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-          with divL(3, 4) front_tickFree_Nil have \<open>t1 \<in> \<D> (Throw P A Q)\<close>
-            by (simp (no_asm) add: D_Throw) blast
-          with divL(1,3,5) show \<open>t \<in> \<D> ?lhs\<close>
-            by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7)
-        qed
-      next
-        case divR
-        from \<open>length t \<le> n\<close> divR(1)
-        have \<open>length (t1 @ [ev a]) \<le> n\<close> \<open>length t2 < n\<close> by simp_all
-        from \<open>P \<down> n = P' \<down> n\<close> \<open>t1 @ [ev a] \<in> \<T> P'\<close> \<open>length (t1 @ [ev a]) \<le> n\<close>
-        have \<open>t1 @ [ev a] \<in> \<T> P\<close>
-          by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        moreover from \<open>length t2 < n\<close> \<open>t2 \<in> \<D> (Q' a)\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-        have \<open>t2 \<in> \<D> (Q a)\<close>
-          by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI restriction_fun_def
-              length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        ultimately have \<open>t \<in> \<D> (P \<Theta> a \<in> A. Q a)\<close>
-          using divR(1,3,4) unfolding D_Throw by blast
-        thus \<open>t \<in> \<D> ?lhs\<close> by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-      qed
-    next
-      show \<open>t = u @ v \<Longrightarrow> u \<in> \<T> (Throw P' A Q') \<Longrightarrow> length u = n \<Longrightarrow>
-            tF u \<Longrightarrow> ftF v \<Longrightarrow> t \<in> \<D> ?lhs\<close> for u v by (fact "*")
-    qed
-
-    show \<open>(t, X) \<in> \<F> ?rhs \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close> for t X
-    proof (elim F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
-      assume \<open>(t, X) \<in> \<F> (Throw P' A Q')\<close> \<open>length t \<le> n\<close>
-      from this(1) consider \<open>t \<in> \<D> (Throw P' A Q')\<close> | \<open>(t, X) \<in> \<F> P'\<close> \<open>set t \<inter> ev ` A = {}\<close>
-        | (failR) t1 a t2 where \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P'\<close>
-          \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>(t2, X) \<in> \<F> (Q' a)\<close>
-        unfolding Throw_projs by auto
-      thus \<open>(t, X) \<in> \<F> ?lhs\<close>
-      proof cases
-        assume \<open>t \<in> \<D> (Throw P' A Q')\<close>
-        hence \<open>t \<in> \<D> ?rhs\<close> by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-        with D_F div show \<open>(t, X) \<in> \<F> ?lhs\<close> by blast
-      next
-        assume \<open>(t, X) \<in> \<F> P'\<close> \<open>set t \<inter> ev ` A = {}\<close>
-        from \<open>(t, X) \<in> \<F> P'\<close> \<open>P \<down> n = P' \<down> n\<close> \<open>length t \<le> n\<close> have \<open>t \<in> \<T> P\<close>
-          by (metis F_T T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        with \<open>set t \<inter> ev ` A = {}\<close> have \<open>t \<in> \<T> (Throw P A Q)\<close> by (simp add: T_Throw)
-        from F_imp_front_tickFree \<open>(t, X) \<in> \<F> P'\<close> have \<open>ftF t\<close> by blast
-        thus \<open>(t, X) \<in> \<F> ?lhs\<close>
-        proof (elim front_tickFreeE)
-          show \<open>(t, X) \<in> \<F> ?lhs\<close> if \<open>tF t\<close>
-          proof (cases \<open>length t = n\<close>)
-            assume \<open>length t = n\<close>
-            with \<open>t \<in> \<T> (Throw P A Q)\<close> \<open>tF t\<close> front_tickFree_charn show \<open>(t, X) \<in> \<F> ?lhs\<close>
-              by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
-          next
-            assume \<open>length t \<noteq> n\<close>
-            with \<open>length t \<le> n\<close> have \<open>length t < n\<close> by simp
-            with \<open>(t, X) \<in> \<F> P'\<close> \<open>P \<down> n = P' \<down> n\<close> have \<open>(t, X) \<in> \<F> P\<close>
-              by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_less_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-            with \<open>set t \<inter> ev ` A = {}\<close> have \<open>(t, X) \<in> \<F> (Throw P A Q)\<close> by (simp add: F_Throw)
-            thus \<open>(t, X) \<in> \<F> ?lhs\<close> by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-          qed
-        next
-          fix t' r assume \<open>t = t' @ [\<checkmark>(r)]\<close>
-          with \<open>t \<in> \<T> (Throw P A Q)\<close> have \<open>(t, X) \<in> \<F> (Throw P A Q)\<close>
-            by (simp add: tick_T_F)
-          thus \<open>(t, X) \<in> \<F> ?lhs\<close> by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-        qed
-      next
-        case failR
-        from \<open>length t \<le> n\<close> failR(1)
-        have \<open>length (t1 @ [ev a]) \<le> n\<close> \<open>length t2 < n\<close> by simp_all
-        from \<open>P \<down> n = P' \<down> n\<close> \<open>t1 @ [ev a] \<in> \<T> P'\<close> \<open>length (t1 @ [ev a]) \<le> n\<close>
-        have \<open>t1 @ [ev a] \<in> \<T> P\<close>
-          by (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        moreover from \<open>length t2 < n\<close> \<open>(t2, X) \<in> \<F> (Q' a)\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-        have \<open>(t2, X) \<in> \<F> (Q a)\<close>
-          by (metis F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI restriction_fun_def
-              length_less_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        ultimately have \<open>(t, X) \<in> \<F> (P \<Theta> a \<in> A. Q a)\<close>
-          using failR(1,3,4) unfolding F_Throw by blast
-        thus \<open>(t, X) \<in> \<F> ?lhs\<close> by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
-      qed
-    next
-      show \<open>t = u @ v \<Longrightarrow> u \<in> \<T> (Throw P' A Q') \<Longrightarrow> length u = n \<Longrightarrow>
-            tF u \<Longrightarrow> ftF v \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close> for u v
-        by (simp add: "*" is_processT8)
-    qed
+  show \<open>P \<Theta> a \<in> A. Q a \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P' \<Theta> a \<in> A. Q' a \<down> n\<close>
+  proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
+    show \<open>t \<in> \<D> (P' \<Theta> a \<in> A. Q' a) \<Longrightarrow> t \<in> \<D> (P \<Theta> a \<in> A. Q a \<down> n)\<close> for t
+      by (metis (no_types, lifting) ext \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>[unfolded restriction_fun_def]
+          in_mono le_ref1 mono_Throw_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+          restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Throw_FD)
+  next
+    show \<open>(s, X) \<in> \<F> (P' \<Theta> a \<in> A. Q' a) \<Longrightarrow> (s, X) \<in> \<F> (P \<Theta> a \<in> A. Q a \<down> n)\<close> for s X
+      by (metis (no_types, lifting) ext \<open>P \<down> n = P' \<down> n\<close>
+          \<open>Q \<down> n = Q' \<down> n\<close>[unfolded restriction_fun_def]
+          in_mono le_ref2 mono_Throw_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+          restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Throw_FD)
   qed
 qed
 

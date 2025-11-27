@@ -843,7 +843,6 @@ next
 qed
 
 
-(* TODO: declare this simp ? *)
 lemma mono_Sync : \<open>P \<sqsubseteq> P' \<Longrightarrow> Q \<sqsubseteq> Q' \<Longrightarrow> P \<lbrakk>A\<rbrakk> Q \<sqsubseteq> P' \<lbrakk>A\<rbrakk> Q'\<close>
   for P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 proof -

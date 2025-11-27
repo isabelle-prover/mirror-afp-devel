@@ -1,8 +1,8 @@
 \documentclass[11pt,a4paper]{book}
-\usepackage[T1]{fontenc}
 \usepackage{isabelle,isabellesym}
 \usepackage{graphicx}
-\graphicspath {{figures/}}
+\graphicspath{document}
+
 
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
@@ -56,9 +56,9 @@
    as has been introduced in the well-known FDR4 model-checker for CSP.
 
    While FDR4 uses these architectural operators as handy macros that help to structure
-   the specifications, they are basically macro-expanded before the Labelled Transition
-   Systems were generated. In contrast, we develop the formal theory of these operators
-   in themselves which paves the way for a more structured approach to reasoning 
+   the specifications, they are basically syntactic sugar and expanded before the Labelled 
+   Transition Systems were generated. In contrast, we develop the formal theory of these 
+   operators in themselves which paves the way for a more structured approach to reasoning 
    in HOL-CSP. Our generalizations will take commutativity and idempotence into account,
    such that they become fully-abstract wrt. to index-sets, index-multi-sets or lists, 
    respectively. 

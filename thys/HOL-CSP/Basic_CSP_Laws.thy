@@ -138,7 +138,7 @@ subsection \<open>The Laws of \<^const>\<open>STOP\<close>\<close>
 text \<open>From the characterization @{thm STOP_iff_T}, we can easily derive the behaviour
       of \<^const>\<open>STOP\<close> wrt. \<^const>\<open>SKIP\<close> and the operators.\<close>
 
-lemma SKIP_Neq_STOP : \<open>SKIP r \<noteq> STOP\<close>
+lemma SKIP_neq_STOP [simp] : \<open>SKIP r \<noteq> STOP\<close>
   by (simp add: STOP_iff_T T_SKIP)
 
 
@@ -384,6 +384,29 @@ next
   show \<open>(s, X) \<in> \<F> (SKIP r) \<Longrightarrow> (s, X) \<in> \<F> (SKIP r \ A)\<close> for s X
     by (simp add: F_Hiding SKIP_projs)
       (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) filter.simps(1, 2) image_iff)
+qed
+
+
+lemma Hiding_SKIPS : \<open>SKIPS R \ S = SKIPS R\<close>
+  \<comment> \<open>Only a weaker version that assumes \<^term>\<open>finite R\<close> is obtainable
+      from distributivity of \<^const>\<open>GlobalNdet\<close>.\<close>
+proof (rule Process_eq_optimizedI)
+  show \<open>t \<in> \<D> (SKIPS R \ S) \<Longrightarrow> t \<in> \<D> (SKIPS R)\<close> for t
+    by (auto simp add: SKIPS_projs elim!: D_Hiding_seqRunE)
+      (metis append_is_Nil_conv front_tickFree_nonempty_append_imp
+        front_tickFree_single list.simps(3) non_tickFree_tick seqRun_Suc)
+next
+  show \<open>t \<in> \<D> (SKIPS R) \<Longrightarrow> t \<in> \<D> (SKIPS R \ S)\<close> for t by (simp add: D_SKIPS)
+next
+  fix t X assume \<open>(t, X) \<in> \<F> (SKIPS R \ S)\<close> \<open>t \<notin> \<D> (SKIPS R \ S)\<close>
+  then obtain u where \<open>t = trace_hide u (ev ` S)\<close> \<open>(u, X \<union> ev ` S) \<in> \<F> (SKIPS R)\<close>
+    unfolding F_Hiding D_Hiding by blast
+  thus \<open>(t, X) \<in> \<F> (SKIPS R)\<close>
+    by (auto simp add: SKIPS_projs split: if_split_asm)
+next
+  show \<open>(t, X) \<in> \<F> (SKIPS R) \<Longrightarrow> (t, X) \<in> \<F> (SKIPS R \ S)\<close> for t X
+    by (simp add: SKIPS_projs F_Hiding_seqRun seqRun_def split: if_split_asm)
+      (metis (no_types, lifting) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(4) filter.simps(1,2) image_iff)
 qed
 
 
@@ -652,8 +675,6 @@ next
   hence \<open>(\<exists>v. u = map (renaming_fun f g) v \<and> (v, renaming_fun f g -` X) \<in> \<F> P) \<longleftrightarrow>
          u = [\<checkmark>(s)] \<or> u = [] \<and> \<checkmark>(s) \<notin> X\<close> for u X
     by (simp add: F_Renaming \<open>\<D> P = {}\<close>)
-  thm this[simplified F_Renaming \<open>\<D> P = {}\<close>, simplified]
-    thm F_SKIP
   have \<open>\<forall>a b. (\<exists>s1. a = map (renaming_fun f g) s1 \<and>
                 (\<exists>X. (\<forall>x. (x \<in> b) = (x \<in> X)) \<and> (s1, renaming_fun f g -` X) \<in> \<F> P)) =
           (a = [] \<and> (\<exists>X. (\<forall>x. (x \<in> b) = (x \<in> X)) \<and> \<checkmark>(s) \<notin> X) \<or> a = [\<checkmark>(s)])\<close>
@@ -1145,6 +1166,44 @@ proof (rule FD_antisym)
   qed
   thus \<open>P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R \<sqsubseteq>\<^sub>F\<^sub>D P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R)\<close> by (metis Sync_commute)
 qed
+
+
+
+subsection \<open>Some Setup\<close>
+
+setup \<open>Reorient_Proc.add (fn \<^Const_>\<open>STOP _ _\<close> => true | _ => false)\<close>
+simproc_setup reorient_STOP (\<open>STOP = x\<close>) = \<open>fn _ => Reorient_Proc.proc\<close>
+
+
+setup \<open>Reorient_Proc.add (fn \<^Const_>\<open>SKIP _ _\<close> => true | _ => false)\<close>
+simproc_setup reorient_SKIP (\<open>SKIP r = x\<close>) = \<open>fn _ => Reorient_Proc.proc\<close>
+
+
+named_theorems ac_hol_csp
+
+lemma Ndet_aci [ac_hol_csp] :
+  \<open>Ndet P Q = Ndet Q P\<close>
+  \<open>Ndet (Ndet P Q) R = Ndet P (Ndet Q R)\<close>
+  \<open>Ndet P (Ndet Q R) = Ndet Q (Ndet P R)\<close>
+  \<open>Ndet P (Ndet P Q) = Ndet P Q\<close>
+  \<open>Ndet P P = P\<close>
+  by (auto simp add: Process_eq_spec Ndet_projs)
+
+lemma Det_aci [ac_hol_csp] :
+  \<open>Det P Q = Det Q P\<close>
+  \<open>Det (Det P Q) R = Det P (Det Q R)\<close>
+  \<open>Det P (Det Q R) = Det Q (Det P R)\<close>
+  \<open>Det P (Det P Q) = Det P Q\<close>
+  \<open>Det P P = P\<close>
+  \<open>Det P STOP = P\<close>
+  \<open>Det STOP P = P\<close>
+  by (auto simp add: Process_eq_spec Det_projs)
+
+lemma Sync_ac [ac_hol_csp] :
+  \<open>P \<lbrakk>A\<rbrakk> Q = Q \<lbrakk>A\<rbrakk> P\<close>
+  \<open>(P \<lbrakk>A\<rbrakk> Q) \<lbrakk>A\<rbrakk> R = P \<lbrakk>A\<rbrakk> (Q \<lbrakk>A\<rbrakk> R)\<close>
+  \<open>P \<lbrakk>A\<rbrakk> (Q \<lbrakk>A\<rbrakk> R) = Q \<lbrakk>A\<rbrakk> (P \<lbrakk>A\<rbrakk> R)\<close>
+  by (simp add: Sync_commute, simp add: Sync_assoc, metis Sync_assoc Sync_commute)
 
 
 (*<*)

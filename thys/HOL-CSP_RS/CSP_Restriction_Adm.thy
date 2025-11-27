@@ -36,7 +36,7 @@ section \<open>Admissibility\<close>
 (*<*)
 theory CSP_Restriction_Adm
   imports Process_Restriction_Space After_Operator_Non_Too_Destructive
-    "HOL-CSP_OpSem.Operational_Semantics_Laws"
+    "HOL-CSP_OpSem"
 begin 
   (*>*)
 
@@ -184,7 +184,7 @@ lemma (in OpSemTransitions) restriction_adm_weak_ev_trans [restriction_adm_proce
     \<open>\<And>f g :: 'b \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. cont\<^sub>\<down> f \<Longrightarrow> cont\<^sub>\<down> g \<Longrightarrow> adm\<^sub>\<down> (\<lambda>x. f x \<leadsto>\<^sub>\<tau> g x)\<close>
     and \<open>cont\<^sub>\<down> f\<close> and \<open>cont\<^sub>\<down> g\<close> and \<open>cont\<^sub>\<down> \<Psi>\<close> and \<open>cont\<^sub>\<down> \<Omega>\<close>
   shows \<open>adm\<^sub>\<down> (\<lambda>x. f x \<leadsto>\<^bsub>e\<^esub> g x)\<close>
-proof (intro restriction_adm_conj)
+proof (unfold ev_trans_def, intro restriction_adm_conj)
   show \<open>adm\<^sub>\<down> (\<lambda>x. ev e \<in> (f x)\<^sup>0)\<close>
     by (simp add: \<open>cont\<^sub>\<down> f\<close> restriction_adm_in_initials)
 next
@@ -202,7 +202,7 @@ lemma (in OpSemTransitions) restriction_adm_weak_tick_trans [restriction_adm_pro
     \<open>\<And>f g :: 'b \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. cont\<^sub>\<down> f \<Longrightarrow> cont\<^sub>\<down> g \<Longrightarrow> adm\<^sub>\<down> (\<lambda>x. f x \<leadsto>\<^sub>\<tau> g x)\<close>
     and \<open>cont\<^sub>\<down> f\<close> and \<open>cont\<^sub>\<down> g\<close> and \<open>cont\<^sub>\<down> \<Psi>\<close> and \<open>cont\<^sub>\<down> \<Omega>\<close>
   shows \<open>adm\<^sub>\<down> (\<lambda>x. f x \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> (g x))\<close>
-proof (intro restriction_adm_conj)
+proof (unfold tick_trans_def, intro restriction_adm_conj)
   show \<open>adm\<^sub>\<down> (\<lambda>x. \<checkmark>(r) \<in> (f x)\<^sup>0)\<close>
     by (simp add: \<open>cont\<^sub>\<down> f\<close> restriction_adm_in_initials)
 next

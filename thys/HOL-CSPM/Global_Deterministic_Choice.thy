@@ -46,7 +46,7 @@ section\<open> The Global Deterministic Choice \<close>
 
 (*<*)
 theory Global_Deterministic_Choice 
-  imports "HOL-CSP.CSP"
+  imports "HOL-CSP"
 begin
   (*>*)
 
@@ -544,5 +544,6 @@ lemma GlobalDet_cont [simp] : \<open>\<lbrakk>finite A; \<And>a. a \<in> A \<Lon
     (simp_all add: GlobalDet_distrib_unit)
 
 
-
+(*<*)
 end
+  (*>*)

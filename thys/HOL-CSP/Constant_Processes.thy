@@ -141,6 +141,9 @@ lemmas SKIP_projs = F_SKIP D_SKIP T_SKIP
 lemma inj_SKIP : \<open>inj SKIP\<close>
   by (rule injI, simp add: Process_eq_spec F_SKIP) blast
 
+lemma SKIP_eq_SKIP_iff [simp] : \<open>SKIP r = SKIP s \<longleftrightarrow> r = s\<close>
+  by (meson injD inj_SKIP)
+
 
 
 section\<open> The STOP Process \<close>

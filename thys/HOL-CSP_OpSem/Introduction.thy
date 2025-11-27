@@ -44,7 +44,7 @@ chapter\<open> Introduction \<close>
 
 (*<*)
 theory Introduction                                               
-  imports "HOL-CSPM.CSPM_Laws"
+  imports "HOL-CSPM"
 begin 
   (*>*)
 

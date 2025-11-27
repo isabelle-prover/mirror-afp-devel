@@ -324,7 +324,7 @@ next
   proof(rule fix_ind[where 
         P="\<lambda>a. 0 < n \<longrightarrow> (\<forall>x. length x = Suc n \<longrightarrow> a (butlast x, x ! n) \<sqsubseteq>\<^sub>F\<^sub>D FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) x)", 
         rule_format], simp_all, goal_cases)
-    case (1 X fs)
+    case step:(1 X fs)
     then show ?case
       apply (unfold FORKs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, subst fix_eq, simp add:forks_transitions_def 
           Un_commute lessThan_Suc nth_butlast)
@@ -601,6 +601,7 @@ qed
 lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1: "length ps > 0 \<Longrightarrow> PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m 1 ps = (LPHIL0\<^sub>n\<^sub>o\<^sub>r\<^sub>m (ps!0))"
   using PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1_dir1 PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_1_dir2 FD_antisym by blast
 
+
 lemma PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_unfold: 
   assumes n_pos:"0 < n" 
   shows "length ps = Suc n \<Longrightarrow> 
@@ -631,9 +632,10 @@ proof(rule FD_antisym)
       hence c:"Up\<^sub>P ps e ! n = ps ! n"
         using 1(3) phils_phil \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def step n_pos 
         by (cases "phil e", auto) (metis exists_least_iff nth_list_update_neq)
-      have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"       
-        by (cases "phil e", auto simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_list_update 
-            lphil0_state_update_def rphil_state_update_def list_update_beyond)
+      have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"  
+        apply(cases "phil e")
+         apply (metis (full_types) \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_conv_take length_list_update phils_update_take)
+        by (smt (verit, best) \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_conv_take length_list_update phils_update_take)
       have e:"length (Up\<^sub>P ps e) = Suc n"
         by (metis (full_types) step(2) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
       from 1 show ?case 
@@ -653,40 +655,56 @@ next
     using phils_phil rphil_phil using n_pos by blast
 
   show "length ps = Suc n \<Longrightarrow> (PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (butlast ps)|||RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (ps!n)) \<sqsubseteq>\<^sub>F\<^sub>D PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) ps"
-    apply (subst PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def, auto simp add:indep dnorm_inter RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def)
-  proof(rule fix_ind[where 
-        P="\<lambda>a. \<forall>x. length x = Suc n \<longrightarrow> a (butlast x, x ! n) \<sqsubseteq>\<^sub>F\<^sub>D PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m (Suc n) x", rule_format], 
-      simp_all, goal_cases step)
-    case (step X ps)
-    hence tra:"(Tr\<^sub>P (Suc n) ps) =(Tr\<^sub>P n (butlast ps) \<union> Tr\<^sub>r\<^sub>p n (ps ! n))" 
-      by (auto simp add:n_pos phils_transitions_def nth_butlast 
-          Suc_leI atLeastLessThanSuc Un_commute Un_assoc)
-    from step show ?case
-      apply (auto simp add:indep dnorm_inter PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def)
-      apply (subst fix_eq, auto simp add:tra)     
-    proof(rule mono_Mprefix_FD, safe, goal_cases)
-      case (1 e)
-      hence c:"Up\<^sub>P ps e ! n = ps ! n"
-        using 1(3) phils_phil \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def step n_pos 
-        by (cases "phil e", auto) (metis exists_least_iff nth_list_update_neq)
-      have d:"Up\<^sub>P (butlast ps) e = butlast (Up\<^sub>P ps e)"       
-        by (cases "phil e", auto simp add:\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def butlast_list_update 
-            lphil0_state_update_def rphil_state_update_def list_update_beyond)
-      have e:"length (Up\<^sub>P ps e) = Suc n"
-        by (metis (full_types) step(3) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
-      from 1 show ?case 
-        using 1(2)[rule_format, of "(Up\<^sub>P ps e)", OF e] c d by auto       
+  proof (unfold PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def RPHIL\<^sub>n\<^sub>o\<^sub>r\<^sub>m_def,
+         induct arbitrary: ps
+         rule: parallel_fix_ind_inc[where G = \<open>\<Lambda> X. (\<lambda>s. \<box> e \<in> (Tr\<^sub>P n s) \<rightarrow> X (Up\<^sub>P s e))\<close>
+                                      and H = \<open>\<Lambda> Y. (\<lambda>s. \<box> e \<in> (Tr\<^sub>r\<^sub>p n s) \<rightarrow> Y (Up\<^sub>r\<^sub>p n s e))\<close>])
+    case admissibility show ?case by (simp add: cont2cont_fun)
+  next
+    case (base_fst Y) show ?case by simp
+  next
+    case (base_snd X) show ?case by simp
+  next
+    case (step X Y)
+    from \<open>length ps = Suc n\<close> have * : \<open>Tr\<^sub>P n (butlast ps) \<union> Tr\<^sub>r\<^sub>p n (ps ! n) = Tr\<^sub>P (Suc n) ps\<close>
+      by (auto simp add: n_pos phils_transitions_def nth_butlast Suc_leI atLeastLessThanSuc)
+    show ?case
+    proof (subst cont_process_rec[OF refl],
+           auto simp add: Mprefix_Inter_Mprefix Mprefix_Det_Mprefix "*" intro!: mono_Mprefix_FD)
+      show \<open>a \<in> Tr\<^sub>P n (butlast ps) \<Longrightarrow> a \<in> Tr\<^sub>r\<^sub>p n (ps ! n) \<Longrightarrow>
+            (X (Up\<^sub>P (butlast ps) a) ||| \<box>e\<in>Tr\<^sub>r\<^sub>p n (ps ! n) \<rightarrow> Y (Up\<^sub>r\<^sub>p n (ps ! n) e)) \<sqinter>
+            (\<box>e\<in>Tr\<^sub>P n (butlast ps) \<rightarrow> X (Up\<^sub>P (butlast ps) e) ||| Y (Up\<^sub>r\<^sub>p n (ps ! n) a)) \<sqsubseteq>\<^sub>F\<^sub>D
+            (P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>Tr\<^sub>P (Suc n),Up\<^sub>P\<rbrakk>) (Up\<^sub>P ps a)\<close> for a
+        by (meson disjoint_iff indep)
     next
-      case (2 e)
-      have e:"length (Up\<^sub>P ps e) = Suc n"
-        by (metis (full_types) 2(3) length_list_update \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
-      from 2 show ?case 
-        using 2(2)[rule_format, of "(Up\<^sub>P ps e)", OF e] n_pos 
-        apply(auto simp add: butlast_list_update rphil_phil \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def)
-        by (meson disjoint_iff_not_equal indep)
+      fix a assume \<open>a \<in> Tr\<^sub>P n (butlast ps)\<close>
+      have \<open>length (Up\<^sub>P (butlast ps) a) = n\<close> by (simp add: \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def Let_def step.prems)
+      with step.hyps(3)[of \<open>Up\<^sub>P (butlast ps) a @ [ps ! n]\<close>]
+      have \<open>X (Up\<^sub>P (butlast ps) a) ||| \<box>e\<in>Tr\<^sub>r\<^sub>p n (ps ! n) \<rightarrow> Y (Up\<^sub>r\<^sub>p n (ps ! n) e) \<sqsubseteq>\<^sub>F\<^sub>D
+            (P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>Tr\<^sub>P (Suc n),Up\<^sub>P\<rbrakk>) (Up\<^sub>P (butlast ps) a @ [ps ! n])\<close>
+        by (simp add: nth_append)
+      also from \<open>length (Up\<^sub>P (butlast ps) a) = n\<close> step.prems \<open>a \<in> Tr\<^sub>P n (butlast ps)\<close>
+      have \<open>Up\<^sub>P (butlast ps) a @ [ps ! n] = Up\<^sub>P ps a\<close>
+        apply (auto simp add: \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def Let_def nth_append phils_phil butlast_conv_take take_update_swap intro!: nth_equalityI)
+           apply (metis nth_take take_update_swap)
+          apply (metis less_Suc_eq n_pos nth_list_update_neq)
+         apply (metis nth_take take_update_swap)
+        by (metis less_Suc_eq nth_list_update_neq phils_phil)
+      finally show \<open>X (Up\<^sub>P (butlast ps) a) ||| \<box>e\<in>Tr\<^sub>r\<^sub>p n (ps ! n) \<rightarrow> Y (Up\<^sub>r\<^sub>p n (ps ! n) e) \<sqsubseteq>\<^sub>F\<^sub>D (P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>Tr\<^sub>P (Suc n),Up\<^sub>P\<rbrakk>) (Up\<^sub>P ps a)\<close> .
+    next
+      fix a assume \<open>a \<in> Tr\<^sub>P (Suc n) ps\<close> \<open>a \<notin> Tr\<^sub>P n (butlast ps)\<close>
+      have \<open>butlast (ps[n := Up\<^sub>r\<^sub>p n (ps ! n) a]) = butlast ps\<close>
+        by (simp add: butlast_conv_take step.prems)
+      moreover have \<open>ps[n := Up\<^sub>r\<^sub>p n (ps ! n) a] = Up\<^sub>P ps a\<close>
+        using "*" \<open>a \<in> Tr\<^sub>P (Suc n) ps\<close> \<open>a \<notin> Tr\<^sub>P n (butlast ps)\<close> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def n_pos rphil_phil by auto
+      ultimately show \<open>\<box>e\<in>Tr\<^sub>P n (butlast ps) \<rightarrow> X (Up\<^sub>P (butlast ps) e) ||| Y (Up\<^sub>r\<^sub>p n (ps ! n) a) \<sqsubseteq>\<^sub>F\<^sub>D
+                       (P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>Tr\<^sub>P (Suc n),Up\<^sub>P\<rbrakk>) (Up\<^sub>P ps a)\<close>
+        using step.hyps(2)[of \<open>ps [n := Up\<^sub>r\<^sub>p n (ps ! n) a]\<close>] step.prems
+        by simp (metis (lifting) length_list_update lessI nth_list_update_eq)
     qed
   qed
 qed
+  
 
 lemma pt: "0 < n \<Longrightarrow> PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m n (replicate n 0) = foldPHILs n"
 proof (induct n, simp)
@@ -758,7 +776,7 @@ next
     apply(auto simp add:dining_transitions_def phils_transitions_def forks_transitions_def
         lphil0_transitions_def rphil_transitions_def fork_transitions_def
         lphil0_state_update_def rphil_state_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update_def 
-        dining_state_update_def \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def list_update_beyond
+        dining_state_update_def \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update_def \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update_def 
         split:if_splits prod.split) 
     unfolding inv_dining_def
   proof(goal_cases)  
@@ -798,13 +816,19 @@ next
   next
     case (9 ps fs i)
     then show ?case     
-      apply (simp add:nth_list_update, intro impI conjI allI, simp_all)
-      by (metis N_pos Suc_pred less_antisym) (metis n_not_Suc_n numeral_2_eq_2)
+      by (intro impI conjI allI, simp_all)
   next
     case (10 ps fs i)
-    then show ?case     
-      apply (simp add:nth_list_update, intro impI conjI allI, simp_all) 
-      by (metis "10"(1) "10"(5) One_nat_def n_not_Suc_n numeral_2_eq_2)+
+    then show ?case    
+      by (simp add:nth_list_update, intro impI conjI allI, simp_all)
+         (metis Nat.lessE diff_Suc_1',metis "10"(1)  One_nat_def n_not_Suc_n numeral_2_eq_2)
+  next 
+    case (11 ps fs i) 
+    then show ?case
+      apply(simp add:nth_list_update, intro impI conjI allI, simp_all)
+
+      apply (metis One_nat_def N_pos Suc_1 diff_Suc_1' "11"(1))
+      by (metis One_nat_def N_pos "11"(1) "11"(5) diff_Suc_1' Suc_1)
   qed
 qed
 
@@ -937,8 +961,10 @@ corollary deadlock_free_DINING: "deadlock_free DINING"
 corollary deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_DINING: "deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S DINING"
   by (simp add: deadlock_free_DINING deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
 
-end
 
+(* < *)
 end
+end
+(* > *)
 
 

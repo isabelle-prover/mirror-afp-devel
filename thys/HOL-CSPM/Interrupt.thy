@@ -44,7 +44,7 @@ section\<open> The Interrupt Operator \<close>
 
 (*<*)
 theory  Interrupt
-  imports "HOL-CSP.CSP"
+  imports "HOL-CSP"
 begin
   (*>*)
 
@@ -742,7 +742,6 @@ next
     show \<open>s \<in> \<D> S \<Longrightarrow> s \<in> \<D> (S \<triangle> (\<Squnion>i. Y i))\<close> by (simp add: D_Interrupt)
   next
     assume \<open>s \<notin> \<D> S\<close>
-    thm D_Interrupt
     define T where \<open>T i \<equiv> {t1. \<exists>t2 r. s = t1 @ t2 \<and> t1 \<in> \<T> S \<and> tickFree t1 \<and> t2 \<in> \<D> (Y i)}\<close> for i
     from \<open>s \<notin> \<D> S\<close> \<open>s \<in> \<D> (\<Squnion>i. S \<triangle> Y i)\<close> have \<open>T i \<noteq> {}\<close> for i
       by (simp add: T_def limproc_is_thelub chain_Interrupt_right \<open>chain Y\<close> D_LUB D_Interrupt) blast

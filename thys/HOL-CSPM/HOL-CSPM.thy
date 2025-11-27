@@ -4,7 +4,7 @@
  *
  * Author          : Benoît Ballenghien, Safouan Taha, Burkhart Wolff.
  *
- * This file       : Extension of the step laws
+ * This file       : Entry Point
  *
  * Copyright (c) 2025 Université Paris-Saclay, France
  *
@@ -41,35 +41,18 @@
 (*>*)
 
 
+chapter\<open> Main Entry Point \<close>
+
 (*<*)
-theory Step_CSPM_Laws_Extended
-  imports Non_Deterministic_CSPM_Distributivity Step_CSPM_Laws
+theory "HOL-CSPM"
+  imports Read_Write_CSPM_Laws CSPM_Laws CSPM_Deadlock_Results Events_Ticks_CSPM_Laws
 begin
   (*>*)
 
-subsection \<open>The Throw Operator\<close>
-
-lemma Throw_Mndetprefix: 
-  \<open>(\<sqinter>a \<in> A \<rightarrow> P a) \<Theta> b \<in> B. Q b =
-    \<sqinter>a \<in> A \<rightarrow> (if a \<in> B then Q a else P a \<Theta> b \<in> B. Q b)\<close>
-  by (auto simp add: Mndetprefix_GlobalNdet Throw_distrib_GlobalNdet_right
-      write0_def Throw_Mprefix
-      intro: mono_GlobalNdet_eq mono_Mprefix_eq)
-
-
-
-subsection \<open>The Interrupt Operator\<close>
-
-lemma Interrupt_Mndetprefix:
-  \<open>(\<sqinter>a \<in> A \<rightarrow> P a) \<triangle> Q = Q \<box> (\<sqinter>a \<in> A \<rightarrow> P a \<triangle> Q)\<close>
-  by (simp add: Mndetprefix_GlobalNdet Interrupt_distrib_GlobalNdet_right
-      write0_def Interrupt_Mprefix Det_distrib_GlobalNdet_left)
-
-
-
-text \<open>For \<^const>\<open>Mndetprefix\<close>, we will directly write the results with \<^const>\<open>ndet_write\<close>.\<close>
+text \<open>This is where the theory \<^session>\<open>HOL-CSPM\<close> should be imported from.\<close>
 
 
 (*<*)
 end
   (*>*)
+

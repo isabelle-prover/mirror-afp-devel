@@ -60,23 +60,23 @@ text \<open>We already have @{thm non_destructive_id(2)}, and can easily notice
 
 
 simproc_setup apply_non_destructiveness (\<open>non_destructive (\<lambda>f. E f)\<close>) = \<open>
-  K (fn ctxt => fn ct =>
-     let val t = Thm.term_of ct
-         val foo = case t of _ $ foo => foo
-     in  case foo of Abs (_, _, expr) =>
-              if   fst (strip_comb expr) = Bound 0
-              (* since \<open>\<lambda>f. E f\<close> is too permissive, we ensure that the term is of the
-                 form \<open>\<lambda>f. f ...\<close> (for example \<open>\<lambda>f. f x\<close>, or \<open>\<lambda>f. f x y\<close>, etc.) *)
-              then let val tac = Metis_Tactic.metis_tac ["no_types"] "combs" ctxt
-                                 @{thms non_destructive_fun_iff non_destructive_id(2)}
-                       val rwrt_ct  = HOLogic.mk_judgment (Thm.apply \<^cterm>\<open>\<lambda>lhs. lhs = True\<close> ct)
-                       val rwrt_thm = Goal.prove_internal ctxt [] rwrt_ct (fn _ => tac 1)
-                   in  SOME (mk_meta_eq rwrt_thm)
-                   end
-              else NONE
-            | _ => NONE
-     end
-    )
+  fn _ => fn ctxt => fn lhs =>
+    (case Thm.term_of lhs of _ $ foo =>
+          case foo of Abs (_, _, expr) =>
+               if case strip_comb expr of (f, args) =>
+                       f = Bound 0 andalso not (exists Term.is_dependent args)
+                  (* since \<open>\<lambda>f. E f\<close> is too permissive, we ensure here that the term
+                     is of the form \<open>\<lambda>f. f \<dots>\<close>, with \<open>f\<close> no longer appearing in \<open>\<dots>\<close> *)
+               then
+                 let
+                   val tac = Metis_Tactic.metis_tac ["no_types"] "combs" ctxt
+                              @{thms non_destructive_fun_iff non_destructive_id(2)}
+                   val thm =
+                     Goal.prove_internal ctxt [] \<^instantiate>\<open>lhs in cprop \<open>lhs = True\<close>\<close>
+                       (fn _ => tac 1)
+                 in SOME (mk_meta_eq thm) end
+               else NONE
+           | _ => NONE)
 \<close>
 
 

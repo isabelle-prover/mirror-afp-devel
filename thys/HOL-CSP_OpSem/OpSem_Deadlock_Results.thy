@@ -247,22 +247,6 @@ subsubsection \<open>Generalizations\<close>
 \<comment>\<open>TODO: reorganize this file\<close>
 
 
-(* put this somewhere else, maybe useful *)
-
-lemma \<open>Mprefix A P = Mprefix B Q \<Longrightarrow> A = B\<close>
-  by (drule arg_cong[where f = initials]) (auto simp add: initials_Mprefix)    
-
-lemma \<open>Mndetprefix A P = Mprefix B Q \<Longrightarrow> A = B\<close>
-  by (drule arg_cong[where f = initials]) (auto simp add: initials_Mprefix initials_Mndetprefix)
-
-lemma \<open>Mndetprefix A P = Mndetprefix B Q \<Longrightarrow> A = B\<close>
-  by (drule arg_cong[where f = initials]) (auto simp add: initials_Mndetprefix)
-
-(* end of block to move *)
-
-
-print_context
-
 lemma superset_initials_restriction_Mndetprefix_FD:
   \<open>\<sqinter>a \<in> B \<rightarrow> P a \<sqsubseteq>\<^sub>F\<^sub>D Q\<close>
   if \<open>\<sqinter>a \<in> A \<rightarrow> P a \<sqsubseteq>\<^sub>F\<^sub>D Q\<close> and \<open>{e. ev e \<in> Q\<^sup>0} \<subseteq> B\<close> and \<open>A \<noteq> {} \<or> B = {}\<close>
@@ -394,8 +378,7 @@ corollary events_restriction_Mprefix_DT:
      (simp add: subset_iff initial_ev_imp_in_events_of)
 
 
-
-
+end
 
 paragraph \<open>Admissibility\<close>
 
@@ -428,8 +411,7 @@ proof (unfold adm_def, intro allI impI)
   thus \<open>\<not> u (Lub Y) \<sqsubseteq>\<^sub>F v (Lub Y)\<close> 
     oops
     unfolding failure_refine_def apply simp by (auto simp add: subset_iff) *)
-\<comment>\<open>See if we can do this kind of version with \<^const>\<open>monofun\<close>, not easy.\<close>
-
+\<comment>\<open>TODO: See if we can do this kind of version with \<^const>\<open>monofun\<close>, not easy.\<close>
 
 
 \<comment>\<open>Less powerful versions\<close>
@@ -455,18 +437,14 @@ lemma not_le_DT_adm[simp]: \<open>cont u \<Longrightarrow> adm (\<lambda>x. \<no
 
 
 
-
-
-lemma initials_refusal: 
-   \<open>(t, UNIV) \<in> \<F> P\<close> if assms: \<open>t \<in> \<T> P\<close> \<open>tF t\<close> \<open>(t, (P after\<^sub>\<T> t)\<^sup>0) \<in> \<F> P\<close>
+lemma (in AfterExt) initials_refusal: 
+  \<open>(t, UNIV) \<in> \<F> P\<close> if assms: \<open>t \<in> \<T> P\<close> \<open>tF t\<close> \<open>(t, (P after\<^sub>\<T> t)\<^sup>0) \<in> \<F> P\<close>
 proof (rule ccontr)
   assume \<open>(t, UNIV) \<notin> \<F> P\<close>
   from is_processT5_S7'[OF assms(3), of UNIV, simplified, OF this]
   obtain e where \<open>e \<notin> (P after\<^sub>\<T> t)\<^sup>0 \<and> t @ [e] \<in> \<T> P\<close> ..
   thus False by (simp add: initials_def T_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_eq assms(1, 2))
 qed
-
-
 
 
 lemma leF_ev_initialE' :
@@ -498,12 +476,6 @@ lemma leFD_ev_initialE' :
 lemma leFD_ev_initialE : 
   \<open>\<sqinter>a \<in> UNIV \<rightarrow> P a \<sqsubseteq>\<^sub>F\<^sub>D Q \<Longrightarrow> (\<And>a. ev a \<in> Q\<^sup>0 \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
   by (meson leFD_imp_leF leF_ev_initialE)
-    
- 
-(* TODO: useful ? *)
-method prove_propagation uses simp base =
-       induct rule: reachable_processes_FD_refinement_propagation_induct,
-       solves simp, solves \<open>use base in \<open>simp add: simp\<close>\<close>, solves \<open>simp add: simp\<close>
 
 
 
@@ -511,6 +483,8 @@ method prove_propagation uses simp base =
 text \<open>The three following results illustrate how powerful are our new rules of induction.\<close>
 
 text \<open>Really ? The second version with @{thm cont_parallel_fix_ind} seems easier...\<close>
+
+context AfterExt begin
 
 lemma (* deadlock_free_imp_DF_F_prem: *)
   \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> DF \<alpha>(P) \<sqsubseteq>\<^sub>F Q\<close> if df_P: \<open>deadlock_free P\<close>
@@ -684,6 +658,7 @@ next
     by (simp add: reachable_self deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def deadlock_free_F)
 qed
 
+end
 
 
 lemma reachable_processes_DF_UNIV_leF_imp_DF_events_of_leF :
@@ -814,6 +789,7 @@ next
 qed
 
 
+context fixes P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> begin
 
 theorem deadlock_free_iff_DF_events_of_leF :
   \<open>deadlock_free P \<longleftrightarrow> \<alpha>(P) \<noteq> {} \<and> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
@@ -1168,7 +1144,7 @@ qed
 
 end
 
-find_theorems name:  data_independence_deadlock_free_Sync_bis
+
 
 \<comment> \<open>Think about a \<^const>\<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close> version.\<close>
 

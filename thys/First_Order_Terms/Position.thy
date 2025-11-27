@@ -16,6 +16,19 @@ theory Position
     Show.Shows_Literal
 begin
 
+lemma list_induct2'':
+  "(\<And>ys. P [] ys) \<Longrightarrow> (\<And>xs. P xs []) \<Longrightarrow>
+    (\<And>x xs y ys. P xs ys \<Longrightarrow> P (x # xs) (y # ys)) \<Longrightarrow> P xs ys"
+proof (induction xs arbitrary: ys)
+  case (Nil ys)
+  then show ?case
+    by simp
+next
+  case (Cons x xs ys)
+  then show ?case
+    by (cases ys) auto
+qed
+
 type_synonym pos = "nat list"
 
 definition less_eq_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix \<open>\<le>\<^sub>p\<close> 50) where
@@ -32,7 +45,7 @@ lemma less_pos_eq_strict_prefix: \<^marker>\<open>contributor \<open>Martin Desh
   "less_pos = Sublist.strict_prefix"
   unfolding less_pos_def less_eq_pos_def Sublist.strict_prefix_def Sublist.prefix_def by metis
 
-interpretation order_pos: order less_eq_pos less_pos
+interpretation order_pos: order "(\<le>\<^sub>p)" "(<\<^sub>p)"
   by (standard) (auto simp: less_eq_pos_def less_pos_def)
 
 lemma less_eq_pos_induct [consumes 1]:
@@ -170,6 +183,13 @@ fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infixr \<open>\<
   | "_ \<bottom> [] \<longleftrightarrow> False"
   | "i # p \<bottom> j # q \<longleftrightarrow> i \<noteq> j \<or> p \<bottom> q"
 
+hide_fact parallel_pos.cases
+hide_fact parallel_pos.elims
+hide_fact parallel_pos.induct
+hide_fact parallel_pos.pelims
+
+text \<open>Use theorems for \<^const>\<open>Sublist.parallel\<close> instead.\<close>
+
 lemma Nil_not_par [simp]:
   "p \<bottom> [] \<longleftrightarrow> False"
   by (cases p, auto)+
@@ -179,12 +199,12 @@ lemma parallel_pos_eq_parallel: \<^marker>\<open>contributor \<open>Martin Desha
 proof (intro ext)
   fix xs ys
   show "xs \<bottom> ys \<longleftrightarrow> xs \<parallel> ys"
-  proof (induction xs ys rule: parallel_pos.induct)
+  proof (induction xs ys rule: list_induct2'')
     case (1 uu)
     thus ?case
       by simp
   next
-    case (2 v va)
+    case (2 ys)
     thus ?case
       by simp
   next
@@ -195,20 +215,20 @@ proof (intro ext)
 qed
 
 lemma parallel_pos: "p \<bottom> q = (\<not> p \<le>\<^sub>p q \<and> \<not> q \<le>\<^sub>p p)"
-  by (induct p q rule: parallel_pos.induct) auto
+  by (induct p q rule: list_induct2'') auto
 
 lemma par_not_refl [simp]: "p \<bottom> p \<longleftrightarrow> False"
   by (simp add: parallel_pos)
 
 lemma parallel_remove_prefix: "p1 \<bottom> p2 \<Longrightarrow>
   \<exists> p i j q1 q2. p1 = p @ i # q1 \<and> p2 = p @ j # q2 \<and> i \<noteq> j"
-proof (induct p1 p2 rule: parallel_pos.induct)
+proof (induct p1 p2 rule: list_induct2'')
   case (3 i p j q)
   then show ?case by simp (metis Cons_eq_append_conv)
 qed auto
 
 lemma pos_cases: "p \<le>\<^sub>p q \<or> q <\<^sub>p p \<or> p \<bottom> q"
-  by (induct p q rule: parallel_pos.induct)
+  by (induct p q rule: list_induct2'')
     (auto simp: less_pos_def)
 
 lemma parallel_pos_sym: "p1 \<bottom> p2 \<Longrightarrow> p2 \<bottom> p1"

@@ -44,7 +44,7 @@ chapter \<open> Conclusion\<close>
 
 (*<*)
 theory  Conclusion
-  imports Recovered_Laws CSP_New_Laws OpSem_Deadlock_Results
+  imports "HOL-CSP_OpSem" "HOL-Library.LaTeXsugar"
 begin
   (*>*)
 

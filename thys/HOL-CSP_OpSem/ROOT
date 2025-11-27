@@ -59,6 +59,7 @@ session "HOL-CSP_OpSem" = "HOL-CSPM" +
     
     OpSem_Deadlock_Results
     CSP_New_Laws
+    "HOL-CSP_OpSem" (global)
 
     Conclusion
          

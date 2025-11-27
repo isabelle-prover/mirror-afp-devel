@@ -61,5 +61,4 @@ session "CSP_RefTK" (AFP) = "HOL-CSP" +
     "root.tex"
     "adb-long.bib"
     "root.bib"
-    "figures/session_graph.pdf"
 

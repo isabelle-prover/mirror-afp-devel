@@ -338,14 +338,14 @@ lemma read_Ndet_write :
    (if b \<in> A then STOP else c\<^bold>!b \<rightarrow> Q) \<sqinter> (c\<^bold>?a\<in>(A - {b}) \<rightarrow> P a) \<box> (if b \<in> A then c\<^bold>!b \<rightarrow> P b \<sqinter> Q else STOP)\<close>
   by (subst Ndet_commute, subst write_Ndet_read) (simp_all add: Ndet_commute)
 
-lemma write0_Ndet_read :
-  \<open>(a \<rightarrow> P) \<sqinter> (id\<^bold>?b\<in>B \<rightarrow> Q b) =
-   (if a \<in> B then STOP else a \<rightarrow> P) \<sqinter> (id\<^bold>?b\<in>(B - {a}) \<rightarrow> Q b) \<box> (if a \<in> B then a \<rightarrow> P \<sqinter> Q a else STOP)\<close>
+lemma write0_Ndet_Mprefix :
+  \<open>(a \<rightarrow> P) \<sqinter> (\<box>b\<in>B \<rightarrow> Q b) =
+   (if a \<in> B then STOP else a \<rightarrow> P) \<sqinter> (\<box>b\<in>(B - {a}) \<rightarrow> Q b) \<box> (if a \<in> B then a \<rightarrow> P \<sqinter> Q a else STOP)\<close>
   by (subst write_Ndet_read[where c = id, unfolded write_is_write0, simplified]) simp
 
-lemma read_Ndet_write0 :
-  \<open>(id\<^bold>?a\<in>A \<rightarrow> P a) \<sqinter> (b \<rightarrow> Q) =
-   (if b \<in> A then STOP else b \<rightarrow> Q) \<sqinter> (id\<^bold>?a\<in>(A - {b}) \<rightarrow> P a) \<box> (if b \<in> A then b \<rightarrow> P b \<sqinter> Q else STOP)\<close>
+lemma Mprefix_Ndet_write0 :
+  \<open>(\<box>a\<in>A \<rightarrow> P a) \<sqinter> (b \<rightarrow> Q) =
+   (if b \<in> A then STOP else b \<rightarrow> Q) \<sqinter> (\<box>a\<in>(A - {b}) \<rightarrow> P a) \<box> (if b \<in> A then b \<rightarrow> P b \<sqinter> Q else STOP)\<close>
   by (subst read_Ndet_write[where c = id, unfolded write_is_write0, simplified]) simp 
 
 
@@ -359,14 +359,14 @@ lemma read_Det_write :
    c\<^bold>?a\<in>(insert b A) \<rightarrow> (if a = b \<and> b \<in> A then P a \<sqinter> Q else if a = b then Q else P a)\<close>
   by (subst read_Det_read[where B = \<open>{b}\<close>, simplified]) (auto intro: mono_read_eq)
 
-lemma write0_Det_read :
-  \<open>(a \<rightarrow> P) \<box> (id\<^bold>?b\<in>B \<rightarrow> Q b) =
-   id\<^bold>?b\<in>(insert a B) \<rightarrow> (if b = a \<and> a \<in> B then P \<sqinter> Q a else if b = a then P else Q b)\<close>
+lemma write0_Det_Mprefix :
+  \<open>(a \<rightarrow> P) \<box> (\<box>b\<in>B \<rightarrow> Q b) =
+   \<box>b\<in>(insert a B) \<rightarrow> (if b = a \<and> a \<in> B then P \<sqinter> Q a else if b = a then P else Q b)\<close>
   by (subst write_Det_read[where c = id, unfolded write_is_write0, simplified]) simp
 
-lemma read_Det_write0 :
-  \<open>(id\<^bold>?a\<in>A \<rightarrow> P a) \<box> (b \<rightarrow> Q) =
-   id\<^bold>?a\<in>(insert b A) \<rightarrow> (if a = b \<and> b \<in> A then P a \<sqinter> Q else if a = b then Q else P a)\<close>
+lemma Mprefix_Det_write0 :
+  \<open>(\<box>a\<in>A \<rightarrow> P a) \<box> (b \<rightarrow> Q) =
+   \<box>a\<in>(insert b A) \<rightarrow> (if a = b \<and> b \<in> A then P a \<sqinter> Q else if a = b then Q else P a)\<close>
   by (subst read_Det_write[where c = id, unfolded write_is_write0, simplified]) simp
 
 
@@ -432,8 +432,8 @@ lemma write_Sliding_superset_read :
    (c\<^bold>!a \<rightarrow> P) \<rhd> (c\<^bold>?b\<in>B \<rightarrow> Q b) = c\<^bold>?b\<in>B \<rightarrow> (if b = a then P \<sqinter> Q b else Q b)\<close>
   by (subst read_Sliding_superset_read[where A = \<open>{a}\<close>, simplified]) simp_all
 
-lemma write0_Sliding_superset_read :
-  \<open>a \<in> B \<Longrightarrow> (a \<rightarrow> P) \<rhd> (id\<^bold>?b\<in>B \<rightarrow> Q b) = id\<^bold>?b\<in>B \<rightarrow> (if b = a then P \<sqinter> Q b else Q b)\<close>
+lemma write0_Sliding_superset_Mprefix :
+  \<open>a \<in> B \<Longrightarrow> (a \<rightarrow> P) \<rhd> (\<box>b\<in>B \<rightarrow> Q b) = \<box>b\<in>B \<rightarrow> (if b = a then P \<sqinter> Q b else Q b)\<close>
   by (subst read_Sliding_superset_read
       [where A = \<open>{a}\<close> and c = id, simplified, unfolded write_is_write0, simplified]) simp_all
 
@@ -442,8 +442,8 @@ lemma write_Sliding_superset_ndet_write :
    (c\<^bold>!a \<rightarrow> P) \<rhd> (c\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b) = c\<^bold>!\<^bold>!b\<in>B \<rightarrow> (if b = a then P \<sqinter> Q b else Q b)\<close>
   by (subst ndet_write_Sliding_superset_ndet_write[where A = \<open>{a}\<close>, simplified]) simp_all
 
-lemma write0_Sliding_superset_ndet_write :
-  \<open>a \<in> B \<Longrightarrow> (a \<rightarrow> P) \<rhd> (id\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b) = id\<^bold>!\<^bold>!b\<in>B \<rightarrow> (if b = a then P \<sqinter> Q b else Q b)\<close>
+lemma write0_Sliding_superset_Mndetprefix :
+  \<open>a \<in> B \<Longrightarrow> (a \<rightarrow> P) \<rhd> (\<sqinter>b\<in>B \<rightarrow> Q b) = \<sqinter>b\<in>B \<rightarrow> (if b = a then P \<sqinter> Q b else Q b)\<close>
   by (subst ndet_write_Sliding_superset_ndet_write
       [where A = \<open>{a}\<close> and c = id, simplified, unfolded write_is_write0, simplified]) simp_all
 
@@ -1306,6 +1306,9 @@ lemma ndet_write_Sync_ndet_write_right :
    c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk> d\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b = d\<^bold>!\<^bold>!b\<in>B \<rightarrow> (c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk> Q b)\<close>
   by (subst (1 2) Sync_commute) (simp add: ndet_write_Sync_ndet_write_left)
 
+
+text \<open>Note that \<^const>\<open>Mndetprefix\<close> versions can be recovered
+      as corollaries through @{thm [source] ndet_write_id}.\<close>
 
 
 

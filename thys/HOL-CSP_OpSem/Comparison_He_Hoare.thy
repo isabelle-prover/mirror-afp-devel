@@ -98,11 +98,11 @@ definition ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E :: \<open>('a, 'r) p
 
 lemma ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_imp_in_initials:
   \<open>P \<^bsub>HOARE\<^esub>\<leadsto>\<^bsub>e\<^esub> Q \<Longrightarrow> ev e \<in> P\<^sup>0\<close>
-  using \<tau>_trans_ev_trans ev_trans_DetL ev_trans_prefix unfolding ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_def by blast
+  using \<tau>_trans_ev_trans ev_trans_DetL ev_trans_prefix unfolding ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_def ev_trans_def by blast
 
 
 lemma ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_imp_ev_trans: \<open>P \<leadsto>\<^bsub>e\<^esub> Q\<close> if \<open>P \<^bsub>HOARE\<^esub>\<leadsto>\<^bsub>e\<^esub> Q\<close>
-proof (rule conjI)
+proof (unfold ev_trans_def, rule conjI)
   from \<open>P \<^bsub>HOARE\<^esub>\<leadsto>\<^bsub>e\<^esub> Q\<close> show \<open>ev e \<in> P\<^sup>0\<close> by (fact ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_imp_in_initials)
 
   from \<open>P \<^bsub>HOARE\<^esub>\<leadsto>\<^bsub>e\<^esub> Q\<close>[unfolded ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_def]
@@ -112,7 +112,7 @@ proof (rule conjI)
     by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Det \<open>ev e \<in> P\<^sup>0\<close> initials_write0 After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_write0)
   moreover have \<open>\<dots> \<leadsto>\<^sub>\<tau> Q\<close> by (fact \<tau>_trans_NdetL)
   ultimately show \<open>P after\<^sub>\<checkmark> ev e \<leadsto>\<^sub>\<tau> Q\<close>
-    using \<open>ev e \<in> P\<^sup>0\<close> ev_trans_\<tau>_trans by presburger
+    using \<open>ev e \<in> P\<^sup>0\<close> ev_trans_\<tau>_trans unfolding ev_trans_def by presburger
 qed
 
 
@@ -127,8 +127,8 @@ lemma hyps_on_\<tau>_trans_imp_ev_trans_imp_ev_trans\<^sub>H\<^sub>O\<^sub>A\<^s
 proof (unfold ev_trans\<^sub>H\<^sub>O\<^sub>A\<^sub>R\<^sub>E_def)
   show \<open>P \<leadsto>\<^sub>\<tau> (e \<rightarrow> Q) \<box> P\<close>
   proof (rule \<tau>_trans_transitivity)
-    have \<open>P = (e \<rightarrow> (P after e)) \<rhd> P\<close>
-      by (simp add: initial_ev_imp_eq_prefix_After_Sliding \<open>P \<leadsto>\<^bsub>e\<^esub> Q\<close>)
+    have \<open>P = (e \<rightarrow> (P after e)) \<rhd> P\<close> 
+      by (metis After.initial_ev_imp_eq_prefix_After_Sliding ev_trans_is that(3))
     also have \<open>(e \<rightarrow> (P after e)) \<rhd> P \<leadsto>\<^sub>\<tau> (e \<rightarrow> (P after e)) \<box> P\<close>
       by (simp add: Sliding_def \<tau>_trans_NdetL)
     finally show \<open>P \<leadsto>\<^sub>\<tau> (e \<rightarrow> (P after e)) \<box> P\<close> .
@@ -249,5 +249,4 @@ end
 
 (*<*)
 end
-  (*>*)
-
+(*>*)
