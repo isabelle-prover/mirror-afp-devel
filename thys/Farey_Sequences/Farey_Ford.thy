@@ -1321,7 +1321,7 @@ qed
 
 end
 
-subsection \<open>Material for \<tt>\<open>Farey\_Ford\<close>\<close>
+subsection \<open>Material for \<^verbatim>\<open>Farey_Ford\<close>\<close>
 
 
 text \<open>
