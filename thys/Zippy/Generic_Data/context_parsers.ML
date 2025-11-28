@@ -35,6 +35,7 @@ sig
   val parse_attribute : attribute parser
   val setup_attribute : string option -> local_theory -> local_theory
 
+  val parsers_separator : string
   (*returns list of parsers that were run*)
   val parse : Parsers_Data.key list context_parser
 end
@@ -164,6 +165,8 @@ fun parse_value table key = Parsers_Data.Table.lookup table key
 
 fun parse_entry keys table = PKV.parse_entry' (Scan.lift (parse_key keys table))
   (K (Scan.succeed "")) (parse_value table)
+
+val parsers_separator = parsers_separator
 
 fun parse (args as (context, _)) = args |>
   let val table = get_parsers_table context
