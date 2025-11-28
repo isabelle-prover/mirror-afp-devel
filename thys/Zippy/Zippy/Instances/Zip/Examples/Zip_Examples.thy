@@ -208,7 +208,7 @@ lemma list_induct3:
    (\<And>x xs y ys z zs. length xs = length ys \<Longrightarrow> length ys = length zs \<Longrightarrow> P xs ys zs \<Longrightarrow> P (x#xs) (y#ys) (z#zs))
    \<Longrightarrow> P xs ys zs"
   by (induct xs arbitrary: ys zs)
-  (* (zip cases (pat) ("_ :: _ list" - "[]") where run exec: Zip.Try.all') *) \<comment>\<open>this suggests Breadth_First\<close>
+  (* (zip cases (pat) ("_ :: _ list" - "[]") where run exec: Zip.Try.all') *) \<comment>\<open>this suggests Breadth\_First\<close>
   (zip cases (pat) ("_ :: _ list" - "[]") where run exec: Zip.Breadth_First.all')
 (*ORIG*)
 (* proof (induct xs arbitrary: ys zs)
@@ -224,7 +224,7 @@ lemma filter_insort:
   "sorted (map f xs) \<Longrightarrow> P x \<Longrightarrow> filter P (insort_key f x xs) = insort_key f x (filter P xs)"
   by (induct xs)
   (zip subst insort_is_Cons where run exec: Zip.Best_First.all')
-  (* (zip subst insort_is_Cons) *) (*this also works, but it is slower*)
+  (* (zip subst insort_is_Cons) *) \<comment>\<open>this also works, but it is slower\<close>
   (*ORIG*)
   (* (auto, subst insort_is_Cons, auto) *)
 
@@ -362,7 +362,7 @@ text \<open>Passing rules to \<open>urule\<close> is particularly useful when de
 cases, theorems for the abbreviated concept can re-used for the new definition (without making the
 definition opaque in general, as is the case with @{command abbreviation}):\<close>
 
-definition "my_refl P \<equiv> reflp_on {x. P x}" (*some derived concept*)
+definition "my_refl P \<equiv> reflp_on {x. P x}" \<comment>\<open>some derived concept\<close>
 
 (*register a unification hint for the proof-producing unifier*)
 lemma my_refl_uhint [uhint]:
@@ -371,7 +371,7 @@ lemma my_refl_uhint [uhint]:
   using assms unfolding my_refl_def by simp
 
 lemma "my_refl P Q \<Longrightarrow> P x \<Longrightarrow> \<exists>x. Q x x"
-  by (zip urule (d) reflp_onD) (*we can directly use the theorem reflp_onD as a destruction rule*)
+  by (zip urule (d) reflp_onD) \<comment>\<open>we can directly use @{thm reflp_onD} as a destruction rule\<close>
 
 lemma
   assumes "\<And>Q. P (reflp_on {x. Q x \<and> True})"
