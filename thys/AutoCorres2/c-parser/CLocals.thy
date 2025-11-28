@@ -3,7 +3,7 @@ section \<open>Modelling Local Variables\<close>
 
 theory CLocals
   imports UMM
-   "HOL-Library.Code_Binary_Nat"
+   "HOL-Library.Code_Target_Numeral"
    "ML_Record_Antiquotation"
 begin
 
