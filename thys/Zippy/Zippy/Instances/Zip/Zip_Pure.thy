@@ -150,8 +150,8 @@ local open Zippy; open MU
         | (timing, x) => (warning (who ^ " finished. Timing: " ^ Timing.message timing); x))
       |> Library.K |> Seq.make
     in Par_List.map run fs |> Seq.of_list |> Seq.flat |> (fn sq => Mo.pure sq ctxt) end
-  val execs = ["AStar", "Depth_First", "Breadth_First", "Best_First"]
 in
+val execs = ["AStar", "Depth_First", "Breadth_First", "Best_First"]
 fun gen post depth fuel c = [AStar.gen, Depth_First.gen, Breadth_First.gen, Best_First.gen]
   |> List.map (fn f => f post depth fuel c) |> curry (op ~~) execs |> exec_all
 fun gen_all depth fuel c = [AStar.gen_all, Depth_First.gen_all, Breadth_First.gen_all, Best_First.gen_all]

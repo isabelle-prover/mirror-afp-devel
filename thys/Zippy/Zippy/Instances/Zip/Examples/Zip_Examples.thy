@@ -2,8 +2,8 @@
 section \<open>Examples and Brief Technical Overview for Zip\<close>
 theory Zip_Examples
   imports
+    Zip_Try0 (*import first such that zip is integrated in try0's schedule*)
     HOL.List
-    Zip_Metis
 begin
 
 paragraph \<open>Summary\<close>
@@ -13,16 +13,20 @@ with a brief technical overview for users interested in customising the method.
 
 On a high-level, @{method zip} performs a proof tree search with customisable
 expansion actions and search strategies. By default, it uses an \<open>A\<^sup>*\<close> search and integrates the
-classical reasoner, simplifier, the blast and metis prover, and supports resolution with higher-order and
-proof-producing unification \cite{ML_Unification-AFP}, conditional substitutions, case splitting and
-induction, among other things.
+classical reasoner, simplifier, the blast and metis prover, and supports resolution with higher-order
+and proof-producing unification \cite{ML_Unification-AFP}, conditional substitutions, case splitting
+and induction, among other things.
 
 In most cases, @{method zip} can be used as a drop-in replacement for Isabelle's classical methods
 like @{method auto}, @{method fastforce}, @{method force}, @{method fast}, etc.,
 as demonstrated in @{dir Benchmarks}. Note, however, that @{method zip} can be slower than those
 methods due to a more general search procedure.
 
-Like @{method auto}, @{method zip} supports non-terminal calls and interactive proof exploration.\<close>
+Like @{method auto}, @{method zip} supports non-terminal calls and interactive proof exploration.
+
+@{method zip} comes with @{command try0} integration in @{file "../Zip_Try0.thy"}.
+Import that theory as a first file to obtain the integration.
+If you want to omit the integration, import @{file "../Zip_Metis.thy"} instead.\<close>
 
 subsection \<open>Examples\<close>
 
@@ -33,6 +37,9 @@ experiment
 begin
 
 text \<open>You can use it like @{method auto}:\<close>
+
+lemma "sorted_wrt (>) l \<longleftrightarrow> sorted (rev l) \<and> distinct l"
+  by (induction l) (zip iff: antisym_conv1 simp: sorted_wrt_append)
 
 lemma "sorted_wrt (>) l \<longleftrightarrow> sorted (rev l) \<and> distinct l"
   by (induction l) (zip iff: antisym_conv1 simp: sorted_wrt_append)
@@ -199,9 +206,9 @@ text \<open>In some cases, it is necessary (or advisable for performance reasons
 strategy from the default \<open>A\<^sup>*\<close> (@{ML_structure Zip.AStar}) search to breadth-first
 (@{ML_structure Zip.Breadth_First}), depth-first (@{ML_structure Zip.Depth_First}),
 or best-first (@{ML_structure Zip.Best_First}) search. You can either try them individually or use
-@{ML_structure Zip.Try} to search for the fastest one in parallel.  Note that
-@{ML_structure Zip.Try} is only meant for exploration. It should be replaced by the discovered,
-most efficient strategy in the final proof document!\<close>
+@{ML_structure Zip.Try} to search for the fastest one in parallel. Note that @{ML_structure Zip.Try}
+is only meant for exploration. It should be replaced by the discovered, most efficient strategy in
+the final proof document!\<close>
 
 lemma list_induct3:
   "length xs = length ys \<Longrightarrow> length ys = length zs \<Longrightarrow> P [] [] [] \<Longrightarrow>
@@ -217,6 +224,12 @@ next
   case (Cons x xs ys zs) then show ?case by (cases ys, simp_all)
     (cases zs, simp_all)
 qed *)
+
+text \<open>@{method zip} is also registered to @{command try0} for each search strategy:\<close>
+
+lemma "map f xs = map g ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>i<length ys. f (xs!i) = g (ys!i))"
+  (*try0 simp: list_eq_iff_nth_eq*) \<comment>\<open>use the try0 command to see all successful attempts\<close>
+  by (zip simp: list_eq_iff_nth_eq)
 
 text \<open>One can use conditional substitution rules:\<close>
 
@@ -258,21 +271,26 @@ only activated if
 using @{method metis} (cf. the setup in @{theory Zippy.Zip_Metis}).
 Users may pass several options/runs to metis using the separator \<open>and\<close>.
 
-A typical workflow with @{method zip} is as follows:
+A typical workflow with @{method zip} looks as follows:
 
 \<^enum> Check if @{method zip} is successful.
-\<^enum> If it is not successful but terminates:
+\<^enum> If it is unsuccessful but terminates:
   \<^enum> Check if there is a relevant lemma missing based on the returned goals.
     It might also be helpful to check non-promising attempts by switching from
     @{ML Zip.AStar.promising'} to @{ML Zip.AStar.all'} (or analogously for another search strategy).
   \<^enum> Call @{command sledgehammer} on the remaining goals and either add the metis calls to
     @{method zip} directly or check if there are some helpful lemmas in the @{method metis} call
-    that you could add in another way (e.g. as a simp or classical rule) such that the
-    @{method metis} call becomes unnecessary.
+    that you could add another way (e.g. as a simp or classical rule) such that the @{method metis}
+    call becomes unnecessary.
     Hint: you may also want to use @{attribute metis_instantiate} for this step.
-\<^enum> If @{method zip} is unsuccessful and does not terminate:
-  \<^enum> Check if @{method zip} is successful with a different strategy and/or depth limit, or
-  \<^enum> limit @{method zip}'s search steps and proceed as described before.
+\<^enum> If it is unsuccessful and does not terminate:
+  \<^enum> Check if @{method zip} is successful with a different strategy
+    (e.g. by using @{ML_structure Zip.Try} or trying the strategies manually) and/or depth limit.
+  \<^enum> If none of the above is successful:
+    \<^enum> Limit @{method zip}'s search steps to a number such that the set of returned subgoals looks
+      reasonable to you.
+    \<^enum> Check which of the returned subgoals were not solvable by sequentially applying \<open>zip[1]\<close> to
+      each subgoal. For each subgoal that is not solved: continue with step 2 of this workflow.
 \<close>
 
 lemma extract_Cons_code: "List.extract P (x # xs) = (if P x then Some ([], x, xs)
@@ -302,6 +320,8 @@ lemma longest_common_prefix:
   (*3. Sledgehammer proposes: "metis append_eq_Cons_conv list.sel(1) self_append_conv"*)
   (*4. We integrate the call into zip. Result:*)
   apply (zip metis append_eq_Cons_conv list.sel(1) self_append_conv)
+  (*Note: metis says that "self_append_conv" is unused, but in fact, metis is used more than once
+  in above proof, where in some cases the theorem required and in others it is not.*)
   done
   (*ORIG*)
   (* by (induct xs ys rule: list_induct2')
