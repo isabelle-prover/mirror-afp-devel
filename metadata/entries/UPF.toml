@@ -21,7 +21,7 @@ note = ""
 [authors]
 
 [authors.brucker]
-email = "brucker_email2"
+homepage = "brucker_homepage"
 
 [authors.bruegger]
 email = "bruegger_email"

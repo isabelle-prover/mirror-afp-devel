@@ -29,7 +29,7 @@ note = ""
 email = "foster_email"
 
 [authors.brucker]
-email = "brucker_email"
+homepage = "brucker_homepage"
 
 [authors.taylor]
 email = "taylor_email"

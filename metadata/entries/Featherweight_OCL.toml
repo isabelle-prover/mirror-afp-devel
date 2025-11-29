@@ -31,7 +31,7 @@ note = ""
 [authors]
 
 [authors.brucker]
-email = "brucker_email2"
+homepage = "brucker_homepage"
 
 [authors.tuong]
 email = "tuong_email"
