@@ -34,6 +34,9 @@ holub = "holub_email"
 starosta = "starosta_email"
 
 [history]
+2025-11-19 = """
+Updated to version AFP-2025-1/v1.12.
+"""
 2023-08-17 = """
 Updated to version v1.10.1.
 """
@@ -44,6 +47,6 @@ Many updates and additions. New theories: Border_Array, Morphisms, Equations_Bas
 [extra]
 
 [related]
-dois = ["10.4230/LIPIcs.ITP.2021.22"]
+dois = ["10.4230/LIPIcs.ITP.2021.22","10.1007/s10817-023-09674-2","10.1016/j.jcta.2024.105904"]
 pubs = ["<a href=\"https://arxiv.org/abs/2104.11622\">Producing symmetrical facts for lists induced by the list reversal mapping in Isabelle/HOL</a>", "<a  href=\"https://gitlab.com/formalcow/combinatorics-on-words-formalized\">Development repository</a>"]
 
