@@ -45,3 +45,6 @@ schlichtkrull = "schlichtkrull_email"
 [extra]
 
 [related]
+dois = [
+  "10.1145/3577020",
+]

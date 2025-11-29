@@ -41,3 +41,6 @@ bruegger = "bruegger_email"
 [extra]
 
 [related]
+dois = [
+  "10.1002/STVR.1544",
+]

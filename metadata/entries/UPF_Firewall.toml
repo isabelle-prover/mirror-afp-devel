@@ -35,3 +35,6 @@ brucker = "brucker_email2"
 [extra]
 
 [related]
+dois = [
+  "10.1002/STVR.1544",
+]
