@@ -1,5 +1,5 @@
 text 
-\<open>This theory formalizes some of the results appearing in the paper "Stellar Consensus By Reduction"\<^cite>\<open>"disc_paper"\<close>.
+\<open>This theory formalizes some of the results appearing in the paper "Stellar Consensus By Instantiation"\<^cite>\<open>"disc_paper"\<close>.
 We prove static properties of personal Byzantine quorum systems and Stellar quorum systems.\<close>
 
 theory Stellar_Quorums
@@ -394,7 +394,8 @@ lemma l15:
 proof -
   have "quorum (truncation p Q)" and "quorum (truncation p' Q')" using l14 assms is_cons_cluster_def by auto
   moreover have "quorum_of_set I (truncation p Q)" and "quorum_of_set I (truncation p' Q')"
-    by (metis IntI assms(4,5) calculation mem_Collect_eq quorum_def quorum_of_def quorum_of_set_def reachable_through.intros(1) truncation_def)+
+    using mem_Collect_eq quorum_def quorum_of_def quorum_of_set_def reachable_through.intros(1) truncation_def
+    by (metis Int_iff assms(4) calculation(1), metis Int_iff assms(5) calculation(2))
   moreover note \<open>is_cons_cluster I\<close>
   ultimately show ?thesis unfolding is_cons_cluster_def by auto
 qed

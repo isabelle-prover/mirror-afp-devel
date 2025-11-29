@@ -4555,25 +4555,6 @@ name = "Giuliano Losa"
 [losa.emails.losa_email]
 user = [
   "giuliano",
-  "losa",
-]
-host = [
-  "epfl",
-  "ch",
-]
-
-[losa.emails.losa_email1]
-user = [
-  "giuliano",
-]
-host = [
-  "galois",
-  "com",
-]
-
-[losa.emails.losa_email2]
-user = [
-  "giuliano",
 ]
 host = [
   "losa",
@@ -4581,6 +4562,7 @@ host = [
 ]
 
 [losa.homepages]
+losa_homepage = "https://www.losa.fr"
 
 [lutz]
 name = "Bianca Lutz"
