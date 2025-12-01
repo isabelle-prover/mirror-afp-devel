@@ -29,8 +29,8 @@ regular language expression with the same Parikh image and of the form depicted 
 expressions" since they decompose into two subexpressions where one of them contains the variable
 \<open>x\<close> and the other one does not:\<close>
 definition bipart_rlexp :: "nat \<Rightarrow> 'a rlexp \<Rightarrow> bool" where
-  "bipart_rlexp x f \<equiv> \<exists>p q. reg_eval p \<and> reg_eval q \<and>
-    f = Union p (Concat q (Var x)) \<and> x \<notin> vars p"
+  "bipart_rlexp x f = (\<exists>p q. reg_eval p \<and> reg_eval q \<and>
+    f = Union p (Concat q (Var x)) \<and> x \<notin> vars p)"
 
 
 text \<open>All bipartite regular language expressions evaluate to regular languages. Additionally,

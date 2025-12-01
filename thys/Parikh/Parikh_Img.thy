@@ -16,7 +16,7 @@ We represent parikh vectors by multisets. The Parikh image of a language \<open>
 is then the set of Parikh vectors of all words in the language.\<close>
 
 definition parikh_img :: "'a lang \<Rightarrow> 'a multiset set" where
-  "parikh_img L \<equiv> mset ` L"
+  "parikh_img L = mset ` L"
 
 notation parikh_img ("\<Psi>")
 
@@ -400,7 +400,7 @@ text \<open>For a given language \<open>L\<close>, we define the equivalence cla
 image:\<close>
 
 definition parikh_img_eq_class :: "'a lang \<Rightarrow> 'a lang set" where
-  "parikh_img_eq_class L \<equiv> {L'. \<Psi> L' = \<Psi> L}"
+  "parikh_img_eq_class L = {L'. \<Psi> L' = \<Psi> L}"
 
 lemma parikh_img_Union_class: "\<Psi> A = \<Psi> (\<Union>(parikh_img_eq_class A))"
 proof
