@@ -253,7 +253,7 @@ proof-
   have "(ord.lexordp (<)) p1 p2 " 
     using redex_patterns_sorted[OF assms(1)] assms sorted_wrt_nth_less by fastforce 
   then show ?thesis
-    by (metis less_eq_pos_def lexord_linorder.less_le_not_le ord.lexordp_eq_pref) 
+    by (metis prefix_def lexord_linorder.less_le_not_le ord.lexordp_eq_pref) 
 qed
 
 end
@@ -1482,8 +1482,11 @@ proof-
       from Prule(5) have "(\<alpha>, []) \<in> set (redex_patterns B)" 
         by auto 
       then obtain Bs where B:"B = Prule \<alpha> Bs"
-        by (smt (verit, ccfv_threshold) Prule.prems(2) in_set_idx in_set_simps(3) redex_patterns_elem_fun less_nat_zero_code list.distinct(1) 
-            nat_neq_iff nth_Cons_0 order_pos.dual_order.refl prod.inject redex_patterns.simps(1) redex_patterns.simps(3) redex_patterns_order wf_pterm.simps) 
+        using [[metis_instantiate]]
+        by (metis Prule.prems(2) in_set_idx in_set_simps(3) redex_patterns_elem_fun[of \<alpha> "[]"]
+            less_nat_zero_code list.distinct(1) nat_neq_iff nth_Cons_0
+            prefix_order.dual_order.refl[of "[]"] prod.inject redex_patterns.simps(1)
+            redex_patterns.simps(3) redex_patterns_order[of B "0" _ _ "[]" \<alpha> "[]"] wf_pterm.simps)
       with Prule(2,3) have l:"length As = length Bs"
         using length_args_well_Prule by blast 
       show ?case proof(cases p)

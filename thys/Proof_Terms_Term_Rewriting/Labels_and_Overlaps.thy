@@ -1319,7 +1319,7 @@ next
         then have "\<not> ?p1 \<le>\<^sub>p x"
           by (metis append.right_neutral fun_poss_append_poss fun_poss_fun_conv fun_poss_imp_poss p1 prefix_pos_diff term.distinct(1))
         then have "\<not> p \<le>\<^sub>p x"
-          unfolding p using less_eq_pos_simps(1) order_pos.order.trans by blast
+          unfolding p using less_eq_pos_simps(1) prefix_order.order_trans by blast
         with x have "x \<in> ?b1"
           unfolding a Inl using possl_rule l lin by auto
       } moreover {fix x assume "x \<in> ?a2"
@@ -1332,7 +1332,7 @@ next
         with j' have "?p1 \<bottom> var_poss_list (lhs \<alpha>) ! j"
           using var_poss_parallel by (metis nth_mem p1 p1_pos var_poss_iff var_poss_list_sound)
         then have "\<not> p \<le>\<^sub>p x"
-          unfolding p x using less_eq_pos_simps(1) order_pos.order_trans pos_less_eq_append_not_parallel by blast
+          unfolding p x using less_eq_pos_simps(1) prefix_order.order_trans pos_less_eq_append_not_parallel by blast
         then have "x \<in> ?b1"
           unfolding a Inl possl_rule[OF l lin] x using j(1) q by blast
       } moreover {fix x assume "x \<in> ?a3"
@@ -1898,7 +1898,7 @@ lemma unlabeled_above_p:
   from Cons(3) obtain f ts where f:"source A = Fun f ts" and i:"i < length ts" and p:"p \<in> poss (ts!i)"
     using args_poss by blast
   from Cons(4) have "[] \<notin> possL A"
-    by (simp add: order_pos.less_le)
+    by simp
   then have no_lab:"get_label (labeled_source A) = None"
     by (metis empty_pos_in_poss get_label_imp_labelposs subt_at.simps(1))
   from Cons(3) obtain f' As where a:"A = Fun f' As"
@@ -2400,7 +2400,7 @@ abbreviation overlaps_pos :: "('f, 'v) term_lab \<Rightarrow> ('f, 'v) term_lab 
 lemma overlaps_pos_symmetric:
   assumes "(p,q) \<in> overlaps_pos A B"
   shows "(q,p) \<in> overlaps_pos B A"
-  using SigmaI assms less_pos_def by auto
+  using SigmaI assms unfolding strict_prefix_def by auto
 
 lemma overlaps_pos_intro:
   assumes "q@q' \<in> fun_poss A" and "q \<in> fun_poss B"
@@ -2422,7 +2422,7 @@ proof
   show "\<And>x. x \<le>\<^sub>o x"
     by (simp add: less_eq_overlap_def)
   show "\<And>x y z. x \<le>\<^sub>o y \<Longrightarrow> y \<le>\<^sub>o z \<Longrightarrow> x \<le>\<^sub>o z"
-    by (smt (z3) less_eq_overlap_def less_overlap_def less_pos_def less_pos_def' less_pos_simps(5) order_pos.dual_order.trans)
+    using less_eq_overlap_def by auto
   show  "\<And>x y. (x <\<^sub>o y) = strict (\<le>\<^sub>o) x y"
     using less_eq_overlap_def less_overlap_def by fastforce
   thus "\<And>x y. x \<le>\<^sub>o y \<Longrightarrow> y \<le>\<^sub>o x \<Longrightarrow> x = y"
@@ -2487,7 +2487,7 @@ lemma empty_overlaps_imp_measure_zero:
     then show "overlaps_pos (labeled_source A) (labeled_source B) \<noteq> {}" proof(cases "?p1 \<le>\<^sub>p ?p2")
       case True
       then obtain p3 where p2:"?p2 = ?p1@p3"
-        by (metis less_eq_pos_def)
+        by (metis prefix_def)
       with q2 have "p = ?p1 @ p3 @ q2"
         by simp
       with q1 have p3:"q1 = p3@q2"
