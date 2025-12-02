@@ -955,7 +955,7 @@ proof-
     by (metis labeled_source_pos labeled_source_to_term source_to_pterm term_lab_to_term.simps(1))
   from p_pos have r_pos:"r \<in> poss (labeled_source (\<sigma> x))"
     unfolding p using p1 t labeled_source_apply_subst
-    by (smt (z3) comp_apply labeled_source_to_term labelposs_subs_poss less_eq_pos_def less_eq_pos_simps(1) p poss_append_poss poss_term_lab_to_term source_to_pterm subset_eq eval_term.simps(1) subt_at_subst to_pterm_wf_pterm)
+    by (smt (z3) comp_apply labeled_source_to_term labelposs_subs_poss less_eq_pos_simps(1) p poss_append_poss poss_term_lab_to_term source_to_pterm subset_eq eval_term.simps(1) subt_at_subst to_pterm_wf_pterm)
   from p_pos obtain \<gamma> n where lab:"get_label ((labeled_source (\<sigma> x))|_r) = Some (\<gamma>, n)"
     unfolding p labeled_source_apply_subst[OF to_pterm_wf_pterm] using t p1 p
     by (smt (verit, ccfv_SIG) comp_apply fun_poss_imp_poss labeled_source_to_term labelposs_obtain_label labelposs_subs_fun_poss poss_term_lab_to_term source_to_pterm subset_eq eval_term.simps(1) subt_at_subst subterm_poss_conv)

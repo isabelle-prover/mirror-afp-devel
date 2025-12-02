@@ -1989,7 +1989,7 @@ proof-
   from n obtain u where a:"p \<notin> poss C\<langle>u\<rangle>" unfolding possc_def by auto
   from possc_not_below_hole_pos[OF y] have b:"\<not> (hole_pos C <\<^sub>p p)"
     unfolding hole_pos_subst by auto
-  from n a have c:"\<not> (p \<le>\<^sub>p hole_pos C)" unfolding less_pos_def using less_eq_hole_pos_in_possc by blast
+  from n a have c:"\<not> (p \<le>\<^sub>p hole_pos C)" using less_eq_hole_pos_in_possc by blast
   with pos_cases b have "p \<bottom> hole_pos C" by blast
   with par_hole_pos_in_possc[OF parallel_pos_sym[OF this]] n show "p \<notin> poss (C\<langle>t\<rangle>)" by fast
 qed

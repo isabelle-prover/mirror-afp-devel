@@ -31,25 +31,8 @@ qed
 
 type_synonym pos = "nat list"
 
-definition less_eq_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" where
-  "less_eq_pos p q \<longleftrightarrow> (\<exists>r. p @ r = q)"
-
-definition less_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" where
-  "less_pos p q \<longleftrightarrow> less_eq_pos p q \<and> p \<noteq> q"
-
-lemma less_eq_pos_eq_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "less_eq_pos = Sublist.prefix"
-  unfolding less_eq_pos_def Sublist.prefix_def by metis
-
-lemma less_pos_eq_strict_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "less_pos = Sublist.strict_prefix"
-  unfolding less_pos_def less_eq_pos_def Sublist.strict_prefix_def Sublist.prefix_def by metis
-
 notation Sublist.prefix (infix \<open>\<le>\<^sub>p\<close> 50)
 notation Sublist.strict_prefix (infix \<open><\<^sub>p\<close> 50)
-
-interpretation order_pos: order "(\<le>\<^sub>p)" "(<\<^sub>p)"
-  by (standard) (auto simp: less_eq_pos_def less_pos_def)
 
 lemma less_eq_pos_induct [consumes 1]:
   assumes "p \<le>\<^sub>p q" and "\<And> p. P p p"
@@ -312,7 +295,7 @@ proof (induction p)
     show "q \<in> ?l = (q \<in> ?r)"
     proof (cases q)
       case Nil
-      have less: "[] <\<^sub>p i # p" unfolding less_pos_def by auto
+      have less: "[] <\<^sub>p i # p" by auto
       show ?thesis unfolding Nil using less by auto
     next
       case (Cons j q')
@@ -414,7 +397,7 @@ proof -
     then show ?thesis by auto
   next
     case False
-    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" unfolding less_eq_pos_def by auto
+    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" by auto
     from rp have par:"\<not> (r @ [i] \<bottom> p0)" using pos_less_eq_append_not_parallel by auto
     from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding prefix_def by auto
     from rp have "\<not> (p0 \<bottom> r)"
@@ -424,7 +407,7 @@ proof -
     have "\<not> (p0 <\<^sub>p r @ [i])" unfolding strict_prefix_def prefix_def
       by (metis aux butlast_append butlast_snoc self_append_conv)
     with par have "r @ [i] \<le>\<^sub>p p0" using pos_cases by auto
-    with ij this[unfolded less_eq_pos_def] have "left_of_pos p0 q" unfolding left_of_pos_def using rq by auto
+    with ij this have "left_of_pos p0 q" unfolding left_of_pos_def using rq by auto
     then show ?thesis by auto
   qed
 qed
@@ -437,12 +420,12 @@ proof -
     unfolding left_of_pos_def by auto
   show ?thesis proof(cases "p0 \<le>\<^sub>p r")
     case True
-    with rp have "p0 <\<^sub>p q" unfolding less_pos_def
+    with rp have "p0 <\<^sub>p q"
       by (metis prefix_snocD prefix_order.strict_trans1)
     then show ?thesis by auto
   next
     case False
-    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" unfolding less_eq_pos_def by auto
+    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" by auto
     from rp rq have par:"\<not> (r @ [j] \<bottom> p0)" using pos_less_eq_append_not_parallel by auto
     from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding prefix_def by auto
     from rq have "\<not> (p0 \<bottom> r)"
@@ -452,7 +435,7 @@ proof -
     have "\<not> (p0 <\<^sub>p r @ [j])" unfolding strict_prefix_def prefix_def using p0 a list.exhaust[of p0]
       by (metis append_Nil2 aux butlast_append butlast_snoc)
     with par have "r @ [j] \<le>\<^sub>p p0" using pos_cases by auto
-    with ij this[unfolded less_eq_pos_def] have "left_of_pos q p0" unfolding left_of_pos_def using rp by auto
+    with ij this have "left_of_pos q p0" unfolding left_of_pos_def using rp by auto
     then show ?thesis by auto
   qed
 qed
@@ -493,7 +476,7 @@ proof
     from r2 obtain k rr where r2:"r2 = k# rr" by (cases r2, auto)
     from p' q' ij' list.inject show False unfolding r2 by simp
   qed
-  with nlt ne have "r \<bottom> r'" by (auto simp: parallel_pos less_pos_def)
+  with nlt ne have "r \<bottom> r'" by (auto simp: parallel_pos)
   with p q show False by (metis less_eq_pos_simps(1) pos_less_eq_append_not_parallel)
 qed
 
@@ -534,7 +517,7 @@ proof
           by (metis append_Cons less_eq_pos_simps(4))
       next
         assume ij:"\<not> \<not> (i < j)"
-        then have "[] @ [i] \<le>\<^sub>p (i # p) \<and> [] @ [j] \<le>\<^sub>p (j # q')" unfolding less_eq_pos_def by auto
+        then have "[] @ [i] \<le>\<^sub>p (i # p) \<and> [] @ [j] \<le>\<^sub>p (j # q')" by auto
         with Cons ij show ?thesis unfolding left_of_pos_def by blast
       qed
     qed
