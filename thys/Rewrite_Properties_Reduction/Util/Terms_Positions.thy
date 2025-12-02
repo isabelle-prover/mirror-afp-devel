@@ -206,7 +206,7 @@ lemmas ctxt_of_pos_term_apply_replace_at_ident = replace_term_at_replace_at_conv
 
 lemma ctxt_apply_term_replace_term_hole_pos [simp]:
   "C\<langle>s\<rangle>[hole_pos C @ q  \<leftarrow> u] = C\<langle>s[q  \<leftarrow> u]\<rangle>"
-  by (simp add: pos_diff_def less_eq_pos_def)
+  by (simp add: pos_diff_def)
 
 
 subsection \<open>@{const term_to_sig} invariants and distributions\<close>

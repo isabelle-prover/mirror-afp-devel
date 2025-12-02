@@ -36,8 +36,8 @@ proof -
   next
     case below
     then obtain q where [simp]:"p = hole_pos C @ q" and poss: "q \<in> poss (l \<cdot> \<sigma>)"
-      using const less_eq_pos_def
-      by (metis (full_types) ctxt_of_pos_term_hole_pos replace_at_subt_at poss_append_poss t(1))
+      using const
+      by (metis hole_pos_poss_conv prefixE t(1))
     have const: "l \<cdot> \<sigma> |_ q = constT c" using const by auto
     from nt_lhs have "\<exists> r. r \<in> var_poss l \<and> r \<le>\<^sub>p q" using const poss
     proof (induct l arbitrary: q)

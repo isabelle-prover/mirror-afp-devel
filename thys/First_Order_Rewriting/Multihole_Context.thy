@@ -2984,7 +2984,7 @@ lemma all_poss_mctxt_mreplace_atI1:
 proof (induct C arbitrary: p q)
   let ?hd = "\<lambda>p. (case p :: pos of i # _ \<Rightarrow> i)"
   case (MFun f Cs) then show ?case
-    by (cases "?hd p = ?hd q") (auto simp: nth_append_take less_pos_def nth_append_drop_is_nth_conv nth_append_take_drop_is_nth_conv)
+    by (cases "?hd p = ?hd q") (auto simp: nth_append_take nth_append_drop_is_nth_conv nth_append_take_drop_is_nth_conv)
 qed auto
 
 lemma funas_mctxt_sup_mctxt:
