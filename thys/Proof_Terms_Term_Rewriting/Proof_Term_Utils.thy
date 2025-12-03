@@ -568,7 +568,8 @@ lemma replace_at_fun_poss_not_below:
   assumes "\<not> p \<le>\<^sub>p q"
     and "p \<in> poss t" and "q \<in> fun_poss (replace_at t p s)"
   shows "q \<in> fun_poss t"
-  using assms by (metis ctxt_supt_id fun_poss_ctxt_apply_term hole_pos_ctxt_of_pos_term less_eq_pos_def) 
+  using assms
+  by (metis ctxt_supt_id fun_poss_ctxt_apply_term hole_pos_ctxt_of_pos_term less_eq_pos_simps(1))
 
 lemma substitution_subterm_at:
   assumes "\<forall>j < length (vars_term_list l). \<sigma> (vars_term_list l ! j) = s |_ (var_poss_list l ! j)"

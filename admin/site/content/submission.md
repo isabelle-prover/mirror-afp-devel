@@ -13,7 +13,7 @@ weight = 5
 
 *   No use of the commands `sorry` or `back`.
 *   Instantiations must not use Isabelle-generated names such as `xa` — use Isar, the `subgoal` command or `rename_tac` to avoid such names.
-*   No use of the command `smt_oracle`.
+*   No use of the commands `sledgehammer` or `smt_oracle`.
 *   If your theories contain calls to `nitpick`, `quickcheck`, or `nunchaku` those calls must include the `expect` parameter. Alternatively the `expect` parameter must be set globally via, e.g. `nitpick_params`.
 *   `apply` scripts should be indented by subgoal as in the Isabelle distribution. If an `apply` command is applied to a state with `n+1` subgoals, it must be indented by `n` spaces relative to the first `apply` in the sequence.
 *   Only named lemmas should carry attributes such as `[simp]`.

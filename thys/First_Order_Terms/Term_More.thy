@@ -674,7 +674,7 @@ lemma less_pos_imp_supt:
   assumes less: "p' <\<^sub>p p" and p: "p \<in> poss t"
   shows "t |_ p \<lhd> t |_ p'"
 proof -
-  from less obtain p'' where p'': "p = p' @ p''" unfolding less_pos_def less_eq_pos_def by auto
+  from less obtain p'' where p'': "p = p' @ p''" unfolding strict_prefix_def prefix_def by auto
   with less have ne: "p'' \<noteq> []" by auto
   then obtain i q where ne: "p'' = i # q" by (cases p'', auto)
   from p have p': "p' \<in> poss t" unfolding p'' by simp
@@ -687,7 +687,7 @@ lemma less_eq_pos_imp_supt_eq:
   assumes less_eq: "p' \<le>\<^sub>p p" and p: "p \<in> poss t"
   shows "t |_ p \<unlhd> t |_ p'"
 proof -
-  from less_eq obtain p'' where p'': "p = p' @ p''" unfolding less_eq_pos_def by auto
+  from less_eq obtain p'' where p'': "p = p' @ p''" unfolding prefix_def by auto
   from p have p': "p' \<in> poss t" unfolding p'' by simp
   from p have "p'' \<in> poss (t |_ p')" unfolding p'' by simp
   from subt_at_imp_supteq[OF this] have "t |_ p' \<unrhd> t |_ p' |_ p''" by simp
@@ -1899,7 +1899,7 @@ lemma replace_at_below_poss:
   assumes p: "p' \<in> poss t" and le: "p \<le>\<^sub>p p'"
   shows "p \<in> poss (replace_at t p' s)"
 proof -
-  from le obtain p'' where p'': "p' = p @ p''" unfolding less_eq_pos_def by auto
+  from le obtain p'' where p'': "p' = p @ p''" unfolding prefix_def by auto
   from p show ?thesis  unfolding p''
     by (metis hole_pos_ctxt_of_pos_term hole_pos_poss poss_append_poss)
 qed
@@ -1908,7 +1908,7 @@ lemma ctxt_of_pos_term_replace_at_below:
   assumes p: "p \<in> poss t" and le: "p \<le>\<^sub>p p'"
   shows "ctxt_of_pos_term p (replace_at t p' u) = ctxt_of_pos_term p t"
 proof -
-  from le obtain p'' where p': "p' = p @ p''" unfolding less_eq_pos_def by auto
+  from le obtain p'' where p': "p' = p @ p''" unfolding prefix_def by auto
   from p show ?thesis unfolding p'
   proof (induct p arbitrary: t)
     case (Cons i p)
@@ -1929,12 +1929,12 @@ lemma ctxt_poss_imp_ctxt_subst_poss:
   assumes p:"p' \<in> poss C\<langle>t\<rangle>" shows "p' \<in> poss C\<langle>t \<cdot> \<mu>\<rangle>"
 proof(rule disjE[OF pos_cases[of p' "hole_pos C"]])
   assume "p' \<le>\<^sub>p hole_pos C"
-  then show ?thesis using hole_pos_poss by (metis less_eq_pos_def poss_append_poss)
+  then show ?thesis using hole_pos_poss by (metis prefix_def poss_append_poss)
 next
   assume or:"hole_pos C <\<^sub>p p' \<or> p' \<bottom> hole_pos C"
   show ?thesis proof(rule disjE[OF or])
     assume "hole_pos C <\<^sub>p p'"
-    then obtain q where dec:"p' = hole_pos C @ q" unfolding less_pos_def less_eq_pos_def by auto
+    then obtain q where dec:"p' = hole_pos C @ q" unfolding strict_prefix_def prefix_def by auto
     with p have "q \<in> poss (t \<cdot> \<mu>)" using hole_pos_poss_conv poss_imp_subst_poss by auto
     then show ?thesis using dec hole_pos_poss_conv by auto
   next
@@ -1976,7 +1976,7 @@ lemma possc_not_below_hole_pos:
 proof(rule notI)
   assume "hole_pos C <\<^sub>p p"
   then obtain r where p':"p = hole_pos C @ r" and r:"r \<noteq> []"
-    unfolding less_pos_def less_eq_pos_def by auto
+    unfolding strict_prefix_def prefix_def by auto
   fix x::'b from r have n:"r \<notin> poss (Var x)" using poss.simps(1) by auto
   from assms have "p \<in> (poss C\<langle>Var x\<rangle>)" unfolding possc_def by auto
   with this[unfolded p'] hole_pos_poss_conv[of C r] have "r \<in> poss (Var x)" by auto
@@ -1989,7 +1989,7 @@ proof-
   from n obtain u where a:"p \<notin> poss C\<langle>u\<rangle>" unfolding possc_def by auto
   from possc_not_below_hole_pos[OF y] have b:"\<not> (hole_pos C <\<^sub>p p)"
     unfolding hole_pos_subst by auto
-  from n a have c:"\<not> (p \<le>\<^sub>p hole_pos C)" unfolding less_pos_def using less_eq_hole_pos_in_possc by blast
+  from n a have c:"\<not> (p \<le>\<^sub>p hole_pos C)" using less_eq_hole_pos_in_possc by blast
   with pos_cases b have "p \<bottom> hole_pos C" by blast
   with par_hole_pos_in_possc[OF parallel_pos_sym[OF this]] n show "p \<notin> poss (C\<langle>t\<rangle>)" by fast
 qed
@@ -3573,9 +3573,36 @@ lemma possc_alt_def: "possc C = poss (C \<langle>Var undefined\<rangle>)"
 
 lemma poss_ctxt_apply: "poss (C \<langle>t\<rangle>) = possc C \<union> (@) (hole_pos C) ` poss t"
 proof
- show "poss C\<langle>t\<rangle> \<subseteq> possc C \<union> (@) (hole_pos C) ` poss t"
-   by (smt (verit) Un_iff hole_pos_poss_conv image_eqI less_eq_hole_pos_in_possc less_eq_pos_def order_pos.less_le
-       par_hole_pos_in_possc pos_cases subsetI)
+  show "poss C\<langle>t\<rangle> \<subseteq> possc C \<union> (@) (hole_pos C) ` poss t"
+  proof (rule subsetI)
+    fix p :: pos
+    assume "p \<in> poss C\<langle>t\<rangle>"
+
+    consider
+      (p_le_hole) "p \<le>\<^sub>p hole_pos C" |
+      (hole_lt_p)"hole_pos C <\<^sub>p p" |
+      (p_par_hole) "p \<bottom> hole_pos C"
+      using pos_cases[of p "hole_pos C"] by satx
+
+    then show "p \<in> possc C \<union> (@) (hole_pos C) ` poss t"
+    proof cases
+      case p_le_hole
+      then have "p \<in> possc C"
+        using less_eq_hole_pos_in_possc by blast
+      then show ?thesis ..
+    next
+      case hole_lt_p
+      then have "p \<in> (@) (hole_pos C) ` poss t"
+        by (metis \<open>p \<in> poss C\<langle>t\<rangle>\<close> hole_pos_poss_conv image_iff less_pos_def')
+      then show ?thesis ..
+    next
+      case p_par_hole
+      then have "p \<in> possc C"
+        by (metis \<open>p \<in> poss C\<langle>t\<rangle>\<close> par_hole_pos_in_possc parallel_pos_sym)
+      then show ?thesis ..
+    qed
+  qed
+next
  show "possc C \<union> (@) (hole_pos C) ` poss t \<subseteq> poss C\<langle>t\<rangle>"
    using poss_imp_possc by fastforce
 qed
@@ -3596,10 +3623,23 @@ proof -
   with p show ?thesis by blast
 qed
 
-lemma ctxt_subst_subt_with_poss_in_ctxt: "hole_pos C \<bottom> p \<Longrightarrow>
-    p \<in> poss C\<langle>u\<rangle> \<Longrightarrow> C\<langle>u\<rangle> |_ p = t \<Longrightarrow> (C \<cdot>\<^sub>c \<sigma>)\<langle>s\<rangle> |_ p = t \<cdot> \<sigma>" 
-  by (metis ctxt_of_pos_term_hole_pos ctxt_of_pos_term_subst hole_pos_poss
-      parallel_replace_at_subt_at poss_imp_subst_poss subt_at_subst)
-
+lemma ctxt_subst_subt_with_poss_in_ctxt:
+  assumes "hole_pos C \<bottom> p" and "p \<in> poss C\<langle>u\<rangle>" and "C\<langle>u\<rangle> |_ p = t"
+  shows "(C \<cdot>\<^sub>c \<sigma>)\<langle>s\<rangle> |_ p = t \<cdot> \<sigma>"
+proof -
+  have "(C \<cdot>\<^sub>c \<sigma>)\<langle>s\<rangle> |_ p = (ctxt_of_pos_term (hole_pos C) C\<langle>u\<rangle> \<cdot>\<^sub>c \<sigma>)\<langle>s\<rangle> |_ p"
+    unfolding ctxt_of_pos_term_hole_pos ..
+  also have "\<dots> = (ctxt_of_pos_term (hole_pos C) (C\<langle>u\<rangle> \<cdot> \<sigma>))\<langle>s\<rangle> |_ p"
+    by (metis hole_pos_poss ctxt_of_pos_term_subst)
+  also have "\<dots> = C\<langle>u\<rangle> \<cdot> \<sigma> |_ p"
+    using \<open>hole_pos C \<bottom> p\<close> \<open>p \<in> poss C\<langle>u\<rangle>\<close>
+    by (simp add: parallel_replace_at_subt_at)
+  also have "\<dots> = C\<langle>u\<rangle> |_ p \<cdot> \<sigma>"
+    using \<open>p \<in> poss C\<langle>u\<rangle>\<close>
+    by (metis subt_at_subst)
+  also have "\<dots> = t \<cdot> \<sigma>"
+    unfolding \<open>C\<langle>u\<rangle> |_ p = t\<close> ..
+  finally show ?thesis .
+qed
 
 end

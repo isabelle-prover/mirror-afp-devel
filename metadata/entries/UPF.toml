@@ -21,7 +21,7 @@ note = ""
 [authors]
 
 [authors.brucker]
-email = "brucker_email2"
+homepage = "brucker_homepage"
 
 [authors.bruegger]
 email = "bruegger_email"
@@ -41,3 +41,6 @@ bruegger = "bruegger_email"
 [extra]
 
 [related]
+dois = [
+  "10.1002/STVR.1544",
+]

@@ -33,7 +33,7 @@ lemma poss_of_term_hole_poss:
 proof (induct C arbitrary: p)
   case (More f ss C ts)
   from More(3) obtain ps where [simp]: "p = length ss # ps" and h: "hole_pos C \<le>\<^sub>p ps"
-    using less_eq_pos_def by auto
+    unfolding prefix_def by auto
   show ?case using More(1)[OF _ h] More(2)
     by (auto simp: poss_of_term_def)
 qed auto

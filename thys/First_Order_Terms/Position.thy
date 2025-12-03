@@ -31,32 +31,17 @@ qed
 
 type_synonym pos = "nat list"
 
-definition less_eq_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix \<open>\<le>\<^sub>p\<close> 50) where
-  "p \<le>\<^sub>p q \<longleftrightarrow> (\<exists>r. p @ r = q)"
-
-definition less_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix \<open><\<^sub>p\<close> 50) where
-  "p <\<^sub>p q \<longleftrightarrow> p \<le>\<^sub>p q \<and> p \<noteq> q"
-
-lemma less_eq_pos_eq_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "less_eq_pos = Sublist.prefix"
-  unfolding less_eq_pos_def Sublist.prefix_def by metis
-
-lemma less_pos_eq_strict_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "less_pos = Sublist.strict_prefix"
-  unfolding less_pos_def less_eq_pos_def Sublist.strict_prefix_def Sublist.prefix_def by metis
-
-interpretation order_pos: order "(\<le>\<^sub>p)" "(<\<^sub>p)"
-  by (standard) (auto simp: less_eq_pos_def less_pos_def)
+notation Sublist.prefix (infix \<open>\<le>\<^sub>p\<close> 50)
+notation Sublist.strict_prefix (infix \<open><\<^sub>p\<close> 50)
 
 lemma less_eq_pos_induct [consumes 1]:
   assumes "p \<le>\<^sub>p q" and "\<And> p. P p p"
     and "\<And> p q r. p \<le>\<^sub>p q \<Longrightarrow> P p q \<Longrightarrow> P p (q @ r)"
   shows "P p q"
-  using assms(1,2,3) less_eq_pos_def by auto
+  using assms(1,2,3)
+  by (metis prefixE prefix_order.order_refl)
 
-lemma Nil_least [intro!, simp]:
-  "[] \<le>\<^sub>p p"
-  by (auto simp: less_eq_pos_def)
+lemmas Nil_least [intro!, simp] = Sublist.Nil_prefix
 
 lemma less_eq_pos_simps [simp]:
   "p \<le>\<^sub>p p @ q" 
@@ -65,13 +50,7 @@ lemma less_eq_pos_simps [simp]:
   "i # q1 \<le>\<^sub>p j # q2 \<longleftrightarrow> i = j \<and> q1 \<le>\<^sub>p q2"
   "p @ q \<le>\<^sub>p p \<longleftrightarrow> q = []"
   "p \<le>\<^sub>p [] \<longleftrightarrow> p = []"
-  by (auto simp: less_eq_pos_def)
-
-lemma less_eq_pos_code [code]:
-  "([] :: pos) \<le>\<^sub>p p = True" 
-  "(i # q1 \<le>\<^sub>p []) = False"
-  "(i # q1 \<le>\<^sub>p j # q2) = (i = j \<and> q1 \<le>\<^sub>p q2)"
-  by auto
+  by simp_all
 
 lemma less_pos_simps[simp]: 
   "(p <\<^sub>p p @ q) = (q \<noteq> [])" 
@@ -79,11 +58,11 @@ lemma less_pos_simps[simp]:
   "(p <\<^sub>p []) = False"
   "(i # q1 <\<^sub>p j # q2) = (i = j \<and> q1 <\<^sub>p q2)"
   "(p @ q <\<^sub>p p) = False"
-  by (auto simp: less_pos_def)
+  by (auto simp add: prefix_order.less_le)
 
 lemma prefix_smaller [simp]:
   assumes "p <\<^sub>p q" shows "size p < size q"
-  using assms by (auto simp: less_pos_def less_eq_pos_def)
+  using assms by (metis prefix_length_less)
 
 instantiation list :: (type) one
 begin
@@ -123,7 +102,7 @@ lemma power_subtract_less_eq:
 proof (cases "m \<ge> n")
   case False
   then have "(n - m) + m = n" by auto
-  then show ?thesis unfolding less_eq_pos_def using power_append_distr by metis
+  then show ?thesis unfolding prefix_def using power_append_distr by metis
 qed simp
 
 lemma power_size: fixes p :: "pos" shows "size (p ^ n) = size p * n" 
@@ -157,7 +136,7 @@ lemma less_eq_pos_remove_prefix_no_None:
 lemma less_eq_pos_remove_prefix:
   assumes "p \<le>\<^sub>p q"
   obtains r where "q = p @ r" and "remove_prefix p q = Some r"
-  using assms by (induct p arbitrary: q) (auto simp: less_eq_pos_def)
+  using assms by (induct p arbitrary: q) (auto simp: prefix_def)
 
 lemma suffix_exists:
   assumes "p \<le>\<^sub>p q"
@@ -229,13 +208,13 @@ qed auto
 
 lemma pos_cases: "p \<le>\<^sub>p q \<or> q <\<^sub>p p \<or> p \<bottom> q"
   by (induct p q rule: list_induct2'')
-    (auto simp: less_pos_def)
+    (auto simp: strict_prefix_def)
 
 lemma parallel_pos_sym: "p1 \<bottom> p2 \<Longrightarrow> p2 \<bottom> p1"
   unfolding parallel_pos by auto
 
 lemma less_pos_def': "(p <\<^sub>p q) = (\<exists> r. q = p @ r \<and> r \<noteq> [])" (is "?l = ?r")
-  by (auto simp: less_pos_def less_eq_pos_def)
+  by (auto simp: strict_prefix_def prefix_def)
 
 lemma pos_append_cases: 
   "p1 @ p2 = q1 @ q2 \<Longrightarrow>
@@ -262,10 +241,10 @@ lemma pos_less_eq_append_not_parallel:
  assumes "q \<le>\<^sub>p p @ q'"
  shows "\<not> (q \<bottom> p)"
 proof-
-  from assms obtain r where "q @ r = p @ q'" unfolding less_eq_pos_def ..  
+  from assms obtain r where "q @ r = p @ q'" unfolding prefix_def by metis  
   then have dec:"(\<exists> q3. q = p @ q3 \<and> q' = q3 @ r) \<or> 
    (\<exists> p3. p = q @ p3 \<and> r = p3 @ q')" (is "?a \<or> ?b") by (rule pos_append_cases)
-  then have "p \<le>\<^sub>p q \<or> q \<le>\<^sub>p p" unfolding less_eq_pos_def by blast
+  then have "p \<le>\<^sub>p q \<or> q \<le>\<^sub>p p" unfolding prefix_def by blast
   then show ?thesis unfolding parallel_pos by auto
 qed
 
@@ -316,7 +295,7 @@ proof (induction p)
     show "q \<in> ?l = (q \<in> ?r)"
     proof (cases q)
       case Nil
-      have less: "[] <\<^sub>p i # p" unfolding less_pos_def by auto
+      have less: "[] <\<^sub>p i # p" by auto
       show ?thesis unfolding Nil using less by auto
     next
       case (Cons j q')
@@ -366,7 +345,7 @@ definition left_of_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool"
 lemma left_of_pos_append:
   "left_of_pos p q \<Longrightarrow> left_of_pos (p @ p') (q @ q')"
   apply (simp add: left_of_pos_def)
-  using less_eq_pos_simps(1) order_pos.order.trans by blast
+  using less_eq_pos_simps(1) prefix_order.order_trans by blast
 
 lemma append_left_of_pos:
   "left_of_pos p q = left_of_pos (p' @ p) (p' @ q)"
@@ -385,13 +364,13 @@ next
       by (metis append_assoc append_Cons append.left_neutral snoc.prems)
     with IH have "left_of_pos (a # p) (a # q)" unfolding left_of_pos_def by (metis left_of_pos_def snoc.hyps) 
     then obtain r i j r' r'' where x:"r @ [i] @ r' = a # p" and y:"(r @ [j]) @ r'' = a # q" 
-      and ij:"i < j" unfolding left_of_pos_def less_eq_pos_def by auto
+      and ij:"i < j" unfolding left_of_pos_def prefix_def by auto
     then have "[] <\<^sub>p r" unfolding less_pos_def'
       by (metis append_Nil append_Cons not_less_iff_gr_or_eq list.inject)
     with x obtain rr where "r = a # rr" using list.exhaust[of r]
       by (metis less_eq_pos_simps(1) less_eq_pos_simps(4) less_pos_simps(1) append.left_neutral)
     with x y have "rr @ [i] @ r' = p" and y:"(rr @ [j]) @ r'' = q" by auto
-    with ij show ?case unfolding left_of_pos_def less_eq_pos_def by auto
+    with ij show ?case unfolding left_of_pos_def prefix_def by auto
   qed simp
 qed
 
@@ -399,8 +378,8 @@ lemma left_pos_parallel: "left_of_pos p q \<Longrightarrow> q \<bottom> p" unfol
 proof -
   assume "\<exists>r i j. r @ [i] \<le>\<^sub>p p \<and> r @ [j] \<le>\<^sub>p q \<and> i < j"
   then obtain r i j where rp:"r @ [i] \<le>\<^sub>p p" and rq:"r @ [j] \<le>\<^sub>p q" and ij:"i < j" by auto
-  from rp obtain p' where rp:"p = r @ i #  p'" unfolding less_eq_pos_def by auto
-  from rq obtain q' where rq:"q = (r @ (j # q'))" unfolding less_eq_pos_def by auto
+  from rp obtain p' where rp:"p = r @ i #  p'" unfolding prefix_def by auto
+  from rq obtain q' where rq:"q = (r @ (j # q'))" unfolding prefix_def by auto
   from rp rq ij have pq:"\<not> p \<le>\<^sub>p q" by force
   from rp rq ij have "\<not> q \<le>\<^sub>p p" by force 
   with pq show ?thesis using parallel_pos by auto
@@ -414,21 +393,21 @@ proof -
   show ?thesis proof(cases "p0 \<le>\<^sub>p r")
     case True
     with rq have "p0 <\<^sub>p q"
-      by (metis less_eq_pos_simps(1) less_eq_pos_simps(5) less_pos_def list.simps(3) order_pos.order.trans)
+      by (simp add: prefix_order.strict_trans1 prefix_snocD)
     then show ?thesis by auto
   next
     case False
-    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" unfolding less_eq_pos_def by auto
+    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" by auto
     from rp have par:"\<not> (r @ [i] \<bottom> p0)" using pos_less_eq_append_not_parallel by auto
-    from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding less_eq_pos_def by auto
+    from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding prefix_def by auto
     from rp have "\<not> (p0 \<bottom> r)"
-      using less_eq_pos_simps(1) order_pos.order.trans parallel_pos pos_less_eq_append_not_parallel by blast
+      using less_eq_pos_simps(1) prefix_order.order_trans parallel_pos pos_less_eq_append_not_parallel by blast
     with a have "r <\<^sub>p p0" using pos_cases by auto
-    then obtain oo where p0:"p0 = r @ oo" and "[] <\<^sub>p oo" unfolding less_pos_def less_eq_pos_def by auto 
-    have "\<not> (p0 <\<^sub>p r @ [i])" unfolding less_pos_def less_eq_pos_def
+    then obtain oo where p0:"p0 = r @ oo" and "[] <\<^sub>p oo" unfolding strict_prefix_def prefix_def by auto 
+    have "\<not> (p0 <\<^sub>p r @ [i])" unfolding strict_prefix_def prefix_def
       by (metis aux butlast_append butlast_snoc self_append_conv)
     with par have "r @ [i] \<le>\<^sub>p p0" using pos_cases by auto
-    with ij this[unfolded less_eq_pos_def] have "left_of_pos p0 q" unfolding left_of_pos_def using rq by auto
+    with ij this have "left_of_pos p0 q" unfolding left_of_pos_def using rq by auto
     then show ?thesis by auto
   qed
 qed
@@ -441,22 +420,22 @@ proof -
     unfolding left_of_pos_def by auto
   show ?thesis proof(cases "p0 \<le>\<^sub>p r")
     case True
-    with rp have "p0 <\<^sub>p q" unfolding less_pos_def
-      by (meson less_eq_pos_simps(1) less_eq_pos_simps(5) list.simps(3) order_pos.order.trans)
+    with rp have "p0 <\<^sub>p q"
+      by (metis prefix_snocD prefix_order.strict_trans1)
     then show ?thesis by auto
   next
     case False
-    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" unfolding less_eq_pos_def by auto
+    then have aux:"\<not> (\<exists> r'. p0 @ r' = r)" by auto
     from rp rq have par:"\<not> (r @ [j] \<bottom> p0)" using pos_less_eq_append_not_parallel by auto
-    from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding less_eq_pos_def by auto
+    from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding prefix_def by auto
     from rq have "\<not> (p0 \<bottom> r)"
-      using less_eq_pos_simps(1) order_pos.order.trans parallel_pos pos_less_eq_append_not_parallel by blast
+      using less_eq_pos_simps(1) prefix_order.order_trans parallel_pos pos_less_eq_append_not_parallel by blast
     with a have "r <\<^sub>p p0" using pos_cases by auto
-    then obtain oo where p0:"p0 = r @ oo" and "[] <\<^sub>p oo" unfolding less_pos_def less_eq_pos_def by auto 
-    have "\<not> (p0 <\<^sub>p r @ [j])" unfolding less_pos_def less_eq_pos_def using p0 a list.exhaust[of p0]
+    then obtain oo where p0:"p0 = r @ oo" and "[] <\<^sub>p oo" unfolding strict_prefix_def prefix_def by auto 
+    have "\<not> (p0 <\<^sub>p r @ [j])" unfolding strict_prefix_def prefix_def using p0 a list.exhaust[of p0]
       by (metis append_Nil2 aux butlast_append butlast_snoc)
     with par have "r @ [j] \<le>\<^sub>p p0" using pos_cases by auto
-    with ij this[unfolded less_eq_pos_def] have "left_of_pos q p0" unfolding left_of_pos_def using rp by auto
+    with ij this have "left_of_pos q p0" unfolding left_of_pos_def using rp by auto
     then show ?thesis by auto
   qed
 qed
@@ -475,15 +454,15 @@ lemma left_of_imp_not_right_of:
 proof
   assume l':"left_of_pos q p"
   from l obtain r i j where "r @ [i] \<le>\<^sub>p p" and ij:"i < j" and "r @ [j] \<le>\<^sub>p q" unfolding left_of_pos_def by blast
-  then obtain p0 q0 where p:"p = (r @ [i]) @ p0" and q:"q = (r @ [j]) @ q0" unfolding less_eq_pos_def by auto
+  then obtain p0 q0 where p:"p = (r @ [i]) @ p0" and q:"q = (r @ [j]) @ q0" unfolding prefix_def by auto
   from l' obtain r' i' j' where "r' @ [j'] \<le>\<^sub>p p" and ij':"i' < j'" and "r' @ [i'] \<le>\<^sub>p q" unfolding left_of_pos_def by blast
-  then obtain p0' q0' where p':"p = (r' @ [j']) @ p0'" and q':"q = (r' @ [i']) @ q0'" unfolding less_eq_pos_def by auto
+  then obtain p0' q0' where p':"p = (r' @ [j']) @ p0'" and q':"q = (r' @ [i']) @ q0'" unfolding prefix_def by auto
   from p p' have p:"r @ (i # p0) = r' @ (j' # p0')"  by auto
   from q q' have q:"r @ (j # q0) = r' @ (i' # q0')"  by auto
   with p ij ij' have ne:"r \<noteq> r'" using same_append_eq[of r] by (metis less_imp_not_less list.inject)
   have nlt:"\<not> r <\<^sub>p r'" proof
     assume "r <\<^sub>p r'"
-    then obtain r2 where r1:"r' = r @ r2" and r2:"r2 \<noteq> []" unfolding less_pos_def less_eq_pos_def by auto
+    then obtain r2 where r1:"r' = r @ r2" and r2:"r2 \<noteq> []" unfolding strict_prefix_def prefix_def by auto
     from p have p':"i # p0 = r2 @ j' # p0'" unfolding r1 append_assoc using less_eq_pos_simps(2) by auto
     from q have q':"j # q0 = r2 @ i' # q0'" unfolding r1 append_assoc using less_eq_pos_simps(2) by auto
     from r2 obtain k rr where r2:"r2 = k# rr" by (cases r2, auto)
@@ -491,13 +470,13 @@ proof
   qed
   have "\<not> r' <\<^sub>p r" proof
     assume "r' <\<^sub>p r"
-    then obtain r2 where r1:"r = r' @ r2" and r2:"r2 \<noteq> []" unfolding less_pos_def less_eq_pos_def by auto
+    then obtain r2 where r1:"r = r' @ r2" and r2:"r2 \<noteq> []" unfolding strict_prefix_def prefix_def by auto
     from p have p':"r2 @ i # p0 = j' # p0'" unfolding r1 append_assoc using less_eq_pos_simps(2) by auto
     from q have q':"r2 @ j # q0 = i' # q0'" unfolding r1 append_assoc using less_eq_pos_simps(2) by auto
     from r2 obtain k rr where r2:"r2 = k# rr" by (cases r2, auto)
     from p' q' ij' list.inject show False unfolding r2 by simp
   qed
-  with nlt ne have "r \<bottom> r'" by (auto simp: parallel_pos less_pos_def)
+  with nlt ne have "r \<bottom> r'" by (auto simp: parallel_pos)
   with p q show False by (metis less_eq_pos_simps(1) pos_less_eq_append_not_parallel)
 qed
 
@@ -538,7 +517,7 @@ proof
           by (metis append_Cons less_eq_pos_simps(4))
       next
         assume ij:"\<not> \<not> (i < j)"
-        then have "[] @ [i] \<le>\<^sub>p (i # p) \<and> [] @ [j] \<le>\<^sub>p (j # q')" unfolding less_eq_pos_def by auto
+        then have "[] @ [i] \<le>\<^sub>p (i # p) \<and> [] @ [j] \<le>\<^sub>p (j # q')" by auto
         with Cons ij show ?thesis unfolding left_of_pos_def by blast
       qed
     qed
@@ -547,7 +526,7 @@ next
   assume l:"left_of_pos p q"
   from this[unfolded left_of_pos_def] obtain r i j where "r @[i] \<le>\<^sub>p p" and "r @ [j] \<le>\<^sub>p q" 
     and ij:"i < j" by blast
-  then obtain p' q' where "p = (r @[i]) @ p'" and "q = (r @[j]) @ q'" unfolding less_eq_pos_def 
+  then obtain p' q' where "p = (r @[i]) @ p'" and "q = (r @[j]) @ q'" unfolding prefix_def 
     by auto
   then show "is_left_of p q"
   proof (induct r arbitrary: p q p' q')
@@ -557,8 +536,8 @@ next
   next
     case (Cons k r') note IH = this
     assume p:"p = ((k # r') @ [i]) @ p'" and q:"q = ((k # r') @ [j]) @ q'"
-    from ij have "left_of_pos ((r' @ [i]) @ p') (( r' @ [j]) @ q')" unfolding left_of_pos_def
-      by (metis less_eq_pos_def)
+    from ij have "left_of_pos ((r' @ [i]) @ p') (( r' @ [j]) @ q')"
+      unfolding left_of_pos_def prefix_def by metis
     with IH have "is_left_of ((r' @ [i]) @ p') (( r' @ [j]) @ q')" by auto
     then show "is_left_of p q" unfolding p q  using left_Cons by force
   qed
@@ -617,7 +596,7 @@ lemma less_pos_right_mono:
 proof (induct q rule: rev_induct)
   case (snoc x xs)
   thus ?case 
-    by (simp add: less_pos_def less_eq_pos_def)
+    by (simp add: strict_prefix_def prefix_def)
       (metis append_is_Nil_conv butlast_append butlast_snoc list.simps(3))
 qed auto
 

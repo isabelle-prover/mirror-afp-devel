@@ -31,7 +31,7 @@ note = ""
 [authors]
 
 [authors.brucker]
-email = "brucker_email2"
+homepage = "brucker_homepage"
 
 [authors.tuong]
 email = "tuong_email"
@@ -60,3 +60,6 @@ wolff = "wolff_email"
 [extra]
 
 [related]
+dois = [
+  "10.5381/JOT.2020.19.3.A3",
+]
