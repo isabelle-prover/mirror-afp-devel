@@ -2,7 +2,7 @@ theory StateMonad
 imports Main "HOL-Library.Monad_Syntax" Utils Solidity_Symbex
 begin
 
-section "State Monad with Exceptions"
+section "state Monad with Exceptions"
 
 datatype ('n, 'e) result = Normal (normal: 'n) | Exception (exception: 'e)
 
@@ -29,7 +29,7 @@ where "return a s = Normal (a, s)"
 fun throw :: "'e \<Rightarrow> ('a, 'e, 's) state_monad"
 where "throw e s = Exception e"
 
-fun bind :: "('a, 'e, 's) state_monad \<Rightarrow> ('a \<Rightarrow> ('b, 'e, 's) state_monad) \<Rightarrow> ('b, 'e, 's) state_monad" (infixl \<open>>>=\<close> 60)
+fun bind :: "('a, 'e, 's) state_monad \<Rightarrow> ('a \<Rightarrow> ('b, 'e, 's) state_monad) \<Rightarrow> ('b, 'e, 's) state_monad" (infixl ">>=" 60)
 where "bind f g s = (case f s of
                       Normal (a, s') \<Rightarrow> g a s'
                     | Exception e \<Rightarrow> Exception e)"
@@ -207,7 +207,7 @@ definition
   valid :: "('s \<Rightarrow> bool) \<Rightarrow> ('a,'e,'s) state_monad \<Rightarrow> 
              ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 
              ('e \<Rightarrow> bool) \<Rightarrow> bool" 
-  (\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
+  ("\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)")
 where
   "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,\<lbrace>E\<rbrace> \<equiv> \<forall>s. P s \<longrightarrow> (case f s of
                    Normal (r,s') \<Rightarrow> Q r s'
