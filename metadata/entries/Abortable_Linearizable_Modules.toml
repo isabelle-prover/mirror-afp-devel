@@ -32,7 +32,7 @@ email = "losa_email"
 [contributors]
 
 [notify]
-losa = "losa_email2"
+losa = "losa_email"
 nipkow = "nipkow_email"
 
 [history]
