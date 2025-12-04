@@ -252,7 +252,14 @@ object AFP_Site_Gen {
     symlinks: Boolean = false,
     progress: Progress = new Progress()
   ): Unit = {
+    /* initialize project with dynamic Isabelle assets */
+
     init_project(hugo, afp, symlinks)
+    HTML.init_fonts(hugo.static_dir)
+
+    val css_dir = Isabelle_System.make_directory(hugo.static_dir + Path.basic("css"))
+    val css = HTML.fonts_css_dir("/") + "\n\n" + File.read(HTML.isabelle_css)
+    File.write(css_dir + Path.basic("isabelle.css"), css)
 
 
     /* load metadata and required data */
