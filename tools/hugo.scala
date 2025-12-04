@@ -35,7 +35,7 @@ object Hugo {
     params: JSON.Object.T = JSON.Object.empty
   ) {
     def json: JSON.Object.T = {
-      params ++
+      JSON.Object("params" -> params) ++
       JSON.optional("title", proper_string(title)) ++
       JSON.optional("description", proper_string(description)) ++
       JSON.optional("url", proper_string(url)) ++
