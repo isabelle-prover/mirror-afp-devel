@@ -6,14 +6,14 @@
                aria-label="Search the AFP" list="autocomplete">
         {{- "" -}}
         <button id="search-button" type="submit">
-          <img src="{{ "images/search.svg" | relURL }}" alt="Search" />
+          <img src="{{ "images/search.svg" | relURL }}" alt="Search">
         </button>
         <datalist id="autocomplete"></datalist>
       </div>
     </form>
   {{- end }}
-  <h1 {{ if or (eq .Kind "home" ) (eq .RelPermalink "/search/") }} class="large-top-margin"{{ end }}>
-    {{- (default .Site.Title .Title) | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML }}
+  <h1{{ if or (eq .Kind "home" ) (eq .RelPermalink "/search/") }} class="large-top-margin"{{ end }}>
+    {{ (default .Site.Title .Title) | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML }}
   </h1>
   <div>
     {{- with .Params.authors }}

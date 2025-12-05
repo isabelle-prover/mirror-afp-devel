@@ -8,7 +8,7 @@
           <li>
             <h3>
               <a href="{{ $topic.RelPermalink }}">
-                {{- $topic.Params.name }} ({{ $topic.Params.count }})
+                {{ $topic.Params.name }} ({{ $topic.Params.count }})
               </a>
             </h3>
           </li>
@@ -17,7 +17,7 @@
               {{- $topic := page.GetPage (printf "/topics/%s" .) }}
               <li>
                 <a href="{{ $topic.RelPermalink }}">
-                  {{- $topic.Params.name }} ({{ $topic.Params.count }})
+                  {{ $topic.Params.name }} ({{ $topic.Params.count }})
                 </a>
               </li>
             {{- end }}

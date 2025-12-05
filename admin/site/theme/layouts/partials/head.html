@@ -1,35 +1,34 @@
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {{- if .IsHome }}
     <title>{{ .Site.Title }}</title>
-    <meta name="description" content="{{ .Site.Params.Description }}" />
-    <meta name="og:description" content="{{ .Site.Params.Description }}" />
+    <meta name="description" content="{{ .Site.Params.Description }}">
+    <meta name="og:description" content="{{ .Site.Params.Description }}">
   {{- else }}
     <title>{{ .Title | safeHTML }} - {{ .Site.Title }}</title>
     {{- $description := default
       (printf "%s in the Archive of Formal Proofs" .Title | plainify)
       .Description }}
-    <meta name="description" content="{{ $description | safeHTMLAttr }}" />
-    <meta property="og:description" content="{{ $description | safeHTMLAttr }}" />
+    <meta name="description" content="{{ $description | safeHTMLAttr }}">
+    <meta property="og:description" content="{{ $description | safeHTMLAttr }}">
   {{- end }}
 
   {{- with .OutputFormats.Get "rss" }}
-  {{- printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink
-     $.Site.Title | safeHTML }}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s">` .Rel .MediaType.Type .Permalink
+       $.Site.Title | safeHTML }}
   {{- end }}
-
-  <meta property="og:title" content="{{ .Title | safeHTMLAttr }}" />
-  <meta property="og:url" content="{{ .Permalink }}" />
-  <meta property="og:image" content="{{ "images/afp.png" | absURL }}" />
+  <meta property="og:title" content="{{ .Title | safeHTMLAttr }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+  <meta property="og:image" content="{{ "images/afp.png" | absURL }}">
   {{- if eq .Section "entries" }}
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="article">
   {{- else if eq .Section "authors" }}
-    <meta property="og:type" content="profile" />
+    <meta property="og:type" content="profile">
   {{- else }}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="website">
   {{- end }}
 
   {{- $options := (dict "targetPath" "css/front.css") }}
@@ -38,7 +37,6 @@
   {{- if (eq .Section "sessions") }}
     <link rel="stylesheet" type="text/css" href="{{ "css/isabelle.css" | relURL }}">
   {{- end }}
-
   <link rel="icon" href="{{ "images/favicon.ico" | relURL }}" type="image/icon">
 
   {{- if or (eq .Section "entries") (eq .RelPermalink "/search/") }}
@@ -64,7 +62,6 @@
   {{- if eq .Section "entries" }}
     <script src="{{ "js/entries.js" | relURL }}"></script>
   {{- end }}
-
   <script src="{{ "js/obfuscate.js" | relURL }}"></script>
   <script src="{{ "js/flexsearch.bundle.js" | relURL }}"></script>
   <script src="{{ "js/scroll-spy.js" | relURL }}"></script>

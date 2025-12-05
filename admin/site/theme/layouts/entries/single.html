@@ -18,7 +18,7 @@
       {{- else if (eq .Params.license "LGPL") }}
         <a href="{{ .Site.BaseURL }}LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
       {{- else }}
-        {{- printf "%s License" .Params.license }}
+        {{ printf "%s License" .Params.license }}
       {{- end }}
     </div>
 
@@ -174,7 +174,7 @@
           {{- range . }}
             <li>
               <a href="{{ $base_url }}/{{ $.Site.Params.release_dir }}/afp-{{ $.Params.name }}-{{ .date }}.tar.gz">
-                {{- dateFormat "Jan 2, 2006" .date }}
+                {{ dateFormat "Jan 2, 2006" .date }}
               </a>
               : Isabelle{{ .isabelle }}
             </li>
