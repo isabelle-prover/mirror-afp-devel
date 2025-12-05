@@ -12,16 +12,18 @@
               </a>
             </h3>
           </li>
-          <ul>
-            {{- range $topic.Params.subtopics }}
-              {{- $topic := page.GetPage (printf "/topics/%s" .) }}
-              <li>
-                <a href="{{ $topic.RelPermalink }}">
-                  {{ $topic.Params.name }} ({{ $topic.Params.count }})
-                </a>
-              </li>
-            {{- end }}
-          </ul>
+          <li>
+            <ul>
+              {{- range $topic.Params.subtopics }}
+                {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+                <li>
+                  <a href="{{ $topic.RelPermalink }}">
+                    {{ $topic.Params.name }} ({{ $topic.Params.count }})
+                  </a>
+                </li>
+              {{- end }}
+            </ul>
+          </li>
         {{- end }}
       </ul>
     {{- end }}

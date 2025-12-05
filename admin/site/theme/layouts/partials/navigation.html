@@ -25,9 +25,9 @@
       {{- else }}
         <ul>
           {{- range .Site.Menus.main }}
-            <a href="{{ .URL | relURL }}">
-              <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>{{ .Name }}</li>
-            </a>
+            <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>
+              <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+            </li>
           {{- end }}
         </ul>
       {{- end }}
