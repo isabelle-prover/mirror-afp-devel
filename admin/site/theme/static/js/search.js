@@ -206,12 +206,6 @@ function debounce(callback, wait) {
   }
 }
 
-function handleSubmit(value) {
-  if (typeof history.pushState !== 'undefined') {
-    history.pushState({}, 'Search the Archive - ' + value, '?s=' + value)
-  }
-}
-
 
 /* setup */
 
@@ -234,14 +228,6 @@ const init_search = async () => {
   const index_json = await Promise.all(index_data.map(r => r.json()))
   const indexes = build_indexes(...index_json)
 
-  input.addEventListener('keydown', (event) => {
-    switch (event.key) {
-      case 'Enter':
-        event.preventDefault()
-        handleSubmit(event.target.value)
-    }
-  })
-
   const run_local_search = (query) => {
     let res = {}
     if (query && query.length > 1) {
@@ -253,6 +239,20 @@ const init_search = async () => {
     entries_res.replaceChildren(render_entries_results(res.entries, query))
     MathJax.typeset()
   }
+
+  const handle_submit = (value) => {
+    if (typeof history.pushState !== 'undefined') {
+      history.pushState({}, 'Search the Archive - ' + value, '?s=' + value)
+    }
+  }
+
+  input.addEventListener('keydown', (event) => {
+    switch (event.key) {
+      case 'Enter':
+        event.preventDefault()
+        handle_submit(event.target.value)
+    }
+  })
 
   input.addEventListener('keyup', (event) => {
     switch (event.key) {
@@ -271,7 +271,7 @@ const init_search = async () => {
         run_local_search(event.target.value)
     }
   })
-  button.addEventListener('click', () => handleSubmit(input.value))
+  button.addEventListener('click', () => handle_submit(input.value))
 
   if (input.value) run_local_search(input.value)
   input.focus()
