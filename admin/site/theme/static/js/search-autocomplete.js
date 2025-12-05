@@ -2,8 +2,7 @@
 
 const ID_AUTOCOMPLETE = "autocomplete"
 
-const get_suggest_index = (keywords) =>
-{
+const get_suggest_index = (keywords) => {
   const index = new FlexSearch.Document({
     encoder: "icase",
     tokenize: "forward",
@@ -16,8 +15,7 @@ const get_suggest_index = (keywords) =>
   return index
 }
 
-const add_suggestions = (index, query) =>
-{
+const add_suggestions = (index, query) => {
   const suggest_results = index.search(query, { pluck: 'keyword', enrich: true }).map(d => d.doc)
 
   if (!(suggest_results.length === 1 && suggest_results[0].keyword === query)) {
@@ -27,8 +25,7 @@ const add_suggestions = (index, query) =>
   }
 }
 
-function filter_autocomplete(values)
-{
+function filter_autocomplete(values) {
   const list = document.getElementById(ID_AUTOCOMPLETE);
   if (list) {
     if (values) {
