@@ -12,7 +12,7 @@ const get_suggest_index = (keywords) =>
       store: true,
     }
   });
-  keywords.forEach(keyword => index.add(keyword))
+  for (let i = 0; i < keywords.length; i++) { index.add(i, keywords[i]) }
   return index
 }
 
