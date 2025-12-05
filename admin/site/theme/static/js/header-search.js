@@ -1,3 +1,11 @@
+/* constants */
+
+const ID_SEARCH_INPUT = "search-input"
+const ID_SEARCH_BUTTON = "search-button"
+
+
+/* search redirect */
+
 function load_search(input, keywords) {
   const suggest_index = get_suggest_index(keywords)
 
@@ -43,8 +51,8 @@ function handle_submit(value) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const input = document.getElementById("search-input")
-  const button = document.getElementById("search-button")
+  const input = document.getElementById(ID_SEARCH_INPUT)
+  const button = document.getElementById(ID_SEARCH_BUTTON)
   if (button) {
     button.addEventListener("click", () => {
       handle_submit(input.value)
