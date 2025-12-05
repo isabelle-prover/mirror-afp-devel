@@ -4,7 +4,7 @@ session Zippy = HOL +
   description
     "Zippy - a Customisable Framework for Tree-Based Searches"
   options
-    [timeout = 300]
+    [timeout = 600]
   sessions
     ML_Unification
     SpecCheck
@@ -99,7 +99,7 @@ session Zip_Benchmarks in "Zippy/Instances/Zip/Examples/Benchmarks" = "HOL-Data_
   description
     "Benchmarks for zip"
   options
-    [timeout = 600]
+    [timeout = 900]
   sessions
     "HOL-Library"
     "Zippy"

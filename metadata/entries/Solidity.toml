@@ -45,6 +45,10 @@ Adding support for instantiation of contracts.
 Adding weakest precondition calculus for the verification of statements.
 (revision fb4d111b2dde)<br>
 """
+2025-12-03 = """
+Adding type information to memory.
+(revision a2b09842f464)<br>
+"""
 
 [extra]
 
