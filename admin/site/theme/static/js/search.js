@@ -130,7 +130,6 @@ async function findfacts_search(index, query) {
 /* result handling */
 
 function render_entry(entry) {
-console.log(entry)
   const authors = entry.authors.join(', ')
   const topics = entry.topics.map((topic, key) =>
     `<a href='${entry.topic_links[key]}'>${topic}</a>`).join(', ')
