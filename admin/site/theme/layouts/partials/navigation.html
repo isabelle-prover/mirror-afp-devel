@@ -12,13 +12,25 @@
       <a href="{{ .Site.Home.RelPermalink }}" class="logo-link">
         <img src="{{ "images/afp.png" | relURL }}" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
-      <ul>
-        {{- range .Site.Menus.main }}
-          <a href="{{ .URL | relURL }}">
-            <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>{{ .Name }}</li>
-          </a>
+      {{- if eq .Section "sessions" }}
+        {{- with .Params.entry }}
+        <ul id="return">
+          <li>
+            <a href="{{ (page.GetPage (printf "entries/%s" .)).RelPermalink }}">Return to entry</a>
+          </li>
+        </ul>
         {{- end }}
-      </ul>
+        <hr>
+        <ul id="theory-navbar" class="list-group"></ul>
+      {{- else }}
+        <ul>
+          {{- range .Site.Menus.main }}
+            <a href="{{ .URL | relURL }}">
+              <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>{{ .Name }}</li>
+            </a>
+          {{- end }}
+        </ul>
+      {{- end }}
     </div>
   </nav>
 </div>
