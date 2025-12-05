@@ -5,7 +5,6 @@ const URL_FINDFACTS = 'https://search.isabelle.in.tum.de'
 const NUM_MAX_SIDE_RESULTS = 4
 const NUM_MAX_MAIN_RESULTS = 15
 
-const ID_SEARCH_INPUT = 'search-input'
 const ID_SEARCH_BUTTON = 'search-button'
 const ID_RESULTS_ENTRIES = 'search-results'
 const ID_RESULTS_AUTHORS = 'author-results'
@@ -240,10 +239,11 @@ const init_search = async () => {
     MathJax.typeset()
   }
 
-  const handle_submit = (value) => {
+  const handle_submit = (query) => {
     if (typeof history.pushState !== 'undefined') {
-      history.pushState({}, 'Search the Archive - ' + value, '?s=' + value)
+      history.pushState({}, 'Search the Archive - ' + query, '?s=' + query)
     }
+    run_local_search(query)
   }
 
   input.addEventListener('keydown', (event) => {
@@ -254,23 +254,7 @@ const init_search = async () => {
     }
   })
 
-  input.addEventListener('keyup', (event) => {
-    switch (event.key) {
-      case 'Enter':
-      case 'Up':
-      case 'ArrowUp':
-      case 'Down':
-      case 'ArrowDown':
-      case 'Left':
-      case 'ArrowLeft':
-      case 'Right':
-      case 'ArrowRight':
-      case 'Escape':
-        break
-      default:
-        run_local_search(event.target.value)
-    }
-  })
+  input.addEventListener('input', () => run_local_search(input.value))
   button.addEventListener('click', () => handle_submit(input.value))
 
   if (input.value) run_local_search(input.value)

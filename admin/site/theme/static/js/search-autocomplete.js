@@ -1,6 +1,7 @@
 /* constants */
 
 const ID_AUTOCOMPLETE = "autocomplete"
+const ID_SEARCH_INPUT = "search-input"
 
 const get_suggest_index = (keywords) => {
   const index = new FlexSearch.Document({
@@ -52,3 +53,36 @@ function filter_autocomplete(values) {
     }
   }
 }
+
+function load_search(keywords) {
+  const input = document.getElementById(ID_SEARCH_INPUT)
+  const suggest_index = get_suggest_index(keywords)
+
+  input.addEventListener("keyup", function (event) {
+    switch (event.key) {
+      case "Enter":
+      case "Up":
+      case "ArrowUp":
+      case "Down":
+      case "ArrowDown":
+      case "Left":
+      case "ArrowLeft":
+      case "Right":
+      case "ArrowRight":
+      case "Escape":
+        break
+      default:
+        if (this.value && this.value.length > 1) {
+          add_suggestions(suggest_index, this.value)
+        }
+    }
+  })
+}
+
+const init_autocomplete = async () => {
+  const response = await fetch("/data/keywords.json")
+  const keywords = await response.json()
+  load_search(keywords)
+}
+
+document.addEventListener("DOMContentLoaded", init_autocomplete)
