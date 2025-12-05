@@ -440,17 +440,6 @@ header {
       min-width: 200px;
     }
 
-    #pdfs {
-      position: fixed;
-      bottom: 0;
-      background: #2E2D4E;
-      margin: 0;
-      padding: 1rem 1.75rem;
-      width: 20vw;
-      box-sizing: border-box;
-      cursor: pointer;
-    }
-
     > div {
       margin-right: 1rem;
     }
@@ -1106,13 +1095,13 @@ iframe {
       }
     }
 
-    .logo-link, input, label, a[href="/search"] {
+    .logo-link, input, label {
       display: block;
       position: absolute;
       z-index: 2;
     }
 
-    input, label, a[href="/search"] {
+    input, label {
       width: 24px;
       height: 24px;
       top: 28px;
@@ -1123,12 +1112,7 @@ iframe {
       cursor: pointer;
     }
 
-    a[href="/search"] {
-      right: 28px;
-      filter: invert(1);
-    }
-
-    a[href="/search"] img, label img {
+    label img {
       width: 100%;
     }
 
