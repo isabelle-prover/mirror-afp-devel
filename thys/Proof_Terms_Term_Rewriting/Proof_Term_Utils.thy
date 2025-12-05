@@ -752,7 +752,14 @@ proof-
       unfolding vars_map_vars_term[symmetric] comp_apply using assms(2)
       by (metis distinct_map distinct_remdups distinct_remdups_id inj_on_inverseI remdups_map_remdups rev_map the_inv_f_f)
     with assms i have 2:"(mk_subst Var (zip (vars_distinct (map_vars_term f t)) xs)) (f x) = xs!i"
-      by (metis (mono_tags, lifting) comp_apply distinct_remdups distinct_rev length_map mk_subst_same nth_map) 
+      using [[metis_instantiate]]
+      by (metis (mono_tags, lifting) comp_apply
+          distinct_remdups[of "rev (vars_term_list (map_vars_term f t))"]
+          distinct_rev[of "(remdups \<circ> rev) (vars_term_list (map_vars_term f t))"]
+          length_map[of f "(rev \<circ> (remdups \<circ> rev)) (vars_term_list t)"]
+          mk_subst_same[of "(map f \<circ> (rev \<circ> (remdups \<circ> rev))) (vars_term_list t)" xs Var]
+          nth_map[of i _ f]
+          nth_map[of i _ "mk_subst Var (zip _ xs)"]) 
     from 1 2 have "(mk_subst Var (zip (vars_distinct t) xs)) x = (mk_subst Var (zip (vars_distinct (map_vars_term f t)) xs)) (f x)"
       by presburger
   }

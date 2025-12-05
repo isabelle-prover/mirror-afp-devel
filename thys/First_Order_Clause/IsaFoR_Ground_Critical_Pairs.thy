@@ -171,7 +171,7 @@ proof unfold_locales
 
             have parallel_p\<^sub>1_p\<^sub>2: "?p\<^sub>1 \<bottom> ?p\<^sub>2" 
               using False
-              by simp
+              by auto
 
             have p\<^sub>1: "?p\<^sub>1 \<in> positions\<^sub>G c\<^sub>1\<langle>l\<^sub>1\<rangle>\<^sub>G"
               unfolding c\<^sub>1

@@ -156,11 +156,11 @@ lemma remove_suffix_Some [simp]:
 
 lemma Nil_power [simp]: "[] ^ n = []" by (induct n) auto
 
-fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infixr \<open>\<bottom>\<close> 64)
+fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool"
   where
-    "[] \<bottom> _ \<longleftrightarrow> False"
-  | "_ \<bottom> [] \<longleftrightarrow> False"
-  | "i # p \<bottom> j # q \<longleftrightarrow> i \<noteq> j \<or> p \<bottom> q"
+    "parallel_pos [] _ \<longleftrightarrow> False"
+  | "parallel_pos _ [] \<longleftrightarrow> False"
+  | "parallel_pos (i # p) (j # q) \<longleftrightarrow> i \<noteq> j \<or> parallel_pos p q"
 
 hide_fact parallel_pos.cases
 hide_fact parallel_pos.elims
@@ -169,15 +169,18 @@ hide_fact parallel_pos.pelims
 
 text \<open>Use theorems for \<^const>\<open>Sublist.parallel\<close> instead.\<close>
 
+notation Sublist.parallel (infixr \<open>\<bottom>\<close> 64)
+
 lemma Nil_not_par [simp]:
   "p \<bottom> [] \<longleftrightarrow> False"
+  "parallel_pos p [] \<longleftrightarrow> False"
   by (cases p, auto)+
 
 lemma parallel_pos_eq_parallel: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "parallel_pos = Sublist.parallel"
 proof (intro ext)
   fix xs ys
-  show "xs \<bottom> ys \<longleftrightarrow> xs \<parallel> ys"
+  show "parallel_pos xs ys \<longleftrightarrow> xs \<parallel> ys"
   proof (induction xs ys rule: list_induct2'')
     case (1 uu)
     thus ?case
@@ -194,17 +197,14 @@ proof (intro ext)
 qed
 
 lemma parallel_pos: "p \<bottom> q = (\<not> p \<le>\<^sub>p q \<and> \<not> q \<le>\<^sub>p p)"
-  by (induct p q rule: list_induct2'') auto
+  by (induct p q rule: list_induct2'') auto              
 
 lemma par_not_refl [simp]: "p \<bottom> p \<longleftrightarrow> False"
   by (simp add: parallel_pos)
 
 lemma parallel_remove_prefix: "p1 \<bottom> p2 \<Longrightarrow>
   \<exists> p i j q1 q2. p1 = p @ i # q1 \<and> p2 = p @ j # q2 \<and> i \<noteq> j"
-proof (induct p1 p2 rule: list_induct2'')
-  case (3 i p j q)
-  then show ?case by simp (metis Cons_eq_append_conv)
-qed auto
+  by (metis parallel_decomp)
 
 lemma pos_cases: "p \<le>\<^sub>p q \<or> q <\<^sub>p p \<or> p \<bottom> q"
   by (induct p q rule: list_induct2'')
@@ -560,8 +560,7 @@ lemma prefix_pos_diff [simp]:
   using suffix_exists [OF assms] by (auto simp: pos_diff_def)
 
 lemma pos_diff_Nil2 [simp]:
-  "pos_diff p [] = p"
-  by (auto simp: pos_diff_def)
+  "pos_diff p [] = p"  by (auto simp: pos_diff_def)
 
 lemma position_diff_Cons [simp]:
   "(i # ps) -\<^sub>p (i # qs) = ps -\<^sub>p qs"

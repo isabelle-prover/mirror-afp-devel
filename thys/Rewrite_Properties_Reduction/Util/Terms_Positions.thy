@@ -61,9 +61,7 @@ subsection \<open>Lemmas for @{const poss} and ordering of positions\<close>
 lemma subst_poss_mono: "poss s \<subseteq> poss (s \<cdot> \<sigma>)"
   by (induct s) force+
 
-lemma par_pos_prefix [simp]:
-  "(i # p) \<bottom> (i # q) \<Longrightarrow> p \<bottom> q"
-  by simp
+lemmas par_pos_prefix [simp] = Sublist.parallel_cancel
 
 lemma pos_diff_itself [simp]: "p -\<^sub>p p = []"
   by (simp add: pos_diff_def)
@@ -165,7 +163,9 @@ lemma par_pos_replace_term_at:
 proof (induct p arbitrary: s q)
   case (Cons i p)
   show ?case using Cons(1)[of "args s ! i" "tl q"] Cons(2-)
-    by (cases s; cases q) (auto, metis nth_list_update)
+    apply (cases s; cases q)
+       apply simp_all
+    by (metis nth_list_update_eq nth_list_update_neq par_pos_prefix)
 qed auto
 
 

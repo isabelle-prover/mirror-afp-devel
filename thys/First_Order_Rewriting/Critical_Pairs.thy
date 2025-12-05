@@ -283,7 +283,7 @@ proof -
           let ?p1 = "?n1 # hole_pos D1"
           let ?p2 = "?n2 # hole_pos D2"
           have l2: "C1\<langle>l1 \<cdot> \<sigma>1\<rangle> |_ ?p2 = l2 \<cdot> \<sigma>2" unfolding C1 id by simp
-          have p12: "?p1  \<bottom> ?p2" using False by simp
+          have p12: "?p1  \<bottom> ?p2" using False by auto
           have p1: "?p1 \<in> poss (C1\<langle>l1 \<cdot> \<sigma>1\<rangle>)" unfolding C1 by simp
           have p2: "?p2 \<in> poss (C1\<langle>l1 \<cdot> \<sigma>1\<rangle>)" unfolding C1 unfolding id by simp
           let ?one = "replace_at (C1\<langle>l1 \<cdot> \<sigma>1\<rangle>) ?p1 (r1 \<cdot> \<sigma>1)"
@@ -292,7 +292,7 @@ proof -
           have "(?one, replace_at ?one ?p2 (r2 \<cdot> \<sigma>2)) \<in> rstep R" by auto
           then have one: "(C1\<langle>r1 \<cdot> \<sigma>1\<rangle>, replace_at ?one ?p2 (r2 \<cdot> \<sigma>2)) \<in> (rstep R)^*" unfolding one by simp
           have l1: "C2\<langle>l2 \<cdot> \<sigma>2\<rangle> |_ ?p1 = l1 \<cdot> \<sigma>1" unfolding C2 id [symmetric] by simp
-          have p21: "?p2  \<bottom> ?p1" using False by simp
+          have p21: "?p2  \<bottom> ?p1" using False by auto
           have p1': "?p1 \<in> poss (C2\<langle>l2 \<cdot> \<sigma>2\<rangle>)" unfolding C2 id [symmetric] by simp
           have p2': "?p2 \<in> poss (C2\<langle>l2 \<cdot> \<sigma>2\<rangle>)" unfolding C2 by simp
           let ?two = "replace_at (C2\<langle>l2 \<cdot> \<sigma>2\<rangle>) ?p2 (r2 \<cdot> \<sigma>2)"

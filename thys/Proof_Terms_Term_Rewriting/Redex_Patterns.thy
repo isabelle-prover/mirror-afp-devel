@@ -212,11 +212,12 @@ proof-
           then have "ord.lexordp (<) p11 p21" 
             using p11(2) p21(2) var_poss_list_sorted[of "lhs \<gamma>"] i'2 j'2 using sorted_wrt_nth_less by blast 
           moreover have "\<not> prefix p11 p21" proof-
-            from False j' i' have "parallel_pos (var_poss_list (lhs \<gamma>) !i') (var_poss_list (lhs \<gamma>) !j')"
-              unfolding length_map length_zip using var_poss_parallel var_poss_list_sound distinct_var_poss_list 
+            from False j' i' have "(var_poss_list (lhs \<gamma>) !i') \<bottom> (var_poss_list (lhs \<gamma>) !j')"
+              unfolding length_map length_zip using var_poss_parallel var_poss_list_sound distinct_var_poss_list
               by (metis l min.idem nth_eq_iff_index_eq nth_mem)
-            then show ?thesis using p11(2) p21(2)
-              by (metis less_eq_pos_simps(1) parallel_pos prefix_def)
+            then show ?thesis
+              using p11(2) p21(2)
+              by (metis parallel_def)
           qed
           ultimately show ?thesis unfolding ap bp p12 p22 using lexord_prefix_diff by simp
         qed
