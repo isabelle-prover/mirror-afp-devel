@@ -14,9 +14,9 @@ This entry defines three useful relations on paths:</p>
 <p>It also provides the <em>path</em> tactic, which proves or simplifies some common proof obligations for composite paths. Namely:</p>
 <ul>
 <li>proving $\\equiv_{\\text{p}}$, $\\leq_{\\text{p}}$, $\\equiv_{\\bigcirc}$</li>
-<li>proving well-definedness of paths (<tt>path</tt>, <tt>valid_path</tt>)</li>
-<li>determining the <em>image</em> of a path (<tt>path_image</tt>)</li>
-<li>showing that a path is not self-intersecting (<tt>arc</tt>, <tt>simple_path</tt>)</li>
+<li>proving well-definedness of paths (<code>path</code>, <code>valid_path</code>)</li>
+<li>determining the <em>image</em> of a path (<code>path_image</code>)</li>
+<li>showing that a path is not self-intersecting (<code>arc</code>, <code>simple_path</code>)</li>
 <li>decomposing integrals on a composite path into the integrals on the constituent paths</li>
 </ul>"""
 license = "bsd"

@@ -5,17 +5,17 @@ topics = [
 ]
 abstract = """
 We implemented a command that can be used to easily generate
-elements of a restricted type <tt>{x :: 'a. P x}</tt>,
+elements of a restricted type <code>{x :: 'a. P x}</code>,
 provided the definition is of the form
-<tt>f ys = (if check ys then Some(generate ys :: 'a) else None)</tt> where
-<tt>ys</tt> is a list of variables <tt>y1 ... yn</tt> and
-<tt>check ys ==> P(generate ys)</tt> can be proved.
+<code>f ys = (if check ys then Some(generate ys :: 'a) else None)</code> where
+<code>ys</code> is a list of variables <code>y1 ... yn</code> and
+<code>check ys ==> P(generate ys)</code> can be proved.
 <p>
 In principle, such a definition is also directly possible using the
-<tt>lift_definition</tt> command. However, then this definition will not be
+<code>lift_definition</code> command. However, then this definition will not be
 suitable for code-generation. To this end, we automated a more complex
 construction of Joachim Breitner which is amenable for code-generation, and
-where the test <tt>check ys</tt> will only be performed once.  In the
+where the test <code>check ys</code> will only be performed once.  In the
 automation, one auxiliary type is created, and Isabelle's lifting- and
 transfer-package is invoked several times."""
 license = "lgpl"

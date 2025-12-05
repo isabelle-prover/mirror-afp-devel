@@ -4,6 +4,7 @@ topics = [
   "Computer science/Functional programming",
 ]
 abstract = """
+<p>
 Applicative functors augment computations with effects by lifting function application to types which model the effects.  As the structure of the computation cannot depend on the effects, applicative expressions can be analysed statically.  This allows us to lift universally quantified equations to the effectful types, as observed by Hinze. Thus, equational reasoning over effectful computations can be reduced to pure types.
 </p><p>
 This entry provides a package for registering applicative functors and two proof methods for lifting of equations over applicative functors. The first method normalises applicative expressions according to the laws of applicative functors. This way, equations whose two sides contain the same list of variables can be lifted to every applicative functor.

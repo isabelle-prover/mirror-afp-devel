@@ -13,7 +13,7 @@ theorem is that three non-zero coprime polynomials
 <em>A</em>, <em>B</em>, <em>C</em>
 over a field which sum to 0 and do not all have vanishing derivatives
 fulfil max{deg(<em>A</em>), deg(<em>B</em>),
-deg(<em>C</em>)} < deg(rad(<em>ABC</em>))
+deg(<em>C</em>)} &lt; deg(rad(<em>ABC</em>))
 where the rad(<em>P</em>) denotes the
 <em>radical</em> of <em>P</em>,
 i.&thinsp;e. the product of all unique irreducible factors of
@@ -25,7 +25,7 @@ except for trivial cases,
 <em>C<sup>n</sup></em> = 0 implies
 n&nbsp;&le;&nbsp;2 for coprime polynomials
 <em>A</em>, <em>B</em>, <em>C</em>
-over a field.</em></p>"""
+over a field.</p>"""
 license = "bsd"
 note = ""
 

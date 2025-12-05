@@ -10,6 +10,7 @@ problems. This work comprises proofs for local and global existence of unique so
 differentiable) dependency of the flow on initial conditions as the <i>flow</i> of ODEs.</p>
 <p>
 Not in the generated document are the following sessions:
+</p>
 <ul>
 <li> HOL-ODE-Numerics:
 Rigorous numerical algorithms for computing enclosures of solutions based on Runge-Kutta methods
@@ -19,8 +20,7 @@ Applications of the numerical algorithms to concrete systems of ODEs.</li>
 <li> Lorenz_C0, Lorenz_C1:
 Verified algorithms for checking C1-information according to Tucker's proof,
 computation of C0-information.</li>
-</ul>
-</p>"""
+</ul>"""
 license = "bsd"
 note = ""
 
