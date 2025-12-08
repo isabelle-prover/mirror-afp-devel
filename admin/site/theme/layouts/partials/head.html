@@ -38,7 +38,7 @@
   {{- end }}
   <link rel="icon" href="{{ "images/favicon.ico" | relURL }}" type="image/icon">
 
-  {{- if or (eq .Section "entries") (eq .RelPermalink "/search/") }}
+  {{- if or (eq .Section "entries") (eq .Path "/search") }}
     {{/*
       The following is the MathJax configuration.
       This means that formulae can be enclosed in either $ … $ or \( … \)
@@ -66,7 +66,7 @@
     <script src="{{ "js/obfuscate.js" | relURL }}"></script>
   {{- end }}
 
-  {{- if eq .RelPermalink "/search/" }}
+  {{- if eq .Path "/search" }}
     <script src="{{ "js/search.js" | relURL }}"></script>
     <script src="{{ "js/mark.min.js" | relURL }}"></script>
   {{- else if eq .Section "entries" }}

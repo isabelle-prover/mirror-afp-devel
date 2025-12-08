@@ -1,5 +1,5 @@
 <header>
-  {{- if and (ne .Kind "home") (ne .RelPermalink "/search/") }}
+  {{- if and (ne .Kind "home") (ne .Path "/search") }}
     <form autocomplete="off" action="{{ "search" | relURL }}">
       <div class="form-container">
         <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
@@ -12,7 +12,7 @@
       </div>
     </form>
   {{- end }}
-  <h1{{ if or (eq .Kind "home" ) (eq .RelPermalink "/search/") }} class="large-top-margin"{{ end }}>
+  <h1{{ if or (eq .Kind "home" ) (eq .Path "/search") }} class="large-top-margin"{{ end }}>
     {{ (default .Site.Title .Title) | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML }}
   </h1>
   <div>

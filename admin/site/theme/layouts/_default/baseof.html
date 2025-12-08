@@ -7,7 +7,7 @@
       {{- partial "navigation.html" . }}
     </aside>
 
-    <div class="content{{ if (eq .Section "entries") }} entries{{ end }}{{ if eq .RelPermalink "/search/" }} search-page{{ end }}">
+    <div class="content{{ if (eq .Section "entries") }} entries{{ end }}{{ if eq .Path "/search" }} search-page{{ end }}">
       {{- partial "header.html" . }}
       <div>
         {{- block "main" . }}
