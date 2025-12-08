@@ -14,11 +14,11 @@
       </a>
       {{- if eq .Section "sessions" }}
         {{- with .Params.entry }}
-        <ul id="return">
-          <li>
-            <a href="{{ (page.GetPage (printf "entries/%s" .)).RelPermalink }}">Return to entry</a>
-          </li>
-        </ul>
+          <ul id="return">
+            <li>
+              <a href="{{ (page.GetPage (printf "entries/%s" .)).RelPermalink }}">Return to entry</a>
+            </li>
+          </ul>
         {{- end }}
         <hr>
         <ul id="theory-navbar" class="list-group"></ul>
