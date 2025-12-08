@@ -548,7 +548,7 @@ proof -
     have funas2 :"funas_term (r2 \<cdot> \<sigma>2) \<subseteq> \<F>" using funas_term_replace_at_lower[OF su(1)]
       using funas(3) unfolding su(4) by blast
     consider (a) "p \<le>\<^sub>p q" | (b) "q \<le>\<^sub>p p" | (c) "p \<bottom> q"
-      using parallel_pos by blast
+      unfolding Sublist.parallel_def by blast
     then have "SCRp \<F> \<R> t u"
     proof cases
       case a
@@ -604,7 +604,7 @@ proof -
         using parallel_replace_term_commute by blast
       from c have "(t, v) \<in> rstep \<R>" unfolding st(4) v_def
         using su(1 - 3) par_pos_replace_pres[OF su(1)]
-        by (metis par_pos_replace_term_at pos_replace_to_rstep parallel_pos)
+        by (metis par_pos_replace_term_at pos_replace_to_rstep Sublist.parallel_def)
       moreover from c have "(u, v) \<in> rstep \<R>" unfolding su(4) *
         using st(1 - 3) par_pos_replace_pres[OF st(1)]
         by (intro pos_replace_to_rstep[of _ _ l]) (auto simp: par_pos_replace_term_at)
@@ -636,7 +636,7 @@ proof -
     have funas2 :"funas_term (r2 \<cdot> \<sigma>2) \<subseteq> \<F>" using funas_term_replace_at_lower[OF su(1)]
       using funas(3) unfolding su(4) by blast
     consider (a) "p \<le>\<^sub>p q" | (b) "q \<le>\<^sub>p p" | (c) "p \<bottom> q"
-      using parallel_pos by blast
+      unfolding Sublist.parallel_def by blast
     then have "(t, u) \<in> (srstep \<F> \<R>)\<^sup>\<down>"
     proof cases
       case a
@@ -687,7 +687,7 @@ proof -
         using parallel_replace_term_commute by blast
       from c have "(t, v) \<in> rstep \<R>" unfolding st(4) v_def
         using su(1 - 3) par_pos_replace_pres[OF su(1)]
-        by (metis par_pos_replace_term_at pos_replace_to_rstep parallel_pos)
+        by (metis par_pos_replace_term_at pos_replace_to_rstep Sublist.parallel_def)
       moreover from c have "(u, v) \<in> rstep \<R>" unfolding su(4) *
         using st(1 - 3) par_pos_replace_pres[OF st(1)]
         by (metis par_pos_replace_term_at pos_replace_to_rstep)

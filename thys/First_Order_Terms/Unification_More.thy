@@ -196,7 +196,7 @@ proof-
       then obtain q where q:"q \<in> poss t" "t|_q = Var y" "q \<in> fun_poss s"  "s|_q = v"
         by (meson right_substs_imp_props) 
       with p have "p \<bottom> q"
-        by (metis Term.term.simps(4) append.right_neutral fun_poss_fun_conv fun_poss_imp_poss parallel_pos prefix_pos_diff var_pos_maximal)
+        by (metis Term.term.simps(4) append.right_neutral fun_poss_fun_conv fun_poss_imp_poss Sublist.parallel_def prefix_pos_diff var_pos_maximal)
       with assms p(1,2) q(3,4) have "x \<notin> vars_term v"
         using fun_poss_imp_poss linear_subterms_disjoint_vars by fastforce
     }
@@ -217,7 +217,7 @@ proof-
       then obtain q where q:"q \<in> poss s" "s|_q = Var y" "q \<in> poss t"  "t|_q = v"
         by (meson left_substs_imp_props) 
       with p have "p \<bottom> q"
-        by (metis Term.term.simps(4) append.right_neutral fun_poss_fun_conv fun_poss_imp_poss parallel_pos prefix_pos_diff var_pos_maximal)
+        by (metis Term.term.simps(4) append.right_neutral fun_poss_fun_conv fun_poss_imp_poss Sublist.parallel_def prefix_pos_diff var_pos_maximal)
       with assms p(1,2) q(3,4) have "x \<notin> vars_term v"
         using fun_poss_imp_poss linear_subterms_disjoint_vars by fastforce
     }

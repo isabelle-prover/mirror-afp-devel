@@ -2787,7 +2787,7 @@ lemma vars_ctxt_subt_at':
   assumes "x \<in> vars_ctxt C"
     and "p \<in> poss C\<langle>t\<rangle>"
     and "hole_pos C = p"
-  shows "\<exists>q. q \<in> poss C\<langle>t\<rangle> \<and> parallel_pos p q \<and> C\<langle>t\<rangle> |_ q = Var x"
+  shows "\<exists>q. q \<in> poss C\<langle>t\<rangle> \<and> p \<bottom> q \<and> C\<langle>t\<rangle> |_ q = Var x"
   using assms
 proof (induct C arbitrary: p)
   case (More f bef C aft)
@@ -2801,13 +2801,13 @@ proof (induct C arbitrary: p)
   proof (cases)
     case C
     from More(1)[OF this] obtain q where "q \<in> poss C\<langle>t\<rangle>" "hole_pos C \<bottom> q" "C\<langle>t\<rangle> |_ q = Var x"
-      using parallel_pos_eq_parallel by fastforce
+      by fastforce
     show ?thesis
     proof (intro exI conjI)
       show "length bef # q \<in> poss (More f bef C aft)\<langle>t\<rangle>"
         by (simp add: \<open>q \<in> poss C\<langle>t\<rangle>\<close>)
-      show "parallel_pos p (length bef # q)"
-        by (simp add: Cons_parallelI2 \<open>hole_pos C \<bottom> q\<close> parallel_pos_eq_parallel)
+      show "p \<bottom> (length bef # q)"
+        by (simp add: Cons_parallelI2 \<open>hole_pos C \<bottom> q\<close>)
       show "(More f bef C aft)\<langle>t\<rangle> |_ (length bef # q) = Var x"
         by (simp add: \<open>C\<langle>t\<rangle> |_ q = Var x\<close>)
     qed
@@ -2834,7 +2834,7 @@ lemma vars_ctxt_subt_at:
   assumes "x \<in> vars_ctxt C"
     and "p \<in> poss C\<langle>t\<rangle>"
     and "hole_pos C = p"
-  obtains q where "q \<in> poss C\<langle>t\<rangle>" and "parallel_pos p q" and "C\<langle>t\<rangle> |_ q = Var x"
+  obtains q where "q \<in> poss C\<langle>t\<rangle>" and "p \<bottom> q" and "C\<langle>t\<rangle> |_ q = Var x"
   using vars_ctxt_subt_at' assms by force
 
 lemma poss_is_Fun_fun_poss:
@@ -2892,7 +2892,7 @@ lemma var_poss_parallel:
     from Fun(4) have "p' \<noteq> q'" 
       unfolding p q True by simp 
     with Fun(1) i j show ?thesis 
-      unfolding True p q parallel_pos.simps using nth_mem by fastforce 
+      unfolding True p q using nth_mem by fastforce 
   next
     case False
     then show ?thesis unfolding p q
@@ -3482,7 +3482,7 @@ lemma imgu_linear_var_disjoint:
     and "linear_term l2"
     and "vars_term l1 \<inter> vars_term l2 = {}"
     and "q \<in> poss l2"
-    and "parallel_pos p q"
+    and "p \<bottom> q"
   shows "l2 |_ q = l2 |_ q \<cdot> \<sigma>"
   using assms
 proof (induct p arbitrary: q l2)
@@ -3496,13 +3496,12 @@ proof (induct p arbitrary: q l2)
   have "linear_term (ls ! i)" using Cons(4) l2 i by simp
   moreover have "vars_term l1 \<inter> vars_term (ls ! i) = {}" using Cons(5) l2 i by force
   ultimately have IH: "\<And>q. q \<in> poss (ls ! i) \<Longrightarrow> p \<bottom> q \<Longrightarrow> ls ! i |_ q = ls ! i |_ q \<cdot> \<sigma>" 
-    using Cons(1)[OF Cons(2)[unfolded l2i] p]
-    by (metis parallel_pos_eq_parallel)
+    using Cons(1)[OF Cons(2)[unfolded l2i] p] by metis
   from Cons(7) obtain j q' where q: "q = j # q'" by (cases q) auto
   show ?case
   proof (cases "j = i") 
     case True with Cons(6,7) IH q show ?thesis
-      using parallel_pos_eq_parallel by fastforce
+      by fastforce
   next
     case False
     from Cons(6) q have j: "j < length ls" by simp 

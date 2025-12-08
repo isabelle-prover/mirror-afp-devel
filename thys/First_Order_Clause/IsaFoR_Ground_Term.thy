@@ -6,7 +6,7 @@ begin
 
 type_synonym 'f ground_term = "'f gterm"
  
-no_notation parallel_pos (infixl \<open>\<bottom>\<close> 64)
+no_notation Sublist.parallel (infixl \<open>\<bottom>\<close> 64)
 
 (* TODO: Generalize consts for abstract contexts *)
 abbreviation positions\<^sub>G where

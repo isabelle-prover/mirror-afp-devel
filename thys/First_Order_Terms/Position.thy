@@ -156,51 +156,14 @@ lemma remove_suffix_Some [simp]:
 
 lemma Nil_power [simp]: "[] ^ n = []" by (induct n) auto
 
-fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool"
-  where
-    "parallel_pos [] _ \<longleftrightarrow> False"
-  | "parallel_pos _ [] \<longleftrightarrow> False"
-  | "parallel_pos (i # p) (j # q) \<longleftrightarrow> i \<noteq> j \<or> parallel_pos p q"
-
-hide_fact parallel_pos.cases
-hide_fact parallel_pos.elims
-hide_fact parallel_pos.induct
-hide_fact parallel_pos.pelims
-
-text \<open>Use theorems for \<^const>\<open>Sublist.parallel\<close> instead.\<close>
-
 notation Sublist.parallel (infixr \<open>\<bottom>\<close> 64)
 
 lemma Nil_not_par [simp]:
   "p \<bottom> [] \<longleftrightarrow> False"
-  "parallel_pos p [] \<longleftrightarrow> False"
-  by (cases p, auto)+
-
-lemma parallel_pos_eq_parallel: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "parallel_pos = Sublist.parallel"
-proof (intro ext)
-  fix xs ys
-  show "parallel_pos xs ys \<longleftrightarrow> xs \<parallel> ys"
-  proof (induction xs ys rule: list_induct2'')
-    case (1 uu)
-    thus ?case
-      by simp
-  next
-    case (2 ys)
-    thus ?case
-      by simp
-  next
-    case (3 i p j q)
-    thus ?case
-      by fastforce
-  qed
-qed
-
-lemma parallel_pos: "p \<bottom> q = (\<not> p \<le>\<^sub>p q \<and> \<not> q \<le>\<^sub>p p)"
-  by (induct p q rule: list_induct2'') auto              
+  by (cases p) simp_all
 
 lemma par_not_refl [simp]: "p \<bottom> p \<longleftrightarrow> False"
-  by (simp add: parallel_pos)
+  by (simp add: Sublist.parallel_def)
 
 lemma parallel_remove_prefix: "p1 \<bottom> p2 \<Longrightarrow>
   \<exists> p i j q1 q2. p1 = p @ i # q1 \<and> p2 = p @ j # q2 \<and> i \<noteq> j"
@@ -211,7 +174,7 @@ lemma pos_cases: "p \<le>\<^sub>p q \<or> q <\<^sub>p p \<or> p \<bottom> q"
     (auto simp: strict_prefix_def)
 
 lemma parallel_pos_sym: "p1 \<bottom> p2 \<Longrightarrow> p2 \<bottom> p1"
-  unfolding parallel_pos by auto
+  unfolding Sublist.parallel_def by auto
 
 lemma less_pos_def': "(p <\<^sub>p q) = (\<exists> r. q = p @ r \<and> r \<noteq> [])" (is "?l = ?r")
   by (auto simp: strict_prefix_def prefix_def)
@@ -245,7 +208,7 @@ proof-
   then have dec:"(\<exists> q3. q = p @ q3 \<and> q' = q3 @ r) \<or> 
    (\<exists> p3. p = q @ p3 \<and> r = p3 @ q')" (is "?a \<or> ?b") by (rule pos_append_cases)
   then have "p \<le>\<^sub>p q \<or> q \<le>\<^sub>p p" unfolding prefix_def by blast
-  then show ?thesis unfolding parallel_pos by auto
+  then show ?thesis unfolding Sublist.parallel_def by auto
 qed
 
 lemma less_pos_power_split: "q <\<^sub>p p ^ m \<Longrightarrow> \<exists> p' k. q = p ^ k @ p' \<and> p' <\<^sub>p p \<and> k < m"
@@ -382,7 +345,7 @@ proof -
   from rq obtain q' where rq:"q = (r @ (j # q'))" unfolding prefix_def by auto
   from rp rq ij have pq:"\<not> p \<le>\<^sub>p q" by force
   from rp rq ij have "\<not> q \<le>\<^sub>p p" by force 
-  with pq show ?thesis using parallel_pos by auto
+  with pq show ?thesis using Sublist.parallel_def by auto
 qed
 
 lemma left_of_append_cases:" left_of_pos (p0 @ p1) q \<Longrightarrow> p0 <\<^sub>p q \<or> left_of_pos p0 q"
@@ -401,7 +364,9 @@ proof -
     from rp have par:"\<not> (r @ [i] \<bottom> p0)" using pos_less_eq_append_not_parallel by auto
     from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding prefix_def by auto
     from rp have "\<not> (p0 \<bottom> r)"
-      using less_eq_pos_simps(1) prefix_order.order_trans parallel_pos pos_less_eq_append_not_parallel by blast
+      by (metis less_eq_pos_simps(1)[of r "[i]"] Sublist.parallel_def
+        prefix_order.order_trans[of r "r @[i]" "p0 @ p1"]
+        pos_less_eq_append_not_parallel[of r p0 p1])
     with a have "r <\<^sub>p p0" using pos_cases by auto
     then obtain oo where p0:"p0 = r @ oo" and "[] <\<^sub>p oo" unfolding strict_prefix_def prefix_def by auto 
     have "\<not> (p0 <\<^sub>p r @ [i])" unfolding strict_prefix_def prefix_def
@@ -429,7 +394,9 @@ proof -
     from rp rq have par:"\<not> (r @ [j] \<bottom> p0)" using pos_less_eq_append_not_parallel by auto
     from aux have a:"\<not> (p0 \<le>\<^sub>p r)" unfolding prefix_def by auto
     from rq have "\<not> (p0 \<bottom> r)"
-      using less_eq_pos_simps(1) prefix_order.order_trans parallel_pos pos_less_eq_append_not_parallel by blast
+    by (metis less_eq_pos_simps(1)[of r "[j]"] Sublist.parallel_def
+        prefix_order.order_trans[of r "r @ [j]" "p0 @ p1"]
+        pos_less_eq_append_not_parallel[of r p0 p1])
     with a have "r <\<^sub>p p0" using pos_cases by auto
     then obtain oo where p0:"p0 = r @ oo" and "[] <\<^sub>p oo" unfolding strict_prefix_def prefix_def by auto 
     have "\<not> (p0 <\<^sub>p r @ [j])" unfolding strict_prefix_def prefix_def using p0 a list.exhaust[of p0]
@@ -476,7 +443,7 @@ proof
     from r2 obtain k rr where r2:"r2 = k# rr" by (cases r2, auto)
     from p' q' ij' list.inject show False unfolding r2 by simp
   qed
-  with nlt ne have "r \<bottom> r'" by (auto simp: parallel_pos)
+  with nlt ne have "r \<bottom> r'" by (auto simp: Sublist.parallel_def)
   with p q show False by (metis less_eq_pos_simps(1) pos_less_eq_append_not_parallel)
 qed
 
