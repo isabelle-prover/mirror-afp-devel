@@ -15,7 +15,7 @@
   {{- range .Params.topics -}}
     {{- $topic := page.GetPage (printf "/topics/%s" .) -}}
     {{- $topics = $topics | append $topic.Title -}}
-    {{- $topic_links = $topic_links | append $topic.RelPermalink -}}
+    {{- $topic_links = $topic_links | append (printf "..%s" $topic.RelPermalink) -}}
   {{- end -}}
 
   {{- $index = $index | append (dict
@@ -26,7 +26,7 @@
     "authors" $authors
     "topics" $topics
     "topic_links" $topic_links
-    "link" .RelPermalink)
+    "link" (printf "..%s" .RelPermalink))
   -}}
 {{- end -}}
 {{- $index | jsonify (dict "indent" " ") -}}

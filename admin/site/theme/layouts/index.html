@@ -23,7 +23,7 @@
     </p>
   {{- end }}
 
-  <form autocomplete="off" action="{{ "search" | relURL }}">
+  <form autocomplete="off" action="{{ ($search := page.GetPage "/search").RelPermalink }}">
     <div class="form-container">
       <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
              aria-label="Search the AFP" list="autocomplete">
