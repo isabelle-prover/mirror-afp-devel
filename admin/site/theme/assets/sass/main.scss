@@ -151,10 +151,20 @@ aside {
   }
 
   li {
-    padding: 0.5em 2rem;
+    padding: 0;
 
     &:hover {
+      background-color: $theme;
+    }
+
+    > a:hover {
       background-color: $theme-hover;
+    }
+
+    a {
+      padding: 0.5em 2rem;
+      display: inline-block;
+      width: 100%;
     }
   }
 
@@ -449,28 +459,6 @@ header {
 
       div {
         min-width: fit-content;
-      }
-    }
-
-    ul {
-      margin-left: 1.75rem;
-    }
-
-    li {
-      padding: 0;
-
-      &:hover {
-        background-color: $theme;
-      }
-
-      > a:hover {
-        background-color: $theme-hover;
-      }
-
-      a {
-        padding: 0.5em 0;
-        display: inline-block;
-        width: 100%;
       }
     }
   }

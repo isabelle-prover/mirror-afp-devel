@@ -11,8 +11,6 @@
                 {{ $topic.Params.name }} ({{ $topic.Params.count }})
               </a>
             </h3>
-          </li>
-          <li>
             <ul>
               {{- range $topic.Params.subtopics }}
                 {{- $topic := page.GetPage (printf "/topics/%s" .) }}
