@@ -416,11 +416,11 @@ object AFP_Site_Gen {
     ): String = {
       val path = browser_info.session_dir(session_name) + Path.basic(name.theory_base_name).html
       val params = json_encode.theory(entry, session_name, name.theory_base_name, path)
-      val url = "/sessions/" + path.implode
+      val url = "/thys/" + path.implode
 
       val  menu = Some(Hugo.Menu_Item(name.theory_base_name, num_thy + 1, menu = session_name))
       val metadata = Hugo.Metadata(title = name.theory, url = url, params = params, menu = menu)
-      hugo.write_content(Hugo.Content("sessions", Path.basic(name.theory), metadata))
+      hugo.write_content(Hugo.Content("thys", Path.basic(name.theory), metadata))
       name.theory
     }
 

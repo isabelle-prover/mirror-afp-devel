@@ -65,7 +65,7 @@
       <h3>Session {{ .name }}</h3>
       <ul>
         {{- range .theories }}
-          {{- $theory := $page.GetPage (printf "/sessions/%s" .) }}
+          {{- $theory := $page.GetPage (printf "/thys/%s" .) }}
           <li><a href="{{ $theory.RelPermalink }}">{{ $theory.Params.name | safeHTML }}</a></li>
         {{- end }}
       </ul>

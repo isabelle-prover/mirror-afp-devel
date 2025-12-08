@@ -12,7 +12,7 @@
       <a href="{{ .Site.Home.RelPermalink }}" class="logo-link">
         <img src="{{ "images/afp.png" | relURL }}" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
-      {{- if eq .Section "sessions" }}
+      {{- if eq .Section "thys" }}
         {{- with .Params.entry }}
           <ul id="return">
             <li>
@@ -23,7 +23,7 @@
         {{- end }}
       {{- end }}
       <ul>
-        {{- $menu := cond (eq .Section "sessions") (.Params.session | lower) "main" }}
+        {{- $menu := cond (eq .Section "thys") (.Params.session | lower) "main" }}
         {{- range (index .Site.Menus $menu) }}
           <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>
             <a href="{{ .URL | relURL }}">{{ .Name }}</a>
