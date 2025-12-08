@@ -60,9 +60,7 @@ lemma less_pos_simps[simp]:
   "(p @ q <\<^sub>p p) = False"
   by (auto simp add: prefix_order.less_le)
 
-lemma prefix_smaller [simp]:
-  assumes "p <\<^sub>p q" shows "size p < size q"
-  using assms by (metis prefix_length_less)
+lemmas prefix_smaller [simp] = prefix_length_less
 
 instantiation list :: (type) one
 begin
