@@ -60,12 +60,13 @@
       </ul>
     {{- end }}
 
+    {{- $page := .Page }}
     {{- range .Params.sessions }}
-      {{- $session := page.GetPage (printf "/sessions/%s" .) }}
-      <h3>Session {{ $session.Title }}</h3>
+      <h3>Session {{ .name }}</h3>
       <ul>
-        {{- range $session.Params.theories }}
-          <li><a href="{{ $session.RelPermalink }}#{{ .name }}">{{ .name }}</a></li>
+        {{- range .theories }}
+          {{- $theory := $page.GetPage (printf "/sessions/%s" .) }}
+          <li><a href="{{ $theory.RelPermalink }}">{{ $theory.Params.name | safeHTML }}</a></li>
         {{- end }}
       </ul>
     {{- end }}

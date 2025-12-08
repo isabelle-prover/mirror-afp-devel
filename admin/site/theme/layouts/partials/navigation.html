@@ -19,18 +19,17 @@
               <a href="{{ (page.GetPage (printf "entries/%s" .)).RelPermalink }}">Return to entry</a>
             </li>
           </ul>
+          <hr>
         {{- end }}
-        <hr>
-        <ul id="theory-navbar" class="list-group"></ul>
-      {{- else }}
-        <ul>
-          {{- range .Site.Menus.main }}
-            <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>
-              <a href="{{ .URL | relURL }}">{{ .Name }}</a>
-            </li>
-          {{- end }}
-        </ul>
       {{- end }}
+      <ul>
+        {{- $menu := cond (eq .Section "sessions") (.Params.session | lower) "main" }}
+        {{- range (index .Site.Menus $menu) }}
+          <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>
+            <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+          </li>
+        {{- end }}
+      </ul>
     </div>
   </nav>
 </div>

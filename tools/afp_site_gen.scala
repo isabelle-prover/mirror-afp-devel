@@ -136,7 +136,7 @@ object AFP_Site_Gen {
 
     def entry(
       entry: Entry,
-      sessions: List[String],
+      sessions: List[(String, List[String])],
       used_by: List[Entry.Name],
       deps: List[Entry.Name],
       similar: List[Entry.Name],
@@ -152,7 +152,9 @@ object AFP_Site_Gen {
         "dependencies" -> deps,
         "used_by" -> used_by,
         "similar" -> similar,
-        "sessions" -> sessions) ++
+        "sessions" -> sessions.map((name, thys) => JSON.Object(
+          "name" -> name,
+          "theories" -> thys))) ++
         JSON.optional("contributors", proper_list(affiliations(entry.contributors))) ++
         JSON.optional("releases",
           proper_list(entry.releases.sortBy(_.isabelle).reverse.map(release))) ++
@@ -193,19 +195,17 @@ object AFP_Site_Gen {
         "article_years_unique" -> stats.years.filter(_.entries.nonEmpty).flatMap(year =>
           year.rep.toString :: Library.replicate(year.entries.drop(1).length, "")))
 
-    def session(
+    def theory(
       entry: Option[Entry.Name],
-      theories: List[(String, Path)],
-      rss: Boolean
-    ): JSON.Object.T = {
+      session: String,
+      theory: String,
+      path: Path
+    ): JSON.Object.T =
       JSON.Object(
-        "theories" -> theories.map((name, path) =>
-          JSON.Object(
-            "name" -> name,
-            "path" -> path.implode)),
-        "rss" -> rss) ++
-      JSON.optional("entry", entry)
-    }
+        "name" -> theory,
+        "session" -> session,
+        "path" -> path.implode) ++
+        JSON.optional("entry", entry)
 
     def home(e: List[Metadata.Entry]): JSON.Object.T = JSON.Object("entries" -> entries(e))
   }
@@ -408,17 +408,27 @@ object AFP_Site_Gen {
         if !info.is_afp
       } yield session_name -> None
 
-    for ((session_name, entry) <- afp_sessions ::: distro_sessions) {
-      val session_dir = browser_info.session_dir(session_name)
-      val thy_paths =
-        for (thy_name <- theories_of(session_name))
-        yield thy_name -> (session_dir + Path.basic(thy_name).html)
+    def theory_page(
+      num_thy: Int,
+      entry: Option[Entry.Name],
+      session_name: String,
+      name: Document.Node.Name
+    ): String = {
+      val path = browser_info.session_dir(session_name) + Path.basic(name.theory_base_name).html
+      val params = json_encode.theory(entry, session_name, name.theory_base_name, path)
+      val url = "/sessions/" + path.implode
 
-      val params = json_encode.session(entry, thy_paths, entry.isDefined)
-      val metadata = Hugo.Metadata(title = session_name, params = params)
-
-      hugo.write_content(Hugo.Content("sessions", Path.basic(session_name), metadata))
+      val  menu = Some(Hugo.Menu_Item(name.theory_base_name, num_thy + 1, menu = session_name))
+      val metadata = Hugo.Metadata(title = name.theory, url = url, params = params, menu = menu)
+      hugo.write_content(Hugo.Content("sessions", Path.basic(name.theory), metadata))
+      name.theory
     }
+
+    val session_theories = 
+      (for {
+        (session_name, entry) <- afp_sessions ::: distro_sessions
+        (theory_node, i) <- sessions_deps(session_name).proper_session_theories.zipWithIndex
+      } yield session_name -> theory_page(i, entry, session_name, theory_node)).groupMap(_._1)(_._2)
 
 
     /* add entries and theory listings */
@@ -434,7 +444,9 @@ object AFP_Site_Gen {
 
       val keywords = get_keywords(entry.name)
       val words = keywords.flatMap(space_explode(' ', _))
-      val sessions = afp.entry_sessions(entry.name).map(_.name)
+      val sessions =
+        for (session <- afp.entry_sessions(entry.name))
+        yield (session.name, session_theories.getOrElse(session.name, Nil))
 
       val similar =
         (for {

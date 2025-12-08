@@ -377,24 +377,6 @@ header {
   grid-template-columns: 20% 80%;
   justify-content: normal;
 
-  .collapsible.collapsed {
-    display: none;
-  }
-
-  .invertible.collapsed {
-    transform: scale(1, -1);
-  }
-
-  .collapse-container.collapsed {
-    .collapsible {
-      display: none;
-    }
-
-    .invertible {
-      transform: scale(1, -1);
-    }
-  }
-
   .content {
     min-width: clamp(60ch, 50vw, 50vw);
     width: 100%;
@@ -404,22 +386,6 @@ header {
 
   pre {
     width: fit-content;
-  }
-
-  h2 {
-    @extend %sticky;
-    padding-top: 0.5rem;
-    border-bottom: 1px $light-grey solid;
-
-    svg {
-      height: 2rem;
-      width: 20px;
-      position: sticky;
-      right: 1rem;
-      float: right;
-      stroke: $dark-grey;
-      transition: transform 100ms;
-    }
   }
 
   main {
@@ -448,10 +414,6 @@ header {
       top: 0rem;
       background: #2E2D4E;
       min-width: 200px;
-    }
-
-    > div {
-      margin-right: 1rem;
     }
 
     &:hover {
