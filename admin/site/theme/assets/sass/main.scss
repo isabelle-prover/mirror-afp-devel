@@ -164,7 +164,7 @@ aside {
     a {
       padding: 0.5em 2rem;
       display: inline-block;
-      width: 100%;
+      width: calc(100% - 4rem);
     }
   }
 
