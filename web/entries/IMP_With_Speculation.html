@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A formalized programming language with speculative execution - Archive of Formal Proofs</title>
-    <meta name="description" content="A formalized programming language with speculative execution in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A formalized programming language with speculative execution in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A formalized programming language with speculative execution" />
-  <meta property="og:url" content="https://isa-afp.org/entries/IMP_With_Speculation.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A formalized programming language with speculative execution in the Archive of Formal Proofs">
+    <meta property="og:description" content="A formalized programming language with speculative execution in the Archive of Formal Proofs">
+    <meta property="og:title" content="A formalized programming language with speculative execution">
+    <meta property="og:url" content="https://isa-afp.org/entries/IMP_With_Speculation.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> formalized programming language with speculative execution
+  <h1>
+    <span class='first'>A</span> formalized programming language with speculative execution
   </h1>
   <div>
       <p><a href="../authors/wright/">Jamie Wright</a> <a class="obfuscated" data="eyJ1c2VyIjpbImp3cmlnaHQ4Il0sImhvc3QiOlsic2hlZmZpZWxkIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/popescu/">Andrei Popescu</a> <a class="obfuscated" data="eyJ1c2VyIjpbImEiLCJwb3Blc2N1Il0sImhvc3QiOlsic2hlZmZpZWxkIiwiYWMiLCJ1ayJdfQ==">📧</a>
@@ -125,28 +117,28 @@
       </ul>
       <h3>Session IMP_With_Speculation</h3>
       <ul>
-          <li><a href="../sessions/imp_with_speculation/#Language_Prelims">Language_Prelims</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Language_Syntax">Language_Syntax</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Step_Basic">Step_Basic</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Step_Normal">Step_Normal</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Step_Spec">Step_Spec</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Instance_Common">Instance_Common</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Instance_Secret_IMem">Instance_Secret_IMem</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Instance_Secret_IMem_Inp">Instance_Secret_IMem_Inp</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun1">Fun1</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun1_insecure">Fun1_insecure</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun2">Fun2</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun2_secure">Fun2_secure</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun3">Fun3</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun3_secure">Fun3_secure</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun4">Fun4</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun4_secure">Fun4_secure</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun5">Fun5</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun5_secure">Fun5_secure</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun6">Fun6</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun6_secure">Fun6_secure</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun_mask">Fun_mask</a></li>
-          <li><a href="../sessions/imp_with_speculation/#Fun_mask_secure">Fun_mask_secure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Language_Prelims.html">Language_Prelims</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Language_Syntax.html">Language_Syntax</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Step_Basic.html">Step_Basic</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Step_Normal.html">Step_Normal</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Step_Spec.html">Step_Spec</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Instance_Common.html">Instance_Common</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Instance_Secret_IMem.html">Instance_Secret_IMem</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Instance_Secret_IMem_Inp.html">Instance_Secret_IMem_Inp</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun1.html">Fun1</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun1_insecure.html">Fun1_insecure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun2.html">Fun2</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun2_secure.html">Fun2_secure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun3.html">Fun3</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun3_secure.html">Fun3_secure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun4.html">Fun4</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun4_secure.html">Fun4_secure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun5.html">Fun5</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun5_secure.html">Fun5_secure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun6.html">Fun6</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun6_secure.html">Fun6_secure</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun_mask.html">Fun_mask</a></li>
+          <li><a href="../thys/AFP/IMP_With_Speculation/Fun_mask_secure.html">Fun_mask_secure</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -200,12 +192,14 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP_With_Speculation-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-IMP_With_Speculation-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP_With_Speculation-2024-08-25.tar.gz">Aug 25, 2024
+              <a href="https://www.isa-afp.org/release/afp-IMP_With_Speculation-2024-08-25.tar.gz">
+                Aug 25, 2024
               </a>
               : Isabelle2024
             </li>

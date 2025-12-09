@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Simple Firewall - Archive of Formal Proofs</title>
-    <meta name="description" content="Simple Firewall in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Simple Firewall in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Simple Firewall" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Simple_Firewall.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Simple Firewall in the Archive of Formal Proofs">
+    <meta property="og:description" content="Simple Firewall in the Archive of Formal Proofs">
+    <meta property="og:title" content="Simple Firewall">
+    <meta property="og:url" content="https://isa-afp.org/entries/Simple_Firewall.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>S</span>imple <span class='first'>F</span>irewall
+  <h1>
+    <span class='first'>S</span>imple <span class='first'>F</span>irewall
   </h1>
   <div>
       <p><a href="../authors/diekmann/">Cornelius Diekmann</a> <a href="http://net.in.tum.de/~diekmann">🌐</a>, <a href="../authors/michaelis/">Julius Michaelis</a> <a href="http://liftm.de/">🌐</a> and <a href="../authors/haslbeck/">Max W. Haslbeck</a> <a href="http://cl-informatik.uibk.ac.at/users/mhaslbeck/">🌐</a>
@@ -133,23 +125,23 @@ Analysis</a>, IFIP Networking 2016.</div>
       </ul>
       <h3>Session Simple_Firewall</h3>
       <ul>
-          <li><a href="../sessions/simple_firewall/#Lib_Enum_toString">Lib_Enum_toString</a></li>
-          <li><a href="../sessions/simple_firewall/#L4_Protocol">L4_Protocol</a></li>
-          <li><a href="../sessions/simple_firewall/#Simple_Packet">Simple_Packet</a></li>
-          <li><a href="../sessions/simple_firewall/#Firewall_Common_Decision_State">Firewall_Common_Decision_State</a></li>
-          <li><a href="../sessions/simple_firewall/#Iface">Iface</a></li>
-          <li><a href="../sessions/simple_firewall/#SimpleFw_Syntax">SimpleFw_Syntax</a></li>
-          <li><a href="../sessions/simple_firewall/#SimpleFw_Semantics">SimpleFw_Semantics</a></li>
-          <li><a href="../sessions/simple_firewall/#List_Product_More">List_Product_More</a></li>
-          <li><a href="../sessions/simple_firewall/#Option_Helpers">Option_Helpers</a></li>
-          <li><a href="../sessions/simple_firewall/#Generic_SimpleFw">Generic_SimpleFw</a></li>
-          <li><a href="../sessions/simple_firewall/#Shadowed">Shadowed</a></li>
-          <li><a href="../sessions/simple_firewall/#IP_Partition_Preliminaries">IP_Partition_Preliminaries</a></li>
-          <li><a href="../sessions/simple_firewall/#GroupF">GroupF</a></li>
-          <li><a href="../sessions/simple_firewall/#IP_Addr_WordInterval_toString">IP_Addr_WordInterval_toString</a></li>
-          <li><a href="../sessions/simple_firewall/#Primitives_toString">Primitives_toString</a></li>
-          <li><a href="../sessions/simple_firewall/#Service_Matrix">Service_Matrix</a></li>
-          <li><a href="../sessions/simple_firewall/#SimpleFw_toString">SimpleFw_toString</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Lib_Enum_toString.html">Lib_Enum_toString</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/L4_Protocol.html">L4_Protocol</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Simple_Packet.html">Simple_Packet</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Firewall_Common_Decision_State.html">Firewall_Common_Decision_State</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Iface.html">Iface</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/SimpleFw_Syntax.html">SimpleFw_Syntax</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/SimpleFw_Semantics.html">SimpleFw_Semantics</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/List_Product_More.html">List_Product_More</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Option_Helpers.html">Option_Helpers</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Generic_SimpleFw.html">Generic_SimpleFw</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Shadowed.html">Shadowed</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/IP_Partition_Preliminaries.html">IP_Partition_Preliminaries</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/GroupF.html">GroupF</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/IP_Addr_WordInterval_toString.html">IP_Addr_WordInterval_toString</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Primitives_toString.html">Primitives_toString</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/Service_Matrix.html">Service_Matrix</a></li>
+          <li><a href="../thys/AFP/Simple_Firewall/SimpleFw_toString.html">SimpleFw_toString</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -215,62 +207,74 @@ Analysis</a>, IFIP Networking 2016.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2025-03-19.tar.gz">Mar 19, 2025
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2025-03-19.tar.gz">
+                Mar 19, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2016-08-24.tar.gz">Aug 24, 2016
+              <a href="https://www.isa-afp.org/release/afp-Simple_Firewall-2016-08-24.tar.gz">
+                Aug 24, 2016
               </a>
               : Isabelle2016
             </li>

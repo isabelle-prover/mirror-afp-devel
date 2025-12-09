@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Diophantine Equations and the DPRM Theorem - Archive of Formal Proofs</title>
-    <meta name="description" content="Diophantine Equations and the DPRM Theorem in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Diophantine Equations and the DPRM Theorem in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Diophantine Equations and the DPRM Theorem" />
-  <meta property="og:url" content="https://isa-afp.org/entries/DPRM_Theorem.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Diophantine Equations and the DPRM Theorem in the Archive of Formal Proofs">
+    <meta property="og:description" content="Diophantine Equations and the DPRM Theorem in the Archive of Formal Proofs">
+    <meta property="og:title" content="Diophantine Equations and the DPRM Theorem">
+    <meta property="og:url" content="https://isa-afp.org/entries/DPRM_Theorem.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>D</span>iophantine <span class='first'>E</span>quations and the <span class='first'>D</span><span class='first'>P</span><span class='first'>R</span><span class='first'>M</span> <span class='first'>T</span>heorem
+  <h1>
+    <span class='first'>D</span>iophantine <span class='first'>E</span>quations and the <span class='first'>D</span><span class='first'>P</span><span class='first'>R</span><span class='first'>M</span> <span class='first'>T</span>heorem
   </h1>
   <div>
       <p><a href="../authors/bayer/">Jonas Bayer</a>, <a href="../authors/david/">Marco David</a>, <a href="../authors/stock/">Benedikt Stock</a>, <a href="../authors/pal/">Abhik Pal</a>, <a href="../authors/matiyasevich/">Yuri Matiyasevich</a> and <a href="../authors/schleicher/">Dierk Schleicher</a>
@@ -128,44 +120,44 @@ Diophantine representation.</div>
       </ul>
       <h3>Session DPRM_Theorem</h3>
       <ul>
-          <li><a href="../sessions/dprm_theorem/#Parametric_Polynomials">Parametric_Polynomials</a></li>
-          <li><a href="../sessions/dprm_theorem/#Assignments">Assignments</a></li>
-          <li><a href="../sessions/dprm_theorem/#Diophantine_Relations">Diophantine_Relations</a></li>
-          <li><a href="../sessions/dprm_theorem/#Existential_Quantifier">Existential_Quantifier</a></li>
-          <li><a href="../sessions/dprm_theorem/#Modulo_Divisibility">Modulo_Divisibility</a></li>
-          <li><a href="../sessions/dprm_theorem/#Exponentiation">Exponentiation</a></li>
-          <li><a href="../sessions/dprm_theorem/#Alpha_Sequence">Alpha_Sequence</a></li>
-          <li><a href="../sessions/dprm_theorem/#Exponential_Relation">Exponential_Relation</a></li>
-          <li><a href="../sessions/dprm_theorem/#Digit_Function">Digit_Function</a></li>
-          <li><a href="../sessions/dprm_theorem/#Binomial_Coefficient">Binomial_Coefficient</a></li>
-          <li><a href="../sessions/dprm_theorem/#Binary_Orthogonal">Binary_Orthogonal</a></li>
-          <li><a href="../sessions/dprm_theorem/#Binary_Masking">Binary_Masking</a></li>
-          <li><a href="../sessions/dprm_theorem/#Binary_And">Binary_And</a></li>
-          <li><a href="../sessions/dprm_theorem/#RegisterMachineSpecification">RegisterMachineSpecification</a></li>
-          <li><a href="../sessions/dprm_theorem/#RegisterMachineProperties">RegisterMachineProperties</a></li>
-          <li><a href="../sessions/dprm_theorem/#RegisterMachineSimulation">RegisterMachineSimulation</a></li>
-          <li><a href="../sessions/dprm_theorem/#SingleStepRegister">SingleStepRegister</a></li>
-          <li><a href="../sessions/dprm_theorem/#SingleStepState">SingleStepState</a></li>
-          <li><a href="../sessions/dprm_theorem/#MultipleStepRegister">MultipleStepRegister</a></li>
-          <li><a href="../sessions/dprm_theorem/#MultipleStepState">MultipleStepState</a></li>
-          <li><a href="../sessions/dprm_theorem/#MachineMasking">MachineMasking</a></li>
-          <li><a href="../sessions/dprm_theorem/#MachineEquations">MachineEquations</a></li>
-          <li><a href="../sessions/dprm_theorem/#CommutationRelations">CommutationRelations</a></li>
-          <li><a href="../sessions/dprm_theorem/#MultipleToSingleSteps">MultipleToSingleSteps</a></li>
-          <li><a href="../sessions/dprm_theorem/#Equation_Setup">Equation_Setup</a></li>
-          <li><a href="../sessions/dprm_theorem/#Register_Machine_Sums">Register_Machine_Sums</a></li>
-          <li><a href="../sessions/dprm_theorem/#RM_Sums_Diophantine">RM_Sums_Diophantine</a></li>
-          <li><a href="../sessions/dprm_theorem/#Register_Equations">Register_Equations</a></li>
-          <li><a href="../sessions/dprm_theorem/#State_0_Equation">State_0_Equation</a></li>
-          <li><a href="../sessions/dprm_theorem/#State_d_Equation">State_d_Equation</a></li>
-          <li><a href="../sessions/dprm_theorem/#State_Unique_Equations">State_Unique_Equations</a></li>
-          <li><a href="../sessions/dprm_theorem/#All_State_Equations">All_State_Equations</a></li>
-          <li><a href="../sessions/dprm_theorem/#Mask_Equations">Mask_Equations</a></li>
-          <li><a href="../sessions/dprm_theorem/#Constants_Equations">Constants_Equations</a></li>
-          <li><a href="../sessions/dprm_theorem/#All_Equations_Invariance">All_Equations_Invariance</a></li>
-          <li><a href="../sessions/dprm_theorem/#All_Equations">All_Equations</a></li>
-          <li><a href="../sessions/dprm_theorem/#Machine_Equation_Equivalence">Machine_Equation_Equivalence</a></li>
-          <li><a href="../sessions/dprm_theorem/#DPRM">DPRM</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Parametric_Polynomials.html">Parametric_Polynomials</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Assignments.html">Assignments</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Diophantine_Relations.html">Diophantine_Relations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Existential_Quantifier.html">Existential_Quantifier</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Modulo_Divisibility.html">Modulo_Divisibility</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Exponentiation.html">Exponentiation</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Alpha_Sequence.html">Alpha_Sequence</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Exponential_Relation.html">Exponential_Relation</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Digit_Function.html">Digit_Function</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Binomial_Coefficient.html">Binomial_Coefficient</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Binary_Orthogonal.html">Binary_Orthogonal</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Binary_Masking.html">Binary_Masking</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Binary_And.html">Binary_And</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/RegisterMachineSpecification.html">RegisterMachineSpecification</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/RegisterMachineProperties.html">RegisterMachineProperties</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/RegisterMachineSimulation.html">RegisterMachineSimulation</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/SingleStepRegister.html">SingleStepRegister</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/SingleStepState.html">SingleStepState</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/MultipleStepRegister.html">MultipleStepRegister</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/MultipleStepState.html">MultipleStepState</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/MachineMasking.html">MachineMasking</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/MachineEquations.html">MachineEquations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/CommutationRelations.html">CommutationRelations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/MultipleToSingleSteps.html">MultipleToSingleSteps</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Equation_Setup.html">Equation_Setup</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Register_Machine_Sums.html">Register_Machine_Sums</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/RM_Sums_Diophantine.html">RM_Sums_Diophantine</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Register_Equations.html">Register_Equations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/State_0_Equation.html">State_0_Equation</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/State_d_Equation.html">State_d_Equation</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/State_Unique_Equations.html">State_Unique_Equations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/All_State_Equations.html">All_State_Equations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Mask_Equations.html">Mask_Equations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Constants_Equations.html">Constants_Equations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/All_Equations_Invariance.html">All_Equations_Invariance</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/All_Equations.html">All_Equations</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/Machine_Equation_Equivalence.html">Machine_Equation_Equivalence</a></li>
+          <li><a href="../thys/AFP/DPRM_Theorem/DPRM.html">DPRM</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -220,27 +212,32 @@ Diophantine representation.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2022-06-07.tar.gz">Jun 7, 2022
+              <a href="https://www.isa-afp.org/release/afp-DPRM_Theorem-2022-06-07.tar.gz">
+                Jun 7, 2022
               </a>
               : Isabelle2021-1
             </li>

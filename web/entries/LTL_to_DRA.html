@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata - Archive of Formal Proofs</title>
-    <meta name="description" content="Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata" />
-  <meta property="og:url" content="https://isa-afp.org/entries/LTL_to_DRA.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata in the Archive of Formal Proofs">
+    <meta property="og:description" content="Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata in the Archive of Formal Proofs">
+    <meta property="og:title" content="Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata">
+    <meta property="og:url" content="https://isa-afp.org/entries/LTL_to_DRA.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>C</span>onverting <span class='first'>L</span>inear <span class='first'>T</span>emporal <span class='first'>L</span>ogic to <span class='first'>D</span>eterministic (<span class='first'>G</span>eneralized) <span class='first'>R</span>abin <span class='first'>A</span>utomata
+  <h1>
+    <span class='first'>C</span>onverting <span class='first'>L</span>inear <span class='first'>T</span>emporal <span class='first'>L</span>ogic to <span class='first'>D</span>eterministic (<span class='first'>G</span>eneralized) <span class='first'>R</span>abin <span class='first'>A</span>utomata
   </h1>
   <div>
       <p><a href="../authors/sickert/">Salomon Sickert</a> <a class="obfuscated" data="eyJ1c2VyIjpbInMiLCJzaWNrZXJ0Il0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
@@ -126,26 +118,26 @@
       </ul>
       <h3>Session LTL_to_DRA</h3>
       <ul>
-          <li><a href="../sessions/ltl_to_dra/#Preliminaries2">Preliminaries2</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Map2">Map2</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Mapping2">Mapping2</a></li>
-          <li><a href="../sessions/ltl_to_dra/#DTS">DTS</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Semi_Mojmir">Semi_Mojmir</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Mojmir">Mojmir</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Rabin">Rabin</a></li>
-          <li><a href="../sessions/ltl_to_dra/#List2">List2</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Mojmir_Rabin">Mojmir_Rabin</a></li>
-          <li><a href="../sessions/ltl_to_dra/#LTL_FGXU">LTL_FGXU</a></li>
-          <li><a href="../sessions/ltl_to_dra/#af">af</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Logical_Characterization">Logical_Characterization</a></li>
-          <li><a href="../sessions/ltl_to_dra/#LTL_Rabin">LTL_Rabin</a></li>
-          <li><a href="../sessions/ltl_to_dra/#LTL_Rabin_Unfold_Opt">LTL_Rabin_Unfold_Opt</a></li>
-          <li><a href="../sessions/ltl_to_dra/#LTL_Compat">LTL_Compat</a></li>
-          <li><a href="../sessions/ltl_to_dra/#LTL_Impl">LTL_Impl</a></li>
-          <li><a href="../sessions/ltl_to_dra/#af_Impl">af_Impl</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Mojmir_Rabin_Impl">Mojmir_Rabin_Impl</a></li>
-          <li><a href="../sessions/ltl_to_dra/#LTL_Rabin_Impl">LTL_Rabin_Impl</a></li>
-          <li><a href="../sessions/ltl_to_dra/#Export_Code">Export_Code</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Preliminaries2.html">Preliminaries2</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Map2.html">Map2</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Mapping2.html">Mapping2</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/DTS.html">DTS</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Semi_Mojmir.html">Semi_Mojmir</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Mojmir.html">Mojmir</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Rabin.html">Rabin</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/List2.html">List2</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Mojmir_Rabin.html">Mojmir_Rabin</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/LTL_FGXU.html">LTL_FGXU</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/af.html">af</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Logical_Characterization.html">Logical_Characterization</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/LTL_Rabin.html">LTL_Rabin</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/LTL_Rabin_Unfold_Opt.html">LTL_Rabin_Unfold_Opt</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/LTL_Compat.html">LTL_Compat</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/LTL_Impl.html">LTL_Impl</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/af_Impl.html">af_Impl</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Mojmir_Rabin_Impl.html">Mojmir_Rabin_Impl</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/LTL_Rabin_Impl.html">LTL_Rabin_Impl</a></li>
+          <li><a href="../thys/AFP/LTL_to_DRA/Export_Code.html">Export_Code</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -202,67 +194,80 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2015-09-04.tar.gz">Sep 4, 2015
+              <a href="https://www.isa-afp.org/release/afp-LTL_to_DRA-2015-09-04.tar.gz">
+                Sep 4, 2015
               </a>
               : Isabelle2015
             </li>

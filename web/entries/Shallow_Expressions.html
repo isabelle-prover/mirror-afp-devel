@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Shallow Expressions - Archive of Formal Proofs</title>
-    <meta name="description" content="Shallow Expressions in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Shallow Expressions in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Shallow Expressions" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Shallow_Expressions.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Shallow Expressions in the Archive of Formal Proofs">
+    <meta property="og:description" content="Shallow Expressions in the Archive of Formal Proofs">
+    <meta property="og:title" content="Shallow Expressions">
+    <meta property="og:url" content="https://isa-afp.org/entries/Shallow_Expressions.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>S</span>hallow <span class='first'>E</span>xpressions
+  <h1>
+    <span class='first'>S</span>hallow <span class='first'>E</span>xpressions
   </h1>
   <div>
       <p><a href="../authors/fosters/">Simon Foster</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwiZm9zdGVyIl0sImhvc3QiOlsieW9yayIsImFjIiwidWsiXX0=">📧</a>
@@ -127,19 +119,19 @@
       </ul>
       <h3>Session Shallow_Expressions</h3>
       <ul>
-          <li><a href="../sessions/shallow_expressions/#Variables">Variables</a></li>
-          <li><a href="../sessions/shallow_expressions/#Expressions">Expressions</a></li>
-          <li><a href="../sessions/shallow_expressions/#Unrestriction">Unrestriction</a></li>
-          <li><a href="../sessions/shallow_expressions/#Substitutions">Substitutions</a></li>
-          <li><a href="../sessions/shallow_expressions/#Extension">Extension</a></li>
-          <li><a href="../sessions/shallow_expressions/#Liberation">Liberation</a></li>
-          <li><a href="../sessions/shallow_expressions/#Quantifiers">Quantifiers</a></li>
-          <li><a href="../sessions/shallow_expressions/#Collections">Collections</a></li>
-          <li><a href="../sessions/shallow_expressions/#Named_Expressions">Named_Expressions</a></li>
-          <li><a href="../sessions/shallow_expressions/#Local_State">Local_State</a></li>
-          <li><a href="../sessions/shallow_expressions/#Shallow_Expressions">Shallow_Expressions</a></li>
-          <li><a href="../sessions/shallow_expressions/#Expressions_Tests">Expressions_Tests</a></li>
-          <li><a href="../sessions/shallow_expressions/#Shallow_Expressions_Examples">Shallow_Expressions_Examples</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Variables.html">Variables</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Expressions.html">Expressions</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Unrestriction.html">Unrestriction</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Substitutions.html">Substitutions</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Extension.html">Extension</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Liberation.html">Liberation</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Quantifiers.html">Quantifiers</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Collections.html">Collections</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Named_Expressions.html">Named_Expressions</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Local_State.html">Local_State</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Shallow_Expressions.html">Shallow_Expressions</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Expressions_Tests.html">Expressions_Tests</a></li>
+          <li><a href="../thys/AFP/Shallow_Expressions/Shallow_Expressions_Examples.html">Shallow_Expressions_Examples</a></li>
       </ul>
 
     <div class="flex-wrap">

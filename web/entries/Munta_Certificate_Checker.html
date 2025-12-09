@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Muntac: A Verified Certificate Checker for Timed Automata - Archive of Formal Proofs</title>
-    <meta name="description" content="Muntac: A Verified Certificate Checker for Timed Automata in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Muntac: A Verified Certificate Checker for Timed Automata in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Muntac: A Verified Certificate Checker for Timed Automata" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Munta_Certificate_Checker.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Muntac: A Verified Certificate Checker for Timed Automata in the Archive of Formal Proofs">
+    <meta property="og:description" content="Muntac: A Verified Certificate Checker for Timed Automata in the Archive of Formal Proofs">
+    <meta property="og:title" content="Muntac: A Verified Certificate Checker for Timed Automata">
+    <meta property="og:url" content="https://isa-afp.org/entries/Munta_Certificate_Checker.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>M</span>untac: <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>C</span>ertificate <span class='first'>C</span>hecker for <span class='first'>T</span>imed <span class='first'>A</span>utomata
+  <h1>
+    <span class='first'>M</span>untac: <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>C</span>ertificate <span class='first'>C</span>hecker for <span class='first'>T</span>imed <span class='first'>A</span>utomata
   </h1>
   <div>
       <p><a href="../authors/wimmer/">Simon Wimmer</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwid2ltbWVyIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
@@ -133,25 +125,25 @@ This entry supersedes earlier versions of Muntac hosted on GitHub.</div>
       </ul>
       <h3>Session Munta_Certificate_Checker</h3>
       <ul>
-          <li><a href="../sessions/munta_certificate_checker/#More_Graph_Theory">More_Graph_Theory</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Graph_Library_Adaptor">Graph_Library_Adaptor</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Lasso_Freeness_Certificates_Complete">Lasso_Freeness_Certificates_Complete</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Simulation_Graphs_Certification">Simulation_Graphs_Certification</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Unreachability_Misc">Unreachability_Misc</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Unreachability_Certification">Unreachability_Certification</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Unreachability_Certification2">Unreachability_Certification2</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Simulation_Graphs2">Simulation_Graphs2</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#TA_Simulation">TA_Simulation</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Normalized_Zone_Semantics_Certification">Normalized_Zone_Semantics_Certification</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Normalized_Zone_Semantics_Certification_Impl">Normalized_Zone_Semantics_Certification_Impl</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Normalized_Zone_Semantics_Certification_Impl2">Normalized_Zone_Semantics_Certification_Impl2</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Extract_Certificate">Extract_Certificate</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Simple_Network_Language_Certificate">Simple_Network_Language_Certificate</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Simple_Network_Language_Certificate_Checking">Simple_Network_Language_Certificate_Checking</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Simple_Network_Language_Certificate_Code">Simple_Network_Language_Certificate_Code</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Munta_Certificate_Testing">Munta_Certificate_Testing</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Munta_Certificate_Compile_MLton">Munta_Certificate_Compile_MLton</a></li>
-          <li><a href="../sessions/munta_certificate_checker/#Munta_Certificate_Compile_Poly">Munta_Certificate_Compile_Poly</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/More_Graph_Theory.html">More_Graph_Theory</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Graph_Library_Adaptor.html">Graph_Library_Adaptor</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Lasso_Freeness_Certificates_Complete.html">Lasso_Freeness_Certificates_Complete</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Simulation_Graphs_Certification.html">Simulation_Graphs_Certification</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Unreachability_Misc.html">Unreachability_Misc</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Unreachability_Certification.html">Unreachability_Certification</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Unreachability_Certification2.html">Unreachability_Certification2</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Simulation_Graphs2.html">Simulation_Graphs2</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/TA_Simulation.html">TA_Simulation</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Normalized_Zone_Semantics_Certification.html">Normalized_Zone_Semantics_Certification</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Normalized_Zone_Semantics_Certification_Impl.html">Normalized_Zone_Semantics_Certification_Impl</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Normalized_Zone_Semantics_Certification_Impl2.html">Normalized_Zone_Semantics_Certification_Impl2</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Extract_Certificate.html">Extract_Certificate</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Simple_Network_Language_Certificate.html">Simple_Network_Language_Certificate</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Simple_Network_Language_Certificate_Checking.html">Simple_Network_Language_Certificate_Checking</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Simple_Network_Language_Certificate_Code.html">Simple_Network_Language_Certificate_Code</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Munta_Certificate_Testing.html">Munta_Certificate_Testing</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Munta_Certificate_Compile_MLton.html">Munta_Certificate_Compile_MLton</a></li>
+          <li><a href="../thys/AFP/Munta_Certificate_Checker/Munta_Certificate_Compile_Poly.html">Munta_Certificate_Compile_Poly</a></li>
       </ul>
 
     <div class="flex-wrap">

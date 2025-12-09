@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid - Archive of Formal Proofs</title>
-    <meta name="description" content="Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid" />
-  <meta property="og:url" content="https://isa-afp.org/entries/IsaGeoCoq.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid in the Archive of Formal Proofs">
+    <meta property="og:description" content="Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid in the Archive of Formal Proofs">
+    <meta property="og:title" content="Tarski&#39;s Parallel Postulate implies the 5th Postulate of Euclid, the Postulate of Playfair and the original Parallel Postulate of Euclid">
+    <meta property="og:url" content="https://isa-afp.org/entries/IsaGeoCoq.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>arski's <span class='first'>P</span>arallel <span class='first'>P</span>ostulate implies the 5th <span class='first'>P</span>ostulate of <span class='first'>E</span>uclid, the <span class='first'>P</span>ostulate of <span class='first'>P</span>layfair and the original <span class='first'>P</span>arallel <span class='first'>P</span>ostulate of <span class='first'>E</span>uclid
+  <h1>
+    <span class='first'>T</span>arski's <span class='first'>P</span>arallel <span class='first'>P</span>ostulate implies the 5th <span class='first'>P</span>ostulate of <span class='first'>E</span>uclid, the <span class='first'>P</span>ostulate of <span class='first'>P</span>layfair and the original <span class='first'>P</span>arallel <span class='first'>P</span>ostulate of <span class='first'>E</span>uclid
   </h1>
   <div>
       <p><a href="../authors/coghetto/">Roland Coghetto</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJvbGFuZCIsImNvZ2hldHRvIl0sImhvc3QiOlsiY2Fmci1tc2EycCIsImJlIl19">📧</a>
@@ -217,7 +209,7 @@ CREATE: Tarski_Neutral_Archimedes_Continuity.thy
 New Definitions (with arity left,right): Tarski_Neutral_Archimedes_Coninuity.thy
 --------------------------------------------------------------------------------
 WARNING: Signature: AlphaTmp(0,2) but "'p => 'p => 'p =>bool", etc.
-WARNING: Space: GeoCoq: Tm and Tm2 <---> IsaGeoCoq Tm2 = Tm.
+WARNING: Space: GeoCoq: Tm and Tm2 &lt;---&gt; IsaGeoCoq Tm2 = Tm.
 
 AlphaTmp(0,2) BetaTmp(0,2) NestedBis(0,2) CantorVariant(0,0)
 inj(0,1) pres_bet(0,1) extension(0,1) inj_line(0,3)
@@ -509,7 +501,7 @@ Add some postulate-definition to Tarski_postulate_Paralles.thy, (forgot 2025-04-
 
 New Definitions (with arity left,right): Tarski_Neutral_Archimedes.thy
 ----------------------------------------------------------------------
-WARNING: GeoCoq: Grad A B C :: IsaGeoCoq: Grad A B C <--> GradI A B C
+WARNING: GeoCoq: Grad A B C :: IsaGeoCoq: Grad A B C &lt;--&gt; GradI A B C
          Grad 'GeoCoq' === GradI 'IsaGeoCoq'
 
 greenberg_s_axiom[GreenBergsAxiom](0,0)
@@ -611,47 +603,47 @@ theories/Main/Meta_theory/Parallel_postulates/tarski_playfair.v
       </ul>
       <h3>Session IsaGeoCoq</h3>
       <ul>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral">Tarski_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Archimedes">Tarski_Neutral_Archimedes</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Postulate_Parallels">Tarski_Postulate_Parallels</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Continuity">Tarski_Neutral_Continuity</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Continuous">Tarski_Neutral_Continuous</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Archimedes_Continuity">Tarski_Neutral_Archimedes_Continuity</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Neutral">Hilbert_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Hilbert">Tarski_Neutral_Hilbert</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_2D">Tarski_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Continuity_2D">Tarski_Neutral_Continuity_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_3D">Tarski_Neutral_3D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_3D_Hilbert">Tarski_Neutral_3D_Hilbert</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Euclidean">Tarski_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_2D">Tarski_Euclidean_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_2D_Continuous">Tarski_Euclidean_2D_Continuous</a></li>
-          <li><a href="../sessions/isageocoq/#Highschool_Neutral">Highschool_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Highschool_Euclidean">Highschool_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Highschool_Euclidean_2D">Highschool_Euclidean_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Non_Euclidean">Tarski_Non_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Non_Euclidean_Aristotle">Tarski_Non_Euclidean_Aristotle</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Non_Euclidean_Archimedean">Tarski_Non_Euclidean_Archimedean</a></li>
-          <li><a href="../sessions/isageocoq/#Gupta_Neutral">Gupta_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Gupta_Neutral_2D">Gupta_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Gupta_Euclidean">Gupta_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_2D">Hilbert_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_3D">Hilbert_Neutral_3D</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Euclidean">Hilbert_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Model_Gupta_Neutral">Tarski_Neutral_Model_Gupta_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_2D_Model_Gupta_Neutral_2D">Tarski_Neutral_2D_Model_Gupta_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_Model_Gupta_Euclidean">Tarski_Euclidean_Model_Gupta_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Gupta_Neutral_Model_Tarski_Neutral">Gupta_Neutral_Model_Tarski_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Gupta_Neutral_2D_Model_Tarski_Neutral_2D">Gupta_Neutral_2D_Model_Tarski_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Gupta_Euclidean_Model_Tarski_Euclidean">Gupta_Euclidean_Model_Tarski_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_Model_Tarski_Neutral">Hilbert_Neutral_Model_Tarski_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_2D_Model_Tarski_Neutral_2D">Hilbert_Neutral_2D_Model_Tarski_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Neutral_3D_Model_Tarski_Neutral_3D">Hilbert_Neutral_3D_Model_Tarski_Neutral_3D</a></li>
-          <li><a href="../sessions/isageocoq/#Hilbert_Euclidean_Model_Tarski_Euclidean">Hilbert_Euclidean_Model_Tarski_Euclidean</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_Model_Hilbert_Neutral">Tarski_Neutral_Model_Hilbert_Neutral</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_2D_Model_Hilbert_Neutral_2D">Tarski_Neutral_2D_Model_Hilbert_Neutral_2D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Neutral_3D_Model_Hilbert_Neutral_3D">Tarski_Neutral_3D_Model_Hilbert_Neutral_3D</a></li>
-          <li><a href="../sessions/isageocoq/#Tarski_Euclidean_Model_Hilbert_Euclidean">Tarski_Euclidean_Model_Hilbert_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral.html">Tarski_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Archimedes.html">Tarski_Neutral_Archimedes</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Postulate_Parallels.html">Tarski_Postulate_Parallels</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Continuity.html">Tarski_Neutral_Continuity</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Continuous.html">Tarski_Neutral_Continuous</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Archimedes_Continuity.html">Tarski_Neutral_Archimedes_Continuity</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Neutral.html">Hilbert_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Hilbert.html">Tarski_Neutral_Hilbert</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_2D.html">Tarski_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Continuity_2D.html">Tarski_Neutral_Continuity_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_3D.html">Tarski_Neutral_3D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_3D_Hilbert.html">Tarski_Neutral_3D_Hilbert</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Euclidean.html">Tarski_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Euclidean_2D.html">Tarski_Euclidean_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Euclidean_2D_Continuous.html">Tarski_Euclidean_2D_Continuous</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Highschool_Neutral.html">Highschool_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Highschool_Euclidean.html">Highschool_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Highschool_Euclidean_2D.html">Highschool_Euclidean_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Non_Euclidean.html">Tarski_Non_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Non_Euclidean_Aristotle.html">Tarski_Non_Euclidean_Aristotle</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Non_Euclidean_Archimedean.html">Tarski_Non_Euclidean_Archimedean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Gupta_Neutral.html">Gupta_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Gupta_Neutral_2D.html">Gupta_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Gupta_Euclidean.html">Gupta_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Neutral_2D.html">Hilbert_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Neutral_3D.html">Hilbert_Neutral_3D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Euclidean.html">Hilbert_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Model_Gupta_Neutral.html">Tarski_Neutral_Model_Gupta_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_2D_Model_Gupta_Neutral_2D.html">Tarski_Neutral_2D_Model_Gupta_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Euclidean_Model_Gupta_Euclidean.html">Tarski_Euclidean_Model_Gupta_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Gupta_Neutral_Model_Tarski_Neutral.html">Gupta_Neutral_Model_Tarski_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Gupta_Neutral_2D_Model_Tarski_Neutral_2D.html">Gupta_Neutral_2D_Model_Tarski_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Gupta_Euclidean_Model_Tarski_Euclidean.html">Gupta_Euclidean_Model_Tarski_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Neutral_Model_Tarski_Neutral.html">Hilbert_Neutral_Model_Tarski_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Neutral_2D_Model_Tarski_Neutral_2D.html">Hilbert_Neutral_2D_Model_Tarski_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Neutral_3D_Model_Tarski_Neutral_3D.html">Hilbert_Neutral_3D_Model_Tarski_Neutral_3D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Hilbert_Euclidean_Model_Tarski_Euclidean.html">Hilbert_Euclidean_Model_Tarski_Euclidean</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_Model_Hilbert_Neutral.html">Tarski_Neutral_Model_Hilbert_Neutral</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_2D_Model_Hilbert_Neutral_2D.html">Tarski_Neutral_2D_Model_Hilbert_Neutral_2D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Neutral_3D_Model_Hilbert_Neutral_3D.html">Tarski_Neutral_3D_Model_Hilbert_Neutral_3D</a></li>
+          <li><a href="../thys/AFP/IsaGeoCoq/Tarski_Euclidean_Model_Hilbert_Euclidean.html">Tarski_Euclidean_Model_Hilbert_Euclidean</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -699,37 +691,44 @@ theories/Main/Meta_theory/Parallel_postulates/tarski_playfair.v
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2021-02-01.tar.gz">Feb 1, 2021
+              <a href="https://www.isa-afp.org/release/afp-IsaGeoCoq-2021-02-01.tar.gz">
+                Feb 1, 2021
               </a>
               : Isabelle2020
             </li>

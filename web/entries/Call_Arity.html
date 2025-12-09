@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Safety of Call Arity - Archive of Formal Proofs</title>
-    <meta name="description" content="The Safety of Call Arity in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Safety of Call Arity in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Safety of Call Arity" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Call_Arity.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Safety of Call Arity in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Safety of Call Arity in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Safety of Call Arity">
+    <meta property="og:url" content="https://isa-afp.org/entries/Call_Arity.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>S</span>afety of <span class='first'>C</span>all <span class='first'>A</span>rity
+  <h1>
+    <span class='first'>T</span>he <span class='first'>S</span>afety of <span class='first'>C</span>all <span class='first'>A</span>rity
   </h1>
   <div>
       <p><a href="../authors/breitner/">Joachim Breitner</a> <a href="http://pp.ipd.kit.edu/~breitner">🌐</a>
@@ -141,64 +133,64 @@ was added.</dd>
       </ul>
       <h3>Session Call_Arity</h3>
       <ul>
-          <li><a href="../sessions/call_arity/#BalancedTraces">BalancedTraces</a></li>
-          <li><a href="../sessions/call_arity/#SestoftConf">SestoftConf</a></li>
-          <li><a href="../sessions/call_arity/#Sestoft">Sestoft</a></li>
-          <li><a href="../sessions/call_arity/#SestoftCorrect">SestoftCorrect</a></li>
-          <li><a href="../sessions/call_arity/#Arity">Arity</a></li>
-          <li><a href="../sessions/call_arity/#AEnv">AEnv</a></li>
-          <li><a href="../sessions/call_arity/#Arity-Nominal">Arity-Nominal</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisSig">ArityAnalysisSig</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisAbinds">ArityAnalysisAbinds</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisSpec">ArityAnalysisSpec</a></li>
-          <li><a href="../sessions/call_arity/#TrivialArityAnal">TrivialArityAnal</a></li>
-          <li><a href="../sessions/call_arity/#Cardinality-Domain">Cardinality-Domain</a></li>
-          <li><a href="../sessions/call_arity/#CardinalityAnalysisSig">CardinalityAnalysisSig</a></li>
-          <li><a href="../sessions/call_arity/#ConstOn">ConstOn</a></li>
-          <li><a href="../sessions/call_arity/#CardinalityAnalysisSpec">CardinalityAnalysisSpec</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisStack">ArityAnalysisStack</a></li>
-          <li><a href="../sessions/call_arity/#NoCardinalityAnalysis">NoCardinalityAnalysis</a></li>
-          <li><a href="../sessions/call_arity/#TransformTools">TransformTools</a></li>
-          <li><a href="../sessions/call_arity/#AbstractTransform">AbstractTransform</a></li>
-          <li><a href="../sessions/call_arity/#EtaExpansion">EtaExpansion</a></li>
-          <li><a href="../sessions/call_arity/#EtaExpansionSafe">EtaExpansionSafe</a></li>
-          <li><a href="../sessions/call_arity/#ArityStack">ArityStack</a></li>
-          <li><a href="../sessions/call_arity/#ArityEtaExpansion">ArityEtaExpansion</a></li>
-          <li><a href="../sessions/call_arity/#ArityEtaExpansionSafe">ArityEtaExpansionSafe</a></li>
-          <li><a href="../sessions/call_arity/#ArityTransform">ArityTransform</a></li>
-          <li><a href="../sessions/call_arity/#ArityConsistent">ArityConsistent</a></li>
-          <li><a href="../sessions/call_arity/#ArityTransformSafe">ArityTransformSafe</a></li>
-          <li><a href="../sessions/call_arity/#Set-Cpo">Set-Cpo</a></li>
-          <li><a href="../sessions/call_arity/#Env-Set-Cpo">Env-Set-Cpo</a></li>
-          <li><a href="../sessions/call_arity/#CoCallGraph">CoCallGraph</a></li>
-          <li><a href="../sessions/call_arity/#CoCallAnalysisSig">CoCallAnalysisSig</a></li>
-          <li><a href="../sessions/call_arity/#AList-Utils-HOLCF">AList-Utils-HOLCF</a></li>
-          <li><a href="../sessions/call_arity/#CoCallGraph-Nominal">CoCallGraph-Nominal</a></li>
-          <li><a href="../sessions/call_arity/#CoCallAnalysisBinds">CoCallAnalysisBinds</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisFix">ArityAnalysisFix</a></li>
-          <li><a href="../sessions/call_arity/#CoCallFix">CoCallFix</a></li>
-          <li><a href="../sessions/call_arity/#CoCallAnalysisImpl">CoCallAnalysisImpl</a></li>
-          <li><a href="../sessions/call_arity/#CallArityEnd2End">CallArityEnd2End</a></li>
-          <li><a href="../sessions/call_arity/#SestoftGC">SestoftGC</a></li>
-          <li><a href="../sessions/call_arity/#CardArityTransformSafe">CardArityTransformSafe</a></li>
-          <li><a href="../sessions/call_arity/#CoCallAritySig">CoCallAritySig</a></li>
-          <li><a href="../sessions/call_arity/#CoCallAnalysisSpec">CoCallAnalysisSpec</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisFixProps">ArityAnalysisFixProps</a></li>
-          <li><a href="../sessions/call_arity/#CoCallImplSafe">CoCallImplSafe</a></li>
-          <li><a href="../sessions/call_arity/#List-Interleavings">List-Interleavings</a></li>
-          <li><a href="../sessions/call_arity/#TTree">TTree</a></li>
-          <li><a href="../sessions/call_arity/#TTree-HOLCF">TTree-HOLCF</a></li>
-          <li><a href="../sessions/call_arity/#AnalBinds">AnalBinds</a></li>
-          <li><a href="../sessions/call_arity/#TTreeAnalysisSig">TTreeAnalysisSig</a></li>
-          <li><a href="../sessions/call_arity/#CoCallGraph-TTree">CoCallGraph-TTree</a></li>
-          <li><a href="../sessions/call_arity/#CoCallImplTTree">CoCallImplTTree</a></li>
-          <li><a href="../sessions/call_arity/#Cardinality-Domain-Lists">Cardinality-Domain-Lists</a></li>
-          <li><a href="../sessions/call_arity/#TTreeAnalysisSpec">TTreeAnalysisSpec</a></li>
-          <li><a href="../sessions/call_arity/#CoCallImplTTreeSafe">CoCallImplTTreeSafe</a></li>
-          <li><a href="../sessions/call_arity/#TTreeImplCardinality">TTreeImplCardinality</a></li>
-          <li><a href="../sessions/call_arity/#TTreeImplCardinalitySafe">TTreeImplCardinalitySafe</a></li>
-          <li><a href="../sessions/call_arity/#CallArityEnd2EndSafe">CallArityEnd2EndSafe</a></li>
-          <li><a href="../sessions/call_arity/#ArityAnalysisCorrDenotational">ArityAnalysisCorrDenotational</a></li>
+          <li><a href="../thys/AFP/Call_Arity/BalancedTraces.html">BalancedTraces</a></li>
+          <li><a href="../thys/AFP/Call_Arity/SestoftConf.html">SestoftConf</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Sestoft.html">Sestoft</a></li>
+          <li><a href="../thys/AFP/Call_Arity/SestoftCorrect.html">SestoftCorrect</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Arity.html">Arity</a></li>
+          <li><a href="../thys/AFP/Call_Arity/AEnv.html">AEnv</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Arity-Nominal.html">Arity-Nominal</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisSig.html">ArityAnalysisSig</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisAbinds.html">ArityAnalysisAbinds</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisSpec.html">ArityAnalysisSpec</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TrivialArityAnal.html">TrivialArityAnal</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Cardinality-Domain.html">Cardinality-Domain</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CardinalityAnalysisSig.html">CardinalityAnalysisSig</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ConstOn.html">ConstOn</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CardinalityAnalysisSpec.html">CardinalityAnalysisSpec</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisStack.html">ArityAnalysisStack</a></li>
+          <li><a href="../thys/AFP/Call_Arity/NoCardinalityAnalysis.html">NoCardinalityAnalysis</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TransformTools.html">TransformTools</a></li>
+          <li><a href="../thys/AFP/Call_Arity/AbstractTransform.html">AbstractTransform</a></li>
+          <li><a href="../thys/AFP/Call_Arity/EtaExpansion.html">EtaExpansion</a></li>
+          <li><a href="../thys/AFP/Call_Arity/EtaExpansionSafe.html">EtaExpansionSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityStack.html">ArityStack</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityEtaExpansion.html">ArityEtaExpansion</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityEtaExpansionSafe.html">ArityEtaExpansionSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityTransform.html">ArityTransform</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityConsistent.html">ArityConsistent</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityTransformSafe.html">ArityTransformSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Set-Cpo.html">Set-Cpo</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Env-Set-Cpo.html">Env-Set-Cpo</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallGraph.html">CoCallGraph</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallAnalysisSig.html">CoCallAnalysisSig</a></li>
+          <li><a href="../thys/AFP/Call_Arity/AList-Utils-HOLCF.html">AList-Utils-HOLCF</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallGraph-Nominal.html">CoCallGraph-Nominal</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallAnalysisBinds.html">CoCallAnalysisBinds</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisFix.html">ArityAnalysisFix</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallFix.html">CoCallFix</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallAnalysisImpl.html">CoCallAnalysisImpl</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CallArityEnd2End.html">CallArityEnd2End</a></li>
+          <li><a href="../thys/AFP/Call_Arity/SestoftGC.html">SestoftGC</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CardArityTransformSafe.html">CardArityTransformSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallAritySig.html">CoCallAritySig</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallAnalysisSpec.html">CoCallAnalysisSpec</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisFixProps.html">ArityAnalysisFixProps</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallImplSafe.html">CoCallImplSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/List-Interleavings.html">List-Interleavings</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TTree.html">TTree</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TTree-HOLCF.html">TTree-HOLCF</a></li>
+          <li><a href="../thys/AFP/Call_Arity/AnalBinds.html">AnalBinds</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TTreeAnalysisSig.html">TTreeAnalysisSig</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallGraph-TTree.html">CoCallGraph-TTree</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallImplTTree.html">CoCallImplTTree</a></li>
+          <li><a href="../thys/AFP/Call_Arity/Cardinality-Domain-Lists.html">Cardinality-Domain-Lists</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TTreeAnalysisSpec.html">TTreeAnalysisSpec</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CoCallImplTTreeSafe.html">CoCallImplTTreeSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TTreeImplCardinality.html">TTreeImplCardinality</a></li>
+          <li><a href="../thys/AFP/Call_Arity/TTreeImplCardinalitySafe.html">TTreeImplCardinalitySafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/CallArityEnd2EndSafe.html">CallArityEnd2EndSafe</a></li>
+          <li><a href="../thys/AFP/Call_Arity/ArityAnalysisCorrDenotational.html">ArityAnalysisCorrDenotational</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -252,82 +244,98 @@ was added.</dd>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-05-11.tar.gz">May 11, 2015
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-05-11.tar.gz">
+                May 11, 2015
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-02-21.tar.gz">Feb 21, 2015
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-02-21.tar.gz">
+                Feb 21, 2015
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-02-20.tar.gz">Feb 20, 2015
+              <a href="https://www.isa-afp.org/release/afp-Call_Arity-2015-02-20.tar.gz">
+                Feb 20, 2015
               </a>
               : Isabelle2014
             </li>

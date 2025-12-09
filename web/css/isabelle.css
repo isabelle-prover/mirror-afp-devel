@@ -1,15 +1,82 @@
 /* Isabelle fonts */
 
 @font-face {
-  font-family: 'Isabelle DejaVu Sans Mono';
-  src: url('/font/IsabelleDejaVuSansMono.ttf') format('truetype');
+  font-family: 'Isabelle DejaVu Sans';
+  src: url('/fonts/IsabelleDejaVuSans.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Sans';
+  src: url('/fonts/IsabelleDejaVuSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Sans';
+  src: url('/fonts/IsabelleDejaVuSans-Oblique.ttf') format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Sans';
+  src: url('/fonts/IsabelleDejaVuSans-BoldOblique.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
 }
 
 @font-face {
   font-family: 'Isabelle DejaVu Sans Mono';
-  src: url('/font/IsabelleDejaVuSansMono-Bold.ttf') format('truetype');
+  src: url('/fonts/IsabelleDejaVuSansMono.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Sans Mono';
+  src: url('/fonts/IsabelleDejaVuSansMono-Bold.ttf') format('truetype');
   font-weight: bold;
 }
+
+@font-face {
+  font-family: 'Isabelle DejaVu Sans Mono';
+  src: url('/fonts/IsabelleDejaVuSansMono-Oblique.ttf') format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Sans Mono';
+  src: url('/fonts/IsabelleDejaVuSansMono-BoldOblique.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Serif';
+  src: url('/fonts/IsabelleDejaVuSerif.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Serif';
+  src: url('/fonts/IsabelleDejaVuSerif-Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Serif';
+  src: url('/fonts/IsabelleDejaVuSerif-Italic.ttf') format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Isabelle DejaVu Serif';
+  src: url('/fonts/IsabelleDejaVuSerif-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Vacuous';
+  src: url('/fonts/Vacuous.ttf') format('truetype');
+}
+
 
 /* standard document markup */
 
@@ -33,7 +100,7 @@ body {
   font-family: "Isabelle DejaVu Sans Mono", monospace;
 }
 
-.theories { background-color: #FFFFFF; padding: 10px; }
+.contents { background-color: #FFFFFF; padding: 10px; }
 .sessions { background-color: #FFFFFF; padding: 10px; }
 .document { white-space: normal; font-family: "Isabelle DejaVu Serif", serif; }
 
@@ -47,8 +114,11 @@ body {
 .control        { font-weight: bold; font-style: italic; }
 
 .binding        { color: #336655; }
+.tclass         { }
+.tconst         { }
 .tfree          { color: #A020F0; }
 .tvar           { color: #A020F0; }
+.const          { }
 .free           { color: #0000FF; }
 .skolem         { color: #D2691E; }
 .bound          { color: #008000; }

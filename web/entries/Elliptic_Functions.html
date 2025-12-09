@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Complex Lattices, Elliptic Functions, and the Modular Group - Archive of Formal Proofs</title>
-    <meta name="description" content="Complex Lattices, Elliptic Functions, and the Modular Group in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Complex Lattices, Elliptic Functions, and the Modular Group in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Complex Lattices, Elliptic Functions, and the Modular Group" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Elliptic_Functions.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Complex Lattices, Elliptic Functions, and the Modular Group in the Archive of Formal Proofs">
+    <meta property="og:description" content="Complex Lattices, Elliptic Functions, and the Modular Group in the Archive of Formal Proofs">
+    <meta property="og:title" content="Complex Lattices, Elliptic Functions, and the Modular Group">
+    <meta property="og:url" content="https://isa-afp.org/entries/Elliptic_Functions.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>C</span>omplex <span class='first'>L</span>attices, <span class='first'>E</span>lliptic <span class='first'>F</span>unctions, and the <span class='first'>M</span>odular <span class='first'>G</span>roup
+  <h1>
+    <span class='first'>C</span>omplex <span class='first'>L</span>attices, <span class='first'>E</span>lliptic <span class='first'>F</span>unctions, and the <span class='first'>M</span>odular <span class='first'>G</span>roup
   </h1>
   <div>
       <p><a href="../authors/eberl/">Manuel Eberl</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnVlbCJdLCJob3N0IjpbInBydXZpc3RvIiwib3JnIl19">📧</a>, <a href="../authors/bordg/">Anthony Bordg</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFwZGIzIl0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a>, <a href="../authors/li/">Wenda Li</a> <a class="obfuscated" data="eyJ1c2VyIjpbIndsMzAyIl0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/paulson/">Lawrence C. Paulson</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxwMTUiXSwiaG9zdCI6WyJjYW0iLCJhYyIsInVrIl19">📧</a>
@@ -150,19 +142,19 @@ modular functions and modular forms.</p></div>
       </ul>
       <h3>Session Elliptic_Functions</h3>
       <ul>
-          <li><a href="../sessions/elliptic_functions/#Z_Plane_Q_Disc">Z_Plane_Q_Disc</a></li>
-          <li><a href="../sessions/elliptic_functions/#Parallelogram_Paths">Parallelogram_Paths</a></li>
-          <li><a href="../sessions/elliptic_functions/#Modular_Group">Modular_Group</a></li>
-          <li><a href="../sessions/elliptic_functions/#Complex_Lattices">Complex_Lattices</a></li>
-          <li><a href="../sessions/elliptic_functions/#Modular_Fundamental_Region">Modular_Fundamental_Region</a></li>
-          <li><a href="../sessions/elliptic_functions/#Elliptic_Functions">Elliptic_Functions</a></li>
-          <li><a href="../sessions/elliptic_functions/#Weierstrass_Elliptic">Weierstrass_Elliptic</a></li>
-          <li><a href="../sessions/elliptic_functions/#Eisenstein_Series">Eisenstein_Series</a></li>
-          <li><a href="../sessions/elliptic_functions/#Weierstrass_Addition">Weierstrass_Addition</a></li>
-          <li><a href="../sessions/elliptic_functions/#Basic_Modular_Forms">Basic_Modular_Forms</a></li>
-          <li><a href="../sessions/elliptic_functions/#Theta_Inversion">Theta_Inversion</a></li>
-          <li><a href="../sessions/elliptic_functions/#Dedekind_Eta">Dedekind_Eta</a></li>
-          <li><a href="../sessions/elliptic_functions/#Eisenstein_G2">Eisenstein_G2</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Z_Plane_Q_Disc.html">Z_Plane_Q_Disc</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Parallelogram_Paths.html">Parallelogram_Paths</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Modular_Group.html">Modular_Group</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Complex_Lattices.html">Complex_Lattices</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Modular_Fundamental_Region.html">Modular_Fundamental_Region</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Elliptic_Functions.html">Elliptic_Functions</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Weierstrass_Elliptic.html">Weierstrass_Elliptic</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Eisenstein_Series.html">Eisenstein_Series</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Weierstrass_Addition.html">Weierstrass_Addition</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Basic_Modular_Forms.html">Basic_Modular_Forms</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Theta_Inversion.html">Theta_Inversion</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Dedekind_Eta.html">Dedekind_Eta</a></li>
+          <li><a href="../thys/AFP/Elliptic_Functions/Eisenstein_G2.html">Eisenstein_G2</a></li>
       </ul>
 
     <div class="flex-wrap">

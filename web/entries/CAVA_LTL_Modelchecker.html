@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Fully Verified Executable LTL Model Checker - Archive of Formal Proofs</title>
-    <meta name="description" content="A Fully Verified Executable LTL Model Checker in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A Fully Verified Executable LTL Model Checker in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A Fully Verified Executable LTL Model Checker" />
-  <meta property="og:url" content="https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A Fully Verified Executable LTL Model Checker in the Archive of Formal Proofs">
+    <meta property="og:description" content="A Fully Verified Executable LTL Model Checker in the Archive of Formal Proofs">
+    <meta property="og:title" content="A Fully Verified Executable LTL Model Checker">
+    <meta property="og:url" content="https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> <span class='first'>F</span>ully <span class='first'>V</span>erified <span class='first'>E</span>xecutable <span class='first'>L</span><span class='first'>T</span><span class='first'>L</span> <span class='first'>M</span>odel <span class='first'>C</span>hecker
+  <h1>
+    <span class='first'>A</span> <span class='first'>F</span>ully <span class='first'>V</span>erified <span class='first'>E</span>xecutable <span class='first'>L</span><span class='first'>T</span><span class='first'>L</span> <span class='first'>M</span>odel <span class='first'>C</span>hecker
   </h1>
   <div>
       <p><a href="../authors/esparza/">Javier Esparza</a> <a href="https://www7.in.tum.de/~esparza/">🌐</a>, <a href="../authors/lammich/">Peter Lammich</a> <a href="https://people.utwente.nl/p.lammich">🌐</a>, <a href="../authors/neumann/">René Neumann</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJlbmUiLCJuZXVtYW5uIl0sImhvc3QiOlsiaW4iLCJ0dW0iLCJkZSJdfQ==">📧</a>, <a href="../authors/nipkow/">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/schimpf/">Alexander Schimpf</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNjaGltcGZhIl0sImhvc3QiOlsiaW5mb3JtYXRpayIsInVuaS1mcmVpYnVyZyIsImRlIl19">📧</a> and <a href="../authors/smaus/">Jan-Georg Smaus</a> <a href="http://www.irit.fr/~Jan-Georg.Smaus">🌐</a>
@@ -140,51 +132,51 @@ can be tested.</div>
       </ul>
       <h3>Session SM</h3>
       <ul>
-          <li><a href="../sessions/sm/#LTS">LTS</a></li>
-          <li><a href="../sessions/sm/#SOS_Misc_Add">SOS_Misc_Add</a></li>
-          <li><a href="../sessions/sm/#SM_Datastructures">SM_Datastructures</a></li>
-          <li><a href="../sessions/sm/#Gen_Scheduler">Gen_Scheduler</a></li>
-          <li><a href="../sessions/sm/#Gen_Scheduler_Refine">Gen_Scheduler_Refine</a></li>
-          <li><a href="../sessions/sm/#SM_Syntax">SM_Syntax</a></li>
-          <li><a href="../sessions/sm/#SM_State">SM_State</a></li>
-          <li><a href="../sessions/sm/#SM_Cfg">SM_Cfg</a></li>
-          <li><a href="../sessions/sm/#SM_Semantics">SM_Semantics</a></li>
-          <li><a href="../sessions/sm/#Decide_Locality">Decide_Locality</a></li>
-          <li><a href="../sessions/sm/#Type_System">Type_System</a></li>
-          <li><a href="../sessions/sm/#SM_Finite_Reachable">SM_Finite_Reachable</a></li>
-          <li><a href="../sessions/sm/#Pid_Scheduler">Pid_Scheduler</a></li>
-          <li><a href="../sessions/sm/#SM_LTL">SM_LTL</a></li>
-          <li><a href="../sessions/sm/#Gen_Cfg_Bisim">Gen_Cfg_Bisim</a></li>
-          <li><a href="../sessions/sm/#Rename_Cfg">Rename_Cfg</a></li>
-          <li><a href="../sessions/sm/#SM_Visible">SM_Visible</a></li>
-          <li><a href="../sessions/sm/#SM_Pid">SM_Pid</a></li>
-          <li><a href="../sessions/sm/#SM_Variables">SM_Variables</a></li>
-          <li><a href="../sessions/sm/#SM_Indep">SM_Indep</a></li>
-          <li><a href="../sessions/sm/#SM_Sticky">SM_Sticky</a></li>
-          <li><a href="../sessions/sm/#SM_POR">SM_POR</a></li>
-          <li><a href="../sessions/sm/#SM_Ample_Impl">SM_Ample_Impl</a></li>
-          <li><a href="../sessions/sm/#SM_Wrapup">SM_Wrapup</a></li>
+          <li><a href="../thys/AFP/SM/LTS.html">LTS</a></li>
+          <li><a href="../thys/AFP/SM/SOS_Misc_Add.html">SOS_Misc_Add</a></li>
+          <li><a href="../thys/AFP/SM/SM_Datastructures.html">SM_Datastructures</a></li>
+          <li><a href="../thys/AFP/SM/Gen_Scheduler.html">Gen_Scheduler</a></li>
+          <li><a href="../thys/AFP/SM/Gen_Scheduler_Refine.html">Gen_Scheduler_Refine</a></li>
+          <li><a href="../thys/AFP/SM/SM_Syntax.html">SM_Syntax</a></li>
+          <li><a href="../thys/AFP/SM/SM_State.html">SM_State</a></li>
+          <li><a href="../thys/AFP/SM/SM_Cfg.html">SM_Cfg</a></li>
+          <li><a href="../thys/AFP/SM/SM_Semantics.html">SM_Semantics</a></li>
+          <li><a href="../thys/AFP/SM/Decide_Locality.html">Decide_Locality</a></li>
+          <li><a href="../thys/AFP/SM/Type_System.html">Type_System</a></li>
+          <li><a href="../thys/AFP/SM/SM_Finite_Reachable.html">SM_Finite_Reachable</a></li>
+          <li><a href="../thys/AFP/SM/Pid_Scheduler.html">Pid_Scheduler</a></li>
+          <li><a href="../thys/AFP/SM/SM_LTL.html">SM_LTL</a></li>
+          <li><a href="../thys/AFP/SM/Gen_Cfg_Bisim.html">Gen_Cfg_Bisim</a></li>
+          <li><a href="../thys/AFP/SM/Rename_Cfg.html">Rename_Cfg</a></li>
+          <li><a href="../thys/AFP/SM/SM_Visible.html">SM_Visible</a></li>
+          <li><a href="../thys/AFP/SM/SM_Pid.html">SM_Pid</a></li>
+          <li><a href="../thys/AFP/SM/SM_Variables.html">SM_Variables</a></li>
+          <li><a href="../thys/AFP/SM/SM_Indep.html">SM_Indep</a></li>
+          <li><a href="../thys/AFP/SM/SM_Sticky.html">SM_Sticky</a></li>
+          <li><a href="../thys/AFP/SM/SM_POR.html">SM_POR</a></li>
+          <li><a href="../thys/AFP/SM/SM_Ample_Impl.html">SM_Ample_Impl</a></li>
+          <li><a href="../thys/AFP/SM/SM_Wrapup.html">SM_Wrapup</a></li>
       </ul>
       <h3>Session CAVA_Setup</h3>
       <ul>
       </ul>
       <h3>Session CAVA_LTL_Modelchecker</h3>
       <ul>
-          <li><a href="../sessions/cava_ltl_modelchecker/#NDFS_SI_Statistics">NDFS_SI_Statistics</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#NDFS_SI">NDFS_SI</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#CAVA_Abstract">CAVA_Abstract</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs">BoolProgs</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_Extras">BoolProgs_Extras</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_LTL_Conv">BoolProgs_LTL_Conv</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_Philosophers">BoolProgs_Philosophers</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_ReaderWriter">BoolProgs_ReaderWriter</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_Simple">BoolProgs_Simple</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_LeaderFilters">BoolProgs_LeaderFilters</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#BoolProgs_Programs">BoolProgs_Programs</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#CAVA_Impl">CAVA_Impl</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#Mulog">Mulog</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#All_Of_Nested_DFS">All_Of_Nested_DFS</a></li>
-          <li><a href="../sessions/cava_ltl_modelchecker/#All_Of_CAVA_LTL_Modelchecker">All_Of_CAVA_LTL_Modelchecker</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/NDFS_SI_Statistics.html">NDFS_SI_Statistics</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/NDFS_SI.html">NDFS_SI</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/CAVA_Abstract.html">CAVA_Abstract</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs.html">BoolProgs</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_Extras.html">BoolProgs_Extras</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_LTL_Conv.html">BoolProgs_LTL_Conv</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_Philosophers.html">BoolProgs_Philosophers</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_ReaderWriter.html">BoolProgs_ReaderWriter</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_Simple.html">BoolProgs_Simple</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_LeaderFilters.html">BoolProgs_LeaderFilters</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/BoolProgs_Programs.html">BoolProgs_Programs</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/CAVA_Impl.html">CAVA_Impl</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/Mulog.html">Mulog</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/All_Of_Nested_DFS.html">All_Of_Nested_DFS</a></li>
+          <li><a href="../thys/AFP/CAVA_LTL_Modelchecker/All_Of_CAVA_LTL_Modelchecker.html">All_Of_CAVA_LTL_Modelchecker</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -244,82 +236,98 @@ can be tested.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-08-28.tar.gz">Aug 28, 2014
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-08-28.tar.gz">
+                Aug 28, 2014
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-05-30.tar.gz">May 30, 2014
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-05-30.tar.gz">
+                May 30, 2014
               </a>
               : Isabelle2013-2
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-05-29.tar.gz">May 29, 2014
+              <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-05-29.tar.gz">
+                May 29, 2014
               </a>
               : Isabelle2013-2
             </li>

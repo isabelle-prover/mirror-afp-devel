@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Modal Logics for Nominal Transition Systems - Archive of Formal Proofs</title>
-    <meta name="description" content="Modal Logics for Nominal Transition Systems in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Modal Logics for Nominal Transition Systems in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Modal Logics for Nominal Transition Systems" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Modal_Logics_for_NTS.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Modal Logics for Nominal Transition Systems in the Archive of Formal Proofs">
+    <meta property="og:description" content="Modal Logics for Nominal Transition Systems in the Archive of Formal Proofs">
+    <meta property="og:title" content="Modal Logics for Nominal Transition Systems">
+    <meta property="og:url" content="https://isa-afp.org/entries/Modal_Logics_for_NTS.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>M</span>odal <span class='first'>L</span>ogics for <span class='first'>N</span>ominal <span class='first'>T</span>ransition <span class='first'>S</span>ystems
+  <h1>
+    <span class='first'>M</span>odal <span class='first'>L</span>ogics for <span class='first'>N</span>ominal <span class='first'>T</span>ransition <span class='first'>S</span>ystems
   </h1>
   <div>
       <p><a href="../authors/weber/">Tjark Weber</a> <a class="obfuscated" data="eyJ1c2VyIjpbInRqYXJrIiwid2ViZXIiXSwiaG9zdCI6WyJpdCIsInV1Iiwic2UiXX0=">📧</a>, <a href="../authors/eriksson/">Lars-Henrik Eriksson</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxoZSJdLCJob3N0IjpbIml0IiwidXUiLCJzZSJdfQ==">📧</a>, <a href="../authors/parrow/">Joachim Parrow</a> <a class="obfuscated" data="eyJ1c2VyIjpbImpvYWNoaW0iLCJwYXJyb3ciXSwiaG9zdCI6WyJpdCIsInV1Iiwic2UiXX0=">📧</a>, <a href="../authors/borgstroem/">Johannes Borgström</a> <a class="obfuscated" data="eyJ1c2VyIjpbImpvaGFubmVzIiwiYm9yZ3N0cm9tIl0sImhvc3QiOlsiaXQiLCJ1dSIsInNlIl19">📧</a> and <a href="../authors/gutkovas/">Ramunas Gutkovas</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJhbXVuYXMiLCJndXRrb3ZhcyJdLCJob3N0IjpbIml0IiwidXUiLCJzZSJdfQ==">📧</a>
@@ -134,33 +126,33 @@ way.</div>
       </ul>
       <h3>Session Modal_Logics_for_NTS</h3>
       <ul>
-          <li><a href="../sessions/modal_logics_for_nts/#Nominal_Bounded_Set">Nominal_Bounded_Set</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Nominal_Wellfounded">Nominal_Wellfounded</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Residual">Residual</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Transition_System">Transition_System</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Formula">Formula</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Validity">Validity</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Logical_Equivalence">Logical_Equivalence</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Bisimilarity_Implies_Equivalence">Bisimilarity_Implies_Equivalence</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Equivalence_Implies_Bisimilarity">Equivalence_Implies_Bisimilarity</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Disjunction">Disjunction</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Expressive_Completeness">Expressive_Completeness</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FS_Set">FS_Set</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FL_Transition_System">FL_Transition_System</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FL_Formula">FL_Formula</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FL_Validity">FL_Validity</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FL_Logical_Equivalence">FL_Logical_Equivalence</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FL_Bisimilarity_Implies_Equivalence">FL_Bisimilarity_Implies_Equivalence</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#FL_Equivalence_Implies_Bisimilarity">FL_Equivalence_Implies_Bisimilarity</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#L_Transform">L_Transform</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Transition_System">Weak_Transition_System</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Formula">Weak_Formula</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Validity">Weak_Validity</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Logical_Equivalence">Weak_Logical_Equivalence</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Bisimilarity_Implies_Equivalence">Weak_Bisimilarity_Implies_Equivalence</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Equivalence_Implies_Bisimilarity">Weak_Equivalence_Implies_Bisimilarity</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#Weak_Expressive_Completeness">Weak_Expressive_Completeness</a></li>
-          <li><a href="../sessions/modal_logics_for_nts/#S_Transform">S_Transform</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Nominal_Bounded_Set.html">Nominal_Bounded_Set</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Nominal_Wellfounded.html">Nominal_Wellfounded</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Residual.html">Residual</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Transition_System.html">Transition_System</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Formula.html">Formula</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Validity.html">Validity</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Logical_Equivalence.html">Logical_Equivalence</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Bisimilarity_Implies_Equivalence.html">Bisimilarity_Implies_Equivalence</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Equivalence_Implies_Bisimilarity.html">Equivalence_Implies_Bisimilarity</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Disjunction.html">Disjunction</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Expressive_Completeness.html">Expressive_Completeness</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FS_Set.html">FS_Set</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FL_Transition_System.html">FL_Transition_System</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FL_Formula.html">FL_Formula</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FL_Validity.html">FL_Validity</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FL_Logical_Equivalence.html">FL_Logical_Equivalence</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FL_Bisimilarity_Implies_Equivalence.html">FL_Bisimilarity_Implies_Equivalence</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/FL_Equivalence_Implies_Bisimilarity.html">FL_Equivalence_Implies_Bisimilarity</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/L_Transform.html">L_Transform</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Transition_System.html">Weak_Transition_System</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Formula.html">Weak_Formula</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Validity.html">Weak_Validity</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Logical_Equivalence.html">Weak_Logical_Equivalence</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Bisimilarity_Implies_Equivalence.html">Weak_Bisimilarity_Implies_Equivalence</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Equivalence_Implies_Bisimilarity.html">Weak_Equivalence_Implies_Bisimilarity</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/Weak_Expressive_Completeness.html">Weak_Expressive_Completeness</a></li>
+          <li><a href="../thys/AFP/Modal_Logics_for_NTS/S_Transform.html">S_Transform</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -214,67 +206,80 @@ way.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2016-10-27.tar.gz">Oct 27, 2016
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2016-10-27.tar.gz">
+                Oct 27, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2016-10-25.tar.gz">Oct 25, 2016
+              <a href="https://www.isa-afp.org/release/afp-Modal_Logics_for_NTS-2016-10-25.tar.gz">
+                Oct 25, 2016
               </a>
               : Isabelle2016
             </li>

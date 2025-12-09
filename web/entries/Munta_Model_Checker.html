@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Munta: A Verified Model Checker for Timed Automata - Archive of Formal Proofs</title>
-    <meta name="description" content="Munta: A Verified Model Checker for Timed Automata in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Munta: A Verified Model Checker for Timed Automata in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Munta: A Verified Model Checker for Timed Automata" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Munta_Model_Checker.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Munta: A Verified Model Checker for Timed Automata in the Archive of Formal Proofs">
+    <meta property="og:description" content="Munta: A Verified Model Checker for Timed Automata in the Archive of Formal Proofs">
+    <meta property="og:title" content="Munta: A Verified Model Checker for Timed Automata">
+    <meta property="og:url" content="https://isa-afp.org/entries/Munta_Model_Checker.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>M</span>unta: <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>M</span>odel <span class='first'>C</span>hecker for <span class='first'>T</span>imed <span class='first'>A</span>utomata
+  <h1>
+    <span class='first'>M</span>unta: <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>M</span>odel <span class='first'>C</span>hecker for <span class='first'>T</span>imed <span class='first'>A</span>utomata
   </h1>
   <div>
       <p><a href="../authors/wimmer/">Simon Wimmer</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwid2ltbWVyIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
@@ -128,59 +120,59 @@
       </ul>
       <h3>Session Munta_Base</h3>
       <ul>
-          <li><a href="../sessions/munta_base/#TA_Syntax_Bundles">TA_Syntax_Bundles</a></li>
-          <li><a href="../sessions/munta_base/#ML_Util">ML_Util</a></li>
-          <li><a href="../sessions/munta_base/#Reordering_Quantifiers">Reordering_Quantifiers</a></li>
-          <li><a href="../sessions/munta_base/#More_Methods">More_Methods</a></li>
-          <li><a href="../sessions/munta_base/#Abstract_Term">Abstract_Term</a></li>
-          <li><a href="../sessions/munta_base/#Bijective_Embedding">Bijective_Embedding</a></li>
-          <li><a href="../sessions/munta_base/#Tracing">Tracing</a></li>
-          <li><a href="../sessions/munta_base/#Printing">Printing</a></li>
-          <li><a href="../sessions/munta_base/#Trace_Timing">Trace_Timing</a></li>
-          <li><a href="../sessions/munta_base/#Error_List_Monad">Error_List_Monad</a></li>
-          <li><a href="../sessions/munta_base/#Temporal_Logics">Temporal_Logics</a></li>
-          <li><a href="../sessions/munta_base/#Subsumption_Graphs">Subsumption_Graphs</a></li>
-          <li><a href="../sessions/munta_base/#Sepref_Acconstraint">Sepref_Acconstraint</a></li>
-          <li><a href="../sessions/munta_base/#TA_DBM_Operations_Impl">TA_DBM_Operations_Impl</a></li>
-          <li><a href="../sessions/munta_base/#TA_More">TA_More</a></li>
-          <li><a href="../sessions/munta_base/#Normalized_Zone_Semantics_Impl">Normalized_Zone_Semantics_Impl</a></li>
-          <li><a href="../sessions/munta_base/#TA_Impl_Misc">TA_Impl_Misc</a></li>
-          <li><a href="../sessions/munta_base/#Normalized_Zone_Semantics_Impl_Semantic_Refinement">Normalized_Zone_Semantics_Impl_Semantic_Refinement</a></li>
-          <li><a href="../sessions/munta_base/#Normalized_Zone_Semantics_Impl_Refine">Normalized_Zone_Semantics_Impl_Refine</a></li>
-          <li><a href="../sessions/munta_base/#Normalized_Zone_Semantics_Impl_Extra">Normalized_Zone_Semantics_Impl_Extra</a></li>
+          <li><a href="../thys/AFP/Munta_Base/TA_Syntax_Bundles.html">TA_Syntax_Bundles</a></li>
+          <li><a href="../thys/AFP/Munta_Base/ML_Util.html">ML_Util</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Reordering_Quantifiers.html">Reordering_Quantifiers</a></li>
+          <li><a href="../thys/AFP/Munta_Base/More_Methods.html">More_Methods</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Abstract_Term.html">Abstract_Term</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Bijective_Embedding.html">Bijective_Embedding</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Tracing.html">Tracing</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Printing.html">Printing</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Trace_Timing.html">Trace_Timing</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Error_List_Monad.html">Error_List_Monad</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Temporal_Logics.html">Temporal_Logics</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Subsumption_Graphs.html">Subsumption_Graphs</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Sepref_Acconstraint.html">Sepref_Acconstraint</a></li>
+          <li><a href="../thys/AFP/Munta_Base/TA_DBM_Operations_Impl.html">TA_DBM_Operations_Impl</a></li>
+          <li><a href="../thys/AFP/Munta_Base/TA_More.html">TA_More</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Normalized_Zone_Semantics_Impl.html">Normalized_Zone_Semantics_Impl</a></li>
+          <li><a href="../thys/AFP/Munta_Base/TA_Impl_Misc.html">TA_Impl_Misc</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Normalized_Zone_Semantics_Impl_Semantic_Refinement.html">Normalized_Zone_Semantics_Impl_Semantic_Refinement</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Normalized_Zone_Semantics_Impl_Refine.html">Normalized_Zone_Semantics_Impl_Refine</a></li>
+          <li><a href="../thys/AFP/Munta_Base/Normalized_Zone_Semantics_Impl_Extra.html">Normalized_Zone_Semantics_Impl_Extra</a></li>
       </ul>
       <h3>Session Munta_Model_Checker</h3>
       <ul>
-          <li><a href="../sessions/munta_model_checker/#Munta_Tagging">Munta_Tagging</a></li>
-          <li><a href="../sessions/munta_model_checker/#Munta_Error_Monad_Add">Munta_Error_Monad_Add</a></li>
-          <li><a href="../sessions/munta_model_checker/#Parser_Combinator">Parser_Combinator</a></li>
-          <li><a href="../sessions/munta_model_checker/#Lexer">Lexer</a></li>
-          <li><a href="../sessions/munta_model_checker/#JSON_Parsing">JSON_Parsing</a></li>
-          <li><a href="../sessions/munta_model_checker/#Networks">Networks</a></li>
-          <li><a href="../sessions/munta_model_checker/#State_Networks">State_Networks</a></li>
-          <li><a href="../sessions/munta_model_checker/#UPPAAL_Asm">UPPAAL_Asm</a></li>
-          <li><a href="../sessions/munta_model_checker/#UPPAAL_Asm_Clocks">UPPAAL_Asm_Clocks</a></li>
-          <li><a href="../sessions/munta_model_checker/#UPPAAL_State_Networks">UPPAAL_State_Networks</a></li>
-          <li><a href="../sessions/munta_model_checker/#UPPAAL_State_Networks_Impl">UPPAAL_State_Networks_Impl</a></li>
-          <li><a href="../sessions/munta_model_checker/#Program_Analysis">Program_Analysis</a></li>
-          <li><a href="../sessions/munta_model_checker/#UPPAAL_State_Networks_Impl_Refine">UPPAAL_State_Networks_Impl_Refine</a></li>
-          <li><a href="../sessions/munta_model_checker/#UPPAAL_Model_Checking">UPPAAL_Model_Checking</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Expressions">Simple_Expressions</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language">Simple_Network_Language</a></li>
-          <li><a href="../sessions/munta_model_checker/#TA_Impl_Misc2">TA_Impl_Misc2</a></li>
-          <li><a href="../sessions/munta_model_checker/#TA_More2">TA_More2</a></li>
-          <li><a href="../sessions/munta_model_checker/#TA_Equivalences">TA_Equivalences</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language_Impl">Simple_Network_Language_Impl</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language_Impl_Refine">Simple_Network_Language_Impl_Refine</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language_Model_Checking">Simple_Network_Language_Model_Checking</a></li>
-          <li><a href="../sessions/munta_model_checker/#Deadlock">Deadlock</a></li>
-          <li><a href="../sessions/munta_model_checker/#Deadlock_Impl">Deadlock_Impl</a></li>
-          <li><a href="../sessions/munta_model_checker/#Deadlock_Checking">Deadlock_Checking</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language_Renaming">Simple_Network_Language_Renaming</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language_Deadlock_Checking">Simple_Network_Language_Deadlock_Checking</a></li>
-          <li><a href="../sessions/munta_model_checker/#Shortest_SCC_Paths">Shortest_SCC_Paths</a></li>
-          <li><a href="../sessions/munta_model_checker/#Simple_Network_Language_Export_Code">Simple_Network_Language_Export_Code</a></li>
-          <li><a href="../sessions/munta_model_checker/#Munta_Compile_MLton">Munta_Compile_MLton</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Munta_Tagging.html">Munta_Tagging</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Munta_Error_Monad_Add.html">Munta_Error_Monad_Add</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Parser_Combinator.html">Parser_Combinator</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Lexer.html">Lexer</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/JSON_Parsing.html">JSON_Parsing</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Networks.html">Networks</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/State_Networks.html">State_Networks</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/UPPAAL_Asm.html">UPPAAL_Asm</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/UPPAAL_Asm_Clocks.html">UPPAAL_Asm_Clocks</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/UPPAAL_State_Networks.html">UPPAAL_State_Networks</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/UPPAAL_State_Networks_Impl.html">UPPAAL_State_Networks_Impl</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Program_Analysis.html">Program_Analysis</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/UPPAAL_State_Networks_Impl_Refine.html">UPPAAL_State_Networks_Impl_Refine</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/UPPAAL_Model_Checking.html">UPPAAL_Model_Checking</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Expressions.html">Simple_Expressions</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language.html">Simple_Network_Language</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/TA_Impl_Misc2.html">TA_Impl_Misc2</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/TA_More2.html">TA_More2</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/TA_Equivalences.html">TA_Equivalences</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language_Impl.html">Simple_Network_Language_Impl</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language_Impl_Refine.html">Simple_Network_Language_Impl_Refine</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language_Model_Checking.html">Simple_Network_Language_Model_Checking</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Deadlock.html">Deadlock</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Deadlock_Impl.html">Deadlock_Impl</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Deadlock_Checking.html">Deadlock_Checking</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language_Renaming.html">Simple_Network_Language_Renaming</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language_Deadlock_Checking.html">Simple_Network_Language_Deadlock_Checking</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Shortest_SCC_Paths.html">Shortest_SCC_Paths</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Simple_Network_Language_Export_Code.html">Simple_Network_Language_Export_Code</a></li>
+          <li><a href="../thys/AFP/Munta_Model_Checker/Munta_Compile_MLton.html">Munta_Compile_MLton</a></li>
       </ul>
 
     <div class="flex-wrap">

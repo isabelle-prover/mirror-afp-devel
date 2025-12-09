@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming - Archive of Formal Proofs</title>
-    <meta name="description" content="Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming" />
-  <meta property="og:url" content="https://isa-afp.org/entries/UTP.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the Archive of Formal Proofs">
+    <meta property="og:description" content="Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming in the Archive of Formal Proofs">
+    <meta property="og:title" content="Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming">
+    <meta property="og:url" content="https://isa-afp.org/entries/UTP.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>I</span>sabelle/<span class='first'>U</span><span class='first'>T</span><span class='first'>P</span>: <span class='first'>M</span>echanised <span class='first'>T</span>heory <span class='first'>E</span>ngineering for <span class='first'>U</span>nifying <span class='first'>T</span>heories of <span class='first'>P</span>rogramming
+  <h1>
+    <span class='first'>I</span>sabelle/<span class='first'>U</span><span class='first'>T</span><span class='first'>P</span>: <span class='first'>M</span>echanised <span class='first'>T</span>heory <span class='first'>E</span>ngineering for <span class='first'>U</span>nifying <span class='first'>T</span>heories of <span class='first'>P</span>rogramming
   </h1>
   <div>
       <p><a href="../authors/fosters/">Simon Foster</a> <a href="https://www-users.cs.york.ac.uk/~simonf/">🌐</a>, <a href="../authors/zeyda/">Frank Zeyda</a>, <a href="../authors/nemouchi/">Yakoub Nemouchi</a> <a class="obfuscated" data="eyJ1c2VyIjpbInlha291YiIsIm5lbW91Y2hpIl0sImhvc3QiOlsieW9yayIsImFjIiwidWsiXX0=">📧</a>, <a href="../authors/ribeiro/">Pedro Ribeiro</a> and <a href="../authors/wolff/">Burkhart Wolff</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJ1cmtoYXJ0Iiwid29sZmYiXSwiaG9zdCI6WyJsbWYiLCJjbnJzIiwiZnIiXX0=">📧</a>
@@ -130,55 +122,55 @@ relational core of the UTP in Isabelle/HOL.</div>
       </ul>
       <h3>Session UTP-Toolkit</h3>
       <ul>
-          <li><a href="../sessions/utp-toolkit/#List_Extra">List_Extra</a></li>
-          <li><a href="../sessions/utp-toolkit/#Sequence">Sequence</a></li>
-          <li><a href="../sessions/utp-toolkit/#FSet_Extra">FSet_Extra</a></li>
-          <li><a href="../sessions/utp-toolkit/#Countable_Set_Extra">Countable_Set_Extra</a></li>
-          <li><a href="../sessions/utp-toolkit/#Map_Extra">Map_Extra</a></li>
-          <li><a href="../sessions/utp-toolkit/#List_Lexord_Alt">List_Lexord_Alt</a></li>
-          <li><a href="../sessions/utp-toolkit/#Partial_Fun">Partial_Fun</a></li>
-          <li><a href="../sessions/utp-toolkit/#Finite_Fun">Finite_Fun</a></li>
-          <li><a href="../sessions/utp-toolkit/#Infinity">Infinity</a></li>
-          <li><a href="../sessions/utp-toolkit/#Positive">Positive</a></li>
-          <li><a href="../sessions/utp-toolkit/#Total_Recall">Total_Recall</a></li>
-          <li><a href="../sessions/utp-toolkit/#utp_toolkit">utp_toolkit</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/List_Extra.html">List_Extra</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Sequence.html">Sequence</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/FSet_Extra.html">FSet_Extra</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Countable_Set_Extra.html">Countable_Set_Extra</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Map_Extra.html">Map_Extra</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/List_Lexord_Alt.html">List_Lexord_Alt</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Partial_Fun.html">Partial_Fun</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Finite_Fun.html">Finite_Fun</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Infinity.html">Infinity</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Positive.html">Positive</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/Total_Recall.html">Total_Recall</a></li>
+          <li><a href="../thys/AFP/UTP-Toolkit/utp_toolkit.html">utp_toolkit</a></li>
       </ul>
       <h3>Session UTP</h3>
       <ul>
-          <li><a href="../sessions/utp/#utp_parser_utils">utp_parser_utils</a></li>
-          <li><a href="../sessions/utp/#utp_var">utp_var</a></li>
-          <li><a href="../sessions/utp/#utp_expr">utp_expr</a></li>
-          <li><a href="../sessions/utp/#utp_expr_insts">utp_expr_insts</a></li>
-          <li><a href="../sessions/utp/#utp_expr_funcs">utp_expr_funcs</a></li>
-          <li><a href="../sessions/utp/#utp_unrest">utp_unrest</a></li>
-          <li><a href="../sessions/utp/#utp_usedby">utp_usedby</a></li>
-          <li><a href="../sessions/utp/#utp_subst">utp_subst</a></li>
-          <li><a href="../sessions/utp/#utp_tactics">utp_tactics</a></li>
-          <li><a href="../sessions/utp/#utp_meta_subst">utp_meta_subst</a></li>
-          <li><a href="../sessions/utp/#utp_pred">utp_pred</a></li>
-          <li><a href="../sessions/utp/#utp_alphabet">utp_alphabet</a></li>
-          <li><a href="../sessions/utp/#utp_lift">utp_lift</a></li>
-          <li><a href="../sessions/utp/#utp_pred_laws">utp_pred_laws</a></li>
-          <li><a href="../sessions/utp/#utp_healthy">utp_healthy</a></li>
-          <li><a href="../sessions/utp/#utp_rel">utp_rel</a></li>
-          <li><a href="../sessions/utp/#utp_recursion">utp_recursion</a></li>
-          <li><a href="../sessions/utp/#utp_sequent">utp_sequent</a></li>
-          <li><a href="../sessions/utp/#utp_rel_laws">utp_rel_laws</a></li>
-          <li><a href="../sessions/utp/#utp_theory">utp_theory</a></li>
-          <li><a href="../sessions/utp/#utp_hoare">utp_hoare</a></li>
-          <li><a href="../sessions/utp/#utp_wp">utp_wp</a></li>
-          <li><a href="../sessions/utp/#utp_dynlog">utp_dynlog</a></li>
-          <li><a href="../sessions/utp/#utp_state_parser">utp_state_parser</a></li>
-          <li><a href="../sessions/utp/#utp_rel_opsem">utp_rel_opsem</a></li>
-          <li><a href="../sessions/utp/#utp_sym_eval">utp_sym_eval</a></li>
-          <li><a href="../sessions/utp/#utp_sp">utp_sp</a></li>
-          <li><a href="../sessions/utp/#utp_concurrency">utp_concurrency</a></li>
-          <li><a href="../sessions/utp/#utp">utp</a></li>
-          <li><a href="../sessions/utp/#utp_expr_ovld">utp_expr_ovld</a></li>
-          <li><a href="../sessions/utp/#utp_full">utp_full</a></li>
-          <li><a href="../sessions/utp/#utp_easy_parser">utp_easy_parser</a></li>
-          <li><a href="../sessions/utp/#sum_list">sum_list</a></li>
-          <li><a href="../sessions/utp/#utp_simple_time">utp_simple_time</a></li>
+          <li><a href="../thys/AFP/UTP/utp_parser_utils.html">utp_parser_utils</a></li>
+          <li><a href="../thys/AFP/UTP/utp_var.html">utp_var</a></li>
+          <li><a href="../thys/AFP/UTP/utp_expr.html">utp_expr</a></li>
+          <li><a href="../thys/AFP/UTP/utp_expr_insts.html">utp_expr_insts</a></li>
+          <li><a href="../thys/AFP/UTP/utp_expr_funcs.html">utp_expr_funcs</a></li>
+          <li><a href="../thys/AFP/UTP/utp_unrest.html">utp_unrest</a></li>
+          <li><a href="../thys/AFP/UTP/utp_usedby.html">utp_usedby</a></li>
+          <li><a href="../thys/AFP/UTP/utp_subst.html">utp_subst</a></li>
+          <li><a href="../thys/AFP/UTP/utp_tactics.html">utp_tactics</a></li>
+          <li><a href="../thys/AFP/UTP/utp_meta_subst.html">utp_meta_subst</a></li>
+          <li><a href="../thys/AFP/UTP/utp_pred.html">utp_pred</a></li>
+          <li><a href="../thys/AFP/UTP/utp_alphabet.html">utp_alphabet</a></li>
+          <li><a href="../thys/AFP/UTP/utp_lift.html">utp_lift</a></li>
+          <li><a href="../thys/AFP/UTP/utp_pred_laws.html">utp_pred_laws</a></li>
+          <li><a href="../thys/AFP/UTP/utp_healthy.html">utp_healthy</a></li>
+          <li><a href="../thys/AFP/UTP/utp_rel.html">utp_rel</a></li>
+          <li><a href="../thys/AFP/UTP/utp_recursion.html">utp_recursion</a></li>
+          <li><a href="../thys/AFP/UTP/utp_sequent.html">utp_sequent</a></li>
+          <li><a href="../thys/AFP/UTP/utp_rel_laws.html">utp_rel_laws</a></li>
+          <li><a href="../thys/AFP/UTP/utp_theory.html">utp_theory</a></li>
+          <li><a href="../thys/AFP/UTP/utp_hoare.html">utp_hoare</a></li>
+          <li><a href="../thys/AFP/UTP/utp_wp.html">utp_wp</a></li>
+          <li><a href="../thys/AFP/UTP/utp_dynlog.html">utp_dynlog</a></li>
+          <li><a href="../thys/AFP/UTP/utp_state_parser.html">utp_state_parser</a></li>
+          <li><a href="../thys/AFP/UTP/utp_rel_opsem.html">utp_rel_opsem</a></li>
+          <li><a href="../thys/AFP/UTP/utp_sym_eval.html">utp_sym_eval</a></li>
+          <li><a href="../thys/AFP/UTP/utp_sp.html">utp_sp</a></li>
+          <li><a href="../thys/AFP/UTP/utp_concurrency.html">utp_concurrency</a></li>
+          <li><a href="../thys/AFP/UTP/utp.html">utp</a></li>
+          <li><a href="../thys/AFP/UTP/utp_expr_ovld.html">utp_expr_ovld</a></li>
+          <li><a href="../thys/AFP/UTP/utp_full.html">utp_full</a></li>
+          <li><a href="../thys/AFP/UTP/utp_easy_parser.html">utp_easy_parser</a></li>
+          <li><a href="../thys/AFP/UTP/sum_list.html">sum_list</a></li>
+          <li><a href="../thys/AFP/UTP/utp_simple_time.html">utp_simple_time</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -232,47 +224,56 @@ relational core of the UTP in Isabelle/HOL.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-UTP-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-UTP-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-UTP-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-UTP-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-UTP-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-UTP-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-UTP-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-UTP-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-UTP-2019-02-06.tar.gz">Feb 6, 2019
+              <a href="https://www.isa-afp.org/release/afp-UTP-2019-02-06.tar.gz">
+                Feb 6, 2019
               </a>
               : Isabelle2018
             </li>

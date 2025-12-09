@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>IMP2 – Simple Program Verification in Isabelle/HOL - Archive of Formal Proofs</title>
-    <meta name="description" content="IMP2 – Simple Program Verification in Isabelle/HOL in the Archive of Formal Proofs" />
-    <meta property="og:description" content="IMP2 – Simple Program Verification in Isabelle/HOL in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="IMP2 – Simple Program Verification in Isabelle/HOL" />
-  <meta property="og:url" content="https://isa-afp.org/entries/IMP2.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="IMP2 – Simple Program Verification in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:description" content="IMP2 – Simple Program Verification in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:title" content="IMP2 – Simple Program Verification in Isabelle/HOL">
+    <meta property="og:url" content="https://isa-afp.org/entries/IMP2.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>I</span><span class='first'>M</span><span class='first'>P</span>2 – <span class='first'>S</span>imple <span class='first'>P</span>rogram <span class='first'>V</span>erification in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
+  <h1>
+    <span class='first'>I</span><span class='first'>M</span><span class='first'>P</span>2 – <span class='first'>S</span>imple <span class='first'>P</span>rogram <span class='first'>V</span>erification in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
   </h1>
   <div>
       <p><a href="../authors/lammich/">Peter Lammich</a> <a href="https://people.utwente.nl/p.lammich">🌐</a> and <a href="../authors/wimmer/">Simon Wimmer</a> <a href="http://home.in.tum.de/~wimmers/">🌐</a>
@@ -137,25 +129,25 @@ language, the ideas could be extended to more sophisticated languages.</div>
       </ul>
       <h3>Session IMP2</h3>
       <ul>
-          <li><a href="../sessions/imp2/#IMP2_Aux_Lemmas">IMP2_Aux_Lemmas</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Utils">IMP2_Utils</a></li>
-          <li><a href="../sessions/imp2/#Named_Simpsets">Named_Simpsets</a></li>
-          <li><a href="../sessions/imp2/#Subgoal_Focus_Some">Subgoal_Focus_Some</a></li>
-          <li><a href="../sessions/imp2/#Syntax">Syntax</a></li>
-          <li><a href="../sessions/imp2/#Semantics">Semantics</a></li>
-          <li><a href="../sessions/imp2/#Annotated_Syntax">Annotated_Syntax</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Basic_Simpset">IMP2_Basic_Simpset</a></li>
-          <li><a href="../sessions/imp2/#Parser">Parser</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Basic_Decls">IMP2_Basic_Decls</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Program_Analysis">IMP2_Program_Analysis</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Var_Postprocessor">IMP2_Var_Postprocessor</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Var_Abs">IMP2_Var_Abs</a></li>
-          <li><a href="../sessions/imp2/#IMP2_VCG">IMP2_VCG</a></li>
-          <li><a href="../sessions/imp2/#IMP2_Specification">IMP2_Specification</a></li>
-          <li><a href="../sessions/imp2/#IMP2">IMP2</a></li>
-          <li><a href="../sessions/imp2/#Quickstart_Guide">Quickstart_Guide</a></li>
-          <li><a href="../sessions/imp2/#IMP2_from_IMP">IMP2_from_IMP</a></li>
-          <li><a href="../sessions/imp2/#Examples">Examples</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Aux_Lemmas.html">IMP2_Aux_Lemmas</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Utils.html">IMP2_Utils</a></li>
+          <li><a href="../thys/AFP/IMP2/Named_Simpsets.html">Named_Simpsets</a></li>
+          <li><a href="../thys/AFP/IMP2/Subgoal_Focus_Some.html">Subgoal_Focus_Some</a></li>
+          <li><a href="../thys/AFP/IMP2/Syntax.html">Syntax</a></li>
+          <li><a href="../thys/AFP/IMP2/Semantics.html">Semantics</a></li>
+          <li><a href="../thys/AFP/IMP2/Annotated_Syntax.html">Annotated_Syntax</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Basic_Simpset.html">IMP2_Basic_Simpset</a></li>
+          <li><a href="../thys/AFP/IMP2/Parser.html">Parser</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Basic_Decls.html">IMP2_Basic_Decls</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Program_Analysis.html">IMP2_Program_Analysis</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Var_Postprocessor.html">IMP2_Var_Postprocessor</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Var_Abs.html">IMP2_Var_Abs</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_VCG.html">IMP2_VCG</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_Specification.html">IMP2_Specification</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2.html">IMP2</a></li>
+          <li><a href="../thys/AFP/IMP2/Quickstart_Guide.html">Quickstart_Guide</a></li>
+          <li><a href="../thys/AFP/IMP2/IMP2_from_IMP.html">IMP2_from_IMP</a></li>
+          <li><a href="../thys/AFP/IMP2/Examples.html">Examples</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -209,47 +201,56 @@ language, the ideas could be extended to more sophisticated languages.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-IMP2-2019-01-15.tar.gz">Jan 15, 2019
+              <a href="https://www.isa-afp.org/release/afp-IMP2-2019-01-15.tar.gz">
+                Jan 15, 2019
               </a>
               : Isabelle2018
             </li>

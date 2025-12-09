@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ConcurrentHOL - Archive of Formal Proofs</title>
-    <meta name="description" content="ConcurrentHOL in the Archive of Formal Proofs" />
-    <meta property="og:description" content="ConcurrentHOL in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="ConcurrentHOL" />
-  <meta property="og:url" content="https://isa-afp.org/entries/ConcurrentHOL.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="ConcurrentHOL in the Archive of Formal Proofs">
+    <meta property="og:description" content="ConcurrentHOL in the Archive of Formal Proofs">
+    <meta property="og:title" content="ConcurrentHOL">
+    <meta property="og:url" content="https://isa-afp.org/entries/ConcurrentHOL.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>C</span>oncurrent<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
+  <h1>
+    <span class='first'>C</span>oncurrent<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
   </h1>
   <div>
       <p><a href="../authors/gammie/">Peter Gammie</a> <a class="obfuscated" data="eyJ1c2VyIjpbInBldGVnNDIiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a>
@@ -119,39 +111,39 @@
       </ul>
       <h3>Session ConcurrentHOL</h3>
       <ul>
-          <li><a href="../sessions/concurrenthol/#Strengthen">Strengthen</a></li>
-          <li><a href="../sessions/concurrenthol/#HOL_Basis">HOL_Basis</a></li>
-          <li><a href="../sessions/concurrenthol/#Aczel_Sequences">Aczel_Sequences</a></li>
-          <li><a href="../sessions/concurrenthol/#Lifted_Predicates">Lifted_Predicates</a></li>
-          <li><a href="../sessions/concurrenthol/#More_Lattices">More_Lattices</a></li>
-          <li><a href="../sessions/concurrenthol/#Closures">Closures</a></li>
-          <li><a href="../sessions/concurrenthol/#Galois">Galois</a></li>
-          <li><a href="../sessions/concurrenthol/#Heyting">Heyting</a></li>
-          <li><a href="../sessions/concurrenthol/#Safety_Logic">Safety_Logic</a></li>
-          <li><a href="../sessions/concurrenthol/#Constructions">Constructions</a></li>
-          <li><a href="../sessions/concurrenthol/#Next_Imp">Next_Imp</a></li>
-          <li><a href="../sessions/concurrenthol/#Stability">Stability</a></li>
-          <li><a href="../sessions/concurrenthol/#Refinement">Refinement</a></li>
-          <li><a href="../sessions/concurrenthol/#Programs">Programs</a></li>
-          <li><a href="../sessions/concurrenthol/#Combinators">Combinators</a></li>
-          <li><a href="../sessions/concurrenthol/#Local_State">Local_State</a></li>
-          <li><a href="../sessions/concurrenthol/#TLS">TLS</a></li>
-          <li><a href="../sessions/concurrenthol/#ConcurrentHOL">ConcurrentHOL</a></li>
-          <li><a href="../sessions/concurrenthol/#Atomic">Atomic</a></li>
-          <li><a href="../sessions/concurrenthol/#Exceptions">Exceptions</a></li>
-          <li><a href="../sessions/concurrenthol/#Assume_Guarantee">Assume_Guarantee</a></li>
-          <li><a href="../sessions/concurrenthol/#WickersonDoddsParkinson">WickersonDoddsParkinson</a></li>
-          <li><a href="../sessions/concurrenthol/#Inhabitation">Inhabitation</a></li>
-          <li><a href="../sessions/concurrenthol/#FindP">FindP</a></li>
-          <li><a href="../sessions/concurrenthol/#BFS">BFS</a></li>
-          <li><a href="../sessions/concurrenthol/#Safety_Closure">Safety_Closure</a></li>
-          <li><a href="../sessions/concurrenthol/#Ix">Ix</a></li>
-          <li><a href="../sessions/concurrenthol/#Heap">Heap</a></li>
-          <li><a href="../sessions/concurrenthol/#CImperativeHOL">CImperativeHOL</a></li>
-          <li><a href="../sessions/concurrenthol/#TSO">TSO</a></li>
-          <li><a href="../sessions/concurrenthol/#TSO_Code_Gen">TSO_Code_Gen</a></li>
-          <li><a href="../sessions/concurrenthol/#TSO_litmus">TSO_litmus</a></li>
-          <li><a href="../sessions/concurrenthol/#Floyd_Warshall">Floyd_Warshall</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Strengthen.html">Strengthen</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/HOL_Basis.html">HOL_Basis</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Aczel_Sequences.html">Aczel_Sequences</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Lifted_Predicates.html">Lifted_Predicates</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/More_Lattices.html">More_Lattices</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Closures.html">Closures</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Galois.html">Galois</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Heyting.html">Heyting</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Safety_Logic.html">Safety_Logic</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Constructions.html">Constructions</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Next_Imp.html">Next_Imp</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Stability.html">Stability</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Refinement.html">Refinement</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Programs.html">Programs</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Combinators.html">Combinators</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Local_State.html">Local_State</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/TLS.html">TLS</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/ConcurrentHOL.html">ConcurrentHOL</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Atomic.html">Atomic</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Exceptions.html">Exceptions</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Assume_Guarantee.html">Assume_Guarantee</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/WickersonDoddsParkinson.html">WickersonDoddsParkinson</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Inhabitation.html">Inhabitation</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/FindP.html">FindP</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/BFS.html">BFS</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Safety_Closure.html">Safety_Closure</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Ix.html">Ix</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Heap.html">Heap</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/CImperativeHOL.html">CImperativeHOL</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/TSO.html">TSO</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/TSO_Code_Gen.html">TSO_Code_Gen</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/TSO_litmus.html">TSO_litmus</a></li>
+          <li><a href="../thys/AFP/ConcurrentHOL/Floyd_Warshall.html">Floyd_Warshall</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -206,17 +198,20 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ConcurrentHOL-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-ConcurrentHOL-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ConcurrentHOL-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-ConcurrentHOL-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ConcurrentHOL-2024-04-17.tar.gz">Apr 17, 2024
+              <a href="https://www.isa-afp.org/release/afp-ConcurrentHOL-2024-04-17.tar.gz">
+                Apr 17, 2024
               </a>
               : Isabelle2023
             </li>

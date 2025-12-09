@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pushdown Automata - Archive of Formal Proofs</title>
-    <meta name="description" content="Pushdown Automata in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Pushdown Automata in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Pushdown Automata" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Pushdown_Automata.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Pushdown Automata in the Archive of Formal Proofs">
+    <meta property="og:description" content="Pushdown Automata in the Archive of Formal Proofs">
+    <meta property="og:title" content="Pushdown Automata">
+    <meta property="og:url" content="https://isa-afp.org/entries/Pushdown_Automata.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>P</span>ushdown <span class='first'>A</span>utomata
+  <h1>
+    <span class='first'>P</span>ushdown <span class='first'>A</span>utomata
   </h1>
   <div>
       <p><a href="../authors/taskin/">Kaan Taskin</a> <a class="obfuscated" data="eyJ1c2VyIjpbImthYW50YXNraW4yMDIyIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0=">📧</a> and <a href="../authors/nipkow/">Tobias Nipkow</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm5pcGtvdyJdLCJob3N0IjpbImluIiwidHVtIiwiZGUiXX0=">📧</a>
@@ -121,11 +113,11 @@ stack and by final state are equivalent.</div>
       </ul>
       <h3>Session Pushdown_Automata</h3>
       <ul>
-          <li><a href="../sessions/pushdown_automata/#Pushdown_Automata">Pushdown_Automata</a></li>
-          <li><a href="../sessions/pushdown_automata/#Stack_To_Final_PDA">Stack_To_Final_PDA</a></li>
-          <li><a href="../sessions/pushdown_automata/#Final_To_Stack_PDA">Final_To_Stack_PDA</a></li>
-          <li><a href="../sessions/pushdown_automata/#CFG_To_PDA">CFG_To_PDA</a></li>
-          <li><a href="../sessions/pushdown_automata/#PDA_To_CFG">PDA_To_CFG</a></li>
+          <li><a href="../thys/AFP/Pushdown_Automata/Pushdown_Automata.html">Pushdown_Automata</a></li>
+          <li><a href="../thys/AFP/Pushdown_Automata/Stack_To_Final_PDA.html">Stack_To_Final_PDA</a></li>
+          <li><a href="../thys/AFP/Pushdown_Automata/Final_To_Stack_PDA.html">Final_To_Stack_PDA</a></li>
+          <li><a href="../thys/AFP/Pushdown_Automata/CFG_To_PDA.html">CFG_To_PDA</a></li>
+          <li><a href="../thys/AFP/Pushdown_Automata/PDA_To_CFG.html">PDA_To_CFG</a></li>
       </ul>
 
     <div class="flex-wrap">

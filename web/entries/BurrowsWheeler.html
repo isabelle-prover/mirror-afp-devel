@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Formalised Burrows-Wheeler Transform - Archive of Formal Proofs</title>
-    <meta name="description" content="Formalised Burrows-Wheeler Transform in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Formalised Burrows-Wheeler Transform in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Formalised Burrows-Wheeler Transform" />
-  <meta property="og:url" content="https://isa-afp.org/entries/BurrowsWheeler.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Formalised Burrows-Wheeler Transform in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formalised Burrows-Wheeler Transform in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formalised Burrows-Wheeler Transform">
+    <meta property="og:url" content="https://isa-afp.org/entries/BurrowsWheeler.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>ormalised <span class='first'>B</span>urrows-<span class='first'>W</span>heeler <span class='first'>T</span>ransform
+  <h1>
+    <span class='first'>F</span>ormalised <span class='first'>B</span>urrows-<span class='first'>W</span>heeler <span class='first'>T</span>ransform
   </h1>
   <div>
       <p><a href="../authors/cheung/">Louis Cheung</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxvdWlzIiwiY2hldW5nIl0sImhvc3QiOlsic3R1ZGVudCIsInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a> and <a href="../authors/rizkallah/">Christine Rizkallah</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNocmlzdGluZSIsInJpemthbGxhaCJdLCJob3N0IjpbInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a>
@@ -124,21 +116,21 @@
 </li>
         <li>Ferragina, P., & Manzini, G. (n.d.). Opportunistic data structures with applications. Proceedings 41st Annual Symposium on Foundations of Computer Science, 390–398. https://doi.org/10.1109/sfcs.2000.892127
 </li>
-        <li><a href=\"https://en.wikipedia.org/wiki/Burrows–Wheeler_transform\">Wikipedia</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Burrows–Wheeler_transform">Wikipedia</a></li>
       </ul>
       <h3>Session BurrowsWheeler</h3>
       <ul>
-          <li><a href="../sessions/burrowswheeler/#Nat_Mod_Helper">Nat_Mod_Helper</a></li>
-          <li><a href="../sessions/burrowswheeler/#Rotated_Substring">Rotated_Substring</a></li>
-          <li><a href="../sessions/burrowswheeler/#Count_Util">Count_Util</a></li>
-          <li><a href="../sessions/burrowswheeler/#Rank_Util">Rank_Util</a></li>
-          <li><a href="../sessions/burrowswheeler/#Select_Util">Select_Util</a></li>
-          <li><a href="../sessions/burrowswheeler/#Rank_Select">Rank_Select</a></li>
-          <li><a href="../sessions/burrowswheeler/#SA_Util">SA_Util</a></li>
-          <li><a href="../sessions/burrowswheeler/#SA_Count">SA_Count</a></li>
-          <li><a href="../sessions/burrowswheeler/#BWT">BWT</a></li>
-          <li><a href="../sessions/burrowswheeler/#BWT_SA_Corres">BWT_SA_Corres</a></li>
-          <li><a href="../sessions/burrowswheeler/#IBWT">IBWT</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/Nat_Mod_Helper.html">Nat_Mod_Helper</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/Rotated_Substring.html">Rotated_Substring</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/Count_Util.html">Count_Util</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/Rank_Util.html">Rank_Util</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/Select_Util.html">Select_Util</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/Rank_Select.html">Rank_Select</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/SA_Util.html">SA_Util</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/SA_Count.html">SA_Count</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/BWT.html">BWT</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/BWT_SA_Corres.html">BWT_SA_Corres</a></li>
+          <li><a href="../thys/AFP/BurrowsWheeler/IBWT.html">IBWT</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -192,12 +184,14 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-BurrowsWheeler-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-BurrowsWheeler-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-BurrowsWheeler-2025-01-17.tar.gz">Jan 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-BurrowsWheeler-2025-01-17.tar.gz">
+                Jan 17, 2025
               </a>
               : Isabelle2024
             </li>

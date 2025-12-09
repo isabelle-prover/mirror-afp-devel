@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Compositional and Unified Translation of LTL into ω-Automata - Archive of Formal Proofs</title>
-    <meta name="description" content="A Compositional and Unified Translation of LTL into ω-Automata in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A Compositional and Unified Translation of LTL into ω-Automata in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A Compositional and Unified Translation of LTL into ω-Automata" />
-  <meta property="og:url" content="https://isa-afp.org/entries/LTL_Master_Theorem.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A Compositional and Unified Translation of LTL into ω-Automata in the Archive of Formal Proofs">
+    <meta property="og:description" content="A Compositional and Unified Translation of LTL into ω-Automata in the Archive of Formal Proofs">
+    <meta property="og:title" content="A Compositional and Unified Translation of LTL into ω-Automata">
+    <meta property="og:url" content="https://isa-afp.org/entries/LTL_Master_Theorem.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> <span class='first'>C</span>ompositional and <span class='first'>U</span>nified <span class='first'>T</span>ranslation of <span class='first'>L</span><span class='first'>T</span><span class='first'>L</span> into ω-<span class='first'>A</span>utomata
+  <h1>
+    <span class='first'>A</span> <span class='first'>C</span>ompositional and <span class='first'>U</span>nified <span class='first'>T</span>ranslation of <span class='first'>L</span><span class='first'>T</span><span class='first'>L</span> into ω-<span class='first'>A</span>utomata
   </h1>
   <div>
       <p><a href="../authors/seidl/">Benedikt Seidl</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJlbmVkaWt0Iiwic2VpZGwiXSwiaG9zdCI6WyJ0dW0iLCJkZSJdfQ==">📧</a> and <a href="../authors/sickert/">Salomon Sickert</a> <a class="obfuscated" data="eyJ1c2VyIjpbInMiLCJzaWNrZXJ0Il0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
@@ -132,20 +124,20 @@ A Unified Translation of LTL into ω-Automata. LICS 2018</div>
       </ul>
       <h3>Session LTL_Master_Theorem</h3>
       <ul>
-          <li><a href="../sessions/ltl_master_theorem/#Syntactic_Fragments_and_Stability">Syntactic_Fragments_and_Stability</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#After">After</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Advice">Advice</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Master_Theorem">Master_Theorem</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Asymmetric_Master_Theorem">Asymmetric_Master_Theorem</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Restricted_Master_Theorem">Restricted_Master_Theorem</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Transition_Functions">Transition_Functions</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Quotient_Type">Quotient_Type</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Omega_Words_Fun_Stream">Omega_Words_Fun_Stream</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#DRA_Construction">DRA_Construction</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#DRA_Implementation">DRA_Implementation</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Extra_Equivalence_Relations">Extra_Equivalence_Relations</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#DRA_Instantiation">DRA_Instantiation</a></li>
-          <li><a href="../sessions/ltl_master_theorem/#Code_Export">Code_Export</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Syntactic_Fragments_and_Stability.html">Syntactic_Fragments_and_Stability</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/After.html">After</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Advice.html">Advice</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Master_Theorem.html">Master_Theorem</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Asymmetric_Master_Theorem.html">Asymmetric_Master_Theorem</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Restricted_Master_Theorem.html">Restricted_Master_Theorem</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Transition_Functions.html">Transition_Functions</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Quotient_Type.html">Quotient_Type</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Omega_Words_Fun_Stream.html">Omega_Words_Fun_Stream</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/DRA_Construction.html">DRA_Construction</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/DRA_Implementation.html">DRA_Implementation</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Extra_Equivalence_Relations.html">Extra_Equivalence_Relations</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/DRA_Instantiation.html">DRA_Instantiation</a></li>
+          <li><a href="../thys/AFP/LTL_Master_Theorem/Code_Export.html">Code_Export</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -208,47 +200,56 @@ A Unified Translation of LTL into ω-Automata. LICS 2018</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2019-04-17.tar.gz">Apr 17, 2019
+              <a href="https://www.isa-afp.org/release/afp-LTL_Master_Theorem-2019-04-17.tar.gz">
+                Apr 17, 2019
               </a>
               : Isabelle2018
             </li>

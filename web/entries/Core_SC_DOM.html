@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Safely Composable DOM - Archive of Formal Proofs</title>
-    <meta name="description" content="The Safely Composable DOM in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Safely Composable DOM in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Safely Composable DOM" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Core_SC_DOM.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Safely Composable DOM in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Safely Composable DOM in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Safely Composable DOM">
+    <meta property="og:url" content="https://isa-afp.org/entries/Core_SC_DOM.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>S</span>afely <span class='first'>C</span>omposable <span class='first'>D</span><span class='first'>O</span><span class='first'>M</span>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>S</span>afely <span class='first'>C</span>omposable <span class='first'>D</span><span class='first'>O</span><span class='first'>M</span>
   </h1>
   <div>
       <p><a href="../authors/brucker/">Achim D. Brucker</a> <a href="https://www.brucker.ch/">🌐</a> and <a href="../authors/herzberg/">Michael Herzberg</a> <a href="http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg">🌐</a>
@@ -132,38 +124,38 @@ DOM.</div>
       </ul>
       <h3>Session Core_SC_DOM</h3>
       <ul>
-          <li><a href="../sessions/core_sc_dom/#Hiding_Type_Variables">Hiding_Type_Variables</a></li>
-          <li><a href="../sessions/core_sc_dom/#Ref">Ref</a></li>
-          <li><a href="../sessions/core_sc_dom/#Core_DOM_Basic_Datatypes">Core_DOM_Basic_Datatypes</a></li>
-          <li><a href="../sessions/core_sc_dom/#BaseClass">BaseClass</a></li>
-          <li><a href="../sessions/core_sc_dom/#Heap_Error_Monad">Heap_Error_Monad</a></li>
-          <li><a href="../sessions/core_sc_dom/#BaseMonad">BaseMonad</a></li>
-          <li><a href="../sessions/core_sc_dom/#ObjectPointer">ObjectPointer</a></li>
-          <li><a href="../sessions/core_sc_dom/#ObjectClass">ObjectClass</a></li>
-          <li><a href="../sessions/core_sc_dom/#ObjectMonad">ObjectMonad</a></li>
-          <li><a href="../sessions/core_sc_dom/#NodePointer">NodePointer</a></li>
-          <li><a href="../sessions/core_sc_dom/#NodeClass">NodeClass</a></li>
-          <li><a href="../sessions/core_sc_dom/#NodeMonad">NodeMonad</a></li>
-          <li><a href="../sessions/core_sc_dom/#ElementPointer">ElementPointer</a></li>
-          <li><a href="../sessions/core_sc_dom/#CharacterDataPointer">CharacterDataPointer</a></li>
-          <li><a href="../sessions/core_sc_dom/#DocumentPointer">DocumentPointer</a></li>
-          <li><a href="../sessions/core_sc_dom/#ShadowRootPointer">ShadowRootPointer</a></li>
-          <li><a href="../sessions/core_sc_dom/#ElementClass">ElementClass</a></li>
-          <li><a href="../sessions/core_sc_dom/#ElementMonad">ElementMonad</a></li>
-          <li><a href="../sessions/core_sc_dom/#CharacterDataClass">CharacterDataClass</a></li>
-          <li><a href="../sessions/core_sc_dom/#CharacterDataMonad">CharacterDataMonad</a></li>
-          <li><a href="../sessions/core_sc_dom/#DocumentClass">DocumentClass</a></li>
-          <li><a href="../sessions/core_sc_dom/#DocumentMonad">DocumentMonad</a></li>
-          <li><a href="../sessions/core_sc_dom/#Core_DOM_Functions">Core_DOM_Functions</a></li>
-          <li><a href="../sessions/core_sc_dom/#Core_DOM_Heap_WF">Core_DOM_Heap_WF</a></li>
-          <li><a href="../sessions/core_sc_dom/#Core_DOM">Core_DOM</a></li>
-          <li><a href="../sessions/core_sc_dom/#Testing_Utils">Testing_Utils</a></li>
-          <li><a href="../sessions/core_sc_dom/#Core_DOM_BaseTest">Core_DOM_BaseTest</a></li>
-          <li><a href="../sessions/core_sc_dom/#Document_adoptNode">Document_adoptNode</a></li>
-          <li><a href="../sessions/core_sc_dom/#Document_getElementById">Document_getElementById</a></li>
-          <li><a href="../sessions/core_sc_dom/#Node_insertBefore">Node_insertBefore</a></li>
-          <li><a href="../sessions/core_sc_dom/#Node_removeChild">Node_removeChild</a></li>
-          <li><a href="../sessions/core_sc_dom/#Core_DOM_Tests">Core_DOM_Tests</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Hiding_Type_Variables.html">Hiding_Type_Variables</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Ref.html">Ref</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Core_DOM_Basic_Datatypes.html">Core_DOM_Basic_Datatypes</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/BaseClass.html">BaseClass</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Heap_Error_Monad.html">Heap_Error_Monad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/BaseMonad.html">BaseMonad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ObjectPointer.html">ObjectPointer</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ObjectClass.html">ObjectClass</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ObjectMonad.html">ObjectMonad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/NodePointer.html">NodePointer</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/NodeClass.html">NodeClass</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/NodeMonad.html">NodeMonad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ElementPointer.html">ElementPointer</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/CharacterDataPointer.html">CharacterDataPointer</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/DocumentPointer.html">DocumentPointer</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ShadowRootPointer.html">ShadowRootPointer</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ElementClass.html">ElementClass</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/ElementMonad.html">ElementMonad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/CharacterDataClass.html">CharacterDataClass</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/CharacterDataMonad.html">CharacterDataMonad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/DocumentClass.html">DocumentClass</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/DocumentMonad.html">DocumentMonad</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Core_DOM_Functions.html">Core_DOM_Functions</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Core_DOM_Heap_WF.html">Core_DOM_Heap_WF</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Core_DOM.html">Core_DOM</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Testing_Utils.html">Testing_Utils</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Core_DOM_BaseTest.html">Core_DOM_BaseTest</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Document_adoptNode.html">Document_adoptNode</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Document_getElementById.html">Document_getElementById</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Node_insertBefore.html">Node_insertBefore</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Node_removeChild.html">Node_removeChild</a></li>
+          <li><a href="../thys/AFP/Core_SC_DOM/Core_DOM_Tests.html">Core_DOM_Tests</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -217,37 +209,44 @@ DOM.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2025-03-19.tar.gz">Mar 19, 2025
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2025-03-19.tar.gz">
+                Mar 19, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2020-11-26.tar.gz">Nov 26, 2020
+              <a href="https://www.isa-afp.org/release/afp-Core_SC_DOM-2020-11-26.tar.gz">
+                Nov 26, 2020
               </a>
               : Isabelle2020
             </li>

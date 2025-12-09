@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Unification Utilities for Isabelle/ML - Archive of Formal Proofs</title>
-    <meta name="description" content="Unification Utilities for Isabelle/ML in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Unification Utilities for Isabelle/ML in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Unification Utilities for Isabelle/ML" />
-  <meta property="og:url" content="https://isa-afp.org/entries/ML_Unification.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Unification Utilities for Isabelle/ML in the Archive of Formal Proofs">
+    <meta property="og:description" content="Unification Utilities for Isabelle/ML in the Archive of Formal Proofs">
+    <meta property="og:title" content="Unification Utilities for Isabelle/ML">
+    <meta property="og:url" content="https://isa-afp.org/entries/ML_Unification.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>U</span>nification <span class='first'>U</span>tilities for <span class='first'>I</span>sabelle/<span class='first'>M</span><span class='first'>L</span>
+  <h1>
+    <span class='first'>U</span>nification <span class='first'>U</span>tilities for <span class='first'>I</span>sabelle/<span class='first'>M</span><span class='first'>L</span>
   </h1>
   <div>
       <p><a href="../authors/kappelmann/">Kevin Kappelmann</a> <a class="obfuscated" data="eyJ1c2VyIjpbImtldmluIiwia2FwcGVsbWFubiJdLCJob3N0IjpbInR1bSIsImRlIl19">📧</a>
@@ -143,50 +135,50 @@ All unifiers are tested with <a href="https://isa-afp.org/entries/SpecCheck.html
       </ul>
       <h3>Session ML_Unification</h3>
       <ul>
-          <li><a href="../sessions/ml_unification/#ML_Code_Utils">ML_Code_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Attributes">ML_Attributes</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Logger">ML_Logger</a></li>
-          <li><a href="../sessions/ml_unification/#Setup_Result_Commands">Setup_Result_Commands</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Logger_Examples">ML_Logger_Examples</a></li>
-          <li><a href="../sessions/ml_unification/#ML_General_Utils">ML_General_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Conversion_Utils">ML_Conversion_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Normalisations">ML_Normalisations</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Binders">ML_Binders</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Term_Utils">ML_Term_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Attribute_Utils">ML_Attribute_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Parsing_Utils">ML_Parsing_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Costs_Priorities">ML_Costs_Priorities</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Functor_Instances">ML_Functor_Instances</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Generic_Data_Utils">ML_Generic_Data_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Method_Utils">ML_Method_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Theorem_Utils">ML_Theorem_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_Base">ML_Unification_Base</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Tactic_Utils">ML_Tactic_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Utils">ML_Utils</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unifiers_Base">ML_Unifiers_Base</a></li>
-          <li><a href="../sessions/ml_unification/#Simps_To">Simps_To</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unifiers">ML_Unifiers</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_Parsers">ML_Unification_Parsers</a></li>
-          <li><a href="../sessions/ml_unification/#Unify_Assumption_Tactic_Base">Unify_Assumption_Tactic_Base</a></li>
-          <li><a href="../sessions/ml_unification/#Unify_Assumption_Tactic">Unify_Assumption_Tactic</a></li>
-          <li><a href="../sessions/ml_unification/#Unify_Resolve_Tactics_Base">Unify_Resolve_Tactics_Base</a></li>
-          <li><a href="../sessions/ml_unification/#Unify_Resolve_Tactics">Unify_Resolve_Tactics</a></li>
-          <li><a href="../sessions/ml_unification/#Unify_Fact_Tactic_Base">Unify_Fact_Tactic_Base</a></li>
-          <li><a href="../sessions/ml_unification/#Unify_Fact_Tactic">Unify_Fact_Tactic</a></li>
-          <li><a href="../sessions/ml_unification/#Unification_Tactics">Unification_Tactics</a></li>
-          <li><a href="../sessions/ml_unification/#Unification_Attributes_Base">Unification_Attributes_Base</a></li>
-          <li><a href="../sessions/ml_unification/#Unification_Attributes">Unification_Attributes</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Term_Index">ML_Term_Index</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_Hints_Base">ML_Unification_Hints_Base</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_Hints">ML_Unification_Hints</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_HOL_Setup">ML_Unification_HOL_Setup</a></li>
-          <li><a href="../sessions/ml_unification/#E_Unification_Examples">E_Unification_Examples</a></li>
-          <li><a href="../sessions/ml_unification/#Unification_Hints_Reification_Examples">Unification_Hints_Reification_Examples</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_Tests_Base">ML_Unification_Tests_Base</a></li>
-          <li><a href="../sessions/ml_unification/#First_Order_ML_Unification_Tests">First_Order_ML_Unification_Tests</a></li>
-          <li><a href="../sessions/ml_unification/#Higher_Order_Pattern_ML_Unification_Tests">Higher_Order_Pattern_ML_Unification_Tests</a></li>
-          <li><a href="../sessions/ml_unification/#Higher_Order_ML_Unification_Tests">Higher_Order_ML_Unification_Tests</a></li>
-          <li><a href="../sessions/ml_unification/#ML_Unification_Tests">ML_Unification_Tests</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Code_Utils.html">ML_Code_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Attributes.html">ML_Attributes</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Logger.html">ML_Logger</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Setup_Result_Commands.html">Setup_Result_Commands</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Logger_Examples.html">ML_Logger_Examples</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_General_Utils.html">ML_General_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Conversion_Utils.html">ML_Conversion_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Normalisations.html">ML_Normalisations</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Binders.html">ML_Binders</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Term_Utils.html">ML_Term_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Attribute_Utils.html">ML_Attribute_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Parsing_Utils.html">ML_Parsing_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Costs_Priorities.html">ML_Costs_Priorities</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Functor_Instances.html">ML_Functor_Instances</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Generic_Data_Utils.html">ML_Generic_Data_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Method_Utils.html">ML_Method_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Theorem_Utils.html">ML_Theorem_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_Base.html">ML_Unification_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Tactic_Utils.html">ML_Tactic_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Utils.html">ML_Utils</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unifiers_Base.html">ML_Unifiers_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Simps_To.html">Simps_To</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unifiers.html">ML_Unifiers</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_Parsers.html">ML_Unification_Parsers</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unify_Assumption_Tactic_Base.html">Unify_Assumption_Tactic_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unify_Assumption_Tactic.html">Unify_Assumption_Tactic</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unify_Resolve_Tactics_Base.html">Unify_Resolve_Tactics_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unify_Resolve_Tactics.html">Unify_Resolve_Tactics</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unify_Fact_Tactic_Base.html">Unify_Fact_Tactic_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unify_Fact_Tactic.html">Unify_Fact_Tactic</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unification_Tactics.html">Unification_Tactics</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unification_Attributes_Base.html">Unification_Attributes_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unification_Attributes.html">Unification_Attributes</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Term_Index.html">ML_Term_Index</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_Hints_Base.html">ML_Unification_Hints_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_Hints.html">ML_Unification_Hints</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_HOL_Setup.html">ML_Unification_HOL_Setup</a></li>
+          <li><a href="../thys/AFP/ML_Unification/E_Unification_Examples.html">E_Unification_Examples</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Unification_Hints_Reification_Examples.html">Unification_Hints_Reification_Examples</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_Tests_Base.html">ML_Unification_Tests_Base</a></li>
+          <li><a href="../thys/AFP/ML_Unification/First_Order_ML_Unification_Tests.html">First_Order_ML_Unification_Tests</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Higher_Order_Pattern_ML_Unification_Tests.html">Higher_Order_Pattern_ML_Unification_Tests</a></li>
+          <li><a href="../thys/AFP/ML_Unification/Higher_Order_ML_Unification_Tests.html">Higher_Order_ML_Unification_Tests</a></li>
+          <li><a href="../thys/AFP/ML_Unification/ML_Unification_Tests.html">ML_Unification_Tests</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -247,17 +239,20 @@ All unifiers are tested with <a href="https://isa-afp.org/entries/SpecCheck.html
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ML_Unification-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-ML_Unification-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ML_Unification-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-ML_Unification-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ML_Unification-2023-10-04.tar.gz">Oct 4, 2023
+              <a href="https://www.isa-afp.org/release/afp-ML_Unification-2023-10-04.tar.gz">
+                Oct 4, 2023
               </a>
               : Isabelle2023
             </li>

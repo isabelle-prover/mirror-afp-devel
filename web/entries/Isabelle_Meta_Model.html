@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Meta-Model for the Isabelle API - Archive of Formal Proofs</title>
-    <meta name="description" content="A Meta-Model for the Isabelle API in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A Meta-Model for the Isabelle API in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A Meta-Model for the Isabelle API" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Isabelle_Meta_Model.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A Meta-Model for the Isabelle API in the Archive of Formal Proofs">
+    <meta property="og:description" content="A Meta-Model for the Isabelle API in the Archive of Formal Proofs">
+    <meta property="og:title" content="A Meta-Model for the Isabelle API">
+    <meta property="og:url" content="https://isa-afp.org/entries/Isabelle_Meta_Model.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> <span class='first'>M</span>eta-<span class='first'>M</span>odel for the <span class='first'>I</span>sabelle <span class='first'>A</span><span class='first'>P</span><span class='first'>I</span>
+  <h1>
+    <span class='first'>A</span> <span class='first'>M</span>eta-<span class='first'>M</span>odel for the <span class='first'>I</span>sabelle <span class='first'>A</span><span class='first'>P</span><span class='first'>I</span>
   </h1>
   <div>
       <p><a href="../authors/tuong/">Frédéric Tuong</a> <a class="obfuscated" data="eyJ1c2VyIjpbInR1b25nIl0sImhvc3QiOlsidXNlcnMiLCJnZm9yZ2UiLCJpbnJpYSIsImZyIl19">📧</a> and <a href="../authors/wolff/">Burkhart Wolff</a> <a href="https://www.lri.fr/~wolff/">🌐</a>
@@ -149,51 +141,51 @@ transformations, correctness, etc.</div>
       </ul>
       <h3>Session Isabelle_Meta_Model</h3>
       <ul>
-          <li><a href="../sessions/isabelle_meta_model/#Antiquote_Setup">Antiquote_Setup</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_Cartouche_Examples">Isabelle_Cartouche_Examples</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_Main0">Isabelle_Main0</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_code_target">Isabelle_code_target</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_code_runtime">Isabelle_code_runtime</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_Main1">Isabelle_Main1</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_typedecl">Isabelle_typedecl</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Isabelle_Main2">Isabelle_Main2</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Init">Init</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Meta_Pure">Meta_Pure</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Parser_init">Parser_init</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Parser_Pure">Parser_Pure</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Meta_SML">Meta_SML</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Meta_Isabelle">Meta_Isabelle</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_init">Printer_init</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_Pure">Printer_Pure</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_SML">Printer_SML</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_Isabelle">Printer_Isabelle</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Toy_Library_Static">Toy_Library_Static</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Init_rbt">Init_rbt</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Meta_Toy">Meta_Toy</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Meta_Toy_extended">Meta_Toy_extended</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Meta_META">Meta_META</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Core_init">Core_init</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Floor1_infra">Floor1_infra</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Floor1_access">Floor1_access</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Floor1_examp">Floor1_examp</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Floor2_examp">Floor2_examp</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Floor1_ctxt">Floor1_ctxt</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Core">Core</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Parser_Toy">Parser_Toy</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Parser_Toy_extended">Parser_Toy_extended</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Parser_META">Parser_META</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_Toy">Printer_Toy</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_Toy_extended">Printer_Toy_extended</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer_META">Printer_META</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Printer">Printer</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Generator_static">Generator_static</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Generator_dynamic_sequential">Generator_dynamic_sequential</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Design_deep">Design_deep</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Toy_Library">Toy_Library</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Design_shallow">Design_shallow</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Rail">Rail</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Design_generated">Design_generated</a></li>
-          <li><a href="../sessions/isabelle_meta_model/#Design_generated_generated">Design_generated_generated</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Antiquote_Setup.html">Antiquote_Setup</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_Cartouche_Examples.html">Isabelle_Cartouche_Examples</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_Main0.html">Isabelle_Main0</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_code_target.html">Isabelle_code_target</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_code_runtime.html">Isabelle_code_runtime</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_Main1.html">Isabelle_Main1</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_typedecl.html">Isabelle_typedecl</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Isabelle_Main2.html">Isabelle_Main2</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Init.html">Init</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Meta_Pure.html">Meta_Pure</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Parser_init.html">Parser_init</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Parser_Pure.html">Parser_Pure</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Meta_SML.html">Meta_SML</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Meta_Isabelle.html">Meta_Isabelle</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_init.html">Printer_init</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_Pure.html">Printer_Pure</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_SML.html">Printer_SML</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_Isabelle.html">Printer_Isabelle</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Toy_Library_Static.html">Toy_Library_Static</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Init_rbt.html">Init_rbt</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Meta_Toy.html">Meta_Toy</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Meta_Toy_extended.html">Meta_Toy_extended</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Meta_META.html">Meta_META</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Core_init.html">Core_init</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Floor1_infra.html">Floor1_infra</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Floor1_access.html">Floor1_access</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Floor1_examp.html">Floor1_examp</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Floor2_examp.html">Floor2_examp</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Floor1_ctxt.html">Floor1_ctxt</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Core.html">Core</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Parser_Toy.html">Parser_Toy</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Parser_Toy_extended.html">Parser_Toy_extended</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Parser_META.html">Parser_META</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_Toy.html">Printer_Toy</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_Toy_extended.html">Printer_Toy_extended</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer_META.html">Printer_META</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Printer.html">Printer</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Generator_static.html">Generator_static</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Generator_dynamic_sequential.html">Generator_dynamic_sequential</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Design_deep.html">Design_deep</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Toy_Library.html">Toy_Library</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Design_shallow.html">Design_shallow</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Rail.html">Rail</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Design_generated.html">Design_generated</a></li>
+          <li><a href="../thys/AFP/Isabelle_Meta_Model/Design_generated_generated.html">Design_generated_generated</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -241,72 +233,86 @@ transformations, correctness, etc.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2015-09-28.tar.gz">Sep 28, 2015
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2015-09-28.tar.gz">
+                Sep 28, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2015-09-25.tar.gz">Sep 25, 2015
+              <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2015-09-25.tar.gz">
+                Sep 25, 2015
               </a>
               : Isabelle2015
             </li>

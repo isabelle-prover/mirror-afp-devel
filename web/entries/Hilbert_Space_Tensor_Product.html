@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Tensor Product on Hilbert Spaces - Archive of Formal Proofs</title>
-    <meta name="description" content="The Tensor Product on Hilbert Spaces in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Tensor Product on Hilbert Spaces in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Tensor Product on Hilbert Spaces" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Hilbert_Space_Tensor_Product.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Tensor Product on Hilbert Spaces in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Tensor Product on Hilbert Spaces in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Tensor Product on Hilbert Spaces">
+    <meta property="og:url" content="https://isa-afp.org/entries/Hilbert_Space_Tensor_Product.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>T</span>ensor <span class='first'>P</span>roduct on <span class='first'>H</span>ilbert <span class='first'>S</span>paces
+  <h1>
+    <span class='first'>T</span>he <span class='first'>T</span>ensor <span class='first'>P</span>roduct on <span class='first'>H</span>ilbert <span class='first'>S</span>paces
   </h1>
   <div>
       <p><a href="../authors/unruh/">Dominique Unruh</a> <a href="https://qis.rwth-aachen.de/people/unruh/">🌐</a>
@@ -113,7 +105,7 @@ spaces, of operators on Hilbert spaces, and of subspaces of Hilbert
 spaces, and of von Neumann algebras, and study their properties.
 
 The theory is based on the AFP entry
-<tt>Complex_Bounded_Operators</tt> that introduces Hilbert spaces and
+<code>Complex_Bounded_Operators</code> that introduces Hilbert spaces and
 operators and related concepts, but in addition to their work, we
 defined and study a number of additional concepts needed for the
 tensor product.
@@ -133,21 +125,21 @@ double commutant theorem.</div>
       </ul>
       <h3>Session Hilbert_Space_Tensor_Product</h3>
       <ul>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Misc_Tensor_Product">Misc_Tensor_Product</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Strong_Operator_Topology">Strong_Operator_Topology</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Positive_Operators">Positive_Operators</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#HS2Ell2">HS2Ell2</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Weak_Operator_Topology">Weak_Operator_Topology</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Misc_Tensor_Product_TTS">Misc_Tensor_Product_TTS</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Eigenvalues">Eigenvalues</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Compact_Operators">Compact_Operators</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Spectral_Theorem">Spectral_Theorem</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Trace_Class">Trace_Class</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Weak_Star_Topology">Weak_Star_Topology</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Hilbert_Space_Tensor_Product">Hilbert_Space_Tensor_Product</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Partial_Trace">Partial_Trace</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Von_Neumann_Algebras">Von_Neumann_Algebras</a></li>
-          <li><a href="../sessions/hilbert_space_tensor_product/#Tensor_Product_Code">Tensor_Product_Code</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Misc_Tensor_Product.html">Misc_Tensor_Product</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Strong_Operator_Topology.html">Strong_Operator_Topology</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Positive_Operators.html">Positive_Operators</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/HS2Ell2.html">HS2Ell2</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Weak_Operator_Topology.html">Weak_Operator_Topology</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Misc_Tensor_Product_TTS.html">Misc_Tensor_Product_TTS</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Eigenvalues.html">Eigenvalues</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Compact_Operators.html">Compact_Operators</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Spectral_Theorem.html">Spectral_Theorem</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Trace_Class.html">Trace_Class</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Weak_Star_Topology.html">Weak_Star_Topology</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Hilbert_Space_Tensor_Product.html">Hilbert_Space_Tensor_Product</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Partial_Trace.html">Partial_Trace</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Von_Neumann_Algebras.html">Von_Neumann_Algebras</a></li>
+          <li><a href="../thys/AFP/Hilbert_Space_Tensor_Product/Tensor_Product_Code.html">Tensor_Product_Code</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -211,12 +203,14 @@ double commutant theorem.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Hilbert_Space_Tensor_Product-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Hilbert_Space_Tensor_Product-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Hilbert_Space_Tensor_Product-2024-12-04.tar.gz">Dec 4, 2024
+              <a href="https://www.isa-afp.org/release/afp-Hilbert_Space_Tensor_Product-2024-12-04.tar.gz">
+                Dec 4, 2024
               </a>
               : Isabelle2024
             </li>

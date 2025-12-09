@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs - Archive of Formal Proofs</title>
-    <meta name="description" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs" />
-  <meta property="og:url" content="https://isa-afp.org/entries/CommCSL.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formalization of CommCSL: A Relational Concurrent Separation Logic for Proving Information Flow Security in Concurrent Programs">
+    <meta property="og:url" content="https://isa-afp.org/entries/CommCSL.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>ormalization of <span class='first'>C</span>omm<span class='first'>C</span><span class='first'>S</span><span class='first'>L</span>: <span class='first'>A</span> <span class='first'>R</span>elational <span class='first'>C</span>oncurrent <span class='first'>S</span>eparation <span class='first'>L</span>ogic for <span class='first'>P</span>roving <span class='first'>I</span>nformation <span class='first'>F</span>low <span class='first'>S</span>ecurity in <span class='first'>C</span>oncurrent <span class='first'>P</span>rograms
+  <h1>
+    <span class='first'>F</span>ormalization of <span class='first'>C</span>omm<span class='first'>C</span><span class='first'>S</span><span class='first'>L</span>: <span class='first'>A</span> <span class='first'>R</span>elational <span class='first'>C</span>oncurrent <span class='first'>S</span>eparation <span class='first'>L</span>ogic for <span class='first'>P</span>roving <span class='first'>I</span>nformation <span class='first'>F</span>low <span class='first'>S</span>ecurity in <span class='first'>C</span>oncurrent <span class='first'>P</span>rograms
   </h1>
   <div>
       <p><a href="../authors/dardinier/">Thibault Dardinier</a> <a class="obfuscated" data="eyJ1c2VyIjpbInRoaWJhdWx0IiwiZGFyZGluaWVyIl0sImhvc3QiOlsiaW5mIiwiZXRoeiIsImNoIl19">📧</a>
@@ -132,17 +124,17 @@ In this entry, we formalize and prove the soundness of CommCSL, a novel relation
       </ul>
       <h3>Session CommCSL</h3>
       <ul>
-          <li><a href="../sessions/commcsl/#PartialMap">PartialMap</a></li>
-          <li><a href="../sessions/commcsl/#PosRat">PosRat</a></li>
-          <li><a href="../sessions/commcsl/#FractionalHeap">FractionalHeap</a></li>
-          <li><a href="../sessions/commcsl/#StateModel">StateModel</a></li>
-          <li><a href="../sessions/commcsl/#Lang">Lang</a></li>
-          <li><a href="../sessions/commcsl/#CommCSL">CommCSL</a></li>
-          <li><a href="../sessions/commcsl/#AbstractCommutativity">AbstractCommutativity</a></li>
-          <li><a href="../sessions/commcsl/#Guards">Guards</a></li>
-          <li><a href="../sessions/commcsl/#Safety">Safety</a></li>
-          <li><a href="../sessions/commcsl/#Soundness">Soundness</a></li>
-          <li><a href="../sessions/commcsl/#NonInterference">NonInterference</a></li>
+          <li><a href="../thys/AFP/CommCSL/PartialMap.html">PartialMap</a></li>
+          <li><a href="../thys/AFP/CommCSL/PosRat.html">PosRat</a></li>
+          <li><a href="../thys/AFP/CommCSL/FractionalHeap.html">FractionalHeap</a></li>
+          <li><a href="../thys/AFP/CommCSL/StateModel.html">StateModel</a></li>
+          <li><a href="../thys/AFP/CommCSL/Lang.html">Lang</a></li>
+          <li><a href="../thys/AFP/CommCSL/CommCSL.html">CommCSL</a></li>
+          <li><a href="../thys/AFP/CommCSL/AbstractCommutativity.html">AbstractCommutativity</a></li>
+          <li><a href="../thys/AFP/CommCSL/Guards.html">Guards</a></li>
+          <li><a href="../thys/AFP/CommCSL/Safety.html">Safety</a></li>
+          <li><a href="../thys/AFP/CommCSL/Soundness.html">Soundness</a></li>
+          <li><a href="../thys/AFP/CommCSL/NonInterference.html">NonInterference</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -190,22 +182,26 @@ In this entry, we formalize and prove the soundness of CommCSL, a novel relation
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CommCSL-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-CommCSL-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CommCSL-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-CommCSL-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CommCSL-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-CommCSL-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CommCSL-2023-04-04.tar.gz">Apr 4, 2023
+              <a href="https://www.isa-afp.org/release/afp-CommCSL-2023-04-04.tar.gz">
+                Apr 4, 2023
               </a>
               : Isabelle2022
             </li>

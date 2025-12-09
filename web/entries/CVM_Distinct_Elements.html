@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Verification of the CVM algorithm with a New Recursive Analysis Technique - Archive of Formal Proofs</title>
-    <meta name="description" content="Verification of the CVM algorithm with a New Recursive Analysis Technique in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Verification of the CVM algorithm with a New Recursive Analysis Technique in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Verification of the CVM algorithm with a New Recursive Analysis Technique" />
-  <meta property="og:url" content="https://isa-afp.org/entries/CVM_Distinct_Elements.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Verification of the CVM algorithm with a New Recursive Analysis Technique in the Archive of Formal Proofs">
+    <meta property="og:description" content="Verification of the CVM algorithm with a New Recursive Analysis Technique in the Archive of Formal Proofs">
+    <meta property="og:title" content="Verification of the CVM algorithm with a New Recursive Analysis Technique">
+    <meta property="og:url" content="https://isa-afp.org/entries/CVM_Distinct_Elements.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>V</span>erification of the <span class='first'>C</span><span class='first'>V</span><span class='first'>M</span> algorithm with a <span class='first'>N</span>ew <span class='first'>R</span>ecursive <span class='first'>A</span>nalysis <span class='first'>T</span>echnique
+  <h1>
+    <span class='first'>V</span>erification of the <span class='first'>C</span><span class='first'>V</span><span class='first'>M</span> algorithm with a <span class='first'>N</span>ew <span class='first'>R</span>ecursive <span class='first'>A</span>nalysis <span class='first'>T</span>echnique
   </h1>
   <div>
       <p><a href="../authors/karayel/">Emin Karayel</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1lIl0sImhvc3QiOlsiZW1pbmthcmF5ZWwiLCJkZSJdfQ==">📧</a>, <a href="../authors/khu/">Derek Khu</a> <a class="obfuscated" data="eyJ1c2VyIjpbIkRlcmVrX0todSJdLCJob3N0IjpbImkyciIsImEtc3RhciIsImVkdSIsInNnIl19">📧</a>, <a href="../authors/meel/">Kuldeep S. Meel</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1lZWwiXSwiaG9zdCI6WyJjcyIsInRvcm9udG8iLCJlZHUiXX0=">📧</a>, <a href="../authors/tan/">Yong Kiam Tan</a> <a class="obfuscated" data="eyJ1c2VyIjpbInlvbmdraWF0Il0sImhvc3QiOlsiY3MiLCJjbXUiLCJlZHUiXX0=">📧</a> and <a href="../authors/watts/">Seng Joe Watt</a> <a class="obfuscated" data="eyJ1c2VyIjpbIldhdHRfU2VuZ19Kb2UiXSwiaG9zdCI6WyJpMnIiLCJhLXN0YXIiLCJlZHUiLCJzZyJdfQ==">📧</a>
@@ -138,10 +130,10 @@ algorithms for the distinct elements problem possess.</p></div>
       </ul>
       <h3>Session CVM_Distinct_Elements</h3>
       <ul>
-          <li><a href="../sessions/cvm_distinct_elements/#CVM_Preliminary">CVM_Preliminary</a></li>
-          <li><a href="../sessions/cvm_distinct_elements/#CVM_Abstract_Algorithm">CVM_Abstract_Algorithm</a></li>
-          <li><a href="../sessions/cvm_distinct_elements/#CVM_Original_Algorithm">CVM_Original_Algorithm</a></li>
-          <li><a href="../sessions/cvm_distinct_elements/#CVM_New_Unbiased_Algorithm">CVM_New_Unbiased_Algorithm</a></li>
+          <li><a href="../thys/AFP/CVM_Distinct_Elements/CVM_Preliminary.html">CVM_Preliminary</a></li>
+          <li><a href="../thys/AFP/CVM_Distinct_Elements/CVM_Abstract_Algorithm.html">CVM_Abstract_Algorithm</a></li>
+          <li><a href="../thys/AFP/CVM_Distinct_Elements/CVM_Original_Algorithm.html">CVM_Original_Algorithm</a></li>
+          <li><a href="../thys/AFP/CVM_Distinct_Elements/CVM_New_Unbiased_Algorithm.html">CVM_New_Unbiased_Algorithm</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -198,12 +190,14 @@ algorithms for the distinct elements problem possess.</p></div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CVM_Distinct_Elements-2025-03-19.tar.gz">Mar 19, 2025
+              <a href="https://www.isa-afp.org/release/afp-CVM_Distinct_Elements-2025-03-19.tar.gz">
+                Mar 19, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CVM_Distinct_Elements-2025-02-07.tar.gz">Feb 7, 2025
+              <a href="https://www.isa-afp.org/release/afp-CVM_Distinct_Elements-2025-02-07.tar.gz">
+                Feb 7, 2025
               </a>
               : Isabelle2024
             </li>

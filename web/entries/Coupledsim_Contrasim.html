@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Coupled Similarity and Contrasimilarity, and How to Compute Them - Archive of Formal Proofs</title>
-    <meta name="description" content="Coupled Similarity and Contrasimilarity, and How to Compute Them in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Coupled Similarity and Contrasimilarity, and How to Compute Them in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Coupled Similarity and Contrasimilarity, and How to Compute Them" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Coupledsim_Contrasim.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Coupled Similarity and Contrasimilarity, and How to Compute Them in the Archive of Formal Proofs">
+    <meta property="og:description" content="Coupled Similarity and Contrasimilarity, and How to Compute Them in the Archive of Formal Proofs">
+    <meta property="og:title" content="Coupled Similarity and Contrasimilarity, and How to Compute Them">
+    <meta property="og:url" content="https://isa-afp.org/entries/Coupledsim_Contrasim.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>C</span>oupled <span class='first'>S</span>imilarity and <span class='first'>C</span>ontrasimilarity, and <span class='first'>H</span>ow to <span class='first'>C</span>ompute <span class='first'>T</span>hem
+  <h1>
+    <span class='first'>C</span>oupled <span class='first'>S</span>imilarity and <span class='first'>C</span>ontrasimilarity, and <span class='first'>H</span>ow to <span class='first'>C</span>ompute <span class='first'>T</span>hem
   </h1>
   <div>
       <p><a href="../authors/bisping/">Benjamin Bisping</a> <a href="https://bbisping.de">🌐</a> and <a href="../authors/montanari/">Luisa Montanari</a>
@@ -132,20 +124,20 @@
       </ul>
       <h3>Session Coupledsim_Contrasim</h3>
       <ul>
-          <li><a href="../sessions/coupledsim_contrasim/#Transition_Systems">Transition_Systems</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Weak_Transition_Systems">Weak_Transition_Systems</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Simple_Game">Simple_Game</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Strong_Relations">Strong_Relations</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Weak_Relations">Weak_Relations</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Contrasimulation">Contrasimulation</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Coupled_Simulation">Coupled_Simulation</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Coupledsim_Game_Delay">Coupledsim_Game_Delay</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Coupledsim_Fixpoint_Algo_Delay">Coupledsim_Fixpoint_Algo_Delay</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Contrasim_Word_Game">Contrasim_Word_Game</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Contrasim_Set_Game">Contrasim_Set_Game</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#HM_Logic_Infinitary">HM_Logic_Infinitary</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Weak_HML_Contrasimulation">Weak_HML_Contrasimulation</a></li>
-          <li><a href="../sessions/coupledsim_contrasim/#Tau_Sinks">Tau_Sinks</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Transition_Systems.html">Transition_Systems</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Weak_Transition_Systems.html">Weak_Transition_Systems</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Simple_Game.html">Simple_Game</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Strong_Relations.html">Strong_Relations</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Weak_Relations.html">Weak_Relations</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Contrasimulation.html">Contrasimulation</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Coupled_Simulation.html">Coupled_Simulation</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Coupledsim_Game_Delay.html">Coupledsim_Game_Delay</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Coupledsim_Fixpoint_Algo_Delay.html">Coupledsim_Fixpoint_Algo_Delay</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Contrasim_Word_Game.html">Contrasim_Word_Game</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Contrasim_Set_Game.html">Contrasim_Set_Game</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/HM_Logic_Infinitary.html">HM_Logic_Infinitary</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Weak_HML_Contrasimulation.html">Weak_HML_Contrasimulation</a></li>
+          <li><a href="../thys/AFP/Coupledsim_Contrasim/Tau_Sinks.html">Tau_Sinks</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -193,17 +185,20 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2025-03-19.tar.gz">Mar 19, 2025
+              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2025-03-19.tar.gz">
+                Mar 19, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2023-10-11.tar.gz">Oct 11, 2023
+              <a href="https://www.isa-afp.org/release/afp-Coupledsim_Contrasim-2023-10-11.tar.gz">
+                Oct 11, 2023
               </a>
               : Isabelle2023
             </li>

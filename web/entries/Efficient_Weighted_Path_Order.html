@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Verified Efficient Implementation of the Weighted Path Order - Archive of Formal Proofs</title>
-    <meta name="description" content="A Verified Efficient Implementation of the Weighted Path Order in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A Verified Efficient Implementation of the Weighted Path Order in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A Verified Efficient Implementation of the Weighted Path Order" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A Verified Efficient Implementation of the Weighted Path Order in the Archive of Formal Proofs">
+    <meta property="og:description" content="A Verified Efficient Implementation of the Weighted Path Order in the Archive of Formal Proofs">
+    <meta property="og:title" content="A Verified Efficient Implementation of the Weighted Path Order">
+    <meta property="og:url" content="https://isa-afp.org/entries/Efficient_Weighted_Path_Order.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>E</span>fficient <span class='first'>I</span>mplementation of the <span class='first'>W</span>eighted <span class='first'>P</span>ath <span class='first'>O</span>rder
+  <h1>
+    <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>E</span>fficient <span class='first'>I</span>mplementation of the <span class='first'>W</span>eighted <span class='first'>P</span>ath <span class='first'>O</span>rder
   </h1>
   <div>
       <p><a href="../authors/thiemann/">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a> and <a href="../authors/wenninger/">Elias Wenninger</a>
@@ -134,12 +126,12 @@ order (RPO), we also easily derive an efficient implementation of RPO.
       </ul>
       <h3>Session Efficient_Weighted_Path_Order</h3>
       <ul>
-          <li><a href="../sessions/efficient_weighted_path_order/#Indexed_Term">Indexed_Term</a></li>
-          <li><a href="../sessions/efficient_weighted_path_order/#List_Memo_Functions">List_Memo_Functions</a></li>
-          <li><a href="../sessions/efficient_weighted_path_order/#WPO_Approx">WPO_Approx</a></li>
-          <li><a href="../sessions/efficient_weighted_path_order/#WPO_Mem_Impl">WPO_Mem_Impl</a></li>
-          <li><a href="../sessions/efficient_weighted_path_order/#RPO_Unbounded">RPO_Unbounded</a></li>
-          <li><a href="../sessions/efficient_weighted_path_order/#RPO_Mem_Impl">RPO_Mem_Impl</a></li>
+          <li><a href="../thys/AFP/Efficient_Weighted_Path_Order/Indexed_Term.html">Indexed_Term</a></li>
+          <li><a href="../thys/AFP/Efficient_Weighted_Path_Order/List_Memo_Functions.html">List_Memo_Functions</a></li>
+          <li><a href="../thys/AFP/Efficient_Weighted_Path_Order/WPO_Approx.html">WPO_Approx</a></li>
+          <li><a href="../thys/AFP/Efficient_Weighted_Path_Order/WPO_Mem_Impl.html">WPO_Mem_Impl</a></li>
+          <li><a href="../thys/AFP/Efficient_Weighted_Path_Order/RPO_Unbounded.html">RPO_Unbounded</a></li>
+          <li><a href="../thys/AFP/Efficient_Weighted_Path_Order/RPO_Mem_Impl.html">RPO_Mem_Impl</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -193,22 +185,26 @@ order (RPO), we also easily derive an efficient implementation of RPO.
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-06-02.tar.gz">Jun 2, 2023
+              <a href="https://www.isa-afp.org/release/afp-Efficient_Weighted_Path_Order-2023-06-02.tar.gz">
+                Jun 2, 2023
               </a>
               : Isabelle2022
             </li>

@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Finite Machine Word Library - Archive of Formal Proofs</title>
-    <meta name="description" content="Finite Machine Word Library in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Finite Machine Word Library in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Finite Machine Word Library" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Word_Lib.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Finite Machine Word Library in the Archive of Formal Proofs">
+    <meta property="og:description" content="Finite Machine Word Library in the Archive of Formal Proofs">
+    <meta property="og:title" content="Finite Machine Word Library">
+    <meta property="og:url" content="https://isa-afp.org/entries/Word_Lib.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>inite <span class='first'>M</span>achine <span class='first'>W</span>ord <span class='first'>L</span>ibrary
+  <h1>
+    <span class='first'>F</span>inite <span class='first'>M</span>achine <span class='first'>W</span>ord <span class='first'>L</span>ibrary
   </h1>
   <div>
       <p><a href="../authors/beeren/">Joel Beeren</a>, <a href="../authors/fernandez/">Matthew Fernandez</a>, <a href="../authors/gao/">Xin Gao</a>, <a href="../authors/klein/">Gerwin Klein</a> <a href="http://www.cse.unsw.edu.au/~kleing/">🌐</a>, <a href="../authors/kolanski/">Rafal Kolanski</a>, <a href="../authors/lim/">Japheth Lim</a>, <a href="../authors/lewis/">Corey Lewis</a>, <a href="../authors/matichuk/">Daniel Matichuk</a> and <a href="../authors/sewell/">Thomas Sewell</a>
@@ -129,57 +121,57 @@ commonly used 32 and 64-bit bases.</div>
       </ul>
       <h3>Session Word_Lib</h3>
       <ul>
-          <li><a href="../sessions/word_lib/#Enumeration">Enumeration</a></li>
-          <li><a href="../sessions/word_lib/#Even_More_List">Even_More_List</a></li>
-          <li><a href="../sessions/word_lib/#More_Arithmetic">More_Arithmetic</a></li>
-          <li><a href="../sessions/word_lib/#More_Divides">More_Divides</a></li>
-          <li><a href="../sessions/word_lib/#More_Bit_Ring">More_Bit_Ring</a></li>
-          <li><a href="../sessions/word_lib/#More_Word">More_Word</a></li>
-          <li><a href="../sessions/word_lib/#Bit_Shifts_Infix_Syntax">Bit_Shifts_Infix_Syntax</a></li>
-          <li><a href="../sessions/word_lib/#Most_significant_bit">Most_significant_bit</a></li>
-          <li><a href="../sessions/word_lib/#Sgn_Abs">Sgn_Abs</a></li>
-          <li><a href="../sessions/word_lib/#Legacy_Aliases">Legacy_Aliases</a></li>
-          <li><a href="../sessions/word_lib/#More_Misc">More_Misc</a></li>
-          <li><a href="../sessions/word_lib/#More_Sublist">More_Sublist</a></li>
-          <li><a href="../sessions/word_lib/#Bit_Comprehension">Bit_Comprehension</a></li>
-          <li><a href="../sessions/word_lib/#More_Int">More_Int</a></li>
-          <li><a href="../sessions/word_lib/#Aligned">Aligned</a></li>
-          <li><a href="../sessions/word_lib/#Next_and_Prev">Next_and_Prev</a></li>
-          <li><a href="../sessions/word_lib/#Signed_Division_Word">Signed_Division_Word</a></li>
-          <li><a href="../sessions/word_lib/#Many_More">Many_More</a></li>
-          <li><a href="../sessions/word_lib/#Singleton_Bit_Shifts">Singleton_Bit_Shifts</a></li>
-          <li><a href="../sessions/word_lib/#Typedef_Morphisms">Typedef_Morphisms</a></li>
-          <li><a href="../sessions/word_lib/#Generic_set_bit">Generic_set_bit</a></li>
-          <li><a href="../sessions/word_lib/#Least_significant_bit">Least_significant_bit</a></li>
-          <li><a href="../sessions/word_lib/#Rsplit">Rsplit</a></li>
-          <li><a href="../sessions/word_lib/#Reversed_Bit_Lists">Reversed_Bit_Lists</a></li>
-          <li><a href="../sessions/word_lib/#Bin_sign">Bin_sign</a></li>
-          <li><a href="../sessions/word_lib/#Bitwise">Bitwise</a></li>
-          <li><a href="../sessions/word_lib/#Bit_Comprehension_Int">Bit_Comprehension_Int</a></li>
-          <li><a href="../sessions/word_lib/#Signed_Words">Signed_Words</a></li>
-          <li><a href="../sessions/word_lib/#Bitwise_Signed">Bitwise_Signed</a></li>
-          <li><a href="../sessions/word_lib/#Enumeration_Word">Enumeration_Word</a></li>
-          <li><a href="../sessions/word_lib/#Hex_Words">Hex_Words</a></li>
-          <li><a href="../sessions/word_lib/#Norm_Words">Norm_Words</a></li>
-          <li><a href="../sessions/word_lib/#Syntax_Bundles">Syntax_Bundles</a></li>
-          <li><a href="../sessions/word_lib/#Type_Syntax">Type_Syntax</a></li>
-          <li><a href="../sessions/word_lib/#Word_EqI">Word_EqI</a></li>
-          <li><a href="../sessions/word_lib/#Boolean_Inequalities">Boolean_Inequalities</a></li>
-          <li><a href="../sessions/word_lib/#Word_Lemmas">Word_Lemmas</a></li>
-          <li><a href="../sessions/word_lib/#Word_8">Word_8</a></li>
-          <li><a href="../sessions/word_lib/#Word_16">Word_16</a></li>
-          <li><a href="../sessions/word_lib/#Word_Syntax">Word_Syntax</a></li>
-          <li><a href="../sessions/word_lib/#Word_Names">Word_Names</a></li>
-          <li><a href="../sessions/word_lib/#More_Word_Operations">More_Word_Operations</a></li>
-          <li><a href="../sessions/word_lib/#Word_32">Word_32</a></li>
-          <li><a href="../sessions/word_lib/#Word_Lib_Sumo">Word_Lib_Sumo</a></li>
-          <li><a href="../sessions/word_lib/#Machine_Word_32_Basics">Machine_Word_32_Basics</a></li>
-          <li><a href="../sessions/word_lib/#Machine_Word_32">Machine_Word_32</a></li>
-          <li><a href="../sessions/word_lib/#Word_64">Word_64</a></li>
-          <li><a href="../sessions/word_lib/#Machine_Word_64_Basics">Machine_Word_64_Basics</a></li>
-          <li><a href="../sessions/word_lib/#Machine_Word_64">Machine_Word_64</a></li>
-          <li><a href="../sessions/word_lib/#Guide">Guide</a></li>
-          <li><a href="../sessions/word_lib/#Examples">Examples</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Enumeration.html">Enumeration</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Even_More_List.html">Even_More_List</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Arithmetic.html">More_Arithmetic</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Divides.html">More_Divides</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Bit_Ring.html">More_Bit_Ring</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Word.html">More_Word</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Bit_Shifts_Infix_Syntax.html">Bit_Shifts_Infix_Syntax</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Most_significant_bit.html">Most_significant_bit</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Sgn_Abs.html">Sgn_Abs</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Legacy_Aliases.html">Legacy_Aliases</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Misc.html">More_Misc</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Sublist.html">More_Sublist</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Bit_Comprehension.html">Bit_Comprehension</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Int.html">More_Int</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Aligned.html">Aligned</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Next_and_Prev.html">Next_and_Prev</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Signed_Division_Word.html">Signed_Division_Word</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Many_More.html">Many_More</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Singleton_Bit_Shifts.html">Singleton_Bit_Shifts</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Typedef_Morphisms.html">Typedef_Morphisms</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Generic_set_bit.html">Generic_set_bit</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Least_significant_bit.html">Least_significant_bit</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Rsplit.html">Rsplit</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Reversed_Bit_Lists.html">Reversed_Bit_Lists</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Bin_sign.html">Bin_sign</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Bitwise.html">Bitwise</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Bit_Comprehension_Int.html">Bit_Comprehension_Int</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Signed_Words.html">Signed_Words</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Bitwise_Signed.html">Bitwise_Signed</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Enumeration_Word.html">Enumeration_Word</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Hex_Words.html">Hex_Words</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Norm_Words.html">Norm_Words</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Syntax_Bundles.html">Syntax_Bundles</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Type_Syntax.html">Type_Syntax</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_EqI.html">Word_EqI</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Boolean_Inequalities.html">Boolean_Inequalities</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_Lemmas.html">Word_Lemmas</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_8.html">Word_8</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_16.html">Word_16</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_Syntax.html">Word_Syntax</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_Names.html">Word_Names</a></li>
+          <li><a href="../thys/AFP/Word_Lib/More_Word_Operations.html">More_Word_Operations</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_32.html">Word_32</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_Lib_Sumo.html">Word_Lib_Sumo</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Machine_Word_32_Basics.html">Machine_Word_32_Basics</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Machine_Word_32.html">Machine_Word_32</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Word_64.html">Word_64</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Machine_Word_64_Basics.html">Machine_Word_64_Basics</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Machine_Word_64.html">Machine_Word_64</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Guide.html">Guide</a></li>
+          <li><a href="../thys/AFP/Word_Lib/Examples.html">Examples</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -243,62 +235,74 @@ commonly used 32 and 64-bit bases.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-06-09.tar.gz">Jun 9, 2016
+              <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-06-09.tar.gz">
+                Jun 9, 2016
               </a>
               : Isabelle2016
             </li>

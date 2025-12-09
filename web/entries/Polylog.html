@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Polylogarithm Function - Archive of Formal Proofs</title>
-    <meta name="description" content="The Polylogarithm Function in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Polylogarithm Function in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Polylogarithm Function" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Polylog.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Polylogarithm Function in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Polylogarithm Function in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Polylogarithm Function">
+    <meta property="og:url" content="https://isa-afp.org/entries/Polylog.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>P</span>olylogarithm <span class='first'>F</span>unction
+  <h1>
+    <span class='first'>T</span>he <span class='first'>P</span>olylogarithm <span class='first'>F</span>unction
   </h1>
   <div>
       <p><a href="../authors/eberl/">Manuel Eberl</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnVlbCJdLCJob3N0IjpbInBydXZpc3RvIiwib3JnIl19">📧</a>
@@ -110,7 +102,7 @@
     <div class="abstract mathjax_process"><p>This entry provides a definition of the <em>Polylogarithm function</em>, commonly denoted as
 $\text{Li}_s(z)$. Here, $z$ is a complex number and $s$ an integer parameter. This function
 can be defined by the power series expression $\text{Li}_s(z) = \sum_{k=1}^\infty \frac{z^k}{k^s}$
-for $|z| < 1$ and analytically extended to the entire complex plane, except for a branch cut on
+for $|z| &lt; 1$ and analytically extended to the entire complex plane, except for a branch cut on
 $\mathbb{R}_{\geq 1}$.</p>
 <p>Several basic properties are also proven, such as the relationship to the Eulerian polynomials via
 $\text{Li}_{-k}(z) = z (1 - z)^{k-1} A_k(z)$ for $k\geq 0$,
@@ -128,7 +120,7 @@ and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li
       </ul>
       <h3>Session Polylog</h3>
       <ul>
-          <li><a href="../sessions/polylog/#Polylog">Polylog</a></li>
+          <li><a href="../thys/AFP/Polylog/Polylog.html">Polylog</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -189,17 +181,20 @@ and the duplication formula $\text{Li}_s(z) + \text{Li}_s(-z) = 2^{1-s} \text{Li
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Polylog-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Polylog-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Polylog-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Polylog-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Polylog-2023-11-22.tar.gz">Nov 22, 2023
+              <a href="https://www.isa-afp.org/release/afp-Polylog-2023-11-22.tar.gz">
+                Nov 22, 2023
               </a>
               : Isabelle2023
             </li>

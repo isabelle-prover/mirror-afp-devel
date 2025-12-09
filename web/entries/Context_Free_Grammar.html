@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Context-Free Grammars and Languages - Archive of Formal Proofs</title>
-    <meta name="description" content="Context-Free Grammars and Languages in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Context-Free Grammars and Languages in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Context-Free Grammars and Languages" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Context_Free_Grammar.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Context-Free Grammars and Languages in the Archive of Formal Proofs">
+    <meta property="og:description" content="Context-Free Grammars and Languages in the Archive of Formal Proofs">
+    <meta property="og:title" content="Context-Free Grammars and Languages">
+    <meta property="og:url" content="https://isa-afp.org/entries/Context_Free_Grammar.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>C</span>ontext-<span class='first'>F</span>ree <span class='first'>G</span>rammars and <span class='first'>L</span>anguages
+  <h1>
+    <span class='first'>C</span>ontext-<span class='first'>F</span>ree <span class='first'>G</span>rammars and <span class='first'>L</span>anguages
   </h1>
   <div>
       <p><a href="../authors/nipkow/">Tobias Nipkow</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm5pcGtvdyJdLCJob3N0IjpbImluIiwidHVtIiwiZGUiXX0=">📧</a>, <a href="../authors/gschossmann/">Markus Gschoßmann</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hcmt1cyIsImdzY2hvc3NtYW5uIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>, <a href="../authors/krayer/">Felix Krayer</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZlbGl4Iiwia3JheWVyIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>, <a href="../authors/lehr/">Fabian Lehr</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZhYmlhbiIsImxlaHIiXSwiaG9zdCI6WyJ0dW0iLCJkZSJdfQ==">📧</a>, <a href="../authors/philipp/">Bruno Philipp</a> <a class="obfuscated" data="eyJ1c2VyIjpbImdlOTVmZWsiXSwiaG9zdCI6WyJteXR1bSIsImRlIl19">📧</a>, <a href="../authors/stimpfle/">August Martin Stimpfle</a>, <a href="../authors/taskin/">Kaan Taskin</a> <a class="obfuscated" data="eyJ1c2VyIjpbImthYW50YXNraW4yMDIyIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0=">📧</a> and <a href="../authors/yamada/">Akihisa Yamada</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFraWhpc2EiLCJ5YW1hZGEiXSwiaG9zdCI6WyJ1aWJrIiwiYWMiLCJhdCJdfQ==">📧</a>
@@ -128,26 +120,26 @@ Binarization proofs due to Felipe Escallon<br>
       </ul>
       <h3>Session Context_Free_Grammar</h3>
       <ul>
-          <li><a href="../sessions/context_free_grammar/#Context_Free_Grammar">Context_Free_Grammar</a></li>
-          <li><a href="../sessions/context_free_grammar/#Parse_Tree">Parse_Tree</a></li>
-          <li><a href="../sessions/context_free_grammar/#Renaming_CFG">Renaming_CFG</a></li>
-          <li><a href="../sessions/context_free_grammar/#Disjoint_Union_CFG">Disjoint_Union_CFG</a></li>
-          <li><a href="../sessions/context_free_grammar/#Context_Free_Language">Context_Free_Language</a></li>
-          <li><a href="../sessions/context_free_grammar/#Expansion">Expansion</a></li>
-          <li><a href="../sessions/context_free_grammar/#Replace_Terminals">Replace_Terminals</a></li>
-          <li><a href="../sessions/context_free_grammar/#Unit_Elimination">Unit_Elimination</a></li>
-          <li><a href="../sessions/context_free_grammar/#Epsilon_Elimination">Epsilon_Elimination</a></li>
-          <li><a href="../sessions/context_free_grammar/#Chomsky_Normal_Form">Chomsky_Normal_Form</a></li>
-          <li><a href="../sessions/context_free_grammar/#Pumping_Lemma_CFG">Pumping_Lemma_CFG</a></li>
-          <li><a href="../sessions/context_free_grammar/#AnBnCn_not_CFL">AnBnCn_not_CFL</a></li>
-          <li><a href="../sessions/context_free_grammar/#CFL_Not_Intersection_Closed">CFL_Not_Intersection_Closed</a></li>
-          <li><a href="../sessions/context_free_grammar/#Inlining1Prod">Inlining1Prod</a></li>
-          <li><a href="../sessions/context_free_grammar/#Binarize">Binarize</a></li>
-          <li><a href="../sessions/context_free_grammar/#Right_Linear">Right_Linear</a></li>
-          <li><a href="../sessions/context_free_grammar/#NDA_rlin2">NDA_rlin2</a></li>
-          <li><a href="../sessions/context_free_grammar/#Right_Linear_Automata">Right_Linear_Automata</a></li>
-          <li><a href="../sessions/context_free_grammar/#Pumping_Lemma_Regular">Pumping_Lemma_Regular</a></li>
-          <li><a href="../sessions/context_free_grammar/#AnBn_Not_Regular">AnBn_Not_Regular</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Context_Free_Grammar.html">Context_Free_Grammar</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Parse_Tree.html">Parse_Tree</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Renaming_CFG.html">Renaming_CFG</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Disjoint_Union_CFG.html">Disjoint_Union_CFG</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Context_Free_Language.html">Context_Free_Language</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Expansion.html">Expansion</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Replace_Terminals.html">Replace_Terminals</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Unit_Elimination.html">Unit_Elimination</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Epsilon_Elimination.html">Epsilon_Elimination</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Chomsky_Normal_Form.html">Chomsky_Normal_Form</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Pumping_Lemma_CFG.html">Pumping_Lemma_CFG</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/AnBnCn_not_CFL.html">AnBnCn_not_CFL</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/CFL_Not_Intersection_Closed.html">CFL_Not_Intersection_Closed</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Inlining1Prod.html">Inlining1Prod</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Binarize.html">Binarize</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Right_Linear.html">Right_Linear</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/NDA_rlin2.html">NDA_rlin2</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Right_Linear_Automata.html">Right_Linear_Automata</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/Pumping_Lemma_Regular.html">Pumping_Lemma_Regular</a></li>
+          <li><a href="../thys/AFP/Context_Free_Grammar/AnBn_Not_Regular.html">AnBn_Not_Regular</a></li>
       </ul>
 
     <div class="flex-wrap">

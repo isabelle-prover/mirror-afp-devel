@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ABY3 Multiplication and Array Shuffling - Archive of Formal Proofs</title>
-    <meta name="description" content="ABY3 Multiplication and Array Shuffling in the Archive of Formal Proofs" />
-    <meta property="og:description" content="ABY3 Multiplication and Array Shuffling in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="ABY3 Multiplication and Array Shuffling" />
-  <meta property="og:url" content="https://isa-afp.org/entries/ABY3_Protocols.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="ABY3 Multiplication and Array Shuffling in the Archive of Formal Proofs">
+    <meta property="og:description" content="ABY3 Multiplication and Array Shuffling in the Archive of Formal Proofs">
+    <meta property="og:title" content="ABY3 Multiplication and Array Shuffling">
+    <meta property="og:url" content="https://isa-afp.org/entries/ABY3_Protocols.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span><span class='first'>B</span><span class='first'>Y</span>3 <span class='first'>M</span>ultiplication and <span class='first'>A</span>rray <span class='first'>S</span>huffling
+  <h1>
+    <span class='first'>A</span><span class='first'>B</span><span class='first'>Y</span>3 <span class='first'>M</span>ultiplication and <span class='first'>A</span>rray <span class='first'>S</span>huffling
   </h1>
   <div>
       <p><a href="../authors/hu/">Shuwei Hu</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNodXdlaSIsImh1Il0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
@@ -119,13 +111,13 @@
       </ul>
       <h3>Session ABY3_Protocols</h3>
       <ul>
-          <li><a href="../sessions/aby3_protocols/#Finite_Number_Type">Finite_Number_Type</a></li>
-          <li><a href="../sessions/aby3_protocols/#Additive_Sharing">Additive_Sharing</a></li>
-          <li><a href="../sessions/aby3_protocols/#Spmf_Common">Spmf_Common</a></li>
-          <li><a href="../sessions/aby3_protocols/#Sharing_Lemmas">Sharing_Lemmas</a></li>
-          <li><a href="../sessions/aby3_protocols/#Shuffle">Shuffle</a></li>
-          <li><a href="../sessions/aby3_protocols/#Multiplication">Multiplication</a></li>
-          <li><a href="../sessions/aby3_protocols/#Multiplication_Synthesization">Multiplication_Synthesization</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Finite_Number_Type.html">Finite_Number_Type</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Additive_Sharing.html">Additive_Sharing</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Spmf_Common.html">Spmf_Common</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Sharing_Lemmas.html">Sharing_Lemmas</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Shuffle.html">Shuffle</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Multiplication.html">Multiplication</a></li>
+          <li><a href="../thys/AFP/ABY3_Protocols/Multiplication_Synthesization.html">Multiplication_Synthesization</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -179,27 +171,32 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2025-03-16.tar.gz">Mar 16, 2025
+              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2025-03-16.tar.gz">
+                Mar 16, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2023-02-05.tar.gz">Feb 5, 2023
+              <a href="https://www.isa-afp.org/release/afp-ABY3_Protocols-2023-02-05.tar.gz">
+                Feb 5, 2023
               </a>
               : Isabelle2022
             </li>

@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Verified Proof Checker for Metric First-Order Temporal Logic - Archive of Formal Proofs</title>
-    <meta name="description" content="A Verified Proof Checker for Metric First-Order Temporal Logic in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A Verified Proof Checker for Metric First-Order Temporal Logic in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A Verified Proof Checker for Metric First-Order Temporal Logic" />
-  <meta property="og:url" content="https://isa-afp.org/entries/MFOTL_Checker.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A Verified Proof Checker for Metric First-Order Temporal Logic in the Archive of Formal Proofs">
+    <meta property="og:description" content="A Verified Proof Checker for Metric First-Order Temporal Logic in the Archive of Formal Proofs">
+    <meta property="og:title" content="A Verified Proof Checker for Metric First-Order Temporal Logic">
+    <meta property="og:url" content="https://isa-afp.org/entries/MFOTL_Checker.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>P</span>roof <span class='first'>C</span>hecker for <span class='first'>M</span>etric <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>T</span>emporal <span class='first'>L</span>ogic
+  <h1>
+    <span class='first'>A</span> <span class='first'>V</span>erified <span class='first'>P</span>roof <span class='first'>C</span>hecker for <span class='first'>M</span>etric <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>T</span>emporal <span class='first'>L</span>ogic
   </h1>
   <div>
       <p><a href="../authors/herasimau/">Andrei Herasimau</a>, <a href="../authors/munive/">Jonathan Julian Huerta y Munive</a> <a class="obfuscated" data="eyJ1c2VyIjpbImpvbmp1bGlhbjIzIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0=">📧</a>, <a href="../authors/lima/">Leonardo Lima</a>, <a href="../authors/raszyk/">Martin Raszyk</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm0iLCJyYXN6eWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/traytel/">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
@@ -135,21 +127,21 @@
       </ul>
       <h3>Session MFOTL_Checker</h3>
       <ul>
-          <li><a href="../sessions/mfotl_checker/#Trace">Trace</a></li>
-          <li><a href="../sessions/mfotl_checker/#Regex">Regex</a></li>
-          <li><a href="../sessions/mfotl_checker/#Formula">Formula</a></li>
-          <li><a href="../sessions/mfotl_checker/#Partition">Partition</a></li>
-          <li><a href="../sessions/mfotl_checker/#Regex_Proof_System">Regex_Proof_System</a></li>
-          <li><a href="../sessions/mfotl_checker/#Proof_System">Proof_System</a></li>
-          <li><a href="../sessions/mfotl_checker/#Regex_Proof_Object">Regex_Proof_Object</a></li>
-          <li><a href="../sessions/mfotl_checker/#Proof_Object">Proof_Object</a></li>
-          <li><a href="../sessions/mfotl_checker/#Prelim">Prelim</a></li>
-          <li><a href="../sessions/mfotl_checker/#Regex_Checker">Regex_Checker</a></li>
-          <li><a href="../sessions/mfotl_checker/#Checker">Checker</a></li>
-          <li><a href="../sessions/mfotl_checker/#Event_Data">Event_Data</a></li>
-          <li><a href="../sessions/mfotl_checker/#Checker_Code">Checker_Code</a></li>
-          <li><a href="../sessions/mfotl_checker/#Monitor">Monitor</a></li>
-          <li><a href="../sessions/mfotl_checker/#Examples">Examples</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Trace.html">Trace</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Regex.html">Regex</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Formula.html">Formula</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Partition.html">Partition</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Regex_Proof_System.html">Regex_Proof_System</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Proof_System.html">Proof_System</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Regex_Proof_Object.html">Regex_Proof_Object</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Proof_Object.html">Proof_Object</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Prelim.html">Prelim</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Regex_Checker.html">Regex_Checker</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Checker.html">Checker</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Event_Data.html">Event_Data</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Checker_Code.html">Checker_Code</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Monitor.html">Monitor</a></li>
+          <li><a href="../thys/AFP/MFOTL_Checker/Examples.html">Examples</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -203,17 +195,20 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFOTL_Checker-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-MFOTL_Checker-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFOTL_Checker-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-MFOTL_Checker-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-MFOTL_Checker-2024-04-19.tar.gz">Apr 19, 2024
+              <a href="https://www.isa-afp.org/release/afp-MFOTL_Checker-2024-04-19.tar.gz">
+                Apr 19, 2024
               </a>
               : Isabelle2023
             </li>

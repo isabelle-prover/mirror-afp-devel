@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A Modular Formalization of Superposition - Archive of Formal Proofs</title>
-    <meta name="description" content="A Modular Formalization of Superposition in the Archive of Formal Proofs" />
-    <meta property="og:description" content="A Modular Formalization of Superposition in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="A Modular Formalization of Superposition" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Superposition_Calculus.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="A Modular Formalization of Superposition in the Archive of Formal Proofs">
+    <meta property="og:description" content="A Modular Formalization of Superposition in the Archive of Formal Proofs">
+    <meta property="og:title" content="A Modular Formalization of Superposition">
+    <meta property="og:url" content="https://isa-afp.org/entries/Superposition_Calculus.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>A</span> <span class='first'>M</span>odular <span class='first'>F</span>ormalization of <span class='first'>S</span>uperposition
+  <h1>
+    <span class='first'>A</span> <span class='first'>M</span>odular <span class='first'>F</span>ormalization of <span class='first'>S</span>uperposition
   </h1>
   <div>
       <p><a href="../authors/desharnais/">Martin Desharnais-Schäfer</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hcnRpbiIsImRlc2hhcm5haXMtc2NoYWVmZXIiXSwiaG9zdCI6WyJpZmkiLCJsbXUiLCJkZSJdfQ==">📧</a> and <a href="../authors/toth/">Balazs Toth</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJhbGF6cyIsInRvdGgiXSwiaG9zdCI6WyJsbXUiLCJkZSJdfQ==">📧</a>
@@ -123,24 +115,24 @@
       </ul>
       <h3>Session Superposition_Calculus</h3>
       <ul>
-          <li><a href="../sessions/superposition_calculus/#Ground_Superposition">Ground_Superposition</a></li>
-          <li><a href="../sessions/superposition_calculus/#Abstract_Rewriting_Extra">Abstract_Rewriting_Extra</a></li>
-          <li><a href="../sessions/superposition_calculus/#Relation_Extra">Relation_Extra</a></li>
-          <li><a href="../sessions/superposition_calculus/#Ground_Superposition_Completeness">Ground_Superposition_Completeness</a></li>
-          <li><a href="../sessions/superposition_calculus/#Ground_Superposition_Soundness">Ground_Superposition_Soundness</a></li>
-          <li><a href="../sessions/superposition_calculus/#Typed_Ground_Superposition">Typed_Ground_Superposition</a></li>
-          <li><a href="../sessions/superposition_calculus/#Superposition">Superposition</a></li>
-          <li><a href="../sessions/superposition_calculus/#Monomorphic_Superposition">Monomorphic_Superposition</a></li>
-          <li><a href="../sessions/superposition_calculus/#Ground_Superposition_Example">Ground_Superposition_Example</a></li>
-          <li><a href="../sessions/superposition_calculus/#Grounded_Superposition">Grounded_Superposition</a></li>
-          <li><a href="../sessions/superposition_calculus/#Superposition_Welltypedness_Preservation">Superposition_Welltypedness_Preservation</a></li>
-          <li><a href="../sessions/superposition_calculus/#Superposition_Completeness">Superposition_Completeness</a></li>
-          <li><a href="../sessions/superposition_calculus/#Superposition_Soundness">Superposition_Soundness</a></li>
-          <li><a href="../sessions/superposition_calculus/#Superposition_Example">Superposition_Example</a></li>
-          <li><a href="../sessions/superposition_calculus/#Untyped_Superposition">Untyped_Superposition</a></li>
-          <li><a href="../sessions/superposition_calculus/#Untyped_Superposition_Inference_System">Untyped_Superposition_Inference_System</a></li>
-          <li><a href="../sessions/superposition_calculus/#Untyped_Superposition_Completeness">Untyped_Superposition_Completeness</a></li>
-          <li><a href="../sessions/superposition_calculus/#Untyped_Superposition_Soundness">Untyped_Superposition_Soundness</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Ground_Superposition.html">Ground_Superposition</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Abstract_Rewriting_Extra.html">Abstract_Rewriting_Extra</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Relation_Extra.html">Relation_Extra</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Ground_Superposition_Completeness.html">Ground_Superposition_Completeness</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Ground_Superposition_Soundness.html">Ground_Superposition_Soundness</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Typed_Ground_Superposition.html">Typed_Ground_Superposition</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Superposition.html">Superposition</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Monomorphic_Superposition.html">Monomorphic_Superposition</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Ground_Superposition_Example.html">Ground_Superposition_Example</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Grounded_Superposition.html">Grounded_Superposition</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Superposition_Welltypedness_Preservation.html">Superposition_Welltypedness_Preservation</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Superposition_Completeness.html">Superposition_Completeness</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Superposition_Soundness.html">Superposition_Soundness</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Superposition_Example.html">Superposition_Example</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Untyped_Superposition.html">Untyped_Superposition</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Untyped_Superposition_Inference_System.html">Untyped_Superposition_Inference_System</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Untyped_Superposition_Completeness.html">Untyped_Superposition_Completeness</a></li>
+          <li><a href="../thys/AFP/Superposition_Calculus/Untyped_Superposition_Soundness.html">Untyped_Superposition_Soundness</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -202,12 +194,14 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Superposition_Calculus-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Superposition_Calculus-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Superposition_Calculus-2024-10-30.tar.gz">Oct 30, 2024
+              <a href="https://www.isa-afp.org/release/afp-Superposition_Calculus-2024-10-30.tar.gz">
+                Oct 30, 2024
               </a>
               : Isabelle2024
             </li>

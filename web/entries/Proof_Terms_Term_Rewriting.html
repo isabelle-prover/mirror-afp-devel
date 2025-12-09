@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Proof Terms for Term Rewriting - Archive of Formal Proofs</title>
-    <meta name="description" content="Proof Terms for Term Rewriting in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Proof Terms for Term Rewriting in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Proof Terms for Term Rewriting" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Proof Terms for Term Rewriting in the Archive of Formal Proofs">
+    <meta property="og:description" content="Proof Terms for Term Rewriting in the Archive of Formal Proofs">
+    <meta property="og:title" content="Proof Terms for Term Rewriting">
+    <meta property="og:url" content="https://isa-afp.org/entries/Proof_Terms_Term_Rewriting.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>P</span>roof <span class='first'>T</span>erms for <span class='first'>T</span>erm <span class='first'>R</span>ewriting
+  <h1>
+    <span class='first'>P</span>roof <span class='first'>T</span>erms for <span class='first'>T</span>erm <span class='first'>R</span>ewriting
   </h1>
   <div>
       <p><a href="../authors/kirk/">Christina Kirk</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNocmlzdGluYSIsImtpcmsiXSwiaG9zdCI6WyJzdHVkZW50IiwidWliayIsImFjIiwiYXQiXX0=">📧</a>
@@ -140,13 +132,13 @@ involving multi-steps.</div>
       </ul>
       <h3>Session Proof_Terms_Term_Rewriting</h3>
       <ul>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Proof_Term_Utils">Proof_Term_Utils</a></li>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Linear_Matching">Linear_Matching</a></li>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Proof_Terms">Proof_Terms</a></li>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Residual_Join_Deletion">Residual_Join_Deletion</a></li>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Orthogonal_PT">Orthogonal_PT</a></li>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Labels_and_Overlaps">Labels_and_Overlaps</a></li>
-          <li><a href="../sessions/proof_terms_term_rewriting/#Redex_Patterns">Redex_Patterns</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Proof_Term_Utils.html">Proof_Term_Utils</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Linear_Matching.html">Linear_Matching</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Proof_Terms.html">Proof_Terms</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Residual_Join_Deletion.html">Residual_Join_Deletion</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Orthogonal_PT.html">Orthogonal_PT</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Labels_and_Overlaps.html">Labels_and_Overlaps</a></li>
+          <li><a href="../thys/AFP/Proof_Terms_Term_Rewriting/Redex_Patterns.html">Redex_Patterns</a></li>
       </ul>
 
     <div class="flex-wrap">
