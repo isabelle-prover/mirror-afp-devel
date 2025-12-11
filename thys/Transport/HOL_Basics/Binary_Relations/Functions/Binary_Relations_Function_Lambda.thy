@@ -16,7 +16,7 @@ syntax
 syntax_consts
   "_rel_lambda" \<rightleftharpoons> rel_lambda
 translations
-  "\<lambda>x xs : A. f" \<rightharpoonup> "CONST rel_lambda A (\<lambda>x. (\<lambda>xs : A. f))"
+  "\<lambda>x xs : A. f" \<rightharpoonup> "CONST rel_lambda A (\<lambda>x. _rel_lambda xs A f)"
   "\<lambda>x : A. f" \<rightleftharpoons> "CONST rel_lambda A (\<lambda>x. f)"
 end
 
