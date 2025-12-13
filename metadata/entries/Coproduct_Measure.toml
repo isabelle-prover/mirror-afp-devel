@@ -5,13 +5,13 @@ topics = [
 ]
 abstract = """
 This entry formalizes the coproduct measure.
-Let $I$ be a set and $\\{M_i\\}_{i\\in I}$ measurable spaces.
+Let $I$ be a set and $\\{(M_i,\\Sigma_{M_i})\\}_{i\\in I}$ measurable spaces.
 The $\\sigma$-algebra
 on $\\coprod_{i\\in I} M_i = \\{(i,x)\\mid i\\in I\\land x\\in M_i\\}$
-is defined as the least one making $(\\lambda x.\\: (i,x))$ measurable for all $i\\in I$.
-Let $\\mu_i$ be measures on $M_i$ for all $i\\in I$ and $A$ a measurable set of $\\coprod_{i\\in I} M_i$.
+is defined by $\\Sigma_{\\coprod_{i\\in I} M_i} = \\{A \\mid \\forall i\\in I. A_i\\in\\Sigma_{M_i}\\}$, where $A_i = \\{x\\mid (i,x)\\in A\\}$.
+Let $\\mu_i$ be measures on $(M_i,\\Sigma_{M_i})$ for all $i\\in I$ and $A\\in \\Sigma_{\\coprod_{i\\in I} M_i}$.
 The coproduct measure $\\coprod_{i\\in I} \\mu_i$ is defined as follows:
-\\[\\left(\\coprod_{i\\in I} \\mu_i\\right)(A) = \\sum_{i\\in I} \\mu_i(A_i), \\quad \\text{where $A_i = \\{x\\mid (i,x)\\in A\\}$.}\\]
+\\[\\left(\\coprod_{i\\in I} \\mu_i\\right)(A) = \\sum_{i\\in I} \\mu_i(A_i).\\]
  
 We also prove the relationship with coproduct quasi-Borel spaces:
 the functor $R: \\mathbf{Meas}\\to\\mathbf{QBS}$ preserves countable coproducts."""
@@ -29,6 +29,7 @@ email = "hirata_email"
 hirata = "hirata_email"
 
 [history]
+2025-12-13 = "modified the abstract."
 
 [extra]
 
