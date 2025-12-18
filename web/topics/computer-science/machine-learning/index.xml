@@ -4,6 +4,13 @@
     <title>Computer science/Machine learning</title>
     <link>https://isa-afp.org/topics/computer-science/machine-learning/</link>
     <description>AFP entries in Machine learning</description><item>
+  <title>Discrete Upper Confidence Bound Algorithm in HOL</title>
+  <link>https://isa-afp.org/entries/Discrete-UCB.html</link>
+  <pubDate>Sat, 25 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Discrete Upper Confidence Bound Algorithm in HOL in the AFP</description>
+    <category>Computer science/Machine learning</category>
+</item>
+<item>
   <title>No-free-lunch theorem for machine learning</title>
   <link>https://isa-afp.org/entries/No_Free_Lunch_ML.html</link>
   <pubDate>Sat, 23 Aug 2025 00:00:00 +0000</pubDate>

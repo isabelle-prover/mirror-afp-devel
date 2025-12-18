@@ -3,19 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/RG_Locks.html</loc>
+    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Pre_Star_CFG.html</loc>
     <lastmod>2025-11-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Weak_Spectroscopy.html</loc>
+    <lastmod>2025-11-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Zippy.html</loc>
     <lastmod>2025-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Neural_Networks.html</loc>
     <lastmod>2025-11-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Discrete-UCB.html</loc>
+    <lastmod>2025-10-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Path_Automation.html</loc>
     <lastmod>2025-10-22T00:00:00+00:00</lastmod>
@@ -3591,6 +3600,8 @@
     <loc>https://isa-afp.org/thys/AFP/Aristotles_Assertoric_Syllogistic/AristotlesAssertoric.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Arith_Prog_Rel_Primes/Arith_Prog_Rel_Primes.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/faber/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/heller/</loc>
   </url><url>
@@ -8794,6 +8805,14 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Discrete_Summation/Summation_Conversion.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Discrete-UCB/Discrete_UCB_Step1.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Discrete-UCB/Discrete_UCB_Step2.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Discrete-UCB/Discrete_UCB_Step3.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Discrete-UCB/MSc_Project_Discrete_Prop15_1.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/AFP/DiscretePricing/CRR_Model.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/DiscretePricing/Disc_Cond_Expect.html</loc>
@@ -12342,6 +12361,38 @@
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/HOL-Examples/Sqrt.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/Gar_Coll.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/Graph.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/Hoare_Parallel.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/Mul_Gar_Coll.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/OG_Com.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/OG_Examples.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/OG_Hoare.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/OG_Syntax.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/OG_Tactics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/OG_Tran.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/Quote_Antiquote.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/RG_Com.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/RG_Examples.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/RG_Hoare.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/RG_Syntax.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-Hoare_Parallel/RG_Tran.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/HOL/HOL-Hoare/Arith2.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/HOL-Hoare/Examples.html</loc>
@@ -15666,6 +15717,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/zee/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/mattes/</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/AFP/KAT_and_DRA/Conway_Tests.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/KAT_and_DRA/DRA_Models.html</loc>
@@ -16234,9 +16287,13 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/LEM/LemExtraDefs.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/mollenkopf/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/beringer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/oldenburg/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/huebner/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lima/</loc>
   </url><url>
@@ -16415,6 +16472,8 @@
     <loc>https://isa-afp.org/thys/AFP/Liouville_Numbers/Liouville_Numbers.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Liouville_Numbers/Liouville_Numbers_Misc.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/barthel/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/List_Interleaving/ListInterleaving.html</loc>
   </url><url>
@@ -21270,6 +21329,20 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Rewriting_Z/Z.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/Function_Supplementary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/Lock_Abstract_Queue.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/Lock_Circular_Buffer.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/Lock_Ticket.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/RG_Annotated_Commands.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/RG_Examples_Reworked.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/RG_Locks/RG_Syntax_Extensions.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/AFP/Ribbon_Proofs/JHelper.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Ribbon_Proofs/More_Finite_Map.html</loc>
@@ -21328,6 +21401,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/ROBDD/Pointer_Map_Impl.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/colvin/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/sachtleben/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/sison/</loc>
@@ -21341,6 +21416,8 @@
     <loc>https://isa-afp.org/authors/raya/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/oosterhuis/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/su/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Rogers_Ramanujan/Rogers_Ramanujan.html</loc>
   </url><url>
@@ -21627,6 +21704,8 @@
     <loc>https://isa-afp.org/thys/AFP/SCL_Simulates_Ground_Resolution/Simulation_SCLFOL_ORDRES.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/SCL_Simulates_Ground_Resolution/The_Optional.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/heiner/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/SDS_Impossibility/SDS_Impossibility.html</loc>
   </url><url>
@@ -24874,6 +24953,32 @@
     <loc>https://isa-afp.org/thys/AFP/VYDRA_MDL/Window.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/guttmann/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Branching_Bisimilarity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Distinction_Implies_Winning_Budgets.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Energy.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Energy_Games.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Eta_Bisimilarity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Expressiveness_Price.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/HML_SRBB.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Labeled_Transition_Systems.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/LTS_Semantics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Silent_Step_Spectroscopy.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Spectroscopy_Game.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Strategy_Formulas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Weak_Spectroscopy/Weak_Traces.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/WebAssembly/Wasm.html</loc>
   </url><url>

@@ -4,6 +4,15 @@
     <title>Computer science/Algorithms/Concurrent</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/concurrent/</link>
     <description>AFP entries in Concurrent</description><item>
+  <title>Rely-Guarantee Extensions and Locks</title>
+  <link>https://isa-afp.org/entries/RG_Locks.html</link>
+  <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Extensions and Locks in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Algorithms/Concurrent</category>
+</item>
+<item>
   <title>Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO</title>
   <link>https://isa-afp.org/entries/ConcurrentGC.html</link>
   <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>

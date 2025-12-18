@@ -1,0 +1,38 @@
+title = "Rely-Guarantee Extensions and Locks"
+date = 2025-11-21
+topics = [
+  "Computer science/Concurrency",
+  "Computer science/Programming languages/Logics",
+  "Computer science/Algorithms/Concurrent",
+]
+abstract = "We enhance rely-guarantee verification in Isabelle/HOL by extending the 2003 built-in library with flexible syntax, data-invariant support, and new tactics. We demonstrate our enhanced library by applying it to the examples attached to the original library. We also apply our library to three queue locks: the Abstract Queue Lock, the Ticket Lock, and the Circular Buffer Lock."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.colvin]
+
+[authors.heiner]
+
+[authors.hoefner]
+email = "hoefner_email"
+
+[authors.su]
+email = "su_email"
+
+[contributors]
+
+[notify]
+su = "su_email"
+hoefner = "hoefner_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Colvin, Heiner, Höfner and Su. Rely-guarantee concurrency verification of queued locks in Isabelle/HOL. VSTTE 2025.",
+]

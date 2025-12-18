@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Verification of Discrete Upper Confidence Bound algorithm in Isabelle/HOL }
+\author{Arjan Faber}
+\maketitle
+
+\begin{abstract}
+  This project formally verifies the Upper Confidence Bound (UCB) algorithm in Isabelle/Higher-order Logic (HOL), focusing on its probabilistic guarantees and regret bounds. The work extends Isabelle/HOL’s probabilistic framework and explores verification of discrete-time bandit models following \cite{RebeschiniLecture15}. This research advances the formal verification of probabilistic algorithms in reinforcement learning.
+\end{abstract}
+
+% \tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+
+
+
+

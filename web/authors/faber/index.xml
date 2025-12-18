@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Arjan Faber</title>
+    <link>https://isa-afp.org/authors/faber/</link>
+    <description>AFP entries of Arjan Faber</description><item>
+  <title>Discrete Upper Confidence Bound Algorithm in HOL</title>
+  <link>https://isa-afp.org/entries/Discrete-UCB.html</link>
+  <pubDate>Sat, 25 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Discrete Upper Confidence Bound Algorithm in HOL in the AFP</description>
+    <category>Computer science/Machine learning</category>
+</item>
+
+  </channel>
+</rss>

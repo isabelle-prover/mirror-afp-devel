@@ -4,11 +4,30 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Rely-Guarantee Extensions and Locks</title>
+  <link>https://isa-afp.org/entries/RG_Locks.html</link>
+  <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Extensions and Locks in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Algorithms/Concurrent</category>
+</item>
+<item>
   <title>Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications</title>
   <link>https://isa-afp.org/entries/Pre_Star_CFG.html</link>
   <pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate>
   <description>Pre*: The Predecessors of a Regular Language w.r.t. a Context-Free Grammar, with Applications in the AFP</description>
     <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>The Weak Spectroscopy Game to Characterize Behavioral Equivalences</title>
+  <link>https://isa-afp.org/entries/Weak_Spectroscopy.html</link>
+  <pubDate>Mon, 17 Nov 2025 00:00:00 +0000</pubDate>
+  <description>The Weak Spectroscopy Game to Characterize Behavioral Equivalences in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Mathematics/Games and economics</category>
 </item>
 <item>
   <title>Zippy - Generic White-Box Proof Search with Zippers</title>
@@ -25,6 +44,13 @@
     <category>Computer science/Artificial intelligence</category>
     <category>Tools</category>
     <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Discrete Upper Confidence Bound Algorithm in HOL</title>
+  <link>https://isa-afp.org/entries/Discrete-UCB.html</link>
+  <pubDate>Sat, 25 Oct 2025 00:00:00 +0000</pubDate>
+  <description>Discrete Upper Confidence Bound Algorithm in HOL in the AFP</description>
+    <category>Computer science/Machine learning</category>
 </item>
 <item>
   <title>Path Equivalence and Automation for Integration Contours</title>

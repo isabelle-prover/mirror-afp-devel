@@ -1,0 +1,55 @@
+title = "The Weak Spectroscopy Game to Characterize Behavioral Equivalences"
+date = 2025-11-17
+topics = [
+  "Computer science/Concurrency",
+  "Computer science/Semantics and reasoning",
+  "Logic/General logic/Modal logic",
+  "Mathematics/Games and economics",
+]
+abstract = """
+<p>
+We provide an Isabelle/HOL formalization of Bisping and Jansen's <em>weak spectroscopy game</em> (2024), which can be used to simultaneously characterize and decide a hierarchy of behavioral equivalences for systems with internal behavior. This is valuable for applications in concurrency theory and formal verification where equivalences and distinctions of the “linear-time–branching-time spectrum” are a recurring topic.
+</p>
+
+<p>
+This entry contains a game characterization of most behavioral equivalences from stability-respecting branching bisimilarity to weak trace equivalence. Technically, the results link distinguishing sublanguages of Hennessy–Milner logic to winning attacker budgets in an energy game through an eight-dimensional measurement of syntactic features appearing in formulas.
+</p>"""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.barthel]
+
+[authors.huebner]
+
+[authors.lemke]
+email = "lemke_email1"
+
+[authors.mattes]
+
+[authors.mollenkopf]
+
+[authors.bisping]
+homepage = "bisping_homepage"
+
+[contributors]
+
+[notify]
+bisping = "bisping_email"
+lemke = "lemke_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4204/EPTCS.412.6",
+  "10.48550/arXiv.2305.17671",
+  "10.1007/978-3-031-37706-8_5",
+  "10.1007/BFb0039066",
+]
+pubs = [
+  "Benjamin Bisping. Generalized Equivalence Checking of Concurrent Programs. PhD thesis, Technische Universität Berlin, 2025. <a href=\"https://generalized-equivalence-checking.equiv.io/\">https://generalized-equivalence-checking.equiv.io/</a>",
+]
