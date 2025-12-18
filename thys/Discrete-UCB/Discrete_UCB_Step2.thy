@@ -53,7 +53,7 @@ proof -
   have "prob E \<le> prob (F \<union> G)"
     using assms local.finite_measure_mono by auto
   also have "prob (F \<union> G) \<le> prob F + prob G"
-    using assms local.finite_measure_subadditive by blast
+    using assms measure_Un_le by blast
   finally show ?thesis .
 qed
 

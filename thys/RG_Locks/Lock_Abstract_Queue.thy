@@ -54,7 +54,7 @@ proof method_basic_inv
   case est_guar
   then show ?case
     apply clarsimp
-    by (metis hd_Cons_tl in_set_member member_rec(1))
+    by (metis hd_Cons_tl list.set_sel(2) set_ConsD)
 next
   case est_post
   then show ?case
