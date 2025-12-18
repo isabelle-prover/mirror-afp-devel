@@ -248,12 +248,10 @@ name = "Janis Bailitis"
 
 [bailitis.emails.bailitis_email]
 user = [
-  "Janis",
-  "Bailitis",
+  "jb4021",
 ]
 host = [
-  "maths",
-  "ox",
+  "hw",
   "ac",
   "uk",
 ]
