@@ -2378,7 +2378,7 @@ lemma comp_mctxt_iff:
 
 lemma hole_poss_parallel_pos [simp]:
   assumes "p \<in> hole_poss C" and "q \<in> hole_poss C" and "p \<noteq> q"
-  shows "parallel_pos p q"
+  shows "Sublist.parallel p q"
   using assms by (induct C arbitrary: p q) (fastforce dest!: nth_mem)+
 
 lemma eq_fill_induct [consumes 1, case_names MHole MVar MFun]:

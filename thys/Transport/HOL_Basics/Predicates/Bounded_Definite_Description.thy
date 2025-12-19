@@ -9,9 +9,13 @@ consts bthe :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'b"
 
 open_bundle bounded_the_syntax
 begin
-syntax "_bthe" :: "[idt, 'a, bool] \<Rightarrow> 'b" (\<open>(3THE _ : _./ _)\<close> [0, 0, 10] 10)
-syntax_consts "_bthe" \<rightleftharpoons> bthe
-translations "THE x : P. Q" \<rightleftharpoons> "CONST bthe P (\<lambda>x. Q)"
+syntax
+  "_bthe"  :: "[pttrns, 'a, bool] \<Rightarrow> 'b" (\<open>(3THE _ : _./ _)\<close> [0, 0, 10] 10)
+syntax_consts
+  "_bthe" \<rightleftharpoons> bthe
+translations
+  "THE x xs : P. Q" \<rightharpoonup> "CONST bthe P (\<lambda>x. _bthe xs P Q)"
+  "THE x : P. Q" \<rightleftharpoons> "CONST bthe P (\<lambda>x. Q)"
 end
 
 definition "bthe_pred P Q \<equiv> The (P \<sqinter> Q)"

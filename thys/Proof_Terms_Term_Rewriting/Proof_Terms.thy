@@ -773,7 +773,7 @@ next
       then obtain q where q:"q \<in> poss (lhs \<alpha>)" "lhs \<alpha> |_q = Var ?y"
         by (meson vars_term_poss_subt_at) 
       from xy p q have "p \<bottom> q"
-        using prefix_def parallel_pos
+        using prefix_def Sublist.parallel_def
         by (metis self_append_conv term.inject(1) var_pos_maximal) 
       moreover have "source (Prule \<alpha> As) |_p = source (As!i)" 
         unfolding source.simps by (metis (mono_tags, lifting) "3.hyps"(2) eval_term.simps(1) i length_map lhs_subst_var_i nth_map p subt_at_subst) 

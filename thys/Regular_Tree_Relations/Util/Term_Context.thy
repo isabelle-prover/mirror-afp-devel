@@ -73,7 +73,7 @@ next
   have "i \<noteq> j \<Longrightarrow> (Fun f ts)[p \<leftarrow> t][q \<leftarrow> u] = (Fun f ts)[q \<leftarrow> u][p \<leftarrow> t]"
     by (auto simp: list_update_swap)
   then show ?case using Fun(1)[OF nth_mem, of j ps qs] Fun(2)
-    by (cases "i = j") auto
+    by (cases "i = j") force
 qed
 
 lemma replace_term_at_above [simp]:

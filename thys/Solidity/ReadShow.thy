@@ -73,24 +73,7 @@ definition  nat_of_digit ::  \<open>char \<Rightarrow> nat\<close> where
 
 declare nat_of_digit_def [solidity_symbex]
 
-definition  is_digit ::  \<open>char \<Rightarrow> bool\<close> where
- \<open>is_digit c = 
-    (if c = CHR ''0'' then True
-    else if c = CHR ''1'' then True
-    else if c = CHR ''2'' then True
-    else if c = CHR ''3'' then True
-    else if c = CHR ''4'' then True
-    else if c = CHR ''5'' then True
-    else if c = CHR ''6'' then True
-    else if c = CHR ''7'' then True
-    else if c = CHR ''8'' then True
-    else if c = CHR ''9'' then True
-    else if c = CHR ''-'' then True
-    else False)\<close>
-
-
-
-definition  digit_of_nat ::  \<open>nat \<Rightarrow> char\<close> where
+definition  digit_of_nat ::  \<open>nat \<Rightarrow>  char \<close> where
   \<open>digit_of_nat x =
     (if x = 0 then CHR ''0''
     else if x = 1 then CHR ''1''
@@ -103,6 +86,23 @@ definition  digit_of_nat ::  \<open>nat \<Rightarrow> char\<close> where
     else if x = 8 then CHR ''8''
     else if x = 9 then CHR ''9''
     else undefined)\<close>
+
+definition  is_digit ::  \<open>char \<Rightarrow> bool\<close> where
+  \<open>is_digit c = 
+    (if c = CHR ''0'' then True
+    else if c = CHR ''1'' then True
+    else if c = CHR ''2'' then True
+    else if c = CHR ''3'' then True
+    else if c = CHR ''4'' then True
+    else if c = CHR ''5'' then True
+    else if c = CHR ''6'' then True
+    else if c = CHR ''7'' then True
+    else if c = CHR ''8'' then True
+    else if c = CHR ''9'' then True
+    else False)\<close>
+
+
+
 
 declare digit_of_nat_def [solidity_symbex]
 
@@ -125,6 +125,7 @@ definition
   nat_implode :: \<open>'a::{numeral,power,zero} list \<Rightarrow> 'a\<close> where
  \<open>nat_implode n = foldr (+) (map (\<lambda> (p,d) \<Rightarrow> 10 ^ p * d) (enumerate 0 (rev n))) 0\<close>
 
+
 declare nat_implode_def [solidity_symbex]
 
 fun nat_explode' :: \<open>nat \<Rightarrow> nat list\<close> where 
@@ -138,7 +139,7 @@ definition
 declare nat_explode_def [solidity_symbex]
 
 lemma nat_explode'_not_empty: \<open>nat_explode' n \<noteq> []\<close> 
-  by (induction n rule: nat_explode'.induct) (simp_all split: bool.split)
+  by (smt (z3) list.simps(3) nat_explode'.simps) 
 
 lemma nat_explode_not_empty: \<open>nat_explode n \<noteq> []\<close>
   using nat_explode'_not_empty nat_explode_def by auto 
@@ -182,7 +183,7 @@ next
   then show ?case 
     using div_ten_less apply(simp (no_asm))  
     using unroll_nat_explode'[of n] * 
-    by (smt (verit) list.simps(8) list.simps(9) mod_div_trivial mod_eq_self_iff_div_eq_0 
+    by (smt (z3) list.simps(8) list.simps(9) mod_div_trivial mod_eq_self_iff_div_eq_0 
                  nat_explode'.simps zero_less_numeral)
   qed
 qed
@@ -261,7 +262,7 @@ next
       then show ?thesis 
       using div_ten_less[of \<open>n\<close>] * 
       by(simp)      
-  qed
+    qed
     then show ?case  
     proof (cases \<open>n < 10\<close>)
       case True
@@ -289,12 +290,18 @@ definition
   Read\<^sub>n\<^sub>a\<^sub>t :: \<open>string \<Rightarrow> nat\<close> where 
  \<open>Read\<^sub>n\<^sub>a\<^sub>t s = nat_implode (map nat_of_digit s)\<close>
 
+
+
 definition 
   Show\<^sub>n\<^sub>a\<^sub>t::"nat \<Rightarrow> string" where
  \<open>Show\<^sub>n\<^sub>a\<^sub>t n = map digit_of_nat (nat_explode n)\<close>
 
+definition is_nat:: "string \<Rightarrow> bool" where
+"is_nat s = (if s = [] then False else foldl (\<and>) True (map is_digit s))"
+
 declare Read\<^sub>n\<^sub>a\<^sub>t_def [solidity_symbex]
         Show\<^sub>n\<^sub>a\<^sub>t_def [solidity_symbex]
+
 
 definition 
   \<open>STR_is_nat s = (Show\<^sub>n\<^sub>a\<^sub>t (Read\<^sub>n\<^sub>a\<^sub>t s) = s)\<close>
@@ -345,6 +352,15 @@ definition
 
 declare ReadL\<^sub>n\<^sub>a\<^sub>t_def [solidity_symbex]
         ShowL\<^sub>n\<^sub>a\<^sub>t_def [solidity_symbex]
+(*\<open>nat_implode (nat_explode n) = n\<close>*)
+
+
+
+lemma ShowLNatDot: "CHR ''.'' \<notin> set(String.explode (ShowL\<^sub>n\<^sub>a\<^sub>t i))" 
+  unfolding ShowL\<^sub>n\<^sub>a\<^sub>t_def Show\<^sub>n\<^sub>a\<^sub>t_def using nat_explode_digits img_digit_of_nat by fastforce
+
+lemma ShowNatDot: "CHR ''.'' \<notin> set(Show\<^sub>n\<^sub>a\<^sub>t i) " 
+  unfolding ShowL\<^sub>n\<^sub>a\<^sub>t_def Show\<^sub>n\<^sub>a\<^sub>t_def using nat_explode_digits img_digit_of_nat by fastforce
 
 
 definition 
@@ -386,6 +402,9 @@ definition
  \<open>Show\<^sub>i\<^sub>n\<^sub>t i = (if i < 0 then (CHR ''-'')#(Show\<^sub>n\<^sub>a\<^sub>t (nat (-i))) 
                         else Show\<^sub>n\<^sub>a\<^sub>t (nat i))\<close>
 
+
+
+
 definition 
  \<open>STR_is_int s = (Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t s) = s)\<close>
 
@@ -397,7 +416,19 @@ value \<open>Read\<^sub>i\<^sub>n\<^sub>t (Show\<^sub>i\<^sub>n\<^sub>t   10)  =
 value \<open>Read\<^sub>i\<^sub>n\<^sub>t (Show\<^sub>i\<^sub>n\<^sub>t (-10)) = -10\<close>
 
 value \<open>Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t (''10''))  =  ''10''\<close>
-value \<open>Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t (''-10'')) = ''-10''\<close>
+value \<open>Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t (''-0'')) = ''-0''\<close>
+value "Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t (''00'')) "
+
+definition 
+is_uint :: \<open>string \<Rightarrow> bool\<close> where
+ \<open>is_uint s = (if hd s = (CHR ''-'') then False else 
+                if hd s = (CHR ''0'') \<and> tl s \<noteq> [] then False else (is_nat s))\<close>
+
+value "is_uint ''07''"
+
+definition 
+ \<open>STR_is_uint s = is_uint s\<close>
+
 
 lemma Show_Read_id: \<open>STR_is_int s \<Longrightarrow> (Show\<^sub>i\<^sub>n\<^sub>t (Read\<^sub>i\<^sub>n\<^sub>t s) = s)\<close>
   by(simp add:STR_is_int_def)
@@ -432,6 +463,8 @@ value \<open>ReadL\<^sub>i\<^sub>n\<^sub>t (ShowL\<^sub>i\<^sub>n\<^sub>t (-10))
 value \<open>ShowL\<^sub>i\<^sub>n\<^sub>t (ReadL\<^sub>i\<^sub>n\<^sub>t (STR ''10''))  =  STR ''10''\<close>
 value \<open>ShowL\<^sub>i\<^sub>n\<^sub>t (ReadL\<^sub>i\<^sub>n\<^sub>t (STR ''-10'')) = STR ''-10''\<close>
 
+value \<open>ShowL\<^sub>i\<^sub>n\<^sub>t (ReadL\<^sub>i\<^sub>n\<^sub>t (STR ''-000''))\<close>
+
 lemma Show_ReadL_id: \<open>strL_is_int' s \<Longrightarrow> (ShowL\<^sub>i\<^sub>n\<^sub>t (ReadL\<^sub>i\<^sub>n\<^sub>t s) = s)\<close>
   by(simp add:strL_is_int'_def)
 
@@ -451,7 +484,26 @@ lemma STR_is_int_ShowL: \<open>strL_is_int' (ShowL\<^sub>i\<^sub>n\<^sub>t n)\<c
 
 lemma String_Cancel: "a + (c::String.literal) = b + c \<Longrightarrow> a = b"
 using String.plus_literal.rep_eq
-by (metis append_same_eq literal.explode_inject)
+  by (metis append_same_eq literal.explode_inject)
+
+lemma ShowLIntDot: "CHR ''.'' \<notin> set(String.explode (ShowL\<^sub>i\<^sub>n\<^sub>t i))" 
+  unfolding ShowL\<^sub>i\<^sub>n\<^sub>t_def Show\<^sub>i\<^sub>n\<^sub>t_def  
+proof(induction  i)
+  case (nonneg n)
+  then have "CHR ''.''
+    \<notin> set (literal.explode
+             ((String.implode \<circ> (\<lambda>i.  Show\<^sub>n\<^sub>a\<^sub>t (nat i))) (int n)))" using ShowLNatDot ShowNatDot
+    by (simp add: Show\<^sub>n\<^sub>a\<^sub>t_ascii)
+  then show ?case using nonneg by simp
+next
+  case (neg n)
+ then have "CHR ''.''
+         \<notin> set (literal.explode
+                  ((String.implode \<circ> (\<lambda>i. if i < 0 then CHR ''-'' # Show\<^sub>n\<^sub>a\<^sub>t (nat (- i)) else Show\<^sub>n\<^sub>a\<^sub>t (nat i)))
+                    (- int (Suc n))))" using ShowLNatDot ShowNatDot
+    by (simp add: Show\<^sub>n\<^sub>a\<^sub>t_ascii)
+  then show ?case using neg by simp
+qed
 
 end
                                             

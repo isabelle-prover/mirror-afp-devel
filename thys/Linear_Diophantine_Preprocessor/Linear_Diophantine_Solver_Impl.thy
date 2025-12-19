@@ -444,7 +444,7 @@ qed
      consist of linear equalities and linear inequalities *)
 
 definition equality_elim_for_inequalities :: "'v dleq list \<Rightarrow> 'v dlineq list \<Rightarrow> 
-  ('v dleq list \<times> ((int,'v)assign \<Rightarrow> (int,'v)assign)) option" where
+  ('v dlineq list \<times> ((int,'v)assign \<Rightarrow> (int,'v)assign)) option" where
   "equality_elim_for_inequalities eqs ineqs = (let v = concat (map vars_l_list ineqs)
      in case dleq_solver v eqs of 
        None \<Rightarrow> None

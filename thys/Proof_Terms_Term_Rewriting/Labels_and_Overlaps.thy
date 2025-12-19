@@ -1223,7 +1223,7 @@ using assms proof(induct A arbitrary:r p)
   with Fun(2) obtain i p' where i:"i < length As" and p':"p' \<in> poss (As!i)" and p:"p = i#p'" 
     by auto
   from Fun(4) consider "r <\<^sub>p p" | "r \<bottom> p"
-    using parallel_pos by fastforce 
+    using Sublist.parallel_def by fastforce 
   then show ?case proof(cases)
     case 1
     then show ?thesis proof(cases r)
@@ -1248,7 +1248,7 @@ using assms proof(induct A arbitrary:r p)
       from Fun(1) 2 i have "get_label ((ctxt_of_pos_term p' (As!i))\<langle>labeled_source B\<rangle> |_ r') = get_label ((As!i) |_ r')"
         using Fun.prems(2) Fun.prems(3) True p p' r by force 
       then show ?thesis using p r True 
-        by (metis "2" Fun.prems(1) Fun.prems(2) parallel_pos parallel_replace_at_subt_at) 
+        by (metis "2" Fun.prems(1) Fun.prems(2) Sublist.parallel_def parallel_replace_at_subt_at) 
     next
       case False
       then show ?thesis 

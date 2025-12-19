@@ -6,50 +6,51 @@ begin
 subsection \<open>Semantics of Expressions\<close>
 
 definition lift ::
-  "(E \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Stackvalue * Type, Ex, Gas) state_monad)
-  \<Rightarrow> (Types \<Rightarrow> Types \<Rightarrow> Valuetype \<Rightarrow> Valuetype \<Rightarrow> (Valuetype * Types) option)
-  \<Rightarrow> E \<Rightarrow> E \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Stackvalue * Type, Ex, Gas) state_monad"
+  "(e \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (stackvalue * type, ex, gas) state_monad)
+  \<Rightarrow> (types \<Rightarrow> types \<Rightarrow> valuetype \<Rightarrow> valuetype \<Rightarrow> (valuetype * types) option)
+  \<Rightarrow> e \<Rightarrow> e \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (stackvalue * type, ex, gas) state_monad"
 where
   "lift expr f e1 e2 e cd st \<equiv>
     (do {
       kv1 \<leftarrow> expr e1 e cd st;
-      (v1, t1) \<leftarrow> case kv1 of (KValue v1, Value t1) \<Rightarrow> return (v1, t1) | _ \<Rightarrow> (throw Err::(Valuetype * Types, Ex, Gas) state_monad);
+      (v1, t1) \<leftarrow> case kv1 of (KValue v1, Value t1) \<Rightarrow> return (v1, t1) | _ \<Rightarrow> (throw Err::(valuetype * types, ex, gas) state_monad);
       kv2 \<leftarrow> expr e2 e cd st;
-      (v2, t2) \<leftarrow> case kv2 of (KValue v2, Value t2) \<Rightarrow> return (v2, t2) | _ \<Rightarrow> (throw Err::(Valuetype * Types, Ex, Gas) state_monad);
-      (v, t) \<leftarrow> (option Err (\<lambda>_::Gas. f t1 t2 v1 v2))::(Valuetype * Types, Ex, Gas) state_monad;
-      return (KValue v, Value t)::(Stackvalue * Type, Ex, Gas) state_monad
+      (v2, t2) \<leftarrow> case kv2 of (KValue v2, Value t2) \<Rightarrow> return (v2, t2) | _ \<Rightarrow> (throw Err::(valuetype * types, ex, gas) state_monad);
+      (v, t) \<leftarrow> (option Err (\<lambda>_::gas. f t1 t2 v1 v2))::(valuetype * types, ex, gas) state_monad;
+      return (KValue v, Value t)::(stackvalue * type, ex, gas) state_monad
     })"
-declare lift_def[simp, solidity_symbex]
+declare lift_def[simp]
 
 lemma lift_cong [fundef_cong]:
   assumes "expr e1 e cd st g = expr' e1 e cd st g"
       and "\<And>v g'. expr' e1 e cd st g = Normal (v,g') \<Longrightarrow> expr e2 e cd st g' = expr' e2 e cd st g'"
   shows "lift expr f e1 e2 e cd st g = lift expr' f e1 e2 e cd st g"
-  unfolding lift_def using assms by (auto split: prod.split_asm result.split option.split_asm option.split Stackvalue.split Type.split)
+  unfolding lift_def using assms by (auto split: prod.split_asm result.split option.split_asm option.split stackvalue.split type.split)
 
-datatype LType = LStackloc Location
-               | LMemloc Location
-               | LStoreloc Location
+datatype (discs_sels) ltype
+  = LStackloc location
+  | LMemloc location
+  | LStoreloc location
 
 locale expressions_with_gas =
-  fixes costs\<^sub>e :: "E \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> Gas"
-    and ep::Environment\<^sub>P
+  fixes costs\<^sub>e :: "e \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> gas"
+    and ep::environment\<^sub>p
   assumes call_not_zero[termination_simp]: "\<And>e cd st i ix. 0 < (costs\<^sub>e (CALL i ix) e cd st)"
       and ecall_not_zero[termination_simp]: "\<And>e cd st a i ix. 0 < (costs\<^sub>e (ECALL a i ix) e cd st)"
 begin
-function (domintros) msel::"bool \<Rightarrow> MTypes \<Rightarrow> Location \<Rightarrow> E list \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Location * MTypes, Ex, Gas) state_monad"
-     and ssel::"STypes \<Rightarrow> Location \<Rightarrow> E list \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Location * STypes, Ex, Gas) state_monad"
-     and expr::"E \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Stackvalue * Type, Ex, Gas) state_monad"
-     and load :: "bool \<Rightarrow> (Identifier \<times> Type) list \<Rightarrow> E list \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> Stack \<Rightarrow> MemoryT \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Environment \<times> CalldataT \<times> Stack \<times> MemoryT, Ex, Gas) state_monad"
-     and rexp::"L \<Rightarrow> Environment \<Rightarrow> CalldataT \<Rightarrow> State \<Rightarrow> (Stackvalue * Type, Ex, Gas) state_monad"
+function (domintros) msel::"bool \<Rightarrow> mtypes \<Rightarrow> location \<Rightarrow> e list \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (location * mtypes, ex, gas) state_monad"
+     and ssel::"stypes \<Rightarrow> location \<Rightarrow> e list \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (location * stypes, ex, gas) state_monad"
+     and expr::"e \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (stackvalue * type, ex, gas) state_monad"
+     and load :: "bool \<Rightarrow> (Identifier \<times> type) list \<Rightarrow> e list \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> stack \<Rightarrow> memoryT \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (environment \<times> calldataT \<times> stack \<times> memoryT, ex, gas) state_monad"
+     and rexp::"l \<Rightarrow> environment \<Rightarrow> calldataT \<Rightarrow> state \<Rightarrow> (stackvalue * type, ex, gas) state_monad"
 where
   "msel _ _ _ [] _ _ _ g = throw Err g"
 | "msel _ (MTValue _) _ _ _ _ _ g = throw Err g"
 | "msel _ (MTArray al t) loc [x] env cd st g =
     (do {
       kv \<leftarrow> expr x env cd st;
-      (v, t') \<leftarrow> case kv of (KValue v, Value t') \<Rightarrow> return (v, t') | _ \<Rightarrow> throw Err;
-      assert Err (\<lambda>_. less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool));
+      (v, b) \<leftarrow> case kv of (KValue v, Value (TUInt b)) \<Rightarrow> return (v, b) | _ \<Rightarrow> throw Err;
+      assert Err (\<lambda>_. less (TUInt b) (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool));
       return (hash loc v, t)
     }) g"
 (*
@@ -59,9 +60,9 @@ where
 | "msel mm (MTArray al t) loc (x # y # ys) env cd st g =
     (do {
       kv \<leftarrow> expr x env cd st;
-      (v, t') \<leftarrow> case kv of (KValue v, Value t') \<Rightarrow> return (v,t') | _ \<Rightarrow> throw Err;
-      assert Err (\<lambda>_. less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool));
-      l \<leftarrow> case accessStore (hash loc v) (if mm then memory st else cd) of Some (MPointer l) \<Rightarrow> return l | _ \<Rightarrow> throw Err;
+      (v, b) \<leftarrow> case kv of (KValue v, Value (TUInt b)) \<Rightarrow> return (v, b) | _ \<Rightarrow> throw Err;
+      assert Err (\<lambda>_. less (TUInt b) (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool));
+      l \<leftarrow> case accessStore (hash loc v) (if mm then Memory st else cd) of Some (MPointer l) \<Rightarrow> return l | _ \<Rightarrow> throw Err;
       msel mm t l (y#ys) env cd st
     }) g"
 | "ssel tp loc Nil _ _ _ g = return (loc, tp) g"
@@ -69,35 +70,34 @@ where
 | "ssel (STArray al t) loc (x # xs) env cd st g =
     (do {
       kv \<leftarrow> expr x env cd st;
-      (v, t') \<leftarrow> case kv of (KValue v, Value t') \<Rightarrow> return (v, t') | _ \<Rightarrow> throw Err;
-      assert Err (\<lambda>_. less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool));
+      (v, b) \<leftarrow> case kv of (KValue v, Value (TUInt b)) \<Rightarrow> return (v, b) | _ \<Rightarrow> throw Err;
+      assert Err (\<lambda>_. less (TUInt b) (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool));
       ssel t (hash loc v) xs env cd st
     }) g"
-| "ssel (STMap _ t) loc (x # xs) env cd st g =
+| "ssel (STMap t t') loc (x # xs) env cd st g =
     (do {
       kv \<leftarrow> expr x env cd st;
-      v \<leftarrow> case kv of (KValue v, _) \<Rightarrow> return v | _ \<Rightarrow> throw Err;
-      ssel t (hash loc v) xs env cd st
+      (v, t'') \<leftarrow> case kv of (KValue v, Value t'') \<Rightarrow> return (v, t'') | _ \<Rightarrow> throw Err;
+      assert Err (\<lambda>_. comp t'' t);
+      ssel t' (hash loc v) xs env cd st
     }) g"
-| "expr (E.INT b x) e cd st g =
+| "expr (e.INT b x) e cd st g =
     (do {
-      assert Gas (\<lambda>g. g > costs\<^sub>e (E.INT b x) e cd st);
-      modify (\<lambda>g. g - costs\<^sub>e (E.INT b x) e cd st);
-      assert Err (\<lambda>_. b \<in> vbits);
+      assert Gas (\<lambda>g. g > costs\<^sub>e (e.INT b x) e cd st);
+      modify (\<lambda>g. g - costs\<^sub>e (e.INT b x) e cd st);
       return (KValue (createSInt b x), Value (TSInt b))
     }) g"
 | "expr (UINT b x) e cd st g =
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e (UINT b x) e cd st);
       modify (\<lambda>g. g - costs\<^sub>e (UINT b x) e cd st);
-      assert Err (\<lambda>_. b \<in> vbits);
       return (KValue (createUInt b x), Value (TUInt b))
   }) g"
 | "expr (ADDRESS ad) e cd st g =
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e (ADDRESS ad) e cd st);
       modify (\<lambda>g. g - costs\<^sub>e  (ADDRESS ad) e cd st);
-      return (KValue ad, Value TAddr)
+      return (KValue (createAddress ad), Value TAddr)
     }) g"
 | "expr (BALANCE ad) e cd st g =
     (do {
@@ -105,25 +105,25 @@ where
       modify (\<lambda>g. g - costs\<^sub>e  (BALANCE ad) e cd st);
       kv \<leftarrow> expr ad e cd st;
       adv \<leftarrow> case kv of (KValue adv, Value TAddr) \<Rightarrow> return adv | _ \<Rightarrow> throw Err; 
-      return (KValue (bal ((accounts st) adv)), Value (TUInt 256))
+      return (KValue (Bal ((Accounts st) adv)), Value (TUInt b256))
     }) g"
 | "expr THIS e cd st g =
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e THIS e cd st);
       modify (\<lambda>g. g - costs\<^sub>e THIS e cd st);
-      return (KValue (address e), Value TAddr)
+      return (KValue (Address e), Value TAddr)
     }) g"
 | "expr SENDER e cd st g =
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e SENDER e cd st);
       modify (\<lambda>g. g - costs\<^sub>e SENDER e cd st);
-      return (KValue (sender e), Value TAddr)
+      return (KValue (Sender e), Value TAddr)
     }) g"
 | "expr VALUE e cd st g =
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e VALUE e cd st);
       modify (\<lambda>g. g - costs\<^sub>e VALUE e cd st);
-      return (KValue (svalue e), Value (TUInt 256))
+      return (KValue (Svalue e), Value (TUInt b256))
     }) g"
 | "expr TRUE e cd st g =
     (do {
@@ -190,8 +190,8 @@ where
       rexp i e cd st
     }) g"
 (* Notes about method calls:
-   - Internal method calls use a fresh environment and stack but keep the memory [1]
-   - External method calls use a fresh environment and stack and memory [2]
+   - Internal method calls use a fresh environment and stack but keep the Memory [1]
+   - External method calls use a fresh environment and stack and Memory [2]
    [1]: https://docs.soliditylang.org/en/v0.8.5/control-structures.html#internal-function-calls
    [2]: https://docs.soliditylang.org/en/v0.8.5/control-structures.html#external-function-calls
 *)
@@ -199,11 +199,15 @@ where
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e (CALL i xe) e cd st);
       modify (\<lambda>g. g - costs\<^sub>e (CALL i xe) e cd st);
-      (ct, _) \<leftarrow> option Err (\<lambda>_. ep $$ (contract e));
+      (ct, _) \<leftarrow> option Err (\<lambda>_. ep $$ (Contract e));
       (fp, x) \<leftarrow> case ct $$ i of Some (Function (fp, False, x)) \<Rightarrow> return (fp, x) | _ \<Rightarrow> throw Err;
-      let e' = ffold_init ct (emptyEnv (address e) (contract e) (sender e) (svalue e)) (fmdom ct);
-      (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> load False fp xe e' emptyStore emptyStore (memory st) e cd st;
-      expr x e\<^sub>l cd\<^sub>l (st\<lparr>stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>)
+      let e' = ffold_init ct (emptyEnv (Address e) (Contract e) (Sender e) (Svalue e)) (fmdom ct);
+      (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> load False fp xe e' emptyTypedStore emptyStore (Memory st) e cd st;
+      (val, typ) \<leftarrow> expr x e\<^sub>l cd\<^sub>l (st\<lparr>Stack:=k\<^sub>l, Memory:=m\<^sub>l\<rparr>);
+      case val of KValue x \<Rightarrow> return (val,typ)
+      | KCDptr cdloc \<Rightarrow>  throw Err
+      | KMemptr memloc \<Rightarrow> throw Err
+      | KStoptr storloc \<Rightarrow> return (val, typ)
     }) g"
 (*It is not allowed to transfer money to external function calls*)
 | "expr (ECALL ad i xe) e cd st g =
@@ -212,40 +216,57 @@ where
       modify (\<lambda>g. g - costs\<^sub>e (ECALL ad i xe) e cd st);
       kad \<leftarrow> expr ad e cd st;
       adv \<leftarrow> case kad of (KValue adv, Value TAddr) \<Rightarrow> return adv | _ \<Rightarrow> throw Err;
-      assert Err (\<lambda>_. adv \<noteq> address e);
-      c \<leftarrow> case type (accounts st adv) of Some (Contract c) \<Rightarrow> return c | _ \<Rightarrow> throw Err;
+      assert Err (\<lambda>_. adv \<noteq> Address e);
+      c \<leftarrow> case Type (Accounts st adv) of Some (atype.Contract c) \<Rightarrow> return c | _ \<Rightarrow> throw Err;
       (ct, _) \<leftarrow> option Err (\<lambda>_. ep $$ c);
       (fp, x) \<leftarrow> case ct $$ i of Some (Function (fp, True, x)) \<Rightarrow> return (fp, x) | _ \<Rightarrow> throw Err;
-      let e' = ffold_init ct (emptyEnv adv c (address e) (ShowL\<^sub>n\<^sub>a\<^sub>t 0)) (fmdom ct);
-      (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> load True fp xe e' emptyStore emptyStore emptyStore e cd st;
-      expr x e\<^sub>l cd\<^sub>l (st\<lparr>stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>)
+      let e' = ffold_init ct (emptyEnv adv c (Address e) (ShowL\<^sub>n\<^sub>a\<^sub>t 0)) (fmdom ct);
+      (e\<^sub>l, cd\<^sub>l, k\<^sub>l, m\<^sub>l) \<leftarrow> load True fp xe e' emptyTypedStore emptyStore emptyTypedStore e cd st;
+      (val, typ) \<leftarrow> expr x e\<^sub>l cd\<^sub>l (st\<lparr>Stack:=k\<^sub>l, Memory:=m\<^sub>l\<rparr>);
+      case val of KValue x \<Rightarrow> return (val,typ)
+      | KCDptr cdloc \<Rightarrow>  throw Err
+      | KMemptr memloc \<Rightarrow> throw Err
+      | KStoptr storloc \<Rightarrow> throw Err
     }) g"
+
+(* 
+in practice cp True means the caller is external
+ (bt) 24/04/25: Added a check which prevents function parameters from sharing variable names with values that already have been declared.
+            In practice this only really impacts Contract variables by preventing function parameters from sharing the same name as "global" Contract variable names. 
+            This would just require a different name to be used by the user, which would be semantically identical but much easier to prove properties over.
+            In theory this will also stop two function parameters from sharing the same name (which should be true anyway)
+*)
 | "load cp ((i\<^sub>p, t\<^sub>p)#pl) (ex#el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g =
-    (do {
-      (v, t) \<leftarrow> expr ex e\<^sub>v cd st;
-      (c, m, k, e) \<leftarrow> case decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (memory st) (storage st) (cd', mem',  sck', e\<^sub>v') of Some (c, m, k, e) \<Rightarrow> return (c, m, k, e) | None \<Rightarrow> throw Err;
-      load cp pl el e c k m e\<^sub>v cd st
-    }) g"
+    (if (case t\<^sub>p of type.Storage x \<Rightarrow> cp | _ \<Rightarrow> False) then throw Err
+     else
+        (case Denvalue e\<^sub>v' $$ i\<^sub>p of Some x' \<Rightarrow> throw Err
+        | None \<Rightarrow>
+        do {
+        (v, t) \<leftarrow> expr ex e\<^sub>v cd st;
+        (c, m, k, e) \<leftarrow> (case decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st) ((Storage st) (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v')
+                          of Some (c, m, k, e) \<Rightarrow> return (c, m, k, e)
+                          | None \<Rightarrow> throw Err);
+        load cp pl el e c k m e\<^sub>v cd st})) g"
 | "load _ [] (_#_) _ _ _ _ _ _ _ g = throw Err g"
 | "load _ (_#_) [] _ _ _ _ _ _ _ g = throw Err g"
 | "load _ [] [] e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = return (e\<^sub>v', cd', sck', mem') g"
 
 | "rexp (Id i) e cd st g =
-    (case fmlookup (denvalue e) i of
+    (case fmlookup (Denvalue e) i of
       Some (tp, Stackloc l) \<Rightarrow>
-        (case accessStore l (stack st) of
+        (case accessStore l (Stack st) of
           Some (KValue v) \<Rightarrow> return (KValue v, tp)
         | Some (KCDptr p) \<Rightarrow> return (KCDptr p, tp)
         | Some (KMemptr p) \<Rightarrow> return (KMemptr p, tp)
         | Some (KStoptr p) \<Rightarrow> return (KStoptr p, tp)
         | _ \<Rightarrow> throw Err)
-    | Some (Storage (STValue t), Storeloc l) \<Rightarrow> return (KValue (accessStorage t l (storage st (address e))), Value t)
-    | Some (Storage (STArray x t), Storeloc l) \<Rightarrow> return (KStoptr l, Storage (STArray x t))
+    | Some (type.Storage (STValue t), Storeloc l) \<Rightarrow> return (KValue (accessStorage t l (Storage st (Address e))), Value t)
+    | Some (type.Storage (STArray x t), Storeloc l) \<Rightarrow> return (KStoptr l, type.Storage (STArray x t))
     | _ \<Rightarrow> throw Err) g"
 | "rexp (Ref i r) e cd st g =
-    (case fmlookup (denvalue e) i of
+    (case fmlookup (Denvalue e) i of
       Some (tp, (Stackloc l)) \<Rightarrow>
-        (case accessStore l (stack st) of
+        (case accessStore l (Stack st) of
           Some (KCDptr l') \<Rightarrow>
             do {
               t \<leftarrow> case tp of Calldata t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
@@ -265,47 +286,47 @@ where
             }
         | Some (KMemptr l') \<Rightarrow>
             do {
-              t \<leftarrow> case tp of Memory t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
+              t \<leftarrow> case tp of type.Memory t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
               (l'', t') \<leftarrow> msel True t l' r e cd st;
               (case t' of
                 MTValue t'' \<Rightarrow>
                   do {
-                    v \<leftarrow> case accessStore l'' (memory st) of Some (MValue v) \<Rightarrow> return v | _ \<Rightarrow> throw Err;
+                    v \<leftarrow> case accessStore l'' (Memory st) of Some (MValue v) \<Rightarrow> return v | _ \<Rightarrow> throw Err;
                     return (KValue v, Value t'')
                   }
               | MTArray x t'' \<Rightarrow>
                   do {
-                    p \<leftarrow> case accessStore l'' (memory st) of Some (MPointer p) \<Rightarrow> return p | _ \<Rightarrow> throw Err;
-                    return (KMemptr p, Memory (MTArray x t''))
+                    p \<leftarrow> case accessStore l'' (Memory st) of Some (MPointer p) \<Rightarrow> return p | _ \<Rightarrow> throw Err;
+                    return (KMemptr p, type.Memory (MTArray x t''))
                   }
               )
             }
         | Some (KStoptr l') \<Rightarrow>
             do {
-              t \<leftarrow> case tp of Storage t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
+              t \<leftarrow> case tp of type.Storage t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
               (l'', t') \<leftarrow> ssel t l' r e cd st;
               (case t' of
-                STValue t'' \<Rightarrow> return (KValue (accessStorage t'' l'' (storage st (address e))), Value t'')
-              | STArray _ _ \<Rightarrow> return (KStoptr l'', Storage t')
-              | STMap _ _   \<Rightarrow> return (KStoptr l'', Storage t'))
+                STValue t'' \<Rightarrow> return (KValue (accessStorage t'' l'' (Storage st (Address e))), Value t'')
+              | STArray _ _ \<Rightarrow> return (KStoptr l'', type.Storage t')
+              | STMap _ _   \<Rightarrow> return (KStoptr l'', type.Storage t'))
              }
         | _ \<Rightarrow> throw Err)
     | Some (tp, (Storeloc l)) \<Rightarrow>
           do {
-            t \<leftarrow> case tp of Storage t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
+            t \<leftarrow> case tp of type.Storage t \<Rightarrow> return t | _ \<Rightarrow> throw Err;
             (l', t') \<leftarrow> ssel t l r e cd st;
             (case t' of
-              STValue t'' \<Rightarrow> return (KValue (accessStorage t'' l' (storage st (address e))), Value t'')
-            | STArray _ _ \<Rightarrow> return (KStoptr l', Storage t')
-            | STMap _ _   \<Rightarrow> return (KStoptr l', Storage t'))
+              STValue t'' \<Rightarrow> return (KValue (accessStorage t'' l' (Storage st (Address e))), Value t'')
+            | STArray _ _ \<Rightarrow> return (KStoptr l', type.Storage t')
+            | STMap _ _   \<Rightarrow> return (KStoptr l', type.Storage t'))
           }
     | None \<Rightarrow> throw Err) g"
 | "expr CONTRACTS e cd st g =
     (do {
       assert Gas (\<lambda>g. g > costs\<^sub>e CONTRACTS e cd st);
       modify (\<lambda>g. g - costs\<^sub>e CONTRACTS e cd st);
-      prev \<leftarrow> case contracts (accounts st (address e)) of 0 \<Rightarrow> throw Err | Suc n \<Rightarrow> return n;
-      return (KValue (hash (address e) (ShowL\<^sub>n\<^sub>a\<^sub>t prev)), Value TAddr)
+      prev \<leftarrow> case Contracts (Accounts st (Address e)) of 0 \<Rightarrow> throw Err | Suc n \<Rightarrow> return n;
+      return (KValue (hash_version (Address e) (ShowL\<^sub>n\<^sub>a\<^sub>t prev)), Value TAddr)
     }) g"
   by pat_completeness auto
 
@@ -417,14 +438,15 @@ lemma msel_ssel_expr_load_rexp_dom_gas[rule_format]:
     "msel_ssel_expr_load_rexp_dom (Inr (Inl (e4, ev4, cd4, st4, g4)))
       \<Longrightarrow> (\<forall>v4' g4'. expr e4 ev4 cd4 st4 g4 = Normal (v4', g4') \<longrightarrow> g4' \<le> g4)"
     "msel_ssel_expr_load_rexp_dom (Inr (Inr (Inl (lcp, lis, lxs, lev0, lcd0, lk, lm, lev, lcd, lst, lg))))
-      \<Longrightarrow> (\<forall>ev cd k m g'. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<longrightarrow> g' \<le> lg \<and> address ev = address lev0 \<and> sender ev = sender lev0 \<and> svalue ev = svalue lev0)"
+
+      \<Longrightarrow> (\<forall>ev cd k m g'. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<longrightarrow> g' \<le> lg \<and> Address ev = Address lev0 \<and> Sender ev = Sender lev0 \<and> Svalue ev = Svalue lev0 \<and> Contract ev = Contract lev0)"
     "msel_ssel_expr_load_rexp_dom (Inr (Inr (Inr (l3, ev3, cd3, st3, g3))))
       \<Longrightarrow> (\<forall>v3' g3'. rexp l3 ev3 cd3 st3 g3 = Normal (v3', g3') \<longrightarrow> g3' \<le> g3)"
 proof (induct rule: msel_ssel_expr_load_rexp.pinduct
 [where ?P1.0="\<lambda>c1 t1 l1 xe1 ev1 cd1 st1 g1. (\<forall>l1' g1'. msel c1 t1 l1 xe1 ev1 cd1 st1 g1 = Normal (l1', g1') \<longrightarrow> g1' \<le> g1)"
    and ?P2.0="\<lambda>t2 l2 xe2 ev2 cd2 st2 g2. (\<forall>v2' g2'. ssel t2 l2 xe2 ev2 cd2 st2 g2 = Normal (v2', g2') \<longrightarrow> g2' \<le> g2)"
    and ?P3.0="\<lambda>e4 ev4 cd4 st4 g4. (\<forall>v4' g4'. expr e4 ev4 cd4 st4 g4 = Normal (v4', g4') \<longrightarrow> g4' \<le> g4)"
-   and ?P4.0="\<lambda>lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg. (\<forall>ev cd k m g'. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<longrightarrow> g' \<le> lg \<and> address ev = address lev0 \<and> sender ev = sender lev0 \<and> svalue ev = svalue lev0)"
+   and ?P4.0="\<lambda>lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg. (\<forall>ev cd k m g'. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<longrightarrow> g' \<le> lg \<and> Address ev = Address lev0 \<and> Sender ev = Sender lev0 \<and> Svalue ev = Svalue lev0 \<and> Contract ev = Contract lev0)"
    and ?P5.0="\<lambda>l3 ev3 cd3 st3 g3. (\<forall>v3' g3'. rexp l3 ev3 cd3 st3 g3 = Normal (v3', g3') \<longrightarrow> g3' \<le> g3)"
 ])
   case 1
@@ -434,7 +456,7 @@ next
   then show ?case using msel.psimps(2) by auto
 next                                                                                                                                                                         
   case 3
-  then show ?case using msel.psimps(3) by (auto split: if_split_asm Type.split_asm Stackvalue.split_asm prod.split_asm StateMonad.result.split_asm)
+  then show ?case using msel.psimps(3) by (auto split: if_split_asm type.split_asm stackvalue.split_asm prod.split_asm StateMonad.result.split_asm types.split_asm)
 next
   case (4 mm al t loc x y ys env cd st g)
   show ?case
@@ -456,32 +478,45 @@ next
             proof (cases c)
               case (Value t')
               then show ?thesis
-              proof (cases)
-                assume l: "less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
+              proof (cases t')
+                case (TSInt x1)
+                 with 4 a1 n p2 KValue Value show ?thesis using msel.psimps(4) by simp
+              next
+                case (TUInt x2)
                 then show ?thesis
-                proof (cases "accessStore (hash loc v) (if mm then memory st else cd)")
-                  case None
-                  with 4 a1 n p2 KValue Value l show ?thesis using msel.psimps(4) by simp
-                next
-                  case (Some a)
+                proof (cases)
+                  assume l: "less t' (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
                   then show ?thesis
-                  proof (cases a)
-                    case (MValue _)
-                    with 4 a1 n p2 KValue Value Some l show ?thesis using msel.psimps(4) by simp
+                  proof (cases "accessStore (hash loc v) (if mm then Memory st else cd)")
+                    case None
+                    with 4 a1 n p2 KValue Value l TUInt show ?thesis using msel.psimps(4) by simp
                   next
-                    case (MPointer l)
-                    with n p2 KValue Value l Some
-                    have "msel mm (MTArray al t) loc (x # y # ys) env cd st g = msel mm t l (y # ys) env cd st g'"
-                      using msel.psimps(4) 4(1) by simp
-                    moreover from n have "g' \<le> g" using 4(2) by simp
-                    moreover from a1 MPointer n Pair p2 KValue Value l Some
-                    have "g1' \<le> g'" using msel.psimps(4) 4(3) 4(1) by simp
-                    ultimately show ?thesis by simp
+                    case (Some a)
+                    then show ?thesis
+                    proof (cases a)
+                      case (MValue _)
+                      with 4 a1 n p2 KValue Value Some l TUInt show ?thesis using msel.psimps(4) by simp
+                    next
+                      case (MPointer l)
+                      with n p2 KValue Value l Some
+                      have "msel mm (MTArray al t) loc (x # y # ys) env cd st g = msel mm t l (y # ys) env cd st g'"
+                        using msel.psimps(4) 4(1) TUInt by simp
+                      moreover from n have "g' \<le> g" using 4(2) by simp
+                      moreover from a1 MPointer n Pair p2 KValue Value l Some
+                      have "g1' \<le> g'" using msel.psimps(4) 4(3) 4(1) TUInt by simp
+                      ultimately show ?thesis by simp
+                    qed
                   qed
+                next
+                  assume "\<not> less t' (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
+                  with 4 a1 n p2 KValue Value show ?thesis using msel.psimps(4) TUInt by simp
                 qed
               next
-                assume "\<not> less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-                with 4 a1 n p2 KValue Value show ?thesis using msel.psimps(4) by simp
+                case TBool
+                with 4 a1 n p2 KValue Value show ?thesis using msel.psimps(4) by simp              
+              next
+                case TAddr
+                  with 4 a1 n p2 KValue Value show ?thesis using msel.psimps(4) by simp
               qed
             next
               case (Calldata _)
@@ -537,18 +572,33 @@ next
             proof (cases c)
               case (Value t')
               then show ?thesis
-              proof (cases)
-                assume l: "less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-                with n p2 KValue Value l
-                have "ssel (STArray al t) loc (x # xs) env cd st g = ssel t (hash loc v) xs env cd st g''"
-                using ssel.psimps(3) 7(1) by simp
-                moreover from n have "g'' \<le> g" using 7(2) by simp
-                moreover from a1 n Pair p2 KValue Value l
-                have "g2' \<le> g''" using ssel.psimps(3) 7(3) 7(1) by simp
-                ultimately show ?thesis by simp
+              proof (cases t')
+                case (TSInt x1)
+                then show ?thesis using 7 a1 n p2 KValue Value ssel.psimps(3) by simp
               next
-                assume "\<not> less t' (TUInt 256) v (ShowL\<^sub>i\<^sub>n\<^sub>t al) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
-                with 7 a1 n p2 KValue Value show ?thesis using ssel.psimps(3) by simp
+                case (TUInt x2)
+                then show ?thesis
+                  proof (cases)
+                    assume l: "less t' (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
+                    with n p2 KValue Value l
+                    have "ssel (STArray al t) loc (x # xs) env cd st g = ssel t (hash loc v) xs env cd st g''"
+                    using ssel.psimps(3) 7(1) TUInt by simp
+                    moreover from n have "g'' \<le> g" using 7(2) by simp
+                    moreover from a1 n Pair p2 KValue Value l
+                    have "g2' \<le> g''" using ssel.psimps(3) 7(3) 7(1) TUInt by simp
+                    ultimately show ?thesis by simp
+                  next
+                    assume "\<not> less t' (TUInt b256) v (ShowL\<^sub>i\<^sub>n\<^sub>t (int al)) = Some (ShowL\<^sub>b\<^sub>o\<^sub>o\<^sub>l True, TBool)"
+                    with 7 a1 n p2 KValue Value show ?thesis using ssel.psimps(3) TUInt by simp
+                  qed
+                 
+              next
+                case TBool
+                then show ?thesis using 7 a1 n p2 KValue Value ssel.psimps(3) by simp
+
+              next
+                case TAddr
+                then show ?thesis using 7 a1 n p2 KValue Value ssel.psimps(3) by simp
               qed
             next
               case (Calldata _)
@@ -594,11 +644,34 @@ next
           then show ?thesis
           proof (cases b)
             case (KValue v)
-            with 8 n p2 have "ssel (STMap vv t) loc (x # xs) env cd st g = ssel t (hash loc v) xs env cd st g'" using ssel.psimps(4) by simp
-            moreover from n have "g' \<le> g" using 8(2) by simp
-            moreover from a1 n Pair p2 KValue
-            have "g2' \<le> g'" using ssel.psimps(4) 8(3) 8(1) by simp
-            ultimately show ?thesis by simp
+            then show ?thesis
+            proof(cases c)
+              case (Value t'')
+              then show ?thesis
+              proof (cases)
+                assume comp: "comp t'' vv"
+                with 8 n p2 KValue comp Value have "ssel (STMap vv t) loc (x # xs) env cd st g = ssel t (hash loc v) xs env cd st g'" using ssel.psimps(4) by simp
+                moreover from n have "g' \<le> g" using 8(2) by simp
+                moreover from a1 n Pair p2 KValue
+                have "g2' \<le> g'" using ssel.psimps(4) 8(3) 8(1) comp Value by simp
+                ultimately show ?thesis by simp  
+                
+              next
+                assume comp: "\<not>comp t'' vv"
+                with 8 a1 n p2 KValue comp Value show ?thesis using ssel.psimps(4) by simp
+              qed
+
+              next
+                case (Calldata x2)
+                with 8 a1 n p2 KValue show ?thesis using ssel.psimps(4) by simp
+              next
+                case (Memory x3)
+                with 8 a1 n p2 KValue show ?thesis using ssel.psimps(4) by simp
+              next
+                case (Storage x4)
+                with 8 a1 n p2 KValue show ?thesis using ssel.psimps(4) by simp
+              qed
+           
           next
             case (KCDptr _)
             with 8 a1 n p2 show ?thesis using ssel.psimps(4) by simp
@@ -813,7 +886,7 @@ next
       with 19(2)[OF * **] have "\<And>g4' v4 t4. expr e1 e cd st (g-gc) = Normal ((v4, t4), g4') \<Longrightarrow> g4' \<le> g - gc" unfolding gc_def by simp
       moreover obtain v g' where ***: "expr e1 e cd st (g - costs\<^sub>e (PLUS e1 e2) e cd st) = Normal (v, g')" using expr.psimps(11)[OF 19(1)] e_def by (simp split:if_split_asm result.split_asm prod.split_asm)
       with 19(3)[OF * ** ***] have "\<And>v t g' v' t' g''. expr e1 e cd st (g-gc) = Normal ((KValue v, Value t), g') \<Longrightarrow> expr e2 e cd st g' = Normal ((v', t'), g'') \<Longrightarrow> g'' \<le> g'" unfolding gc_def by simp
-      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -834,7 +907,7 @@ next
       with 20(2)[OF * **] have "\<And>g4' v4 t4. expr e1 e cd st (g-gc) = Normal ((v4, t4), g4') \<Longrightarrow> g4' \<le> g - gc" unfolding gc_def by simp
       moreover obtain v g' where ***: "expr e1 e cd st (g - costs\<^sub>e (MINUS e1 e2) e cd st) = Normal (v, g')" using expr.psimps(12)[OF 20(1)] e_def by (simp split:if_split_asm result.split_asm prod.split_asm)
       with 20(3)[OF * ** ***] have "\<And>v t g' v' t' g''. expr e1 e cd st (g-gc) = Normal ((KValue v, Value t), g') \<Longrightarrow> expr e2 e cd st g' = Normal ((v', t'), g'') \<Longrightarrow> g'' \<le> g'" unfolding gc_def by simp
-      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -855,7 +928,7 @@ next
       with 21(2)[OF * **] have "\<And>g4' v4 t4. expr e1 e cd st (g-gc) = Normal ((v4, t4), g4') \<Longrightarrow> g4' \<le> g - gc" unfolding gc_def by simp
       moreover obtain v g' where ***: "expr e1 e cd st (g - costs\<^sub>e (LESS e1 e2) e cd st) = Normal (v, g')" using expr.psimps(13)[OF 21(1)] e_def by (simp split:if_split_asm result.split_asm prod.split_asm)
       with 21(3)[OF * ** ***] have "\<And>v t g' v' t' g''. expr e1 e cd st (g-gc) = Normal ((KValue v, Value t), g') \<Longrightarrow> expr e2 e cd st g' = Normal ((v', t'), g'') \<Longrightarrow> g'' \<le> g'" unfolding gc_def by simp
-      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -876,7 +949,7 @@ next
       with 22(2)[OF * **] have "\<And>g4' v4 t4. expr e1 e cd st (g-gc) = Normal ((v4, t4), g4') \<Longrightarrow> g4' \<le> g - gc" unfolding gc_def by simp
       moreover obtain v g' where ***: "expr e1 e cd st (g - costs\<^sub>e (EQUAL e1 e2) e cd st) = Normal (v, g')" using expr.psimps(14)[OF 22(1)] e_def by (simp split:if_split_asm result.split_asm prod.split_asm)
       with 22(3)[OF * ** ***] have "\<And>v t g' v' t' g''. expr e1 e cd st (g-gc) = Normal ((KValue v, Value t), g') \<Longrightarrow> expr e2 e cd st g' = Normal ((v', t'), g'') \<Longrightarrow> g'' \<le> g'" unfolding gc_def by simp
-      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -897,7 +970,7 @@ next
       with 23(2)[OF * **] have "\<And>g4' v4 t4. expr e1 e cd st (g-gc) = Normal ((v4, t4), g4') \<Longrightarrow> g4' \<le> g - gc" unfolding gc_def by simp
       moreover obtain v g' where ***: "expr e1 e cd st (g - costs\<^sub>e (AND e1 e2) e cd st) = Normal (v, g')" using expr.psimps(15)[OF 23(1)] e_def by (simp split:if_split_asm result.split_asm prod.split_asm)
       with 23(3)[OF * ** ***] have "\<And>v t g' v' t' g''. expr e1 e cd st (g-gc) = Normal ((KValue v, Value t), g') \<Longrightarrow> expr e2 e cd st g' = Normal ((v', t'), g'') \<Longrightarrow> g'' \<le> g'" unfolding gc_def by simp
-      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -918,7 +991,7 @@ next
       with 24(2)[OF * **] have "\<And>g4' v4 t4. expr e1 e cd st (g-gc) = Normal ((v4, t4), g4') \<Longrightarrow> g4' \<le> g - gc" unfolding gc_def by simp
       moreover obtain v g' where ***: "expr e1 e cd st (g - costs\<^sub>e (OR e1 e2) e cd st) = Normal (v, g')" using expr.psimps(16)[OF 24(1)] e_def by (simp split:if_split_asm result.split_asm prod.split_asm)
       with 24(3)[OF * ** ***] have "\<And>v t g' v' t' g''. expr e1 e cd st (g-gc) = Normal ((KValue v, Value t), g') \<Longrightarrow> expr e2 e cd st g' = Normal ((v', t'), g'') \<Longrightarrow> g'' \<le> g'" unfolding gc_def by simp
-      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show "g4 \<le> g" using lift_gas[OF lift] `\<not> g \<le> gc` by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -937,7 +1010,7 @@ next
       then have "expr (LVAL i) e cd st g = rexp i e cd st (g - gc)" using expr.psimps(17)[OF 25(1)] gc_def by simp
       then have "rexp i e cd st (g - gc) = Normal (xa, g4)" using e_def by simp
       moreover have **: "modify (\<lambda>g. g - costs\<^sub>e (LVAL i) e cd st) g = Normal ((), g - costs\<^sub>e (LVAL i) e cd st)" by simp
-      ultimately show ?thesis using 25(2)[OF * **] unfolding gc_def by (simp split:result.split_asm Stackvalue.split_asm Type.split_asm prod.split_asm)
+      ultimately show ?thesis using 25(2)[OF * **] unfolding gc_def by (simp split:result.split_asm stackvalue.split_asm type.split_asm prod.split_asm)
     qed
   qed
 next
@@ -958,7 +1031,7 @@ next
       proof (cases v4)
         case (Pair l4 t4)
         then show ?thesis
-        proof (cases "ep $$ contract e")
+        proof (cases "ep $$ Contract e")
           case None
           with 26(1) a1 gc_def gcost show ?thesis using expr.psimps(18) by simp
         next
@@ -966,7 +1039,7 @@ next
           then show ?thesis
           proof (cases a)
             case p2: (fields ct x0 x1)
-            then have 1: "option Err (\<lambda>_. ep $$ contract e) (g - gc) = Normal ((ct, x0, x1), (g - gc))" using Some by simp
+            then have 1: "option Err (\<lambda>_. ep $$ Contract e) (g - gc) = Normal ((ct, x0, x1), (g - gc))" using Some by simp
             then show ?thesis
             proof (cases "fmlookup ct i")
               case None
@@ -986,22 +1059,22 @@ next
                   next
                     case False
                     then have 2: "(case ct $$ i of None \<Rightarrow> throw Err | Some (Function (fp, True, xa)) \<Rightarrow> throw Err | Some (Function (fp, False, xa)) \<Rightarrow> return (fp, xa) | Some _ \<Rightarrow> throw Err) (g - gc) = Normal ((fp, x), (g - gc))" using s1 Function p1 by simp
-                    define e' where "e' = ffold (init ct) (emptyEnv (address e) (contract e) (sender e) (svalue e)) (fmdom ct)"
+                    define e' where "e' = ffold (init ct) (emptyEnv (Address e) (Contract e) (Sender e) (Svalue e)) (fmdom ct)"
                     then show ?thesis
-                    proof (cases "load False fp xe e' emptyStore emptyStore (memory st) e cd st (g - gc)")
+                    proof (cases "load False fp xe e' emptyTypedStore emptyStore (Memory st) e cd st (g - gc)")
                       case s4: (n a g')
                       then show ?thesis
                       proof (cases a)
                         case f2: (fields e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l)
                         then show ?thesis
-                        proof (cases "expr x e\<^sub>l cd\<^sub>l (st\<lparr>stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) g'")
+                        proof (cases "expr x e\<^sub>l cd\<^sub>l (st\<lparr>Stack:=k\<^sub>l, Memory:=m\<^sub>l\<rparr>) g'")
                           case n2: (n a g'')
                           then show ?thesis
                           proof (cases a)
                             case p3: (Pair sv tp)
                             with 26(1) a1 gc_def gcost Some p2 s1 Function p1 e'_def s4 f2 n2 False
                             have "expr (CALL i xe) e cd st g = Normal ((sv, tp), g'')"
-                              using expr.psimps(18)[OF 26(1)] by simp
+                              using expr.psimps(18)[OF 26(1)] by (simp split:stackvalue.split_asm option.split_asm if_split_asm)
                             with a1 have "g4' \<le> g''" by simp
                             also from 26(3)[OF * ** 1 _ 2 _ _ s4] e'_def f2 n2 p3 gcost gc_def
                               have "\<dots> \<le> g'" by auto
@@ -1076,14 +1149,14 @@ next
                   case TAddr
                   then have 1: "(case a0 of (KValue adv, Value TAddr) \<Rightarrow> return adv | (KValue adv, Value _) \<Rightarrow> throw Err | (KValue adv, _) \<Rightarrow> throw Err | (_, b) \<Rightarrow> throw Err) g' = Normal (adv, g')" using p0 KValue Value by simp
                   then show ?thesis
-                  proof (cases "adv = address e")
+                  proof (cases "adv = Address e")
                     case True
                     with a1 gc_def gcost n p0 KValue Value TAddr show ?thesis using expr.psimps(19)[OF 27(1)] by simp
                   next
                     case False
-                    then have 2: "assert Err (\<lambda>_. adv \<noteq> address e) g' = Normal ((), g')" by simp
+                    then have 2: "assert Err (\<lambda>_. adv \<noteq> Address e) g' = Normal ((), g')" by simp
                     then show ?thesis
-                    proof (cases "type (accounts st adv)")
+                    proof (cases "Type (Accounts st adv)")
                       case None
                       with a1 gc_def gcost n p0 KValue Value TAddr False show ?thesis using expr.psimps(19)[OF 27(1)] by simp
                     next
@@ -1094,7 +1167,7 @@ next
                         with a1 gc_def gcost n p0 KValue Value TAddr False Some show ?thesis using expr.psimps(19)[OF 27(1)] by simp
                       next
                         case c: (Contract c)
-                        then have 3: "(case type (accounts st adv) of Some (Contract c) \<Rightarrow> return c | _ \<Rightarrow> throw Err) g' = Normal (c, g')" using Some by simp
+                        then have 3: "(case Type (Accounts st adv) of Some (atype.Contract c) \<Rightarrow> return c | _ \<Rightarrow> throw Err) g' = Normal (c, g')" using Some by simp
                         then show ?thesis
                         proof (cases "ep $$ c")
                           case None
@@ -1121,22 +1194,22 @@ next
                                   proof (cases ext)
                                     case True
                                     then have 5: "(case ct $$ i of None \<Rightarrow> throw Err | Some (Function (fp, True, xa)) \<Rightarrow> return (fp, xa) | Some (Function (fp, False, xa)) \<Rightarrow> throw Err | Some _ \<Rightarrow> throw Err) g' = Normal ((fp, x), g')" using s1 Function p2 by simp
-                                    define e' where "e' = ffold (init ct) (emptyEnv adv c (address e) (ShowL\<^sub>n\<^sub>a\<^sub>t 0)) (fmdom ct)"
+                                    define e' where "e' = ffold (init ct) (emptyEnv adv c (Address e) (ShowL\<^sub>n\<^sub>a\<^sub>t 0)) (fmdom ct)"
                                     then show ?thesis
-                                    proof (cases "load True fp xe e' emptyStore emptyStore emptyStore e cd st g'")
+                                    proof (cases "load True fp xe e' emptyTypedStore emptyStore emptyTypedStore e cd st g'")
                                       case n1: (n a g'')
                                       then show ?thesis
                                       proof (cases a)
                                         case f2: (fields e\<^sub>l cd\<^sub>l k\<^sub>l m\<^sub>l)
                                         show ?thesis
-                                        proof (cases "expr x e\<^sub>l cd\<^sub>l (st\<lparr>stack:=k\<^sub>l, memory:=m\<^sub>l\<rparr>) g''")
+                                        proof (cases "expr x e\<^sub>l cd\<^sub>l (st\<lparr>Stack:=k\<^sub>l, Memory:=m\<^sub>l\<rparr>) g''")
                                           case n2: (n a g''')
                                           then show ?thesis
                                           proof (cases a)
                                             case p3: (Pair sv tp)
                                             with a1 gc_def gcost n p2 KValue Value TAddr Some p1 s1 Function p0 e'_def n1 f2 n2 True False s0 c
                                             have "expr (ECALL ad i xe) e cd st g = Normal ((sv, tp), g''')"
-                                                using expr.psimps(19)[OF 27(1)] by auto
+                                                using expr.psimps(19)[OF 27(1)] by (auto split: stackvalue.splits)
                                             with a1 have "g4' \<le> g'''" by auto
                                             also from 27(4)[OF * ** n 1 2 3 4 _ 5 _ _ n1] p3 f2 e'_def n2
                                               have "\<dots> \<le> g''" by simp
@@ -1205,37 +1278,165 @@ next
 next
   case (28 cp i\<^sub>p t\<^sub>p pl e el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g)
   then show ?case
-  proof (cases "expr e e\<^sub>v cd st g")
-    case (n a g'')
+  proof(cases "t\<^sub>p")
+    case (Value x1)
     then show ?thesis
-    proof (cases a)
-      case (Pair v t)
-      then show ?thesis
-      proof (cases "decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (memory st) (storage st) (cd', mem',  sck', e\<^sub>v')")
-        case None
-        with 28(1) n Pair show ?thesis using load.psimps(1) by simp
-      next
-        case (Some a)
-        show ?thesis
+    proof (cases "expr e e\<^sub>v cd st g")
+        case (n a g'')
+        then show ?thesis
         proof (cases a)
-          case (fields cd'' m'' k'' e\<^sub>v'')
-          then have 1: "(case decl i\<^sub>p t\<^sub>p (Some (v, t)) cp cd (memory st) (storage st) (cd', mem', sck', e\<^sub>v') of None \<Rightarrow> throw Err | Some (c, m, k, e) \<Rightarrow> return (c, m, k, e)) g'' = Normal ((cd'',m'',k'',e\<^sub>v''), g'')" using Some by simp
-          show ?thesis
-          proof ((rule allI)+,(rule impI))
-            fix ev cda k m g' assume load_def: "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
-            with n Pair Some fields have "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g''" using load.psimps(1)[OF 28(1)] by simp
-            with load_def have "load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g'' = Normal ((ev, cda, k, m), g')" by simp
-            with Pair fields have "g' \<le> g'' \<and> address ev = address e\<^sub>v'' \<and> sender ev = sender e\<^sub>v'' \<and> svalue ev = svalue e\<^sub>v''" using 28(3)[OF n Pair 1, of cd'' _ m''] by simp
-            moreover from n have "g'' \<le> g" using 28(2) by simp
-            moreover from Some fields have "address e\<^sub>v'' =  address e\<^sub>v' \<and> sender e\<^sub>v'' = sender e\<^sub>v' \<and> svalue e\<^sub>v'' = svalue e\<^sub>v'" using decl_env by auto
-            ultimately show "g' \<le> g \<and> address ev = address e\<^sub>v' \<and> sender ev = sender e\<^sub>v' \<and> svalue ev = svalue e\<^sub>v'" by auto
+          case (Pair v t)
+          then show ?thesis
+          proof (cases "decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v')")
+            case None
+            with 28(1) n Pair Value show ?thesis using load.psimps(1) by (simp split:option.splits)
+          next
+            case (Some a)
+            show ?thesis
+            proof (cases a)
+              case (fields cd'' m'' k'' e\<^sub>v'')
+              then have 1: "(case decl i\<^sub>p t\<^sub>p (Some (v, t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem', sck', e\<^sub>v') of None \<Rightarrow> throw Err | Some (c, m, k, e) \<Rightarrow> return (c, m, k, e)) g'' = Normal ((cd'',m'',k'',e\<^sub>v''), g'')" using Some by simp
+              show ?thesis
+              proof ((rule allI)+,(rule impI))
+                fix ev cda k m g' assume load_def: "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
+                then have none:"Denvalue e\<^sub>v' $$ i\<^sub>p = None" using load.pelims[OF load_def 28(1)] Value by fastforce
+                with n Pair Some fields have "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g''" using load.psimps(1)[OF 28(1)] Value by (simp split:option.splits)
+                with load_def have "load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g'' = Normal ((ev, cda, k, m), g')" by simp
+                with Pair fields have "g' \<le> g'' \<and> Address ev = Address e\<^sub>v'' \<and> Sender ev = Sender e\<^sub>v'' \<and> Svalue ev = Svalue e\<^sub>v''  \<and> Contract ev = Contract e\<^sub>v''"  using 28(3) n Pair 1 Value none 
+                  by fastforce
+                moreover from n have "g'' \<le> g" using 28(2) Value none by simp
+                moreover from Some fields have "Address e\<^sub>v'' =  Address e\<^sub>v' \<and> Sender e\<^sub>v'' = Sender e\<^sub>v' \<and> Svalue e\<^sub>v'' = Svalue e\<^sub>v'  \<and> Contract e\<^sub>v'' = Contract e\<^sub>v'" using decl_env by auto
+                ultimately show "g' \<le> g \<and> Address ev = Address e\<^sub>v' \<and> Sender ev = Sender e\<^sub>v' \<and> Svalue ev = Svalue e\<^sub>v'  \<and> Contract ev = Contract e\<^sub>v'" by auto
+              qed
+            qed
+
           qed
         qed
+      next
+        case (e _)
+        with 28(1) show ?thesis using load.psimps(1) Value by (simp split:option.splits)
       qed
-    qed
   next
-    case (e _)
-    with 28(1) show ?thesis using load.psimps(1) by simp
+    case (Calldata x2)
+    then show ?thesis
+    proof (cases "expr e e\<^sub>v cd st g")
+        case (n a g'')
+        then show ?thesis
+        proof (cases a)
+          case (Pair v t)
+          then show ?thesis
+          proof (cases "decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v')")
+            case None
+            with 28(1) n Pair Calldata show ?thesis using load.psimps(1)by (simp split:option.splits)
+          next
+            case (Some a)
+            show ?thesis
+            proof (cases a)
+              case (fields cd'' m'' k'' e\<^sub>v'')
+              then have 1: "(case decl i\<^sub>p t\<^sub>p (Some (v, t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem', sck', e\<^sub>v') of None \<Rightarrow> throw Err | Some (c, m, k, e) \<Rightarrow> return (c, m, k, e)) g'' = Normal ((cd'',m'',k'',e\<^sub>v''), g'')" using Some by simp
+              show ?thesis
+              proof ((rule allI)+,(rule impI))
+                fix ev cda k m g' assume load_def: "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
+                then have none:"Denvalue e\<^sub>v' $$ i\<^sub>p = None" using load.pelims[OF load_def 28(1)] Calldata by fastforce
+
+                with n Pair Some fields have "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g''" using load.psimps(1)[OF 28(1)] Calldata by (simp split:option.splits)
+                with load_def have "load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g'' = Normal ((ev, cda, k, m), g')" by simp
+                with Pair fields have "g' \<le> g'' \<and> Address ev = Address e\<^sub>v'' \<and> Sender ev = Sender e\<^sub>v'' \<and> Svalue ev = Svalue e\<^sub>v'' \<and> Contract ev = Contract e\<^sub>v'' " using none 28(3) n Pair 1 Calldata 
+                  by fastforce
+                moreover from n have "g'' \<le> g" using 28(2) Calldata none by (simp add: "28.hyps"(2))
+                moreover from Some fields have "Address e\<^sub>v'' =  Address e\<^sub>v' \<and> Sender e\<^sub>v'' = Sender e\<^sub>v' \<and> Svalue e\<^sub>v'' = Svalue e\<^sub>v' \<and> Contract e\<^sub>v'' = Contract e\<^sub>v'" using decl_env by auto
+                ultimately show "g' \<le> g \<and> Address ev = Address e\<^sub>v' \<and> Sender ev = Sender e\<^sub>v' \<and> Svalue ev = Svalue e\<^sub>v' \<and> Contract ev = Contract e\<^sub>v' " by auto
+              qed
+            qed
+          qed
+        qed
+      next
+        case (e _)
+        with 28(1) show ?thesis using load.psimps(1) Calldata by (simp split:option.splits)
+      qed
+  next
+    case (Memory x3)
+    then show ?thesis
+    proof (cases "expr e e\<^sub>v cd st g")
+        case (n a g'')
+        then show ?thesis
+        proof (cases a)
+          case (Pair v t)
+          then show ?thesis
+          proof (cases "decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v')")
+            case None
+            with 28(1) n Pair Memory show ?thesis using load.psimps(1)by (simp split:option.splits)
+          next
+            case (Some a)
+            show ?thesis
+            proof (cases a)
+              case (fields cd'' m'' k'' e\<^sub>v'')
+              then have 1: "(case decl i\<^sub>p t\<^sub>p (Some (v, t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem', sck', e\<^sub>v') of None \<Rightarrow> throw Err | Some (c, m, k, e) \<Rightarrow> return (c, m, k, e)) g'' = Normal ((cd'',m'',k'',e\<^sub>v''), g'')" using Some by simp
+              show ?thesis
+              proof ((rule allI)+,(rule impI))
+                fix ev cda k m g' assume load_def: "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
+                then have none:"Denvalue e\<^sub>v' $$ i\<^sub>p = None" using load.pelims[OF load_def 28(1)] Memory by fastforce
+
+                with n Pair Some fields have "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g''" using load.psimps(1)[OF 28(1)] Memory by (simp split:option.splits)
+                with load_def have "load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g'' = Normal ((ev, cda, k, m), g')" by simp
+                with Pair fields have "g' \<le> g'' \<and> Address ev = Address e\<^sub>v'' \<and> Sender ev = Sender e\<^sub>v'' \<and> Svalue ev = Svalue e\<^sub>v'' \<and> Contract ev = Contract  e\<^sub>v''" using 28(3) n Pair 1 Memory none by fastforce
+                moreover from n have "g'' \<le> g" using 28(2) Memory none by (simp add: "28.hyps"(2))
+                moreover from Some fields have "Address e\<^sub>v'' =  Address e\<^sub>v' \<and> Sender e\<^sub>v'' = Sender e\<^sub>v' \<and> Svalue e\<^sub>v'' = Svalue e\<^sub>v'\<and> Contract e\<^sub>v'' = Contract e\<^sub>v'" using decl_env by auto
+                ultimately show "g' \<le> g \<and> Address ev = Address e\<^sub>v' \<and> Sender ev = Sender e\<^sub>v' \<and> Svalue ev = Svalue e\<^sub>v'\<and> Contract ev = Contract e\<^sub>v'" by auto
+              qed
+            qed
+          qed
+        qed
+      next
+        case (e _)
+        with 28(1) show ?thesis using load.psimps(1) Memory by (simp split:option.splits)
+      qed
+  next
+    case (Storage x4)
+    then show ?thesis
+    proof(cases cp)
+      case True
+      then show ?thesis using 28 load.psimps Storage by simp
+    next
+      case notCP:False
+      then show ?thesis
+      proof (cases "expr e e\<^sub>v cd st g")
+        case (n a g'')
+        then show ?thesis
+        proof (cases a)
+          case (Pair v t)
+          then show ?thesis
+          proof (cases "decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v')")
+            case None
+            with 28(1) n Pair Storage notCP show ?thesis using load.psimps(1) by (simp split:option.splits)
+          next
+            case (Some a)
+            show ?thesis
+            proof (cases a)
+              case (fields cd'' m'' k'' e\<^sub>v'')
+              then have 1: "(case decl i\<^sub>p t\<^sub>p (Some (v, t)) cp cd (Memory st) (Storage st (Address e\<^sub>v)) (cd', mem', sck', e\<^sub>v') of None \<Rightarrow> throw Err | Some (c, m, k, e) \<Rightarrow> return (c, m, k, e)) g'' = Normal ((cd'',m'',k'',e\<^sub>v''), g'')" using Some by simp
+              show ?thesis
+              proof ((rule allI)+,(rule impI))
+                fix ev cda k m g' assume load_def: "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
+                then have none:"Denvalue e\<^sub>v' $$ i\<^sub>p = None" using load.pelims[OF load_def 28(1)] Storage notCP by fastforce
+
+                with n Pair Some fields have "load cp ((i\<^sub>p, t\<^sub>p) # pl) (e # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g''" using load.psimps(1)[OF 28(1)] Storage notCP by (simp split:option.splits)
+                with load_def have "load cp pl el e\<^sub>v'' cd'' k'' m'' e\<^sub>v cd st g'' = Normal ((ev, cda, k, m), g')" by simp
+                with Pair fields have "g' \<le> g'' \<and> Address ev = Address e\<^sub>v'' \<and> Sender ev = Sender e\<^sub>v'' \<and> Svalue ev = Svalue e\<^sub>v'' \<and> Contract ev = Contract  e\<^sub>v''" using 28(3) n Pair 1 Storage notCP none by fastforce
+                moreover from n have "g'' \<le> g" using 28(2) Storage notCP none by (simp add: "28.hyps"(2))
+                moreover from Some fields have "Address e\<^sub>v'' =  Address e\<^sub>v' \<and> Sender e\<^sub>v'' = Sender e\<^sub>v' \<and> Svalue e\<^sub>v'' = Svalue e\<^sub>v'\<and> Contract e\<^sub>v'' = Contract e\<^sub>v'" using decl_env by auto
+                ultimately show "g' \<le> g \<and> Address ev = Address e\<^sub>v' \<and> Sender ev = Sender e\<^sub>v' \<and> Svalue ev = Svalue e\<^sub>v'\<and> Contract ev = Contract e\<^sub>v'" by auto
+              qed
+            qed
+          qed
+        qed
+      next
+        case (e _)
+        with 28(1) show ?thesis using load.psimps(1) Storage notCP by (simp split:option.splits)
+      qed
+
+    qed  
+      
   qed
 next
   case 29
@@ -1250,8 +1451,8 @@ next
   case (32 i e cd st g)
   show ?case
   proof (rule allI[THEN allI, OF impI])
-    fix xa xaa assume "rexp (L.Id i) e cd st g = Normal (xa, xaa)"
-    then show "xaa \<le> g" using 32(1) rexp.psimps(1) by (simp split: option.split_asm Denvalue.split_asm Stackvalue.split_asm prod.split_asm Type.split_asm STypes.split_asm)
+    fix xa xaa assume "rexp (l.Id i) e cd st g = Normal (xa, xaa)"
+    then show "xaa \<le> g" using 32(1) rexp.psimps(1) by (simp split: option.split_asm denvalue.split_asm stackvalue.split_asm prod.split_asm type.split_asm stypes.split_asm)
   qed
 next
   case (33 i r e cd st g)
@@ -1259,7 +1460,7 @@ next
   proof (rule allI[THEN allI,OF impI])
     fix xa xaa assume rexp_def: "rexp (Ref i r) e cd st g = Normal (xa, xaa)"
     show "xaa \<le> g"
-    proof (cases "fmlookup (denvalue e) i")
+    proof (cases "fmlookup (Denvalue e) i")
       case None
       with 33(1) show ?thesis using rexp.psimps rexp_def by simp
     next
@@ -1271,7 +1472,7 @@ next
         proof (cases b)
           case (Stackloc l)
           then show ?thesis
-          proof (cases "accessStore l (stack st)")
+          proof (cases "accessStore l (Stack st)")
             case None
             with 33(1) Some Pair Stackloc show ?thesis using rexp.psimps(2) rexp_def by simp
           next
@@ -1282,18 +1483,18 @@ next
               with 33(1) Some Pair Stackloc s1 show ?thesis using rexp.psimps(2) rexp_def by simp
             next
               case (KCDptr l')
-              with 33 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e cd st] rexp_def by (simp split: option.split_asm Memoryvalue.split_asm MTypes.split_asm prod.split_asm Type.split_asm StateMonad.result.split_asm)
+              with 33 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e cd st] rexp_def by (simp split: option.split_asm memoryvalue.split_asm mtypes.split_asm prod.split_asm type.split_asm StateMonad.result.split_asm)
             next
               case (KMemptr x3)
-              with 33 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e cd st] rexp_def by (simp split: option.split_asm Memoryvalue.split_asm MTypes.split_asm prod.split_asm Type.split_asm StateMonad.result.split_asm)
+              with 33 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e cd st] rexp_def by (simp split: option.split_asm memoryvalue.split_asm mtypes.split_asm prod.split_asm type.split_asm StateMonad.result.split_asm)
             next
               case (KStoptr x4)
-              with 33 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e cd st] rexp_def by (simp split: option.split_asm STypes.split_asm prod.split_asm Type.split_asm StateMonad.result.split_asm)
+              with 33 Some Pair Stackloc s1 show ?thesis using rexp.psimps(2)[of i r e cd st] rexp_def by (simp split: option.split_asm stypes.split_asm prod.split_asm type.split_asm StateMonad.result.split_asm)
             qed
           qed
         next
           case (Storeloc x2)
-          with 33 Some Pair show ?thesis using rexp.psimps rexp_def by (simp split: option.split_asm STypes.split_asm prod.split_asm Type.split_asm  StateMonad.result.split_asm)
+          with 33 Some Pair show ?thesis using rexp.psimps rexp_def by (simp split: option.split_asm stypes.split_asm prod.split_asm type.split_asm  StateMonad.result.split_asm)
         qed
       qed
     qed
@@ -1302,6 +1503,8 @@ next
   case (34 e cd st g)
   then show ?case using expr.psimps(20) by (simp split:nat.split)
 qed
+
+
 
 text \<open>Now we can define the termination function\<close>
 
@@ -1324,16 +1527,16 @@ method msel_ssel_expr_load_rexp_dom =
   match premises in l: "load _ _ _ _ _ _ _ _ _ _ _ = Normal (_,_)" and d[thin]: "msel_ssel_expr_load_rexp_dom (Inr (Inr (Inl _)))" \<Rightarrow> \<open>insert msel_ssel_expr_load_rexp_dom_gas(4)[OF d l, THEN conjunct1]\<close>
 
 method costs =
-  match premises in "costs\<^sub>e (CALL i xe) e cd st < _" for i xe and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert call_not_zero[of (unchecked) i xe e cd st]\<close> |
-  match premises in "costs\<^sub>e (ECALL ad i xe) e cd st < _" for ad i xe and e::Environment and cd::CalldataT and st::State \<Rightarrow> \<open>insert ecall_not_zero[of (unchecked) ad i xe e cd st]\<close>
+  match premises in "costs\<^sub>e (CALL i xe) e cd st < _" for i xe and e::environment and cd::calldataT and st::state \<Rightarrow> \<open>insert call_not_zero[of (unchecked) i xe e cd st]\<close> |
+  match premises in "costs\<^sub>e (ECALL ad i xe) e cd st < _" for ad i xe and e::environment and cd::calldataT and st::state \<Rightarrow> \<open>insert ecall_not_zero[of (unchecked) ad i xe e cd st]\<close>
 
 termination msel
   apply (relation "measures [mgas, msize]")
-  apply (auto split:Member.split_asm prod.split_asm bool.split_asm if_split_asm Stackvalue.split_asm option.split_asm Type.split_asm Types.split_asm Memoryvalue.split_asm atype.split_asm)
+  apply (auto split:member.split_asm prod.split_asm bool.split_asm if_split_asm stackvalue.split_asm option.split_asm type.split_asm types.split_asm memoryvalue.split_asm atype.split_asm)
   apply (msel_ssel_expr_load_rexp_dom+, costs?, arith)+
   done
 
-subsection \<open>Gas Reduction\<close>
+subsection \<open>gas Reduction\<close>
 
 text \<open>
   The following corollary is a generalization of @{thm [source] msel_ssel_expr_load_rexp_dom_gas}.
@@ -1363,13 +1566,399 @@ lemmas msel_ssel_expr_load_rexp_gas =
 
 lemma expr_sender:
   assumes "expr SENDER e cd st g = Normal ((KValue adv, Value TAddr), g')"
-  shows "adv = sender e" using assms by (simp split:if_split_asm)
+  shows "adv = Sender e" using assms by (simp split:if_split_asm)
 
 declare expr.simps[simp del, solidity_symbex add]
 declare load.simps[simp del, solidity_symbex add]
 declare ssel.simps[simp del, solidity_symbex add]
 declare msel.simps[simp del, solidity_symbex add]
 declare rexp.simps[simp del, solidity_symbex add]
+
+
+lemma load_denval_sub[rule_format]:
+  "\<forall>l1'  t1' g1' arr. msel c1 t1 l1 xe1 ev1 cd1 st1 g1 = Normal ((l1', t1'), g1') \<longrightarrow> True"
+  "\<forall>l2' v2' t2' g2'. ssel t2 l2 xe2 ev2 cd2 st2 g2 = Normal ((l2', t2'), g2') \<longrightarrow> True"
+  "\<forall>v t g4'. expr e4 ev4 cd4 st4 g4 = Normal ((v, t), g4') \<longrightarrow> True"        (*lev0 lcd0 lk lm*)
+
+  "\<forall>ev cd k m g'. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<longrightarrow> fmdom (Denvalue lev0) |\<subseteq>| fmdom (Denvalue ev) "
+  "\<forall>v3' t3'  g3'. rexp l3 ev3 cd3 st3 g3 = Normal ((v3', t3'), g3') \<longrightarrow> True"
+proof (induct rule: msel_ssel_expr_load_rexp.induct
+    [where ?P1.0="\<lambda>c1 t1 l1 xe1 ev1 cd1 st1 g1. (\<forall>l1'  t1' g1' arr. msel c1 t1 l1 xe1 ev1 cd1 st1 g1 = Normal ((l1',  t1'), g1') \<longrightarrow> True)"
+      and ?P2.0="\<lambda>t2 l2 xe2 ev2 cd2 st2 g2. (\<forall>l2' v2' t2' g2'. ssel t2 l2 xe2 ev2 cd2 st2 g2 = Normal ((l2',  t2'), g2')\<longrightarrow> True)"
+      and ?P3.0="\<lambda>e4 ev4 cd4 st4 g4. (\<forall>v t g4'. expr e4 ev4 cd4 st4 g4 = Normal ((v, t), g4')\<longrightarrow> True)"
+      and ?P4.0="\<lambda>lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg. (\<forall>ev cd k m g'. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<longrightarrow> fmdom (Denvalue lev0) |\<subseteq>| fmdom (Denvalue ev) )"
+      and ?P5.0="\<lambda>l3 ev3 cd3 st3 g3. (\<forall>v3' t3' g3'. rexp l3 ev3 cd3 st3 g3 = Normal (( v3',  t3'), g3') \<longrightarrow> True)"
+      ])
+  case (1 uu uv uw ux uy uz g)
+  then show ?case by simp
+next
+  case (2 va vb vc vd ve vf vg g)
+  then show ?case by simp
+next
+  case (3 vh al t loc x env cd st g)
+  then show ?case by simp
+next
+  case (4 mm al t loc x y ys env cd st g)
+  then show ?case by simp
+next
+  case (5 tp loc vi vj vk g)
+  then show ?case by simp
+next
+  case (6 vl vm vn vo vp vq vr g)
+  then show ?case by simp
+next
+  case (7 al t loc x xs env cd st g)
+  then show ?case by simp
+next
+  case (8 t t' loc x xs env cd st g)
+  then show ?case by simp
+next
+  case (9 b x e cd st g)
+  then show ?case by simp
+next
+  case (10 b x e cd st g)
+  then show ?case by simp
+next
+  case (11 ad e cd st g)
+  then show ?case by simp
+next
+  case (12 ad e cd st g)
+  then show ?case by simp
+next
+  case (13 e cd st g)
+  then show ?case by simp
+next
+  case (14 e cd st g)
+  then show ?case by simp
+next
+  case (15 e cd st g)
+  then show ?case by simp
+next
+  case (16 e cd st g)
+  then show ?case by simp
+next
+  case (17 e cd st g)
+  then show ?case by simp
+next
+  case (18 x e cd st g)
+  then show ?case by simp
+next
+  case (19 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (20 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (21 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (22 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (23 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (24 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (25 i e cd st g)
+  then show ?case by simp
+next
+  case (26 i xe e cd st g)
+  then show ?case by simp
+next
+  case (27 ad i xe e cd st g)
+  then show ?case by simp
+next
+ case (28 cp i\<^sub>p t\<^sub>p pl ex el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g)
+  show ?case
+  proof(intros)
+    fix ev cda k m g' locs t l stloc
+    assume as1:"local.load cp ((i\<^sub>p, t\<^sub>p) # pl) (ex # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
+    then have none:"Denvalue e\<^sub>v' $$ i\<^sub>p = None" using load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] as1 
+      by (simp split:type.splits option.splits)
+
+    then obtain x g4' where a7:"expr ex e\<^sub>v cd st g = Normal (x, g4')" 
+      using as1 load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] 
+      by (simp split:if_splits type.splits result.splits prod.splits option.splits)
+    then have  a8:"\<exists>v t. expr ex e\<^sub>v cd st g = Normal ((v, t), g4')" using as1 by simp
+    then obtain v t where a10:"expr ex e\<^sub>v cd st g = Normal ((v, t), g4')"  using as1 load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] by (auto split: result.splits prod.splits option.splits)
+    then obtain c m' k' e where a15:"decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st)  (Storage st (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v') = Some (c, m', k', e)" 
+      using as1 load.simps(1) by (auto split:if_splits type.splits result.splits prod.splits option.splits)
+    then have a20:"load cp pl el e c k' m' e\<^sub>v cd st g4' = Normal ((ev, cda, k, m), g')"  
+      using as1 load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] a10 a15 
+      by (simp split:if_splits type.splits option.splits)
+    have a30:"fmdom (Denvalue e\<^sub>v') |\<subseteq>| fmdom (Denvalue e)"using decl_env_subset_denval a15 by simp
+    have "fmdom (Denvalue e) |\<subseteq>| fmdom (Denvalue ev)" 
+    proof(cases t\<^sub>p)
+      case (Value x1)
+      then show ?thesis using 28 a20 a7 a8 a10 a15 none by fastforce
+    next
+      case (Calldata x2)
+      then show ?thesis using 28 a20 a7 a8 a10 a15 none by fastforce
+    next
+      case (Memory x3)
+      then show ?thesis using 28 a20 a7 a8 a10 a15 none by fastforce
+    next
+      case (Storage x4)
+      then have "\<not>cp" using as1 load.simps by auto
+      then show ?thesis using 28 a20 a7 a8 a10 a15 none Storage by fastforce
+    qed
+    then show "fmdom (Denvalue e\<^sub>v') |\<subseteq>| fmdom (Denvalue ev)" using a30 by simp 
+  qed
+next
+  case (29 vt vu vv vw vx vy vz wa wb wc g)
+  show ?case
+  proof(intros)
+    fix ev cd k m g' locs
+    assume a1: "load vt [] (vu # vv) vw vx vy vz wa wb wc g = Normal ((ev, cd, k, m), g') "
+    then show "fmdom (Denvalue vw) |\<subseteq>| fmdom (Denvalue ev)" using load.simps(2) by (auto split:if_split_asm result.splits)
+  qed
+next
+  case (30 wd we wf wg wh wi wj wk wl wm g)
+  show ?case
+  proof(intros)
+    fix ev cd k m g' locs
+    assume a1: " load wd (we # wf) [] wg wh wi wj wk wl wm g = Normal ((ev, cd, k, m), g')"
+    then show " fmdom (Denvalue wg) |\<subseteq>| fmdom (Denvalue ev)" using load.simps(3) by (auto split:if_split_asm result.splits)
+
+  qed
+next
+  case (31 wn e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g)
+  show ?case
+  proof(intros)
+    fix ev cda k m g' locs
+      (* cd' = cda \<Longrightarrow> sck' = k \<Longrightarrow> mem' = m*)
+    assume a1: " load wn [] [] e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g')"
+    then show "fmdom (Denvalue e\<^sub>v') |\<subseteq>| fmdom (Denvalue ev)" using load.simps(4)[of wn e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] by (auto split:if_split_asm result.splits)
+  qed
+next
+  case (32 i e cd st g)
+  then show ?case by simp
+next
+  case (33 i r e cd st g)
+  then show ?case by simp
+next
+  case (34 e cd st g)
+  then show ?case by simp
+qed
+
+lemma load_denval_existing_remain[rule_format]:
+  "\<forall>l1'  t1' g1' arr. msel c1 t1 l1 xe1 ev1 cd1 st1 g1 = Normal ((l1', t1'), g1') \<longrightarrow> True"
+  "\<forall>l2' v2' t2' g2'. ssel t2 l2 xe2 ev2 cd2 st2 g2 = Normal ((l2', t2'), g2') \<longrightarrow> True"
+  "\<forall>v t g4'. expr e4 ev4 cd4 st4 g4 = Normal ((v, t), g4') \<longrightarrow> True"        (*lev0 lcd0 lk lm*)
+
+  "\<forall>ev cd k m g' id x. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<and> Denvalue lev0 $$ id = Some x \<longrightarrow> (Denvalue ev) $$ id = Some x "
+  "\<forall>v3' t3'  g3'. rexp l3 ev3 cd3 st3 g3 = Normal ((v3', t3'), g3') \<longrightarrow> True"
+proof (induct rule: msel_ssel_expr_load_rexp.induct
+    [where ?P1.0="\<lambda>c1 t1 l1 xe1 ev1 cd1 st1 g1. (\<forall>l1'  t1' g1' arr. msel c1 t1 l1 xe1 ev1 cd1 st1 g1 = Normal ((l1',  t1'), g1') \<longrightarrow> True)"
+      and ?P2.0="\<lambda>t2 l2 xe2 ev2 cd2 st2 g2. (\<forall>l2' v2' t2' g2'. ssel t2 l2 xe2 ev2 cd2 st2 g2 = Normal ((l2',  t2'), g2')\<longrightarrow> True)"
+      and ?P3.0="\<lambda>e4 ev4 cd4 st4 g4. (\<forall>v t g4'. expr e4 ev4 cd4 st4 g4 = Normal ((v, t), g4')\<longrightarrow> True)"
+      and ?P4.0="\<lambda>lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg. (\<forall>ev cd k m g' id x. load lcp lis lxs lev0 lcd0 lk lm lev lcd lst lg = Normal ((ev, cd, k, m), g') \<and> Denvalue lev0 $$ id = Some x \<longrightarrow> (Denvalue ev) $$ id = Some x)"
+      and ?P5.0="\<lambda>l3 ev3 cd3 st3 g3. (\<forall>v3' t3' g3'. rexp l3 ev3 cd3 st3 g3 = Normal (( v3',  t3'), g3') \<longrightarrow> True)"
+      ])
+  case (1 uu uv uw ux uy uz g)
+  then show ?case by simp
+next
+  case (2 va vb vc vd ve vf vg g)
+  then show ?case by simp
+next
+  case (3 vh al t loc x env cd st g)
+  then show ?case by simp
+next
+  case (4 mm al t loc x y ys env cd st g)
+  then show ?case by simp
+next
+  case (5 tp loc vi vj vk g)
+  then show ?case by simp
+next
+  case (6 vl vm vn vo vp vq vr g)
+  then show ?case by simp
+next
+  case (7 al t loc x xs env cd st g)
+  then show ?case by simp
+next
+  case (8 t t' loc x xs env cd st g)
+  then show ?case by simp
+next
+  case (9 b x e cd st g)
+  then show ?case by simp
+next
+  case (10 b x e cd st g)
+  then show ?case by simp
+next
+  case (11 ad e cd st g)
+  then show ?case by simp
+next
+  case (12 ad e cd st g)
+  then show ?case by simp
+next
+  case (13 e cd st g)
+  then show ?case by simp
+next
+  case (14 e cd st g)
+  then show ?case by simp
+next
+  case (15 e cd st g)
+  then show ?case by simp
+next
+  case (16 e cd st g)
+  then show ?case by simp
+next
+  case (17 e cd st g)
+  then show ?case by simp
+next
+  case (18 x e cd st g)
+  then show ?case by simp
+next
+  case (19 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (20 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (21 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (22 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (23 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (24 e1 e2 e cd st g)
+  then show ?case by simp
+next
+  case (25 i e cd st g)
+  then show ?case by simp
+next
+  case (26 i xe e cd st g)
+  then show ?case by simp
+next
+  case (27 ad i xe e cd st g)
+  then show ?case by simp
+next
+ case (28 cp i\<^sub>p t\<^sub>p pl ex el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g)
+  show ?case
+  proof(intros)
+    fix ev cda k m g' id x
+    assume as1:"load cp ((i\<^sub>p, t\<^sub>p) # pl) (ex # el) e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g') \<and> Denvalue e\<^sub>v' $$ id = Some x"
+    then have none:"Denvalue e\<^sub>v' $$ i\<^sub>p = None" using load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] as1 
+      by (simp split:type.splits option.splits)
+
+    then obtain x' g4' where a7:"expr ex e\<^sub>v cd st g = Normal (x', g4')"
+      using as1 load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] 
+      by (simp split:if_splits type.splits result.splits prod.splits option.splits)
+    then have  a8:"\<exists>v t. expr ex e\<^sub>v cd st g = Normal ((v, t), g4')" using as1 by simp
+    then obtain v t where a10:"expr ex e\<^sub>v cd st g = Normal ((v, t), g4')"  using as1 load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] by (auto split: result.splits prod.splits option.splits)
+    then obtain c m' k' e where a15:"decl i\<^sub>p t\<^sub>p (Some (v,t)) cp cd (Memory st)  (Storage st (Address e\<^sub>v)) (cd', mem',  sck', e\<^sub>v') = Some (c, m', k', e)"
+      using as1 load.simps(1) by (auto split: if_splits type.splits result.splits prod.splits option.splits)
+    then have a20:"load cp pl el e c k' m' e\<^sub>v cd st g4' = Normal ((ev, cda, k, m), g')"  
+      using as1 load.simps(1)[of cp i\<^sub>p t\<^sub>p  pl ex  el e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] a10 a15 
+      by (simp split:if_splits type.splits option.splits)
+    have a30:"fmdom (Denvalue e\<^sub>v') |\<subseteq>| fmdom (Denvalue e)"using decl_env_subset_denval a15 by simp
+    
+    then show "Denvalue ev $$ id = Some x"
+    proof(cases t\<^sub>p)
+      case (Value x1)
+      then show ?thesis 
+      proof(cases "id = i\<^sub>p")
+        case True
+        then show ?thesis using as1 load.simps none by simp
+      next
+        case False
+        then have a50:" Denvalue e $$ id = Some x" using a15 a20 as1 none 
+          using decl_env_monotonic[OF a15, of id] 
+          by simp
+        have "\<forall>ev cda k m g' id x. load cp pl el  e c k' m' e\<^sub>v cd st g4' = Normal ((ev, cda, k, m), g') \<and> Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x"
+          using 28(2)[OF]  Value none a10 a20 a7 a8 a10 a15 none False by fastforce
+        then have "Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x" using a20 by blast
+        then show ?thesis using a50 by simp
+      qed
+    next
+      case (Calldata x2)
+      then show ?thesis
+      proof(cases "id = i\<^sub>p")
+        case True
+        then show ?thesis using as1 load.simps none by simp
+      next
+        case False
+        then have a50:" Denvalue e $$ id = Some x" using a15 a20 as1 none 
+          using decl_env_monotonic by presburger
+        have "\<forall>ev cda k m g' id x. load cp pl el  e c k' m' e\<^sub>v cd st g4' = Normal ((ev, cda, k, m), g') \<and> Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x"
+          using 28(2) Calldata none a10 a20 a7 a8 a10 a15 none False by fastforce
+        then have "Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x" using a20 by blast
+        then show ?thesis using a50 by simp
+      qed
+    next
+      case (Memory x3)
+      then show ?thesis
+      proof(cases "id = i\<^sub>p")
+        case True
+        then show ?thesis using as1 load.simps none by simp
+      next
+        case False
+        then have a50:" Denvalue e $$ id = Some x" using a15 a20 as1 none 
+          using decl_env_monotonic by presburger
+        have "\<forall>ev cda k m g' id x. load cp pl el  e c k' m' e\<^sub>v cd st g4' = Normal ((ev, cda, k, m), g') \<and> Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x"
+          using 28(2) Memory a20 a7 a8 a10 a15 none False by fastforce
+        then have "Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x" using a20 by blast
+        then show ?thesis using a50 by simp
+      qed
+    next
+      case (Storage x4)
+      then show ?thesis
+      proof(cases "id = i\<^sub>p")
+        case True
+        then show ?thesis using as1 load.simps none by simp
+      next
+        case False
+        then have a50:" Denvalue e $$ id = Some x" using a15 a20 as1 none 
+          using decl_env_monotonic by presburger
+        have "\<not>cp" using as1 load.simps Storage by auto
+        then have "\<forall>ev cda k m g' id x. load cp pl el  e c k' m' e\<^sub>v cd st g4' = Normal ((ev, cda, k, m), g') \<and> Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x"
+          using 28(2) Storage a20 a7 a8 a10 a15 none False by fastforce
+        then have "Denvalue e $$ id = Some x \<longrightarrow> Denvalue ev $$ id = Some x" using a20 by blast
+        then show ?thesis using a50 by simp
+      qed
+    qed
+  qed
+next
+  case (29 vt vu vv vw vx vy vz wa wb wc g)
+  show ?case
+  proof(intros)
+    fix ev cd k m g' locs id x
+    assume a1: "load vt [] (vu # vv) vw vx vy vz wa wb wc g = Normal ((ev, cd, k, m), g') \<and> Denvalue vw $$ id = Some x"
+    then show "Denvalue ev $$ id = Some x " using load.simps(2) by (auto split:if_split_asm result.splits)
+  qed
+next
+  case (30 wd we wf wg wh wi wj wk wl wm g)
+  show ?case
+  proof(intros)
+    fix ev cd k m g' locs id x
+    assume a1: " load wd (we # wf) [] wg wh wi wj wk wl wm g = Normal ((ev, cd, k, m), g')\<and> Denvalue wg $$ id = Some x"
+    then show "Denvalue ev $$ id = Some x" using load.simps(3) by (auto split:if_split_asm result.splits)
+
+  qed
+next
+  case (31 wn e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g)
+  show ?case
+  proof(intros)
+    fix ev cda k m g' locs id x
+      (* cd' = cda \<Longrightarrow> sck' = k \<Longrightarrow> mem' = m*)
+    assume a1: " load wn [] [] e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g = Normal ((ev, cda, k, m), g') \<and>  Denvalue e\<^sub>v' $$ id = Some x"
+    then show " Denvalue ev $$ id = Some x" using load.simps(4)[of wn e\<^sub>v' cd' sck' mem' e\<^sub>v cd st g] by (auto split:if_split_asm result.splits)
+  qed
+next
+  case (32 i e cd st g)
+  then show ?case by simp
+next
+  case (33 i r e cd st g)
+  then show ?case by simp
+next
+  case (34 e cd st g)
+  then show ?case by simp
+qed
 
 end
 
