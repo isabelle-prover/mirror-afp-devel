@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/AutoCorres2.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Introduction_AutoCorres2.html">Introduction_AutoCorres2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/More_Lib.html">More_Lib</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/MkTermAntiquote.html">MkTermAntiquote</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/MkTermAntiquote_Tests.html">MkTermAntiquote_Tests</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/TermPatternAntiquote.html">TermPatternAntiquote</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/TermPatternAntiquote_Tests.html">TermPatternAntiquote_Tests</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Print_Annotated.html">Print_Annotated</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ML_Fun_Cache.html">ML_Fun_Cache</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Named_Bindings.html">Named_Bindings</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AutoCorres_Utils.html">AutoCorres_Utils</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Match_Cterm.html">Match_Cterm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ML_Record_Antiquotation.html">ML_Record_Antiquotation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Misc_Antiquotation.html">Misc_Antiquotation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Tuple_Tools.html">Tuple_Tools</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Subgoal_Methods.html">Subgoal_Methods</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Synthesize.html">Synthesize</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Rule_By_Method.html">Rule_By_Method</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Option_Scanner.html">Option_Scanner</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Named_Rules.html">Named_Rules</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Subgoals.html">Subgoals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Tagging.html">Tagging</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Basic_Runs_To_VCG.html">Basic_Runs_To_VCG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Runs_To_VCG.html">Runs_To_VCG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Eisbach_Methods.html">Eisbach_Methods</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Less_Monad_Syntax.html">Less_Monad_Syntax</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Reader_Monad.html">Reader_Monad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Option_MonadND.html">Option_MonadND</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Apply_Trace.html">Apply_Trace</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Apply_Trace_Cmd.html">Apply_Trace_Cmd</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Mutual_CCPO_Recursion.html">Mutual_CCPO_Recursion</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Target_Architecture.html">Target_Architecture</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Lemmas_Internal.html">Word_Lemmas_Internal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Lemmas_32_Internal.html">Word_Lemmas_32_Internal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Lemmas_64_Internal.html">Word_Lemmas_64_Internal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Distinct_Prop.html">Distinct_Prop</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/WordSetup.html">WordSetup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Addr_Type_ARM.html">Addr_Type_ARM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Addr_Type_ARM64.html">Addr_Type_ARM64</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Addr_Type_ARM_HYP.html">Addr_Type_ARM_HYP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Addr_Type_RISCV64.html">Addr_Type_RISCV64</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Addr_Type_X64.html">Addr_Type_X64</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Addr_Type.html">Addr_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CTypesBase.html">CTypesBase</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CTypesDefs.html">CTypesDefs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CTypes.html">CTypes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Vanilla32_Preliminaries.html">Vanilla32_Preliminaries</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Mem_Encoding_ARM.html">Word_Mem_Encoding_ARM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Mem_Encoding_ARM64.html">Word_Mem_Encoding_ARM64</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Mem_Encoding_ARM_HYP.html">Word_Mem_Encoding_ARM_HYP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Mem_Encoding_RISCV64.html">Word_Mem_Encoding_RISCV64</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Mem_Encoding_X64.html">Word_Mem_Encoding_X64</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Word_Mem_Encoding.html">Word_Mem_Encoding</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Vanilla32.html">Vanilla32</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ML_Infer_Instantiate.html">ML_Infer_Instantiate</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Arrays.html">Arrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Padding.html">Padding</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Lens.html">Lens</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CompoundCTypes.html">CompoundCTypes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ArraysMemInstance.html">ArraysMemInstance</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ArchArraysMemInstance.html">ArchArraysMemInstance</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/HeapRawState.html">HeapRawState</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/MapExtra.html">MapExtra</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/MapExtraTrans.html">MapExtraTrans</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/TypHeap.html">TypHeap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Separation_UMM.html">Separation_UMM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/SepCode.html">SepCode</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/SepInv.html">SepInv</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/SepTactic.html">SepTactic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/SepFrame.html">SepFrame</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/StructSupport.html">StructSupport</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ArrayAssertion.html">ArrayAssertion</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CProof.html">CProof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Padding_Equivalence.html">Padding_Equivalence</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CLanguage.html">CLanguage</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/AutoCorres2/UMM.html">UMM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/PackedTypes.html">PackedTypes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/PrettyProgs.html">PrettyProgs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/IndirectCalls.html">IndirectCalls</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ModifiesProofs.html">ModifiesProofs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CLocals.html">CLocals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CTranslationSetup.html">CTranslationSetup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Array_Selectors.html">Array_Selectors</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CTranslation.html">CTranslation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/TypHeapLib.html">TypHeapLib</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/LemmaBucket_C.html">LemmaBucket_C</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Cong_Tactic.html">Cong_Tactic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Spec_Monad.html">Spec_Monad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Reaches.html">Reaches</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Simp_Trace.html">Simp_Trace</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AutoCorres_Base.html">AutoCorres_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/SimplBucket.html">SimplBucket</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CCorresE.html">CCorresE</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/L1Defs.html">L1Defs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/L1Peephole.html">L1Peephole</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/SimplConv.html">SimplConv</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CorresXF.html">CorresXF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/L1Valid.html">L1Valid</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/L2Defs.html">L2Defs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/LocalVarExtract.html">LocalVarExtract</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AutoCorresSimpset.html">AutoCorresSimpset</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/ExceptionRewrite.html">ExceptionRewrite</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/L2ExceptionRewrite.html">L2ExceptionRewrite</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/L2Peephole.html">L2Peephole</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/TypHeapSimple.html">TypHeapSimple</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Stack_Typing.html">Stack_Typing</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/In_Out_Parameters.html">In_Out_Parameters</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Split_Heap.html">Split_Heap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AbstractArrays.html">AbstractArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/HeapLift.html">HeapLift</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/NatBitwise.html">NatBitwise</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/WordAbstract.html">WordAbstract</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/WordPolish.html">WordPolish</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Refines_Spec.html">Refines_Spec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/TypeStrengthen.html">TypeStrengthen</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Polish.html">Polish</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Runs_To_VCG_StackPointer.html">Runs_To_VCG_StackPointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AutoCorres.html">AutoCorres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Chapter1_MinMax.html">Chapter1_MinMax</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Chapter2_HoareHeap.html">Chapter2_HoareHeap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/Chapter3_HoareHeap.html">Chapter3_HoareHeap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AutoCorresInfrastructure.html">AutoCorresInfrastructure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/pointers_to_locals.html">pointers_to_locals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/In_Out_Parameters_Ex.html">In_Out_Parameters_Ex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/fnptr.html">fnptr</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/union_ac.html">union_ac</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/open_struct.html">open_struct</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/AutoCorres_Documentation.html">AutoCorres_Documentation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/AutoCorres2/CTranslationInfrastructure.html">CTranslationInfrastructure</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span>uto<span class='first'>C</span>orres2.<span class='first'>U</span><span class='first'>M</span><span class='first'>M</span>
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/AutoCorres2/UMM.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

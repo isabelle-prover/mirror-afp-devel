@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/HOL-CSP.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Introduction.html">Introduction</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/HOL-CSP/Process.html">Process</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Constant_Processes.html">Constant_Processes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Deterministic_Choice.html">Deterministic_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Non_Deterministic_Choice.html">Non_Deterministic_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Sliding_Choice.html">Sliding_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Multi_Deterministic_Prefix_Choice.html">Multi_Deterministic_Prefix_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Multi_Non_Deterministic_Prefix_Choice.html">Multi_Non_Deterministic_Prefix_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Global_Non_Deterministic_Choice.html">Global_Non_Deterministic_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Sequential_Composition.html">Sequential_Composition</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Synchronization_Product.html">Synchronization_Product</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Renaming.html">Renaming</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Hiding.html">Hiding</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/CSP_Refinements.html">CSP_Refinements</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/CSP_Monotonies.html">CSP_Monotonies</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Non_Deterministic_CSP_Distributivity.html">Non_Deterministic_CSP_Distributivity</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Basic_CSP_Laws.html">Basic_CSP_Laws</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Step_CSP_Laws.html">Step_CSP_Laws</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Step_CSP_Laws_Extended.html">Step_CSP_Laws_Extended</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Read_Write_CSP_Laws.html">Read_Write_CSP_Laws</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/CSP_Laws.html">CSP_Laws</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Events_Ticks_CSP_Laws.html">Events_Ticks_CSP_Laws</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/CSP_Assertions.html">CSP_Assertions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Induct_CSP_Rules.html">Induct_CSP_Rules</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/HOL-CSP.html">HOL-CSP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/Conclusion.html">Conclusion</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/CopyBuffer.html">CopyBuffer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/HOL-CSP/MergeAnomaly.html">MergeAnomaly</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>-<span class='first'>C</span><span class='first'>S</span><span class='first'>P</span>.<span class='first'>P</span>rocess
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/HOL-CSP/Process.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

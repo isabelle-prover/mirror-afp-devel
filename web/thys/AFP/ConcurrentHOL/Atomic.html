@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/ConcurrentHOL.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Strengthen.html">Strengthen</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/HOL_Basis.html">HOL_Basis</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Aczel_Sequences.html">Aczel_Sequences</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Lifted_Predicates.html">Lifted_Predicates</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/More_Lattices.html">More_Lattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Closures.html">Closures</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Galois.html">Galois</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Heyting.html">Heyting</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Safety_Logic.html">Safety_Logic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Constructions.html">Constructions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Next_Imp.html">Next_Imp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Stability.html">Stability</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Refinement.html">Refinement</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Programs.html">Programs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Combinators.html">Combinators</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Local_State.html">Local_State</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/TLS.html">TLS</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/ConcurrentHOL.html">ConcurrentHOL</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/ConcurrentHOL/Atomic.html">Atomic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Exceptions.html">Exceptions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Assume_Guarantee.html">Assume_Guarantee</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/WickersonDoddsParkinson.html">WickersonDoddsParkinson</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Inhabitation.html">Inhabitation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/FindP.html">FindP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/BFS.html">BFS</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Safety_Closure.html">Safety_Closure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Ix.html">Ix</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Heap.html">Heap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/CImperativeHOL.html">CImperativeHOL</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/TSO.html">TSO</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/TSO_Code_Gen.html">TSO_Code_Gen</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/TSO_litmus.html">TSO_litmus</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/ConcurrentHOL/Floyd_Warshall.html">Floyd_Warshall</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>oncurrent<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>.<span class='first'>A</span>tomic
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/ConcurrentHOL/Atomic.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Security_Protocol_Refinement.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Infra.html">Infra</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Refinement.html">Refinement</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Agents.html">Agents</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Keys.html">Keys</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Atoms.html">Atoms</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Runs.html">Runs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Channels.html">Channels</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/Message.html">Message</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/s0g_secrecy.html">s0g_secrecy</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/a0n_agree.html">a0n_agree</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/a0i_agree.html">a0i_agree</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_auth.html">m1_auth</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m2_auth_chan.html">m2_auth_chan</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m2_confid_chan.html">m2_confid_chan</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_sig.html">m3_sig</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_enc.html">m3_enc</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_keydist.html">m1_keydist</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_keydist_iirn.html">m1_keydist_iirn</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_keydist_inrn.html">m1_keydist_inrn</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_kerberos.html">m1_kerberos</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m2_kerberos.html">m2_kerberos</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_kerberos_par.html">m3_kerberos_par</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_kerberos5.html">m3_kerberos5</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_kerberos4.html">m3_kerberos4</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_nssk.html">m1_nssk</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m2_nssk.html">m2_nssk</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_nssk_par.html">m3_nssk_par</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_nssk.html">m3_nssk</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m1_ds.html">m1_ds</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m2_ds.html">m2_ds</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_ds_par.html">m3_ds_par</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Security_Protocol_Refinement/m3_ds.html">m3_ds</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span>ecurity_<span class='first'>P</span>rotocol_<span class='first'>R</span>efinement.m2_auth_chan
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Security_Protocol_Refinement/m2_auth_chan.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

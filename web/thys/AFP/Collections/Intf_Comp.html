@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Collections.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Collections/Sorted_List_Operations.html">Sorted_List_Operations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/HashCode.html">HashCode</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetIterator.html">SetIterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetIteratorOperations.html">SetIteratorOperations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Proper_Iterator.html">Proper_Iterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/It_to_It.html">It_to_It</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetIteratorGA.html">SetIteratorGA</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Gen_Iterator.html">Gen_Iterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Idx_Iterator.html">Idx_Iterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Iterator.html">Iterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/RBT_add.html">RBT_add</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Dlist_add.html">Dlist_add</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Assoc_List.html">Assoc_List</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Diff_Array.html">Diff_Array</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Partial_Equivalence_Relation.html">Partial_Equivalence_Relation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Tools.html">ICF_Tools</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Ord_Code_Preproc.html">Ord_Code_Preproc</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Record_Intf.html">Record_Intf</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Locale_Code.html">Locale_Code</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Spec_Base.html">ICF_Spec_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/MapSpec.html">MapSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Robdd.html">Robdd</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Locale_Code_Ex.html">Locale_Code_Ex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/DatRef.html">DatRef</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetAbstractionIterator.html">SetAbstractionIterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/GenCF_Chapter.html">GenCF_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/GenCF_Intf_Chapter.html">GenCF_Intf_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Intf_Map.html">Intf_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Intf_Set.html">Intf_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Intf_Hash.html">Intf_Hash</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Collections/Intf_Comp.html">Intf_Comp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/GenCF_Gen_Chapter.html">GenCF_Gen_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Gen_Set.html">Gen_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Gen_Map.html">Gen_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Gen_Map2Set.html">Gen_Map2Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Gen_Comp.html">Gen_Comp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/GenCF_Impl_Chapter.html">GenCF_Impl_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_Array_Stack.html">Impl_Array_Stack</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_List_Set.html">Impl_List_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Array_Iterator.html">Array_Iterator</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_List_Map.html">Impl_List_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_Array_Hash_Map.html">Impl_Array_Hash_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_RBT_Map.html">Impl_RBT_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_Cfun_Set.html">Impl_Cfun_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_Array_Map.html">Impl_Array_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_Bit_Set.html">Impl_Bit_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Impl_Uv_Set.html">Impl_Uv_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Gen_Hash.html">Gen_Hash</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/GenCF.html">GenCF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Chapter.html">ICF_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Spec_Chapter.html">ICF_Spec_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetSpec.html">SetSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListSpec.html">ListSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/AnnotatedListSpec.html">AnnotatedListSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/PrioSpec.html">PrioSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/PrioUniqueSpec.html">PrioUniqueSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Gen_Algo_Chapter.html">ICF_Gen_Algo_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetIteratorCollectionsGA.html">SetIteratorCollectionsGA</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/MapGA.html">MapGA</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetGA.html">SetGA</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetByMap.html">SetByMap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListGA.html">ListGA</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetIndex.html">SetIndex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Algos.html">Algos</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/PrioByAnnotatedList.html">PrioByAnnotatedList</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/PrioUniqueByAnnotatedList.html">PrioUniqueByAnnotatedList</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Impl_Chapter.html">ICF_Impl_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListMapImpl.html">ListMapImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListMapImpl_Invar.html">ListMapImpl_Invar</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/RBTMapImpl.html">RBTMapImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/HashMap_Impl.html">HashMap_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/HashMap.html">HashMap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Trie_Impl.html">Trie_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Trie2.html">Trie2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/TrieMapImpl.html">TrieMapImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ArrayHashMap_Impl.html">ArrayHashMap_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ArrayHashMap.html">ArrayHashMap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ArrayMapImpl.html">ArrayMapImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/MapStdImpl.html">MapStdImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListSetImpl.html">ListSetImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListSetImpl_Invar.html">ListSetImpl_Invar</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListSetImpl_NotDist.html">ListSetImpl_NotDist</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ListSetImpl_Sorted.html">ListSetImpl_Sorted</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/RBTSetImpl.html">RBTSetImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/HashSet.html">HashSet</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/TrieSetImpl.html">TrieSetImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ArrayHashSet.html">ArrayHashSet</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ArraySetImpl.html">ArraySetImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SetStdImpl.html">SetStdImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Fifo.html">Fifo</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/BinoPrioImpl.html">BinoPrioImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/SkewPrioImpl.html">SkewPrioImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/FTAnnotatedListImpl.html">FTAnnotatedListImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/FTPrioImpl.html">FTPrioImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/FTPrioUniqueImpl.html">FTPrioUniqueImpl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Impl.html">ICF_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Refine_Monadic.html">ICF_Refine_Monadic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Autoref.html">ICF_Autoref</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Entrypoints_Chapter.html">ICF_Entrypoints_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Collections.html">Collections</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/CollectionsV1.html">CollectionsV1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Collections_Entrypoints_Chapter.html">Collections_Entrypoints_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Refine_Dflt.html">Refine_Dflt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Refine_Dflt_ICF.html">Refine_Dflt_ICF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Refine_Dflt_Only_ICF.html">Refine_Dflt_Only_ICF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Userguides_Chapter.html">Userguides_Chapter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/Refine_Monadic_Userguide.html">Refine_Monadic_Userguide</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Collections/ICF_Userguide.html">ICF_Userguide</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>ollections.<span class='first'>I</span>ntf_<span class='first'>C</span>omp
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Collections/Intf_Comp.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

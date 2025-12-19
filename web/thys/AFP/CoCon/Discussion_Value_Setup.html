@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/CoCon.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Prelim.html">Prelim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/System_Specification.html">System_Specification</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Automation_Setup.html">Automation_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Safety_Properties.html">Safety_Properties</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Observation_Setup.html">Observation_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Paper_Intro.html">Paper_Intro</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Paper_Value_Setup.html">Paper_Value_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Paper_Aut_PC.html">Paper_Aut_PC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Paper_Aut.html">Paper_Aut</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Paper_All.html">Paper_All</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Review_Intro.html">Review_Intro</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Review_Value_Setup.html">Review_Value_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Review_RAut.html">Review_RAut</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Review_RAut_NCPC.html">Review_RAut_NCPC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Review_RAut_NCPC_PAut.html">Review_RAut_NCPC_PAut</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Review_All.html">Review_All</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Discussion_Intro.html">Discussion_Intro</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/CoCon/Discussion_Value_Setup.html">Discussion_Value_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Discussion_NCPC.html">Discussion_NCPC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Discussion_All.html">Discussion_All</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Decision_Intro.html">Decision_Intro</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Decision_Value_Setup.html">Decision_Value_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Decision_NCPC.html">Decision_NCPC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Decision_NCPC_Aut.html">Decision_NCPC_Aut</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Decision_All.html">Decision_All</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Reviewer_Assignment_Intro.html">Reviewer_Assignment_Intro</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Reviewer_Assignment_Value_Setup.html">Reviewer_Assignment_Value_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Reviewer_Assignment_NCPC.html">Reviewer_Assignment_NCPC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Reviewer_Assignment_NCPC_Aut.html">Reviewer_Assignment_NCPC_Aut</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Reviewer_Assignment_All.html">Reviewer_Assignment_All</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/Traceback_Properties.html">Traceback_Properties</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CoCon/All_BD_Security_Instances_for_CoCon.html">All_BD_Security_Instances_for_CoCon</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>o<span class='first'>C</span>on.<span class='first'>D</span>iscussion_<span class='first'>V</span>alue_<span class='first'>S</span>etup
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/CoCon/Discussion_Value_Setup.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

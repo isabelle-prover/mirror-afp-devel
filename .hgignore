@@ -73,6 +73,5 @@ admin/venv
 
 tools/**.jar
 web/hugo
-web/thys
 web/webapp
 out/

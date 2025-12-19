@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../../../thys/HOL/HOL/Try0.html">Try0</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/HOL.html">HOL</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Orderings.html">Orderings</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Groups.html">Groups</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Lattices.html">Lattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Boolean_Algebras.html">Boolean_Algebras</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Set.html">Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Typedef.html">Typedef</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Fun.html">Fun</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Complete_Lattices.html">Complete_Lattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Ctr_Sugar.html">Ctr_Sugar</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Inductive.html">Inductive</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Product_Type.html">Product_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Sum_Type.html">Sum_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Rings.html">Rings</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Nat.html">Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Fields.html">Fields</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Relation.html">Relation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Finite_Set.html">Finite_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Transitive_Closure.html">Transitive_Closure</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Wellfounded.html">Wellfounded</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Wfrec.html">Wfrec</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Order_Relation.html">Order_Relation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Hilbert_Choice.html">Hilbert_Choice</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Zorn.html">Zorn</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Wellorder_Relation.html">BNF_Wellorder_Relation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Wellorder_Embedding.html">BNF_Wellorder_Embedding</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Wellorder_Constructions.html">BNF_Wellorder_Constructions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Cardinal_Order_Relation.html">BNF_Cardinal_Order_Relation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Cardinal_Arithmetic.html">BNF_Cardinal_Arithmetic</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Fun_Def_Base.html">Fun_Def_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Def.html">BNF_Def</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Composition.html">BNF_Composition</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Basic_BNFs.html">Basic_BNFs</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Fixpoint_Base.html">BNF_Fixpoint_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/BNF_Least_Fixpoint.html">BNF_Least_Fixpoint</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Equiv_Relations.html">Equiv_Relations</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Basic_BNF_LFPs.html">Basic_BNF_LFPs</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Meson.html">Meson</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/ATP.html">ATP</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Metis.html">Metis</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Transfer.html">Transfer</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Lifting.html">Lifting</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Quotient.html">Quotient</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Num.html">Num</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Power.html">Power</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Groups_Big.html">Groups_Big</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Complete_Partial_Order.html">Complete_Partial_Order</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Option.html">Option</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Partial_Function.html">Partial_Function</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Argo.html">Argo</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/SAT.html">SAT</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Fun_Def.html">Fun_Def</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Int.html">Int</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Lattices_Big.html">Lattices_Big</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Euclidean_Rings.html">Euclidean_Rings</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Parity.html">Parity</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Numeral_Simprocs.html">Numeral_Simprocs</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Semiring_Normalization.html">Semiring_Normalization</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Groebner_Basis.html">Groebner_Basis</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Set_Interval.html">Set_Interval</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Presburger.html">Presburger</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Try0_HOL.html">Try0_HOL</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/SMT.html">SMT</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Sledgehammer.html">Sledgehammer</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Lifting_Set.html">Lifting_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/List.html">List</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Groups_List.html">Groups_List</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Bit_Operations.html">Bit_Operations</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Code_Numeral.html">Code_Numeral</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Random.html">Random</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Map.html">Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Enum.html">Enum</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/String.html">String</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Typerep.html">Typerep</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Predicate.html">Predicate</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Lazy_Sequence.html">Lazy_Sequence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Limited_Sequence.html">Limited_Sequence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Code_Evaluation.html">Code_Evaluation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Quickcheck_Random.html">Quickcheck_Random</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Random_Pred.html">Random_Pred</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Random_Sequence.html">Random_Sequence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Quickcheck_Exhaustive.html">Quickcheck_Exhaustive</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Predicate_Compile.html">Predicate_Compile</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Quickcheck_Narrowing.html">Quickcheck_Narrowing</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Mirabelle.html">Mirabelle</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Extraction.html">Extraction</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Record.html">Record</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/GCD.html">GCD</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Nitpick.html">Nitpick</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Nunchaku.html">Nunchaku</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/HOL/HOL/BNF_Greatest_Fixpoint.html">BNF_Greatest_Fixpoint</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Filter.html">Filter</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Conditionally_Complete_Lattices.html">Conditionally_Complete_Lattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Factorial.html">Factorial</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Binomial.html">Binomial</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Main.html">Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Archimedean_Field.html">Archimedean_Field</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Rat.html">Rat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Real.html">Real</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Topological_Spaces.html">Topological_Spaces</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Hull.html">Hull</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Modules.html">Modules</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Vector_Spaces.html">Vector_Spaces</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Real_Vector_Spaces.html">Real_Vector_Spaces</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Limits.html">Limits</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Inequalities.html">Inequalities</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Series.html">Series</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Deriv.html">Deriv</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/NthRoot.html">NthRoot</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Transcendental.html">Transcendental</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Complex.html">Complex</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/MacLaurin.html">MacLaurin</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Binomial_Plus.html">Binomial_Plus</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL/Complex_Main.html">Complex_Main</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>.<span class='first'>B</span><span class='first'>N</span><span class='first'>F</span>_<span class='first'>G</span>reatest_<span class='first'>F</span>ixpoint
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/HOL/HOL/BNF_Greatest_Fixpoint.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Gauss_Jordan.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Rref.html">Rref</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Set.html">Code_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Matrix.html">Code_Matrix</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Elementary_Operations.html">Elementary_Operations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Rank.html">Rank</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Gauss_Jordan.html">Gauss_Jordan</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Linear_Maps.html">Linear_Maps</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Gauss_Jordan_PA.html">Gauss_Jordan_PA</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Determinants2.html">Determinants2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Inverse.html">Inverse</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Bases_Of_Fundamental_Subspaces.html">Bases_Of_Fundamental_Subspaces</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/System_Of_Equations.html">System_Of_Equations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Z2.html">Code_Z2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Examples_Gauss_Jordan_Abstract.html">Examples_Gauss_Jordan_Abstract</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/IArray_Addenda.html">IArray_Addenda</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Matrix_To_IArray.html">Matrix_To_IArray</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Gauss_Jordan_IArrays.html">Gauss_Jordan_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Gauss_Jordan_PA_IArrays.html">Gauss_Jordan_PA_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Bases_Of_Fundamental_Subspaces_IArrays.html">Bases_Of_Fundamental_Subspaces_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/System_Of_Equations_IArrays.html">System_Of_Equations_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Determinants_IArrays.html">Determinants_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Inverse_IArrays.html">Inverse_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Examples_Gauss_Jordan_IArrays.html">Examples_Gauss_Jordan_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Generation_IArrays.html">Code_Generation_IArrays</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Generation_IArrays_SML.html">Code_Generation_IArrays_SML</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Rational.html">Code_Rational</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Gauss_Jordan/Code_Generation_IArrays_Haskell.html">Code_Generation_IArrays_Haskell</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>G</span>auss_<span class='first'>J</span>ordan.<span class='first'>C</span>ode_<span class='first'>S</span>et
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Gauss_Jordan/Code_Set.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

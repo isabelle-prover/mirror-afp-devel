@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Zippy.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Args_Antiquotations.html">ML_Args_Antiquotations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Gen_ML_Typeclasses_Base.html">Gen_ML_Typeclasses_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Eval_Antiquotation.html">ML_Eval_Antiquotation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Typeclasses_Base.html">ML_Typeclasses_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Bi_Typeclasses.html">ML_Bi_Typeclasses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Categories.html">ML_Categories</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Coroutines.html">ML_Coroutines</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_ITypeclasses_Base.html">ML_ITypeclasses_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_ICategories.html">ML_ICategories</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Lenses.html">ML_Lenses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_State_Base.html">ML_State_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_State.html">ML_State</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Typeclasses.html">ML_Typeclasses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_ITypeclasses.html">ML_ITypeclasses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Extended_Metis_Data.html">Extended_Metis_Data</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_ML_Tactic_Utils.html">Zippy_ML_Tactic_Utils</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Cases_Tactics.html">Cases_Tactics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Cases_Tactics_HOL.html">Cases_Tactics_HOL</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Extended_Blast_Data.html">Extended_Blast_Data</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Generic_Term_Index_Data.html">Generic_Term_Index_Data</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Priority_Queues.html">ML_Priority_Queues</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Actions_Base.html">Zippy_Actions_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Base_Setup.html">Zippy_Base_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_IMap_Antiquotation.html">ML_IMap_Antiquotation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Gen_Zippers_Base.html">ML_Gen_Zippers_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Gen_Zippers_Setup.html">ML_Gen_Zippers_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Morphs.html">ML_Morphs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Structured_Lenses.html">ML_Structured_Lenses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Zippers.html">ML_Zippers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Linked_Zippers.html">ML_Linked_Zippers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Alternating_Zippers.html">ML_Alternating_Zippers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Zipper_Utils.html">ML_Zipper_Utils</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Alternating_Zipper_Utils.html">ML_Alternating_Zipper_Utils</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Exceptions.html">Zippy_Exceptions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Loggers.html">Zippy_Loggers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Shows.html">Zippy_Shows</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_States.html">Zippy_States</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Base.html">Zippy_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Coroutines.html">Zippy_Coroutines</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Enums.html">Zippy_Enums</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Identifiers.html">Zippy_Identifiers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Actions.html">Zippy_Actions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Alternating_Zipper_Nodes.html">ML_Alternating_Zipper_Nodes</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Zippy/ML_Zipper_Directions.html">ML_Zipper_Directions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Zipper_Positions.html">ML_Zipper_Positions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Lists.html">ML_Lists</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Zipper_Instances.html">ML_Zipper_Instances</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Alternating_Zipper_Instances.html">ML_Alternating_Zipper_Instances</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Zipper_Position_Utils.html">ML_Zipper_Position_Utils</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Alternating_Zipper_Paths.html">ML_Alternating_Zipper_Paths</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Nodes.html">Zippy_Nodes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Positions.html">Zippy_Positions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Actions_Positions.html">Zippy_Actions_Positions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/ML_Union_Find.html">ML_Union_Find</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Goals_Base.html">Zippy_Goals_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Goals.html">Zippy_Goals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Lists_Base.html">Zippy_Lists_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Lists_Goals.html">Zippy_Lists_Goals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Generic_Table_Data.html">Generic_Table_Data</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Action_Clusters.html">Zippy_Action_Clusters</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Goal_Pos_Updates_Base.html">Zippy_Goal_Pos_Updates_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Goal_Pos_Updates.html">Zippy_Goal_Pos_Updates</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Lists_Goal_Pos_Updates.html">Zippy_Lists_Goal_Pos_Updates</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Collect.html">Zippy_Collect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Lists_Collect.html">Zippy_Lists_Collect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Lists_Positions.html">Zippy_Lists_Positions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Lists_Positions_Collect.html">Zippy_Lists_Positions_Collect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Action_Applications_Base.html">Zippy_Action_Applications_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Action_Applications.html">Zippy_Action_Applications</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Tactics_Base.html">Zippy_Tactics_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Tactics.html">Zippy_Tactics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance.html">Zippy_Instance</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Hom_Changed_Goals_Data.html">Zippy_Instance_Hom_Changed_Goals_Data</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Cases.html">Zippy_Instance_Cases</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Classical.html">Zippy_Instance_Classical</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Induction_Tactics.html">Induction_Tactics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Induction.html">Zippy_Instance_Induction</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Subst.html">Zippy_Instance_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Context_Parsers.html">Context_Parsers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Extended_Simp_Data.html">Extended_Simp_Data</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Resolve.html">Zippy_Instance_Resolve</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Resolves_Simp.html">Zippy_Instance_Resolves_Simp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Runs_Base.html">Zippy_Runs_Base</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Seqs.html">Zippy_Seqs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Runs.html">Zippy_Runs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Pure.html">Zippy_Instance_Pure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Instance_Simp.html">Zippy_Instance_Simp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zip_Pure.html">Zip_Pure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zip_HOL.html">Zip_HOL</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zip_Metis.html">Zip_Metis</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zip_Try0.html">Zip_Try0</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zip_Examples.html">Zip_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Zippy/Zippy_Paper.html">Zippy_Paper</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>Z</span>ippy.<span class='first'>M</span><span class='first'>L</span>_<span class='first'>Z</span>ipper_<span class='first'>D</span>irections
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Zippy/ML_Zipper_Directions.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>
