@@ -1,24 +1,33 @@
 <div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="{{ "images/menu.svg" | relURL }}" alt="Menu" />
+    <img src="{{ "images/menu.svg" | relURL }}" alt="Menu">
   </label>
-
   <a href="{{ .Site.Home.RelPermalink }}" class="logo-link">
     <img src="{{ "images/afp.png" | relURL }}" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="{{ .Site.Home.RelPermalink }}" class="logo-link">
         <img src="{{ "images/afp.png" | relURL }}" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
+      {{- if eq .Section "thys" }}
+        {{- with .Params.entry }}
+          <ul id="return">
+            <li>
+              <a href="{{ (page.GetPage (printf "entries/%s" .)).RelPermalink }}">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+        {{- end }}
+      {{- end }}
       <ul>
-        {{- range .Site.Menus.main }}
-          <a href="{{ .URL | relURL }}">
-            <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>{{ .Name }}</li>
-          </a>
+        {{- $menu := cond (eq .Section "thys") (.Params.session | lower) "main" }}
+        {{- range (index .Site.Menus $menu) }}
+          <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>
+            <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+          </li>
         {{- end }}
       </ul>
     </div>

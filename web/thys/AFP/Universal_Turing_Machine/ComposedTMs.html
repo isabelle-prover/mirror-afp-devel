@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Universal_Turing_Machine.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Turing.html">Turing</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Turing_aux.html">Turing_aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/BlanksDoNotMatter.html">BlanksDoNotMatter</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/ComposableTMs.html">ComposableTMs</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/ComposedTMs.html">ComposedTMs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Numerals.html">Numerals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Numerals_Ex.html">Numerals_Ex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Turing_Hoare.html">Turing_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/SemiIdTM.html">SemiIdTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Turing_HaltingConditions.html">Turing_HaltingConditions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/OneStrokeTM.html">OneStrokeTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/WeakCopyTM.html">WeakCopyTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/StrongCopyTM.html">StrongCopyTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/TuringDecidable.html">TuringDecidable</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/TuringReducible.html">TuringReducible</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/SimpleGoedelEncoding.html">SimpleGoedelEncoding</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/HaltingProblems_K_H.html">HaltingProblems_K_H</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/HaltingProblems_K_aux.html">HaltingProblems_K_aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/TuringComputable.html">TuringComputable</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/DitherTM.html">DitherTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/CopyTM.html">CopyTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/TuringUnComputable_H2.html">TuringUnComputable_H2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/TuringUnComputable_H2_original.html">TuringUnComputable_H2_original</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Abacus_Mopup.html">Abacus_Mopup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Abacus.html">Abacus</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Abacus_alt_Compile.html">Abacus_alt_Compile</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Abacus_Hoare.html">Abacus_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Rec_Def.html">Rec_Def</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Rec_Ex.html">Rec_Ex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Recursive.html">Recursive</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Recs_alt_Def.html">Recs_alt_Def</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/Recs_alt_Ex.html">Recs_alt_Ex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/UF.html">UF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/UTM.html">UTM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Universal_Turing_Machine/GeneratedCode.html">GeneratedCode</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>U</span>niversal_<span class='first'>T</span>uring_<span class='first'>M</span>achine.<span class='first'>C</span>omposed<span class='first'>T</span><span class='first'>M</span>s
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Universal_Turing_Machine/ComposedTMs.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

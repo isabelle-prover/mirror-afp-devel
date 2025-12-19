@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Combinatorics on Words Basics - Archive of Formal Proofs</title>
-    <meta name="description" content="Combinatorics on Words Basics in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Combinatorics on Words Basics in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Combinatorics on Words Basics" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Combinatorics_Words.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Combinatorics on Words Basics in the Archive of Formal Proofs">
+    <meta property="og:description" content="Combinatorics on Words Basics in the Archive of Formal Proofs">
+    <meta property="og:title" content="Combinatorics on Words Basics">
+    <meta property="og:url" content="https://isa-afp.org/entries/Combinatorics_Words.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>C</span>ombinatorics on <span class='first'>W</span>ords <span class='first'>B</span>asics
+  <h1>
+    <span class='first'>C</span>ombinatorics on <span class='first'>W</span>ords <span class='first'>B</span>asics
   </h1>
   <div>
       <p><a href="../authors/holub/">Štěpán Holub</a> <a href="https://www2.karlin.mff.cuni.cz/~holub/">🌐</a>, <a href="../authors/raska/">Martin Raška</a> and <a href="../authors/starosta/">Štěpán Starosta</a> <a href="https://staroste.pages.fit/">🌐</a>
@@ -124,6 +116,9 @@ words, including its full parametric solution. We support the algebraic point of
     </div>
       <h3>History</h3>
       <dl>
+          <dt>November 19, 2025</dt>
+          <dd>Updated to version AFP-2025-1/v1.12.
+</dd>
           <dt>August 17, 2023</dt>
           <dd>Updated to version v1.10.1.
 </dd>
@@ -137,22 +132,26 @@ words, including its full parametric solution. We support the algebraic point of
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Holub, Š., &amp; Starosta, Š. (2021). <i>Formalization of Basic Combinatorics on Words</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2021.22</li>
+        <li>Holub, Š., &amp; Starosta, Š. (2021). Formalization of Basic Combinatorics on Words. In L. Cohen &amp; C. Kaliszyk (Eds.), <i>LIPIcs, Volume 193, ITP 2021</i> (No.22; Vol. 193, pp. 22:1–22:17). Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2021.22</li>
+        <li>Holub, Š., Raška, M., & Starosta, Š. (2023). Binary Codes that do not Preserve Primitivity. Journal of Automated Reasoning, 67(3). <a href="https://doi.org/10.1007/s10817-023-09674-2">https://doi.org/10.1007/s10817-023-09674-2</a>
+</li>
+        <li>Klouda, K., & Starosta, Š. (2024). The number of primitive words of unbounded exponent in the language of an HD0L-system is finite. Journal of Combinatorial Theory, Series A, 206, 105904. <a href="https://doi.org/10.1016/j.jcta.2024.105904">https://doi.org/10.1016/j.jcta.2024.105904</a>
+</li>
         <li><a href="https://arxiv.org/abs/2104.11622">Producing symmetrical facts for lists induced by the list reversal mapping in Isabelle/HOL</a></li>
         <li><a  href="https://gitlab.com/formalcow/combinatorics-on-words-formalized">Development repository</a></li>
       </ul>
       <h3>Session Combinatorics_Words</h3>
       <ul>
-          <li><a href="../sessions/combinatorics_words/#Arithmetical_Hints">Arithmetical_Hints</a></li>
-          <li><a href="../sessions/combinatorics_words/#Reverse_Symmetry">Reverse_Symmetry</a></li>
-          <li><a href="../sessions/combinatorics_words/#CoWBasic">CoWBasic</a></li>
-          <li><a href="../sessions/combinatorics_words/#Border_Array">Border_Array</a></li>
-          <li><a href="../sessions/combinatorics_words/#Submonoids">Submonoids</a></li>
-          <li><a href="../sessions/combinatorics_words/#Morphisms">Morphisms</a></li>
-          <li><a href="../sessions/combinatorics_words/#Periodicity_Lemma">Periodicity_Lemma</a></li>
-          <li><a href="../sessions/combinatorics_words/#Lyndon_Schutzenberger">Lyndon_Schutzenberger</a></li>
-          <li><a href="../sessions/combinatorics_words/#Binary_Code_Morphisms">Binary_Code_Morphisms</a></li>
-          <li><a href="../sessions/combinatorics_words/#Equations_Basic">Equations_Basic</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Arithmetical_Hints.html">Arithmetical_Hints</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Reverse_Symmetry.html">Reverse_Symmetry</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/CoWBasic.html">CoWBasic</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Border_Array.html">Border_Array</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Submonoids.html">Submonoids</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Morphisms.html">Morphisms</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Periodicity_Lemma.html">Periodicity_Lemma</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Lyndon_Schutzenberger.html">Lyndon_Schutzenberger</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Binary_Code_Morphisms.html">Binary_Code_Morphisms</a></li>
+          <li><a href="../thys/AFP/Combinatorics_Words/Equations_Basic.html">Equations_Basic</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -215,32 +214,38 @@ words, including its full parametric solution. We support the algebraic point of
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2021-05-26.tar.gz">May 26, 2021
+              <a href="https://www.isa-afp.org/release/afp-Combinatorics_Words-2021-05-26.tar.gz">
+                May 26, 2021
               </a>
               : Isabelle2021
             </li>

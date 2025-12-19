@@ -1,0 +1,8 @@
+{{- define "main" }}
+  {{- $base_url := cond .Site.Data.status .Site.Params.devel_url .Site.Params.url }}
+  <main>
+    <a id="theory" href="{{ $base_url }}/{{ $.Site.Params.html_dir }}/{{ .Params.path }}">
+      HTML Presentation
+    </a>
+  </main>
+{{- end }}

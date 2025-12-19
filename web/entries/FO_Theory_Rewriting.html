@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>First-Order Theory of Rewriting - Archive of Formal Proofs</title>
-    <meta name="description" content="First-Order Theory of Rewriting in the Archive of Formal Proofs" />
-    <meta property="og:description" content="First-Order Theory of Rewriting in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="First-Order Theory of Rewriting" />
-  <meta property="og:url" content="https://isa-afp.org/entries/FO_Theory_Rewriting.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="First-Order Theory of Rewriting in the Archive of Formal Proofs">
+    <meta property="og:description" content="First-Order Theory of Rewriting in the Archive of Formal Proofs">
+    <meta property="og:title" content="First-Order Theory of Rewriting">
+    <meta property="og:url" content="https://isa-afp.org/entries/FO_Theory_Rewriting.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>T</span>heory of <span class='first'>R</span>ewriting
+  <h1>
+    <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>T</span>heory of <span class='first'>R</span>ewriting
   </h1>
   <div>
       <p><a href="../authors/lochmann/">Alexander Lochmann</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFsZXhhbmRlciIsImxvY2htYW5uIl0sImhvc3QiOlsidWliayIsImFjIiwiYXQiXX0=">📧</a> and <a href="../authors/felgenhauer/">Bertram Felgenhauer</a>
@@ -132,27 +124,27 @@ verify their output.</div>
       </ul>
       <h3>Session FO_Theory_Rewriting</h3>
       <ul>
-          <li><a href="../sessions/fo_theory_rewriting/#Utils">Utils</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Multihole_Context_More">Multihole_Context_More</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Ground_MCtxt">Ground_MCtxt</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Bot_Terms">Bot_Terms</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Saturation">Saturation</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Rewriting">Rewriting</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#LV_to_GTT">LV_to_GTT</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#NF">NF</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Tree_Automata_Derivation_Split">Tree_Automata_Derivation_Split</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#TA_Clousure_Const">TA_Clousure_Const</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Type_Instances_Impl">Type_Instances_Impl</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#NF_Impl">NF_Impl</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Context_Extensions">Context_Extensions</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#FOR_Certificate">FOR_Certificate</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Lift_Root_Step">Lift_Root_Step</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#Context_RR2">Context_RR2</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#GTT_RRn">GTT_RRn</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#FOL_Extra">FOL_Extra</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#FOR_Semantics">FOR_Semantics</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#FOR_Check">FOR_Check</a></li>
-          <li><a href="../sessions/fo_theory_rewriting/#FOR_Check_Impl">FOR_Check_Impl</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Utils.html">Utils</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Multihole_Context_More.html">Multihole_Context_More</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Ground_MCtxt.html">Ground_MCtxt</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Bot_Terms.html">Bot_Terms</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Saturation.html">Saturation</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Rewriting.html">Rewriting</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/LV_to_GTT.html">LV_to_GTT</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/NF.html">NF</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Tree_Automata_Derivation_Split.html">Tree_Automata_Derivation_Split</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/TA_Clousure_Const.html">TA_Clousure_Const</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Type_Instances_Impl.html">Type_Instances_Impl</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/NF_Impl.html">NF_Impl</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Context_Extensions.html">Context_Extensions</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/FOR_Certificate.html">FOR_Certificate</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Lift_Root_Step.html">Lift_Root_Step</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/Context_RR2.html">Context_RR2</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/GTT_RRn.html">GTT_RRn</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/FOL_Extra.html">FOL_Extra</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/FOR_Semantics.html">FOR_Semantics</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/FOR_Check.html">FOR_Check</a></li>
+          <li><a href="../thys/AFP/FO_Theory_Rewriting/FOR_Check_Impl.html">FOR_Check_Impl</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -208,27 +200,32 @@ verify their output.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2022-02-10.tar.gz">Feb 10, 2022
+              <a href="https://www.isa-afp.org/release/afp-FO_Theory_Rewriting-2022-02-10.tar.gz">
+                Feb 10, 2022
               </a>
               : Isabelle2021-1
             </li>

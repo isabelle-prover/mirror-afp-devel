@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Residuated Transition Systems II: Categorical Properties - Archive of Formal Proofs</title>
-    <meta name="description" content="Residuated Transition Systems II: Categorical Properties in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Residuated Transition Systems II: Categorical Properties in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Residuated Transition Systems II: Categorical Properties" />
-  <meta property="og:url" content="https://isa-afp.org/entries/ResiduatedTransitionSystem2.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Residuated Transition Systems II: Categorical Properties in the Archive of Formal Proofs">
+    <meta property="og:description" content="Residuated Transition Systems II: Categorical Properties in the Archive of Formal Proofs">
+    <meta property="og:title" content="Residuated Transition Systems II: Categorical Properties">
+    <meta property="og:url" content="https://isa-afp.org/entries/ResiduatedTransitionSystem2.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>R</span>esiduated <span class='first'>T</span>ransition <span class='first'>S</span>ystems <span class='first'>I</span><span class='first'>I</span>: <span class='first'>C</span>ategorical <span class='first'>P</span>roperties
+  <h1>
+    <span class='first'>R</span>esiduated <span class='first'>T</span>ransition <span class='first'>S</span>ystems <span class='first'>I</span><span class='first'>I</span>: <span class='first'>C</span>ategorical <span class='first'>P</span>roperties
   </h1>
   <div>
       <p><a href="../authors/stark/">Eugene W. Stark</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0YXJrIl0sImhvc3QiOlsiY3MiLCJzdG9ueWJyb29rIiwiZWR1Il19">📧</a>
@@ -149,16 +141,16 @@ cartesian closed subcategory ${\bf RTS}$.</div>
       </ul>
       <h3>Session ResiduatedTransitionSystem2</h3>
       <ul>
-          <li><a href="../sessions/residuatedtransitionsystem2/#CategoryWithBoundedPushouts">CategoryWithBoundedPushouts</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#CategoryOfTransitions">CategoryOfTransitions</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#Preliminaries">Preliminaries</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#RTSConstructions">RTSConstructions</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#RTSCategory">RTSCategory</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#ConcreteRTSCategory">ConcreteRTSCategory</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#RTSCatx">RTSCatx</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#RTSCat">RTSCat</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#RTSCat_Interp">RTSCat_Interp</a></li>
-          <li><a href="../sessions/residuatedtransitionsystem2/#RTSEnrichedCategory">RTSEnrichedCategory</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/CategoryWithBoundedPushouts.html">CategoryWithBoundedPushouts</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/CategoryOfTransitions.html">CategoryOfTransitions</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/Preliminaries.html">Preliminaries</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/RTSConstructions.html">RTSConstructions</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/RTSCategory.html">RTSCategory</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/ConcreteRTSCategory.html">ConcreteRTSCategory</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/RTSCatx.html">RTSCatx</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/RTSCat.html">RTSCat</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/RTSCat_Interp.html">RTSCat_Interp</a></li>
+          <li><a href="../thys/AFP/ResiduatedTransitionSystem2/RTSEnrichedCategory.html">RTSEnrichedCategory</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -213,12 +205,14 @@ cartesian closed subcategory ${\bf RTS}$.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ResiduatedTransitionSystem2-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-ResiduatedTransitionSystem2-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-ResiduatedTransitionSystem2-2024-06-17.tar.gz">Jun 17, 2024
+              <a href="https://www.isa-afp.org/release/afp-ResiduatedTransitionSystem2-2024-06-17.tar.gz">
+                Jun 17, 2024
               </a>
               : Isabelle2024
             </li>

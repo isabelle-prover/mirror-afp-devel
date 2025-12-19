@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gauss-Jordan Algorithm and Its Applications - Archive of Formal Proofs</title>
-    <meta name="description" content="Gauss-Jordan Algorithm and Its Applications in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Gauss-Jordan Algorithm and Its Applications in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Gauss-Jordan Algorithm and Its Applications" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Gauss_Jordan.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Gauss-Jordan Algorithm and Its Applications in the Archive of Formal Proofs">
+    <meta property="og:description" content="Gauss-Jordan Algorithm and Its Applications in the Archive of Formal Proofs">
+    <meta property="og:title" content="Gauss-Jordan Algorithm and Its Applications">
+    <meta property="og:url" content="https://isa-afp.org/entries/Gauss_Jordan.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>G</span>auss-<span class='first'>J</span>ordan <span class='first'>A</span>lgorithm and <span class='first'>I</span>ts <span class='first'>A</span>pplications
+  <h1>
+    <span class='first'>G</span>auss-<span class='first'>J</span>ordan <span class='first'>A</span>lgorithm and <span class='first'>I</span>ts <span class='first'>A</span>pplications
   </h1>
   <div>
       <p><a href="../authors/divason/">Jose Divasón</a> <a href="https://www.unirioja.es/cu/jodivaso/">🌐</a> and <a href="../authors/aransay/">Jesús Aransay</a> <a href="https://www.unirioja.es/cu/jearansa">🌐</a>
@@ -119,33 +111,33 @@
       </ul>
       <h3>Session Gauss_Jordan</h3>
       <ul>
-          <li><a href="../sessions/gauss_jordan/#Rref">Rref</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Set">Code_Set</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Matrix">Code_Matrix</a></li>
-          <li><a href="../sessions/gauss_jordan/#Elementary_Operations">Elementary_Operations</a></li>
-          <li><a href="../sessions/gauss_jordan/#Rank">Rank</a></li>
-          <li><a href="../sessions/gauss_jordan/#Gauss_Jordan">Gauss_Jordan</a></li>
-          <li><a href="../sessions/gauss_jordan/#Linear_Maps">Linear_Maps</a></li>
-          <li><a href="../sessions/gauss_jordan/#Gauss_Jordan_PA">Gauss_Jordan_PA</a></li>
-          <li><a href="../sessions/gauss_jordan/#Determinants2">Determinants2</a></li>
-          <li><a href="../sessions/gauss_jordan/#Inverse">Inverse</a></li>
-          <li><a href="../sessions/gauss_jordan/#Bases_Of_Fundamental_Subspaces">Bases_Of_Fundamental_Subspaces</a></li>
-          <li><a href="../sessions/gauss_jordan/#System_Of_Equations">System_Of_Equations</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Z2">Code_Z2</a></li>
-          <li><a href="../sessions/gauss_jordan/#Examples_Gauss_Jordan_Abstract">Examples_Gauss_Jordan_Abstract</a></li>
-          <li><a href="../sessions/gauss_jordan/#IArray_Addenda">IArray_Addenda</a></li>
-          <li><a href="../sessions/gauss_jordan/#Matrix_To_IArray">Matrix_To_IArray</a></li>
-          <li><a href="../sessions/gauss_jordan/#Gauss_Jordan_IArrays">Gauss_Jordan_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Gauss_Jordan_PA_IArrays">Gauss_Jordan_PA_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Bases_Of_Fundamental_Subspaces_IArrays">Bases_Of_Fundamental_Subspaces_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#System_Of_Equations_IArrays">System_Of_Equations_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Determinants_IArrays">Determinants_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Inverse_IArrays">Inverse_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Examples_Gauss_Jordan_IArrays">Examples_Gauss_Jordan_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Generation_IArrays">Code_Generation_IArrays</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Generation_IArrays_SML">Code_Generation_IArrays_SML</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Rational">Code_Rational</a></li>
-          <li><a href="../sessions/gauss_jordan/#Code_Generation_IArrays_Haskell">Code_Generation_IArrays_Haskell</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Rref.html">Rref</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Set.html">Code_Set</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Matrix.html">Code_Matrix</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Elementary_Operations.html">Elementary_Operations</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Rank.html">Rank</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Gauss_Jordan.html">Gauss_Jordan</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Linear_Maps.html">Linear_Maps</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Gauss_Jordan_PA.html">Gauss_Jordan_PA</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Determinants2.html">Determinants2</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Inverse.html">Inverse</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Bases_Of_Fundamental_Subspaces.html">Bases_Of_Fundamental_Subspaces</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/System_Of_Equations.html">System_Of_Equations</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Z2.html">Code_Z2</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Examples_Gauss_Jordan_Abstract.html">Examples_Gauss_Jordan_Abstract</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/IArray_Addenda.html">IArray_Addenda</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Matrix_To_IArray.html">Matrix_To_IArray</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Gauss_Jordan_IArrays.html">Gauss_Jordan_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Gauss_Jordan_PA_IArrays.html">Gauss_Jordan_PA_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Bases_Of_Fundamental_Subspaces_IArrays.html">Bases_Of_Fundamental_Subspaces_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/System_Of_Equations_IArrays.html">System_Of_Equations_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Determinants_IArrays.html">Determinants_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Inverse_IArrays.html">Inverse_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Examples_Gauss_Jordan_IArrays.html">Examples_Gauss_Jordan_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Generation_IArrays.html">Code_Generation_IArrays</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Generation_IArrays_SML.html">Code_Generation_IArrays_SML</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Rational.html">Code_Rational</a></li>
+          <li><a href="../thys/AFP/Gauss_Jordan/Code_Generation_IArrays_Haskell.html">Code_Generation_IArrays_Haskell</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -214,72 +206,86 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2014-09-03.tar.gz">Sep 3, 2014
+              <a href="https://www.isa-afp.org/release/afp-Gauss_Jordan-2014-09-03.tar.gz">
+                Sep 3, 2014
               </a>
               : Isabelle2014
             </li>

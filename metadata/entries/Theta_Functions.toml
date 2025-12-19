@@ -10,7 +10,7 @@ and derives from it the more commonly known Jacobi theta function on the unit di
 \\[\\vartheta_{00}(w,q) = \\sum_{n=-\\infty}^\\infty w^{2n} q^{n^2},\\ \\]
 its version in the complex plane
 \\[\\vartheta_{00}(z;\\tau) = \\sum_{n=-\\infty}^\\infty \\exp(i\\pi (2nz + n^2\\tau))\\]
-as well as its half-period variants $\\vartheta_{01}$, $\\vartheta_{10}$, and $\\vartheta_{11}$.</p>
+as well as its half-period variants $\\vartheta_{01}$, $\\vartheta_{10}$, and $\\vartheta_{11}$.
 
 <p>Notable results formalised include the fact that $\\vartheta_{00}$ is a solution to the 
 one-dimensional heat equation $\\frac{\\partial^2}{\\partial z^2} f(z,t) = 

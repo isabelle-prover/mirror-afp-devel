@@ -1,0 +1,79 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{tt}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+%-------------------------------------------------------------------------------
+\usepackage[margin=1in]{geometry}
+
+%-------------------------------------------------------------------------------
+\begin{document}
+
+\title{Rely-Guarantee Extensions and Locks}
+\author{Robert J. Colvin, Scott Heiner, Peter H\"ofner, Roger C. Su}
+\maketitle
+
+\begin{abstract}
+We enhance rely-guarantee verification in Isabelle/HOL by extending the 2003 built-in library with flexible syntax, data-invariant support, and new tactics. We demonstrate our enhanced library by applying it to the examples attached to the original library. We also apply our library to three queue locks: the Abstract Queue Lock, the Ticket Lock, and the Circular Buffer Lock.
+\end{abstract}
+
+\tableofcontents
+
+%-------------------------------------------------------------------------------
+\section{Introduction}
+
+The content of this entry has been presented as~\cite{VSTTE-25}.
+The original built-in library is~\cite{RGinIsabelle}.
+
+%-------------------------------------------------------------------------------
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% funding acknowledgement
+\section*{Acknowledgement}
+This work was funded by the Department of Defence, and administered through the Advanced Strategic Capabilities Accelerator.
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

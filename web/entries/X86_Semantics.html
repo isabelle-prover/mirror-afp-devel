@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>X86 instruction semantics and basic block symbolic execution - Archive of Formal Proofs</title>
-    <meta name="description" content="X86 instruction semantics and basic block symbolic execution in the Archive of Formal Proofs" />
-    <meta property="og:description" content="X86 instruction semantics and basic block symbolic execution in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="X86 instruction semantics and basic block symbolic execution" />
-  <meta property="og:url" content="https://isa-afp.org/entries/X86_Semantics.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="X86 instruction semantics and basic block symbolic execution in the Archive of Formal Proofs">
+    <meta property="og:description" content="X86 instruction semantics and basic block symbolic execution in the Archive of Formal Proofs">
+    <meta property="og:title" content="X86 instruction semantics and basic block symbolic execution">
+    <meta property="og:url" content="https://isa-afp.org/entries/X86_Semantics.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>X</span>86 instruction semantics and basic block symbolic execution
+  <h1>
+    <span class='first'>X</span>86 instruction semantics and basic block symbolic execution
   </h1>
   <div>
       <p><a href="../authors/verbeek/">Freek Verbeek</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZyZWVrIl0sImhvc3QiOlsidnQiLCJlZHUiXX0=">📧</a>, <a href="../authors/bharadwaj/">Abhijith Bharadwaj</a>, <a href="../authors/bockenek/">Joshua Bockenek</a>, <a href="../authors/roessle/">Ian Roessle</a>, <a href="../authors/weerwag/">Timmy Weerwag</a> and <a href="../authors/ravindran/">Binoy Ravindran</a>
@@ -120,7 +112,7 @@ instructions may simply have no semantics at all. In those cases, the
 semantics are mapped to universally quantified uninterpreted terms
 from a locale. Second, this entry provides a method to symbolic
 execution of basic blocks. The method, called
-“<tt>se_step</tt>” (for: symbolic execution step) fetches
+“<code>se_step</code>” (for: symbolic execution step) fetches
 an instruction and updates the current symbolic state while keeping
 track of assumptions made over the memory model. A key component is a
 set of theorems that prove how reads from memory resolve after writes
@@ -144,15 +136,15 @@ CoreUtils SHA256 implementation.</div>
       </ul>
       <h3>Session X86_Semantics</h3>
       <ul>
-          <li><a href="../sessions/x86_semantics/#BitByte">BitByte</a></li>
-          <li><a href="../sessions/x86_semantics/#Memory">Memory</a></li>
-          <li><a href="../sessions/x86_semantics/#State">State</a></li>
-          <li><a href="../sessions/x86_semantics/#X86_InstructionSemantics">X86_InstructionSemantics</a></li>
-          <li><a href="../sessions/x86_semantics/#StateCleanUp">StateCleanUp</a></li>
-          <li><a href="../sessions/x86_semantics/#SymbolicExecution">SymbolicExecution</a></li>
-          <li><a href="../sessions/x86_semantics/#Examples">Examples</a></li>
-          <li><a href="../sessions/x86_semantics/#X86_Parse">X86_Parse</a></li>
-          <li><a href="../sessions/x86_semantics/#Example_WC">Example_WC</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/BitByte.html">BitByte</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/Memory.html">Memory</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/State.html">State</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/X86_InstructionSemantics.html">X86_InstructionSemantics</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/StateCleanUp.html">StateCleanUp</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/SymbolicExecution.html">SymbolicExecution</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/Examples.html">Examples</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/X86_Parse.html">X86_Parse</a></li>
+          <li><a href="../thys/AFP/X86_Semantics/Example_WC.html">Example_WC</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -206,32 +198,38 @@ CoreUtils SHA256 implementation.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2021-10-31.tar.gz">Oct 31, 2021
+              <a href="https://www.isa-afp.org/release/afp-X86_Semantics-2021-10-31.tar.gz">
+                Oct 31, 2021
               </a>
               : Isabelle2021
             </li>

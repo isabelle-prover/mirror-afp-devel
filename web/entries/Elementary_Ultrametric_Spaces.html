@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Definition and Elementary Properties of Ultrametric Spaces - Archive of Formal Proofs</title>
-    <meta name="description" content="Definition and Elementary Properties of Ultrametric Spaces in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Definition and Elementary Properties of Ultrametric Spaces in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Definition and Elementary Properties of Ultrametric Spaces" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Elementary_Ultrametric_Spaces.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Definition and Elementary Properties of Ultrametric Spaces in the Archive of Formal Proofs">
+    <meta property="og:description" content="Definition and Elementary Properties of Ultrametric Spaces in the Archive of Formal Proofs">
+    <meta property="og:title" content="Definition and Elementary Properties of Ultrametric Spaces">
+    <meta property="og:url" content="https://isa-afp.org/entries/Elementary_Ultrametric_Spaces.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>D</span>efinition and <span class='first'>E</span>lementary <span class='first'>P</span>roperties of <span class='first'>U</span>ltrametric <span class='first'>S</span>paces
+  <h1>
+    <span class='first'>D</span>efinition and <span class='first'>E</span>lementary <span class='first'>P</span>roperties of <span class='first'>U</span>ltrametric <span class='first'>S</span>paces
   </h1>
   <div>
       <p><a href="../authors/ballenghien/">Benoît Ballenghien</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJlbm9pdCIsImJhbGxlbmdoaWVuIl0sImhvc3QiOlsidW5pdmVyc2l0ZS1wYXJpcy1zYWNsYXkiLCJmciJdfQ==">📧</a>, <a href="../authors/puyobro/">Benjamin Puyobro</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJlbmphbWluIiwicHV5b2JybyJdLCJob3N0IjpbImxhcG9zdGUiLCJuZXQiXX0=">📧</a> and <a href="../authors/wolff/">Burkhart Wolff</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJ1cmtoYXJ0Iiwid29sZmYiXSwiaG9zdCI6WyJsbWYiLCJjbnJzIiwiZnIiXX0=">📧</a>
@@ -130,7 +122,7 @@ and fundamental properties of ultrametric spaces are formally established.</div>
       </ul>
       <h3>Session Elementary_Ultrametric_Spaces</h3>
       <ul>
-          <li><a href="../sessions/elementary_ultrametric_spaces/#Elementary_Ultrametric_Spaces">Elementary_Ultrametric_Spaces</a></li>
+          <li><a href="../thys/AFP/Elementary_Ultrametric_Spaces/Elementary_Ultrametric_Spaces.html">Elementary_Ultrametric_Spaces</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -181,6 +173,15 @@ and fundamental properties of ultrametric spaces are formally established.</div>
       <a class="close" href="#">&times;</a>
       <a href="https://www.isa-afp.org/release/afp-Elementary_Ultrametric_Spaces-current.tar.gz" download>
         Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Elementary_Ultrametric_Spaces-2025-05-01.tar.gz">
+                May 1, 2025
+              </a>
+              : Isabelle2025
+            </li>
+        </ul>
     </div>
   </div>
       </div>

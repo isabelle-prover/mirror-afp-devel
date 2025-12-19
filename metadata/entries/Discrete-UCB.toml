@@ -1,0 +1,26 @@
+title = "Discrete Upper Confidence Bound Algorithm in HOL"
+date = 2025-10-25
+topics = [
+  "Computer science/Machine learning",
+]
+abstract = "This project formally verifies the Discrete Upper Confidence Bound (UCB) algorithm in Isabelle/Higher-order Logic (HOL), focusing on its probabilistic guarantees and regret bounds. The work extends Isabelle/HOLs probabilistic framework and explores verification of discrete-time bandit models following [1]. This research advances the formal verification of probabilistic algorithms in reinforcement learning."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.faber]
+email = "faber_email"
+
+[contributors]
+
+[notify]
+faber = "faber_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

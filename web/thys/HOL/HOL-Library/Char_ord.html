@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/README.html">README</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/AList.html">AList</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/BNF_Axiomatization.html">BNF_Axiomatization</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/BNF_Corec.html">BNF_Corec</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/While_Combinator.html">While_Combinator</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Bourbaki_Witt_Fixpoint.html">Bourbaki_Witt_Fixpoint</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Centered_Division.html">Centered_Division</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/HOL/HOL-Library/Char_ord.html">Char_ord</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Phantom_Type.html">Phantom_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Cardinality.html">Cardinality</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Cardinality.html">Code_Cardinality</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Case_Converter.html">Case_Converter</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Lazy.html">Code_Lazy</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Test.html">Code_Test</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Combine_PER.html">Combine_PER</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Complete_Partial_Order2.html">Complete_Partial_Order2</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Conditional_Parametricity.html">Conditional_Parametricity</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Confluence.html">Confluence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Confluent_Quotient.html">Confluent_Quotient</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Old_Datatype.html">Old_Datatype</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Nat_Bijection.html">Nat_Bijection</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Countable.html">Countable</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Infinite_Set.html">Infinite_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Countable_Set.html">Countable_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Countable_Complete_Lattices.html">Countable_Complete_Lattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Countable_Set_Type.html">Countable_Set_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Debug.html">Debug</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Diagonal_Subsequence.html">Diagonal_Subsequence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Discrete_Functions.html">Discrete_Functions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/FuncSet.html">FuncSet</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Disjoint_Sets.html">Disjoint_Sets</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/FSet.html">FSet</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Finite_Map.html">Finite_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Disjoint_FSets.html">Disjoint_FSets</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Dlist.html">Dlist</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Dual_Ordered_Lattice.html">Dual_Ordered_Lattice</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Equipollence.html">Equipollence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Simps_Case_Conv.html">Simps_Case_Conv</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Extended.html">Extended</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Order_Continuity.html">Order_Continuity</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Extended_Nat.html">Extended_Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Liminf_Limsup.html">Liminf_Limsup</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Extended_Real.html">Extended_Real</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Indicator_Function.html">Indicator_Function</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Extended_Nonnegative_Real.html">Extended_Nonnegative_Real</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Log_Nat.html">Log_Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Lattice_Algebras.html">Lattice_Algebras</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Float.html">Float</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Function_Algebras.html">Function_Algebras</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Function_Division.html">Function_Division</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Fun_Lexorder.html">Fun_Lexorder</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Going_To_Filter.html">Going_To_Filter</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Groups_Big_Fun.html">Groups_Big_Fun</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Infinite_Typeclass.html">Infinite_Typeclass</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Set_Algebras.html">Set_Algebras</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Interval.html">Interval</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Interval_Float.html">Interval_Float</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/IArray.html">IArray</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Landau_Symbols.html">Landau_Symbols</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Lattice_Constructions.html">Lattice_Constructions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Stream.html">Stream</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Sublist.html">Sublist</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Linear_Temporal_Logic_on_Streams.html">Linear_Temporal_Logic_on_Streams</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/ListVector.html">ListVector</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Lub_Glb.html">Lub_Glb</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Mapping.html">Mapping</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Monad_Syntax.html">Monad_Syntax</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/More_List.html">More_List</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Cancellation.html">Cancellation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Multiset.html">Multiset</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Multiset_Order.html">Multiset_Order</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/NList.html">NList</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Nonpos_Ints.html">Nonpos_Ints</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Numeral_Type.html">Numeral_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Omega_Words_Fun.html">Omega_Words_Fun</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Open_State_Syntax.html">Open_State_Syntax</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Option_ord.html">Option_ord</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Parallel.html">Parallel</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Pattern_Aliases.html">Pattern_Aliases</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Periodic_Fun.html">Periodic_Fun</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Poly_Mapping.html">Poly_Mapping</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Power_By_Squaring.html">Power_By_Squaring</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Preorder.html">Preorder</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Product_Plus.html">Product_Plus</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quadratic_Discriminant.html">Quadratic_Discriminant</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_Syntax.html">Quotient_Syntax</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_Set.html">Quotient_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_Product.html">Quotient_Product</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_Option.html">Quotient_Option</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_List.html">Quotient_List</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_Sum.html">Quotient_Sum</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Quotient_Type.html">Quotient_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Ramsey.html">Ramsey</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Real_Mod.html">Real_Mod</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Reflection.html">Reflection</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Rewrite.html">Rewrite</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Type_Length.html">Type_Length</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Saturated.html">Saturated</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Set_Idioms.html">Set_Idioms</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Signed_Division.html">Signed_Division</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/State_Monad.html">State_Monad</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Comparator.html">Comparator</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Sorting_Algorithms.html">Sorting_Algorithms</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Sum_of_Squares.html">Sum_of_Squares</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Time_Commands.html">Time_Commands</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Time_Functions.html">Time_Functions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Transitive_Closure_Table.html">Transitive_Closure_Table</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Tree.html">Tree</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Tree_Multiset.html">Tree_Multiset</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Tree_Real.html">Tree_Real</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Uprod.html">Uprod</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Word.html">Word</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Z2.html">Z2</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Library.html">Library</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Product_Order.html">Product_Order</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Finite_Lattice.html">Finite_Lattice</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/List_Lexorder.html">List_Lexorder</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/List_Lenlexorder.html">List_Lenlexorder</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Prefix_Order.html">Prefix_Order</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Product_Lexorder.html">Product_Lexorder</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Subseq_Order.html">Subseq_Order</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Datatype_Records.html">Datatype_Records</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/AList_Mapping.html">AList_Mapping</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Abstract_Char.html">Code_Abstract_Char</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Abstract_Nat.html">Code_Abstract_Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Binary_Nat.html">Code_Binary_Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Prolog.html">Code_Prolog</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Target_Int.html">Code_Target_Int</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Real_Approx_By_Float.html">Code_Real_Approx_By_Float</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Target_Nat.html">Code_Target_Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Target_Numeral.html">Code_Target_Numeral</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Code_Target_Numeral_Float.html">Code_Target_Numeral_Float</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Complex_Order.html">Complex_Order</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/DAList.html">DAList</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/DAList_Multiset.html">DAList_Multiset</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/RBT_Impl.html">RBT_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/RBT.html">RBT</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/RBT_Mapping.html">RBT_Mapping</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/RBT_Set.html">RBT_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Time_Manual.html">Time_Manual</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/LaTeXsugar.html">LaTeXsugar</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/OptionalSugar.html">OptionalSugar</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Suc_Notation.html">Suc_Notation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Predicate_Compile_Alternative_Defs.html">Predicate_Compile_Alternative_Defs</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Predicate_Compile_Quickcheck.html">Predicate_Compile_Quickcheck</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Old_Recdef.html">Old_Recdef</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Realizers.html">Realizers</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Library/Refute.html">Refute</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>-<span class='first'>L</span>ibrary.<span class='first'>C</span>har_ord
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/HOL/HOL-Library/Char_ord.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

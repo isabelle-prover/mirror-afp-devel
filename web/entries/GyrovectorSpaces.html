@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity - Archive of Formal Proofs</title>
-    <meta name="description" content="Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity" />
-  <meta property="og:url" content="https://isa-afp.org/entries/GyrovectorSpaces.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity">
+    <meta property="og:url" content="https://isa-afp.org/entries/GyrovectorSpaces.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>ormalization of <span class='first'>G</span>yrovector <span class='first'>S</span>paces as <span class='first'>M</span>odels of <span class='first'>H</span>yperbolic <span class='first'>G</span>eometry and <span class='first'>S</span>pecial <span class='first'>R</span>elativity
+  <h1>
+    <span class='first'>F</span>ormalization of <span class='first'>G</span>yrovector <span class='first'>S</span>paces as <span class='first'>M</span>odels of <span class='first'>H</span>yperbolic <span class='first'>G</span>eometry and <span class='first'>S</span>pecial <span class='first'>R</span>elativity
   </h1>
   <div>
       <p><a href="../authors/maricf/">Filip Marić</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZpbGlwIl0sImhvc3QiOlsibWF0ZiIsImJnIiwiYWMiLCJycyJdfQ==">📧</a> and <a href="../authors/markovic/">Jelena Markovic</a> <a class="obfuscated" data="eyJ1c2VyIjpbImplbGVuYSIsIm1hcmtvdmljIl0sImhvc3QiOlsibWF0ZiIsImJnIiwiYWMiLCJycyJdfQ==">📧</a>
@@ -139,28 +131,28 @@ models, satisfying Tarski’s geometry axioms for hyperbolic geometry.</p></div>
       </ul>
       <h3>Session GyrovectorSpaces</h3>
       <ul>
-          <li><a href="../sessions/gyrovectorspaces/#GyroGroup">GyroGroup</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#More_Real_Vector">More_Real_Vector</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#GyroVectorSpace">GyroVectorSpace</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#VectorSpace">VectorSpace</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#Abe">Abe</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#GyroVectorSpaceIsomorphism">GyroVectorSpaceIsomorphism</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MoreComplex">MoreComplex</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#GammaFactor">GammaFactor</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#PoincareDisc">PoincareDisc</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MobiusGyroGroup">MobiusGyroGroup</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#Gyrotrigonometry">Gyrotrigonometry</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#HyperbolicFunctions">HyperbolicFunctions</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MobiusGyroVectorSpace">MobiusGyroVectorSpace</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#Einstein">Einstein</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#GyroVectorSpaceTrivial">GyroVectorSpaceTrivial</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#hDistance">hDistance</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MobiusCollinear">MobiusCollinear</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MobiusGeometry">MobiusGeometry</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#TarskiIsomorphism">TarskiIsomorphism</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MobiusGyroTarski">MobiusGyroTarski</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#MobiusGyrotrigonometry">MobiusGyrotrigonometry</a></li>
-          <li><a href="../sessions/gyrovectorspaces/#Poincare">Poincare</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/GyroGroup.html">GyroGroup</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/More_Real_Vector.html">More_Real_Vector</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/GyroVectorSpace.html">GyroVectorSpace</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/VectorSpace.html">VectorSpace</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/Abe.html">Abe</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/GyroVectorSpaceIsomorphism.html">GyroVectorSpaceIsomorphism</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MoreComplex.html">MoreComplex</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/GammaFactor.html">GammaFactor</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/PoincareDisc.html">PoincareDisc</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MobiusGyroGroup.html">MobiusGyroGroup</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/Gyrotrigonometry.html">Gyrotrigonometry</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/HyperbolicFunctions.html">HyperbolicFunctions</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MobiusGyroVectorSpace.html">MobiusGyroVectorSpace</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/Einstein.html">Einstein</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/GyroVectorSpaceTrivial.html">GyroVectorSpaceTrivial</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/hDistance.html">hDistance</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MobiusCollinear.html">MobiusCollinear</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MobiusGeometry.html">MobiusGeometry</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/TarskiIsomorphism.html">TarskiIsomorphism</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MobiusGyroTarski.html">MobiusGyroTarski</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/MobiusGyrotrigonometry.html">MobiusGyrotrigonometry</a></li>
+          <li><a href="../thys/AFP/GyrovectorSpaces/Poincare.html">Poincare</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -211,6 +203,15 @@ models, satisfying Tarski’s geometry axioms for hyperbolic geometry.</p></div>
       <a class="close" href="#">&times;</a>
       <a href="https://www.isa-afp.org/release/afp-GyrovectorSpaces-current.tar.gz" download>
         Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-GyrovectorSpaces-2025-04-09.tar.gz">
+                Apr 9, 2025
+              </a>
+              : Isabelle2025
+            </li>
+        </ul>
     </div>
   </div>
       </div>

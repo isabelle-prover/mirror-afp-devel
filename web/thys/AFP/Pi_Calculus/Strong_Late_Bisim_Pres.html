@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Pi_Calculus.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Agent.html">Agent</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Late_Semantics.html">Late_Semantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Late_Semantics1.html">Late_Semantics1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Rel.html">Rel</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Sim.html">Strong_Late_Sim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Bisim.html">Strong_Late_Bisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Subst.html">Strong_Late_Bisim_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Sim_Pres.html">Strong_Late_Sim_Pres</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Pres.html">Strong_Late_Bisim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Subst_Pres.html">Strong_Late_Bisim_Subst_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Late_Tau_Chain.html">Late_Tau_Chain</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Step_Semantics.html">Weak_Late_Step_Semantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Semantics.html">Weak_Late_Semantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Sim.html">Weak_Late_Sim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Bisim.html">Weak_Late_Bisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Step_Sim.html">Weak_Late_Step_Sim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Cong.html">Weak_Late_Cong</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Bisim_Subst.html">Weak_Late_Bisim_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Cong_Subst.html">Weak_Late_Cong_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Sim_SC.html">Strong_Late_Sim_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Bisim_SC.html">Strong_Late_Bisim_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Subst_SC.html">Strong_Late_Bisim_Subst_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Cong_Subst_SC.html">Weak_Late_Cong_Subst_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Step_Sim_Pres.html">Weak_Late_Step_Sim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Bisim_SC.html">Weak_Late_Bisim_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Sim_Pres.html">Weak_Late_Sim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Bisim_Pres.html">Weak_Late_Bisim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Late_Cong_Pres.html">Weak_Late_Cong_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Early_Semantics.html">Early_Semantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Sim.html">Strong_Early_Sim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Bisim.html">Strong_Early_Bisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Bisim_Subst.html">Strong_Early_Bisim_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Sim_Pres.html">Strong_Early_Sim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Bisim_Pres.html">Strong_Early_Bisim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Bisim_Subst_Pres.html">Strong_Early_Bisim_Subst_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Early_Tau_Chain.html">Early_Tau_Chain</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Step_Semantics.html">Weak_Early_Step_Semantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Semantics.html">Weak_Early_Semantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Sim.html">Weak_Early_Sim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Bisim.html">Weak_Early_Bisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Step_Sim.html">Weak_Early_Step_Sim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Cong.html">Weak_Early_Cong</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Bisim_Subst.html">Weak_Early_Bisim_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Cong_Subst.html">Weak_Early_Cong_Subst</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Step_Sim_Pres.html">Weak_Early_Step_Sim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Sim_Pres.html">Weak_Early_Sim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Late_Comp.html">Strong_Early_Late_Comp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Early_Bisim_SC.html">Strong_Early_Bisim_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Bisim_SC.html">Weak_Early_Bisim_SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Bisim_Pres.html">Weak_Early_Bisim_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Cong_Pres.html">Weak_Early_Cong_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Weak_Early_Cong_Subst_Pres.html">Weak_Early_Cong_Subst_Pres</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Expansion_Law.html">Strong_Late_Expansion_Law</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Pi_Calculus/Strong_Late_Axiomatisation.html">Strong_Late_Axiomatisation</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>P</span>i_<span class='first'>C</span>alculus.<span class='first'>S</span>trong_<span class='first'>L</span>ate_<span class='first'>B</span>isim_<span class='first'>P</span>res
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Pi_Calculus/Strong_Late_Bisim_Pres.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

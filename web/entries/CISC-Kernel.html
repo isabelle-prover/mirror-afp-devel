@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Formal Specification of a Generic Separation Kernel - Archive of Formal Proofs</title>
-    <meta name="description" content="Formal Specification of a Generic Separation Kernel in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Formal Specification of a Generic Separation Kernel in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Formal Specification of a Generic Separation Kernel" />
-  <meta property="og:url" content="https://isa-afp.org/entries/CISC-Kernel.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Formal Specification of a Generic Separation Kernel in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formal Specification of a Generic Separation Kernel in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formal Specification of a Generic Separation Kernel">
+    <meta property="og:url" content="https://isa-afp.org/entries/CISC-Kernel.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>ormal <span class='first'>S</span>pecification of a <span class='first'>G</span>eneric <span class='first'>S</span>eparation <span class='first'>K</span>ernel
+  <h1>
+    <span class='first'>F</span>ormal <span class='first'>S</span>pecification of a <span class='first'>G</span>eneric <span class='first'>S</span>eparation <span class='first'>K</span>ernel
   </h1>
   <div>
       <p><a href="../authors/verbeek/">Freek Verbeek</a> <a class="obfuscated" data="eyJ1c2VyIjpbIkZyZWVrIiwiVmVyYmVlayJdLCJob3N0IjpbIm91IiwibmwiXX0=">📧</a>, <a href="../authors/tverdyshev/">Sergey Tverdyshev</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0diJdLCJob3N0IjpbInN5c2dvIiwiY29tIl19">📧</a>, <a href="../authors/havle/">Oto Havle</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm9oYSJdLCJob3N0IjpbInN5c2dvIiwiY29tIl19">📧</a>, <a href="../authors/blasum/">Holger Blasum</a> <a class="obfuscated" data="eyJ1c2VyIjpbImhvbGdlciIsImJsYXN1bSJdLCJob3N0IjpbInN5c2dvIiwiY29tIl19">📧</a>, <a href="../authors/langenstein/">Bruno Langenstein</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxhbmdlbnN0ZWluIl0sImhvc3QiOlsiZGZraSIsImRlIl19">📧</a>, <a href="../authors/stephan/">Werner Stephan</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0ZXBoYW4iXSwiaG9zdCI6WyJkZmtpIiwiZGUiXX0=">📧</a>, <a href="../authors/nemouchi/">Yakoub Nemouchi</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm5lbW91Y2hpIl0sImhvc3QiOlsibHJpIiwiZnIiXX0=">📧</a>, <a href="../authors/feliachi/">Abderrahmane Feliachi</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFiZGVycmFobWFuZSIsImZlbGlhY2hpIl0sImhvc3QiOlsibHJpIiwiZnIiXX0=">📧</a>, <a href="../authors/wolff/">Burkhart Wolff</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJ1cmtoYXJ0Iiwid29sZmYiXSwiaG9zdCI6WyJsbWYiLCJjbnJzIiwiZnIiXX0=">📧</a> and <a href="../authors/schmaltz/">Julien Schmaltz</a> <a class="obfuscated" data="eyJ1c2VyIjpbIkp1bGllbiIsIlNjaG1hbHR6Il0sImhvc3QiOlsib3UiLCJubCJdfQ==">📧</a>
@@ -132,21 +124,21 @@ Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div>
       </ul>
       <h3>Session CISC-Kernel</h3>
       <ul>
-          <li><a href="../sessions/cisc-kernel/#Option_Binders">Option_Binders</a></li>
-          <li><a href="../sessions/cisc-kernel/#List_Theorems">List_Theorems</a></li>
-          <li><a href="../sessions/cisc-kernel/#K">K</a></li>
-          <li><a href="../sessions/cisc-kernel/#SK">SK</a></li>
-          <li><a href="../sessions/cisc-kernel/#ISK">ISK</a></li>
-          <li><a href="../sessions/cisc-kernel/#CISK">CISK</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step_configuration">Step_configuration</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step_policies">Step_policies</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step">Step</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step_invariants">Step_invariants</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step_vpeq">Step_vpeq</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step_vpeq_locally_respects">Step_vpeq_locally_respects</a></li>
-          <li><a href="../sessions/cisc-kernel/#Step_vpeq_weakly_step_consistent">Step_vpeq_weakly_step_consistent</a></li>
-          <li><a href="../sessions/cisc-kernel/#Separation_kernel_model">Separation_kernel_model</a></li>
-          <li><a href="../sessions/cisc-kernel/#Link_separation_kernel_model_to_CISK">Link_separation_kernel_model_to_CISK</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Option_Binders.html">Option_Binders</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/List_Theorems.html">List_Theorems</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/K.html">K</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/SK.html">SK</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/ISK.html">ISK</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/CISK.html">CISK</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step_configuration.html">Step_configuration</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step_policies.html">Step_policies</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step.html">Step</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step_invariants.html">Step_invariants</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step_vpeq.html">Step_vpeq</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step_vpeq_locally_respects.html">Step_vpeq_locally_respects</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Step_vpeq_weakly_step_consistent.html">Step_vpeq_weakly_step_consistent</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Separation_kernel_model.html">Separation_kernel_model</a></li>
+          <li><a href="../thys/AFP/CISC-Kernel/Link_separation_kernel_model_to_CISK.html">Link_separation_kernel_model_to_CISK</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -194,77 +186,92 @@ Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-08-28.tar.gz">Aug 28, 2014
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-08-28.tar.gz">
+                Aug 28, 2014
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-07-18.tar.gz">Jul 18, 2014
+              <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-07-18.tar.gz">
+                Jul 18, 2014
               </a>
               : Isabelle2013-2
             </li>

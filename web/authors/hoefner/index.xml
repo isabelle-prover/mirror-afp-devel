@@ -4,6 +4,15 @@
     <title>Peter Höfner</title>
     <link>https://isa-afp.org/authors/hoefner/</link>
     <description>AFP entries of Peter Höfner</description><item>
+  <title>Rely-Guarantee Extensions and Locks</title>
+  <link>https://isa-afp.org/entries/RG_Locks.html</link>
+  <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Extensions and Locks in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Algorithms/Concurrent</category>
+</item>
+<item>
   <title>Relational Characterisations of Paths</title>
   <link>https://isa-afp.org/entries/Relational_Paths.html</link>
   <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>

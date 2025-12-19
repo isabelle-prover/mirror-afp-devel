@@ -8,20 +8,20 @@
           <li>
             <h3>
               <a href="{{ $topic.RelPermalink }}">
-                {{- $topic.Params.name }} ({{ $topic.Params.count }})
+                {{ $topic.Params.name }} ({{ $topic.Params.count }})
               </a>
             </h3>
+            <ul>
+              {{- range $topic.Params.subtopics }}
+                {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+                <li>
+                  <a href="{{ $topic.RelPermalink }}">
+                    {{ $topic.Params.name }} ({{ $topic.Params.count }})
+                  </a>
+                </li>
+              {{- end }}
+            </ul>
           </li>
-          <ul>
-            {{- range $topic.Params.subtopics }}
-              {{- $topic := page.GetPage (printf "/topics/%s" .) }}
-              <li>
-                <a href="{{ $topic.RelPermalink }}">
-                  {{- $topic.Params.name }} ({{ $topic.Params.count }})
-                </a>
-              </li>
-            {{- end }}
-          </ul>
         {{- end }}
       </ul>
     {{- end }}

@@ -12,7 +12,7 @@ $L(a_n, q) = \\sum_{n=1}^\\infty a_n q^n / (1-q^n)$ where $a_n$ is a sequence of
 <li> the precise region in which $L(a_n, q)$ converges</li>
 <li> the functional equation $L(a_n, \\frac{1}{q}) = -(\\sum_{n=1}^\\infty a_n) - L(a_n, q)$</li>
 <li> the power series expansion of $L(a_n, q)$ at $q = 0$</li>
-<li> the connection $L(a_n, q) = \\sum_{k=1}^\\infty f(q^k)$ for $f(z) = \\sum_{n=1}^\\infty a_n z^n$</li>
+<li> the connection $L(a_n, q) = \\sum_{k=1}^\\infty f(q^k)$ for $f(z) = \\sum_{n=1}^\\infty a_n z^n$
 that links a Lambert series to its &ldquo;corresponding&rdquo; power series</li>
 <li> connections to various number-theoretic functions, e.g. the divisor $\\sigma$ function via
 $\\sum_{n=1}^\\infty \\sigma_{\\alpha}(n) q^n = L(n^\\alpha, q)$</li>

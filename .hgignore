@@ -73,4 +73,5 @@ admin/venv
 
 tools/**.jar
 web/hugo
+web/webapp
 out/

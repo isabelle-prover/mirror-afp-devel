@@ -10,7 +10,7 @@ $$\\frac{0}{1}, \\frac{1}{n}, \\frac{1}{n-1}, \\ldots, \\frac{n-1}{n}, \\frac{1}
 where the fractions appear in numerical order and have denominators at most $n$.
 The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of 
 the sequence~$F_n$, using an operation called the mediant.
-Adjacent (reduced) fractions $(a/b) < (c/d)$ satisfy the unimodular
+Adjacent (reduced) fractions $(a/b) &lt; (c/d)$ satisfy the unimodular
 relation $bc - ad = 1$ and their mediant is $\\frac{a+c}{b+d}$.
 A Ford circle is specified by a rational number, and interesting consequences follow
 in the case of Ford circles obtained from some Farey sequence~$F_n$.

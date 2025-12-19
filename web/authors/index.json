@@ -196,6 +196,10 @@
   "name": "Antonio Yuste-Ginel"
  },
  {
+  "link": "/authors/faber/",
+  "name": "Arjan Faber"
+ },
+ {
   "link": "/authors/heller/",
   "name": "Armin Heller"
  },
@@ -1164,6 +1168,10 @@
   "name": "Karen Zee"
  },
  {
+  "link": "/authors/mattes/",
+  "name": "Karl P. P. Mattes"
+ },
+ {
   "link": "/authors/kreuzer/",
   "name": "Katharina Kreuzer"
  },
@@ -1224,12 +1232,20 @@
   "name": "Lei Yu"
  },
  {
+  "link": "/authors/mollenkopf/",
+  "name": "Lenard Mollenkopf"
+ },
+ {
   "link": "/authors/beringer/",
   "name": "Lennart Beringer"
  },
  {
   "link": "/authors/oldenburg/",
   "name": "Lennart Oldenburg"
+ },
+ {
+  "link": "/authors/huebner/",
+  "name": "Leonard M. Hübner"
  },
  {
   "link": "/authors/lima/",
@@ -1242,6 +1258,10 @@
  {
   "link": "/authors/ye/",
   "name": "Lina Ye"
+ },
+ {
+  "link": "/authors/barthel/",
+  "name": "Lisa A. Barthel"
  },
  {
   "link": "/authors/chevalier/",
@@ -1752,6 +1772,10 @@
   "name": "Rob van Glabbeek"
  },
  {
+  "link": "/authors/colvin/",
+  "name": "Robert J. Colvin"
+ },
+ {
   "link": "/authors/sachtleben/",
   "name": "Robert Sachtleben"
  },
@@ -1770,6 +1794,10 @@
  {
   "link": "/authors/oosterhuis/",
   "name": "Roelof Oosterhuis"
+ },
+ {
+  "link": "/authors/su/",
+  "name": "Roger C. Su"
  },
  {
   "link": "/authors/strnisa/",
@@ -1826,6 +1854,10 @@
  {
   "link": "/authors/boehme/",
   "name": "Sascha Böhme"
+ },
+ {
+  "link": "/authors/heiner/",
+  "name": "Scott Heiner"
  },
  {
   "link": "/authors/joosten/",

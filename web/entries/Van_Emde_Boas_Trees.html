@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>van Emde Boas Trees - Archive of Formal Proofs</title>
-    <meta name="description" content="van Emde Boas Trees in the Archive of Formal Proofs" />
-    <meta property="og:description" content="van Emde Boas Trees in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="van Emde Boas Trees" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Van_Emde_Boas_Trees.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="van Emde Boas Trees in the Archive of Formal Proofs">
+    <meta property="og:description" content="van Emde Boas Trees in the Archive of Formal Proofs">
+    <meta property="og:title" content="van Emde Boas Trees">
+    <meta property="og:url" content="https://isa-afp.org/entries/Van_Emde_Boas_Trees.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 >van <span class='first'>E</span>mde <span class='first'>B</span>oas <span class='first'>T</span>rees
+  <h1>
+    van <span class='first'>E</span>mde <span class='first'>B</span>oas <span class='first'>T</span>rees
   </h1>
   <div>
       <p><a href="../authors/ammer/">Thomas Ammer</a> and <a href="../authors/lammich/">Peter Lammich</a>
@@ -112,16 +104,16 @@ priority queue</em> is a data structure supporting membership
 test, insertion, predecessor and successor search, minimum and maximum
 determination and deletion in <em>O(log log U)</em> time, where <em>U =
 0,...,2<sup>n-1</sup></em> is the overall range to be
-considered. <p/> The presented formalization follows Chapter 20
+considered. <p> The presented formalization follows Chapter 20
 of the popular <em>Introduction to Algorithms (3rd
 ed.)</em> by Cormen, Leiserson, Rivest and Stein (CLRS),
 extending the list of formally verified CLRS algorithms. Our current
 formalization is based on the first author's bachelor's
-thesis. <p/> First, we prove correct a
+thesis. <p> First, we prove correct a
 <em>functional</em> implementation, w.r.t. an abstract
 data type for sets. Apart from functional correctness, we show a
 resource bound, and runtime bounds w.r.t. manually defined timing
-functions for the operations. <p/> Next, we refine the
+functions for the operations. <p> Next, we refine the
 operations to Imperative HOL with time, and show correctness and
 complexity. This yields a practically more efficient implementation,
 and eliminates the manually defined timing functions from the trusted
@@ -137,41 +129,41 @@ base of the proof.</div>
       </ul>
       <h3>Session Van_Emde_Boas_Trees</h3>
       <ul>
-          <li><a href="../sessions/van_emde_boas_trees/#Heap_Time_Monad">Heap_Time_Monad</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Array_Time">Array_Time</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Ref_Time">Ref_Time</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Imperative_HOL_Time">Imperative_HOL_Time</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Syntax_Match">Syntax_Match</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Assertions">Assertions</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Hoare_Triple">Hoare_Triple</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Refine_Imp_Hol">Refine_Imp_Hol</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Automation">Automation</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Sep_Main">Sep_Main</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Imperative_HOL_Add">Imperative_HOL_Add</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Time_Reasoning">Time_Reasoning</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#Simple_TBOUND_Cond">Simple_TBOUND_Cond</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Example_Setup">VEBT_Example_Setup</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Definitions">VEBT_Definitions</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Member">VEBT_Member</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Insert">VEBT_Insert</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_InsertCorrectness">VEBT_InsertCorrectness</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_MinMax">VEBT_MinMax</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Succ">VEBT_Succ</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Pred">VEBT_Pred</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Delete">VEBT_Delete</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_DeleteCorrectness">VEBT_DeleteCorrectness</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Uniqueness">VEBT_Uniqueness</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Height">VEBT_Height</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Bounds">VEBT_Bounds</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_DeleteBounds">VEBT_DeleteBounds</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Space">VEBT_Space</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Intf_Functional">VEBT_Intf_Functional</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_List_Assn">VEBT_List_Assn</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_BuildupMemImp">VEBT_BuildupMemImp</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_SuccPredImperative">VEBT_SuccPredImperative</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_DelImperative">VEBT_DelImperative</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Intf_Imperative">VEBT_Intf_Imperative</a></li>
-          <li><a href="../sessions/van_emde_boas_trees/#VEBT_Example">VEBT_Example</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Heap_Time_Monad.html">Heap_Time_Monad</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Array_Time.html">Array_Time</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Ref_Time.html">Ref_Time</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Imperative_HOL_Time.html">Imperative_HOL_Time</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Syntax_Match.html">Syntax_Match</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Assertions.html">Assertions</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Hoare_Triple.html">Hoare_Triple</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Refine_Imp_Hol.html">Refine_Imp_Hol</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Automation.html">Automation</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Sep_Main.html">Sep_Main</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Imperative_HOL_Add.html">Imperative_HOL_Add</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Time_Reasoning.html">Time_Reasoning</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/Simple_TBOUND_Cond.html">Simple_TBOUND_Cond</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Example_Setup.html">VEBT_Example_Setup</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Definitions.html">VEBT_Definitions</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Member.html">VEBT_Member</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Insert.html">VEBT_Insert</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_InsertCorrectness.html">VEBT_InsertCorrectness</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_MinMax.html">VEBT_MinMax</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Succ.html">VEBT_Succ</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Pred.html">VEBT_Pred</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Delete.html">VEBT_Delete</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_DeleteCorrectness.html">VEBT_DeleteCorrectness</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Uniqueness.html">VEBT_Uniqueness</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Height.html">VEBT_Height</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Bounds.html">VEBT_Bounds</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_DeleteBounds.html">VEBT_DeleteBounds</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Space.html">VEBT_Space</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Intf_Functional.html">VEBT_Intf_Functional</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_List_Assn.html">VEBT_List_Assn</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_BuildupMemImp.html">VEBT_BuildupMemImp</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_SuccPredImperative.html">VEBT_SuccPredImperative</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_DelImperative.html">VEBT_DelImperative</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Intf_Imperative.html">VEBT_Intf_Imperative</a></li>
+          <li><a href="../thys/AFP/Van_Emde_Boas_Trees/VEBT_Example.html">VEBT_Example</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -226,32 +218,38 @@ base of the proof.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2021-11-26.tar.gz">Nov 26, 2021
+              <a href="https://www.isa-afp.org/release/afp-Van_Emde_Boas_Trees-2021-11-26.tar.gz">
+                Nov 26, 2021
               </a>
               : Isabelle2021
             </li>

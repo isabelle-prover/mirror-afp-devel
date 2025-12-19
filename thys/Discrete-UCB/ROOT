@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Discrete-UCB" = "HOL-Probability" +
+  options [timeout = 600]
+
+  theories
+    Discrete_UCB_Step1
+    Discrete_UCB_Step2
+    Discrete_UCB_Step3
+    MSc_Project_Discrete_Prop15_1
+  document_files
+    "root.bib"
+    "root.tex"

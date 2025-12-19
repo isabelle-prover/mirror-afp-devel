@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 - Archive of Formal Proofs</title>
-    <meta name="description" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Featherweight_OCL.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 in the Archive of Formal Proofs">
+    <meta property="og:description" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 in the Archive of Formal Proofs">
+    <meta property="og:title" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5">
+    <meta property="og:url" content="https://isa-afp.org/entries/Featherweight_OCL.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,20 +77,20 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>eatherweight <span class='first'>O</span><span class='first'>C</span><span class='first'>L</span>: <span class='first'>A</span> <span class='first'>P</span>roposal for a <span class='first'>M</span>achine-<span class='first'>C</span>hecked <span class='first'>F</span>ormal <span class='first'>S</span>emantics for <span class='first'>O</span><span class='first'>C</span><span class='first'>L</span> 2.5
+  <h1>
+    <span class='first'>F</span>eatherweight <span class='first'>O</span><span class='first'>C</span><span class='first'>L</span>: <span class='first'>A</span> <span class='first'>P</span>roposal for a <span class='first'>M</span>achine-<span class='first'>C</span>hecked <span class='first'>F</span>ormal <span class='first'>S</span>emantics for <span class='first'>O</span><span class='first'>C</span><span class='first'>L</span> 2.5
   </h1>
   <div>
-      <p><a href="../authors/brucker/">Achim D. Brucker</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFkYnJ1Y2tlciJdLCJob3N0IjpbIjB4NWYiLCJvcmciXX0=">📧</a>, <a href="../authors/tuong/">Frédéric Tuong</a> <a class="obfuscated" data="eyJ1c2VyIjpbInR1b25nIl0sImhvc3QiOlsidXNlcnMiLCJnZm9yZ2UiLCJpbnJpYSIsImZyIl19">📧</a> and <a href="../authors/wolff/">Burkhart Wolff</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJ1cmtoYXJ0Iiwid29sZmYiXSwiaG9zdCI6WyJsbWYiLCJjbnJzIiwiZnIiXX0=">📧</a>
+      <p><a href="../authors/brucker/">Achim D. Brucker</a> <a href="https://www.brucker.ch/">🌐</a>, <a href="../authors/tuong/">Frédéric Tuong</a> <a class="obfuscated" data="eyJ1c2VyIjpbInR1b25nIl0sImhvc3QiOlsidXNlcnMiLCJnZm9yZ2UiLCJpbnJpYSIsImZyIl19">📧</a> and <a href="../authors/wolff/">Burkhart Wolff</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJ1cmtoYXJ0Iiwid29sZmYiXSwiaG9zdCI6WyJsbWYiLCJjbnJzIiwiZnIiXX0=">📧</a>
       </p>
       <p class="date">January 16, 2014</p>
   </div>
@@ -149,30 +141,35 @@ implementors.</div>
       <ul>
           <li><a href="../topics/computer-science/system-description-languages/">Computer science/System description languages</a></li>
       </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Brucker, A., Tuong, F., & Wolff, B. (2020). Model Transformation as Conservative Theory-Transformation. The Journal of Object Technology, 19(3), 3:1. https://doi.org/10.5381/jot.2020.19.3.a3
+</li>
+      </ul>
       <h3>Session Featherweight_OCL</h3>
       <ul>
-          <li><a href="../sessions/featherweight_ocl/#UML_Types">UML_Types</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Logic">UML_Logic</a></li>
-          <li><a href="../sessions/featherweight_ocl/#Featherweight_OCL_Assert">Featherweight_OCL_Assert</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_PropertyProfiles">UML_PropertyProfiles</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Boolean">UML_Boolean</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Void">UML_Void</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Integer">UML_Integer</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Real">UML_Real</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_String">UML_String</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Pair">UML_Pair</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Bag">UML_Bag</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Set">UML_Set</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Sequence">UML_Sequence</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Library">UML_Library</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_State">UML_State</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Contracts">UML_Contracts</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Tools">UML_Tools</a></li>
-          <li><a href="../sessions/featherweight_ocl/#UML_Main">UML_Main</a></li>
-          <li><a href="../sessions/featherweight_ocl/#Analysis_UML">Analysis_UML</a></li>
-          <li><a href="../sessions/featherweight_ocl/#Analysis_OCL">Analysis_OCL</a></li>
-          <li><a href="../sessions/featherweight_ocl/#Design_UML">Design_UML</a></li>
-          <li><a href="../sessions/featherweight_ocl/#Design_OCL">Design_OCL</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Types.html">UML_Types</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Logic.html">UML_Logic</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/Featherweight_OCL_Assert.html">Featherweight_OCL_Assert</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_PropertyProfiles.html">UML_PropertyProfiles</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Boolean.html">UML_Boolean</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Void.html">UML_Void</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Integer.html">UML_Integer</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Real.html">UML_Real</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_String.html">UML_String</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Pair.html">UML_Pair</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Bag.html">UML_Bag</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Set.html">UML_Set</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Sequence.html">UML_Sequence</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Library.html">UML_Library</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_State.html">UML_State</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Contracts.html">UML_Contracts</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Tools.html">UML_Tools</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/UML_Main.html">UML_Main</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/Analysis_UML.html">Analysis_UML</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/Analysis_OCL.html">Analysis_OCL</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/Design_UML.html">Design_UML</a></li>
+          <li><a href="../thys/AFP/Featherweight_OCL/Design_OCL.html">Design_OCL</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -220,77 +217,92 @@ implementors.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2014-08-28.tar.gz">Aug 28, 2014
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2014-08-28.tar.gz">
+                Aug 28, 2014
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2014-01-16.tar.gz">Jan 16, 2014
+              <a href="https://www.isa-afp.org/release/afp-Featherweight_OCL-2014-01-16.tar.gz">
+                Jan 16, 2014
               </a>
               : Isabelle2013-2
             </li>

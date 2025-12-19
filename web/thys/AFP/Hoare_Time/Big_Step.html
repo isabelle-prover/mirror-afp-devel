@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Hoare_Time.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/AExp.html">AExp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/BExp.html">BExp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Com.html">Com</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Hoare_Time/Big_Step.html">Big_Step</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Big_StepT.html">Big_StepT</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Nielson_Hoare.html">Nielson_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Nielson_VCG.html">Nielson_VCG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Vars.html">Vars</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Nielson_VCGi.html">Nielson_VCGi</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Nielson_VCGi_complete.html">Nielson_VCGi_complete</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Nielson_Examples.html">Nielson_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Nielson_Sqrt.html">Nielson_Sqrt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Quant_Hoare.html">Quant_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Quant_VCG.html">Quant_VCG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Quant_Examples.html">Quant_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/QuantK_Hoare.html">QuantK_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/QuantK_VCG.html">QuantK_VCG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/QuantK_Examples.html">QuantK_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/QuantK_Sqrt.html">QuantK_Sqrt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Partial_Evaluation.html">Partial_Evaluation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Product_Separation_Algebra.html">Product_Separation_Algebra</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Sep_Algebra_Add.html">Sep_Algebra_Add</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Big_StepT_Partial.html">Big_StepT_Partial</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/SepLog_Hoare.html">SepLog_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/SepLog_Examples.html">SepLog_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/SepLogK_Hoare.html">SepLogK_Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/SepLogK_VCG.html">SepLogK_VCG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Discussion.html">Discussion</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/DiscussionO.html">DiscussionO</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Hoare_Time/Hoare_Time.html">Hoare_Time</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>H</span>oare_<span class='first'>T</span>ime.<span class='first'>B</span>ig_<span class='first'>S</span>tep
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Hoare_Time/Big_Step.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

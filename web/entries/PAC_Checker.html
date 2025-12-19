@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Practical Algebraic Calculus Checker - Archive of Formal Proofs</title>
-    <meta name="description" content="Practical Algebraic Calculus Checker in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Practical Algebraic Calculus Checker in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Practical Algebraic Calculus Checker" />
-  <meta property="og:url" content="https://isa-afp.org/entries/PAC_Checker.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Practical Algebraic Calculus Checker in the Archive of Formal Proofs">
+    <meta property="og:description" content="Practical Algebraic Calculus Checker in the Archive of Formal Proofs">
+    <meta property="og:title" content="Practical Algebraic Calculus Checker">
+    <meta property="og:url" content="https://isa-afp.org/entries/PAC_Checker.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>P</span>ractical <span class='first'>A</span>lgebraic <span class='first'>C</span>alculus <span class='first'>C</span>hecker
+  <h1>
+    <span class='first'>P</span>ractical <span class='first'>A</span>lgebraic <span class='first'>C</span>alculus <span class='first'>C</span>hecker
   </h1>
   <div>
       <p><a href="../authors/fleury/">Mathias Fleury</a> <a href="http://fmv.jku.at/fleury">🌐</a> and <a href="../authors/kaufmann/">Daniela Kaufmann</a> <a href="http://fmv.jku.at/kaufmann">🌐</a>
@@ -127,24 +119,24 @@ going with our FMCAD'20 tool presentation.</div>
       </ul>
       <h3>Session PAC_Checker</h3>
       <ul>
-          <li><a href="../sessions/pac_checker/#PAC_More_Poly">PAC_More_Poly</a></li>
-          <li><a href="../sessions/pac_checker/#Finite_Map_Multiset">Finite_Map_Multiset</a></li>
-          <li><a href="../sessions/pac_checker/#WB_Sort">WB_Sort</a></li>
-          <li><a href="../sessions/pac_checker/#More_Loops">More_Loops</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Specification">PAC_Specification</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Map_Rel">PAC_Map_Rel</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Checker_Specification">PAC_Checker_Specification</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Polynomials">PAC_Polynomials</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Polynomials_Term">PAC_Polynomials_Term</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Polynomials_Operations">PAC_Polynomials_Operations</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Misc">PAC_Misc</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Checker">PAC_Checker</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Checker_Relation">PAC_Checker_Relation</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Assoc_Map_Rel">PAC_Assoc_Map_Rel</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Checker_Init">PAC_Checker_Init</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Version">PAC_Version</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Checker_Synthesis">PAC_Checker_Synthesis</a></li>
-          <li><a href="../sessions/pac_checker/#PAC_Checker_MLton">PAC_Checker_MLton</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_More_Poly.html">PAC_More_Poly</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/Finite_Map_Multiset.html">Finite_Map_Multiset</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/WB_Sort.html">WB_Sort</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/More_Loops.html">More_Loops</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Specification.html">PAC_Specification</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Map_Rel.html">PAC_Map_Rel</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Checker_Specification.html">PAC_Checker_Specification</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Polynomials.html">PAC_Polynomials</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Polynomials_Term.html">PAC_Polynomials_Term</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Polynomials_Operations.html">PAC_Polynomials_Operations</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Misc.html">PAC_Misc</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Checker.html">PAC_Checker</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Checker_Relation.html">PAC_Checker_Relation</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Assoc_Map_Rel.html">PAC_Assoc_Map_Rel</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Checker_Init.html">PAC_Checker_Init</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Version.html">PAC_Version</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Checker_Synthesis.html">PAC_Checker_Synthesis</a></li>
+          <li><a href="../thys/AFP/PAC_Checker/PAC_Checker_MLton.html">PAC_Checker_MLton</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -200,37 +192,44 @@ going with our FMCAD'20 tool presentation.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2020-08-31.tar.gz">Aug 31, 2020
+              <a href="https://www.isa-afp.org/release/afp-PAC_Checker-2020-08-31.tar.gz">
+                Aug 31, 2020
               </a>
               : Isabelle2020
             </li>

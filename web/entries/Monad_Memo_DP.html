@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Monadification, Memoization and Dynamic Programming - Archive of Formal Proofs</title>
-    <meta name="description" content="Monadification, Memoization and Dynamic Programming in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Monadification, Memoization and Dynamic Programming in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Monadification, Memoization and Dynamic Programming" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Monad_Memo_DP.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Monadification, Memoization and Dynamic Programming in the Archive of Formal Proofs">
+    <meta property="og:description" content="Monadification, Memoization and Dynamic Programming in the Archive of Formal Proofs">
+    <meta property="og:title" content="Monadification, Memoization and Dynamic Programming">
+    <meta property="og:url" content="https://isa-afp.org/entries/Monad_Memo_DP.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>M</span>onadification, <span class='first'>M</span>emoization and <span class='first'>D</span>ynamic <span class='first'>P</span>rogramming
+  <h1>
+    <span class='first'>M</span>onadification, <span class='first'>M</span>emoization and <span class='first'>D</span>ynamic <span class='first'>P</span>rogramming
   </h1>
   <div>
       <p><a href="../authors/wimmer/">Simon Wimmer</a> <a href="http://home.in.tum.de/~wimmers/">🌐</a>, <a href="../authors/hu/">Shuwei Hu</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNodXdlaSIsImh1Il0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a> and <a href="../authors/nipkow/">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
@@ -134,35 +126,35 @@ description of our work can be found in the accompanying paper [2].</div>
       </ul>
       <h3>Session Monad_Memo_DP</h3>
       <ul>
-          <li><a href="../sessions/monad_memo_dp/#State_Monad_Ext">State_Monad_Ext</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Pure_Monad">Pure_Monad</a></li>
-          <li><a href="../sessions/monad_memo_dp/#DP_CRelVS">DP_CRelVS</a></li>
-          <li><a href="../sessions/monad_memo_dp/#State_Heap_Misc">State_Heap_Misc</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Heap_Monad_Ext">Heap_Monad_Ext</a></li>
-          <li><a href="../sessions/monad_memo_dp/#State_Heap">State_Heap</a></li>
-          <li><a href="../sessions/monad_memo_dp/#DP_CRelVH">DP_CRelVH</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Memory">Memory</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Pair_Memory">Pair_Memory</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Indexing">Indexing</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Memory_Heap">Memory_Heap</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Transform_Cmd">Transform_Cmd</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Bottom_Up_Computation">Bottom_Up_Computation</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Bottom_Up_Computation_Heap">Bottom_Up_Computation_Heap</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Solve_Cong">Solve_Cong</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Heap_Main">Heap_Main</a></li>
-          <li><a href="../sessions/monad_memo_dp/#State_Main">State_Main</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Example_Misc">Example_Misc</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Tracing">Tracing</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Ground_Function">Ground_Function</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Bellman_Ford">Bellman_Ford</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Heap_Default">Heap_Default</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Knapsack">Knapsack</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Counting_Tiles">Counting_Tiles</a></li>
-          <li><a href="../sessions/monad_memo_dp/#CYK">CYK</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Min_Ed_Dist0">Min_Ed_Dist0</a></li>
-          <li><a href="../sessions/monad_memo_dp/#OptBST">OptBST</a></li>
-          <li><a href="../sessions/monad_memo_dp/#Longest_Common_Subsequence">Longest_Common_Subsequence</a></li>
-          <li><a href="../sessions/monad_memo_dp/#All_Examples">All_Examples</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/State_Monad_Ext.html">State_Monad_Ext</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Pure_Monad.html">Pure_Monad</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/DP_CRelVS.html">DP_CRelVS</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/State_Heap_Misc.html">State_Heap_Misc</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Heap_Monad_Ext.html">Heap_Monad_Ext</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/State_Heap.html">State_Heap</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/DP_CRelVH.html">DP_CRelVH</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Memory.html">Memory</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Pair_Memory.html">Pair_Memory</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Indexing.html">Indexing</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Memory_Heap.html">Memory_Heap</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Transform_Cmd.html">Transform_Cmd</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Bottom_Up_Computation.html">Bottom_Up_Computation</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Bottom_Up_Computation_Heap.html">Bottom_Up_Computation_Heap</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Solve_Cong.html">Solve_Cong</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Heap_Main.html">Heap_Main</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/State_Main.html">State_Main</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Example_Misc.html">Example_Misc</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Tracing.html">Tracing</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Ground_Function.html">Ground_Function</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Bellman_Ford.html">Bellman_Ford</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Heap_Default.html">Heap_Default</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Knapsack.html">Knapsack</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Counting_Tiles.html">Counting_Tiles</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/CYK.html">CYK</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Min_Ed_Dist0.html">Min_Ed_Dist0</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/OptBST.html">OptBST</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/Longest_Common_Subsequence.html">Longest_Common_Subsequence</a></li>
+          <li><a href="../thys/AFP/Monad_Memo_DP/All_Examples.html">All_Examples</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -223,57 +215,68 @@ description of our work can be found in the accompanying paper [2].</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2022-02-13.tar.gz">Feb 13, 2022
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2022-02-13.tar.gz">
+                Feb 13, 2022
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2018-05-23.tar.gz">May 23, 2018
+              <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2018-05-23.tar.gz">
+                May 23, 2018
               </a>
               : Isabelle2017
             </li>

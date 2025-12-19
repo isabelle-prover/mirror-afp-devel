@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Z Mathematical Toolkit in Isabelle/HOL - Archive of Formal Proofs</title>
-    <meta name="description" content="Z Mathematical Toolkit in Isabelle/HOL in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Z Mathematical Toolkit in Isabelle/HOL in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Z Mathematical Toolkit in Isabelle/HOL" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Z_Toolkit.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Z Mathematical Toolkit in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:description" content="Z Mathematical Toolkit in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:title" content="Z Mathematical Toolkit in Isabelle/HOL">
+    <meta property="og:url" content="https://isa-afp.org/entries/Z_Toolkit.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>Z</span> <span class='first'>M</span>athematical <span class='first'>T</span>oolkit in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
+  <h1>
+    <span class='first'>Z</span> <span class='first'>M</span>athematical <span class='first'>T</span>oolkit in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
   </h1>
   <div>
       <p><a href="../authors/fosters/">Simon Foster</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNpbW9uIiwiZm9zdGVyIl0sImhvc3QiOlsieW9yayIsImFjIiwidWsiXX0=">📧</a>, <a href="../authors/ribeiro/">Pedro Ribeiro</a>, <a href="../authors/zeyda/">Frank Zeyda</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZyYW5rIiwiemV5ZGEiXSwiaG9zdCI6WyJ5b3JrIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/woodcock/">Jim Woodcock</a>
@@ -132,35 +124,35 @@ the mathematical toolkit for sets, relations, functions, and sequences.</div>
       </ul>
       <h3>Session Z_Toolkit</h3>
       <ul>
-          <li><a href="../sessions/z_toolkit/#Z_Toolkit_Overview">Z_Toolkit_Overview</a></li>
-          <li><a href="../sessions/z_toolkit/#List_Extra">List_Extra</a></li>
-          <li><a href="../sessions/z_toolkit/#Infinite_Sequence">Infinite_Sequence</a></li>
-          <li><a href="../sessions/z_toolkit/#Countable_Set_Extra">Countable_Set_Extra</a></li>
-          <li><a href="../sessions/z_toolkit/#Infinity">Infinity</a></li>
-          <li><a href="../sessions/z_toolkit/#Positive">Positive</a></li>
-          <li><a href="../sessions/z_toolkit/#Haskell_Show">Haskell_Show</a></li>
-          <li><a href="../sessions/z_toolkit/#Enum_Type">Enum_Type</a></li>
-          <li><a href="../sessions/z_toolkit/#Record_Default_Instance">Record_Default_Instance</a></li>
-          <li><a href="../sessions/z_toolkit/#Def_Const">Def_Const</a></li>
-          <li><a href="../sessions/z_toolkit/#Overriding">Overriding</a></li>
-          <li><a href="../sessions/z_toolkit/#Relation_Extra">Relation_Extra</a></li>
-          <li><a href="../sessions/z_toolkit/#Map_Extra">Map_Extra</a></li>
-          <li><a href="../sessions/z_toolkit/#Partial_Fun">Partial_Fun</a></li>
-          <li><a href="../sessions/z_toolkit/#Partial_Inj">Partial_Inj</a></li>
-          <li><a href="../sessions/z_toolkit/#Finite_Fun">Finite_Fun</a></li>
-          <li><a href="../sessions/z_toolkit/#Finite_Inj">Finite_Inj</a></li>
-          <li><a href="../sessions/z_toolkit/#Total_Fun">Total_Fun</a></li>
-          <li><a href="../sessions/z_toolkit/#Bounded_List">Bounded_List</a></li>
-          <li><a href="../sessions/z_toolkit/#Tabulate_Command">Tabulate_Command</a></li>
-          <li><a href="../sessions/z_toolkit/#Relation_Lib">Relation_Lib</a></li>
-          <li><a href="../sessions/z_toolkit/#Set_Toolkit">Set_Toolkit</a></li>
-          <li><a href="../sessions/z_toolkit/#Relation_Toolkit">Relation_Toolkit</a></li>
-          <li><a href="../sessions/z_toolkit/#Function_Toolkit">Function_Toolkit</a></li>
-          <li><a href="../sessions/z_toolkit/#Number_Toolkit">Number_Toolkit</a></li>
-          <li><a href="../sessions/z_toolkit/#Sequence_Toolkit">Sequence_Toolkit</a></li>
-          <li><a href="../sessions/z_toolkit/#Z_Toolkit_Pretty">Z_Toolkit_Pretty</a></li>
-          <li><a href="../sessions/z_toolkit/#Partial_Function_Command">Partial_Function_Command</a></li>
-          <li><a href="../sessions/z_toolkit/#Z_Toolkit">Z_Toolkit</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Z_Toolkit_Overview.html">Z_Toolkit_Overview</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/List_Extra.html">List_Extra</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Infinite_Sequence.html">Infinite_Sequence</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Countable_Set_Extra.html">Countable_Set_Extra</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Infinity.html">Infinity</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Positive.html">Positive</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Haskell_Show.html">Haskell_Show</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Enum_Type.html">Enum_Type</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Record_Default_Instance.html">Record_Default_Instance</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Def_Const.html">Def_Const</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Overriding.html">Overriding</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Relation_Extra.html">Relation_Extra</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Map_Extra.html">Map_Extra</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Partial_Fun.html">Partial_Fun</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Partial_Inj.html">Partial_Inj</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Finite_Fun.html">Finite_Fun</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Finite_Inj.html">Finite_Inj</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Total_Fun.html">Total_Fun</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Bounded_List.html">Bounded_List</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Tabulate_Command.html">Tabulate_Command</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Relation_Lib.html">Relation_Lib</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Set_Toolkit.html">Set_Toolkit</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Relation_Toolkit.html">Relation_Toolkit</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Function_Toolkit.html">Function_Toolkit</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Number_Toolkit.html">Number_Toolkit</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Sequence_Toolkit.html">Sequence_Toolkit</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Z_Toolkit_Pretty.html">Z_Toolkit_Pretty</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Partial_Function_Command.html">Partial_Function_Command</a></li>
+          <li><a href="../thys/AFP/Z_Toolkit/Z_Toolkit.html">Z_Toolkit</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -211,6 +203,15 @@ the mathematical toolkit for sets, relations, functions, and sequences.</div>
       <a class="close" href="#">&times;</a>
       <a href="https://www.isa-afp.org/release/afp-Z_Toolkit-current.tar.gz" download>
         Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Z_Toolkit-2025-10-17.tar.gz">
+                Oct 17, 2025
+              </a>
+              : Isabelle2025
+            </li>
+        </ul>
     </div>
   </div>
       </div>

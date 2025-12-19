@@ -8,7 +8,7 @@ This entry contains <em>Zippy</em>, a framework for tree-based searches.
 Zippy is largely independent of concrete search tree representations, search algorithms, states and effects.
 It is designed to create analysable and navigable searches that are open to customisation and extensions by users.
 An accompanying arXiv preprint is available <a href=\"https://arxiv.org/abs/2503.20413\">here</a>.
-</br></br>
+<br><br>
 
 This entry also provides a concrete instantiation of the framework in the form of a general purpose white-box prover,
 called <em>zip</em>.
@@ -19,12 +19,12 @@ and supports resolution with higher-order and <a href=\"https://www.isa-afp.org/
 among other things.
 Users are free to extend the prover with additional expansion actions and search strategies.
 We demonstrate the capabilities of zip in an examples theory.
-</br></br>
+<br><br>
 
 In most cases, zip can be used as a drop-in replacement for Isabelle's classical methods, including
 auto, fastforce, force, fast, etc. We demonstrate this with a benchmark containing 2267 method calls
 from Isabelle's standard library, where zip achieves a success rate of 99.82% (2263/2267).
-</br></br>
+<br><br>
 
 The Zippy framework is founded on concepts from functional programming theory, particularly zippers, arrows,
 monads, lenses, and coroutines. This entry contains a library of mentioned concepts for Isabelle/ML."""

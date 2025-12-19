@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Independence of the Continuum Hypothesis in Isabelle/ZF - Archive of Formal Proofs</title>
-    <meta name="description" content="The Independence of the Continuum Hypothesis in Isabelle/ZF in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Independence of the Continuum Hypothesis in Isabelle/ZF in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Independence of the Continuum Hypothesis in Isabelle/ZF" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Independence_CH.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Independence of the Continuum Hypothesis in Isabelle/ZF in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Independence of the Continuum Hypothesis in Isabelle/ZF in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Independence of the Continuum Hypothesis in Isabelle/ZF">
+    <meta property="og:url" content="https://isa-afp.org/entries/Independence_CH.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>I</span>ndependence of the <span class='first'>C</span>ontinuum <span class='first'>H</span>ypothesis in <span class='first'>I</span>sabelle/<span class='first'>Z</span><span class='first'>F</span>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>I</span>ndependence of the <span class='first'>C</span>ontinuum <span class='first'>H</span>ypothesis in <span class='first'>I</span>sabelle/<span class='first'>Z</span><span class='first'>F</span>
   </h1>
   <div>
       <p><a href="../authors/gunther/">Emmanuel Gunther</a> <a class="obfuscated" data="eyJ1c2VyIjpbImd1bnRoZXIiXSwiaG9zdCI6WyJmYW1hZiIsInVuYyIsImVkdSIsImFyIl19">📧</a>, <a href="../authors/pagano/">Miguel Pagano</a> <a href="https://cs.famaf.unc.edu.ar/~mpagano/">🌐</a>, <a href="../authors/terraf/">Pedro Sánchez Terraf</a> <a href="https://cs.famaf.unc.edu.ar/~pedro/home_en.html">🌐</a> and <a href="../authors/steinberg/">Matías Steinberg</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hdGlhcyIsInN0ZWluYmVyZyJdLCJob3N0IjpbIm1pIiwidW5jIiwiZWR1IiwiYXIiXX0=">📧</a>
@@ -122,42 +114,42 @@ extensions that satisfy the Continuum Hypothesis and its negation.</div>
       </ul>
       <h3>Session Independence_CH</h3>
       <ul>
-          <li><a href="../sessions/independence_ch/#Forcing_Notions">Forcing_Notions</a></li>
-          <li><a href="../sessions/independence_ch/#Cohen_Posets_Relative">Cohen_Posets_Relative</a></li>
-          <li><a href="../sessions/independence_ch/#Edrel">Edrel</a></li>
-          <li><a href="../sessions/independence_ch/#FrecR">FrecR</a></li>
-          <li><a href="../sessions/independence_ch/#FrecR_Arities">FrecR_Arities</a></li>
-          <li><a href="../sessions/independence_ch/#Fm_Definitions">Fm_Definitions</a></li>
-          <li><a href="../sessions/independence_ch/#Internal_ZFC_Axioms">Internal_ZFC_Axioms</a></li>
-          <li><a href="../sessions/independence_ch/#Interface">Interface</a></li>
-          <li><a href="../sessions/independence_ch/#Separation_Instances">Separation_Instances</a></li>
-          <li><a href="../sessions/independence_ch/#Replacement_Instances">Replacement_Instances</a></li>
-          <li><a href="../sessions/independence_ch/#ZF_Trans_Interpretations">ZF_Trans_Interpretations</a></li>
-          <li><a href="../sessions/independence_ch/#Forcing_Data">Forcing_Data</a></li>
-          <li><a href="../sessions/independence_ch/#Forces_Definition">Forces_Definition</a></li>
-          <li><a href="../sessions/independence_ch/#Names">Names</a></li>
-          <li><a href="../sessions/independence_ch/#Forcing_Theorems">Forcing_Theorems</a></li>
-          <li><a href="../sessions/independence_ch/#Ordinals_In_MG">Ordinals_In_MG</a></li>
-          <li><a href="../sessions/independence_ch/#Separation_Rename">Separation_Rename</a></li>
-          <li><a href="../sessions/independence_ch/#Separation_Axiom">Separation_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Pairing_Axiom">Pairing_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Union_Axiom">Union_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Powerset_Axiom">Powerset_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Extensionality_Axiom">Extensionality_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Foundation_Axiom">Foundation_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Replacement_Axiom">Replacement_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Infinity_Axiom">Infinity_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Choice_Axiom">Choice_Axiom</a></li>
-          <li><a href="../sessions/independence_ch/#Proper_Extension">Proper_Extension</a></li>
-          <li><a href="../sessions/independence_ch/#Succession_Poset">Succession_Poset</a></li>
-          <li><a href="../sessions/independence_ch/#Forcing_Main">Forcing_Main</a></li>
-          <li><a href="../sessions/independence_ch/#Cardinal_Preservation">Cardinal_Preservation</a></li>
-          <li><a href="../sessions/independence_ch/#Not_CH">Not_CH</a></li>
-          <li><a href="../sessions/independence_ch/#Kappa_Closed_Notions">Kappa_Closed_Notions</a></li>
-          <li><a href="../sessions/independence_ch/#CH">CH</a></li>
-          <li><a href="../sessions/independence_ch/#Absolute_Versions">Absolute_Versions</a></li>
-          <li><a href="../sessions/independence_ch/#Definitions_Main">Definitions_Main</a></li>
-          <li><a href="../sessions/independence_ch/#Demonstrations">Demonstrations</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Forcing_Notions.html">Forcing_Notions</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Cohen_Posets_Relative.html">Cohen_Posets_Relative</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Edrel.html">Edrel</a></li>
+          <li><a href="../thys/AFP/Independence_CH/FrecR.html">FrecR</a></li>
+          <li><a href="../thys/AFP/Independence_CH/FrecR_Arities.html">FrecR_Arities</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Fm_Definitions.html">Fm_Definitions</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Internal_ZFC_Axioms.html">Internal_ZFC_Axioms</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Interface.html">Interface</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Separation_Instances.html">Separation_Instances</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Replacement_Instances.html">Replacement_Instances</a></li>
+          <li><a href="../thys/AFP/Independence_CH/ZF_Trans_Interpretations.html">ZF_Trans_Interpretations</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Forcing_Data.html">Forcing_Data</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Forces_Definition.html">Forces_Definition</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Names.html">Names</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Forcing_Theorems.html">Forcing_Theorems</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Ordinals_In_MG.html">Ordinals_In_MG</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Separation_Rename.html">Separation_Rename</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Separation_Axiom.html">Separation_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Pairing_Axiom.html">Pairing_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Union_Axiom.html">Union_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Powerset_Axiom.html">Powerset_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Extensionality_Axiom.html">Extensionality_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Foundation_Axiom.html">Foundation_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Replacement_Axiom.html">Replacement_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Infinity_Axiom.html">Infinity_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Choice_Axiom.html">Choice_Axiom</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Proper_Extension.html">Proper_Extension</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Succession_Poset.html">Succession_Poset</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Forcing_Main.html">Forcing_Main</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Cardinal_Preservation.html">Cardinal_Preservation</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Not_CH.html">Not_CH</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Kappa_Closed_Notions.html">Kappa_Closed_Notions</a></li>
+          <li><a href="../thys/AFP/Independence_CH/CH.html">CH</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Absolute_Versions.html">Absolute_Versions</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Definitions_Main.html">Definitions_Main</a></li>
+          <li><a href="../thys/AFP/Independence_CH/Demonstrations.html">Demonstrations</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -211,27 +203,32 @@ extensions that satisfy the Continuum Hypothesis and its negation.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2022-03-07.tar.gz">Mar 7, 2022
+              <a href="https://www.isa-afp.org/release/afp-Independence_CH-2022-03-07.tar.gz">
+                Mar 7, 2022
               </a>
               : Isabelle2021-1
             </li>

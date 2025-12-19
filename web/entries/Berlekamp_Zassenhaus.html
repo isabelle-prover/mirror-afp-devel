@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Factorization Algorithm of Berlekamp and Zassenhaus - Archive of Formal Proofs</title>
-    <meta name="description" content="The Factorization Algorithm of Berlekamp and Zassenhaus in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Factorization Algorithm of Berlekamp and Zassenhaus in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Factorization Algorithm of Berlekamp and Zassenhaus" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Berlekamp_Zassenhaus.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Factorization Algorithm of Berlekamp and Zassenhaus in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Factorization Algorithm of Berlekamp and Zassenhaus in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Factorization Algorithm of Berlekamp and Zassenhaus">
+    <meta property="og:url" content="https://isa-afp.org/entries/Berlekamp_Zassenhaus.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>F</span>actorization <span class='first'>A</span>lgorithm of <span class='first'>B</span>erlekamp and <span class='first'>Z</span>assenhaus
+  <h1>
+    <span class='first'>T</span>he <span class='first'>F</span>actorization <span class='first'>A</span>lgorithm of <span class='first'>B</span>erlekamp and <span class='first'>Z</span>assenhaus
   </h1>
   <div>
       <p><a href="../authors/divason/">Jose Divasón</a> <a href="https://www.unirioja.es/cu/jodivaso/">🌐</a>, <a href="../authors/joosten/">Sebastiaan J. C. Joosten</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNlYmFzdGlhYW4iLCJqb29zdGVuIl0sImhvc3QiOlsidWliayIsImFjIiwiYXQiXX0=">📧</a>, <a href="../authors/thiemann/">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a> and <a href="../authors/yamada/">Akihisa Yamada</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFraWhpc2EiLCJ5YW1hZGEiXSwiaG9zdCI6WyJ1aWJrIiwiYWMiLCJhdCJdfQ==">📧</a>
@@ -147,40 +139,40 @@ local type definitions.
       </ul>
       <h3>Session Berlekamp_Zassenhaus</h3>
       <ul>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Finite_Field">Finite_Field</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Arithmetic_Record_Based">Arithmetic_Record_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Finite_Field_Record_Based">Finite_Field_Record_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Matrix_Record_Based">Matrix_Record_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#More_Missing_Multiset">More_Missing_Multiset</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Unique_Factorization">Unique_Factorization</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Unique_Factorization_Poly">Unique_Factorization_Poly</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Poly_Mod">Poly_Mod</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Poly_Mod_Finite_Field">Poly_Mod_Finite_Field</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Karatsuba_Multiplication">Karatsuba_Multiplication</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Polynomial_Record_Based">Polynomial_Record_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Poly_Mod_Finite_Field_Record_Based">Poly_Mod_Finite_Field_Record_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Chinese_Remainder_Poly">Chinese_Remainder_Poly</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Berlekamp_Type_Based">Berlekamp_Type_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Distinct_Degree_Factorization">Distinct_Degree_Factorization</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Finite_Field_Factorization">Finite_Field_Factorization</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Finite_Field_Factorization_Record_Based">Finite_Field_Factorization_Record_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Hensel_Lifting">Hensel_Lifting</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Hensel_Lifting_Type_Based">Hensel_Lifting_Type_Based</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Berlekamp_Hensel">Berlekamp_Hensel</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Square_Free_Int_To_Square_Free_GFp">Square_Free_Int_To_Square_Free_GFp</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Suitable_Prime">Suitable_Prime</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Degree_Bound">Degree_Bound</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Mahler_Measure">Mahler_Measure</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Factor_Bound">Factor_Bound</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Sublist_Iteration">Sublist_Iteration</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Reconstruction">Reconstruction</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Code_Abort_Gcd">Code_Abort_Gcd</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Berlekamp_Zassenhaus">Berlekamp_Zassenhaus</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Gcd_Finite_Field_Impl">Gcd_Finite_Field_Impl</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Square_Free_Factorization_Int">Square_Free_Factorization_Int</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Factorize_Int_Poly">Factorize_Int_Poly</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Factorize_Rat_Poly">Factorize_Rat_Poly</a></li>
-          <li><a href="../sessions/berlekamp_zassenhaus/#Factorization_External_Interface">Factorization_External_Interface</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Finite_Field.html">Finite_Field</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Arithmetic_Record_Based.html">Arithmetic_Record_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Finite_Field_Record_Based.html">Finite_Field_Record_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Matrix_Record_Based.html">Matrix_Record_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/More_Missing_Multiset.html">More_Missing_Multiset</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Unique_Factorization.html">Unique_Factorization</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Unique_Factorization_Poly.html">Unique_Factorization_Poly</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Poly_Mod.html">Poly_Mod</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Poly_Mod_Finite_Field.html">Poly_Mod_Finite_Field</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Karatsuba_Multiplication.html">Karatsuba_Multiplication</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Polynomial_Record_Based.html">Polynomial_Record_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Poly_Mod_Finite_Field_Record_Based.html">Poly_Mod_Finite_Field_Record_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Chinese_Remainder_Poly.html">Chinese_Remainder_Poly</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Berlekamp_Type_Based.html">Berlekamp_Type_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Distinct_Degree_Factorization.html">Distinct_Degree_Factorization</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Finite_Field_Factorization.html">Finite_Field_Factorization</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Finite_Field_Factorization_Record_Based.html">Finite_Field_Factorization_Record_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Hensel_Lifting.html">Hensel_Lifting</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Hensel_Lifting_Type_Based.html">Hensel_Lifting_Type_Based</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Berlekamp_Hensel.html">Berlekamp_Hensel</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Square_Free_Int_To_Square_Free_GFp.html">Square_Free_Int_To_Square_Free_GFp</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Suitable_Prime.html">Suitable_Prime</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Degree_Bound.html">Degree_Bound</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Mahler_Measure.html">Mahler_Measure</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Factor_Bound.html">Factor_Bound</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Sublist_Iteration.html">Sublist_Iteration</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Reconstruction.html">Reconstruction</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Code_Abort_Gcd.html">Code_Abort_Gcd</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Berlekamp_Zassenhaus.html">Berlekamp_Zassenhaus</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Gcd_Finite_Field_Impl.html">Gcd_Finite_Field_Impl</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Square_Free_Factorization_Int.html">Square_Free_Factorization_Int</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Factorize_Int_Poly.html">Factorize_Int_Poly</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Factorize_Rat_Poly.html">Factorize_Rat_Poly</a></li>
+          <li><a href="../thys/AFP/Berlekamp_Zassenhaus/Factorization_External_Interface.html">Factorization_External_Interface</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -254,62 +246,74 @@ local type definitions.
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2018-09-07.tar.gz">Sep 7, 2018
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2018-09-07.tar.gz">
+                Sep 7, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Berlekamp_Zassenhaus-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>

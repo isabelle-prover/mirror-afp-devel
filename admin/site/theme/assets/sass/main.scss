@@ -68,8 +68,8 @@ $size-xl: 1800px; // for example 4k desktop
   font-display: swap;
   font-style: normal;
   font-weight: 300;
-  src: local(""), url("/font/open-sans-v18-latin-300.woff2") format("woff2"),
-  url("/font/open-sans-v18-latin-300.woff") format("woff");
+  src: local(""), url("/fonts/open-sans-v18-latin-300.woff2") format("woff2"),
+  url("/fonts/open-sans-v18-latin-300.woff") format("woff");
 }
 
 @font-face {
@@ -77,8 +77,8 @@ $size-xl: 1800px; // for example 4k desktop
   font-display: swap;
   font-style: normal;
   font-weight: 400;
-  src: local(""), url("/font/open-sans-v18-latin-regular.woff2") format("woff2"),
-  url("/font/open-sans-v18-latin-regular.woff") format("woff");
+  src: local(""), url("/fonts/open-sans-v18-latin-regular.woff2") format("woff2"),
+  url("/fonts/open-sans-v18-latin-regular.woff") format("woff");
 }
 
 @font-face {
@@ -86,8 +86,8 @@ $size-xl: 1800px; // for example 4k desktop
   font-display: swap;
   font-style: italic;
   font-weight: 400;
-  src: local(""), url("/font/open-sans-v18-latin-italic.woff2") format("woff2"),
-  url("/font/open-sans-v18-latin-italic.woff") format("woff");
+  src: local(""), url("/fonts/open-sans-v18-latin-italic.woff2") format("woff2"),
+  url("/fonts/open-sans-v18-latin-italic.woff") format("woff");
 }
 
 @font-face {
@@ -95,8 +95,8 @@ $size-xl: 1800px; // for example 4k desktop
   font-display: swap;
   font-style: normal;
   font-weight: 700;
-  src: local(""), url("/font/open-sans-v18-latin-700.woff2") format("woff2"),
-  url("/font/open-sans-v18-latin-700.woff") format("woff");
+  src: local(""), url("/fonts/open-sans-v18-latin-700.woff2") format("woff2"),
+  url("/fonts/open-sans-v18-latin-700.woff") format("woff");
 }
 
 @font-face {
@@ -104,8 +104,8 @@ $size-xl: 1800px; // for example 4k desktop
   font-display: swap;
   font-style: italic;
   font-weight: 700;
-  src: local(""), url("/font/open-sans-v18-latin-700italic.woff2") format("woff2"),
-  url("/font/open-sans-v18-latin-700italic.woff") format("woff");
+  src: local(""), url("/fonts/open-sans-v18-latin-700italic.woff2") format("woff2"),
+  url("/fonts/open-sans-v18-latin-700italic.woff") format("woff");
 }
 
 *::selection {
@@ -151,10 +151,20 @@ aside {
   }
 
   li {
-    padding: 0.5em 2rem;
+    padding: 0;
 
     &:hover {
+      background-color: $theme;
+    }
+
+    > a:hover {
       background-color: $theme-hover;
+    }
+
+    a {
+      padding: 0.5em 2rem;
+      display: inline-block;
+      width: calc(100% - 4rem);
     }
   }
 
@@ -367,24 +377,6 @@ header {
   grid-template-columns: 20% 80%;
   justify-content: normal;
 
-  .collapsible.collapsed {
-    display: none;
-  }
-
-  .invertible.collapsed {
-    transform: scale(1, -1);
-  }
-
-  .collapse-container.collapsed {
-    .collapsible {
-      display: none;
-    }
-
-    .invertible {
-      transform: scale(1, -1);
-    }
-  }
-
   .content {
     min-width: clamp(60ch, 50vw, 50vw);
     width: 100%;
@@ -394,22 +386,6 @@ header {
 
   pre {
     width: fit-content;
-  }
-
-  h2 {
-    @extend %sticky;
-    padding-top: 0.5rem;
-    border-bottom: 1px $light-grey solid;
-
-    svg {
-      height: 2rem;
-      width: 20px;
-      position: sticky;
-      right: 1rem;
-      float: right;
-      stroke: $dark-grey;
-      transition: transform 100ms;
-    }
   }
 
   main {
@@ -440,48 +416,11 @@ header {
       min-width: 200px;
     }
 
-    #pdfs {
-      position: fixed;
-      bottom: 0;
-      background: #2E2D4E;
-      margin: 0;
-      padding: 1rem 1.75rem;
-      width: 20vw;
-      box-sizing: border-box;
-      cursor: pointer;
-    }
-
-    > div {
-      margin-right: 1rem;
-    }
-
     &:hover {
       min-width: fit-content;
 
       div {
         min-width: fit-content;
-      }
-    }
-
-    ul {
-      margin-left: 1.75rem;
-    }
-
-    li {
-      padding: 0;
-
-      &:hover {
-        background-color: $theme;
-      }
-
-      > a:hover {
-        background-color: $theme-hover;
-      }
-
-      a {
-        padding: 0.5em 0;
-        display: inline-block;
-        width: 100%;
       }
     }
   }
@@ -1106,13 +1045,13 @@ iframe {
       }
     }
 
-    .logo-link, input, label, a[href="/search"] {
+    .logo-link, input, label {
       display: block;
       position: absolute;
       z-index: 2;
     }
 
-    input, label, a[href="/search"] {
+    input, label {
       width: 24px;
       height: 24px;
       top: 28px;
@@ -1123,12 +1062,7 @@ iframe {
       cursor: pointer;
     }
 
-    a[href="/search"] {
-      right: 28px;
-      filter: invert(1);
-    }
-
-    a[href="/search"] img, label img {
+    label img {
       width: 100%;
     }
 

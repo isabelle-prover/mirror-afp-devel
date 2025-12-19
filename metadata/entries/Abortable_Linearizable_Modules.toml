@@ -28,6 +28,7 @@ homepage = "kuncak_homepage"
 
 [authors.losa]
 email = "losa_email"
+homepage = "losa_homepage"
 
 [contributors]
 

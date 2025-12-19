@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem - Archive of Formal Proofs</title>
-    <meta name="description" content="Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Doob_Convergence.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem in the Archive of Formal Proofs">
+    <meta property="og:description" content="Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem in the Archive of Formal Proofs">
+    <meta property="og:title" content="Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem">
+    <meta property="og:url" content="https://isa-afp.org/entries/Doob_Convergence.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>D</span>oob's <span class='first'>U</span>pcrossing <span class='first'>I</span>nequality and <span class='first'>M</span>artingale <span class='first'>C</span>onvergence <span class='first'>T</span>heorem
+  <h1>
+    <span class='first'>D</span>oob's <span class='first'>U</span>pcrossing <span class='first'>I</span>nequality and <span class='first'>M</span>artingale <span class='first'>C</span>onvergence <span class='first'>T</span>heorem
   </h1>
   <div>
       <p><a href="../authors/keskin/">Ata Keskin</a> <a class="obfuscated" data="eyJ1c2VyIjpbImF0YSIsImtlc2tpbiJdLCJob3N0IjpbInR1bSIsImRlIl19">📧</a>
@@ -127,9 +119,9 @@ Doob's martingale convergence theorem states that if we have a submartingale whe
       </ul>
       <h3>Session Doob_Convergence</h3>
       <ul>
-          <li><a href="../sessions/doob_convergence/#Stopping_Time">Stopping_Time</a></li>
-          <li><a href="../sessions/doob_convergence/#Upcrossing">Upcrossing</a></li>
-          <li><a href="../sessions/doob_convergence/#Doob_Convergence">Doob_Convergence</a></li>
+          <li><a href="../thys/AFP/Doob_Convergence/Stopping_Time.html">Stopping_Time</a></li>
+          <li><a href="../thys/AFP/Doob_Convergence/Upcrossing.html">Upcrossing</a></li>
+          <li><a href="../thys/AFP/Doob_Convergence/Doob_Convergence.html">Doob_Convergence</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -183,17 +175,20 @@ Doob's martingale convergence theorem states that if we have a submartingale whe
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Doob_Convergence-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Doob_Convergence-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Doob_Convergence-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Doob_Convergence-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Doob_Convergence-2024-03-29.tar.gz">Mar 29, 2024
+              <a href="https://www.isa-afp.org/release/afp-Doob_Convergence-2024-03-29.tar.gz">
+                Mar 29, 2024
               </a>
               : Isabelle2023
             </li>

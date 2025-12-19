@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/SCL_Simulates_Ground_Resolution.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Isabelle_2024_Compatibility.html">Isabelle_2024_Compatibility</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Ground_Ordered_Resolution.html">Ground_Ordered_Resolution</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Lower_Set.html">Lower_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/HOL_Extra_Extra.html">HOL_Extra_Extra</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/The_Optional.html">The_Optional</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Full_Run.html">Full_Run</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Background.html">Background</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES.html">ORD_RES</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_1.html">ORD_RES_1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Exhaustive_Factorization.html">Exhaustive_Factorization</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_2.html">ORD_RES_2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Exhaustive_Resolution.html">Exhaustive_Resolution</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_3.html">ORD_RES_3</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Implicit_Exhaustive_Factorization.html">Implicit_Exhaustive_Factorization</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_4.html">ORD_RES_4</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_5.html">ORD_RES_5</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_6.html">ORD_RES_6</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_7.html">ORD_RES_7</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Clause_Could_Propagate.html">Clause_Could_Propagate</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_8.html">ORD_RES_8</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_9.html">ORD_RES_9</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_10.html">ORD_RES_10</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/ORD_RES_11.html">ORD_RES_11</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/SCL_Simulates_Ground_Resolution/Simulation_SCLFOL_ORDRES.html">Simulation_SCLFOL_ORDRES</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span><span class='first'>C</span><span class='first'>L</span>_<span class='first'>S</span>imulates_<span class='first'>G</span>round_<span class='first'>R</span>esolution.<span class='first'>C</span>lause_<span class='first'>C</span>ould_<span class='first'>P</span>ropagate
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/SCL_Simulates_Ground_Resolution/Clause_Could_Propagate.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

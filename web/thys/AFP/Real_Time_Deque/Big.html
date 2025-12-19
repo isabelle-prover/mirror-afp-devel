@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Real_Time_Deque.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Deque.html">Deque</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Type_Classes.html">Type_Classes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Stack.html">Stack</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Current.html">Current</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Idle.html">Idle</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Common.html">Common</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Real_Time_Deque/Big.html">Big</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Small.html">Small</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/States.html">States</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/RealTimeDeque.html">RealTimeDeque</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Stack_Aux.html">Stack_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Current_Aux.html">Current_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Idle_Aux.html">Idle_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Common_Aux.html">Common_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Big_Aux.html">Big_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Small_Aux.html">Small_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/States_Aux.html">States_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/RealTimeDeque_Aux.html">RealTimeDeque_Aux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/RTD_Util.html">RTD_Util</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Stack_Proof.html">Stack_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Idle_Proof.html">Idle_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Current_Proof.html">Current_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Common_Proof.html">Common_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Big_Proof.html">Big_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/Small_Proof.html">Small_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/States_Proof.html">States_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/RealTimeDeque_Dequeue_Proof.html">RealTimeDeque_Dequeue_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/RealTimeDeque_Enqueue_Proof.html">RealTimeDeque_Enqueue_Proof</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Real_Time_Deque/RealTimeDeque_Proof.html">RealTimeDeque_Proof</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>R</span>eal_<span class='first'>T</span>ime_<span class='first'>D</span>eque.<span class='first'>B</span>ig
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Real_Time_Deque/Big.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

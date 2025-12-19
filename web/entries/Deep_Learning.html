@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Expressiveness of Deep Learning - Archive of Formal Proofs</title>
-    <meta name="description" content="Expressiveness of Deep Learning in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Expressiveness of Deep Learning in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Expressiveness of Deep Learning" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Deep_Learning.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Expressiveness of Deep Learning in the Archive of Formal Proofs">
+    <meta property="og:description" content="Expressiveness of Deep Learning in the Archive of Formal Proofs">
+    <meta property="og:title" content="Expressiveness of Deep Learning">
+    <meta property="og:url" content="https://isa-afp.org/entries/Deep_Learning.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>E</span>xpressiveness of <span class='first'>D</span>eep <span class='first'>L</span>earning
+  <h1>
+    <span class='first'>E</span>xpressiveness of <span class='first'>D</span>eep <span class='first'>L</span>earning
   </h1>
   <div>
       <p><a href="../authors/bentkamp/">Alexander Bentkamp</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJlbnRrYW1wIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0=">📧</a>
@@ -120,25 +112,25 @@
       </ul>
       <h3>Session Deep_Learning</h3>
       <ul>
-          <li><a href="../sessions/deep_learning/#Tensor">Tensor</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Subtensor">Tensor_Subtensor</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Plus">Tensor_Plus</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Scalar_Mult">Tensor_Scalar_Mult</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Product">Tensor_Product</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Unit_Vec">Tensor_Unit_Vec</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Rank">Tensor_Rank</a></li>
-          <li><a href="../sessions/deep_learning/#Tensor_Matricization">Tensor_Matricization</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Rank_CP_Rank">DL_Rank_CP_Rank</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Flatten_Matrix">DL_Flatten_Matrix</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Network">DL_Network</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Concrete_Matrices">DL_Concrete_Matrices</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Missing_Finite_Set">DL_Missing_Finite_Set</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Deep_Model">DL_Deep_Model</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Deep_Model_Poly">DL_Deep_Model_Poly</a></li>
-          <li><a href="../sessions/deep_learning/#Lebesgue_Functional">Lebesgue_Functional</a></li>
-          <li><a href="../sessions/deep_learning/#Lebesgue_Zero_Set">Lebesgue_Zero_Set</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Shallow_Model">DL_Shallow_Model</a></li>
-          <li><a href="../sessions/deep_learning/#DL_Fundamental_Theorem_Network_Capacity">DL_Fundamental_Theorem_Network_Capacity</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor.html">Tensor</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Subtensor.html">Tensor_Subtensor</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Plus.html">Tensor_Plus</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Scalar_Mult.html">Tensor_Scalar_Mult</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Product.html">Tensor_Product</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Unit_Vec.html">Tensor_Unit_Vec</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Rank.html">Tensor_Rank</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Tensor_Matricization.html">Tensor_Matricization</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Rank_CP_Rank.html">DL_Rank_CP_Rank</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Flatten_Matrix.html">DL_Flatten_Matrix</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Network.html">DL_Network</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Concrete_Matrices.html">DL_Concrete_Matrices</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Missing_Finite_Set.html">DL_Missing_Finite_Set</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Deep_Model.html">DL_Deep_Model</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Deep_Model_Poly.html">DL_Deep_Model_Poly</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Lebesgue_Functional.html">Lebesgue_Functional</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/Lebesgue_Zero_Set.html">Lebesgue_Zero_Set</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Shallow_Model.html">DL_Shallow_Model</a></li>
+          <li><a href="../thys/AFP/Deep_Learning/DL_Fundamental_Theorem_Network_Capacity.html">DL_Fundamental_Theorem_Network_Capacity</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -201,62 +193,74 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2020-04-18.tar.gz">Apr 18, 2020
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2020-04-18.tar.gz">
+                Apr 18, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2016-11-10.tar.gz">Nov 10, 2016
+              <a href="https://www.isa-afp.org/release/afp-Deep_Learning-2016-11-10.tar.gz">
+                Nov 10, 2016
               </a>
               : Isabelle2016
             </li>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Isabelle_Meta_Model.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Antiquote_Setup.html">Antiquote_Setup</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_Cartouche_Examples.html">Isabelle_Cartouche_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_Main0.html">Isabelle_Main0</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_code_target.html">Isabelle_code_target</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_code_runtime.html">Isabelle_code_runtime</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_Main1.html">Isabelle_Main1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_typedecl.html">Isabelle_typedecl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Isabelle_Main2.html">Isabelle_Main2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Init.html">Init</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Meta_Pure.html">Meta_Pure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Parser_init.html">Parser_init</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Parser_Pure.html">Parser_Pure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Meta_SML.html">Meta_SML</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Meta_Isabelle.html">Meta_Isabelle</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_init.html">Printer_init</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_Pure.html">Printer_Pure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_SML.html">Printer_SML</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_Isabelle.html">Printer_Isabelle</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Toy_Library_Static.html">Toy_Library_Static</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Init_rbt.html">Init_rbt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Meta_Toy.html">Meta_Toy</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Meta_Toy_extended.html">Meta_Toy_extended</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Meta_META.html">Meta_META</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Core_init.html">Core_init</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Floor1_infra.html">Floor1_infra</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Floor1_access.html">Floor1_access</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Floor1_examp.html">Floor1_examp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Floor2_examp.html">Floor2_examp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Floor1_ctxt.html">Floor1_ctxt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Core.html">Core</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Parser_Toy.html">Parser_Toy</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Parser_Toy_extended.html">Parser_Toy_extended</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Parser_META.html">Parser_META</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_Toy.html">Printer_Toy</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_Toy_extended.html">Printer_Toy_extended</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer_META.html">Printer_META</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Printer.html">Printer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Generator_static.html">Generator_static</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Generator_dynamic_sequential.html">Generator_dynamic_sequential</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Design_deep.html">Design_deep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Toy_Library.html">Toy_Library</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Design_shallow.html">Design_shallow</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Rail.html">Rail</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Design_generated.html">Design_generated</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Isabelle_Meta_Model/Design_generated_generated.html">Design_generated_generated</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>I</span>sabelle_<span class='first'>M</span>eta_<span class='first'>M</span>odel.<span class='first'>P</span>arser_<span class='first'>M</span><span class='first'>E</span><span class='first'>T</span><span class='first'>A</span>
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Isabelle_Meta_Model/Parser_META.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

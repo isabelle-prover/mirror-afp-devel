@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JinjaDCI: a Java semantics with dynamic class initialization - Archive of Formal Proofs</title>
-    <meta name="description" content="JinjaDCI: a Java semantics with dynamic class initialization in the Archive of Formal Proofs" />
-    <meta property="og:description" content="JinjaDCI: a Java semantics with dynamic class initialization in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="JinjaDCI: a Java semantics with dynamic class initialization" />
-  <meta property="og:url" content="https://isa-afp.org/entries/JinjaDCI.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="JinjaDCI: a Java semantics with dynamic class initialization in the Archive of Formal Proofs">
+    <meta property="og:description" content="JinjaDCI: a Java semantics with dynamic class initialization in the Archive of Formal Proofs">
+    <meta property="og:title" content="JinjaDCI: a Java semantics with dynamic class initialization">
+    <meta property="og:url" content="https://isa-afp.org/entries/JinjaDCI.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>J</span>inja<span class='first'>D</span><span class='first'>C</span><span class='first'>I</span>: a <span class='first'>J</span>ava semantics with dynamic class initialization
+  <h1>
+    <span class='first'>J</span>inja<span class='first'>D</span><span class='first'>C</span><span class='first'>I</span>: a <span class='first'>J</span>ava semantics with dynamic class initialization
   </h1>
   <div>
       <p><a href="../authors/mansky/">Susannah Mansky</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNqb2huc24yIl0sImhvc3QiOlsiaWxsaW5vaXMiLCJlZHUiXX0=">📧</a>
@@ -123,60 +115,60 @@ work is partially described in Mansky and Gunter's paper at CPP
       </ul>
       <h3>Session JinjaDCI</h3>
       <ul>
-          <li><a href="../sessions/jinjadci/#Auxiliary">Auxiliary</a></li>
-          <li><a href="../sessions/jinjadci/#Type">Type</a></li>
-          <li><a href="../sessions/jinjadci/#Decl">Decl</a></li>
-          <li><a href="../sessions/jinjadci/#TypeRel">TypeRel</a></li>
-          <li><a href="../sessions/jinjadci/#Value">Value</a></li>
-          <li><a href="../sessions/jinjadci/#Objects">Objects</a></li>
-          <li><a href="../sessions/jinjadci/#Exceptions">Exceptions</a></li>
-          <li><a href="../sessions/jinjadci/#Expr">Expr</a></li>
-          <li><a href="../sessions/jinjadci/#WellType">WellType</a></li>
-          <li><a href="../sessions/jinjadci/#WellTypeRT">WellTypeRT</a></li>
-          <li><a href="../sessions/jinjadci/#State">State</a></li>
-          <li><a href="../sessions/jinjadci/#SystemClasses">SystemClasses</a></li>
-          <li><a href="../sessions/jinjadci/#WellForm">WellForm</a></li>
-          <li><a href="../sessions/jinjadci/#WWellForm">WWellForm</a></li>
-          <li><a href="../sessions/jinjadci/#BigStep">BigStep</a></li>
-          <li><a href="../sessions/jinjadci/#DefAss">DefAss</a></li>
-          <li><a href="../sessions/jinjadci/#Conform">Conform</a></li>
-          <li><a href="../sessions/jinjadci/#SmallStep">SmallStep</a></li>
-          <li><a href="../sessions/jinjadci/#EConform">EConform</a></li>
-          <li><a href="../sessions/jinjadci/#Progress">Progress</a></li>
-          <li><a href="../sessions/jinjadci/#JWellForm">JWellForm</a></li>
-          <li><a href="../sessions/jinjadci/#TypeSafe">TypeSafe</a></li>
-          <li><a href="../sessions/jinjadci/#Equivalence">Equivalence</a></li>
-          <li><a href="../sessions/jinjadci/#Annotate">Annotate</a></li>
-          <li><a href="../sessions/jinjadci/#JVMState">JVMState</a></li>
-          <li><a href="../sessions/jinjadci/#JVMInstructions">JVMInstructions</a></li>
-          <li><a href="../sessions/jinjadci/#JVMExceptions">JVMExceptions</a></li>
-          <li><a href="../sessions/jinjadci/#JVMExecInstr">JVMExecInstr</a></li>
-          <li><a href="../sessions/jinjadci/#JVMExec">JVMExec</a></li>
-          <li><a href="../sessions/jinjadci/#JVMDefensive">JVMDefensive</a></li>
-          <li><a href="../sessions/jinjadci/#SemiType">SemiType</a></li>
-          <li><a href="../sessions/jinjadci/#JVM_SemiType">JVM_SemiType</a></li>
-          <li><a href="../sessions/jinjadci/#Effect">Effect</a></li>
-          <li><a href="../sessions/jinjadci/#EffectMono">EffectMono</a></li>
-          <li><a href="../sessions/jinjadci/#BVSpec">BVSpec</a></li>
-          <li><a href="../sessions/jinjadci/#TF_JVM">TF_JVM</a></li>
-          <li><a href="../sessions/jinjadci/#BVExec">BVExec</a></li>
-          <li><a href="../sessions/jinjadci/#LBVJVM">LBVJVM</a></li>
-          <li><a href="../sessions/jinjadci/#BVConform">BVConform</a></li>
-          <li><a href="../sessions/jinjadci/#ClassAdd">ClassAdd</a></li>
-          <li><a href="../sessions/jinjadci/#StartProg">StartProg</a></li>
-          <li><a href="../sessions/jinjadci/#BVSpecTypeSafe">BVSpecTypeSafe</a></li>
-          <li><a href="../sessions/jinjadci/#BVNoTypeError">BVNoTypeError</a></li>
-          <li><a href="../sessions/jinjadci/#J1">J1</a></li>
-          <li><a href="../sessions/jinjadci/#J1WellForm">J1WellForm</a></li>
-          <li><a href="../sessions/jinjadci/#PCompiler">PCompiler</a></li>
-          <li><a href="../sessions/jinjadci/#Hidden">Hidden</a></li>
-          <li><a href="../sessions/jinjadci/#Compiler1">Compiler1</a></li>
-          <li><a href="../sessions/jinjadci/#Correctness1">Correctness1</a></li>
-          <li><a href="../sessions/jinjadci/#Compiler2">Compiler2</a></li>
-          <li><a href="../sessions/jinjadci/#Correctness2">Correctness2</a></li>
-          <li><a href="../sessions/jinjadci/#Compiler">Compiler</a></li>
-          <li><a href="../sessions/jinjadci/#TypeComp">TypeComp</a></li>
-          <li><a href="../sessions/jinjadci/#JinjaDCI">JinjaDCI</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Auxiliary.html">Auxiliary</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Type.html">Type</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Decl.html">Decl</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/TypeRel.html">TypeRel</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Value.html">Value</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Objects.html">Objects</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Exceptions.html">Exceptions</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Expr.html">Expr</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/WellType.html">WellType</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/WellTypeRT.html">WellTypeRT</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/State.html">State</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/SystemClasses.html">SystemClasses</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/WellForm.html">WellForm</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/WWellForm.html">WWellForm</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/BigStep.html">BigStep</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/DefAss.html">DefAss</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Conform.html">Conform</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/SmallStep.html">SmallStep</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/EConform.html">EConform</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Progress.html">Progress</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JWellForm.html">JWellForm</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/TypeSafe.html">TypeSafe</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Equivalence.html">Equivalence</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Annotate.html">Annotate</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVMState.html">JVMState</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVMInstructions.html">JVMInstructions</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVMExceptions.html">JVMExceptions</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVMExecInstr.html">JVMExecInstr</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVMExec.html">JVMExec</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVMDefensive.html">JVMDefensive</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/SemiType.html">SemiType</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JVM_SemiType.html">JVM_SemiType</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Effect.html">Effect</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/EffectMono.html">EffectMono</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/BVSpec.html">BVSpec</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/TF_JVM.html">TF_JVM</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/BVExec.html">BVExec</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/LBVJVM.html">LBVJVM</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/BVConform.html">BVConform</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/ClassAdd.html">ClassAdd</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/StartProg.html">StartProg</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/BVSpecTypeSafe.html">BVSpecTypeSafe</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/BVNoTypeError.html">BVNoTypeError</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/J1.html">J1</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/J1WellForm.html">J1WellForm</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/PCompiler.html">PCompiler</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Hidden.html">Hidden</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Compiler1.html">Compiler1</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Correctness1.html">Correctness1</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Compiler2.html">Compiler2</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Correctness2.html">Correctness2</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/Compiler.html">Compiler</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/TypeComp.html">TypeComp</a></li>
+          <li><a href="../thys/AFP/JinjaDCI/JinjaDCI.html">JinjaDCI</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -237,37 +229,44 @@ work is partially described in Mansky and Gunter's paper at CPP
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2021-01-13.tar.gz">Jan 13, 2021
+              <a href="https://www.isa-afp.org/release/afp-JinjaDCI-2021-01-13.tar.gz">
+                Jan 13, 2021
               </a>
               : Isabelle2020
             </li>

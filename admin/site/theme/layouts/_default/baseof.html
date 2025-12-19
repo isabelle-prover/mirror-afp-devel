@@ -2,16 +2,12 @@
 <html lang="en">
   {{- partial "head.html" . }}
 
-  <body class="mathjax_ignore{{ if (eq .Section "sessions") }} theories{{ end }}">
+  <body class="mathjax_ignore{{ if (eq .Section "thys") }} theories{{ end }}">
     <aside>
-      {{- if ne .Section "sessions" }}
-        {{- partial "navigation.html" . }}
-      {{- else }}
-        {{- partial "theory-navigation.html" . }}
-      {{- end }}
+      {{- partial "navigation.html" . }}
     </aside>
 
-    <div class="content{{ if (eq .Section "entries") }} entries{{ end }}{{ if eq .RelPermalink "/search/" }} search-page{{ end }}">
+    <div class="content{{ if (eq .Section "entries") }} entries{{ end }}{{ if eq .Path "/search" }} search-page{{ end }}">
       {{- partial "header.html" . }}
       <div>
         {{- block "main" . }}

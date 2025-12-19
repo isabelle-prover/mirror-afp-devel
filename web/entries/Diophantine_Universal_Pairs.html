@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Universal Pairs for Diophantine Equations - Archive of Formal Proofs</title>
-    <meta name="description" content="Universal Pairs for Diophantine Equations in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Universal Pairs for Diophantine Equations in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Universal Pairs for Diophantine Equations" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Diophantine_Universal_Pairs.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Universal Pairs for Diophantine Equations in the Archive of Formal Proofs">
+    <meta property="og:description" content="Universal Pairs for Diophantine Equations in the Archive of Formal Proofs">
+    <meta property="og:title" content="Universal Pairs for Diophantine Equations">
+    <meta property="og:url" content="https://isa-afp.org/entries/Diophantine_Universal_Pairs.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>U</span>niversal <span class='first'>P</span>airs for <span class='first'>D</span>iophantine <span class='first'>E</span>quations
+  <h1>
+    <span class='first'>U</span>niversal <span class='first'>P</span>airs for <span class='first'>D</span>iophantine <span class='first'>E</span>quations
   </h1>
   <div>
       <p><a href="../authors/david/">Marco David</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hcmNvIiwiZGF2aWQiXSwiaG9zdCI6WyJob3RtYWlsIiwiZGUiXX0=">📧</a>, <a href="../authors/andre/">Théo André</a>, <a href="../authors/dupuis/">Mathis Bouverot-Dupuis</a>, <a href="../authors/brenner/">Eva Brenner</a>, <a href="../authors/chevalier/">Loïc Chevalier</a>, <a href="../authors/danilkin/">Anna Danilkin</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFubmEiLCJkYW5pbGtpbiJdLCJob3N0IjpbImVucyIsInBzbCIsImV1Il19">📧</a>, <a href="../authors/dorneich/">Charlotte Dorneich</a>, <a href="../authors/leek/">Kevin Lee</a> <a class="obfuscated" data="eyJ1c2VyIjpbImtma2wyIl0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a>, <a href="../authors/pige/">Xavier Pigé</a>, <a href="../authors/ringeard/">Timothé Ringeard</a>, <a href="../authors/vermande/">Quentin Vermande</a>, <a href="../authors/wangp/">Paul Wang</a>, <a href="../authors/yaoa/">Annie Yao</a>, <a href="../authors/yez/">Zhengkun Ye</a> <a class="obfuscated" data="eyJ1c2VyIjpbInp5MzA3Il0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/bayer/">Jonas Bayer</a> <a class="obfuscated" data="eyJ1c2VyIjpbImpvbmFzIiwiYmF5ZXI5OTkiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a>
@@ -128,53 +120,53 @@ This AFP entry contributes the main construction required to establish said univ
       </ul>
       <h3>Session Diophantine_Universal_Pairs</h3>
       <ul>
-          <li><a href="../sessions/diophantine_universal_pairs/#Notation">Notation</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Degree">Degree</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Variables">Variables</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Total_Degree">Total_Degree</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Poly_Expansions">Poly_Expansions</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Substitutions">Substitutions</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Type_Casting">Type_Casting</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#More_More_MPoly_Type">More_More_MPoly_Type</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Poly_Extract">Poly_Extract</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Bit_Counting">Bit_Counting</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Utils">Utils</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Tau_Reduction">Tau_Reduction</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Masking">Masking</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Multinomial">Multinomial</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lemma_1_8_Defs">Lemma_1_8_Defs</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lemma_1_8_Coding">Lemma_1_8_Coding</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lemma_1_8">Lemma_1_8</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Diophantine_Definition">Diophantine_Definition</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Total_Degree_Env">Total_Degree_Env</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Suitable_For_Coding">Suitable_For_Coding</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Poly_Degree">Poly_Degree</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Coding_Theorem_Definitions">Coding_Theorem_Definitions</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lemma_2_2">Lemma_2_2</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lower_Bounds">Lower_Bounds</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Coding_Theorem">Coding_Theorem</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lucas_Sequences">Lucas_Sequences</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Pell_Equation">Pell_Equation</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lucas_Diophantine">Lucas_Diophantine</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Lemma_4_4">Lemma_4_4</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#DFI_square_0">DFI_square_0</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#DFI_square_1">DFI_square_1</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#DFI_square_2">DFI_square_2</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#DFI_square_3">DFI_square_3</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Bridge_Theorem_Imp">Bridge_Theorem_Imp</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Bridge_Theorem_Rev">Bridge_Theorem_Rev</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Bridge_Theorem">Bridge_Theorem</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Algebra_Basics">Algebra_Basics</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#J3_Polynomial">J3_Polynomial</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#J3_Relations">J3_Relations</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Pi_Relations">Pi_Relations</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#M3_Polynomial">M3_Polynomial</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Pi_to_M3_rat">Pi_to_M3_rat</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Matiyasevich_Polynomial">Matiyasevich_Polynomial</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Nine_Unknowns_N_Z_Definitions">Nine_Unknowns_N_Z_Definitions</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Nine_Unknowns_N_Z">Nine_Unknowns_N_Z</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Eleven_Unknowns_Z">Eleven_Unknowns_Z</a></li>
-          <li><a href="../sessions/diophantine_universal_pairs/#Universal_Pairs">Universal_Pairs</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Notation.html">Notation</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Degree.html">Degree</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Variables.html">Variables</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Total_Degree.html">Total_Degree</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Poly_Expansions.html">Poly_Expansions</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Substitutions.html">Substitutions</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Type_Casting.html">Type_Casting</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/More_More_MPoly_Type.html">More_More_MPoly_Type</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Poly_Extract.html">Poly_Extract</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Bit_Counting.html">Bit_Counting</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Utils.html">Utils</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Tau_Reduction.html">Tau_Reduction</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Masking.html">Masking</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Multinomial.html">Multinomial</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lemma_1_8_Defs.html">Lemma_1_8_Defs</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lemma_1_8_Coding.html">Lemma_1_8_Coding</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lemma_1_8.html">Lemma_1_8</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Diophantine_Definition.html">Diophantine_Definition</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Total_Degree_Env.html">Total_Degree_Env</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Suitable_For_Coding.html">Suitable_For_Coding</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Poly_Degree.html">Poly_Degree</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Coding_Theorem_Definitions.html">Coding_Theorem_Definitions</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lemma_2_2.html">Lemma_2_2</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lower_Bounds.html">Lower_Bounds</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Coding_Theorem.html">Coding_Theorem</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lucas_Sequences.html">Lucas_Sequences</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Pell_Equation.html">Pell_Equation</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lucas_Diophantine.html">Lucas_Diophantine</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Lemma_4_4.html">Lemma_4_4</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/DFI_square_0.html">DFI_square_0</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/DFI_square_1.html">DFI_square_1</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/DFI_square_2.html">DFI_square_2</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/DFI_square_3.html">DFI_square_3</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Bridge_Theorem_Imp.html">Bridge_Theorem_Imp</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Bridge_Theorem_Rev.html">Bridge_Theorem_Rev</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Bridge_Theorem.html">Bridge_Theorem</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Algebra_Basics.html">Algebra_Basics</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/J3_Polynomial.html">J3_Polynomial</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/J3_Relations.html">J3_Relations</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Pi_Relations.html">Pi_Relations</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/M3_Polynomial.html">M3_Polynomial</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Pi_to_M3_rat.html">Pi_to_M3_rat</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Matiyasevich_Polynomial.html">Matiyasevich_Polynomial</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Nine_Unknowns_N_Z_Definitions.html">Nine_Unknowns_N_Z_Definitions</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Nine_Unknowns_N_Z.html">Nine_Unknowns_N_Z</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Eleven_Unknowns_Z.html">Eleven_Unknowns_Z</a></li>
+          <li><a href="../thys/AFP/Diophantine_Universal_Pairs/Universal_Pairs.html">Universal_Pairs</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -227,6 +219,15 @@ This AFP entry contributes the main construction required to establish said univ
       <a class="close" href="#">&times;</a>
       <a href="https://www.isa-afp.org/release/afp-Diophantine_Universal_Pairs-current.tar.gz" download>
         Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Diophantine_Universal_Pairs-2025-07-29.tar.gz">
+                Jul 29, 2025
+              </a>
+              : Isabelle2025
+            </li>
+        </ul>
     </div>
   </div>
       </div>

@@ -6,14 +6,14 @@ topics = [
 ]
 abstract = """
 Isabelle/Isar provides named cases to structure proofs. This article
-contains an implementation of a proof method <tt>casify</tt>, which can
+contains an implementation of a proof method <code>casify</code>, which can
 be used to easily extend proof tools with support for named cases. Such
 a proof tool must produce labeled subgoals, which are then interpreted
-by <tt>casify</tt>.
+by <code>casify</code>.
 <p>
 As examples, this work contains verification condition generators
 producing named cases for three languages: The Hoare language from
-<tt>HOL/Library</tt>, a monadic language for computations with failure
+<code>HOL/Library</code>, a monadic language for computations with failure
 (inspired by the AutoCorres tool), and a language of conditional
 expressions. These VCGs are demonstrated by a number of example programs."""
 license = "bsd"

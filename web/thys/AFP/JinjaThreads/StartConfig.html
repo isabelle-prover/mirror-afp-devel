@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/JinjaThreads.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Set_without_equal.html">Set_without_equal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Set_Monad.html">Set_Monad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JT_ICF.html">JT_ICF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Auxiliary.html">Auxiliary</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Basic_Main.html">Basic_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWState.html">FWState</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWLock.html">FWLock</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWLocking.html">FWLocking</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWThread.html">FWThread</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWWait.html">FWWait</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWCondAction.html">FWCondAction</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWWellform.html">FWWellform</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWLockingThread.html">FWLockingThread</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWInterrupt.html">FWInterrupt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWSemantics.html">FWSemantics</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWProgressAux.html">FWProgressAux</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWDeadlock.html">FWDeadlock</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWProgress.html">FWProgress</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWLifting.html">FWLifting</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/LTS.html">LTS</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWLTS.html">FWLTS</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Bisimulation.html">Bisimulation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWBisimulation.html">FWBisimulation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWBisimDeadlock.html">FWBisimDeadlock</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWLiftingSem.html">FWLiftingSem</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWInitFinLift.html">FWInitFinLift</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/FWBisimLift.html">FWBisimLift</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Semilat.html">Semilat</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Err.html">Err</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Opt.html">Opt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Product.html">Product</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Listn.html">Listn</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Semilattices.html">Semilattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Typing_Framework.html">Typing_Framework</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SemilatAlg.html">SemilatAlg</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Typing_Framework_err.html">Typing_Framework_err</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Kildall.html">Kildall</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/LBVSpec.html">LBVSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/LBVCorrect.html">LBVCorrect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/LBVComplete.html">LBVComplete</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Abstract_BV.html">Abstract_BV</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Type.html">Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Decl.html">Decl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/TypeRel.html">TypeRel</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Value.html">Value</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Exceptions.html">Exceptions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SystemClasses.html">SystemClasses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Heap.html">Heap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Observable_Events.html">Observable_Events</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/JinjaThreads/StartConfig.html">StartConfig</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Conform.html">Conform</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ExternalCall.html">ExternalCall</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/WellForm.html">WellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ExternalCallWF.html">ExternalCallWF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ConformThreaded.html">ConformThreaded</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BinOp.html">BinOp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SemiType.html">SemiType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Common_Main.html">Common_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/State.html">State</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Expr.html">Expr</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JHeap.html">JHeap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SmallStep.html">SmallStep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/WWellForm.html">WWellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/WellType.html">WellType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/DefAss.html">DefAss</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JWellForm.html">JWellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Threaded.html">Threaded</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/WellTypeRT.html">WellTypeRT</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Progress.html">Progress</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/DefAssPreservation.html">DefAssPreservation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/TypeSafe.html">TypeSafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ProgressThreaded.html">ProgressThreaded</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Deadlocked.html">Deadlocked</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Annotate.html">Annotate</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J_Main.html">J_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMState.html">JVMState</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMInstructions.html">JVMInstructions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMHeap.html">JVMHeap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMExecInstr.html">JVMExecInstr</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMExceptions.html">JVMExceptions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMExec.html">JVMExec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMDefensive.html">JVMDefensive</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMThreaded.html">JVMThreaded</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVM_Main.html">JVM_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVM_SemiType.html">JVM_SemiType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Effect.html">Effect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BVSpec.html">BVSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BVConform.html">BVConform</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BVSpecTypeSafe.html">BVSpecTypeSafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BVNoTypeError.html">BVNoTypeError</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BVProgressThreaded.html">BVProgressThreaded</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMDeadlocked.html">JVMDeadlocked</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/EffectMono.html">EffectMono</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/TF_JVM.html">TF_JVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/LBVJVM.html">LBVJVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BVExec.html">BVExec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BCVExec.html">BCVExec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BV_Main.html">BV_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/CallExpr.html">CallExpr</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J0.html">J0</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J0Bisim.html">J0Bisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1State.html">J1State</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1Heap.html">J1Heap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1.html">J1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1Deadlock.html">J1Deadlock</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/PCompiler.html">PCompiler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Compiler2.html">Compiler2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Exception_Tables.html">Exception_Tables</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1WellType.html">J1WellType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1WellForm.html">J1WellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/TypeComp.html">TypeComp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMTau.html">JVMTau</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Execs.html">Execs</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1JVMBisim.html">J1JVMBisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J1JVM.html">J1JVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMJ1.html">JVMJ1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Correctness2.html">Correctness2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ListIndex.html">ListIndex</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Compiler1.html">Compiler1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J0J1Bisim.html">J0J1Bisim</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Correctness1Threaded.html">Correctness1Threaded</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Correctness1.html">Correctness1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JJ1WellForm.html">JJ1WellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Compiler.html">Compiler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Correctness.html">Correctness</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Preprocessor.html">Preprocessor</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Compiler_Main.html">Compiler_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/MM.html">MM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SC.html">SC</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SC_Interp.html">SC_Interp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SC_Collections.html">SC_Collections</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Orders.html">Orders</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Spec.html">JMM_Spec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_DRF.html">JMM_DRF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SC_Legal.html">SC_Legal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Non_Speculative.html">Non_Speculative</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SC_Completion.html">SC_Completion</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/HB_Completion.html">HB_Completion</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Heap.html">JMM_Heap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Framework.html">JMM_Framework</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Typesafe.html">JMM_Typesafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Common.html">JMM_Common</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_J.html">JMM_J</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/DRF_J.html">DRF_J</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_JVM.html">JMM_JVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/DRF_JVM.html">DRF_JVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Type.html">JMM_Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Compiler.html">JMM_Compiler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Type2.html">JMM_Type2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Interp.html">JMM_Interp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Typesafe2.html">JMM_Typesafe2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_J_Typesafe.html">JMM_J_Typesafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_JVM_Typesafe.html">JMM_JVM_Typesafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM_Compiler_Type2.html">JMM_Compiler_Type2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JMM.html">JMM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/MM_Main.html">MM_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/State_Refinement.html">State_Refinement</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Scheduler.html">Scheduler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Random_Scheduler.html">Random_Scheduler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Round_Robin.html">Round_Robin</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/SC_Schedulers.html">SC_Schedulers</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/TypeRelRefine.html">TypeRelRefine</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/PCompilerRefine.html">PCompilerRefine</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/J_Execute.html">J_Execute</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ExternalCall_Execute.html">ExternalCall_Execute</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMExec_Execute2.html">JVMExec_Execute2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVM_Execute2.html">JVM_Execute2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Code_Generation.html">Code_Generation</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVMExec_Execute.html">JVMExec_Execute</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JVM_Execute.html">JVM_Execute</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ToString.html">ToString</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Java2Jinja.html">Java2Jinja</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Execute_Main.html">Execute_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/ApprenticeChallenge.html">ApprenticeChallenge</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/BufferExample.html">BufferExample</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/Examples_Main.html">Examples_Main</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/JinjaThreads/JinjaThreads.html">JinjaThreads</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>J</span>inja<span class='first'>T</span>hreads.<span class='first'>S</span>tart<span class='first'>C</span>onfig
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/JinjaThreads/StartConfig.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

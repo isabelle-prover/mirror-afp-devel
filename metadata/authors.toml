@@ -354,6 +354,13 @@ name = "Damián Barsotti"
 [barsotti.homepages]
 barsotti_homepage = "http://www.cs.famaf.unc.edu.ar/~damian/"
 
+[barthel]
+name = "Lisa A. Barthel"
+
+[barthel.emails]
+
+[barthel.homepages]
+
 [bauer]
 name = "Gertrud Bauer"
 
@@ -1063,17 +1070,6 @@ orcid = "0000-0002-6355-1200"
 
 [brucker.emails]
 
-[brucker.emails.brucker_email]
-user = [
-  "a",
-  "brucker",
-]
-host = [
-  "exeter",
-  "ac",
-  "uk",
-]
-
 [brucker.emails.brucker_email2]
 user = [
   "adbrucker",
@@ -1491,6 +1487,13 @@ host = [
 ]
 
 [cohen.homepages]
+
+[colvin]
+name = "Robert J. Colvin"
+
+[colvin.emails]
+
+[colvin.homepages]
 
 [connor]
 name = "Liam O'Connor"
@@ -2065,6 +2068,22 @@ host = [
 ]
 
 [essmann.homepages]
+
+[faber]
+name = "Arjan Faber"
+
+[faber.emails]
+
+[faber.emails.faber_email]
+user = [
+  "arjan-faber",
+]
+host = [
+  "hotmail",
+  "com",
+]
+
+[faber.homepages]
 
 [fan]
 name = "Zixuan Fan"
@@ -2981,6 +3000,13 @@ host = [
 
 [heimes.homepages]
 
+[heiner]
+name = "Scott Heiner"
+
+[heiner.emails]
+
+[heiner.homepages]
+
 [helke]
 name = "Steffen Helke"
 
@@ -3268,6 +3294,13 @@ host = [
 ]
 
 [hu.homepages]
+
+[huebner]
+name = "Leonard M. Hübner"
+
+[huebner.emails]
+
+[huebner.homepages]
 
 [huffman]
 name = "Brian Huffman"
@@ -4874,6 +4907,13 @@ name = "Yuri Matiyasevich"
 
 [matiyasevich.homepages]
 
+[mattes]
+name = "Karl P. P. Mattes"
+
+[mattes.emails]
+
+[mattes.homepages]
+
 [maximova]
 name = "Alexandra Maximova"
 
@@ -5168,6 +5208,13 @@ name = "Bernhard Möller"
 
 [moeller.homepages]
 moeller_homepage = "https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/"
+
+[mollenkopf]
+name = "Lenard Mollenkopf"
+
+[mollenkopf.emails]
+
+[mollenkopf.homepages]
 
 [montanari]
 name = "Luisa Montanari"
@@ -7554,6 +7601,25 @@ name = "Daniel Stüwe"
 [stuewe.emails]
 
 [stuewe.homepages]
+
+[su]
+name = "Roger C. Su"
+orcid = "0000-0003-0176-3264"
+
+[su.emails]
+
+[su.emails.su_email]
+user = [
+  "roger",
+  "c",
+  "su",
+]
+host = [
+  "proton",
+  "me",
+]
+
+[su.homepages]
 
 [suarez]
 name = "Fabián Fernando Serran Suárez"

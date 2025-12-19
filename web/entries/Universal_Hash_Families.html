@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Universal Hash Families - Archive of Formal Proofs</title>
-    <meta name="description" content="Universal Hash Families in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Universal Hash Families in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Universal Hash Families" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Universal_Hash_Families.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Universal Hash Families in the Archive of Formal Proofs">
+    <meta property="og:description" content="Universal Hash Families in the Archive of Formal Proofs">
+    <meta property="og:title" content="Universal Hash Families">
+    <meta property="og:url" content="https://isa-afp.org/entries/Universal_Hash_Families.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>U</span>niversal <span class='first'>H</span>ash <span class='first'>F</span>amilies
+  <h1>
+    <span class='first'>U</span>niversal <span class='first'>H</span>ash <span class='first'>F</span>amilies
   </h1>
   <div>
       <p><a href="../authors/karayel/">Emin Karayel</a> <a href="https://orcid.org/0000-0003-3290-5034">🌐</a>
@@ -137,18 +129,18 @@ independent families are shown that might be of independent interest.</div>
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Karayel, E. (2022). <i>Formalization of Randomized Approximation Algorithms for Frequency Moments</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2022.21</li>
+        <li>Karayel, E. (2022). Formalization of Randomized Approximation Algorithms for Frequency Moments. In J. Andronick &amp; L. de Moura (Eds.), <i>LIPIcs, Volume 237, ITP 2022</i> (No.21; Vol. 237, pp. 21:1–21:21). Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2022.21</li>
         <li>Karayel, E. (2025). Derandomization with Pseudorandomness. Annals of Formalized Mathematics, Volume 1. <a href="https://doi.org/10.46298/afm.13477">https://doi.org/10.46298/afm.13477</a>
 </li>
       </ul>
       <h3>Session Universal_Hash_Families</h3>
       <ul>
-          <li><a href="../sessions/universal_hash_families/#Universal_Hash_Families">Universal_Hash_Families</a></li>
-          <li><a href="../sessions/universal_hash_families/#Universal_Hash_Families_More_Independent_Families">Universal_Hash_Families_More_Independent_Families</a></li>
-          <li><a href="../sessions/universal_hash_families/#Carter_Wegman_Hash_Family">Carter_Wegman_Hash_Family</a></li>
-          <li><a href="../sessions/universal_hash_families/#Universal_Hash_Families_More_Product_PMF">Universal_Hash_Families_More_Product_PMF</a></li>
-          <li><a href="../sessions/universal_hash_families/#Pseudorandom_Objects">Pseudorandom_Objects</a></li>
-          <li><a href="../sessions/universal_hash_families/#Pseudorandom_Objects_Hash_Families">Pseudorandom_Objects_Hash_Families</a></li>
+          <li><a href="../thys/AFP/Universal_Hash_Families/Universal_Hash_Families.html">Universal_Hash_Families</a></li>
+          <li><a href="../thys/AFP/Universal_Hash_Families/Universal_Hash_Families_More_Independent_Families.html">Universal_Hash_Families_More_Independent_Families</a></li>
+          <li><a href="../thys/AFP/Universal_Hash_Families/Carter_Wegman_Hash_Family.html">Carter_Wegman_Hash_Family</a></li>
+          <li><a href="../thys/AFP/Universal_Hash_Families/Universal_Hash_Families_More_Product_PMF.html">Universal_Hash_Families_More_Product_PMF</a></li>
+          <li><a href="../thys/AFP/Universal_Hash_Families/Pseudorandom_Objects.html">Pseudorandom_Objects</a></li>
+          <li><a href="../thys/AFP/Universal_Hash_Families/Pseudorandom_Objects_Hash_Families.html">Pseudorandom_Objects_Hash_Families</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -217,27 +209,32 @@ independent families are shown that might be of independent interest.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2022-02-21.tar.gz">Feb 21, 2022
+              <a href="https://www.isa-afp.org/release/afp-Universal_Hash_Families-2022-02-21.tar.gz">
+                Feb 21, 2022
               </a>
               : Isabelle2021-1
             </li>

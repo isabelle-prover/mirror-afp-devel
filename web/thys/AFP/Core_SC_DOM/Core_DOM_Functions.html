@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Core_SC_DOM.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Hiding_Type_Variables.html">Hiding_Type_Variables</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Ref.html">Ref</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Core_DOM_Basic_Datatypes.html">Core_DOM_Basic_Datatypes</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/BaseClass.html">BaseClass</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Heap_Error_Monad.html">Heap_Error_Monad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/BaseMonad.html">BaseMonad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ObjectPointer.html">ObjectPointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ObjectClass.html">ObjectClass</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ObjectMonad.html">ObjectMonad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/NodePointer.html">NodePointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/NodeClass.html">NodeClass</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/NodeMonad.html">NodeMonad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ElementPointer.html">ElementPointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/CharacterDataPointer.html">CharacterDataPointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/DocumentPointer.html">DocumentPointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ShadowRootPointer.html">ShadowRootPointer</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ElementClass.html">ElementClass</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/ElementMonad.html">ElementMonad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/CharacterDataClass.html">CharacterDataClass</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/CharacterDataMonad.html">CharacterDataMonad</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/DocumentClass.html">DocumentClass</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/DocumentMonad.html">DocumentMonad</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Core_SC_DOM/Core_DOM_Functions.html">Core_DOM_Functions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Core_DOM_Heap_WF.html">Core_DOM_Heap_WF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Core_DOM.html">Core_DOM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Testing_Utils.html">Testing_Utils</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Core_DOM_BaseTest.html">Core_DOM_BaseTest</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Document_adoptNode.html">Document_adoptNode</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Document_getElementById.html">Document_getElementById</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Node_insertBefore.html">Node_insertBefore</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Node_removeChild.html">Node_removeChild</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Core_SC_DOM/Core_DOM_Tests.html">Core_DOM_Tests</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>ore_<span class='first'>S</span><span class='first'>C</span>_<span class='first'>D</span><span class='first'>O</span><span class='first'>M</span>.<span class='first'>C</span>ore_<span class='first'>D</span><span class='first'>O</span><span class='first'>M</span>_<span class='first'>F</span>unctions
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Core_SC_DOM/Core_DOM_Functions.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

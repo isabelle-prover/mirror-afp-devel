@@ -5,7 +5,6 @@ const URL_FINDFACTS = 'https://search.isabelle.in.tum.de'
 const NUM_MAX_SIDE_RESULTS = 4
 const NUM_MAX_MAIN_RESULTS = 15
 
-const ID_SEARCH_INPUT = 'search-input'
 const ID_SEARCH_BUTTON = 'search-button'
 const ID_RESULTS_ENTRIES = 'search-results'
 const ID_RESULTS_AUTHORS = 'author-results'
@@ -130,7 +129,6 @@ async function findfacts_search(index, query) {
 /* result handling */
 
 function render_entry(entry) {
-console.log(entry)
   const authors = entry.authors.join(', ')
   const topics = entry.topics.map((topic, key) =>
     `<a href='${entry.topic_links[key]}'>${topic}</a>`).join(', ')
@@ -207,12 +205,6 @@ function debounce(callback, wait) {
   }
 }
 
-function handleSubmit(value) {
-  if (typeof history.pushState !== 'undefined') {
-    history.pushState({}, 'Search the Archive - ' + value, '?s=' + value)
-  }
-}
-
 
 /* setup */
 
@@ -235,14 +227,6 @@ const init_search = async () => {
   const index_json = await Promise.all(index_data.map(r => r.json()))
   const indexes = build_indexes(...index_json)
 
-  input.addEventListener('keydown', (event) => {
-    switch (event.key) {
-      case 'Enter':
-        event.preventDefault()
-        handleSubmit(event.target.value)
-    }
-  })
-
   const run_local_search = (query) => {
     let res = {}
     if (query && query.length > 1) {
@@ -255,24 +239,23 @@ const init_search = async () => {
     MathJax.typeset()
   }
 
-  input.addEventListener('keyup', (event) => {
+  const handle_submit = (query) => {
+    if (typeof history.pushState !== 'undefined') {
+      history.pushState({}, 'Search the Archive - ' + query, '?s=' + query)
+    }
+    run_local_search(query)
+  }
+
+  input.addEventListener('keydown', (event) => {
     switch (event.key) {
       case 'Enter':
-      case 'Up':
-      case 'ArrowUp':
-      case 'Down':
-      case 'ArrowDown':
-      case 'Left':
-      case 'ArrowLeft':
-      case 'Right':
-      case 'ArrowRight':
-      case 'Escape':
-        break
-      default:
-        run_local_search(event.target.value)
+        event.preventDefault()
+        handle_submit(event.target.value)
     }
   })
-  button.addEventListener('click', () => handleSubmit(input.value))
+
+  input.addEventListener('input', () => run_local_search(input.value))
+  button.addEventListener('click', () => handle_submit(input.value))
 
   if (input.value) run_local_search(input.value)
   input.focus()

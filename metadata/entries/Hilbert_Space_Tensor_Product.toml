@@ -10,7 +10,7 @@ spaces, of operators on Hilbert spaces, and of subspaces of Hilbert
 spaces, and of von Neumann algebras, and study their properties.
 
 The theory is based on the AFP entry
-<tt>Complex_Bounded_Operators</tt> that introduces Hilbert spaces and
+<code>Complex_Bounded_Operators</code> that introduces Hilbert spaces and
 operators and related concepts, but in addition to their work, we
 defined and study a number of additional concepts needed for the
 tensor product.

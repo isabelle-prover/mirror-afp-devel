@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Formally Verified Suffix Array Construction - Archive of Formal Proofs</title>
-    <meta name="description" content="Formally Verified Suffix Array Construction in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Formally Verified Suffix Array Construction in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Formally Verified Suffix Array Construction" />
-  <meta property="og:url" content="https://isa-afp.org/entries/SuffixArray.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Formally Verified Suffix Array Construction in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formally Verified Suffix Array Construction in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formally Verified Suffix Array Construction">
+    <meta property="og:url" content="https://isa-afp.org/entries/SuffixArray.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>ormally <span class='first'>V</span>erified <span class='first'>S</span>uffix <span class='first'>A</span>rray <span class='first'>C</span>onstruction
+  <h1>
+    <span class='first'>F</span>ormally <span class='first'>V</span>erified <span class='first'>S</span>uffix <span class='first'>A</span>rray <span class='first'>C</span>onstruction
   </h1>
   <div>
       <p><a href="../authors/cheung/">Louis Cheung</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxvdWlzIiwiY2hldW5nIl0sImhvc3QiOlsic3R1ZGVudCIsInVuaW1lbGIiLCJlZHUiLCJhdSJdfQ==">📧</a> and <a href="../authors/rizkallah/">Christine Rizkallah</a> <a href="https://www.mpi-inf.mpg.de/~crizkall/">🌐</a>
@@ -125,58 +117,58 @@ As part of this formalization, we have developed the SA-IS algorithm in Isabelle
 </li>
         <li>Ko, P., & Aluru, S. (2005). Space efficient linear time construction of suffix arrays. Journal of Discrete Algorithms, 3(2–4), 143–156. https://doi.org/10.1016/j.jda.2004.08.002
 </li>
-        <li><a href=\"https://en.wikipedia.org/wiki/Suffix_array\">Wikipedia</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Suffix_array">Wikipedia</a></li>
       </ul>
       <h3>Session SuffixArray</h3>
       <ul>
-          <li><a href="../sessions/suffixarray/#Nat_Util">Nat_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Fun_Util">Fun_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Set_Util">Set_Util</a></li>
-          <li><a href="../sessions/suffixarray/#List_Util">List_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Sorting_Util">Sorting_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Repeat">Repeat</a></li>
-          <li><a href="../sessions/suffixarray/#Continuous_Interval">Continuous_Interval</a></li>
-          <li><a href="../sessions/suffixarray/#List_Slice">List_Slice</a></li>
-          <li><a href="../sessions/suffixarray/#List_Lexorder_Util">List_Lexorder_Util</a></li>
-          <li><a href="../sessions/suffixarray/#List_Permutation_Util">List_Permutation_Util</a></li>
-          <li><a href="../sessions/suffixarray/#List_Lexorder_NS">List_Lexorder_NS</a></li>
-          <li><a href="../sessions/suffixarray/#Valid_List">Valid_List</a></li>
-          <li><a href="../sessions/suffixarray/#Valid_List_Util">Valid_List_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Suffix">Suffix</a></li>
-          <li><a href="../sessions/suffixarray/#Suffix_Util">Suffix_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Prefix">Prefix</a></li>
-          <li><a href="../sessions/suffixarray/#Prefix_Util">Prefix_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Suffix_Array">Suffix_Array</a></li>
-          <li><a href="../sessions/suffixarray/#Suffix_Array_Properties">Suffix_Array_Properties</a></li>
-          <li><a href="../sessions/suffixarray/#Simple_SACA">Simple_SACA</a></li>
-          <li><a href="../sessions/suffixarray/#Simple_SACA_Verification">Simple_SACA_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#List_Type">List_Type</a></li>
-          <li><a href="../sessions/suffixarray/#Buckets">Buckets</a></li>
-          <li><a href="../sessions/suffixarray/#LMS_List_Slice_Util">LMS_List_Slice_Util</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_SAIS">Abs_SAIS</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Bucket_Insert_Verification">Abs_Bucket_Insert_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Induce_L_Verification">Abs_Induce_L_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Induce_S_Verification">Abs_Induce_S_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Induce_Verification">Abs_Induce_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Extract_LMS_Verification">Abs_Extract_LMS_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Order_LMS_Verification">Abs_Order_LMS_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_Rename_LMS_Verification">Abs_Rename_LMS_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_SAIS_Verification_With_Valid_Precondition">Abs_SAIS_Verification_With_Valid_Precondition</a></li>
-          <li><a href="../sessions/suffixarray/#Abs_SAIS_Verification">Abs_SAIS_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Bucket_Insert">Bucket_Insert</a></li>
-          <li><a href="../sessions/suffixarray/#Get_Types">Get_Types</a></li>
-          <li><a href="../sessions/suffixarray/#Induce_L">Induce_L</a></li>
-          <li><a href="../sessions/suffixarray/#Induce_S">Induce_S</a></li>
-          <li><a href="../sessions/suffixarray/#Induce">Induce</a></li>
-          <li><a href="../sessions/suffixarray/#SAIS">SAIS</a></li>
-          <li><a href="../sessions/suffixarray/#Bucket_Insert_Verification">Bucket_Insert_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Induce_L_Verification">Induce_L_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Induce_S_Verification">Induce_S_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Induce_Verification">Induce_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Get_Types_Verification">Get_Types_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#SAIS_Verification">SAIS_Verification</a></li>
-          <li><a href="../sessions/suffixarray/#Code_Extraction">Code_Extraction</a></li>
-          <li><a href="../sessions/suffixarray/#SACA_Equiv">SACA_Equiv</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Nat_Util.html">Nat_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Fun_Util.html">Fun_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Set_Util.html">Set_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/List_Util.html">List_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Sorting_Util.html">Sorting_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Repeat.html">Repeat</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Continuous_Interval.html">Continuous_Interval</a></li>
+          <li><a href="../thys/AFP/SuffixArray/List_Slice.html">List_Slice</a></li>
+          <li><a href="../thys/AFP/SuffixArray/List_Lexorder_Util.html">List_Lexorder_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/List_Permutation_Util.html">List_Permutation_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/List_Lexorder_NS.html">List_Lexorder_NS</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Valid_List.html">Valid_List</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Valid_List_Util.html">Valid_List_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Suffix.html">Suffix</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Suffix_Util.html">Suffix_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Prefix.html">Prefix</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Prefix_Util.html">Prefix_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Suffix_Array.html">Suffix_Array</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Suffix_Array_Properties.html">Suffix_Array_Properties</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Simple_SACA.html">Simple_SACA</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Simple_SACA_Verification.html">Simple_SACA_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/List_Type.html">List_Type</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Buckets.html">Buckets</a></li>
+          <li><a href="../thys/AFP/SuffixArray/LMS_List_Slice_Util.html">LMS_List_Slice_Util</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_SAIS.html">Abs_SAIS</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Bucket_Insert_Verification.html">Abs_Bucket_Insert_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Induce_L_Verification.html">Abs_Induce_L_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Induce_S_Verification.html">Abs_Induce_S_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Induce_Verification.html">Abs_Induce_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Extract_LMS_Verification.html">Abs_Extract_LMS_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Order_LMS_Verification.html">Abs_Order_LMS_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_Rename_LMS_Verification.html">Abs_Rename_LMS_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_SAIS_Verification_With_Valid_Precondition.html">Abs_SAIS_Verification_With_Valid_Precondition</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Abs_SAIS_Verification.html">Abs_SAIS_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Bucket_Insert.html">Bucket_Insert</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Get_Types.html">Get_Types</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Induce_L.html">Induce_L</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Induce_S.html">Induce_S</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Induce.html">Induce</a></li>
+          <li><a href="../thys/AFP/SuffixArray/SAIS.html">SAIS</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Bucket_Insert_Verification.html">Bucket_Insert_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Induce_L_Verification.html">Induce_L_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Induce_S_Verification.html">Induce_S_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Induce_Verification.html">Induce_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Get_Types_Verification.html">Get_Types_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/SAIS_Verification.html">SAIS_Verification</a></li>
+          <li><a href="../thys/AFP/SuffixArray/Code_Extraction.html">Code_Extraction</a></li>
+          <li><a href="../thys/AFP/SuffixArray/SACA_Equiv.html">SACA_Equiv</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -230,12 +222,14 @@ As part of this formalization, we have developed the SA-IS algorithm in Isabelle
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-SuffixArray-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-SuffixArray-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-SuffixArray-2024-10-03.tar.gz">Oct 3, 2024
+              <a href="https://www.isa-afp.org/release/afp-SuffixArray-2024-10-03.tar.gz">
+                Oct 3, 2024
               </a>
               : Isabelle2024
             </li>

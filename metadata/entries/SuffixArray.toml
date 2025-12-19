@@ -34,5 +34,5 @@ dois = [
   "10.1016/J.JDA.2004.08.002",
 ]
 pubs = [
-  "<a href=\\\"https://en.wikipedia.org/wiki/Suffix_array\\\">Wikipedia</a>",
+  "<a href=\"https://en.wikipedia.org/wiki/Suffix_array\">Wikipedia</a>",
 ]

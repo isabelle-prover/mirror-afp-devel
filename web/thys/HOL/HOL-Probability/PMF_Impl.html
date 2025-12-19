@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Probability_Measure.html">Probability_Measure</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Distribution_Functions.html">Distribution_Functions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Weak_Convergence.html">Weak_Convergence</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Giry_Monad.html">Giry_Monad</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Projective_Family.html">Projective_Family</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Infinite_Product_Measure.html">Infinite_Product_Measure</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Independent_Family.html">Independent_Family</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Convolution.html">Convolution</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Information.html">Information</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Distributions.html">Distributions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Characteristic_Functions.html">Characteristic_Functions</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Helly_Selection.html">Helly_Selection</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Sinc_Integral.html">Sinc_Integral</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Levy.html">Levy</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Central_Limit_Theorem.html">Central_Limit_Theorem</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Discrete_Topology.html">Discrete_Topology</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Probability_Mass_Function.html">Probability_Mass_Function</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/HOL/HOL-Probability/PMF_Impl.html">PMF_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Fin_Map.html">Fin_Map</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Projective_Limit.html">Projective_Limit</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Random_Permutations.html">Random_Permutations</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/SPMF.html">SPMF</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Product_PMF.html">Product_PMF</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Hoeffding.html">Hoeffding</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Stream_Space.html">Stream_Space</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Tree_Space.html">Tree_Space</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Conditional_Expectation.html">Conditional_Expectation</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Essential_Supremum.html">Essential_Supremum</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Stopping_Time.html">Stopping_Time</a>
+          </li>
+          <li >
+            <a href="../../../thys/HOL/HOL-Probability/Probability.html">Probability</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>-<span class='first'>P</span>robability.<span class='first'>P</span><span class='first'>M</span><span class='first'>F</span>_<span class='first'>I</span>mpl
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/HOL/HOL-Probability/PMF_Impl.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

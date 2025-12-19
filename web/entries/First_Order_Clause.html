@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>First Order Clause - Archive of Formal Proofs</title>
-    <meta name="description" content="First Order Clause in the Archive of Formal Proofs" />
-    <meta property="og:description" content="First Order Clause in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="First Order Clause" />
-  <meta property="og:url" content="https://isa-afp.org/entries/First_Order_Clause.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="First Order Clause in the Archive of Formal Proofs">
+    <meta property="og:description" content="First Order Clause in the Archive of Formal Proofs">
+    <meta property="og:title" content="First Order Clause">
+    <meta property="og:url" content="https://isa-afp.org/entries/First_Order_Clause.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>irst <span class='first'>O</span>rder <span class='first'>C</span>lause
+  <h1>
+    <span class='first'>F</span>irst <span class='first'>O</span>rder <span class='first'>C</span>lause
   </h1>
   <div>
       <p><a href="../authors/toth/">Balazs Toth</a> <a class="obfuscated" data="eyJ1c2VyIjpbImJhbGF6cyIsInRvdGgiXSwiaG9zdCI6WyJsbXUiLCJkZSJdfQ==">📧</a>
@@ -120,82 +112,82 @@
       </ul>
       <h3>Session First_Order_Clause</h3>
       <ul>
-          <li><a href="../sessions/first_order_clause/#Context_Notation">Context_Notation</a></li>
-          <li><a href="../sessions/first_order_clause/#Typing">Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Term_Typing">Term_Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Generic_Context">Generic_Context</a></li>
-          <li><a href="../sessions/first_order_clause/#Parallel_Induct">Parallel_Induct</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Ground_Term">IsaFoR_Ground_Term</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Ground_Context">IsaFoR_Ground_Context</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Term_Typing">Ground_Term_Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Term">Nonground_Term</a></li>
-          <li><a href="../sessions/first_order_clause/#Multiset_Extra">Multiset_Extra</a></li>
-          <li><a href="../sessions/first_order_clause/#Multiset_Grounding_Lifting">Multiset_Grounding_Lifting</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Clause_Generic">Nonground_Clause_Generic</a></li>
-          <li><a href="../sessions/first_order_clause/#Selection_Function">Selection_Function</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Selection_Function">Nonground_Selection_Function</a></li>
-          <li><a href="../sessions/first_order_clause/#HOL_Extra">HOL_Extra</a></li>
-          <li><a href="../sessions/first_order_clause/#Grounded_Selection_Function">Grounded_Selection_Function</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Nonground_Term">IsaFoR_Nonground_Term</a></li>
-          <li><a href="../sessions/first_order_clause/#Literal_Functor">Literal_Functor</a></li>
-          <li><a href="../sessions/first_order_clause/#Uprod_Extra">Uprod_Extra</a></li>
-          <li><a href="../sessions/first_order_clause/#Uprod_Literal_Functor">Uprod_Literal_Functor</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Clause_With_Equality">Nonground_Clause_With_Equality</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Nonground_Clause_With_Equality">IsaFoR_Nonground_Clause_With_Equality</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Context">Nonground_Context</a></li>
-          <li><a href="../sessions/first_order_clause/#Context_Functor">Context_Functor</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Nonground_Context">IsaFoR_Nonground_Context</a></li>
-          <li><a href="../sessions/first_order_clause/#Restricted_Order">Restricted_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Context_Compatible_Order">Context_Compatible_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Term_Order_Notation">Term_Order_Notation</a></li>
-          <li><a href="../sessions/first_order_clause/#Transitive_Closure_Extra">Transitive_Closure_Extra</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Term_Order">Ground_Term_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Grounded_Order">Grounded_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Term_Order">Nonground_Term_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Multiset_Extension">Multiset_Extension</a></li>
-          <li><a href="../sessions/first_order_clause/#Natural_Functor_To_Multiset">Natural_Functor_To_Multiset</a></li>
-          <li><a href="../sessions/first_order_clause/#Grounded_Multiset_Extension">Grounded_Multiset_Extension</a></li>
-          <li><a href="../sessions/first_order_clause/#Maximal_Literal">Maximal_Literal</a></li>
-          <li><a href="../sessions/first_order_clause/#Term_Order_Lifting">Term_Order_Lifting</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Order_Generic">Ground_Order_Generic</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Order_Generic">Nonground_Order_Generic</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Order_With_Equality">Ground_Order_With_Equality</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Order_With_Equality">Nonground_Order_With_Equality</a></li>
-          <li><a href="../sessions/first_order_clause/#Selection_Function_Select_Max">Selection_Function_Select_Max</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_KBO">IsaFoR_KBO</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Clause">Nonground_Clause</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Nonground_Clause">IsaFoR_Nonground_Clause</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Term_Rewrite_System">Ground_Term_Rewrite_System</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Critical_Pairs">Ground_Critical_Pairs</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Critical_Peaks">Ground_Critical_Peaks</a></li>
-          <li><a href="../sessions/first_order_clause/#IsaFoR_Ground_Critical_Pairs">IsaFoR_Ground_Critical_Pairs</a></li>
-          <li><a href="../sessions/first_order_clause/#Collect_Extra">Collect_Extra</a></li>
-          <li><a href="../sessions/first_order_clause/#Infinite_Variables_Per_Type">Infinite_Variables_Per_Type</a></li>
-          <li><a href="../sessions/first_order_clause/#Typed_Substitution">Typed_Substitution</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Term_Typing">Nonground_Term_Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Typed_IMGU">Typed_IMGU</a></li>
-          <li><a href="../sessions/first_order_clause/#Monomorphic_Typing">Monomorphic_Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Entailment_Lifting">Entailment_Lifting</a></li>
-          <li><a href="../sessions/first_order_clause/#Fold_Extra">Fold_Extra</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Entailment">Nonground_Entailment</a></li>
-          <li><a href="../sessions/first_order_clause/#Inference_Functor">Inference_Functor</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Inference">Nonground_Inference</a></li>
-          <li><a href="../sessions/first_order_clause/#Ground_Order">Ground_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Order">Nonground_Order</a></li>
-          <li><a href="../sessions/first_order_clause/#Natural_Magma_Typing_Lifting">Natural_Magma_Typing_Lifting</a></li>
-          <li><a href="../sessions/first_order_clause/#Multiset_Typing_Lifting">Multiset_Typing_Lifting</a></li>
-          <li><a href="../sessions/first_order_clause/#Clause_Typing_Generic">Clause_Typing_Generic</a></li>
-          <li><a href="../sessions/first_order_clause/#Typed_Substitution_Lifting">Typed_Substitution_Lifting</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Typing_Generic">Nonground_Typing_Generic</a></li>
-          <li><a href="../sessions/first_order_clause/#Clause_Typing">Clause_Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Typing">Nonground_Typing</a></li>
-          <li><a href="../sessions/first_order_clause/#Clause_Typing_With_Equality">Clause_Typing_With_Equality</a></li>
-          <li><a href="../sessions/first_order_clause/#Nonground_Typing_With_Equality">Nonground_Typing_With_Equality</a></li>
-          <li><a href="../sessions/first_order_clause/#Typed_Substitution_Example">Typed_Substitution_Example</a></li>
-          <li><a href="../sessions/first_order_clause/#Typed_Substitution_Lifting_Example">Typed_Substitution_Lifting_Example</a></li>
-          <li><a href="../sessions/first_order_clause/#Tiebreakers">Tiebreakers</a></li>
-          <li><a href="../sessions/first_order_clause/#Typed_Tiebreakers">Typed_Tiebreakers</a></li>
-          <li><a href="../sessions/first_order_clause/#Untyped_Calculus">Untyped_Calculus</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Context_Notation.html">Context_Notation</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typing.html">Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Term_Typing.html">Term_Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Generic_Context.html">Generic_Context</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Parallel_Induct.html">Parallel_Induct</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Ground_Term.html">IsaFoR_Ground_Term</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Ground_Context.html">IsaFoR_Ground_Context</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Term_Typing.html">Ground_Term_Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Term.html">Nonground_Term</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Multiset_Extra.html">Multiset_Extra</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Multiset_Grounding_Lifting.html">Multiset_Grounding_Lifting</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Clause_Generic.html">Nonground_Clause_Generic</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Selection_Function.html">Selection_Function</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Selection_Function.html">Nonground_Selection_Function</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/HOL_Extra.html">HOL_Extra</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Grounded_Selection_Function.html">Grounded_Selection_Function</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Nonground_Term.html">IsaFoR_Nonground_Term</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Literal_Functor.html">Literal_Functor</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Uprod_Extra.html">Uprod_Extra</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Uprod_Literal_Functor.html">Uprod_Literal_Functor</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Clause_With_Equality.html">Nonground_Clause_With_Equality</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Nonground_Clause_With_Equality.html">IsaFoR_Nonground_Clause_With_Equality</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Context.html">Nonground_Context</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Context_Functor.html">Context_Functor</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Nonground_Context.html">IsaFoR_Nonground_Context</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Restricted_Order.html">Restricted_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Context_Compatible_Order.html">Context_Compatible_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Term_Order_Notation.html">Term_Order_Notation</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Transitive_Closure_Extra.html">Transitive_Closure_Extra</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Term_Order.html">Ground_Term_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Grounded_Order.html">Grounded_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Term_Order.html">Nonground_Term_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Multiset_Extension.html">Multiset_Extension</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Natural_Functor_To_Multiset.html">Natural_Functor_To_Multiset</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Grounded_Multiset_Extension.html">Grounded_Multiset_Extension</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Maximal_Literal.html">Maximal_Literal</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Term_Order_Lifting.html">Term_Order_Lifting</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Order_Generic.html">Ground_Order_Generic</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Order_Generic.html">Nonground_Order_Generic</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Order_With_Equality.html">Ground_Order_With_Equality</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Order_With_Equality.html">Nonground_Order_With_Equality</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Selection_Function_Select_Max.html">Selection_Function_Select_Max</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_KBO.html">IsaFoR_KBO</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Clause.html">Nonground_Clause</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Nonground_Clause.html">IsaFoR_Nonground_Clause</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Term_Rewrite_System.html">Ground_Term_Rewrite_System</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Critical_Pairs.html">Ground_Critical_Pairs</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Critical_Peaks.html">Ground_Critical_Peaks</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/IsaFoR_Ground_Critical_Pairs.html">IsaFoR_Ground_Critical_Pairs</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Collect_Extra.html">Collect_Extra</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Infinite_Variables_Per_Type.html">Infinite_Variables_Per_Type</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typed_Substitution.html">Typed_Substitution</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Term_Typing.html">Nonground_Term_Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typed_IMGU.html">Typed_IMGU</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Monomorphic_Typing.html">Monomorphic_Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Entailment_Lifting.html">Entailment_Lifting</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Fold_Extra.html">Fold_Extra</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Entailment.html">Nonground_Entailment</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Inference_Functor.html">Inference_Functor</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Inference.html">Nonground_Inference</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Ground_Order.html">Ground_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Order.html">Nonground_Order</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Natural_Magma_Typing_Lifting.html">Natural_Magma_Typing_Lifting</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Multiset_Typing_Lifting.html">Multiset_Typing_Lifting</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Clause_Typing_Generic.html">Clause_Typing_Generic</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typed_Substitution_Lifting.html">Typed_Substitution_Lifting</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Typing_Generic.html">Nonground_Typing_Generic</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Clause_Typing.html">Clause_Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Typing.html">Nonground_Typing</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Clause_Typing_With_Equality.html">Clause_Typing_With_Equality</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Nonground_Typing_With_Equality.html">Nonground_Typing_With_Equality</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typed_Substitution_Example.html">Typed_Substitution_Example</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typed_Substitution_Lifting_Example.html">Typed_Substitution_Lifting_Example</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Tiebreakers.html">Tiebreakers</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Typed_Tiebreakers.html">Typed_Tiebreakers</a></li>
+          <li><a href="../thys/AFP/First_Order_Clause/Untyped_Calculus.html">Untyped_Calculus</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -266,7 +258,8 @@
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-First_Order_Clause-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-First_Order_Clause-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>

@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ordinary Differential Equations - Archive of Formal Proofs</title>
-    <meta name="description" content="Ordinary Differential Equations in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Ordinary Differential Equations in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Ordinary Differential Equations" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Ordinary_Differential_Equations.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Ordinary Differential Equations in the Archive of Formal Proofs">
+    <meta property="og:description" content="Ordinary Differential Equations in the Archive of Formal Proofs">
+    <meta property="og:title" content="Ordinary Differential Equations">
+    <meta property="og:url" content="https://isa-afp.org/entries/Ordinary_Differential_Equations.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>O</span>rdinary <span class='first'>D</span>ifferential <span class='first'>E</span>quations
+  <h1>
+    <span class='first'>O</span>rdinary <span class='first'>D</span>ifferential <span class='first'>E</span>quations
   </h1>
   <div>
       <p><a href="../authors/immler/">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a> and <a href="../authors/hoelzl/">Johannes Hölzl</a> <a href="http://home.in.tum.de/~hoelzl">🌐</a>
@@ -113,6 +105,7 @@ problems. This work comprises proofs for local and global existence of unique so
 differentiable) dependency of the flow on initial conditions as the <i>flow</i> of ODEs.</p>
 <p>
 Not in the generated document are the following sessions:
+</p>
 <ul>
 <li> HOL-ODE-Numerics:
 Rigorous numerical algorithms for computing enclosures of solutions based on Runge-Kutta methods
@@ -122,8 +115,7 @@ Applications of the numerical algorithms to concrete systems of ODEs.</li>
 <li> Lorenz_C0, Lorenz_C1:
 Verified algorithms for checking C1-information according to Tucker's proof,
 computation of C0-information.</li>
-</ul>
-</p></div>
+</ul></div>
 
     <h3>License</h3>
     <div>
@@ -148,87 +140,87 @@ for C0-information of the Lorenz attractor.</dd>
       </ul>
       <h3>Session Ordinary_Differential_Equations</h3>
       <ul>
-          <li><a href="../sessions/ordinary_differential_equations/#ODE_Auxiliarities">ODE_Auxiliarities</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#MVT_Ex">MVT_Ex</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Vector_Derivative_On">Vector_Derivative_On</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Interval_Integral_HK">Interval_Integral_HK</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Gronwall">Gronwall</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Initial_Value_Problem">Initial_Value_Problem</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Picard_Lindeloef_Qualitative">Picard_Lindeloef_Qualitative</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Bounded_Linear_Operator">Bounded_Linear_Operator</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Multivariate_Taylor">Multivariate_Taylor</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Flow">Flow</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Upper_Lower_Solution">Upper_Lower_Solution</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Poincare_Map">Poincare_Map</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Reachability_Analysis">Reachability_Analysis</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Flow_Congs">Flow_Congs</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Cones">Cones</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#Linear_ODE">Linear_ODE</a></li>
-          <li><a href="../sessions/ordinary_differential_equations/#ODE_Analysis">ODE_Analysis</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/ODE_Auxiliarities.html">ODE_Auxiliarities</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/MVT_Ex.html">MVT_Ex</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Vector_Derivative_On.html">Vector_Derivative_On</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Interval_Integral_HK.html">Interval_Integral_HK</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Gronwall.html">Gronwall</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Initial_Value_Problem.html">Initial_Value_Problem</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Picard_Lindeloef_Qualitative.html">Picard_Lindeloef_Qualitative</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Bounded_Linear_Operator.html">Bounded_Linear_Operator</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Multivariate_Taylor.html">Multivariate_Taylor</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Flow.html">Flow</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Upper_Lower_Solution.html">Upper_Lower_Solution</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Poincare_Map.html">Poincare_Map</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Reachability_Analysis.html">Reachability_Analysis</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Flow_Congs.html">Flow_Congs</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Cones.html">Cones</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/Linear_ODE.html">Linear_ODE</a></li>
+          <li><a href="../thys/AFP/Ordinary_Differential_Equations/ODE_Analysis.html">ODE_Analysis</a></li>
       </ul>
       <h3>Session HOL-ODE-Numerics</h3>
       <ul>
-          <li><a href="../sessions/hol-ode-numerics/#GenCF_No_Comp">GenCF_No_Comp</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Dflt_No_Comp">Refine_Dflt_No_Comp</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Autoref_Misc">Autoref_Misc</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Weak_Set">Weak_Set</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Enclosure_Operations">Enclosure_Operations</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Vector_List">Refine_Vector_List</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Transfer_Analysis">Transfer_Analysis</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Transfer_ODE">Transfer_ODE</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Transfer_Euclidean_Space_Vector">Transfer_Euclidean_Space_Vector</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Hyperplane">Refine_Hyperplane</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Unions">Refine_Unions</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Intersection">Refine_Intersection</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Invar">Refine_Invar</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Interval">Refine_Interval</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Info">Refine_Info</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Abstract_Rigorous_Numerics">Abstract_Rigorous_Numerics</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Rigorous_Numerics">Refine_Rigorous_Numerics</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Rigorous_Numerics_Aform">Refine_Rigorous_Numerics_Aform</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Concrete_Rigorous_Numerics">Concrete_Rigorous_Numerics</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_String">Refine_String</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Folds">Refine_Folds</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#One_Step_Method">One_Step_Method</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Runge_Kutta">Runge_Kutta</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Abstract_Reachability_Analysis">Abstract_Reachability_Analysis</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Concrete_Reachability_Analysis">Concrete_Reachability_Analysis</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Parallel">Refine_Parallel</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Default">Refine_Default</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Phantom">Refine_Phantom</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_ScaleR2">Refine_ScaleR2</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Abstract_Reachability_Analysis_C1">Abstract_Reachability_Analysis_C1</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Concrete_Reachability_Analysis_C1">Concrete_Reachability_Analysis_C1</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Reachability_Analysis">Refine_Reachability_Analysis</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Refine_Reachability_Analysis_C1">Refine_Reachability_Analysis_C1</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Init_ODE_Solver">Init_ODE_Solver</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#Example_Utilities">Example_Utilities</a></li>
-          <li><a href="../sessions/hol-ode-numerics/#ODE_Numerics">ODE_Numerics</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/GenCF_No_Comp.html">GenCF_No_Comp</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Dflt_No_Comp.html">Refine_Dflt_No_Comp</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Autoref_Misc.html">Autoref_Misc</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Weak_Set.html">Weak_Set</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Enclosure_Operations.html">Enclosure_Operations</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Vector_List.html">Refine_Vector_List</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Transfer_Analysis.html">Transfer_Analysis</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Transfer_ODE.html">Transfer_ODE</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Transfer_Euclidean_Space_Vector.html">Transfer_Euclidean_Space_Vector</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Hyperplane.html">Refine_Hyperplane</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Unions.html">Refine_Unions</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Intersection.html">Refine_Intersection</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Invar.html">Refine_Invar</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Interval.html">Refine_Interval</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Info.html">Refine_Info</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Abstract_Rigorous_Numerics.html">Abstract_Rigorous_Numerics</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Rigorous_Numerics.html">Refine_Rigorous_Numerics</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Rigorous_Numerics_Aform.html">Refine_Rigorous_Numerics_Aform</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Concrete_Rigorous_Numerics.html">Concrete_Rigorous_Numerics</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_String.html">Refine_String</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Folds.html">Refine_Folds</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/One_Step_Method.html">One_Step_Method</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Runge_Kutta.html">Runge_Kutta</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Abstract_Reachability_Analysis.html">Abstract_Reachability_Analysis</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Concrete_Reachability_Analysis.html">Concrete_Reachability_Analysis</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Parallel.html">Refine_Parallel</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Default.html">Refine_Default</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Phantom.html">Refine_Phantom</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_ScaleR2.html">Refine_ScaleR2</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Abstract_Reachability_Analysis_C1.html">Abstract_Reachability_Analysis_C1</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Concrete_Reachability_Analysis_C1.html">Concrete_Reachability_Analysis_C1</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Reachability_Analysis.html">Refine_Reachability_Analysis</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Refine_Reachability_Analysis_C1.html">Refine_Reachability_Analysis_C1</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Init_ODE_Solver.html">Init_ODE_Solver</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/Example_Utilities.html">Example_Utilities</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Numerics/ODE_Numerics.html">ODE_Numerics</a></li>
       </ul>
       <h3>Session Lorenz_Approximation</h3>
       <ul>
-          <li><a href="../sessions/lorenz_approximation/#Result_Elements">Result_Elements</a></li>
-          <li><a href="../sessions/lorenz_approximation/#Result_File_Coarse">Result_File_Coarse</a></li>
-          <li><a href="../sessions/lorenz_approximation/#Lorenz_Approximation">Lorenz_Approximation</a></li>
+          <li><a href="../thys/AFP/Lorenz_Approximation/Result_Elements.html">Result_Elements</a></li>
+          <li><a href="../thys/AFP/Lorenz_Approximation/Result_File_Coarse.html">Result_File_Coarse</a></li>
+          <li><a href="../thys/AFP/Lorenz_Approximation/Lorenz_Approximation.html">Lorenz_Approximation</a></li>
       </ul>
       <h3>Session HOL-ODE-Examples</h3>
       <ul>
-          <li><a href="../sessions/hol-ode-examples/#Examples_Integral">Examples_Integral</a></li>
-          <li><a href="../sessions/hol-ode-examples/#Examples_One_Step_Method">Examples_One_Step_Method</a></li>
-          <li><a href="../sessions/hol-ode-examples/#Examples_Poincare_Map">Examples_Poincare_Map</a></li>
-          <li><a href="../sessions/hol-ode-examples/#ODE_Examples">ODE_Examples</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Examples/Examples_Integral.html">Examples_Integral</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Examples/Examples_One_Step_Method.html">Examples_One_Step_Method</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Examples/Examples_Poincare_Map.html">Examples_Poincare_Map</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-Examples/ODE_Examples.html">ODE_Examples</a></li>
       </ul>
       <h3>Session HOL-ODE-ARCH-COMP</h3>
       <ul>
-          <li><a href="../sessions/hol-ode-arch-comp/#Examples_ARCH_COMP">Examples_ARCH_COMP</a></li>
+          <li><a href="../thys/AFP/HOL-ODE-ARCH-COMP/Examples_ARCH_COMP.html">Examples_ARCH_COMP</a></li>
       </ul>
       <h3>Session Lorenz_C0</h3>
       <ul>
-          <li><a href="../sessions/lorenz_c0/#Lorenz_C0">Lorenz_C0</a></li>
+          <li><a href="../thys/AFP/Lorenz_C0/Lorenz_C0.html">Lorenz_C0</a></li>
       </ul>
       <h3>Session Lorenz_C1</h3>
       <ul>
-          <li><a href="../sessions/lorenz_c1/#Lorenz_C1">Lorenz_C1</a></li>
+          <li><a href="../thys/AFP/Lorenz_C1/Lorenz_C1.html">Lorenz_C1</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -297,92 +289,110 @@ for C0-information of the Lorenz attractor.</dd>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2014-08-28.tar.gz">Aug 28, 2014
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2014-08-28.tar.gz">
+                Aug 28, 2014
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2013-12-11.tar.gz">Dec 11, 2013
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2013-12-11.tar.gz">
+                Dec 11, 2013
               </a>
               : Isabelle2013-2
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2013-11-17.tar.gz">Nov 17, 2013
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2013-11-17.tar.gz">
+                Nov 17, 2013
               </a>
               : Isabelle2013-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2013-02-16.tar.gz">Feb 16, 2013
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2013-02-16.tar.gz">
+                Feb 16, 2013
               </a>
               : Isabelle2013
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2012-05-24.tar.gz">May 24, 2012
+              <a href="https://www.isa-afp.org/release/afp-Ordinary_Differential_Equations-2012-05-24.tar.gz">
+                May 24, 2012
               </a>
               : Isabelle2012
             </li>

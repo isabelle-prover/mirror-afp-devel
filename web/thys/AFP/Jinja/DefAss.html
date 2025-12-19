@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Jinja.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Auxiliary.html">Auxiliary</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Type.html">Type</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Decl.html">Decl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/TypeRel.html">TypeRel</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Value.html">Value</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Objects.html">Objects</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Exceptions.html">Exceptions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Expr.html">Expr</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/State.html">State</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BigStep.html">BigStep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/SmallStep.html">SmallStep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/SystemClasses.html">SystemClasses</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/WellForm.html">WellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/WWellForm.html">WWellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Equivalence.html">Equivalence</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/WellType.html">WellType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/WellTypeRT.html">WellTypeRT</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Jinja/DefAss.html">DefAss</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Conform.html">Conform</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Progress.html">Progress</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JWellForm.html">JWellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/TypeSafe.html">TypeSafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Annotate.html">Annotate</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Examples.html">Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/execute_Bigstep.html">execute_Bigstep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/execute_WellType.html">execute_WellType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMState.html">JVMState</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMInstructions.html">JVMInstructions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMExecInstr.html">JVMExecInstr</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMExceptions.html">JVMExceptions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMExec.html">JVMExec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMDefensive.html">JVMDefensive</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVMListExample.html">JVMListExample</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Semilat.html">Semilat</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Err.html">Err</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Opt.html">Opt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Product.html">Product</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Listn.html">Listn</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Semilattices.html">Semilattices</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Typing_Framework_1.html">Typing_Framework_1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/SemilatAlg.html">SemilatAlg</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Typing_Framework_err.html">Typing_Framework_err</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Kildall_1.html">Kildall_1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Kildall_2.html">Kildall_2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/LBVSpec.html">LBVSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/LBVCorrect.html">LBVCorrect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/LBVComplete.html">LBVComplete</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Abstract_BV.html">Abstract_BV</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/SemiType.html">SemiType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/JVM_SemiType.html">JVM_SemiType</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Effect.html">Effect</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/EffectMono.html">EffectMono</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BVSpec.html">BVSpec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/TF_JVM.html">TF_JVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Typing_Framework_2.html">Typing_Framework_2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BVExec.html">BVExec</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/LBVJVM.html">LBVJVM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BVConform.html">BVConform</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BVSpecTypeSafe.html">BVSpecTypeSafe</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BVNoTypeError.html">BVNoTypeError</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/BVExample.html">BVExample</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/J1.html">J1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/J1WellForm.html">J1WellForm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/PCompiler.html">PCompiler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Hidden.html">Hidden</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Compiler1.html">Compiler1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Correctness1.html">Correctness1</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Compiler2.html">Compiler2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Correctness2.html">Correctness2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Compiler.html">Compiler</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/TypeComp.html">TypeComp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Jinja/Jinja.html">Jinja</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>J</span>inja.<span class='first'>D</span>ef<span class='first'>A</span>ss
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/DefAss.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

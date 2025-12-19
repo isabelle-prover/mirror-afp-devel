@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Factorization of Polynomials with Algebraic Coefficients - Archive of Formal Proofs</title>
-    <meta name="description" content="Factorization of Polynomials with Algebraic Coefficients in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Factorization of Polynomials with Algebraic Coefficients in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Factorization of Polynomials with Algebraic Coefficients" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Factorization of Polynomials with Algebraic Coefficients in the Archive of Formal Proofs">
+    <meta property="og:description" content="Factorization of Polynomials with Algebraic Coefficients in the Archive of Formal Proofs">
+    <meta property="og:title" content="Factorization of Polynomials with Algebraic Coefficients">
+    <meta property="og:url" content="https://isa-afp.org/entries/Factor_Algebraic_Polynomial.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>F</span>actorization of <span class='first'>P</span>olynomials with <span class='first'>A</span>lgebraic <span class='first'>C</span>oefficients
+  <h1>
+    <span class='first'>F</span>actorization of <span class='first'>P</span>olynomials with <span class='first'>A</span>lgebraic <span class='first'>C</span>oefficients
   </h1>
   <div>
       <p><a href="../authors/eberl/">Manuel Eberl</a> <a href="https://pruvisto.org/">🌐</a> and <a href="../authors/thiemann/">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a>
@@ -128,18 +120,18 @@ an approximation algorithm using interval arithmetic.</div>
       </ul>
       <h3>Session Factor_Algebraic_Polynomial</h3>
       <ul>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Poly_Connection">Poly_Connection</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#MPoly_Divide">MPoly_Divide</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#MPoly_Divide_Code">MPoly_Divide_Code</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#MPoly_Container">MPoly_Container</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Multivariate_Resultant">Multivariate_Resultant</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Is_Int_To_Int">Is_Int_To_Int</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Roots_of_Algebraic_Poly">Roots_of_Algebraic_Poly</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Roots_of_Algebraic_Poly_Impl">Roots_of_Algebraic_Poly_Impl</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Roots_via_IA">Roots_via_IA</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Roots_of_Real_Complex_Poly">Roots_of_Real_Complex_Poly</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Factor_Complex_Poly">Factor_Complex_Poly</a></li>
-          <li><a href="../sessions/factor_algebraic_polynomial/#Factor_Real_Poly">Factor_Real_Poly</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Poly_Connection.html">Poly_Connection</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/MPoly_Divide.html">MPoly_Divide</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/MPoly_Divide_Code.html">MPoly_Divide_Code</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/MPoly_Container.html">MPoly_Container</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Multivariate_Resultant.html">Multivariate_Resultant</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Is_Int_To_Int.html">Is_Int_To_Int</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Roots_of_Algebraic_Poly.html">Roots_of_Algebraic_Poly</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Roots_of_Algebraic_Poly_Impl.html">Roots_of_Algebraic_Poly_Impl</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Roots_via_IA.html">Roots_via_IA</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Roots_of_Real_Complex_Poly.html">Roots_of_Real_Complex_Poly</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Factor_Complex_Poly.html">Factor_Complex_Poly</a></li>
+          <li><a href="../thys/AFP/Factor_Algebraic_Polynomial/Factor_Real_Poly.html">Factor_Real_Poly</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -205,32 +197,38 @@ an approximation algorithm using interval arithmetic.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2021-11-14.tar.gz">Nov 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Factor_Algebraic_Polynomial-2021-11-14.tar.gz">
+                Nov 14, 2021
               </a>
               : Isabelle2021
             </li>

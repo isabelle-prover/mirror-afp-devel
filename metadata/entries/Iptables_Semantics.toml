@@ -14,7 +14,7 @@ supporting every iptables match condition by abstracting over
 unknowns. Using this AFP entry and all entries it depends on, we
 created an easy-to-use, stand-alone haskell tool called <a
 href=\"http://iptables.isabelle.systems\">fffuu</a>. The tool does not
-require any input &mdash;except for the <tt>iptables-save</tt> dump of
+require any input &mdash;except for the <code>iptables-save</code> dump of
 the analyzed firewall&mdash; and presents interesting results about
 the user's ruleset. Real-Word firewall errors have been uncovered, and
 the correctness of rulesets has been proved, with the help of

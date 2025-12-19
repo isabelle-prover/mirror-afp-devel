@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Transitive Models of Fragments of ZFC - Archive of Formal Proofs</title>
-    <meta name="description" content="Transitive Models of Fragments of ZFC in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Transitive Models of Fragments of ZFC in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Transitive Models of Fragments of ZFC" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Transitive_Models.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Transitive Models of Fragments of ZFC in the Archive of Formal Proofs">
+    <meta property="og:description" content="Transitive Models of Fragments of ZFC in the Archive of Formal Proofs">
+    <meta property="og:title" content="Transitive Models of Fragments of ZFC">
+    <meta property="og:url" content="https://isa-afp.org/entries/Transitive_Models.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>ransitive <span class='first'>M</span>odels of <span class='first'>F</span>ragments of <span class='first'>Z</span><span class='first'>F</span><span class='first'>C</span>
+  <h1>
+    <span class='first'>T</span>ransitive <span class='first'>M</span>odels of <span class='first'>F</span>ragments of <span class='first'>Z</span><span class='first'>F</span><span class='first'>C</span>
   </h1>
   <div>
       <p><a href="../authors/gunther/">Emmanuel Gunther</a> <a class="obfuscated" data="eyJ1c2VyIjpbImd1bnRoZXIiXSwiaG9zdCI6WyJmYW1hZiIsInVuYyIsImVkdSIsImFyIl19">📧</a>, <a href="../authors/pagano/">Miguel Pagano</a> <a href="https://cs.famaf.unc.edu.ar/~mpagano/">🌐</a>, <a href="../authors/terraf/">Pedro Sánchez Terraf</a> <a href="https://cs.famaf.unc.edu.ar/~pedro/home_en.html">🌐</a> and <a href="../authors/steinberg/">Matías Steinberg</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hdGlhcyIsInN0ZWluYmVyZyJdLCJob3N0IjpbIm1pIiwidW5jIiwiZWR1IiwiYXIiXX0=">📧</a>
@@ -124,41 +116,41 @@ Continuum Hypothesis.</div>
       </ul>
       <h3>Session Transitive_Models</h3>
       <ul>
-          <li><a href="../sessions/transitive_models/#Utils">Utils</a></li>
-          <li><a href="../sessions/transitive_models/#Nat_Miscellanea">Nat_Miscellanea</a></li>
-          <li><a href="../sessions/transitive_models/#ZF_Miscellanea">ZF_Miscellanea</a></li>
-          <li><a href="../sessions/transitive_models/#Renaming">Renaming</a></li>
-          <li><a href="../sessions/transitive_models/#Renaming_Auto">Renaming_Auto</a></li>
-          <li><a href="../sessions/transitive_models/#M_Basic_No_Repl">M_Basic_No_Repl</a></li>
-          <li><a href="../sessions/transitive_models/#Eclose_Absolute">Eclose_Absolute</a></li>
-          <li><a href="../sessions/transitive_models/#Recursion_Thms">Recursion_Thms</a></li>
-          <li><a href="../sessions/transitive_models/#Datatype_absolute">Datatype_absolute</a></li>
-          <li><a href="../sessions/transitive_models/#Internalize">Internalize</a></li>
-          <li><a href="../sessions/transitive_models/#Rec_Separation">Rec_Separation</a></li>
-          <li><a href="../sessions/transitive_models/#Satisfies_absolute">Satisfies_absolute</a></li>
-          <li><a href="../sessions/transitive_models/#DPow_absolute">DPow_absolute</a></li>
-          <li><a href="../sessions/transitive_models/#Synthetic_Definition">Synthetic_Definition</a></li>
-          <li><a href="../sessions/transitive_models/#Internalizations">Internalizations</a></li>
-          <li><a href="../sessions/transitive_models/#Least">Least</a></li>
-          <li><a href="../sessions/transitive_models/#Higher_Order_Constructs">Higher_Order_Constructs</a></li>
-          <li><a href="../sessions/transitive_models/#Relativization">Relativization</a></li>
-          <li><a href="../sessions/transitive_models/#Discipline_Base">Discipline_Base</a></li>
-          <li><a href="../sessions/transitive_models/#Arities">Arities</a></li>
-          <li><a href="../sessions/transitive_models/#Discipline_Function">Discipline_Function</a></li>
-          <li><a href="../sessions/transitive_models/#Lambda_Replacement">Lambda_Replacement</a></li>
-          <li><a href="../sessions/transitive_models/#Discipline_Cardinal">Discipline_Cardinal</a></li>
-          <li><a href="../sessions/transitive_models/#Univ_Relative">Univ_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Cardinal_Relative">Cardinal_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#CardinalArith_Relative">CardinalArith_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Aleph_Relative">Aleph_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Cardinal_AC_Relative">Cardinal_AC_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#FiniteFun_Relative">FiniteFun_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#ZF_Library_Relative">ZF_Library_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Replacement_Lepoll">Replacement_Lepoll</a></li>
-          <li><a href="../sessions/transitive_models/#Cardinal_Library_Relative">Cardinal_Library_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Delta_System_Relative">Delta_System_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Pointed_DC_Relative">Pointed_DC_Relative</a></li>
-          <li><a href="../sessions/transitive_models/#Partial_Functions_Relative">Partial_Functions_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Utils.html">Utils</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Nat_Miscellanea.html">Nat_Miscellanea</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/ZF_Miscellanea.html">ZF_Miscellanea</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Renaming.html">Renaming</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Renaming_Auto.html">Renaming_Auto</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/M_Basic_No_Repl.html">M_Basic_No_Repl</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Eclose_Absolute.html">Eclose_Absolute</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Recursion_Thms.html">Recursion_Thms</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Datatype_absolute.html">Datatype_absolute</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Internalize.html">Internalize</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Rec_Separation.html">Rec_Separation</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Satisfies_absolute.html">Satisfies_absolute</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/DPow_absolute.html">DPow_absolute</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Synthetic_Definition.html">Synthetic_Definition</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Internalizations.html">Internalizations</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Least.html">Least</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Higher_Order_Constructs.html">Higher_Order_Constructs</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Relativization.html">Relativization</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Discipline_Base.html">Discipline_Base</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Arities.html">Arities</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Discipline_Function.html">Discipline_Function</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Lambda_Replacement.html">Lambda_Replacement</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Discipline_Cardinal.html">Discipline_Cardinal</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Univ_Relative.html">Univ_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Cardinal_Relative.html">Cardinal_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/CardinalArith_Relative.html">CardinalArith_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Aleph_Relative.html">Aleph_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Cardinal_AC_Relative.html">Cardinal_AC_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/FiniteFun_Relative.html">FiniteFun_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/ZF_Library_Relative.html">ZF_Library_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Replacement_Lepoll.html">Replacement_Lepoll</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Cardinal_Library_Relative.html">Cardinal_Library_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Delta_System_Relative.html">Delta_System_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Pointed_DC_Relative.html">Pointed_DC_Relative</a></li>
+          <li><a href="../thys/AFP/Transitive_Models/Partial_Functions_Relative.html">Partial_Functions_Relative</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -218,27 +210,32 @@ Continuum Hypothesis.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-03-04.tar.gz">Mar 4, 2022
+              <a href="https://www.isa-afp.org/release/afp-Transitive_Models-2022-03-04.tar.gz">
+                Mar 4, 2022
               </a>
               : Isabelle2021-1
             </li>

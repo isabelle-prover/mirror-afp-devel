@@ -1,0 +1,21 @@
+(* License: LGPL *)
+
+chapter AFP
+
+session Weak_Spectroscopy = "HOL-Library" +
+  (* Timeout (in sec) in case of non-termination problems *)
+  options [timeout = 900]
+
+(* The top-level theories of the submission: *)
+theories
+  HML_SRBB
+  Silent_Step_Spectroscopy
+  Weak_Traces
+  Branching_Bisimilarity
+
+(* Dependencies on document source files: *)
+document_files
+  "root.bib"
+  "root.tex"
+
+

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/CZH_Foundations.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_MIF.html">CZH_Sets_MIF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Utilities.html">CZH_Utilities</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Introduction.html">CZH_Introduction</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Introduction.html">CZH_Sets_Introduction</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Sets.html">CZH_Sets_Sets</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Nat.html">CZH_Sets_Nat</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_BRelations.html">CZH_Sets_BRelations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_IF.html">CZH_Sets_IF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Equipollence.html">CZH_Sets_Equipollence</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Cardinality.html">CZH_Sets_Cardinality</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Ordinals.html">CZH_Sets_Ordinals</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_FSequences.html">CZH_Sets_FSequences</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_FBRelations.html">CZH_Sets_FBRelations</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_VNHS.html">CZH_Sets_VNHS</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_NOP.html">CZH_Sets_NOP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_ZQR.html">CZH_Sets_ZQR</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_EX_Replacement.html">CZH_EX_Replacement</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_EX_TS.html">CZH_EX_TS</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_EX_Algebra.html">CZH_EX_Algebra</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_Sets_Conclusions.html">CZH_Sets_Conclusions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Introduction.html">CZH_DG_Introduction</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Digraph.html">CZH_DG_Digraph</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Small_Digraph.html">CZH_DG_Small_Digraph</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_DGHM.html">CZH_DG_DGHM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Small_DGHM.html">CZH_DG_Small_DGHM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_TDGHM.html">CZH_DG_TDGHM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Small_TDGHM.html">CZH_DG_Small_TDGHM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_PDigraph.html">CZH_DG_PDigraph</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Subdigraph.html">CZH_DG_Subdigraph</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Simple.html">CZH_DG_Simple</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_GRPH.html">CZH_DG_GRPH</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Rel.html">CZH_DG_Rel</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Par.html">CZH_DG_Par</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Set.html">CZH_DG_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_Conclusions.html">CZH_DG_Conclusions</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Introduction.html">CZH_SMC_Introduction</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Semicategory.html">CZH_SMC_Semicategory</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Small_Semicategory.html">CZH_SMC_Small_Semicategory</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Semifunctor.html">CZH_SMC_Semifunctor</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Small_Semifunctor.html">CZH_SMC_Small_Semifunctor</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_NTSMCF.html">CZH_SMC_NTSMCF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Small_NTSMCF.html">CZH_SMC_Small_NTSMCF</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_PSemicategory.html">CZH_SMC_PSemicategory</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Subsemicategory.html">CZH_SMC_Subsemicategory</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Simple.html">CZH_SMC_Simple</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Rel.html">CZH_SMC_Rel</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Par.html">CZH_SMC_Par</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Set.html">CZH_SMC_Set</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_GRPH.html">CZH_SMC_GRPH</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_DG_SemiCAT.html">CZH_DG_SemiCAT</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_SemiCAT.html">CZH_SMC_SemiCAT</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/CZH_Foundations/CZH_SMC_Conclusions.html">CZH_SMC_Conclusions</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span><span class='first'>Z</span><span class='first'>H</span>_<span class='first'>F</span>oundations.<span class='first'>C</span><span class='first'>Z</span><span class='first'>H</span>_<span class='first'>S</span><span class='first'>M</span><span class='first'>C</span>_<span class='first'>C</span>onclusions
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/CZH_Foundations/CZH_SMC_Conclusions.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

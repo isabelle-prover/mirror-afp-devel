@@ -32,5 +32,5 @@ dois = [
   "10.1109/SFCS.2000.892127",
 ]
 pubs = [
-  "<a href=\\\"https://en.wikipedia.org/wiki/Burrows–Wheeler_transform\\\">Wikipedia</a>",
+  "<a href=\"https://en.wikipedia.org/wiki/Burrows–Wheeler_transform\">Wikipedia</a>",
 ]

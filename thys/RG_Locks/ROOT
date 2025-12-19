@@ -1,0 +1,27 @@
+chapter AFP
+
+session RG_Locks = HOL +
+
+  options [
+    timeout = 300
+  ]
+
+  sessions
+    "HOL-Library"
+    "HOL-Hoare"
+    "HOL-Hoare_Parallel"
+    "HOL-Eisbach"
+
+  theories
+    "RG_Syntax_Extensions"
+    "RG_Annotated_Commands"
+    "RG_Examples_Reworked"
+    "Lock_Abstract_Queue"
+    "Lock_Ticket"
+    "Lock_Circular_Buffer"
+    "Function_Supplementary"
+
+  document_files
+    "root.tex"
+    "root.bib"
+

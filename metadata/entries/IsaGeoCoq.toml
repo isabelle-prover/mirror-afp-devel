@@ -142,7 +142,7 @@ Add some postulate-definition to Tarski_postulate_Paralles.thy, (forgot 2025-04-
 
 New Definitions (with arity left,right): Tarski_Neutral_Archimedes.thy
 ----------------------------------------------------------------------
-WARNING: GeoCoq: Grad A B C :: IsaGeoCoq: Grad A B C <--> GradI A B C
+WARNING: GeoCoq: Grad A B C :: IsaGeoCoq: Grad A B C &lt;--&gt; GradI A B C
          Grad 'GeoCoq' === GradI 'IsaGeoCoq'
 	 
 greenberg_s_axiom[GreenBergsAxiom](0,0)
@@ -341,7 +341,7 @@ CREATE: Tarski_Neutral_Archimedes_Continuity.thy
 New Definitions (with arity left,right): Tarski_Neutral_Archimedes_Coninuity.thy
 --------------------------------------------------------------------------------
 WARNING: Signature: AlphaTmp(0,2) but "'p => 'p => 'p =>bool", etc.
-WARNING: Space: GeoCoq: Tm and Tm2 <---> IsaGeoCoq Tm2 = Tm.
+WARNING: Space: GeoCoq: Tm and Tm2 &lt;---&gt; IsaGeoCoq Tm2 = Tm.
 	 
 AlphaTmp(0,2) BetaTmp(0,2) NestedBis(0,2) CantorVariant(0,0)
 inj(0,1) pres_bet(0,1) extension(0,1) inj_line(0,3)

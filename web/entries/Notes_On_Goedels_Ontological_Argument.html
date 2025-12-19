@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) - Archive of Formal Proofs</title>
-    <meta name="description" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the Archive of Formal Proofs">
+    <meta property="og:description" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset) in the Archive of Formal Proofs">
+    <meta property="og:title" content="Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)">
+    <meta property="og:url" content="https://isa-afp.org/entries/Notes_On_Goedels_Ontological_Argument.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>N</span>otes on <span class='first'>G</span>ödel’s and <span class='first'>S</span>cott’s <span class='first'>V</span>ariants of the <span class='first'>O</span>ntological <span class='first'>A</span>rgument (<span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> dataset)
+  <h1>
+    <span class='first'>N</span>otes on <span class='first'>G</span>ödel’s and <span class='first'>S</span>cott’s <span class='first'>V</span>ariants of the <span class='first'>O</span>ntological <span class='first'>A</span>rgument (<span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> dataset)
   </h1>
   <div>
       <p><a href="../authors/benzmueller/">Christoph Benzmüller</a> <a class="obfuscated" data="eyJ1c2VyIjpbImMiLCJiZW56bXVlbGxlciJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19">📧</a> and <a href="../authors/scott/">Dana Scott</a> <a href="http://www.cs.cmu.edu/~scott/">🌐</a>
@@ -126,36 +118,36 @@ Our contribution is explained in full detail in an associated journal article. T
       </ul>
       <h3>Session Notes_On_Goedels_Ontological_Argument</h3>
       <ul>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#SurjectiveCantor">SurjectiveCantor</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#HOMLinHOL">HOMLinHOL</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#TestsHOML">TestsHOML</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ModalFilter">ModalFilter</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML1">GoedelVariantHOML1</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML2">GoedelVariantHOML2</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML3">GoedelVariantHOML3</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ThereIsNoEvil1">ThereIsNoEvil1</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ThereIsNoEvil2">ThereIsNoEvil2</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ScottVariantHOML">ScottVariantHOML</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#HOMLinHOLonlyK">HOMLinHOLonlyK</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ScottVariantHOMLinK">ScottVariantHOMLinK</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ScottVariantHOMLAndersonQuant">ScottVariantHOMLAndersonQuant</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML1poss">GoedelVariantHOML1poss</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML2poss">GoedelVariantHOML2poss</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML3poss">GoedelVariantHOML3poss</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ScottVariantHOMLposs">ScottVariantHOMLposs</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#EvilDerivable">EvilDerivable</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML1AndersonQuant">GoedelVariantHOML1AndersonQuant</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML2AndersonQuant">GoedelVariantHOML2AndersonQuant</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML3AndersonQuant">GoedelVariantHOML3AndersonQuant</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#HOMLinHOLonlyS4">HOMLinHOLonlyS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#TestsHOMLinS4">TestsHOMLinS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML1inS4">GoedelVariantHOML1inS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML2inS4">GoedelVariantHOML2inS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML2possInS4">GoedelVariantHOML2possInS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML3inS4">GoedelVariantHOML3inS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#GoedelVariantHOML3possInS4">GoedelVariantHOML3possInS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ScottVariantHOMLinS4">ScottVariantHOMLinS4</a></li>
-          <li><a href="../sessions/notes_on_goedels_ontological_argument/#ScottVariantHOMLpossInS4">ScottVariantHOMLpossInS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/SurjectiveCantor.html">SurjectiveCantor</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/HOMLinHOL.html">HOMLinHOL</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/TestsHOML.html">TestsHOML</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ModalFilter.html">ModalFilter</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML1.html">GoedelVariantHOML1</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML2.html">GoedelVariantHOML2</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML3.html">GoedelVariantHOML3</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ThereIsNoEvil1.html">ThereIsNoEvil1</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ThereIsNoEvil2.html">ThereIsNoEvil2</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ScottVariantHOML.html">ScottVariantHOML</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/HOMLinHOLonlyK.html">HOMLinHOLonlyK</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ScottVariantHOMLinK.html">ScottVariantHOMLinK</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ScottVariantHOMLAndersonQuant.html">ScottVariantHOMLAndersonQuant</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML1poss.html">GoedelVariantHOML1poss</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML2poss.html">GoedelVariantHOML2poss</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML3poss.html">GoedelVariantHOML3poss</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ScottVariantHOMLposs.html">ScottVariantHOMLposs</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/EvilDerivable.html">EvilDerivable</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML1AndersonQuant.html">GoedelVariantHOML1AndersonQuant</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML2AndersonQuant.html">GoedelVariantHOML2AndersonQuant</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML3AndersonQuant.html">GoedelVariantHOML3AndersonQuant</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/HOMLinHOLonlyS4.html">HOMLinHOLonlyS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/TestsHOMLinS4.html">TestsHOMLinS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML1inS4.html">GoedelVariantHOML1inS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML2inS4.html">GoedelVariantHOML2inS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML2possInS4.html">GoedelVariantHOML2possInS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML3inS4.html">GoedelVariantHOML3inS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/GoedelVariantHOML3possInS4.html">GoedelVariantHOML3possInS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ScottVariantHOMLinS4.html">ScottVariantHOMLinS4</a></li>
+          <li><a href="../thys/AFP/Notes_On_Goedels_Ontological_Argument/ScottVariantHOMLpossInS4.html">ScottVariantHOMLpossInS4</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -203,17 +195,20 @@ Our contribution is explained in full detail in an associated journal article. T
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-2025-01-17.tar.gz">Jan 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-2025-01-17.tar.gz">
+                Jan 17, 2025
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-2025-01-07.tar.gz">Jan 7, 2025
+              <a href="https://www.isa-afp.org/release/afp-Notes_On_Goedels_Ontological_Argument-2025-01-07.tar.gz">
+                Jan 7, 2025
               </a>
               : Isabelle2024
             </li>

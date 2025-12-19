@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Hidden Number Problem - Archive of Formal Proofs</title>
-    <meta name="description" content="The Hidden Number Problem in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The Hidden Number Problem in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The Hidden Number Problem" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Hidden_Number_Problem.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The Hidden Number Problem in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Hidden Number Problem in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Hidden Number Problem">
+    <meta property="og:url" content="https://isa-afp.org/entries/Hidden_Number_Problem.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he <span class='first'>H</span>idden <span class='first'>N</span>umber <span class='first'>P</span>roblem
+  <h1>
+    <span class='first'>T</span>he <span class='first'>H</span>idden <span class='first'>N</span>umber <span class='first'>P</span>roblem
   </h1>
   <div>
       <p><a href="../authors/binder/">Sage Binder</a> <a class="obfuscated" data="eyJ1c2VyIjpbInNhZ2UtYmluZGVyIl0sImhvc3QiOlsidWlvd2EiLCJlZHUiXX0=">📧</a>, <a href="../authors/ren/">Eric Ren</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJlbmVyaWMiLCIyMDAyIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0=">📧</a> and <a href="../authors/cordwell/">Katherine Kosaian</a> <a class="obfuscated" data="eyJ1c2VyIjpbImthdGhlcmluZS1rb3NhaWFuIl0sImhvc3QiOlsidWlvd2EiLCJlZHUiXX0=">📧</a>
@@ -107,11 +99,11 @@
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">In this entry, we formalize the Hidden Number Problem (HNP), originally introduced by Boneh and Venkatesan in 1996. Intuitively, the HNP involves demonstrating the existence of an algorithm (the ``adversary'') which can compute (with high probability) a hidden number $\alpha$ given access to a bit-leaking oracle. Originally developed to establish the security of Diffie--Hellman key exchange, the HNP has since been used not only for protocol security but also in cryptographic attacks, including notable ones on DSA and ECDSA.
+    <div class="abstract mathjax_process">In this entry, we formalize the Hidden Number Problem (HNP), originally introduced by Boneh and Venkatesan in 1996. Intuitively, the HNP involves demonstrating the existence of an algorithm (the "adversary") which can compute (with high probability) a hidden number $\alpha$ given access to a bit-leaking oracle. Originally developed to establish the security of Diffie--Hellman key exchange, the HNP has since been used not only for protocol security but also in cryptographic attacks, including notable ones on DSA and ECDSA.
 
 Additionally, the HNP makes use of an instance of Babai's nearest plane algorithm, which solves the approximate closest vector problem. Thus, building on the LLL algorithm (which has already been formalized), we formalize Babai's algorithm, which itself is of independent interest. Our formalizations of Babai's algorithm and the HNP adversary are executable, setting up potential future work, e.g. in developing formally verified instances of cryptographic attacks.
 
-Note, our formalization of Babai's algorithm here is an updated version of a previous AFP entry of ours. The updates include a tighter error bound, which is required for our HNP proof.</div>
+Note, our formalization of Babai's algorithm is in the entry Babai_Nearest_Plane, which is a dependency of this entry.</div>
 
     <h3>License</h3>
     <div>
@@ -131,9 +123,9 @@ Note, our formalization of Babai's algorithm here is an updated version of a pre
       </ul>
       <h3>Session Hidden_Number_Problem</h3>
       <ul>
-          <li><a href="../sessions/hidden_number_problem/#Misc_PMF">Misc_PMF</a></li>
-          <li><a href="../sessions/hidden_number_problem/#Hidden_Number_Problem">Hidden_Number_Problem</a></li>
-          <li><a href="../sessions/hidden_number_problem/#Ad_Codegen_Example">Ad_Codegen_Example</a></li>
+          <li><a href="../thys/AFP/Hidden_Number_Problem/Misc_PMF.html">Misc_PMF</a></li>
+          <li><a href="../thys/AFP/Hidden_Number_Problem/Hidden_Number_Problem.html">Hidden_Number_Problem</a></li>
+          <li><a href="../thys/AFP/Hidden_Number_Problem/Ad_Codegen_Example.html">Ad_Codegen_Example</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -184,6 +176,15 @@ Note, our formalization of Babai's algorithm here is an updated version of a pre
       <a class="close" href="#">&times;</a>
       <a href="https://www.isa-afp.org/release/afp-Hidden_Number_Problem-current.tar.gz" download>
         Download latest</a>
+        <p>Older releases:</p>
+        <ul>
+            <li>
+              <a href="https://www.isa-afp.org/release/afp-Hidden_Number_Problem-2025-06-26.tar.gz">
+                Jun 26, 2025
+              </a>
+              : Isabelle2025
+            </li>
+        </ul>
     </div>
   </div>
       </div>

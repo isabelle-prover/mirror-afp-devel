@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Simpl.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Language.html">Language</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Semantic.html">Semantic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HoarePartialDef.html">HoarePartialDef</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HoarePartialProps.html">HoarePartialProps</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HoarePartial.html">HoarePartial</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Termination.html">Termination</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/SmallStep.html">SmallStep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HoareTotalDef.html">HoareTotalDef</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HoareTotalProps.html">HoareTotalProps</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HoareTotal.html">HoareTotal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Hoare.html">Hoare</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/StateSpace.html">StateSpace</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/AlternativeSmallStep.html">AlternativeSmallStep</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Simpl_Heap.html">Simpl_Heap</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/HeapList.html">HeapList</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Generalise.html">Generalise</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Vcg.html">Vcg</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/SyntaxTest.html">SyntaxTest</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/VcgEx.html">VcgEx</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/VcgExSP.html">VcgExSP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/VcgExTotal.html">VcgExTotal</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Quicksort.html">Quicksort</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/XVcg.html">XVcg</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/XVcgEx.html">XVcgEx</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Simpl/ProcParEx.html">ProcParEx</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/ProcParExSP.html">ProcParExSP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Closure.html">Closure</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/ClosureEx.html">ClosureEx</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Compose.html">Compose</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/ComposeEx.html">ComposeEx</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/UserGuide.html">UserGuide</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Simpl/Simpl.html">Simpl</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span>impl.<span class='first'>P</span>roc<span class='first'>P</span>ar<span class='first'>E</span>x
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Simpl/ProcParEx.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

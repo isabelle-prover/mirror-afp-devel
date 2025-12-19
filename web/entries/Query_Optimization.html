@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Verification of Query Optimization Algorithms - Archive of Formal Proofs</title>
-    <meta name="description" content="Verification of Query Optimization Algorithms in the Archive of Formal Proofs" />
-    <meta property="og:description" content="Verification of Query Optimization Algorithms in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="Verification of Query Optimization Algorithms" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Query_Optimization.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="Verification of Query Optimization Algorithms in the Archive of Formal Proofs">
+    <meta property="og:description" content="Verification of Query Optimization Algorithms in the Archive of Formal Proofs">
+    <meta property="og:title" content="Verification of Query Optimization Algorithms">
+    <meta property="og:url" content="https://isa-afp.org/entries/Query_Optimization.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>V</span>erification of <span class='first'>Q</span>uery <span class='first'>O</span>ptimization <span class='first'>A</span>lgorithms
+  <h1>
+    <span class='first'>V</span>erification of <span class='first'>Q</span>uery <span class='first'>O</span>ptimization <span class='first'>A</span>lgorithms
   </h1>
   <div>
       <p><a href="../authors/stevens/">Lukas Stevens</a> <a href="https://www21.in.tum.de/team/stevensl">🌐</a> and <a href="../authors/stoeckl/">Bernhard Stöckl</a> <a class="obfuscated" data="eyJ1c2VyIjpbInN0b2Vja2wiXSwiaG9zdCI6WyJpbiIsInR1bSIsImRlIl19">📧</a>
@@ -124,21 +116,21 @@ optimal solution within a restricted solution space.</div>
       </ul>
       <h3>Session Query_Optimization</h3>
       <ul>
-          <li><a href="../sessions/query_optimization/#Misc">Misc</a></li>
-          <li><a href="../sessions/query_optimization/#Graph_Theory_Batteries">Graph_Theory_Batteries</a></li>
-          <li><a href="../sessions/query_optimization/#Graph_Definitions">Graph_Definitions</a></li>
-          <li><a href="../sessions/query_optimization/#Shortest_Path_Tree">Shortest_Path_Tree</a></li>
-          <li><a href="../sessions/query_optimization/#Selectivities">Selectivities</a></li>
-          <li><a href="../sessions/query_optimization/#JoinTree">JoinTree</a></li>
-          <li><a href="../sessions/query_optimization/#CostFunctions">CostFunctions</a></li>
-          <li><a href="../sessions/query_optimization/#Graph_Additions">Graph_Additions</a></li>
-          <li><a href="../sessions/query_optimization/#QueryGraph">QueryGraph</a></li>
-          <li><a href="../sessions/query_optimization/#Directed_Tree_Additions">Directed_Tree_Additions</a></li>
-          <li><a href="../sessions/query_optimization/#Dtree">Dtree</a></li>
-          <li><a href="../sessions/query_optimization/#List_Dtree">List_Dtree</a></li>
-          <li><a href="../sessions/query_optimization/#IKKBZ">IKKBZ</a></li>
-          <li><a href="../sessions/query_optimization/#IKKBZ_Optimality">IKKBZ_Optimality</a></li>
-          <li><a href="../sessions/query_optimization/#IKKBZ_Examples">IKKBZ_Examples</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Misc.html">Misc</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Graph_Theory_Batteries.html">Graph_Theory_Batteries</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Graph_Definitions.html">Graph_Definitions</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Shortest_Path_Tree.html">Shortest_Path_Tree</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Selectivities.html">Selectivities</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/JoinTree.html">JoinTree</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/CostFunctions.html">CostFunctions</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Graph_Additions.html">Graph_Additions</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/QueryGraph.html">QueryGraph</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Directed_Tree_Additions.html">Directed_Tree_Additions</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/Dtree.html">Dtree</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/List_Dtree.html">List_Dtree</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/IKKBZ.html">IKKBZ</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/IKKBZ_Optimality.html">IKKBZ_Optimality</a></li>
+          <li><a href="../thys/AFP/Query_Optimization/IKKBZ_Examples.html">IKKBZ_Examples</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -192,27 +184,32 @@ optimal solution within a restricted solution space.</div>
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2022-10-05.tar.gz">Oct 5, 2022
+              <a href="https://www.isa-afp.org/release/afp-Query_Optimization-2022-10-05.tar.gz">
+                Oct 5, 2022
               </a>
               : Isabelle2021-1
             </li>

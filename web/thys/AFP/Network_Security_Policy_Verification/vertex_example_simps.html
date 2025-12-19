@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/isabelle.css">
+  <link rel="icon" href="../../../images/favicon.ico" type="image/icon">
+
+  <script src="../../../js/util.js"></script>
+  <script src="../../../js/flexsearch.bundle.js"></script>
+  <script src="../../../js/search-autocomplete.js"></script>
+    <script src="../../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../../" class="logo-link">
+    <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../../" class="logo-link">
+        <img src="../../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../../entries/Network_Security_Policy_Verification.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/ML_GraphViz.html">ML_GraphViz</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/ML_GraphViz_Disable.html">ML_GraphViz_Disable</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/FiniteGraph.html">FiniteGraph</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/FiniteListGraph.html">FiniteListGraph</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Util.html">TopoS_Util</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Efficient_Distinct.html">Efficient_Distinct</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/FiniteListGraph_Impl.html">FiniteListGraph_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Vertices.html">TopoS_Vertices</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Interface.html">TopoS_Interface</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_withOffendingFlows.html">TopoS_withOffendingFlows</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_ENF.html">TopoS_ENF</a>
+          </li>
+          <li class="active" >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/vertex_example_simps.html">vertex_example_simps</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Helper.html">TopoS_Helper</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Subnets2.html">SINVAR_Subnets2</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_BLPstrict.html">SINVAR_BLPstrict</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Tainting.html">SINVAR_Tainting</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_BLPbasic.html">SINVAR_BLPbasic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_TaintingTrusted.html">SINVAR_TaintingTrusted</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_BLPtrusted.html">SINVAR_BLPtrusted</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Analysis_Tainting.html">Analysis_Tainting</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Interface_impl.html">TopoS_Interface_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_BLPbasic_impl.html">SINVAR_BLPbasic_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Subnets.html">SINVAR_Subnets</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Subnets_impl.html">SINVAR_Subnets_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_DomainHierarchyNG.html">SINVAR_DomainHierarchyNG</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_DomainHierarchyNG_impl.html">SINVAR_DomainHierarchyNG_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_BLPtrusted_impl.html">SINVAR_BLPtrusted_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_SecGwExt.html">SINVAR_SecGwExt</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_SecGwExt_impl.html">SINVAR_SecGwExt_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Sink.html">SINVAR_Sink</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Sink_impl.html">SINVAR_Sink_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_SubnetsInGW.html">SINVAR_SubnetsInGW</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_SubnetsInGW_impl.html">SINVAR_SubnetsInGW_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_CommunicationPartners.html">SINVAR_CommunicationPartners</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_CommunicationPartners_impl.html">SINVAR_CommunicationPartners_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_NoRefl.html">SINVAR_NoRefl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_NoRefl_impl.html">SINVAR_NoRefl_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Tainting_impl.html">SINVAR_Tainting_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_TaintingTrusted_impl.html">SINVAR_TaintingTrusted_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Dependability.html">SINVAR_Dependability</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Dependability_impl.html">SINVAR_Dependability_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_NonInterference.html">SINVAR_NonInterference</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_NonInterference_impl.html">SINVAR_NonInterference_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_ACLcommunicateWith.html">SINVAR_ACLcommunicateWith</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_ACLnotCommunicateWith.html">SINVAR_ACLnotCommunicateWith</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_ACLnotCommunicateWith_impl.html">SINVAR_ACLnotCommunicateWith_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_ACLcommunicateWith_impl.html">SINVAR_ACLcommunicateWith_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Dependability_norefl.html">SINVAR_Dependability_norefl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Dependability_norefl_impl.html">SINVAR_Dependability_norefl_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Library.html">TopoS_Library</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Composition_Theory.html">TopoS_Composition_Theory</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Stateful_Policy.html">TopoS_Stateful_Policy</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Composition_Theory_impl.html">TopoS_Composition_Theory_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Stateful_Policy_Algorithm.html">TopoS_Stateful_Policy_Algorithm</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Stateful_Policy_impl.html">TopoS_Stateful_Policy_impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/METASINVAR_SystemBoundary.html">METASINVAR_SystemBoundary</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_Impl.html">TopoS_Impl</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Network_Security_Policy_Verification.html">Network_Security_Policy_Verification</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Example_BLP.html">Example_BLP</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/TopoS_generateCode.html">TopoS_generateCode</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/attic.html">attic</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Impl_List_Playground_ChairNetwork.html">Impl_List_Playground_ChairNetwork</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Impl_List_Playground_statefulpolicycompliance.html">Impl_List_Playground_statefulpolicycompliance</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Example.html">Example</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Example_NetModel.html">Example_NetModel</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Example_Forte14.html">Example_Forte14</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Distributed_WebApp.html">Distributed_WebApp</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/I8_SSH_Landscape.html">I8_SSH_Landscape</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Impl_List_Playground.html">Impl_List_Playground</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Impl_List_Playground_ChairNetwork_statefulpolicy_example.html">Impl_List_Playground_ChairNetwork_statefulpolicy_example</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/CryptoDB.html">CryptoDB</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/IDEM.html">IDEM</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/MeasrDroid.html">MeasrDroid</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/SINVAR_Examples.html">SINVAR_Examples</a>
+          </li>
+          <li >
+            <a href="../../../thys/AFP/Network_Security_Policy_Verification/Imaginary_Factory_Network.html">Imaginary_Factory_Network</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>N</span>etwork_<span class='first'>S</span>ecurity_<span class='first'>P</span>olicy_<span class='first'>V</span>erification.vertex_example_simps
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Network_Security_Policy_Verification/vertex_example_simps.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>

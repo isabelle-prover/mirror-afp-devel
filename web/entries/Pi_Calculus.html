@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The pi-calculus in nominal logic - Archive of Formal Proofs</title>
-    <meta name="description" content="The pi-calculus in nominal logic in the Archive of Formal Proofs" />
-    <meta property="og:description" content="The pi-calculus in nominal logic in the Archive of Formal Proofs" />
-
-  <meta property="og:title" content="The pi-calculus in nominal logic" />
-  <meta property="og:url" content="https://isa-afp.org/entries/Pi_Calculus.html" />
-  <meta property="og:image" content="https://isa-afp.org/images/afp.png" />
-    <meta property="og:type" content="article" />
+    <meta name="description" content="The pi-calculus in nominal logic in the Archive of Formal Proofs">
+    <meta property="og:description" content="The pi-calculus in nominal logic in the Archive of Formal Proofs">
+    <meta property="og:title" content="The pi-calculus in nominal logic">
+    <meta property="og:url" content="https://isa-afp.org/entries/Pi_Calculus.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
-
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
     
     <script>
@@ -28,56 +25,51 @@
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
     </script>
-    <script src="../js/entries.js"></script>
 
-  <script src="../js/obfuscate.js"></script>
-  <script src="../js/flexsearch.bundle.js"></script>
-  <script src="../js/scroll-spy.js"></script>
-  <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script>
-    <script src="../js/header-search.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
 </head>
 
   <body class="mathjax_ignore">
     <aside><div id="menu-toggle">
-  <input id="toggle" type="checkbox" />
+  <input id="toggle" type="checkbox">
   <label for="toggle">
     <span>menu</span>
-    <img src="../images/menu.svg" alt="Menu" />
+    <img src="../images/menu.svg" alt="Menu">
   </label>
-
   <a href="../" class="logo-link">
     <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
   </a>
-
   <nav id="menu">
     <div>
       <a href="../" class="logo-link">
         <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
       </a>
       <ul>
-          <a href="../">
-            <li >Home</li>
-          </a>
-          <a href="../topics/">
-            <li >Topics</li>
-          </a>
-          <a href="../download/">
-            <li >Download</li>
-          </a>
-          <a href="../help/">
-            <li >Help</li>
-          </a>
-          <a href="../submission/">
-            <li >Submission</li>
-          </a>
-          <a href="../statistics/">
-            <li >Statistics</li>
-          </a>
-          <a href="../about/">
-            <li >About</li>
-          </a>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
       </ul>
     </div>
   </nav>
@@ -85,17 +77,17 @@
     </aside>
 
     <div class="content entries"><header>
-    <form autocomplete="off" action="../search">
+    <form autocomplete="off" action="../search/">
       <div class="form-container">
-        <input id="search-input" type="search" size="31" maxlength="255" value=""
-               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="button">
-          <img src="../images/search.svg" alt="Search" />
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
         </button>
-        <datalist id="autocomplete">
-        </datalist>
+        <datalist id="autocomplete"></datalist>
       </div>
     </form>
-  <h1 ><span class='first'>T</span>he pi-calculus in nominal logic
+  <h1>
+    <span class='first'>T</span>he pi-calculus in nominal logic
   </h1>
   <div>
       <p><a href="../authors/bengtson/">Jesper Bengtson</a> <a href="http://www.itu.dk/people/jebe">🌐</a>
@@ -123,60 +115,60 @@ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/file
       </ul>
       <h3>Session Pi_Calculus</h3>
       <ul>
-          <li><a href="../sessions/pi_calculus/#Agent">Agent</a></li>
-          <li><a href="../sessions/pi_calculus/#Late_Semantics">Late_Semantics</a></li>
-          <li><a href="../sessions/pi_calculus/#Late_Semantics1">Late_Semantics1</a></li>
-          <li><a href="../sessions/pi_calculus/#Rel">Rel</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Sim">Strong_Late_Sim</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Bisim">Strong_Late_Bisim</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Bisim_Subst">Strong_Late_Bisim_Subst</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Sim_Pres">Strong_Late_Sim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Bisim_Pres">Strong_Late_Bisim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Bisim_Subst_Pres">Strong_Late_Bisim_Subst_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Late_Tau_Chain">Late_Tau_Chain</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Step_Semantics">Weak_Late_Step_Semantics</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Semantics">Weak_Late_Semantics</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Sim">Weak_Late_Sim</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Bisim">Weak_Late_Bisim</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Step_Sim">Weak_Late_Step_Sim</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Cong">Weak_Late_Cong</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Bisim_Subst">Weak_Late_Bisim_Subst</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Cong_Subst">Weak_Late_Cong_Subst</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Sim_SC">Strong_Late_Sim_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Bisim_SC">Strong_Late_Bisim_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Bisim_Subst_SC">Strong_Late_Bisim_Subst_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Cong_Subst_SC">Weak_Late_Cong_Subst_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Step_Sim_Pres">Weak_Late_Step_Sim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Bisim_SC">Weak_Late_Bisim_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Sim_Pres">Weak_Late_Sim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Bisim_Pres">Weak_Late_Bisim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Late_Cong_Pres">Weak_Late_Cong_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Early_Semantics">Early_Semantics</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Sim">Strong_Early_Sim</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Bisim">Strong_Early_Bisim</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Bisim_Subst">Strong_Early_Bisim_Subst</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Sim_Pres">Strong_Early_Sim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Bisim_Pres">Strong_Early_Bisim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Bisim_Subst_Pres">Strong_Early_Bisim_Subst_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Early_Tau_Chain">Early_Tau_Chain</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Step_Semantics">Weak_Early_Step_Semantics</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Semantics">Weak_Early_Semantics</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Sim">Weak_Early_Sim</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Bisim">Weak_Early_Bisim</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Step_Sim">Weak_Early_Step_Sim</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Cong">Weak_Early_Cong</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Bisim_Subst">Weak_Early_Bisim_Subst</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Cong_Subst">Weak_Early_Cong_Subst</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Step_Sim_Pres">Weak_Early_Step_Sim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Sim_Pres">Weak_Early_Sim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Late_Comp">Strong_Early_Late_Comp</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Early_Bisim_SC">Strong_Early_Bisim_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Bisim_SC">Weak_Early_Bisim_SC</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Bisim_Pres">Weak_Early_Bisim_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Cong_Pres">Weak_Early_Cong_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Weak_Early_Cong_Subst_Pres">Weak_Early_Cong_Subst_Pres</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Expansion_Law">Strong_Late_Expansion_Law</a></li>
-          <li><a href="../sessions/pi_calculus/#Strong_Late_Axiomatisation">Strong_Late_Axiomatisation</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Agent.html">Agent</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Late_Semantics.html">Late_Semantics</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Late_Semantics1.html">Late_Semantics1</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Rel.html">Rel</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Sim.html">Strong_Late_Sim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Bisim.html">Strong_Late_Bisim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Subst.html">Strong_Late_Bisim_Subst</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Sim_Pres.html">Strong_Late_Sim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Pres.html">Strong_Late_Bisim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Subst_Pres.html">Strong_Late_Bisim_Subst_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Late_Tau_Chain.html">Late_Tau_Chain</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Step_Semantics.html">Weak_Late_Step_Semantics</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Semantics.html">Weak_Late_Semantics</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Sim.html">Weak_Late_Sim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Bisim.html">Weak_Late_Bisim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Step_Sim.html">Weak_Late_Step_Sim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Cong.html">Weak_Late_Cong</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Bisim_Subst.html">Weak_Late_Bisim_Subst</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Cong_Subst.html">Weak_Late_Cong_Subst</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Sim_SC.html">Strong_Late_Sim_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Bisim_SC.html">Strong_Late_Bisim_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Bisim_Subst_SC.html">Strong_Late_Bisim_Subst_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Cong_Subst_SC.html">Weak_Late_Cong_Subst_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Step_Sim_Pres.html">Weak_Late_Step_Sim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Bisim_SC.html">Weak_Late_Bisim_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Sim_Pres.html">Weak_Late_Sim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Bisim_Pres.html">Weak_Late_Bisim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Late_Cong_Pres.html">Weak_Late_Cong_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Early_Semantics.html">Early_Semantics</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Sim.html">Strong_Early_Sim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Bisim.html">Strong_Early_Bisim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Bisim_Subst.html">Strong_Early_Bisim_Subst</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Sim_Pres.html">Strong_Early_Sim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Bisim_Pres.html">Strong_Early_Bisim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Bisim_Subst_Pres.html">Strong_Early_Bisim_Subst_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Early_Tau_Chain.html">Early_Tau_Chain</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Step_Semantics.html">Weak_Early_Step_Semantics</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Semantics.html">Weak_Early_Semantics</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Sim.html">Weak_Early_Sim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Bisim.html">Weak_Early_Bisim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Step_Sim.html">Weak_Early_Step_Sim</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Cong.html">Weak_Early_Cong</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Bisim_Subst.html">Weak_Early_Bisim_Subst</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Cong_Subst.html">Weak_Early_Cong_Subst</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Step_Sim_Pres.html">Weak_Early_Step_Sim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Sim_Pres.html">Weak_Early_Sim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Late_Comp.html">Strong_Early_Late_Comp</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Early_Bisim_SC.html">Strong_Early_Bisim_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Bisim_SC.html">Weak_Early_Bisim_SC</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Bisim_Pres.html">Weak_Early_Bisim_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Cong_Pres.html">Weak_Early_Cong_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Weak_Early_Cong_Subst_Pres.html">Weak_Early_Cong_Subst_Pres</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Expansion_Law.html">Strong_Late_Expansion_Law</a></li>
+          <li><a href="../thys/AFP/Pi_Calculus/Strong_Late_Axiomatisation.html">Strong_Late_Axiomatisation</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -224,92 +216,110 @@ This entry is described in detail in <a href="http://www.itu.dk/people/jebe/file
         <p>Older releases:</p>
         <ul>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2025-03-17.tar.gz">Mar 17, 2025
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2025-03-17.tar.gz">
+                Mar 17, 2025
               </a>
               : Isabelle2025
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2024-05-26.tar.gz">May 26, 2024
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2024-05-26.tar.gz">
+                May 26, 2024
               </a>
               : Isabelle2024
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2023-09-13.tar.gz">Sep 13, 2023
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2023-09-13.tar.gz">
+                Sep 13, 2023
               </a>
               : Isabelle2023
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2022-10-27.tar.gz">Oct 27, 2022
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2022-10-27.tar.gz">
+                Oct 27, 2022
               </a>
               : Isabelle2022
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2021-12-14.tar.gz">Dec 14, 2021
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2021-12-14.tar.gz">
+                Dec 14, 2021
               </a>
               : Isabelle2021-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2021-02-23.tar.gz">Feb 23, 2021
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2021-02-23.tar.gz">
+                Feb 23, 2021
               </a>
               : Isabelle2021
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2020-04-20.tar.gz">Apr 20, 2020
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2020-04-20.tar.gz">
+                Apr 20, 2020
               </a>
               : Isabelle2020
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2019-06-11.tar.gz">Jun 11, 2019
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2019-06-11.tar.gz">
+                Jun 11, 2019
               </a>
               : Isabelle2019
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2018-08-16.tar.gz">Aug 16, 2018
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2018-08-16.tar.gz">
+                Aug 16, 2018
               </a>
               : Isabelle2018
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2017-10-10.tar.gz">Oct 10, 2017
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2017-10-10.tar.gz">
+                Oct 10, 2017
               </a>
               : Isabelle2017
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2016-12-17.tar.gz">Dec 17, 2016
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2016-12-17.tar.gz">
+                Dec 17, 2016
               </a>
               : Isabelle2016-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2016-02-22.tar.gz">Feb 22, 2016
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2016-02-22.tar.gz">
+                Feb 22, 2016
               </a>
               : Isabelle2016
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2015-05-27.tar.gz">May 27, 2015
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2015-05-27.tar.gz">
+                May 27, 2015
               </a>
               : Isabelle2015
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2014-08-28.tar.gz">Aug 28, 2014
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2014-08-28.tar.gz">
+                Aug 28, 2014
               </a>
               : Isabelle2014
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2013-12-11.tar.gz">Dec 11, 2013
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2013-12-11.tar.gz">
+                Dec 11, 2013
               </a>
               : Isabelle2013-2
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2013-11-17.tar.gz">Nov 17, 2013
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2013-11-17.tar.gz">
+                Nov 17, 2013
               </a>
               : Isabelle2013-1
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2013-02-16.tar.gz">Feb 16, 2013
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2013-02-16.tar.gz">
+                Feb 16, 2013
               </a>
               : Isabelle2013
             </li>
             <li>
-              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2012-06-14.tar.gz">Jun 14, 2012
+              <a href="https://www.isa-afp.org/release/afp-Pi_Calculus-2012-06-14.tar.gz">
+                Jun 14, 2012
               </a>
               : Isabelle2012
             </li>

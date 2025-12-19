@@ -4,6 +4,25 @@
     <title>Computer science/Concurrency</title>
     <link>https://isa-afp.org/topics/computer-science/concurrency/</link>
     <description>AFP entries in Concurrency</description><item>
+  <title>Rely-Guarantee Extensions and Locks</title>
+  <link>https://isa-afp.org/entries/RG_Locks.html</link>
+  <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Extensions and Locks in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Algorithms/Concurrent</category>
+</item>
+<item>
+  <title>The Weak Spectroscopy Game to Characterize Behavioral Equivalences</title>
+  <link>https://isa-afp.org/entries/Weak_Spectroscopy.html</link>
+  <pubDate>Mon, 17 Nov 2025 00:00:00 +0000</pubDate>
+  <description>The Weak Spectroscopy Game to Characterize Behavioral Equivalences in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
   <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
   <link>https://isa-afp.org/entries/Serializable.html</link>
   <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>
