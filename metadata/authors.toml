@@ -1070,17 +1070,6 @@ orcid = "0000-0002-6355-1200"
 
 [brucker.emails]
 
-[brucker.emails.brucker_email]
-user = [
-  "a",
-  "brucker",
-]
-host = [
-  "exeter",
-  "ac",
-  "uk",
-]
-
 [brucker.emails.brucker_email2]
 user = [
   "adbrucker",
