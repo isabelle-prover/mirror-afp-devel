@@ -524,7 +524,7 @@ proof -
     ultimately have d: "cos (- pi - arccos (1 - x * 2)) = (x * 2 - 1)"
       using cos_arccos[OF i] mult.commute by metis
     have cosm: "\<And>x. cos (x - pi*2) = cos x"
-      by (metis cos_periodic eq_diff_eq' mult.commute) 
+      by (metis cos_periodic eq_diff_eq mult.commute) 
     have 34: "?LHS3 x = (?RHS3  \<circ> ?\<phi>) x"  "?LHS4 x = (?RHS4 \<circ> ?\<phi>) x"
       using d_gt_0 x a b c iii cos_periodic [of "pi / 2 - arccos (x * 2 - 1)"] 
        apply (auto simp add: x_coord_def algebra_simps diff_divide_distrib power2_eq_square)

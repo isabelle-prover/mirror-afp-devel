@@ -312,7 +312,7 @@ proof-
         from uv have "b = (1/v) *\<^sub>R x - (u/v) *\<^sub>R a"
           by (smt (verit, ccfv_threshold) ** divide_inverse_commute inverse_eq_divide real_vector_affinity_eq vector_space_assms(3) Groups.add_ac(2))
         moreover from uv have "1/v - u/v = 1"
-          by (metis "**" add.commute add_cancel_right_left diff_divide_distrib divide_self_if eq_diff_eq' not_one_less_zero)
+          by (metis "**" add.commute add_cancel_right_left diff_divide_distrib divide_self_if eq_diff_eq not_one_less_zero)
         ultimately have "b = (1 - 1/v) *\<^sub>R a + (1/v) *\<^sub>R x" by (simp add: diff_eq_eq)
         moreover from uv ** have "0 < 1/v \<and> 1/v < 1" by simp
         ultimately show ?thesis
@@ -331,7 +331,7 @@ proof-
         from uv have "a = (1/u) *\<^sub>R x - (v/u) *\<^sub>R b"
           by (smt (verit, ccfv_threshold) ** divide_inverse_commute inverse_eq_divide real_vector_affinity_eq vector_space_assms(3) Groups.add_ac(2))
         moreover from uv have "1/u - v/u = 1"
-          by (metis "**" add_cancel_right_left diff_divide_distrib divide_self_if eq_diff_eq' not_one_less_zero)
+          by (metis "**" add_cancel_right_left diff_divide_distrib divide_self_if eq_diff_eq not_one_less_zero)
         ultimately have "a = (1 - 1/u) *\<^sub>R b + (1/u) *\<^sub>R x" by (simp add: diff_eq_eq)
         moreover from uv ** have "0 < 1/u \<and> 1/u < 1" by simp
         ultimately show ?thesis

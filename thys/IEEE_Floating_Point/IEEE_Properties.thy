@@ -905,7 +905,7 @@ proof -
   next
     case False
     then show ?thesis
-      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq error_def zerosign_def)
   qed
 qed
 
@@ -942,7 +942,7 @@ proof -
   next
     case False
     then show ?thesis
-      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq error_def zerosign_def)
   qed
 qed
 
@@ -977,7 +977,7 @@ proof -
       by (metis True signzero_zero val_zero val_ab)
   next
     case False then show ?thesis
-      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq error_def zerosign_def)
   qed
 qed
 
@@ -1012,7 +1012,7 @@ proof -
       by (metis True signzero_zero val_zero val_ab)
   next
     case False then show ?thesis
-      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq error_def zerosign_def)
   qed
 qed
 

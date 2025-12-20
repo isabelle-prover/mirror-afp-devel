@@ -835,7 +835,7 @@ proof -
     apply (auto simp: vars_def times_mpoly.rep_eq Var.rep_eq
     elim!: in_keys_timesE dest: keys_add')
     apply (auto simp: keys_def lookup_times_monomial_left Var.rep_eq Var\<^sub>0_def adds_def
-      lookup_add eq_diff_eq'[symmetric])
+      lookup_add eq_diff_eq[symmetric])
     done
 qed
 
