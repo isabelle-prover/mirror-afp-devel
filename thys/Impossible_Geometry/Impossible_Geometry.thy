@@ -514,7 +514,7 @@ next
      show ?thesis
       apply (rule exI [where x= ?a], rule exI [where x= ?b])
       using ab False
-      by (simp add: algebra_simps not_in_own_radicals eq_diff_eq' radical_sqrt_normal_form_inverse)
+      by (simp add: algebra_simps not_in_own_radicals eq_diff_eq radical_sqrt_normal_form_inverse)
   qed
 next
   case (Addition e1 e2)
