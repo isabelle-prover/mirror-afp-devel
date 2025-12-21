@@ -29,7 +29,10 @@ FILES=$LN@$FILES
 EXPORT_PRE=afp
 DATE=`date '+%Y-%m-%d'`
 
-TAR=tar
+# Do not include attribute files on MacOS:
+export COPYFILE_DISABLE=1
+# Do not create extended attributes on any platform
+TAR="tar --no-xattrs"
 
 
 ## functions
