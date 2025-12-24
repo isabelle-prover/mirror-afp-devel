@@ -136,6 +136,6 @@ class AFP_Structure private(options: Options, val base_dir: Path) {
 }
 
 object AFP_Structure {
-  def apply(options: Options = Options.init0(), base_dir: Path = AFP.BASE): AFP_Structure =
+  def apply(options: Options = Options.defaults, base_dir: Path = AFP.BASE): AFP_Structure =
     new AFP_Structure(options, base_dir.absolute)
 }
