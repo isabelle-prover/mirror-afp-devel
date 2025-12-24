@@ -1,5 +1,27 @@
 [
  {
+  "abstract": "We present a formalization of Dynamic Pushdown Networks (DPNs) and the automata based algorithm for computing backward reachability sets using Isabelle/HOL.    Dynamic pushdown networks are an abstract model for multithreaded, interprocedural programs with dynamic thread creation that was presented by Bouajjani, Müller-Olm and Touili in 2005.     We formalize the notion of a DPN in Isabelle and describe the algorithm for computing the $pre^*$-set from a regular set of configurations, and prove its correctness. We first give a nondeterministic description of the algorithm, from that we then infer a deterministic one, from which we can generate executable code using Isabelle's code-generation tool.",
+  "authors": [
+   "Peter Lammich"
+  ],
+  "link": "../entries/Dynamic_Pushdown_Networks.html",
+  "shortname": "Dynamic_Pushdown_Networks",
+  "title": "Dynamic Pushdown Networks",
+  "topic_links": [
+   "../topics/computer-science/",
+   "../topics/computer-science/concurrency/",
+   "../topics/computer-science/automata-and-formal-languages/",
+   "../topics/computer-science/programming-languages/static-analysis/"
+  ],
+  "topics": [
+   "Computer science",
+   "Computer science/Concurrency",
+   "Computer science/Automata and formal languages",
+   "Computer science/Programming languages/Static analysis"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We enhance rely-guarantee verification in Isabelle/HOL by extending the 2003 built-in library with flexible syntax, data-invariant support, and new tactics. We demonstrate our enhanced library by applying it to the examples attached to the original library. We also apply our library to three queue locks: the Abstract Queue Lock, the Ticket Lock, and the Circular Buffer Lock.",
   "authors": [
    "Robert J. Colvin",

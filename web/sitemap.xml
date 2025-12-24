@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
+    <lastmod>2025-12-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
+    <lastmod>2025-12-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</loc>
+    <lastmod>2025-12-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/RG_Locks.html</loc>
     <lastmod>2025-11-21T00:00:00+00:00</lastmod>
@@ -8994,6 +8997,24 @@
     <loc>https://isa-afp.org/authors/bryant/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Dyck_Language/Dyck_Language.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN_impl.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN_implEx.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN_Setup.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/FSM.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/FSM_ex.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/ImplHelper.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/NDET.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/SRS.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Dynamic_Tables/Tables_nat.html</loc>
   </url><url>

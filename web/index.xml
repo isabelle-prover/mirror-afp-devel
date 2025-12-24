@@ -4,6 +4,16 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Dynamic Pushdown Networks</title>
+  <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
+  <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Dynamic Pushdown Networks in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
   <title>Rely-Guarantee Extensions and Locks</title>
   <link>https://isa-afp.org/entries/RG_Locks.html</link>
   <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
