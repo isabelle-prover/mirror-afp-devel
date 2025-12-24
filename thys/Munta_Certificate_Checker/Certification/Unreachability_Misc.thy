@@ -41,7 +41,7 @@ lemma return_htD:
   using assms unfolding hoare_triple_def Let_def by (force intro: run_return entailsI)
 
 definition run_heap :: "'a Heap \<Rightarrow> 'a" where
-  "run_heap h = fst (the (execute h Heap.empty))"
+  [code drop]: "run_heap h = fst (the (execute h Heap.empty))"
 
 code_printing constant run_heap \<rightharpoonup> (SML) "(fn f => f ()) _"
 code_printing constant run_heap \<rightharpoonup> (OCaml) "(fun f -> f ()) _"
