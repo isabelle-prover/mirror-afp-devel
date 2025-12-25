@@ -6,13 +6,8 @@ begin
 
 instantiation "term" :: "term" begin
 
-text \<open>
-  All of these definitions need to be marked as \<open>code del\<close>; otherwise the code generator will
-  attempt to generate these, which will fail because they are not executable.
-\<close>
-
 definition abs_pred_term :: "(term \<Rightarrow> bool) \<Rightarrow> term \<Rightarrow> bool" where
-[code del]: "abs_pred P t \<longleftrightarrow>
+  "abs_pred P t \<longleftrightarrow>
   (\<forall>x. t = Bound x \<longrightarrow> P t) \<and>
   (\<forall>t'. t = \<Lambda> t' \<longrightarrow> P t' \<longrightarrow> P t)"
 
@@ -23,6 +18,10 @@ instance proof (standard, goal_cases)
 qed (auto simp: abs_pred_term_def)
 
 end
+
+lemma abs_pred_term_code [code]:
+  \<open>abs_pred P t \<longleftrightarrow> (case t of Bound x \<Rightarrow> P t | \<Lambda> t' \<Rightarrow> P t' \<longrightarrow> P t | _ \<Rightarrow> True)\<close>
+  by (cases t) (simp_all add: abs_pred_term_def)
 
 lemma is_const_free[simp]: "\<not> is_const (Free name)"
 unfolding is_const_def by simp
