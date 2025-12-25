@@ -153,7 +153,7 @@ where
        )
      ))"
 
-declare \<Gamma>\<^sub>T\<^sub>O\<^sub>Y.simps [simp del, code del]
+declare \<Gamma>\<^sub>T\<^sub>O\<^sub>Y.simps [simp del]
 lemmas \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_simps [simp, code] = \<Gamma>\<^sub>T\<^sub>O\<^sub>Y.simps [simplified]
 
 fun \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_skeleton
@@ -167,7 +167,7 @@ lemma \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_skeleton_wf [simp]:
       by (cases pn) simp_all
   qed
 
-declare \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_skeleton.simps [simp del, code del]
+declare \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_skeleton.simps [simp del]
 lemmas \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_skeleton_simps [simp, code] = \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_skeleton.simps [simplified \<Gamma>\<^sub>T\<^sub>O\<^sub>Y_simps seqp_skeleton.simps]
 
 lemma toy_proc_cases [dest]:

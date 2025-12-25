@@ -119,8 +119,6 @@ by(cases Pi)(clarsimp simp add: tabulate_class_def lookup.rep_eq Mapping_inverse
 
 subsection \<open>Refining sub class and lookup functions to use precomputed mappings\<close>
 
-declare subcls'.equation [code del]
-
 lemma subcls'_program [code]: 
   "subcls' (program Pi) C D \<longleftrightarrow> 
   C = D \<or>
@@ -291,7 +289,7 @@ definition check_acyclicity :: "(cname, cname set) mapping \<Rightarrow> 'm cdec
 where "check_acyclicity _ _ = ()"
 
 definition cyclic_class_hierarchy :: unit 
-where [code del]: "cyclic_class_hierarchy = ()"
+where "cyclic_class_hierarchy = ()"
 
 declare [[code abort: cyclic_class_hierarchy]]
 

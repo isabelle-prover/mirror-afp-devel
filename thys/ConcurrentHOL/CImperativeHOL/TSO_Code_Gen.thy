@@ -100,7 +100,7 @@ text \<open>Intermediate operation avoids invariance problem in \<open>Scala\<cl
 setup \<open>Sign.mandatory_path "tso.Ref"\<close>
 
 definition ref' where
-  [code del]: "ref' = tso.Ref.ref"
+  [code drop]: "ref' = tso.Ref.ref"
 
 lemma [code]:
   "tso.Ref.ref x = tso.Ref.ref' x"

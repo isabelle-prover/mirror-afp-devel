@@ -229,7 +229,7 @@ lemma RBT_Impl_fold1_simps [simp, code]:
 by(simp_all add: RBT_Impl_fold1_def RBT_Impl.keys_def fold_map RBT_Impl.fold_def split_def o_def tl_append hd_def split: list.split)
 
 definition RBT_Impl_rbt_all :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) rbt \<Rightarrow> bool"
-where [code del]: "RBT_Impl_rbt_all P rbt = (\<forall>(k, v) \<in> set (RBT_Impl.entries rbt). P k v)"
+where "RBT_Impl_rbt_all P rbt = (\<forall>(k, v) \<in> set (RBT_Impl.entries rbt). P k v)"
 
 lemma RBT_Impl_rbt_all_simps [simp, code]:
   "RBT_Impl_rbt_all P rbt.Empty \<longleftrightarrow> True"
@@ -237,7 +237,7 @@ lemma RBT_Impl_rbt_all_simps [simp, code]:
 by(auto simp add: RBT_Impl_rbt_all_def)
 
 definition RBT_Impl_rbt_ex :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) rbt \<Rightarrow> bool"
-where [code del]: "RBT_Impl_rbt_ex P rbt = (\<exists>(k, v) \<in> set (RBT_Impl.entries rbt). P k v)"
+where "RBT_Impl_rbt_ex P rbt = (\<exists>(k, v) \<in> set (RBT_Impl.entries rbt). P k v)"
 
 lemma RBT_Impl_rbt_ex_simps [simp, code]:
   "RBT_Impl_rbt_ex P rbt.Empty \<longleftrightarrow> False"

@@ -5,7 +5,6 @@ theory Export imports Prover begin
 definition \<open>prove_sequent \<equiv> i.mkTree eff rules\<close>
 definition \<open>prove \<equiv> \<lambda>p. prove_sequent ([], [p])\<close>
 
-declare Stream.smember_code [code del]
 lemma [code]: \<open>Stream.smember x (y ## s) = (x = y \<or> Stream.smember x s)\<close>
   unfolding Stream.smember_def by auto
 

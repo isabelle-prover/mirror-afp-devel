@@ -328,15 +328,15 @@ abbreviation sinvmap ::"('s \<Rightarrow> 't) \<Rightarrow> ('t, 'v) prog \<Righ
 abbreviation vinvmap ::"('v \<Rightarrow> 'w) \<Rightarrow> ('s, 'w) prog \<Rightarrow> ('s, 'v) prog" where
   "vinvmap vf \<equiv> prog.invmap id vf"
 
-declare prog.bind_def[code del]
-declare prog.action_def[code del]
-declare prog.return_def[code del]
-declare prog.Parallel_def[code del]
-declare prog.parallel_def[code del]
-declare prog.vmap_def[code del]
-declare prog.rel_def[code del]
-declare prog.steps_def[code del]
-declare prog.invmap_def[code del]
+declare prog.bind_def[code drop]
+declare prog.action_def[code drop]
+declare prog.return_def[code drop]
+declare prog.Parallel_def[code drop]
+declare prog.parallel_def[code drop]
+declare prog.vmap_def[code drop]
+declare prog.rel_def[code drop]
+declare prog.steps_def[code drop]
+declare prog.invmap_def[code drop]
 
 
 subsubsection\<open> Laws of programming \label{sec:programs-laws} \<close>

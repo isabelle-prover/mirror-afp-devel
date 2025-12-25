@@ -674,7 +674,7 @@ lemma check_eqv_code[code]: "check_eqv idx r s =
   | Some (a # list, x) \<Rightarrow> False))"
   unfolding check_eqv_def Presb.check_eqv_def Presb.step_alt ..
 
-definition while where [code del, code_abbrev]: "while idx \<phi> = while_default (fut_default idx \<phi>)"
+definition while where [code_abbrev]: "while idx \<phi> = while_default (fut_default idx \<phi>)"
 declare while_default_code[of "fut_default idx \<phi>" for idx \<phi>, folded while_def, code]
 
 lemma check_eqv_sound: 

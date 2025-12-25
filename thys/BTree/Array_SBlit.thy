@@ -219,7 +219,7 @@ let array_sblit src si di len = (
 \<close>
 
 definition safe_sblit' where
-  [code del]: "safe_sblit' src si di len 
+  "safe_sblit' src si di len 
       = safe_sblit src (nat_of_integer si) (nat_of_integer di) 
           (nat_of_integer len)"
 

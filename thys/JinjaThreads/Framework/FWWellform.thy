@@ -16,7 +16,7 @@ text\<open>Well-formedness property: Locks are held by real threads\<close>
 
 definition
   lock_thread_ok :: "('l, 't) locks \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> bool"
-where [code del]:
+where
   "lock_thread_ok ls ts \<equiv> \<forall>l t. has_lock (ls $ l) t \<longrightarrow> (\<exists>xw. ts t = \<lfloor>xw\<rfloor>)"
 
 lemma lock_thread_ok_code [code]: 

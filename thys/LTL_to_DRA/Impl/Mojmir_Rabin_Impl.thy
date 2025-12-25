@@ -562,8 +562,6 @@ where
   "index_option n [] y = None"
 | "index_option n (x # xs) y = (if x = y then Some n else index_option (Suc n) xs y)"
 
-declare rk.simps [code del]
-
 lemma rk_eq_index_option [code]:
   "rk xs x = index_option 0 xs x"
 proof -

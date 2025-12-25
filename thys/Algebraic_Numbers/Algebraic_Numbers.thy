@@ -516,7 +516,7 @@ lemma represents_add:
 subsection \<open>Division of Algebraic Numbers\<close>
 
 definition poly_x_mult_y where
-  [code del]: "poly_x_mult_y p \<equiv> (\<Sum> i \<le> degree p. monom (monom (coeff p i) i) i)"
+  "poly_x_mult_y p \<equiv> (\<Sum> i \<le> degree p. monom (monom (coeff p i) i) i)"
 
 lemma coeff_poly_x_mult_y:
   shows "coeff (poly_x_mult_y p) i = monom (coeff p i) i" (is "?l = ?r")

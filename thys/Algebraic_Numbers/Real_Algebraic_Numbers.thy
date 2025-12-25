@@ -1498,7 +1498,7 @@ proof -
 qed
 
 definition real_alg_2' :: "root_info \<Rightarrow> int poly \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> real_alg_2" where
-  [code del]: "real_alg_2' ri p l r = (
+  "real_alg_2' ri p l r = (
     if degree p = 1 then Rational (Rat.Fract (- coeff p 0) (coeff p 1)) else
     real_alg_2_main ri (case tighten_poly_bounds_for_x p 0 l r (sgn (ipoly p r)) of
               (l',r',sr') \<Rightarrow> (p, l', r')))"
@@ -3138,10 +3138,10 @@ instantiation real_alg :: ord
 begin
 
 definition less_real_alg :: "real_alg \<Rightarrow> real_alg \<Rightarrow> bool" where
-  [code del]: "less_real_alg x y = (real_of x < real_of y)"
+  "less_real_alg x y = (real_of x < real_of y)"
 
 definition less_eq_real_alg :: "real_alg \<Rightarrow> real_alg \<Rightarrow> bool" where
-  [code del]: "less_eq_real_alg x y = (real_of x \<le> real_of y)"
+  "less_eq_real_alg x y = (real_of x \<le> real_of y)"
 
 instance ..
 end    

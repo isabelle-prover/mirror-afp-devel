@@ -174,7 +174,7 @@ text \<open>Case operator\<close>
 
 definition case_resumption :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> ('a,'b,'c,'d) resumption \<Rightarrow> 'e) \<Rightarrow>
                             ('c \<Rightarrow> ('d \<Rightarrow> ('a,'b,'c,'d) resumption) \<Rightarrow> 'e) \<Rightarrow> ('a,'b,'c,'d) resumption \<Rightarrow> 'e"
-where [code del]:
+where
   "case_resumption t l br r =
    case_RESUMPTION t (\<lambda>b r. l b (Abs_resumption r)) (\<lambda>c rs. br c (\<lambda>d. Abs_resumption (rs d))) (Rep_resumption r)"
 

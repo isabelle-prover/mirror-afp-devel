@@ -743,7 +743,7 @@ text \<open>Finger trees viewed as a double-ended queue. The head and tail funct
   empty finger trees.\<close>
 text "Check for emptiness"
 definition isEmpty :: "('e,'a) FingerTreeStruc \<Rightarrow> bool" where
-  [code del]: "isEmpty t = (t = Empty)"
+  "isEmpty t = (t = Empty)"
 lemma isEmpty_correct: "isEmpty t \<longleftrightarrow> toList t = []"
   unfolding isEmpty_def by (simp add: toList_empty)
 \<comment> \<open>Avoid comparison with @{text "(=)"}, and thus unnecessary equality-class

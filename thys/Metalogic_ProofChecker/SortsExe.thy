@@ -244,7 +244,6 @@ lemma wf_sort_code:
   using normalized_sort_code sort_ex_code assms
   by (simp add: sort_ex_code wf_sort_def)
 
-declare exewf_sort_def[code del]
 lemma [code]: "exewf_sort sub S \<equiv> (S = {} \<or> exenormalized_sort sub S \<and> exesort_ex sub S)"
   by simp (smt ball_empty bot_set_def empty_Collect_eq)
 

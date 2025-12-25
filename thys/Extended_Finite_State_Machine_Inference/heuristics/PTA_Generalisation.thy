@@ -156,9 +156,8 @@ lemma fold_add_groupwise_updates [code]:
 
 \<comment> \<open>This will be replaced to calls to Z3 in the executable\<close>
 definition get_regs :: "(vname \<Rightarrow>f String.literal) \<Rightarrow> inputs \<Rightarrow> vname aexp \<Rightarrow> value \<Rightarrow> registers" where
-  "get_regs types inputs expression output = Eps (\<lambda>r. aval expression (join_ir inputs r) = Some output)"
+  [code drop]: "get_regs types inputs expression output = Eps (\<lambda>r. aval expression (join_ir inputs r) = Some output)"
 
-declare get_regs_def [code del]
 code_printing constant get_regs \<rightharpoonup> (Scala) "Dirties.getRegs"
 
 type_synonym action_info = "(cfstate \<times> registers \<times> registers \<times> inputs \<times> tids \<times> transition)"
@@ -226,13 +225,12 @@ lemma target_fold [code]: "target tRegs ts = target_fold tRegs ts []"
 
 \<comment> \<open>This will be replaced by symbolic regression in the executable\<close>
 definition get_update :: "label \<Rightarrow> nat \<Rightarrow> value list \<Rightarrow> (inputs \<times> registers \<times> registers) list \<Rightarrow> vname aexp option" where
-  "get_update _ reg values train = (let
+  [code drop]: "get_update _ reg values train = (let
     possible_funs = {a. \<forall>(i, r, r') \<in> set train. aval a (join_ir i r) = r' $ reg}
     in
     if possible_funs = {} then None else Some (Eps (\<lambda>x. x \<in> possible_funs))
   )"
 
-declare get_update_def [code del]
 code_printing constant get_update \<rightharpoonup> (Scala) "Dirties.getUpdate"
 
 definition get_updates_opt :: "label \<Rightarrow> value list \<Rightarrow> (inputs \<times> registers \<times> registers) list \<Rightarrow> (nat \<times> vname aexp option) list" where
@@ -334,12 +332,11 @@ text\<open>We want to return an aexp which, when evaluated in the correct contex
 input-output pairs within the training set. This will be replaced by symbolic regression in the
 executable\<close>
 definition get_output :: "label \<Rightarrow> nat \<Rightarrow> value list \<Rightarrow> (inputs \<times> registers \<times> value) list \<Rightarrow> (vname aexp \<times> (vname \<Rightarrow>f String.literal)) option" where
-  "get_output _ maxReg values train = (let
+  [code drop]: "get_output _ maxReg values train = (let
     possible_funs = {a. \<forall>(i, r, p) \<in> set train. aval a (join_ir i r) = Some p}
     in
     if possible_funs = {} then None else Some (Eps (\<lambda>x. x \<in> possible_funs), (K$ STR ''int''))
   )"
-declare get_output_def [code del]
 code_printing constant get_output \<rightharpoonup> (Scala) "Dirties.getOutput"
 
 definition get_outputs :: "label \<Rightarrow> nat \<Rightarrow> value list \<Rightarrow> inputs list \<Rightarrow> registers list \<Rightarrow> value list list \<Rightarrow> (vname aexp \<times> (vname \<Rightarrow>f String.literal)) option list" where

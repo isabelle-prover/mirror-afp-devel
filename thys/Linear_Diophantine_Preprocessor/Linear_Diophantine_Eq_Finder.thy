@@ -12,7 +12,7 @@ theory Linear_Diophantine_Eq_Finder
 begin
 
 definition linear_poly_of_lpoly :: "(int,var)lpoly \<Rightarrow> linear_poly" where
-  [code del]: "linear_poly_of_lpoly p = (let cxs = map (\<lambda> v. (v, coeff_l p v)) (vars_l_list p)
+  "linear_poly_of_lpoly p = (let cxs = map (\<lambda> v. (v, coeff_l p v)) (vars_l_list p)
      in sum_list (map (\<lambda> (x,c). lp_monom (of_int c) x) cxs))" 
 
 lemma linear_poly_of_lpoly_impl[code]: 
@@ -59,7 +59,7 @@ qed
 
 definition eq_finder_int :: "var dlineq list \<Rightarrow> 
     (var dleq list \<times> var dlineq list) option" where
-  [code del]: "eq_finder_int ineqs = (case 
+  "eq_finder_int ineqs = (case 
       eq_finder_rat (map dlineq_to_constraint ineqs) of
          None \<Rightarrow> None
        | Some (idx_eq, _) \<Rightarrow> let I = set idx_eq;

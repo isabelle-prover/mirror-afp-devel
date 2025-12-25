@@ -283,7 +283,7 @@ lemma compare_double_le_0: "compare_double x y \<le> 0 \<longleftrightarrow>
 lift_definition double_of_integer :: "integer \<Rightarrow> double" is
   "\<lambda>x. zerosign 0 (intround RNE (int_of_integer x))" .
 
-definition double_of_int where [code del]: "double_of_int x = double_of_integer (integer_of_int x)"
+definition double_of_int where "double_of_int x = double_of_integer (integer_of_int x)"
 
 lemma [code]: "double_of_int (int_of_integer x) = double_of_integer x"
   unfolding double_of_int_def by simp

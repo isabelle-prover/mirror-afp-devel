@@ -419,13 +419,13 @@ text \<open>
   LC keeps complements of such enumerated set comprehensions, i.e., @{term "- {b. b = True}"} evaluates to @{value "- {b. b = True}"}.
   If you want that the complement operation actually computes the elements of the complements, you have to replace the code equations for @{term uminus} as follows:
 \<close>
-declare Set_uminus_code[code del] Set_uminus_cenum[code]
+declare Set_uminus_cenum[code]
 (*<*)value "- {b. b = True}"(*>*)
 text \<open>
   Then, @{term "- {b. b = True}"} becomes @{value "- {b. b = True}"}, but this applies to all complement invocations.
   For example, @{term [source] "UNIV :: bool set"} becomes @{value "UNIV :: bool set"}.
 \<close>
-(*<*)declare Set_uminus_cenum[code del] Set_uminus_code[code](*>*)
+(*<*)declare Set_uminus_code[code](*>*)
 
 subsection \<open>Nested sets\<close>
 text_raw \<open>\label{subsection:finite_UNIV} \label{subsection:card_UNIV} \label{subsection:cproper_interval}\<close>
@@ -783,7 +783,7 @@ text \<open>
 \<close>
 
 definition Trie_Mapping :: "('k :: cbl, 'v) trie \<Rightarrow> ('k, 'v) mapping" 
-where [simp, code del]: "Trie_Mapping t = Mapping.Mapping (lookup t)"
+where [simp]: "Trie_Mapping t = Mapping.Mapping (lookup t)"
 
 code_datatype Assoc_List_Mapping RBT_Mapping Mapping Trie_Mapping
 
@@ -1086,7 +1086,7 @@ text_raw \<open>
     \par
 \<close>
 lemma empty_Set_Monad: "{} = Set_Monad []" by simp
-declare tiny_set_code[code del, unfolded empty_Set_Monad, code]
+declare tiny_set_code[unfolded empty_Set_Monad, code]
 text_raw \<open>
     \isastyletext
     \par

@@ -724,7 +724,7 @@ lemma algebraic_1[simp]: "algebraic 1"
 
 text \<open>Polynomial for unary minus.\<close>
 
-definition poly_uminus :: "'a :: ring_1 poly \<Rightarrow> 'a poly" where [code del]:
+definition poly_uminus :: "'a :: ring_1 poly \<Rightarrow> 'a poly" where
   "poly_uminus p \<equiv> \<Sum>i\<le>degree p. monom ((-1)^i * coeff p i) i"
 
 lemma poly_uminus_pCons_pCons[simp]:

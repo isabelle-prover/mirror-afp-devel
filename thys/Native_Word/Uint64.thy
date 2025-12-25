@@ -610,18 +610,16 @@ including undefined_transfer unfolding uint64_mod_def uint64_divmod_def
 by transfer (simp add: word_mod_def)
 
 definition uint64_sdiv :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64"
-where [code del]:
+where
   "uint64_sdiv x y =
    (if y = 0 then undefined ((div) :: uint64 \<Rightarrow> _) x (0 :: uint64)
     else Abs_uint64 (Rep_uint64 x sdiv Rep_uint64 y))"
 
 definition div0_uint64 :: "uint64 \<Rightarrow> uint64"
-where [code del]: "div0_uint64 x = undefined ((div) :: uint64 \<Rightarrow> _) x (0 :: uint64)"
-declare [[code abort: div0_uint64]]
+where [code abort]: "div0_uint64 x = undefined ((div) :: uint64 \<Rightarrow> _) x (0 :: uint64)"
 
 definition mod0_uint64 :: "uint64 \<Rightarrow> uint64"
-where [code del]: "mod0_uint64 x = undefined ((mod) :: uint64 \<Rightarrow> _) x (0 :: uint64)"
-declare [[code abort: mod0_uint64]]
+where [code abort]: "mod0_uint64 x = undefined ((mod) :: uint64 \<Rightarrow> _) x (0 :: uint64)"
 
 lemma uint64_divmod_code [code]:
   "uint64_divmod x y =

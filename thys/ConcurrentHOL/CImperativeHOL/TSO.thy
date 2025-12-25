@@ -764,12 +764,12 @@ lemma return_alt_def:
   shows "tso.return v = tso.read \<langle>v\<rangle>"
 by (auto simp: tso.return_def intro: arg_cong[where f="tso.action"])
 
-declare tso.bind_def[code del]
-declare tso.action_def[code del]
-declare tso.return_def[code del]
-declare tso.MFENCE_def[code del]
-declare tso.parallel_def[code del]
-declare tso.vmap_def[code del]
+declare tso.bind_def[code drop]
+declare tso.action_def[code drop]
+declare tso.return_def[code drop]
+declare tso.MFENCE_def[code drop]
+declare tso.parallel_def[code drop]
+declare tso.vmap_def[code drop]
 
 setup \<open>Sign.mandatory_path "return"\<close>
 
@@ -1068,7 +1068,7 @@ definition raise :: "String.literal \<Rightarrow> 'v tso" where
 definition assert :: "bool \<Rightarrow> unit tso" where
   "assert P = (if P then tso.return () else tso.raise STR ''assert'')"
 
-declare tso.raise_def[code del]
+declare tso.raise_def[code drop]
 
 setup \<open>Sign.mandatory_path "fold_mapM"\<close>
 
@@ -1144,9 +1144,9 @@ definition lookup :: "'a::heap.rep ref \<Rightarrow> 'a tso" (\<open>!_\<close> 
 definition update :: "'a ref \<Rightarrow> 'a::heap.rep \<Rightarrow> unit tso" (\<open>_ := _\<close> 62) where
   "update r v = tso.write \<langle>heap.Write (ref.addr_of r) 0 (heap.rep.to v)\<rangle>"
 
-declare tso.Ref.ref_def[code del]
-declare tso.Ref.lookup_def[code del]
-declare tso.Ref.update_def[code del]
+declare tso.Ref.ref_def[code drop]
+declare tso.Ref.lookup_def[code drop]
+declare tso.Ref.update_def[code drop]
 
 setup \<open>Sign.parent_path\<close>
 

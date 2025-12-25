@@ -58,7 +58,7 @@ subsection \<open>Prefix ordering as a lower semilattice\<close>
 
 instantiation llist :: (type) semilattice_inf begin
 
-definition [code del]:
+definition
   "inf xs ys = 
    unfold_llist (\<lambda>(xs, ys). xs \<noteq> LNil \<longrightarrow> ys \<noteq> LNil \<longrightarrow> lhd xs \<noteq> lhd ys)
      (lhd \<circ> snd) (map_prod ltl ltl) (xs, ys)"

@@ -414,7 +414,7 @@ qed
 
 
 definition kernel_dim :: "'a :: field mat \<Rightarrow> nat" where
-  [code del]: "kernel_dim A = kernel.dim (dim_col A) A"
+  "kernel_dim A = kernel.dim (dim_col A) A"
 
 lemma (in kernel) kernel_dim [simp]: "kernel_dim A = dim" unfolding kernel_dim_def
   using A by simp

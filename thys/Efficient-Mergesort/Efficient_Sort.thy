@@ -243,7 +243,6 @@ end
 text \<open>
   Replace existing code equations for \<^const>\<open>sort_key\<close> by \<^const>\<open>msort_key\<close>.
 \<close>
-declare sort_key_by_quicksort_code [code del]
 declare sort_key_msort_key_conv [code]
 
 end

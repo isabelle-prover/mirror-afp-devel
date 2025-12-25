@@ -341,16 +341,16 @@ lemma [code]: "infer f k e r m check np = infer_with_log f k e r m check np"
 *)
 
 (* declare make_pta_fold [code] *)
-declare GExp.satisfiable_def [code del]
-declare initially_undefined_context_check_full_def [code del]
-declare generalise_output_context_check_def [code del]
-declare dirty_always_different_outputs_direct_subsumption_def [code del]
-declare diff_outputs_ctx_def [code del]
-declare random_member_def [code del]
-declare dirty_directly_subsumes_def [code del]
-declare recognises_and_visits_both_def [code del]
-declare initially_undefined_context_check_def [code del]
-declare can_still_take_ctx_def [code del]
+declare GExp.satisfiable_def [code drop]
+declare initially_undefined_context_check_full_def [code drop]
+declare generalise_output_context_check_def [code drop]
+declare dirty_always_different_outputs_direct_subsumption_def [code drop]
+declare diff_outputs_ctx_def [code drop]
+declare random_member_def [code drop]
+declare dirty_directly_subsumes_def [code drop]
+declare recognises_and_visits_both_def [code drop]
+declare initially_undefined_context_check_def [code drop]
+declare can_still_take_ctx_def [code drop]
 
 code_printing
   constant infer \<rightharpoonup> (Scala) "Code'_Generation.infer'_with'_log" |
@@ -380,8 +380,8 @@ code_printing
   | constant "finfun_update_code" \<rightharpoonup> (Scala) "_ + (_ -> _)"
   | constant "finfun_apply" \<rightharpoonup> (Scala) "_((_))"
   | constant "finfun_to_list" \<rightharpoonup> (Scala) "_.keySet.toList"
-declare finfun_to_list_const_code [code del]
-declare finfun_to_list_update_code [code del]
+declare finfun_to_list_const_code [code drop]
+declare finfun_to_list_update_code [code drop]
 
 definition mismatched_updates :: "transition \<Rightarrow> transition \<Rightarrow> bool" where
   "mismatched_updates t1 t2 = (\<exists>r \<in> set (map fst (Updates t1)). r \<notin> set (map fst (Updates t2)))"

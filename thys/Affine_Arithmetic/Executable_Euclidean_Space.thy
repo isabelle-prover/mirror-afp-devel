@@ -135,10 +135,6 @@ lemma infnorm[code]:
   by (auto simp: Max.set_eq_fold[symmetric] infnorm_Max[symmetric] infnorm_pos_le
     intro!: max.absorb2[symmetric])
 
-declare Inf_real_def[code del]
-declare Sup_real_def[code del]
-declare Inf_prod_def[code del]
-declare Sup_prod_def[code del]
 declare [[code abort: "Inf::real set \<Rightarrow> real"]]
 declare [[code abort: "Sup::real set \<Rightarrow> real"]]
 declare [[code abort: "Inf::('a::Inf * 'b::Inf) set \<Rightarrow> 'a * 'b"]]

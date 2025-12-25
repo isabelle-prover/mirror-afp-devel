@@ -245,7 +245,7 @@ begin
 
 definition equal_node :: "node \<Rightarrow> node \<Rightarrow> bool"
 where
-  [code del]: "equal_node = HOL.eq"
+  "equal_node = HOL.eq"
 
 instance proof
 qed (simp add: equal_node_def)

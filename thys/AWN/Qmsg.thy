@@ -28,7 +28,7 @@ abbreviation qmsg
 where
   "qmsg \<equiv> \<lparr> init = \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G, trans = seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G \<rparr>"
 
-declare \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G.simps [simp del, code del]
+declare \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G.simps [simp del]
 lemmas \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps [simp, code] = \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G.simps [simplified]
 
 lemma \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_not_empty [simp, intro]: "\<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G \<noteq> {}"

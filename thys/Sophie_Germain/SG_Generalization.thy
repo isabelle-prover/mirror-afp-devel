@@ -453,8 +453,6 @@ lemma auxiliary_primeE :
 
 text \<open>With this, we can quickly eliminate numbers that cannot be auxiliary.\<close>
 
-declare auxiliary_prime_iff_enum_mod [code del]
-
 lemma auxiliary_prime_iff_enum_mod_optimized [code] :
   \<open>aux_prime p q \<longleftrightarrow>
    p = 2 \<and> (q = 3 \<or> q = 5) \<or>

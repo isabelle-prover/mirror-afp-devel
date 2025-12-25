@@ -138,10 +138,10 @@ by(simp add: is_ccompare_def ccompare_set_def ID_def)
 
 
 definition cless_eq_set :: "'a :: ccompare set \<Rightarrow> 'a set \<Rightarrow> bool" 
-where [simp, code del]: "cless_eq_set = le_of_comp (the (ID CCOMPARE('a set)))"
+where [simp]: "cless_eq_set = le_of_comp (the (ID CCOMPARE('a set)))"
 
 definition cless_set :: "'a :: ccompare set \<Rightarrow> 'a set \<Rightarrow> bool"
-where [simp, code del]: "cless_set = lt_of_comp (the (ID CCOMPARE('a set)))"
+where [simp]: "cless_set = lt_of_comp (the (ID CCOMPARE('a set)))"
 
 lemma ccompare_set_code [code]:
   "CCOMPARE('a :: ccompare set) = 

@@ -82,7 +82,7 @@ subsection "Code Generator Setup"
 \<close>
 
   definition blit' where
-    [code del]: "blit' src si dst di len 
+    "blit' src si dst di len 
       = blit src (nat_of_integer si) dst (nat_of_integer di) 
           (nat_of_integer len)"
 
@@ -104,8 +104,8 @@ subsection "Code Generator Setup"
       safecopy(_.array,_.toInt,_.array,_.toInt,_.toInt)
     }"
   
-  definition [code del]: "nth_oo' v a == nth_oo v a o nat_of_integer"
-  definition [code del]: "upd_oo' f == upd_oo f o nat_of_integer"
+  definition "nth_oo' v a == nth_oo v a o nat_of_integer"
+  definition "upd_oo' f == upd_oo f o nat_of_integer"
 
   lemma [code]: 
     "nth_oo v a == nth_oo' v a o integer_of_nat"

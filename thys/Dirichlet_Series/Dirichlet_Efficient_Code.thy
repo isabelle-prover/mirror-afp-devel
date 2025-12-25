@@ -187,8 +187,6 @@ lemma totient_code1: "totient n = totient_aux1 n (prime_factors_nat n)"
 lemma totient_code2: "totient n = (if n = 0 then 0 else totient_aux2 (prime_factorization_nat' n))"
   by (simp_all add: set_prime_factorization_nat' totient_conv_totient_aux2 split: if_splits)
 
-declare totient_code_naive [code del]
-
 lemmas [code] = totient_code2
 
 value "totient 125789726827482323235784"
@@ -196,7 +194,6 @@ value "totient 125789726827482323235784"
 
 subsection \<open>Divisor Functions\<close>
 
-lemmas [code del] = divisor_count_naive divisor_sum_naive
 lemmas [code] = divisor_count.efficient_code' divisor_sum.efficient_code'
 
 value "int (divisor_count 378568418621)"

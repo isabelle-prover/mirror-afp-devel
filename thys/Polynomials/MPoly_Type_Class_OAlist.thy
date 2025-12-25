@@ -23,7 +23,7 @@ instantiation poly_mapping :: (type, "{equal, zero}") equal
 begin
 
 definition equal_poly_mapping :: "('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
-  equal_poly_mapping_def [code del]: "equal_poly_mapping p q \<equiv> (\<forall>t. lookup p t = lookup q t)"
+  equal_poly_mapping_def: "equal_poly_mapping p q \<equiv> (\<forall>t. lookup p t = lookup q t)"
 
 instance by standard (auto simp: equal_poly_mapping_def intro: poly_mapping_eqI)
 

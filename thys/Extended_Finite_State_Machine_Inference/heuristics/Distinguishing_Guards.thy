@@ -45,7 +45,7 @@ primrec collect_training_sets :: "log \<Rightarrow> iEFSM \<Rightarrow> tids \<R
   )"
 
 definition find_distinguishing_guards :: "(inputs \<times> registers) list \<Rightarrow> (inputs \<times> registers) list \<Rightarrow> (vname gexp \<times> vname gexp) option" where
-  "find_distinguishing_guards G1 G2 = (
+  [code drop]: "find_distinguishing_guards G1 G2 = (
     let gs = {(g1, g2).
       (\<forall>(i, r) \<in> set G1. gval g1 (join_ir i r) = true) \<and>
       (\<forall>(i, r) \<in> set G2. gval g2 (join_ir i r) = true) \<and>
@@ -53,7 +53,6 @@ definition find_distinguishing_guards :: "(inputs \<times> registers) list \<Rig
     } in
     if gs = {} then None else Some (Eps (\<lambda>g. g \<in> gs))
   )"
-declare find_distinguishing_guards_def [code del]
 code_printing constant find_distinguishing_guards \<rightharpoonup> (Scala) "Dirties.findDistinguishingGuards"
 
 definition add_guard :: "transition \<Rightarrow> vname gexp \<Rightarrow> transition" where

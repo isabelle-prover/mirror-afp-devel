@@ -1553,10 +1553,8 @@ handle it.
 
 *)
 
-declare UNIV_coset[code del]
 declare UNIV_enum[code]
 
-declare compl_set[code del] compl_coset[code del]
 declare Compl_eq_Diff_UNIV[code]
 
 (*

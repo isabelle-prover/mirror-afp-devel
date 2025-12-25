@@ -12,7 +12,6 @@ Otherwise, we will never actually get to a result.\<close>
 code_lazy_type stream
 
 text \<open>We would also like to make the evaluation of streams a bit more efficient.\<close>
-declare Stream.smember_code [code del]
 lemma [code]: "Stream.smember x (y ## s) = (x = y \<or> Stream.smember x s)"
   unfolding Stream.smember_def by auto
 

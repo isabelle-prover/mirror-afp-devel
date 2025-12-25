@@ -10,12 +10,12 @@ begin
 
 definition rpo_mem :: "('f \<times> nat \<Rightarrow> 'f \<times> nat \<Rightarrow> bool \<times> bool) \<times> ('f \<times> nat \<Rightarrow> bool) 
   \<Rightarrow> ('f \<times> nat \<Rightarrow> order_tag) \<Rightarrow> _" where
-  [code del]: "rpo_mem pr c mem st = 
+  "rpo_mem pr c mem st = 
   wpo_mem (fst pr) (snd pr) False (\<lambda> _. False) (\<lambda> _ _. False) (\<lambda> _ _. True) full_status c mem st" 
 
 definition rpo_main :: "('f \<times> nat \<Rightarrow> 'f \<times> nat \<Rightarrow> bool \<times> bool) \<times> ('f \<times> nat \<Rightarrow> bool) 
   \<Rightarrow> ('f \<times> nat \<Rightarrow> order_tag) \<Rightarrow> _" where
-  [code del]: "rpo_main pr c mem st = 
+  "rpo_main pr c mem st = 
   wpo_main (fst pr) (snd pr) False (\<lambda> _. False) (\<lambda> _ _. False) (\<lambda> _ _. True) full_status c mem st"
 
 lemma rpo_mem_code[code]: "rpo_mem pr c mem (s,t) =

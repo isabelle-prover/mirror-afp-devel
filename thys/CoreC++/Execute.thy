@@ -42,8 +42,6 @@ code_pred
   app
 .
 
-declare rtranclp_rtrancl_eq[code del]
-
 lemmas [code_pred_intro] = rtranclp.rtrancl_refl converse_rtranclp_into_rtranclp
 
 code_pred 

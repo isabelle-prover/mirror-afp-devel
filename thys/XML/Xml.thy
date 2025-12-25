@@ -172,7 +172,7 @@ definition many_letters :: "string parser"
 where
   [simp]: "many_letters = manyof letters"
 
-lemma many_letters [code, code_unfold]:
+lemma many_letters:
   "many_letters = many is_letter"
   by (simp add: is_letter_def [abs_def] manyof_def)
 
@@ -842,8 +842,6 @@ declare spaces_def[code_unfold del]
 lemma spaces_code[code]: 
   "spaces cs = Inr ((), trim cs)" 
   unfolding spaces_def trim_def manyof_def many_take_drop Parser_Monad.bind_def Parser_Monad.return_def by auto
-
-declare many_letters[code del, code_unfold del]
 
 fun many_letters_main where
   "many_letters_main [] = ([], [])" 

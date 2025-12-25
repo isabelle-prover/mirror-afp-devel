@@ -48,7 +48,7 @@ redundant parentheses in the output, but seems unavoidable in the current setup,
 i.e., pshowsp via primrec followed by defining showsp via pshowsp composed with map).*)
 definition showsp_prod :: "'a showsp \<Rightarrow> 'b showsp \<Rightarrow> ('a \<times> 'b) showsp"
   where
-    [code del]: "showsp_prod s1 s2 p = pshowsp_prod p o map_prod (s1 1) (s2 1)"
+    "showsp_prod s1 s2 p = pshowsp_prod p o map_prod (s1 1) (s2 1)"
 
 lemma showsp_prod_simps [simp, code]:
   "showsp_prod s1 s2 p (x, y) =

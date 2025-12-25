@@ -631,7 +631,7 @@ by(simp_all add: Fail_def Pause.ctr Done.ctr)
 text \<open>Add @{typ unit} closure to circumvent SML value restriction\<close>
 
 definition Fail' :: "unit \<Rightarrow> ('a, 'out, 'in) gpv"
-where [code del]: "Fail' _ = Fail"
+where "Fail' _ = Fail"
 
 lemma Fail_code [code_unfold]: "Fail = Fail' ()"
 by(simp add: Fail'_def)

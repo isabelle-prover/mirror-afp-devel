@@ -16,11 +16,11 @@ code_identifier code_module Lazy_TLList \<rightharpoonup>
   (Scala) TLList
 
 definition Lazy_tllist :: "(unit \<Rightarrow> 'a \<times> ('a, 'b) tllist + 'b) \<Rightarrow> ('a, 'b) tllist"
-where [code del]:
+where
   "Lazy_tllist xs = (case xs () of Inl (x, ys) \<Rightarrow> TCons x ys | Inr b \<Rightarrow> TNil b)"
 
 definition force :: "('a, 'b) tllist \<Rightarrow> 'a \<times> ('a, 'b) tllist + 'b"
-where [simp, code del]: "force xs = (case xs of TNil b \<Rightarrow> Inr b | TCons x ys \<Rightarrow> Inl (x, ys))"
+where [simp]: "force xs = (case xs of TNil b \<Rightarrow> Inr b | TCons x ys \<Rightarrow> Inl (x, ys))"
 
 code_datatype Lazy_tllist
 

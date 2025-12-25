@@ -489,7 +489,7 @@ proof -
   finally show ?thesis .
 qed
 
-declare some_elem_def [code del]
+declare some_elem_def [code drop]
 code_printing
   constant some_elem \<rightharpoonup> (SML) "(case/ _ of/ Set/ xs/ =>/ hd/ xs)"
 

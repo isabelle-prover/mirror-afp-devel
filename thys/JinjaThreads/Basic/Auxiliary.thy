@@ -786,7 +786,7 @@ by(blast dest: invariant3pD intro: invariant3pI)
 subsection \<open>Concatenation for @{typ String.literal}\<close>
 
 definition concat :: "String.literal list \<Rightarrow> String.literal"
-  where [code_abbrev, code del]: "concat = sum_list"
+  where [code_abbrev, code drop]: "concat = sum_list"
 
 lemma explode_add [simp]:
   "String.explode (s + t) = String.explode s @ String.explode t"

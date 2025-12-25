@@ -1787,7 +1787,6 @@ subsection \<open>Type class instantiations\<close>
 datatype set_impl = Set_IMPL
 declare
   set_impl.eq.simps [code del]
-  set_impl.size [code del]
   set_impl.rec [code del]
   set_impl.case [code del]
 

@@ -122,7 +122,6 @@ abbreviation "Iff \<phi> \<psi> \<equiv> Conj (Imp \<phi> \<psi>) (Imp \<psi> \<
 
 definition "thm1 \<equiv> ({|Conj (Atom 0) (Neg (Atom 0))|}, {||})"
 
-declare Stream.smember_code [code del]
 lemma [code]: "Stream.smember x (y ## s) = (x = y \<or> Stream.smember x s)"
   unfolding Stream.smember_def by auto
 

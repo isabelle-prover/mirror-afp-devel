@@ -788,7 +788,7 @@ lemma compl_connD:
 subsubsection \<open>Function \<open>gb_schema_dummy\<close>\<close>
 
 definition (in -) add_indices :: "(('a, 'b, 'c) pdata' list \<times> 'd) \<Rightarrow> (nat \<times> 'd) \<Rightarrow> (('a, 'b, 'c) pdata list \<times> nat \<times> 'd)"
-  where [code del]: "add_indices ns data =
+  where "add_indices ns data =
         (map_idx (\<lambda>h i. (fst h, i, snd h)) (fst ns) (fst data), fst data + length (fst ns), snd ns)"
 
 lemma (in -) add_indices_code [code]:

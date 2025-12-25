@@ -14,7 +14,7 @@ subsection \<open>Definitions for lifting bisimulation relations\<close>
 
 primrec nta_bisim :: "('t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim) \<Rightarrow> (('t,'x1,'m1) new_thread_action, ('t,'x2,'m2) new_thread_action) bisim"
   where
-  [code del]: "nta_bisim bisim (NewThread t x m) ta = (\<exists>x' m'. ta = NewThread t x' m' \<and> bisim t (x, m) (x', m'))"
+  "nta_bisim bisim (NewThread t x m) ta = (\<exists>x' m'. ta = NewThread t x' m' \<and> bisim t (x, m) (x', m'))"
 | "nta_bisim bisim (ThreadExists t b) ta = (ta = ThreadExists t b)"
 
 lemma nta_bisim_1_code [code]:

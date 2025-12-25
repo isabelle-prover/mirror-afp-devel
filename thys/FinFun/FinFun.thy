@@ -353,7 +353,7 @@ qed
 subsection \<open>Default value for FinFuns\<close>
 
 definition finfun_default_aux :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"
-where [code del]: "finfun_default_aux f = (if finite (UNIV :: 'a set) then undefined else THE b. finite {a. f a \<noteq> b})"
+where "finfun_default_aux f = (if finite (UNIV :: 'a set) then undefined else THE b. finite {a. f a \<noteq> b})"
 
 lemma finfun_default_aux_infinite:
   fixes f :: "'a \<Rightarrow> 'b"
@@ -441,7 +441,7 @@ by(simp add: finfun_default_update_const)
 subsection \<open>Recursion combinator and well-formedness conditions\<close>
 
 definition finfun_rec :: "('b \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow>f 'b) \<Rightarrow> 'c"
-where [code del]:
+where
   "finfun_rec cnst upd f \<equiv>
    let b = finfun_default f;
        g = THE g. f = Abs_finfun (map_default b g) \<and> finite (dom g) \<and> b \<notin> ran g
@@ -915,7 +915,7 @@ by(auto simp add: expand_finfun_eq fun_eq_iff finfun_upd_apply)
 subsection \<open>Function composition\<close>
 
 definition finfun_comp :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow>f 'a \<Rightarrow> 'c \<Rightarrow>f 'b"  (infixr \<open>\<circ>$\<close> 55)
-where [code del]: "g \<circ>$ f  = finfun_rec (\<lambda>b. (K$ g b)) (\<lambda>a b c. c(a $:= g b)) f"
+where "g \<circ>$ f  = finfun_rec (\<lambda>b. (K$ g b)) (\<lambda>a b c. c(a $:= g b)) f"
 
 notation (ASCII)
   finfun_comp (infixr \<open>o$\<close> 55)
@@ -977,7 +977,7 @@ proof -
 qed
 
 definition finfun_comp2 :: "'b \<Rightarrow>f 'c \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow>f 'c"  (infixr \<open>$\<circ>\<close> 55)
-where [code del]: "g $\<circ> f = Abs_finfun (($) g \<circ> f)"
+where "g $\<circ> f = Abs_finfun (($) g \<circ> f)"
 
 notation (ASCII)
   finfun_comp2  (infixr \<open>$o\<close> 55)
@@ -1003,7 +1003,7 @@ qed
 subsection \<open>Universal quantification\<close>
 
 definition finfun_All_except :: "'a list \<Rightarrow> 'a \<Rightarrow>f bool \<Rightarrow> bool"
-where [code del]: "finfun_All_except A P \<equiv> \<forall>a. a \<in> set A \<or> P $ a"
+where "finfun_All_except A P \<equiv> \<forall>a. a \<in> set A \<or> P $ a"
 
 lemma finfun_All_except_const: "finfun_All_except A (K$ b) \<longleftrightarrow> b \<or> set A = UNIV"
 by(auto simp add: finfun_All_except_def)
@@ -1047,7 +1047,7 @@ by(simp add: finfun_Ex_def)
 subsection \<open>A diagonal operator for FinFuns\<close>
 
 definition finfun_Diag :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow>f 'c \<Rightarrow> 'a \<Rightarrow>f ('b \<times> 'c)" (\<open>(1'($_,/ _$'))\<close> [0, 0] 1000)
-where [code del]: "($f, g$) = finfun_rec (\<lambda>b. Pair b \<circ>$ g) (\<lambda>a b c. c(a $:= (b, g $ a))) f"
+where "($f, g$) = finfun_rec (\<lambda>b. Pair b \<circ>$ g) (\<lambda>a b c. c(a $:= (b, g $ a))) f"
 
 interpretation finfun_Diag_aux: finfun_rec_wf_aux "\<lambda>b. Pair b \<circ>$ g" "\<lambda>a b c. c(a $:= (b, g $ a))"
 by(unfold_locales)(simp_all add: expand_finfun_eq fun_eq_iff finfun_upd_apply)
@@ -1174,7 +1174,7 @@ by(induct f rule: finfun_weak_induct)(simp_all add: finfun_fst_const finfun_snd_
 subsection \<open>Currying for FinFuns\<close>
 
 definition finfun_curry :: "('a \<times> 'b) \<Rightarrow>f 'c \<Rightarrow> 'a \<Rightarrow>f 'b \<Rightarrow>f 'c"
-where [code del]: "finfun_curry = finfun_rec (finfun_const \<circ> finfun_const) (\<lambda>(a, b) c f. f(a $:= (f $ a)(b $:= c)))"
+where "finfun_curry = finfun_rec (finfun_const \<circ> finfun_const) (\<lambda>(a, b) c f. f(a $:= (f $ a)(b $:= c)))"
 
 interpretation finfun_curry_aux: finfun_rec_wf_aux "finfun_const \<circ> finfun_const" "\<lambda>(a, b) c f. f(a $:= (f $ a)(b $:= c))"
 apply(unfold_locales)
@@ -1261,7 +1261,7 @@ lemma [code nbe]:
 subsection \<open>An operator that explicitly removes all redundant updates in the generated representations\<close>
 
 definition finfun_clearjunk :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow>f 'b"
-where [simp, code del]: "finfun_clearjunk = id"
+where [simp]: "finfun_clearjunk = id"
 
 lemma finfun_clearjunk_const [code]: "finfun_clearjunk (K$ b) = (K$ b)"
 by simp
@@ -1273,7 +1273,7 @@ by simp
 subsection \<open>The domain of a FinFun as a FinFun\<close>
 
 definition finfun_dom :: "('a \<Rightarrow>f 'b) \<Rightarrow> ('a \<Rightarrow>f bool)"
-where [code del]: "finfun_dom f = Abs_finfun (\<lambda>a. f $ a \<noteq> finfun_default f)"
+where "finfun_dom f = Abs_finfun (\<lambda>a. f $ a \<noteq> finfun_default f)"
 
 lemma finfun_dom_const:
   "finfun_dom ((K$ c) :: 'a \<Rightarrow>f 'b) = (K$ finite (UNIV :: 'a set) \<and> c \<noteq> undefined)"

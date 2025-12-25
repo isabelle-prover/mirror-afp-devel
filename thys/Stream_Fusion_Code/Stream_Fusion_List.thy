@@ -531,10 +531,10 @@ subsubsection \<open>@{const ord.lexordp}\<close>
 context ord begin
 
 definition lexord_fusion :: "('a, 's1) generator \<Rightarrow> ('a, 's2) generator \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool"
-where [code del]: "lexord_fusion g1 g2 s1 s2 = ord_class.lexordp (unstream g1 s1) (unstream g2 s2)"
+where "lexord_fusion g1 g2 s1 s2 = ord_class.lexordp (unstream g1 s1) (unstream g2 s2)"
 
 definition lexord_eq_fusion :: "('a, 's1) generator \<Rightarrow> ('a, 's2) generator \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool"
-where [code del]: "lexord_eq_fusion g1 g2 s1 s2 = lexordp_eq (unstream g1 s1) (unstream g2 s2)"
+where "lexord_eq_fusion g1 g2 s1 s2 = lexordp_eq (unstream g1 s1) (unstream g2 s2)"
 
 lemma lexord_fusion_code:
   "lexord_fusion g1 g2 s1 s2 \<longleftrightarrow>

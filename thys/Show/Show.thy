@@ -115,7 +115,7 @@ where
 
 definition showsp_list :: "'a showsp \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> shows"
 where
-  [code del]: "showsp_list s p = pshowsp_list p o map (s 0)"
+  "showsp_list s p = pshowsp_list p o map (s 0)"
 
 lemma showsp_list_code [code]:
   "showsp_list s p xs = shows_list_gen (s 0) ''[]'' ''['' '', '' '']'' xs"

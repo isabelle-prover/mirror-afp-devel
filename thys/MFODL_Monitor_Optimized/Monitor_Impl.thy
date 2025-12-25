@@ -162,7 +162,6 @@ lemma RPDs_aux_code[code]:
   unfolding RPDs_aux_def bind_UNION
   by (subst saturate_code) auto
 
-declare RPDs_code[code del]
 lemma RPDs_code[code]: "RPDs r = RPDs_aux {r}"
   unfolding RPDs_aux_def RPDs_code
   by (rule saturate_commute[where C="RPDs r"])
@@ -175,7 +174,6 @@ lemma LPDs_aux_code[code]:
   unfolding LPDs_aux_def bind_UNION
   by (subst saturate_code) auto
 
-declare LPDs_code[code del]
 lemma LPDs_code[code]: "LPDs r = LPDs_aux {r}"
   unfolding LPDs_aux_def LPDs_code
   by (rule saturate_commute[where C="LPDs r"])

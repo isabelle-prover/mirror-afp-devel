@@ -76,16 +76,16 @@ where
        prog.return ()
      }"
 
-declare prog.raise_def[code del]
-declare prog.Ref.ref_def[code del]
-declare prog.Ref.lookup_def[code del]
-declare prog.Ref.update_def[code del]
-declare prog.Array.new_def[code del]
-declare prog.Array.make_def[code del]
-declare prog.Array.of_list_def[code del]
-declare prog.Array.nth_def[code del]
-declare prog.Array.upd_def[code del]
-declare prog.Array.freeze_def[code del]
+declare prog.raise_def[code drop]
+declare prog.Ref.ref_def[code drop]
+declare prog.Ref.lookup_def[code drop]
+declare prog.Ref.update_def[code drop]
+declare prog.Array.new_def[code drop]
+declare prog.Array.make_def[code drop]
+declare prog.Array.of_list_def[code drop]
+declare prog.Array.nth_def[code drop]
+declare prog.Array.upd_def[code drop]
+declare prog.Array.freeze_def[code drop]
 
 
 paragraph\<open> Operations on two-dimensional arrays \<close>
@@ -197,7 +197,7 @@ text\<open> Intermediate operation avoids invariance problem in \<open>Scala\<cl
 setup \<open>Sign.mandatory_path "Ref"\<close>
 
 definition ref' where
-  [code del]: "ref' = prog.Ref.ref"
+  [code drop]: "ref' = prog.Ref.ref"
 
 lemma [code]:
   "prog.Ref.ref x = Ref.ref' x"
@@ -220,7 +220,7 @@ setup \<open>Sign.mandatory_path "prog.Array"\<close>
 definition new' :: "integer \<Rightarrow> 'a \<Rightarrow> 'a::heap.rep one_dim_array imp" where
   "new' k v = prog.action {(a, s, s') |a s s'. (a, s') \<in> ODArray.alloc (replicate (nat_of_integer k) v) s}"
 
-declare prog.Array.new'_def[code del]
+declare prog.Array.new'_def[code drop]
 
 lemma new_new'[code]:
   shows "prog.Array.new b v = prog.Array.new' (of_nat (length (Ix.interval b))) v \<bind> prog.return \<circ> Array b"
@@ -231,7 +231,7 @@ by (force simp: prog.Array.new_def prog.Array.new'_def prog.vmap.action
 definition make' :: "integer \<Rightarrow> (integer \<Rightarrow> 'a) \<Rightarrow> 'a::heap.rep one_dim_array imp" where
   "make' k f = prog.action {(a, s, s') |a s s'. (a, s') \<in> ODArray.alloc (map (f \<circ> of_nat) [0..<nat_of_integer k]) s}"
 
-declare prog.Array.make'_def[code del]
+declare prog.Array.make'_def[code drop]
 
 lemma make_make'[code]:
   shows "prog.Array.make b f
@@ -244,7 +244,7 @@ by (force simp: interval_map prog.Array.make_def prog.Array.make'_def prog.vmap.
 definition of_list' :: "integer \<Rightarrow> 'a list \<Rightarrow> 'a::heap.rep one_dim_array imp" where
   "of_list' k xs = prog.action {(a, s, s') |a s s'. nat_of_integer k \<le> length xs \<and> (a, s') \<in> ODArray.alloc xs s}"
 
-declare prog.Array.of_list'_def[code del]
+declare prog.Array.of_list'_def[code drop]
 
 lemma of_list_of_list'[code]:
   shows "prog.Array.of_list b xs
@@ -256,7 +256,7 @@ by (force simp: prog.Array.of_list_def prog.Array.of_list'_def prog.vmap.action
 definition nth' :: "'a::heap.rep one_dim_array \<Rightarrow> integer \<Rightarrow> 'a imp" where
   "nth' a i = prog.read (ODArray.get a (nat_of_integer i))"
 
-declare prog.Array.nth'_def[code del]
+declare prog.Array.nth'_def[code drop]
 
 lemma nth_nth'[code]:
   shows "prog.Array.nth a i = prog.Array.nth' (array.arr a) (of_nat (Array.index a i))"
@@ -265,7 +265,7 @@ by (simp add: prog.Array.nth_def prog.Array.nth'_def Array.get_def)
 definition upd' :: "'a::heap.rep one_dim_array \<Rightarrow> integer \<Rightarrow> 'a::heap.rep \<Rightarrow> unit imp" where
   "upd' a i v = prog.write (ODArray.set a (nat_of_integer i) v)"
 
-declare prog.Array.upd'_def[code del]
+declare prog.Array.upd'_def[code drop]
 
 lemma upd_upd'[code]:
   shows "prog.Array.upd a i v = prog.Array.upd' (array.arr a) (of_nat (Array.index a i)) v"

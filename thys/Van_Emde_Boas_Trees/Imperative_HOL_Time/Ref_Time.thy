@@ -42,13 +42,13 @@ definition noteq :: "'a::heap ref \<Rightarrow> 'b::heap ref \<Rightarrow> bool"
 subsection \<open>Monad operations\<close>
 
 definition ref :: "'a::heap \<Rightarrow> 'a ref Heap" where
-  [code del]: "ref v = Heap_Time_Monad.heap (%h. let (r,h') = alloc v h in (r,h',1))"
+  [code drop]: "ref v = Heap_Time_Monad.heap (%h. let (r,h') = alloc v h in (r,h',1))"
 
 definition lookup :: "'a::heap ref \<Rightarrow> 'a Heap" (\<open>!_\<close> 61) where
-  [code del]: "lookup r = Heap_Time_Monad.tap (\<lambda>h. get h r)"
+  [code drop]: "lookup r = Heap_Time_Monad.tap (\<lambda>h. get h r)"
 
 definition update :: "'a ref \<Rightarrow> 'a::heap \<Rightarrow> unit Heap" (\<open>_ := _\<close> 62) where
-  [code del]: "update r v = Heap_Time_Monad.heap (\<lambda>h. ((), set r v h, 1))"
+  [code drop]: "update r v = Heap_Time_Monad.heap (\<lambda>h. ((), set r v h, 1))"
 
 definition change :: "('a::heap \<Rightarrow> 'a) \<Rightarrow> 'a ref \<Rightarrow> 'a Heap" where
   "change f r = do {
@@ -272,7 +272,7 @@ subsection \<open>Code generator setup\<close>
 text \<open>Intermediate operation avoids invariance problem in \<open>Scala\<close> (similar to value restriction)\<close>
 
 definition ref' where
-  [code del]: "ref' = ref"
+  [code drop]: "ref' = ref"
 
 lemma [code]:
   "ref x = ref' x"

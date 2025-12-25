@@ -315,8 +315,6 @@ qed
 
 declare vars_coeffs_impl(4)[code]
 
-declare eval_l_def[code del]
-
 lemma eval_lpoly_impl[code]: "eval_l \<alpha> (lpoly_of p) = 
   constant_lpoly_impl p + (\<Sum>(x, c) \<leftarrow> vars_coeffs_impl p. c * \<alpha> x)" 
   unfolding eval_l_def constant_lpoly_impl 
@@ -326,8 +324,6 @@ lemma eval_lpoly_impl[code]: "eval_l \<alpha> (lpoly_of p) =
   subgoal unfolding vars_l_list_def by simp
   subgoal unfolding map_map o_def split ..
   done
-
-declare substitute_all_l_def[code del]
 
 lemma substitute_all_impl[code]: "substitute_all_l \<sigma> (lpoly_of p) = 
   const_l (constant_lpoly_impl p) + (\<Sum>(x, c) \<leftarrow> vars_coeffs_impl p. smult_l c (\<sigma> x))" 
@@ -504,14 +500,10 @@ proof (intro lpoly_fun_of_eqI, goal_cases)
     by transfer auto
 qed
 
-declare min_var_def[code del]
-
 lemmas min_var_impl = min_var_def[of "lpoly_of p" for p,
     folded vars_coeffs_impl(5)]
 
 declare min_var_impl[code]
-
-declare gcd_coeffs_l_def[code del]
 
 lemma Gcd_set: "Gcd (set (xs :: 'a :: semiring_Gcd list)) = gcd_list xs" 
   unfolding Gcd_set_eq_fold Gcd_fin.set_eq_fold[of xs] ..

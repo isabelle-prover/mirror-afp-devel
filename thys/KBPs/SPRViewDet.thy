@@ -896,8 +896,6 @@ where
 
 (* We need to avoid the explicit enumeration of the set in spr_repRels. *)
 
-declare (in -) spr_knowledge_def[code del]
-
 lemma (in -) [code]:
   "spr_knowledge envObs cec = (\<lambda>a s.
      ODList.fromList [ s' . s' \<leftarrow> toList cec,
@@ -931,8 +929,6 @@ where
 (*<*)
 
 (* We need to avoid the explicit enumeration of the set in spr_repRels. *)
-
-declare (in -) spr_commonKnowledge_def[code del]
 
 lemma (in -) [code]:
   "spr_commonKnowledge envObs cec = (\<lambda>as s.

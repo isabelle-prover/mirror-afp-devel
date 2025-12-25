@@ -427,7 +427,6 @@ sepref_definition lexord_eq_term
 declare lexord_eq_term.refine[sepref_fr_rules]
 
 
-lemmas [code del] = msort_poly_impl_def msort_monoms_impl_def
 lemmas [code] =
   msort_poly_impl_def[unfolded lexord_eq_alt_def1[abs_def]]
   msort_monoms_impl_def[unfolded msort_msort2]

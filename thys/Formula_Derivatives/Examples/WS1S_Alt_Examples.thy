@@ -27,7 +27,7 @@ abbreviation FLess (\<open>x\<^sub>_ < x\<^sub>_\<close> [65, 66] 65) where "FLe
 abbreviation FIn (\<open>x\<^sub>_ \<in> X\<^bsub>_\<^esub>\<close> [65, 66] 65) where "FIn m M \<equiv> FBase (In m M)"
 abbreviation FQ (\<open>[x\<^sub>_]\<close> [66] 65) where "FQ m \<equiv> FBase (Fo m)"
 
-declare check_eqv_code[code del]
+declare check_eqv_code[code drop]
 
 (*true in M2L, false in WS1S*)
 definition "M2L = (FEx SO (FAll FO (FBase (In 0 0))) :: formula)"

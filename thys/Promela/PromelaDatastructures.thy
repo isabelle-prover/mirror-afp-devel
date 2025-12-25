@@ -130,12 +130,12 @@ abbreviation "with_warn msg e \<equiv> let _ = warn msg in e"
 abbreviation "the_warn opt msg \<equiv> case opt of None \<Rightarrow> () | _ \<Rightarrow> warn msg"
 
 text \<open>\<open>usc\<close>: "Unsupported Construct"\<close>
-definition [code del]: "usc (c :: String.literal) \<equiv> undefined"
+definition [code drop]: "usc (c :: String.literal) \<equiv> undefined"
 
-definition  [code del]: "err (e :: String.literal) = undefined"
+definition  [code drop]: "err (e :: String.literal) = undefined"
 abbreviation "errv e v \<equiv> err (e + v)"
 
-definition [simp, code del]: "abort (msg :: String.literal) f = f ()"
+definition [simp, code drop]: "abort (msg :: String.literal) f = f ()"
 abbreviation "abortv msg v f \<equiv> abort (msg + v) f"
 
 code_printing

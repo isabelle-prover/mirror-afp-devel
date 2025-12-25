@@ -419,18 +419,16 @@ including undefined_transfer unfolding uint32_mod_def uint32_divmod_def
 by transfer (simp add: word_mod_def)
 
 definition uint32_sdiv :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32"
-where [code del]:
+where
   "uint32_sdiv x y =
    (if y = 0 then undefined ((div) :: uint32 \<Rightarrow> _) x (0 :: uint32)
     else Abs_uint32 (Rep_uint32 x sdiv Rep_uint32 y))"
 
 definition div0_uint32 :: "uint32 \<Rightarrow> uint32"
-where [code del]: "div0_uint32 x = undefined ((div) :: uint32 \<Rightarrow> _) x (0 :: uint32)"
-declare [[code abort: div0_uint32]]
+where [code abort]: "div0_uint32 x = undefined ((div) :: uint32 \<Rightarrow> _) x (0 :: uint32)"
 
 definition mod0_uint32 :: "uint32 \<Rightarrow> uint32"
-where [code del]: "mod0_uint32 x = undefined ((mod) :: uint32 \<Rightarrow> _) x (0 :: uint32)"
-declare [[code abort: mod0_uint32]]
+where [code abort]: "mod0_uint32 x = undefined ((mod) :: uint32 \<Rightarrow> _) x (0 :: uint32)"
 
 lemma uint32_divmod_code [code]:
   "uint32_divmod x y =

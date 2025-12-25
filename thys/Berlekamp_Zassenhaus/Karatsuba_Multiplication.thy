@@ -24,7 +24,7 @@ lemma karatsuba_single_sided: fixes f :: "'a :: comm_ring_1 poly"
 
 
 definition split_at :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list" where 
-  [code del]: "split_at n xs = (take n xs, drop n xs)" 
+  "split_at n xs = (take n xs, drop n xs)" 
   
 lemma split_at_code[code]: 
   "split_at n [] = ([],[])"

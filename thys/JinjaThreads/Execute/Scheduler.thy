@@ -21,7 +21,7 @@ text \<open>
 \<close>
 
 definition unfold_tllist' :: "('a \<Rightarrow> 'b \<times> 'a + 'c) \<Rightarrow> 'a \<Rightarrow> ('b, 'c) tllist"
-where [code del]: 
+where 
   "unfold_tllist' f = 
    unfold_tllist (\<lambda>a. \<exists>c. f a = Inr c) (projr \<circ> f) (fst \<circ> projl \<circ> f) (snd \<circ> projl \<circ> f)"
 

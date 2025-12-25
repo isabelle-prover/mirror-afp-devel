@@ -47,50 +47,50 @@ code_printing type_constructor double \<rightharpoonup>
 
 code_printing constant "0 :: double" \<rightharpoonup>
   (SML) "0.0" and (OCaml) "0.0"
-declare zero_double.abs_eq[code del]
+declare zero_double.abs_eq[code drop]
 
 code_printing constant "1 :: double" \<rightharpoonup>
   (SML) "1.0" and (OCaml) "1.0"
-declare one_double.abs_eq[code del]
+declare one_double.abs_eq[code drop]
 
 code_printing constant "eq_double :: double \<Rightarrow> double \<Rightarrow> bool" \<rightharpoonup>
   (SML) "Real.== ((_:real), (_))" and (OCaml) "Pervasives.(=)"
-declare eq_double.abs_eq[code del]
+declare eq_double.abs_eq[code drop]
 
 code_printing constant "Orderings.less_eq :: double \<Rightarrow> double \<Rightarrow> bool" \<rightharpoonup>
   (SML) "Real.<= ((_), (_))" and (OCaml) "Pervasives.(<=)"
-declare less_double_def [code del]
+declare less_double_def [code drop]
 
 code_printing constant "Orderings.less :: double \<Rightarrow> double \<Rightarrow> bool" \<rightharpoonup>
   (SML) "Real.< ((_), (_))" and (OCaml) "Pervasives.(<)"
-declare less_eq_double_def[code del]
+declare less_eq_double_def[code drop]
 
 code_printing constant "(+) :: double \<Rightarrow> double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Real.+ ((_), (_))" and (OCaml) "Pervasives.( +. )"
-declare plus_double_def[code del]
+declare plus_double_def[code drop]
 
 code_printing constant "(*) :: double \<Rightarrow> double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Real.* ((_), (_))" and (OCaml) "Pervasives.( *. )"
-declare times_double_def [code del]
+declare times_double_def [code drop]
 
 code_printing constant "(-) :: double \<Rightarrow> double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Real.- ((_), (_))" and (OCaml) "Pervasives.( -. )"
-declare minus_double_def [code del]
+declare minus_double_def [code drop]
 
 code_printing constant "uminus :: double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Real.~" and (OCaml) "Pervasives.( ~-. )"
 
 code_printing constant "(/) :: double \<Rightarrow> double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Real.'/ ((_), (_))" and (OCaml) "Pervasives.( '/. )"
-declare divide_double_def [code del]
+declare divide_double_def [code drop]
 
 code_printing constant "sqrt_double :: double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Math.sqrt" and (OCaml) "Pervasives.sqrt"
-declare sqrt_def[code del]
+declare sqrt_def[code drop]
 
 code_printing constant "infinity_double :: double" \<rightharpoonup>
   (SML) "Real.posInf"
-declare infinity_double.abs_eq[code del]
+declare infinity_double.abs_eq[code drop]
 
 code_printing constant "is_normal :: double \<Rightarrow> bool" \<rightharpoonup>
   (SML) "Real.isNormal"

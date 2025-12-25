@@ -32,7 +32,7 @@ interpretation pcompose_hom: idom_hom "\<lambda>q. q \<circ>\<^sub>p p" ..
 
 
 definition eval_poly :: "('a \<Rightarrow> 'b :: comm_semiring_1) \<Rightarrow> 'a :: zero poly \<Rightarrow> 'b \<Rightarrow> 'b" where
-  [code del]: "eval_poly h p = poly (map_poly h p)"
+  "eval_poly h p = poly (map_poly h p)"
 
 lemma eval_poly_code[code]: "eval_poly h p x = fold_coeffs (\<lambda> a b. h a + x * b) p 0" 
   by (induct p, auto simp: eval_poly_def)

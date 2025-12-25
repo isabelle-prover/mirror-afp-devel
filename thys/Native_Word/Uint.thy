@@ -44,7 +44,7 @@ abbreviation "dflt_size \<equiv> len_of (TYPE (dflt_size))"
 
 context includes integer.lifting begin
 lift_definition dflt_size_integer :: integer is "int dflt_size" .
-declare dflt_size_integer_def[code del]
+declare dflt_size_integer_def[code drop]
   \<comment> \<open>The code generator will substitute a machine-dependent value for this constant\<close>
 
 lemma dflt_size_by_int[code]: "dflt_size = nat_of_integer dflt_size_integer"
@@ -565,18 +565,16 @@ including undefined_transfer unfolding uint_mod_def uint_divmod_def
 by transfer(simp add: word_mod_def)
 
 definition uint_sdiv :: "uint \<Rightarrow> uint \<Rightarrow> uint"
-where [code del]:
+where
   "uint_sdiv x y =
    (if y = 0 then undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint)
     else Abs_uint (Rep_uint x sdiv Rep_uint y))"
 
 definition div0_uint :: "uint \<Rightarrow> uint"
-where [code del]: "div0_uint x = undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint)"
-declare [[code abort: div0_uint]]
+where [code abort]: "div0_uint x = undefined ((div) :: uint \<Rightarrow> _) x (0 :: uint)"
 
 definition mod0_uint :: "uint \<Rightarrow> uint"
-where [code del]: "mod0_uint x = undefined ((mod) :: uint \<Rightarrow> _) x (0 :: uint)"
-declare [[code abort: mod0_uint]]
+where [code abort]: "mod0_uint x = undefined ((mod) :: uint \<Rightarrow> _) x (0 :: uint)"
 
 definition wivs_overflow_uint :: uint 
   where "wivs_overflow_uint \<equiv> push_bit (dflt_size - 1) 1"
