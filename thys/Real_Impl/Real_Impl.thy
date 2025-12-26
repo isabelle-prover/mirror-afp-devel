@@ -28,6 +28,8 @@ imports
   Sqrt_Babylonian.Sqrt_Babylonian
 begin
 
+declare [[code_del_allowed]]
+
 text \<open>We represent real numbers of the form $p + q \cdot \sqrt{b}$ for $p,q \in \rats$, $n \in \nats$
 by triples $(p,q,b)$. However, we require the invariant that $\sqrt{b}$ is irrational.
 Most binary operations are implemented via partial functions where the common the restriction is that

@@ -11,6 +11,8 @@ theory Set_Impl imports
   Complex_Main
 begin
 
+declare [[code_del_allowed]]
+
 section \<open>Different implementations of sets\<close>
 
 subsection \<open>Auxiliary functions\<close>

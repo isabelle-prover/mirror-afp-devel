@@ -7,6 +7,8 @@ theory SelectionSort_Functional
 imports RemoveMax
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Defining data structure\<close>
 
 text\<open>Selection sort works with list and that is the reason why {\em

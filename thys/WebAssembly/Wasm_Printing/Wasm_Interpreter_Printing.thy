@@ -1,5 +1,7 @@
 theory Wasm_Interpreter_Printing imports "../Wasm_Interpreter_Properties" begin
 
+declare [[code_del_allowed]]
+
 definition "run = run_v (2^63) 300"
 
 code_printing

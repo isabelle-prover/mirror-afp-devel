@@ -10,6 +10,8 @@ imports
   Polynomial_Factorization.Missing_Polynomial_Factorial
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Algorithm\<close>
 
 locale div_exp_sound_gcd = div_exp_sound div_exp for 

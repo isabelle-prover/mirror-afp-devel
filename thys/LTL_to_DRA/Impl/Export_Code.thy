@@ -12,6 +12,8 @@ theory Export_Code
     "HOL-Library.Code_Target_Numeral" 
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>External Interface\<close>
 
 \<comment> \<open>Fix the type to match the type of the LTL parser\<close>

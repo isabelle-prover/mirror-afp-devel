@@ -7,6 +7,8 @@ theory Formal_Puiseux_Series
   imports FPS_Hensel
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Auxiliary facts and definitions\<close>
 
 lemma div_dvd_self:

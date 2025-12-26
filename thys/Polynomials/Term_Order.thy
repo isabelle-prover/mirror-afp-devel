@@ -6,6 +6,8 @@ theory Term_Order
   imports OAlist_Poly_Mapping "HOL-Library.Product_Lexorder"
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Type Class \<open>nat\<close>\<close>
 
 class nat = zero + plus + minus + order + equal +

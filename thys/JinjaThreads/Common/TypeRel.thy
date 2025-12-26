@@ -11,6 +11,8 @@ imports
   Decl
 begin
 
+declare [[code_del_allowed]]
+
 subsection\<open>The subclass relations\<close>
 
 inductive subcls1 :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sup>1 _\<close> [71, 71, 71] 70)

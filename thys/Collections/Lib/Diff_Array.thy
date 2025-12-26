@@ -5,6 +5,8 @@ theory Diff_Array imports
   "HOL-Library.Code_Target_Numeral"
 begin
 
+declare [[code_del_allowed]]
+
 datatype 'a array = Array "'a list"
 
 subsection \<open>primitive operations\<close>

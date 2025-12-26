@@ -9,6 +9,8 @@ theory Tree_Automata_Class_Instances_Impl
    First_Order_Terms.Term_Impl
 begin
 
+declare [[code_del_allowed]]
+
 derive linorder ta_rule
 derive (compare) ccompare "term"
 derive ceq ta_rule

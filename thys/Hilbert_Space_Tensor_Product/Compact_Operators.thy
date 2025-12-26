@@ -12,6 +12,7 @@ theory Compact_Operators
     Eigenvalues
 begin
 
+declare [[code_del_allowed]]
 
 unbundle cblinfun_syntax
 

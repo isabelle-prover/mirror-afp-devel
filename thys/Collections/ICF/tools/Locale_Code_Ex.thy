@@ -6,6 +6,8 @@ imports
   "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
 begin
 
+declare [[code_del_allowed]]
+
 definition [simp, code del]: "NOCODE \<equiv> id"
 
 locale test = 

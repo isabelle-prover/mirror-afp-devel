@@ -9,6 +9,8 @@ imports
   Time_Monad
 begin
 
+declare [[code_del_allowed]]
+
 declare Let_def[simp]
 
 subsection \<open>Time Prelude\<close>

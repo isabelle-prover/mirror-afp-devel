@@ -26,6 +26,8 @@ theory Complex_Vector_Spaces
     Complex_Vector_Spaces0
 begin
 
+
+declare [[code_del_allowed]]
 bundle norm_syntax begin
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end

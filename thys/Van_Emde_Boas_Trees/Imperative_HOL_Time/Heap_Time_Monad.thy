@@ -13,6 +13,8 @@ theory Heap_Time_Monad
   "HOL-Library.Monad_Syntax"
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>The monad\<close>
 
 subsubsection \<open>Monad construction\<close>

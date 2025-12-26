@@ -6,6 +6,8 @@ theory Tree_Automata
     "HOL-Library.Option_ord"
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Tree automaton definition and functionality\<close>
 
 datatype ('q, 'f) ta_rule = TA_rule (r_root: 'f) (r_lhs_states: "'q list") (r_rhs: 'q) (\<open>_ _ \<rightarrow> _\<close> [51, 51, 51] 52)

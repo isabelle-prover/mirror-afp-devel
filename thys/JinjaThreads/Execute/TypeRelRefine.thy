@@ -12,6 +12,8 @@ imports
   "HOL-Library.AList_Mapping"
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Auxiliary lemmata\<close>
 
 lemma rtranclp_tranclpE:

@@ -7,6 +7,8 @@ theory Word
 imports Main
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Auxilary Lemmas\<close>
 
 lemma max_le [intro!]: "[| x \<le> z; y \<le> z |] ==> max x y \<le> z"

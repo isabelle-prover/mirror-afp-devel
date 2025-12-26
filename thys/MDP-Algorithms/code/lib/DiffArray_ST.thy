@@ -5,7 +5,7 @@ theory DiffArray_ST
 imports DiffArray_Base
 begin
 
-
+declare [[code_del_allowed]]
 
 subsection \<open>Primitive Operations\<close>
 

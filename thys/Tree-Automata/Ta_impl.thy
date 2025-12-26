@@ -11,8 +11,7 @@ imports
   "HOL-Library.Code_Target_Numeral" 
 begin
 
-
-
+declare [[code_del_allowed]]
 
 text_raw \<open>\label{sec:taimpl}\<close>
 

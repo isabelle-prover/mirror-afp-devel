@@ -4,6 +4,8 @@ theory IO
     "HOL-Library.Monad_Syntax"
 begin
 
+declare [[code_del_allowed]]
+
 section\<open>IO Monad\<close>
 text \<open>
   Inspired by Haskell.

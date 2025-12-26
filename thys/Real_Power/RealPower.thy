@@ -9,6 +9,8 @@ theory RealPower
 imports RatPower
 begin
 
+declare [[code_del_allowed]]
+
 instance rat :: ab_group_add 
 by intro_classes
 

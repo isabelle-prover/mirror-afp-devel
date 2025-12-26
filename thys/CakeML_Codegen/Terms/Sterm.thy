@@ -4,6 +4,8 @@ theory Sterm
 imports Strong_Term
 begin
 
+declare [[code_del_allowed]]
+
 datatype sterm =
   Sconst name |
   Svar name |

@@ -7,6 +7,7 @@ imports
   
 begin
 
+declare [[code_del_allowed]]
 
 subsection \<open>Additional List Operations\<close>
 

@@ -10,6 +10,8 @@ theory Coinductive_Nat imports
   "HOL-Library.Complete_Partial_Order2"
 begin
 
+declare [[code_del_allowed]]
+
 lemma inj_enat [simp]: "inj_on enat A"
 by(simp add: inj_on_def)
 

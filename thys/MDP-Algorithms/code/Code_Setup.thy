@@ -11,6 +11,8 @@ theory Code_Setup
 
 begin
 
+declare [[code_del_allowed]]
+
 context MDP_nat_disc begin
 lemma L_zero:
   assumes "\<And>s. s \<ge> states \<Longrightarrow> apply_bfun v s = 0" "s \<ge> states"

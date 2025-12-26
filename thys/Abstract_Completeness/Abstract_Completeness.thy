@@ -10,6 +10,8 @@ imports
 begin
 (*>*)
 
+declare [[code_del_allowed]]
+
 section\<open>General Tree Concepts\<close>
 
 codatatype 'a tree = Node (root: 'a) (cont: "'a tree fset")

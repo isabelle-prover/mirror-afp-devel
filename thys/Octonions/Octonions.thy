@@ -7,6 +7,8 @@ theory Octonions
   imports Cross_Product_7 
 begin
 
+declare [[code_del_allowed]]
+
 subsection\<open>Basic definitions\<close>
 
 text\<open>As with the complex numbers, coinduction is convenient.\<close>

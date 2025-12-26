@@ -4,6 +4,8 @@ theory Refine_Imp_Hol
             "HOL-Eisbach.Eisbach"
 begin
 
+  declare [[code_del_allowed]]
+
   subsection \<open>Assertions\<close>
     
   text \<open>We add assertions that consume no time to Imperative HOL Time.

@@ -11,6 +11,8 @@ theory Complex_Bounded_Linear_Function0
     Complex_Euclidean_Space0
 begin
 
+declare [[code_del_allowed]]
+
 unbundle cinner_syntax
 
 lemma conorm_componentwise:

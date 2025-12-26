@@ -12,6 +12,8 @@ imports
   Coinductive_Nat
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Auxiliary lemmata\<close>
 
 lemma funpow_Suc_conv [simp]: "(Suc ^^ n) m = m + n"

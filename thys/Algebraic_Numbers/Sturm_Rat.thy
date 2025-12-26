@@ -13,6 +13,8 @@ imports
   Berlekamp_Zassenhaus.Square_Free_Int_To_Square_Free_GFp
 begin
 
+declare [[code_del_allowed]]
+
 hide_const (open) UnivPoly.coeff
 
 (* TODO: Move *)

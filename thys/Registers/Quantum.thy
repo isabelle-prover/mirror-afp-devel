@@ -10,6 +10,8 @@ theory Quantum
     "HOL-Library.Code_Target_Numeral"
 begin
 
+declare [[code_del_allowed]]
+
 unbundle cblinfun_syntax
 
 type_synonym ('a,'b) matrix = \<open>('a ell2, 'b ell2) cblinfun\<close>

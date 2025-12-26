@@ -10,6 +10,8 @@ theory "Quaternions"
     "HOL-Analysis.Multivariate_Analysis"
 begin
 
+declare [[code_del_allowed]]
+
 subsection\<open>Basic definitions\<close>
 
 text\<open>As with the complex numbers, coinduction is convenient\<close>

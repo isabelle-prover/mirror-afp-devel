@@ -8,6 +8,8 @@ imports
     reasons: to allow for a \<^theory_text>\<open>quickcheck\<close> setup.\<close>
 begin
 
+declare [[code_del_allowed]]
+
 datatype pterm =
   Pconst name |
   Pvar name |

@@ -3,6 +3,8 @@ imports
   Proper_Iterator
 begin
 
+  declare [[code_del_allowed]]
+
   lemma proper_it_fold: 
     "proper_it it it' \<Longrightarrow> foldli (it (\<lambda>_. True) (\<lambda>x l. l@[x]) []) = it'"
     unfolding proper_it_def by auto

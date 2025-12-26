@@ -5,6 +5,8 @@ theory Assoc_List
   "../Iterator/SetIteratorOperations"
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Type \<open>('a, 'b) assoc_list\<close>\<close>
 
 typedef ('k, 'v) assoc_list = "{xs :: ('k \<times> 'v) list. distinct (map fst xs)}"

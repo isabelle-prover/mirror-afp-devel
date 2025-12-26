@@ -12,6 +12,8 @@ imports
   Gauss_Jordan
 begin
 
+declare [[code_del_allowed]]
+
 subsection\<open>Definitions and functions to compute the Gauss-Jordan algorithm over matrices represented as nested iarrays\<close>
 
 definition "least_non_zero_position_of_vector_from_index A i = the (List.find (\<lambda>x. A !! x \<noteq> 0) [i..<IArray.length A])"

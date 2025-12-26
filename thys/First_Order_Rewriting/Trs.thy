@@ -6,6 +6,8 @@ theory Trs
     First_Order_Terms.Term_More
 begin
 
+declare [[code_del_allowed]]
+
 text \<open>
   A rewrite rule is a pair of terms. A term rewrite system (TRS) is a set of rewrite rules.
 \<close>

@@ -6,6 +6,8 @@ theory OAlist_Poly_Mapping
   imports PP_Type MPoly_Type_Class_Ordered OAlist
 begin
 
+declare [[code_del_allowed]]
+
 text \<open>We introduce a dedicated type for ordered associative lists (oalists) representing polynomials.
   To that end, we require the order relation the oalists are sorted wrt. to be admissible term orders,
   and furthermore sort the lists @{emph \<open>descending\<close>} rather than @{emph \<open>ascending\<close>}, because this

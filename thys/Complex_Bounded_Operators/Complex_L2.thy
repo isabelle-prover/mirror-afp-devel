@@ -18,6 +18,8 @@ theory Complex_L2
     "HOL-Library.Infinite_Typeclass"
 begin
 
+declare [[code_del_allowed]]
+
 unbundle lattice_syntax and cblinfun_syntax and no blinfun_apply_syntax
 
 subsection \<open>l2 norm of functions\<close>

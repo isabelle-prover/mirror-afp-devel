@@ -7,6 +7,8 @@ theory Lazy_LList imports
   Coinductive_List
 begin
 
+declare [[code_del_allowed]]
+
 subsection \<open>Lazy lists\<close>
 
 code_identifier code_module Lazy_LList \<rightharpoonup>

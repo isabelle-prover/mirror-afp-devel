@@ -4,6 +4,8 @@ theory Nterm
 imports Term_Class
 begin
 
+declare [[code_del_allowed]]
+
 text \<open>
   The \<open>nterm\<close> type is similar to @{typ term}, but removes the distinction between bound and free
   variables. Instead, there are only named variables.

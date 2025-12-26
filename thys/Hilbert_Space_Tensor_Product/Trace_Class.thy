@@ -6,6 +6,8 @@ theory Trace_Class
     Spectral_Theorem
 begin
 
+declare [[code_del_allowed]]
+
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_Sigma_iff
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_comparison_test
 hide_const (open) Determinants.trace
