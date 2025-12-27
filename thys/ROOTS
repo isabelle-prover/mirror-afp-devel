@@ -785,6 +785,7 @@ Separation_Logic_Imperative_HOL
 Separation_Logic_Unbounded
 SequentInvertibility
 Serializable
+Set_Reconciliation
 Shadow_DOM
 Shadow_SC_DOM
 Shallow_Expressions

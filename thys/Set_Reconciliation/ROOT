@@ -1,0 +1,18 @@
+chapter AFP
+
+session Set_Reconciliation = "HOL-Computational_Algebra" +
+  options [timeout = 600]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOL-Library"
+    "Gauss_Jordan"
+    "Berlekamp_Zassenhaus"
+    "Elimination_Of_Repeated_Factors"
+  theories
+    Rational_Function_Interpolation
+    Factorisation
+    Poly_Lemmas
+    Set_Reconciliation
+  document_files
+    "root.tex"
+    "root.bib"
