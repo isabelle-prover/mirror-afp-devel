@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</loc>
     <lastmod>2025-12-23T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Set_Reconciliation.html</loc>
+    <lastmod>2025-12-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/RG_Locks.html</loc>
     <lastmod>2025-11-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -21956,6 +21959,14 @@
     <loc>https://isa-afp.org/authors/tverdyshev/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Serializable/Serializable.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Factorisation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Poly_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Rational_Function_Interpolation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Set_Reconciliation.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/park/</loc>
   </url><url>

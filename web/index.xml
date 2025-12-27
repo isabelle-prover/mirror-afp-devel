@@ -14,6 +14,13 @@
     <category>Computer science/Programming languages/Static analysis</category>
 </item>
 <item>
+  <title>Set Reconciliation</title>
+  <link>https://isa-afp.org/entries/Set_Reconciliation.html</link>
+  <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Set Reconciliation in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
   <title>Rely-Guarantee Extensions and Locks</title>
   <link>https://isa-afp.org/entries/RG_Locks.html</link>
   <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>

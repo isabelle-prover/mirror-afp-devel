@@ -22,6 +22,23 @@
   "year": "2025"
  },
  {
+  "abstract": "This entry formally verifies the set reconciliation algorithm with nearly optimal communication complexity, due to Y. Minsky et al. [1]. The algorithm allows two communication partners, who have a similar pair of sets to reconcile them while using messages of nearly optimal size, proportional to a bound on the maximum symmetric difference between the sets.  The formalization also introduces an optimization, which reduces the communication complexity even further compared to the original publication.",
+  "authors": [
+   "Paul Hofmeier",
+   "Emin Karayel"
+  ],
+  "link": "../entries/Set_Reconciliation.html",
+  "shortname": "Set_Reconciliation",
+  "title": "Set Reconciliation",
+  "topic_links": [
+   "../topics/computer-science/algorithms/"
+  ],
+  "topics": [
+   "Computer science/Algorithms"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We enhance rely-guarantee verification in Isabelle/HOL by extending the 2003 built-in library with flexible syntax, data-invariant support, and new tactics. We demonstrate our enhanced library by applying it to the examples attached to the original library. We also apply our library to three queue locks: the Abstract Queue Lock, the Ticket Lock, and the Circular Buffer Lock.",
   "authors": [
    "Robert J. Colvin",
