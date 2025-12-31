@@ -23,6 +23,9 @@ tilscher = "tilscher_email"
 wimmer = "wimmer_email"
 
 [history]
+2025-12-31 = """
+completed JSON parser example with lexer
+"""
 
 [extra]
 
