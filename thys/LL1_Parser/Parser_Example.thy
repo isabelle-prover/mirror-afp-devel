@@ -53,7 +53,7 @@ lemma "parse pt (NT (start gr))
        [Leaf If, Node E [Leaf Num, Leaf Eq, Leaf Num], Leaf Then,
         Node S [Leaf Print, Node E [Leaf Num, Leaf Eq, Leaf Num]], Leaf Else,
         Node S [Leaf Print, Node E [Leaf Num, Leaf Eq, Leaf Num]]]))
-     []"
+     [] True"
   by eval
 
 text\<open>Example input:

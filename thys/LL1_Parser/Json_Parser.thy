@@ -125,7 +125,7 @@ lemma "parse pt (NT (start jsonGrammar))
             Node Value [Leaf (mkS LeftBrack), Node Elts [], Leaf (mkS RightBrack)]],
           Node PairsTl []],
         Leaf (mkS RightBrace)])
-   []"
+   [] True"
   by eval
 
 text\<open>Example input:
@@ -184,12 +184,12 @@ lemma "parse pt (NT (start jsonGrammar))
               Leaf RightBrackS]],
           Node PairsTl []],
         Leaf RightBraceS])
-   []"
+   [] True"
   by eval
 
 subsection \<open>Reading the Parse Tree\<close>
 
-\<comment> \<open>A datatype for JSON (taken from Munta)\<close>
+\<comment> \<open>A datatype for JSON\<close>
 datatype JSON =
   Object "(string \<times> JSON) list"
 | Array "JSON list"
@@ -263,7 +263,7 @@ definition
   "parse_tree_to_json = fold_parse_tree json_leaf json_node"
 
 definition
-  "the_RESULT = (\<lambda>RESULT r _ \<Rightarrow> r)"
+  "the_RESULT = (\<lambda>RESULT r _ _ \<Rightarrow> r)"
 
 lemma "parse_tree_to_json (the_RESULT (parse pt (NT (start jsonGrammar))
   [LeftBraceS, StrS ''items'', ColonS, LeftBrackS, RightBrackS, RightBraceS]))
@@ -875,7 +875,7 @@ definition lex_it where
     lex_result = parse lex_pt (NT (start jsonLex)) chrs
   in
     case lex_result of
-      RESULT t r \<Rightarrow>
+      RESULT t r _ \<Rightarrow>
       if r = [] then
         case map_surrogates (lex_tree_to_lex_list t) of
           None \<Rightarrow> Inl ''Lone surrogates not allowed''
@@ -890,7 +890,7 @@ definition parse_it where
     result = parse pt (NT (start jsonGrammar)) x
    in
     case result of
-      RESULT t r \<Rightarrow>
+      RESULT t r _ \<Rightarrow>
       if r = [] then
         Inr (parse_tree_to_json t)
       else

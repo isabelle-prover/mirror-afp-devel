@@ -7,7 +7,7 @@ begin
 
 datatype ('n, 't) parse_tree = Node "'n" "('n, 't) parse_tree list" | Leaf "'t"
 
-datatype ('n, 't, 's) return_type = RESULT "('n, 't \<times> 's) parse_tree" "('t \<times> 's) list"
+datatype ('n, 't, 's) return_type = RESULT "('n, 't \<times> 's) parse_tree" "('t \<times> 's) list" bool
   | ERROR "string" "'n" "('t \<times> 's) list"
   | GRAMMAR_NOT_LL1 "string" "'t lookahead"
   | REJECT "string" "('t \<times> 's) list"
@@ -33,7 +33,7 @@ and
   \<Rightarrow> ('n, 't, 's) return_type"
   where
     "parseSymbol _ (T a) [] _ = REJECT ''input exhausted'' []"
-  | "parseSymbol pt (T a) (t#ts) vis = (if fst t = a then RESULT (Leaf t) ts
+  | "parseSymbol pt (T a) (t#ts) vis = (if fst t = a then RESULT (Leaf t) ts True
     else REJECT (mismatchMessage a t) (t#ts))"
   | "parseSymbol pt (NT x) ts vis = (if x |\<in>| vis then ERROR ''left recursion detected'' x ts
     else (case fmlookup pt (x, peek ts) of
@@ -41,13 +41,13 @@ and
     | Some (x', gamma) \<Rightarrow> (if x \<noteq> x' then ERROR ''malformed parse table'' x ts
         else parseGamma pt x gamma ts (finsert x vis))
     ))"
-  | "parseGamma pt n [] ts vis = RESULT (Node n []) ts"
+  | "parseGamma pt n [] ts vis = RESULT (Node n []) ts False"
   | "parseGamma pt n (s#gamma') ts vis = (let parse_s = parseSymbol pt s ts vis in
     (case parse_s of
-      RESULT t r \<Rightarrow>
-        (let parse_g = parseGamma pt n gamma' r (if length r < length ts then {||} else vis) in
+      RESULT t r c_s \<Rightarrow>
+        (let parse_g = parseGamma pt n gamma' r (if c_s then {||} else vis) in
           (case parse_g of
-            RESULT (Node n tls) r' \<Rightarrow> RESULT (Node n (t # tls)) r'
+            RESULT (Node n tls) r' c_g \<Rightarrow> RESULT (Node n (t # tls)) r' (c_s \<or> c_g)
           | e \<Rightarrow> e))
     | e \<Rightarrow> e))"
 proof (goal_cases)
@@ -105,10 +105,12 @@ definition mlex_triple :: "('a \<Rightarrow> nat \<times> nat \<times> nat) \<Ri
 
 lemma parseSymbol_length_bound_partial:
   "parseSymbol_parseGamma_dom (Inl (pt, s, ts, vis))
-  \<Longrightarrow> (\<And>tr r. parseSymbol pt s ts vis = RESULT tr r \<Longrightarrow> length r \<le> length ts)" and
+  \<Longrightarrow> (\<And>tr r c. parseSymbol pt s ts vis = RESULT tr r c
+  \<Longrightarrow> length r \<le> length ts \<and> (c \<longrightarrow> length r < length ts))" and
   parseGamma_length_bound_partial:
   "parseSymbol_parseGamma_dom (Inr (pt, n, gamma, ts, vis))
-  \<Longrightarrow> (\<And>tr r. parseGamma pt n gamma ts vis = RESULT tr r \<Longrightarrow> length r \<le> length ts)"
+  \<Longrightarrow> (\<And>tr r c. parseGamma pt n gamma ts vis = RESULT tr r c
+   \<Longrightarrow> length r \<le> length ts \<and> (c \<longrightarrow> length r < length ts))"
 proof (induction rule: parseSymbol_parseGamma.pinduct)
   case (1 pt a vis)
   then show ?case
@@ -180,7 +182,7 @@ fun parseTreeToString :: "('n, 't \<times> 's) parse_tree \<Rightarrow> string" 
 fun parseToString ::
   "('n, 't) ll1_parse_table \<Rightarrow> ('n, 't) symbol \<Rightarrow> ('t \<times> 's) list \<Rightarrow> string" where
   "parseToString (PT pt) s ts = (case parseSymbol pt s ts {||} of
-    RESULT t [] \<Rightarrow> parseTreeToString t)"
+    RESULT t [] _ \<Rightarrow> parseTreeToString t)"
 | "parseToString (ERROR_GRAMMAR_NOT_LL1_AMB_LA l) s ts = ''Grammar not LL1, ambigous lookahead '' @
     (case l of (a, p1, p) \<Rightarrow> (case a of LA t \<Rightarrow> showT t | EOF \<Rightarrow> ''EOF''))"
 
@@ -201,9 +203,9 @@ where
     \<Longrightarrow> gamma_derives_prefix g n (s#ss) (wpre @ wsuf) (Node n (v # vs)) r"
 
 lemma parseSymbol_ts_contains_remainder:
-  "\<And>t r. parseSymbol pt s ts vis = RESULT t r \<Longrightarrow> \<exists>ts'. ts' @ r = ts" and
+  "\<And>t r c. parseSymbol pt s ts vis = RESULT t r c \<Longrightarrow> \<exists>ts'. ts' @ r = ts" and
   parseGamma_ts_contains_remainder:
-  "\<And>t r. parseGamma pt n gamma ts vis = RESULT t r \<Longrightarrow> \<exists>ts'. ts' @ r = ts"
+  "\<And>t r c. parseGamma pt n gamma ts vis = RESULT t r c \<Longrightarrow> \<exists>ts'. ts' @ r = ts"
 proof (induction pt s ts vis and pt n gamma ts vis rule: parseSymbol_parseGamma.induct)
   case (5 pt n s gamma' ts vis)
   then show ?case by (fastforce split: return_type.splits parse_tree.splits option.splits if_splits)
@@ -220,18 +222,18 @@ lemma parse_meas_induct:
     | Inr (pt, x, ss, ts, vis) \<Rightarrow> parse_ind_meas_sym_list pt ss ts vis)"]
         simp add: mlex_triple_def wf_lex_triple)
 
-lemma parseGamma_node: "parseSymbol pt s ts vis = RESULT v r \<Longrightarrow> True"
-  "parseGamma pt x gamma ts vis = RESULT v r \<Longrightarrow> \<exists>ls. v = Node x ls"
-proof (induction pt s ts vis and pt x gamma ts vis arbitrary: and v r
+lemma parseGamma_node: "parseSymbol pt s ts vis = RESULT v r c \<Longrightarrow> True"
+  "parseGamma pt x gamma ts vis = RESULT v r c \<Longrightarrow> \<exists>ls. v = Node x ls"
+proof (induction pt s ts vis and pt x gamma ts vis arbitrary: and v r c
     rule: parseSymbol_parseGamma.induct)
   case (5 pt n s' gamma' ts vis)
-  obtain a b where A: "parseSymbol pt s' ts vis = RESULT a b"
+  obtain a b c where A: "parseSymbol pt s' ts vis = RESULT a b c"
     using 5(2,3) by (auto split: return_type.splits parse_tree.splits if_splits)
   show ?case
   proof (cases gamma')
     case Nil
-    then have "parseGamma pt n gamma' b (if length b < length ts then {||} else vis)
-        = RESULT (Node n []) b"
+    then obtain c' where "parseGamma pt n gamma' b (if c then {||} else vis)
+        = RESULT (Node n []) b c'"
       by auto
     then show ?thesis using 5(3) A
       by (auto split: return_type.splits parse_tree.splits)
@@ -243,18 +245,35 @@ proof (induction pt s ts vis and pt x gamma ts vis arbitrary: and v r
   qed
 qed auto
 
+lemma parseGamma_length: "parseSymbol pt s ts vis = RESULT v r c \<Longrightarrow> c \<longleftrightarrow> length r < length ts"
+  "parseGamma pt x gamma ts vis = RESULT v r c \<Longrightarrow> c \<longleftrightarrow> length r < length ts"
+  apply (induction pt s ts vis and pt x gamma ts vis arbitrary: v r c and v r c
+    rule: parseSymbol_parseGamma.induct)
+  apply (simp split: if_split_asm option.split_asm prod.split_asm; fail)+
+
+  apply (simp split: if_split_asm option.split_asm prod.split_asm)
+  apply (auto split: return_type.splits parse_tree.splits)
+  apply (metis add_less_cancel_left length_append parseGamma_ts_contains_remainder trans_less_add2)
+  using parseSymbol_ts_contains_remainder apply fastforce
+  apply (metis parseGamma_node(2) parse_tree.distinct(1))
+  by (metis parseGamma_node(2) parse_tree.distinct(1))
+
+lemma parseSymbol_not_consumedD:
+  "ts = ts'" if "parseSymbol pt s ts vis = RESULT x ts' False"
+  using parseGamma_length(1) parseSymbol_ts_contains_remainder that by fastforce
+
 lemma parseSymbol_parseGamma_sound: "case x of Inl (pt, s, ts, vis) \<Rightarrow> parse_table_correct pt g
-  \<longrightarrow> parseSymbol pt s ts vis = RESULT v r \<longrightarrow> (\<exists>w. w @ r = ts \<and> sym_derives_prefix g s w v r)
+  \<longrightarrow> parseSymbol pt s ts vis = RESULT v r c \<longrightarrow> (\<exists>w. w @ r = ts \<and> sym_derives_prefix g s w v r)
   | Inr (pt, n, gamma, ts, vis) \<Rightarrow> parse_table_correct pt g
-  \<longrightarrow> (parseGamma pt n gamma ts vis = RESULT v r
+  \<longrightarrow> (parseGamma pt n gamma ts vis = RESULT v r c
   \<longrightarrow> (\<exists>w. w @ r = ts \<and> gamma_derives_prefix g n gamma w v r))"
-proof (induction arbitrary: v r rule: parse_meas_induct)
+proof (induction arbitrary: v r c rule: parse_meas_induct)
   case (1 y)
   note IH = "1"
   {
     fix pt s ts vis
     assume A: "y = Inl (pt, s, ts, vis)" "parse_table_correct pt g"
-        "parseSymbol pt s ts vis = RESULT v r"
+        "parseSymbol pt s ts vis = RESULT v r c"
     consider (T) a lex ts' where "s = T a" "ts = (a,lex)#ts'" "v = Leaf (a, lex)" "r = ts'"
       | (NT) x ss where "s = NT x" "x |\<notin>| vis" "fmlookup pt (x, peek ts) = Some (x, ss)"
         "parseSymbol pt s ts vis = parseGamma pt x ss ts (finsert x vis)"
@@ -271,7 +290,7 @@ proof (induction arbitrary: v r rule: parse_meas_induct)
         unfolding mlex_triple_def parse_ind_meas_sym_def parse_ind_meas_sym_list_def
         using A(1) fcard_diff_insert_less by simp
       then obtain w where " w @ r = ts" "gamma_derives_prefix g x ss w v r"
-        using IH[of "Inr (pt, x, ss, ts, (finsert x vis))"] A NT by auto
+        using IH[of "Inr (pt, x, ss, ts, (finsert x vis))"] A NT by fastforce
       then show ?thesis using A(2) NT(1,3) NT_sdp pt_sound_def by fastforce
     qed
   }
@@ -279,21 +298,25 @@ proof (induction arbitrary: v r rule: parse_meas_induct)
   {
     fix pt x ss ts vis
     assume A: "y = Inr (pt, x, ss, ts, vis)" "parse_table_correct pt g"
-        "parseGamma pt x ss ts vis = RESULT v r"
+        "parseGamma pt x ss ts vis = RESULT v r c"
     consider (Nil) "ss = []"
-      | (ConsLe) s ss' t tls r1 where "ss = s#ss'"
-        "parseSymbol pt s ts vis = RESULT t r1" "length r1 < length ts"
-        "parseGamma pt x ss' r1 {||} = RESULT (Node x tls) r" "v = Node x (t # tls)"
-      | (ConsEq) s ss' t tls where "ss = s#ss'" "parseSymbol pt s ts vis = RESULT t ts"
-        "parseGamma pt x ss' ts vis = RESULT (Node x tls) r" "v = Node x (t # tls)"
+      | (ConsLe) s ss' t tls r1 c_g where "ss = s#ss'"
+        "parseSymbol pt s ts vis = RESULT t r1 True" "length r1 < length ts" c
+        "parseGamma pt x ss' r1 {||} = RESULT (Node x tls) r c_g" "v = Node x (t # tls)"
+      | (ConsEq) s ss' t tls where "ss = s#ss'" "parseSymbol pt s ts vis = RESULT t ts False"
+        "parseGamma pt x ss' ts vis = RESULT (Node x tls) r c" "v = Node x (t # tls)"
     proof (cases ss)
       case Nil
       then show ?thesis by (simp add: that(1))
     next
       case (Cons s ss')
-      then show ?thesis
+      have *: "length r \<ge> length ts" if "parseSymbol pt s ts vis = RESULT n r False" for n r
+        using parseGamma_length that by fastforce
+      have **: "length r < length ts" if "parseSymbol pt s ts vis = RESULT t r True" for t r
+        using parseGamma_length that by fastforce
+      from Cons * ** show ?thesis
         using parseSymbol_ts_contains_remainder parseGamma_node(2) A(3)
-        by (fastforce simp: ConsLe ConsEq split: return_type.splits if_splits)
+        by (fastforce simp: ConsLe ConsEq split: return_type.splits if_splits parse_tree.split_asm)
     qed
     then have "\<exists>w. w @ r = ts \<and> gamma_derives_prefix g x ss w v r"
     proof (cases)
@@ -302,17 +325,17 @@ proof (induction arbitrary: v r rule: parse_meas_induct)
     next
       case ConsLe
       obtain wpre wsuf where "ts = wpre @ wsuf @ r" "wsuf @ r = r1"
-        using parseGamma_ts_contains_remainder A(3) parseSymbol_ts_contains_remainder ConsLe(2,4)
+        using parseGamma_ts_contains_remainder A(3) parseSymbol_ts_contains_remainder ConsLe(2,5)
         by metis
       then have "gamma_derives_prefix g x ss' wsuf (Node x tls) r"
-        using IH[of "Inr (pt, x, ss', r1, {||})"] A(1,2) ConsLe(3,4)
+        using IH[of "Inr (pt, x, ss', r1, {||})"] A(1,2) ConsLe(3,5)
         unfolding mlex_triple_def parse_ind_meas_sym_list_def
         by (auto simp add: A(1))
       moreover have "sym_derives_prefix g s wpre t (wsuf @ r)"
         using IH[of "Inl (pt, s, ts, vis)"] \<open>ts = wpre @ wsuf @ r\<close> \<open>wsuf @ r = r1\<close> A ConsLe(2)
         unfolding mlex_triple_def parse_ind_meas_sym_def parse_ind_meas_sym_list_def
         by (auto simp add: A(1))
-      ultimately show ?thesis by (simp add: ConsLe(1,5) Cons_gdp \<open>ts = wpre @ wsuf @ r\<close>)
+      ultimately show ?thesis by (simp add: ConsLe(1,6) Cons_gdp \<open>ts = wpre @ wsuf @ r\<close>)
     next
       case ConsEq
       obtain w where "ts = w @ r" using ConsEq(3) parseGamma_ts_contains_remainder by
@@ -333,7 +356,7 @@ proof (induction arbitrary: v r rule: parse_meas_induct)
   then show ?case using 1 2 by (cases y) (auto split: prod.splits)
 qed
 
-theorem parse_sound: "parse_table_correct pt g \<Longrightarrow> parse (PT pt) s (w @ r) = RESULT v r
+theorem parse_sound: "parse_table_correct pt g \<Longrightarrow> parse (PT pt) s (w @ r) = RESULT v r c
   \<Longrightarrow> sym_derives_prefix g s w v r"
   using parseSymbol_parseGamma_sound[where x = "Inl (pt, s, (w @ r), {||})"]
   by auto
@@ -345,10 +368,10 @@ lemma parseSymbol_parseGamma_complete_or_error:
   assumes "parse_table_correct pt g"
   shows "sym_derives_prefix g s w v r
     \<Longrightarrow> (\<forall>vis. (\<exists>m x ts'. parseSymbol pt s (w @ r) vis = ERROR m x ts')
-    \<or> (parseSymbol pt s (w @ r) vis = RESULT v r))"
+    \<or> (parseSymbol pt s (w @ r) vis = RESULT v r (w \<noteq> [])))"
     and "gamma_derives_prefix g y ss w v r
      \<Longrightarrow> (\<forall>vis. (\<exists>m x ts'. parseGamma pt y ss (w @ r) vis = ERROR m x ts')
-    \<or> (parseGamma pt y ss (w @ r) vis = RESULT v r))"
+    \<or> (parseGamma pt y ss (w @ r) vis = RESULT v r (w \<noteq> [])))"
 proof (induction rule: sym_derives_prefix_gamma_derives_prefix.inducts)
   case (T_sdp a r)
   then show ?case by auto
@@ -357,7 +380,7 @@ next
   have "fmlookup pt (x,peek (w @ r)) = Some (x, gamma)"
     using NT_sdp.IH(1) NT_sdp.IH(2) assms pt_complete_def by fastforce
   then have "(\<exists>m y ts'. parseSymbol pt (NT x) (w @ r) vis = ERROR m y ts')
-    \<or> parseSymbol pt (NT x) (w @ r) vis = RESULT v r" for vis
+    \<or> parseSymbol pt (NT x) (w @ r) vis = RESULT v r (w \<noteq> [])" for vis
   proof (cases "x |\<in>| vis")
     case True
     then show ?thesis by simp
@@ -373,15 +396,19 @@ next
   then show ?case by auto
 next
   case (Cons_gdp s wpre v wsuf r n ss vs)
-  then have "(\<exists>m x ts'. parseGamma pt n (s # ss) ((wpre @ wsuf) @ r) vis = ERROR m x ts')
-    \<or> parseGamma pt n (s # ss) ((wpre @ wsuf) @ r) vis = RESULT (Node n (v # vs)) r" for vis
+  let ?c = "wpre \<noteq> [] \<or> wsuf \<noteq> []"
+  from Cons_gdp have "(\<exists>m x ts'. parseGamma pt n (s # ss) ((wpre @ wsuf) @ r) vis = ERROR m x ts')
+    \<or> parseGamma pt n (s # ss) ((wpre @ wsuf) @ r) vis = RESULT (Node n (v # vs)) r ?c" for vis
   proof -
     have "\<exists>m x ts'. parseSymbol pt s (wpre @ wsuf @ r) vis = ERROR m x ts'
-      \<or> parseSymbol pt s (wpre @ wsuf @ r) vis = RESULT v (wsuf @ r)" using Cons_gdp.IH(2) by auto
+      \<or> parseSymbol pt s (wpre @ wsuf @ r) vis = RESULT v (wsuf @ r) (wpre \<noteq> [])"
+      using Cons_gdp.IH(2) by auto
     moreover have "\<exists>m x ts'. parseGamma pt n ss (wsuf @ r) vis = ERROR m x ts'
-      \<or> parseGamma pt n ss (wsuf @ r) vis = RESULT (Node n vs) r" using Cons_gdp(4) by auto
+      \<or> parseGamma pt n ss (wsuf @ r) vis = RESULT (Node n vs) r (wsuf \<noteq> [])"
+      using Cons_gdp(4) by auto
     moreover have "\<exists>m x ts'. parseGamma pt n ss (wsuf @ r) {||} = ERROR m x ts'
-      \<or> parseGamma pt n ss (wsuf @ r) {||} = RESULT (Node n vs) r" using Cons_gdp(4) by auto
+      \<or> parseGamma pt n ss (wsuf @ r) {||} = RESULT (Node n vs) r (wsuf \<noteq> [])"
+      using Cons_gdp(4) by auto
     ultimately show ?thesis by (cases "parseSymbol pt s (wpre @ wsuf @ r) vis") auto
   qed
   then show ?case by auto
@@ -389,7 +416,7 @@ qed
 
 lemma parse_complete_or_error: "parse_table_correct pt g \<Longrightarrow> sym_derives_prefix g s w v r
   \<Longrightarrow> \<exists>m x ts'. parse (PT pt) s (w @ r) = ERROR m x ts'
-  \<or> (parse (PT pt) s (w @ r) = RESULT v r)"
+  \<or> (parse (PT pt) s (w @ r) = RESULT v r (w \<noteq> []))"
   using parseSymbol_parseGamma_complete_or_error by fastforce
 
 
@@ -776,54 +803,59 @@ proof
   qed
 qed
 
-lemma input_length_lt_or_nullable_sym: "case x of Inl (pt, s, ts, vis) \<Rightarrow> parse_table_correct pt g
-    \<longrightarrow> parseSymbol pt s ts vis = RESULT v r \<longrightarrow> length r < length ts \<or> nullable_sym g s
-  | Inr (pt, x, ss, ts, vis) \<Rightarrow> parse_table_correct pt g \<longrightarrow> parseGamma pt x ss ts vis = RESULT v r
-    \<longrightarrow> length r < length ts \<or> nullable_gamma g ss"
-proof (induction arbitrary: v r rule: parse_meas_induct)
+lemma input_length_lt_or_nullable_sym: "case x of
+    Inl (pt, s, ts, vis) \<Rightarrow> parse_table_correct pt g
+    \<longrightarrow> parseSymbol pt s ts vis = RESULT v r c
+    \<longrightarrow> c \<and> length r < length ts \<or> \<not>c \<and> nullable_sym g s
+  | Inr (pt, x, ss, ts, vis) \<Rightarrow> parse_table_correct pt g
+    \<longrightarrow> parseGamma pt x ss ts vis = RESULT v r c
+    \<longrightarrow> c \<and> length r < length ts \<or> \<not> c \<and> nullable_gamma g ss"
+proof (induction arbitrary: v r c rule: parse_meas_induct)
   case (1 y)
   note IH = 1
   then show ?case
   proof (cases y)
     case (Inl a)
     then obtain pt s ts vis where "a = (pt, s, ts, vis)" by (cases y) auto
-    have "length r < length ts \<or> nullable_sym g s"
-      if "parseSymbol pt s ts vis = RESULT v r" and "parse_table_correct pt g"
+    have "c \<and> length r < length ts \<or> \<not> c \<and> nullable_sym g s"
+      if "parseSymbol pt s ts vis = RESULT v r c" and "parse_table_correct pt g"
     proof (cases s)
       case (NT x)
       from that obtain ss where parse_ss_simp: "x |\<notin>| vis" "fmlookup pt (x, peek ts) = Some (x, ss)"
-        "parseGamma pt x ss ts (finsert x vis) = RESULT v r"
+        "parseGamma pt x ss ts (finsert x vis) = RESULT v r c"
         by (auto simp: NT split: if_splits option.splits)
       then have "(x, ss) \<in> set (prods g)" using that(2) by (auto simp add: pt_sound_def)
       have "fcard (nt_from_pt pt |-| finsert x vis) < fcard (nt_from_pt pt |-| vis)"
         using fcard_diff_insert_less parse_ss_simp(1,2) by fastforce
-      then have "length r < length ts \<or> nullable_gamma g ss"
+      then have "length r < length ts \<and> c \<or> \<not> c \<and> nullable_gamma g ss"
         using IH[of "Inr (pt, x, ss, ts, finsert x vis)"] parse_ss_simp(3)
         unfolding mlex_triple_def parse_ind_meas_sym_def parse_ind_meas_sym_list_def
         by (auto simp: Inl \<open>a = (pt, s, ts, vis)\<close> that(2))
       then show ?thesis using NT NullableSym \<open>(x, ss) \<in> set (prods g)\<close> by force
     next
       case (T t)
-      from that obtain s where "ts = (t, s) # r"
+      from that obtain s where "ts = (t, s) # r" c
         by (cases ts, auto simp: T split: if_splits option.splits)
-      then show ?thesis by simp
+      then show ?thesis
+        by simp
     qed
     then show ?thesis by (simp add: Inl \<open>a = (pt, s, ts, vis)\<close>)
   next
     case (Inr a)
     then obtain pt x ss ts vis where "a = (pt, x, ss, ts, vis)" by (cases y) auto
     have "length r < length ts \<or> nullable_gamma g ss" if
-      "parseGamma pt x ss ts vis = RESULT v r" "parse_table_correct pt g"
+      "parseGamma pt x ss ts vis = RESULT v r c" "parse_table_correct pt g"
     proof (cases ss)
       case Nil
       then show ?thesis by (simp add: NullableNil)
     next
       case (Cons s ss')
-      from that(1) consider v0 v1 where "parseSymbol pt s ts vis = RESULT v0 ts"
-        "parseGamma pt x ss' ts vis = RESULT (Node x v1) r" "v = Node x (v0 # v1)"
-      | v0 v1 r0 where "parseSymbol pt s ts vis = RESULT v0 r0" "length r0 < length ts"
-        "parseGamma pt x ss' r0 {||} = RESULT (Node x v1) r" "v = Node x (v0 # v1)"
+      from that(1) consider v0 v1 where "parseSymbol pt s ts vis = RESULT v0 ts False"
+        "parseGamma pt x ss' ts vis = RESULT (Node x v1) r c" "v = Node x (v0 # v1)"
+      | v0 v1 r0 c' where "parseSymbol pt s ts vis = RESULT v0 r0 True" "length r0 < length ts" c
+        "parseGamma pt x ss' r0 {||} = RESULT (Node x v1) r c'" "v = Node x (v0 # v1)"
         using parseSymbol_ts_contains_remainder[of pt s ts vis] Cons parseGamma_node(2)[of pt x ss']
+          parseGamma_length
         by (fastforce split: return_type.splits parse_tree.splits if_splits)
       then show ?thesis
       proof cases
@@ -839,16 +871,17 @@ proof (induction arbitrary: v r rule: parse_meas_induct)
         ultimately show ?thesis using NullableCons Cons by blast
       next
         case 2
-        have "length r \<le> length r0" using parseGamma_ts_contains_remainder "2"(3) by fastforce
+        have "length r \<le> length r0" using parseGamma_ts_contains_remainder "2"(4) by fastforce
         then show ?thesis using "2"(2) by auto
       qed
     qed
-    then show ?thesis by (simp add: Inr \<open>a = (pt, x, ss, ts, vis)\<close>)
+    then show ?thesis
+      by (simp add: Inr \<open>a = (pt, x, ss, ts, vis)\<close>) (metis parseGamma_length(2))
   qed
 qed
 
 lemma input_length_eq_nullable_sym:
-  "parse_table_correct tbl g \<Longrightarrow> parseSymbol tbl s ts vis = RESULT v ts \<Longrightarrow> nullable_sym g s"
+  "parse_table_correct tbl g \<Longrightarrow> parseSymbol tbl s ts vis = RESULT v ts c \<Longrightarrow> nullable_sym g s"
   using input_length_lt_or_nullable_sym[where x = "Inl (tbl, s, ts, vis)"] by auto
 
 lemma error_conditions: "case y of
@@ -938,12 +971,13 @@ proof (induction arbitrary: m z ts' rule: parse_meas_induct)
       assume assms: "parse_table_correct pt g" "parseGamma pt x ss ts vis = ERROR m z ts'"
       then obtain s ss' where "ss = s # ss'" by (auto elim: parseGamma.elims)
       then consider (parse_s_error) "parseSymbol pt s ts vis = ERROR m z ts'"
-        | (parse_ss'_error_le) str r where "parseSymbol pt s ts vis = RESULT str r"
+        | (parse_ss'_error_le) str r where "parseSymbol pt s ts vis = RESULT str r True"
           "length r < length ts" "parseGamma pt x ss' r {||} = ERROR m z ts'"
-        | (parse_ss'_error_eq) str where "parseSymbol pt s ts vis = RESULT str ts"
+        | (parse_ss'_error_eq) str c' where "parseSymbol pt s ts vis = RESULT str ts c'"
           "parseGamma pt x ss' ts vis = ERROR m z ts'"
-        using assms(2) parseSymbol_ts_contains_remainder
-        by (fastforce split: return_type.splits if_splits parse_tree.splits)
+        using assms(2) parseSymbol_ts_contains_remainder parseGamma_length
+        by (fastforce split: return_type.splits if_splits parse_tree.splits
+                      dest: parseSymbol_not_consumedD)
       then show "(\<exists>pre s. (\<exists>suf. ss = pre @ s # suf) \<and> nullable_gamma g pre \<and> z |\<in>| vis
         \<and> (s = NT z \<or> nullable_path g (peek ts) s (NT z))) \<or>
         (\<exists>la. left_recursive g (NT z) la)"
@@ -1004,7 +1038,7 @@ proof
 qed
 
 theorem parse_complete: "parse_table_correct pt g \<Longrightarrow> sym_derives_prefix g s w v r
-  \<Longrightarrow> parse (PT pt) s (w @ r) = RESULT v r"
+  \<Longrightarrow> parse (PT pt) s (w @ r) = RESULT v r (w \<noteq> [])"
   using parse_terminates_without_error parse_complete_or_error by fastforce
 
 end
