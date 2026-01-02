@@ -6701,8 +6701,8 @@ proof -
     then show ?thesis unfolding A'_def by auto
   next
     case False
-    have "A $$ (0, 0) = A'' $$ (0, 0)"
-      by (smt (verit) add_gr_0 append_rows_def A_def A'' carrier_matD index_mat_four_block(1) mn n0 nat_SN.compat)
+    from \<open>0 < n\<close> \<open>0 < m\<close> A'' have \<open>A $$ (0, 0) = A'' $$ (0, 0)\<close>
+      by (simp add: A_def append_rows_def)
     hence A''00: "A''$$(0,0) = 0" using False by auto
     let ?i = "non_zero_positions ! 0"
     obtain xs where non_zero_positions_xs_m: "non_zero_positions = xs @ [m]" and d_xs: "distinct xs"
