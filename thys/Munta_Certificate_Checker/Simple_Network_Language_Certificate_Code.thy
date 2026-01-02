@@ -1124,8 +1124,6 @@ code_printing
 code_printing
   constant list_of_set' \<rightharpoonup> (Haskell) "(case _ of Set xs -> xs)"
 
-declare [[code abort: run_heap]] \<comment>\<open>TODO: no Haskell-specific setup for \<^const>\<open>run_heap\<close>\<close>
-
 export_code parse_convert_check parse_convert_run_print parse_convert_run_check Result Error
   nat_of_integer int_of_integer DBMEntry.Le DBMEntry.Lt DBMEntry.INF
   Impl1 Impl2 Impl3 Buechi Reachable_Set Buechi_Set

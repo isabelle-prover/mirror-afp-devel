@@ -43,8 +43,11 @@ lemma return_htD:
 definition run_heap :: "'a Heap \<Rightarrow> 'a" where
   [code drop]: "run_heap h = fst (the (execute h Heap.empty))"
 
-code_printing constant run_heap \<rightharpoonup> (SML) "(fn f => f ()) _"
-code_printing constant run_heap \<rightharpoonup> (OCaml) "(fun f -> f ()) _"
+code_printing \<comment>\<open>TODO: unsafe\<close>
+  constant run_heap \<rightharpoonup>
+    (SML) "(fn f => f ()) _"
+    and (OCaml) "(fun f -> f ()) _"
+    and (Haskell) "unsafePerformIO"
 
 definition run_map_heap :: "('a \<Rightarrow> 'b Heap) \<Rightarrow> 'a list \<Rightarrow> 'b list" where
   "run_map_heap f xs = map (run_heap o f) xs"
