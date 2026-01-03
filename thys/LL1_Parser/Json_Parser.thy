@@ -1037,22 +1037,22 @@ fun hex2 :: "nat \<Rightarrow> string" where
 fun escape_char :: "char \<Rightarrow> string" where
   "escape_char c =
      (if c = CHR 0x22 then
-        [CHR 0x5C, CHR 0x22]      \<comment> \<open>\"\<close>
+        [CHR 0x5C, CHR 0x22]      \<comment> \<open>\<open>\"\<close>\<close>
       else if c = CHR 0x5C then
-        [CHR 0x5C, CHR 0x5C]      \<comment> \<open>\\\<close>
+        [CHR 0x5C, CHR 0x5C]      \<comment> \<open>\<open>\\\<close>\<close>
       else if c = CHR 0x08 then
-        [CHR 0x5C, CHR 0x62]      \<comment> \<open>\\b\<close>
+        [CHR 0x5C, CHR 0x62]      \<comment> \<open>\<open>\\b\<close>\<close>
       else if c = CHR 0x0C then
-        [CHR 0x5C, CHR 0x66]      \<comment> \<open>\\f\<close>
+        [CHR 0x5C, CHR 0x66]      \<comment> \<open>\<open>\\f\<close>\<close>
       else if c = CHR 0x0A then
-        [CHR 0x5C, CHR 0x6E]      \<comment> \<open>\\n\<close>
+        [CHR 0x5C, CHR 0x6E]      \<comment> \<open>\<open>\\n\<close>\<close>
       else if c = CHR 0x0D then
-        [CHR 0x5C, CHR 0x72]      \<comment> \<open>\\r\<close>
+        [CHR 0x5C, CHR 0x72]      \<comment> \<open>\<open>\\r\<close>\<close>
       else if c = CHR 0x09 then
-        [CHR 0x5C, CHR 0x74]      \<comment> \<open>\\t\<close>
+        [CHR 0x5C, CHR 0x74]      \<comment> \<open>\<open>\\t\<close>\<close>
       else if nat_of_char c < 32 then
         [CHR 0x5C, CHR 0x75, CHR 0x30, CHR 0x30]
-          @ hex2 (nat_of_char c)  \<comment> \<open>\\u00XX\<close>
+          @ hex2 (nat_of_char c)  \<comment> \<open>\<open>\\u00XX\<close>\<close>
       else
         [c])"
 
