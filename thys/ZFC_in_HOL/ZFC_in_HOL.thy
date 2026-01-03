@@ -1153,7 +1153,7 @@ definition transrec :: "((V \<Rightarrow> 'a) \<Rightarrow> V \<Rightarrow> 'a) 
 
 lemma transrec: "transrec H a = H (\<lambda>x \<in> elts a. transrec H x) a"
 proof -
-  have "(cut (wfrec {(x, y). x \<in> elts y} H) {(x, y). x \<in> elts y} a)
+  have "(Wfrec.cut (wfrec {(x, y). x \<in> elts y} H) {(x, y). x \<in> elts y} a)
       = (\<lambda>x\<in>elts a. wfrec {(x, y). x \<in> elts y} H x)"
     by (force simp: cut_def)
   then show ?thesis

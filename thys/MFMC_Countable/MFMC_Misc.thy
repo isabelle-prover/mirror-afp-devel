@@ -11,7 +11,6 @@ begin
 
 hide_const (open) cycle
 hide_const (open) path
-hide_const (open) cut
 hide_const (open) orthogonal
 
 lemmas disjE [consumes 1, case_names left right, cases pred] = disjE
