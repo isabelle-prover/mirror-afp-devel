@@ -6,8 +6,6 @@ theory OAlist_Poly_Mapping
   imports PP_Type MPoly_Type_Class_Ordered OAlist
 begin
 
-declare [[code_del_allowed]]
-
 text \<open>We introduce a dedicated type for ordered associative lists (oalists) representing polynomials.
   To that end, we require the order relation the oalists are sorted wrt. to be admissible term orders,
   and furthermore sort the lists @{emph \<open>descending\<close>} rather than @{emph \<open>ascending\<close>}, because this
@@ -277,11 +275,11 @@ definition nat_term_compare_inv :: "'a nat_term_order \<Rightarrow> 'a::nat_term
   where "nat_term_compare_inv to = (\<lambda>x y. nat_term_compare to y x)"
 
 definition key_order_of_nat_term_order :: "'a nat_term_order \<Rightarrow> 'a::nat_term key_order"
-  where key_order_of_nat_term_order_def [code del]:
+  where key_order_of_nat_term_order_def:
     "key_order_of_nat_term_order to = Abs_key_order (nat_term_compare to)"
 
 definition key_order_of_nat_term_order_inv :: "'a nat_term_order \<Rightarrow> 'a::nat_term key_order"
-  where key_order_of_nat_term_order_inv_def [code del]:
+  where key_order_of_nat_term_order_inv_def:
     "key_order_of_nat_term_order_inv to = Abs_key_order (nat_term_compare_inv to)"
 
 definition le_of_nat_term_order :: "'a nat_term_order \<Rightarrow> 'a \<Rightarrow> 'a::nat_term \<Rightarrow> bool"

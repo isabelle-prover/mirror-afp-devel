@@ -4,8 +4,6 @@ theory Nterm
 imports Term_Class
 begin
 
-declare [[code_del_allowed]]
-
 text \<open>
   The \<open>nterm\<close> type is similar to @{typ term}, but removes the distinction between bound and free
   variables. Instead, there are only named variables.
@@ -72,7 +70,7 @@ end
 instantiation nterm :: "term" begin
 
 definition abs_pred_nterm :: "(nterm \<Rightarrow> bool) \<Rightarrow> nterm \<Rightarrow> bool" where
-[code del]: "abs_pred P t \<longleftrightarrow> (\<forall>t' x. t = (\<Lambda>\<^sub>n x. t') \<longrightarrow> P t' \<longrightarrow> P t)"
+  "abs_pred P t \<longleftrightarrow> (\<forall>t' x. t = (\<Lambda>\<^sub>n x. t') \<longrightarrow> P t' \<longrightarrow> P t)"
 
 instance proof (standard, goal_cases)
   case (1 P t)

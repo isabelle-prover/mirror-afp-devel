@@ -4,8 +4,6 @@ theory IO
     "HOL-Library.Monad_Syntax"
 begin
 
-declare [[code_del_allowed]]
-
 section\<open>IO Monad\<close>
 text \<open>
   Inspired by Haskell.
@@ -78,7 +76,7 @@ text\<open>
   Within an \<^typ>\<open>'\<alpha> io\<close> context, execute \<^term>\<open>action\<^sub>1\<close> and \<^term>\<open>action\<^sub>2\<close> sequentially.
   The world is passed through and potentially modified by each action.
 \<close>
-definition bind :: "'\<alpha> io \<Rightarrow> ('\<alpha> \<Rightarrow> '\<beta> io) \<Rightarrow> '\<beta> io" where [code del]:
+definition bind :: "'\<alpha> io \<Rightarrow> ('\<alpha> \<Rightarrow> '\<beta> io) \<Rightarrow> '\<beta> io" where [code drop]:
   "bind action\<^sub>1 action\<^sub>2 = Abs_io (\<lambda>world\<^sub>0.
                                   let (a, world\<^sub>1) = (Rep_io action\<^sub>1) world\<^sub>0;
                                       (b, world\<^sub>2) = (Rep_io (action\<^sub>2 a)) world\<^sub>1
@@ -103,7 +101,7 @@ lemma "bind (foo :: '\<alpha> io) (\<lambda>a. bar a) = foo \<bind> (\<lambda>a.
   by simp
 
 
-definition return :: "'\<alpha> \<Rightarrow> '\<alpha> io" where [code del]:
+definition return :: "'\<alpha> \<Rightarrow> '\<alpha> io" where [code drop]:
   "return a \<equiv> Abs_io (\<lambda>world. (a, world))"
 
 hide_const (open) return

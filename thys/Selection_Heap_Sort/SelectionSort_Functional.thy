@@ -7,8 +7,6 @@ theory SelectionSort_Functional
 imports RemoveMax
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Defining data structure\<close>
 
 text\<open>Selection sort works with list and that is the reason why {\em
@@ -93,9 +91,9 @@ using remove_max_mset_lemma[of m l' "hd l" "[]" "tl l"]
 by auto
 
 definition ssf_ssort' where
-  [simp, code del]: "ssf_ssort' = RemoveMax.ssort' (\<lambda> l. l = []) remove_max"
+  [simp]: "ssf_ssort' = RemoveMax.ssort' (\<lambda> l. l = []) remove_max"
 definition ssf_ssort where 
-  [simp, code del]: "ssf_ssort = RemoveMax.ssort (\<lambda> l. l = []) id remove_max"
+  [simp]: "ssf_ssort = RemoveMax.ssort (\<lambda> l. l = []) id remove_max"
 
 interpretation SSRemoveMax: 
   RemoveMax "[]" "\<lambda> l. l = []" id mset remove_max "\<lambda> _. True" 

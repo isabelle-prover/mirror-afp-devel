@@ -6,8 +6,6 @@ theory Trs
     First_Order_Terms.Term_More
 begin
 
-declare [[code_del_allowed]]
-
 text \<open>
   A rewrite rule is a pair of terms. A term rewrite system (TRS) is a set of rewrite rules.
 \<close>
@@ -3033,7 +3031,7 @@ lemma all_ctxt_closed_rstep_conversion:
 
 
 definition instance_rule :: "('f, 'v) rule \<Rightarrow> ('f, 'w) rule \<Rightarrow> bool" where
-  [code del]: "instance_rule lr st \<longleftrightarrow> (\<exists> \<sigma>. fst lr = fst st \<cdot> \<sigma> \<and> snd lr = snd st \<cdot> \<sigma>)"
+  "instance_rule lr st \<longleftrightarrow> (\<exists> \<sigma>. fst lr = fst st \<cdot> \<sigma> \<and> snd lr = snd st \<cdot> \<sigma>)"
   (* instance rule has implementation in Substitution.thy *)
 
 definition eq_rule_mod_vars :: "('f, 'v) rule \<Rightarrow> ('f, 'v) rule \<Rightarrow> bool" where

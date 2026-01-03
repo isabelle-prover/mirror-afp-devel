@@ -3,8 +3,6 @@ imports
   Proper_Iterator
 begin
 
-  declare [[code_del_allowed]]
-
   lemma proper_it_fold: 
     "proper_it it it' \<Longrightarrow> foldli (it (\<lambda>_. True) (\<lambda>x l. l@[x]) []) = it'"
     unfolding proper_it_def by auto
@@ -16,7 +14,7 @@ begin
   text \<open>The following constant converts an iterator over list-state
     to an iterator over arbitrary state\<close>
   definition it_to_it :: "('x,'x list) set_iterator \<Rightarrow> ('x,'\<sigma>) set_iterator"
-    where [code del]: "it_to_it it 
+    where "it_to_it it 
     \<equiv> (foldli (it (\<lambda>_. True) (\<lambda>x l. l@[x]) []))"
 
   lemma pi_it_to_it[icf_proper_iteratorI]: "proper_it (it_to_it I) (it_to_it I)"

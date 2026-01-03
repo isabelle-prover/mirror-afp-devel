@@ -12,8 +12,6 @@ theory Export_Code
     "HOL-Library.Code_Target_Numeral" 
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>External Interface\<close>
 
 \<comment> \<open>Fix the type to match the type of the LTL parser\<close>
@@ -116,9 +114,6 @@ lemmas ltl_to_rabin_base_code_export [code] =
   ltl_to_rabin_base_code_def.Acc_inf\<^sub>C.simps 
   ltl_to_rabin_base_code_def.Acc_fin\<^sub>C.simps
   ltl_to_rabin_base_code_def.max_rank_of\<^sub>C_def
-
-lemmas M_fin\<^sub>C_lhs [code del, code_unfold] = 
-  M_fin\<^sub>C_af\<^sub>\<UU>_lhs_def M_fin\<^sub>C_af_lhs_def 
 
 \<comment> \<open>Test code export\<close>
 export_code true\<^sub>c Iff_ltlc Nop true Abs AList_Mapping.Mapping set ltlc_to_rabin checking

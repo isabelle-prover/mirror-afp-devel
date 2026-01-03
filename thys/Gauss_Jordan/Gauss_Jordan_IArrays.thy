@@ -12,8 +12,6 @@ imports
   Gauss_Jordan
 begin
 
-declare [[code_del_allowed]]
-
 subsection\<open>Definitions and functions to compute the Gauss-Jordan algorithm over matrices represented as nested iarrays\<close>
 
 definition "least_non_zero_position_of_vector_from_index A i = the (List.find (\<lambda>x. A !! x \<noteq> 0) [i..<IArray.length A])"
@@ -314,11 +312,6 @@ definition rank_iarray :: "'a::{field} iarray iarray => nat"
 
 subsubsection\<open>Proving the equivalence between @{term "rank"} and @{term "rank_iarray"}.\<close>
 
-text\<open>First of all, some code equations are removed to allow the execution of Gauss-Jordan algorithm using iarrays\<close>
-
-lemmas rank_Gauss_Jordan_code[code del]
-
-
 lemma rank_eq_card_iarrays:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}"
   shows "rank A = card {vec_to_iarray (row i (Gauss_Jordan A)) |i. \<not> is_zero_iarray (vec_to_iarray (row i (Gauss_Jordan A)))}"
@@ -372,7 +365,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma matrix_to_iarray_rank[code_unfold]:
+lemma matrix_to_iarray_rank[code, code_unfold]:
   shows "rank A = rank_iarray (matrix_to_iarray A)"
   unfolding rank_eq_card_iarrays_code rank_iarray_def Let_def
   apply (rule bij_betw_same_card[of "to_nat"])

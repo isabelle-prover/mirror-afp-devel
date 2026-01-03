@@ -11,8 +11,6 @@ imports
   "HOL-Library.Code_Target_Numeral" 
 begin
 
-declare [[code_del_allowed]]
-
 text_raw \<open>\label{sec:taimpl}\<close>
 
 text \<open>
@@ -1116,8 +1114,6 @@ definition "reindex_map H ==
 definition hta_reindex 
   :: "('Q::hashable,'L::hashable) hashedTa \<Rightarrow> (nat,'L) hashedTa" where
   "hta_reindex H == hta_remap (reindex_map H) H"
-
-declare hta_reindex_def [code del]
 
   \<comment> \<open>This version is more efficient, as the map is only computed once\<close>
 lemma [code]: "hta_reindex H = (

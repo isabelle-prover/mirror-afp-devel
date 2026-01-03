@@ -4,8 +4,6 @@ theory Sterm
 imports Strong_Term
 begin
 
-declare [[code_del_allowed]]
-
 datatype sterm =
   Sconst name |
   Svar name |
@@ -86,7 +84,11 @@ end
 instantiation sterm :: "term" begin
 
 definition abs_pred_sterm :: "(sterm \<Rightarrow> bool) \<Rightarrow> sterm \<Rightarrow> bool" where
-[code del]: "abs_pred P t \<longleftrightarrow> (\<forall>cs. t = Sabs cs \<longrightarrow> (\<forall>pat t. (pat, t) \<in> set cs \<longrightarrow> P t) \<longrightarrow> P t)"
+  "abs_pred P t \<longleftrightarrow> (\<forall>cs. t = Sabs cs \<longrightarrow> (\<forall>pat t. (pat, t) \<in> set cs \<longrightarrow> P t) \<longrightarrow> P t)"
+
+lemma abs_pred_sterm_code [code]:
+  \<open>abs_pred P t = (case t of Sabs cs \<Rightarrow> (\<forall>(_, t) \<in> set cs. P t) \<longrightarrow> P t | _ \<Rightarrow> True)\<close>
+  by (cases t) (auto simp add: abs_pred_sterm_def)
 
 lemma abs_pred_stermI[intro]:
   assumes "\<And>cs. (\<And>pat t. (pat, t) \<in> set cs \<Longrightarrow> P t) \<Longrightarrow> P (Sabs cs)"

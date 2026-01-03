@@ -9,10 +9,6 @@ imports
   Time_Monad
 begin
 
-declare [[code_del_allowed]]
-
-declare Let_def[simp]
-
 subsection \<open>Time Prelude\<close>
 
 text\<open>Redefinition of some auxiliary functions, but now with \<open>tm\<close> monad:\<close>

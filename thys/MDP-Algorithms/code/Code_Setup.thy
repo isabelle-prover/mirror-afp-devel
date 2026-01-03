@@ -11,8 +11,6 @@ theory Code_Setup
 
 begin
 
-declare [[code_del_allowed]]
-
 context MDP_nat_disc begin
 lemma L_zero:
   assumes "\<And>s. s \<ge> states \<Longrightarrow> apply_bfun v s = 0" "s \<ge> states"
@@ -1163,7 +1161,6 @@ hack:
 This fails for floats, so we reimplement the check monomorphically and change equality on floats to
 @{term "a = b \<longleftrightarrow> dist a b < 1.0/10^8"}.
 \<close>
-lemmas pmf_of_list_wf_code[code del]
 
 definition
   "pmf_of_list_wf' xs \<longleftrightarrow> list_all (\<lambda>z. snd z \<ge> 0) xs \<and> sum_list (map snd xs) = (1 :: real)"

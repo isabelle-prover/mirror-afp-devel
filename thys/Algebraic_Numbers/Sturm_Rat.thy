@@ -13,8 +13,6 @@ imports
   Berlekamp_Zassenhaus.Square_Free_Int_To_Square_Free_GFp
 begin
 
-declare [[code_del_allowed]]
-
 hide_const (open) UnivPoly.coeff
 
 (* TODO: Move *)
@@ -104,12 +102,12 @@ definition count_roots_interval_sf_rat :: "int poly \<Rightarrow> root_info" whe
   in Root_Info (\<lambda> a b. cr (of_rat a) (of_rat b)) (\<lambda> a. nr (of_rat a)))"
 
 definition count_roots_interval_rat :: "int poly \<Rightarrow> root_info" where
-  [code del]: "count_roots_interval_rat  p = (let pp = real_of_int_poly p;
+  "count_roots_interval_rat  p = (let pp = real_of_int_poly p;
     (cr,nr) = count_roots_interval pp
   in Root_Info (\<lambda> a b. cr (of_rat a) (of_rat b)) (\<lambda> a. nr (of_rat a)))"
 
 definition count_roots_rat :: "int poly \<Rightarrow> nat" where
-  [code del]: "count_roots_rat  p = (count_roots (real_of_int_poly p))"
+  "count_roots_rat  p = (count_roots (real_of_int_poly p))"
 
 lemma count_roots_interval_sf_rat: assumes p: "p \<noteq> 0" 
   shows "root_info_cond (count_roots_interval_sf_rat p) p"

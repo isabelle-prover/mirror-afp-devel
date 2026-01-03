@@ -5,8 +5,6 @@ theory DiffArray_ST
 imports DiffArray_Base
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Primitive Operations\<close>
 
 typedef 'a starray = "UNIV :: 'a array set" 
@@ -98,15 +96,15 @@ subsection \<open>Code Generator Setup\<close>
 subsubsection \<open>Code-Numeral Preparation\<close>
 
 
-definition [code del]: "starray_new' == starray_new o nat_of_integer"
-definition [code del]: "starray_tabulate' n f \<equiv> starray_tabulate (nat_of_integer n) (f o integer_of_nat)"
+definition [code drop]: "starray_new' == starray_new o nat_of_integer"
+definition [code drop]: "starray_tabulate' n f \<equiv> starray_tabulate (nat_of_integer n) (f o integer_of_nat)"
 
-definition [code del]: "starray_length' == integer_of_nat o starray_length"
-definition [code del]: "starray_get' a == starray_get a o nat_of_integer"
-definition [code del]: "starray_set' a == starray_set a o nat_of_integer"
-definition [code del]:
+definition [code drop]: "starray_length' == integer_of_nat o starray_length"
+definition [code drop]: "starray_get' a == starray_get a o nat_of_integer"
+definition [code drop]: "starray_set' a == starray_set a o nat_of_integer"
+definition [code drop]:
   "starray_get_oo' x a == starray_get_oo x a o nat_of_integer"
-definition [code del]:
+definition [code drop]:
   "starray_set_oo' f a == starray_set_oo f a o nat_of_integer"
 
 
@@ -261,7 +259,7 @@ ML_val \<open>
   if not @{code test1} then error "ERROR" else ()
 \<close>          
 
-export_code test1 checking OCaml? Haskell? SML
+export_code test1 checking SML
 
 
 hide_const test1

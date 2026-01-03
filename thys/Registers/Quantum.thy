@@ -10,8 +10,6 @@ theory Quantum
     "HOL-Library.Code_Target_Numeral"
 begin
 
-declare [[code_del_allowed]]
-
 unbundle cblinfun_syntax
 
 type_synonym ('a,'b) matrix = \<open>('a ell2, 'b ell2) cblinfun\<close>
@@ -21,7 +19,7 @@ subsection \<open>Basic quantum states\<close>
 subsubsection \<open>EPR pair\<close>
 
 definition "vector_\<beta>00 = vec_of_list [ 1/sqrt 2::complex, 0, 0, 1/sqrt 2 ]"
-definition \<beta>00 :: \<open>(bit\<times>bit) ell2\<close> where [code del]: "\<beta>00 = basis_enum_of_vec vector_\<beta>00"
+definition \<beta>00 :: \<open>(bit\<times>bit) ell2\<close> where "\<beta>00 = basis_enum_of_vec vector_\<beta>00"
 lemma vec_of_basis_enum_\<beta>00[simp]: "vec_of_basis_enum \<beta>00 = vector_\<beta>00"
   by (auto simp add: \<beta>00_def vector_\<beta>00_def)
 lemma vec_of_ell2_\<beta>00[simp, code]: "vec_of_ell2 \<beta>00 = vector_\<beta>00"
@@ -33,7 +31,7 @@ lemma norm_\<beta>00[simp]: "norm \<beta>00 = 1"
 subsubsection \<open>Ket plus\<close>
 
 definition "vector_ketplus = vec_of_list [ 1/sqrt 2::complex, 1/sqrt 2 ]"
-definition ketplus :: \<open>bit ell2\<close> ("|+\<rangle>") where [code del]: \<open>ketplus = basis_enum_of_vec vector_ketplus\<close>
+definition ketplus :: \<open>bit ell2\<close> ("|+\<rangle>") where \<open>ketplus = basis_enum_of_vec vector_ketplus\<close>
 lemma vec_of_basis_enum_ketplus[simp]: "vec_of_basis_enum ketplus = vector_ketplus"
   by (auto simp add: ketplus_def vector_ketplus_def)
 lemma vec_of_ell2_ketplus[simp, code]: "vec_of_ell2 ketplus = vector_ketplus"
@@ -44,7 +42,7 @@ subsection \<open>Basic quantum gates\<close>
 subsubsection \<open>Pauli X\<close>
 
 definition "matrix_pauliX = mat_of_rows_list 2 [ [0::complex, 1], [1, 0] ]"
-definition pauliX :: \<open>(bit, bit) matrix\<close> where [code del]: "pauliX = cblinfun_of_mat matrix_pauliX"
+definition pauliX :: \<open>(bit, bit) matrix\<close> where "pauliX = cblinfun_of_mat matrix_pauliX"
 lemma mat_of_cblinfun_pauliX[simp, code]: "mat_of_cblinfun pauliX = matrix_pauliX"
   by (auto simp add: pauliX_def matrix_pauliX_def cblinfun_of_mat_inverse)
 
@@ -66,7 +64,7 @@ lemma pauliXX[simp]: "pauliX o\<^sub>C\<^sub>L pauliX = id_cblinfun"
 subsubsection \<open>Pauli Z\<close>
 
 definition "matrix_pauliZ = mat_of_rows_list 2 [ [1::complex, 0], [0, -1] ]"
-definition pauliZ :: \<open>(bit, bit) matrix\<close> where [code del]: "pauliZ = cblinfun_of_mat matrix_pauliZ"
+definition pauliZ :: \<open>(bit, bit) matrix\<close> where "pauliZ = cblinfun_of_mat matrix_pauliZ"
 lemma mat_of_cblinfun_pauliZ[simp, code]: "mat_of_cblinfun pauliZ = matrix_pauliZ"
   by (auto simp add: pauliZ_def matrix_pauliZ_def cblinfun_of_mat_inverse)
 lemma pauliZ_adjoint[simp]: "pauliZ* = pauliZ"
@@ -78,7 +76,7 @@ lemma pauliZZ[simp]: "pauliZ o\<^sub>C\<^sub>L pauliZ = id_cblinfun"
 subsubsection Hadamard
 
 definition "matrix_hadamard = mat_of_rows_list 2 [ [1/sqrt 2::complex, 1/sqrt 2], [1/sqrt 2, -1/sqrt 2] ]"
-definition hadamard :: \<open>(bit,bit) matrix\<close> where [code del]: "hadamard = cblinfun_of_mat matrix_hadamard"
+definition hadamard :: \<open>(bit,bit) matrix\<close> where "hadamard = cblinfun_of_mat matrix_hadamard"
 
 lemma mat_of_cblinfun_hadamard[simp, code]: "mat_of_cblinfun hadamard = matrix_hadamard"
   by (auto simp add: hadamard_def matrix_hadamard_def cblinfun_of_mat_inverse)
@@ -90,7 +88,7 @@ lemma hada_adj[simp]: "hadamard* = hadamard"
 subsubsection CNOT
 
 definition "matrix_CNOT = mat_of_rows_list 4 [ [1::complex,0,0,0], [0,1,0,0], [0,0,0,1], [0,0,1,0] ]"
-definition CNOT :: \<open>(bit*bit, bit*bit) matrix\<close> where [code del]: "CNOT = cblinfun_of_mat matrix_CNOT"
+definition CNOT :: \<open>(bit*bit, bit*bit) matrix\<close> where "CNOT = cblinfun_of_mat matrix_CNOT"
 
 lemma mat_of_cblinfun_CNOT[simp, code]: "mat_of_cblinfun CNOT = matrix_CNOT"
   by (auto simp add: CNOT_def matrix_CNOT_def cblinfun_of_mat_inverse)
@@ -107,7 +105,7 @@ subsubsection \<open>Qubit swap\<close>
 
 definition "matrix_Uswap = mat_of_rows_list 4 [ [1::complex, 0, 0, 0], [0,0,1,0], [0,1,0,0], [0,0,0,1] ]"
 definition Uswap :: \<open>(bit\<times>bit, bit\<times>bit) matrix\<close> where
-  [code del]: \<open>Uswap = cblinfun_of_mat matrix_Uswap\<close>
+  \<open>Uswap = cblinfun_of_mat matrix_Uswap\<close>
 
 lemma mat_of_cblinfun_Uswap[simp, code]: "mat_of_cblinfun Uswap = matrix_Uswap"
   by (auto simp add: Uswap_def matrix_Uswap_def cblinfun_of_mat_inverse)

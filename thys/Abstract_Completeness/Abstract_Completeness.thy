@@ -10,8 +10,6 @@ imports
 begin
 (*>*)
 
-declare [[code_del_allowed]]
-
 section\<open>General Tree Concepts\<close>
 
 codatatype 'a tree = Node (root: 'a) (cont: "'a tree fset")
@@ -391,7 +389,7 @@ definition "eff r s sl \<equiv> eff' r s = Some sl"
 
 end (* context RuleSystem_Code *)
 
-definition [code del]: "effG eff' r s sl \<equiv> RuleSystem_Code.eff eff' r s sl"
+definition [code drop]: "effG eff' r s sl = RuleSystem_Code.eff eff' r s sl"
 
 sublocale RuleSystem_Code < RuleSystem_Defs
   where eff = "effG eff'" and rules = rules .
@@ -400,7 +398,7 @@ context RuleSystem_Code
 begin
 
 lemma enabled_eff': "enabled r s \<longleftrightarrow> eff' r s \<noteq> None"
-unfolding enabled_def effG_def eff_def by auto
+unfolding enabled_def eff_def effG_def by auto
 
 lemma pickEff_the[code]: "pickEff r s = the (eff' r s)"
 unfolding pickEff_def enabled_def effG_def eff_def by auto

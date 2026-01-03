@@ -10,8 +10,6 @@ theory Coinductive_Nat imports
   "HOL-Library.Complete_Partial_Order2"
 begin
 
-declare [[code_del_allowed]]
-
 lemma inj_enat [simp]: "inj_on enat A"
 by(simp add: inj_on_def)
 
@@ -139,7 +137,7 @@ by(simp_all add: eSuc_def split: enat.split)
 
 
 definition epred_numeral :: "num \<Rightarrow> enat"
-where [code del]: "epred_numeral = enat \<circ> pred_numeral"
+where "epred_numeral = enat \<circ> pred_numeral"
 
 lemma numeral_eq_eSuc: "numeral k = eSuc (epred_numeral k)"
 by(simp add: numeral_eq_Suc eSuc_def epred_numeral_def numeral_eq_enat)

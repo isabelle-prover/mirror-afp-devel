@@ -11,8 +11,6 @@ imports
   Decl
 begin
 
-declare [[code_del_allowed]]
-
 subsection\<open>The subclass relations\<close>
 
 inductive subcls1 :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sup>1 _\<close> [71, 71, 71] 70)
@@ -576,14 +574,13 @@ text \<open>
   the paths in the hieararchy are unique and cycle-free.
 \<close>
 
-definition widen_i_i_i' where "widen_i_i_i' = widen_i_i_i"
-
-declare widen.equation [code del]
-lemmas widen_i_i_i'_equation [code] = widen.equation[folded widen_i_i_i'_def]
-
 lemma widen_i_i_i_code [code]:
   "widen_i_i_i P T T' = (if P \<turnstile> T \<le> T' then Predicate.single () else bot)"
 by(auto intro!: pred_eqI intro: widen_i_i_iI elim: widen_i_i_iE)
+
+definition widen_i_i_i' where "widen_i_i_i' = widen_i_i_i"
+
+lemmas widen_i_i_i'_equation [code] = widen.equation[folded widen_i_i_i'_def]
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)

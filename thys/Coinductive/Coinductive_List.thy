@@ -12,8 +12,6 @@ imports
   Coinductive_Nat
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Auxiliary lemmata\<close>
 
 lemma funpow_Suc_conv [simp]: "(Suc ^^ n) m = m + n"
@@ -998,10 +996,10 @@ where
 | "llist_of (x#xs) = LCons x (llist_of xs)"
 
 definition list_of :: "'a llist \<Rightarrow> 'a list"
-where [code del]: "list_of xs = (if lfinite xs then inv llist_of xs else undefined)"
+where "list_of xs = (if lfinite xs then inv llist_of xs else undefined)"
 
 definition llength :: "'a llist \<Rightarrow> enat"
-where [code del]:
+where
   "llength = enat_unfold lnull ltl"
 
 primcorec ltake :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
@@ -1065,17 +1063,17 @@ where
 hide_fact (open) LNil LCons
 
 definition inf_llist :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a llist"
-where [code del]: "inf_llist f = lmap f (iterates Suc 0)"
+where "inf_llist f = lmap f (iterates Suc 0)"
 
 abbreviation repeat :: "'a \<Rightarrow> 'a llist"
 where "repeat \<equiv> iterates (\<lambda>x. x)"
 
 definition lstrict_prefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
-where [code del]: "lstrict_prefix xs ys \<equiv> xs \<sqsubseteq> ys \<and> xs \<noteq> ys"
+where "lstrict_prefix xs ys \<equiv> xs \<sqsubseteq> ys \<and> xs \<noteq> ys"
 
 text \<open>longest common prefix\<close>
 definition llcp :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> enat"
-where [code del]:
+where
   "llcp xs ys =
    enat_unfold (\<lambda>(xs, ys). lnull xs \<or> lnull ys \<or> lhd xs \<noteq> lhd ys) (map_prod ltl ltl) (xs, ys)"
 

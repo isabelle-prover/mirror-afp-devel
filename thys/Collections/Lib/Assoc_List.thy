@@ -5,8 +5,6 @@ theory Assoc_List
   "../Iterator/SetIteratorOperations"
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Type \<open>('a, 'b) assoc_list\<close>\<close>
 
 typedef ('k, 'v) assoc_list = "{xs :: ('k \<times> 'v) list. distinct (map fst xs)}"
@@ -32,19 +30,19 @@ by(rule impl_of_inverse)
 subsection \<open>Primitive operations\<close>
 
 definition empty :: "('k, 'v) assoc_list"
-where [code del]: "empty = Assoc_List []"
+where "empty = Assoc_List []"
 
 definition lookup :: "('k, 'v) assoc_list \<Rightarrow> 'k \<Rightarrow> 'v option"
-where [code]: "lookup al = map_of (impl_of al)" 
+where "lookup al = map_of (impl_of al)" 
 
 definition update_with :: "'v \<Rightarrow> 'k \<Rightarrow> ('v \<Rightarrow> 'v) \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> ('k, 'v) assoc_list"
-where [code del]: "update_with v k f al = Assoc_List (AList.update_with_aux v k f (impl_of al))"
+where "update_with v k f al = Assoc_List (AList.update_with_aux v k f (impl_of al))"
 
 definition delete :: "'k \<Rightarrow> ('k, 'v) assoc_list \<Rightarrow> ('k, 'v) assoc_list"
-where [code del]: "delete k al = Assoc_List (AList.delete_aux k (impl_of al))"
+where "delete k al = Assoc_List (AList.delete_aux k (impl_of al))"
 
 definition iteratei :: "('k, 'v) assoc_list \<Rightarrow> ('s\<Rightarrow>bool) \<Rightarrow> ('k \<times> 'v \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> 's" 
-where [code]: "iteratei al c f = foldli (impl_of al) c f"
+where "iteratei al c f = foldli (impl_of al) c f"
 
 lemma impl_of_empty [code abstract]: "impl_of empty = []"
 by(simp add: empty_def Assoc_List_inverse)

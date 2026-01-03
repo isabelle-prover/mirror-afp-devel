@@ -11,8 +11,6 @@ theory Set_Impl imports
   Complex_Main
 begin
 
-declare [[code_del_allowed]]
-
 section \<open>Different implementations of sets\<close>
 
 subsection \<open>Auxiliary functions\<close>
@@ -1787,10 +1785,18 @@ hide_const (open) insert_monad union_monad
 subsection \<open>Type class instantiations\<close>
 
 datatype set_impl = Set_IMPL
-declare
-  set_impl.eq.simps [code del]
-  set_impl.rec [code del]
-  set_impl.case [code del]
+
+lemma [code]:
+  \<open>HOL.equal (x :: set_impl) (y :: set_impl) \<longleftrightarrow> True\<close>
+  by (cases x; cases y) (simp add: equal)
+
+lemma [code]:
+  \<open>rec_set_impl f x = f\<close>
+  by (cases x) simp
+
+lemma [code]:
+  \<open>case_set_impl f x = f\<close>
+  by (cases x) simp
 
 lemma [code, set_base_code]: 
   fixes x :: set_impl

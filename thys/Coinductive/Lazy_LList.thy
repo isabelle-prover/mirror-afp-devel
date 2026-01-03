@@ -7,8 +7,6 @@ theory Lazy_LList imports
   Coinductive_List
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Lazy lists\<close>
 
 code_identifier code_module Lazy_LList \<rightharpoonup>
@@ -21,10 +19,14 @@ definition Lazy_llist :: "(unit \<Rightarrow> ('a \<times> 'a llist) option) \<R
 where [simp]:
   "Lazy_llist xs = (case xs () of None \<Rightarrow> LNil | Some (x, ys) \<Rightarrow> LCons x ys)"
 
-definition force :: "'a llist \<Rightarrow> ('a \<times> 'a llist) option"
-where [simp, code del]: "force xs = (case xs of LNil \<Rightarrow> None | LCons x ys \<Rightarrow> Some (x, ys))"
-
 code_datatype Lazy_llist
+
+definition force :: "'a llist \<Rightarrow> ('a \<times> 'a llist) option"
+where [simp]: "force xs = (case xs of LNil \<Rightarrow> None | LCons x ys \<Rightarrow> Some (x, ys))"
+
+lemma Lazy_llist_inverse [code, simp]:
+  "force (Lazy_llist xs) = xs ()"
+by(auto split: option.splits)
 
 lemma partial_term_of_llist_code [code]:
   fixes tytok :: "'a :: partial_term_of llist itself" shows
@@ -47,10 +49,6 @@ declare option.splits [split]
 lemma Lazy_llist_inject [simp]:
   "Lazy_llist xs = Lazy_llist ys \<longleftrightarrow> xs = ys"
 by(auto simp add: fun_eq_iff)
-
-lemma Lazy_llist_inverse [code, simp]:
-  "force (Lazy_llist xs) = xs ()"
-by(auto)
 
 lemma force_inverse [simp]:
   "Lazy_llist (\<lambda>_. force xs) = xs"

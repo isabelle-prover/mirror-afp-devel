@@ -10,18 +10,16 @@ imports
   Polynomial_Factorization.Missing_Polynomial_Factorial
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Algorithm\<close>
 
 locale div_exp_sound_gcd = div_exp_sound div_exp for 
   div_exp :: "'a :: {semiring_gcd_mult_normalize,factorial_ring_gcd} \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" 
 begin
 definition gcd_impl_primitive where
-  [code del]: "gcd_impl_primitive G1 G2 = normalize (primitive_part (fst (subresultant_prs G1 G2)))" 
+  "gcd_impl_primitive G1 G2 = normalize (primitive_part (fst (subresultant_prs G1 G2)))" 
 
 definition gcd_impl_main where
-  [code del]: "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
+  "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
    smult (gcd (content G1) (content G2))
      (gcd_impl_primitive (primitive_part G1) (primitive_part G2)))"
 

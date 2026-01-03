@@ -8,8 +8,6 @@ imports
     reasons: to allow for a \<^theory_text>\<open>quickcheck\<close> setup.\<close>
 begin
 
-declare [[code_del_allowed]]
-
 datatype pterm =
   Pconst name |
   Pvar name |
@@ -211,7 +209,11 @@ qed (auto split: option.splits)
 instantiation pterm :: "term" begin
 
 definition abs_pred_pterm :: "(pterm \<Rightarrow> bool) \<Rightarrow> pterm \<Rightarrow> bool" where
-[code del]: "abs_pred P t \<longleftrightarrow> (\<forall>cs. t = Pabs cs \<longrightarrow> (\<forall>pat t. (pat, t) |\<in>| cs \<longrightarrow> P t) \<longrightarrow> P t)"
+  "abs_pred P t \<longleftrightarrow> (\<forall>cs. t = Pabs cs \<longrightarrow> (\<forall>pat t. (pat, t) |\<in>| cs \<longrightarrow> P t) \<longrightarrow> P t)"
+
+lemma abs_pred_pterm_code [code]:
+  \<open>abs_pred P t \<longleftrightarrow> (case t of Pabs cs \<Rightarrow> (\<forall>(_, t)|\<in>|cs. P t) \<longrightarrow> P t | _ \<Rightarrow> True)\<close>
+  by (cases t) (auto simp add: abs_pred_pterm_def)
 
 context begin
 

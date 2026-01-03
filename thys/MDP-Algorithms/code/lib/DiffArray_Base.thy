@@ -7,8 +7,6 @@ imports
   
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Additional List Operations\<close>
 
 definition "tabulate n f = map f [0..<n]"
@@ -252,15 +250,15 @@ subsection \<open>Code Generator Setup\<close>
 subsubsection \<open>Code-Numeral Preparation\<close>
 
 
-definition [code del]: "array_new' == array_new o nat_of_integer"
-definition [code del]: "array_tabulate' n f \<equiv> array_tabulate (nat_of_integer n) (f o integer_of_nat)"
+definition [code drop]: "array_new' == array_new o nat_of_integer"
+definition [code drop]: "array_tabulate' n f \<equiv> array_tabulate (nat_of_integer n) (f o integer_of_nat)"
 
-definition [code del]: "array_length' == integer_of_nat o array_length"
-definition [code del]: "array_get' a == array_get a o nat_of_integer"
-definition [code del]: "array_set' a == array_set a o nat_of_integer"
-definition [code del]:
+definition [code drop]: "array_length' == integer_of_nat o array_length"
+definition [code drop]: "array_get' a == array_get a o nat_of_integer"
+definition [code drop]: "array_set' a == array_set a o nat_of_integer"
+definition [code drop]:
   "array_get_oo' x a == array_get_oo x a o nat_of_integer"
-definition [code del]:
+definition [code drop]:
   "array_set_oo' f a == array_set_oo f a o nat_of_integer"
 
 
@@ -744,7 +742,7 @@ code_printing
 
 context begin
 (*private*) definition "test_diffarray_setup \<equiv> (Array,array_new',array_length',array_get', array_set', array_of_list,array_get_oo',array_set_oo')"
-export_code test_diffarray_setup checking SML OCaml? Haskell?
+export_code test_diffarray_setup checking Haskell? SML (*Scala*) \<comment>\<open>TODO: Scala does not compile\<close>
 end
 
 
@@ -791,7 +789,7 @@ ML_val \<open>
   if not @{code test1} then error "ERROR" else ()
 \<close>          
 
-export_code test1 checking OCaml? Haskell? SML
+export_code test1 checking Haskell? SML (*Scala*) \<comment>\<open>TODO: Scala does not compile\<close>
 
 
 hide_const test1

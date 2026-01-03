@@ -12,8 +12,6 @@ imports
   "HOL-Library.AList_Mapping"
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Auxiliary lemmata\<close>
 
 lemma rtranclp_tranclpE:
@@ -144,7 +142,6 @@ lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_unfold]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
 by(auto simp add: fun_eq_iff subcls1_i_i_o_def subcls'_def rtranclp_FioB_i_i_def subcls'_i_i_i_def)
 
-declare Method.equation[code del]
 lemma Method_program [code]:
   "program Pi \<turnstile> C sees M:Ts\<rightarrow>T=meth in D \<longleftrightarrow> 
   (case Mapping.lookup (snd (snd (snd (snd (impl_of Pi))))) C of 
@@ -174,8 +171,6 @@ lemma Method_i_i_i_o_o_o_i_program [code]:
       None \<Rightarrow> bot
     | Some (D', Ts, T, meth) \<Rightarrow> if D = D' then Predicate.single (Ts, T, meth) else bot))" for Pi
 by(auto simp add: Method_i_i_i_o_o_o_i_def Method_program intro!: pred_eqI)
-
-declare sees_field.equation[code del]
 
 lemma sees_field_program [code]:
   "program Pi \<turnstile> C sees F:T (fd) in D \<longleftrightarrow>
