@@ -7,8 +7,6 @@ imports
   Deriving.Compare_Instances
   "List-Index.List_Index"
 begin
-
-hide_const (open) cut
 (*>*)
 
 definition "eval P x = (x |\<in>| P)"

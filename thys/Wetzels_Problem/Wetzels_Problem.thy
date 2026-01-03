@@ -199,9 +199,9 @@ proof -
         using that by (simp add: h_def)
       have dd_cong: "dd n \<epsilon> = dd n \<epsilon>'" if "\<And>i. i<n \<Longrightarrow> \<epsilon> i = \<epsilon>' i" for n \<epsilon> \<epsilon>'
         using that by (metis dd_def DD_def BALL_def h_cong) 
-      have [simp]: "h n (cut \<epsilon> less_than n) = h n \<epsilon>" for n \<epsilon>
+      have [simp]: "h n (Wfrec.cut \<epsilon> less_than n) = h n \<epsilon>" for n \<epsilon>
         by (meson cut_apply h_cong less_than_iff)
-      have [simp]: "dd n (cut \<epsilon> less_than n) = dd n \<epsilon>" for n \<epsilon>
+      have [simp]: "dd n (Wfrec.cut \<epsilon> less_than n) = dd n \<epsilon>" for n \<epsilon>
         by (meson cut_apply dd_cong less_than_iff)
 
       define coeff where "coeff \<equiv> wfrec less_than (\<lambda>\<epsilon> n. (dd n \<epsilon> - h n \<epsilon> (w n)) / p n (w n))"
