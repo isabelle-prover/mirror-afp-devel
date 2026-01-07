@@ -196,15 +196,15 @@ qed
 
 subsection\<open>Reachable States\<close>
 
-definition reachable_from :: "('s, 'l) lts \<Rightarrow> 's \<Rightarrow> 's set" where
-  "reachable_from T q = {q'. \<exists>w. q' \<in> steps_lts T w q}"
+definition reachable_lts :: "('s, 'l) lts \<Rightarrow> 's \<Rightarrow> 's set" where
+  "reachable_lts T q = {q'. \<exists>w. q' \<in> steps_lts T w q}"
 
-lemma reachable_from_computable: "reachable_from T q \<subseteq> {q} \<union> (snd ` snd ` T)"
+lemma reachable_lts_computable: "reachable_lts T q \<subseteq> {q} \<union> (snd ` snd ` T)"
 proof
   fix q'
-  assume "q' \<in> reachable_from T q"
+  assume "q' \<in> reachable_lts T q"
   then obtain w where w_def: "q' \<in> steps_lts T w q"
-    unfolding reachable_from_def by blast
+    unfolding reachable_lts_def by blast
   then consider "w = []" | "\<exists>ws c. w = ws@[c]"
     by (meson rev_exhaust)
   then show "q' \<in> {q} \<union> (snd ` snd ` T)"
@@ -225,24 +225,24 @@ proof
   qed
 qed
 
-lemma reachable_from_trans[trans]:
-  assumes "q1 \<in> reachable_from T q0" and "q2 \<in> reachable_from T q1"
-  shows "q2 \<in> reachable_from T q0"
-  using assms Steps_lts_join unfolding reachable_from_def by fast
+lemma reachable_lts_trans[trans]:
+  assumes "q1 \<in> reachable_lts T q0" and "q2 \<in> reachable_lts T q1"
+  shows "q2 \<in> reachable_lts T q0"
+  using assms Steps_lts_join unfolding reachable_lts_def by fast
 
 lemma reachable_add_trans:
   assumes "\<forall>(q1, _, q2) \<in> T'. \<exists>w. q2 \<in> steps_lts T w q1"
-  shows "reachable_from T q = reachable_from (T \<union> T') q"
+  shows "reachable_lts T q = reachable_lts (T \<union> T') q"
 proof (standard; standard)
   fix q'
-  assume "q' \<in> reachable_from T q"
-  then show "q' \<in> reachable_from (T \<union> T') q"
-    unfolding reachable_from_def using steps_lts_union by fast
+  assume "q' \<in> reachable_lts T q"
+  then show "q' \<in> reachable_lts (T \<union> T') q"
+    unfolding reachable_lts_def using steps_lts_union by fast
 next
   fix q'
-  assume "q' \<in> reachable_from (T \<union> T') q"
+  assume "q' \<in> reachable_lts (T \<union> T') q"
   then obtain w where "q' \<in> steps_lts (T \<union> T') w q"
-    unfolding reachable_from_def by blast
+    unfolding reachable_lts_def by blast
   then have "\<exists>w'. q' \<in> steps_lts T w' q"
   proof (induction w arbitrary: q)
     case Nil
@@ -282,8 +282,8 @@ next
         by blast
     qed
   qed
-  then show "q' \<in> reachable_from T q"
-    by (simp add: reachable_from_def)
+  then show "q' \<in> reachable_lts T q"
+    by (simp add: reachable_lts_def)
 qed
 
 

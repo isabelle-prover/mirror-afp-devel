@@ -9,7 +9,7 @@ imports
   "HOL-Library.While_Combinator"
 begin
 
-(* Internal polishing: One could get rid of \<open>reachable_from\<close> and use \<open>states_lts \<subseteq> Q\<close> instead. *)
+(* Internal polishing: One could get rid of \<open>reachable_lts\<close> and use \<open>states_lts \<subseteq> Q\<close> instead. *)
 
 text\<open>This theory defines \<open>pre\<^sup>*(L)\<close> (\<open>pre_star\<close> below) and verifies a simple saturation algorithm
 \<open>pre_star_auto\<close> that computes \<open>pre\<^sup>*(M)\<close> given an NFA \<open>M\<close> and a finite set of context-free productions.
@@ -67,12 +67,12 @@ text\<open>
 \<close>
 
 lemma pre_lts_reachable:
-  "reachable_from T q = reachable_from (T \<union> pre_lts P Q T) q"
+  "reachable_lts T q = reachable_lts (T \<union> pre_lts P Q T) q"
   unfolding pre_lts_def by (rule reachable_add_trans) blast
 
 lemma pre_star_lts_reachable:
   assumes "pre_star_lts P Q T = Some T'"
-  shows "reachable_from T q = reachable_from T' q"
+  shows "reachable_lts T q = reachable_lts T' q"
   by (rule pre_star_lts_rule; use assms pre_lts_reachable in fast)
 
 lemma states_pre_lts: assumes "states_lts T \<subseteq> Q" shows "states_lts (pre_lts P Q T) \<subseteq> Q"
@@ -87,7 +87,7 @@ lemma pre_lts_prod:
   using assms unfolding pre_lts_def Steps_lts_def Step_lts_def step_lts_def by force
 
 lemma pre_lts_pre:
-  assumes "P \<turnstile> w\<^sub>\<alpha> \<Rightarrow> w\<^sub>\<beta>" and "reachable_from T q \<subseteq> Q" and "q' \<in> steps_lts T w\<^sub>\<beta> q"
+  assumes "P \<turnstile> w\<^sub>\<alpha> \<Rightarrow> w\<^sub>\<beta>" and "reachable_lts T q \<subseteq> Q" and "q' \<in> steps_lts T w\<^sub>\<beta> q"
   shows "q' \<in> steps_lts (T \<union> pre_lts P Q T) w\<^sub>\<alpha> q"
 proof -
   obtain w\<^sub>p w\<^sub>s A \<beta> where prod: "(A, \<beta>) \<in> P"
@@ -99,10 +99,10 @@ proof -
       and step_\<beta>: "q2 \<in> steps_lts T \<beta> q1"
       and step_w\<^sub>s: "q' \<in> steps_lts T w\<^sub>s q2"
     using Steps_lts_split3 assms(3)[unfolded w\<^sub>\<beta>_split] by fast
-  then have q1_reach: "q1 \<in> reachable_from T q" and "q2 \<in> reachable_from T q1"
-    using assms(2) unfolding reachable_from_def by blast+
-  then have q2_reach: "q2 \<in> reachable_from T q"
-    using assms(2) reachable_from_trans by fast
+  then have q1_reach: "q1 \<in> reachable_lts T q" and "q2 \<in> reachable_lts T q1"
+    using assms(2) unfolding reachable_lts_def by blast+
+  then have q2_reach: "q2 \<in> reachable_lts T q"
+    using assms(2) reachable_lts_trans by fast
 
   have "q2 \<in> steps_lts (T \<union> pre_lts P Q T) [Nt A] q1"
     by (rule pre_lts_prod; use q1_reach q2_reach assms(2) prod step_\<beta> in blast)
@@ -115,7 +115,7 @@ proof -
 qed
 
 lemma pre_lts_fp:
-  assumes "P \<turnstile> w\<^sub>\<alpha> \<Rightarrow>* w\<^sub>\<beta>" and "reachable_from T q \<subseteq> Q" and "q' \<in> steps_lts T w\<^sub>\<beta> q"
+  assumes "P \<turnstile> w\<^sub>\<alpha> \<Rightarrow>* w\<^sub>\<beta>" and "reachable_lts T q \<subseteq> Q" and "q' \<in> steps_lts T w\<^sub>\<beta> q"
     and fp: "pre_lts P Q T \<subseteq> T"
   shows "q' \<in> steps_lts T w\<^sub>\<alpha> q"
 proof (insert assms, induction rule: converse_rtranclp_induct[where r="derive P"])
@@ -201,7 +201,7 @@ proof -
 qed
 
 lemma pre_star_lts_correct:                 
-  assumes "reachable_from T q\<^sub>0 \<subseteq> Q" and "pre_star_lts P Q T = Some T'"
+  assumes "reachable_lts T q\<^sub>0 \<subseteq> Q" and "pre_star_lts P Q T = Some T'"
   shows "Lang_lts T' q\<^sub>0 F = pre_star P (Lang_lts T q\<^sub>0 F)"
 proof (standard; standard)
   fix w
@@ -223,7 +223,7 @@ next
     by blast
   then have "q\<^sub>f \<in> steps_lts T' w' q\<^sub>0"
     using steps_lts_mono pre_star_lts_mono assms by (metis in_mono)
-  moreover have "reachable_from T' q\<^sub>0 \<subseteq> Q"
+  moreover have "reachable_lts T' q\<^sub>0 \<subseteq> Q"
     using assms pre_star_lts_reachable by fast
   moreover have "pre_lts P Q T' \<subseteq> T'"
     by (rule pre_star_lts_fp; use assms(2) in simp)
@@ -306,8 +306,8 @@ proof -
   then have "finite Q"
     unfolding T_def states_lts_def using assms(2) by auto
   have MQ: "states_lts (auto.lts M) \<subseteq> Q" unfolding Q_def T_def by (force)
-  have "reachable_from T (auto.start M) \<subseteq> Q"
-    using reachable_from_computable unfolding Q_def states_lts_def by fastforce
+  have "reachable_lts T (auto.start M) \<subseteq> Q"
+    using reachable_lts_computable unfolding Q_def states_lts_def by fastforce
   moreover obtain T' where T'_def: "pre_star_lts P Q T = Some T'"
     using pre_star_lts_terminates[OF assms(1) \<open>finite Q\<close> assms(2) MQ] T_def by blast
   ultimately have "Lang_lts T' (auto.start M) (auto.finals M)
