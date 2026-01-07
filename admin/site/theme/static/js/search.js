@@ -90,21 +90,22 @@ function render_entry(entry) {
   </div>`
 }
 
-function render_entries_results(data, query) {
-  if (!data) return parse_elem('<p>Please enter a search term above.</p>')
-  if (data.length === 0) return parse_elem('<p>No results.</p>')
+function render_entries_results(parent, data, query) {
+  if (!data) parent.replaceChildren(parse_elem('<p>Please enter a search term above.</p>'))
+  else if (data.length === 0) parent.replaceChildren(parse_elem('<p>No results.</p>'))
   else {
     const end = data.length > NUM_MAX_MAIN_RESULTS ? '...' : ''
     const res = parse_elem(`
       ${data.slice(0, NUM_MAX_MAIN_RESULTS).map(entry => render_entry(entry)).join('')}${end}`)
-    new Mark(res).mark(query)
-    return res
+    parent.replaceChildren(res)
+    MathJax.typeset([parent])
+    new Mark(parent).mark(query)
   }
 }
 
-function render_results_shortlist(data, query) {
-  if (!data) return ''
-  if (data.length === 0) return parse_elem('<p>No results</p>')
+function render_results_shortlist(parent, data, query) {
+  if (!data) parent.replaceChildren([])
+  else if (data.length === 0) parent.replaceChildren(parse_elem('<p>No results</p>'))
   else {
     const end = data.length > NUM_MAX_SIDE_RESULTS ? '<li>...</li>' : ''
     const res = parse_elem(`
@@ -114,8 +115,8 @@ function render_results_shortlist(data, query) {
         </li>`).join('')}
         ${end}
       </ul>`)
-    new Mark(res).mark(query)
-    return res
+    parent.replaceChildren(res)
+    new Mark(parent).mark(query)
   }
 }
 
@@ -147,10 +148,9 @@ const init_search = async () => {
       add_suggestions(indexes['suggest'], query)
       res = local_search(indexes, query)
     }
-    authors_res.replaceChildren(render_results_shortlist(res.authors, query))
-    topics_res.replaceChildren(render_results_shortlist(res.topics, query))
-    entries_res.replaceChildren(render_entries_results(res.entries, query))
-    MathJax.typeset()
+    render_results_shortlist(authors_res, res.authors, query)
+    render_results_shortlist(topics_res, res.topics, query)
+    render_entries_results(entries_res, res.entries, query)
   }
 
   const handle_submit = (query) => {
