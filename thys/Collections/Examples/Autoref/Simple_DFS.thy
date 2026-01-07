@@ -416,6 +416,15 @@ prepare_code_thms dfs_impl2_def
 prepare_code_thms dfs_impl3_def
 prepare_code_thms dfs_impl3'_def
 
+declare [[code abort:
+  Diff_Array.new_array'
+  Diff_Array.array_length'
+  Diff_Array.array_get'
+  Diff_Array.array_set'
+  Diff_Array.array_grow'
+  Diff_Array.array_shrink'
+]] \<comment> \<open>TODO: there is no setup of diff arrays for OCaml\<close>
+
 export_code dfs_impl dfs_impl2 dfs_impl3 dfs_impl3' checking SML OCaml? Haskell? Scala
 
 text \<open>And we prove the alternative implementations correct \<close>
