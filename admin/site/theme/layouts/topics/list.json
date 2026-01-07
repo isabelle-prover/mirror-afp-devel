@@ -2,7 +2,7 @@
 {{- range .Pages -}}
   {{- $index = $index | append (dict
     "name" .Title
-    "link" .RelPermalink)
+    "link" (printf "..%s" .RelPermalink))
   -}}
 {{- end -}}
 {{- $index | jsonify (dict "indent" " ") -}}
