@@ -1,7 +1,5 @@
 /* constants */
 
-const URL_FINDFACTS = 'https://search.isabelle.in.tum.de'
-
 const NUM_MAX_SIDE_RESULTS = 4
 const NUM_MAX_MAIN_RESULTS = 15
 
@@ -9,7 +7,6 @@ const ID_SEARCH_BUTTON = 'search-button'
 const ID_RESULTS_ENTRIES = 'search-results'
 const ID_RESULTS_AUTHORS = 'author-results'
 const ID_RESULTS_TOPICS = 'topic-results'
-const ID_RESULTS_FINDFACTS = 'find-facts-results'
 
 
 /* index */
@@ -55,21 +52,6 @@ function build_indexes(entries, authors, topics, keywords) {
   }
 }
 
-async function get_findfacts_index() {
-  const indexes = await fetch(URL_FINDFACTS + '/v1/indexes').then(async http_res => {
-    if (http_res.status !== 200) {
-      console.log(`Error ${http_res.status} when fetching indexes: ${http_res.statusText}`)
-      return Promise.resolve([])
-    }
-    return await http_res.json()
-  }).catch((err) => {
-    console.log(`Could not fetch indexes: ${err}`)
-    return Promise.resolve([])
-  })
-
-  return indexes.find(index => index.startsWith('default_'))
-}
-
 
 /* search */
 
@@ -81,48 +63,6 @@ function local_search(indices, query) {
   const author_results = indices['author'].search(query, NUM_MAX_SIDE_RESULTS + 1,
     {enrich: true, pluck: 'name'}).map(d => d.doc)
   return {entries: entry_results, topics: topic_results, authors: author_results}
-}
-
-async function findfacts_search(index, query) {
-  if (!index) return {}
-  const facet_query = {
-    filters: [
-      {
-        field: 'SourceCode',
-        filter: {
-          Term: {
-            inner: query
-          }
-        }
-      }
-    ],
-    fields: ['Kind'],
-    maxFacets: 5
-  }
-  const facet = await fetch(`${URL_FINDFACTS}/v1/${index}/facet`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(facet_query),
-    }
-  ).then(async (response) => {
-    if (response.status !== 200) {
-      console.log(`Error ${http_res.status} on findfacts query: ${http_res.statusText}`)
-      return {}
-    } else {
-      const json = await response.json()
-      return json['Kind']
-    }
-  }).catch((err) => {
-    console.log(`Error in findfacts query: ${err}`)
-    return {}
-  })
-  const search_query = `{"term"%3A"${encodeURIComponent(query)}"}`
-  const url = `${URL_FINDFACTS}/#search/${index}?q=${search_query}`
-
-  return {facet: facet, url: url}
 }
 
 
@@ -150,21 +90,22 @@ function render_entry(entry) {
   </div>`
 }
 
-function render_entries_results(data, query) {
-  if (!data) return parse_elem('<p>Please enter a search term above.</p>')
-  if (data.length === 0) return parse_elem('<p>No results.</p>')
+function render_entries_results(parent, data, query) {
+  if (!data) parent.replaceChildren(parse_elem('<p>Please enter a search term above.</p>'))
+  else if (data.length === 0) parent.replaceChildren(parse_elem('<p>No results.</p>'))
   else {
     const end = data.length > NUM_MAX_MAIN_RESULTS ? '...' : ''
     const res = parse_elem(`
       ${data.slice(0, NUM_MAX_MAIN_RESULTS).map(entry => render_entry(entry)).join('')}${end}`)
-    new Mark(res).mark(query)
-    return res
+    parent.replaceChildren(res)
+    MathJax.typeset([parent])
+    new Mark(parent).mark(query)
   }
 }
 
-function render_results_shortlist(data, query) {
-  if (!data) return ''
-  if (data.length === 0) return parse_elem('<p>No results</p>')
+function render_results_shortlist(parent, data, query) {
+  if (!data) parent.replaceChildren([])
+  else if (data.length === 0) parent.replaceChildren(parse_elem('<p>No results</p>'))
   else {
     const end = data.length > NUM_MAX_SIDE_RESULTS ? '<li>...</li>' : ''
     const res = parse_elem(`
@@ -174,34 +115,8 @@ function render_results_shortlist(data, query) {
         </li>`).join('')}
         ${end}
       </ul>`)
-    new Mark(res).mark(query)
-    return res
-  }
-}
-
-function render_findfacts_results(res) {
-  if (res.facet && Object.keys(res.facet).length > 0) {
-    return parse_elem(`
-      <ul>${(Object.entries(res.facet).map(([name, count]) => `
-        <li>
-          <a href="${escape_html(res.url)}" target="_blank" rel="noreferrer noopener">
-            ${count} ${name}s
-          </a>
-        </li>`).join(''))}
-      </ul>`)
-  } else return parse_elem('<p>No results</p>')
-}
-
-
-/* input handling */
-
-function debounce(callback, wait) {
-  let timeout
-  return (...args) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(function () {
-      callback.apply(this, args)
-    }, wait)
+    parent.replaceChildren(res)
+    new Mark(parent).mark(query)
   }
 }
 
@@ -233,10 +148,9 @@ const init_search = async () => {
       add_suggestions(indexes['suggest'], query)
       res = local_search(indexes, query)
     }
-    authors_res.replaceChildren(render_results_shortlist(res.authors, query))
-    topics_res.replaceChildren(render_results_shortlist(res.topics, query))
-    entries_res.replaceChildren(render_entries_results(res.entries, query))
-    MathJax.typeset()
+    render_results_shortlist(authors_res, res.authors, query)
+    render_results_shortlist(topics_res, res.topics, query)
+    render_entries_results(entries_res, res.entries, query)
   }
 
   const handle_submit = (query) => {
@@ -259,25 +173,6 @@ const init_search = async () => {
 
   if (input.value) run_local_search(input.value)
   input.focus()
-
-  // findfacts
-  const findfacts_res = document.getElementById(ID_RESULTS_FINDFACTS)
-  const findfacts_index = await get_findfacts_index()
-  const memoized_findfacts_search = memoize(findfacts_search)
-
-  const run_findfacts_search = async (query) => {
-    let res = {}
-    if (query && query.length > 2) {
-      findfacts_res.replaceChildren(parse_elem('<p>...</p>'))
-      res = await memoized_findfacts_search([findfacts_index, query])
-    }
-    findfacts_res.replaceChildren(render_findfacts_results(res))
-  }
-
-  input.addEventListener('keyup', debounce(async (event) =>
-    run_findfacts_search(event.target.value), 300))
-
-  if (input.value) await run_findfacts_search(input.value)
 }
 
 document.addEventListener('DOMContentLoaded', init_search)
