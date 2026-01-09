@@ -11,7 +11,7 @@ sig
   include HAS_LOGGER
 
   val unify : Unification_Base.unifier
-  val norms : Unification_Base.normalisers
+  val norms_unify : Unification_Base.normalisers
 end
 
 structure Higher_Order_Unification : HIGHER_ORDER_UNIFICATION =
@@ -21,8 +21,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Higher_Order_Unifi
 
 structure Util = Unification_Util
 
-val norms = Unification_Util.beta_eta_short_norms_unif
-
+val norms_unify = Unification_Util.beta_eta_short_norms_unif
 fun unify binders ctxt tp env = Seq.make (fn _ =>
   let
     val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
@@ -32,7 +31,7 @@ fun unify binders ctxt tp env = Seq.make (fn _ =>
     val init_goal = Logic.mk_equals #> Thm.cterm_of ctxt #> Goal.init
     fun create_env_thmq env =
       (*replace binders and apply the computed unifier*)
-      apply2 (Binders.replace_binders binders #> (#inst_term norms env #> #norm_term norms)) tp
+      apply2 (Binders.replace_binders binders #> (#inst_term norms_unify env #> #norm_term norms_unify)) tp
       (*create a goal such that we can create a theorem including the flex-flex pairs*)
       |> init_goal
       (*kind of a hack: resolving against the equality theorem will add the
@@ -46,6 +45,11 @@ fun unify binders ctxt tp env = Seq.make (fn _ =>
     (*add the flex-flex pairs to the theorem*)
     |> Seq.maps (fst #> create_env_thmq)
     |> Seq.pull
+    |> (fn res => (if is_none res
+      then @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
+        Pretty.str "Higher-order unification failed."
+      ] |> Pretty.string_of)
+      else (); res))
   end)
 
 end

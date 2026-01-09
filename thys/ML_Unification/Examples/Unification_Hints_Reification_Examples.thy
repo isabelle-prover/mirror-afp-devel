@@ -32,7 +32,7 @@ ML\<open>
       (*only retrieve hints based on hints' left-hand sides*)
       retrieval = SOME (Args.mk_retrieval_sym
         (Library.K TI.unifiables |> Args.retrieve_transfer |> Args.retrieve_left) TI.norm_term),
-      hint_preprocessor = SOME (Standard_Unification_Hints.get_hint_preprocessor
+      hint_preprocessor = SOME (Unification_Hints.get_hint_preprocessor
         (Context.the_generic_context ()))}\<close>\<close>
 
 val reify_unify = Unification_Combinator.add_fallback_unifier

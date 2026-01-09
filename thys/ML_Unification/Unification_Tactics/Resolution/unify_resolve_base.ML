@@ -61,7 +61,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Unify_Resolve_Base
 structure Util = Unification_Util
 structure HOPU = Higher_Order_Pattern_Unification
 
-fun unify_resolve_tac norms unify rule ctxt =
+fun unify_resolve_tac norms unify rule ctxt i st = Seq.make (fn _ =>
   let fun tac cgoal i state =
     let
       val _ = @{log Logger.TRACE} ctxt (fn _ => Pretty.breaks [
@@ -81,13 +81,14 @@ fun unify_resolve_tac norms unify rule ctxt =
       val conv = #conv norms
       val inst_thm = #inst_thm norms
       fun rewrite_tac (env, unif_thm) =
-        Tactic_Util.rewrite_subgoal_unif_concl (#inst_term norms)
-          (Util.inst_norm_subgoal inst_thm conv) (Util.inst_norm_thm (#inst_unif_thm norms) conv)
-          binders (env, unif_thm) ctxt
-        THEN' (fn i => Tactic_Util.no_lift_resolve_tac
+        Tactic_Unification.tac_from_env_tac (Tactic_Unification.rewrite_subgoal_eq_concl_env_tac
+          (#inst_term norms) (Util.inst_norm_subgoal inst_thm conv)
+          (Util.inst_norm_thm (#inst_unif_thm norms) conv)
+          binders unif_thm ctxt i) env
+        THEN (Tactic_Util.no_lift_resolve_tac
           (Util.inst_norm_thm inst_thm conv ctxt env lifted_rule) nprems_rule ctxt i)
-    in Seq.maps (fn res => rewrite_tac res i state) env_thmq end
-  in Tactic_Util.CSUBGOAL_DATA I tac end
+    in Seq.maps (fn res => rewrite_tac res state) env_thmq end
+  in Tactic_Util.CSUBGOAL_DATA I tac i st end |> Seq.pull)
 
 fun unify_resolve_tacs norms unify rules ctxt =
   map (fn rule => unify_resolve_tac norms unify rule ctxt) rules

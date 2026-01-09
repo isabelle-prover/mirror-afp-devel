@@ -100,7 +100,7 @@ fun retrieve_sym retrieve ctxt ti tp = interleave
 fun retrieve_transfer retrieve ctxt = map (transfer_hint_prio (Proof_Context.theory_of ctxt)) oo
   retrieve ctxt
 
-(*FIXME: use Prio.Table instead of sorted lists*)
+(*FIXME: use priority queue instead of sorted lists?*)
 val sort_hint_prios = sort (rev_order o Prio.ord o apply2 snd)
 
 val sorted_hint_seq_of_hint_prios = sort_hint_prios #> Seq.of_list #> Seq.map fst
@@ -134,6 +134,7 @@ end
 signature TERM_INDEX_UNIFICATION_HINTS =
 sig
   include HAS_LOGGER
+  structure FI : FUNCTOR_INSTANCE
 
   structure UH : UNIFICATION_HINTS
 
@@ -217,7 +218,7 @@ structure PU = Parse_Util
 val logger = Logger.setup_new_logger Unification_Hints_Base.logger FI.name
 
 \<^functor_instance>\<open>struct_name: UH
-  functor_name: Unification_Hints
+  functor_name: Unification_Hints_Functor
   path: FI.long_name
   id: FI.id
   more_args: \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>\<close>
@@ -375,7 +376,7 @@ fun del_hint hint context =
     val (lhs_key, rhs_key) = term_index_keys_from_hint hint
   in del_hint_lhs lhs_key hint context |> del_hint_rhs rhs_key hint end
 
-val binding = Binding.make (FI.prefix_id "uhint", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 fun try_hints binders ctxt tp env = Seq.make (fn _ =>
   let

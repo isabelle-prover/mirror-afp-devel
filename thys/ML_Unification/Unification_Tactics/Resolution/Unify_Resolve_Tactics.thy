@@ -10,18 +10,18 @@ paragraph \<open>Summary\<close>
 text \<open>Setup of resolution tactics and examples.\<close>
 
 ML\<open>
-\<^functor_instance>\<open>struct_name: Standard_Unify_Resolve
-  functor_name: Unify_Resolve
-  id: \<open>""\<close>
+\<^functor_instance>\<open>struct_name: Unify_Resolve
+  functor_name: Unify_Resolve_Functor
+  id: \<open>"urule"\<close>
   more_args: \<open>val init_args = {
-    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
-    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify,
+    normalisers = SOME Mixed_Comb_Unification.norms_fo_hop_comb_unify,
+    unifier = SOME Mixed_Comb_Unification.fo_hop_comb_unify,
     mode = SOME (Unify_Resolve_Args.PM.key Unify_Resolve_Args.PM.any),
     chained = SOME (Unify_Resolve_Args.PCM.key Unify_Resolve_Args.PCM.resolve)
   }\<close>\<close>
 \<close>
-local_setup \<open>Standard_Unify_Resolve.setup_attribute NONE\<close>
-local_setup \<open>Standard_Unify_Resolve.setup_method NONE\<close>
+local_setup \<open>Unify_Resolve.setup_attribute NONE\<close>
+local_setup \<open>Unify_Resolve.setup_method NONE\<close>
 
 paragraph \<open>Examples\<close>
 
@@ -53,7 +53,7 @@ lemma
   assumes h1: "\<And>x. PROP A x \<Longrightarrow> PROP D x"
   and h2: "\<And>x. PROP D x \<Longrightarrow> PROP E x"
   shows "\<And>x. PROP A x \<Longrightarrow> PROP B x \<Longrightarrow> PROP C x"
-  \<comment>\<open>use (rr,re,rd,rf) to use repetition; in particular: \<open>(urule (rr)) \<simeq> intro\<close>\<close>
+  \<comment>\<open>use (rr,re,rd) to use repetition; in particular: \<open>(urule (rr)) \<simeq> intro\<close>\<close>
   apply (urule (rd) h1 h2)
   oops
 

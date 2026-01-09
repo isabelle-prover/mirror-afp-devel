@@ -18,11 +18,15 @@ sig
   val ORELSE : ('a -> 'b Seq.seq) * ('a -> 'b Seq.seq) -> 'a -> 'b Seq.seq
   val ORELSE' : ('a -> 'b -> 'c Seq.seq) * ('a -> 'b -> 'c Seq.seq) -> 'a -> 'b -> 'c Seq.seq
 
-  val TRY' : ('a -> tactic) -> 'a -> tactic
+  val TRY : ('a -> 'a Seq.seq) -> 'a -> 'a Seq.seq
+  val TRY' : ('a -> 'b -> 'b Seq.seq) -> 'a -> 'b -> 'b Seq.seq
+
+  val FIRST : ('a -> 'b Seq.seq) list -> 'a -> 'b Seq.seq
+  val FIRST' : ('a -> 'b -> 'c Seq.seq) list -> 'a -> 'b -> 'c Seq.seq
 
   val EVERY_ARG : ('a -> tactic) -> 'a list -> tactic
   val EVERY_ARG' : ('a -> 'b -> tactic) -> 'a list -> 'b -> tactic
-  val CONCAT : ('a -> 'b Seq.seq) list -> ('a -> 'b Seq.seq)
+  val CONCAT : ('a -> 'b Seq.seq) list -> 'a -> 'b Seq.seq
   val CONCAT' : ('a -> 'b -> 'c Seq.seq) list -> 'a -> 'b -> 'c Seq.seq
 
   (*filters duplicate results*)
@@ -67,16 +71,6 @@ sig
   (*rewrite subgoal according to the given equality theorem "lhs \<equiv> subgoal"*)
   val rewrite_subgoal_tac : thm -> int -> tactic
 
-  (*creates equality theorem for a subgoal from an equality theorem for the subgoal's conclusion;
-    fails if the equality theorem contains a tpair or implicit Assumption mentioning one of the bound variables*)
-  val eq_subgoal_from_eq_concl : cterm Binders.binders -> cterm list -> Proof.context -> thm ->
-    thm option
-
-  (*rewrite a subgoal given an equality theorem and environment for the subgoal's conclusion*)
-  val rewrite_subgoal_unif_concl : Envir_Normalisation.term_normaliser ->
-    (int -> Envir_Normalisation.thm_normaliser) -> Envir_Normalisation.thm_normaliser ->
-    term Binders.binders -> (Envir.env * thm) -> Proof.context -> int -> tactic
-
   (*protect premises starting from (and excluding) the given index in the specified subgoal*)
   val protect_tac : int -> Proof.context -> int -> tactic
   (*unprotect the subgoal*)
@@ -108,12 +102,17 @@ fun HEADGOAL f = f 1
 fun (tac1 THEN tac2) = Seq.THEN (tac1, tac2)
 fun (tac1 THEN' tac2) x = tac1 x THEN tac2 x
 
+(* note: this ORELSE is lazy while the default ORELSE in tactical.ML is not! *)
 fun (tac1 ORELSE tac2) st = Seq.make (fn _ => case Seq.pull (tac1 st) of
     NONE => Seq.pull (tac2 st)
   | some => some)
 fun (tac1 ORELSE' tac2) x = tac1 x ORELSE tac2 x
 
-fun TRY' tac = tac ORELSE' K all_tac
+fun TRY tac = tac ORELSE Seq.succeed
+fun TRY' tac = tac ORELSE' K Seq.succeed
+
+fun FIRST tacs = fold_rev (curry (op ORELSE)) tacs Seq.fail
+fun FIRST' tacs = fold_rev (curry (op ORELSE')) tacs (K Seq.fail)
 
 fun EVERY_ARG tac = EVERY o map tac
 fun EVERY_ARG' tac = EVERY' o map tac
@@ -183,47 +182,6 @@ val no_lift_eresolve_tac = no_lift_biresolve_tac true
 
 fun rewrite_subgoal_tac eq_thm = CONVERSION (K (Thm.symmetric eq_thm))
 
-fun eq_subgoal_from_eq_concl cbinders cprems ctxt eq_thm =
-  let
-    fun all_abstract ((x, T), cfree) =
-      let val all_const = Logic.all_const T |> Thm.cterm_of ctxt
-      in
-        Thm_Util.abstract_rule ctxt x cfree
-        #> Option.map (Drule.arg_cong_rule all_const)
-      end
-  in
-    (*introduce the premises*)
-    SOME (fold_rev (Drule.imp_cong_rule o Thm.reflexive) cprems eq_thm)
-    (*introduce abstractions for the fresh Frees*)
-    |> fold (Option.mapPartial o all_abstract) cbinders
-  end
-
-fun rewrite_subgoal_unif_concl inst_binders norm_state norm_eq_thm binders (env_eq_thm as (env, _))
-  ctxt i =
-  let
-    (*updates binders with their normalised type*)
-    fun normed_binders env = Binders.norm_binders (inst_binders env) binders
-    val binders = normed_binders env
-    val smash_tpairs_if_occurs = Seq.maps o Unification_Util.smash_tpairs_if_occurs ctxt
-    fun rewrite_tac env eq_thm prems =
-      let
-        val binders = normed_binders env
-        val cterm_of = Thm.cterm_of ctxt
-        val cprems = map (cterm_of o Binders.replace_binders binders) prems
-      in
-        norm_eq_thm ctxt env eq_thm
-        |> eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems ctxt
-        |> Option.map rewrite_subgoal_tac
-        |> \<^if_none>\<open>K no_tac\<close>
-      end
-  in
-    (*smash tpairs in case some binder occurs*)
-    fold (smash_tpairs_if_occurs o snd) binders (Seq.single env_eq_thm)
-    |> Seq.lifts (fn (env, eq_thm) =>
-      PRIMITIVE (norm_state i ctxt env)
-      THEN SUBGOAL_STRIPPED (fst o snd) (rewrite_tac env eq_thm) i)
-  end
-
 fun protect_tac n ctxt =
   let fun protect cbinders (cprems, cconcl) i =
     let val nprems = length cprems
@@ -248,7 +206,7 @@ fun protect_tac n ctxt =
         in
           @{thm Pure.prop_def}
           |> Thm.instantiate' [] [SOME cconcl_protected]
-          |> eq_subgoal_from_eq_concl cbinders cprems_unprotected ctxt
+          |> Thm_Util.eq_subgoal_from_eq_concl cbinders cprems_unprotected ctxt
           |> Option.map (fn protected_eq_thm => rewrite_subgoal_tac protected_eq_thm i)
           |> the_default no_tac
         end

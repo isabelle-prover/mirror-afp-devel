@@ -29,7 +29,7 @@ lemma [uhint prio: Prio.LOW]: "n \<noteq> 0 \<Longrightarrow> n - 1 \<equiv>\<^s
   unfolding SIMPS_TO_UNIF_eq by linarith
 
 text \<open>By default, below unification methods use
-@{ML Standard_Mixed_Comb_Unification.first_higherp_comb_unify}, which is a combination of various
+@{ML Mixed_Comb_Unification.fo_hop_comb_unify}, which is a combination of various
 practical unification algorithms.\<close>
 
 schematic_goal "(\<And>x. x + 4 = n) \<Longrightarrow> Suc ?x = n"
@@ -95,7 +95,7 @@ text \<open>Solution 1: we can use @{attribute rec_uhint} for recursive usages o
 Warning: recursive hint applications easily loop.\<close>
 
 schematic_goal "n - ?m = length []"
-  supply [[ucombine del: \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
+  supply [[ucombine del: \<open>\<^binding>\<open>simp_unify\<close>\<close>]]
   (*doesn't work*)
   \<comment> \<open>by (ufact refl)\<close>
   supply sub_self_eq_zero[uhint del, rec_uhint]
@@ -106,7 +106,7 @@ text \<open>Solution 2: make the recursion explicit in the hint.\<close>
 lemma [uhint]: "k \<equiv> 0 \<Longrightarrow> (n :: nat) \<equiv> m \<Longrightarrow> n - m \<equiv> k" by simp
 
 schematic_goal "n - ?m = length []"
-  supply [[ucombine del: \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
+  supply [[ucombine del: \<open>\<^binding>\<open>simp_unify\<close>\<close>]]
   by (ufact refl)
 
 subsection \<open>Strenghten Unification With Unification Hints\<close>
@@ -154,7 +154,7 @@ subsection \<open>Better Control Over Meta Variable Instantiations\<close>
 
 text \<open>Consider the following type-inference problem.\<close>
 schematic_goal
-  assumes app_typeI: "\<And>f x.  (\<And>x. ArgT x \<Longrightarrow> DomT x (f x)) \<Longrightarrow> ArgT x \<Longrightarrow> DomT x (f x)"
+  assumes app_typeI: "\<And>f x. (\<And>x. ArgT x \<Longrightarrow> DomT x (f x)) \<Longrightarrow> ArgT x \<Longrightarrow> DomT x (f x)"
   and f_type: "\<And>x. ArgT x \<Longrightarrow> DomT x (f x)"
   and x_type: "ArgT x"
   shows "?T (f x)"

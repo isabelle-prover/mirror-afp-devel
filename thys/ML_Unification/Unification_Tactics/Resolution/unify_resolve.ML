@@ -157,6 +157,8 @@ end
 
 signature UNIFY_RESOLVE =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = Unify_Resolve_Args.config_args
 
@@ -196,7 +198,7 @@ sig
   val setup_method : string option -> local_theory -> local_theory
 end
 
-functor Unify_Resolve(
+functor Unify_Resolve_Functor(
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unify_Resolve_Args.config_args
   ) : UNIFY_RESOLVE =
@@ -233,7 +235,7 @@ fun unify_resolve_tac resolve_mode rules facts ctxt =
   URA.unify_resolve_config_args_tac (get_config_args (Context.Proof ctxt)) resolve_mode rules facts
     ctxt
 
-val binding = Binding.make (FI.prefix_id "urule", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val parse_config_arg_entry =
   let

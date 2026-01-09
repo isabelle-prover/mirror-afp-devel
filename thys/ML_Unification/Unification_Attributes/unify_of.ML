@@ -79,6 +79,8 @@ end
 
 signature UNIFY_OF =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = Unify_OF_Args.config_args
 
@@ -113,7 +115,7 @@ sig
   val setup_attribute : string option -> local_theory -> local_theory
 end
 
-functor Unify_OF(A :
+functor Unify_OF_Functor(A :
   sig
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unify_OF_Args.config_args
@@ -148,7 +150,7 @@ fun unify_OF rules context =
 fun unify_OF_attribute rules (context, thm) =
   UOA.unify_OF_config_args_attribute (get_config_args context) rules (context, thm)
 
-val binding = Binding.make (FI.prefix_id "uOF", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val parse_arg_entry =
   let

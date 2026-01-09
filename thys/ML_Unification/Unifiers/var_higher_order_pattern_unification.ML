@@ -20,7 +20,6 @@ sig
   include HAS_LOGGER
 
   val can_var_pattern_match : term * term -> bool * term list
-  val e_match : Unification_Base.e_matcher
   val e_unify : Unification_Base.e_unifier
 end
 
@@ -46,27 +45,7 @@ local
   fun seq_try msg = General_Util.seq_try (FALLBACK (Pretty.str msg))
 in
 
-fun e_match match_theory binders ctxt tp env = Seq.make (fn _ =>
-  let val hop_match_type_match =
-    Higher_Order_Pattern_Unification.e_match Util.match_types Comb.fail_match Comb.fail_match
-    |> Type_Unification.e_match Util.match_types
-  in
-    ((@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
-        Pretty.str "Variable head higher-order pattern E-matching",
-        Util.pretty_unif_problem ctxt tp
-      ] |> Pretty.block |> Pretty.string_of);
-    case can_var_pattern_match tp of
-      (true, _) => hop_match_type_match binders ctxt tp env
-        |> seq_try "Higher-order pattern matching failed."
-    | _ => raise FALLBACK (Pretty.str ("Left-hand side term not of the form " ^ form_msg)))
-    handle FALLBACK msg => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
-        msg,
-        Util.pretty_call_theory_match ctxt tp
-      ] |> Pretty.block |> Pretty.string_of);
-      match_theory binders ctxt tp env))
-    |> Seq.pull
-  end)
-
+(*pre-condition: (t, p) are normalised wrt. the passed environment*)
 fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
   let
     val hop_match_type_unif =

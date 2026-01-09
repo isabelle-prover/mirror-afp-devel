@@ -28,39 +28,64 @@ paragraph \<open>Combining Unifiers\<close>
 
 ML_file\<open>unification_combine.ML\<close>
 ML\<open>
-\<^functor_instance>\<open>struct_name: Standard_Unification_Combine
-  functor_name: Unification_Combine
-  id: \<open>""\<close>\<close>
+\<^functor_instance>\<open>struct_name: Unification_Combine
+  functor_name: Unification_Combine_Functor
+  id: \<open>"ucombine"\<close>\<close>
 \<close>
-local_setup \<open>Standard_Unification_Combine.setup_attribute NONE\<close>
+local_setup \<open>Unification_Combine.setup_attribute NONE\<close>
 
 paragraph \<open>Mixture of Unifiers\<close>
 
 ML_file\<open>mixed_unification.ML\<close>
 ML\<open>
-\<^functor_instance>\<open>struct_name: Standard_Mixed_Comb_Unification
-  functor_name: Mixed_Comb_Unification
-  id: \<open>""\<close>
-  more_args: \<open>structure UC = Standard_Unification_Combine\<close>\<close>
+\<^functor_instance>\<open>struct_name: Mixed_Comb_Unification
+  functor_name: Mixed_Comb_Unification_Functor
+  id: \<open>"mixed_unif"\<close>
+  more_args: \<open>structure UC = Unification_Combine\<close>\<close>
 \<close>
 
-declare [[ucombine \<open>Standard_Unification_Combine.eunif_data
-  (Standard_Unification_Combine.metadata \<^binding>\<open>var_hop_unif\<close> Prio.HIGH1,
+declare [[ucombine \<open>Unification_Combine.eunif_data
+  (Unification_Combine.metadata (\<^binding>\<open>var_hop_unify\<close>, Prio.HIGH1),
   Var_Higher_Order_Pattern_Unification.e_unify
   #> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
-    Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify))\<close>]]
+    Mixed_Comb_Unification.norms_fo_hop_comb_unify))\<close>]]
+
+ML\<open>
+structure Unification_Combine :
+  sig
+    include UNIFICATION_COMBINE
+    structure HO_Unify : EXTENDED_HIGHER_ORDER_UNIFICATION_DATA
+  end =
+struct open Unification_Combine
+\<^functor_instance>\<open>struct_name: HO_Unify
+  functor_name: Extended_Higher_Order_Unification_Data
+  id: \<open>FI.prefix_id "ho_unify"\<close>
+  more_args: \<open>
+    val parent_logger = logger
+    val init_args = {
+      search_bound = SOME (Config.get @{context} Unify.search_bound),
+      results_bound = SOME 10,
+      silence_bound_exceeded = SOME false
+    }\<close>\<close>
+end
+\<close>
+local_setup\<open>Unification_Combine.HO_Unify.setup_attribute NONE\<close>
+
+declare [[ucombine \<open>Unification_Combine.eunif_data
+  (Unification_Combine.metadata (Unification_Combine.HO_Unify.binding, Prio.VERY_LOW),
+  K Unification_Combine.HO_Unify.ho_unify)\<close>]]
 
 declare [[ucombine \<open>
   let open Term_Normalisation
     (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)
     val eq_beta_eta_dummy_vars = apply2 (beta_eta_short #> dummy_vars) #> op aconv
-    val e_unif = Standard_Mixed_Comb_Unification.first_higherp_comb_e_unify
-    val norms = Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify
+    val e_unif = Mixed_Comb_Unification.fo_hop_comb_e_unify Unification_Util.unify_types
+    val norms = Mixed_Comb_Unification.norms_fo_hop_comb_unify
     fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
       (Simplifier_Unification.simp_unify norms (e_unif Unification_Combinator.fail_unify) norms)
         (Unification_Util.inst_norm_term' norms) (e_unif unify_theory)
       |> Type_Unification.e_unify Unification_Util.unify_types
-    val metadata = Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>
-  in Standard_Unification_Combine.eunif_data (metadata, simp_unif) end\<close>]]
+    val metadata = Unification_Combine.metadata (\<^binding>\<open>simp_unify\<close>, Prio.MEDIUM)
+  in Unification_Combine.eunif_data (metadata, simp_unif) end\<close>]]
 
 end

@@ -8,40 +8,41 @@ Combine a list of E-unifiers.
 signature UNIFICATION_COMBINE =
 sig
   include HAS_LOGGER
+  structure FI : FUNCTOR_INSTANCE
 
   structure PM : PARSE_UNIFICATION_COMBINE_MODE
 
-  type binding = binding
-  val eq_binding : binding * binding -> bool
-  val pretty_binding : binding -> Pretty.T
+  type id = binding
+  val eq_id : id * id -> bool
+  val pretty_id : id -> Pretty.T
 
   type metadata
-  val metadata : binding -> Prio.prio -> metadata
-  val dest_metadata : metadata -> binding * Prio.prio
-  val metadata_binding : metadata -> binding
-  val metadata_prio : metadata -> Prio.prio
+  val metadata : id * Prio.prio -> metadata
+  val dest_metadata : metadata -> id * Prio.prio
+  val get_metadata_id : metadata -> id
+  val get_metadata_prio : metadata -> Prio.prio
   val eq_metadata : metadata * metadata -> bool
+  val eq_metadata_id : metadata * metadata -> bool
   val pretty_metadata : metadata -> Pretty.T
-  val default_metadata : binding -> metadata
 
   type eunif_data
   val eunif_data : metadata * Unification_Base.e_unifier -> eunif_data
   val dest_eunif_data : eunif_data -> metadata * Unification_Base.e_unifier
-  val eunif_data_e_unifier : eunif_data -> Unification_Base.e_unifier
-  val eunif_data_metadata : eunif_data -> metadata
+  val get_eunif_data_e_unifier : eunif_data -> Unification_Base.e_unifier
+  val get_eunif_data_metadata : eunif_data -> metadata
+  val get_eunif_data_id : eunif_data -> id
   val pretty_eunif_data : eunif_data -> Pretty.T
 
   structure Table : TABLE
   where type key = Prio.prio
   type eunif_datas = eunif_data list Table.table
-  (*storing the E-unifiers and metadata*)
   structure Data : GENERIC_DATA
   where type T = eunif_datas
 
   val get_eunif_datas : Context.generic -> eunif_datas
   val map_eunif_datas : (eunif_datas -> eunif_datas) -> Context.generic -> Context.generic
   val insert_eunif_data : eunif_data -> Context.generic -> Context.generic
-  val delete_eunif_data : metadata -> Context.generic -> Context.generic
+  val delete_id : id -> Context.generic -> Context.generic
 
   val pretty_data : Proof.context -> Pretty.T
 
@@ -57,7 +58,7 @@ sig
   val setup_attribute : string option -> local_theory -> local_theory
 end
 
-functor Unification_Combine(A :
+functor Unification_Combine_Functor(A :
   sig
     structure FI : FUNCTOR_INSTANCE_BASE
   end) : UNIFICATION_COMBINE =
@@ -73,81 +74,78 @@ val logger = Logger.setup_new_logger Unification_Base.logger FI.name
 
 @{parse_entries (struct) PM [add, del]}
 
-type binding = binding
+type id = binding
 
-val eq_binding = Binding.eq_name
-val pretty_binding = Binding.pretty
+val eq_id = apply2 Binding.long_name_of #> (op =)
+val pretty_id = Binding.pretty
 
-datatype metadata = Metadata of binding * Prio.prio
+datatype metadata = Metadata of id * Prio.prio
 
-fun metadata binding prio = Metadata (binding, prio)
+val metadata = Metadata
 fun dest_metadata (Metadata meta) = meta
-fun metadata_binding (Metadata (binding, _)) = binding
-fun metadata_prio (Metadata (_, prio)) = prio
+fun get_metadata_id (Metadata (id, _)) = id
+fun get_metadata_prio (Metadata (_, prio)) = prio
 
-val eq_metadata = eq_pair eq_binding Prio.eq o apply2 dest_metadata
-fun pretty_metadata (Metadata (binding, prio))= Pretty.block [
-    Pretty.str "Binding: ",
-    pretty_binding binding,
+val eq_metadata = eq_pair eq_id Prio.eq o apply2 dest_metadata
+val eq_metadata_id = apply2 get_metadata_id #> eq_id
+fun pretty_metadata (Metadata (id, prio))= Pretty.block [
+    Pretty.str "Id: ",
+    pretty_id id,
     Pretty.str ", Priority: ",
     Prio.pretty prio
   ]
-
-fun default_metadata binding = metadata binding Prio.MEDIUM
 
 datatype eunif_data = EUnif_Data of metadata * UB.e_unifier
 
 fun eunif_data (meta, unify) = EUnif_Data (meta, unify)
 fun dest_eunif_data (EUnif_Data data) = data
-fun eunif_data_metadata (EUnif_Data (meta, _)) = meta
-fun eunif_data_e_unifier (EUnif_Data (_, unify)) = unify
-val eunif_data_prio = eunif_data_metadata #> metadata_prio
+fun get_eunif_data_e_unifier (EUnif_Data (_, unify)) = unify
+fun get_eunif_data_metadata (EUnif_Data (meta, _)) = meta
+val get_eunif_data_id = get_eunif_data_metadata #> get_metadata_id
+val eunif_data_prio = get_eunif_data_metadata #> get_metadata_prio
 
-val eq_eunif_data = eq_metadata o apply2 eunif_data_metadata
+val eq_eunif_data = eq_metadata o apply2 get_eunif_data_metadata
+val eq_eunif_data_id = apply2 get_eunif_data_metadata #> eq_metadata_id
 fun pretty_eunif_data (EUnif_Data (meta, _)) = pretty_metadata meta
 
 structure Table = Table(type key = Prio.prio; val ord = rev_order o Prio.ord)
 type eunif_datas = eunif_data list Table.table
 
-(*invariant: data is sorted with respect to the priorities*)
 structure Data = Generic_Data(
   type T = eunif_datas
   val empty = Table.empty
-  val merge = Table.merge_list eq_eunif_data)
+  val merge = Table.merge_list eq_eunif_data_id)
 
 val get_eunif_datas = Data.get
-val get_e_unifiers = map (eunif_data_e_unifier o snd) o Table.dest_list o get_eunif_datas
+val get_e_unifiers = map (get_eunif_data_e_unifier o snd) o Table.dest_list o get_eunif_datas
 val map_eunif_datas = Data.map
 
+fun is_dup id = get_eunif_data_id #> curry eq_id id
+fun has_dup table id = exists (snd #> is_dup id) (Table.dest_list table)
+
 fun insert_eunif_data data context =
-  let val prio = eunif_data_prio data
+  let val id = get_eunif_data_id data
   in
     Data.map (fn datas =>
-      if member eq_eunif_data (Table.lookup_list datas prio) data
+      if has_dup datas id
       then (@{log Logger.WARN} (Context.proof_of context) (fn _ => Pretty.block [
-            Pretty.str "eunif data ",
-            Pretty.enclose "(" ")" [pretty_eunif_data data],
-            Pretty.str " already added."
+            Pretty.str "Id ", pretty_id id, Pretty.str " already added."
           ] |> Pretty.string_of);
         datas)
-      else Table.insert_list eq_eunif_data (prio, data) datas
+      else Table.insert_list (K false) (eunif_data_prio data, data) datas
     ) context
   end
 
-fun delete_eunif_data metadata context =
-  let val prio = metadata_prio metadata
+fun delete_id id context = Data.map (fn datas =>
+  let val hits = Table.dest_list datas |> filter (snd #> is_dup id)
   in
-    Data.map (fn datas =>
-      if member eq_metadata (Table.lookup_list datas prio |> map eunif_data_metadata) metadata
-      then Table.remove_list (eq_metadata o apsnd eunif_data_metadata) (prio, metadata) datas
-      else (@{log Logger.WARN} (Context.proof_of context) (fn _ => Pretty.block [
-            Pretty.str "metadata ",
-            Pretty.enclose "(" ")" [pretty_metadata metadata],
-            Pretty.str " not found."
-          ] |> Pretty.string_of);
-        datas)
-    ) context
-  end
+    if not (null hits)
+    then fold (Table.remove_list eq_eunif_data) hits datas
+    else (@{log Logger.WARN} (Context.proof_of context) (fn _ => Pretty.block [
+          Pretty.str "Id ", pretty_id id, Pretty.str " not found."
+        ] |> Pretty.string_of);
+      datas)
+  end) context
 
 fun pretty_data ctxt = get_eunif_datas (Context.Proof ctxt)
   |> Table.dest_list
@@ -163,17 +161,17 @@ fun e_unify unif binders ctxt tp env = Seq.make (fn _ =>
     ] |> Pretty.string_of);
   UCB.concat_e_unifiers (get_e_unifiers (Context.Proof ctxt)) unif binders ctxt tp env) |> Seq.pull)
 
-val binding = Binding.make (FI.prefix_id "ucombine", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val add_arg_parser = PU.nonempty_code (K "eunif_data to add must not be empty") |> Scan.repeat1
-val del_arg_parser = PU.nonempty_code (K "data to delete must not be empty") |> Scan.repeat1
+val del_arg_parser = PU.nonempty_code (K "id to delete must not be empty") |> Scan.repeat1
 
 fun add_attribute (data, pos) =
   let val code = MCU.read "fold" @ FI.code_struct_op "insert_eunif_data" @ MCU.list data
   in ML_Attribute.run_map_context (code, pos) end
 
 fun del_attribute (data, pos) =
-  let val code = MCU.read "fold" @ FI.code_struct_op "delete_eunif_data" @ MCU.list data
+  let val code = MCU.read "fold" @ FI.code_struct_op "delete_id" @ MCU.list data
   in ML_Attribute.run_map_context (code, pos) end
 
 val parse_entries =

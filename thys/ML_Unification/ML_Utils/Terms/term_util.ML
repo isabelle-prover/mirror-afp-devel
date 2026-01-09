@@ -5,6 +5,8 @@ Term utilities.
 *)
 signature TERM_UTIL =
 sig
+  val is_Abs : term -> bool
+
   val fresh_vars : string -> typ list -> int -> term list * int
   val fresh_var : string -> typ -> int -> term * int
 
@@ -40,6 +42,9 @@ end
 
 structure Term_Util : TERM_UTIL =
 struct
+
+fun is_Abs (Abs _) = true
+  | is_Abs _ = false
 
 fun fresh_vars name Ts idx =
   let fun mk_var_inc T i = (Var ((name, i + 1), T), (i + 1))

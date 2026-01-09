@@ -48,6 +48,15 @@ sig
   val concat_e_unifiers : Unification_Base.e_unifier list -> Unification_Base.e_unifier
   val concat_e_matchers : Unification_Base.e_matcher list -> Unification_Base.e_matcher
 
+  val orelse_closed_unifiers : Unification_Base.closed_unifier list ->
+    Unification_Base.closed_unifier
+  val orelse_closed_matchers : Unification_Base.closed_matcher list ->
+    Unification_Base.closed_matcher
+  val orelse_unifiers : Unification_Base.unifier list -> Unification_Base.unifier
+  val orelse_matchers : Unification_Base.matcher list -> Unification_Base.matcher
+  val orelse_e_unifiers : Unification_Base.e_unifier list -> Unification_Base.e_unifier
+  val orelse_e_matchers : Unification_Base.e_matcher list -> Unification_Base.e_matcher
+
   (* normalisation *)
   (*apply normaliser before calling the matcher/unifier*)
   val norm_closed_unifier : Envir_Normalisation.term_normaliser -> Unification_Base.closed_unifier ->
@@ -120,6 +129,18 @@ val concat_matchers = concat_unifiers
 fun concat_e_unifiers unifiers unif binders ctxt tp =
   fold_rev (fn unify => curry Seq.APPEND (unify unif binders ctxt tp)) unifiers Seq.fail
 val concat_e_matchers = concat_e_unifiers
+
+fun orelse_closed_unifiers unifiers ctxt tp =
+  fold_rev (fn unify => curry Tactic_Util.ORELSE (unify ctxt tp)) unifiers Seq.fail
+val orelse_closed_matchers = orelse_closed_unifiers
+
+fun orelse_unifiers unifiers binders ctxt tp =
+  fold_rev (fn unify => curry Tactic_Util.ORELSE (unify binders ctxt tp)) unifiers Seq.fail
+val orelse_matchers = orelse_unifiers
+
+fun orelse_e_unifiers unifiers unif binders ctxt tp =
+  fold_rev (fn unify => curry Tactic_Util.ORELSE (unify unif binders ctxt tp)) unifiers Seq.fail
+val orelse_e_matchers = orelse_e_unifiers
 
 (* normalisation *)
 fun norm_closed_unifier norm_t unif ctxt tp env = unif ctxt (apply2 (norm_t env) tp) env

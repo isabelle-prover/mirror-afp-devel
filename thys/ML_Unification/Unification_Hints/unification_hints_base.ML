@@ -16,7 +16,6 @@ sig
   include HAS_LOGGER
 
   type unif_hint = thm
-  val cdest_hint : unif_hint -> (cterm * cterm) list * (cterm * cterm)
   val cdest_hint_concl : unif_hint -> cterm * cterm
   val symmetric_hint : unif_hint -> unif_hint
   val pretty_hint : Proof.context -> unif_hint -> Pretty.T
@@ -46,7 +45,6 @@ structure UUtil = Unification_Util
 
 type unif_hint = thm
 
-val cdest_hint = Thm.cprop_of #> TUtil.strip_cimp #>> map Thm.dest_equals ##> Thm.dest_equals
 val cdest_hint_concl = Thm.cconcl_of #> Thm.dest_equals
 
 (*only flips the conclusion since unification calls for the premises should be symmetric*)

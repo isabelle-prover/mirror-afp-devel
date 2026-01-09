@@ -35,8 +35,10 @@ sig
   val match_types : Unification_Base.type_matcher
 
   (* normalisers *)
+  val beta_norms_match : Unification_Base.normalisers
   val eta_short_norms_match : Unification_Base.normalisers
   val beta_eta_short_norms_match : Unification_Base.normalisers
+  val beta_norms_unif : Unification_Base.normalisers
   val eta_short_norms_unif : Unification_Base.normalisers
   val beta_eta_short_norms_unif : Unification_Base.normalisers
 
@@ -94,8 +96,11 @@ val pretty_tyenv = Show.tyenv
 val pretty_tenv = Show.tenv
 val pretty_env = Show.env
 
-fun pretty_unif_problem ctxt (t1, t2) =
-  Pretty.block [pretty_term ctxt t1, Pretty.str " \<equiv>\<^sup>? " , pretty_term ctxt t2]
+fun pretty_unif_problem ctxt (t1, t2) = Pretty.breaks [
+    pretty_term ctxt t1,
+    Pretty.str "\<equiv>\<^sup>?",
+    pretty_term ctxt t2
+  ] |> Pretty.block
 
 fun pretty_unif_result ctxt (env, thm) = Pretty.fbreaks [
     Pretty.block [Pretty.str "Environment: ", pretty_env ctxt env],
@@ -149,36 +154,51 @@ fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
     raise UBase.UNIF)
 
 (* normalisers *)
-val eta_short_norms_match = {
-  (*Precondition: the matcher must already instantiate its theorem!*)
+val beta_norms_match = {
+  (*Precondition: the matcher must already normalise the types in its theorem!*)
   inst_unif_thm = K o K I,
   inst_term = Norm.norm_term_match,
   inst_thm = Norm.norm_thm_match,
+  norm_term = Term_Normalisation.beta,
+  conv = Conversion_Util.beta_conv
+}
+val eta_short_norms_match = {
+  (*Precondition: the matcher must already instantiate its theorem!*)
+  inst_unif_thm = #inst_unif_thm beta_norms_match,
+  inst_term = #inst_term beta_norms_match,
+  inst_thm = #inst_thm beta_norms_match,
   norm_term = Term_Normalisation.eta_short,
   conv = Conversion_Util.eta_short_conv
 }
 val beta_eta_short_norms_match = {
   (*Precondition: the matcher must already normalise the types in its theorem!*)
-  inst_unif_thm = (#inst_unif_thm eta_short_norms_match),
-  inst_term = (#inst_term eta_short_norms_match),
-  inst_thm = (#inst_thm eta_short_norms_match),
+  inst_unif_thm = #inst_unif_thm beta_norms_match,
+  inst_term = #inst_term beta_norms_match,
+  inst_thm = #inst_thm beta_norms_match,
   norm_term = Term_Normalisation.beta_eta_short,
   conv = Conversion_Util.beta_eta_short_conv
 }
 
-val eta_short_norms_unif = {
+val beta_norms_unif = {
   inst_unif_thm = Norm.norm_thm_unif,
   inst_term = Norm.norm_term_unif,
   inst_thm = Norm.norm_thm_unif,
-  norm_term = Term_Normalisation.eta_short,
-  conv = Conversion_Util.eta_short_conv
+  norm_term = #norm_term beta_norms_match,
+  conv = #conv beta_norms_match
+}
+val eta_short_norms_unif = {
+  inst_unif_thm = #inst_unif_thm beta_norms_unif,
+  inst_term = #inst_term beta_norms_unif,
+  inst_thm = #inst_thm beta_norms_unif,
+  norm_term = #norm_term eta_short_norms_match,
+  conv = #conv eta_short_norms_match
 }
 val beta_eta_short_norms_unif = {
-  inst_unif_thm = (#inst_unif_thm eta_short_norms_unif),
-  inst_term = (#inst_term eta_short_norms_unif),
-  inst_thm = (#inst_thm eta_short_norms_unif),
-  norm_term = Term_Normalisation.beta_eta_short,
-  conv = Conversion_Util.beta_eta_short_conv
+  inst_unif_thm = #inst_unif_thm beta_norms_unif,
+  inst_term = #inst_term beta_norms_unif,
+  inst_thm = #inst_thm beta_norms_unif,
+  norm_term = #norm_term beta_eta_short_norms_match,
+  conv = #conv beta_eta_short_norms_match
 }
 
 fun inst_norm_term inst_term norm_term = norm_term oo inst_term

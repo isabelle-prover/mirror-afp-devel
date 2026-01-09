@@ -9,16 +9,16 @@ paragraph \<open>Summary\<close>
 text \<open>Setup of assumption tactic and examples.\<close>
 
 ML\<open>
-\<^functor_instance>\<open>struct_name: Standard_Unify_Assumption
-  functor_name: Unify_Assumption
-  id: \<open>""\<close>
+\<^functor_instance>\<open>struct_name: Unify_Assumption
+  functor_name: Unify_Assumption_Functor
+  id: \<open>"uassm"\<close>
   more_args: \<open>val init_args = {
-    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
-    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify
+    normalisers = SOME Mixed_Comb_Unification.norms_fo_hop_comb_unify,
+    unifier = SOME Mixed_Comb_Unification.fo_hop_comb_unify
   }\<close>\<close>
 \<close>
-local_setup \<open>Standard_Unify_Assumption.setup_attribute NONE\<close>
-local_setup \<open>Standard_Unify_Assumption.setup_method NONE\<close>
+local_setup \<open>Unify_Assumption.setup_attribute NONE\<close>
+local_setup \<open>Unify_Assumption.setup_method NONE\<close>
 
 
 paragraph \<open>Examples\<close>

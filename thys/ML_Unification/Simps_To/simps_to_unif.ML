@@ -14,7 +14,6 @@ sig
 
   val SIMPS_TO_UNIF_tac : (int -> tactic) -> (int -> thm -> 'a Seq.seq) -> int -> Proof.context ->
     int -> thm -> 'a Seq.seq
-  val SIMPS_TO_UNIF_refl_tac : (int -> tactic) -> int -> Proof.context -> int -> tactic
 
   val SIMPS_TO_UNIF_env_tac : (int -> tactic) -> Unification_Base.normalisers ->
     Unification_Base.unifier -> Proof.context -> int -> Tactic_Unification.env_tactic
@@ -41,7 +40,7 @@ fun SIMPS_TO_UNIF_tac simp_tac eq_tac maxidx ctxt =
       in
         Unify.hounifiers (map fst binders) (Context.Proof ctxt, env, [(rhs, lhs)])
         |> Seq.filter (fn (env, _) => Envir.above env maxidx) (*only keep matchers (note: incomplete)*)
-        |> Seq.map (fn (env, _) => #inst_thm Higher_Order_Unification.norms ctxt env state)
+        |> Seq.map (fn (env, _) => #inst_thm Higher_Order_Unification.norms_unify ctxt env state)
       end
     val simp_inst_tac = simp_tac THEN' Tactic_Util.SUBGOAL_STRIPPED (apsnd snd) (K o inst_tac)
   in
@@ -52,30 +51,8 @@ fun SIMPS_TO_UNIF_tac simp_tac eq_tac maxidx ctxt =
     THEN' eq_tac
   end
 
-fun SIMPS_TO_UNIF_refl_tac simp_tac maxidx ctxt =
-  SIMPS_TO_UNIF_tac simp_tac (resolve_tac ctxt [@{thm reflexive}]) maxidx ctxt
-
-fun SIMPS_TO_UNIF_env_tac simp_tac norms unif ctxt i (env, state) =
-  let fun eq_tac i state =
-    let
-      val env = Unification_Util.update_maxidx_envir (Thm.maxidx_of state) env
-      val (params, tp) = Thm.cprem_of state i |> Thm.term_of
-        |> Term_Util.strip_all ||> Logic.dest_equals
-      val (binders, ctxt) = Binders.fix_binders params ctxt
-      fun norm_implies_elim (env, eq_thm) =
-        let
-          val inst_term = #inst_term norms env
-          val conv = #conv norms
-          val binders = map (snd #> inst_term #> Thm.cterm_of ctxt) binders
-        in
-          eq_thm
-          |> Unification_Util.inst_norm_thm (#inst_unif_thm norms) conv ctxt env
-          |> fold Thm.forall_intr binders
-          |> Thm.implies_elim
-            (Unification_Util.inst_norm_subgoal (#inst_thm norms) conv i ctxt env state)
-          |> pair env
-        end
-    in unif binders ctxt tp env |> Seq.map norm_implies_elim end
-  in SIMPS_TO_UNIF_tac simp_tac eq_tac (Envir.maxidx_of env) ctxt i state end
+fun SIMPS_TO_UNIF_env_tac simp_tac norms unif ctxt i (env, state) = SIMPS_TO_UNIF_tac simp_tac
+  (fn i => curry (Tactic_Unification.unify_eq_env_tac norms unif [] ctxt i) env)
+  (Envir.maxidx_of env) ctxt i state
 
 end

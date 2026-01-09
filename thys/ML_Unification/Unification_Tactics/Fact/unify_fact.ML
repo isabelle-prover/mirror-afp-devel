@@ -55,6 +55,8 @@ end
 
 signature UNIFY_FACT =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = Unify_Fact_Args.config_args
 
@@ -84,7 +86,7 @@ sig
   val setup_method : string option -> local_theory -> local_theory
 end
 
-functor Unify_Fact(A :
+functor Unify_Fact_Functor(A :
   sig
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unify_Fact_Args.config_args
@@ -115,7 +117,7 @@ val map_unifier = map_config_args o PCA.map_unifier
 fun unify_fact_tac facts ctxt =
   UFA.unify_fact_config_args_tac (get_config_args (Context.Proof ctxt)) facts ctxt
 
-val binding = Binding.make (FI.prefix_id "ufact", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val parse_arg_entry =
   let
