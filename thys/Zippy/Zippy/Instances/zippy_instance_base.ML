@@ -98,14 +98,14 @@ struct
   @{record (struct) NCB3 ZIPPY_INSTANCE_NODE_CO_BASE3 [copy, meta]}
   @{record (struct) NCB4 ZIPPY_INSTANCE_NODE_CO_BASE4 [paction, action_app_num, focus, meta]}
   @{record (struct) NCB5 ZIPPY_INSTANCE_NODE_CO_BASE5 [action_app_num, focus, prio, gpos_update, meta]}
-  structure GCS = Standard_Zippy_Goal_Clusters
+  structure GCS = Zippy_Goal_Clusters
   structure GResults = Zippy_Goal_Results
-  structure GC = Standard_Zippy_Goal_Cluster
-  structure Tac_Res = Standard_Zippy_ZTactic_Result
+  structure GC = Zippy_Goal_Cluster
+  structure Tac_Res = Zippy_ZTactic_Result
   structure TMV = Zippy_Top_Meta_Vars
   structure ACMeta = Zippy_Action_Cluster_Metadata
   structure AANum = Zippy_Action_App_Num
-  structure GFocus = Standard_Zippy_Goal_Focus
+  structure GFocus = Zippy_Goal_Focus
   structure AMeta = Zippy_Action_Metadata
   structure AAMeta = Zippy_Action_App_Metadata(
     type cost = cost

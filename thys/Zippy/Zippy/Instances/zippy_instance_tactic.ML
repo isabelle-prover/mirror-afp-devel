@@ -56,8 +56,8 @@ structure Tac_AAM = Zippy_Tactic_Action_App_Metadata_Mixin(
   Zippy_Tactic_Action_App_Metadata_Mixin_Base(
     structure Meta = Zippy_Action_App_Metadata_Mixin_Base(
       structure Meta = Base_Data.AAMeta; structure L = Lens5.Meta)
-    structure Tac = Zippy_ZTactic(
-      structure R = Base_Data.Tac_Res; structure RTac = Standard_Zippy_RTactic)))
+    structure Tac = Zippy_ZTactic_Functor(
+      structure R = Base_Data.Tac_Res; structure RTac = Zippy_RTactic)))
 
 structure Tac =
 struct

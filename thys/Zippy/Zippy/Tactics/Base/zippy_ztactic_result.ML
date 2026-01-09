@@ -23,7 +23,7 @@ sig
   val map_more : ('m -> 'n) -> 'm result -> 'n result
 end
 
-functor Zippy_ZTactic_Result(GPU : ZIPPY_GOAL_POS_UPDATE_UTIL) : ZIPPY_ZTACTIC_RESULT =
+functor Zippy_ZTactic_Result_Functor(GPU : ZIPPY_GOAL_POS_UPDATE_UTIL) : ZIPPY_ZTACTIC_RESULT =
 struct
 
 structure GPU = GPU
@@ -50,4 +50,4 @@ fun map_more f {state, more, gpos_update} = {state = state, more = f more, gpos_
 
 end
 
-structure Standard_Zippy_ZTactic_Result = Zippy_ZTactic_Result(Standard_Zippy_Goal_Pos_Update_Util)
+structure Zippy_ZTactic_Result = Zippy_ZTactic_Result_Functor(Zippy_Goal_Pos_Update_Util)

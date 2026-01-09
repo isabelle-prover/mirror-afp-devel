@@ -116,7 +116,7 @@ local open Zippy
 in
 \<^functor_instance>\<open>struct_name: Subst
   functor_name: Zippy_Instance_Subst_Data
-  id: \<open>FI.id\<close>
+  id: \<open>FI.prefix_id "subst"\<close>
   path: \<open>FI.long_name\<close>
   more_args: \<open>
     structure Z = Zippy
@@ -204,8 +204,7 @@ local open Zippy
     structure Ctxt = Ctxt
     fun mk_init_args cost = {
       simp = SOME true,
-      match = SOME (can Seq.hd oooo Type_Unification.e_unify Unification_Util.unify_types
-        (Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match)),
+      match = SOME (can Seq.hd oooo Mixed_Unification.fo_hop_match),
       empty_action = SOME (Library.K Zippy.PAction.disable_action),
       default_update = SOME Zip.Run.init_gpos,
       mk_cud = SOME Zippy.Result_Action.copy_update_data_empty_changed,
@@ -221,7 +220,7 @@ in
 \<^functor_instance>\<open>struct_name: Cases
   functor_name: Zippy_Instance_Cases_Data
   FI_struct_name: FI_Cases_Data
-  id: \<open>FI.id\<close>
+  id: \<open>FI.prefix_id "cases"\<close>
   path: \<open>FI.long_name\<close>
   more_args: \<open>open Base_Args
     val init_args = mk_init_args Cost.MEDIUM
@@ -230,7 +229,7 @@ structure Cases = Cases.Cases_Data
 \<^functor_instance>\<open>struct_name: Induction
   functor_name: Zippy_Instance_Induction_Data
   FI_struct_name: FI_Induction_Data
-  id: \<open>FI.id\<close>
+  id: \<open>FI.prefix_id "induct"\<close>
   path: \<open>FI.long_name\<close>
   more_args: \<open>open Base_Args
     val init_args = mk_init_args Cost.HIGH

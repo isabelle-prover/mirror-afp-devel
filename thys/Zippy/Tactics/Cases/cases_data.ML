@@ -162,6 +162,7 @@ end
 signature CASES_DATA =
 sig
   include HAS_LOGGER
+  structure FI : FUNCTOR_INSTANCE
 
   structure Config_Data : GENERIC_DATA
   where type T = Cases_Data_Args.config
@@ -293,7 +294,7 @@ fun delete args context = Data.map (fn data => if Ord_List.member data_ord data 
 val delete_declaration_attribute = with_prepared_attr_rule delete
 val delete_declaration_attribute_context_defaults = with_context_defaults delete_declaration_attribute
 
-val binding = Binding.make (FI.prefix_id "cases", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val filter_arg_entries =
   let

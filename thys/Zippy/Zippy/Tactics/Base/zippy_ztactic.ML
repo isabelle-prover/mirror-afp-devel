@@ -57,7 +57,7 @@ sig
   val zSOME_GOAL_FOCUS : (GPU.GCS.goal_pos -> 'm ztactic) -> GPU.F.focus -> 'm ztactic
 end
 
-functor Zippy_ZTactic(
+functor Zippy_ZTactic_Functor(
     structure R : ZIPPY_ZTACTIC_RESULT
     structure RTac : ZIPPY_RTACTIC
   ) : ZIPPY_ZTACTIC =
@@ -132,5 +132,5 @@ fun zSOME_GOAL_FOCUS x = gen_lift_tac_focus zISOME_GOAL x
 end
 end
 
-structure Standard_Zippy_ZTactic = Zippy_ZTactic(
-  structure R = Standard_Zippy_ZTactic_Result; structure RTac = Standard_Zippy_RTactic)
+structure Zippy_ZTactic = Zippy_ZTactic_Functor(
+  structure R = Zippy_ZTactic_Result; structure RTac = Zippy_RTactic)

@@ -462,7 +462,7 @@ fun del_args_context_defaults args = get_config
 fun delete_declaration_attribute_context_defaults args thm context =
   delete_declaration_attribute (del_args_context_defaults args context) thm context
 
-val binding = Binding.make (FI.prefix_id "cases", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 fun gen_filter_arg_entries get_insts get_match_safe =
   let

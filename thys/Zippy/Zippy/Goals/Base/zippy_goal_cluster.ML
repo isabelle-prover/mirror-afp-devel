@@ -20,7 +20,7 @@ sig
   val init_state : GCS.state -> GCS.gclusters * gcluster list
 end
 
-functor Zippy_Goal_Cluster(GCS : ZIPPY_GOAL_CLUSTERS) : ZIPPY_GOAL_CLUSTER =
+functor Zippy_Goal_Cluster_Functor(GCS : ZIPPY_GOAL_CLUSTERS) : ZIPPY_GOAL_CLUSTER =
 struct
 
 structure GCS = GCS
@@ -64,4 +64,4 @@ fun init_state state =
 
 end
 
-structure Standard_Zippy_Goal_Cluster = Zippy_Goal_Cluster(Standard_Zippy_Goal_Clusters)
+structure Zippy_Goal_Cluster = Zippy_Goal_Cluster_Functor(Zippy_Goal_Clusters)

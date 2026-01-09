@@ -85,6 +85,8 @@ end
 
 signature ARGS_ANTIQUOTATIONS =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = Args_Antiquotations_Args.args_args
 

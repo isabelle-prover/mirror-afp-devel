@@ -67,8 +67,8 @@ val _ = Theory.setup (Rule.Resolve.map_default_update (K default_update)
   more_args: \<open>open Resolve_Base
     structure PDC = Zippy_Instance_Hom_Changed_Goals_Data_Args.PDC
     val init_args = init_args Zippy_Instance_UResolve_Data_Args.PD.get_rule |> (fn args => {
-      normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
-      unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify,
+      normalisers = SOME Mixed_Comb_Unification.norms_fo_hop_comb_unify,
+      unifier = SOME Mixed_Comb_Unification.fo_hop_comb_unify,
       mk_meta = SOME (PDC.get_mk_meta args),
       empty_action = SOME (PDC.get_empty_action args),
       default_update = SOME default_update,
@@ -112,10 +112,6 @@ fun init st = st |>
     (arr (Mixin2.GCluster.get_ngoals #> Base_Data.Tac_Res.GPU.F.all_upto))
   >>> top2 >>> Z1.ZM.Unzip.morph)
 
-val are_thm_variants = apply2 Thm.prop_of #> Term_Util.are_term_variants
-fun changed_uniquesq st = Seq.filter (fn st' => not (are_thm_variants (st, st')))
-  #> Tactic_Util.unique_thmsq are_thm_variants
-
 \<^functor_instance>\<open>struct_name: Data
   functor_name: Zippy_Run_Data
   id: \<open>FI.prefix_id "run"\<close>
@@ -129,7 +125,7 @@ fun changed_uniquesq st = Seq.filter (fn st' => not (are_thm_variants (st, st'))
       init = SOME init,
       exec = SOME Run.AStar.promising',
       post = SOME (fn st => Ctxt.with_ctxt (fn ctxt =>
-        arr (changed_uniquesq st #> Seq.maps (prune_params_tac ctxt))))}\<close>\<close>
+        arr (Run.changed_uniquesq st #> Seq.maps (prune_params_tac ctxt))))}\<close>\<close>
 fun tac fuel ctxt = Data.tac fuel {ctxt = ctxt}
 end
 end
@@ -439,7 +435,7 @@ declare [[zip_init_gc
     val meta = Base_Data.ACMeta.metadata (id,
       Lazy.value "f-resolution with higher-order unification on first possible goal")
     val tac = Unify_Resolve_Base.unify_fresolve_tac
-      Higher_Order_Unification.norms Higher_Order_Unification.unify
+      Higher_Order_Unification.norms_unify Higher_Order_Unification.unify
     fun ztac mk_meta thm _ = Ctxt.with_ctxt (fn ctxt => tac thm ctxt
       |> Tac_AAM.lift_tac mk_meta
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
@@ -466,8 +462,7 @@ declare [[zip_init_gc
       Lazy.value "f-resolution with higher-order matching on first possible goal")
     (*FIXME: use same matcher as in other match tactics*)
     val tac = Unify_Resolve_Base.unify_fresolve_tac
-      Mixed_Unification.norms_first_higherp_match
-      (Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match)
+      Mixed_Unification.norms_fo_hop_match Mixed_Unification.fo_hop_match
     fun ztac mk_meta thm _ = Ctxt.with_ctxt (fn ctxt => tac thm ctxt
       |> Tac_AAM.lift_tac mk_meta
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS

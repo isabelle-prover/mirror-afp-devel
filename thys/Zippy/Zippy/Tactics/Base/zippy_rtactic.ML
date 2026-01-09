@@ -14,7 +14,7 @@ sig
   val lift_tac' : ('a -> state * state -> 'm) -> ('a -> tactic) -> 'a -> 'm rtactic
 end
 
-functor Zippy_RTactic(R : ZIPPY_RTACTIC_RESULT) : ZIPPY_RTACTIC =
+functor Zippy_RTactic_Functor(R : ZIPPY_RTACTIC_RESULT) : ZIPPY_RTACTIC =
 struct
 
 open R
@@ -28,4 +28,4 @@ fun lift_tac' mk_more tac i state = tac i state
   |> Seq.map (fn state' => result (mk_more i (state, state')) state')
 end
 
-structure Standard_Zippy_RTactic = Zippy_RTactic(Zippy_RTactic_Result)
+structure Zippy_RTactic = Zippy_RTactic_Functor(Zippy_RTactic_Result)

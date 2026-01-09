@@ -41,9 +41,6 @@ text \<open>You can use it like @{method auto}:\<close>
 lemma "sorted_wrt (>) l \<longleftrightarrow> sorted (rev l) \<and> distinct l"
   by (induction l) (zip iff: antisym_conv1 simp: sorted_wrt_append)
 
-lemma "sorted_wrt (>) l \<longleftrightarrow> sorted (rev l) \<and> distinct l"
-  by (induction l) (zip iff: antisym_conv1 simp: sorted_wrt_append)
-
 text \<open>You can use it for proof exploration (i.e. the method returns incomplete attempts):\<close>
 
 lemma
@@ -367,7 +364,7 @@ individual data, e.g. priority, cost, and proof-producing unifier to be used.
 Resolving rules with a proof-producing unifier is particularly useful in situations where equations do
 not hold up to \<open>\<alpha>\<beta>\<eta>\<close>-equality but some stronger, provable equality (see the examples theories in
 @{session ML_Unification} for more details). By default, the proof-producing unifier
-@{ML Standard_Mixed_Comb_Unification.first_higherp_comb_unify} is used, which uses the simplifier
+@{ML Mixed_Comb_Unification.fo_hop_comb_unify} is used, which uses the simplifier
 and unification hints (cf. @{theory ML_Unification.ML_Unification_Hints}), among other things.\<close>
 
 lemma
@@ -472,9 +469,9 @@ declare [[zip_init_gc \<open>
   let open Zippy; open ZLPC Base_Data MU; open A Mo
     val id = @{binding refl}
     (*action cluster metadata*)
-    val ac_meta = Mixin_Base3.Meta.Meta.metadata (id, Lazy.value "reflexivity action cluster")
+    val ac_meta = ACMeta.metadata (id, Lazy.value "reflexivity action cluster")
     (*action metadata*)
-    val a_meta = Mixin_Base4.Meta.Meta.metadata (id, Lazy.value "proof by reflexivity")
+    val a_meta = AMeta.metadata (id, Lazy.value "proof by reflexivity")
     (*action application metadata*)
     fun mk_aa_meta _ _ = AAMeta.metadata {cost = Cost.VERY_LOW, (*cost of the action's result*)
       progress = AAMeta.P.Promising} (*is it a promising expansion?*)
@@ -492,7 +489,7 @@ declare [[zip_init_gc \<open>
       presultsq = Zip.PResults.enum_scale_presultsq_default Cost.LOW,
       tac = ztac}
     (*attach the action cluster and step back to the parent node*)
-    fun init _ focus z = Tac.cons_action_cluster Util.exn (ACMeta.no_descr id) [(focus, data)] z
+    fun init _ focus z = Tac.cons_action_cluster Util.exn ac_meta [(focus, data)] z
       >>= AC.opt (K z) Up3.morph
   in (id, init) end\<close>]]
 declare [[zip_init_gc del: "@{binding refl}"]] (*delete it*)

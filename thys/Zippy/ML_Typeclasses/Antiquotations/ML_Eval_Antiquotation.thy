@@ -11,14 +11,14 @@ text \<open>Antiquotation for ML evaluation.\<close>
 ML_file\<open>eval_antiquotation.ML\<close>
 
 ML\<open>
-  \<^functor_instance>\<open>struct_name: Standard_Eval_Antiquotation
-    functor_name: Eval_Antiquotation
-    id: \<open>""\<close>
+  \<^functor_instance>\<open>struct_name: Eval_Antiquotation
+    functor_name: Eval_Antiquotation_Functor
+    id: \<open>"eval"\<close>
     more_args: \<open>val init_args = {
       parser = SOME (Parse_Util.ML_string (K "eval string must be non-empty."))
     }\<close>\<close>
 \<close>
-local_setup \<open>Standard_Eval_Antiquotation.setup_attribute NONE\<close>
-setup \<open>Standard_Eval_Antiquotation.setup_antiquotation\<close>
+local_setup \<open>Eval_Antiquotation.setup_attribute NONE\<close>
+setup \<open>Eval_Antiquotation.setup_antiquotation\<close>
 
 end
