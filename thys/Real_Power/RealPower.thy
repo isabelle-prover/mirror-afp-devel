@@ -1,6 +1,6 @@
 (*  Title:      RealPower/RealPower.thy
     Authors:    Jacques D. Fleuriot
-                University of Edinburgh, 2021          
+                University of Edinburgh, 2021
 *)
 
 section \<open>Real Exponents via Limits\<close>
@@ -8,8 +8,6 @@ section \<open>Real Exponents via Limits\<close>
 theory RealPower
 imports RatPower
 begin
-
-declare [[code_del_allowed]]
 
 instance rat :: ab_group_add 
 by intro_classes
@@ -40,12 +38,12 @@ end
 instantiation rat :: metric_space
 begin
 
-definition uniformity_rat_def [code del]:
-  "(uniformity :: (rat \<times> rat) filter) = 
+definition uniformity_rat_def:
+  "(uniformity :: (rat \<times> rat) filter) =
       (INF e\<in>{0 <..}. principal {((x::rat), y). dist x y < e})"
 
-definition open_rat_def [code del]:
-  "open (U :: rat set) \<longleftrightarrow> 
+definition open_rat_def:
+  "open (U :: rat set) \<longleftrightarrow>
       (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 
 instance 

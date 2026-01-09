@@ -10,8 +10,6 @@ theory "Quaternions"
     "HOL-Analysis.Multivariate_Analysis"
 begin
 
-declare [[code_del_allowed]]
-
 subsection\<open>Basic definitions\<close>
 
 text\<open>As with the complex numbers, coinduction is convenient\<close>
@@ -176,10 +174,10 @@ definition "sgn x = x /\<^sub>R norm x" for x :: quat
 
 definition "dist x y = norm (x - y)" for x y :: quat
 
-definition [code del]:
+definition
   "(uniformity :: (quat \<times> quat) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
-definition [code del]:
+definition
   "open (U :: quat set) \<longleftrightarrow> (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 
 lemma norm_eq_L2: "norm z = L2_set (quat_proj z) {..3}"

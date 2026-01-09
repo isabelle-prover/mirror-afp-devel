@@ -363,8 +363,8 @@ lift_definition norm_ell2 :: "'a ell2 \<Rightarrow> real" is ell2_norm .
 declare norm_ell2_def[code del]
 definition "dist x y = norm (x - y)" for x y::"'a ell2"
 definition "sgn x = x /\<^sub>R norm x" for x::"'a ell2"
-definition [code del]: "uniformity = (INF e\<in>{0<..}. principal {(x::'a ell2, y). norm (x - y) < e})"
-definition [code del]: "open U = (\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in INF e\<in>{0<..}. principal {(x, y). norm (x - y) < e}. x' = x \<longrightarrow> y \<in> U)" for U :: "'a ell2 set"
+definition "uniformity = (INF e\<in>{0<..}. principal {(x::'a ell2, y). norm (x - y) < e})"
+definition "open U = (\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in INF e\<in>{0<..}. principal {(x, y). norm (x - y) < e}. x' = x \<longrightarrow> y \<in> U)" for U :: "'a ell2 set"
 instance
 proof
   fix a b :: "'a ell2"

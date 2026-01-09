@@ -12,8 +12,6 @@ theory Compact_Operators
     Eigenvalues
 begin
 
-declare [[code_del_allowed]]
-
 unbundle cblinfun_syntax
 
 subsection \<open>Finite rank operators\<close>
@@ -750,10 +748,10 @@ lift_definition sgn_compact_op :: \<open>('a, 'b) compact_op \<Rightarrow> ('a, 
 lift_definition norm_compact_op :: \<open>('a, 'b) compact_op \<Rightarrow> real\<close> is norm .
 lift_definition scaleR_compact_op :: \<open>real \<Rightarrow> ('a, 'b) compact_op \<Rightarrow> ('a, 'b) compact_op\<close> is scaleR by simp
 lift_definition dist_compact_op :: \<open>('a, 'b) compact_op \<Rightarrow> ('a, 'b) compact_op \<Rightarrow> real\<close> is dist .
-definition [code del]:
+definition
   \<open>(uniformity :: (('a, 'b) compact_op \<times> ('a, 'b) compact_op) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})\<close>
 definition open_compact_op :: "('a, 'b) compact_op set \<Rightarrow> bool"
-  where [code del]: "open_compact_op S = (\<forall>x\<in>S. \<forall>\<^sub>F (x', y) in uniformity. x' = x \<longrightarrow> y \<in> S)"
+  where "open_compact_op S = (\<forall>x\<in>S. \<forall>\<^sub>F (x', y) in uniformity. x' = x \<longrightarrow> y \<in> S)"
 instance
 proof
   show "((*\<^sub>R) r :: ('a, 'b) compact_op \<Rightarrow> _) = (*\<^sub>C) (complex_of_real r)" for r

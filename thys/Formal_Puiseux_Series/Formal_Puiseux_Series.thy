@@ -7,8 +7,6 @@ theory Formal_Puiseux_Series
   imports FPS_Hensel
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Auxiliary facts and definitions\<close>
 
 lemma div_dvd_self:
@@ -1797,10 +1795,10 @@ end
 instantiation fpxs :: (group_add) metric_space
 begin
 
-definition uniformity_fpxs_def [code del]:
+definition uniformity_fpxs_def:
   "(uniformity :: ('a fpxs \<times> 'a fpxs) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
-definition open_fpxs_def [code del]:
+definition open_fpxs_def:
   "open (U :: 'a fpxs set) \<longleftrightarrow> (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 
 instance proof
