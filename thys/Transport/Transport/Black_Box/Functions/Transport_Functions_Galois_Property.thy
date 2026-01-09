@@ -259,8 +259,8 @@ corollary left_right_rel_if_left_rel_rightI:
   assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   and "g \<le>\<^bsub>R\<^esub> g"
   and "f \<le>\<^bsub>L\<^esub> r g"
   shows "l f \<le>\<^bsub>R\<^esub> g"
@@ -270,8 +270,8 @@ corollary left_rel_right_if_left_right_relI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
   and "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   and "f \<le>\<^bsub>L\<^esub> f"
   and "l f \<le>\<^bsub>R\<^esub> g"
   shows "f \<le>\<^bsub>L\<^esub> r g"
@@ -281,13 +281,14 @@ corollary left_rel_right_iff_left_right_relI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   and "f \<le>\<^bsub>L\<^esub> f"
   and "g \<le>\<^bsub>R\<^esub> g"
   shows "f \<le>\<^bsub>L\<^esub> r g \<longleftrightarrow> l f \<le>\<^bsub>R\<^esub> g"
-  using assms by (intro tdfr.left_rel_right_iff_left_right_relI) auto
+  using assms by (intro tdfr.left_rel_right_iff_left_right_relI)
+  (auto 10 0 dest: tdfrs.t1.right_left_Galois_if_right_relI)
 
 end
 
@@ -434,9 +435,9 @@ lemma half_galois_prop_left_left_rightI:
   assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>L2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.half_galois_prop_left_left_rightI tfr.mono_wrt_rel_leftI)
   simp_all
@@ -447,9 +448,9 @@ lemma half_galois_prop_right_left_rightI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
   and "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "((\<le>\<^bsub>L2\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.half_galois_prop_right_left_rightI flip.tfr.mono_wrt_rel_leftI)
   simp_all
@@ -458,13 +459,13 @@ corollary galois_prop_left_rightI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.galois_propI
     half_galois_prop_left_left_rightI half_galois_prop_right_left_rightI)
-  auto
+  (auto 10 2 elim!: tdfrs.t1.galois_connectionE dest!: tdfrs.t1.right_left_Galois_if_right_relI)
 
 end
 

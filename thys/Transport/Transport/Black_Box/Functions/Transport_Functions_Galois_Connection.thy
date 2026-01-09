@@ -293,13 +293,13 @@ lemma galois_connection_left_rightI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.galois_connectionI galois_prop_left_rightI
     mono_wrt_rel_leftI flip.mono_wrt_rel_leftI)
-  auto
+  (auto 8 0 dest!: tdfrs.t1.right_left_Galois_if_right_relI)
 
 end
 

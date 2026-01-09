@@ -122,8 +122,9 @@ subparagraph \<open>Closure of Order and Galois Concepts\<close>
 lemma preorder_galois_connection_if_galois_connectionI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)" "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)" "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.preorder_galois_connectionI
     galois_connection_left_rightI
@@ -133,17 +134,18 @@ lemma preorder_galois_connection_if_galois_connectionI:
 
 theorem preorder_galois_connectionI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro preorder_galois_connection_if_galois_connectionI)
-  (auto intro: reflexive_on_if_le_pred_if_reflexive_on
-    in_field_if_in_dom in_field_if_in_codom)
+  (auto 6 0 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom in_field_if_in_codom
+    dest!: tdfrs.t1.left_Galois_left_if_left_relI tdfrs.t1.right_left_Galois_if_right_relI)
 
 theorem preorder_equivalence_if_galois_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)" "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)" "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.preorder_equivalence_if_galois_equivalenceI
     galois_equivalenceI
@@ -153,18 +155,20 @@ theorem preorder_equivalence_if_galois_equivalenceI:
 
 theorem preorder_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by (intro preorder_equivalence_if_galois_equivalenceI) auto
+  using assms by (intro preorder_equivalence_if_galois_equivalenceI)
+  (auto 8 0 dest!: tdfrs.t1.left_Galois_left_if_left_relI tdfrs.t1.right_left_Galois_if_right_relI)
 
 theorem partial_equivalence_rel_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and per2: "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.partial_equivalence_rel_equivalence_if_galois_equivalenceI
     galois_equivalenceI
     partial_equivalence_rel_leftI flip.partial_equivalence_rel_leftI)
-  auto
+  (auto 8 0 dest!: per2 tdfrs.t1.left_Galois_left_if_left_relI
+    tdfrs.t1.right_left_Galois_if_right_relI)
 
 
 subparagraph \<open>Simplification of Left and Right Relations\<close>
@@ -265,26 +269,31 @@ interpretation tmfr : transport_Mono_Fun_Rel L1 R1 l1 r1 L2 R2 l2 r2 .
 interpretation flip : transport_Mono_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2 .
 
 theorem partial_equivalence_rel_equivalenceI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  assumes per1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
+  and per2: "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
 proof -
-  from assms have "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) = (tmfr.tmdfr.L \<equiv>\<^bsub>PER\<^esub> tmfr.tmdfr.R)"
-    by (subst tmfr.left_rel_eq_tfr_leftI flip.left_rel_eq_tfr_leftI; auto)+
+  have "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) = (tmfr.tmdfr.L \<equiv>\<^bsub>PER\<^esub> tmfr.tmdfr.R)" using per1
+    by (subst tmfr.left_rel_eq_tfr_leftI flip.left_rel_eq_tfr_leftI;
+      auto 8 0 dest!: per2 tdfrs.t1.left_Galois_left_if_left_relI
+        tdfrs.t1.right_left_Galois_if_right_relI)+
   with assms show ?thesis by (auto intro!: tmfr.partial_equivalence_rel_equivalenceI)
 qed
 
 theorem left_Galois_eq_Fun_Rel_left_Galois_if_partial_equivalence_rel_equivalenceI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  assumes per1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
+  and per2: "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))"
 proof -
-  from assms have rel_eqs: "(\<le>\<^bsub>L\<^esub>) = tmfr.tmdfr.L" "(\<le>\<^bsub>R\<^esub>) = tmfr.tmdfr.R"
-    by (subst tmfr.left_rel_eq_tfr_leftI flip.left_rel_eq_tfr_leftI; auto)+
+  have rel_eqs: "(\<le>\<^bsub>L\<^esub>) = tmfr.tmdfr.L" "(\<le>\<^bsub>R\<^esub>) = tmfr.tmdfr.R" using per1
+    by (subst tmfr.left_rel_eq_tfr_leftI flip.left_rel_eq_tfr_leftI;
+      auto 8 0 dest!: per2 tdfrs.t1.left_Galois_left_if_left_relI
+        tdfrs.t1.right_left_Galois_if_right_relI)+
   then have "(\<^bsub>L\<^esub>\<lessapprox>) = tmfr.tmdfr.Galois" by simp
   also with assms have "... = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom tmfr.tmdfr.L\<^esub>\<upharpoonleft>\<^bsub>in_codom tmfr.tmdfr.R\<^esub>"
     by (intro tmfr.left_Galois_eq_Fun_Rel_left_Galois_restrictI)
-      (auto intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom)
+      (auto 8 0 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom
+        dest!: per2 tdfrs.t1.left_Galois_left_if_left_relI tdfrs.t1.right_left_Galois_if_right_relI)
   also from rel_eqs have "... = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))\<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>" by simp
   also with assms have "... = ((\<^bsub>L1\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>L2\<^esub>\<lessapprox>))"
     by (intro Fun_Rel_left_Galois_restrict_left_right_eq_Fun_Rel_left_GaloisI) fastforce+

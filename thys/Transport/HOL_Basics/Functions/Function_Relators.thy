@@ -37,6 +37,10 @@ translations
   "(x : P | B) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. CONST rel_if B R)"
 end
 
+(*FIXME: the following term is printed the wrong way.
+should we introduce separate constants for relations and predicates?*)
+(* term "((x y \<Colon> R) \<Rrightarrow> S x x y) f g" *)
+
 definition "Dep_Fun_Rel_rel R S f g \<equiv> \<forall>x y. R x y \<longrightarrow> S x y (f x) (g y)"
 adhoc_overloading Dep_Fun_Rel \<rightleftharpoons> Dep_Fun_Rel_rel
 

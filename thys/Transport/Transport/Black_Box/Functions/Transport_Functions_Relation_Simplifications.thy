@@ -92,7 +92,7 @@ begin
 
 lemma left_rel_eq_tfr_leftI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
   shows "(\<le>\<^bsub>L\<^esub>) = tfr.tdfr.L"
   using assms by (intro tmdfr.left_rel_eq_tdfr_leftI) auto
 

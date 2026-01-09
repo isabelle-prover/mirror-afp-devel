@@ -337,13 +337,15 @@ lemma galois_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and gal_equiv2: "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.galois_equivalenceI
     galois_connection_left_rightI flip.galois_prop_left_rightI)
-  (auto intro: reflexive_on_if_le_pred_if_reflexive_on
+  (auto dest!: tdfrs.t1.right_left_Galois_if_right_relI gal_equiv2
+    elim!: tdfrs.t1.galois_equivalenceE
+    intro: reflexive_on_if_le_pred_if_reflexive_on
     in_field_if_in_dom in_field_if_in_codom)
 
 end

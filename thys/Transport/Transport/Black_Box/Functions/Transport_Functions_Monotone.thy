@@ -141,7 +141,7 @@ begin
 
 lemma mono_wrt_rel_leftI:
   assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow>((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   using assms by (intro tdfr.mono_wrt_rel_leftI) simp_all
 

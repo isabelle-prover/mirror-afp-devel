@@ -349,38 +349,38 @@ begin
 
 lemma reflexive_on_in_field_leftI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
   shows "reflexive_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tdfr.reflexive_on_in_field_leftI) simp_all
 
 lemma transitive_leftI:
   assumes "reflexive_on (in_dom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "transitive (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tdfr.transitive_leftI) simp_all
 
 lemma transitive_leftI':
   assumes "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "transitive (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tdfr.transitive_leftI') simp_all
 
 lemma preorder_on_in_field_leftI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
   shows "preorder_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tdfr.preorder_on_in_field_leftI) simp_all
 
 lemma symmetric_leftI:
   assumes "symmetric (\<le>\<^bsub>L1\<^esub>)"
-  and "symmetric (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> symmetric (\<le>\<^bsub>L2\<^esub>)"
   shows "symmetric (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tdfr.symmetric_leftI) simp_all
 
 corollary partial_equivalence_rel_leftI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "symmetric (\<le>\<^bsub>L1\<^esub>)"
-  and "partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
   shows "partial_equivalence_rel (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tdfr.partial_equivalence_rel_leftI) auto
 
@@ -412,14 +412,14 @@ begin
 
 lemma symmetric_leftI:
   assumes "symmetric (\<le>\<^bsub>L1\<^esub>)"
-  and "symmetric (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> symmetric (\<le>\<^bsub>L2\<^esub>)"
   shows "symmetric (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tmdfr.symmetric_leftI) auto
 
 lemma partial_equivalence_rel_leftI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "symmetric (\<le>\<^bsub>L1\<^esub>)"
-  and "partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2\<^esub>)"
   shows "partial_equivalence_rel (\<le>\<^bsub>L\<^esub>)"
   using assms by (intro tmdfr.partial_equivalence_rel_leftI) auto
 

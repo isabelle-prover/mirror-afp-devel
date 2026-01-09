@@ -298,10 +298,10 @@ corollary rel_unit_self_if_rel_selfI:
   assumes "inflationary_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "inflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> inflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   and "f \<le>\<^bsub>L\<^esub> f"
   shows "f \<le>\<^bsub>L\<^esub> \<eta> f"
   using assms by (intro tdfr.rel_unit_self_if_rel_selfI) simp_all
@@ -310,10 +310,10 @@ corollary counit_rel_self_if_rel_selfI:
   assumes "deflationary_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>) \<epsilon>\<^sub>1"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "transitive (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "deflationary_on (in_dom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>) \<epsilon>\<^sub>2"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> deflationary_on (in_dom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>) \<epsilon>\<^sub>2"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   and "g \<le>\<^bsub>R\<^esub> g"
   shows "\<epsilon> g \<le>\<^bsub>R\<^esub> g"
   using assms by (intro tdfr.counit_rel_self_if_rel_selfI) simp_all
@@ -321,10 +321,10 @@ corollary counit_rel_self_if_rel_selfI:
 lemma bi_related_unit_self_if_rel_selfI:
   assumes "rel_equivalence_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   and "f \<le>\<^bsub>L\<^esub> f"
   shows "f \<equiv>\<^bsub>L\<^esub> \<eta> f"
   using assms by (intro tdfr.bi_related_unit_self_if_rel_selfI) simp_all
@@ -675,14 +675,14 @@ lemma inflationary_on_unitI:
   and "inflationary_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "reflexive_on (in_codom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "inflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> inflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   using assms by (intro tmdfr.inflationary_on_unitI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
-  simp_all
+  auto
 
 lemma deflationary_on_counitI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
@@ -690,37 +690,38 @@ lemma deflationary_on_counitI:
   and "deflationary_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>) \<epsilon>\<^sub>1"
   and "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "transitive (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "deflationary_on (in_dom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>) \<epsilon>\<^sub>2"
-  and "transitive (\<le>\<^bsub>R2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> deflationary_on (in_dom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>) \<epsilon>\<^sub>2"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2\<^esub>)"
   shows "deflationary_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>) \<epsilon>"
   using assms by (intro tmdfr.deflationary_on_counitI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
-  simp_all
+  auto
 
 lemma rel_equivalence_on_unitI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
   and "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "rel_equivalence_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
-  and "rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
-  and "transitive (\<le>\<^bsub>L2\<^esub>)"
+  and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> ((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2\<^esub>)"
   shows "rel_equivalence_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   using assms by (intro tmdfr.rel_equivalence_on_unitI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
-  simp_all
+  auto
 
 lemma order_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro tmdfr.order_equivalenceI
     tfr.mono_wrt_rel_leftI flip.tfr.mono_wrt_rel_leftI)
   (auto elim!: tdfrs.t1.preorder_equivalence_order_equivalenceE
-    tdfrs.t2.preorder_equivalence_order_equivalenceE)
+      tdfrs.t2.preorder_equivalence_order_equivalenceE
+    dest!: tdfrs.t1.right_left_Galois_if_right_relI)
 
 end
 
