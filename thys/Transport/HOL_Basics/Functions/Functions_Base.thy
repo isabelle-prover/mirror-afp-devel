@@ -56,7 +56,7 @@ lemma fun_map_eq_dep_fun_map: "(f \<leadsto> g) = ((_ :  f) \<leadsto> (\<lambda
 
 lemma fun_map_eq_dep_fun_map_uhint [uhint]:
   assumes "f \<equiv> f'"
-  and "g' \<equiv> (\<lambda>_ _. g)"
+  and "g' \<equiv> \<lambda>_ _. g"
   shows "(f \<leadsto> g) = ((x :  f') \<leadsto> g' x)"
   using assms by (simp add: fun_map_eq_dep_fun_map)
 

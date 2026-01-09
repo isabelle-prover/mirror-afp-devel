@@ -13,7 +13,8 @@ paragraph \<open>Summary\<close>
 text \<open>Introduces the concept of function relators. The slogan of function
 relators is "related functions map related inputs to related outputs".\<close>
 
-consts Dep_Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
+consts Dep_Fun_Rel_rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
+consts Dep_Fun_Rel_pred :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
 consts Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
 
 open_bundle Dep_Fun_Rel_syntax
@@ -29,27 +30,24 @@ syntax
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
 syntax_consts
-  "_Dep_Fun_Rel_rel" "_Dep_Fun_Rel_rel_if" "_Dep_Fun_Rel_pred" "_Dep_Fun_Rel_pred_if" \<rightleftharpoons> Dep_Fun_Rel
+  "_Dep_Fun_Rel_rel" "_Dep_Fun_Rel_rel_if" \<rightleftharpoons> Dep_Fun_Rel_rel
+  and "_Dep_Fun_Rel_pred" "_Dep_Fun_Rel_pred_if" \<rightleftharpoons> Dep_Fun_Rel_pred
 translations
-  "(x y \<Colon> R) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel R (\<lambda>x y. S)"
-  "(x y \<Colon> R | B) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel R (\<lambda>x y. CONST rel_if B S)"
-  "(x : P) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. R)"
-  "(x : P | B) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. CONST rel_if B R)"
+  "(x y \<Colon> R) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel_rel R (\<lambda>x y. S)"
+  "(x y \<Colon> R | B) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel_rel R (\<lambda>x y. CONST rel_if B S)"
+  "(x : P) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel_pred P (\<lambda>x. R)"
+  "(x : P | B) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel_pred P (\<lambda>x. CONST rel_if B R)"
 end
 
-(*FIXME: the following term is printed the wrong way.
-should we introduce separate constants for relations and predicates?*)
-(* term "((x y \<Colon> R) \<Rrightarrow> S x x y) f g" *)
-
-definition "Dep_Fun_Rel_rel R S f g \<equiv> \<forall>x y. R x y \<longrightarrow> S x y (f x) (g y)"
-adhoc_overloading Dep_Fun_Rel \<rightleftharpoons> Dep_Fun_Rel_rel
+definition "Dep_Fun_Rel_rel_rel R S f g \<equiv> \<forall>x y. R x y \<longrightarrow> S x y (f x) (g y)"
+adhoc_overloading Dep_Fun_Rel_rel \<rightleftharpoons> Dep_Fun_Rel_rel_rel
 
 definition "Fun_Rel_rel (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'c \<Rightarrow> 'd \<Rightarrow> bool) \<equiv>
   ((_ _ \<Colon> R) \<Rrightarrow> S) :: ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool"
 adhoc_overloading Fun_Rel \<rightleftharpoons> Fun_Rel_rel
 
-definition "Dep_Fun_Rel_pred P R f g \<equiv> \<forall>x. P x \<longrightarrow> R x (f x) (g x)"
-adhoc_overloading Dep_Fun_Rel \<rightleftharpoons> Dep_Fun_Rel_pred
+definition "Dep_Fun_Rel_pred_pred P R f g \<equiv> \<forall>x. P x \<longrightarrow> R x (f x) (g x)"
+adhoc_overloading Dep_Fun_Rel_pred \<rightleftharpoons> Dep_Fun_Rel_pred_pred
 
 definition "Fun_Rel_pred (P :: 'a \<Rightarrow> bool) (R :: 'b \<Rightarrow> 'c \<Rightarrow> bool) \<equiv>
   ((_ : P) \<Rrightarrow> R) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> bool"
@@ -61,7 +59,7 @@ lemma Fun_Rel_rel_eq_Dep_Fun_Rel_rel:
 
 lemma Fun_Rel_rel_eq_Dep_Fun_Rel_rel_uhint [uhint]:
   assumes "R \<equiv> R'"
-  and "S' \<equiv> (\<lambda>(_ :: 'a) (_ :: 'b). S)"
+  and "\<And>x y. S' x y \<equiv> S"
   shows "((R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<Rrightarrow> (S :: 'c \<Rightarrow> 'd \<Rightarrow> bool)) = ((x y \<Colon> R') \<Rrightarrow> S' x y)"
   using assms by (simp add: Fun_Rel_rel_eq_Dep_Fun_Rel_rel)
 
@@ -75,7 +73,7 @@ lemma Fun_Rel_pred_eq_Dep_Fun_Rel_pred:
 
 lemma Fun_Rel_pred_eq_Dep_Fun_Rel_pred_uhint [uhint]:
   assumes "P \<equiv> P'"
-  and "R' \<equiv> (\<lambda>(_ :: 'a). R)"
+  and "\<And>x. R' x \<equiv> R"
   shows "((P :: 'a \<Rightarrow> bool) \<Rrightarrow> (R :: 'b \<Rightarrow> 'c \<Rightarrow> bool)) = ((x : P') \<Rrightarrow> R' x)"
   using assms by (simp add: Fun_Rel_pred_eq_Dep_Fun_Rel_pred)
 
@@ -86,18 +84,18 @@ lemma Fun_Rel_pred_iff_Dep_Fun_Rel_pred:
 lemma Dep_Fun_Rel_relI [intro]:
   assumes "\<And>x y. R x y \<Longrightarrow> S x y (f x) (g y)"
   shows "((x y \<Colon> R) \<Rrightarrow> S x y) f g"
-  unfolding Dep_Fun_Rel_rel_def using assms by blast
+  unfolding Dep_Fun_Rel_rel_rel_def using assms by blast
 
 lemma Dep_Fun_Rel_relD [dest]:
   assumes "((x y \<Colon> R) \<Rrightarrow> S x y) f g"
   and "R x y"
   shows "S x y (f x) (g y)"
-  using assms unfolding Dep_Fun_Rel_rel_def by blast
+  using assms unfolding Dep_Fun_Rel_rel_rel_def by blast
 
 lemma Dep_Fun_Rel_relE:
   assumes "((x y \<Colon> R) \<Rrightarrow> S x y) f g"
   obtains "\<And>x y. R x y \<Longrightarrow> S x y (f x) (g y)"
-  using assms unfolding Dep_Fun_Rel_rel_def by blast
+  using assms unfolding Dep_Fun_Rel_rel_rel_def by blast
 
 lemma Dep_Fun_Rel_rel_cong [cong]:
   assumes "R = R'"
@@ -124,18 +122,18 @@ lemma Fun_Rel_relE:
 lemma Dep_Fun_Rel_predI [intro]:
   assumes "\<And>x. P x \<Longrightarrow> R x (f x) (g x)"
   shows "((x : P) \<Rrightarrow> R x) f g"
-  unfolding Dep_Fun_Rel_pred_def using assms by blast
+  unfolding Dep_Fun_Rel_pred_pred_def using assms by blast
 
 lemma Dep_Fun_Rel_predD [dest]:
   assumes "((x : P) \<Rrightarrow> R x) f g"
   and "P x"
   shows "R x (f x) (g x)"
-  using assms unfolding Dep_Fun_Rel_pred_def by blast
+  using assms unfolding Dep_Fun_Rel_pred_pred_def by blast
 
 lemma Dep_Fun_Rel_predE:
   assumes "((x : P) \<Rrightarrow> R x) f g"
   obtains "\<And>x. P x \<Longrightarrow> R x (f x) (g x)"
-  using assms unfolding Dep_Fun_Rel_pred_def by blast
+  using assms unfolding Dep_Fun_Rel_pred_pred_def by blast
 
 lemma Dep_Fun_Rel_pred_cong [cong]:
   assumes "P = P'"
