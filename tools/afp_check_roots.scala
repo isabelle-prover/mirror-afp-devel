@@ -183,7 +183,7 @@ object AFP_Check_Roots {
     checks: List[Check[_]],
     dirs: List[Path],
     check_dirs: List[Path],
-    progress: Progress = new Progress()
+    progress: Progress = new Progress
   ): Unit = {
     val structure = Sessions.load_structure(Options.init(), dirs = dirs, select_dirs = check_dirs)
     val sessions = structure.build_selection(Sessions.Selection.empty).sorted
