@@ -13,8 +13,6 @@ theory Heap_Time_Monad
   "HOL-Library.Monad_Syntax"
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>The monad\<close>
 
 subsubsection \<open>Monad construction\<close>
@@ -26,7 +24,7 @@ datatype 'a Heap = Heap "heap \<Rightarrow> ('a \<times> heap \<times> nat) opti
 declare [[code drop: "Code_Evaluation.term_of :: 'a::typerep Heap \<Rightarrow> Code_Evaluation.term"]]
 
 primrec execute :: "'a Heap \<Rightarrow> heap \<Rightarrow> ('a \<times> heap \<times> nat) option" where
-  [code del]: "execute (Heap f) = f"
+  [code drop]: "execute (Heap f) = f"
 
 lemma Heap_cases [case_names succeed fail]:
   fixes f and h
@@ -52,21 +50,21 @@ lemma execute_Let [execute_simps]:
 subsubsection \<open>Specialised lifters\<close>
 
 definition tap :: "(heap \<Rightarrow> 'a) \<Rightarrow> 'a Heap" where
-  [code del]: "tap f = Heap (\<lambda>h. Some (f h, h, 1))"
+  [code drop]: "tap f = Heap (\<lambda>h. Some (f h, h, 1))"
 
 lemma execute_tap [execute_simps]:
   "execute (tap f) h = Some (f h, h, 1)"
   by (simp add: tap_def)
 
 definition heap :: "(heap \<Rightarrow> 'a \<times> heap \<times> nat) \<Rightarrow> 'a Heap" where
-  [code del]: "heap f = Heap (Some \<circ> f)"
+  [code drop]: "heap f = Heap (Some \<circ> f)"
 
 lemma execute_heap [execute_simps]:
   "execute (heap f) = Some \<circ> f"
   by (simp add: heap_def)
 
 definition guard :: "(heap \<Rightarrow> bool) \<Rightarrow> (heap \<Rightarrow> 'a \<times> heap \<times> nat) \<Rightarrow> 'a Heap" where
-  [code del]: "guard P f = Heap (\<lambda>h. if P h then Some (f h) else None)"
+  [code drop]: "guard P f = Heap (\<lambda>h. if P h then Some (f h) else None)"
 
 lemma execute_guard [execute_simps]:
   "\<not> P h \<Longrightarrow> execute (guard P f) h = None"
@@ -219,7 +217,7 @@ lemma effect_guardE [effect_elims]:
 subsubsection \<open>Monad combinators\<close>
 
 definition return :: "'a \<Rightarrow> 'a Heap" where
-  [code del]: "return x = heap (\<lambda>h. (x,h,1))"
+  [code drop]: "return x = heap (\<lambda>h. (x,h,1))"
 
 lemma execute_return [execute_simps]:
   "execute (return x) = Some \<circ> (\<lambda>h. (x,h,1))"
@@ -239,7 +237,7 @@ lemma effect_returnE [effect_elims]:
   using assms by (rule effectE) (simp add: execute_simps)
 
 definition ureturn :: "'a \<Rightarrow> 'a Heap" where
-  [code del]: "ureturn x = heap (\<lambda>h. (x,h,0))"
+  [code drop]: "ureturn x = heap (\<lambda>h. (x,h,0))"
 
 lemma execute_ureturn [execute_simps]:
   "execute (ureturn x) = Some \<circ> (\<lambda>h. (x,h,0))"
@@ -259,7 +257,7 @@ lemma effect_ureturnE [effect_elims]:
   using assms by (rule effectE) (simp add: execute_simps)
 
 definition raise :: "string \<Rightarrow> 'a Heap" where \<comment> \<open>the string is just decoration\<close>
-  [code del]: "raise s = Heap (\<lambda>_. None)"
+  [code drop]: "raise s = Heap (\<lambda>_. None)"
 
 lemma execute_raise [execute_simps]:
   "execute (raise s) = (\<lambda>_. None)"
@@ -284,7 +282,7 @@ lemma timeFrame_assoc[simp]: "timeFrame n (timeFrame n' f) = timeFrame (n+n') f"
   
   
 definition bind :: "'a Heap \<Rightarrow> ('a \<Rightarrow> 'b Heap) \<Rightarrow> 'b Heap" where
-  [code del]: "bind f g = Heap (\<lambda>h. case execute f h of
+  [code drop]: "bind f g = Heap (\<lambda>h. case execute f h of
                   Some (r, h', n) \<Rightarrow> timeFrame n (execute (g r) h')
                 | None \<Rightarrow> None)"
   
@@ -587,11 +585,13 @@ subsubsection \<open>SML and OCaml\<close>
 code_printing type_constructor Heap \<rightharpoonup> (SML) "(unit/ ->/ _)"
 code_printing constant bind \<rightharpoonup> (SML) "!(fn/ f'_/ =>/ fn/ ()/ =>/ f'_/ (_/ ())/ ())"
 code_printing constant return \<rightharpoonup> (SML) "!(fn/ ()/ =>/ _)"
+code_printing constant ureturn \<rightharpoonup> (SML) "!(fn/ ()/ =>/ _)"
 code_printing constant Heap_Time_Monad.raise \<rightharpoonup> (SML) "!(raise/ Fail/ _)"
 
 code_printing type_constructor Heap \<rightharpoonup> (OCaml) "(unit/ ->/ _)"
 code_printing constant bind \<rightharpoonup> (OCaml) "!(fun/ f'_/ ()/ ->/ f'_/ (_/ ())/ ())"
 code_printing constant return \<rightharpoonup> (OCaml) "!(fun/ ()/ ->/ _)"
+code_printing constant ureturn \<rightharpoonup> (OCaml) "!(fun/ ()/ ->/ _)"
 code_printing constant Heap_Time_Monad.raise \<rightharpoonup> (OCaml) "failwith"
 
 
@@ -639,6 +639,7 @@ text \<open>Monad\<close>
 code_printing type_constructor Heap \<rightharpoonup> (Haskell) "Heap.ST/ Heap.RealWorld/ _"
 code_monad bind Haskell
 code_printing constant return \<rightharpoonup> (Haskell) "return"
+code_printing constant ureturn \<rightharpoonup> (Haskell) "return"
 code_printing constant Heap_Time_Monad.raise \<rightharpoonup> (Haskell) "error"
 
 
@@ -691,6 +692,7 @@ code_reserved (Scala) Heap Ref Array
 code_printing type_constructor Heap \<rightharpoonup> (Scala) "(Unit/ =>/ _)"
 code_printing constant bind \<rightharpoonup> (Scala) "Heap.bind"
 code_printing constant return \<rightharpoonup> (Scala) "('_: Unit)/ =>/ _"
+code_printing constant ureturn \<rightharpoonup> (Scala) "('_: Unit)/ =>/ _"
 code_printing constant Heap_Time_Monad.raise \<rightharpoonup> (Scala) "!sys.error((_))"
 
 
@@ -705,7 +707,7 @@ open Code_Thingol;
 val imp_program =
   let
     val is_bind = curry (=) \<^const_name>\<open>bind\<close>;
-    val is_return = curry (=) \<^const_name>\<open>return\<close>;
+    val is_return = member (=) [\<^const_name>\<open>return\<close>, \<^const_name>\<open>ureturn\<close>];
     val dummy_name = "";
     val dummy_case_term = IVar NONE;
     (*assumption: dummy values are not relevant for serialization*)
