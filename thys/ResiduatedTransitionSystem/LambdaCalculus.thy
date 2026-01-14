@@ -1959,51 +1959,41 @@ begin
     qed
 
     text \<open>
-      As a consequence of the Church-Rosser Theorem, the collection of all reduction
-      paths forms a coherent normal sub-RTS of the RTS of reduction paths, and on identities
+      As a consequence of the Church-Rosser Theorem, the collection of all arrows
+      forms a coherent normal sub-RTS of the \<open>\<lambda>\<close>-calculus RTS, and on identities
       the congruence induced by this normal sub-RTS coincides with convertibility.
       The quotient of the \<open>\<lambda>\<close>-calculus RTS by this congruence is then obviously discrete:
       the only transitions are identities.
     \<close>
 
-    interpretation Red: normal_sub_rts \<Lambda>x.Resid \<open>Collect \<Lambda>x.Arr\<close>
-    proof
-      show "\<And>t. t \<in> Collect \<Lambda>x.Arr \<Longrightarrow> \<Lambda>x.arr t"
-        by blast
-      show "\<And>a. \<Lambda>x.ide a \<Longrightarrow> a \<in> Collect \<Lambda>x.Arr"
-        using \<Lambda>x.Ide_char \<Lambda>x.ide_char by blast
-      show "\<And>u t. \<lbrakk>u \<in> Collect \<Lambda>x.Arr; \<Lambda>x.coinitial t u\<rbrakk> \<Longrightarrow> \<Lambda>x.Resid u t \<in> Collect \<Lambda>x.Arr"
-        by (metis \<Lambda>x.Con_imp_Arr_Resid \<Lambda>x.Resid.simps(1) \<Lambda>x.con_sym \<Lambda>x.confluence\<^sub>P \<Lambda>x.ide_def
-            \<open>\<And>a. \<Lambda>x.ide a \<Longrightarrow> a \<in> Collect \<Lambda>x.Arr\<close> mem_Collect_eq \<Lambda>x.arr_resid_iff_con)
-      show "\<And>u t. \<lbrakk>u \<in> Collect \<Lambda>x.Arr; \<Lambda>x.Resid t u \<in> Collect \<Lambda>x.Arr\<rbrakk> \<Longrightarrow> t \<in> Collect \<Lambda>x.Arr"
-        by (metis \<Lambda>x.Arr.simps(1) \<Lambda>x.Con_implies_Arr(1) mem_Collect_eq)
-      show "\<And>u t. \<lbrakk>u \<in> Collect \<Lambda>x.Arr; \<Lambda>x.seq u t\<rbrakk> \<Longrightarrow> \<exists>v. \<Lambda>x.composite_of u t v"
-        by (meson \<Lambda>x.obtains_composite_of)
-      show "\<And>u t. \<lbrakk>u \<in> Collect \<Lambda>x.Arr; \<Lambda>x.seq t u\<rbrakk> \<Longrightarrow> \<exists>v. \<Lambda>x.composite_of t u v"
-        by (meson \<Lambda>x.obtains_composite_of)
-    qed
-
-    interpretation Red: coherent_normal_sub_rts \<Lambda>x.Resid \<open>Collect \<Lambda>x.Arr\<close>
+    interpretation Red: normal_sub_rts resid \<open>Collect arr\<close>
+      using ide_implies_arr arr_resid_iff_con
       apply unfold_locales
-      by (metis Red.Cong_closure_props(4) Red.Cong_imp_arr(2) \<Lambda>x.Con_imp_Arr_Resid
-          \<Lambda>x.arr_resid_iff_con \<Lambda>x.con_char \<Lambda>x.sources_resid mem_Collect_eq)
+         apply auto[4]
+      by (meson Coinitial_iff_Con)
+
+    interpretation Red: coherent_normal_sub_rts resid \<open>Collect arr\<close>
+      apply unfold_locales
+      by (metis Red.Cong_arr_resid_NPath Red.NPath_Resid_single_Arr Red.NPath_implies_Arr
+          Red.normal_is_Cong_closed Red.resid_along_normal_preserves_reflects_con
+          \<Lambda>x.Arr.simps(1) \<Lambda>x.sources_Resid1x arrE arrI mem_Collect_eq)
 
     lemma cnv_iff_Cong:
     assumes "ide a" and "ide b"
-    shows "cnv a b \<longleftrightarrow> Red.Cong [a] [b]"
+    shows "cnv a b \<longleftrightarrow> Red.Cong a b"
     proof
-      assume 1: "Red.Cong [a] [b]"
+      assume 1: "Red.Cong a b"
       obtain U V
-        where UV: "\<Lambda>x.Arr U \<and> \<Lambda>x.Arr V \<and> Red.Cong\<^sub>0 (\<Lambda>x.Resid [a] U) (\<Lambda>x.Resid [b] V)"
-        using 1 Red.Cong_def [of "[a]" "[b]"] by blast
+        where UV: "\<Lambda>x.Arr U \<and> \<Lambda>x.Arr V \<and> Red.Cong\<^sub>0 (\<Lambda>x.Resid1x a U) (\<Lambda>x.Resid1x b V)"
+        using 1 Red.Cong_def [of a b] Red.NPath_def by blast
       have "red a (\<Lambda>x.Trg U) \<and> red b (\<Lambda>x.Trg V)"
-        by (metis UV \<Lambda>x.Arr.simps(1) \<Lambda>x.Con_implies_Arr(1) \<Lambda>x.Resid_single_ide(2) \<Lambda>x.Src_resid
-            \<Lambda>x.Trg.simps(2) assms(1-2) mem_Collect_eq reduction_paths.red_iff trg_ide)
+        using UV \<Lambda>x.red_iff
+        by (metis Red.Cong\<^sub>0_imp_con \<Lambda>x.Con_single_ide_ind \<Lambda>x.Resid1x_as_Resid'
+            \<Lambda>x.Srcs_simp\<^sub>P\<^sub>W\<^sub>E assms(1,2) con_def null_is_zero(2) singletonD)
       moreover have "\<Lambda>x.Trg U = \<Lambda>x.Trg V"
-        using UV
-        by (metis (no_types, lifting) Red.Cong\<^sub>0_imp_con \<Lambda>x.Arr.simps(1) \<Lambda>x.Con_Arr_self
-            \<Lambda>x.Con_implies_Arr(1) \<Lambda>x.Resid_single_ide(2) \<Lambda>x.Src_resid \<Lambda>x.cube \<Lambda>x.ide_def
-            \<Lambda>x.resid_arr_ide assms(1) mem_Collect_eq)
+        using assms UV Coinitial_iff_Con Red.Cong\<^sub>0_imp_con \<Lambda>x.Resid1x_as_Resid'
+              \<Lambda>x.Trgs_simp\<^sub>P\<^sub>W\<^sub>E \<Lambda>x.sources_Resid1x sources_simp null_is_zero(2) conE
+        by (metis (no_types, lifting) singleton_inject)
       ultimately show "cnv a b"
         by (metis cnv_sym cnv.intros(3) red_imp_cnv)
       next
@@ -2014,25 +2004,21 @@ begin
         using c \<Lambda>x.red_iff by blast
       obtain V where V: "\<Lambda>x.Arr V \<and> \<Lambda>x.Src V = b \<and> \<Lambda>x.Trg V = c"
         using c \<Lambda>x.red_iff by blast
-      have "\<Lambda>x.Resid1x a U = c \<and> \<Lambda>x.Resid1x b V = c"
-        by (metis U V \<Lambda>x.Con_single_ide_ind \<Lambda>x.Ide.simps(2) \<Lambda>x.Resid1x_as_Resid
-            \<Lambda>x.Resid_Ide_Arr_ind \<Lambda>x.Resid_single_ide(2) \<Lambda>x.Srcs_simp\<^sub>P\<^sub>W\<^sub>E \<Lambda>x.Trg.simps(2)
-            \<Lambda>x.Trg_resid_sym \<Lambda>x.ex_un_Src assms(1-2) singletonD trg_ide)
-      hence "Red.Cong\<^sub>0 (\<Lambda>x.Resid [a] U) (\<Lambda>x.Resid [b] V)"
-        by (metis Red.Cong\<^sub>0_reflexive U V \<Lambda>x.Con_single_ideI(1) \<Lambda>x.Resid1x_as_Resid
-            \<Lambda>x.Srcs_simp\<^sub>P\<^sub>W\<^sub>E \<Lambda>x.arr_resid \<Lambda>x.con_char assms(1-2) empty_set
-            list.set_intros(1) list.simps(15))
-      thus "Red.Cong [a] [b]"
-        using U V Red.Cong_def [of "[a]" "[b]"] by blast
+      have "Red.Cong\<^sub>0 (\<Lambda>x.Resid1x a U) (\<Lambda>x.Resid1x b V)"
+        by (metis U V \<Lambda>x.Con_single_ideI(1) \<Lambda>x.Ide.simps(2) \<Lambda>x.Resid1x_as_Resid
+            \<Lambda>x.Resid_Ide(1) \<Lambda>x.Resid_Ide_Arr_ind \<Lambda>x.Srcs_simp\<^sub>P\<^sub>W\<^sub>E \<Lambda>x.Trg.simps(2)
+            \<Lambda>x.Trg_resid_sym \<Lambda>x.Trgs_are_con \<Lambda>x.Trgs_simp\<^sub>P\<^sub>W\<^sub>E assms(1,2) con_implies_arr(1)
+            insertI1 mem_Collect_eq trg_def trg_ide)
+      thus "Red.Cong a b"
+        by (meson Red.CongI Red.NPath_def U V \<Lambda>x.set_Arr_subset_arr)
     qed
 
-    interpretation \<Lambda>q: quotient_by_coherent_normal \<Lambda>x.Resid \<open>Collect \<Lambda>x.Arr\<close>
+    interpretation \<Lambda>q: quotient_by_coherent_normal resid \<open>Collect arr\<close>
       ..
 
     lemma quotient_by_cnv_is_discrete:
     shows "\<Lambda>q.arr t \<longleftrightarrow> \<Lambda>q.ide t"
-      by (metis Red.Cong_class_memb_is_arr \<Lambda>q.arr_char \<Lambda>q.ide_char' \<Lambda>x.arr_char
-          mem_Collect_eq subsetI)
+      by (metis Red.Cong_class_memb_is_arr \<Lambda>q.arr_char \<Lambda>q.ide_char' mem_Collect_eq subsetI)
 
     subsection "Normalization"
 

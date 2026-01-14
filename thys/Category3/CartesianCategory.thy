@@ -998,7 +998,7 @@ begin
       using assms prod_def comp_assoc comp_tuple_arr by fastforce
 
     lemma tuple_eqI:
-    assumes "ide b" and "ide c" and "seq \<pp>\<^sub>0[b, c] f" and "seq \<pp>\<^sub>1[b, c] f"
+    assumes "ide b" and "ide c" and "seq \<pp>\<^sub>0[b, c] f"
     and "\<pp>\<^sub>0[b, c] \<cdot> f = f0" and "\<pp>\<^sub>1[b, c] \<cdot> f = f1"
     shows "f = \<langle>f1, f0\<rangle>"
       using assms pr_joint_monic [of b c "\<langle>f1, f0\<rangle>" f] pr_tuple by auto
