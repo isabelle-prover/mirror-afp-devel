@@ -20,7 +20,6 @@ imports
   Reconstruction
   Suitable_Prime
   Degree_Bound
-  Code_Abort_Gcd
 begin
 
 context

@@ -8,7 +8,6 @@ theory Square_Free_Factorization_Int
 imports 
   Square_Free_Int_To_Square_Free_GFp 
   Suitable_Prime
-  Code_Abort_Gcd
   Gcd_Finite_Field_Impl
 begin
 

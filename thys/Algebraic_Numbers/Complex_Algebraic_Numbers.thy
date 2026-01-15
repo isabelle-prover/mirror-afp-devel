@@ -21,7 +21,6 @@ imports
   Complex_Roots_Real_Poly
   Compare_Complex
   Jordan_Normal_Form.Char_Poly  
-  Berlekamp_Zassenhaus.Code_Abort_Gcd
   Interval_Arithmetic
 begin
 
