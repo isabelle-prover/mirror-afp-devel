@@ -1,6 +1,6 @@
 theory Survival_Model
   imports "HOL-Library.Rewrite" "HOL-Library.Extended_Nonnegative_Real" "HOL-Library.Extended_Real"
-    "HOL-Probability.Probability" Preliminaries
+    "HOL-Probability.Probability" Preliminaries_AC
 begin
 
 section \<open>Survival Model\<close>
@@ -49,6 +49,9 @@ text \<open>
   Note that \<open>ccdf (distr \<MM> borel X)\<close> is the survival (distributive) function for \<open>X\<close>.
 \<close>
 
+lemma ccdfX_borel_measurable[measurable]: "ccdf (distr \<MM> borel X) \<in> borel_measurable borel"
+  by (rule MM_PS.ccdf_distr_measurable) simp
+
 lemma ccdfX_0_1: "ccdf (distr \<MM> borel X) 0 = 1"
   apply (rewrite MM_PS.ccdf_distr_P, simp)
   using X_pos_AE MM_PS.prob_space
@@ -67,7 +70,7 @@ proof (rule antisym)
 qed
 
 definition death_pt :: ereal (\<open>$\<psi>\<close>)
-  where "$\<psi> \<equiv> Inf (ereal ` {x \<in> \<real>. ccdf (distr \<MM> borel X) x = 0})"
+  where "$\<psi> \<equiv> Inf (ereal ` {x::real. ccdf (distr \<MM> borel X) x = 0})"
     \<comment> \<open>This is my original notation,
         which is used to develop life insurance mathematics rigorously.\<close>
 
@@ -75,7 +78,7 @@ lemma psi_nonneg: "$\<psi> \<ge> 0"
   unfolding death_pt_def
 proof (rule Inf_greatest)
   fix x'::ereal
-  assume "x' \<in> ereal ` {x \<in> \<real>. ccdf (distr \<MM> borel X) x = 0}"
+  assume "x' \<in> ereal ` {x::real. ccdf (distr \<MM> borel X) x = 0}"
   then obtain x::real where "x' = ereal x" and "ccdf (distr \<MM> borel X) x = 0" by blast
   hence "ccdf (distr \<MM> borel X) 0 > ccdf (distr \<MM> borel X) x" using ccdfX_0_1 X_pos_AE by simp
   hence "x \<ge> 0"
@@ -86,11 +89,11 @@ qed
 
 lemma ccdfX_beyond_0: "ccdf (distr \<MM> borel X) x = 0" if "x > $\<psi>" for x::real
 proof -
-  have "ereal ` {y \<in> \<real>. ccdf (distr \<MM> borel X) y = 0} \<noteq> {}" using death_pt_def that by force
-  hence "\<exists>y'\<in>(ereal ` {y \<in> \<real>. ccdf (distr \<MM> borel X) y = 0}). y' < ereal x"
+  have "ereal ` {y::real. ccdf (distr \<MM> borel X) y = 0} \<noteq> {}" using death_pt_def that by force
+  hence "\<exists>y'\<in>(ereal ` {y::real. ccdf (distr \<MM> borel X) y = 0}). y' < ereal x"
     using that unfolding death_pt_def by (rule cInf_lessD)
   then obtain "y'"
-    where "y' \<in> (ereal ` {y \<in> \<real>. ccdf (distr \<MM> borel X) y = 0})" and "y' < ereal x" by blast
+    where "y' \<in> (ereal ` {y::real. ccdf (distr \<MM> borel X) y = 0})" and "y' < ereal x" by blast
   then obtain y::real
     where "y' = ereal y" and "ccdf (distr \<MM> borel X) y = 0" and "ereal y < ereal x" by blast
   hence "ccdf (distr \<MM> borel X) y = 0" and "y < x" by simp_all
@@ -261,6 +264,10 @@ interpretation alivex_PS: prob_space "\<MM> \<downharpoonright> alive x"
   by (rule MM_PS.cond_prob_space_correct, simp_all add: alive_def)
 
 interpretation distrTx_RD: real_distribution "distr (\<MM> \<downharpoonright> alive x) borel (T x)" by simp
+
+lemma ccdfTx_borel_measurable[measurable]:
+  "ccdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) \<in> borel_measurable borel"
+  by (rule alivex_PS.ccdf_distr_measurable) simp
 
 lemma ccdfTx_cond_prob:
   "ccdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) t = \<P>(\<xi> in \<MM>. T x \<xi> > t \<bar> T x \<xi> > 0)" for t::real
@@ -470,6 +477,9 @@ lemma differentiable_ccdfX_ccdfTx:
 
 subsubsection \<open>Properties of \<open>$p_{t&x}\<close>\<close>
 
+lemma p_measurable[measurable]: "(\<lambda>t. $p_{t&x}) \<in> borel_measurable borel"
+  unfolding survive_def by measurable
+
 lemma p_0_1: "$p_{0&x} = 1"
   unfolding survive_def using ccdfTx_0_1 by simp
 
@@ -536,6 +546,9 @@ lemma ccdfX_p: "ccdf (distr \<MM> borel X) x = $p_{x&0}" for x::real
 
 subsubsection \<open>Introduction of Cumulative Distributive Function for \<open>X\<close>\<close>
 
+lemma cdfX_borel_measurable[measurable]: "cdf (distr \<MM> borel X) \<in> borel_measurable borel"
+  by (rule MM_PS.cdf_distr_measurable) simp
+
 lemma cdfX_0_0: "cdf (distr \<MM> borel X) 0 = 0"
   using ccdfX_0_1 distrX_RD.ccdf_cdf distrX_RD.prob_space by fastforce
 
@@ -562,6 +575,10 @@ interpretation alivex_PS: prob_space "\<MM> \<downharpoonright> alive x"
   by (rule MM_PS.cond_prob_space_correct, simp_all add: alive_def)
 
 interpretation distrTx_RD: real_distribution "distr (\<MM> \<downharpoonright> alive x) borel (T x)" by simp
+
+lemma cdfTx_borel_measurable[measurable]:
+  "cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) \<in> borel_measurable borel"
+  by (rule alivex_PS.cdf_distr_measurable) simp
 
 lemma cdfTx_cond_prob:
   "cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) t = \<P>(\<xi> in \<MM>. T x \<xi> \<le> t \<bar> T x \<xi> > 0)" for t::real
@@ -675,6 +692,9 @@ lemma differentiable_cdfX_cdfTx:
       real_differentiable_def x_lt_psi)
 
 subsubsection \<open>Properties of \<open>$q_{t&x}\<close>\<close>
+
+lemma q_measurable[measurable]: "(\<lambda>t. $q_{t&x}) \<in> borel_measurable borel"
+  unfolding die_def by measurable
 
 lemma q_nonpos_0: "$q_{t&x} = 0" if "t \<le> 0" for t::real
   unfolding die_def using that cdfTx_nonpos_0 by simp
@@ -862,7 +882,6 @@ proof -
     unfolding survive_def using distrTx_RD.ccdf_nonincreasing by force
   hence "(\<integral>\<^sup>+t\<in>{0..d}. ennreal ($p_{t&x}) \<partial>lborel) \<ge> (\<integral>\<^sup>+t\<in>{0..d}. ennreal (1/2) \<partial>lborel)"
     apply (intro nn_set_integral_mono, simp_all)
-    unfolding survive_def using Tx_alivex_measurable apply force
     by (rule AE_I2) (smt (verit) ennreal_half ennreal_leI half_bounded_equal)
   moreover have "(\<integral>\<^sup>+t\<in>{0..}. ennreal ($p_{t&x}) \<partial>lborel) \<ge> (\<integral>\<^sup>+t\<in>{0..d}. ennreal ($p_{t&x}) \<partial>lborel)"
     by (rule nn_set_integral_set_mono) simp
@@ -884,7 +903,6 @@ proposition e_LBINT_p: "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})"
   \<comment> \<open>Note that \<open>0 = 0\<close> holds when the integral diverges.\<close>
   unfolding life_expect_def apply (rewrite integral_eq_nn_integral, simp_all add: less_imp_le)
   unfolding set_lebesgue_integral_def apply (rewrite integral_eq_nn_integral, simp_all)
-   apply (measurable, simp add: survive_def)
   by (rewrite nn_integral_T_p) (simp add: indicator_mult_ennreal mult.commute)
 
 corollary e_integral_p: "$e`\<circ>_x = integral {0..} (\<lambda>t. $p_{t&x})"
@@ -892,8 +910,7 @@ corollary e_integral_p: "$e`\<circ>_x = integral {0..} (\<lambda>t. $p_{t&x})"
 proof -
   have "$e`\<circ>_x = (LBINT t:{0..}. $p_{t&x})" using e_LBINT_p by simp
   also have "\<dots> = integral {0..} (\<lambda>t. $p_{t&x})"
-    apply (rule set_borel_integral_eq_integral_nonneg, simp_all)
-    unfolding survive_def by simp
+    by (rule set_borel_integral_eq_integral_nonneg, simp_all)
   finally show ?thesis .
 qed
 
@@ -911,8 +928,7 @@ qed
 
 corollary e_pos': "$e`\<circ>_x > 0" if "(\<lambda>t. $p_{t&x}) integrable_on {0..}"
   apply (rule e_pos)
-  using that apply (rewrite integrable_on_iff_set_integrable_nonneg; simp)
-  unfolding survive_def by simp
+  using that by (rewrite integrable_on_iff_set_integrable_nonneg; simp)
 
 lemma e_LBINT_p_Icc: "$e`\<circ>_x = (LBINT t:{0..n}. $p_{t&x})" if "x+n \<ge> $\<psi>" for n::real
 proof -
@@ -1481,9 +1497,6 @@ subsubsection \<open>Properties of Survival Function for \<open>X\<close>\<close
 lemma ccdfX_continuous[simp]: "continuous_on UNIV (ccdf (distr \<MM> borel X))"
   using ccdfX_piecewise_differentiable piecewise_differentiable_on_imp_continuous_on by fastforce
 
-corollary ccdfX_borel_measurable[measurable]: "ccdf (distr \<MM> borel X) \<in> borel_measurable borel"
-  by (rule borel_measurable_continuous_onI) simp
-
 lemma ccdfX_nondifferentiable_finite_set[simp]:
   "finite {x. \<not> ccdf (distr \<MM> borel X) differentiable at x}"
 proof -
@@ -1522,9 +1535,6 @@ lemma cdfX_piecewise_differentiable[simp]:
 
 lemma cdfX_continuous[simp]: "continuous_on UNIV (cdf (distr \<MM> borel X))"
   using cdfX_piecewise_differentiable piecewise_differentiable_on_imp_continuous_on by fastforce
-
-corollary cdfX_borel_measurable[measurable]: "cdf (distr \<MM> borel X) \<in> borel_measurable borel"
-  by (rule borel_measurable_continuous_onI) simp
 
 lemma cdfX_nondifferentiable_finite_set[simp]:
   "finite {x. \<not> cdf (distr \<MM> borel X) differentiable at x}"
@@ -1618,10 +1628,6 @@ proof -
   thus ?thesis by simp
 qed
 
-corollary ccdfTx_borel_measurable[measurable]:
-  "ccdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) \<in> borel_measurable borel"
-  by (rule borel_measurable_continuous_onI) simp
-
 lemma ccdfTx_nondifferentiable_finite_set[simp]:
   "finite {t. \<not> ccdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) differentiable at t}"
 proof -
@@ -1685,10 +1691,6 @@ subsubsection \<open>Properties of Cumulative Distributive Function for \<open>T
 lemma cdfTx_continuous[simp]:
   "continuous_on UNIV (cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)))"
   using distrTx_RD.cdf_ccdf ccdfTx_continuous by (simp add: continuous_on_eq_continuous_within)
-
-corollary cdfTx_borel_measurable[measurable]:
-  "cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) \<in> borel_measurable borel"
-  by (rule borel_measurable_continuous_onI) simp
 
 lemma cdfTx_nondifferentiable_finite_set[simp]:
   "finite {t. \<not> cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) differentiable at t}"
@@ -2378,7 +2380,6 @@ lemma LBINT_p_mu_q_defer: "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = $q_{f\
 proof -
   have "(LBINT s:{f<..f+t}. $p_{s&x} * $\<mu>_(x+s)) = (LBINT s:{f<..f+t}. pdfT x s)"
     apply (rule set_lebesgue_integral_cong_AE; simp)
-     apply (simp add: survive_def)
     using pdfTx_p_mu_AE apply (rule AE_mp)
     using that by (intro always_eventually; simp add: ereal_less_le)
   also have "\<dots> = enn2real (\<integral>\<^sup>+s\<in>{f<..f+t}. ennreal (pdfT x s) \<partial>lborel)"
@@ -2474,8 +2475,7 @@ lemma e_LBINT_p_mu: "$e`\<circ>_x = (LBINT s:{0..}. $p_{s&x} * $\<mu>_(x+s) * s)
   \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
 proof -
   let ?f = "\<lambda>s. $p_{s&x} * $\<mu>_(x+s) * s"
-  have [simp]: "(\<lambda>s. ?f s * indicat_real {0..} s) \<in> borel_measurable borel"
-    by measurable (simp_all add: survive_def)
+  have [simp]: "(\<lambda>s. ?f s * indicat_real {0..} s) \<in> borel_measurable borel" by measurable
   hence [simp]: "(\<lambda>s. indicat_real {0..} s * ?f s) \<in> borel_measurable borel"
     by (meson measurable_cong mult.commute)
   have [simp]: "AE s in lborel. ?f s * indicat_real {0..} s \<ge> 0"
@@ -2920,7 +2920,7 @@ end
 
 lemma q_omega_1: "$q_($\<omega>-1) = 1"
   using q_1_equiv_nat
-  by (metis diff_less order.refl le_diff_conv of_nat_1 omega_pos zero_less_one)
+  by (metis diff_less dual_order.refl le_diff_conv of_nat_1 omega_pos zero_less_one)
 
 end
 

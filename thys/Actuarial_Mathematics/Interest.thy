@@ -1,5 +1,5 @@
 theory Interest
-  imports Preliminaries
+  imports Preliminaries_AC
 begin
 
 section \<open>Theory of Interest\<close>
@@ -203,7 +203,7 @@ proof -
   hence limf: "(?f \<longlongrightarrow> $\<delta>) (at 0)"
     unfolding DERIV_def using v_futr_pos by auto
   hence "(\<lambda>m. $i^{Suc m}) \<longlonglongrightarrow> $\<delta>"
-    unfolding i_nom_def using tendsto_at_iff_sequentially[of ?f "$\<delta>" 0 \<real>, THEN iffD1]
+    unfolding i_nom_def using tendsto_at_iff_sequentially[of ?f "$\<delta>" 0 UNIV, THEN iffD1]
     apply simp
     apply (drule_tac x="\<lambda>m. 1 / Suc m" in spec, simp, drule mp)
     subgoal using lim_1_over_n LIMSEQ_Suc by force
