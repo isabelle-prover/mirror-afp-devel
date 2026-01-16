@@ -1,0 +1,71 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+\usepackage{amsmath}
+\usepackage{wasysym}
+\usepackage{etoolbox}
+\usepackage{fullpage}
+
+\makeatletter
+\def\<#1>{\ifcsdef{isabelle@symbol@#1}{\csuse{isabelle@symbol@#1}}{\PackageError{--}{Unknown Isabelle symbol #1. Use \string\newisabellesymbol\space to define it}{}\textbf{\texttt{#1}}}}
+\newcommand\newisabellesymbolraw[2]{\csdef{isabelle@symbol@#1}{#2}}
+\newcommand\newisabellesymbol[2]{\newisabellesymbolraw{#1}{\ensuremath{#2}}}
+\newisabellesymbol{rangle}{\rangle}
+\newisabellesymbol{mapsto}{\mapsto}
+\newisabellesymbol{oplus}{\oplus}
+\newisabellesymbol{noteq}{\neq}
+
+\newcommand\ket[1]{\lvert#1\rangle}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Compressed Random Oracles}
+\author{Dominique Unruh\thanks{Supported by the ERC consolidator grant CerQuS (819317), the PRG team grant “Secure Quantum Technology” (PRG946) from the Estonian Research Council, and the Estonian Cluster of Excellence ``Foundations of the Universe'' (TK202).}}
+\maketitle
+
+\begin{abstract}
+  We formalize the compressed quantum random oracle methodology by \hyperlink{cite.zhandry18recording}{Zhandry (Crypto 2019)}.
+  This is a formalism for modeling quantum random oracles to make quantum cryptographic proofs feasible.
+  Our definition of the compressed oracles is loosely based on the presentation from \hyperlink{cite.unruh21cpo}{Unruh (arXiv 2021)}, but with a considerable amount of new definitions and results.
+  In particular, we make extensive use of the quantum references formalism (Unruh, \hyperlink{cite.references-v3}{arXiv 2024}, \hyperlink{cite.References-AFP}{AFP 2021}) to enable reasoning about queries on arbitrary subsystems, something which is left very informal in pen-and-paper formalizations of the compressed oracles.
+
+  We use the developed formalism to prove that finding $x$ with $H(x)=0$, and finding collisions in $H$, is hard for quantum adversaries with oracle access to a random function $H$.
+\end{abstract}
+
+\nocite{zhandry18recording}
+\nocite{unruh21cpo}
+\nocite{references-v3}
+\nocite{References-AFP}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\bigskip
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{plain}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

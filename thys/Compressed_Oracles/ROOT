@@ -1,0 +1,8 @@
+chapter AFP
+
+session Compressed_Oracles = Registers +
+  options [timeout = 600, document_variants = "document:outline=-proof,/ML"]
+  sessions Sturm_Sequences
+  theories Find_Zero Collision
+  document_files
+    "root.tex" "root.bib"
