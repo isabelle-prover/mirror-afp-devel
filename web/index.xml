@@ -4,6 +4,14 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Compressed Oracles</title>
+  <link>https://isa-afp.org/entries/Compressed_Oracles.html</link>
+  <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Compressed Oracles in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
   <title>Dynamic Pushdown Networks</title>
   <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
   <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>

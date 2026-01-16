@@ -1,0 +1,41 @@
+title = "Compressed Oracles"
+date = 2025-12-31
+topics = [
+  "Computer science/Security/Cryptography",
+  "Mathematics/Physics/Quantum information",
+]
+abstract = """
+We formalize the compressed quantum random oracle methodology by
+Zhandry (Crypto 2019).  This is a formalism for modeling quantum
+random oracles to make quantum cryptographic proofs feasible.  Our
+definition of the compressed oracles is loosely based on the
+presentation from Unruh (arXiv 2021), but with a considerable amount
+of new definitions and results.  In particular, we make extensive use
+of the quantum references formalism (Unruh, arXiv 2024, AFP 2025) to
+enable reasoning about queries on arbitrary subsystems, something
+which is left very informal in pen-and-paper formalizations of the
+compressed oracles.
+
+We use the developed formalism to prove that finding $x$ with
+$H(x)=0$, and finding collisions in $H$, is hard for quantum
+adversaries with oracle access to a random function $H$."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.unruh]
+email = "unruh_email"
+
+[contributors]
+
+[notify]
+unruh = "unruh_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

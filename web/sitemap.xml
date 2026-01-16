@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-12-23T00:00:00+00:00</lastmod>
+    <lastmod>2025-12-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-12-23T00:00:00+00:00</lastmod>
+    <lastmod>2025-12-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Compressed_Oracles.html</loc>
+    <lastmod>2025-12-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</loc>
     <lastmod>2025-12-23T00:00:00+00:00</lastmod>
@@ -6654,6 +6657,26 @@
     <loc>https://isa-afp.org/thys/AFP/ComponentDependencies/DataDependenciesCaseStudy.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/ComponentDependencies/DataDependenciesConcreteValues.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Aux_Sturm_Calculation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/CO_Invariants.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/CO_Operations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Collision.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Compressed_Oracle_Is_RO.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Find_Zero.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Function_At.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Invariant_Preservation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Misc_Compressed_Oracle.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Oracle_Programs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Computational_pAdics/Distinguished_Quotients.html</loc>
   </url><url>

@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "We formalize the compressed quantum random oracle methodology by Zhandry (Crypto 2019).  This is a formalism for modeling quantum random oracles to make quantum cryptographic proofs feasible.  Our definition of the compressed oracles is loosely based on the presentation from Unruh (arXiv 2021), but with a considerable amount of new definitions and results.  In particular, we make extensive use of the quantum references formalism (Unruh, arXiv 2024, AFP 2025) to enable reasoning about queries on arbitrary subsystems, something which is left very informal in pen-and-paper formalizations of the compressed oracles.  We use the developed formalism to prove that finding $x$ with $H(x)=0$, and finding collisions in $H$, is hard for quantum adversaries with oracle access to a random function $H$.",
+  "authors": [
+   "Dominique Unruh"
+  ],
+  "link": "../entries/Compressed_Oracles.html",
+  "shortname": "Compressed_Oracles",
+  "title": "Compressed Oracles",
+  "topic_links": [
+   "../topics/computer-science/security/cryptography/",
+   "../topics/mathematics/physics/quantum-information/"
+  ],
+  "topics": [
+   "Computer science/Security/Cryptography",
+   "Mathematics/Physics/Quantum information"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We present a formalization of Dynamic Pushdown Networks (DPNs) and the automata based algorithm for computing backward reachability sets using Isabelle/HOL.    Dynamic pushdown networks are an abstract model for multithreaded, interprocedural programs with dynamic thread creation that was presented by Bouajjani, Müller-Olm and Touili in 2005.     We formalize the notion of a DPN in Isabelle and describe the algorithm for computing the $pre^*$-set from a regular set of configurations, and prove its correctness. We first give a nondeterministic description of the algorithm, from that we then infer a deterministic one, from which we can generate executable code using Isabelle's code-generation tool.",
   "authors": [
    "Peter Lammich"
