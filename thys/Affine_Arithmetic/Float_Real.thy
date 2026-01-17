@@ -48,8 +48,6 @@ lemma [code_abbrev]:
   "real_of_float 1 = Ratreal 1"
   by simp
 
-lemmas compute_real_of_float[code drop]
-
 lemmas [code drop] =
   real_equal_code
   real_less_eq_code

@@ -566,4 +566,30 @@ lemma Pdevs_raw_map: "f 0 = 0 \<Longrightarrow> Pdevs_raw (map (\<lambda>(i, x).
 lemma compute_nlex_pdevs[code]: "nlex_pdevs (Pdevs x) = Pdevs (nlex_slist x)"
   by transfer (auto simp: Pdevs_raw_map)
 
+context \<comment>\<open>Suppress class parameters that would require \<^const>\<open>sqrt\<close>\<close>
+begin
+
+private definition unimplemented_sgn :: \<open>'a::sgn \<Rightarrow> 'a\<close>
+  where [code drop]: \<open>unimplemented_sgn = sgn\<close>
+
+lemma [code]:
+  \<open>sgn = unimplemented_sgn\<close>
+  by (simp add: unimplemented_sgn_def)
+
+private definition unimplemented_norm :: \<open>'a::real_normed_vector \<Rightarrow> real\<close>
+  where [code drop]: \<open>unimplemented_norm = norm\<close>
+
+lemma [code]:
+  \<open>norm = unimplemented_norm\<close>
+  by (simp add: unimplemented_norm_def)
+
+private definition unimplemented_dist :: \<open>'a::metric_space \<Rightarrow> 'a \<Rightarrow> real\<close>
+  where [code drop]: \<open>unimplemented_dist = dist\<close>
+
+lemma [code]:
+  \<open>dist = unimplemented_dist\<close>
+  by (simp add: unimplemented_dist_def)
+
+end
+
 end
