@@ -760,7 +760,8 @@ definition check_certificate_string ::
   where "check_certificate_string = check_certificate"
 
 
-(***********************************)
+declare [[code abort: \<open>cproper_interval :: _ FSet_Lex_Wrapper option \<Rightarrow> _\<close>]]
+
 export_code check_certificate_string Var Fun fset_of_list nat_of_integer Certificate
   R2GTT_Rel R2Eq R2Reflc R2Step R2StepEq R2Steps R2StepsEq R2StepsNF R2ParStep R2RootStep
   R2RootStepEq R2RootSteps R2RootStepsEq R2NonRootStep R2NonRootStepEq R2NonRootSteps
