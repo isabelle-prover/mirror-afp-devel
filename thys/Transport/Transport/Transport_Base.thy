@@ -54,16 +54,11 @@ begin
 
 interpretation t : transport S T f g for S T f g .
 
-lemma rel_inv_preorder_galois_connection_eq_preorder_galois_connection_rel_inv [simp]:
-  "((\<le>\<^bsub>R\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<ge>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<ge>\<^bsub>R\<^esub>))"
+lemma preorder_galois_connection_rel_inv_eq_rel_inv_preorder_galois_connection [simp]:
+  "((\<ge>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>R\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>L\<^esub>))\<inverse>"
   by (intro ext) (auto intro!: t.preorder_galois_connectionI)
 
 end
-
-corollary preorder_galois_connection_rel_inv_iff_preorder_galois_connection [iff]:
-  "((\<ge>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<ge>\<^bsub>R\<^esub>)) l r \<longleftrightarrow> ((\<le>\<^bsub>R\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>L\<^esub>)) r l"
-  by (simp flip:
-    rel_inv_preorder_galois_connection_eq_preorder_galois_connection_rel_inv)
 
 definition "partial_equivalence_rel_galois_connection \<equiv>
   ((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r
@@ -99,16 +94,13 @@ begin
 
 interpretation t : transport S T f g for S T f g .
 
-lemma rel_inv_partial_equivalence_rel_galois_connection_eq_partial_equivalence_rel_galois_connection_rel_inv
-  [simp]: "((\<le>\<^bsub>R\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<ge>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<ge>\<^bsub>R\<^esub>))"
-  by (intro ext) blast
+lemma partial_equivalence_rel_galois_connection_rel_inv_eq_rel_inv_partial_equivalence_rel_galois_connection
+  [simp]: "((\<ge>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>R\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<le>\<^bsub>L\<^esub>))\<inverse>"
+  by (intro ext iffI t.partial_equivalence_rel_galois_connectionI,
+    elim t.partial_equivalence_rel_galois_connectionE)
+  auto
 
 end
-
-corollary partial_equivalence_rel_galois_connection_rel_inv_iff_partial_equivalence_rel_galois_connection
-  [iff]: "((\<ge>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<ge>\<^bsub>R\<^esub>)) l r \<longleftrightarrow> ((\<le>\<^bsub>R\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<le>\<^bsub>L\<^esub>)) r l"
-  by (simp flip:
-    rel_inv_partial_equivalence_rel_galois_connection_eq_partial_equivalence_rel_galois_connection_rel_inv)
 
 lemma left_Galois_comp_ge_Galois_left_eq_left_if_partial_equivalence_rel_galois_connection:
   assumes "((\<le>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"

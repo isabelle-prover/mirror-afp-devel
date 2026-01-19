@@ -2,7 +2,8 @@
 section \<open>Transport via Equivalences on PERs (Prototype)\<close>
 theory Transport_Prototype
   imports
-    Transport_Rel_If
+    Transport_Black_Box
+    Transport_No_Dep_Fun
     ML_Unification.ML_Unification_HOL_Setup
     ML_Unification.Unify_Resolve_Tactics
   keywords "trp_term" :: thy_goal_defn

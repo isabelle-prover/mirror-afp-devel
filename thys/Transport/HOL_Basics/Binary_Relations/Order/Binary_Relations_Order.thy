@@ -27,8 +27,10 @@ lemma rel_comp_le_rel_inv_if_rel_comp_le_if_symmetric:
   and le: "(R1 \<circ>\<circ> R2) \<le> R3"
   shows "(R2 \<circ>\<circ> R1) \<le> R3\<inverse>"
 proof -
-  from le have "(R1 \<circ>\<circ> R2)\<inverse> \<le> R3\<inverse>" by blast
-  with symms show ?thesis by simp
+  from symms have "(R2 \<circ>\<circ> R1) = (R2\<inverse> \<circ>\<circ> R1\<inverse>)" by simp
+  also have "... = (R1 \<circ>\<circ> R2)\<inverse>" by simp
+  also from le have "... \<le> R3\<inverse>" by simp
+  finally show ?thesis .
 qed
 
 lemma rel_inv_le_rel_comp_if_le_rel_comp_if_symmetric:
@@ -37,7 +39,9 @@ lemma rel_inv_le_rel_comp_if_le_rel_comp_if_symmetric:
   shows "R3\<inverse> \<le> (R2 \<circ>\<circ> R1)"
 proof -
   from le have "R3\<inverse> \<le> (R1 \<circ>\<circ> R2)\<inverse>" by blast
-  with symms show ?thesis by simp
+  also have "... = (R2\<inverse> \<circ>\<circ> R1\<inverse>)" by simp
+  also from symms have "... = (R2 \<circ>\<circ> R1)" by simp
+  finally show ?thesis .
 qed
 
 corollary rel_comp_le_rel_comp_if_rel_comp_le_rel_comp_if_symmetric:
@@ -47,7 +51,9 @@ corollary rel_comp_le_rel_comp_if_rel_comp_le_rel_comp_if_symmetric:
 proof -
   from assms have "(R2 \<circ>\<circ> R1) \<le> (R3 \<circ>\<circ> R4)\<inverse>"
     by (intro rel_comp_le_rel_inv_if_rel_comp_le_if_symmetric)
-  with assms show ?thesis by simp
+  also have "... = (R4\<inverse> \<circ>\<circ> R3\<inverse>)" by simp
+  also from assms have "... = (R4 \<circ>\<circ> R3)" by simp
+  finally show ?thesis .
 qed
 
 corollary rel_comp_le_rel_comp_iff_if_symmetric:

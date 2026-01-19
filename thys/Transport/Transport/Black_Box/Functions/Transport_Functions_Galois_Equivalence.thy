@@ -51,23 +51,22 @@ interpretation flip : transport_Dep_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2
 lemma galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI:
   assumes galois_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and preorder_L1: "preorder_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  shows "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | \<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2" (is ?goal1)
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | (x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3)) \<Rrightarrow> (\<ge>)) L2" (is ?goal2)
+  and mono_L2: mono_cond_left_rel
+  shows "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | \<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) L2" (is ?goal1)
+  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2" (is ?goal2)
 proof -
   show ?goal1
-  proof (intro dep_mono_wrt_relI rel_if_if_impI Dep_Fun_Rel_relI)
-    fix x1 x2 x3 x4 assume "x1 \<le>\<^bsub>L1\<^esub> x2"
+  proof (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Fun_Rel_relI rel_if_if_impI)
+    fix x1 x2 x3 x4 presume "x1 \<le>\<^bsub>L1\<^esub> x2"
     moreover with galois_equiv1 preorder_L1 have "x2 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x2"
       by (blast intro: t1.rel_unit_if_reflexive_on_if_galois_connection)
-    moreover assume "\<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1"
+    moreover presume "\<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1"
     ultimately have "x2 \<equiv>\<^bsub>L1\<^esub> x1" using preorder_L1 by blast
-    moreover assume "x3 \<le>\<^bsub>L1\<^esub> x4" "x2 \<le>\<^bsub>L1\<^esub> x3"
-    ultimately show "(\<le>\<^bsub>L2 x1 x3\<^esub>) \<le> (\<le>\<^bsub>L2 x2 x4\<^esub>)" using preorder_L1 mono_L2
-      by (intro le_relI) (blast dest!: rel_ifD elim!: dep_mono_wrt_relE)
-  qed
+    moreover presume "x3 \<le>\<^bsub>L1\<^esub> x4" "x2 \<le>\<^bsub>L1\<^esub> x3"
+    ultimately show "(\<le>\<^bsub>L2 x1 x3\<^esub>) \<le> (\<le>\<^bsub>L2 x2 x4\<^esub>)" using preorder_L1 mono_L2 by fast
+  qed auto
   show ?goal2
-  proof (intro dep_mono_wrt_relI rel_if_if_impI Dep_Fun_Rel_relI)
+  proof (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Fun_Rel_relI)
     fix x1 x2 x3 x4 presume "x3 \<le>\<^bsub>L1\<^esub> x4" "x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3"
     moreover with galois_equiv1 preorder_L1 have "\<eta>\<^sub>1 x3 \<le>\<^bsub>L1\<^esub> x3"
       by (blast intro: flip.t1.counit_rel_if_reflexive_on_if_galois_connection)
@@ -81,10 +80,8 @@ lemma galois_equivalence_if_mono_if_galois_equivalence_Dep_Fun_Rel_pred_assm_lef
   assumes galois_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and refl_L1: "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and refl_R1: "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and mono_R2: "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and mono_l2: "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
+  and mono_conds: mono_conds_rel
+  and mono_l2: mono_cond_left_fun
   and "x \<le>\<^bsub>L1\<^esub> x"
   shows "(in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) x\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub>) (l2\<^bsub>(l1 x) x\<^esub>)"
 proof (intro Fun_Rel_predI)
@@ -93,29 +90,25 @@ proof (intro Fun_Rel_predI)
     by (blast intro: bi_related_if_rel_equivalence_on
       t1.rel_equivalence_on_unit_if_reflexive_on_if_galois_equivalence)
   moreover with refl_L1 have "\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x" by blast
-  ultimately have "in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) (\<eta>\<^sub>1 x)\<^esub>) y" using mono_L2 by blast
+  ultimately have "in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) (\<eta>\<^sub>1 x)\<^esub>) y" using mono_conds by blast
   moreover from \<open>x \<le>\<^bsub>L1\<^esub> x\<close> galois_equiv1
     have "l1 x \<le>\<^bsub>R1\<^esub> l1 x" "\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x" "x \<^bsub>L1\<^esub>\<lessapprox> l1 x"
     by (blast intro: t1.left_Galois_left_if_left_relI
       flip.t1.counit_rel_if_right_rel_if_galois_connection)+
-  moreover note
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_l2 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>] \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close>]
-  ultimately have "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (\<epsilon>\<^sub>1 (l1 x)) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" by auto
+  ultimately have "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (\<epsilon>\<^sub>1 (l1 x)) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" using mono_l2 by fastforce
   moreover note \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>
   moreover with galois_equiv1 refl_R1 have "l1 x \<equiv>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (l1 x)"
     by (blast intro: bi_related_if_rel_equivalence_on
       flip.t1.rel_equivalence_on_unit_if_reflexive_on_if_galois_equivalence)
   ultimately show "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
-    using mono_R2 by blast
+    using mono_conds by blast
 qed
 
 lemma galois_equivalence_if_mono_if_galois_equivalence_Dep_Fun_Rel_pred_assm_right:
   assumes galois_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and refl_R1: "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and mono_R2: "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and mono_r2: "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and mono_conds: mono_conds_rel
+  and mono_r2: mono_cond_right_fun
   and "x' \<le>\<^bsub>R1\<^esub> x'"
   shows "(in_dom (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub>)) (r2\<^bsub>(r1 x') x'\<^esub>) (r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub>)"
 proof (intro Fun_Rel_predI)
@@ -124,20 +117,18 @@ proof (intro Fun_Rel_predI)
     by (blast intro: bi_related_if_rel_equivalence_on
       flip.t1.rel_equivalence_on_unit_if_reflexive_on_if_galois_equivalence)
   moreover with refl_R1 have "\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'" by blast
-  ultimately have "in_dom (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') (\<epsilon>\<^sub>1 x')\<^esub>) y" using mono_R2 by blast
+  ultimately have "in_dom (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') (\<epsilon>\<^sub>1 x')\<^esub>) y" using mono_conds by blast
   moreover from \<open>x' \<le>\<^bsub>R1\<^esub> x'\<close> galois_equiv1
     have "r1 x' \<le>\<^bsub>L1\<^esub> r1 x'" "x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'" "r1 x' \<^bsub>L1\<^esub>\<lessapprox> x'"
     by (blast intro: t1.right_left_Galois_if_right_relI
       flip.t1.rel_unit_if_left_rel_if_galois_connection)+
-  moreover note
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_r2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close>] \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close>]
-  ultimately have "r2\<^bsub>(r1 x') x'\<^esub> y \<le>\<^bsub>L2 (r1 x') (\<eta>\<^sub>1 (r1 x'))\<^esub> r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y" by auto
+  ultimately have "r2\<^bsub>(r1 x') x'\<^esub> y \<le>\<^bsub>L2 (r1 x') (\<eta>\<^sub>1 (r1 x'))\<^esub> r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y" using mono_r2 by fastforce
   moreover note \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close>
   moreover with galois_equiv1 refl_R1 have "r1 x' \<equiv>\<^bsub>L1\<^esub> \<eta>\<^sub>1 (r1 x')"
-    by (blast intro: bi_related_if_rel_equivalence_on
+    by (blast intro!: bi_related_if_rel_equivalence_on
       t1.rel_equivalence_on_unit_if_reflexive_on_if_galois_equivalence)
   ultimately show "r2\<^bsub>(r1 x') x'\<^esub> y \<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y"
-    using mono_L2 by blast
+    using mono_conds by blast
 qed
 
 end
@@ -237,14 +228,9 @@ corollary galois_equivalence_if_galois_equivalenceI':
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1') x2'\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 x1' x1'\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) \<le> (\<le>\<^bsub>R2 x' x'\<^esub>)"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow>
-    (in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) x\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub>) (l2\<^bsub>(l1 x) x\<^esub>)"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
-  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow>
-    (in_dom (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub>)) (r2\<^bsub>(r1 x') x'\<^esub>) (r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub>)"
+  and tdfr.mono_conds_fun
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> (in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) x\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub>) (l2\<^bsub>(l1 x) x\<^esub>)"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> (in_dom (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub>)) (r2\<^bsub>(r1 x') x'\<^esub>) (r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
@@ -253,26 +239,20 @@ corollary galois_equivalence_if_galois_equivalenceI':
     tdfr.galois_connection_left_right_if_galois_connection_mono_assms_rightI
     tdfr.galois_connection_left_right_if_galois_connection_mono_2_assms_leftI
     tdfr.galois_connection_left_right_if_galois_connection_mono_2_assms_rightI)
-  (auto intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom
-    in_field_if_in_codom)
+  (auto intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom in_field_if_in_codom)
 
 corollary galois_equivalence_if_mono_if_galois_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | \<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | (x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3)) \<Rrightarrow> (\<ge>)) L2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | \<epsilon>\<^sub>1 x2' \<le>\<^bsub>R1\<^esub> x1') \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | (x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3')) \<Rrightarrow> (\<ge>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow>
-    (in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) x\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub>) (l2\<^bsub>(l1 x) x\<^esub>)"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
-  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow>
-    (in_dom (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub>)) (r2\<^bsub>(r1 x') x'\<^esub>) (r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub>)"
+  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | \<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) L2"
+  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2"
+  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | \<epsilon>\<^sub>1 x2' \<le>\<^bsub>R1\<^esub> x1') \<Rightarrow> \<lparr>x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3'\<rparr> \<Rrightarrow> (\<le>)) R2"
+  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> \<lparr>x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3'\<rparr> \<Rrightarrow> (\<ge>)) R2"
+  and tdfr.mono_conds_fun
+  and "\<And>x. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> (in_codom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) x\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub>)) (l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub>) (l2\<^bsub>(l1 x) x\<^esub>)"
+  and "\<And>x'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> (in_dom (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub>)) (r2\<^bsub>(r1 x') x'\<^esub>) (r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
@@ -292,12 +272,7 @@ interpretation flip : transport_Mono_Dep_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2
 lemma galois_equivalence_if_mono_if_preorder_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and tdfr.mono_conds
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
@@ -306,17 +281,12 @@ lemma galois_equivalence_if_mono_if_preorder_equivalenceI:
     flip.tdfr.galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI
     tdfr.galois_equivalence_if_mono_if_galois_equivalence_Dep_Fun_Rel_pred_assm_leftI
     tdfr.galois_equivalence_if_mono_if_galois_equivalence_Dep_Fun_Rel_pred_assm_right)
-  auto
+  (auto elim!: tdfr.mono_condsE tdfr.mono_conds_relE)
 
 theorem galois_equivalence_if_mono_if_preorder_equivalenceI':
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and tdfr.mono_conds
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro galois_equivalence_if_mono_if_preorder_equivalenceI
     tdfr.transitive_left2_if_preorder_equivalenceI

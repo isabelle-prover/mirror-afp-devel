@@ -32,8 +32,8 @@ interpretation flip_inv : transport_natural_functor "(\<ge>\<^bsub>R1\<^esub>)" 
   rewrites "flip_inv.R \<equiv> (\<ge>\<^bsub>L\<^esub>)"
   and "flip_inv.L \<equiv> (\<ge>\<^bsub>R\<^esub>)"
   and "\<And>R S f g. (R\<inverse> \<^sub>h\<unlhd> S\<inverse>) f g \<equiv> (S \<unlhd>\<^sub>h R) g f"
-  by (simp_all only: flip_inv_left_eq_ge_right flip_inv_right_eq_ge_left
-    galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right)
+  by (simp_all add: flip_inv_left_eq_ge_right flip_inv_right_eq_ge_left
+    galois_prop.half_galois_prop_left_rel_inv_eq_rel_inv_half_galois_prop_right)
 
 lemma half_galois_prop_rightI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"

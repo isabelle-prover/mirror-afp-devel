@@ -84,7 +84,7 @@ interpretation flip_inv :
   and "\<And>x1' x2'. transitive (flip2 R2 x1' x2') \<equiv> transitive (\<le>\<^bsub>R2 x2' x1'\<^esub>)"
   by (simp_all add: flip_inv_left_eq_ge_right flip_inv_right_eq_ge_left
     flip_unit_eq_counit t1.flip_unit_eq_counit t2.flip_unit_eq_counit
-    galois_prop.rel_inv_half_galois_prop_right_eq_half_galois_prop_left_rel_inv
+    galois_prop.half_galois_prop_right_rel_inv_eq_rel_inv_half_galois_prop_left
     mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma counit_rel_self_if_rel_selfI:
@@ -168,8 +168,7 @@ lemma order_equivalence_if_order_equivalence_mono_assms_leftI:
   assumes order_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and refl_R1: "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and R2_counit_le1: "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1') x2'\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
-  and mono_l2: "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
+  and mono_l2: mono_cond_left_fun
   and [iff]: "x1' \<le>\<^bsub>R1\<^esub> x2'"
   shows "((in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x1' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
   and "((in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
@@ -178,24 +177,19 @@ proof -
   moreover with order_equiv1
     have "r1 x1' \<le>\<^bsub>L1\<^esub> r1 x2'" "r1 x1' \<le>\<^bsub>L1\<^esub> r1 x1'" "r1 x2' \<le>\<^bsub>L1\<^esub> r1 x2'" by auto
   ultimately have "r1 x1' \<^bsub>L1\<^esub>\<lessapprox> x1'" "r1 x2' \<^bsub>L1\<^esub>\<lessapprox> x2'" by blast+
-  note Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_l2 \<open>x1' \<le>\<^bsub>R1\<^esub> x2'\<close>]
-    \<open>r1 x1' \<le>\<^bsub>L1\<^esub> r1 x1'\<close>]
-  with \<open>r1 x1' \<^bsub>L1\<^esub>\<lessapprox> x1'\<close> R2_counit_le1
+  with mono_l2 \<open>x1' \<le>\<^bsub>R1\<^esub> x2'\<close> \<open>r1 x1' \<le>\<^bsub>L1\<^esub> r1 x1'\<close> \<open>r1 x1' \<^bsub>L1\<^esub>\<lessapprox> x1'\<close> R2_counit_le1
     show "((in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x1' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
-    by (intro Fun_Rel_predI) (auto dest!: in_field_if_in_dom)
-  note Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_l2 \<open>x2' \<le>\<^bsub>R1\<^esub> x2'\<close>]
-    \<open>r1 x1' \<le>\<^bsub>L1\<^esub> r1 x2'\<close>]
-  with \<open>r1 x2' \<^bsub>L1\<^esub>\<lessapprox> x2'\<close> R2_counit_le1
+    by (intro Fun_Rel_predI) (auto 8 0 dest!: in_field_if_in_dom)
+  from mono_l2 \<open>x2' \<le>\<^bsub>R1\<^esub> x2'\<close> \<open>r1 x1' \<le>\<^bsub>L1\<^esub> r1 x2'\<close> \<open>r1 x2' \<^bsub>L1\<^esub>\<lessapprox> x2'\<close> R2_counit_le1
     show "((in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
-    by (intro Fun_Rel_predI) (auto dest!: in_field_if_in_codom)
+    by (intro Fun_Rel_predI) (auto 8 0 dest!: in_field_if_in_codom)
 qed
 
 lemma order_equivalence_if_order_equivalence_mono_assms_rightI:
   assumes order_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and refl_L1: "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and L2_unit_le2: "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> (\<le>\<^bsub>L2 x1 (\<eta>\<^sub>1 x2)\<^esub>) \<le> (\<le>\<^bsub>L2 x1 x2\<^esub>)"
-  and mono_r2: "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and mono_r2: mono_cond_right_fun
   and [iff]: "x1 \<le>\<^bsub>L1\<^esub> x2"
   shows "((in_codom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x2)\<^esub>) (r2\<^bsub>x2 (l1 x2)\<^esub>)"
   and "((in_dom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x1)\<^esub>) (r2\<^bsub>x1 (l1 x2)\<^esub>)"
@@ -205,85 +199,67 @@ proof -
     have "l1 x1 \<le>\<^bsub>R1\<^esub> l1 x2" "l1 x1 \<le>\<^bsub>R1\<^esub> l1 x1" "l1 x2 \<le>\<^bsub>R1\<^esub> l1 x2" by auto
   ultimately have "x1 \<^bsub>L1\<^esub>\<lessapprox> l1 x1" "x2 \<^bsub>L1\<^esub>\<lessapprox> l1 x2" using order_equiv1
     by (auto intro!: t1.left_Galois_left_if_in_codom_if_inflationary_onI)
-  note Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_r2 \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close>]
-    \<open>l1 x2 \<le>\<^bsub>R1\<^esub> l1 x2\<close>]
-  with \<open>x2 \<^bsub>L1\<^esub>\<lessapprox> l1 x2\<close> L2_unit_le2
+  from mono_r2 \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close> \<open>l1 x2 \<le>\<^bsub>R1\<^esub> l1 x2\<close> \<open>x2 \<^bsub>L1\<^esub>\<lessapprox> l1 x2\<close> L2_unit_le2
     show "((in_codom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x2)\<^esub>) (r2\<^bsub>x2 (l1 x2)\<^esub>)"
-    by (intro Fun_Rel_predI) (auto dest!: in_field_if_in_codom)
-  note Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_r2 \<open>x1 \<le>\<^bsub>L1\<^esub> x1\<close>]
-    \<open>l1 x1 \<le>\<^bsub>R1\<^esub> l1 x2\<close>]
-  with \<open>x1 \<^bsub>L1\<^esub>\<lessapprox> l1 x1\<close> L2_unit_le2
+    by (intro Fun_Rel_predI) (auto 8 0 dest!: in_field_if_in_codom)
+  from mono_r2 \<open>x1 \<le>\<^bsub>L1\<^esub> x1\<close> \<open>l1 x1 \<le>\<^bsub>R1\<^esub> l1 x2\<close> \<open>x1 \<^bsub>L1\<^esub>\<lessapprox> l1 x1\<close> L2_unit_le2
     show "((in_dom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x1)\<^esub>) (r2\<^bsub>x1 (l1 x2)\<^esub>)"
-    by (intro Fun_Rel_predI) (auto dest!: in_field_if_in_dom)
+    by (intro Fun_Rel_predI) (auto 8 0 dest!: in_field_if_in_dom)
 qed
 
 lemma l2_unit_bi_rel_selfI:
   assumes pre_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and mono_L2:
-    "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | (x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3)) \<Rrightarrow> (\<ge>)) L2"
+    "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2"
   and mono_R2:
-    "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | (x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3')) \<Rrightarrow> (\<ge>)) R2"
-  and mono_l2: "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
+    "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> \<lparr>x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3'\<rparr> \<Rrightarrow> (\<ge>)) R2"
+  and mono_l2: mono_cond_left_fun
   and "x \<le>\<^bsub>L1\<^esub> x"
   and "in_field (\<le>\<^bsub>L2 x x\<^esub>) y"
-  shows "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
+  shows "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>(R2 (l1 x) (l1 x))\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
 proof (rule bi_relatedI)
   note t1.preorder_equivalence_order_equivalenceE[elim!]
   from \<open>x \<le>\<^bsub>L1\<^esub> x\<close> pre_equiv1 have "l1 x \<le>\<^bsub>R1\<^esub> l1 x" "x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x" "\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x" by blast+
   with pre_equiv1 have "x \<^bsub>L1\<^esub>\<lessapprox> l1 x" "\<eta>\<^sub>1 x \<^bsub>L1\<^esub>\<lessapprox> l1 x" by (auto 4 3)
   from pre_equiv1 \<open>x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x\<close> have "x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 (\<eta>\<^sub>1 x)" by fastforce
-  moreover note \<open>in_field (\<le>\<^bsub>L2 x x\<^esub>) y\<close>
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_L2 \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close>] \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close>]
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_L2 \<open>x \<le>\<^bsub>L1\<^esub> x\<close>] \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close>]
-  ultimately have "in_field (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) (\<eta>\<^sub>1 x)\<^esub>) y" "in_field (\<le>\<^bsub>L2 x (\<eta>\<^sub>1 x)\<^esub>) y"
-    using \<open>x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x\<close> by blast+
-  moreover note \<open>x \<^bsub>L1\<^esub>\<lessapprox> l1 x\<close>
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_l2 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>] \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close>]
-  ultimately have "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (\<epsilon>\<^sub>1 (l1 x)) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" by auto
+  with \<open>in_field (\<le>\<^bsub>L2 x x\<^esub>) y\<close> mono_L2 \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close> \<open>x \<le>\<^bsub>L1\<^esub> x\<close>
+  have "in_field (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) (\<eta>\<^sub>1 x)\<^esub>) y" "in_field (\<le>\<^bsub>L2 x (\<eta>\<^sub>1 x)\<^esub>) y" using \<open>x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x\<close> by blast+
+  with \<open>x \<^bsub>L1\<^esub>\<lessapprox> l1 x\<close> mono_l2 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close> \<open>\<eta>\<^sub>1 x \<le>\<^bsub>L1\<^esub> x\<close>
+    have "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (\<epsilon>\<^sub>1 (l1 x)) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" by fastforce
   moreover from pre_equiv1 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>
     have "\<epsilon>\<^sub>1 (l1 x) \<le>\<^bsub>R1\<^esub> l1 x" "l1 x \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (l1 x)" by fastforce+
-  moreover note Dep_Fun_Rel_relD[OF dep_mono_wrt_relD
-    [OF mono_R2 \<open>l1 x \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (l1 x)\<close>] \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>]
-  ultimately show "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" by blast
-  note \<open>\<eta>\<^sub>1 x \<^bsub>L1\<^esub>\<lessapprox> l1 x\<close> \<open>in_field (\<le>\<^bsub>L2 x (\<eta>\<^sub>1 x)\<^esub>) y\<close>
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_l2 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>] \<open>x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x\<close>]
-  then show "l2\<^bsub>(l1 x) x\<^esub> y \<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y" by auto
+  ultimately show "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
+    using mono_R2 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close> by fastforce
+  from \<open>\<eta>\<^sub>1 x \<^bsub>L1\<^esub>\<lessapprox> l1 x\<close> \<open>in_field (\<le>\<^bsub>L2 x (\<eta>\<^sub>1 x)\<^esub>) y\<close> mono_l2 \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close> \<open>x \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x\<close>
+    show "l2\<^bsub>(l1 x) x\<^esub> y \<le>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y" by fastforce
 qed
 
 lemma r2_counit_bi_rel_selfI:
   assumes pre_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and mono_L2:
-    "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | (x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3)) \<Rrightarrow> (\<ge>)) L2"
+    "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2"
   and mono_R2:
-    "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | (x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3')) \<Rrightarrow> (\<ge>)) R2"
-  and mono_r2: "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+    "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> \<lparr>x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3'\<rparr> \<Rrightarrow> (\<ge>)) R2"
+  and mono_r2: mono_cond_right_fun
   and "x' \<le>\<^bsub>R1\<^esub> x'"
   and "in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y'"
-  shows "r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
+  shows "r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>(L2 (r1 x') (r1 x'))\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
 proof (rule bi_relatedI)
   note t1.preorder_equivalence_order_equivalenceE[elim!]
   from \<open>x' \<le>\<^bsub>R1\<^esub> x'\<close> pre_equiv1 have "r1 x' \<le>\<^bsub>L1\<^esub> r1 x'" "x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'" "\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'" by blast+
   with pre_equiv1 have "r1 x' \<^bsub>L1\<^esub>\<lessapprox> x'" "r1 x' \<^bsub>L1\<^esub>\<lessapprox> \<epsilon>\<^sub>1 x'" by fastforce+
   from pre_equiv1 \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close> have "x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 (\<epsilon>\<^sub>1 x')" by fastforce
-  moreover note \<open>in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y'\<close>
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_R2 \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>] \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>]
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_R2 \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>] \<open>x' \<le>\<^bsub>R1\<^esub> x'\<close>]
-  ultimately have "in_field (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') (\<epsilon>\<^sub>1 x')\<^esub>) y'" "in_field (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') x'\<^esub>) y'"
-    using \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close> \<open>x' \<le>\<^bsub>R1\<^esub> x'\<close> by blast+
-  moreover note \<open>r1 x' \<^bsub>L1\<^esub>\<lessapprox> \<epsilon>\<^sub>1 x'\<close>
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_r2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close>] \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>]
-  ultimately show "r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'" by auto
-  note \<open>r1 x' \<^bsub>L1\<^esub>\<lessapprox> x'\<close> \<open>in_field (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') (\<epsilon>\<^sub>1 x')\<^esub>) y'\<close>
-    Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_r2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close>] \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close>]
-  then have "r2\<^bsub>(r1 x') x'\<^esub> y' \<le>\<^bsub>L2 (r1 x') (\<eta>\<^sub>1 (r1 x'))\<^esub> r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y'" by auto
+  with \<open>in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y'\<close> mono_R2 \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close> \<open>x' \<le>\<^bsub>R1\<^esub> x'\<close>
+    have "in_field (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') (\<epsilon>\<^sub>1 x')\<^esub>) y'" "in_field (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') x'\<^esub>) y'"
+    using \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close> by blast+
+  with \<open>r1 x' \<^bsub>L1\<^esub>\<lessapprox> \<epsilon>\<^sub>1 x'\<close> mono_r2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close> \<open>\<epsilon>\<^sub>1 x' \<le>\<^bsub>R1\<^esub> x'\<close>
+    show "r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'" by fastforce
+  from \<open>r1 x' \<^bsub>L1\<^esub>\<lessapprox> x'\<close> \<open>in_field (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') (\<epsilon>\<^sub>1 x')\<^esub>) y'\<close> mono_r2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close> \<open>x' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x'\<close>
+    have "r2\<^bsub>(r1 x') x'\<^esub> y' \<le>\<^bsub>L2 (r1 x') (\<eta>\<^sub>1 (r1 x'))\<^esub> r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y'" by fastforce
   moreover from pre_equiv1 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close>
     have "\<eta>\<^sub>1 (r1 x') \<le>\<^bsub>L1\<^esub> r1 x'" "r1 x' \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 (r1 x')" by fastforce+
-  moreover note Dep_Fun_Rel_relD[OF dep_mono_wrt_relD
-    [OF mono_L2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close>] \<open>r1 x' \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 (r1 x')\<close>]
   ultimately show "r2\<^bsub>(r1 x') x'\<^esub> y' \<le>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y'"
-    using pre_equiv1 by blast
+    using mono_L2 \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close> pre_equiv1 by blast
 qed
 
 end
@@ -413,8 +389,7 @@ proof -
   from rel_equiv_unit1 trans_L1 have "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
     by (intro reflexive_on_in_field_if_transitive_if_rel_equivalence_on)
   with assms show ?thesis
-    by (intro rel_equivalence_onI inflationary_on_unitI
-      flip.deflationary_on_counitI)
+    by (intro rel_equivalence_onI inflationary_on_unitI flip.deflationary_on_counitI)
     (auto intro!: tdfr.bi_related_unit_self_if_rel_self_aux
       intro: inflationary_on_if_le_pred_if_inflationary_on
         deflationary_on_if_le_pred_if_deflationary_on
@@ -487,13 +462,13 @@ lemma order_equivalence_if_preorder_equivalenceI:
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow>
     ((in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
   and l2_bi_rel: "\<And>x y. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> in_field (\<le>\<^bsub>L2 x x\<^esub>) y \<Longrightarrow>
-    l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
+    l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>(R2 (l1 x) (l1 x))\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow>
     ((in_codom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x2)\<^esub>) (r2\<^bsub>x2 (l1 x2)\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow>
     ((in_dom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x1)\<^esub>) (r2\<^bsub>x1 (l1 x2)\<^esub>)"
   and r2_bi_rel: "\<And>x' y'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y' \<Longrightarrow>
-    r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
+    r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>(L2 (r1 x') (r1 x'))\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
   and trans_L2: "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and trans_R2: "\<And>x1 x2. x1 \<le>\<^bsub>R1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1 x2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
@@ -556,7 +531,7 @@ proof -
   proof -
     presume "in_dom (\<le>\<^bsub>L2 (\<eta>\<^sub>1 x) x\<^esub>) y \<or> in_codom (\<le>\<^bsub>L2 x (\<eta>\<^sub>1 x)\<^esub>) y"
     then have "in_field (\<le>\<^bsub>L2 x x\<^esub>) y" using L2_unit_eq1 L2_unit_eq2 by auto
-    with l2_bi_rel have "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" by blast
+    with l2_bi_rel have "l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>(R2 (l1 x) (l1 x))\<^esub> l2\<^bsub>(l1 x) x\<^esub> y" by blast
     moreover from pre_equiv1 have \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close> by blast
     ultimately show ?goal1 ?goal2 using trans_R2 by blast+
   qed auto
@@ -570,7 +545,7 @@ proof -
   proof -
     presume "in_dom (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x') x'\<^esub>) y' \<or> in_codom (\<le>\<^bsub>R2 x' (\<epsilon>\<^sub>1 x')\<^esub>) y'"
     then have "in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y'" using R2_counit_eq1 R2_counit_eq2 by auto
-    with r2_bi_rel have "r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
+    with r2_bi_rel have "r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>(L2 (r1 x') (r1 x'))\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
       by blast
     moreover from pre_equiv1 have \<open>r1 x' \<le>\<^bsub>L1\<^esub> r1 x'\<close> by blast
     ultimately show ?goal1 ?goal2 using trans_L2 by blast+
@@ -595,14 +570,11 @@ lemma order_equivalence_if_preorder_equivalenceI':
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1') x2'\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 x1' x1'\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 x1' (\<epsilon>\<^sub>1 x2')\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
+  and tdfr.mono_conds_fun
   and "\<And>x y. x \<le>\<^bsub>L1\<^esub> x \<Longrightarrow> in_field (\<le>\<^bsub>L2 x x\<^esub>) y \<Longrightarrow>
-    l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>R2 (l1 x) (l1 x)\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+    l2\<^bsub>(l1 x) (\<eta>\<^sub>1 x)\<^esub> y \<equiv>\<^bsub>(R2 (l1 x) (l1 x))\<^esub> l2\<^bsub>(l1 x) x\<^esub> y"
   and "\<And>x' y'. x' \<le>\<^bsub>R1\<^esub> x' \<Longrightarrow> in_field (\<le>\<^bsub>R2 x' x'\<^esub>) y' \<Longrightarrow>
-    r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>L2 (r1 x') (r1 x')\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
+    r2\<^bsub>(r1 x') (\<epsilon>\<^sub>1 x')\<^esub> y' \<equiv>\<^bsub>(L2 (r1 x') (r1 x'))\<^esub> r2\<^bsub>(r1 x') x'\<^esub> y'"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>R1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1 x2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
@@ -615,14 +587,11 @@ lemma order_equivalence_if_preorder_equivalenceI':
 lemma order_equivalence_if_mono_if_preorder_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | \<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | (x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3)) \<Rrightarrow> (\<ge>)) L2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | \<epsilon>\<^sub>1 x2' \<le>\<^bsub>R1\<^esub> x1') \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | (x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3')) \<Rrightarrow> (\<ge>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | \<eta>\<^sub>1 x2 \<le>\<^bsub>L1\<^esub> x1) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) L2"
+  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2"
+  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | \<epsilon>\<^sub>1 x2' \<le>\<^bsub>R1\<^esub> x1') \<Rightarrow> \<lparr>x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3'\<rparr> \<Rrightarrow> (\<le>)) R2"
+  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> \<lparr>x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3' \<and> x4' \<le>\<^bsub>R1\<^esub> \<epsilon>\<^sub>1 x3'\<rparr> \<Rrightarrow> (\<ge>)) R2"
+  and tdfr.mono_conds_fun
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>R1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1 x2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
@@ -640,12 +609,7 @@ lemma order_equivalence_if_mono_if_preorder_equivalenceI:
 theorem order_equivalence_if_mono_if_preorder_equivalenceI':
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and tdfr.mono_conds
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro order_equivalence_if_mono_if_preorder_equivalenceI
     tdfr.galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI
@@ -657,7 +621,8 @@ theorem order_equivalence_if_mono_if_preorder_equivalenceI':
     t1.galois_equivalence_left_right_if_transitive_if_order_equivalence
     flip.t1.galois_equivalence_left_right_if_transitive_if_order_equivalence)
   (auto elim!: t1.preorder_equivalence_order_equivalenceE
-    t2.preorder_equivalence_order_equivalenceE)
+    t2.preorder_equivalence_order_equivalenceE
+    tdfr.mono_condsE tdfr.mono_conds_relE)
 
 end
 

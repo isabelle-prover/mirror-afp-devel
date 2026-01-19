@@ -8,22 +8,22 @@ begin
 text \<open>Clean relational functions may not contain further elements outside their specification.\<close>
 
 (*TODO: could be generalised to HOL functions (undefined outside domain)*)
-consts crel_dep_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
+consts crel_dep_mono_wrt_pred :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 consts crel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle crel_mono_wrt_syntax
 begin
 notation "crel_mono_wrt" (infixr \<open>\<rightarrow>\<^sub>c\<close> 50)
 syntax
-  "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow>\<^sub>c (_)\<close> [51, 50, 50] 50)
+  "_crel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>('(_ : _') \<rightarrow>\<^sub>c/ _)\<close> [0, 0, 10] 50)
 syntax_consts
-  "_crel_dep_mono_wrt" \<rightleftharpoons> crel_dep_mono_wrt
+  "_crel_dep_mono_wrt_pred" \<rightleftharpoons> crel_dep_mono_wrt_pred
 translations
-  "(x : A) \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_dep_mono_wrt A (\<lambda>x. B)"
+  "(x : A) \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_dep_mono_wrt_pred A (\<lambda>x. B)"
 end
 
-definition "crel_dep_mono_wrt_pred (A :: 'a \<Rightarrow> bool) B R \<equiv> ((x : A) \<rightarrow> B x) R \<and> in_dom R = A"
-adhoc_overloading crel_dep_mono_wrt \<rightleftharpoons> crel_dep_mono_wrt_pred
+definition "crel_dep_mono_wrt_pred_pred (A :: 'a \<Rightarrow> bool) B R \<equiv> ((x : A) \<rightarrow> B x) R \<and> in_dom R = A"
+adhoc_overloading crel_dep_mono_wrt_pred \<rightleftharpoons> crel_dep_mono_wrt_pred_pred
 
 definition "crel_mono_wrt_pred (A :: 'a \<Rightarrow> bool) B \<equiv> (((_ :: 'a) : A) \<rightarrow>\<^sub>c B)"
 adhoc_overloading crel_mono_wrt \<rightleftharpoons> crel_mono_wrt_pred
@@ -46,7 +46,7 @@ lemma crel_dep_mono_wrt_predI [intro]:
   assumes "((x : A) \<rightarrow> B x) R"
   and "in_dom R \<le> A"
   shows "((x : A) \<rightarrow>\<^sub>c B x) R"
-  unfolding crel_dep_mono_wrt_pred_def using assms
+  unfolding crel_dep_mono_wrt_pred_pred_def using assms
   by (intro conjI antisym le_in_dom_if_left_total_on) auto
 
 lemma crel_dep_mono_wrt_predI':
@@ -64,7 +64,7 @@ qed (use assms in auto)
 lemma crel_dep_mono_wrt_predE:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
   obtains "((x : A) \<rightarrow> B x) R" "in_dom R = A"
-  using assms unfolding crel_dep_mono_wrt_pred_def by auto
+  using assms unfolding crel_dep_mono_wrt_pred_pred_def by auto
 
 lemma crel_dep_mono_wrt_predE' [elim]:
   notes crel_dep_mono_wrt_predE[elim]
@@ -159,23 +159,22 @@ lemma crel_dep_mono_wrt_pred_covariant_codom:
   shows "((x : A) \<rightarrow>\<^sub>c B' x) R"
   using assms by (force intro: rel_dep_mono_wrt_pred_covariant_codom)
 
-lemma eq_comp_eval_restrict_left_le_if_crel_dep_mono_wrt_pred:
+lemma Graph_on_eval_le_if_crel_dep_mono_wrt_pred:
   assumes [uhint]: "((x : A) \<rightarrow>\<^sub>c B x) R"
-  shows "((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub> \<le> R"
+  shows "Graph_on A (eval R) \<le> R"
   supply rel_restrict_left_eq_self_if_crel_dep_mono_wrt_pred[uhint]
-  by (urule eq_comp_eval_restrict_left_le_if_rel_dep_mono_wrt_pred) (use assms in auto)
+  by (urule Graph_on_eval_le_if_rel_dep_mono_wrt_pred) (use assms in auto)
 
-lemma le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred:
+lemma le_Graph_on_eval_if_rel_dep_mono_wrt_pred:
   assumes [uhint]: "((x : A) \<rightarrow>\<^sub>c B x) R"
-  shows "R \<le> ((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub>"
+  shows "R \<le> Graph_on A (eval R)"
   supply rel_restrict_left_eq_self_if_crel_dep_mono_wrt_pred[uhint]
-  by (urule restrict_left_le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred) (use assms in auto)
+  by (urule restrict_left_le_Graph_on_eval_if_rel_dep_mono_wrt_pred) (use assms in auto)
 
-corollary restrict_left_eq_eq_comp_eval_if_crel_dep_mono_wrt_pred:
+corollary Graph_on_eval_eq_if_crel_dep_mono_wrt_pred:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
-  shows "R = ((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub>"
-  using assms eq_comp_eval_restrict_left_le_if_crel_dep_mono_wrt_pred
-    le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred
+  shows "Graph_on A (eval R) = R"
+  using assms Graph_on_eval_le_if_crel_dep_mono_wrt_pred le_Graph_on_eval_if_rel_dep_mono_wrt_pred
   by (intro antisym) auto
 
 lemma eval_eq_if_crel_dep_mono_wrt_pred_if_rel_dep_mono_wrt_predI:

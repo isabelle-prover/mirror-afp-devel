@@ -10,7 +10,7 @@ consts bin_rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle bin_rel_syntax
 begin
-syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> (\<open>{\<Sum>}_ : _./ _\<close> [51, 50, 50] 51)
+syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> (\<open>({\<Sum>}_ : _./ _)\<close> [0, 0, 10] 51)
 notation bin_rel (infixr \<open>{\<times>}\<close> 51)
 syntax_consts
   "_dep_bin_rel" \<rightleftharpoons> dep_bin_rel
@@ -26,7 +26,7 @@ definition "bin_rel_pred (A :: 'a \<Rightarrow> bool) (B :: 'b \<Rightarrow> boo
   {\<Sum>}(_ :: 'a) : A. B"
 adhoc_overloading bin_rel \<rightleftharpoons> bin_rel_pred
 
-lemma bin_rel_pred_eq_dep_bin_rel_pred: "A {\<times>} B = {\<Sum>}_ : A. B"
+lemma bin_rel_pred_eq_dep_bin_rel_pred: "A {\<times>} B = ({\<Sum>}_ : A. B)"
   unfolding bin_rel_pred_def by auto
 
 lemma bin_rel_pred_eq_dep_bin_rel_pred_uhint [uhint]:
@@ -88,7 +88,7 @@ lemma dep_bin_rel_cong [cong]:
 
 lemma le_dep_bin_rel_if_le_dom:
   assumes "A \<le> A'"
-  shows "({\<Sum>}x : A. B x) \<le> ({\<Sum>}x : A'. B x)"
+  shows "({\<Sum>}x : A. B x) \<le> {\<Sum>}x : A'. B x"
   using assms by (intro le_predI dep_bin_relI) auto
 
 lemma dep_bin_rel_covariant_codom:

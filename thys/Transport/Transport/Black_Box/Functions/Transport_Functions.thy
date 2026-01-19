@@ -31,13 +31,10 @@ theorem preorder_galois_connection_if_galois_connectionI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "reflexive_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<stileturn> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((_ x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | (x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3)) \<Rrightarrow> (\<ge>)) L2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | \<epsilon>\<^sub>1 x2' \<le>\<^bsub>R1\<^esub> x1') \<Rightarrow> (x3' _ \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<stileturn> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) l2\<^bsub>x' x\<^esub> r2\<^bsub>x x'\<^esub>"
+  and "((_ x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2"
+  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | \<epsilon>\<^sub>1 x2' \<le>\<^bsub>R1\<^esub> x1') \<Rightarrow> \<lparr>x3' _ \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2' \<le>\<^bsub>R1\<^esub> x3'\<rparr> \<Rrightarrow> (\<le>)) R2"
+  and tdfr.mono_conds_fun
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn>\<^bsub>pre\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
@@ -52,13 +49,8 @@ theorem preorder_galois_connection_if_galois_connectionI:
 
 theorem preorder_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 _ \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 _ \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' _ \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' _ \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) l2\<^bsub>x' x\<^esub> r2\<^bsub>x x'\<^esub>"
+  and tdfr.mono_conds
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro preorder_equivalence_if_galois_equivalenceI
     galois_equivalence_if_mono_if_preorder_equivalenceI'
@@ -70,18 +62,12 @@ theorem preorder_equivalenceI:
     tdfr.left_rel_right_iff_left_right_rel_if_galois_prop_le_assms_rightI
     tdfr.galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI
     flip.tdfr.galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI)
-  (auto intro: reflexive_on_if_le_pred_if_reflexive_on
-    in_field_if_in_dom in_field_if_in_codom)
+  (auto 4 4 intro: reflexive_on_if_le_pred_if_reflexive_on in_field_if_in_dom in_field_if_in_codom)
 
 theorem partial_equivalence_rel_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 _ \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 _ \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' _ \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' _ \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) l2\<^bsub>x' x\<^esub> r2\<^bsub>x x'\<^esub>"
+  and tdfr.mono_conds
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms
   by (intro partial_equivalence_rel_equivalence_if_galois_equivalenceI
@@ -91,7 +77,7 @@ theorem partial_equivalence_rel_equivalenceI:
     partial_equivalence_rel_leftI flip.partial_equivalence_rel_leftI
     tdfr.partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI
     tdfr.partial_equivalence_rel_right2_if_partial_equivalence_rel_equivalenceI)
-  auto
+  (auto 4 4 elim!: tdfr.mono_condsE tdfr.mono_conds_relE)
 
 subparagraph \<open>Simplification of Left and Right Relations\<close>
 
@@ -208,19 +194,14 @@ interpretation flip : transport_Mono_Dep_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2
 
 theorem partial_equivalence_rel_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) l2\<^bsub>x' x\<^esub> r2\<^bsub>x x'\<^esub>"
+  and mono_conds
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
 proof -
   from assms have "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) = (tmdfr.L \<equiv>\<^bsub>PER\<^esub> tmdfr.R)"
     by (subst tmdfr.left_rel_eq_tdfr_leftI_if_equivalencesI
         flip.left_rel_eq_tdfr_leftI_if_equivalencesI,
-      auto intro!: partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI
+      auto 0 4 intro!: partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI
         partial_equivalence_rel_right2_if_partial_equivalence_rel_equivalenceI
       iff: t1.galois_equivalence_right_left_iff_galois_equivalence_left_right)+
   with assms show ?thesis
@@ -229,18 +210,13 @@ qed
 
 theorem left_Galois_eq_Dep_Fun_Rel_left_Galois_if_partial_equivalence_rel_equivalenceI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
-  and "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2"
-  and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
-    in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) r2"
+  and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) l2\<^bsub>x' x\<^esub> r2\<^bsub>x x'\<^esub>"
+  and mono_conds
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)) \<Rrightarrow> (\<^bsub>L2 x x'\<^esub>\<lessapprox>))"
 proof -
   from assms have rel_eqs: "(\<le>\<^bsub>L\<^esub>) = tmdfr.L" "(\<le>\<^bsub>R\<^esub>) = tmdfr.R"
     by (subst tmdfr.left_rel_eq_tdfr_leftI_if_equivalencesI flip.left_rel_eq_tdfr_leftI_if_equivalencesI,
-      auto intro!: partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI
+      auto 0 4 intro!: partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI
         partial_equivalence_rel_right2_if_partial_equivalence_rel_equivalenceI
       iff: t1.galois_equivalence_right_left_iff_galois_equivalence_left_right)+
   then have "(\<^bsub>L\<^esub>\<lessapprox>) = tmdfr.Galois" by simp
@@ -254,7 +230,7 @@ proof -
       transitive_left2_if_preorder_equivalenceI transitive_right2_if_preorder_equivalenceI
       galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI
       flip.tdfr.galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI)
-    (auto iff: t1.galois_equivalence_right_left_iff_galois_equivalence_left_right, fast?)
+    (auto 4 4 iff: t1.galois_equivalence_right_left_iff_galois_equivalence_left_right, fast?)
   finally show ?thesis .
 qed
 

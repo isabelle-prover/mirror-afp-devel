@@ -18,32 +18,22 @@ we can apply all results from @{locale "transport_Mono_Dep_Fun_Rel"} to
 reflexive.\<close>
 
 lemma reflexive_on_in_field_left_rel2_le_assmI:
-  assumes refl_L1: "reflexive_on (in_dom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and mono_L2: "((x1 : \<top>) \<Rightarrow> (x2 x3 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x2) \<Rightarrow> (\<le>)) L2"
+  assumes "reflexive_on (in_dom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
+  and "((x1 : \<top>) \<Rightarrow> \<lparr>x2 x3 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x2\<rparr> \<Rightarrow> (\<le>)) L2"
   and "x1 \<le>\<^bsub>L1\<^esub> x2"
   shows "(\<le>\<^bsub>L2 x1 x1\<^esub>) \<le> (\<le>\<^bsub>L2 x1 x2\<^esub>)"
-proof -
-  from refl_L1 \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close> have "x1 \<le>\<^bsub>L1\<^esub> x1" by blast
-  with dep_mono_wrt_relD[OF dep_mono_wrt_predD[OF mono_L2] \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close>]
-    show "(\<le>\<^bsub>L2 x1 x1\<^esub>) \<le> (\<le>\<^bsub>L2 x1 x2\<^esub>)" by auto
-qed
+  using assms by fastforce
 
 lemma reflexive_on_in_field_mono_assm_left2I:
-  assumes mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and refl_L1: "reflexive_on (in_dom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  shows "((x1 : \<top>) \<Rightarrow> (x2 x3 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x2) \<Rightarrow> (\<le>)) L2"
-proof (intro dep_mono_wrt_predI dep_mono_wrt_relI rel_if_if_impI)
-  fix x1 x2 x3 assume "x1 \<le>\<^bsub>L1\<^esub> x2" "x2 \<le>\<^bsub>L1\<^esub> x3"
-  with refl_L1 have "x1 \<ge>\<^bsub>L1\<^esub> x1" by blast
-  from Dep_Fun_Rel_relD[OF dep_mono_wrt_relD[OF mono_L2 \<open>x1 \<ge>\<^bsub>L1\<^esub> x1\<close>]
-    \<open>x2 \<le>\<^bsub>L1\<^esub> x3\<close>] \<open>x1 \<le>\<^bsub>L1\<^esub> x2\<close>
-    show "(\<le>\<^bsub>L2 x1 x2\<^esub>) \<le> (\<le>\<^bsub>L2 x1 x3\<^esub>)" by blast
-qed
+  assumes "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) L2"
+  and "reflexive_on (in_dom (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
+  shows "((x1 : \<top>) \<Rightarrow> \<lparr>x2 x3 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x2\<rparr> \<Rightarrow> (\<le>)) L2"
+  using assms by fastforce
 
 lemma reflexive_on_in_field_left_if_equivalencesI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "preorder_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  and mono_cond_left_rel
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   shows "reflexive_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
   using assms
@@ -75,7 +65,7 @@ lemma left_rel_eq_tdfr_leftI:
 lemma left_rel_eq_tdfr_leftI_if_equivalencesI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "preorder_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) L2"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   shows "(\<le>\<^bsub>L\<^esub>) = tdfr.L"
   using assms by (intro left_rel_eq_tdfr_left_rel_if_reflexive_on

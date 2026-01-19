@@ -28,13 +28,9 @@ begin
 
 interpretation g : galois S T f g for S T f g.
 
-lemma rel_inv_galois_connection_eq_galois_connection_rel_inv [simp]:
-  "((\<le>\<^bsub>R\<^esub>) \<stileturn> (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<ge>\<^bsub>L\<^esub>) \<stileturn> (\<ge>\<^bsub>R\<^esub>))"
-  by (intro ext) blast
-
-corollary galois_connection_rel_inv_iff_galois_connection [iff]:
-  "((\<ge>\<^bsub>L\<^esub>) \<stileturn> (\<ge>\<^bsub>R\<^esub>)) l r \<longleftrightarrow> ((\<le>\<^bsub>R\<^esub>) \<stileturn> (\<le>\<^bsub>L\<^esub>)) r l"
-  by (simp flip: rel_inv_galois_connection_eq_galois_connection_rel_inv)
+lemma galois_connection_rel_inv_eq_rel_inv_galois_connection [simp]:
+  "((\<ge>\<^bsub>L\<^esub>) \<stileturn> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>R\<^esub>) \<stileturn> (\<le>\<^bsub>L\<^esub>))\<inverse>"
+  by (intro ext iffI) (auto 0 5)
 
 lemma rel_unit_if_left_rel_if_galois_connection:
   assumes "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
