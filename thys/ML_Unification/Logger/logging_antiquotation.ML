@@ -3,7 +3,7 @@
 *)
 signature LOGGING_ANTIQUOTATION =
 sig
-  val show_log_pos: bool Config.T
+  val show_log_pos : bool Config.T
 end
 
 structure Logging_Antiquotation : LOGGING_ANTIQUOTATION =

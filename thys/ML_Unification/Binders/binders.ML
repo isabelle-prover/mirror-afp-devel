@@ -37,8 +37,10 @@ type 'a binders = ('a binder) list
 fun add_binders binders1 binders2 = binders1 @ binders2
 
 fun fix_binders nTs ctxt =
-  Variable.variant_fixes (map fst nTs) ctxt
+  Variable.set_body true ctxt
+  |> Variable.variant_fixes (map fst nTs)
   |>> map2 (fn (n, T) => fn n' => ((n, T), Free (n', T))) nTs
+  ||> Variable.restore_body ctxt
 
 val fix_binder = yield_singleton fix_binders
 
@@ -63,6 +65,6 @@ fun abstract_over lev v body =
 val replace_frees = General_Util.fold_rev_index (fn (i, (_, t)) => abstract_over i t)
 
 fun norm_binders norm =
-  map (fn ((n, _), t) => let val t' = norm t in ((n, snd (dest_Free t')), t') end)
+  map (fn ((n, _), t) => let val t' = Same.commit norm t in ((n, snd (dest_Free t')), t') end)
 
 end

@@ -157,7 +157,8 @@ fun e_unify unif binders ctxt tp env = Seq.make (fn _ =>
   (@{log Logger.DEBUG} ctxt (fn _ =>
     Pretty.block [
       Pretty.str "Combining E-unifiers for ",
-      Unification_Util.pretty_unif_problem ctxt (apply2 (Envir_Normalisation.norm_term_unif env) tp)
+      Unification_Util.pretty_unif_problem binders ctxt
+        (apply2 (Same.commit (Envir_Normalisation.norm_term_unif env)) tp)
     ] |> Pretty.string_of);
   UCB.concat_e_unifiers (get_e_unifiers (Context.Proof ctxt)) unif binders ctxt tp env) |> Seq.pull)
 

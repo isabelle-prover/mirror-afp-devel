@@ -17,7 +17,7 @@ definition "SIMPS_TO s t \<equiv> (s \<equiv> t)"
 
 open_bundle SIMPS_TO_syntax
 begin
-notation SIMPS_TO ("_ \<equiv>> _" [50,50] 50)
+notation SIMPS_TO ("(_ \<equiv>> _)" [51,51] 50)
 end
 
 lemma SIMPS_TO_eq: "s \<equiv>> t \<equiv> (s \<equiv> t)"
@@ -37,7 +37,7 @@ definition "SIMPS_TO_UNIF s t \<equiv> (s \<equiv> t)"
 
 open_bundle SIMPS_TO_UNIF_syntax
 begin
-notation SIMPS_TO_UNIF ("_ \<equiv>\<^sup>?> _" [50,50] 50)
+notation SIMPS_TO_UNIF ("(_ \<equiv>\<^sup>?> _)" [51,51] 50)
 end
 
 text \<open>Prevent simplification\<close>

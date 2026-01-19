@@ -59,6 +59,7 @@ structure Unification_Combine :
 struct open Unification_Combine
 \<^functor_instance>\<open>struct_name: HO_Unify
   functor_name: Extended_Higher_Order_Unification_Data
+  path: FI.long_name
   id: \<open>FI.prefix_id "ho_unify"\<close>
   more_args: \<open>
     val parent_logger = logger
@@ -73,12 +74,12 @@ local_setup\<open>Unification_Combine.HO_Unify.setup_attribute NONE\<close>
 
 declare [[ucombine \<open>Unification_Combine.eunif_data
   (Unification_Combine.metadata (Unification_Combine.HO_Unify.binding, Prio.VERY_LOW),
-  K Unification_Combine.HO_Unify.ho_unify)\<close>]]
+  K Unification_Combine.HO_Unify.unify)\<close>]]
 
 declare [[ucombine \<open>
   let open Term_Normalisation
     (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)
-    val eq_beta_eta_dummy_vars = apply2 (beta_eta_short #> dummy_vars) #> op aconv
+    val eq_beta_eta_dummy_vars = apply2 (Same.commit beta_eta_short #> dummy_vars) #> op aconv
     val e_unif = Mixed_Comb_Unification.fo_hop_comb_e_unify Unification_Util.unify_types
     val norms = Mixed_Comb_Unification.norms_fo_hop_comb_unify
     fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars

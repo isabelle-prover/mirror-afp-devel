@@ -79,6 +79,8 @@ However, the simplifier can rewrite @{term "length []"} to @{term 0} and the hin
 
 (*uncomment to see the trace*)
 (* declare [[ML_map_context \<open>Logger.set_log_levels Logger.root Logger.TRACE\<close>]] *)
+(*uncomment to see bound variables instead of Skolem variables*)
+(* declare [[show_unif_problem_skolem=false]] *)
 
 schematic_goal "n - ?m = length []"
   by (ufact refl)

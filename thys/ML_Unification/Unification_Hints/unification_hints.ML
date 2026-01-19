@@ -21,7 +21,6 @@ end
 structure Unification_Hints_Args : UNIFICATION_HINTS_ARGS =
 struct
 structure UB = Unification_Base
-structure EN = Envir_Normalisation
 structure UHB = Unification_Hints_Base
 
 @{parse_entries (struct) PA [concl_unifier, normalisers, prems_unifier]}

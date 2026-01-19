@@ -108,11 +108,11 @@ val sorted_hint_seq_of_hint_prios = sort_hint_prios #> Seq.of_list #> Seq.map fs
 fun mk_retrieval retrieve norm_terms ti _ ctxt tp _ =
   retrieve ctxt ti (norm_terms tp) |> sorted_hint_seq_of_hint_prios
 
-fun mk_retrieval_left retrieve = mk_retrieval (retrieve_left retrieve) o apfst
-fun mk_retrieval_right retrieve = mk_retrieval (retrieve_right retrieve) o apsnd
-fun mk_retrieval_pair retrieve = mk_retrieval (retrieve_pair retrieve) o apply2
-fun mk_retrieval_sym retrieve = mk_retrieval (retrieve_sym retrieve) o apply2
-fun mk_retrieval_sym_pair retrieve = mk_retrieval (retrieve_sym (retrieve_pair retrieve)) o apply2
+fun mk_retrieval_left retrieve = mk_retrieval (retrieve_left retrieve) o apfst o Same.commit
+fun mk_retrieval_right retrieve = mk_retrieval (retrieve_right retrieve) o apsnd o Same.commit
+fun mk_retrieval_pair retrieve = mk_retrieval (retrieve_pair retrieve) o apply2 o Same.commit
+fun mk_retrieval_sym retrieve = mk_retrieval (retrieve_sym retrieve) o apply2 o Same.commit
+fun mk_retrieval_sym_pair retrieve = mk_retrieval (retrieve_sym (retrieve_pair retrieve)) o apply2 o Same.commit
 
 type 'ti config_args = (UB.unifier, UB.normalisers, UB.unifier, 'ti * 'ti -> UHB.hint_retrieval,
   UHB.hint_preprocessor) PCA.entries
@@ -290,7 +290,7 @@ fun pretty_indexes ctxt = Pretty.fbreaks [
   ] |> Pretty.block
 
 val term_index_keys_from_hint =
-  UHB.cdest_hint_concl #> apply2 (Thm.term_of #> TI.norm_term)
+  UHB.cdest_hint_concl #> apply2 (Thm.term_of #> Same.commit TI.norm_term)
 
 val pretty_spaced_block = Pretty.breaks #> Pretty.block #> Pretty.string_of
 
@@ -385,7 +385,7 @@ fun try_hints binders ctxt tp env = Seq.make (fn _ =>
         Pretty.str "Trying unification hints",
         Binding.pretty binding,
         Pretty.str "for",
-        Unification_Util.pretty_unif_problem ctxt tp
+        Unification_Util.pretty_unif_problem binders ctxt tp
       ])
   in UH.try_hints (get_retrieval context (get_indexes context)) binders ctxt tp env |> Seq.pull end)
 

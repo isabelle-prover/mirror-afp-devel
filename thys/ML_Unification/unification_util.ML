@@ -15,11 +15,12 @@ sig
   val pretty_tenv : Proof.context -> Envir.tenv -> Pretty.T
   val pretty_env : Proof.context -> Envir.env -> Pretty.T
 
-  val pretty_unif_problem : Proof.context -> (term * term) -> Pretty.T
+  val show_unif_problem_skolem : bool Config.T
+  val pretty_unif_problem : term Binders.binders -> Proof.context -> (term * term) -> Pretty.T
   val pretty_unif_result : Proof.context -> (Envir.env * thm) -> Pretty.T
 
-  val pretty_call_theory_match : Proof.context -> (term * term) -> Pretty.T
-  val pretty_call_theory_unif : Proof.context -> (term * term) -> Pretty.T
+  val pretty_call_theory_match : term Binders.binders -> Proof.context -> (term * term) -> Pretty.T
+  val pretty_call_theory_unif : term Binders.binders -> Proof.context -> (term * term) -> Pretty.T
 
   (* terms and environments *)
   val maxidx_of_terms : term list -> int
@@ -96,25 +97,30 @@ val pretty_tyenv = Show.tyenv
 val pretty_tenv = Show.tenv
 val pretty_env = Show.env
 
-fun pretty_unif_problem ctxt (t1, t2) = Pretty.breaks [
-    pretty_term ctxt t1,
-    Pretty.str "\<equiv>\<^sup>?",
-    pretty_term ctxt t2
-  ] |> Pretty.block
+val show_unif_problem_skolem = Attrib.setup_config_bool @{binding "show_unif_problem_skolem"} (K true)
+
+fun pretty_unif_problem binders ctxt (t1, t2) =
+  let val norm = Config.get ctxt show_unif_problem_skolem ? Binders.replace_binders binders
+  in Pretty.breaks [
+      pretty_term ctxt (norm t1),
+      Pretty.str "\<equiv>\<^sup>?",
+      pretty_term ctxt (norm t2)
+    ] |> Pretty.block
+  end
 
 fun pretty_unif_result ctxt (env, thm) = Pretty.fbreaks [
     Pretty.block [Pretty.str "Environment: ", pretty_env ctxt env],
     Pretty.block [Pretty.str "Theorem: ", Thm.pretty_thm ctxt thm]
   ] |> Pretty.block
 
-fun pretty_call_theory_match ctxt pt = Pretty.block [
+fun pretty_call_theory_match binders ctxt pt = Pretty.block [
     Pretty.str "Calling theory matcher for ",
-    pretty_unif_problem ctxt pt
+    pretty_unif_problem binders ctxt pt
   ]
 
-fun pretty_call_theory_unif ctxt tp = Pretty.block [
+fun pretty_call_theory_unif binders ctxt tp = Pretty.block [
     Pretty.str "Calling theory unifier for ",
-    pretty_unif_problem ctxt tp
+    pretty_unif_problem binders ctxt tp
   ]
 
 (* terms and environments *)
@@ -135,7 +141,7 @@ fun match_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
     (@{log Logger.DEBUG} ctxt
       (fn _ => Pretty.block [
           Pretty.str "Failed to match types ",
-          pretty_types ctxt [Envir_Normalisation.norm_type_match tyenv T, U]
+          pretty_types ctxt [Same.commit (Envir_Normalisation.norm_type_match tyenv) T, U]
         ] |> Pretty.string_of);
     raise UBase.UNIF)
 
@@ -149,7 +155,7 @@ fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
     (@{log Logger.DEBUG} ctxt
       (fn _ => Pretty.block [
           Pretty.str "Failed to unify types ",
-          pretty_types ctxt (map (Envir_Normalisation.norm_type_unif tyenv) [T, U])
+          pretty_types ctxt (map (Same.commit (Envir_Normalisation.norm_type_unif tyenv)) [T, U])
         ] |> Pretty.string_of);
     raise UBase.UNIF)
 
@@ -201,7 +207,7 @@ val beta_eta_short_norms_unif = {
   conv = #conv beta_eta_short_norms_match
 }
 
-fun inst_norm_term inst_term norm_term = norm_term oo inst_term
+fun inst_norm_term inst_term norm_term = Same.compose norm_term o inst_term
 fun inst_norm_term' norms = inst_norm_term (#inst_term norms) (#norm_term norms)
 fun inst_norm_thm inst_thm conv = Conversion_Util.apply_thm_conv conv ooo inst_thm
 fun inst_norm_subgoal inst_thm conv i = Conversion_Util.apply_subgoal_conv conv i ooo inst_thm
@@ -245,7 +251,7 @@ fun abstract_abstract norm_term_type unify binders ctxt name T tbp env = Seq.mak
   let
     val (binder as (_, bvar), ctxt') = Binders.fix_binder (name, T) ctxt
     fun norm_abstract (env, thm) =
-      let fun norm_bvar env = norm_term_type (Envir.type_env env) bvar
+      let fun norm_bvar env = Same.commit (norm_term_type (Envir.type_env env)) bvar
       in
         smash_tpairs_if_occurs ctxt' (norm_bvar env) (env, thm)
         |> Seq.map_filter (fn (env, thm) =>
@@ -260,7 +266,7 @@ fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env = Seq.make (fn _ 
     if ns = nt then
       let val (env' as Envir.Envir {tyenv,...}) = unify_types ctxt (Ts, Tt) env
       in
-        (env', UBase.reflexive_term ctxt (norm_term_type tyenv s))
+        (env', UBase.reflexive_term ctxt (Same.commit (norm_term_type tyenv) s))
         |> Seq.single
         |> Seq.pull
       end

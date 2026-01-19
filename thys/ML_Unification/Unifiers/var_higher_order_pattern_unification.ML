@@ -57,7 +57,7 @@ fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
   in
     ((@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
         Pretty.str "Variable head higher-order pattern E-unifying",
-        Util.pretty_unif_problem ctxt tp
+        Util.pretty_unif_problem binders ctxt tp
       ] |> Pretty.block |> Pretty.string_of);
     case apply2 can_var_pattern_match (tp, (p, t)) of
       ((true, boundst), (true, boundsp)) => (if length boundst >= length boundsp
@@ -68,7 +68,7 @@ fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
     | _ => raise FALLBACK (Pretty.str ("Terms not of the form " ^ form_msg)))
     handle FALLBACK msg => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
           msg,
-          Util.pretty_call_theory_unif ctxt tp
+          Util.pretty_call_theory_unif binders ctxt tp
         ] |> Pretty.block |> Pretty.string_of);
       unif_theory binders ctxt tp env))
     |> Seq.pull

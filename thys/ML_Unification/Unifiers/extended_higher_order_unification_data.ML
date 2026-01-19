@@ -9,7 +9,11 @@ sig
   structure PA : PARSE_EXTENDED_HIGHER_ORDER_UNIFICATION_DATA_ARGS
   type args = (int, int, bool) PA.entries
 
-  val ho_unify : args -> Unification_Base.unifier
+  val with_args_seq : (Proof.context -> 'a Seq.seq) -> args -> Proof.context -> 'a Seq.seq
+  val with_args_tac : (Proof.context -> int -> tactic) -> args -> Proof.context -> int -> tactic
+  val ho_unifiers : args -> term Binders.binders -> Proof.context -> term * term -> Envir.env ->
+    (Envir.env * (term * term) list) Seq.seq
+  val unify : args -> Unification_Base.unifier
 
   val arg_parsers : (int parser, int parser, bool parser) PA.entries
 end
@@ -21,14 +25,16 @@ struct
 
 type args = (int, int, bool) PA.entries
 
-fun ho_unify args binders ctxt tp env = Seq.make (fn _ =>
+fun with_args_seq f args ctxt = Seq.make (fn _ =>
   let val ctxt = Tactic_Util.set_kernel_ho_unif_bound (PA.get_search_bound args) ctxt
     |> (PA.get_silence_bound_exceeded args ? Tactic_Util.silence_kernel_ho_bound_exceeded)
-  in
-    Higher_Order_Unification.unify binders ctxt tp env
-    |> Seq.take (PA.get_results_bound args)
-    |> Seq.pull
-  end)
+  in f ctxt |> Seq.take (PA.get_results_bound args) |> Seq.pull end)
+
+fun with_args_tac tac args ctxt i st = with_args_seq (fn ctxt => tac ctxt i st) args ctxt
+
+fun gen_unify f args binders ctxt tp env = with_args_seq (fn ctxt => f binders ctxt tp env) args ctxt
+val ho_unifiers = gen_unify Higher_Order_Unification.ho_unifiers
+val unify = gen_unify Higher_Order_Unification.unify
 
 val arg_parsers = {
   search_bound = SOME Parse.int,
@@ -53,7 +59,11 @@ sig
   val get_silence_bound_exceeded : Context.generic -> bool
   val map_silence_bound_exceeded : (bool -> bool) -> Context.generic -> Context.generic
 
-  val ho_unify : Unification_Base.unifier
+  val with_args_seq : (Proof.context -> 'a Seq.seq) -> Proof.context -> 'a Seq.seq
+  val with_args_tac : (Proof.context -> int -> tactic) -> Proof.context -> int -> tactic
+  val ho_unifiers : term Binders.binders -> Proof.context -> term * term -> Envir.env ->
+    (Envir.env * (term * term) list) Seq.seq
+  val unify : Unification_Base.unifier
 
   val binding : Binding.binding
   val parse_arg_entries : Extended_Higher_Order_Unification_Data_Args.args parser
@@ -92,16 +102,22 @@ val map_results_bound = map_args o PA.map_results_bound
 val get_silence_bound_exceeded = PA.get_silence_bound_exceeded o get_args
 val map_silence_bound_exceeded = map_args o PA.map_silence_bound_exceeded
 
-fun ho_unify binders ctxt tp env = Seq.make (fn _ =>
-  let
-    val args = get_args (Context.Proof ctxt)
-    val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-        Pretty.str "Higher-order unifying with search bound ",
-        SpecCheck_Show.int (PA.get_search_bound args),
-        Pretty.str " and results bound ",
-        SpecCheck_Show.int (PA.get_results_bound args)
-      ] |> Pretty.string_of)
-  in EHDA.ho_unify args binders ctxt tp env |> Seq.pull end)
+fun with_get_args f ctxt = f (get_args (Context.Proof ctxt)) ctxt
+fun with_args_seq f = with_get_args (EHDA.with_args_seq f)
+val with_args_tac = with_get_args o EHDA.with_args_tac
+
+fun gen_unify what f binders ctxt tp env = Seq.make (fn _ => with_get_args (fn args => fn ctxt =>
+  let val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
+      what,
+      Pretty.str " with search bound ",
+      SpecCheck_Show.int (PA.get_search_bound args),
+      Pretty.str " and results bound ",
+      SpecCheck_Show.int (PA.get_results_bound args)
+    ] |> Pretty.string_of)
+  in f args binders ctxt tp env end) ctxt |> Seq.pull)
+
+val ho_unifiers = gen_unify (Pretty.str "Computing higher-order unifiers") EHDA.ho_unifiers
+val unify = gen_unify (Pretty.str "Higher-order unifying") EHDA.unify
 
 val binding = Binding.make (FI.id, FI.pos)
 

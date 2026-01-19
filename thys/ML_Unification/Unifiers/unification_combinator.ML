@@ -143,8 +143,8 @@ fun orelse_e_unifiers unifiers unif binders ctxt tp =
 val orelse_e_matchers = orelse_e_unifiers
 
 (* normalisation *)
-fun norm_closed_unifier norm_t unif ctxt tp env = unif ctxt (apply2 (norm_t env) tp) env
-fun norm_closed_matcher norm_p match ctxt (p, t) env = match ctxt (norm_p env p, t) env
+fun norm_closed_unifier norm_t unif ctxt tp env = unif ctxt (apply2 (Same.commit (norm_t env)) tp) env
+fun norm_closed_matcher norm_p match ctxt (p, t) env = match ctxt (Same.commit (norm_p env) p, t) env
 
 fun norm_unifier norm_t unif binders ctxt tp env =
   norm_closed_unifier norm_t (unif (Binders.norm_binders (norm_t env) binders)) ctxt tp env

@@ -26,7 +26,7 @@ fun e_match match_types match binders ctxt (pt as (p, t)) env = Seq.make (fn _ =
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Matching types of ",
-        Util.pretty_unif_problem ctxt (apfst (Norm.norm_term_match env) pt)
+        Util.pretty_unif_problem binders ctxt (apfst (Same.commit (Norm.norm_term_match env)) pt)
       ] |> Pretty.string_of);
     match_types ctxt (Envir.fastype env binder_types p, fastype_of1 (binder_types, t)) env
     |> match binders ctxt pt)
@@ -39,7 +39,7 @@ fun e_unify unif_types unif binders ctxt st env = Seq.make (fn _ =>
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Unifying types of ",
-        Util.pretty_unif_problem ctxt (apply2 (Norm.norm_term_unif env) st)
+        Util.pretty_unif_problem binders ctxt (apply2 (Same.commit (Norm.norm_term_unif env)) st)
       ] |> Pretty.string_of);
     unif_types ctxt (apply2 (Envir.fastype env binder_types) st) env
     |> unif binders ctxt st)

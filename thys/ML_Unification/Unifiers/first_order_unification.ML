@@ -40,7 +40,7 @@ fun seq_try sq = General_Util.seq_try FALLBACK sq
 i.e. when matching p \<equiv>? t, t may contain variables.*)
 fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
   let
-    val norm_pt = apfst o Norm.norm_term_match
+    val norm_pt = apfst o Same.commit o Norm.norm_term_match
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
       Util.rigid_rigid Norm.norm_term_types_match match_types ctxt p n env |> seq_try
       handle Unification_Base.UNIF => Seq.empty (*types do not match*)
@@ -49,12 +49,12 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
     fun match binders ctxt (pt as (p, t)) (env as Envir.Envir {tenv, tyenv,...}) =
       (case pt of
         (Var (x, Tx), _) =>
-          (case Envir.lookup1 tenv (x, Norm.norm_type_match tyenv Tx) of
+          (case Envir.lookup1 tenv (x, Same.commit (Norm.norm_type_match tyenv) Tx) of
             NONE =>
               if Term.is_open t then
                 (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
                     Pretty.str "Failed to match (open term) ",
-                    Util.pretty_unif_problem ctxt (norm_pt env pt)
+                    Util.pretty_unif_problem binders ctxt (norm_pt env pt)
                   ] |> Pretty.string_of);
                 raise FALLBACK)
               else
@@ -67,7 +67,7 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
                   handle Unification_Base.UNIF => Seq.empty (*types do not match*)
                 end
           | SOME p' =>
-            if Envir.aeconv (apply2 Envir.beta_norm (p', t)) then
+            if (op aconv) (apply2 (Same.commit Term_Normalisation.beta_eta_short) (p', t)) then
               Seq.single (env, Unification_Base.reflexive_term ctxt t)
             else raise FALLBACK)
       | (Abs (np, Tp, tp), Abs (nt, Tt, tt)) =>
@@ -89,7 +89,7 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
           end)
           handle TYPE _ => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
                   Pretty.str "First-order matching failed. Term is not of function type.",
-                  Util.pretty_unif_problem ctxt (norm_pt env pt)
+                  Util.pretty_unif_problem binders ctxt (norm_pt env pt)
                 ] |> Pretty.block |> Pretty.string_of);
               Seq.empty)
           | Unification_Base.UNIF => Seq.empty) (*types do not unify*)
@@ -112,13 +112,13 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
       | _ => raise FALLBACK)
       handle FALLBACK => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
             Pretty.str "First-order matching failed.",
-            Util.pretty_call_theory_match ctxt (norm_pt env pt)
+            Util.pretty_call_theory_match binders ctxt (norm_pt env pt)
           ] |> Pretty.block |> Pretty.string_of);
         match_theory binders ctxt pt env)
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "First-order E-matching ",
-        Util.pretty_unif_problem ctxt (norm_pt env pt)
+        Util.pretty_unif_problem binders ctxt (norm_pt env pt)
       ] |> Pretty.string_of);
     match binders ctxt pt env)
     |> Seq.pull
@@ -138,24 +138,22 @@ fun occurs v (Var (x, _)) = x = v
 
 fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
   let
-    val norm_st = apply2 o Norm.norm_term_unif
+    val norm_st = apply2 o Same.commit o Norm.norm_term_unif
     fun rigid_rigid ctxt t n env = (*we do not have to normalise types in rigid-rigid cases*)
       Util.rigid_rigid (K I) unify_types ctxt t n env |> seq_try
       handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
     (*standard first-order unifier that calls unify_theory on failure*)
     fun unif binders ctxt (st as (s, t)) env =
       (case st of
-        (Var (x, Tx), _) =>
-          let val unif' = unif binders ctxt
+        (Var (x, Tx), _) => let val norm = Norm.norm_term_unif env
           in
-            (unif' (Envir.norm_term_same env s, t) env
-            handle Same.SAME =>
-              (unif' (s, Envir.norm_term_same env t) env
-              handle Same.SAME =>
-                if Term.is_open t
-                then (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
+            unif binders ctxt (norm s, t) env
+            handle Same.SAME => let val t = Same.commit norm t
+              in
+                if Term.is_open t then
+                  (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
                       Pretty.str "Failed to unify (open term) ",
-                      Util.pretty_unif_problem ctxt (norm_st env st)
+                      Util.pretty_unif_problem binders ctxt (norm_st env st)
                     ] |> Pretty.string_of);
                   raise FALLBACK)
                 else
@@ -170,7 +168,7 @@ fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
                     if not vars_eq andalso occurs x t then
                       (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
                           Pretty.str "Failed to unify (occurs check) ",
-                          Util.pretty_unif_problem ctxt (norm_st env st)
+                          Util.pretty_unif_problem binders ctxt (norm_st env st)
                         ] |> Pretty.string_of);
                       raise FALLBACK)
                     else
@@ -179,7 +177,8 @@ fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
                       |>> update_env
                       |> Seq.single)
                       handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
-                  end))
+                  end
+              end
           end
        | (_, Var _) => Comb.flip_unifier unif binders ctxt st env
        | (Abs (ns, Ts, ts), Abs (nt, Tt, tt)) =>
@@ -211,13 +210,13 @@ fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
       handle FALLBACK =>
         (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
             Pretty.str "First-order unification failed.",
-            Util.pretty_call_theory_unif ctxt (norm_st env st)
+            Util.pretty_call_theory_unif binders ctxt (norm_st env st)
           ] |> Pretty.block |> Pretty.string_of);
         unify_theory binders ctxt st env)
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "First-order E-unifying ",
-        Util.pretty_unif_problem ctxt (norm_st env st)
+        Util.pretty_unif_problem binders ctxt (norm_st env st)
       ] |> Pretty.string_of);
     unif binders ctxt st env)
     |> Seq.pull

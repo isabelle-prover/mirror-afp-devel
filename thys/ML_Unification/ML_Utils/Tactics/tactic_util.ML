@@ -127,7 +127,8 @@ local structure TI = Net
 in
 fun unique_thmsq eq_thm thmsq =
   let fun go ti = Seq.pull #> Option.mapPartial (fn (thm, thmsq) =>
-    let val key = Thm.full_prop_of thm |> Term_Normalisation.beta_eta_short |> TI.key_of_term
+    let val key = Thm.full_prop_of thm
+      |> Same.commit Term_Normalisation.beta_eta_short |> TI.key_of_term
     in
       TI.insert eq_thm (key, thm) ti |> (fn ti => SOME (thm, Seq.make (fn _ => go ti thmsq)))
       handle TI.INSERT => go ti thmsq

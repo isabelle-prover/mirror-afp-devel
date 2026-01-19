@@ -141,10 +141,10 @@ fun terms_unify ctxt unif tp =
 fun terms_unify_thms_correct norm_terms norm_thm ctxt unif tp =
   terms_unify ctxt unif tp andalso thms_correct norm_terms norm_thm ctxt unif tp
 
-val beta_eta_short_norm_term_unif = UUtil.inst_norm_term Norm.norm_term_unif TNorm.beta_eta_short
+val beta_eta_short_norm_term_unif = Same.commit o UUtil.inst_norm_term Norm.norm_term_unif TNorm.beta_eta_short
 val inst_norm_beta_eta_short_unif = UUtil.inst_norm_thm
   (#inst_unif_thm UUtil.beta_eta_short_norms_unif) (#conv UUtil.beta_eta_short_norms_unif)
-val beta_eta_short_norm_term_match = UUtil.inst_norm_term Norm.norm_term_match TNorm.beta_eta_short
+val beta_eta_short_norm_term_match = Same.commit o UUtil.inst_norm_term Norm.norm_term_match TNorm.beta_eta_short
 val inst_norm_beta_eta_short_match = UUtil.inst_norm_thm
   (#inst_unif_thm UUtil.beta_eta_short_norms_match) (#conv UUtil.beta_eta_short_norms_match)
 

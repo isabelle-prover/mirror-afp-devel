@@ -101,7 +101,7 @@ fun match_bind (tenv, binders, ixn, T, is, t) =
 (** higher-order pattern E-unification **)
 fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt env = Seq.make (fn _ =>
   let
-    val norm_pt = apfst o Norm.norm_term_match
+    val norm_pt = apfst o Same.commit o Norm.norm_term_match
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
       Util.rigid_rigid Norm.norm_term_types_match match_types ctxt p n env |> seq_try
       handle Unification_Base.UNIF => Seq.empty (*types do not match*)
@@ -112,7 +112,7 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
         fun handle_failure match_theory failure_msg =
           (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
               Pretty.str failure_msg,
-              Util.pretty_call_theory_match ctxt (norm_pt env pt)
+              Util.pretty_call_theory_match binders ctxt (norm_pt env pt)
             ] |> Pretty.block |> Pretty.string_of);
           match_theory binders ctxt pt env)
       in
@@ -142,7 +142,7 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
             (Var (x, T), ps) =>
               let
                 val is = ints_of ps
-                val T' = Norm.norm_type_match tyenv T
+                val T' = Same.commit (Norm.norm_type_match tyenv) T
               in
                 case Envir.lookup1 tenv (x, T') of
                   NONE =>
@@ -153,7 +153,7 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
                     in Seq.single (env', Unification_Base.reflexive_term ctxt t') end)
                     handle OPEN_TERM => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
                           Pretty.str "Failed to match (open term) ",
-                          Util.pretty_unif_problem ctxt (norm_pt env pt)
+                          Util.pretty_unif_problem binders ctxt (norm_pt env pt)
                         ] |> Pretty.string_of);
                       raise FALLBACK))
                 | SOME ph' =>
@@ -180,7 +180,7 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Higher-order pattern E-matching ",
-        Util.pretty_unif_problem ctxt (norm_pt env pt)
+        Util.pretty_unif_problem binders ctxt (norm_pt env pt)
       ] |> Pretty.string_of);
     match binders ctxt pt env)
     |> Seq.pull
@@ -196,7 +196,7 @@ val norms_match = Util.beta_eta_short_norms_match
 fun string_of_term ctxt env binders t =
   (map (Free o fst) binders, t)
   |> subst_bounds
-  |> Norm.norm_term_unif env
+  |> Same.commit (Norm.norm_term_unif env)
   |> Syntax.string_of_term ctxt
 
 fun bname binders = fst o fst o nth binders
@@ -256,7 +256,7 @@ fun split_type t n =
   in split (t, n, []) end
 
 fun type_of_G (Envir.Envir {tyenv,...}) (T, n, is) =
-  let val (Ts, U) = split_type (Norm.norm_type_unif tyenv T) n
+  let val (Ts, U) = split_type (Same.commit (Norm.norm_type_unif tyenv) T) n
   in map (nth Ts) is ---> U end
 
 fun mk_hnf (binders, is, G, js) = mkabs (binders, is, app (G, js))
@@ -324,7 +324,7 @@ fun mk_ff_list (is,js) =
     in mk (is, js, length is - 1) end;
 
 fun app_free (Envir.Envir {tyenv,...}) binders n T is =
-  let val norm_type = Norm.norm_type_unif tyenv
+  let val norm_type = Same.commit (Norm.norm_type_unif tyenv)
   in list_comb (Var (n, norm_type T), map (map_types norm_type o Binders.nth_binder_data binders) is) end
 
 fun flexflex1 unify_types ctxt (env, binders, F, Fty, Fty', is, js) =
@@ -398,7 +398,7 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
         fun handle_failure unify_theory failure_msg = (@{log Logger.DEBUG} ctxt (fn _ =>
             Pretty.breaks [
               Pretty.str failure_msg,
-              Util.pretty_call_theory_unif ctxt st'
+              Util.pretty_call_theory_unif binders ctxt st'
             ] |> Pretty.block |> Pretty.string_of);
           (*Note: st' is already normalised*)
           unify_theory binders ctxt st' env)
@@ -456,7 +456,7 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Higher-order pattern E-unifying ",
-        Util.pretty_unif_problem ctxt (apply2 (Norm.norm_term_unif env) st)
+        Util.pretty_unif_problem binders ctxt (apply2 (Same.commit (Norm.norm_term_unif env)) st)
       ] |> Pretty.string_of);
     unif binders ctxt st env)
     |> Seq.pull

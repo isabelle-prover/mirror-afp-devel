@@ -21,7 +21,7 @@ text \<open>One-time setup to obtain a unifier with unification hints for the pu
 ML\<open>
 \<^functor_instance>\<open>struct_name: Reification_Unification_Hints
   functor_name: Term_Index_Unification_Hints
-  id: \<open>"reify"\<close>
+  id: \<open>"reify_uhint"\<close>
   more_args: \<open>
     structure TI = Discrimination_Tree
     structure Args = Term_Index_Unification_Hints_Args
