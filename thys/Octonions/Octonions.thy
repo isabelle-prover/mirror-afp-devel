@@ -7,8 +7,6 @@ theory Octonions
   imports Cross_Product_7 
 begin
 
-declare [[code_del_allowed]]
-
 subsection\<open>Basic definitions\<close>
 
 text\<open>As with the complex numbers, coinduction is convenient.\<close>
@@ -190,10 +188,10 @@ definition "sgn x = x /\<^sub>R norm x" for x :: octo
 
 definition "dist x y = norm (x - y)" for x y :: octo
 
-definition [code del]:
+definition
   "(uniformity :: (octo \<times> octo) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
-definition [code del]:
+definition
   "open (U :: octo set) \<longleftrightarrow> (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 
 lemma norm_eq_L2: "norm x = L2_set (octo_proj x) {..7}"

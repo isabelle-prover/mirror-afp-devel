@@ -13,7 +13,6 @@ text \<open>We adapt the integer polynomial gcd algorithm so that it
 theory Gcd_Finite_Field_Impl
 imports 
   Suitable_Prime
-  Code_Abort_Gcd
   "HOL-Library.Code_Target_Int" (* to be able to efficiently primality of medium large numbers *)
 begin
 

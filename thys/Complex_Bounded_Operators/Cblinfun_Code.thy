@@ -19,8 +19,6 @@ theory Cblinfun_Code
     Cblinfun_Matrix Containers.Set_Impl Jordan_Normal_Form.Matrix_Kernel
 begin
 
-declare [[code_del_allowed]]
-
 no_notation "Lattice.meet" (infixl \<open>\<sqinter>\<index>\<close> 70)
 no_notation "Lattice.join" (infixl \<open>\<squnion>\<index>\<close> 65)
 hide_const (open) Coset.kernel
@@ -251,7 +249,7 @@ text \<open>We proceed to give code equations for operations involving both
 \<close>
 
 definition cblinfun_apply_ell2 :: "'a ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'b ell2" 
-  where [code del, code_abbrev]: "cblinfun_apply_ell2 = (*\<^sub>V)"
+  where [code_abbrev]: "cblinfun_apply_ell2 = (*\<^sub>V)"
     \<comment> \<open>@{attribute code_abbrev} instructs the code generation to replace the
      rhs \<^term>\<open>(*\<^sub>V)\<close> by the lhs \<^term>\<open>cblinfun_apply_ell2\<close> before starting 
      the actual code generation.\<close>
@@ -267,7 +265,7 @@ text \<open>For the constant \<^term>\<open>vector_to_cblinfun\<close> (canonica
   \<open>vector_to_cblinfun_code\<close> with more restricted type\<close>
 
 definition vector_to_cblinfun_code :: "'a ell2 \<Rightarrow> 'b::one_dim \<Rightarrow>\<^sub>C\<^sub>L 'a ell2" where
-  [code del,code_abbrev]: "vector_to_cblinfun_code = vector_to_cblinfun"
+  [code_abbrev]: "vector_to_cblinfun_code = vector_to_cblinfun"
   \<comment> \<open>@{attribute code_abbrev} instructs the code generation to replace the
      rhs \<^term>\<open>vector_to_cblinfun\<close> by the lhs \<^term>\<open>vector_to_cblinfun_code\<close>
      before starting the actual code generation.\<close>
@@ -279,7 +277,7 @@ lemma vector_to_cblinfun_code[code]:
   by (simp add: mat_of_cblinfun_vector_to_cblinfun  vec_of_ell2_def vector_to_cblinfun_code_def)
 
 definition butterfly_code :: \<open>'a ell2 \<Rightarrow> 'b ell2 \<Rightarrow> 'b ell2 \<Rightarrow>\<^sub>C\<^sub>L 'a ell2\<close> 
-  where [code del, code_abbrev]: \<open>butterfly_code = butterfly\<close> 
+  where [code_abbrev]: \<open>butterfly_code = butterfly\<close> 
 lemma butterfly_code[code]: \<open>mat_of_cblinfun (butterfly_code s t)
    = mat_of_cols (CARD('a)) [vec_of_ell2 s] * mat_of_rows (CARD('b)) [map_vec cnj (vec_of_ell2 t)]\<close>
   for s :: \<open>'a::enum ell2\<close> and t :: \<open>'b::enum ell2\<close>
@@ -305,7 +303,7 @@ because that would require \<open>SPAN\<close> to be injective.)
 Then all code equations for different operations need to be formulated as
 functions of values of the form \<open>SPAN x\<close>. (E.g., \<open>SPAN x + SPAN y = SPAN (\<dots>)\<close>.)\<close>
 
-definition [code del]: "SPAN x = (let n = length (canonical_basis :: 'a::onb_enum list) in
+definition "SPAN x = (let n = length (canonical_basis :: 'a::onb_enum list) in
     ccspan (basis_enum_of_vec ` Set.filter (\<lambda>v. dim_vec v = n) (set x)) :: 'a ccsubspace)"
   \<comment> \<open>The SPAN of vectors x, as a \<^type>\<open>ccsubspace\<close>.
       We filter out vectors of the wrong dimension because \<open>SPAN\<close> needs to have
@@ -373,7 +371,7 @@ text \<open>We do not need an equation for \<^term>\<open>(+)\<close> because \<
 is defined in terms of \<^term>\<open>(\<squnion>)\<close> (for \<^type>\<open>ccsubspace\<close>), thus the code generation automatically
 computes \<^term>\<open>(+)\<close> in terms of the code for \<^term>\<open>(\<squnion>)\<close>\<close>
 
-definition [code del,code_abbrev]: "Span_code (S::'a::enum ell2 set) = (ccspan S)"
+definition [code_abbrev]: "Span_code (S::'a::enum ell2 set) = (ccspan S)"
   \<comment> \<open>A copy of \<^term>\<open>ccspan\<close> with restricted type. For analogous reasons as
      \<^term>\<open>cblinfun_apply_ell2\<close>, see there for explanations\<close>
 
@@ -390,7 +388,7 @@ lemma span_Set_Monad[code]: "Span_code (Set_Monad l) = (SPAN (map vec_of_ell2 l)
 text \<open>This instantiation defines a code equation for equality tests for \<^type>\<open>ccsubspace\<close>.
       The actual code for equality tests is given below (lemma \<open>equal_ccsubspace_code\<close>).\<close>
 instantiation ccsubspace :: (onb_enum) equal begin
-definition [code del]: "equal_ccsubspace (A::'a ccsubspace) B = (A=B)"
+definition "equal_ccsubspace (A::'a ccsubspace) B = (A=B)"
 instance apply intro_classes unfolding equal_ccsubspace_def by simp
 end
 
@@ -463,7 +461,7 @@ proof -
     by simp
 qed
 
-definition [code del, code_abbrev]: "range_cblinfun_code A = A *\<^sub>S top"
+definition [code_abbrev]: "range_cblinfun_code A = A *\<^sub>S top"
   \<comment> \<open>A new constant for the special case of applying an operator to the subspace \<^term>\<open>top\<close>
   (i.e., for computing the range of the operator). We do this to be able to give
   more specialized code for this specific situation. (The generic code for

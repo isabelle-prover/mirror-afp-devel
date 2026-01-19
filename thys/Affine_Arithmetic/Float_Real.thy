@@ -48,22 +48,6 @@ lemma [code_abbrev]:
   "real_of_float 1 = Ratreal 1"
   by simp
 
-lemmas compute_real_of_float[code drop]
-
-lemmas [code drop] =
-  real_equal_code
-  real_less_eq_code
-  real_less_code
-  real_plus_code
-  real_times_code
-  real_uminus_code
-  real_minus_code
-  real_inverse_code
-  real_divide_code
-  real_floor_code
-  Float.compute_truncate_down
-  Float.compute_truncate_up
-
 lemma real_equal_code [code]:
   "HOL.equal (real_of_float x) (real_of_float y) \<longleftrightarrow> HOL.equal x y"
   by (metis (poly_guards_query) equal real_of_float_inverse)

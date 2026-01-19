@@ -27,15 +27,12 @@ qed
 
 code_datatype ff_of_rbt
 
-declare [[code drop: finfun_const]]
 lemma finfun_const_impl[code]: "finfun_const c = ff_of_rbt (c, RBT.empty)" 
   by transfer auto
 
-declare [[code drop: finfun_apply]]
 lemma finfun_apply_impl[code]: "finfun_apply (ff_of_rbt (c, t)) x = def_option c (RBT.lookup t x)"
   by transfer auto
 
-declare [[code drop: finfun_update]]
 lemma finfun_update_impl[code]: "finfun_update (ff_of_rbt (c, t)) x y = ff_of_rbt (c, RBT.insert x y t)"
   by transfer auto
 

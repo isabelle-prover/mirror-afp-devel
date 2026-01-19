@@ -135,11 +135,6 @@ lemma infnorm[code]:
   by (auto simp: Max.set_eq_fold[symmetric] infnorm_Max[symmetric] infnorm_pos_le
     intro!: max.absorb2[symmetric])
 
-declare [[code abort: "Inf::real set \<Rightarrow> real"]]
-declare [[code abort: "Sup::real set \<Rightarrow> real"]]
-declare [[code abort: "Inf::('a::Inf * 'b::Inf) set \<Rightarrow> 'a * 'b"]]
-declare [[code abort: "Sup::('a::Sup * 'b::Sup) set \<Rightarrow> 'a * 'b"]]
-
 lemma nth_Basis_list_in_Basis[simp]:
   "n < length (Basis_list::'a::executable_euclidean_space list) \<Longrightarrow> Basis_list ! n \<in> (Basis::'a set)"
   by (metis Basis_list nth_mem)

@@ -6,8 +6,6 @@ theory Trace_Class
     Spectral_Theorem
 begin
 
-declare [[code_del_allowed]]
-
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_Sigma_iff
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_comparison_test
 hide_const (open) Determinants.trace
@@ -1554,8 +1552,8 @@ instantiation trace_class :: (chilbert_space, chilbert_space) "{complex_normed_v
 lift_definition norm_trace_class :: \<open>('a,'b) trace_class \<Rightarrow> real\<close> is trace_norm .
 definition sgn_trace_class :: \<open>('a,'b) trace_class \<Rightarrow> ('a,'b) trace_class\<close> where \<open>sgn_trace_class a = a /\<^sub>R norm a\<close>
 definition dist_trace_class :: \<open>('a,'b) trace_class \<Rightarrow> _ \<Rightarrow> _\<close> where \<open>dist_trace_class a b = norm (a - b)\<close>
-definition [code del]: "uniformity_trace_class = (INF e\<in>{0<..}. principal {(x::('a,'b) trace_class, y). dist x y < e})"
-definition [code del]: "open_trace_class U = (\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in INF e\<in>{0<..}. principal {(x, y). dist x y < e}. x' = x \<longrightarrow> y \<in> U)" for U :: "('a,'b) trace_class set"
+definition "uniformity_trace_class = (INF e\<in>{0<..}. principal {(x::('a,'b) trace_class, y). dist x y < e})"
+definition "open_trace_class U = (\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in INF e\<in>{0<..}. principal {(x, y). dist x y < e}. x' = x \<longrightarrow> y \<in> U)" for U :: "('a,'b) trace_class set"
 instance
 proof standard
   fix a b :: \<open>('a,'b) trace_class\<close>

@@ -4,8 +4,6 @@ theory Refine_Imp_Hol
             "HOL-Eisbach.Eisbach"
 begin
 
-  declare [[code_del_allowed]]
-
   subsection \<open>Assertions\<close>
     
   text \<open>We add assertions that consume no time to Imperative HOL Time.
@@ -14,7 +12,7 @@ begin
     actually being checked at runtime. On the other hand, our assertions are not executable, 
     and must be refined before code generation.
   \<close>
-  definition [code del]: "assert' P \<equiv> if P then ureturn () else raise ''assert''"
+  definition "assert' P \<equiv> if P then ureturn () else raise ''assert''"
 
   lemma execute_assert'[execute_simps]: "execute (assert' P) h = (if P then Some ((),h,0) else None)"
     by (auto simp: assert'_def execute_simps)

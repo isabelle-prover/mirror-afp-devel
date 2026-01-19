@@ -233,6 +233,7 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val context = Context(options)
+          notify_failed(context, url, results, progress)
           sitegen(context, url, results, progress)
         }
       },

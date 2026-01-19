@@ -511,8 +511,4 @@ where
     let d = Gcd (coeffs p)
     in (d, sdiv d p))"
 
-value "let p = M [1,2,3] (4::int) + M [2,0,4] 6 + M [2,0,5] 8
-  in content_primitive p"
-
-
 end

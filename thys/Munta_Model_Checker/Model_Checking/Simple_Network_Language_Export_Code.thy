@@ -1619,6 +1619,16 @@ paragraph \<open>OCaml Code Export\<close>
 text_raw \<open>\label{export-ocaml}\<close>
 
 text \<open>This is how to do it for OCaml:\<close>
+
+declare [[code abort:
+  Diff_Array.new_array'
+  Diff_Array.array_length'
+  Diff_Array.array_get'
+  Diff_Array.array_set'
+  Diff_Array.array_grow'
+  Diff_Array.array_shrink'
+]] \<comment> \<open>TODO: there is no setup of diff arrays for OCaml\<close>
+
 export_code
   convert_run Result Error String.explode int_of_integer nat_of_integer
   JSON.Object JSON.Array JSON.String JSON.Int JSON.Nat JSON.Rat JSON.Boolean JSON.Null fract.Rat

@@ -11,8 +11,6 @@ theory Complex_Bounded_Linear_Function0
     Complex_Euclidean_Space0
 begin
 
-declare [[code_del_allowed]]
-
 unbundle cinner_syntax
 
 lemma conorm_componentwise:
@@ -191,11 +189,11 @@ lift_definition minus_cblinfun :: "'a \<Rightarrow>\<^sub>C\<^sub>L 'b \<Rightar
 definition dist_cblinfun :: "'a \<Rightarrow>\<^sub>C\<^sub>L 'b \<Rightarrow> 'a \<Rightarrow>\<^sub>C\<^sub>L 'b \<Rightarrow> real"
   where "dist_cblinfun a b = norm (a - b)"
 
-definition [code del]:
+definition
   "(uniformity :: (('a \<Rightarrow>\<^sub>C\<^sub>L 'b) \<times> ('a \<Rightarrow>\<^sub>C\<^sub>L 'b)) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition open_cblinfun :: "('a \<Rightarrow>\<^sub>C\<^sub>L 'b) set \<Rightarrow> bool"
-  where [code del]: "open_cblinfun S = (\<forall>x\<in>S. \<forall>\<^sub>F (x', y) in uniformity. x' = x \<longrightarrow> y \<in> S)"
+  where "open_cblinfun S = (\<forall>x\<in>S. \<forall>\<^sub>F (x', y) in uniformity. x' = x \<longrightarrow> y \<in> S)"
 
 lift_definition uminus_cblinfun :: "'a \<Rightarrow>\<^sub>C\<^sub>L 'b \<Rightarrow> 'a \<Rightarrow>\<^sub>C\<^sub>L 'b" is "\<lambda>f x. - f x"
   by (rule bounded_clinear_minus)
@@ -266,8 +264,6 @@ proof
 qed
 
 end
-
-declare uniformity_Abort[where 'a="('a :: complex_normed_vector) \<Rightarrow>\<^sub>C\<^sub>L ('b :: complex_normed_vector)", code]
 
 lemma norm_cblinfun_eqI:
   assumes "n \<le> norm (cblinfun_apply f x) / norm x"

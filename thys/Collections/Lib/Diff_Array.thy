@@ -5,8 +5,6 @@ theory Diff_Array imports
   "HOL-Library.Code_Target_Numeral"
 begin
 
-declare [[code_del_allowed]]
-
 datatype 'a array = Array "'a list"
 
 subsection \<open>primitive operations\<close>
@@ -458,15 +456,15 @@ subsection \<open>Code Generator Setup\<close>
 
 subsubsection \<open>Code-Numeral Preparation\<close>
 
-definition [code del]: "new_array' v == new_array v o nat_of_integer"
-definition [code del]: "array_length' == integer_of_nat o array_length"
-definition [code del]: "array_get' a == array_get a o nat_of_integer"
-definition [code del]: "array_set' a == array_set a o nat_of_integer"
-definition [code del]: "array_grow' a == array_grow a o nat_of_integer"
-definition [code del]: "array_shrink' a == array_shrink a o nat_of_integer"
-definition [code del]:
+definition [code drop]: "new_array' v == new_array v o nat_of_integer"
+definition [code drop]: "array_length' == integer_of_nat o array_length"
+definition [code drop]: "array_get' a == array_get a o nat_of_integer"
+definition [code drop]: "array_set' a == array_set a o nat_of_integer"
+definition [code drop]: "array_grow' a == array_grow a o nat_of_integer"
+definition [code drop]: "array_shrink' a == array_shrink a o nat_of_integer"
+definition [code drop]:
   "array_get_oo' x a == array_get_oo x a o nat_of_integer"
-definition [code del]:
+definition [code drop]:
   "array_set_oo' f a == array_set_oo f a o nat_of_integer"
 
 
@@ -1094,7 +1092,7 @@ code_printing
 
 context begin
 (*private*) definition "test_diffarray_setup \<equiv> (Array,new_array',array_length',array_get', array_set', array_grow', array_shrink',array_of_list,array_get_oo',array_set_oo')"
-export_code test_diffarray_setup checking Scala SML OCaml? Haskell?
+export_code test_diffarray_setup checking SML Haskell? Scala
 end
 
 end

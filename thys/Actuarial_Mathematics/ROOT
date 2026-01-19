@@ -3,7 +3,7 @@ chapter AFP
 session "Actuarial_Mathematics" = "HOL-Probability" +
   options [timeout = 600]
   theories
-    Preliminaries
+    Preliminaries_AC
     Interest
     Survival_Model
     Life_Table

@@ -15,7 +15,7 @@ object AFP_Site_Gen {
 
   class Cache(
     dir: Path = Path.explode("$ISABELLE_HOME_USER"),
-    progress: Progress = new Progress()
+    progress: Progress = new Progress
   ) {
     private val cache_file = dir + Path.basic("dois.json")
 
@@ -250,7 +250,7 @@ object AFP_Site_Gen {
     afp: AFP_Structure = AFP_Structure(),
     status_file: Option[Path] = None,
     symlinks: Boolean = false,
-    progress: Progress = new Progress()
+    progress: Progress = new Progress
   ): Unit = {
     /* initialize project with dynamic Isabelle assets */
 
@@ -502,7 +502,7 @@ object AFP_Site_Gen {
     hugo: Hugo.Project,
     server: Boolean = false,
     clean: Boolean = false,
-    progress: Progress = new Progress()
+    progress: Progress = new Progress
   ): Unit = {
     val root = out_dir.absolute
 

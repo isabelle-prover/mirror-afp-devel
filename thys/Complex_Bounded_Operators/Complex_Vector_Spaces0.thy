@@ -961,13 +961,9 @@ instance
 
 end
 
-declare uniformity_Abort[where 'a=complex, code]
-
 lemma dist_of_complex [simp]: "dist (of_complex x :: 'a) (of_complex y) = dist x y"
   for a :: "'a::complex_normed_div_algebra"
   by (metis dist_norm norm_of_complex of_complex_diff)
-
-declare [[code abort: "open :: complex set \<Rightarrow> bool"]]
 
 (* As far as I can tell, there is no analogue to this for complex:
 instance real :: order_topology

@@ -23,22 +23,53 @@ typedecl f64
 \<comment> \<open>memory\<close>
 type_synonym byte = uint8
 
-typedef bytes = "UNIV :: (byte list) set" ..
+typedef bytes = "UNIV :: byte list set" ..
 setup_lifting type_definition_bytes
 declare Quotient_bytes[transfer_rule]
+code_datatype Abs_bytes
 
-lift_definition bytes_takefill :: "byte \<Rightarrow> nat \<Rightarrow> bytes \<Rightarrow> bytes" is "(\<lambda>a n as. takefill (Abs_uint8 a) n as)" .
-lift_definition bytes_replicate :: "nat \<Rightarrow> byte \<Rightarrow> bytes" is "(\<lambda>n b. replicate n (Abs_uint8 b))" .
-definition msbyte :: "bytes \<Rightarrow> byte" where
-  "msbyte bs = last (Rep_bytes bs)"
+lemma Rep_bytes_Abs_bytes_eq [code]:
+  "Rep_bytes (Abs_bytes bs) = bs"
+  by transfer rule
 
-typedef mem = "UNIV :: (byte list) set" ..
+lift_definition bytes_takefill :: "byte \<Rightarrow> nat \<Rightarrow> bytes \<Rightarrow> bytes"
+  is \<open>takefill :: uint8 \<Rightarrow> nat \<Rightarrow> uint8 list \<Rightarrow> uint8 list\<close> .
+
+declare bytes_takefill.abs_eq [code]
+
+lift_definition bytes_replicate :: "nat \<Rightarrow> byte \<Rightarrow> bytes"
+  is \<open>replicate :: nat \<Rightarrow> uint8 \<Rightarrow> uint8 list\<close> .
+
+declare bytes_replicate.abs_eq [code]
+
+lift_definition msbyte :: "bytes \<Rightarrow> byte"
+  is \<open>last :: uint8 list \<Rightarrow> uint8\<close> .
+
+declare msbyte.abs_eq [code]
+
+typedef mem = "UNIV :: byte list set" ..
 setup_lifting type_definition_mem
 declare Quotient_mem[transfer_rule]
+code_datatype Abs_mem
 
-lift_definition read_bytes :: "mem \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bytes" is "(\<lambda>m n l. take l (drop n m))" .
-lift_definition write_bytes :: "mem \<Rightarrow> nat \<Rightarrow> bytes \<Rightarrow> mem" is "(\<lambda>m n bs. (take n m) @ bs @ (drop (n + length bs) m))" .
-lift_definition mem_append :: "mem \<Rightarrow> bytes \<Rightarrow> mem" is append .
+lemma Rep_mem_Abs_mem_eq [code]:
+  "Rep_mem (Abs_mem bs) = bs"
+  by transfer rule
+
+lift_definition read_bytes :: "mem \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bytes"
+  is "\<lambda>m n l. take l (drop n m)" .
+
+declare read_bytes.abs_eq [code]
+
+lift_definition write_bytes :: "mem \<Rightarrow> nat \<Rightarrow> bytes \<Rightarrow> mem"
+  is "\<lambda>m n bs. (take n m) @ bs @ (drop (n + length bs) m)" .
+
+declare write_bytes.abs_eq [code]
+
+lift_definition mem_append :: "mem \<Rightarrow> bytes \<Rightarrow> mem"
+  is append .
+
+declare mem_append.abs_eq [code]
 
 \<comment> \<open>host\<close>
 typedecl host

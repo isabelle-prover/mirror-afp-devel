@@ -26,8 +26,6 @@ theory Complex_Vector_Spaces
     Complex_Vector_Spaces0
 begin
 
-
-declare [[code_del_allowed]]
 bundle norm_syntax begin
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
@@ -2551,10 +2549,8 @@ instantiation ccsubspace :: ("{complex_vector,topological_space}") "order"
 begin
 lift_definition less_eq_ccsubspace :: \<open>'a ccsubspace \<Rightarrow> 'a ccsubspace \<Rightarrow> bool\<close>
   is  \<open>(\<subseteq>)\<close>.
-declare less_eq_ccsubspace_def[code del]
 lift_definition less_ccsubspace :: \<open>'a ccsubspace \<Rightarrow> 'a ccsubspace \<Rightarrow> bool\<close>
   is \<open>(\<subset>)\<close>.
-declare less_ccsubspace_def[code del]
 instance
 proof
   fix x y z :: "'a ccsubspace"
