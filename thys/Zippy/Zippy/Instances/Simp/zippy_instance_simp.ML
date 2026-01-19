@@ -23,9 +23,7 @@ functor Zippy_Instance_Simp(
     structure Z : ZIPPY_INSTANCE_TACTIC
     structure Ctxt : ZIPPY_CTXT_STATE_MIXIN
     sharing type Ctxt.M.t = Z.M.t
-  )
-  : ZIPPY_INSTANCE_SIMP
-  =
+  ) : ZIPPY_INSTANCE_SIMP =
 struct
 open Z
 

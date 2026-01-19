@@ -82,7 +82,7 @@ fun insert (t, value) context = map_index (fn ti =>
   let
     val ctxt = Context.proof_of context
     val term_value = (t, value)
-    val key = TI.norm_term t
+    val key = Same.commit TI.norm_term t
   in
     (@{log Logger.DEBUG} ctxt (fn _ =>
       Pretty.breaks [
@@ -102,7 +102,7 @@ fun insert (t, value) context = map_index (fn ti =>
 fun delete (t, select) context = map_index (fn ti =>
   let
     val ctxt = Context.proof_of context
-    val key = TI.norm_term t
+    val key = Same.commit TI.norm_term t
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Deleting from key ", Syntax.pretty_term ctxt key

@@ -1,6 +1,7 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 theory Zip_HOL
   imports
+    Zip_Pure
     Cases_Tactics_HOL
     Extended_Blast_Data
     ML_Unification.ML_Unification_HOL_Setup
@@ -8,7 +9,6 @@ theory Zip_HOL
     Zippy_Instance_Classical
     Zippy_Instance_Induction
     Zippy_Instance_Subst
-    Zip_Pure
 begin
 
 subsubsection \<open>Simplifier\<close>
