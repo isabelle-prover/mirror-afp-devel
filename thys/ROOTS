@@ -147,6 +147,7 @@ Complex_Bounded_Operators
 Complex_Geometry
 Complx
 ComponentDependencies
+Compressed_Oracles
 Computational_pAdics
 Concentration_Inequalities
 ConcurrentGC
@@ -230,6 +231,7 @@ Dominance_CHK
 Doob_Convergence
 Dyck_Language
 DynamicArchitectures
+Dynamic_Pushdown_Networks
 Dynamic_Tables
 E_Transcendental
 Earley_Parser
@@ -784,6 +786,7 @@ Separation_Logic_Imperative_HOL
 Separation_Logic_Unbounded
 SequentInvertibility
 Serializable
+Set_Reconciliation
 Shadow_DOM
 Shadow_SC_DOM
 Shallow_Expressions

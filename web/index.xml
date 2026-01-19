@@ -4,6 +4,38 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Actuarial Mathematics</title>
+  <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
+  <pubDate>Fri, 16 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Actuarial Mathematics in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Compressed Oracles</title>
+  <link>https://isa-afp.org/entries/Compressed_Oracles.html</link>
+  <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Compressed Oracles in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
+  <title>Dynamic Pushdown Networks</title>
+  <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
+  <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Dynamic Pushdown Networks in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
+  <title>Set Reconciliation</title>
+  <link>https://isa-afp.org/entries/Set_Reconciliation.html</link>
+  <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Set Reconciliation in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
   <title>Rely-Guarantee Extensions and Locks</title>
   <link>https://isa-afp.org/entries/RG_Locks.html</link>
   <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
@@ -1001,13 +1033,6 @@
   <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
   <description>ConcurrentHOL in the AFP</description>
     <category>Computer science/Concurrency</category>
-</item>
-<item>
-  <title>Actuarial Mathematics</title>
-  <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
-  <pubDate>Sun, 07 Apr 2024 00:00:00 +0000</pubDate>
-  <description>Actuarial Mathematics in the AFP</description>
-    <category>Mathematics/Games and economics</category>
 </item>
 <item>
   <title>Broadcast Psi-calculi</title>

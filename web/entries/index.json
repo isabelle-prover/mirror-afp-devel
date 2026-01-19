@@ -1,5 +1,79 @@
 [
  {
+  "abstract": "Actuarial Mathematics is a theory in applied mathematics. This is mainly used for determining the prices of insurance products and evaluating the liability of a company associating with insurance contracts. It is related to calculus, probability theory and financial theory, etc. In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL. It includes the theory of interest, survival model, and life table. The theory of interest deals with interest rates, present value factors, an annuity certain, etc. The survival model is a probabilistic model that represents the human mortality. The life table is based on the survival model and used for practical calculations. I have already formalized the basic part of Actuarial Mathematics in Coq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner. In contrast, Isabelle formalization is based on the probability theory and the survival model is developed as generally as possible. Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web. This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know. (Updated January 16th, 2026.) ",
+  "authors": [
+   "Yosuke Ito",
+   "Michikazu Hirata"
+  ],
+  "link": "../entries/Actuarial_Mathematics.html",
+  "shortname": "Actuarial_Mathematics",
+  "title": "Actuarial Mathematics",
+  "topic_links": [
+   "../topics/mathematics/games-and-economics/"
+  ],
+  "topics": [
+   "Mathematics/Games and economics"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We formalize the compressed quantum random oracle methodology by Zhandry (Crypto 2019).  This is a formalism for modeling quantum random oracles to make quantum cryptographic proofs feasible.  Our definition of the compressed oracles is loosely based on the presentation from Unruh (arXiv 2021), but with a considerable amount of new definitions and results.  In particular, we make extensive use of the quantum references formalism (Unruh, arXiv 2024, AFP 2025) to enable reasoning about queries on arbitrary subsystems, something which is left very informal in pen-and-paper formalizations of the compressed oracles.  We use the developed formalism to prove that finding $x$ with $H(x)=0$, and finding collisions in $H$, is hard for quantum adversaries with oracle access to a random function $H$.",
+  "authors": [
+   "Dominique Unruh"
+  ],
+  "link": "../entries/Compressed_Oracles.html",
+  "shortname": "Compressed_Oracles",
+  "title": "Compressed Oracles",
+  "topic_links": [
+   "../topics/computer-science/security/cryptography/",
+   "../topics/mathematics/physics/quantum-information/"
+  ],
+  "topics": [
+   "Computer science/Security/Cryptography",
+   "Mathematics/Physics/Quantum information"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "We present a formalization of Dynamic Pushdown Networks (DPNs) and the automata based algorithm for computing backward reachability sets using Isabelle/HOL.    Dynamic pushdown networks are an abstract model for multithreaded, interprocedural programs with dynamic thread creation that was presented by Bouajjani, Müller-Olm and Touili in 2005.     We formalize the notion of a DPN in Isabelle and describe the algorithm for computing the $pre^*$-set from a regular set of configurations, and prove its correctness. We first give a nondeterministic description of the algorithm, from that we then infer a deterministic one, from which we can generate executable code using Isabelle's code-generation tool.",
+  "authors": [
+   "Peter Lammich"
+  ],
+  "link": "../entries/Dynamic_Pushdown_Networks.html",
+  "shortname": "Dynamic_Pushdown_Networks",
+  "title": "Dynamic Pushdown Networks",
+  "topic_links": [
+   "../topics/computer-science/",
+   "../topics/computer-science/concurrency/",
+   "../topics/computer-science/automata-and-formal-languages/",
+   "../topics/computer-science/programming-languages/static-analysis/"
+  ],
+  "topics": [
+   "Computer science",
+   "Computer science/Concurrency",
+   "Computer science/Automata and formal languages",
+   "Computer science/Programming languages/Static analysis"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This entry formally verifies the set reconciliation algorithm with nearly optimal communication complexity, due to Y. Minsky et al. [1]. The algorithm allows two communication partners, who have a similar pair of sets to reconcile them while using messages of nearly optimal size, proportional to a bound on the maximum symmetric difference between the sets.  The formalization also introduces an optimization, which reduces the communication complexity even further compared to the original publication.",
+  "authors": [
+   "Paul Hofmeier",
+   "Emin Karayel"
+  ],
+  "link": "../entries/Set_Reconciliation.html",
+  "shortname": "Set_Reconciliation",
+  "title": "Set Reconciliation",
+  "topic_links": [
+   "../topics/computer-science/algorithms/"
+  ],
+  "topics": [
+   "Computer science/Algorithms"
+  ],
+  "year": "2025"
+ },
+ {
   "abstract": "We enhance rely-guarantee verification in Isabelle/HOL by extending the 2003 built-in library with flexible syntax, data-invariant support, and new tactics. We demonstrate our enhanced library by applying it to the examples attached to the original library. We also apply our library to three queue locks: the Abstract Queue Lock, the Ticket Lock, and the Circular Buffer Lock.",
   "authors": [
    "Robert J. Colvin",
@@ -2413,22 +2487,6 @@
   ],
   "topics": [
    "Computer science/Concurrency"
-  ],
-  "year": "2024"
- },
- {
-  "abstract": "Actuarial Mathematics is a theory in applied mathematics.This is mainly used for determining the prices of insurance products and evaluating the liability of a company associating with insurance contracts.It is related to calculus, probability theory and financial theory, etc. In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL.It includes the theory of interest, survival model, and life table.The theory of interest deals with interest rates, present value factors, an annuity certain, etc.The survival model is a probabilistic model that represents the human mortality.The life table is based on the survival model and used for practical calculations. I have already formalized the basic part of Actuarial Mathematics in Coq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner.In contrast, Isabelle formalization is based on the probability theory and the survival model is developed as generally as possible.Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web. This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know. (Updated April 7th, 2024.) ",
-  "authors": [
-   "Yosuke Ito"
-  ],
-  "link": "../entries/Actuarial_Mathematics.html",
-  "shortname": "Actuarial_Mathematics",
-  "title": "Actuarial Mathematics",
-  "topic_links": [
-   "../topics/mathematics/games-and-economics/"
-  ],
-  "topics": [
-   "Mathematics/Games and economics"
   ],
   "year": "2024"
  },

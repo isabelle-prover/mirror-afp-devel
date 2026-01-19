@@ -3,10 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
+    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-11-21T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Compressed_Oracles.html</loc>
+    <lastmod>2025-12-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</loc>
+    <lastmod>2025-12-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Set_Reconciliation.html</loc>
+    <lastmod>2025-12-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/RG_Locks.html</loc>
     <lastmod>2025-11-21T00:00:00+00:00</lastmod>
@@ -403,9 +415,6 @@
   </url><url>
     <loc>https://isa-afp.org/entries/ConcurrentHOL.html</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
-    <lastmod>2024-04-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Broadcast_Psi.html</loc>
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
@@ -2989,7 +2998,7 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Actuarial_Mathematics/Life_Table.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/AFP/Actuarial_Mathematics/Preliminaries.html</loc>
+    <loc>https://isa-afp.org/thys/AFP/Actuarial_Mathematics/Preliminaries_AC.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Actuarial_Mathematics/Survival_Model.html</loc>
   </url><url>
@@ -4821,8 +4830,6 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Berlekamp_Zassenhaus/Chinese_Remainder_Poly.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/AFP/Berlekamp_Zassenhaus/Code_Abort_Gcd.html</loc>
-  </url><url>
     <loc>https://isa-afp.org/thys/AFP/Berlekamp_Zassenhaus/Degree_Bound.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Berlekamp_Zassenhaus/Distinct_Degree_Factorization.html</loc>
@@ -6648,6 +6655,26 @@
     <loc>https://isa-afp.org/thys/AFP/ComponentDependencies/DataDependenciesCaseStudy.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/ComponentDependencies/DataDependenciesConcreteValues.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Aux_Sturm_Calculation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/CO_Invariants.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/CO_Operations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Collision.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Compressed_Oracle_Is_RO.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Find_Zero.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Function_At.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Invariant_Preservation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Misc_Compressed_Oracle.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Compressed_Oracles/Oracle_Programs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Computational_pAdics/Distinguished_Quotients.html</loc>
   </url><url>
@@ -8994,6 +9021,24 @@
     <loc>https://isa-afp.org/authors/bryant/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Dyck_Language/Dyck_Language.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN_impl.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN_implEx.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/DPN_Setup.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/FSM.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/FSM_ex.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/ImplHelper.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/NDET.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Dynamic_Pushdown_Networks/SRS.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Dynamic_Tables/Tables_nat.html</loc>
   </url><url>
@@ -12192,6 +12237,8 @@
     <loc>https://isa-afp.org/thys/HOL/HOL-ex/Chinese.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/HOL-ex/Classical.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/HOL-ex/Code_Assertion.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/HOL-ex/Code_Binary_Nat_examples.html</loc>
   </url><url>
@@ -21936,6 +21983,14 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Serializable/Serializable.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Factorisation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Poly_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Rational_Function_Interpolation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Set_Reconciliation.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/park/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Shadow_DOM/Shadow_DOM.html</loc>
@@ -23974,6 +24029,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Functions_Galois_Relator.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Functions_Mono_Conditions.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Functions_Monotone.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Functions_Order_Base.html</loc>
@@ -24001,6 +24058,8 @@
     <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Natural_Functors_Order_Base.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Natural_Functors_Order_Equivalence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Transport/Transport_No_Dep_Fun.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Transport/Transport_Partial_Quotient_Types.html</loc>
   </url><url>
