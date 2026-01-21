@@ -763,7 +763,7 @@ let
 
              in
                lthy 
-               |> Utils.define_lemma (Binding.qualify has_fun_pointers "ts" (Binding.set_pos \<^here> b))
+               |> Utils.define_lemma (Binding.qualify has_fun_pointers "ts" (Binding.new_pos \<^here> b))
                    (final_attr @ [AutoCorresData.define_function_attribute {concealed_named_theorems=false} filename skips phase f]) 
                    def'
                |> snd

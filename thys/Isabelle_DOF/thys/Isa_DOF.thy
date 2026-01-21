@@ -829,7 +829,7 @@ fun binding_from_pos get_objects get_object_name name thy  =
   let
     val ns = get_objects (Proof_Context.init_global thy)
                          |> Name_Space.space_of_table 
-    val {pos, ...} = Name_Space.the_entry ns (get_object_name name thy)
+    val pos = Name_Space.the_entry_pos ns (get_object_name name thy)
   in if Long_Name.is_qualified name
      then Binding.make (Long_Name.base_name name, pos)
      else Binding.make (name, pos)end
@@ -1416,7 +1416,7 @@ setup\<open>
 |> fold (fn (n, check, elaborate) => fn thy =>
 let val ns = Sign.tsig_of thy |> Type.type_space
     val name = n
-    val {pos, ...} = Name_Space.the_entry ns name
+    val pos = Name_Space.the_entry_pos ns name
     val bname = Long_Name.base_name name
     val binding = Binding.make (bname, pos)
                    |> Binding.prefix_name DOF_core.ISA_prefix
@@ -1433,7 +1433,7 @@ end)
 |> fold (fn (n, check, elaborate) => fn thy =>
 let val ns = Sign.consts_of thy |> Consts.space_of
     val name = n
-    val {pos, ...} = Name_Space.the_entry ns name
+    val pos = Name_Space.the_entry_pos ns name
     val bname =  Long_Name.base_name name
     val binding = Binding.make (bname, pos)
 in  DOF_core.add_isa_transformer binding ((check, elaborate) |> DOF_core.make_isa_transformer) thy
@@ -2422,7 +2422,7 @@ val _ =
                 let val name = DOF_core.get_onto_class_name_global' ncid thy
                     val ns = DOF_core.get_onto_classes (Proof_Context.init_global thy)
                              |> Name_Space.space_of_table
-                    val {pos, ...} = Name_Space.the_entry ns name
+                    val pos = Name_Space.the_entry_pos ns name
                 in SOME (name,pos) end
             | default_cid' _ (SOME _) cid_pos = cid_pos
           val ncid =  Config.get_global thy declare_reference_default_class
@@ -2881,7 +2881,7 @@ fun check_and_mark_term ctxt oid  =
     val DOF_core.Instance {cid,value,...} = DOF_core.get_instance_global oid' thy
     val instances = DOF_core.get_instances ctxt'
     val ns = instances |> Name_Space.space_of_table 
-    val {pos, ...} = Name_Space.the_entry ns oid'
+    val pos = Name_Space.the_entry_pos ns oid'
     val markup = oid' |> Name_Space.markup (Name_Space.space_of_table instances)
     val _ = Context_Position.report ctxt' pos markup;
     (* this sends a report for a ref application to the PIDE interface ... *) 
