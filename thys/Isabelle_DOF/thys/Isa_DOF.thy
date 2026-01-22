@@ -251,7 +251,7 @@ struct
 
   fun print_onto_classes verbose ctxt =
     Pretty.big_list "Isabelle.DOF Onto_Classes:"
-      (map (Pretty.mark_str o #1) (Name_Space.markup_table verbose ctxt (get_onto_classes ctxt)))
+      (map (Pretty.marks_str o #1) (Name_Space.markups_table verbose ctxt (get_onto_classes ctxt)))
     |> Pretty.writeln;
 
   fun the_onto_class T i =
@@ -374,7 +374,7 @@ struct
 
   fun print_instances verbose ctxt =
     Pretty.big_list "Isabelle.DOF Instances:"
-      (map (Pretty.mark_str o #1) (Name_Space.markup_table verbose ctxt (get_instances ctxt)))
+      (map (Pretty.marks_str o #1) (Name_Space.markups_table verbose ctxt (get_instances ctxt)))
     |> Pretty.writeln;
 
   fun the_instance T i =
@@ -445,7 +445,7 @@ struct
 
   fun print_isa_transformers verbose ctxt =
     Pretty.big_list "Isabelle.DOF ISA_Transformers:"
-      (map (Pretty.mark_str o #1) (Name_Space.markup_table verbose ctxt (get_isa_transformers ctxt)))
+      (map (Pretty.marks_str o #1) (Name_Space.markups_table verbose ctxt (get_isa_transformers ctxt)))
     |> Pretty.writeln;
 
   fun the_isa_transformer T i =
@@ -594,7 +594,7 @@ struct
 
   fun print_invariants which verbose ctxt =
     Pretty.big_list "Isabelle.DOF ML_Invariants:"
-      (map (Pretty.mark_str o #1) (Name_Space.markup_table verbose ctxt (get_invariants which ctxt)))
+      (map (Pretty.marks_str o #1) (Name_Space.markups_table verbose ctxt (get_invariants which ctxt)))
     |> Pretty.writeln;
 
   val print_ml_invariants = print_invariants (fst o fst)
@@ -688,7 +688,7 @@ struct
 
   fun print_monitors_infos verbose ctxt =
     Pretty.big_list "Isabelle.DOF Monitor_Infos:"
-      (map (Pretty.mark_str o #1) (Name_Space.markup_table verbose ctxt (get_monitor_infos ctxt)))
+      (map (Pretty.marks_str o #1) (Name_Space.markups_table verbose ctxt (get_monitor_infos ctxt)))
     |> Pretty.writeln;
 
   fun the_monitor_info T i =
@@ -980,9 +980,10 @@ fun prep_decls prep_var raw_vars ctxt =
       |> Proof_Context.add_fixes vars
       ||> Context_Position.restore_visible ctxt';
     val _ =
-      Context_Position.reports ctxt''
-        (map (Binding.pos_of o #1) vars ~~        
-          map (Variable.markup_entity_def ctxt'' ##> Properties.remove Markup.kindN) xs);
+      (map (Binding.pos_of o #1) vars ~~
+        map (Variable.markups_entity_def ctxt'' #> map (apsnd (Properties.remove Markup.kindN))) xs)
+      |> maps (fn (p, ms) => map (pair p) ms)
+      |> Context_Position.reports ctxt''
   in ((vars, xs), ctxt'') end;
 
 fun print_doc_class_tree ctxt P T = 
@@ -1359,9 +1360,9 @@ fun compute_attr_access ctxt attr oid pos_option pos' = (* template *)
     val DOF_core.Instance {cid,...} =
                                     DOF_core.get_instance_global oid thy
     val instances = DOF_core.get_instances ctxt'
-    val markup = DOF_core.get_instance_name_global oid thy
-                 |> Name_Space.markup (Name_Space.space_of_table instances)
-    val _ = Context_Position.report ctxt' pos' markup;
+    val markups = DOF_core.get_instance_name_global oid thy
+                 |> Name_Space.markups (Name_Space.space_of_table instances)
+    val _ = Context_Position.reports ctxt' (map (pair pos') markups);
     val {long_name, typ=ty, ...} = 
       case DOF_core.get_attribute_info_local cid attr ctxt' of
           SOME f => f
@@ -1380,9 +1381,9 @@ fun compute_attr_access ctxt attr oid pos_option pos' = (* template *)
                   let 
                     val class_name = Long_Name.qualifier long_name
                     val onto_classes = DOF_core.get_onto_classes ctxt'
-                    val markup = DOF_core.get_onto_class_name_global class_name thy
-                                 |> Name_Space.markup (Name_Space.space_of_table onto_classes)
-                  in Context_Position.report ctxt' pos markup end
+                    val markups = DOF_core.get_onto_class_name_global class_name thy
+                                 |> Name_Space.markups (Name_Space.space_of_table onto_classes)
+                  in Context_Position.reports ctxt' (map (pair pos) markups) end
   in  symbex_attr_access0 ctxt' proj_term value end
 
 fun ML_isa_elaborate_trace_attribute (thy:theory) _ _ term_option pos =
@@ -1624,9 +1625,9 @@ fun check_classref {is_monitor=is_monitor} (SOME (cid, pos)) thy =
             then error("should be monitor class!")
             else ()
     val onto_classes = DOF_core.get_onto_classes ctxt
-    val markup = DOF_core.get_onto_class_name_global cid_long thy
-                 |> Name_Space.markup (Name_Space.space_of_table onto_classes)
-    val _ = Context_Position.report ctxt pos markup;
+    val markups = DOF_core.get_onto_class_name_global cid_long thy
+                 |> Name_Space.markups (Name_Space.space_of_table onto_classes)
+    val _ = Context_Position.reports ctxt (map (pair pos) markups);
   in  (name_cid_typ, pos)
   end
   | check_classref _ NONE _ = pair DOF_core.default_cid DOF_core.default_cid
@@ -1659,9 +1660,9 @@ fun calc_update_term {mk_elaboration=mk_elaboration} thy (name, typ)
                         then
                           let val attr_defined_cid = get_class_name cid_long lhs pos
                               val onto_classes = DOF_core.get_onto_classes ctxt
-                              val markup = DOF_core.get_onto_class_name_global attr_defined_cid thy
-                                           |> Name_Space.markup (Name_Space.space_of_table onto_classes)
-                          in Context_Position.report ctxt pos markup end
+                              val markups = DOF_core.get_onto_class_name_global attr_defined_cid thy
+                                           |> Name_Space.markups (Name_Space.space_of_table onto_classes)
+                          in Context_Position.reports ctxt (map (pair pos) markups) end
                         else ()
                 val info_opt = DOF_core.get_attribute_info cid_long (Long_Name.base_name lhs) thy
                 val (ln,lnt,lnu,_) = case info_opt of 
@@ -2117,9 +2118,9 @@ fun update_instance_command  ((binding, cid_pos),
                                       DOF_core.get_instance_global oid thy
                     val ctxt =  Proof_Context.init_global thy
                     val instances = DOF_core.get_instances ctxt
-                    val markup = DOF_core.get_instance_name_global oid thy
-                                 |> Name_Space.markup (Name_Space.space_of_table instances)
-                    val _ = Context_Position.report ctxt (Binding.pos_of binding) markup;
+                    val markups = DOF_core.get_instance_name_global oid thy
+                                 |> Name_Space.markups (Name_Space.space_of_table instances)
+                    val _ = Context_Position.reports ctxt (map (pair (Binding.pos_of binding)) markups);
                 in  cid end
       val default_cid = cid = DOF_core.default_cid
       val (((name, cid'), typ), pos') = Value_Command.Docitem_Parser.check_classref {is_monitor = false}
@@ -2215,9 +2216,9 @@ fun close_monitor_command (args as ((binding, cid_pos),
         val DOF_core.Instance {cid=cid_long,...} = DOF_core.get_instance_global oid thy
         val ctxt = Proof_Context.init_global thy
         val instances = DOF_core.get_instances ctxt
-        val markup = DOF_core.get_instance_name_global oid thy
-                      |> Name_Space.markup (Name_Space.space_of_table instances)
-        val _ = Context_Position.report ctxt pos markup;
+        val markups = DOF_core.get_instance_name_global oid thy
+                      |> Name_Space.markups (Name_Space.space_of_table instances)
+        val _ = Context_Position.reports ctxt (map (pair pos) markups);
     in  thy |> tap (DOF_core.check_closing_ml_invs cid_long oid {is_monitor=true})
             |> update_instance_command args
             |> tap (DOF_core.check_ml_invs cid_long oid {is_monitor=true})
@@ -2816,9 +2817,9 @@ fun check_and_mark ctxt cid_decl ({strict_checking = strict}) {inline=inline_req
             else if not inline then () else error("referred text-element is no macro!")
     val instances = DOF_core.get_instances ctxt
     val name' = DOF_core.get_instance_name_global name thy
-    val markup = name' |> Name_Space.markup (Name_Space.space_of_table instances)
+    val markups = name' |> Name_Space.markups (Name_Space.space_of_table instances)
     (* this sends a report for a ref application to the PIDE interface ... *)
-    val _ = Context_Position.report ctxt pos markup;
+    val _ = Context_Position.reports ctxt (map (pair pos) markups);
     val cid' = if cid = DOF_core.default_cid
                then cid
                else DOF_core.get_onto_class_cid thy cid |> (fst o fst)
@@ -2882,8 +2883,8 @@ fun check_and_mark_term ctxt oid  =
     val instances = DOF_core.get_instances ctxt'
     val ns = instances |> Name_Space.space_of_table 
     val pos = Name_Space.the_entry_pos ns oid'
-    val markup = oid' |> Name_Space.markup (Name_Space.space_of_table instances)
-    val _ = Context_Position.report ctxt' pos markup;
+    val markups = oid' |> Name_Space.markups (Name_Space.space_of_table instances)
+    val _ = Context_Position.reports ctxt' (map (pair pos) markups);
     (* this sends a report for a ref application to the PIDE interface ... *) 
     val _ = if cid = DOF_core.default_cid
             then error("anonymous "^ DOF_core.default_cid ^ " class has no value" )
@@ -2949,17 +2950,17 @@ fun get_instance_value_2_ML ctxt (oid:string,pos) =
         val thy = Proof_Context.theory_of ctxt'
         val value = DOF_core.value_of oid thy
         val instances = DOF_core.get_instances ctxt'
-        val markup = DOF_core.get_instance_name_global oid thy
-                     |> Name_Space.markup (Name_Space.space_of_table instances)
-        val _ = Context_Position.report ctxt' pos markup;
+        val markups = DOF_core.get_instance_name_global oid thy
+                     |> Name_Space.markups (Name_Space.space_of_table instances)
+        val _ = Context_Position.reports ctxt' (map (pair pos) markups);
     in  ML_Syntax.print_term value end
 
 fun get_instance_name_2_ML ctxt (oid:string,pos) =
     let val ctxt' = Context.the_proof ctxt
         val instances = DOF_core.get_instances ctxt'
-        val markup = DOF_core.get_instance_name_global oid (Proof_Context.theory_of ctxt')
-                     |> Name_Space.markup (Name_Space.space_of_table instances)
-        val _ = Context_Position.report ctxt' pos markup;
+        val markups = DOF_core.get_instance_name_global oid (Proof_Context.theory_of ctxt')
+                     |> Name_Space.markups (Name_Space.space_of_table instances)
+        val _ = Context_Position.reports ctxt' (map (pair pos) markups);
     in "\"" ^ oid ^ "\"" end
 
 fun trace_attr_2_ML ctxt (oid:string,pos) =
@@ -2986,8 +2987,8 @@ let
   val ns = Name_Space.space_of_table instances
   val name  = DOF_core.get_instance_name_global oid (Proof_Context.theory_of ctxt)
   val ctxt' = Config.put Name_Space.names_unique true ctxt
-  val _ = name |> Name_Space.markup ns
-               |> Context_Position.report ctxt pos
+  val markups = Name_Space.markups ns name
+  val _ = Context_Position.reports ctxt (map (pair pos) markups)
 in Name_Space.pretty ctxt' ns name end
 
 fun pretty_cid_style ctxt (style, (cid,pos)) = 
@@ -3501,8 +3502,8 @@ fun naming_context thy =
 fun get_space which = Name_Space.space_of_table o which o Data.get o Context.theory_of;
 
 fun print which context =
-  Name_Space.markup_extern (Context.proof_of context) (get_space which context)
-  #> uncurry Markup.markup;
+  Name_Space.markups_extern (Context.proof_of context) (get_space which context)
+  #> uncurry Markup.markups;
 
 fun check which context arg =
   Name_Space.check context (which (Data.get (Context.theory_of context))) arg;
