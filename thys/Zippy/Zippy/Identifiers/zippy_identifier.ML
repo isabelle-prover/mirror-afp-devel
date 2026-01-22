@@ -25,8 +25,8 @@ val pretty = Binding.pretty
 val quoted_string = Binding.print
 
 fun prefix_name opt_pos s = Binding.prefix_name s
-  #> (Option.map Binding.set_pos opt_pos |> the_default I)
+  #> (Option.map Binding.new_pos opt_pos |> the_default I)
 fun suffix_name opt_pos s = Binding.suffix_name s
-  #> (Option.map Binding.set_pos opt_pos |> the_default I)
+  #> (Option.map Binding.new_pos opt_pos |> the_default I)
 
 end

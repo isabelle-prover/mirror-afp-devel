@@ -662,7 +662,7 @@ fun ensure_L2_call_map_of_default_commutes_upto n lthy =
   in
     if null thms then lthy
     else snd (Local_Theory.note 
-      ((Binding.set_pos \<^here> Binding.empty, @{attributes [L2_call_map_of_default_commutes]}), thms) lthy)
+      ((Binding.new_pos \<^here> Binding.empty, @{attributes [L2_call_map_of_default_commutes]}), thms) lthy)
   end
 
 fun ensure_runs_to_partial_map_of_default_upto n lthy =
@@ -675,7 +675,7 @@ fun ensure_runs_to_partial_map_of_default_upto n lthy =
   in
     if null thms then lthy
     else snd (Local_Theory.note 
-      ((Binding.set_pos \<^here> Binding.empty, @{attributes [runs_to_vcg]}), thms) lthy)
+      ((Binding.new_pos \<^here> Binding.empty, @{attributes [runs_to_vcg]}), thms) lthy)
   end
 
 fun dest_prod ct = ct |> Match_Cterm.switch [

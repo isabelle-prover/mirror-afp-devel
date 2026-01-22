@@ -255,7 +255,7 @@ fun define_progenvs_and_rewrite_defs prog_name lthy =
             Binding.name (base_name ^ "_def")
       in
         lthy 
-        |> Utils.define_lemma'' (Binding.set_pos \<^here> b)
+        |> Utils.define_lemma'' (Binding.new_pos \<^here> b)
             (@{attributes [final_defs]} @ (if changed then @{attributes [ts_def]} else [])) 
             new_eq
         |> snd

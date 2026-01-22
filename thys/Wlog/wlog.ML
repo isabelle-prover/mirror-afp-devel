@@ -238,7 +238,7 @@ fun wlog (pos:Position.T)  (* Position where the wlog-command was entered *)
           (* assume fact1: \<open>A1\<close> and \<dots> and factn: \<open>An\<close> *)
           val state = Proof.assume [] [] (map (fn (name, assm) => ((Binding.make (name, pos),[]), map (fn t => (rename_fixed (Thm.prop_of t),[])) assm)) assms) state
           (* note wlog_assms = this *)
-          val state = Proof.note_thmss [((Binding.qualified_name "wlog_assms" |> Binding.set_pos pos, []), [(Proof.the_facts state, [])])] state
+          val state = Proof.note_thmss [((Binding.qualified_name "wlog_assms" |> Binding.new_pos pos, []), [(Proof.the_facts state, [])])] state
           (* Detect all facts that were already proven in this proof and that are now lost.
              (By comparing with the facts in `initial_ctxt`.) *)
           val facts = Proof_Context.facts_of initial_ctxt
