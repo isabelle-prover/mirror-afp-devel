@@ -14,20 +14,6 @@ imports
   HOL.Complex "HOL-Computational_Algebra.Factorial_Ring"
 begin
 
-lemma bernoulli_inequality: 
-  assumes x: "-1 \<le> (x :: 'a :: linordered_field)"
-  shows "1 + of_nat n * x \<le> (1 + x) ^ n"
-proof (induct n)
-  case (Suc n)
-  have "1 + of_nat (Suc n) * x = 1 + x + of_nat n * x" by (simp add: field_simps)
-  also have "\<dots> \<le> \<dots> + of_nat n * x ^ 2" by simp
-  also have "\<dots> = (1 + of_nat n * x) * (1 + x)" by (simp add: field_simps power2_eq_square)
-  also have "\<dots> \<le> (1 + x) ^ n * (1 + x)"
-    by (rule mult_right_mono[OF Suc], insert x, auto)
-  also have "\<dots> = (1 + x) ^ (Suc n)" by simp
-  finally show ?case .
-qed simp
-
 context
   fixes b :: "'a :: archimedean_field"
   assumes b: "0 < b" "b < 1"
@@ -56,7 +42,7 @@ proof (rule ccontr)
     by (rule less_imp_inverse_less[OF bnc c])
   also have "\<dots> < bbb * of_nat n" using lt bbb by (metis mult.commute pos_divide_less_eq)
   also have "\<dots> \<le> bb ^ n"
-    using bernoulli_inequality[OF bm1, folded id, of n] by (simp add: ac_simps)
+    using Bernoulli_inequality[OF bm1, folded id, of n] by (simp add: ac_simps)
   finally show False by simp
 qed
 
@@ -362,29 +348,7 @@ lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
 lemma inverse_le_iff_sgn: 
   assumes sgn: "sgn x = sgn y"
   shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"
-proof (cases "x = 0")
-  case True
-  with sgn have "sgn y = 0" by simp
-  hence "y = 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0"; auto)
-  thus ?thesis using True by simp
-next
-  case False note x = this
-  show ?thesis
-  proof (cases "x < 0")
-    case True
-    with x sgn have "sgn y = -1" by simp
-    hence "y < 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
-    show ?thesis
-      by (rule inverse_le_iff_le_neg[OF True \<open>y < 0\<close>])
-  next
-    case False
-    with x have x: "x > 0" by auto
-    with sgn have "sgn y = 1" by auto
-    hence "y > 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
-    show ?thesis
-      by (rule inverse_le_iff_le[OF x \<open>y > 0\<close>])
-  qed
-qed
+  by (metis inverse_le_imp_le inverse_le_imp_le_neg linorder_not_less nle_le sgn sgn_0_0 sgn_le_0_iff)
 
 lemma inverse_le_sgn: 
   assumes sgn: "sgn x = sgn y" and xy: "x \<le> (y :: real)"
@@ -393,20 +357,9 @@ lemma inverse_le_sgn:
 
 lemma set_list_update: "set (xs [i := k]) = 
   (if i < length xs then insert k (set (take i xs) \<union> set (drop (Suc i) xs)) else set xs)"
-proof (induct xs arbitrary: i)
-  case (Cons x xs i) 
-  thus ?case
-    by (cases i, auto)
-qed simp
+  by (simp add: leI list_update_beyond set_list_update)
 
-lemma prod_list_dvd: assumes "(x :: 'a :: comm_monoid_mult) \<in> set xs"
-  shows "x dvd prod_list xs"
-proof -
-  from assms[unfolded in_set_conv_decomp] obtain ys zs where xs: "xs = ys @ x # zs" by auto
-  show ?thesis unfolding xs dvd_def by (intro exI[of _ "prod_list (ys @ zs)"], simp add: ac_simps)
-qed
-
-lemma dvd_prod: 
+lemma dvd_prod:
 fixes A::"'b set" 
 assumes "\<exists>b\<in>A. a dvd f b" "finite A"
 shows "a dvd prod f A" 
@@ -431,16 +384,7 @@ end
 lemma dvd_imp_mult_div_cancel_left[simp]:
   assumes "(a :: 'a :: semidom_divide) dvd b"
   shows "a * (b div a) = b"
-proof(cases "b = 0")
-  case True then show ?thesis by auto
-next
-  case False
-  with dvdE[OF assms] obtain c where *: "b = a * c" by auto
-  also with False have "a \<noteq> 0" by auto
-  then have "a * c div a = c" by auto
-  also note *[symmetric]
-  finally show ?thesis.
-qed
+  using assms nonzero_mult_div_cancel_left by fastforce
 
 lemma (in semidom) prod_list_zero_iff[simp]: 
   "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
@@ -474,7 +418,8 @@ lemma not_irreducibleE:
 
 lemma prime_elem_dvd_prod_list:
   assumes p: "prime_elem p" and pA: "p dvd prod_list A" shows "\<exists>a \<in> set A. p dvd a"
-proof(insert pA, induct A)
+  using pA
+proof(induct A)
   case Nil
   with p show ?case by (simp add: prime_elem_not_unit)
 next
@@ -484,7 +429,8 @@ qed
 
 lemma prime_elem_dvd_prod_mset:
   assumes p: "prime_elem p" and pA: "p dvd prod_mset A" shows "\<exists>a \<in># A. p dvd a"
-proof(insert pA, induct A)
+  using pA
+proof(induct A)
   case empty
   with p show ?case by (simp add: prime_elem_not_unit)
 next
@@ -495,13 +441,7 @@ qed
 lemma mult_unit_dvd_iff[simp]:
   assumes "b dvd 1"
   shows "a * b dvd c \<longleftrightarrow> a dvd c"
-proof
-  assume "a * b dvd c"
-  with assms show "a dvd c" using dvd_mult_left[of a b c] by simp
-next
-  assume "a dvd c"
-  with assms mult_dvd_mono show "a * b dvd c" by fastforce
-qed
+  by (metis assms dvd.dvdE local.dvd_mult_left local.dvd_refl local.mult_dvd_mono local.one_dvd)
 
 lemma mult_unit_dvd_iff'[simp]: "a dvd 1 \<Longrightarrow> (a * b) dvd c \<longleftrightarrow> b dvd c"
   using mult_unit_dvd_iff [of a b c] by (simp add: ac_simps)
@@ -548,15 +488,9 @@ lemma irreducible_altdef:
   using local.irreducibleD' irreducibleI' irreducible_def by blast
 
 lemma dvd_mult_unit_iff:
-  assumes b: "b dvd 1"
+  assumes "b dvd 1"
   shows "a dvd c * b \<longleftrightarrow> a dvd c"
-proof-
-  from b obtain b' where 1: "b * b' = 1" by (elim dvdE, auto)
-  then have b0: "b \<noteq> 0" by auto
-  from 1 have "a = (a * b') * b" by (simp add: ac_simps)
-  also have "\<dots> dvd c * b \<longleftrightarrow> a * b' dvd c" using b0 by auto
-  finally show ?thesis by (auto intro: dvd_mult_left)
-qed
+  by (meson assms local.dvd_refl local.dvd_trans local.mult_unit_dvd_iff)
 
 lemma dvd_mult_unit_iff': "b dvd 1 \<Longrightarrow> a dvd b * c \<longleftrightarrow> a dvd c"
   using dvd_mult_unit_iff [of b a c] by (simp add: ac_simps)
@@ -591,29 +525,6 @@ lemma unit_mult_left_cancel: "a dvd 1 \<Longrightarrow> a * b = a * c \<longleft
 
 lemma unit_mult_right_cancel: "a dvd 1 \<Longrightarrow> b * a = c * a \<longleftrightarrow> b = c"
   using unit_mult_left_cancel [of a b c] by (auto simp add: ac_simps)
-
-text \<open>New parts from here\<close>
-
-lemma irreducible_multD:
-  assumes l: "irreducible (a*b)"
-  shows "a dvd 1 \<and> irreducible b \<or> b dvd 1 \<and> irreducible a"
-proof-
-  from l have "a dvd 1 \<or> b dvd 1" using irreducibleD by auto
-  then show ?thesis
-  proof(elim disjE)
-    assume a: "a dvd 1"
-    with l have "irreducible b"
-      unfolding irreducible_def
-      by (metis is_unit_mult_iff mult.left_commute mult_not_zero)
-    with a show ?thesis by auto
-  next
-    assume a: "b dvd 1"
-    with l have "irreducible a"
-      unfolding irreducible_def
-      by (meson is_unit_mult_iff mult_not_zero semiring_normalization_rules(16))
-    with a show ?thesis by auto
-  qed
-qed
 
 end
 
