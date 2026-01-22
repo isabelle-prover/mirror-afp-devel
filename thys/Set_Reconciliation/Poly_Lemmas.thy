@@ -6,104 +6,6 @@ theory Poly_Lemmas
     "Polynomial_Interpolation.Missing_Polynomial"
 begin
 
-text "Taken from Budan-Fourier.BF-Misc"
-lemma order_linear[simp]: "order x [:-y, 1:] = (if x=y then 1 else 0)"
-  by (auto simp add:order_power_n_n[where n=1,simplified] order_0I)
-
-subsection "On Polynomial Roots"
-
-lemma proots_empty: "proots p = {#} \<longleftrightarrow> p = 0 \<or> (\<forall>x. poly p x \<noteq> 0)"
-proof standard
-  show "proots p = {#} \<Longrightarrow> p = 0 \<or> (\<forall>x. poly p x \<noteq> 0)"
-    using order_root count_empty count_proots by metis
-next
-  have "(\<forall>x. poly p x \<noteq> 0) \<Longrightarrow> proots p = {#}"
-    by (simp add: multiset_eqI order_root)
-  then show "p = 0 \<or> (\<forall>x. poly p x \<noteq> 0) \<Longrightarrow> proots p = {#}"
-    by auto
-qed
-
-lemma proots_element: "x \<in># proots p \<or> p = 0 \<longleftrightarrow> poly p x = 0"
-  by (cases "p = 0") auto
-
-lemma proots_diff:
-  assumes "p \<noteq> 0" "q \<noteq> 0"
-  shows "set_mset (proots p - proots q) = {x. order x p > order x q}" (is "?L = ?R")
-proof -
-  have "?L = {x. count (proots p) x > count (proots q) x}"
-    by (rule set_mset_diff)
-  also have "\<dots> = ?R"
-    using count_proots assms by simp
-  finally show ?thesis by simp
-qed
-
-subsection \<open>On @{term "rsquarefree"}\<close>
-
-text \<open>The following fact is an improved version of @{thm "rsquarefree_root_order"}, 
-which does not require the assumption that @{term "p \<noteq> 0"}.\<close>
-
-lemma rsquarefree_root_order': "rsquarefree p \<Longrightarrow> poly p x = 0 \<Longrightarrow> order x p = 1"
-  using rsquarefree_root_order rsquarefree_def by auto
-
-lemma rsquarefree_single_root[simp]: "rsquarefree [:-x,1:]"
-proof -
-  have "[:-x,1:] \<noteq> 0"
-    by simp
-  then show ?thesis
-    unfolding rsquarefree_def by auto
-qed
-
-lemma rsquarefree_mul:
-  assumes "rsquarefree p" "rsquarefree q"
-    "\<forall> x. poly p x \<noteq> 0 \<or> poly q x \<noteq> 0"
-  shows "rsquarefree(p * q)"
-proof -
-  have 11: "p \<noteq> 0" "q \<noteq> 0"
-    using assms rsquarefree_def by auto
-  then have 1: "p * q \<noteq> 0"
-    by simp
-
-  have "(\<forall>x. order x p = 0 \<or> order x p = 1)"
-    "(\<forall>x. order x q = 0 \<or> order x q = 1)"
-    using assms rsquarefree_def by auto
-  then have 2: "(\<forall>x. order x (p * q) = 0 \<or> order x (p * q) = 1)"
-    using 11 1 order_mult assms(3)
-    by (metis comm_monoid_add_class.add_0 less_one order_gt_0_iff verit_sum_simplify)
-
-  show ?thesis unfolding rsquarefree_def
-    using 1 2  by auto
-qed
-
-
-subsection \<open>On Symmetric Differences\<close>
-
-lemma card_sym_diff_finite:
-  assumes "finite A" "finite B"
-  shows "card (sym_diff A B) = card (A-B) + card (B-A)"
-proof -
-  have "(A-B) \<inter> (B-A) = {}"
-    by blast
-  then show ?thesis
-    using assms card_Un_disjoint[of "(A-B)" "(B-A)"] by fast
-qed
-
-lemma card_add_diff_finite:
-  assumes "finite A" "finite B"
-  shows "card A + card (B-A) = card B + card (A-B)"
-  using assms
-proof -
-  from assms have fi: "finite (A \<inter> B)"
-    by simp
-
-  have "card (B-A) = card B - card (A \<inter> B)"
-    using fi card_Diff_subset_Int by (metis inf_commute)
-  also have "card (A-B) = card A - card (A \<inter> B)"
-    using fi card_Diff_subset_Int by blast
-  moreover have "card A + (card B - card (A \<inter> B)) = card B + (card A - card (A \<inter> B))"
-    using assms by (metis Nat.diff_add_assoc add.commute card_mono inf.cobounded1 inf.cobounded2)
-  ultimately show ?thesis by argo
-qed
-
 lemma card_sub_int_diff_finite:
   assumes "finite A" "finite B"
   shows "int (card A) - card B = int (card (A-B)) - card (B-A)"
@@ -113,7 +15,6 @@ lemma card_sub_int_diff_finite_real:
   assumes "finite A" "finite B"
   shows "real (card A) - card B = real (card (A-B)) - card (B-A)"
   using assms card_add_diff_finite by fastforce
-
 subsection \<open>Characteristic Polynomial\<close>
 
 text \<open>The characteristic polynomial associated to a set:\<close>
@@ -217,15 +118,7 @@ qed
 
 lemma set_to_poly_order:
   "order x (set_to_poly A) = (if x \<in> A then 1 else 0)"
-proof (cases "x \<in> A")
-  case True
-  then show ?thesis
-    by (simp add: in_set_to_poly rsquarefree_root_order' rsquarefree_set_to_poly)
-next
-  case False
-  then show ?thesis using in_set_to_poly order_root
-    by auto
-qed
+  by (simp add: in_set_to_poly order_0I rsquarefree_root_order rsquarefree_set_to_poly)
 
 lemma set_to_poly_lead_coeff: "lead_coeff (set_to_poly A) = 1"
 proof (induct A rule: infinite_finite_induct)

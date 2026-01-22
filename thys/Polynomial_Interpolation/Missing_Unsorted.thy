@@ -11,16 +11,13 @@ text \<open>This theory contains several lemmas which might be of interest to th
 
 theory Missing_Unsorted
 imports
-  HOL.Complex "HOL-Computational_Algebra.Factorial_Ring"
+  Complex_Main "HOL-Computational_Algebra.Factorial_Ring"
 begin
 
 context
   fixes b :: "'a :: archimedean_field"
   assumes b: "0 < b" "b < 1"
 begin
-private lemma pow_one: "b ^ x \<le> 1" using power_Suc_less_one[OF b, of "x - 1"] by (cases x, auto)
-
-private lemma pow_zero: "0 < b ^ x" using b(1) by simp
 
 lemma exp_tends_to_zero: 
   assumes c: "c > 0"
@@ -46,47 +43,39 @@ proof (rule ccontr)
   finally show False by simp
 qed
 
-lemma linear_exp_bound: "\<exists> p. \<forall> x. b ^ x * of_nat x \<le> p"
+lemma linear_exp_bound: "\<exists> p. \<forall> n. b ^ n * of_nat n \<le> p"
 proof -
-  from b have "1 - b > 0" by simp
-  from exp_tends_to_zero[OF this]
-  obtain x0 where x0: "b ^ x0 \<le> 1 - b" ..
-  {
-    fix x
-    assume "x \<ge> x0"
-    hence "\<exists> y. x = x0 + y" by arith
-    then obtain y where x: "x = x0 + y" by auto
-    have "b ^ x = b ^ x0 * b ^ y" unfolding x by (simp add: power_add)
-    also have "\<dots> \<le> b ^ x0" using pow_one[of y] pow_zero[of x0] by auto
-    also have "\<dots> \<le> 1 - b" by (rule x0)
-    finally have "b ^ x \<le> 1 - b" .
-  } note x0 = this
-  define bs where "bs = insert 1 { b ^ Suc x * of_nat (Suc x) | x . x \<le> x0}"
-  have bs: "finite bs" unfolding bs_def by auto
+  obtain n0 where x0: "b ^ n0 \<le> 1 - b"
+    using b exp_tends_to_zero by fastforce
+  have *: "b ^ n \<le> 1 - b" if "n \<ge> n0" for n
+   by (metis that b order_trans power_decreasing_iff x0)
+  define bs where "bs \<equiv> insert 1 ((\<lambda>n. b ^ Suc n * of_nat (Suc n)) ` {..n0})"
+  have "finite bs" unfolding bs_def by auto
   define p where "p = Max bs"
-  have bs: "\<And> b. b \<in> bs \<Longrightarrow> b \<le> p" unfolding p_def using bs by simp
+  have bs: "\<And> b. b \<in> bs \<Longrightarrow> b \<le> p"
+    by (simp add: \<open>finite bs\<close> p_def)
   hence p1: "p \<ge> 1" unfolding bs_def by auto
   show ?thesis
   proof (intro allI exI)
-    fix x
-    show "b ^ x * of_nat x \<le> p"
-    proof (induct x)
-      case (Suc x)
+    fix n
+    show "b ^ n * of_nat n \<le> p"
+    proof (induct n)
+      case (Suc n)
       show ?case
-      proof (cases "x \<le> x0")
+      proof (cases "n \<le> n0")
         case True
-        show ?thesis 
-          by (rule bs, unfold bs_def, insert True, auto)
+        with bs show ?thesis 
+          by (auto simp: bs_def)
       next
         case False
-        let ?x = "of_nat x :: 'a"
-        have "b ^ (Suc x) * of_nat (Suc x) = b * (b ^ x * ?x) + b ^ Suc x" by (simp add: field_simps)
-        also have "\<dots> \<le> b * p + b ^ Suc x"
+        let ?x = "of_nat n :: 'a"
+        have "b ^ (Suc n) * of_nat (Suc n) = b * (b ^ n * ?x) + b ^ Suc n" by (simp add: field_simps)
+        also have "\<dots> \<le> b * p + b ^ Suc n"
           using b by (intro add_right_mono[OF mult_left_mono[OF Suc]]) auto
-        also have "\<dots> = p - ((1 - b) * p - b ^ (Suc x))" by (simp add: field_simps)
+        also have "\<dots> = p - ((1 - b) * p - b ^ (Suc n))" by (simp add: field_simps)
         also have "\<dots> \<le> p - 0"
         proof -
-          have "b ^ Suc x \<le> 1 - b" using x0[of "Suc x"] False by auto
+          have "b ^ Suc n \<le> 1 - b" using *[of "Suc n"] False by auto
           also have "\<dots> \<le> (1 - b) * p" using b p1 by auto
           finally show ?thesis
             by (intro diff_left_mono, simp)
@@ -97,13 +86,13 @@ proof -
   qed
 qed
 
-lemma poly_exp_bound: "\<exists> p. \<forall> x. b ^ x * of_nat x ^ deg \<le> p" 
+lemma poly_exp_bound: "\<exists> p. \<forall> n. b ^ n * of_nat n ^ deg \<le> p" 
 proof -
   show ?thesis
   proof (induct deg)
     case 0
     show ?case
-      by (rule exI[of _ 1], intro allI, insert pow_one, auto)
+      using b power_decreasing_iff by auto
   next
     case (Suc deg)
     then obtain q where IH: "\<And> x. b ^ x * (of_nat x) ^ deg \<le> q" by auto
@@ -146,7 +135,7 @@ proof -
           also have "c * \<dots> = (2 ^ Suc deg) * ((b ^ x * ?x ^ deg) * (b ^ x * ?x ^ deg))" 
             unfolding c_def by (simp add: ac_simps)  
           also have "\<dots> \<le> (2 ^ Suc deg) * (p * p)"
-            by (rule mult_left_mono[OF mult_mono[OF IH IH p]], insert pow_zero[of x], auto)
+            using mult_left_mono[OF mult_mono[OF IH IH p]] b by fastforce
           finally show "f (2 * x) \<le> (2 ^ Suc deg) * (p * p)" .
         qed (auto simp: f_def)
         hence "?f (2 * x) \<le> (2 ^ Suc deg) * (p * p)" unfolding f_def .

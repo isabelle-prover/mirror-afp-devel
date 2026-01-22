@@ -258,9 +258,6 @@ proof -
     by (auto simp add:order_multiplicity_eq intro:multiplicity_gcd)
 qed
 
-lemma order_linear[simp]: "order x [:-a,1:] = (if x=a then 1 else 0)"
-  by (auto simp add:order_power_n_n[where n=1,simplified] order_0I)
-  
 lemma map_poly_order_of_real:
   assumes "p\<noteq>0"
   shows "order (of_real t) (map_poly of_real p) = order t p" using assms

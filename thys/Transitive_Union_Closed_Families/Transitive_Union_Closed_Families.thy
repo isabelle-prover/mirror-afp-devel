@@ -25,9 +25,6 @@ no_notation equivalence.Partition (infixl "'/" 75)
 definition union_closed:: "'a set set \<Rightarrow> bool" 
   where "union_closed \<F> \<equiv> (\<forall>A\<in>\<F>. \<forall> B\<in>\<F>. A \<union> B \<in> \<F>)"
 
-abbreviation set_difference :: "['a set,'a set] \<Rightarrow> 'a set" (infixl "\<setminus>" 65)
-  where "A \<setminus> B \<equiv> A-B"
-
 locale Family = additive_abelian_group +
   fixes R 
   assumes finG: "finite G"

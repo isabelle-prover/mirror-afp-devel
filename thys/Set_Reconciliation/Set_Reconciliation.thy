@@ -309,7 +309,7 @@ proof -
     using type_m by (simp add:case_prod_beta del:proots_eff.simps)
   moreover have "\<dots> = {x. order x  p\<^sub>A > order x p\<^sub>B}  \<union> (B - {x. order x  p\<^sub>B > order x p\<^sub>A})"
     unfolding proots_eff_correct [symmetric]
-    using proots_diff irf(4,5) n0 by auto
+    using irf(4,5) n0 by (auto simp: set_mset_diff)
 
   ultimately show ?thesis by argo
 qed
