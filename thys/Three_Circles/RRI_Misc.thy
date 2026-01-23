@@ -395,7 +395,7 @@ proof (induction d arbitrary: p rule: less_induct)
             hence "degree y = 0" using hdeg by auto
             then obtain y' where 4: "y = [:y':]" using degree_0_iff by auto
             moreover from hdeg obtain a b where 5:"c = [:a, b:]" and 6: "b \<noteq> 0"
-              by (meson degree_eq_oneE)
+              by (meson degree1_coeffs)
             from 1 2 5 6 have "x' = inverse b" by (auto simp: field_simps)
             moreover from 3 4 5 6 have "y' = inverse b" by (auto simp: field_simps)
             ultimately have "x = y" using 2 4 by presburger

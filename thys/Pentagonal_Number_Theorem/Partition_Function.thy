@@ -95,7 +95,7 @@ qed
 lemma Partition'_mono:
   assumes "m \<le> n"
   shows   "Partition' m \<le> Partition' n"
-  using Partition'_strict_mono assms sledgehammer
+  using Partition'_strict_mono assms 
   by (metis Partition'_0 Partition'_pos bot_nat_0.extremum_strict
             less_one linorder_le_less_linear order_le_less)
 

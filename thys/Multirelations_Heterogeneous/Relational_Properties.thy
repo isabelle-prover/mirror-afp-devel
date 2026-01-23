@@ -6,6 +6,8 @@ imports Main
 
 begin
 
+no_notation set_difference (infixl "\<setminus>" 65)
+
 text \<open>This is a general-purpose theory for enrichments of Rel, which is still quite basic,
 but helpful for developing properties of multirelations.\<close>
 
