@@ -329,7 +329,7 @@ lemma Re_winding_number_poly_part_circlepath:
   assumes "degree p>0"
   shows "((\<lambda>r. Re (winding_number (poly p o part_circlepath z0 r 0 pi) 0)) \<longlongrightarrow> degree p/2 ) at_top"
 using assms
-proof (induct rule:poly_root_induct_alt)
+proof (induct rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by auto
 next
@@ -346,7 +346,7 @@ next
   have ?case when "degree p=0"
   proof -
     obtain pc where pc_def:"p=[:pc:]" using \<open>degree p = 0\<close> degree_eq_zeroE by blast
-    then have "pc\<noteq>0" using root(2) by auto
+    then have "pc\<noteq>0" using root by auto
     have "\<forall>\<^sub>F r in at_top. Re (w r) = Re (winding_number (g r) a)" 
     proof (rule eventually_at_top_linorderI[of "cmod (( pc * a) / pc - z0) + 1"])
       fix r::real assume asm:"cmod ((pc * a) / pc - z0) + 1 \<le> r"
@@ -459,7 +459,7 @@ next
       have "((\<lambda>r. Re (winding_number (g r) a)) \<longlongrightarrow>1 / 2) at_top" 
         unfolding g_def by (rule Re_winding_number_tendsto_part_circlepath)  
       moreover have "((\<lambda>r. Re (winding_number (poly p \<circ> g r) 0)) \<longlongrightarrow> degree p / 2) at_top"
-        unfolding g_def by (rule root(1)[OF that])
+        unfolding g_def using root that by blast
       moreover have "degree q = degree p + 1" 
         unfolding q_def
         apply (subst degree_mult_eq)
@@ -1338,7 +1338,7 @@ lemma cindexE_roots_on_horizontal_border:
   shows "cindexE lb ub (\<lambda>t. Im ((poly p \<circ> g) t) / Re ((poly p \<circ> g) t)) =
           cindexE lb ub (\<lambda>t. Im ((poly q \<circ> g) t) / Re ((poly q \<circ> g) t))"
   using assms
-proof (induct r arbitrary:p rule:poly_root_induct_alt)
+proof (induct r arbitrary:p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then have False 
     by (metis Im_complex_of_real UNIV_I imaginary_unit.simps(2) proots_within_0 zero_neq_one)
@@ -1393,7 +1393,7 @@ next
     qed 
     also have "\<dots> = cindexE lb ub (\<lambda>t. Im ((poly q \<circ> g) t) / Re ((poly q \<circ> g) t))"
       unfolding qrg_def
-    proof (rule root(1))
+    proof (rule root)
       show "lead_coeff r = 1" 
         by (metis lead_coeff_mult lead_coeff_pCons(1) mult_cancel_left2 one_poly_eq_simps(2) 
           root.prems(2) zero_neq_one)
@@ -1408,7 +1408,7 @@ lemma poly_decompose_by_proots:
   fixes p ::"'a::idom poly"
   assumes "p\<noteq>0"
   shows "\<exists>q r. p = q * r \<and> lead_coeff q=1 \<and> (\<forall>x\<in>proots q. P x) \<and> (\<forall>x\<in>proots r. \<not>P x)" using assms
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -1717,7 +1717,7 @@ proof -
   next
     fix x assume "x \<in> proots_within (p \<circ>\<^sub>p q) {z. 0 < Im z}"
     show "order (f x) p = order x (p \<circ>\<^sub>p q)" using \<open>p\<noteq>0\<close>
-    proof (induct p rule:poly_root_induct_alt)
+    proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
       case 0
       then show ?case by simp
     next

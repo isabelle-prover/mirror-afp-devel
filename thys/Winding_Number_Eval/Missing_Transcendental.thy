@@ -522,7 +522,7 @@ lemma periodic_set_tan_poly:
   assumes "p\<noteq>0" "c\<noteq>0"
   shows "periodic_set (roots (\<lambda>x. poly p (tan (x/c)))) (c*pi)"
   using assms
-proof (induct rule:poly_root_induct_alt)
+proof (induct rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next

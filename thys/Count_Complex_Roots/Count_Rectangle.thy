@@ -571,7 +571,7 @@ lemma proots_rect_cindexP_pathE:
     and "not_rect_vanishing p a b"
   shows "proots_rect p a b = -(proots_rect_border p a b +cindexP_pathE p (rectpath a b)) / 2"
   using \<open>not_rect_vanishing p a b\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then have False unfolding not_rect_vanishing_def by auto
   then show ?case by simp
@@ -591,7 +591,7 @@ next
 
   have hyps:"real (proots_rect p a b) =
               -(proots_rect_border p a b + cindexP_pathE p (rectpath a b)) / 2"
-    apply (rule root(1))
+    apply (rule root)
     by (meson not_rect_vanishing_def poly_mult_zero_iff root.prems)
 
   have cind_eq:"cindexP_pathE (rr * p) (rectpath a b) =

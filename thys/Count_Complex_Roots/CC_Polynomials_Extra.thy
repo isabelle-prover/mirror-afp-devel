@@ -167,30 +167,8 @@ lemma rsquarefree_0[simp]: "\<not> rsquarefree 0"
 
 lemma rsquarefree_times:
   assumes "rsquarefree (p*q)"
-  shows "rsquarefree q" using assms
-proof (induct p rule:poly_root_induct_alt)
-  case 0
-  then show ?case by simp
-next
-  case (no_proots p)
-  then have [simp]:"p\<noteq>0" "q\<noteq>0" "\<And>a. order a p = 0" 
-    using order_0I by auto
-  obtain "order a (p * q) = 0 \<longleftrightarrow> order a q = 0"
-         "order a (p * q) = 1 \<longleftrightarrow> order a q = 1" for a
-    by (simp add: order_mult)
-  then show ?case using \<open>rsquarefree (p * q)\<close>
-    unfolding rsquarefree_def by simp
-next
-  case (root a p)
-  define pq aa where "pq = p * q" and "aa = [:- a, 1:]"
-  obtain [simp]:"pq\<noteq>0" "aa\<noteq>0" "order a aa=1"
-    using aa_def pq_def root.prems by force
-  have "rsquarefree (aa * pq)"
-    unfolding aa_def pq_def using root(2) by (simp add:algebra_simps)
-  then have "rsquarefree pq"
-    unfolding rsquarefree_def by (auto simp add:order_mult)
-  from root(1)[OF this[unfolded pq_def]] show ?case .
-qed
+  shows "rsquarefree q"
+  using assms by (metis order_mult rsquarefree_def rsquarefree_def' add_leE mult_zero_right)
 
 lemma rsquarefree_smult_iff:
   assumes "s\<noteq>0"
