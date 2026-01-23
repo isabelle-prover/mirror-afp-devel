@@ -1,0 +1,29 @@
+title = "Abel's Limit Theorem"
+date = 2025-11-13
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+This entry mechanises Abel's limit theorem on power series with real coefficients. The theorem also holds for complex numbers, but this entry has not covered it yet.
+
+An application example of this theorem is also presented in this entry to extend the generalised binomial theorem for a specific example from $(-1,1)$ to its boundary cases $-1$ and $1$."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.yek]
+email = "yek_email"
+
+[contributors]
+
+[notify]
+yek = "yek_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

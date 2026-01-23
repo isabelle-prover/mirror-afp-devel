@@ -26,6 +26,9 @@
     <loc>https://isa-afp.org/entries/Weak_Spectroscopy.html</loc>
     <lastmod>2025-11-17T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Abel_Limit_Theorem.html</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Zippy.html</loc>
     <lastmod>2025-11-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -2859,6 +2862,10 @@
     <loc>https://isa-afp.org/authors/middeldorp/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/feliachi/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Abel_Limit_Theorem/Abel_Limit_Theorem.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Abel_Limit_Theorem/Binomial_Sqrt_Series_Boundary.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bharadwaj/</loc>
   </url><url>
@@ -15723,6 +15730,8 @@
     <loc>https://isa-afp.org/authors/engelhardt/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/wirt/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/yek/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Karatsuba_Sqrt/Karatsuba_Sqrt.html</loc>
   </url><url>
