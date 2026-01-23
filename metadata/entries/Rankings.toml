@@ -1,0 +1,28 @@
+title = "Linear orders as rankings"
+date = 2026-01-22
+topics = [
+  "Mathematics/Order",
+]
+abstract = """
+<p>This entry formalises the obvious isomorphism between finite linear orders and lists, where the list in question is interpreted as a <em>ranking</em>, i.e. it lists the elements in descending order without repetition.</p>
+<p>It also provides an executable algorithm to compute topological sortings, i.e. all rankings whose linear orders are extensions of a given relation.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

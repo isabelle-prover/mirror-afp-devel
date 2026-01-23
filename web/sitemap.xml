@@ -3,10 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2025-12-31T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2025-12-31T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Rankings.html</loc>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Swap_Distance.html</loc>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/SWF_Impossibility.html</loc>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Compressed_Oracles.html</loc>
     <lastmod>2025-12-31T00:00:00+00:00</lastmod>
@@ -20697,6 +20706,10 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Rank_Nullity_Theorem/Mod_Type.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Rankings/Rankings.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Rankings/Topological_Sortings_Rankings.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/amjad/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Real_Impl/Prime_Product.html</loc>
@@ -23273,6 +23286,24 @@
     <loc>https://isa-afp.org/authors/mansky/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/linker/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Swap_Distance/Swap_Distance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/Anon_Unan_Stratproof_Impossibility.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/Majcons_Stratproof_Impossibility.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/Social_Welfare_Functions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Anonymous.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Explicit.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Impossibility_Automation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Impossibility_Library.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Lowering.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/meesum/</loc>
   </url><url>

@@ -4,6 +4,27 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Swap Distance</title>
+  <link>https://isa-afp.org/entries/Swap_Distance.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Swap Distance in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Impossibility of Strategyproof Rank Aggregation</title>
+  <link>https://isa-afp.org/entries/SWF_Impossibility.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>The Impossibility of Strategyproof Rank Aggregation in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Linear orders as rankings</title>
+  <link>https://isa-afp.org/entries/Rankings.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Linear orders as rankings in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
   <title>Compressed Oracles</title>
   <link>https://isa-afp.org/entries/Compressed_Oracles.html</link>
   <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
