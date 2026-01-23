@@ -8,11 +8,6 @@ begin
 
 text \<open>Some new notation for built-in primitives\<close>
 
-section \<open>Sets\<close>
-
-abbreviation complement_in_of:: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (\<open>_\<setminus>_\<close> [65,65]65)
-  where "A \<setminus> B \<equiv> A-B"
-
 section \<open>Functions\<close>
 
 abbreviation preimage:: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> 'a set" (\<open>_ \<^sup>\<inverse> _ _\<close> [90,90,1000]90)

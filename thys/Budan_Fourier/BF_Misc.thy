@@ -41,14 +41,20 @@ subsection \<open>Misc\<close>
 lemma lead_coeff_pderiv:
   fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors,semiring_char_0} poly"
   shows "lead_coeff (pderiv p) = of_nat (degree p) * lead_coeff p"
-  apply (auto simp:degree_pderiv coeff_pderiv)
-  apply (cases "degree p")
-  by (auto simp add: coeff_eq_0)
+proof (cases "degree p")
+  case 0
+  then show ?thesis
+    by (simp add: pderiv_eq_0_iff)
+next
+  case (Suc nat)
+  then show ?thesis
+    by (simp add: coeff_pderiv degree_pderiv)
+qed
 
 lemma gcd_degree_le_min:
   assumes "p\<noteq>0" "q\<noteq>0"
   shows "degree (gcd p q) \<le> min (degree p) (degree q)"
-  by (simp add: assms(1) assms(2) dvd_imp_degree_le)
+  by (simp add: assms dvd_imp_degree_le)
 
 lemma lead_coeff_normalize_field:
   fixes p::"'a::{field,semidom_divide_unit_factor} poly"
@@ -77,19 +83,6 @@ lemma lead_coeff_gcd_field:
 lemma poly_gcd_0_iff:
   "poly (gcd p q) x = 0 \<longleftrightarrow> poly p x=0 \<and> poly q x=0"
   by (simp add:poly_eq_0_iff_dvd)
-
-lemma degree_eq_oneE:
-  fixes p :: "'a::zero poly"
-  assumes "degree p = 1"
-  obtains a b where "p = [:a,b:]" "b\<noteq>0"
-proof -
-  obtain a b q where p:"p=pCons a (pCons b q)"
-    by (metis pCons_cases)
-  with assms have "q=0" by (cases "q = 0") simp_all
-  with p have "p=[:a,b:]" by auto
-  moreover then have "b\<noteq>0" using assms by auto
-  ultimately show ?thesis ..
-qed
 
 subsection \<open>More results about sign variations (i.e. @{term changes}\<close>
 
@@ -625,7 +618,7 @@ lemma proots_pcompose:
   shows "proots_count (pcompose p q) s = proots_count p (poly q ` s)"
 proof -
   obtain a b where ab:"q=[:a,b:]" "b\<noteq>0"
-    using \<open>degree q=1\<close> degree_eq_oneE by metis
+    using \<open>degree q=1\<close> degree1_coeffs by metis
   define f where "f=(\<lambda>y. (y-a)/b)"
   have f_eq:"f (poly q x) = x" "poly q (f x) = x" for x
     unfolding f_def using ab by auto
