@@ -62,7 +62,7 @@ lemma sign_r_pos_at_left:
   shows "if even (order c p) \<longleftrightarrow>sign_r_pos p c then eventually (\<lambda>x. poly p x>0) (at_left c)
          else eventually (\<lambda>x. poly p x<0) (at_left c)"
   using assms
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -921,7 +921,7 @@ qed
 lemma all_roots_real_degree:
   assumes "all_roots_real p" 
   shows "proots_count p UNIV =degree p" using assms 
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then have False using imaginary_unit.sel(2) unfolding all_roots_real_def by auto
   then show ?case by simp
@@ -961,7 +961,7 @@ lemma all_real_roots_mobius:
   fixes a b::real 
   assumes "all_roots_real p" and "a<b"
   shows "all_roots_real (fcompose p [:a,b:] [:1,1:])" using assms(1)
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next

@@ -10,80 +10,6 @@ theory BF_Misc imports
   Sturm_Tarski.Sturm_Tarski
 begin
 
-subsection \<open>Induction on polynomial roots\<close>
-
-(*adapted from the poly_root_induct in Polynomial.thy.*)
-lemma poly_root_induct_alt [case_names 0 no_proots root]:
-  fixes p :: "'a :: idom poly"
-  assumes "Q 0"
-  assumes "\<And>p. (\<And>a. poly p a \<noteq> 0) \<Longrightarrow> Q p"
-  assumes "\<And>a p. Q p \<Longrightarrow> Q ([:-a, 1:] * p)"
-  shows   "Q p"
-proof (induction "degree p" arbitrary: p rule: less_induct)
-  case (less p)
-  have ?case when "p=0" using \<open>Q 0\<close> that by auto
-  moreover have ?case when "\<nexists>a. poly p a = 0"
-    using assms(2) that by blast
-  moreover have ?case when "\<exists>a. poly p a = 0" "p\<noteq>0"
-  proof -
-    obtain a where "poly p a =0" using \<open>\<exists>a. poly p a = 0\<close> by auto
-    then obtain q where pq:"p= [:-a,1:] * q" by (meson dvdE poly_eq_0_iff_dvd)
-    then have "q\<noteq>0" using \<open>p\<noteq>0\<close> by auto
-    then have "degree q<degree p" unfolding pq by (subst degree_mult_eq,auto)
-    then have "Q q" using less by auto
-    then show ?case using assms(3) unfolding pq by auto
-  qed
-  ultimately show ?case by auto
-qed
-
-subsection \<open>Misc\<close>
-
-lemma lead_coeff_pderiv:
-  fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors,semiring_char_0} poly"
-  shows "lead_coeff (pderiv p) = of_nat (degree p) * lead_coeff p"
-proof (cases "degree p")
-  case 0
-  then show ?thesis
-    by (simp add: pderiv_eq_0_iff)
-next
-  case (Suc nat)
-  then show ?thesis
-    by (simp add: coeff_pderiv degree_pderiv)
-qed
-
-lemma gcd_degree_le_min:
-  assumes "p\<noteq>0" "q\<noteq>0"
-  shows "degree (gcd p q) \<le> min (degree p) (degree q)"
-  by (simp add: assms dvd_imp_degree_le)
-
-lemma lead_coeff_normalize_field:
-  fixes p::"'a::{field,semidom_divide_unit_factor} poly"
-  assumes "p\<noteq>0"
-  shows "lead_coeff (normalize p) = 1"
-  by (metis (no_types, lifting) assms coeff_normalize divide_self_if dvd_field_iff 
-      is_unit_unit_factor leading_coeff_0_iff normalize_eq_0_iff normalize_idem)
-
-lemma smult_normalize_field_eq:
-  fixes p::"'a::{field,semidom_divide_unit_factor} poly"
-  shows "p = smult (lead_coeff p) (normalize p)"
-proof (rule poly_eqI)
-  fix n
-  have "unit_factor (lead_coeff p) = lead_coeff p"
-    by (metis dvd_field_iff is_unit_unit_factor unit_factor_0)
-  then show "coeff p n = coeff (smult (lead_coeff p) (normalize p)) n"
-    by simp
-qed
-
-lemma lead_coeff_gcd_field:
-  fixes p q::"'a::field_gcd poly"
-  assumes "p\<noteq>0 \<or> q\<noteq>0"
-  shows "lead_coeff (gcd p q) = 1"
-  using assms by (metis gcd.normalize_idem gcd_eq_0_iff lead_coeff_normalize_field)
-
-lemma poly_gcd_0_iff:
-  "poly (gcd p q) x = 0 \<longleftrightarrow> poly p x=0 \<and> poly q x=0"
-  by (simp add:poly_eq_0_iff_dvd)
-
 subsection \<open>More results about sign variations (i.e. @{term changes}\<close>
 
 lemma changes_0[simp]:"changes (0#xs) = changes xs"
@@ -94,13 +20,11 @@ lemma changes_Cons:"changes (x#xs) = (if filter (\<lambda>x. x\<noteq>0) xs = []
                           else if x* hd (filter (\<lambda>x. x\<noteq>0) xs) < 0 then 
                             1 + changes xs 
                           else changes xs)"
-  apply (induct xs)
-  by auto
+  by (induct xs) auto
 
 lemma changes_filter_eq:
   "changes (filter (\<lambda>x. x\<noteq>0) xs) = changes xs"
-  apply (induct xs)
-  by (auto simp add:changes_Cons)
+  by (induct xs) (auto simp add:changes_Cons)
 
 lemma changes_filter_empty:
   assumes "filter (\<lambda>x. x\<noteq>0) xs = []"
@@ -126,7 +50,7 @@ next
     using that Cons by auto
   moreover have ?case when "xs\<noteq>[]" "ys\<noteq>[]"
   proof -
-    have "filter (\<lambda>x. x \<noteq> 0) xs \<noteq>[]"
+    have "filter (\<lambda>x. x \<noteq> 0) xs \<noteq> []"
       using that Cons 
       apply auto 
       by (metis (mono_tags, lifting) filter.simps(1) filter.simps(2) filter_append snoc_eq_iff_butlast)
@@ -254,7 +178,7 @@ qed
 lemma map_poly_order_of_real:
   assumes "p\<noteq>0"
   shows "order (of_real t) (map_poly of_real p) = order t p" using assms
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -269,7 +193,7 @@ next
 next
   case (root a p)
   define a1 where "a1=[:-a,1:]"
-  have [simp]:"a1\<noteq>0" "p\<noteq>0" unfolding a1_def using root(2) by auto
+  have [simp]:"a1\<noteq>0" "p\<noteq>0" unfolding a1_def using root by auto
   have "order (of_real t) (map_poly of_real a1) = order t a1"
     unfolding a1_def by simp
   then show ?case 
@@ -281,7 +205,7 @@ lemma order_pcompose:
   assumes "pcompose p q\<noteq>0"
   shows "order x (pcompose p q) = order x (q-[:poly q x:]) * order (poly q x) p" 
   using \<open>pcompose p q\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -296,10 +220,9 @@ next
 next
   case (root a p)
   define a1 where "a1=[:-a,1:]"
-  have [simp]: "a1\<noteq>0" "p\<noteq>0" "a1 \<circ>\<^sub>p q \<noteq>0" "p \<circ>\<^sub>p q \<noteq> 0" 
-    subgoal using root(2) unfolding a1_def by simp
-    subgoal using root(2) by auto
-    using root(2) by (fold a1_def,auto simp:pcompose_mult)
+  obtain [simp]: "a1\<noteq>0" "p\<noteq>0" "a1 \<circ>\<^sub>p q \<noteq>0" "p \<circ>\<^sub>p q \<noteq> 0" 
+    using root a1_def
+    by (metis (no_types, opaque_lifting) mult_zero_left mult_zero_right pcompose_0 pcompose_mult)
   have "order x ((a1 * p) \<circ>\<^sub>p q) = order x (a1  \<circ>\<^sub>p q) + order x (p \<circ>\<^sub>p q)"
     unfolding pcompose_mult by (auto simp: order_mult)
   also have "... = order x (q-[:poly q x:]) * (order (poly q x) a1 + order (poly q x) p)"
@@ -859,7 +782,7 @@ lemma fcompose_nzero:
   assumes "p\<noteq>0" and "q2\<noteq>0" and nconst:"\<forall>c. q1 \<noteq> smult c q2"
       and infi:"infinite (UNIV::'a set)"
   shows "fcompose p q1 q2 \<noteq> 0" using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -901,7 +824,7 @@ lemma proots_fcompose_bij_eq:
       and infi:"infinite (UNIV::'a set)"
   shows "proots_count p B = proots_count (fcompose p q1 q2) A"
   using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -1020,7 +943,7 @@ lemma proots_card_fcompose_bij_eq:
       and infi:"infinite (UNIV::'a set)"
   shows "card (proots_within p B) = card (proots_within (fcompose p q1 q2) A)"
   using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -1107,7 +1030,7 @@ lemma proots_pcompose_bij_eq:
   assumes bij:"bij_betw (\<lambda>x. poly q x) A B" and "p\<noteq>0" 
       and q_deg: "degree q = 1"
   shows "proots_count p B = proots_count (p \<circ>\<^sub>p q) A" using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by simp
 next
@@ -1205,7 +1128,7 @@ lemma proots_card_pcompose_bij_eq:
   assumes bij:"bij_betw (\<lambda>x. poly q x) A B" and "p\<noteq>0" 
       and q_deg: "degree q = 1"
   shows "card (proots_within p B) = card (proots_within (p \<circ>\<^sub>p q) A)" using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
+proof (induct p rule: poly_root_induct_alt [of _ "\<lambda>x. True"])
   case 0
   then show ?case by auto
 next
@@ -1225,7 +1148,7 @@ next
       using that unfolding pcompose_mult proots_within_times
       apply (auto simp add: poly_pcompose)
       using bij bij_betwE by blast
-    ultimately show ?thesis using root.hyps[OF \<open>p\<noteq>0\<close>] by auto
+    ultimately show ?thesis  using \<open>p \<noteq> 0\<close> root.hyps by auto
   qed
   moreover have ?case when "b\<in>B" "poly p b\<noteq>0"
   proof -

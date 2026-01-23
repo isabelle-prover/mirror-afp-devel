@@ -30,15 +30,14 @@ lemma last_smods_gcd:
 proof (induct "smods p q" arbitrary:p q rule:length_induct)
   case 1
   have ?case when "q=0"
-    using that smult_normalize_field_eq \<open>p\<noteq>0\<close> by auto
+    using that \<open>p\<noteq>0\<close> by (simp add: smult_normalize_field_eq)
   moreover have ?case when "q\<noteq>0"
   proof -
     define r where "r= - (p mod q)"
     have smods_cons:"smods p q = p # smods q r"
       unfolding r_def using \<open>p\<noteq>0\<close> by simp
     have "last (smods q r) = smult (lead_coeff (last (smods q r))) (gcd q r)"
-      apply (rule 1(1)[rule_format,of "smods q r" q r])
-      using smods_cons \<open>q\<noteq>0\<close> by auto
+      by (metis "1.hyps" length_Cons lessI smods_cons that)
     moreover have "gcd p q = gcd q r"
       unfolding r_def by (simp add: gcd.commute that)
     ultimately show ?thesis unfolding smods_cons using \<open>q\<noteq>0\<close>

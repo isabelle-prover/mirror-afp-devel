@@ -33,7 +33,7 @@ proof -
     then have "length (coeffs (of_qr x)) + (degree (qr_poly' TYPE('a)) - length (coeffs (of_qr x))) =
       degree (qr_poly' TYPE('a))" by (subst add_diff_assoc) (auto simp add: 1)
     then have "length ys = ?n" unfolding ys_def by (auto) 
-    moreover have "x = to_qr (Poly ys)" unfolding ys_def Poly_append_replicate_zero 
+    moreover have "x = to_qr (Poly ys)" unfolding ys_def Poly_append_replicate_0 
       Poly_coeffs to_qr_of_qr by simp
     ultimately have "\<exists> ys. length ys = ?n \<and> x = to_qr (Poly ys)" by blast
     then show ?case by force
