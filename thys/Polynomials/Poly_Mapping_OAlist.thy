@@ -2,7 +2,7 @@
 
 section \<open>Ordered Associative Lists for Polynomials\<close>
 
-theory OAlist_Poly_Mapping
+theory Poly_Mapping_OAlist
   imports PP_Type MPoly_Type_Class_Ordered OAlist
 begin
 

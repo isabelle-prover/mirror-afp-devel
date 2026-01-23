@@ -6,7 +6,7 @@
 *)
 section \<open>Executable Operations for Symmetric Polynomials\<close>
 theory Symmetric_Polynomials_Code
-  imports Symmetric_Polynomials "Polynomials.MPoly_Type_Class_FMap"
+  imports Symmetric_Polynomials "Polynomials.MPoly_Type_Class_Finite_Map"
 begin
 
 (* TODO: Quite a few of these code equations should probably be moved to the Polynomials entry. *)

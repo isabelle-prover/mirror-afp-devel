@@ -5,7 +5,7 @@ subsection \<open>Part 1 -- Extensions Without Importing Univariate Polynomials\
 theory Preliminaries_on_Polynomials_1
   imports 
     Polynomials.More_MPoly_Type
-    Polynomials.MPoly_Type_Class_FMap
+    Polynomials.MPoly_Type_Class_Finite_Map
 begin
 
 type_synonym var = nat

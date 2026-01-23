@@ -3,7 +3,7 @@
 section \<open>Computable Term Orders\<close>
 
 theory Term_Order
-  imports OAlist_Poly_Mapping "HOL-Library.Product_Lexorder"
+  imports Poly_Mapping_OAlist "HOL-Library.Product_Lexorder"
 begin
 
 declare [[code_del_allowed]]

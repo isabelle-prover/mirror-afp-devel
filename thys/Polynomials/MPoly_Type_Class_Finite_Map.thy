@@ -2,7 +2,7 @@
 
 section \<open>Executable Representation of Polynomial Mappings as Association Lists\<close>
 
-theory MPoly_Type_Class_FMap
+theory MPoly_Type_Class_Finite_Map
   imports
     MPoly_Type_Class_Ordered
     Poly_Mapping_Finite_Map

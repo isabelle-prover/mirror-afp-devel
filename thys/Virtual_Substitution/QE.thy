@@ -1,7 +1,7 @@
 section "QE lemmas"
 theory QE
   imports Polynomials.MPoly_Type_Univariate
-    Polynomials.Polynomials  Polynomials.MPoly_Type_Class_FMap 
+    Polynomials.Polynomials  Polynomials.MPoly_Type_Class_Finite_Map 
     "HOL-Library.Quadratic_Discriminant"
 begin
 

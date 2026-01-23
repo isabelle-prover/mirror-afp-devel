@@ -3,7 +3,7 @@ subsection \<open>Executable Version to Compute Representative Polynomials\<clos
 theory Roots_of_Algebraic_Poly_Impl
 imports 
   Roots_of_Algebraic_Poly
-  Polynomials.MPoly_Type_Class_FMap
+  Polynomials.MPoly_Type_Class_Finite_Map
 begin
 
 text \<open>We need to specialize our code to real and complex polynomials, 
