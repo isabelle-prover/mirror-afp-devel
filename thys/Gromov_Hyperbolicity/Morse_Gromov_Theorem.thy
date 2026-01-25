@@ -1963,7 +1963,7 @@ proof -
         alternative holds, i.e., the desired inequality is true.\<close>
         have "dm > 0" using I \<open>delta > 0\<close> \<open>C \<ge> 0\<close> Laux by auto
         have "\<exists>k. 2^k > dist (f um) (p um)/dm + 1"
-          by (simp add: real_arch_pow)
+          by (simp add: arch_pow)
         then obtain k where "2^k > dist (f um) (p um)/dm + 1"
           by blast
         then have "dist (f um) (p um) < (2^k - 1) * dm"
@@ -2283,7 +2283,7 @@ proof -
         qed
         have "dM > 0" using I \<open>delta > 0\<close> \<open>C \<ge> 0\<close> Laux by auto
         have "\<exists>k. 2^k > dist (f uM) (p uM)/dM + 1"
-          by (simp add: real_arch_pow)
+          by (simp add: arch_pow)
         then obtain k where "2^k > dist (f uM) (p uM)/dM + 1"
           by blast
         then have "dist (f uM) (p uM) < (2^k - 1) * dM"

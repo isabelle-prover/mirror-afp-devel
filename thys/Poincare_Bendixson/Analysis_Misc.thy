@@ -690,7 +690,7 @@ proof (rule metric_LIMSEQ_I)
   assume "e > (0::real)"
   then have "k / e > 0" using assms(1) by auto
   obtain N where N: "b^(N::nat) > k / e" using assms(2)
-    using real_arch_pow by blast
+    using arch_pow by blast
   then have "norm (s n) < e" if "n \<ge> N" for n
   proof -
     have "k / b^n \<le> k / b^N"

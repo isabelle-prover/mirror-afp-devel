@@ -1078,7 +1078,7 @@ proof -
     fix x :: "nat \<Rightarrow> real" and \<epsilon> :: real
     assume h:"x \<in> (\<Pi>\<^sub>E i\<in>UNIV. {0,1})" "0 < \<epsilon>"
     then obtain n where n:"(1/2)^n < \<epsilon>"
-      using real_arch_pow_inv[OF _ pd.r(2)] by auto
+      using arch_pow_inv[OF _ pd.r(2)] by auto
     show "\<exists>\<delta>>0. \<forall>y. y\<in>UNIV \<rightarrow>\<^sub>E {0, 1} \<and> pd.product_dist x y < \<delta> \<longrightarrow> d (f x) (f y) < \<epsilon>"
     proof(safe intro!: exI[where x="(1/2)^n"])
       fix y
@@ -1110,7 +1110,7 @@ proof -
       assume h:"x \<in> mspace pd.Product_metric.Self" "0 < \<epsilon>"
       then have x:"x \<in> (\<Pi>\<^sub>E i\<in>UNIV. {0,1})" by simp
       from h obtain n where n: "(1/2)^n < \<epsilon>"
-        using real_arch_pow_inv[OF _ pd.r(2)] by auto
+        using arch_pow_inv[OF _ pd.r(2)] by auto
       obtain e where e: "e > 0" "\<And>y. y \<in> (\<Pi>\<^sub>E i\<in>UNIV. {0,1}) \<Longrightarrow> x \<noteq> y \<Longrightarrow> d (f x) (f y) < e \<Longrightarrow> Suc n \<le> def_at x y"
         using d_le_rn_then[OF x,of "Suc n"] by auto
       show "\<exists>\<delta>>0. \<forall>y\<in>mspace pd.Product_metric.Self. mdist md.Self (f x) (f y) < \<delta> \<longrightarrow> mdist pd.Product_metric.Self x y < \<epsilon>"

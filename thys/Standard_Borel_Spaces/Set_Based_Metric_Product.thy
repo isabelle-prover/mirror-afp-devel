@@ -354,7 +354,7 @@ next
     assume he:"(0::real) < \<epsilon>"
     then have "0 < \<epsilon>*((1-r)/K)" using r K_pos by auto
     hence "\<exists>k. r^k < \<epsilon>*((1-r)/K)"
-      using r(2) real_arch_pow_inv by blast
+      using r(2) arch_pow_inv by blast
     then obtain l where "r^l < \<epsilon>*((1-r)/K)" by auto
     hence hk:"r^l/(1-r)*K < \<epsilon>"
       using mult_imp_div_pos_less[OF divide_pos_pos[OF _ K_pos,of "1-r"]] r(2) by simp
@@ -481,7 +481,7 @@ proof -
           case he2:1
           have "0 < (\<epsilon> - product_dist a x)*((1-r)/ K)" using r hu K_pos that hu by auto
           hence "\<exists>k. r^k < (\<epsilon> - product_dist a x)*((1-r)/ K)"
-            using r(2) real_arch_pow_inv by blast
+            using r(2) arch_pow_inv by blast
           then obtain k where "r^k < (\<epsilon> - product_dist a x)*((1-r)/ K)" by auto
           hence hk:"r^k / (1-r) * K < (\<epsilon> - product_dist a x)"
             using mult_imp_div_pos_less[OF divide_pos_pos[OF _ K_pos,of "1-r"]] r(2) by auto

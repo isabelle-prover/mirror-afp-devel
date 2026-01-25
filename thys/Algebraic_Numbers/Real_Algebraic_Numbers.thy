@@ -1819,11 +1819,13 @@ proof -
       case False  
       hence c: "c > 0" by auto
       with eps have "inverse c * eps > 0" by auto
-      from exp_tends_to_zero[of "3/4 :: real", OF _ _ this] obtain n where 
-        "(3/4) ^ n \<le> inverse c * eps" by auto
+      from arch_pow_inv[OF this, of "3/4 :: real"] 
+      obtain n where  "(3/4) ^ n \<le> inverse c * eps"
+        by (force simp add: less_eq_real_def)
       from mult_right_mono[OF this, of c] c
       have "(3/4) ^ n * c \<le> eps" by (auto simp: field_simps)
-      with *[of n] show ?thesis by (intro exI[of _ n], auto)
+      with *[of n] show ?thesis
+        using order_trans by blast
     qed
     then obtain n where "?r (R n) - ?r (L n) \<le> eps" unfolding l_def r_def diff_def by blast
     thus "\<exists>n l r. g n = (l, r) \<and> ?r r - ?r l \<le> eps" unfolding L_def R_def by (intro exI[of _ n], force)
@@ -2364,7 +2366,8 @@ proof (intro conjI impI allI)
   assume eps: "0 < eps" 
   define c where "c = eps / (max (real_of_rat (ir - il)) 1)" 
   have c0: "c > 0" using eps unfolding c_def by auto    
-  from exp_tends_to_zero[OF _ _ this, of "1/2"] obtain i where c: "(1/2)^i \<le> c" by auto
+  from arch_pow_inv[OF this, of "1/2"]  obtain i where c: "(1/2)^i \<le> c" 
+    by (force simp: less_eq_real_def)
   obtain l' r' where fi: "?f i = (l',r')" by force
   from main[of i, unfolded fi] have le: "r' - l' \<le> (ir - il) / 2 ^ i" by auto
   have iril: "real_of_rat (ir - il) \<ge> 0" using ir_il by (auto simp: of_rat_less_eq)

@@ -1210,7 +1210,7 @@ proof -
     assume "f \<one> \<noteq> 0"
     then have "f \<one> > 0" using f_bounds by fastforce
     then obtain n where hn: "f \<one> > (real 1)/2^n"
-      by (metis divide_less_eq_1 of_nat_1 one_less_numeral_iff power_one_over real_arch_pow_inv semiring_norm(76) zero_less_numeral)
+      by (metis divide_less_eq_1 of_nat_1 one_less_numeral_iff power_one_over arch_pow_inv semiring_norm(76) zero_less_numeral)
     have "\<one> \<in> V 1 n" using U_neighborhood by simp
     then have "(real 1)/2^n \<in> {(real m)/2^n |m n. \<one> \<in> V m n}" by fast
     then show "False" using hn cInf_lower bdd_below[of \<one>] unfolding f_def by (smt (verit, ccfv_threshold))
@@ -1341,7 +1341,7 @@ proof -
   proof (rule group_prenorm_continuous_if_continuous_at_1, intro allI impI)
     fix \<epsilon> :: real assume "\<epsilon> > 0"
     then obtain n where hn: "1/2^n < \<epsilon>" 
-      by (metis divide_less_eq_1_pos one_less_numeral_iff power_one_over real_arch_pow_inv semiring_norm(76) zero_less_numeral)
+      by (metis divide_less_eq_1_pos one_less_numeral_iff power_one_over arch_pow_inv semiring_norm(76) zero_less_numeral)
     then have "N \<sigma> < \<epsilon>" if "\<sigma> \<in> U (n + 1)" for \<sigma> using that U_in_norm_ball by fastforce
     then show "\<exists>U. neighborhood \<one> U \<and> (\<forall>\<sigma>\<in>U. N \<sigma> < \<epsilon>)" using U_props by meson
   qed
@@ -1449,7 +1449,7 @@ proof -
   proof (rule group_prenorm_continuous_if_continuous_at_1, intro allI impI)
     fix \<epsilon> :: real assume "\<epsilon> > 0"
     then obtain n where hn: "1/2^n < \<epsilon>" 
-      by (metis divide_less_eq_1_pos one_less_numeral_iff power_one_over real_arch_pow_inv semiring_norm(76) zero_less_numeral)
+      by (metis divide_less_eq_1_pos one_less_numeral_iff power_one_over arch_pow_inv semiring_norm(76) zero_less_numeral)
     then have "N \<sigma> < \<epsilon>" if "\<sigma> \<in> U (n + 1)" for \<sigma> using that U_in_norm_ball by fastforce
     then show "\<exists>U. neighborhood \<one> U \<and> (\<forall>\<sigma>\<in>U. N \<sigma> < \<epsilon>)" using U_props by meson
   qed
