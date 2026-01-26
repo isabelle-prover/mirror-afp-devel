@@ -7,22 +7,6 @@ section \<open>Some useful lemmas in topology\<close>
 theory Missing_Topology imports "HOL-Analysis.Multivariate_Analysis"
 begin
 
-subsection \<open>Misc\<close>    
-
-lemma continuous_on_neq_split:
-  fixes f :: "'a::linear_continuum_topology \<Rightarrow> 'b::linorder_topology"
-  assumes "\<forall>x\<in>s. f x\<noteq>y" "continuous_on s f" "connected s"
-  shows "(\<forall>x\<in>s. f x>y) \<or> (\<forall>x\<in>s. f x<y)"
-  by (smt (verit) assms connectedD_interval connected_continuous_image imageE image_eqI leI) 
-
-lemma
-  fixes f::"'a::linorder_topology \<Rightarrow> 'b::topological_space"
-  assumes "continuous_on {a..b} f" "a<b"
-  shows continuous_on_at_left:"continuous (at_left b) f" 
-    and continuous_on_at_right:"continuous (at_right a) f"
-  using assms continuous_on_Icc_at_leftD continuous_within apply blast
-  using assms continuous_on_Icc_at_rightD continuous_within by blast
- 
 subsection \<open>More about @{term filtermap}\<close> 
 
 lemma filtermap_at_bot_linear_eq:

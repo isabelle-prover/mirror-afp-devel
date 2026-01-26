@@ -121,45 +121,7 @@ qed
 lemma pderiv_power: "pderiv (p ^ n) = smult (of_nat n) (p ^ (n-1)) * pderiv p"
   apply (cases n)
   using pderiv_power_Suc by auto
-
-(*TODO: to replace the one (with the same name) in the library, as this version does 
-  not require 'a to be a field?*)
-thm order_pderiv
-      lemma order_pderiv:
-        fixes p::"'a::{idom,semiring_char_0} poly"
-        assumes "p\<noteq>0" "poly p x=0"
-        shows "order x p = Suc (order x (pderiv p))" using assms
-      proof -
-        define xx op where "xx=[:- x, 1:]" and "op = order x p"
-        have "op \<noteq> 0" unfolding op_def using assms order_root by blast
-        obtain pp where pp:"p = xx ^ op * pp" "\<not> xx dvd pp"
-          using order_decomp[OF \<open>p\<noteq>0\<close>,of x,folded xx_def op_def] by auto
-        have p_der:"pderiv p = smult (of_nat op) (xx^(op -1)) * pp + xx^op*pderiv pp"
-          unfolding pp(1) by (auto simp:pderiv_mult pderiv_power xx_def algebra_simps pderiv_pCons)
-        have "xx^(op -1) dvd (pderiv p)"
-          unfolding p_der
-          by (metis \<open>op \<noteq> 0\<close> dvd_add_left_iff dvd_mult2 dvd_refl dvd_smult dvd_triv_right
-              power_eq_if) 
-        moreover have "\<not> xx^op dvd (pderiv p)"
-        proof 
-          assume "xx ^ op dvd pderiv p"
-          then have "xx ^ op dvd smult (of_nat op) (xx^(op -1) * pp)"
-            unfolding p_der by (simp add: dvd_add_left_iff)
-          then have "xx ^ op dvd (xx^(op -1)) * pp"
-            apply (elim dvd_monic[rotated])
-            using \<open>op\<noteq>0\<close> by (auto simp:lead_coeff_power xx_def)
-          then have "xx ^ (op-1) * xx dvd (xx^(op -1))"
-            using \<open>\<not> xx dvd pp\<close> by (simp add: \<open>op \<noteq> 0\<close> mult.commute power_eq_if)
-          then have "xx dvd 1" 
-            using assms(1) pp(1) by auto
-          then show False unfolding xx_def by (meson assms(1) dvd_trans one_dvd order_decomp)
-        qed
-        ultimately have "op - 1 = order x (pderiv p)"
-          using order_unique_lemma[of x "op-1" "pderiv p",folded xx_def] \<open>op\<noteq>0\<close> 
-          by auto
-        then show ?thesis using \<open>op\<noteq>0\<close> unfolding op_def by auto
-      qed
-      
+     
 subsection \<open>More about @{term rsquarefree}\<close>
 
 lemma rsquarefree_0[simp]: "\<not> rsquarefree 0"
