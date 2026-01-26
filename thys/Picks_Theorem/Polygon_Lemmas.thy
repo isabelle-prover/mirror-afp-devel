@@ -1961,7 +1961,7 @@ proof-
     assume "\<epsilon> > 0"
     then obtain m where "m > 0 \<and> 1 / m < \<epsilon>"
       by (metis Groups.mult_ac(2) divide_less_eq linordered_field_no_ub order_less_trans zero_less_divide_1_iff)
-    moreover obtain k where "2^k > m" using arch_pow by fastforce
+    moreover obtain k where "2^k > m" using arch_pow[of 2] by fastforce
     ultimately have "1 / (2^k) < \<epsilon>" by (smt (verit) frac_less2)
     moreover have "(1::real) - ((2^k - 1) / (2^k)) = (1/(2^k))" by (simp add: diff_divide_distrib)
     ultimately show "\<exists>k. 1 - (2^k - 1) / (2^k) < \<epsilon>" by (smt (verit))
