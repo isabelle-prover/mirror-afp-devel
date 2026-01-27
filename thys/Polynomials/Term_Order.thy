@@ -648,7 +648,11 @@ definition rep_nat_term_prod :: "('a \<times> 'b) \<Rightarrow> ((nat, nat) pp \
   where rep_nat_term_prod_def: "rep_nat_term_prod u = (rep_nat_pp (fst u), rep_nat (snd u))"
 
 definition splus_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b)"
-  where splus_prod_def [code del]: "splus_prod t u = pprod.splus (fst t) u"
+  where splus_prod_def: "splus_prod t u = pprod.splus (fst t) u"
+
+lemma splus_prod_eq [code]:
+  \<open>splus (a, c) (b, d) = (a + b, d)\<close>
+  by (simp add: splus_prod_def pprod.splus_def pprod.pp_of_term_def pprod.component_of_term_def)
 
 instance proof
   fix x y :: "'a \<times> 'b"
