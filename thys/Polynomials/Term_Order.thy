@@ -450,7 +450,7 @@ definition abs_nat_pp_pp :: "(nat, nat) pp \<Rightarrow> ('a, 'b) pp"
   where abs_nat_pp_pp_def [code del]: "abs_nat_pp_pp t = pp_of_fun (\<lambda>n::'a. abs_nat (lookup_pp t (rep_nat n)))"
 
 definition lex_comp'_pp :: "('a, 'b) pp comparator"
-  where lex_comp'_pp_def [code del]: "lex_comp'_pp = comp_of_ord lex_pp"
+  where lex_comp'_pp_def: "lex_comp'_pp = comp_of_ord lex_pp"
 
 definition deg'_pp :: "('a, 'b) pp \<Rightarrow> nat"
   where "deg'_pp x = rep_nat (deg_pp x)"
@@ -561,10 +561,10 @@ instantiation pp :: (nat, nat) nat_term
 begin
 
 definition rep_nat_term_pp :: "('a, 'b) pp \<Rightarrow> (nat, nat) pp \<times> nat"
-  where rep_nat_term_pp_def [code del]: "rep_nat_term_pp t = (rep_nat_pp t, 0)"
+  where rep_nat_term_pp_def: "rep_nat_term_pp t = (rep_nat_pp t, 0)"
 
 definition splus_pp :: "('a, 'b) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> ('a, 'b) pp"
-  where splus_pp_def [code del]: "splus_pp = (+)"
+  where splus_pp_def: "splus_pp = (+)"
 
 instance proof
   fix x y :: "('a, 'b) pp"
@@ -645,7 +645,7 @@ instantiation prod :: ("{nat_pp_compare, comm_powerprod}", nat) nat_term
 begin
 
 definition rep_nat_term_prod :: "('a \<times> 'b) \<Rightarrow> ((nat, nat) pp \<times> nat)"
-  where rep_nat_term_prod_def [code del]: "rep_nat_term_prod u = (rep_nat_pp (fst u), rep_nat (snd u))"
+  where rep_nat_term_prod_def: "rep_nat_term_prod u = (rep_nat_pp (fst u), rep_nat (snd u))"
 
 definition splus_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b)"
   where splus_prod_def [code del]: "splus_prod t u = pprod.splus (fst t) u"
@@ -898,7 +898,7 @@ lemma nat_pp_order_of_le_nat_pp [code]: "nat_term_order_of_le = LEX"
 subsubsection \<open>Equality of Term Orders\<close>
 
 definition nat_term_order_eq :: "'a nat_term_order \<Rightarrow> 'a::nat_term_compare nat_term_order \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool"
-  where nat_term_order_eq_def [code del]:
+  where nat_term_order_eq_def:
       "nat_term_order_eq to1 to2 dg ps =
                 (\<forall>u v. (dg \<longrightarrow> deg_pp (fst (rep_nat_term u)) = deg_pp (fst (rep_nat_term v))) \<longrightarrow>
                        (ps \<longrightarrow> snd (rep_nat_term u) = snd (rep_nat_term v)) \<longrightarrow>
