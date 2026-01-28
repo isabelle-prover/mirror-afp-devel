@@ -72,11 +72,11 @@ which ignores any Terminals that might still exist in such a derivation step. Si
 operates on symbols (a different type) it needs a fully new definition. Since these new versions 
 allow more flexibility on the words, it turns out that the original 5 conditions aren't enough anymore 
 to fully constrain to the target language. Thus we add two additional 
-constraints \<open>successively P7\<close> and \<open>successively P8\<close> on the symbol-version of \<open>R\<^sub>A\<close> that vanish when 
+constraints \<open>successively P6\<close> and \<open>successively P7\<close> on the symbol-version of \<open>R\<^sub>A\<close> that vanish when 
 we ultimately restricts back to words consisting only of terminal symbols. With these the induction goes through:
 
-  \<^descr> \<open>(successively P7_sym) x\<close>: each \<open>Nt Y\<close> is directly preceded by some \<open>Tm [\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or some \<open>Tm [\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in \<open>x\<close>;
-  \<^descr> \<open>(successively P8_sym) x\<close>: each \<open>Nt Y\<close> is directly followed by some \<open>]\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or some \<open>]\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in \<open>x\<close>.
+  \<^descr> \<open>(successively P6_sym) x\<close>: each \<open>Nt Y\<close> is directly preceded by some \<open>Tm [\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or some \<open>Tm [\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in \<open>x\<close>;
+  \<^descr> \<open>(successively P7_sym) x\<close>: each \<open>Nt Y\<close> is directly followed by some \<open>]\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or some \<open>]\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in \<open>x\<close>.
 
 The \<open>\<leftarrow>\<close>-direction (see lemma \<open>Reg_and_dyck_imp_P'\<close>) is more work. 
 This time we stick with fully terminal words, so we work with the standard version of \<open>R\<^sub>A\<close>:
@@ -322,7 +322,7 @@ Additionally a version of each language (taking symbols as input) is defined
 which allows arbitrary interspersion of nonterminals.
 
 As this interspersion weakens the description, the symbol version of the regular language (@{term \<open>Reg_sym\<close>})
-is defined using two additional languages lifted from \<open>P7\<close> and \<open>P8\<close>. These vanish when restricted to
+is defined using two additional languages lifted from \<open>P6\<close> and \<open>P7\<close>. These vanish when restricted to
 words only containing terminals.
 
 As stated in the introductory text, these languages will only be regular, when constrained to a finite bracket set.
@@ -533,31 +533,31 @@ lemma P5_for_tm_if_P5_sym[dest]: \<open>P5_sym A (map Tm x) \<Longrightarrow> P5
   by(induction x) auto
 
 
-subsection\<open>\<open>P7\<close> and \<open>P8\<close>\<close>
+subsection\<open>\<open>P6\<close> and \<open>P7\<close>\<close>
 
-text\<open>\<open>(successively P7_sym) w\<close> iff \<open>Nt Y\<close> is directly preceded by some \<open>Tm [\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or \<open>Tm [\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in w:\<close>
+text\<open>\<open>(successively P6_sym) w\<close> iff \<open>Nt Y\<close> is directly preceded by some \<open>Tm [\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or \<open>Tm [\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in w:\<close>
+fun P6_sym :: \<open>('n, ('n,'t) bracket3) sym \<Rightarrow> ('n, ('n,'t) bracket3) sym \<Rightarrow> bool\<close> where
+  \<open>P6_sym (Tm (b,(A, [Nt B, Nt C]), v )) (Nt Y) = (b = True \<and> ((Y = B \<and> v = One) \<or> (Y=C \<and> v = Two)) )\<close> | 
+  \<open>P6_sym x (Nt Y) = False\<close> | 
+  \<open>P6_sym x y = True\<close>
+
+lemma P6_symD[dest]: 
+  fixes x:: \<open>('n, ('n,'t) bracket3) sym\<close>
+  assumes \<open>P6_sym x (Nt Y)\<close>
+  shows \<open>(\<exists>A C. x = Tm [\<^sup>1\<^bsub>(A,[Nt Y, Nt C])\<^esub>) \<or> (\<exists>A B. x = Tm [\<^sup>2\<^bsub>(A,[Nt B, Nt Y])\<^esub>)\<close>
+  using assms by(induction x \<open>Nt Y::('n, ('n,'t) bracket3) sym\<close> rule: P6_sym.induct) auto
+
+text\<open>\<open>(successively P7_sym) w\<close> iff \<open>Nt Y\<close> is directly followed by some \<open>]\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or \<open>]\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in w:\<close>
 fun P7_sym :: \<open>('n, ('n,'t) bracket3) sym \<Rightarrow> ('n, ('n,'t) bracket3) sym \<Rightarrow> bool\<close> where
-  \<open>P7_sym (Tm (b,(A, [Nt B, Nt C]), v )) (Nt Y) = (b = True \<and> ((Y = B \<and> v = One) \<or> (Y=C \<and> v = Two)) )\<close> | 
-  \<open>P7_sym x (Nt Y) = False\<close> | 
+  \<open>P7_sym (Nt Y) (Tm (b,(A, [Nt B, Nt C]), v ))  = (b = False \<and> ( (Y = B \<and> v = One) \<or> (Y=C \<and> v = Two)) )\<close> | 
+  \<open>P7_sym (Nt Y) x = False\<close> | 
   \<open>P7_sym x y = True\<close>
 
 lemma P7_symD[dest]: 
   fixes x:: \<open>('n, ('n,'t) bracket3) sym\<close>
-  assumes \<open>P7_sym x (Nt Y)\<close>
-  shows \<open>(\<exists>A C. x = Tm [\<^sup>1\<^bsub>(A,[Nt Y, Nt C])\<^esub>) \<or> (\<exists>A B. x = Tm [\<^sup>2\<^bsub>(A,[Nt B, Nt Y])\<^esub>)\<close>
-  using assms by(induction x \<open>Nt Y::('n, ('n,'t) bracket3) sym\<close> rule: P7_sym.induct) auto
-
-text\<open>\<open>(successively P8_sym) w\<close> iff \<open>Nt Y\<close> is directly followed by some \<open>]\<^sup>1\<^bsub>A\<rightarrow>YC\<^esub>\<close> or \<open>]\<^sup>2\<^bsub>A\<rightarrow>BY\<^esub>\<close> in w:\<close>
-fun P8_sym :: \<open>('n, ('n,'t) bracket3) sym \<Rightarrow> ('n, ('n,'t) bracket3) sym \<Rightarrow> bool\<close> where
-  \<open>P8_sym (Nt Y) (Tm (b,(A, [Nt B, Nt C]), v ))  = (b = False \<and> ( (Y = B \<and> v = One) \<or> (Y=C \<and> v = Two)) )\<close> | 
-  \<open>P8_sym (Nt Y) x = False\<close> | 
-  \<open>P8_sym x y = True\<close>
-
-lemma P8_symD[dest]: 
-  fixes x:: \<open>('n, ('n,'t) bracket3) sym\<close>
-  assumes \<open>P8_sym (Nt Y) x\<close>
+  assumes \<open>P7_sym (Nt Y) x\<close>
   shows \<open>(\<exists>A C. x = Tm ]\<^sup>1\<^bsub>(A,[Nt Y, Nt C])\<^esub>) \<or> (\<exists>A B. x = Tm ]\<^sup>2\<^bsub>(A,[Nt B, Nt Y])\<^esub>)\<close>
-  using assms by(induction \<open>Nt Y::('n, ('n,'t) bracket3) sym\<close> x rule: P8_sym.induct) auto
+  using assms by(induction \<open>Nt Y::('n, ('n,'t) bracket3) sym\<close> x rule: P7_sym.induct) auto
 
 
 subsection\<open>\<open>Reg\<close> and \<open>Reg_sym\<close>\<close>
@@ -589,15 +589,15 @@ lemma RegD[dest]:
   using assms unfolding Reg_def by blast+
 
 text\<open>A version of \<open>Reg\<close> for symbols, i.e. strings that may still contain Nt's. 
-It has 2 more Properties \<open>P7\<close> and \<open>P8\<close> that vanish for pure terminal strings:\<close>
+It has 2 more Properties \<open>P6\<close> and \<open>P7\<close> that vanish for pure terminal strings:\<close>
 definition Reg_sym :: \<open>'n \<Rightarrow> ('n, ('n,'t) bracket3) syms set\<close> where
   \<open>Reg_sym A = {u. P1_sym u \<and> 
      successively P2_sym u \<and> 
      successively P3_sym u \<and> 
      successively P4_sym u \<and> 
      P5_sym A u \<and> 
-     successively P7_sym u \<and> 
-     successively P8_sym u}\<close>
+     successively P6_sym u \<and> 
+     successively P7_sym u}\<close>
 
 lemma Reg_symI[intro]:
   assumes \<open>P1_sym u\<close> 
@@ -605,8 +605,8 @@ lemma Reg_symI[intro]:
     and \<open>successively P3_sym u\<close> 
     and \<open>successively P4_sym u\<close> 
     and \<open>P5_sym A u\<close> 
-    and \<open>successively P7_sym u\<close> 
-    and \<open>successively P8_sym u\<close>
+    and \<open>successively P6_sym u\<close> 
+    and \<open>successively P7_sym u\<close>
   shows \<open>u \<in> Reg_sym A\<close>
   using assms unfolding Reg_sym_def by blast
 
@@ -617,8 +617,8 @@ lemma Reg_symD[dest]:
     and \<open>successively P3_sym u\<close> 
     and \<open>successively P4_sym u\<close> 
     and \<open>P5_sym A u\<close> 
-    and \<open>successively P7_sym u\<close> 
-    and \<open>successively P8_sym u\<close>
+    and \<open>successively P6_sym u\<close> 
+    and \<open>successively P7_sym u\<close>
   using assms unfolding Reg_sym_def by blast+
 
 lemma Reg_for_tm_if_Reg_sym[dest]: \<open>map Tm u \<in> Reg_sym A \<Longrightarrow> u \<in> Reg A\<close> 
@@ -1238,61 +1238,61 @@ next
               successively P2_sym (u@w) \<and> 
               successively P3_sym (u@w) \<and> 
               successively P4_sym (u@w) \<and> 
-              successively P7_sym (u@w) \<and> 
-              successively P8_sym (u@w)\<close>
+              successively P6_sym (u@w) \<and> 
+              successively P7_sym (u@w)\<close>
   proof(cases u rule: rev_cases)
     case Nil
     then show ?thesis using w_eq by auto
   next
     case (snoc ys y)
 
-    then have \<open>successively P7_sym (ys @ [y] @ [Nt A] @ v)\<close> 
+    then have \<open>successively P6_sym (ys @ [y] @ [Nt A] @ v)\<close> 
       using Reg_symD[OF uAv] snoc by auto
-    then have \<open>P7_sym y (Nt A)\<close> 
+    then have \<open>P6_sym y (Nt A)\<close> 
       by (simp add: successively_append_iff)
 
     then obtain R X Y v' where y_eq: \<open>y = (Tm (Open((R, [Nt X, Nt Y]), v')))\<close> and \<open>v' = One \<Longrightarrow> A = X\<close> and \<open>v' = Two \<Longrightarrow> A = Y\<close> 
       by blast
     then have \<open>P3_sym y (hd w)\<close> 
-      using w_eq \<open>P7_sym y (Nt A)\<close> by force
+      using w_eq \<open>P6_sym y (Nt A)\<close> by force
     hence \<open>P1'_sym (last (ys@[y])) (hd w) \<and> 
           P2_sym (last (ys@[y])) (hd w) \<and> 
           P3_sym (last (ys@[y])) (hd w) \<and> 
           P4_sym (last (ys@[y])) (hd w) \<and> 
-          P7_sym (last (ys@[y])) (hd w) \<and> 
-          P8_sym (last (ys@[y])) (hd w)\<close> 
+          P6_sym (last (ys@[y])) (hd w) \<and> 
+          P7_sym (last (ys@[y])) (hd w)\<close> 
       unfolding y_eq using w_eq by auto
     with Reg_symD[OF uAv] moreover have 
       \<open>successively P1'_sym (ys @ [y]) \<and> 
      successively P2_sym (ys @ [y]) \<and> 
      successively P3_sym (ys @ [y]) \<and> 
      successively P4_sym (ys @ [y]) \<and> 
-     successively P7_sym (ys @ [y]) \<and> 
-     successively P8_sym (ys @ [y])\<close> 
+     successively P6_sym (ys @ [y]) \<and> 
+     successively P7_sym (ys @ [y])\<close> 
       unfolding snoc using successively_append_iff by blast
     ultimately show 
       \<open>successively P1'_sym (u@w) \<and> 
      successively P2_sym (u@w) \<and> 
      successively P3_sym (u@w) \<and> 
      successively P4_sym (u@w) \<and> 
-     successively P7_sym (u@w) \<and> 
-     successively P8_sym (u@w)\<close> 
+     successively P6_sym (u@w) \<and> 
+     successively P7_sym (u@w)\<close> 
       unfolding snoc using Reg_symD[OF w_resym] using successively_append_iff by blast
   qed
   have right: \<open>successively P1'_sym (w@v) \<and> 
                successively P2_sym (w@v) \<and> 
                successively P3_sym (w@v) \<and> 
                successively P4_sym (w@v) \<and> 
-               successively P7_sym (w@v) \<and> 
-               successively P8_sym (w@v)\<close>
+               successively P6_sym (w@v) \<and> 
+               successively P7_sym (w@v)\<close>
   proof(cases v)
     case Nil
     then show ?thesis using w_eq by auto
   next
     case (Cons y ys)
-    then have \<open>successively P8_sym ([Nt A] @ y # ys)\<close> 
+    then have \<open>successively P7_sym ([Nt A] @ y # ys)\<close> 
       using Reg_symD[OF uAv] Cons using successively_append_iff by blast
-    then have \<open>P8_sym (Nt A) y\<close> 
+    then have \<open>P7_sym (Nt A) y\<close> 
       by fastforce
     then obtain R X Y v' where y_eq: \<open>y = (Tm (Close((R, [Nt X, Nt Y]), v')))\<close> and \<open>v' = One \<Longrightarrow> A = X\<close> and \<open>v' = Two \<Longrightarrow> A = Y\<close> 
       by blast
@@ -1300,23 +1300,23 @@ next
          P2_sym (last w) (hd (y#ys)) \<and> 
          P3_sym (last w) (hd (y#ys)) \<and> 
          P4_sym (last w) (hd (y#ys)) \<and> 
-         P7_sym (last w) (hd (y#ys)) \<and> 
-         P8_sym (last w) (hd (y#ys))\<close> 
+         P6_sym (last w) (hd (y#ys)) \<and> 
+         P7_sym (last w) (hd (y#ys))\<close> 
       unfolding y_eq using w_eq by auto
     with Reg_symD[OF uAv] moreover have 
       \<open>successively P1'_sym (y # ys) \<and> 
      successively P2_sym (y # ys) \<and> 
      successively P3_sym (y # ys) \<and> 
      successively P4_sym (y # ys) \<and> 
-     successively P7_sym (y # ys) \<and> 
-     successively P8_sym (y # ys)\<close> 
+     successively P6_sym (y # ys) \<and> 
+     successively P7_sym (y # ys)\<close> 
       unfolding Cons by (metis P1_symD successively_append_iff)
     ultimately show \<open>successively P1'_sym (w@v) \<and> 
                      successively P2_sym (w@v) \<and> 
                      successively P3_sym (w@v) \<and> 
                      successively P4_sym (w@v) \<and> 
-                     successively P7_sym (w@v) \<and> 
-                     successively P8_sym (w@v)\<close> 
+                     successively P6_sym (w@v) \<and> 
+                     successively P7_sym (w@v)\<close> 
       unfolding Cons using Reg_symD[OF w_resym] successively_append_iff by blast
   qed
   from left right have P1_uwv: \<open>successively P1'_sym (u@w@v)\<close> 
@@ -1325,8 +1325,8 @@ next
     \<open>successively P2_sym (u@w@v) \<and> 
    successively P3_sym (u@w@v) \<and> 
    successively P4_sym (u@w@v) \<and> 
-   successively P7_sym (u@w@v) \<and> 
-   successively P8_sym (u@w@v)\<close> 
+   successively P6_sym (u@w@v) \<and> 
+   successively P7_sym (u@w@v)\<close> 
     using w_eq by (metis (no_types, lifting) List.list.discI hd_append2 successively_append_iff)
 
   moreover have \<open>P5_sym T (u@w@v)\<close> 
