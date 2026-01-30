@@ -119,10 +119,9 @@ setup_lifting type_definition_rf_polys
 lift_definition yun_polys :: "'a :: {euclidean_ring_gcd,field_char_0,semiring_gcd_mult_normalize} poly \<Rightarrow> 'a rf_polys"
   is "\<lambda> p. yun_factorization gcd p" 
   subgoal for p
-    apply auto
-    apply (intro square_free_rsquarefree)
-    apply (insert yun_factorization[of p, OF refl])
-    by (cases "yun_factorization gcd p", auto dest: square_free_factorizationD)
+    apply clarsimp
+    by (metis square_free_factorizationD(2) square_free_rsquarefree
+        yun_factorization(1))
   done
 
 context
@@ -132,6 +131,7 @@ lift_definition (code_dt) yun_rf :: "'a :: idom rf_polys \<Rightarrow> 'a \<time
   by (auto simp: list_all_iff, force)
 end
 end
+
 definition polys_rf :: "'a :: idom rf_polys \<Rightarrow> 'a rf_poly list" where
   "polys_rf = map fst o snd o yun_rf" 
 
@@ -146,7 +146,7 @@ lemma yun_polys: assumes "p \<noteq> 0"
     from yun_factorization[OF this] have sff: "square_free_factorization p (c, ps)" by auto
     from square_free_factorizationD'(1)[OF sff] p have c0: "c \<noteq> 0" by auto
     show ?thesis unfolding yun 
-      unfolding square_free_factorizationD'(1)[OF sff] poly_smult poly_prod_list snd_conv
+      unfolding square_free_factorizationD'(1)[OF sff] poly_smult poly_prod_list_eq snd_conv
       mult_eq_0_iff prod_list_zero_iff
       using c0 square_free_factorizationD(2)[OF sff] by force
   qed
