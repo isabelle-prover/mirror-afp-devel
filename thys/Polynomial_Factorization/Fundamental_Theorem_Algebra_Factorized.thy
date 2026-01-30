@@ -52,7 +52,7 @@ proof -
     and c: "c = coeff p (degree p)" by metis
   let ?prod = "(\<Prod>a\<leftarrow>as. [:- a, 1:])"
   from p0 have c: "c \<noteq> 0" unfolding c by auto
-  have roots: "{x. poly p x = 0} = set as" unfolding p poly_smult_zero_iff poly_prod_list prod_list_zero_iff
+  have roots: "{x. poly p x = 0} = set as" unfolding p poly_smult_zero_iff poly_prod_list_eq prod_list_zero_iff
     using c by auto
   have idr: "(card {x. poly p x = 0} = degree p) = distinct as" unfolding roots pas
     using card_distinct distinct_card by blast

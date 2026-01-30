@@ -66,7 +66,7 @@ lemma zip_altdef: "zip xs ys = [(xs!i, ys!i). i \<leftarrow> [0..<min (length xs
 
 
 
-lemma card_poly_roots_bound:
+lemma poly_roots_degree:
   fixes p :: "'a::{comm_ring_1,ring_no_zero_divisors} poly"
   assumes "p \<noteq> 0"
   shows   "card {x. poly p x = 0} \<le> degree p"
@@ -111,7 +111,7 @@ proof (rule ccontr)
     using neq and assms by (intro card_mono poly_roots_finite) auto
   finally have "degree (p - q) < card {x. poly (p - q) x = 0}" .
   moreover have "degree (p - q) \<ge> card {x. poly (p - q) x = 0}"
-    using neq by (intro card_poly_roots_bound) auto
+    using neq by (intro poly_roots_degree) auto
   ultimately show False by linarith
 qed  
 

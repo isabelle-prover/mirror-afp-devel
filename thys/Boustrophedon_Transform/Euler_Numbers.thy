@@ -1022,7 +1022,7 @@ lemma bernpoly_aux_correct:
   "bernpoly_aux cs (map (\<lambda>p. poly p x) ps) n x = 
      map (\<lambda>p. poly p x) (Bernpolys_aux cs ps n)"
   by (rule sym, induction n arbitrary: ps cs)
-     (simp_all add: Let_def poly_sum_list poly_monom o_def case_prod_unfold zip_map1
+     (simp_all add: Let_def poly_sum_list_eq poly_monom o_def case_prod_unfold zip_map1
                del: upt_Suc of_nat_Suc)
 
 lemma bernpoly_code [code]:
@@ -1120,7 +1120,7 @@ lemma length_euler_poly_aux [simp]: "length (euler_poly_aux cs xs n x) = length 
 lemma euler_poly_aux_correct:
   "euler_poly_aux cs (map (\<lambda>p. poly p x) ps) n x = map (\<lambda>p. poly p x) (Euler_polys_aux cs ps n)"
   by (rule sym, induction n arbitrary: ps cs)
-     (simp_all add: Let_def poly_sum_list poly_monom o_def case_prod_unfold zip_map1
+     (simp_all add: Let_def poly_sum_list_eq poly_monom o_def case_prod_unfold zip_map1
                del: upt_Suc of_nat_Suc)
 
 lemma euler_poly_code [code]:
