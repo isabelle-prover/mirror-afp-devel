@@ -20,18 +20,6 @@ declare poly_ext[intro]
 
 subsection \<open>Basic Properties\<close>
 
-lemma linear_poly_root: 
-  "(a :: 'a :: comm_ring_1) \<in> set as \<Longrightarrow> poly (\<Prod> a \<leftarrow> as. [: - a, 1:]) a = 0"
-proof (induct as)
-  case (Cons b as)
-  show ?case
-  proof (cases "a = b")
-    case False
-    with Cons have "a \<in> set as" by auto
-    from Cons(1)[OF this] show ?thesis by simp
-  qed simp
-qed simp
-
 lemma degree_lcoeff_sum: assumes deg: "degree (f q) = n"
   and fin: "finite S" and q: "q \<in> S" and degle: "\<And> p . p \<in> S - {q} \<Longrightarrow> degree (f p) < n"
   and cong: "coeff (f q) n = c"
@@ -64,47 +52,6 @@ next
       unfolding coeff_sum
       by (subst sum.remove[OF _ q], unfold id, insert fin, auto)
   qed
-qed
-
-lemma poly_sum_list: "poly (sum_list ps) x = sum_list (map (\<lambda> p. poly p x) ps)"
-  by (induct ps, auto)
-
-lemma poly_prod_list: "poly (prod_list ps) x = prod_list (map (\<lambda> p. poly p x) ps)"
-  by (induct ps, auto)
-
-lemma sum_list_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 0) \<Longrightarrow> sum_list xs = 0"
-  by (induct xs) auto
-
-lemma prod_list_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 1) \<Longrightarrow> prod_list xs = 1"
-  by (induct xs) auto
-
-lemma (in comm_monoid_mult) prod_list_map_remove1:
-  "x \<in> set xs \<Longrightarrow> prod_list (map f xs) = f x * prod_list (map f (remove1 x xs))"
-  by (induct xs) (auto simp add: ac_simps)
-
-lemma poly_as_sum:
-  fixes p :: "'a::comm_semiring_1 poly"
-  shows "poly p x = (\<Sum>i\<le>degree p. x ^ i * coeff p i)"
-  unfolding poly_altdef by (simp add: ac_simps)
-
-lemma poly_prod_0: "finite ps \<Longrightarrow> poly (prod f ps) x = (0 :: 'a :: field) \<longleftrightarrow> (\<exists> p \<in> ps. poly (f p) x = 0)"
-  by (induct ps rule: finite_induct, auto)
-
-lemma coeff_monom_mult:
-  shows "coeff (monom a d * p) i =
-    (if d \<le> i then a * coeff p (i-d) else 0)" (is "?l = ?r")
-proof (cases "d \<le> i")
-  case False thus ?thesis unfolding coeff_mult by simp
-  next case True
-    let ?f = "\<lambda>j. coeff (monom a d) j * coeff p (i - j)"
-    have "\<And>j. j \<in> {0..i} - {d} \<Longrightarrow> ?f j = 0" by auto
-    hence "0 = (\<Sum>j \<in> {0..i} - {d}. ?f j)" by auto
-    also have "... + ?f d = (\<Sum>j \<in> insert d ({0..i} - {d}). ?f j)"
-      by(subst sum.insert, auto)
-    also have "... = (\<Sum>j \<in> {0..i}. ?f j)" by (subst insert_Diff, insert True, auto)
-    also have "... = (\<Sum>j\<le>i. ?f j)" by (rule sum.cong, auto)
-    also have "... = ?l" unfolding coeff_mult ..
-    finally show ?thesis using True by auto
 qed
 
 subsection \<open>Polynomial Composition\<close>
@@ -378,89 +325,6 @@ proof (rule ccontr)
   with order_2[OF p, of a] show False by blast
 qed
 
-
-subsection \<open>Divisibility\<close>
-
-context
-  assumes "SORT_CONSTRAINT('a :: idom)"
-begin
-lemma poly_linear_linear_factor: assumes 
-  dvd: "[:b,1:] dvd (\<Prod> (a :: 'a) \<leftarrow> as. [: a, 1:])"
-  shows "b \<in> set as"
-proof -
-  let ?p = "\<lambda> as. (\<Prod> a \<leftarrow> as. [: a, 1:])"
-  let ?b = "[:b,1:]"
-  from assms[unfolded dvd_def] obtain p where id: "?p as = ?b * p" ..
-  from arg_cong[OF id, of "\<lambda> p. poly p (-b)"]
-  have "poly (?p as) (-b) = 0" by simp
-  thus ?thesis
-  proof (induct as)
-    case (Cons a as)
-    have "?p (a # as) = [:a,1:] * ?p as" by simp
-    from Cons(2)[unfolded this] have "poly (?p as) (-b) = 0 \<or> (a - b) = 0" by simp
-    with Cons(1) show ?case by auto
-  qed simp
-qed
-
-lemma poly_linear_exp_linear_factors: 
-  assumes dvd: "([:b,1:])^n dvd (\<Prod> (a :: 'a) \<leftarrow> as. [: a, 1:])"
-  shows "length (filter ((=) b) as) \<ge> n"
-proof -
-  let ?p = "\<lambda> as. (\<Prod> a \<leftarrow> as. [: a, 1:])"
-  let ?b = "[:b,1:]"
-  from dvd show ?thesis
-  proof (induct n arbitrary: as)
-    case (Suc n as)
-    have bs: "?b ^ Suc n = ?b * ?b ^ n" by simp
-    from poly_linear_linear_factor[OF dvd_mult_left[OF Suc(2)[unfolded bs]], 
-      unfolded in_set_conv_decomp]
-    obtain as1 as2 where as: "as = as1 @ b # as2" by auto
-    have "?p as = [:b,1:] * ?p (as1 @ as2)" unfolding as
-    proof (induct as1)
-      case (Cons a as1)
-      have "?p (a # as1 @ b # as2) = [:a,1:] * ?p (as1 @ b # as2)" by simp
-      also have "?p (as1 @ b # as2) = [:b,1:] * ?p (as1 @ as2)" unfolding Cons by simp
-      also have "[:a,1:] * \<dots> = [:b,1:] * ([:a,1:] * ?p (as1 @ as2))" 
-        by (metis (no_types, lifting) mult.left_commute)
-      finally show ?case by simp
-    qed simp
-    from Suc(2)[unfolded bs this dvd_mult_cancel_left]
-    have "?b ^ n dvd ?p (as1 @ as2)" by simp
-    from Suc(1)[OF this] show ?case unfolding as by simp
-  qed simp    
-qed
-end
-
-lemma const_poly_dvd: "([:a:] dvd [:b:]) = (a dvd b)"
-proof
-  assume "a dvd b"
-  then obtain c where "b = a * c" unfolding dvd_def by auto
-  hence "[:b:] = [:a:] * [: c:]" by (auto simp: ac_simps)
-  thus "[:a:] dvd [:b:]" unfolding dvd_def by blast
-next
-  assume "[:a:] dvd [:b:]"
-  then obtain pc where "[:b:] =  [:a:] * pc" unfolding dvd_def by blast
-  from arg_cong[OF this, of "\<lambda> p. coeff p 0", unfolded coeff_mult]
-  have "b = a * coeff pc 0" by auto
-  thus "a dvd b" unfolding dvd_def by blast
-qed
-
-lemma const_poly_dvd_1 [simp]:
-  "[:a:] dvd 1 \<longleftrightarrow> a dvd 1"
-  by (metis const_poly_dvd one_poly_eq_simps(2))
-
-lemma poly_dvd_1:
-  fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
-  shows "p dvd 1 \<longleftrightarrow> degree p = 0 \<and> coeff p 0 dvd 1"
-proof (cases "degree p = 0")
-  case False
-  with divides_degree[of p 1] show ?thesis by auto
-next
-  case True
-  then obtain a where p: "p = [:a:]"
-    using degree_eq_zeroE by blast
-  show ?thesis unfolding p by auto
-qed
 
 text \<open>Degree based version of irreducibility.\<close>
 
@@ -833,26 +697,6 @@ proof (induct p arbitrary: q)
     qed auto
 qed auto
 
-subsection \<open>Morphismic properties of @{term "pCons 0"}\<close>
-
-lemma monom_pCons_0_monom:
-  "monom (pCons 0 (monom a n)) d = map_poly (pCons 0) (monom (monom a n) d)"
-  apply (induct d)
-  unfolding monom_0 unfolding map_poly_simps apply simp
-  unfolding monom_Suc map_poly_simps by auto
-
-lemma pCons_0_add: "pCons 0 (p + q) = pCons 0 p + pCons 0 q" by auto
-
-lemma sum_pCons_0_commute:
-  "sum (\<lambda>i. pCons 0 (f i)) S = pCons 0 (sum f S)"
-  by(induct S rule: infinite_finite_induct;simp)
-
-lemma pCons_0_as_mult:
-  fixes p:: "'a :: comm_semiring_1 poly"
-  shows "pCons 0 p = [:0,1:] * p" by auto
-
-
-
 subsection \<open>Misc\<close>
 
 fun expand_powers :: "(nat \<times> 'a)list \<Rightarrow> 'a list" where
@@ -868,17 +712,20 @@ lemma poly_smult_zero_iff: fixes x :: "'a :: idom"
   shows "(poly (smult a p) x = 0) = (a = 0 \<or> poly p x = 0)"
   by simp
 
-lemma poly_prod_list_zero_iff: fixes x :: "'a :: idom" 
+lemma poly_prod_list_zero_iff: 
+  fixes x :: "'a :: idom" 
   shows "(poly (prod_list ps) x = 0) = (\<exists> p \<in> set ps. poly p x = 0)"
   by (induct ps, auto)
 
-lemma poly_mult_zero_iff: fixes x :: "'a :: idom" 
+lemma poly_mult_zero_iff: 
+  fixes x :: "'a :: idom" 
   shows "(poly (p * q) x = 0) = (poly p x = 0 \<or> poly q x = 0)"
   by simp
 
-lemma poly_power_zero_iff: fixes x :: "'a :: idom" 
+lemma poly_power_zero_iff: 
+  fixes x :: "'a :: idom" 
   shows "(poly (p^n) x = 0) = (n \<noteq> 0 \<and> poly p x = 0)"
-  by (cases n, auto)
+  by auto
 
 
 lemma sum_monom_0_iff: assumes fin: "finite S"
