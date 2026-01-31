@@ -9,6 +9,23 @@ begin
 datatype ('n,'t) tree = Sym "('n,'t) sym"  | Rule 'n "('n,'t) tree list"
 datatype_compat tree
 
+fun size_pt :: "('n,'t)tree \<Rightarrow> nat" where
+"size_pt (Sym _) = 0" |
+"size_pt (Rule _ ts) = sum_list (map size_pt ts) + 1"
+
+(*
+instantiation tree :: (type,type)size
+begin
+
+fun size :: "('n,'t)tree \<Rightarrow> nat" where
+"size (Sym _) = 0" |
+"size (Rule _ ts) = sum_list (map size ts) + 1"
+
+end
+*)
+
+abbreviation "size_pts ts \<equiv> sum_list (map size_pt ts)"
+
 fun root :: "('n,'t) tree \<Rightarrow> ('n,'t) sym" where
 "root(Sym s) = s" |
 "root(Rule A _) = Nt A"
@@ -23,7 +40,7 @@ fun parse_tree :: "('n,'t)Prods \<Rightarrow> ('n,'t) tree \<Rightarrow> bool" w
 "parse_tree P (Sym s) = True" |
 "parse_tree P (Rule A ts) = ((\<forall>t \<in> set ts. parse_tree P t) \<and> (A,map root ts) \<in> P)"
 
-lemma fringe_steps_if_parse_tree: "parse_tree P t \<Longrightarrow> P \<turnstile> [root t] \<Rightarrow>* fringe t"
+lemma fringe_deriven_if_parse_tree: "parse_tree P t \<Longrightarrow> P \<turnstile> [root t] \<Rightarrow>(size_pt t) fringe t"
 proof(induction t)
   case (Sym s)
   then show ?case by (auto)
@@ -31,9 +48,12 @@ next
   case (Rule A ts)
   have "P \<turnstile> [Nt A] \<Rightarrow> map root ts"
     using Rule.prems by (simp add: derive_singleton)
-  with Rule show ?case apply(simp)
-    using derives_concat1 by (metis converse_rtranclp_into_rtranclp)
+  with Rule show ?case
+    using deriven_concat1[of ts size_pt P root fringe] by (simp add: relpowp_Suc_I2)
 qed
+
+lemma derives_fringe_if_parse_tree: "parse_tree P t \<Longrightarrow> P \<turnstile> [root t] \<Rightarrow>* fringe t"
+by (meson fringe_deriven_if_parse_tree rtranclp_power)
 
 fun subst_pt and subst_pts where
 "subst_pt t' 0 (Sym _) = t'" |
@@ -69,6 +89,15 @@ proof(induction t' i t and t' i ts rule: subst_pt_subst_pts.induct)
   then show ?case by (auto simp add: nth_append Let_def)
 qed auto
 
+lemma size_subst_pt: "\<lbrakk> i < length(fringe t) \<rbrakk>
+ \<Longrightarrow> size_pt (subst_pt t' i t) = size_pt t + size_pt t'" and
+size_subst_pts: "\<lbrakk> i < length(fringes ts) \<rbrakk>
+ \<Longrightarrow> size_pts (subst_pts t' i ts) = size_pts ts + size_pt t'"
+proof(induction t' i t and t' i ts rule: subst_pt_subst_pts.induct)
+  case (3 t' m t ts)
+  then show ?case by (auto simp add: nth_append Let_def)
+qed auto
+
 lemma parse_tree_subst_pt:
   "\<lbrakk> parse_tree P t; i < length(fringe t); fringe t ! i = Nt A; parse_tree P t'; root t'= Nt A \<rbrakk>
   \<Longrightarrow> parse_tree P (subst_pt t' i t)"
@@ -84,23 +113,58 @@ next
   then show ?case by(auto simp add: nth_append Let_def)
 qed auto
 
-lemma parse_tree_if_derives: "P \<turnstile> [Nt A] \<Rightarrow>* w \<Longrightarrow> \<exists>t. parse_tree P t \<and> fringe t = w \<and> root t = Nt A"
-proof(induction rule: derives_induct)
-  case base
+lemma parse_tree_if_deriven: "P \<turnstile> [Nt A] \<Rightarrow>(n) w \<Longrightarrow>
+  \<exists>t. parse_tree P t \<and> size_pt t = n \<and> fringe t = w \<and> root t = Nt A"
+proof(induction rule: deriven_induct)
+  case 0
   then show ?case
-    using fringe.simps(1) parse_tree.simps(1) root.simps(1) by blast
+    using parse_tree.simps(1) by fastforce
 next
-  case (step u A' v w)
+  case (Suc n u A' v w)
   then obtain t where 1: "parse_tree P t" and 2: "fringe t = u @ [Nt A'] @ v" and 3: \<open>root t = Nt A\<close>
+and 4: "size_pt t = n"
     by blast
   let ?t' = "Rule A' (map Sym w)"
   let ?t = "subst_pt ?t' (length u) t"
   have "fringe ?t = u @ w @ v"
     using 2 fringe_subst_pt[of "length u" t ?t'] by(simp add: o_def)
   moreover have "parse_tree P ?t"
-    using parse_tree_subst_pt[OF 1, of "length u"] step.hyps(2) 2 by(simp add: o_def)
+    using parse_tree_subst_pt[OF 1, of "length u"] Suc.hyps(2) 2 by(simp add: o_def)
   moreover have \<open>root ?t = Nt A\<close> by (simp add: 2 3 root_subst_pt)
-  ultimately show ?case by blast
+  ultimately show ?case using size_subst_pt[of "length u" t ?t'] 2 4
+    by (auto simp add: o_def)
 qed
 
+lemma parse_tree_if_derives: "P \<turnstile> [Nt A] \<Rightarrow>* w \<Longrightarrow> \<exists>t. parse_tree P t \<and> fringe t = w \<and> root t = Nt A"
+by (meson parse_tree_if_deriven rtranclp_power)
+
+lemma parse_tree_bound_if_Unit_Eps_free:
+assumes "Unit_free P" "Eps_free P"
+shows "parse_tree P t \<Longrightarrow>
+  size_pt t \<le> length (fringe t) - 1 + length(filter isTm (fringe t))"
+using  deriven_bound_if_Unit_Eps_free[OF assms] fringe_deriven_if_parse_tree
+  by fastforce
+
+lemma parse_tree_bound_if_Unit_Eps_free_NtTm:
+assumes "Unit_free P" "Eps_free P"
+shows "parse_tree P t \<Longrightarrow> fringe t = map Tm w \<Longrightarrow> size_pt t \<le> 2*length w - 1"
+using parse_tree_bound_if_Unit_Eps_free[OF assms]
+  by fastforce
+
+fun Syms_pt :: "('n,'t)tree \<Rightarrow> ('n,'t) sym set" where
+"Syms_pt (Sym s) = {s}"|
+"Syms_pt (Rule A ts) = (\<Union>t \<in> set ts. Syms_pt t)"
+
+(*
+lemma size_pt_0_iff: "size_pt t = 0 \<longleftrightarrow> (\<exists>a. t = Sym(Tm a)) \<or> (\<exists>A. t = Sym(Nt A))"
+proof(induction t)
+  case (Sym x)
+  then show ?case by (cases x) auto
+next
+  case (Rule)
+  then show ?case by simp
+qed
+
+lemma "parse_tree P t \<Longrightarrow> finite {t. size_pt t = n \<and> Syms_pt t \<subseteq> S}"
+*)
 end

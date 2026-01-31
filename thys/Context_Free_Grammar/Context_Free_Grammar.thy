@@ -602,6 +602,20 @@ lemma derives_append_decomp:
   "P \<turnstile> u @ v \<Rightarrow>* w \<longleftrightarrow> (\<exists>u' v'. P \<turnstile> u \<Rightarrow>* u' \<and> P \<turnstile> v \<Rightarrow>* v' \<and> w = u' @ v')"
   by (auto simp: rtranclp_power deriven_append_decomp)
 
+lemma deriven_concat:
+  "\<forall>i \<in> set is. P \<turnstile> f i \<Rightarrow>(n i) g i \<Longrightarrow> P \<turnstile> concat(map f is) \<Rightarrow>(sum_list (map n is)) concat(map g is)"
+proof(induction "is")
+  case Nil
+  then show ?case by auto
+next
+  case Cons
+  thus ?case by(auto simp: deriven_append_decomp less_Suc_eq)
+qed
+
+lemma deriven_concat1:
+  "\<forall>i \<in> set is. P \<turnstile> [f i] \<Rightarrow>(n i) g i \<Longrightarrow> P \<turnstile> map f is \<Rightarrow>(sum_list (map n is)) concat(map g is)"
+using deriven_concat[where f = "\<lambda>i. [f i]"] by auto
+
 lemma derives_concat:
   "\<forall>i \<in> set is. P \<turnstile> f i \<Rightarrow>* g i \<Longrightarrow> P \<turnstile> concat(map f is) \<Rightarrow>* concat(map g is)"
 proof(induction "is")
@@ -611,6 +625,7 @@ next
   case Cons
   thus ?case by(auto simp: derives_append_decomp less_Suc_eq)
 qed
+(* Proof via \<open>deriven_concat\<close> seems tricky (because of the \<open>n\<close> *)
 
 lemma derives_concat1:
   "\<forall>i \<in> set is. P \<turnstile> [f i] \<Rightarrow>* g i \<Longrightarrow> P \<turnstile> map f is \<Rightarrow>* concat(map g is)"
@@ -1914,5 +1929,54 @@ next
   ultimately show ?case using Eps_free_deriveln_Nil[OF assms, of n "[Nt X]"]
     by (auto simp: Cons_eq_append_conv derivel_Nt_Cons relpowp_Suc_I)
 qed
+
+subsection \<open>Unit-Freeness\<close>
+
+definition Unit_free :: "('n, 't) Prods \<Rightarrow> bool" where
+"Unit_free P = (\<nexists>A B. (A,[Nt B]) \<in> P)"
+
+lemma rhs_if_Unit_Eps_free:
+  "\<lbrakk> Unit_free P; Eps_free P \<rbrakk> \<Longrightarrow> (A,\<alpha>) \<in> P \<Longrightarrow> length \<alpha> \<ge> Suc(Suc 0) \<or> (\<exists>t. \<alpha> = [Tm t])"
+unfolding Unit_free_def Eps_free_def Suc_le_length_iff
+apply (auto split: prod.splits)
+by (metis list.exhaust sym.exhaust)
+
+
+subsection \<open>Derivation Length Bound\<close>
+
+text \<open>A linear bound on the derivation lengths of Unit and Eps free grammars.\<close>
+
+lemma derives_measures_if_Eps_free:
+  assumes "Eps_free P"
+  shows "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> length \<alpha> \<le> length \<beta> \<and> length(filter isTm \<alpha>) \<le> length(filter isTm \<beta>)"
+proof (induction rule: derives_induct)
+  case base
+  then show ?case by simp
+next
+  case (step u A v w)
+  then show ?case
+    using Eps_freeE_Cons assms by fastforce
+qed
+
+lemma deriven_bound_if_Unit_Eps_free:
+assumes "Unit_free P" "Eps_free P"
+shows "P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta> \<Longrightarrow>
+  n \<le> length \<beta> - length \<alpha> + length(filter isTm \<beta>) - length(filter isTm \<alpha>)"
+proof (induction rule: deriven_induct)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n u A v w)
+  have *: "P \<turnstile> \<alpha> \<Rightarrow>* u @ [Nt A] @ v"
+    by (metis rtranclp_power Suc(1))
+  show ?case
+    using Suc(3) rhs_if_Unit_Eps_free[OF assms \<open>(A,w) \<in> P\<close>] derives_measures_if_Eps_free[OF assms(2) *]
+    by auto
+qed
+
+corollary deriven_bound_if_Unit_Eps_free_NtTm:
+assumes "Unit_free P" "Eps_free P"
+shows "P \<turnstile> [Nt A] \<Rightarrow>(n) map Tm w \<Longrightarrow> n \<le> 2 * length w - 1"
+by(drule deriven_bound_if_Unit_Eps_free[OF assms]) simp
 
 end
