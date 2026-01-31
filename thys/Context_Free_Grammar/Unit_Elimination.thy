@@ -30,9 +30,6 @@ definition Unit_elim_rel :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods \<Right
 corollary Unit_elim_correct: "Unit_elim_rel P (Unit_elim P)"
 by (metis Unit_elim_def Unit_elim_rel_def)
 
-definition Unit_free :: "('n, 't) Prods \<Rightarrow> bool" where
-"Unit_free P = (\<nexists>A B. (A,[Nt B]) \<in> P)"
-
 lemma Unit_free_if_Unit_elim_rel: "Unit_elim_rel P P' \<Longrightarrow> Unit_free P'" 
 unfolding Unit_elim_rel_def Unit_rm_def New_prods_def Unit_prods_def Unit_free_def by simp
 
