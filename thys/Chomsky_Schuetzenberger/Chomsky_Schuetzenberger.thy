@@ -1714,7 +1714,7 @@ proof-
   from t_def have \<open>parse_tree P' (transform_tree t)  \<and>  \<h>\<s> (fringe (transform_tree t)) = w\<close> 
     using transform_tree_correct assms by blast
   with root_tr have \<open>fringe (transform_tree t) \<in> Ders P' S \<and> w = \<h>\<s> (fringe (transform_tree t))\<close> 
-    using fringe_steps_if_parse_tree by (metis DersI)
+    using derives_fringe_if_parse_tree by (metis DersI)
   then show ?thesis by blast
 qed
 
