@@ -16,6 +16,22 @@
   "year": "2026"
  },
  {
+  "abstract": "We revisit the problem of formalization of the category of sets and functions in Isabelle/HOL, regarding it as a paradigm for the formalization of other large categories. We follow a general plan in which we extend the “category” locale from our previous article [3] with a few axioms that allow us to pass back and forth between objects and arrows internal to the category and “real” sets and functions external to it. Using this setup, we prove the standard properties of the category of sets as consequences of the properties of the external notions. A key feature is the inclusion of an axiom that allows us to obtain objects internal to the category corresponding to externally given sets. To avoid inconsistency, our framework axiomatizes a notion of “smallness” and only asserts the existence of objects corresponding to small sets. We give two “top-level” interpretations of our “sets category” locale. One uses “finite” as the notion of smallness and uses only standard HOL for its construction, which results in a small category. The other uses the axiomatic extension of HOL given in [2] to construct an interpretation that incorporates infinite sets as well, resulting in a large (but locally small) category.",
+  "authors": [
+   "Eugene W. Stark"
+  ],
+  "link": "../entries/Sets_Revisited.html",
+  "shortname": "Sets_Revisited",
+  "title": "'Sets' Revisited: Working with a Large Category in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/category-theory/"
+  ],
+  "topics": [
+   "Mathematics/Category theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalises the obvious isomorphism between finite linear orders and lists, where the list in question is interpreted as a ranking, i.e. it lists the elements in descending order without repetition.\nIt also provides an executable algorithm to compute topological sortings, i.e. all rankings whose linear orders are extensions of a given relation.\n",
   "authors": [
    "Manuel Eberl"
