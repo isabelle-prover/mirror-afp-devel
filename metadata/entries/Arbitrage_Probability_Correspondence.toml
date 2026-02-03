@@ -1,0 +1,30 @@
+title = "Arbitrage Opportunities Correspond to Probability Inequality Identities"
+date = 2026-01-12
+topics = [
+  "Mathematics/Probability theory",
+  "Mathematics/Games and economics",
+]
+abstract = """
+We consider a fixed-odds gambling market over arbitrary logical propositions, where participants trade bets involving conjunctions, disjunctions, and negations. In this setting, we establish a three-way correspondence between the financial feasibility of trading strategies, the validity of universal probability inequalities, and the solutions to bounded Maximum Satisfiability (MaxSAT) problems.
+
+The central result demonstrates that proving a trading strategy constitutes an arbitrage opportunity (i.e., guaranteeing a risk-free profit regardless of the outcome) is equivalent to proving a specific inequality identity holds for all probability functions, and is computationally equivalent to establishing a lower bound on a corresponding MaxSAT instance. Dually, we show that checking the coherence of a strategy (i.e., ensuring it does not guarantee a loss) also corresponds to verifying a probability identity and bounding a MaxSAT problem from above."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.doty]
+email = "doty_email"
+
+[contributors]
+
+[notify]
+doty = "doty_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
