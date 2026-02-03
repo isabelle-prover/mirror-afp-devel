@@ -1,0 +1,9 @@
+chapter AFP
+
+session Arbitrage_Probability_Correspondence (AFP) = "Probability_Inequality_Completeness" +
+  options [timeout = 600]
+  theories
+    Arbitrage_Probability_Correspondence
+  document_files
+    "root.tex"
+    "root.bib"
