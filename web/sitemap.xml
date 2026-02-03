@@ -3,10 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-01-30T00:00:00+00:00</lastmod>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/HOL-CSP_Proc-Omata.html</loc>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-01-30T00:00:00+00:00</lastmod>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/HOL-CSP_PTick.html</loc>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Concentrated_Liquidity_Market_Making_Operations.html</loc>
     <lastmod>2026-01-30T00:00:00+00:00</lastmod>
@@ -11968,6 +11974,88 @@
     <loc>https://isa-afp.org/thys/AFP/HOL-CSP_OpSem/OpSem_Deadlock_Results.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/HOL-CSP_OpSem/Recovered_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/HOL-CSP_Proc-Omata.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Almost_Compactification.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Combining_Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Combining_Synchronization_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Combining_Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_DiningPhilosophers.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_Synchronization_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Conclusion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Deterministic_Processes.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Introduction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Process_Normalization.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Process_Normalization_Properties.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/HOL-CSP_PTick.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/After_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Basic_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Conclusion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Deadlock_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Introduction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Monotonicities.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Renaming.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Events_Ticks_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Finite_Ticks.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Multi_Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Multi_Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Non_Deterministic_CSP_PTick_Distributivity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Operational_Semantics_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Read_Write_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Sequential_Composition_Generalized_Cont.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Sequential_Composition_Generalized_Non_Destructive.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Step_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Step_CSP_PTick_Laws_Extended.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Associativity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Commutativity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Cont.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Interpretations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Non_Destructive.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/HOL-CSP_RS/HOL-CSP_RS.html</loc>
   </url><url>

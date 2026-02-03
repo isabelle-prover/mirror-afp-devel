@@ -1,5 +1,44 @@
 [
  {
+  "abstract": "This entry develops the Proc-Omata framework on top of HOL-CSP and its extensions. Proc-Omata are defined from functional automata and come in four variants: deterministic, terminating deterministic, non-deterministic, and terminating non-deterministic. This subclass of processes combines the expressiveness of CSP with automata-like structure (reachability, enableness), making it particularly amenable to invariant-based reasoning.  We lift sequential composition and synchronization product to the automata level through combination functions and prove compactification theorems that enable reasoning over large process architectures. An essential ingredient is the use of restriction spaces, which guarantees well-defined fixed points even in the non-deterministic setting. Finally, we illustrate the applicability of the framework with the Dining Philosophers, where compactification yields proofs that scale to an arbitrary finite but unbounded number of participants in this parameterized process architecture.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Burkhart Wolff"
+  ],
+  "link": "../entries/HOL-CSP_Proc-Omata.html",
+  "shortname": "HOL-CSP_Proc-Omata",
+  "title": "A Bridge between CSP Processes and Functional Automata",
+  "topic_links": [
+   "../topics/computer-science/concurrency/process-calculi/",
+   "../topics/computer-science/semantics-and-reasoning/",
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Concurrency/Process calculi",
+   "Computer science/Semantics and reasoning",
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Recently, parameterized termination has been introduced in HOL-CSP, allowing the termination event tick to carry a result value, in a way analogous to the return of a state monad. This conservative extension of the CSP theory required the generalization of several denotational definitions and the adaptation of numerous proofs. Since Isabelle2025, this work has been completed for the HOL-CSP, HOL-CSPM, and HOL-CSP\\_OpSem sessions. However, for two operators—namely sequential composition and the synchronization product—the most direct generalizations turn out to be conceptually unsatisfactory, in particular with respect to their interaction with $SKIP$. To address this issue, we introduce in this entry generalized versions of these operators that fully exploit the expressive power of parameterized termination; in particular, the resulting notion of sequential composition satisfies the monad laws. Building on these definitions, we establish a range of algebraic and operational laws, as well as fundamental properties such as continuity and non-destructiveness.",
+  "authors": [
+   "Benoît Ballenghien"
+  ],
+  "link": "../entries/HOL-CSP_PTick.html",
+  "shortname": "HOL-CSP_PTick",
+  "title": "Parameterized Termination for Sequential Composition and Synchronization Product",
+  "topic_links": [
+   "../topics/computer-science/concurrency/process-calculi/",
+   "../topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Computer science/Concurrency/Process calculi",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Automated Market Makers (AMMs) are one of the cornerstones of decentralized finance. They enable users to exchange tokens without the need for order books as would be the case in traditional finance. They involve liquidity providers, whose tokens, usually called the quote and base tokens,  can be used in the swap process in exchange for a fee, and liquidity takers who swap their tokens. The rules specifying the quantities of tokens that can swapped and those that act as fees are predefined and lead to several categories of AMMs.   Uniswap v3 introduced a new market-making design that improves capital efficiency by allowing liquidity providers to allocate their assets within selected price intervals. By concentrating liquidity over narrower ranges, providers may earn higher fee income than in earlier AMMs, where liquidity is generally distributed uniformly across all prices. Owing to its success, this design was  adopted by several decentralized exchanges on various blockchains, including Trader Joe, PancakeSwap v3, Sunswap v3, and Sushiswap v3. These protocols are collectively referred to as Concentrated Liquidity Market Makers (CLMMs). Despite differences in implementation details, such as fee structures, tick spacing, or incentive mechanisms, they all rely on the same underlying principles.  In practice, liquidity takers can thus interact with multiple CLMM pools involving the same pair of tokens but different liquidity profiles or fee structures. A crucial task for them is to understand how these pools can be combined, both conceptually and computationally.  We formalize several notions related to CLMMs, and introduce several operations on such pools that permit to derive an optimality result: if two pools admit the same fees, then the defined transformations permit to determine the optimal quantities of quote tokens to trade in each pool in order to recover as many base tokens as possible.",
   "authors": [
    "Mnacho Echenim"
