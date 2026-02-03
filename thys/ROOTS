@@ -358,6 +358,8 @@ GyrovectorSpaces
 HOL-CSP
 HOL-CSPM
 HOL-CSP_OpSem
+HOL-CSP_Proc-Omata
+HOL-CSP_PTick
 HOL-CSP_RS
 HOLCF-Prelude
 HRB-Slicing

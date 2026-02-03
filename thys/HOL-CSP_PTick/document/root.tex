@@ -1,0 +1,88 @@
+\documentclass[11pt,a4paper]{book}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\graphicspath {figures/}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{pifont}
+
+\usepackage{mathpartir}
+
+\usepackage{amssymb}
+%for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+%\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+%\<triangleq>, \<yen>, \<lozenge>
+
+\usepackage{eurosym}
+%for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+%for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+%for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+%for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+%\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+% fixes generation until the AFP updates their LaTeX
+\pagestyle{plain}
+
+
+\begin{document}
+
+
+\title{HOL-CSP\_PTick\\Parameterized Termination for Sequential Composition
+and Synchronization Product}
+\author{Benoît Ballenghien}
+\maketitle
+\chapter*{Abstract}
+
+Recently, parameterized termination has been introduced in \verb'HOL-CSP', allowing
+the termination event \verb'tick' to carry a result value, in a way analogous to
+the \verb'return' of a state monad. This conservative extension of the CSP theory
+required the generalization of several denotational definitions and the adaptation
+of numerous proofs. Since Isabelle2025, this work has been completed for the
+\verb'HOL-CSP', \verb'HOL-CSPM', and \verb'HOL-CSP_OpSem' sessions.
+However, for two operators---namely sequential composition and the synchronization
+product---the most direct generalizations turn out to be conceptually unsatisfactory,
+in particular with respect to their interaction with $SKIP$. To address this issue,
+we introduce in this entry generalized versions of these operators that
+fully exploit the expressive power of parameterized termination; in particular, the
+resulting notion of sequential composition satisfies the monad laws. Building on
+these definitions, we establish a range of algebraic and operational laws, as well as
+fundamental properties such as continuity and non-destructiveness.
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+

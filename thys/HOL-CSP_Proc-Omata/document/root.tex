@@ -1,0 +1,89 @@
+\documentclass[11pt,a4paper]{book}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\graphicspath {figures/}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{pifont}
+
+\usepackage{mathpartir}
+
+\usepackage{amssymb}
+%for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+%\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+%\<triangleq>, \<yen>, \<lozenge>
+
+\usepackage{eurosym}
+%for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+%for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+%for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+%for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+%\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+% fixes generation until the AFP updates their LaTeX
+\pagestyle{plain}
+
+
+\begin{document}
+
+
+\title{HOL-CSP\_Proc-Omata: A Bridge between CSP Processes and Functional Automata}
+\author{Benoît Ballenghien \and Burkhart Wolff}
+\maketitle
+\chapter*{Abstract}
+
+This entry develops the Proc-Omata framework on top of \verb'HOL-CSP' and its extensions.
+Proc-Omata are defined from functional automata and come in four variants:
+deterministic, terminating deterministic, non-deterministic,
+and terminating non-deterministic. This subclass of processes combines the
+expressiveness of CSP with automata-like structure
+(reachability, enableness), making it particularly amenable to invariant-based reasoning.
+
+We lift sequential composition and synchronization product to the automata level
+through combination functions and prove compactification theorems that enable
+reasoning over large process architectures.
+An essential ingredient is the use of restriction spaces, which guarantees
+well-defined fixed points even in the non-deterministic setting.
+Finally, we illustrate the applicability of the framework with the Dining Philosophers,
+where compactification yields proofs that scale to an arbitrary finite but unbounded
+number of participants in this parameterized process architecture.
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
