@@ -1,5 +1,21 @@
 [
  {
+  "abstract": "Automated Market Makers (AMMs) are one of the cornerstones of decentralized finance. They enable users to exchange tokens without the need for order books as would be the case in traditional finance. They involve liquidity providers, whose tokens, usually called the quote and base tokens,  can be used in the swap process in exchange for a fee, and liquidity takers who swap their tokens. The rules specifying the quantities of tokens that can swapped and those that act as fees are predefined and lead to several categories of AMMs.   Uniswap v3 introduced a new market-making design that improves capital efficiency by allowing liquidity providers to allocate their assets within selected price intervals. By concentrating liquidity over narrower ranges, providers may earn higher fee income than in earlier AMMs, where liquidity is generally distributed uniformly across all prices. Owing to its success, this design was  adopted by several decentralized exchanges on various blockchains, including Trader Joe, PancakeSwap v3, Sunswap v3, and Sushiswap v3. These protocols are collectively referred to as Concentrated Liquidity Market Makers (CLMMs). Despite differences in implementation details, such as fee structures, tick spacing, or incentive mechanisms, they all rely on the same underlying principles.  In practice, liquidity takers can thus interact with multiple CLMM pools involving the same pair of tokens but different liquidity profiles or fee structures. A crucial task for them is to understand how these pools can be combined, both conceptually and computationally.  We formalize several notions related to CLMMs, and introduce several operations on such pools that permit to derive an optimality result: if two pools admit the same fees, then the defined transformations permit to determine the optimal quantities of quote tokens to trade in each pool in order to recover as many base tokens as possible.",
+  "authors": [
+   "Mnacho Echenim"
+  ],
+  "link": "../entries/Concentrated_Liquidity_Market_Making_Operations.html",
+  "shortname": "Concentrated_Liquidity_Market_Making_Operations",
+  "title": "Concentrated Liquidity Market Making Operations",
+  "topic_links": [
+   "../topics/computer-science/algorithms/"
+  ],
+  "topics": [
+   "Computer science/Algorithms"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalises the obvious isomorphism between finite linear orders and lists, where the list in question is interpreted as a ranking, i.e. it lists the elements in descending order without repetition.\nIt also provides an executable algorithm to compute topological sortings, i.e. all rankings whose linear orders are extensions of a given relation.\n",
   "authors": [
    "Manuel Eberl"

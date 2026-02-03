@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2026-01-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Concentrated_Liquidity_Market_Making_Operations.html</loc>
+    <lastmod>2026-01-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Rankings.html</loc>
     <lastmod>2026-01-22T00:00:00+00:00</lastmod>
@@ -6780,6 +6783,14 @@
     <loc>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</loc>
   </url><url>
     <loc>https://isa-afp.org/topics/computer-science/system-description-languages/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/CLMM_Description.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/CLMM_Misc.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/CLMM_Transformation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/Grid_Information.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Concentration_Inequalities/Bennett_Inequality.html</loc>
   </url><url>
