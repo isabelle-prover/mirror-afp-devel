@@ -1590,20 +1590,20 @@ where the corresponding production needs to be applied in the transformed versio
 
 abbreviation \<open>roots ts \<equiv> map root ts\<close>
 
-fun wrap1_Sym :: \<open>'n \<Rightarrow> ('n,'t) sym \<Rightarrow> version \<Rightarrow> ('n,('n,'t) bracket3) tree list\<close> where
+fun wrap1_Sym :: \<open>'n \<Rightarrow> ('n,'t) sym \<Rightarrow> version \<Rightarrow> ('n,('n,'t) bracket3) ptree list\<close> where
   "wrap1_Sym A (Tm a) v = [ Sym (Tm (Open ((A, [Tm a]),v))),  Sym (Tm (Close ((A, [Tm a]), v)))]" | 
   \<open>wrap1_Sym _ _ _ = []\<close>
 
-fun wrap2_Sym :: \<open>'n \<Rightarrow> ('n,'t) sym \<Rightarrow> ('n,'t) sym \<Rightarrow> version \<Rightarrow> ('n,('n,'t) bracket3) tree \<Rightarrow> ('n,('n,'t) bracket3) tree list\<close>  where
+fun wrap2_Sym :: \<open>'n \<Rightarrow> ('n,'t) sym \<Rightarrow> ('n,'t) sym \<Rightarrow> version \<Rightarrow> ('n,('n,'t) bracket3) ptree \<Rightarrow> ('n,('n,'t) bracket3) ptree list\<close>  where
   "wrap2_Sym A (Nt B) (Nt C) v t = [Sym (Tm (Open ((A, [Nt B, Nt C]), v))), t , Sym (Tm (Close ((A, [Nt B, Nt C]), v)))]" | 
   \<open>wrap2_Sym _ _ _ _ _ = []\<close>
 
-fun transform_tree :: "('n,'t) tree \<Rightarrow> ('n,('n,'t) bracket3) tree" where
+fun transform_tree :: "('n,'t) ptree \<Rightarrow> ('n,('n,'t) bracket3) ptree" where
   \<open>transform_tree (Sym (Nt A)) = (Sym (Nt A))\<close> | 
   \<open>transform_tree (Sym (Tm a)) = (Sym (Tm [\<^sup>1\<^bsub>(SOME A. True, [Tm a])\<^esub>))\<close> |
-  \<open>transform_tree (Rule A [Sym (Tm a)]) = Rule A ((wrap1_Sym A (Tm a) One)@(wrap1_Sym A (Tm a) Two))\<close> | 
-  \<open>transform_tree (Rule A [t1, t2]) = Rule A ((wrap2_Sym A (root t1) (root t2) One (transform_tree t1)) @ (wrap2_Sym A (root t1) (root t2) Two (transform_tree t2)))\<close> | 
-  \<open>transform_tree (Rule A y) = (Rule A [])\<close>
+  \<open>transform_tree (Prod A [Sym (Tm a)]) = Prod A ((wrap1_Sym A (Tm a) One)@(wrap1_Sym A (Tm a) Two))\<close> | 
+  \<open>transform_tree (Prod A [t1, t2]) = Prod A ((wrap2_Sym A (root t1) (root t2) One (transform_tree t1)) @ (wrap2_Sym A (root t1) (root t2) Two (transform_tree t2)))\<close> | 
+  \<open>transform_tree (Prod A y) = (Prod A [])\<close>
 
 lemma root_of_transform_tree[intro, simp]: \<open>root t = Nt X \<Longrightarrow> root (transform_tree t) = Nt X\<close>
   by(induction t rule: transform_tree.induct) auto
@@ -1634,10 +1634,10 @@ lemma transform_tree_correct:
     then show ?thesis using Sym by (metis Parse_Tree.parse_tree.simps(1) \<open>fringe (Sym (Tm [\<^sup>1\<^bsub>(SOME A. True, [Tm a])\<^esub> )) = [Tm [\<^sup>1\<^bsub>(SOME A. True, [Tm a])\<^esub> ]\<close> \<open>\<h>\<s> [Tm [\<^sup>1\<^bsub>(SOME A. True, [Tm a])\<^esub> ] = [Tm a]\<close> \<open>transform_tree (Sym x) = Sym (Tm [\<^sup>1\<^bsub>(SOME A. True, [Tm a])\<^esub> )\<close>)
   qed
 next
-  case (Rule A ts)
-  from Rule have pt: \<open>parse_tree P (Rule A ts)\<close> and fr: \<open>fringe (Rule A ts) = w\<close> 
+  case (Prod A ts)
+  from Prod have pt: \<open>parse_tree P (Prod A ts)\<close> and fr: \<open>fringe (Prod A ts) = w\<close> 
     by blast+
-  from Rule have IH: \<open>\<And>x2a w'. \<lbrakk>x2a \<in> set ts; parse_tree P x2a \<and> fringe x2a = w'\<rbrakk> \<Longrightarrow> parse_tree P' (transform_tree x2a) \<and> \<h>\<s> (fringe (transform_tree x2a)) = w'\<close> 
+  from Prod have IH: \<open>\<And>x2a w'. \<lbrakk>x2a \<in> set ts; parse_tree P x2a \<and> fringe x2a = w'\<rbrakk> \<Longrightarrow> parse_tree P' (transform_tree x2a) \<and> \<h>\<s> (fringe (transform_tree x2a)) = w'\<close> 
     using P'_def by blast
   from pt have \<open>(A, roots ts) \<in> P\<close> 
     by simp
@@ -1656,14 +1656,14 @@ next
     case Tm
     then have ts_eq: \<open>ts = [Sym (Tm a)]\<close> and roots: \<open>roots ts = [Tm a]\<close> 
       by blast+
-    then have \<open>transform_tree (Rule A ts) = Rule A [ Sym (Tm [\<^sup>1\<^bsub>(A,[Tm a])\<^esub>),  Sym(Tm ]\<^sup>1\<^bsub>(A,[Tm a])\<^esub>),  Sym (Tm [\<^sup>2\<^bsub>(A,[Tm a])\<^esub>),  Sym(Tm ]\<^sup>2\<^bsub>(A, [Tm a])\<^esub>)  ]\<close> 
+    then have \<open>transform_tree (Prod A ts) = Prod A [ Sym (Tm [\<^sup>1\<^bsub>(A,[Tm a])\<^esub>),  Sym(Tm ]\<^sup>1\<^bsub>(A,[Tm a])\<^esub>),  Sym (Tm [\<^sup>2\<^bsub>(A,[Tm a])\<^esub>),  Sym(Tm ]\<^sup>2\<^bsub>(A, [Tm a])\<^esub>)  ]\<close> 
       by simp
-    then have \<open>\<h>\<s> (fringe (transform_tree (Rule A ts))) = [Tm a]\<close> 
+    then have \<open>\<h>\<s> (fringe (transform_tree (Prod A ts))) = [Tm a]\<close> 
       by simp
     also have \<open>... = w\<close> 
       using fr unfolding ts_eq by auto
-    finally have \<open>\<h>\<s> (fringe (transform_tree (Rule A ts))) = w\<close> .
-    moreover have \<open>parse_tree (P') (transform_tree (Rule A [Sym (Tm a)]))\<close> 
+    finally have \<open>\<h>\<s> (fringe (transform_tree (Prod A ts))) = w\<close> .
+    moreover have \<open>parse_tree (P') (transform_tree (Prod A [Sym (Tm a)]))\<close> 
       using pt roots unfolding P'_def by force
     ultimately show ?thesis unfolding ts_eq P'_def by blast
   next
@@ -1672,17 +1672,17 @@ next
       by blast+
     then have root_t1_eq_B: \<open>root t1 = Nt B\<close> and root_t2_eq_C: \<open>root t2 = Nt C\<close>
       by blast+
-    then have \<open>transform_tree (Rule A ts) = Rule A ((wrap2_Sym A (Nt B) (Nt C) One (transform_tree t1)) @ (wrap2_Sym A (Nt B) (Nt C) Two (transform_tree t2)))\<close>                
+    then have \<open>transform_tree (Prod A ts) = Prod A ((wrap2_Sym A (Nt B) (Nt C) One (transform_tree t1)) @ (wrap2_Sym A (Nt B) (Nt C) Two (transform_tree t2)))\<close>                
       by (simp add: ts_eq)  
-    then have \<open>\<h>\<s> (fringe (transform_tree (Rule A ts))) = \<h>\<s> (fringe (transform_tree t1)) @  \<h>\<s> (fringe (transform_tree t2))\<close> 
+    then have \<open>\<h>\<s> (fringe (transform_tree (Prod A ts))) = \<h>\<s> (fringe (transform_tree t1)) @  \<h>\<s> (fringe (transform_tree t2))\<close> 
       by auto
     also have \<open>... = fringe t1 @ fringe t2\<close> 
       using IH pt ts_eq by force
-    also have \<open>... = fringe (Rule A ts)\<close> 
+    also have \<open>... = fringe (Prod A ts)\<close> 
       using ts_eq by simp
     also have \<open>... = w\<close> 
       using fr by blast
-    ultimately have \<open>\<h>\<s> (fringe (transform_tree (Rule A ts))) = w\<close> 
+    ultimately have \<open>\<h>\<s> (fringe (transform_tree (Prod A ts))) = w\<close> 
       by blast
 
     have \<open>parse_tree P t1\<close> and \<open>parse_tree P t2\<close> 
@@ -1693,12 +1693,12 @@ next
       using root_t1_eq_B by auto
     moreover have root2: \<open>map Parse_Tree.root (wrap2_Sym A (Nt B) (Nt C) Two (transform_tree t2)) = [Tm [\<^sup>2\<^bsub>(A, [Nt B, Nt C])\<^esub>, Nt C, Tm ]\<^sup>2\<^bsub>(A, [Nt B, Nt C])\<^esub> ] \<close> 
       using root_t2_eq_C by auto
-    ultimately have \<open>parse_tree P' (transform_tree (Rule A ts))\<close> 
+    ultimately have \<open>parse_tree P' (transform_tree (Prod A ts))\<close> 
       using \<open>parse_tree P' (transform_tree t1)\<close>  \<open>parse_tree P' (transform_tree t2)\<close>
         \<open>(A, map Parse_Tree.root ts) \<in> P\<close> roots
       by (force simp: ts_eq P'_def)
     then show ?thesis 
-      using \<open>\<h>\<s> (fringe (transform_tree (Rule A ts))) = w\<close> by auto
+      using \<open>\<h>\<s> (fringe (transform_tree (Prod A ts))) = w\<close> by auto
   qed  
 qed
 

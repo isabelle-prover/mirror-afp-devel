@@ -6,49 +6,41 @@ theory Parse_Tree
 imports Context_Free_Grammar
 begin
 
-datatype ('n,'t) tree = Sym "('n,'t) sym"  | Rule 'n "('n,'t) tree list"
-datatype_compat tree
+datatype ('n,'t) ptree = Sym "('n,'t) sym"  | Prod 'n "('n,'t) ptree list"
+datatype_compat ptree
 
-fun size_pt :: "('n,'t)tree \<Rightarrow> nat" where
+fun size_pt :: "('n,'t)ptree \<Rightarrow> nat" where
 "size_pt (Sym _) = 0" |
-"size_pt (Rule _ ts) = sum_list (map size_pt ts) + 1"
+"size_pt (Prod _ ts) = sum_list (map size_pt ts) + 1"
 
-(*
-instantiation tree :: (type,type)size
-begin
-
-fun size :: "('n,'t)tree \<Rightarrow> nat" where
-"size (Sym _) = 0" |
-"size (Rule _ ts) = sum_list (map size ts) + 1"
-
-end
-*)
+lemma size_pt_0_iff:  "size_pt t = 0 \<longleftrightarrow> (\<exists>s. t = Sym s)"
+by (metis not_add_less2 size_pt.elims size_pt.simps(1) zero_less_one)
 
 abbreviation "size_pts ts \<equiv> sum_list (map size_pt ts)"
 
-fun root :: "('n,'t) tree \<Rightarrow> ('n,'t) sym" where
+fun root :: "('n,'t) ptree \<Rightarrow> ('n,'t) sym" where
 "root(Sym s) = s" |
-"root(Rule A _) = Nt A"
+"root(Prod A _) = Nt A"
 
-fun fringe :: "('n,'t) tree \<Rightarrow> ('n,'t) syms" where
+fun fringe :: "('n,'t) ptree \<Rightarrow> ('n,'t) syms" where
 "fringe(Sym s) = [s]" |
-"fringe(Rule _ ts) = concat(map fringe ts)"
+"fringe(Prod _ ts) = concat(map fringe ts)"
 
 abbreviation "fringes ts \<equiv> concat(map fringe ts)"
 
-fun parse_tree :: "('n,'t)Prods \<Rightarrow> ('n,'t) tree \<Rightarrow> bool" where
+fun parse_tree :: "('n,'t)Prods \<Rightarrow> ('n,'t) ptree \<Rightarrow> bool" where
 "parse_tree P (Sym s) = True" |
-"parse_tree P (Rule A ts) = ((\<forall>t \<in> set ts. parse_tree P t) \<and> (A,map root ts) \<in> P)"
+"parse_tree P (Prod A ts) = ((\<forall>t \<in> set ts. parse_tree P t) \<and> (A,map root ts) \<in> P)"
 
 lemma fringe_deriven_if_parse_tree: "parse_tree P t \<Longrightarrow> P \<turnstile> [root t] \<Rightarrow>(size_pt t) fringe t"
 proof(induction t)
   case (Sym s)
   then show ?case by (auto)
 next
-  case (Rule A ts)
+  case (Prod A ts)
   have "P \<turnstile> [Nt A] \<Rightarrow> map root ts"
-    using Rule.prems by (simp add: derive_singleton)
-  with Rule show ?case
+    using Prod.prems by (simp add: derive_singleton)
+  with Prod show ?case
     using deriven_concat1[of ts size_pt P root fringe] by (simp add: relpowp_Suc_I2)
 qed
 
@@ -57,7 +49,7 @@ by (meson fringe_deriven_if_parse_tree rtranclp_power)
 
 fun subst_pt and subst_pts where
 "subst_pt t' 0 (Sym _) = t'" |
-"subst_pt t' m (Rule A ts) = Rule A (subst_pts t' m ts)" |
+"subst_pt t' m (Prod A ts) = Prod A (subst_pts t' m ts)" |
 "subst_pts t' m (t#ts) =
   (let n = length(fringe t) in if m < n then subst_pt t' m t # ts
    else t # subst_pts t' (m-n) ts)"
@@ -124,7 +116,7 @@ next
   then obtain t where 1: "parse_tree P t" and 2: "fringe t = u @ [Nt A'] @ v" and 3: \<open>root t = Nt A\<close>
 and 4: "size_pt t = n"
     by blast
-  let ?t' = "Rule A' (map Sym w)"
+  let ?t' = "Prod A' (map Sym w)"
   let ?t = "subst_pt ?t' (length u) t"
   have "fringe ?t = u @ w @ v"
     using 2 fringe_subst_pt[of "length u" t ?t'] by(simp add: o_def)
@@ -137,6 +129,11 @@ qed
 
 lemma parse_tree_if_derives: "P \<turnstile> [Nt A] \<Rightarrow>* w \<Longrightarrow> \<exists>t. parse_tree P t \<and> fringe t = w \<and> root t = Nt A"
 by (meson parse_tree_if_deriven rtranclp_power)
+
+
+subsection \<open>Parse Trees up to some height\<close>
+
+text \<open>Derived from the corresponding derivability thms:\<close>
 
 lemma parse_tree_bound_if_Unit_Eps_free:
 assumes "Unit_free P" "Eps_free P"
@@ -151,20 +148,53 @@ shows "parse_tree P t \<Longrightarrow> fringe t = map Tm w \<Longrightarrow> si
 using parse_tree_bound_if_Unit_Eps_free[OF assms]
   by fastforce
 
-fun Syms_pt :: "('n,'t)tree \<Rightarrow> ('n,'t) sym set" where
-"Syms_pt (Sym s) = {s}"|
-"Syms_pt (Rule A ts) = (\<Union>t \<in> set ts. Syms_pt t)"
+text \<open>There are only finitely many parse ptrees up to some height.
+A complication \<open>Sym s\<close> is a valid parse ptree for any symbol s. This is in correspondence with
+the fact that \<open>P \<turnstile> [s] \<Rightarrow>* [s]\<close> also holds for any \<open>s\<close>. Thus we need to restrict the parse ptrees
+to those containing only symbols from \<open>P\<close>.\<close>
 
-(*
-lemma size_pt_0_iff: "size_pt t = 0 \<longleftrightarrow> (\<exists>a. t = Sym(Tm a)) \<or> (\<exists>A. t = Sym(Nt A))"
-proof(induction t)
-  case (Sym x)
-  then show ?case by (cases x) auto
+
+lemma finite_pptrees_height_le1:
+  assumes "finite P"
+  shows "finite {t. parse_tree P t \<and> 0 < size_pt t \<and> size_pt t \<le> n}" (is "finite (?T n)")
+proof (induction n)
+  case 0
+  then show ?case using not_finite_existsD by fastforce
 next
-  case (Rule)
-  then show ?case by simp
+  case (Suc n)
+  let ?max = "Max (length ` snd ` P)"
+  have 1: "(A,w) \<in> P \<Longrightarrow> length w \<le> ?max" for A w
+    by (metis Max_ge assms finite_imageI imageI snd_eqD)
+  have 2: "(A, map root ts) \<in> P \<Longrightarrow> Sym s \<in> set ts \<Longrightarrow> s \<in> Syms P" for A ts s
+    by (metis Syms_simps(2) UnCI in_set_conv_nth insert_Diff length_map nth_map root.simps(1))
+  let ?Ts = "{ts. set ts \<subseteq> Sym ` Syms P \<union> ?T n \<and> length ts \<le> ?max}"
+  have "t \<in> (\<lambda>(A,ts). Prod A ts) ` (Nts P \<times> ?Ts)" if t: "t \<in> ?T(Suc n)" for t
+  proof (cases t)
+    case (Prod A ts)
+    with t have "A \<in> Nts P" by (auto simp: Nts_Lhss_Rhs_Nts Lhss_def)
+    from Prod t Suc have "\<forall>t \<in> set ts. parse_tree P t \<and> size_pt t \<le> n" 
+      using member_le_sum_list[of _ "map size_pt ts"] by fastforce
+    then have ts: "set ts \<subseteq> Sym ` Syms P \<union> ?T n"
+      using size_pt_0_iff 2 t Prod by (fastforce simp: image_iff elim: size_pt.elims)
+    have "length ts \<le> ?max" using 1 Prod t by fastforce
+    with \<open>A \<in> Nts P\<close> ts Prod show ?thesis
+      by blast
+  qed (use t in simp)
+  hence 4: "?T (Suc n) \<subseteq> (\<lambda>(A,ts). Prod A ts) ` (Nts P \<times> ?Ts)" by blast
+  show ?case using finite_subset[OF 4] Suc.IH
+    by (simp add: assms finite_Nts finite_Syms finite_lists_length_le)
 qed
 
-lemma "parse_tree P t \<Longrightarrow> finite {t. size_pt t = n \<and> Syms_pt t \<subseteq> S}"
-*)
+corollary finite_pptrees_height_le:
+  assumes "finite P"
+  shows "finite {t. parse_tree P t \<and> size_pt t \<le> n \<and> (\<forall>s. t = Sym s \<longrightarrow> s \<in> Syms P)}"
+proof -
+  have "{t. parse_tree P t \<and> size_pt t \<le> n \<and> (\<forall>s. t = Sym s \<longrightarrow> s \<in> Syms P)} =
+    Sym ` Syms P \<union> {t. parse_tree P t \<and> 0 < size_pt t \<and> size_pt t \<le> n}"
+    using size_pt_0_iff by(auto simp: image_iff)
+  then show ?thesis
+    using finite_pptrees_height_le1[OF assms, of n]
+  by (simp add: assms finite_Syms)
+qed
+
 end

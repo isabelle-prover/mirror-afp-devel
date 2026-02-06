@@ -315,6 +315,9 @@ unfolding Nts_def by (simp add: case_prod_beta finite_Nts_syms)
 lemma finite_Tms: "finite P \<Longrightarrow> finite (Tms P)"
 unfolding Tms_def by (simp add: case_prod_beta finite_Tms_syms)
 
+lemma finite_Syms: "finite P \<Longrightarrow> finite(Syms P)"
+unfolding Syms_def by fast
+
 lemma finite_Rhss: "finite P \<Longrightarrow> finite (Rhss P A)"
 unfolding Rhss_def by (metis Image_singleton finite_Image)
 
