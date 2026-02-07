@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{pgfplots}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Linear orders as rankings}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry formalises the obvious isomorphism between finite linear orders and lists, where the list in question is interpreted as a \emph{ranking}, i.e.\ it lists the elements in descending order without repetition.
+
+It also provides an executable algorithm to compute topological sortings, i.e.\ all rankings whose linear orders are extensions of a given relation.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

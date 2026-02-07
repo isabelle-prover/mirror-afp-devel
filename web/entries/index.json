@@ -1,5 +1,125 @@
 [
  {
+  "abstract": "This entry develops the Proc-Omata framework on top of HOL-CSP and its extensions. Proc-Omata are defined from functional automata and come in four variants: deterministic, terminating deterministic, non-deterministic, and terminating non-deterministic. This subclass of processes combines the expressiveness of CSP with automata-like structure (reachability, enableness), making it particularly amenable to invariant-based reasoning.  We lift sequential composition and synchronization product to the automata level through combination functions and prove compactification theorems that enable reasoning over large process architectures. An essential ingredient is the use of restriction spaces, which guarantees well-defined fixed points even in the non-deterministic setting. Finally, we illustrate the applicability of the framework with the Dining Philosophers, where compactification yields proofs that scale to an arbitrary finite but unbounded number of participants in this parameterized process architecture.",
+  "authors": [
+   "Benoît Ballenghien",
+   "Burkhart Wolff"
+  ],
+  "link": "../entries/HOL-CSP_Proc-Omata.html",
+  "shortname": "HOL-CSP_Proc-Omata",
+  "title": "A Bridge between CSP Processes and Functional Automata",
+  "topic_links": [
+   "../topics/computer-science/concurrency/process-calculi/",
+   "../topics/computer-science/semantics-and-reasoning/",
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Concurrency/Process calculi",
+   "Computer science/Semantics and reasoning",
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Recently, parameterized termination has been introduced in HOL-CSP, allowing the termination event tick to carry a result value, in a way analogous to the return of a state monad. This conservative extension of the CSP theory required the generalization of several denotational definitions and the adaptation of numerous proofs. Since Isabelle2025, this work has been completed for the HOL-CSP, HOL-CSPM, and HOL-CSP\\_OpSem sessions. However, for two operators—namely sequential composition and the synchronization product—the most direct generalizations turn out to be conceptually unsatisfactory, in particular with respect to their interaction with $SKIP$. To address this issue, we introduce in this entry generalized versions of these operators that fully exploit the expressive power of parameterized termination; in particular, the resulting notion of sequential composition satisfies the monad laws. Building on these definitions, we establish a range of algebraic and operational laws, as well as fundamental properties such as continuity and non-destructiveness.",
+  "authors": [
+   "Benoît Ballenghien"
+  ],
+  "link": "../entries/HOL-CSP_PTick.html",
+  "shortname": "HOL-CSP_PTick",
+  "title": "Parameterized Termination for Sequential Composition and Synchronization Product",
+  "topic_links": [
+   "../topics/computer-science/concurrency/process-calculi/",
+   "../topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Computer science/Concurrency/Process calculi",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Automated Market Makers (AMMs) are one of the cornerstones of decentralized finance. They enable users to exchange tokens without the need for order books as would be the case in traditional finance. They involve liquidity providers, whose tokens, usually called the quote and base tokens,  can be used in the swap process in exchange for a fee, and liquidity takers who swap their tokens. The rules specifying the quantities of tokens that can swapped and those that act as fees are predefined and lead to several categories of AMMs.   Uniswap v3 introduced a new market-making design that improves capital efficiency by allowing liquidity providers to allocate their assets within selected price intervals. By concentrating liquidity over narrower ranges, providers may earn higher fee income than in earlier AMMs, where liquidity is generally distributed uniformly across all prices. Owing to its success, this design was  adopted by several decentralized exchanges on various blockchains, including Trader Joe, PancakeSwap v3, Sunswap v3, and Sushiswap v3. These protocols are collectively referred to as Concentrated Liquidity Market Makers (CLMMs). Despite differences in implementation details, such as fee structures, tick spacing, or incentive mechanisms, they all rely on the same underlying principles.  In practice, liquidity takers can thus interact with multiple CLMM pools involving the same pair of tokens but different liquidity profiles or fee structures. A crucial task for them is to understand how these pools can be combined, both conceptually and computationally.  We formalize several notions related to CLMMs, and introduce several operations on such pools that permit to derive an optimality result: if two pools admit the same fees, then the defined transformations permit to determine the optimal quantities of quote tokens to trade in each pool in order to recover as many base tokens as possible.",
+  "authors": [
+   "Mnacho Echenim"
+  ],
+  "link": "../entries/Concentrated_Liquidity_Market_Making_Operations.html",
+  "shortname": "Concentrated_Liquidity_Market_Making_Operations",
+  "title": "Concentrated Liquidity Market Making Operations",
+  "topic_links": [
+   "../topics/computer-science/algorithms/"
+  ],
+  "topics": [
+   "Computer science/Algorithms"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We revisit the problem of formalization of the category of sets and functions in Isabelle/HOL, regarding it as a paradigm for the formalization of other large categories. We follow a general plan in which we extend the “category” locale from our previous article [3] with a few axioms that allow us to pass back and forth between objects and arrows internal to the category and “real” sets and functions external to it. Using this setup, we prove the standard properties of the category of sets as consequences of the properties of the external notions. A key feature is the inclusion of an axiom that allows us to obtain objects internal to the category corresponding to externally given sets. To avoid inconsistency, our framework axiomatizes a notion of “smallness” and only asserts the existence of objects corresponding to small sets. We give two “top-level” interpretations of our “sets category” locale. One uses “finite” as the notion of smallness and uses only standard HOL for its construction, which results in a small category. The other uses the axiomatic extension of HOL given in [2] to construct an interpretation that incorporates infinite sets as well, resulting in a large (but locally small) category.",
+  "authors": [
+   "Eugene W. Stark"
+  ],
+  "link": "../entries/Sets_Revisited.html",
+  "shortname": "Sets_Revisited",
+  "title": "'Sets' Revisited: Working with a Large Category in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/category-theory/"
+  ],
+  "topics": [
+   "Mathematics/Category theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalises the obvious isomorphism between finite linear orders and lists, where the list in question is interpreted as a ranking, i.e. it lists the elements in descending order without repetition.\nIt also provides an executable algorithm to compute topological sortings, i.e. all rankings whose linear orders are extensions of a given relation.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "link": "../entries/Rankings.html",
+  "shortname": "Rankings",
+  "title": "Linear orders as rankings",
+  "topic_links": [
+   "../topics/mathematics/order/"
+  ],
+  "topics": [
+   "Mathematics/Order"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Given two lists that are permutations of one another, the swap distance (also known as the Kendall tau distance) is the minimum number of swap operations of adjacent elements required to make the two lists the same.\nEquivalently, the swap distance of two finite linear orders $\\preceq$ and $\\unlhd$ is the number of disagreements of the two orders, i.e. of pairs $(x,y)$ such that $x\\prec y$ and $y\\lhd x$.\nThis article defines these two notions of swap distance as well as their equivalence under the obvious isomorphism between lists and linear orders given by interpreting a list as a ranking of elements in descending order.\nAn efficient $O(n\\log n)$ algorithm to compute the swap distance is also provided via the connection to the number of inversions of a list, for which an efficient algorithm is already available in the AFP.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "link": "../entries/Swap_Distance.html",
+  "shortname": "Swap_Distance",
+  "title": "Swap Distance",
+  "topic_links": [
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "In Social Choice Theory, a social welfare function (SWF) is a function that takes a collection of individual preferences on some set of alternatives and returns an aggregated preference relation.\nMore formally: Consider finite sets of agents $N=\\{1,\\ldots,n\\}$ and alternatives $A=\\{x_1,\\ldots,x_m\\}$. The input of an SWF is an $n$-tuple of rankings (i.e. linear orders) of $A$, and its output is a ranking of $A$ as well.\nVarious desirable properties on SWFs can be defined:\nAnonymity: The SWF is invariant under permutation of the agents. Unanimity: If all voters prefer $x$ over $y$, then $x$ is preferred over $y$ in the output ranking as well. Majority consistency: If there exists a ranking $x_1, \\ldots, x_{m}$ such that for every $i \u003c j$, the alternative $x_i$ is preferred over $x_j$ by more than half of the agents, that ranking must be returned. Kemeny strategyproofness: Strategic voting is not possible for a single agent, i.e. no agent can achieve a result more aligned with their own preferences by lying about them. This entry contains two impossibility results for SWFs with $m$ alternatives and $n$ agents:\nThere exists no anonymous, unanimous, and Kemeny-strategyproof SWF for $m \\geq 5$ and $n$ even or for $m = 4$ and $n$ a multiple of 4. There exists no majority-consistent and Kemeny-strategyproof SWF for $m = 4$ and $n \\geq 3$ or $m \\geq 4$ and $n \\in \\{9,11,13,15\\}\\cup\\{17,\\ldots\\}$ For some of the base cases, SAT solving is used by letting specialised automation prove a large number of clauses, translating to the DIMACS format, and importing a proof pre-generated by an external SAT solver using Lammich's GRAT format.\n",
+  "authors": [
+   "Manuel Eberl",
+   "Patrick Lederer"
+  ],
+  "link": "../entries/SWF_Impossibility.html",
+  "shortname": "SWF_Impossibility",
+  "title": "The Impossibility of Strategyproof Rank Aggregation",
+  "topic_links": [
+   "../topics/mathematics/games-and-economics/"
+  ],
+  "topics": [
+   "Mathematics/Games and economics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Actuarial Mathematics is a theory in applied mathematics. This is mainly used for determining the prices of insurance products and evaluating the liability of a company associating with insurance contracts. It is related to calculus, probability theory and financial theory, etc. In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL. It includes the theory of interest, survival model, and life table. The theory of interest deals with interest rates, present value factors, an annuity certain, etc. The survival model is a probabilistic model that represents the human mortality. The life table is based on the survival model and used for practical calculations. I have already formalized the basic part of Actuarial Mathematics in Coq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner. In contrast, Isabelle formalization is based on the probability theory and the survival model is developed as generally as possible. Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web. This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know. (Updated January 16th, 2026.) ",
   "authors": [
    "Yosuke Ito",
@@ -12,6 +132,24 @@
    "../topics/mathematics/games-and-economics/"
   ],
   "topics": [
+   "Mathematics/Games and economics"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We consider a fixed-odds gambling market over arbitrary logical propositions, where participants trade bets involving conjunctions, disjunctions, and negations. In this setting, we establish a three-way correspondence between the financial feasibility of trading strategies, the validity of universal probability inequalities, and the solutions to bounded Maximum Satisfiability (MaxSAT) problems.  The central result demonstrates that proving a trading strategy constitutes an arbitrage opportunity (i.e., guaranteeing a risk-free profit regardless of the outcome) is equivalent to proving a specific inequality identity holds for all probability functions, and is computationally equivalent to establishing a lower bound on a corresponding MaxSAT instance. Dually, we show that checking the coherence of a strategy (i.e., ensuring it does not guarantee a loss) also corresponds to verifying a probability identity and bounding a MaxSAT problem from above.",
+  "authors": [
+   "Matthew Doty"
+  ],
+  "link": "../entries/Arbitrage_Probability_Correspondence.html",
+  "shortname": "Arbitrage_Probability_Correspondence",
+  "title": "Arbitrage Opportunities Correspond to Probability Inequality Identities",
+  "topic_links": [
+   "../topics/mathematics/probability-theory/",
+   "../topics/mathematics/games-and-economics/"
+  ],
+  "topics": [
+   "Mathematics/Probability theory",
    "Mathematics/Games and economics"
   ],
   "year": "2026"
@@ -137,6 +275,22 @@
    "Computer science/Semantics and reasoning",
    "Logic/General logic/Modal logic",
    "Mathematics/Games and economics"
+  ],
+  "year": "2025"
+ },
+ {
+  "abstract": "This entry mechanises Abel's limit theorem on power series with real coefficients. The theorem also holds for complex numbers, but this entry has not covered it yet.  An application example of this theorem is also presented in this entry to extend the generalised binomial theorem for a specific example from $(-1,1)$ to its boundary cases $-1$ and $1$.",
+  "authors": [
+   "Kangfeng Ye"
+  ],
+  "link": "../entries/Abel_Limit_Theorem.html",
+  "shortname": "Abel_Limit_Theorem",
+  "title": "Abel's Limit Theorem",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
   ],
   "year": "2025"
  },

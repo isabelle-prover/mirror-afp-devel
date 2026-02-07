@@ -3,13 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/HOL-CSP_Proc-Omata.html</loc>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/</loc>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/HOL-CSP_PTick.html</loc>
+    <lastmod>2026-02-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Concentrated_Liquidity_Market_Making_Operations.html</loc>
+    <lastmod>2026-01-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Sets_Revisited.html</loc>
+    <lastmod>2026-01-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Rankings.html</loc>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Swap_Distance.html</loc>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/SWF_Impossibility.html</loc>
+    <lastmod>2026-01-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
     <lastmod>2026-01-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
+    <loc>https://isa-afp.org/entries/Arbitrage_Probability_Correspondence.html</loc>
+    <lastmod>2026-01-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Compressed_Oracles.html</loc>
     <lastmod>2025-12-31T00:00:00+00:00</lastmod>
@@ -28,6 +52,9 @@
   </url><url>
     <loc>https://isa-afp.org/entries/Weak_Spectroscopy.html</loc>
     <lastmod>2025-11-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Abel_Limit_Theorem.html</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Zippy.html</loc>
     <lastmod>2025-11-11T00:00:00+00:00</lastmod>
@@ -2860,6 +2887,10 @@
   </url><url>
     <loc>https://isa-afp.org/authors/feliachi/</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Abel_Limit_Theorem/Abel_Limit_Theorem.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Abel_Limit_Theorem/Binomial_Sqrt_Series_Boundary.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/bharadwaj/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/pal/</loc>
@@ -3593,6 +3624,8 @@
     <loc>https://isa-afp.org/thys/AFP/Approximation_Algorithms/Approx_VC_Hoare.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Approximation_Algorithms/Center_Selection.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Arbitrage_Probability_Correspondence/Arbitrage_Probability_Correspondence.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Architectural_Design_Patterns/Auxiliary.html</loc>
   </url><url>
@@ -6757,6 +6790,14 @@
     <loc>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</loc>
   </url><url>
     <loc>https://isa-afp.org/topics/computer-science/system-description-languages/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/CLMM_Description.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/CLMM_Misc.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/CLMM_Transformation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Concentrated_Liquidity_Market_Making_Operations/Grid_Information.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Concentration_Inequalities/Bennett_Inequality.html</loc>
   </url><url>
@@ -11932,6 +11973,88 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/HOL-CSP_OpSem/Recovered_Laws.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/HOL-CSP_Proc-Omata.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Almost_Compactification.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Combining_Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Combining_Synchronization_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Combining_Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_DiningPhilosophers.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_Synchronization_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Compactification_Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Conclusion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Deterministic_Processes.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Introduction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Process_Normalization.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_Proc-Omata/Process_Normalization_Properties.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/HOL-CSP_PTick.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/After_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Basic_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Conclusion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Deadlock_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Introduction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Monotonicities.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/CSP_PTick_Renaming.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Events_Ticks_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Finite_Ticks.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Multi_Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Multi_Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Non_Deterministic_CSP_PTick_Distributivity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Operational_Semantics_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Read_Write_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Sequential_Composition_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Sequential_Composition_Generalized_Cont.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Sequential_Composition_Generalized_Non_Destructive.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Step_CSP_PTick_Laws.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Step_CSP_PTick_Laws_Extended.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Associativity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Commutativity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Cont.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Interpretations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/HOL-CSP_PTick/Synchronization_Product_Generalized_Non_Destructive.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/AFP/HOL-CSP_RS/HOL-CSP_RS.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/HOL-CSP_RS/After_Operator_Non_Too_Destructive.html</loc>
@@ -15723,6 +15846,8 @@
     <loc>https://isa-afp.org/authors/engelhardt/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/wirt/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/yek/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Karatsuba_Sqrt/Karatsuba_Sqrt.html</loc>
   </url><url>
@@ -19690,7 +19815,7 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Polynomials/MPoly_Type_Class.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/AFP/Polynomials/MPoly_Type_Class_FMap.html</loc>
+    <loc>https://isa-afp.org/thys/AFP/Polynomials/MPoly_Type_Class_Finite_Map.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Polynomials/MPoly_Type_Class_OAlist.html</loc>
   </url><url>
@@ -19702,9 +19827,9 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Polynomials/OAlist.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/AFP/Polynomials/OAlist_Poly_Mapping.html</loc>
-  </url><url>
     <loc>https://isa-afp.org/thys/AFP/Polynomials/Poly_Mapping_Finite_Map.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Polynomials/Poly_Mapping_OAlist.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Polynomials/Polynomials.html</loc>
   </url><url>
@@ -20687,6 +20812,10 @@
     <loc>https://isa-afp.org/thys/AFP/Rank_Nullity_Theorem/Miscellaneous.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Rank_Nullity_Theorem/Mod_Type.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Rankings/Rankings.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Rankings/Topological_Sortings_Rankings.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/amjad/</loc>
   </url><url>
@@ -21991,6 +22120,16 @@
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Set_Reconciliation/Set_Reconciliation.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sets_Revisited/SetsCat.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sets_Revisited/SetsCat_Interps.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sets_Revisited/Smallness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sets_Revisited/Universe.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sets_Revisited/Universe_Interps.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/park/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Shadow_DOM/Shadow_DOM.html</loc>
@@ -23264,6 +23403,24 @@
     <loc>https://isa-afp.org/authors/mansky/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/linker/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Swap_Distance/Swap_Distance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/Anon_Unan_Stratproof_Impossibility.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/Majcons_Stratproof_Impossibility.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/Social_Welfare_Functions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Anonymous.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Explicit.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Impossibility_Automation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Impossibility_Library.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/SWF_Impossibility/SWF_Lowering.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/meesum/</loc>
   </url><url>

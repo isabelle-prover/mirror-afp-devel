@@ -1,0 +1,269 @@
+\documentclass[11pt,notitlepage,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym,eufrak}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\addtolength\textwidth{60pt}
+\addtolength\oddsidemargin{-30pt}
+\addtolength\evensidemargin{-30pt}
+
+\begin{document}
+
+\title{`{\bf Sets}' Revisited: Working with a Large Category in Isabelle/HOL}
+\author{Eugene W. Stark}
+\maketitle
+
+\begin{abstract}
+We revisit the problem of formalization of the category of sets and functions
+in Isabelle/HOL, regarding it as a paradigm for the formalization of other
+large categories.  We follow a general plan in which we extend the ``category''
+locale from our previous article \cite{Category3-AFP} with a few axioms that allow
+us to pass back and forth between objects and arrows internal to the category and
+``real'' sets and functions external to it.
+Using this setup, we prove the standard properties of the category of sets
+as consequences of the properties of the external notions.
+A key feature is the inclusion of an axiom that allows us to obtain objects
+internal to the category corresponding to externally given sets.
+To avoid inconsistency, our framework axiomatizes a notion of ``smallness''
+and only asserts the existence of objects corresponding to small sets.
+We give two ``top-level'' interpretations of our ``sets category'' locale.
+One uses ``finite'' as the notion of smallness and uses only standard HOL
+for its construction, which results in a small category.
+The other uses the axiomatic extension of HOL given in \cite{ZFC_in_HOL-AFP}
+to construct an interpretation that incorporates infinite sets as well,
+resulting in a large (but locally small) category.
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Introduction}
+
+In a previous article \cite{Category3-AFP} we formalized many basic notions and facts
+from category theory.  The formalization was carried out in HOL, in spite of the fact
+that HOL is significantly weaker than set theories usually cited as foundations for
+category theory.  The rationale for doing so was that most of the central concepts in
+category theory have significant content, even in contexts, such as small categories,
+that pose no foundational issues.  At some point, however, one wants to be able to work
+with categories that are not small; the category of sets being the prototypical example.
+That is, we would like to have a category \isa{S} that first of all can be considered as a
+``set category'', in the sense that there is fully faithful functorial way of mapping
+its objects to sets and its arrows to functions, and which in addition has ``enough objects''
+in the sense that if we given any ``real'' set then there will exist a representative
+object of $S$ whose elements correspond bijectively to the elements of the given set.
+Such a category would enjoy the small completeness and cocompleteness properties we
+would expect of the ``real'' category of sets.
+
+Now, in standard HOL it is not possible to define a category of sets as described
+above, because the normal axioms of HOL do not prove the existence of a type
+``large enough'' to provide (even up to equipollence) sets to represent the result
+of iterated exponentiations starting from an infinite set.
+However, it is possible to get around this restriction by adding additional axioms
+that assert the existence of such a type.  This is the approach taken in the article
+\cite{ZFC_in_HOL-AFP}, which augments HOL with additional axioms whose essence is
+to assert the existence of a new type \isa{V} whose elements correspond to sets that
+can be proved to exist in ZFC.  To avoid obvious inconsistency, clearly not every
+set of elements at type \isa{V} can correspond to an element of \isa{V}; the sets that do
+correspond to elements of \isa{V} are declared to be ``small''.  The notion of smallness
+is then extended via equipollence to obtain a notion of small sets at arbitrary types.
+
+In the article \cite{Category3-AFP} the present author used the ZFC-in-HOL
+axiomatization to define a ``set category'' whose objects are in bijective correspondence
+with the small sets at type \isa{V}.  This does produce a usable category of small sets,
+but there are some identifiable deficiencies.  First of all, the construction is
+very closely tied to the ZFC-in-HOL development and the particular type \isa{V} introduced
+there.  It would be more flexible if somehow the necessary assumptions could be distilled
+and expressed (using Isabelle's locale feature, for example) as assumptions about
+an unspecified type named by a type variable, or, more generally, as assumptions about
+a set of elements of such a type.  Secondly, the construction given in
+\cite{Category3-AFP} was somewhat {\em ad hoc}, which although it served its purpose
+as a proof-of-concept, did not pay much attention to the ultimate usability of the theory
+nor provide much guidance as to how the construction might be generalized to produce
+categories of sets with additional structure (a category of groups, for example).
+
+The purpose of present article is to revisit the problem of formalizing the category of
+sets in Isabelle/HOL while trying to address the above deficiencies.
+The approach we have taken is as follows.
+We first attempt to decouple the underlying extensions needed to HOL from the
+particular development in ZFC-in-HOL and to re-express these extensions,
+independently of the particular type \isa{V}, using Isabelle's locale feature.
+This leads us to identify two main aspects that need to be addressed:
+(1) the notion of ``smallness'' of a set; and (2) and notion of a ``universe'',
+comprising a collection of sets that is in some sense closed under the usual set-theoretic
+constructions.
+
+The notion of smallness is addressed by the theory \isa{Smallness}, which introduces
+several locales whose assumptions concern a function \isa{sml :: 'V set => bool}
+which is understood as specifying a collection of sets, at some unspecified but fixed
+type \isa{'V}, which are to be considered ``small''.  A base locale, {\em smallness},
+assumes as a regularity condition that the function \isa{sml} respects equipollence and then
+uses polymorphism to extend this function by equipollence to a function
+\isa{small :: 'a set => bool} at every type.
+(It is done this way because types mentioned in locale parameters are essentially fixed,
+whereas functions defined in the body of a locale can be polymorphic.)
+Several extensions to the \isa{smallness} locale are then defined, corresponding to
+various assumptions about what sets are to be considered as small.
+The \isa{small\_finite} locale is satisfied by notions of smallness for which arbitrary
+finite sets are considered to be small.
+The \isa{small\_nat} locale is satisfied by notions of smallness for which the set of
+natural numbers is small.
+The \isa{small\_product} locale is satisfied by notions of smallness that are preserved
+under cartesian product.
+The \isa{small\_sum} locale is satisfied by notions of smallness that are preserved
+under the formation of small-indexed unions.
+The \isa{small\_powerset} locale is satisfied by notions of smallness for which the set of
+all subsets of a small set is again small.
+The \isa{small\_funcset} locale is satisfied by notions of smallness that are preserved
+by a suitable construction of function spaces (this involves some technical issues that
+result from the the fact that HOL requires all functions to be total).
+
+The notion of a ``universe'' is addressed by the theory \isa{Universe}.  This theory
+introduces several locales whose assumptions concern a set \isa{univ :: 'U set}, at some
+unspecified but fixed type \isa{'U}, which admits embeddings of various other sets;
+typically resulting from constructions on $univ$ itself.
+A base locale, \isa{embedding}, defines the notion of an injective embedding of another
+set into \isa{univ}.
+The \isa{lifting} locale is satisfied when the set \isa{univ} embeds the disjoint union of
+itself and an additional element.
+The \isa{pairing} locale is satisfied when the set \isa{univ} embeds $univ \times univ$.
+The \isa{powering} locale is satisfied when the set \isa{univ} embeds the set of all its
+``small'' subsets.
+The \isa{tupling} locale is satisfied when the set \isa{univ} embeds the set of all
+``small extensional functions'' on its elements (here, again, there are some technical
+issues to be addressed).
+Finally, the \isa{universe} locale combines the \isa{tupling} locale with the assumption
+that the set of natural numbers is small.
+
+Having defined the above locales, we proceed to defining the \isa{sets\_cat} locale,
+which axiomatizes the notion ``category of sets and functions''.
+This definition follows a general plan that can be applied to construct locales that axiomatize
+categories of other kinds of algebraic structures.
+We first define the locale \isa{sets\_cat\_base}, which is satisfied by an arbitrary category
+\isa{C} with terminal object together with a notion of smallness.
+The \isa{sets\_cat\_base} locale provides a convenient place to define correspondences,
+between objects of \isa{C} and sets and between arrows of \isa{C} and functions.
+Specifically, after making an arbitrary choice of terminal object, we define a function
+\isa{Set} that takes each object to the set of its global elements, and a function \isa{Fun}
+that takes each arrow to the function on global elements it induces by composition.
+Here we are exploiting the well-pointedness of a category of sets and functions to simplify
+things a bit.  To apply the same plan to categories that are not well-pointed, we will have
+to use generalized elements instead, which is possible, but more cumbersome.
+
+The \isa{sets\_cat\_base} locale is then extended to the \isa{sets\_cat} locale by adding
+four axioms.  The first axiom asserts that the set of global elements of every object is small.
+The second axiom asserts that the mapping \isa{Fun} that takes arrows to functions on global
+elements is injective.
+The third axiom asserts that for every ``real'' function \isa{F} from the set of global elements
+of object \isa{a} to the set of global elements of object \isa{b} there is an arrow \isa{f : a -> b}
+of \isa{C} such that \isa{Fun f = f}.
+Finally, the fourth axiom, which we call ``repleteness'', asserts that for every small subset
+\isa{A} of the set of arrows of \isa{C} there exists an object \isa{a} of \isa{C}
+such that the set of global elements of \isa{a} is equipollent with \isa{A}.
+Although the restrictions imposed by Isabelle/HOL on locale definitions require that this
+axiom be expressed with respect to a fixed type, namely the type of arrows of \isa{C},
+in the body of the locale we can immediately extend the repleteness property to show the existence
+of objects corresponding to small sets at arbitrary types, as long as a set for which we
+want to obtain an object ``embeds'' via an injective mapping into the set of arrows of \isa{C}.
+
+The gist of the \isa{sets\_cat} axioms is to assert the existence of a ``meta-functor''
+from \isa{C} to ``real sets'' (of global elements of \isa{C}) and ``real functions''
+(between sets of global elements), which is full, faithful, and surjective from objects
+to small sets (of arrows of \isa{C}).  Moreover, we can obtain an object corresponding to a
+given small set at an arbitrary type, assuming that there is an embedding of that set into the
+set of arrows of \isa{C}.
+So, the image of \isa{C} under this meta-functor is a ``meta-category'' whose objects are
+sets of arrows of \isa{C} and whose arrows are functions between such sets.
+This meta-category is in general only equivalent to \isa{C}, not isomorphic to it,
+because when we pass from a small set \isa{A} to the corresponding object \isa{mkide A}
+and then back to the set \isa{Set(mkide A)} of global elements of \isa{mkide a},
+we recover a set that is only equipollent to \isa{A}, rather than equal to it.
+We therefore obtain a pair of inverse ``comparison maps'' between an externally given
+small set \isa{A} and the set of global elements of the object \isa{mkide a}
+corresponding to it.
+The map \isa{IN} encodes each element of \isa{A} as a corresponding global element of
+\isa{mkide A}; the inverse map \isa{OUT} decodes each global element of \isa{mkide A}
+to the corresponding element of \isa{A}.
+We use the just-outlined structure to prove a ``categoricity'' result which states that,
+a category \isa{C} that satisfies the \isa{sets\_cat} locale is, up to equivalence of categories,
+the unique such category whose set of arrows has the same cardinality as that of \isa{C}.
+The same overall pattern can be applied to algebraic structures more general than sets,
+but note that in this case the comparison maps will end up being isomorphisms for these
+structures, rather than just invertible functions.
+
+We then proceed to develop the consequences of the \isa{sets\_cat} axioms;
+proving a set of properties roughly patterned after those in Lawvere's
+``Elementary Theory of the Category of Sets'' \cite{Lawvere-ETCS}.
+In brief, we show that, if the collection of arrows of \isa{C} forms a ``universe'',
+then \isa{C} is well-pointed, small-complete and small co-complete, cartesian closed,
+has a subobject classifier and a natural numbers object, and splits all epimorphisms.
+The fact that the correspondences, between objects and sets and between arrows and functions,
+have been defined in terms of structure intrinsic to the category \isa{C} means that we
+can carry out the proofs without having to reference concrete details of the construction
+of a particular underlying type, such as that of the type \isa{V} from \isa{ZFC\_in\_HOL}.
+Of particular interest is the pattern we use to show the existence of limits and colimits
+in \isa{C}.  Consider the case of binary products as an example.  We know that the set of
+global elements of the product $a \otimes b$ of objects \isa{a} and \isa{b} of \isa{C}
+should be equipollent with the cartesian product $Set\;a \times Set\;b$ of the set of global
+elements of \isa{a} and that of \isa{b}.  Moreover, the sets of global elements of \isa{a}
+and \isa{b} are small (by the locale assumptions), so if we have available as an additional
+assumption about smallness that it is preserved by cartesian product, then we may conclude
+that the set $Set\;a \times Set\;b$ is also small.  If we have also assumed the existence of
+a pairing function, which injectively maps pairs of arrows of \isa{C} to arrows of \isa{C},
+then we may use repleteness to prove the existence of an object $a \otimes b$ whose set
+of global elements is equipollent with $Set\;a \times Set\;b$.  Once the existence of this
+object has been shown, then we can prove that it is in fact a categorical product of
+\isa{a} and \isa{b}.  To do this, we need to obtain the projections, but these are just the
+arrows of \isa{C} that correspond to the ``real'' projection functions on $Set\;a \times Set\;b$.
+So to summarize, to show that \isa{C} admits a particular categorical construction,
+we first carry out a corresponding construction on sets of global elements.  This will
+typically result in a set at a higher type than that of the arrows of \isa{C}.
+To obtain an object of \isa{C} we must show that this set is small and in addition that it
+``embeds'' back down into the set of arrows of \isa{C}.
+
+Finally, as everything described up to this point has been carried out axiomatically
+(the locale assumptions are the axioms), to keep ourselves honest we have to show that
+the axioms are actually consistent.  We do this by constructing two ``top-level''
+interpretations of the \isa{sets\_cat} locale.  One interpretation is carried out
+in ``vanilla HOL'' without the use of \isa{ZFC\_in\_HOL} and takes ``finite'' as the notion
+of smallness.  It shows that the category whose objects are the natural numbers and
+whose arrows correspond to functions between finite sets, interprets the
+\isa{sets\_cat\_with\_tupling} locale, which satisfies all the smallness and embedding
+assumptions we use, except for the assumption that the set of natural numbers is small.
+The second interpretation, which uses \isa{ZFC\_in\_HOL}, shows that the category of
+sets we constructed in the previous article \cite{Category3-AFP} interprets
+the \isa{sets\_cat\_with\_tupling} locale as well as the \isa{small\_nat} locale,
+which asserts also that the set of natural numbers is small.
+
+In the end, what we achieve is a locale, \isa{sets\_cat}, which axiomatizes the notion
+of a category of sets and functions, and which can be used to perform reasoning internal
+to such a category without having to refer to details of a particular concrete construction.
+When required, we can pass from inside the category to the ``external world'' via
+a fully faithful functorial mapping.  Functions that exist externally can be internalized
+as arrows using the fullness of this mapping.  In addition, sets that exist externally,
+at any type, can be internalized as objects of the category, provided that we establish
+two facts: (1) their smallness; and (2) that they can be embedded into the set of arrows
+of the category.  We have demonstrated this procedure by using it to prove the familiar
+properties of a ``set category''.
+
+% include generated text of all theories
+
+%\input{session}
+\input{Smallness}
+\input{Universe}
+\input{SetsCat}
+\input{Universe_Interps}
+\input{SetsCat_Interps}
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

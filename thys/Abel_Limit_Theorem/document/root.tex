@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Abel's Limit Theorem in Isabelle/HOL}
+\author{Kangfeng Ye\\[.5ex] University of York, UK \\[2ex] \texttt{\small kangfeng.ye@york.ac.uk}}
+\maketitle
+
+\begin{abstract}
+\noindent This theory proves the Abel's limit theorem on power series of real numbers, and then an example is shown to use the theorem to cover the boundary cases of binomial series.
+\end{abstract}
+
+\tableofcontents
+%\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrvurl}
+\bibliography{root}
+
+\end{document}
