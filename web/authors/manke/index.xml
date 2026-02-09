@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Moritz Manke</title>
+    <link>https://isa-afp.org/authors/manke/</link>
+    <description>AFP entries of Moritz Manke</description><item>
+  <title>Workflow Net Fitness Measures</title>
+  <link>https://isa-afp.org/entries/Workflow_Net_Fitness_Measures.html</link>
+  <pubDate>Sat, 07 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Workflow Net Fitness Measures in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Data structures</category>
+</item>
+
+  </channel>
+</rss>

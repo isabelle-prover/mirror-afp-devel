@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "This entry covers workflow nets, a specialization of Petri nets, which are especially useful for modelling business processes. It then defines measures for the fitness of these nets, namely trace fitness and causal footprint fitness. These attempt to measure how well a model covers all of the traces in an event log (a multiset of traces, which have happened in the business). Most fitness measures are far from perfect and a number of attributes have been defined in literature. The main goal of this entry is to formalize proofs for some of these attributes of fitness measures and learning how to correctly define the measures and attributes along the way.",
+  "authors": [
+   "Moritz Manke"
+  ],
+  "link": "../entries/Workflow_Net_Fitness_Measures.html",
+  "shortname": "Workflow_Net_Fitness_Measures",
+  "title": "Workflow Net Fitness Measures",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/",
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages",
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry develops the Proc-Omata framework on top of HOL-CSP and its extensions. Proc-Omata are defined from functional automata and come in four variants: deterministic, terminating deterministic, non-deterministic, and terminating non-deterministic. This subclass of processes combines the expressiveness of CSP with automata-like structure (reachability, enableness), making it particularly amenable to invariant-based reasoning.  We lift sequential composition and synchronization product to the automata level through combination functions and prove compactification theorems that enable reasoning over large process architectures. An essential ingredient is the use of restriction spaces, which guarantees well-defined fixed points even in the non-deterministic setting. Finally, we illustrate the applicability of the framework with the Dining Philosophers, where compactification yields proofs that scale to an arbitrary finite but unbounded number of participants in this parameterized process architecture.",
   "authors": [
    "Benoît Ballenghien",
