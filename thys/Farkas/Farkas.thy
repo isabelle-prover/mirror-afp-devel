@@ -460,8 +460,10 @@ proof -
     unfolding bound_atoms_def index_valid_def set_of_map_def boundsl_def boundsu_def o_def by force
   finally have sub: "snd ` set ?C \<subseteq> snd ` as" by force
   show ?thesis unfolding farkas_coefficients_atoms_tableau_def
-    by (intro exI[of _ p] exI[of _ c] exI[of _ ?C] conjI,
-        insert Qs[unfolded id] sub, (force simp: o_def)+)
+    apply (intro exI[of _ p] exI[of _ c] exI[of _ ?C] conjI)
+       apply (insert Qs[unfolded id] sub)
+    subgoal by simp force
+    by (auto simp: o_def)
 qed
 
 end
