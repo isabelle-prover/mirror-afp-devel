@@ -1711,8 +1711,8 @@ Usage: isabelle afp_submit [OPTIONS] DIR
 
       val paths = Web_App.Paths(Url(frontend + ":" + port), backend_path, serve_frontend = devel,
         landing = Page.SUBMIT)
-      val server = new Server(paths = paths, afp = afp, mode = Mode.SUBMISSION,
-        handler = handler, devel = devel, verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths, handler, afp = afp, mode = Mode.SUBMISSION, devel = devel,
+        verbose = verbose, progress = progress, port = port)
 
       server.run()
     })
@@ -1745,8 +1745,8 @@ Usage: isabelle afp_edit_metadata [OPTIONS]
 
       val paths = Web_App.Paths(Url("http://localhost:" + port), Path.current,
         serve_frontend = true, landing = Page.SUBMISSIONS)
-      val server = new Server(paths = paths, afp = afp, mode = Mode.EDIT, handler = handler,
-        devel = true, verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths, handler, afp = afp, mode = Mode.EDIT, devel = true,
+        verbose = verbose, progress = progress, port = port)
 
       server.run()
     })
