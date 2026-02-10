@@ -1424,13 +1424,13 @@ object AFP_Submit {
 
   class Server(
     paths: Web_App.Paths,
-    afp: AFP_Structure,
-    mode: Mode.Value,
     handler: Handler,
-    devel: Boolean,
-    verbose: Boolean,
-    progress: Progress,
-    port: Int
+    afp: AFP_Structure = AFP_Structure(),
+    mode: Mode.Value = Mode.SUBMISSION,
+    devel: Boolean = false,
+    verbose: Boolean = false,
+    progress: Progress = new Progress,
+    port: Int = 0
   ) extends Web_App.Server[Model.T](paths, port, verbose, progress) {
     private var _state: State = State.load(afp)
 
