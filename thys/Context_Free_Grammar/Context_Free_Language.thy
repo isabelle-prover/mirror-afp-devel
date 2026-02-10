@@ -256,7 +256,7 @@ proof(induction n arbitrary: w A rule: less_induct)
     then obtain ws ms where *:
       "w = concat ws \<and> length \<alpha> = length ws \<and> length \<alpha> = length ms
         \<and> sum_list ms = m \<and> (\<forall>i < length ws. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ms ! i) map Tm (ws ! i))"
-      using derive_decomp_Tm by metis
+      using deriven_decomp_Tm by metis
 
     have "\<forall>i < length ws. ws ! i \<in> inst_sym (\<lambda>A. ((subst_lang P)^^m) (\<lambda>A. {}) A) (\<alpha> ! i)"
     proof (rule allI | rule impI)+
