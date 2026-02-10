@@ -2145,9 +2145,6 @@ next
     by auto (* takes time *)
 qed
 
-lemma finite_bad_grammar: "finite (set (bad_grammar As))"
-  by (induction As rule: bad_grammar.induct) (auto simp: bad_grammar.simps(2))
-
 lemma finite_Expand_tri: "finite R \<Longrightarrow> finite (Expand_tri As R)"
 proof (induction As R rule: Expand_tri.induct)
   case (1 R)
@@ -2252,7 +2249,7 @@ next
   then have cardS2: "card {v@[Tm True] | v. (n,v) \<in> ?R'} = 2 ^ Suc n" 
     using cardCvR by (auto simp add: bij_betw_same_card)
 
-  have fin_R': "finite ?R'" using finite_bad_grammar finite_Expand_tri by blast
+  have fin_R': "finite ?R'" using finite_set finite_Expand_tri by blast
   let ?f1 = "\<lambda>(C,v). v@[Tm False]"
   have "{v@[Tm False] | v. (n,v) \<in> ?R'} \<subseteq> ?f1 ` ?R'" by auto
   then have fin1: "finite {v@[Tm False] | v. (n,v) \<in> ?R'}"
@@ -2278,7 +2275,7 @@ theorem Expand_tri_blowup:
 (is "card ?R \<ge> _")
 proof -
   have fin: "finite ?R"
-    using finite_bad_grammar finite_Expand_tri by blast
+    using finite_set finite_Expand_tri by blast
   have "{v. (n,v) \<in> ?R} \<subseteq> snd ` ?R" by (force simp del: upt_Suc simp: image_def)
   from fin card_mono[OF _ this, unfolded bad_gram_last_expanded_card]
     card_image_le[OF fin, of snd]

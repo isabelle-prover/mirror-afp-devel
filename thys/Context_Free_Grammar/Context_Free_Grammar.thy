@@ -794,6 +794,45 @@ next
   assume ?R thus ?L by (meson derives_Cons derives_Cons_rule derives_append_decomp)
 qed
 
+lemma deriven_decomp: "P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta> \<Longrightarrow>
+  \<exists>\<beta>s ns. \<beta> = concat \<beta>s \<and> length \<alpha> = length \<beta>s \<and> length \<alpha> = length ns \<and> sum_list ns = n
+          \<and> (\<forall>i < length \<beta>s. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ns!i) (\<beta>s ! i))"
+  (is "_ \<Longrightarrow> \<exists>\<beta>s ns. ?G \<alpha> \<beta> n \<beta>s ns")
+proof (induction \<alpha> arbitrary: \<beta> n)
+  case (Cons s \<alpha>)
+  from deriven_Cons_decomp[THEN iffD1, OF Cons.prems]
+  show ?case
+  proof (elim disjE exE conjE)
+    fix \<beta>' assume as: "\<beta> = s # \<beta>'" "P \<turnstile> \<alpha> \<Rightarrow>(n) \<beta>'"
+    from Cons.IH[OF this(2)] obtain \<beta>s ns where *: "?G \<alpha> \<beta>' n \<beta>s ns"
+      by blast
+    let ?\<beta>s = "[s]#\<beta>s"
+    let ?ns = "0#ns"
+    have "?G (s#\<alpha>) \<beta> n ?\<beta>s ?ns"
+      using \<open>\<beta> = _\<close> as * by (auto simp: nth_Cons')
+    then show ?thesis by blast
+  next
+    fix n1 n2 A \<alpha>' \<beta>1 \<beta>2
+    assume *: "n = Suc(n1+n2)" "\<beta> = \<beta>1 @ \<beta>2" "s = Nt A" "(A, \<alpha>') \<in> P" "P \<turnstile> \<alpha>' \<Rightarrow>(n1) \<beta>1" "P \<turnstile> \<alpha> \<Rightarrow>(n2) \<beta>2"
+    then obtain \<beta>1' \<beta>2' where **: "\<beta> = \<beta>1' @ \<beta>2'" "P \<turnstile> \<alpha>' \<Rightarrow>(n1) \<beta>1'" "P \<turnstile> \<alpha> \<Rightarrow>(n2) \<beta>2'"
+      by (metis)
+    from Cons.IH[OF this(3)] obtain \<beta>s ns where ***: "?G \<alpha> \<beta>2' n2 \<beta>s ns"
+      by blast
+    let ?\<beta>s = "\<beta>1'#\<beta>s"
+    let ?ns = "Suc n1 # ns"
+    from * ** have "P \<turnstile> [(s#\<alpha>) ! 0] \<Rightarrow>(?ns ! 0) (?\<beta>s ! 0)"
+      by (metis derive_singleton nth_Cons_0 relpowp_Suc_I2)
+    then have "?G (s#\<alpha>) \<beta> n ?\<beta>s ?ns"
+      using * ** *** by (auto simp add: nth_Cons' derives_Cons_rule fold_plus_sum_list_rev)
+    then show ?thesis by blast
+  qed
+qed simp
+
+lemma deriven_decomp_Tm: "P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm \<beta> \<Longrightarrow>
+  \<exists>\<beta>s ns. \<beta> = concat \<beta>s \<and> length \<alpha> = length \<beta>s \<and> length \<alpha> = length ns \<and> sum_list ns = n
+          \<and> (\<forall>i < length \<beta>s. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ns!i) map Tm (\<beta>s ! i))"
+by(drule deriven_decomp)(fastforce simp add: map_eq_concat_iff)
+
 lemma deriven_Suc_decomp_left:
   "P \<turnstile> u \<Rightarrow>(Suc n) v \<longleftrightarrow> (\<exists>p A u2 w v1 v2 n1 n2.
   u = p @ Nt A # u2 \<and> v = p @ v1 @ v2 \<and> n = n1 + n2 \<and>
@@ -854,42 +893,6 @@ next
 qed
 
 subsubsection \<open>Derivations leading to terminal words\<close>
-
-lemma derive_decomp_Tm: "P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm \<beta> \<Longrightarrow>
-  \<exists>\<beta>s ns. \<beta> = concat \<beta>s \<and> length \<alpha> = length \<beta>s \<and> length \<alpha> = length ns \<and> sum_list ns = n
-          \<and> (\<forall>i < length \<beta>s. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ns!i) map Tm (\<beta>s ! i))"
-  (is "_ \<Longrightarrow> \<exists>\<beta>s ns. ?G \<alpha> \<beta> n \<beta>s ns")
-proof (induction \<alpha> arbitrary: \<beta> n)
-  case (Cons s \<alpha>)
-  from deriven_Cons_decomp[THEN iffD1, OF Cons.prems]
-  show ?case
-  proof (elim disjE exE conjE)
-    fix \<gamma> assume as: "map Tm \<beta> = s # \<gamma>" "P \<turnstile> \<alpha> \<Rightarrow>(n) \<gamma>"
-    then obtain s' \<gamma>' where "\<beta> = s' # \<gamma>'"  "P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm \<gamma>'" "s = Tm s'" by force
-    from Cons.IH[OF this(2)] obtain \<beta>s ns where *: "?G \<alpha> \<gamma>' n \<beta>s ns"
-      by blast
-    let ?\<beta>s = "[s']#\<beta>s"
-    let ?ns = "0#ns"
-    have "?G (s#\<alpha>) \<beta> n ?\<beta>s ?ns"
-      using \<open>\<beta> = _\<close> as * by (auto simp: nth_Cons')
-    then show ?thesis by blast
-  next
-    fix n1 n2 A w \<beta>1 \<beta>2
-    assume *: "n = Suc (n1 + n2)" "map Tm \<beta> = \<beta>1 @ \<beta>2" "s = Nt A" "(A, w) \<in> P" "P \<turnstile> w \<Rightarrow>(n1) \<beta>1" "P \<turnstile> \<alpha> \<Rightarrow>(n2) \<beta>2"
-    then obtain \<beta>1' \<beta>2' where **: "\<beta> = \<beta>1' @ \<beta>2'" "P \<turnstile> w \<Rightarrow>(n1) map Tm \<beta>1'" "P \<turnstile> \<alpha> \<Rightarrow>(n2) map Tm \<beta>2'"
-      by (metis (no_types, lifting) append_eq_map_conv)
-    from Cons.IH[OF this(3)] obtain \<beta>s ns
-      where ***: "?G \<alpha> \<beta>2' n2 \<beta>s ns"
-      by blast
-    let ?\<beta>s = "\<beta>1'#\<beta>s"
-    let ?ns = "Suc n1 # ns"
-    from * ** have "P \<turnstile> [(s#\<alpha>) ! 0] \<Rightarrow>(?ns ! 0) map Tm (?\<beta>s ! 0)"
-      by (metis derive_singleton nth_Cons_0 relpowp_Suc_I2)
-    then have "?G (s#\<alpha>) \<beta> n ?\<beta>s ?ns"
-      using * ** *** by (auto simp add: nth_Cons' derives_Cons_rule fold_plus_sum_list_rev)
-    then show ?thesis by blast
-  qed
-qed simp
 
 lemma word_decomp1: 
   "R \<turnstile> p @ [Nt A] @ map Tm ts \<Rightarrow>(n) map Tm q 
@@ -1318,7 +1321,6 @@ by (fastforce simp: map_eq_append_conv split: prod.splits)
 lemma derivel_imp_derive: "P \<turnstile> u \<Rightarrow>l v \<Longrightarrow> P \<turnstile> u \<Rightarrow> v"
   using derive.simps derivel.cases self_append_conv2 by fastforce
 
-(* TODO: CFG? *)
 lemma derivel_append_iff:
   "P \<turnstile> u@v \<Rightarrow>l w \<longleftrightarrow>
   (\<exists>u'. w = u'@v \<and> P \<turnstile> u \<Rightarrow>l u') \<or> (\<exists>u' v'. w = u@v' \<and> u = map Tm u' \<and> P \<turnstile> v \<Rightarrow>l v')"
