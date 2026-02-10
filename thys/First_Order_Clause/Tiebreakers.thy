@@ -12,7 +12,7 @@ begin
 
 sublocale wellfounded_strict_order "tiebreakers C\<^sub>G"
   using tiebreakers_axioms tiebreakers_def wfp_imp_asymp
-  by unfold_locales auto  
+  by unfold_locales auto
 
 end
 

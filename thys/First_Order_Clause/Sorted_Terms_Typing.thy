@@ -4,18 +4,19 @@ theory Sorted_Terms_Typing
     Sorted_Terms.Sorted_Terms
     IsaFoR_Nonground_Term
     Typed_IMGU
+    Monomorphic_Typing_Compatibility
 begin
 
-locale sorted_term_typing =
+locale sorted_terms_typing =
   fixes \<F> :: "'f \<times> 'ty list \<Rightarrow> 'ty option"
 begin
 
-abbreviation welltyped :: "('v \<Rightarrow> 'ty) \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> 'ty \<Rightarrow> bool" where
+abbreviation welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> 'ty \<Rightarrow> bool" where
   "welltyped \<V> t \<tau> \<equiv> t : \<tau> in \<T>(\<F>, Some \<circ> \<V>)"
 
 notation welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
 
-sublocale "term": base_typing where 
+sublocale "term": base_typing where
   welltyped = "welltyped \<V>" for \<V>
 proof unfold_locales
   show "right_unique (welltyped \<V>)"
@@ -53,7 +54,6 @@ proof unfold_locales
 
     then have "\<V>  \<turnstile> Fun f (ss1 @ c\<langle>t'\<rangle> # ss2) : \<tau>"
       unfolding Fun_hastype
-      apply auto
       by (smt (verit, ccfv_threshold) More.IH list_all2_Cons1 list_all2_append list_all2_append1)
 
     then show ?case
@@ -71,12 +71,12 @@ qed
 
 sublocale "term": base_typing_properties where
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
-  vars = term.vars and welltyped = "welltyped" and to_ground = term.to_ground and
-  from_ground = term.from_ground and subst_updates = subst_updates and apply_subst = apply_subst and
-  subst_update = fun_upd
-proof(unfold_locales)
+  vars = term.vars and is_ground = term.is_ground and welltyped = "welltyped" and
+  to_ground = term.to_ground and from_ground = term.from_ground and subst_update = fun_upd and
+  subst_updates = subst_updates and apply_subst = apply_subst
+proof unfold_locales
   fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
-  assume type_preserving_\<sigma>: " \<forall>x\<in>term.vars t. \<V> \<turnstile> Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
+  assume type_preserving_\<sigma>: "\<forall>x\<in>vars t. \<V> \<turnstile> term.Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
 
   show "\<V> \<turnstile> t \<cdot> \<sigma> : \<tau> \<longleftrightarrow> \<V> \<turnstile> t : \<tau>"  
   proof (rule iffI)
@@ -117,9 +117,8 @@ next
       case (Var x)
 
       then have "\<V>' (term.rename \<rho> x) = \<tau>"
-        using renaming
-        by (metis Term.simps(1) comp_apply eq_Some_iff_hastype eval_term.simps(1)
-            option.inject term.id_subst_rename)
+        using renaming term_id_subst_rename 
+        by fastforce
 
       then have "\<V> x = \<tau>"
         by (simp add: Var.prems(1))
@@ -138,16 +137,17 @@ next
         by (meson Fun_hastype fun_hastype_def hastype_list_iff_those)
 
       then show ?case
-        by (smt (verit, best) Fun.prems Var_hastype hastype_in_o renaming
-            subst_hastype_iff_vars term.id_subst_rename)
+        by (smt (verit, best) Fun.prems Var_hastype exists_nonground_term
+            hastype_in_o renaming subst_hastype_iff_vars
+            term.id_subst_rename)
     qed
   next
     assume "\<V> \<turnstile> t : \<tau>"
 
     then show "\<V>' \<turnstile> t \<cdot> \<rho> : \<tau>"
       using \<V>
-      by (smt (verit, best) Var_hastype hastype_in_o renaming subst_hastype_iff_vars
-          term.id_subst_rename)
+      by (smt (verit, best) Var_hastype hastype_in_o renaming
+          subst_hastype_iff_vars term_id_subst_rename)
   qed
 next
   fix \<V> :: "('v, 'ty) var_types"  and x

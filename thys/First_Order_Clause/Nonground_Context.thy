@@ -22,9 +22,9 @@ locale nonground_context =
   term_based_lifting where
     sub_vars = "term_vars :: 't \<Rightarrow> 'v set" and sub_subst = "term_subst :: 't \<Rightarrow> 'subst \<Rightarrow> 't" and
     sub_from_ground = term_from_ground and sub_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
-    to_ground_map = to_ground_context_map and ground_map = ground_context_map and 
-    from_ground_map = from_ground_context_map and map = map_context and to_set = context_to_set and
-    to_set_ground = ground_context_to_set +
+    sub_is_ground = term_is_ground and to_ground_map = to_ground_context_map and
+    ground_map = ground_context_map and from_ground_map = from_ground_context_map and
+    map = map_context and to_set = context_to_set and to_set_ground = ground_context_to_set +
 
   "context" +
 
@@ -49,7 +49,7 @@ assumes
     "\<And>c c'. from_ground (c \<circ>\<^sub>c\<^sub>G c') = from_ground c \<circ>\<^sub>c from_ground c'" and
   apply_context_vars [simp]: "\<And>c t. term.vars c\<langle>t\<rangle> = vars c \<union> term.vars t" and
   apply_context_subst [simp]: "\<And>c t \<sigma>. c\<langle>t\<rangle> \<cdot>t \<sigma> = (subst c \<sigma>)\<langle>t \<cdot>t \<sigma>\<rangle>" and
-  context_Var: "\<And>x t. x \<in> term.vars t \<longleftrightarrow> (\<exists>c. t = c\<langle>term.Var x\<rangle>)" and
+  context_Var: "\<And>x t. x \<in> term.vars t \<Longrightarrow> (\<exists>c. t = c\<langle>term.Var x\<rangle>)" and
  
   (* TODO: Simplify? + Separate? *)
   subst_to_context: "t \<cdot>t \<gamma> = c\<^sub>G\<langle>t\<^sub>G\<rangle> \<Longrightarrow> term.is_ground (t \<cdot>t \<gamma>) \<Longrightarrow>
@@ -101,54 +101,52 @@ shows "\<exists>c t' c\<^sub>G'. t = c\<langle>t'\<rangle> \<and> term.is_Var t'
 proof (cases "\<exists>c t'. t = c\<langle>t'\<rangle> \<and> t' \<cdot>t \<gamma> = t\<^sub>G \<and> c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G")
   case True
 
-  then obtain c t' where t: "t = c\<langle>t'\<rangle>" and "t' \<cdot>t \<gamma> = t\<^sub>G" "c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G"
+  then obtain c t' where 
+    t: "t = c\<langle>t'\<rangle>" and
+    c_\<gamma>: "c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G" and
+    "t' \<cdot>t \<gamma> = t\<^sub>G"
     by metis
 
-  have "is_ground c\<^sub>G"
-    using t_\<gamma> t_grounding 
-    by auto
-
-  obtain x where t': "t' = term.Var x"
-    using \<open>c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G\<close> \<open>t' \<cdot>t \<gamma> = t\<^sub>G\<close> not_subst_into_Fun t
-    by blast
+  then obtain x where t': "t' = term.Var x" and exists_nonground: "term.exists_nonground"
+    using not_subst_into_Fun 
+    by presburger
 
   show ?thesis
-  proof (intro exI conjI)
-
-    show "t = c\<langle>t'\<rangle>"
-      using t .
-  next
-
-    show "t' = term.Var x"
-      using t' .
-  next
+  proof (intro exI conjI impI; (rule t t')?)
 
     show "c\<^sub>G = (c \<cdot>t\<^sub>c \<gamma>) \<circ>\<^sub>c \<box>"
-      by (simp add: \<open>c \<cdot>t\<^sub>c \<gamma> = c\<^sub>G\<close>)
+      by (simp add: c_\<gamma>)
+  next
+
+    show "\<not> term.is_ground t'"
+      using t' term.vars_id_subst[OF exists_nonground] term.no_vars_if_is_ground
+      by auto
   qed
 next
   case False
 
   then show ?thesis
     using subst_to_context[OF t_\<gamma> t_grounding]
-    by metis
+    by (metis apply_context_is_ground subst_ident_if_ground t_\<gamma>
+        term.all_subst_ident_if_ground)
 qed
 
 end
 
 locale occurences =
   nonground_context where map_context = map_context and term_vars = term_vars
-for 
+for
   map_context :: "('t \<Rightarrow> 't) \<Rightarrow> 'c \<Rightarrow> 'c" and term_vars :: "'t \<Rightarrow> 'v set" +
 fixes occurences :: "'t \<Rightarrow> 'v \<Rightarrow> nat"
- assumes
+assumes
   occurences:
-    "\<And>t\<^sub>G c x. term.is_ground t\<^sub>G \<Longrightarrow> occurences (c\<langle>term.Var x\<rangle>) x = Suc (occurences (c\<langle>t\<^sub>G\<rangle>) x)" and
+    "\<And>t\<^sub>G c x. term.exists_nonground \<Longrightarrow> term.is_ground t\<^sub>G \<Longrightarrow>
+      occurences (c\<langle>term.Var x\<rangle>) x = Suc (occurences (c\<langle>t\<^sub>G\<rangle>) x)" and
   vars_occurences: "\<And>x t. x \<in> term.vars t \<longleftrightarrow> 0 < occurences t x"
 begin
 
 lemma is_ground_no_occurences: "term.is_ground t \<Longrightarrow> occurences t x = 0"
-  using vars_occurences
+  using vars_occurences term.no_vars_if_is_ground 
   by auto
 
 lemma occurences_obtain_context:
@@ -163,9 +161,9 @@ proof -
     by presburger
 
   moreover have "occurences c\<langle>t\<^sub>G\<rangle> x = n"
-    using assms
-    unfolding t occurences[OF update]
-    by linarith
+    using assms is_ground_no_occurences occurences
+    unfolding t
+    by fastforce
 
   ultimately show ?thesis
     using that

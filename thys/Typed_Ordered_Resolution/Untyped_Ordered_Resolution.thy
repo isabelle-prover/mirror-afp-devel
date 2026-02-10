@@ -1,10 +1,9 @@
 theory Untyped_Ordered_Resolution
-   imports 
+  imports
     First_Order_Clause.Nonground_Order
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Tiebreakers
-
-    Fresh_Identifiers.Fresh
+    First_Order_Clause.Infinite_Variables
 begin
 
 locale untyped_ordered_resolution_calculus =
@@ -14,16 +13,30 @@ locale untyped_ordered_resolution_calculus =
 
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>t)" and atom_vars = term.vars and term_vars = term_vars and
-  atom_from_ground = term.from_ground and atom_to_ground = term.to_ground and id_subst = id_subst +
+  atom_from_ground = term.from_ground and atom_to_ground = term.to_ground and
+  atom_is_ground = term.is_ground and id_subst = id_subst +
 
   tiebreakers tiebreakers +
-  "term": exists_imgu where vars = term_vars and subst = "(\<cdot>t)" and id_subst = id_subst
+
+  "term": exists_imgu where
+  vars = term_vars and subst = "(\<cdot>t)" and id_subst = id_subst and is_ground = term_is_ground +
+
+  infinite_variables where
+  variables = "UNIV :: 'v set" and exists_nonground = term.exists_nonground +
+
+  (* TODO: *)
+  subst_eq where
+  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst +
+  vars_grounded_iff_is_grounding where 
+  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst +
+  subst_updates_compat where
+  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst
 for
   select :: "'t select" and
   less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
   tiebreakers :: "('t\<^sub>G, 't) tiebreakers" and
   id_subst :: 'subst and
-  term_vars :: "'t \<Rightarrow> ('v :: infinite) set"
+  term_vars :: "'t \<Rightarrow> 'v set"
 begin
 
 inductive factoring :: "'t clause \<Rightarrow> 't clause \<Rightarrow> bool" where

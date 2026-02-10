@@ -25,7 +25,7 @@ lemma factoring_lifting:
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
     select: "clause.from_ground (select\<^sub>G D\<^sub>G) = (select D) \<cdot> \<gamma>" and
     type_preserving_\<gamma>: "type_preserving_on (clause.vars D) \<V> \<gamma>" and
-    \<V>: "infinite_variables_per_type \<V>"
+    \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
   obtains C'
   where
     "factoring (\<V>, D) (\<V>, C')"
@@ -183,7 +183,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.factoring.cases)
     show "Infer [D\<^sub>G] C\<^sub>G \<in> inference_ground_instances (Infer [(\<V>, D)] (\<V>, ?C'))"
     proof (rule is_inference_ground_instance_one_premise)
       show "is_inference_ground_instance_one_premise (\<V>, D) (\<V>, ?C') (Infer [D\<^sub>G] C\<^sub>G) \<gamma>"
-      proof(unfold split, intro conjI; (rule refl \<V>)?)
+      proof(unfold split, intro conjI impI; (rule refl \<V>)?)
 
         show "inference.is_ground (Infer [D] ?C' \<cdot>\<iota> \<gamma>)"
           using C_grounding D_grounding C'_\<gamma>
@@ -239,8 +239,8 @@ lemma resolution_lifting:
     type_preserving_\<rho>\<^sub>2_\<gamma>: "type_preserving_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)" and
     type_preserving_\<rho>\<^sub>1: "type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
     type_preserving_\<rho>\<^sub>2: "type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
-    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
-    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2"
+    \<V>\<^sub>1: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>1" and
+    \<V>\<^sub>2: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>2"
   obtains C' \<V>\<^sub>3
   where
     "resolution (\<V>\<^sub>2, D) (\<V>\<^sub>1, E) (\<V>\<^sub>3, C')"
@@ -377,11 +377,13 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.resolution.cases)
     by auto
 
   obtain \<V>\<^sub>3 where
-    \<V>\<^sub>3: "infinite_variables_per_type \<V>\<^sub>3" and
+    \<V>\<^sub>3: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>3" and
     \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x\<in>clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x)" and
     \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x\<in>clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x)"
-    using clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart clause.finite_vars clause.finite_vars 
-        infinite_UNIV] .
+    using 
+      clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart clause.finite_vars clause.finite_vars 
+        infinite_variables]
+    by (metis clause.exists_nonground_iff_base_exists_nonground)
 
   have type_preserving_\<gamma>: "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
   proof(unfold Set.ball_Un, intro conjI)
@@ -427,12 +429,12 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.resolution.cases)
       show "\<not> E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>c D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>"
       proof(rule clause.order.ground_less_not_less_eq)
 
-        show "clause.vars (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<cdot> \<sigma>) = {}"
+        show "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<cdot> \<sigma>)"
           using D_grounding
           unfolding \<gamma>
           by simp
 
-        show "clause.vars (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>) = {}"
+        show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
           using E_grounding
           unfolding \<gamma>
           by simp
@@ -526,7 +528,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.resolution.cases)
     proof (rule is_inference_ground_instance_two_premises)
 
       show "is_inference_ground_instance_two_premises (\<V>\<^sub>2, D) (\<V>\<^sub>1, E) (\<V>\<^sub>3, C') \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
-      proof(unfold split, intro conjI;
+      proof(unfold split, intro conjI impI;
           (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart refl \<V>\<^sub>1 \<V>\<^sub>2 \<V>\<^sub>3)?)
 
         show "inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C' \<cdot>\<iota> \<gamma>)"
@@ -577,6 +579,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.resolution.cases)
           qed
         qed
       qed
+
       show "\<iota>\<^sub>G \<in> ground.G_Inf"
         unfolding ground.G_Inf_def
         using ground_resolution
@@ -615,7 +618,7 @@ proof -
   obtain D \<gamma> \<V> where
     D_grounding: "clause.is_ground (D \<cdot> \<gamma>)" and
     type_preserving_\<gamma>: "type_preserving_on (clause.vars D) \<V> \<gamma>" and
-    \<V>: "infinite_variables_per_type \<V>" and
+    \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>" and
     D_in_N: "(\<V>, D) \<in> N" and
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>)"
     "D \<cdot> \<gamma> = clause.from_ground D\<^sub>G"
@@ -682,7 +685,7 @@ proof-
   obtain E \<V>\<^sub>1 \<gamma>\<^sub>1 where
     E_grounding: "clause.is_ground (E \<cdot> \<gamma>\<^sub>1)" and
     type_preserving_\<gamma>\<^sub>1: "type_preserving_on (clause.vars E) \<V>\<^sub>1 \<gamma>\<^sub>1" and
-    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
+    \<V>\<^sub>1: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>1" and
     E_in_N: "(\<V>\<^sub>1, E) \<in> N" and
     "select\<^sub>G E\<^sub>G = clause.to_ground (select E \<cdot> \<gamma>\<^sub>1)"
     "E \<cdot> \<gamma>\<^sub>1 = clause.from_ground E\<^sub>G"
@@ -697,7 +700,7 @@ proof-
   obtain D \<V>\<^sub>2 \<gamma>\<^sub>2 where
     D_grounding: "clause.is_ground (D \<cdot> \<gamma>\<^sub>2)" and
     type_preserving_\<gamma>\<^sub>2: "type_preserving_on (clause.vars D) \<V>\<^sub>2 \<gamma>\<^sub>2" and
-    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
+    \<V>\<^sub>2: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>2" and
     D_in_N: "(\<V>\<^sub>2, D) \<in> N" and
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>\<^sub>2)"
     "D \<cdot> \<gamma>\<^sub>2 = clause.from_ground D\<^sub>G"
@@ -716,24 +719,28 @@ proof-
     type_preserving_\<rho>\<^sub>1: "type_preserving_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1" and
     type_preserving_\<rho>\<^sub>2: "type_preserving_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<gamma>\<^sub>1_\<gamma>: "\<forall>x \<in> clause.vars E. x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>" and
-    \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
-    using clause.obtain_merged_grounding[OF
-        type_preserving_\<gamma>\<^sub>1 type_preserving_\<gamma>\<^sub>2 E_grounding D_grounding \<V>\<^sub>2 clause.finite_vars] .
+    \<gamma>\<^sub>2_\<gamma>: "\<forall>x \<in> clause.vars D. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>" and
+    E_\<gamma>\<^sub>1_\<gamma>: "E \<cdot> \<gamma>\<^sub>1 = E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>" and
+    D_\<gamma>\<^sub>2_\<gamma>: "D \<cdot> \<gamma>\<^sub>2 = D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>"
+    using 
+      clause.obtain_merged_grounding[OF
+        type_preserving_\<gamma>\<^sub>1 type_preserving_\<gamma>\<^sub>2 E_grounding D_grounding infinite_variables_per_type_on_subset[OF _ \<V>\<^sub>2] clause.finite_vars]
+    by blast
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
-    using clause.subst_eq \<gamma>\<^sub>1_\<gamma> E_grounding
+    using E_\<gamma>\<^sub>1_\<gamma> E_grounding
     by fastforce
 
   have E\<^sub>G: "E\<^sub>G = clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
-    using clause.subst_eq \<gamma>\<^sub>1_\<gamma> E\<^sub>G
+    using E_\<gamma>\<^sub>1_\<gamma> E\<^sub>G
     by fastforce
 
   have D_grounding: "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>)"
-    using clause.subst_eq \<gamma>\<^sub>2_\<gamma> D_grounding
+    using D_\<gamma>\<^sub>2_\<gamma> D_grounding
     by fastforce
 
   have D\<^sub>G: "D\<^sub>G = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>)"
-    using clause.subst_eq \<gamma>\<^sub>2_\<gamma> D\<^sub>G
+    using D_\<gamma>\<^sub>2_\<gamma> D\<^sub>G
     by fastforce
 
   have type_preserving_\<rho>\<^sub>1_\<gamma>: "type_preserving_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<gamma>)"
@@ -746,37 +753,13 @@ proof-
 
   have select_from_E:
     "clause.from_ground (select\<^sub>G (clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>))) = select E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>"
-  proof-
-    have "E \<cdot> \<gamma>\<^sub>1 = E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>"
-      using \<gamma>\<^sub>1_\<gamma> clause.subst_eq
-      by fast
-
-    moreover have "select E \<cdot> \<gamma>\<^sub>1 = select E \<cdot> \<rho>\<^sub>1 \<cdot> \<gamma>"
-      using clause.subst_eq \<gamma>\<^sub>1_\<gamma> select_vars_subset
-      by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
-
-    ultimately show ?thesis
-      using select_from_E
-      unfolding E\<^sub>G
-      by simp
-  qed
+    using select_from_E
+    unfolding E\<^sub>G clause.subset_subst_eq[OF \<gamma>\<^sub>1_\<gamma> select_vars_subset] .
 
   have select_from_D:
     "clause.from_ground (select\<^sub>G (clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>))) = select D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>"
-  proof-
-    have "D \<cdot> \<gamma>\<^sub>2 = D \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>"
-      using \<gamma>\<^sub>2_\<gamma> clause.subst_eq
-      by fast
-
-    moreover have "select D \<cdot> \<gamma>\<^sub>2 = select D \<cdot> \<rho>\<^sub>2 \<cdot> \<gamma>"
-      using clause.subst_eq \<gamma>\<^sub>2_\<gamma> select_vars_subset[of D]
-      by (metis (no_types, lifting) clause.comp_subst.left.monoid_action_compatibility in_mono)
-
-    ultimately show ?thesis
-      using select_from_D
-      unfolding D\<^sub>G
-      by simp
-  qed
+    using  select_from_D
+    unfolding D\<^sub>G clause.subset_subst_eq[OF \<gamma>\<^sub>2_\<gamma> select_vars_subset] .
 
   obtain C where
     C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and

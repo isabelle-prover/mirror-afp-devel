@@ -4,6 +4,7 @@ theory Monomorphic_Typing
     Ground_Term_Typing
     IsaFoR_Nonground_Term
     Typed_IMGU
+    Monomorphic_Typing_Compatibility
 begin
 
 no_notation Ground_Term_Typing.welltyped (\<open>_ \<turnstile> _ : _\<close> [1000, 0, 50] 50)
@@ -89,8 +90,8 @@ qed
 
 sublocale "term": base_typing_properties where
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
-  vars = term.vars and welltyped = welltyped and to_ground = term.to_ground and
-  from_ground = term.from_ground and
+  vars = term.vars and is_ground = term.is_ground and welltyped = welltyped and
+  to_ground = term.to_ground and from_ground = term.from_ground and
   subst_updates = subst_updates and apply_subst = apply_subst and subst_update = fun_upd
 proof(unfold_locales; (intro welltyped.Var refl)?)
   fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
@@ -165,8 +166,9 @@ next
       case (Var x)
 
       then have "\<V>' (term.rename \<rho> x) = \<tau>"
-        using renaming Var term.id_subst_rename[OF renaming]
-        by (metis eval_term.simps(1) term.right_uniqueD welltyped.Var)
+        using renaming Var term.id_subst_rename[OF _ renaming]
+        by (metis eval_term.simps(1) local.term.right_uniqueD
+            term_id_subst_rename welltyped.Var)
 
       then have "\<V> x = \<tau>"
         by (simp add: Var.prems(1))
@@ -209,8 +211,8 @@ next
         by simp
 
       then show ?case
-        using term.id_subst_rename[OF renaming]
-        by (metis eval_term.simps(1) welltyped.Var)
+        using term.id_subst_rename[OF _ renaming]
+        by (simp add: exists_nonground_term welltyped.Var)
     next
       case (Fun f ts \<tau>s \<tau>)
 

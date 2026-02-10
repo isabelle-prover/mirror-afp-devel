@@ -23,7 +23,7 @@ proof (cases D C rule: factoring.cases)
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
-      \<V>: "infinite_variables_per_type \<V>"
+      \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
@@ -54,7 +54,7 @@ proof (cases D C rule: factoring.cases)
 
     have "?D\<^sub>G \<in> ground_instances \<V> D"
     proof(unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
-          intro exI, intro conjI \<V>)
+          intro exI, intro impI conjI \<V>)
 
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -150,7 +150,7 @@ proof (cases D E C rule: resolution.cases)
     have "?E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E"
       proof(
         unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
-        intro exI, intro conjI resolutionI)
+        intro exI, intro impI conjI resolutionI)
 
       show "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -175,7 +175,7 @@ proof (cases D E C rule: resolution.cases)
     have "?D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D"
     proof(
         unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
-        intro exI, intro conjI resolutionI)
+        intro exI, intro conjI impI resolutionI)
 
       show "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         by simp

@@ -5,6 +5,8 @@ theory Uprod_Extra
     Abstract_Substitution.Natural_Functor
 begin
 
+setup natural_functor_setups
+
 abbreviation upair where
   "upair \<equiv> \<lambda>(x, y). Upair x y"
 
@@ -68,7 +70,7 @@ lemma mset_uprod_not_empty [simp]: "mset_uprod up \<noteq> {#}"
   by (cases up) simp
 
 lemma map_uprod_inverse: "(\<And>x. f (g x) = x) \<Longrightarrow> (\<And>y. map_uprod f (map_uprod g y) = y)"
-  by (simp add: uprod.map_comp uprod.map_ident_strong)
+  by (simp add: uprod.map_comp)
 
 lemma mset_uprod_image_mset: "mset_uprod (map_uprod f p) = image_mset f (mset_uprod p)"
 proof-
@@ -89,21 +91,20 @@ lemma inj_mset_uprod: "inj mset_uprod"
 proof(unfold inj_def, intro allI impI)
   fix a b :: "'a uprod"
   assume "mset_uprod a = mset_uprod b"
+
   then show "a = b"
-    by(cases a; cases b)(auto simp: add_mset_eq_add_mset)
+    by (cases a; cases b) (auto simp: add_mset_eq_add_mset)
 qed
 
 lemma mset_uprod_plus_neq: "mset_uprod a \<noteq> mset_uprod b + mset_uprod b"
-  by(cases a; cases b)(auto simp: add_mset_eq_add_mset)
+  by( cases a; cases b) (auto simp: add_mset_eq_add_mset)
 
 lemma set_uprod_not_empty [iff]: "set_uprod a \<noteq> {}"
-  by(cases a) simp
+  by (cases a) simp
 
-global_interpretation uprod_functor: finite_natural_functor where
+global_interpretation uprod_functor: non_empty_finite_natural_functor where
   map = map_uprod and to_set = set_uprod
-  by
-    unfold_locales
-    (auto simp:  uprod.map_comp uprod.map_ident uprod.set_map intro: uprod.map_cong)
+  by unfold_locales simp
 
 global_interpretation uprod_functor: natural_functor_conversion where
   map = map_uprod and to_set = set_uprod and map_to = map_uprod and map_from = map_uprod and
@@ -116,13 +117,14 @@ lemma uprod_mem_image_iff_prod_mem [simp]:
   using assms[THEN symD]
   by auto
 
+(* TODO: Report this as nitpick error *)
 lemma rep_uprod_UpairI: "P (a, b) \<Longrightarrow> P (b, a) \<Longrightarrow> P (rep_uprod (Upair a b))"
-  using Quotient3_uprod  eq_upair_simps 
+  using Quotient3_uprod eq_upair_simps 
   unfolding Upair.abs_eq Quotient3_def
   by (smt (verit, ccfv_threshold) split_pairs2)
 
 lemma rep_uprod_UpairE: "P (rep_uprod (Upair a b)) \<Longrightarrow> P (a, b) \<or> P (b, a)"
-  using Quotient3_uprod eq_upair_simps 
+  using Quotient3_uprod eq_upair_simps
   unfolding Upair.abs_eq Quotient3_def
   by (smt (verit, ccfv_threshold) split_pairs2)  
 

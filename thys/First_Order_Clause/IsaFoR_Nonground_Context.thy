@@ -17,6 +17,7 @@ interpretation "context": term_based_lifting where
   sub_subst = "(\<cdot>)" and sub_vars = term.vars and sub_to_ground = term.to_ground and
   sub_from_ground = term.from_ground and term_vars = term.vars and term_subst = "(\<cdot>)" and
   term_to_ground = term.to_ground and term_from_ground = term.from_ground and
+  term_is_ground = term.is_ground and sub_is_ground = term.is_ground and
   to_ground_map = map_args_actxt and ground_map = map_args_actxt and
   from_ground_map = map_args_actxt and map = map_args_actxt and to_set = set2_actxt and
   to_set_ground = set2_actxt
@@ -28,12 +29,13 @@ notation context.subst (infixl \<open>\<cdot>\<^sub>c\<close> 67)
 interpretation "context": nonground_context where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and subst_update = fun_upd and 
   subst_updates = subst_updates and apply_subst = apply_subst and term_subst = "(\<cdot>)" and
-  term_vars = term.vars and compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and
-  term_to_ground = term.to_ground and map_context = map_args_actxt and
-  to_ground_context_map = map_args_actxt and from_ground_context_map = map_args_actxt and
-  context_to_set = set2_actxt and hole = \<box> and apply_context = ctxt_apply_term and 
-  ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
-  ground_context_to_set = set2_actxt and apply_ground_context = apply_ground_context
+  term_is_ground = term.is_ground and term_vars = term.vars and compose_context = "(\<circ>\<^sub>c)" and
+  term_from_ground = term.from_ground and term_to_ground = term.to_ground and
+  map_context = map_args_actxt and to_ground_context_map = map_args_actxt and
+  from_ground_context_map = map_args_actxt and context_to_set = set2_actxt and hole = \<box> and
+  apply_context = ctxt_apply_term and ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and
+  ground_context_map = map_args_actxt and ground_context_to_set = set2_actxt and
+  apply_ground_context = apply_ground_context
 proof unfold_locales
   fix c and t :: "('f, 'v) term"
 
@@ -48,7 +50,7 @@ next
   fix c and t :: "('f, 'v) term"
 
   show "term.is_ground c\<langle>t\<rangle> \<longleftrightarrow> context.is_ground c \<and> term.is_ground t"
-    by (induction c) (auto simp: context.vars_def)
+    by (induction c) (auto simp: context.is_ground_def)
 next
   fix f :: "('f, 'v) term \<Rightarrow> ('f, 'v) term" and c c' :: "('f, 'v) context"
 
@@ -73,8 +75,8 @@ next
 next
   fix x and t :: "('f, 'v) term"
 
-  show "x \<in> term.vars t \<longleftrightarrow> (\<exists>c. t = c\<langle>Var x\<rangle>)"
-    by (metis Un_iff supteq_Var supteq_ctxtE term.set_intros(3) vars_term_ctxt_apply)
+  show "x \<in> term.vars t \<Longrightarrow> \<exists>c. t = c\<langle>Var x\<rangle>"
+    by (metis supteq_Var supteq_ctxtE)
 next
   fix c\<^sub>G t\<^sub>G and \<sigma> :: "('f, 'v) subst" and t :: "('f, 'v) term"
   assume t_\<sigma>: "t \<cdot> \<sigma> = c\<^sub>G\<langle>t\<^sub>G\<rangle>"
@@ -176,12 +178,12 @@ interpretation "term": occurences where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and subst_update = fun_upd and 
   subst_updates = subst_updates and apply_subst = apply_subst and term_subst = "(\<cdot>)" and
   term_vars = term.vars and compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and
-  term_to_ground = term.to_ground and map_context = map_args_actxt and
-  to_ground_context_map = map_args_actxt and from_ground_context_map = map_args_actxt and
-  context_to_set = set2_actxt and hole = \<box> and apply_context = ctxt_apply_term and 
-  ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
-  ground_context_to_set = set2_actxt and apply_ground_context = apply_ground_context and
-  occurences = occurences
+  term_is_ground = term.is_ground and term_to_ground = term.to_ground and
+  map_context = map_args_actxt and to_ground_context_map = map_args_actxt and
+  from_ground_context_map = map_args_actxt and context_to_set = set2_actxt and hole = \<box> and
+  apply_context = ctxt_apply_term and ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and
+  ground_context_map = map_args_actxt and ground_context_to_set = set2_actxt and
+  apply_ground_context = apply_ground_context and occurences = occurences
 proof unfold_locales
   fix x c and t :: "('f, 'v) term"
   assume "term.is_ground t"

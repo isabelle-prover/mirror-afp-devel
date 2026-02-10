@@ -24,7 +24,8 @@ end
 
 locale nonground_clause_generic =
   literal: term_based_lifting where
-  sub_vars = atom_vars and sub_subst = atom_subst and sub_to_ground = atom_to_ground and
+  sub_vars = atom_vars and sub_subst = atom_subst and 
+  sub_is_ground = atom_is_ground and sub_to_ground = atom_to_ground and
   sub_from_ground = atom_from_ground and map = map_literal and to_set = set_literal and
   to_ground_map = map_literal and from_ground_map = map_literal and ground_map = map_literal and
   to_set_ground = set_literal
@@ -32,7 +33,8 @@ for
   atom_from_ground :: "'g \<Rightarrow> 'a" and
   atom_to_ground :: "'a \<Rightarrow> 'g" and
   atom_subst :: "'a \<Rightarrow> 'subst \<Rightarrow> 'a" and
-  atom_vars :: "'a \<Rightarrow> 'v set"
+  atom_vars :: "'a \<Rightarrow> 'v set" and
+  atom_is_ground :: "'a \<Rightarrow> bool"
 begin
 
 subsection \<open>Nonground Literals\<close>
@@ -84,14 +86,14 @@ lemma literal_to_ground_atom_to_ground [simp]:
   by (simp_all add: literal.to_ground_def)
 
 lemma literal_is_ground_atom_is_ground [intro]:
-  "literal.is_ground l \<longleftrightarrow> literal.sub.is_ground (atm_of l)"
-  by (simp add: literal.vars_def set_literal_atm_of)
+  "literal.is_ground l \<longleftrightarrow> atom_is_ground (atm_of l)"
+  by (simp add: literal.is_ground_def set_literal_atm_of)
 
 subsection \<open>Nonground Clauses\<close>
 
 sublocale clause: term_based_multiset_lifting where
-  sub_subst = literal.subst and sub_vars = literal.vars and sub_to_ground = literal.to_ground and
-  sub_from_ground = literal.from_ground
+  sub_subst = literal.subst and sub_vars = literal.vars and sub_is_ground = literal.is_ground and
+  sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground
   by unfold_locales
 
 notation clause.subst (infixl "\<cdot>" 67)
@@ -111,7 +113,7 @@ lemma subst_clause_remove1_mset [simp]:
 lemma clause_from_ground_remove1_mset [simp]:
   "clause.from_ground (remove1_mset l\<^sub>G C\<^sub>G) =
     remove1_mset (literal.from_ground l\<^sub>G) (clause.from_ground C\<^sub>G)"
-  unfolding clause.from_ground_def image_mset_remove1_mset[OF literal.inj_from_ground]..
+  unfolding clause.from_ground_def image_mset_remove1_mset[OF literal.inj_from_ground] ..
 
 end
 

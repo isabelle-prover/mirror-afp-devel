@@ -57,8 +57,9 @@ lemma upair_compatible_with_gctxtI [intro]:
   unfolding compatible_with_context_def
   by (simp add: sym)
 
-sublocale "term": symmetric_base_entailment where vars = "term.vars :: 't \<Rightarrow> 'v set" and
-  comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and to_ground = term.to_ground and
+sublocale "term": symmetric_base_entailment where 
+  vars = "term.vars :: 't \<Rightarrow> 'v set" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
+  is_ground = term.is_ground and to_ground = term.to_ground and
   from_ground = term.from_ground
 proof unfold_locales
   fix \<gamma> and t t' update x
@@ -77,11 +78,10 @@ proof unfold_locales
 
     then have "x \<notin> term.vars t"
       using context.context_Var occurences
-      by auto
+      by (simp add: vars_occurences)
 
     then have "t \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = t \<cdot>t \<gamma>"
-      using term.subst_reduntant_upd
-      by presburger
+      by simp
 
     with 0 show ?case
       by argo
@@ -96,18 +96,23 @@ proof unfold_locales
 
     have "(term.to_ground (?t' \<cdot>t \<gamma>), t') \<in> I"
     proof (rule Suc.hyps)
+
       show "n = occurences ?t' x"
-        using Suc.hyps(2) occurences t update_is_ground 
-        by auto
+        using Suc.hyps(2) occurences t update_is_ground is_ground_no_occurences
+        by fastforce
     next
+
       show "term.is_ground (?t' \<cdot>t \<gamma>)"
         using Suc.prems(1) t update_is_ground 
         by auto
     next
+
       show "(term.to_ground (?t' \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk>), t') \<in> I"
         using Suc.prems(2) update_is_ground
         unfolding t
-        by auto
+        by (metis (full_types) Suc.hyps(2) Zero_not_Suc context.apply_context_subst
+            is_ground_no_occurences term.all_subst_ident_if_ground term.id_subst_subst
+            term.subst_update_var(1))
     qed
 
     then show ?case
@@ -118,7 +123,8 @@ proof unfold_locales
 qed (rule sym)
 
 sublocale atom: symmetric_entailment where
-  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and subst = "(\<cdot>a)" and
+  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and 
+  base_is_ground = term.is_ground and subst = "(\<cdot>a)" and is_ground = atom.is_ground and
   vars = atom.vars and base_to_ground = term.to_ground and base_from_ground = term.from_ground and
   I = I and entails_def = "\<lambda>a. atom.to_ground a \<in> upair ` I"
 proof unfold_locales
@@ -148,7 +154,8 @@ proof unfold_locales
 qed (simp_all add: sym)
 
 sublocale literal: entailment_lifting_conj where
-  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and sub_subst = "(\<cdot>a)" and
+  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and 
+  base_is_ground = term.is_ground and sub_subst = "(\<cdot>a)" and sub_is_ground = atom.is_ground and
   sub_vars = atom.vars and base_to_ground = term.to_ground and
   base_from_ground = term.from_ground and I = I and sub_entails = atom.entails and
   map = "map_literal" and to_set = "set_literal" and is_negated = is_neg and
@@ -165,8 +172,9 @@ proof unfold_locales
 qed auto
 
 sublocale clause: entailment_lifting_disj where
-  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and
-  base_to_ground = term.to_ground and base_from_ground = term.from_ground and I = I and
+  comp_subst = "(\<odot>)" and base_subst = "(\<cdot>t)" and base_vars = term.vars and 
+  base_is_ground = term.is_ground and base_to_ground = term.to_ground and
+  base_from_ground = term.from_ground and I = I and sub_is_ground = literal.is_ground and
   sub_subst = "(\<cdot>l)" and sub_vars = literal.vars and sub_entails = literal.entails and
   map = image_mset and to_set = set_mset and is_negated = "\<lambda>_. False" and
   entails_def = "\<lambda>C. upair ` I \<TTurnstile> clause.to_ground C"

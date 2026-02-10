@@ -20,6 +20,7 @@ session Typed_Ordered_Resolution = Saturation_Framework_Extensions +
     Untyped_Ordered_Resolution_Soundness
 
     Monomorphic_Ordered_Resolution
+    Sorted_Terms_Ordered_Resolution
     Ordered_Resolution_Example
 
   document_files

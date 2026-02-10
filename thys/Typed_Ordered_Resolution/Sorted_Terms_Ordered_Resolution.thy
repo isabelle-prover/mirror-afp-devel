@@ -1,13 +1,13 @@
-theory Monomorphic_Ordered_Resolution
+theory Sorted_Terms_Ordered_Resolution
   imports 
     Ordered_Resolution
 
     First_Order_Clause.IsaFoR_Nonground_Clause
-    First_Order_Clause.Monomorphic_Typing
+    First_Order_Clause.Sorted_Terms_Typing
 begin
 
-locale monomorphic_ordered_resolution_calculus =
-  monomorphic_term_typing +
+locale sorted_terms_ordered_resolution_calculus =
+  sorted_terms_typing +
 
   ordered_resolution_calculus where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and term_subst = "(\<cdot>)" and term_vars = term.vars and

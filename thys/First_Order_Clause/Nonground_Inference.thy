@@ -8,8 +8,8 @@ context nonground_clause_generic
 begin
 
 sublocale inference: term_based_lifting where
-  sub_subst = clause.subst and sub_vars = clause.vars and map = map_inference and
-  to_set = set_inference and sub_to_ground = clause.to_ground and
+  sub_subst = clause.subst and sub_vars = clause.vars and sub_is_ground = clause.is_ground and
+  map = map_inference and to_set = set_inference and sub_to_ground = clause.to_ground and
   sub_from_ground = clause.from_ground and to_ground_map = map_inference and
   from_ground_map = map_inference and ground_map = map_inference and to_set_ground = set_inference
   by unfold_locales
@@ -36,7 +36,8 @@ lemma inference_to_ground_clause_to_ground [simp]:
 
 lemma inference_is_ground_clause_is_ground [simp]:
   "inference.is_ground (Infer Ps C) \<longleftrightarrow> list_all clause.is_ground Ps \<and> clause.is_ground C"
-  by (auto simp: Ball_set)
+  using Ball_set inference.is_ground_def
+  by auto
 
 end
 

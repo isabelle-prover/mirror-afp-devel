@@ -1,15 +1,15 @@
-theory Monomorphic_Superposition
+theory Sorted_Terms_Superposition
   imports 
     Superposition
 
     First_Order_Clause.IsaFoR_Ground_Critical_Pairs
     First_Order_Clause.IsaFoR_Nonground_Clause_With_Equality
     First_Order_Clause.IsaFoR_Nonground_Context
-    First_Order_Clause.Monomorphic_Typing
+    First_Order_Clause.Sorted_Terms_Typing
 begin
 
-locale monomorphic_superposition_calculus =
-  monomorphic_term_typing +
+locale sorted_terms_superposition_calculus =
+  sorted_terms_typing +
 
   superposition_calculus where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and term_subst = "(\<cdot>)" and term_vars = term.vars and
@@ -21,6 +21,5 @@ locale monomorphic_superposition_calculus =
   occurences = occurences and ground_hole = \<box> and apply_ground_context = apply_ground_context and
   compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
   ground_context_to_set = set2_actxt and welltyped = welltyped and term_is_ground = term.is_ground
-
 
 end

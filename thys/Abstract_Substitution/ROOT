@@ -9,6 +9,7 @@ session Abstract_Substitution = HOL +
     Abstract_Substitution
     Based_Substitution
     Based_Substitution_Lifting
+    Noop_Substitution
     Substitution_First_Order_Term
     Substitution_HOL_ex_Unification
     Substitution_Lifting_Example

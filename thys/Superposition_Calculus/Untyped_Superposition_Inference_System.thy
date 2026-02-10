@@ -14,13 +14,21 @@ sublocale typed: superposition_calculus where
     unfold_locales
     (auto intro: term.ground_exists simp: term.exists_imgu right_unique_def split: unit.splits)
 
-lemma weakly_welltyped_atom [simp]: "typed.weakly_welltyped_atom (\<lambda>_. ()) a"
-  unfolding typed.weakly_welltyped_atom_def
+(* TODO: Move these *)
+lemma atom_weakly_welltyped [simp]: "typed.atom.weakly_welltyped a"
+  unfolding typed.atom.weakly_welltyped_def
   by blast
   
-lemma weakly_welltyped_literal [simp]: "typed.weakly_welltyped_literal (\<lambda>_. ()) l"
-  unfolding typed.weakly_welltyped_literal_def
+lemma literal_weakly_welltyped [simp]: "typed.literal.weakly_welltyped l"
+  unfolding typed.literal.weakly_welltyped_def
   by simp
+
+lemma infinite_variables_per_type:
+  assumes "term.exists_nonground" 
+  shows "infinite_variables_per_type (\<lambda>(_::'v). ())"
+  using infinite_variables[OF assms]
+  unfolding infinite_variables_per_type_on_def
+  by auto
 
 declare
   typed.term.welltyped_renaming [simp del]
@@ -131,7 +139,7 @@ proof unfold_locales
 
         show ?thesis
           by
-            (intro typed.superpositionI; (rule superpositionI)?)
+            (intro typed.superpositionI; (rule superpositionI infinite_variables_per_type)?)
             (auto simp: case_unit_Unity)
       qed
     qed

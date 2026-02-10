@@ -4,23 +4,17 @@ theory Context_Functor
     Abstract_Substitution.Natural_Functor
 begin
 
+setup natural_functor_setups
+
 type_synonym ('f, 'v) "context" = "('f, 'v) ctxt"
 
-global_interpretation "context": finite_natural_functor where
+global_interpretation "context": non_empty_finite_natural_functor where
   map = map_args_actxt and to_set = set2_actxt
 proof unfold_locales
-  fix t :: 't
-
+  (* TODO: To make this automatic, I need the nested set_intros, can I get them in ML? *)
   show "\<exists>c. set2_actxt c \<noteq> {}"
-    by (metis actxt.set_intros(5) empty_iff in_set_conv_decomp)
-next
-  fix c :: "('f, 't) actxt"
-
-  show "finite (set2_actxt c)"
-    by(induction c) auto
-qed (auto
-    simp: actxt.set_map(2) actxt.map_comp fun.map_ident actxt.map_ident_strong
-    cong: actxt.map_cong)
+    by (rule non_empty_helper, rule actxt.set_intros(5), rule list.set_intros)
+qed
 
 global_interpretation "context": natural_functor_conversion where
   map = map_args_actxt and to_set = set2_actxt and map_to = map_args_actxt and

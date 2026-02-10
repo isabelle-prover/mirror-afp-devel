@@ -21,9 +21,9 @@ abbreviation uprod_literal_to_set where "uprod_literal_to_set l \<equiv> \<Union
 lemma uprod_literal_to_set_atm_of: "uprod_literal_to_set l = set_uprod (atm_of l)"
   by (cases l) auto
 
-abbreviation map_uprod_literal where "map_uprod_literal f \<equiv> map_literal (map_uprod f)"
+abbreviation map_uprod_literal where "map_uprod_literal f \<equiv> map_literal (map_uprod f)"  
 
-global_interpretation uprod_literal_functor: finite_natural_functor where
+global_interpretation uprod_literal_functor: non_empty_finite_natural_functor where
   map = map_uprod_literal and to_set = uprod_literal_to_set
   by unfold_locales (auto intro: literal.map_cong0 uprod.map_cong0)
 

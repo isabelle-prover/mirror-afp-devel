@@ -29,14 +29,14 @@ proof (cases D C rule: eq_resolution.cases)
       refl_I: "refl I" and
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
-      weakly_welltyped_clause: "weakly_welltyped_clause \<V> C" and
+      weakly_welltyped_C: "clause.weakly_welltyped \<V> C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
-      \<V>: "infinite_variables_per_type \<V>"
+      \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
+      \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -48,7 +48,9 @@ proof (cases D C rule: eq_resolution.cases)
     note type_preserving_\<mu> = eq_resolutionI(3)
 
     have "?D\<^sub>G \<in> ground_instances \<V> D"
-    proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv, intro exI, intro conjI \<V>)
+    proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
+           intro exI,
+           intro conjI impI eq_resolutionI \<V>)
 
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -59,17 +61,18 @@ proof (cases D C rule: eq_resolution.cases)
         by auto
     next
 
+      have type_preserving_\<gamma>': 
+        "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<mu>) ` clause.vars D)) \<V> \<gamma>'"
+        using type_preserving_\<gamma>' by blast
+
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
-        using 
-          type_preserving_\<gamma>' type_preserving_\<mu> \<gamma>'_is_ground_subst
-          term.type_preserving_ground_compose_ground_subst
-        by presburger
+        using term.type_preserving_on_subst_compose[OF type_preserving_\<mu> type_preserving_\<gamma>'] .
     next
 
-      show "weakly_welltyped_clause \<V> D" 
-        using 
-          eq_resolution_weakly_welltyped_clause[OF eq_resolution[unfolded eq_resolutionI]] 
-          weakly_welltyped_clause
+      show "clause.weakly_welltyped \<V> D" 
+        using
+          eq_resolution_weakly_welltyped[OF eq_resolution[unfolded eq_resolutionI]] 
+          weakly_welltyped_C
         unfolding eq_resolutionI
         by satx
     qed
@@ -111,7 +114,7 @@ proof (cases D C rule: eq_resolution.cases)
       by simp
 
     then have "?I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>)"
-      using clause.subst_eq[OF \<gamma>'_\<gamma>[rule_format]] I_models_l\<^sub>G
+      using I_models_l\<^sub>G \<gamma>_\<gamma>'
       by auto
   }
 
@@ -141,15 +144,15 @@ proof (cases D C rule: eq_factoring.cases)
       sym_I: "sym I" and
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
-      weakly_welltyped_clause: "weakly_welltyped_clause \<V> C" and
+      weakly_welltyped_C: "clause.weakly_welltyped \<V> C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
-      \<V>: "infinite_variables_per_type \<V>"
+      \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
-      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>].
+      \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
+      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G' = "clause.to_ground (D' \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -164,7 +167,9 @@ proof (cases D C rule: eq_factoring.cases)
     note type_preserving_\<mu> = eq_factoringI(6)
 
     have "?D\<^sub>G \<in> ground_instances \<V> D"
-    proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv, intro exI, intro conjI \<V>)
+    proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
+           intro exI,
+           intro conjI impI eq_factoringI \<V>)
 
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -174,19 +179,20 @@ proof (cases D C rule: eq_factoring.cases)
         using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
         by auto
     next
-     
+      have type_preserving_\<gamma>':
+        "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<mu>) ` clause.vars D)) \<V> \<gamma>'"
+        using type_preserving_\<gamma>' 
+        by fastforce
+
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
-        using 
-          type_preserving_\<mu> type_preserving_\<gamma>' \<gamma>'_is_ground_subst
-          term.type_preserving_ground_compose_ground_subst
-        by presburger
+        using term.type_preserving_on_subst_compose[OF type_preserving_\<mu> type_preserving_\<gamma>'] .
     next
 
-      show "weakly_welltyped_clause \<V> D"
-        using weakly_welltyped_clause
-        unfolding 
+      show "clause.weakly_welltyped \<V> D"
+        using weakly_welltyped_C
+        unfolding
           eq_factoringI
-          eq_factoring_weakly_welltyped_clause[OF eq_factoring[unfolded eq_factoringI]] .
+          eq_factoring_weakly_welltyped[OF eq_factoring[unfolded eq_factoringI]] .
     qed
 
     then have "?I \<TTurnstile> ?D\<^sub>G"
@@ -225,7 +231,8 @@ proof (cases D C rule: eq_factoring.cases)
         by( auto dest: transD)
 
       then show ?thesis
-        using clause.subst_eq[OF \<gamma>'_\<gamma>[rule_format]] sym_I
+        unfolding \<gamma>_\<gamma>'
+        using sym_I
         by auto
     next
       case False
@@ -236,7 +243,7 @@ proof (cases D C rule: eq_factoring.cases)
         by simp
 
       then have "l\<^sub>G \<in># clause.to_ground (C \<cdot> \<gamma>)"
-        using clause.subst_eq[OF \<gamma>'_\<gamma>[rule_format]]
+        unfolding \<gamma>_\<gamma>'
         by simp
 
       then show ?thesis
@@ -259,7 +266,7 @@ lemma superposition_sound:
   shows "{E, D} \<TTurnstile>\<^sub>F {C}"
   using superposition
 proof (cases D E C rule: superposition.cases)
-  case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 E' D' C)
+  case (superpositionI \<P> \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D t\<^sub>1 \<V>\<^sub>3 \<mu> t\<^sub>2 c\<^sub>1 t\<^sub>1' t\<^sub>2' l\<^sub>1 l\<^sub>2 C E' D')
 
   {
     fix I :: "'t\<^sub>G rel" and \<gamma> :: 'subst
@@ -273,13 +280,13 @@ proof (cases D E C rule: superposition.cases)
       E_entails_ground_instances: "\<forall>E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E. ?I \<TTurnstile> E\<^sub>G" and
       D_entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
-      weakly_welltyped_clause: "weakly_welltyped_clause \<V>\<^sub>3 C" and
+      weakly_welltyped_C: "clause.weakly_welltyped \<V>\<^sub>3 C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
 
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
       type_preserving_\<gamma>': "type_preserving \<V>\<^sub>3 \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
+      \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
       using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
 
     let ?E\<^sub>G = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -303,9 +310,8 @@ proof (cases D E C rule: superposition.cases)
 
     note [simp] = \<P>_simps[OF superpositionI(4)]
 
-    have \<mu>_\<gamma>'_is_ground_subst:
-      "term.is_ground_subst (\<mu> \<odot> \<gamma>')"
-      using term.is_ground_subst_comp_right[OF \<gamma>'_is_ground_subst].
+    have \<mu>_\<gamma>'_is_ground_subst: "term.is_ground_subst (\<mu> \<odot> \<gamma>')"
+      using term.is_ground_subst_comp_right[OF \<gamma>'_is_ground_subst] .
 
     note type_preserving_\<mu> = superpositionI(11)
      
@@ -321,7 +327,7 @@ proof (cases D E C rule: superposition.cases)
     have "?E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E"
     proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv, 
             intro exI, 
-            intro conjI superpositionI)
+            intro conjI impI superpositionI)
 
       show "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -339,11 +345,11 @@ proof (cases D E C rule: superposition.cases)
         by (simp add: clause.vars_subst term.assoc)
     next
 
-      show "weakly_welltyped_clause \<V>\<^sub>1 E"
+      show "clause.weakly_welltyped \<V>\<^sub>1 E"
+        using superposition[unfolded superpositionI(1, 2, 3)]
         using 
-          weakly_welltyped_clause
-          superposition_weakly_welltyped_clause[OF superposition[unfolded superpositionI]]
-        unfolding superpositionI
+          weakly_welltyped_C
+          superposition_weakly_welltyped[OF superposition[unfolded superpositionI(1, 2, 3)]]
         by satx
     qed
 
@@ -354,11 +360,12 @@ proof (cases D E C rule: superposition.cases)
     have "?D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D"
     proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
             intro exI,
-            intro conjI superpositionI)
+            intro conjI impI superpositionI)
 
       show "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
     next
+
       show "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
         by auto
@@ -371,12 +378,12 @@ proof (cases D E C rule: superposition.cases)
         by (simp add: term.assoc clause.vars_subst)
     next
 
-      show "weakly_welltyped_clause \<V>\<^sub>2 D"
+      show "clause.weakly_welltyped \<V>\<^sub>2 D"
         using 
-          weakly_welltyped_clause
-          superposition_weakly_welltyped_clause[OF superposition[unfolded superpositionI]]
+          weakly_welltyped_C
+          superposition_weakly_welltyped[OF superposition[unfolded superpositionI]]
         unfolding superpositionI
-        by satx  
+        by satx
     qed
 
     then have entails_D\<^sub>G: "?I \<TTurnstile> ?D\<^sub>G"
@@ -386,6 +393,7 @@ proof (cases D E C rule: superposition.cases)
     have "?I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>')"
     proof(cases "?I \<TTurnstile>l literal.to_ground (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) \<cdot>l \<mu> \<cdot>l \<gamma>')")
       case True
+
       then show ?thesis
         unfolding superpositionI
         by simp
@@ -431,7 +439,7 @@ proof (cases D E C rule: superposition.cases)
     qed
 
     then have "?I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>)"
-      by (metis \<gamma>'_\<gamma> clause.subst_eq)
+      unfolding \<gamma>_\<gamma>' .
   }
 
   then show ?thesis

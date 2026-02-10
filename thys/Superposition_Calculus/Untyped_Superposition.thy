@@ -4,29 +4,41 @@ theory Untyped_Superposition
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Tiebreakers
     First_Order_Clause.Ground_Critical_Pairs
-
-    Fresh_Identifiers.Fresh
+    First_Order_Clause.Infinite_Variables
 begin
 
 locale untyped_superposition_calculus =
   nonground_term_with_context where
-  term_vars = "term_vars :: 't \<Rightarrow> 'v :: infinite set" and
+  term_vars = "term_vars :: 't \<Rightarrow> 'v set" and
   term_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" +
+
   context_compatible_nonground_order where less\<^sub>t = less\<^sub>t +
+
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
-  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground +
-  "term": exists_imgu where vars = term_vars and subst = "(\<cdot>t)" +
+  atom_is_ground = atom.is_ground and atom_to_ground = atom.to_ground and
+  atom_from_ground = atom.from_ground +
+
+  "term": exists_imgu where vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground +
+
+  infinite_variables where
+  variables = "UNIV :: 'v set" and exists_nonground = term.exists_nonground +
+
   ground_critical_pairs where
   compose_context = compose_ground_context and apply_context = apply_ground_context and
-  hole = ground_hole
+  hole = ground_hole +
+
+  tiebreakers tiebreakers +
+
+  (* TODO: *)
+  subst_eq where vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground +
+  vars_grounded_iff_is_grounding where 
+  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground +
+  subst_updates_compat where vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground
   for
     select :: "'t atom select" and
     less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
-    tiebreakers :: "('t\<^sub>G atom, 't atom) tiebreakers" +
-  assumes
-    wfp_tiebreakers[iff]: "\<And>C\<^sub>G. wfp (tiebreakers C\<^sub>G)" and
-    transp_tiebreakers[iff]: "\<And>C\<^sub>G. transp (tiebreakers C\<^sub>G)"
+    tiebreakers :: "('t\<^sub>G atom, 't atom) tiebreakers" 
 begin
 
 interpretation term_order_notation .

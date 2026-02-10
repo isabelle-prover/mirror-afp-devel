@@ -6,20 +6,22 @@ begin
 
 locale typed_term_imgu =
   nonground_term where
-    term_vars = term.vars and id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and term_subst = "(\<cdot>)" and
-    subst_updates = subst_updates and apply_subst = apply_subst and subst_update = fun_upd and
-    term_to_ground = term.to_ground and term_from_ground = term.from_ground and
-    comp_subst = "(\<circ>\<^sub>s)" +
+  term_vars = term.vars and id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and term_subst = "(\<cdot>)" and
+  term_is_ground = term.is_ground and subst_updates = subst_updates and
+  apply_subst = apply_subst and subst_update = fun_upd and term_to_ground = term.to_ground and
+  term_from_ground = term.from_ground and comp_subst = "(\<circ>\<^sub>s)" +
 
   base_typed_substitution where
-     subst = "(\<cdot>)" and vars = term.vars and id_subst = Var and apply_subst = apply_subst and
-     subst_update = fun_upd and welltyped = welltyped and comp_subst = "(\<circ>\<^sub>s)" +
+  subst = "(\<cdot>)" and vars = term.vars and is_ground = term.is_ground and id_subst = Var and 
+  apply_subst = apply_subst and welltyped = welltyped and comp_subst = "(\<circ>\<^sub>s)" and
+  subst_update = fun_upd +
 
   base_typed_subst_stability where
-     subst = "(\<cdot>)" and vars = term.vars and id_subst = Var and apply_subst = apply_subst and
-     subst_update = fun_upd and welltyped = welltyped and comp_subst = "(\<circ>\<^sub>s)" 
+  subst = "(\<cdot>)" and vars = term.vars and is_ground = term.is_ground and id_subst = Var and
+  apply_subst = apply_subst and welltyped = welltyped and comp_subst = "(\<circ>\<^sub>s)" and
+  subst_update = fun_upd
 
-for welltyped  :: "('v \<Rightarrow> 'ty) \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> 'ty \<Rightarrow> bool"
+for welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f, 'v) Term.term \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 lemma unify_subterms:
@@ -44,9 +46,10 @@ proof (intro ballI2)
   assume s_s': "(s, s') \<in> set es"
 
   then have "type_preserving_on (vars (s \<cdot> subst x t) \<union> vars (s' \<cdot> subst x t)) \<V> \<upsilon>"
-    using assms term.vars_id_subst_update
+    using assms
     unfolding subst_def
-    by (smt (verit, del_insts) Un_iff case_prodD in_mono list.set_intros(1,2))
+    by (smt (verit, del_insts) Un_iff case_prod_conv list.set_intros(1,2) subset_eq
+        vars_id_subst_update)
 
   then show "type_preserving_unifier \<V> \<upsilon> (s \<cdot> subst x t) (s' \<cdot> subst x t)"
     using assms s_s'
@@ -235,8 +238,8 @@ lemma type_preserving_the_mgu:
 
 sublocale type_preserving_imgu where 
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
-  vars = term.vars and welltyped = welltyped and subst_update = fun_upd and
-  apply_subst = apply_subst
+  vars = term.vars and is_ground = term.is_ground and welltyped = welltyped and
+  apply_subst = apply_subst and subst_update = fun_upd
 proof unfold_locales
   fix \<V> \<upsilon> and t t' :: "('f, 'v) term"
   assume unifier: "type_preserving_unifier \<V> \<upsilon> t t'"

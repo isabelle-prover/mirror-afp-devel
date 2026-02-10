@@ -2,7 +2,7 @@ theory Nonground_Term_Order
   imports
     Nonground_Context
     Ground_Term_Order 
-    Grounded_Order 
+    Grounded_Order
 begin
 
 locale base_grounded_order =
@@ -17,7 +17,7 @@ locale nonground_term_order =
   order: restricted_wellfounded_total_strict_order where
   less = less\<^sub>t and restriction = "range term.from_ground" +
   order: ground_subst_stability where R = less\<^sub>t and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
-  vars = term.vars and to_ground = term.to_ground and
+  vars = term.vars and is_ground = term.is_ground and to_ground = term.to_ground and
   from_ground = "term.from_ground"
 for less\<^sub>t
 begin
@@ -25,7 +25,7 @@ begin
 interpretation term_order_notation .
 
 sublocale base_grounded_order where
-  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and
+  subst = "(\<cdot>t)" and vars = term.vars and is_ground = term.is_ground and comp_subst = "(\<odot>)" and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
   by unfold_locales
 
@@ -77,7 +77,7 @@ begin
 interpretation term_order_notation .
 
 sublocale order: base_subst_update_stable_grounded_order where 
-  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and
+  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and is_ground = term.is_ground and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
 proof unfold_locales
   fix update x \<gamma> t
@@ -99,7 +99,9 @@ proof unfold_locales
       by blast
 
     then have c_update: "c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = (c \<cdot>t\<^sub>c \<gamma>)\<langle>update\<rangle>"
-      by auto
+      by (metis context.apply_context_is_ground context.apply_context_subst
+          context.no_vars_if_is_ground context.subst_update(1) term.id_subst_subst
+          term.no_vars_if_is_ground term.subst_update_var(1) x_in_t)
 
     show ?case
       using 0(3) update_less update_is_ground
@@ -119,13 +121,13 @@ proof unfold_locales
 
       show "n = occurences c\<langle>update\<rangle> x - 1"
         using Suc.hyps(2) occurences t update_is_ground 
-        by auto
+        by (metis diff_Suc_1 emptyE term.no_vars_if_is_ground x_in_t)
     next
 
       have "occurences c\<langle>update\<rangle> x = Suc n"
-        using Suc.hyps(2)
-        unfolding t occurences[OF update_is_ground]
-        by auto
+        using Suc.hyps(2) occurences[OF _ update_is_ground] vars_occurences term.no_vars_if_is_ground
+        unfolding t
+        by fastforce
 
       then show "x \<in> term.vars c\<langle>update\<rangle>"
         using vars_occurences
@@ -140,7 +142,8 @@ proof unfold_locales
 
     moreover have "c\<langle>update\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk>"
       using update_is_ground
-      by auto
+      by (metis (full_types) context.apply_context_subst emptyE term.all_subst_ident_if_ground
+          term.id_subst_subst term.no_vars_if_is_ground term.subst_update_var(1) x_in_t)
 
     moreover have less: "c\<langle>update\<rangle> \<cdot>t \<gamma> \<prec>\<^sub>t c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>"
       using Suc.prems(2) update_is_ground update_less

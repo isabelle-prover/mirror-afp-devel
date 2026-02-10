@@ -14,6 +14,14 @@ sublocale typed: ordered_resolution_calculus where
     unfold_locales
     (auto intro: term.ground_exists simp: term.exists_imgu right_unique_def split: unit.splits)
 
+(* TODO: Move *)
+lemma infinite_variables_per_type:
+  assumes "term.exists_nonground" 
+  shows "infinite_variables_per_type (\<lambda>(_::'v). ())"
+  using infinite_variables[OF assms]
+  unfolding infinite_variables_per_type_on_def
+  by auto
+
 declare
   typed.term.welltyped_renaming [simp del]
   typed.term.welltyped_subst_stability [simp del]
@@ -93,7 +101,7 @@ proof unfold_locales
 
         show ?thesis
           by
-            (intro typed.resolutionI; (rule resolutionI)?)
+            (intro typed.resolutionI; (rule resolutionI infinite_variables_per_type)?)
             (auto simp: case_unit_Unity)
       qed
     qed

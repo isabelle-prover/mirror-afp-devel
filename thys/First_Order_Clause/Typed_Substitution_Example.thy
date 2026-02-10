@@ -2,7 +2,7 @@ theory Typed_Substitution_Example
   imports
     Typed_Substitution
     Abstract_Substitution.Substitution_First_Order_Term
-begin
+begin                                 
 
 type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"
 
@@ -27,7 +27,7 @@ qed
 global_interpretation base_typed_substitution where
   welltyped = "welltyped \<F>" and subst = subst_apply_term and id_subst = Var and
   comp_subst = subst_compose and vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and
-  apply_subst = apply_subst and subst_update = fun_upd
+  apply_subst = apply_subst and is_ground = is_ground and subst_update = fun_upd
   for \<F> :: "('f, 'ty) fun_types"
   by unfold_locales (simp_all add: welltyped.Var)
 
@@ -39,12 +39,11 @@ locale typed_term_subst_properties =
 global_interpretation "term": typed_term_subst_properties where
   subst = subst_apply_term and id_subst = Var and
   comp_subst = subst_compose and vars = "vars_term :: ('f, 'v) term \<Rightarrow> 'v set" and
-  apply_subst = apply_subst and subst_update = fun_upd
+  apply_subst = apply_subst and is_ground = is_ground and subst_update = fun_upd
   for \<F> :: "'f \<Rightarrow> 'ty list \<times> 'ty"
-proof (unfold_locales)
+proof unfold_locales
   fix \<V> :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<sigma> \<tau>
-  assume is_welltyped_on: 
-    "\<forall>x \<in> vars_term t. welltyped \<F> \<V> (Var x) (\<V> x) \<longrightarrow> welltyped \<F> \<V> (\<sigma> x) (\<V> x)"
+  assume is_welltyped_on: "type_preserving_on \<F> (vars_term t) \<V> \<sigma>"
 
   show "welltyped \<F> \<V> (t \<cdot> \<sigma>) \<tau> \<longleftrightarrow> welltyped \<F> \<V> t \<tau>"
   proof(rule iffI)
@@ -62,10 +61,6 @@ proof (unfold_locales)
 
       then obtain x' where t: "t = Var x'"
         by (metis subst_apply_eq_Var)
-
-      have "welltyped \<F> \<V> t (\<V> x')"
-        unfolding t
-        by (simp add: welltyped.Var)
 
       moreover have "welltyped \<F> \<V> t (\<V> x)"
         using Var
@@ -93,7 +88,6 @@ thm
   term.right_unique
   term.welltyped_subst_stability
 
-  type_preserving_on_subst_update
   type_preserving_on_subset
   type_preserving_on_id_subst
 

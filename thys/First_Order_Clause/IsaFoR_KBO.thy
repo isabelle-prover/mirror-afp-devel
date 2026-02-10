@@ -125,7 +125,7 @@ end
 subsection\<open>Interpret non-ground order with KBO\<close>
 
 interpretation KBO: context_compatible_nonground_order where
-  less\<^sub>t = "less_kbo :: ('f :: weighted,'v :: infinite) term \<Rightarrow> ('f,'v) term \<Rightarrow> bool" and
+  less\<^sub>t = "less_kbo :: ('f :: weighted, 'v) term \<Rightarrow> ('f,'v) term \<Rightarrow> bool" and
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and term_subst = "(\<cdot>)" and term_vars = term.vars and
   subst_updates = subst_updates and apply_subst = apply_subst and subst_update = fun_upd and
   compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and
@@ -134,7 +134,7 @@ interpretation KBO: context_compatible_nonground_order where
   context_to_set = set2_actxt and hole = \<box> and apply_context = ctxt_apply_term and 
   occurences = occurences and ground_hole = \<box> and apply_ground_context = apply_ground_context and
   compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
-  ground_context_to_set = set2_actxt
+  ground_context_to_set = set2_actxt and term_is_ground = term.is_ground
 proof unfold_locales
    show "transp less_kbo"
     using KBO.S_trans

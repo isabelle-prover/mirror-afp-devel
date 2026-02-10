@@ -1,60 +1,60 @@
 theory Based_Substitution \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
   imports Substitution
-begin
+begin             
 
 section \<open>Substitutions on base expressions\<close>
 
 locale base_substitution = substitution where vars = vars and apply_subst = apply_subst
   for vars :: "'base \<Rightarrow> 'v set" and apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl \<open>\<cdot>v\<close> 69) +
-  assumes 
-    vars_id_subst [simp]: "\<And>x. vars (x \<cdot>v id_subst) = {x}" and
+  assumes
+    \<comment>\<open>The precondition of the assumption ensures noop substitutions\<close>
+    vars_id_subst: "\<And>x. exists_nonground \<Longrightarrow> vars (x \<cdot>v id_subst) = {x}" and
     comp_subst_iff: "\<And>\<sigma> \<sigma>' x. x \<cdot>v \<sigma> \<odot> \<sigma>' = subst (x \<cdot>v \<sigma>) \<sigma>'" and
-    base_vars_subst: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (vars ` var_subst \<rho> ` vars expr)"
+    base_vars_subst: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (vars ` var_subst \<rho> ` vars expr)" and
+    base_vars_grounded_if_is_grounding:
+      "\<And>expr \<gamma>. is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> \<forall>x \<in> vars expr. is_ground (x \<cdot>v \<gamma>)"
 
 locale based_substitution =
   substitution where vars = vars and apply_subst = "apply_subst :: 'v \<Rightarrow> 'subst \<Rightarrow> 'base" +
-  base: base_substitution where subst = base_subst and vars = base_vars 
+  base: base_substitution where subst = base_subst and vars = base_vars and is_ground = base_is_ground
 for
   base_subst :: "'base \<Rightarrow> 'subst \<Rightarrow> 'base" and
   base_vars :: "'base \<Rightarrow> 'v set" and
-  vars :: "'expr \<Rightarrow> 'v set"  +
+  vars :: "'expr \<Rightarrow> 'v set" and
+  base_is_ground +
 assumes
   ground_subst_iff_base_ground_subst [simp]: "\<And>\<gamma>. is_ground_subst \<gamma> \<longleftrightarrow> base.is_ground_subst \<gamma>" and
-  vars_subst: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (base_vars ` var_subst \<rho> ` vars expr)"
+  vars_subst: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (base_vars ` var_subst \<rho> ` vars expr)" and
+  vars_grounded_if_is_grounding:
+    "\<And>expr \<gamma>. is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> \<forall>x \<in> vars expr. base_is_ground (x \<cdot>v \<gamma>)"
 begin
+
+lemma exists_nonground_iff_base_exists_nonground:
+  "exists_nonground \<longleftrightarrow> base.exists_nonground"
+  by (metis base.is_ground_subst_def base.subst_id_subst ground_subst_iff_base_ground_subst
+      is_ground_subst_def subst_id_subst)
 
 lemma id_subst_subst [simp]: "base_subst (x \<cdot>v id_subst) \<sigma> = x \<cdot>v \<sigma>"
   by (metis base.comp_subst_iff left_neutral)
 
-lemma vars_id_subst_update: "vars (expr \<cdot> id_subst\<lbrakk>x := b\<rbrakk>) \<subseteq> vars expr \<union> base_vars b"
-  unfolding fun_upd_def vars_subst
-  using subst_update
-  by (smt (verit, del_insts) SUP_least UnCI base.vars_id_subst image_iff singletonD subsetI)
-
-lemma is_grounding_iff_vars_grounded:
-  "is_ground (expr \<cdot> \<gamma>) \<longleftrightarrow> (\<forall>x \<in> vars expr. base.is_ground (x \<cdot>v \<gamma>))"
-  using vars_subst
-  by auto
-
 lemma variable_grounding:
   assumes "is_ground (expr \<cdot> \<gamma>)" "x \<in> vars expr"
-  shows "base.is_ground (x \<cdot>v \<gamma>)"
-  using assms is_grounding_iff_vars_grounded
+  shows "base_is_ground (x \<cdot>v \<gamma>)"
+  using assms vars_grounded_if_is_grounding
   by blast
 
 definition range_vars :: "'subst \<Rightarrow> 'v set" where
   "range_vars \<sigma> = \<Union>(base_vars ` subst_range \<sigma>)"
 
-lemma vars_subst_subset: "vars (expr \<cdot> \<sigma>) \<subseteq> (vars expr - subst_domain \<sigma>) \<union> range_vars \<sigma>"
-  unfolding subst_domain_def range_vars_def vars_subst
-  using base.vars_id_subst
-  by (smt (verit, del_insts) Diff_iff UN_iff UnCI image_iff mem_Collect_eq singletonD subsetI)
+lemma vars_id_subst_subset: "base_vars (x \<cdot>v id_subst) \<subseteq> {x}"
+  using base.vars_id_subst base.no_vars_if_is_ground
+  by blast
 
-lemma ground_subst_update [simp]:
-  assumes "base.is_ground update" "is_ground (expr \<cdot> \<gamma>)"
-  shows "is_ground (expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk>)"
-  using assms is_grounding_iff_vars_grounded
-  by (metis subst_update)
+lemma vars_subst_subset: "vars (expr \<cdot> \<sigma>) \<subseteq> (vars expr - subst_domain \<sigma>) \<union> range_vars \<sigma>"
+  unfolding subst_domain_def range_vars_def vars_subst subset_eq
+  using base.vars_id_subst
+  by (smt (verit, del_insts) DiffI UN_iff UN_simps(10) UnCI base.no_vars_if_is_ground empty_iff
+      mem_Collect_eq singleton_iff)
 
 end
 
@@ -62,130 +62,55 @@ context base_substitution
 begin
 
 sublocale based_substitution
-  where base_subst = subst and base_vars = vars
-  by unfold_locales (simp_all add: base_vars_subst)
+  where base_subst = subst and base_vars = vars and base_is_ground = is_ground
+  by unfold_locales (simp_all add: base_vars_grounded_if_is_grounding base_vars_subst)
 
 declare ground_subst_iff_base_ground_subst [simp del]
 
 end
 
 hide_fact base_substitution.base_vars_subst
+hide_fact base_substitution.base_vars_grounded_if_is_grounding
 
 
 section \<open>Properties of substitutions on base expressions\<close>
 
-locale base_exists_ground_subst = 
-  base_substitution where
-    vars = "vars :: 'base \<Rightarrow> 'v set" and apply_subst = "apply_subst  :: 'v \<Rightarrow> 'subst \<Rightarrow> 'base" +
-  subst_updates + 
-  assumes
-    base_ground_exists: "\<exists>expr. is_ground expr"
+locale based_subst_update =
+  based_substitution + 
+  subst_update +
+  assumes ground_subst_update_in_vars:
+    "\<And>update expr \<gamma> x. base_is_ground update \<Longrightarrow> is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> x \<in> vars expr \<Longrightarrow> 
+      is_ground (expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk>)"
 begin
 
-lemma redundant_subst_updates [simp]:
-  assumes "\<And>x. x \<in> vars expr \<Longrightarrow> update x = None"
-  shows "expr \<cdot> subst_updates \<sigma> update = expr \<cdot> \<sigma>"
-proof (rule subst_eq)
-  fix x
-  assume "x \<in> vars expr"
-
-  then have "update x = None"
-    using assms
-    by metis
-
-  then show "x \<cdot>v subst_updates \<sigma> update = x \<cdot>v \<sigma>"
+lemma vars_id_subst_update: "vars (expr \<cdot> id_subst\<lbrakk>x := b\<rbrakk>) \<subseteq> vars expr \<union> base_vars b"
+proof (cases exists_nonground)
+  case True
+  then show ?thesis
+    unfolding vars_subst 
+    using subst_update base.vars_id_subst
+    by (smt (verit, ccfv_threshold) SUP_least UnCI exists_nonground_iff_base_exists_nonground
+        imageE singleton_iff subset_eq subst_update_var(1,2))
+next
+  case False
+  then show ?thesis
     by simp
 qed
 
-lemma redundant_subst_updates_vars_set [simp]:
-  assumes "\<And>x. x \<in> X \<Longrightarrow> update x = None"
-  shows "(\<lambda>x. x \<cdot>v subst_updates \<sigma> update) ` X = (\<lambda>x. x \<cdot>v \<sigma>) ` X"
-  using assms subst_updates 
-  by auto
+lemma ground_subst_update [simp]:
+  assumes "base_is_ground update" "is_ground (expr \<cdot> \<gamma>)"
+  shows "is_ground (expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk>)"
+  using assms
+proof (cases "x \<in> vars expr")
+  case True
 
-lemma redundant_subst_updates_vars_image [simp]:
-  assumes "\<And>x. x \<in> \<Union>(vars ` X) \<Longrightarrow> update x = None"
-  shows "(\<lambda>expr. expr \<cdot> subst_updates \<sigma> update) ` X = (\<lambda>expr. expr \<cdot> \<sigma>) ` X"
-  using assms subst_updates 
-  by (meson UN_I image_cong redundant_subst_updates)
+  show ?thesis
+    using ground_subst_update_in_vars[OF assms True] .
+next
+  case False
 
-sublocale exists_ground_subst
-proof unfold_locales
-   obtain b where is_ground: "is_ground b"
-    using base_ground_exists 
-    by blast
-
-  define \<gamma> :: 'subst where
-    "\<And>x. \<gamma> \<equiv> subst_updates id_subst (\<lambda>_. Some b)"
-
-  show "\<exists>\<gamma>. is_ground_subst \<gamma>"
-  proof (rule exI)
-    show "is_ground_subst \<gamma>"
-      unfolding is_ground_subst_def \<gamma>_def
-      by (simp add: is_ground is_grounding_iff_vars_grounded)
-  qed
-qed
-
-end
-
-locale base_exists_non_ident_subst =
-  base_substitution where vars = vars + 
-  finite_variables where vars = vars +
-  infinite_variables where vars = vars +
-  all_subst_ident_iff_ground where vars = vars
-  for vars :: "'expr \<Rightarrow> 'v set" 
-begin
-
-sublocale exists_non_ident_subst
-proof unfold_locales
-  fix expr and S :: "'expr set"
-  assume finite_S: "finite S" and vars_not_empty: "vars expr \<noteq> {}"
-
-  obtain x where x: "x \<in> vars expr"
-    using vars_not_empty
-    by blast
-
-  have "finite (vars_set S)"
-    using finite_S finite_vars
-    unfolding vars_set_def
-    by blast
-
-  obtain y where y: "y \<notin> vars expr" "y \<notin> vars_set S"
-  proof -
-
-    have "finite (vars_set S)"
-      using finite_S finite_vars
-      unfolding vars_set_def
-      by blast
-
-    then have "finite (vars expr \<union> vars_set S)"
-      using finite_vars
-      by simp
-
-    then show ?thesis
-      using that infinite_vars finite_vars
-      by (meson UnCI ex_new_if_finite)
-  qed
-
-  define \<sigma> where "\<sigma> \<equiv> id_subst\<lbrakk>x := y \<cdot>v id_subst\<rbrakk>"
-
-  show "\<exists>\<sigma>. expr \<cdot> \<sigma> \<noteq> expr \<and> expr \<cdot> \<sigma> \<notin> S"
-  proof (intro exI conjI)
-
-    have y_in_expr_\<sigma>: "y \<in> vars (expr \<cdot> \<sigma>)"
-      unfolding \<sigma>_def
-      using x vars_subst
-      by fastforce
-
-    then show "expr \<cdot> \<sigma> \<noteq> expr"
-      using y
-      by metis
-
-    show "expr \<cdot> \<sigma> \<notin> S"
-      using y_in_expr_\<sigma> y(2)
-      unfolding vars_set_def
-      by auto
-  qed
+  then show ?thesis
+    by (simp add: assms(2))
 qed
 
 end
@@ -196,9 +121,24 @@ locale variables_in_base_imgu = based_substitution +
         base.is_imgu \<mu> XX \<Longrightarrow> finite XX \<Longrightarrow> \<forall>X \<in> XX. finite X \<Longrightarrow>
         vars (expr \<cdot> \<mu>) \<subseteq> vars expr \<union> (\<Union>(base_vars ` \<Union> XX))"
 
+locale range_vars_subset_if_is_imgu = base_substitution +
+  assumes range_vars_subset_if_is_imgu:
+    "\<And>\<mu> XX. is_imgu \<mu> XX \<Longrightarrow> \<forall>X\<in>XX. finite X \<Longrightarrow> finite XX \<Longrightarrow>
+        range_vars \<mu> \<subseteq> (\<Union>expr\<in>\<Union>XX. vars expr)"
+begin
+
+sublocale variables_in_base_imgu where 
+  base_subst = subst and base_vars = vars and base_is_ground = is_ground
+  using range_vars_subset_if_is_imgu vars_subst_subset
+  by unfold_locales fastforce
+
+end
+
+(* TODO Try using compactness instead of infinite variables \<exists>Y \<subseteq> X. finite Y \<and> (\<forall>\<tau>. is_unifier \<tau> X \<longleftrightarrow> is_unifier \<tau> Y)
+ *)
 locale base_variables_in_base_imgu =
-  base_substitution where vars = "vars :: 'expr \<Rightarrow> 'v set" and
-  subst_update = "subst_update :: 'subst \<Rightarrow> 'v \<Rightarrow> 'expr \<Rightarrow> 'subst" + 
+  base_substitution where vars = "vars :: 'expr \<Rightarrow> 'v set" + 
+  subst_update + 
   finite_variables +
   infinite_variables +
 assumes
@@ -206,7 +146,7 @@ assumes
 begin
 
 lemma imgu_subst_domain_subset:
-  assumes imgu: "is_imgu \<mu> XX" and finite_X: "\<forall>X\<in>XX. finite X" and finite_XX: "finite XX"
+  assumes imgu: "is_imgu \<mu> XX"
   shows "subst_domain \<mu> \<subseteq> \<Union> (vars ` \<Union> XX)"
 proof (intro Set.subsetI)
   fix x
@@ -246,14 +186,14 @@ proof (intro Set.subsetI)
 
       ultimately show ?thesis
         unfolding comp_subst_iff y \<tau>_def
-        by auto
+        by (metis all_subst_ident_if_ground id_subst_subst subst_update_var)
     next
       case False
 
       then show ?thesis
         unfolding \<tau>_def comp_subst_iff
         using not_back_to_id_subst
-        by (metis subst_update(1))
+        by (metis all_subst_ident_if_ground id_subst_subst subst_update_var(1))
     qed
 
     then have "\<mu> \<odot> \<tau> \<noteq> \<tau>"
@@ -275,7 +215,7 @@ qed
 lemma imgu_subst_domain_finite:
   assumes imgu: "is_imgu \<mu> XX" and finite_X: "\<forall>X\<in>XX. finite X" and finite_XX: "finite XX"
   shows "finite (subst_domain \<mu>)"
-  using imgu_subst_domain_subset[OF assms(1-3)] finite_XX finite_X finite_vars
+  using imgu_subst_domain_subset[OF imgu] finite_XX finite_X finite_vars
   by (simp add: finite_subset)
 
 lemma imgu_range_vars_finite:
@@ -318,24 +258,29 @@ proof (intro Set.subsetI)
     have "x \<cdot>v \<mu> \<odot> \<tau> \<noteq> x \<cdot>v \<tau>"
     proof -
 
-      have "z \<notin> vars (x \<cdot>v \<mu>)"
+      have "\<forall>x. x \<cdot>v \<mu> = x \<cdot>v id_subst \<or> z \<notin> vars (x \<cdot>v \<mu>)"
+        using range_vars_def subst_domain_def z(1)
+        by auto
+
+      then have "z \<notin> vars (x \<cdot>v \<mu>)"
         using z(1) x(2) x_neq_y
         unfolding range_vars_def subst_domain_def
-        by force
+        by (metis all_not_in_conv no_vars_if_is_ground singleton_iff vars_id_subst)
 
       moreover have "z \<in> vars (x \<cdot>v \<mu> \<cdot> id_subst\<lbrakk>y := z \<cdot>v id_subst\<rbrakk>)"
-        using x(2) vars_subst
-        by fastforce
-
+        using x(2) vars_id_subst subst_update_var(1)
+        unfolding vars_subst
+        by (metis UN_I equals0D imageI insertI1 no_vars_if_is_ground)
+       
       then have "z \<in> vars (x \<cdot>v \<mu> \<cdot> id_subst\<lbrakk>y := z \<cdot>v id_subst\<rbrakk> \<cdot> \<mu>)"
-        using z(2) vars_subst
-        unfolding range_vars_def subst_domain_def
+        using z(2) vars_id_subst no_vars_if_is_ground
+        unfolding range_vars_def subst_domain_def vars_subst
         by fastforce
-
+        
       ultimately show ?thesis
         using x_neq_y
         unfolding \<tau>_def comp_subst_iff
-        by auto
+        by (metis id_subst_subst subst_comp_subst subst_update_var(2))
     qed
 
     then have "\<mu> \<odot> \<tau> \<noteq> \<tau>"
@@ -362,7 +307,7 @@ proof -
     by (simp add: range_vars_def)
 
   also have "\<dots> \<subseteq> (\<Union>(vars ` (\<lambda>expr. expr \<cdot> \<mu>) ` \<Union> XX))"
-    using imgu_subst_domain_subset[OF assms] subsetD vars_subst 
+    using imgu_subst_domain_subset[OF assms(1)] subsetD vars_subst 
     by fastforce
 
   also have "\<dots> \<subseteq> (\<Union>expr\<in>\<Union>XX. vars expr)"
@@ -372,23 +317,127 @@ proof -
 qed
 
 sublocale variables_in_base_imgu where 
-  base_subst = subst and base_vars = vars
+  base_subst = subst and base_vars = vars and base_is_ground = is_ground
   using range_vars_subset_if_is_imgu vars_subst_subset
   by unfold_locales fastforce
 
 end
 
-locale range_vars_subset_if_is_imgu = base_substitution +
-  assumes range_vars_subset_if_is_imgu: 
-    "\<And>\<mu> XX. is_imgu \<mu> XX \<Longrightarrow> \<forall>X\<in>XX. finite X \<Longrightarrow> finite XX \<Longrightarrow>
-        range_vars \<mu> \<subseteq> (\<Union>expr\<in>\<Union>XX. vars expr)"
+locale base_exists_ground_subst =
+  base_substitution where
+    vars = "vars :: 'base \<Rightarrow> 'v set" and apply_subst = "apply_subst  :: 'v \<Rightarrow> 'subst \<Rightarrow> 'base" +
+  subst_updates +
+  is_ground_if_no_vars +
+assumes 
+  base_ground_exists: "\<exists>expr. is_ground expr"
 begin
 
-sublocale variables_in_base_imgu where 
-  base_subst = subst and base_vars = vars
-  using range_vars_subset_if_is_imgu vars_subst_subset
-  by unfold_locales fastforce
+lemma redundant_subst_updates_vars_set' [simp]:
+  assumes "\<And>x. x \<in> X \<Longrightarrow> update x = None" 
+  shows "(\<lambda>x. x \<cdot>v \<sigma>\<lbrakk>update\<rbrakk>) ` X = (\<lambda>x. x \<cdot>v \<sigma>) ` X"
+  using assms subst_updates
+  by (metis id_subst_subst redundant_subst_updates_vars_set subst_ident_if_ground)
+
+sublocale exists_ground_subst
+proof unfold_locales
+
+  obtain b where is_ground: "is_ground b"
+    using base_ground_exists 
+    by blast
+
+  define \<gamma> :: 'subst where
+    "\<gamma> \<equiv> id_subst\<lbrakk>\<lambda>_. Some b\<rbrakk>"
+
+  have vars: "\<And>x. vars (x \<cdot>v \<gamma>) = {}"
+    unfolding \<gamma>_def
+    by (metis is_ground no_vars_if_is_ground option.simps(5) subst_updates(1))
+
+  show "\<exists>\<gamma>. is_ground_subst \<gamma>"
+  proof (rule exI)
+    
+    show "is_ground_subst \<gamma>"
+      using vars
+      unfolding is_ground_subst_def is_ground_iff_no_vars \<gamma>_def vars_subst
+      by fast
+  qed
+qed
 
 end
+
+locale base_exists_non_ident_subst =
+  base_substitution where vars = vars + 
+  finite_variables where vars = vars +
+  infinite_variables where vars = vars +
+  all_subst_ident_iff_ground where vars = vars +
+  subst_update where vars = vars +
+  is_ground_if_no_vars where vars = vars
+  for vars :: "'expr \<Rightarrow> 'v set" 
+begin
+
+sublocale exists_non_ident_subst
+proof unfold_locales
+  fix expr and S :: "'expr set"
+  assume finite_S: "finite S" and vars_not_empty: "\<not> is_ground expr"
+
+  obtain x where x: "x \<in> vars expr"
+    using is_ground_iff_no_vars vars_not_empty 
+    by auto
+
+  have "finite (vars_set S)"
+    using finite_S finite_vars
+    unfolding vars_set_def
+    by blast
+
+  obtain y where y: "y \<notin> vars expr" "y \<notin> vars_set S"
+  proof -
+
+    have "finite (vars_set S)"
+      using finite_S finite_vars
+      unfolding vars_set_def
+      by blast
+
+    then have "finite (vars expr \<union> vars_set S)"
+      using finite_vars
+      by simp
+
+    then show ?thesis
+      using that infinite_vars finite_vars
+      by (meson UnCI ex_new_if_finite)
+  qed
+
+  define \<sigma> where "\<sigma> \<equiv> id_subst\<lbrakk>x := y \<cdot>v id_subst\<rbrakk>"
+
+  show "\<exists>\<sigma>. expr \<cdot> \<sigma> \<noteq> expr \<and> expr \<cdot> \<sigma> \<notin> S"
+  proof (intro exI conjI)
+
+    have y_in_expr_\<sigma>: "y \<in> vars (expr \<cdot> \<sigma>)"
+      unfolding \<sigma>_def vars_subst
+      using x
+      by (metis UN_iff image_eqI singletonI subst_update_var(1) vars_id_subst vars_not_empty)
+
+    then show "expr \<cdot> \<sigma> \<noteq> expr"
+      using y
+      by metis
+
+    show "expr \<cdot> \<sigma> \<notin> S"
+      using y_in_expr_\<sigma> y(2)
+      unfolding vars_set_def
+      by auto
+  qed
+qed
+
+end
+
+locale vars_grounded_iff_is_grounding = base_substitution +
+  assumes is_grounding_if_vars_grounded:
+    "\<And>expr \<gamma>. \<forall>x \<in> vars expr. is_ground (x \<cdot>v \<gamma>) \<Longrightarrow> is_ground (expr \<cdot> \<gamma>)"
+begin
+
+lemma vars_grounded_iff_is_grounding: "(\<forall>x \<in> vars b. is_ground (x \<cdot>v \<gamma>)) \<longleftrightarrow> is_ground (b \<cdot> \<gamma>)"
+  using is_grounding_if_vars_grounded vars_grounded_if_is_grounding
+  by blast
+
+end
+
 
 end

@@ -8,15 +8,19 @@ session Superposition_Calculus = Saturation_Framework_Extensions +
   theories
     Ground_Superposition_Completeness
     Ground_Superposition_Soundness
-    Ground_Superposition_Example
+    IsaFoR_Ground_Superposition_Compatibility
     Typed_Ground_Superposition
-    Monomorphic_Superposition
+
     Superposition_Completeness
     Superposition_Soundness
     Superposition_Welltypedness_Preservation
-    Superposition_Example
+    Superposition_Alternative_Rules
     Untyped_Superposition_Completeness
     Untyped_Superposition_Soundness
+
+    Monomorphic_Superposition
+    Sorted_Terms_Superposition
+    Superposition_Example
   document_files
     "root.bib"
     "root.tex"

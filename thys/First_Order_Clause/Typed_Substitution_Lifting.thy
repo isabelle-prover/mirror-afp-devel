@@ -6,8 +6,11 @@ begin
 
 locale typed_substitution_lifting =
   sub: typed_substitution where
-    vars = sub_vars and subst = sub_subst and welltyped = sub_welltyped and base_vars = base_vars +
-    based_substitution_lifting where to_set = to_set and base_vars = base_vars
+  vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground and 
+  welltyped = sub_welltyped and base_vars = base_vars +
+
+  based_substitution_lifting where 
+  to_set = to_set and base_vars = base_vars
 for
   sub_welltyped :: "('v, 'ty) var_types \<Rightarrow> 'sub \<Rightarrow> 'ty' \<Rightarrow> bool" and
   to_set :: "'expr \<Rightarrow> 'sub set" and
@@ -18,30 +21,32 @@ sublocale typing_lifting where sub_welltyped = "sub_welltyped \<V>"
   by unfold_locales
 
 sublocale typed_substitution where
-  vars = vars and subst = subst and welltyped = welltyped
+  vars = vars and subst = subst and is_ground = is_ground and welltyped = welltyped
   by unfold_locales
 
 end
 
 locale witnessed_typed_substitution_lifting =
   typed_substitution_lifting +
+  subst_updates_lifting +
   sub: witnessed_typed_substitution where
-  vars = sub_vars and subst = sub_subst and welltyped = sub_welltyped
+  vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground and welltyped = sub_welltyped
 begin
 
 sublocale witnessed_typed_substitution where
-  vars = vars and subst = subst and welltyped = welltyped
-  by unfold_locales (simp_all add: sub.types_witnessed)
+  vars = vars and subst = subst and is_ground = is_ground and welltyped = welltyped
+  by unfold_locales (simp_all add: sub.types_witnessed exists_nonground_iff_sub_exists_nonground)  
 
 end
 
 locale typed_subst_stability_lifting =
   typed_substitution_lifting +
   sub: typed_subst_stability where
-  welltyped = sub_welltyped and vars = sub_vars and subst = sub_subst
+  welltyped = sub_welltyped and vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
 begin
 
-sublocale typed_subst_stability where welltyped = welltyped and subst = subst and vars = vars
+sublocale typed_subst_stability where
+  welltyped = welltyped and subst = subst and vars = vars and is_ground = is_ground
 proof unfold_locales
   fix \<V> \<sigma> expr
   assume type_preserving_\<sigma>: "sub.base.type_preserving_on (vars expr) \<V> \<sigma>"
@@ -56,25 +61,28 @@ end
 
 locale replaceable_\<V>_lifting =
   typed_substitution_lifting +
-  sub: replaceable_\<V> where welltyped = sub_welltyped and vars = sub_vars and subst = sub_subst
+  sub: replaceable_\<V> where
+  welltyped = sub_welltyped and vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
 begin
 
 sublocale replaceable_\<V> where
-  subst = subst and vars = vars and welltyped = welltyped
+  subst = subst and vars = vars and is_ground = is_ground and welltyped = welltyped
   by unfold_locales (metis SUP_upper2 sub.replace_\<V> subset_eq vars_def is_welltyped_def)
 
 end
 
 locale typed_renaming_lifting =
   typed_substitution_lifting where
-  base_welltyped = "base_welltyped :: ('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
+  base_welltyped = "base_welltyped :: ('v, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
   renaming_variables_lifting +
+  (* TODO: *)
+  subst_updates_compat_lifting +
   sub: based_typed_renaming where
-  subst = sub_subst and vars = sub_vars and welltyped = sub_welltyped
+  subst = sub_subst and vars = sub_vars and is_ground = sub_is_ground and welltyped = sub_welltyped
 begin
 
 sublocale based_typed_renaming where
-  subst = subst and vars = vars and welltyped = welltyped
+  subst = subst and vars = vars and is_ground = is_ground and welltyped = welltyped
   by unfold_locales (force simp: vars_def subst_def is_welltyped_def)
 
 end
