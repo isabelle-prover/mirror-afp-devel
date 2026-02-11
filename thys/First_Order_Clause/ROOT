@@ -15,25 +15,33 @@ session First_Order_Clause = Abstract_Substitution +
     Sorted_Terms
     VeriComp
   theories
+    Ground_Critical_Pairs
     Ground_Term_Typing
     Grounded_Selection_Function
+
+    Infinite_Variables
+    Typed_Tiebreakers
+    Untyped_Calculus
+
     IsaFoR_KBO
     IsaFoR_Nonground_Clause
     IsaFoR_Nonground_Clause_With_Equality
-    IsaFoR_Ground_Critical_Pairs
+    
     IsaFoR_Ground_Term_Compatibility
-    Infinite_Variables
-    Monomorphic_Typing
+    
     Nonground_Entailment
     Nonground_Inference
     Nonground_Order
     Nonground_Order_With_Equality
     Nonground_Typing
     Nonground_Typing_With_Equality
+
+    Polymorphic_Ground_Context
+
+    Monomorphic_Typing
     Sorted_Terms_Typing
+
     Typed_Substitution_Example
     Typed_Substitution_Lifting_Example
-    Typed_Tiebreakers
-    Untyped_Calculus
   document_files
     "root.tex"

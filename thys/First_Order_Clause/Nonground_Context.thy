@@ -20,11 +20,11 @@ end
 
 locale nonground_context =
   term_based_lifting where
-    sub_vars = "term_vars :: 't \<Rightarrow> 'v set" and sub_subst = "term_subst :: 't \<Rightarrow> 'subst \<Rightarrow> 't" and
-    sub_from_ground = term_from_ground and sub_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
-    sub_is_ground = term_is_ground and to_ground_map = to_ground_context_map and
-    ground_map = ground_context_map and from_ground_map = from_ground_context_map and
-    map = map_context and to_set = context_to_set and to_set_ground = ground_context_to_set +
+  sub_vars = "term_vars :: 't \<Rightarrow> 'v set" and sub_subst = "term_subst :: 't \<Rightarrow> 'subst \<Rightarrow> 't" and
+  sub_from_ground = term_from_ground and sub_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
+  sub_is_ground = term_is_ground and to_ground_map = to_ground_context_map and
+  ground_map = ground_context_map and from_ground_map = from_ground_context_map and
+  map = map_context and to_set = context_to_set and to_set_ground = ground_context_to_set +
 
   "context" +
 
@@ -38,7 +38,6 @@ for
   apply_ground_context :: "'c\<^sub>G \<Rightarrow> 't\<^sub>G \<Rightarrow> 't\<^sub>G" +
 assumes
   hole_if_context_ident [simp]: "c\<langle>t\<rangle> = t \<Longrightarrow> c = \<box>" and
-  compose_hole [simp]: "c = c \<circ>\<^sub>c \<box>" and
   term_to_ground_context_to_ground [simp]:
   "\<And>c t. term.to_ground c\<langle>t\<rangle> = (to_ground c)\<langle>term.to_ground t\<rangle>\<^sub>G" and
   term_from_ground_context_from_ground [simp]:

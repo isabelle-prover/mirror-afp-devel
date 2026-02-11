@@ -65,7 +65,6 @@ sublocale context.noop: noop_lifting where
 
 end
 
-(* TODO: Instantiate *)
 locale ground_superposition_compatibility = untyped_superposition_calculus where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_vars = noop_vars and
   subst_update = noop_subst_update and apply_subst = noop_apply_subst and
@@ -77,7 +76,12 @@ locale ground_superposition_compatibility = untyped_superposition_calculus where
   term_is_ground = noop_is_ground
 begin
 
-interpretation grounded: ground_superposition_calculus 
+interpretation grounded: ground_superposition_calculus where
+  subterms = ground_subterms and fun_sym = ground_fun_sym and extra = ground_extra and
+  subterms\<^sub>l = ground_subterms\<^sub>l and subcontext = ground_subcontext and
+  subterms\<^sub>r = ground_subterms\<^sub>r and Fun = GFun and More = GMore and fun_sym\<^sub>c = ground_fun_sym\<^sub>c and
+  extra\<^sub>c = ground_extra\<^sub>c and size = ground_size and hole_position = ground_hole_position and
+  context_at = ground_context_at and size\<^sub>c = ground_size\<^sub>c
 proof unfold_locales
 
   show "wfp (\<prec>\<^sub>t)"

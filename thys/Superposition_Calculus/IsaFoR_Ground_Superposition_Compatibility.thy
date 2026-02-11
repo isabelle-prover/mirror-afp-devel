@@ -2,7 +2,6 @@ theory IsaFoR_Ground_Superposition_Compatibility
 imports
   Ground_Superposition_Compatibility
   First_Order_Clause.IsaFoR_Ground_Term_Compatibility
-  First_Order_Clause.IsaFoR_Ground_Critical_Pairs
   First_Order_Clause.IsaFoR_KBO
 begin
 
@@ -49,7 +48,7 @@ next
     by (meson KBO.term.order.less\<^sub>r_def KBO.term.order.restriction.totalp subset_UNIV
         totalp_on_mono_strong)
 next
-  fix t and c :: "'f ground_context"
+  fix t and c :: "'f gcontext"
 
   assume "c \<noteq> \<box>"
 
@@ -69,7 +68,12 @@ interpretation ground_superposition_compatibility: ground_superposition_compatib
   apply_context = apply_ground_context and compose_context = "(\<circ>\<^sub>c)" and hole = \<box> and
   map_context = map_args_actxt and context_to_set = set2_actxt and select = trivial_select and 
   tiebreakers = trivial_tiebreakers and
-  less\<^sub>t = "ground_less_kbo :: 'f :: weighted gterm \<Rightarrow> 'f gterm \<Rightarrow> bool"
+  less\<^sub>t = "ground_less_kbo :: 'f :: weighted gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
+  ground_subterms = gargs and ground_fun_sym = groot_sym and ground_extra = "\<lambda>_. ()" and
+  GFun = "\<lambda>f _. GFun f" and GMore = "\<lambda>f _. More f" and ground_fun_sym\<^sub>c = fun_sym\<^sub>c and
+  ground_extra\<^sub>c = "\<lambda>_. ()" and ground_subterms\<^sub>l = subterms\<^sub>l and ground_subcontext = subcontext and
+  ground_subterms\<^sub>r = subterms\<^sub>r and ground_size = size and ground_hole_position = hole_pos and
+  ground_context_at = context_at\<^sub>G and ground_size\<^sub>c = size
   by unfold_locales auto
 
 end

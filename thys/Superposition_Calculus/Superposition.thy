@@ -33,9 +33,7 @@ locale superposition_calculus =
 
   tiebreakers where tiebreakers = tiebreakers +
 
-  ground_critical_pairs where
-  compose_context = compose_ground_context and apply_context = apply_ground_context and
-  hole = ground_hole +
+  ground_term_context' +
 
   infinite_variables where
   exists_nonground = term.exists_nonground and variables = "UNIV :: 'v set"

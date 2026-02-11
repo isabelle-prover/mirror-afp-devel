@@ -57,7 +57,7 @@ next
   show "map_args_actxt f (c \<circ>\<^sub>c c') = map_args_actxt f c \<circ>\<^sub>c map_args_actxt f c'"
     by (induction c) auto
 next
-  fix c c' :: "'f ground_context"
+  fix c c' :: "'f gcontext"
 
   show "context.from_ground (c \<circ>\<^sub>c c') = context.from_ground c \<circ>\<^sub>c context.from_ground c'"
     by (induction c) (auto simp: context.from_ground_def)

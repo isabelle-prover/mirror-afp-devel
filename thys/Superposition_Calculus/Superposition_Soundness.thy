@@ -276,7 +276,7 @@ proof (cases D E C rule: superposition.cases)
     assume
       trans_I: "trans I" and
       sym_I: "sym I" and
-      compatible_with_ground_context_I: "compatible_with_context I" and
+      compatible_with_ground_context_I: "ground.compatible_with_context I" and
       E_entails_ground_instances: "\<forall>E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E. ?I \<TTurnstile> E\<^sub>G" and
       D_entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D. ?I \<TTurnstile> D\<^sub>G" and
       C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and

@@ -828,7 +828,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           let ?I = "upair ` I"
 
           assume
-            "refl I" "trans I" "sym I" "compatible_with_context I" and
+            "refl I" "trans I" "sym I" "ground.compatible_with_context I" and
             premise: "?I \<TTurnstile>s {?E\<^sub>G', D\<^sub>G}"
 
           then interpret clause_entailment where I = I

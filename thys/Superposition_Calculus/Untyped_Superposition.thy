@@ -3,8 +3,9 @@ theory Untyped_Superposition
     First_Order_Clause.Nonground_Order_With_Equality
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Tiebreakers
-    First_Order_Clause.Ground_Critical_Pairs
     First_Order_Clause.Infinite_Variables
+
+    Ground_Term_Context
 begin
 
 locale untyped_superposition_calculus =
@@ -24,9 +25,7 @@ locale untyped_superposition_calculus =
   infinite_variables where
   variables = "UNIV :: 'v set" and exists_nonground = term.exists_nonground +
 
-  ground_critical_pairs where
-  compose_context = compose_ground_context and apply_context = apply_ground_context and
-  hole = ground_hole +
+  ground_term_context' +
 
   tiebreakers tiebreakers +
 

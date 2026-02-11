@@ -25,7 +25,11 @@ begin
 
 sublocale ground: ground_superposition_calculus where
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and select = select\<^sub>G and compose_context = compose_ground_context and 
-  apply_context = apply_ground_context and hole = ground_hole
+  apply_context = apply_ground_context and hole = ground_hole and subterms = ground_subterms and
+  fun_sym = ground_fun_sym and extra = ground_extra and subterms\<^sub>l = ground_subterms\<^sub>l and
+  subcontext = ground_subcontext and subterms\<^sub>r = ground_subterms\<^sub>r and Fun = GFun and
+  More = GMore and fun_sym\<^sub>c = ground_fun_sym\<^sub>c and extra\<^sub>c = ground_extra\<^sub>c and size = ground_size and
+  hole_position = ground_hole_position and context_at = ground_context_at and size\<^sub>c = ground_size\<^sub>c
 rewrites
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) ground.literal_to_mset = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
@@ -33,7 +37,6 @@ rewrites
   "\<And>l\<^sub>G C\<^sub>G. ground.is_strictly_maximal l\<^sub>G C\<^sub>G \<longleftrightarrow> ground_is_strictly_maximal l\<^sub>G C\<^sub>G"
   unfolding is_maximal_rewrite[symmetric] is_strictly_maximal_rewrite[symmetric]
   by unfold_locales simp_all
-
 
 abbreviation is_inference_ground_instance_one_premise where
   "is_inference_ground_instance_one_premise D C \<iota>\<^sub>G \<gamma> \<equiv>
