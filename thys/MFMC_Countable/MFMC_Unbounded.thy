@@ -969,7 +969,7 @@ proof -
   with \<open>a \<in> A \<Gamma>\<close> have "hindrance \<Gamma> h"
   proof
     have "d_OUT h a = d_OUT g a" by(simp add: OUT_g_a)
-    also have "\<dots> \<le> d_OUT f a + \<integral>\<^sup>+ y. j (Some y, Some a) \<partial>count_space UNIV"
+    also have "\<dots> \<le> d_OUT f a + (\<integral>\<^sup>+ y. j (Some y, Some a) \<partial>count_space UNIV)"
       unfolding d_OUT_def d_IN_def
       by(subst nn_integral_add[symmetric])(auto simp add: g_simps intro!: nn_integral_mono diff_le_self_ennreal)
     also have "(\<integral>\<^sup>+ y. j (Some y, Some a) \<partial>count_space UNIV) = (\<integral>\<^sup>+ y. j (y, Some a) \<partial>embed_measure (count_space UNIV) Some)"

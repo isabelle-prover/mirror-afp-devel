@@ -156,7 +156,7 @@ lemma d_OUT_current_of_bipartite:
 proof -
   have "d_OUT (current_of_bipartite f) x = \<integral>\<^sup>+ y. f (Inl x, y) * indicator \<^bold>E (x, projr y) \<partial>count_space (range Inr)"
     by(simp add: d_OUT_def nn_integral_count_space_reindex)
-  also have "\<dots> = d_OUT f (Inl x) - \<integral>\<^sup>+ y. f (Inl x, y) * indicator {Inr x} y \<partial>count_space UNIV" (is "_ = _ - ?rest")
+  also have "\<dots> = d_OUT f (Inl x) - (\<integral>\<^sup>+ y. f (Inl x, y) * indicator {Inr x} y \<partial>count_space UNIV)" (is "_ = _ - ?rest")
     unfolding d_OUT_def by(subst nn_integral_diff[symmetric])(auto 4 4 simp add: current_bipartite_web_finite[OF f] AE_count_space nn_integral_count_space_indicator no_loop split: split_indicator intro!: nn_integral_cong intro: currentD_outside[OF f] elim: edge_bipartite_webE)
   finally show ?thesis by simp
 qed
@@ -167,7 +167,7 @@ lemma d_IN_current_of_bipartite:
 proof -
   have "d_IN (current_of_bipartite f) x = \<integral>\<^sup>+ y. f (y, Inr x) * indicator \<^bold>E (projl y, x) \<partial>count_space (range Inl)"
     by(simp add: d_IN_def nn_integral_count_space_reindex)
-  also have "\<dots> = d_IN f (Inr x) - \<integral>\<^sup>+ y. f (y, Inr x) * indicator {Inl x} y \<partial>count_space UNIV" (is "_ = _ - ?rest")
+  also have "\<dots> = d_IN f (Inr x) - (\<integral>\<^sup>+ y. f (y, Inr x) * indicator {Inl x} y \<partial>count_space UNIV)" (is "_ = _ - ?rest")
     unfolding d_IN_def by(subst nn_integral_diff[symmetric])(auto 4 4 simp add: current_bipartite_web_finite[OF f] AE_count_space nn_integral_count_space_indicator no_loop split: split_indicator intro!: nn_integral_cong intro: currentD_outside[OF f] elim: edge_bipartite_webE)
   finally show ?thesis by simp
 qed

@@ -1098,7 +1098,7 @@ proof -
   then have qn: "q ^ n \<in> {0<..<1}"
     using assms q by (auto)
   have "NR\<^sub>N n u l = p * (l + NR\<^sub>N (n - 1) u l) +
-                    q * (u + \<integral>\<^sup>+ k. NR\<^sub>N (k + 1) u l  \<partial>measure_pmf (binomial_pmf (n - 1) q))"
+                    q * (u + (\<integral>\<^sup>+ k. NR\<^sub>N (k + 1) u l  \<partial>measure_pmf (binomial_pmf (n - 1) q)))"
     using assms unfolding NR\<^sub>N_def
     by(subst R\<^sub>N_recurrence)
       (auto simp add: field_simps nn_integral_add q_def ennreal_of_nat_eq_real_of_nat)
