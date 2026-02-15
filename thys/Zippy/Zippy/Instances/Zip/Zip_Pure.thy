@@ -125,7 +125,7 @@ fun init st = st |>
       init = SOME init,
       exec = SOME Run.AStar.promising',
       post = SOME (fn st => Ctxt.with_ctxt (fn ctxt =>
-        arr (Run.changed_uniquesq st #> Seq.maps (prune_params_tac ctxt))))}\<close>\<close>
+        arr (Run.changed_uniquesq st #> Seq.maps (Simplifier.prune_params_tac ctxt))))}\<close>\<close>
 fun tac fuel ctxt = Data.tac fuel {ctxt = ctxt}
 end
 end

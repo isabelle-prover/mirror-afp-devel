@@ -626,9 +626,9 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
   let
     val AlphaResult {alpha_trms, alpha_bn_trms, ...} = alpha_result
 
-    val refl' = map (fold_rule ctxt [reflp_def'] o atomize ctxt) refl
-    val symm' = map (fold_rule ctxt [symp_def'] o atomize ctxt) symm
-    val trans' = map (fold_rule ctxt [transp_def'] o atomize ctxt) trans
+    val refl' = map (Simplifier.fold_rule ctxt [reflp_def'] o atomize ctxt) refl
+    val symm' = map (Simplifier.fold_rule ctxt [symp_def'] o atomize ctxt) symm
+    val trans' = map (Simplifier.fold_rule ctxt [transp_def'] o atomize ctxt) trans
 
     fun prep_goal t = \<^Const>\<open>Trueprop for \<^Const>\<open>equivp \<open>domain_type (fastype_of t)\<close> for t\<close>\<close>
   in
