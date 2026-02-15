@@ -1899,7 +1899,7 @@ in
 
 fun raw_conseq_simp_tac ctxt state_kind thms i =
   let
-    val ctxt' = Config.put simp_depth_limit 0 ctxt;
+    val ctxt' = Config.put Simplifier.simp_depth_limit 0 ctxt;
   in
      simp_tac (put_simpset conseq1_ss_base ctxt'
        |> fold Simplifier.add_proc (state_simprocs ctxt' state_kind)

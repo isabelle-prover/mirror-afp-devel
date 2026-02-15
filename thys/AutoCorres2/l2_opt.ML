@@ -912,7 +912,7 @@ let
   val depth = strip_comb_depth_of_term (Thm.prop_of thm)
   (* Don't print out warning messages. *)
   val ctxt = ctxt |> Context_Position.set_visible false
-             |> Config.map simp_depth_limit (K (depth + 20))
+             |> Config.map Simplifier.simp_depth_limit (K (depth + 20))
 
   val final_conv = the_default (K Conv.all_conv) aux_conv
   val l2opt_conv =

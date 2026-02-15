@@ -2265,7 +2265,7 @@ fun prepare_simpset max_depth ctxt =
       |> Simplifier.add_simps monad_cong_simps
       |> Simplifier.add_simps @{thms Arrays.fupdate_def [symmetric]}
       |> Context_Position.set_visible visible
-      |> Config.map simp_depth_limit (K (max_depth + 20))
+      |> Config.map Simplifier.simp_depth_limit (K (max_depth + 20))
    in ctxt' end
 
 fun monad_simp_tac ctxt = SUBGOAL (fn (goal, i) =>

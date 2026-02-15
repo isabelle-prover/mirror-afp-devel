@@ -746,7 +746,7 @@ fun umm_mem_type st recname fld_count recty typtag_thm tag_def_thm entire_compon
   fun asm_full_simp_tac' ctxt = SUBGOAL (fn (goal, i) =>
     let
       val depth = strip_comb_depth_of_term goal
-      val ctxt' = ctxt |> Config.map simp_depth_limit (K (depth + 20))
+      val ctxt' = ctxt |> Config.map Simplifier.simp_depth_limit (K (depth + 20))
     in
       SOLVED' (asm_full_simp_tac ctxt') i
     end)
@@ -790,7 +790,7 @@ fun umm_mem_type st recname fld_count recty typtag_thm tag_def_thm entire_compon
    val wf_padding_step =
           let
             val ctxt = lthy addsimps (t_def_thms @ @{thms wf_padding_combinator_simps wf_padding})
-              |> Config.map simp_depth_limit (K (fld_count + 20))
+              |> Config.map Simplifier.simp_depth_limit (K (fld_count + 20))
           in  asm_full_simp_tac ctxt 1 end
 
   val is_mem_type_thm =
