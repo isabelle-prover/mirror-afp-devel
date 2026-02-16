@@ -507,7 +507,7 @@ qed
 lemma converse_derives_induct[consumes 1, case_names base step]:
   assumes "P \<turnstile> xs \<Rightarrow>* ys"
   and Base: "Q ys"
-  and Step: "\<And>u A v w. \<lbrakk> P \<turnstile> u @ [Nt A] @ v \<Rightarrow>* ys; Q (u @ w @ v); (A,w) \<in> P \<rbrakk> \<Longrightarrow> Q (u @ [Nt A] @ v)"
+  and Step: "\<And>u A v w. \<lbrakk> P \<turnstile> u @ w @ v \<Rightarrow>* ys; Q (u @ w @ v); (A,w) \<in> P \<rbrakk> \<Longrightarrow> Q (u @ [Nt A] @ v)"
   shows "Q xs"
   using assms(1)
   apply (induction rule: converse_rtranclp_induct)
@@ -866,8 +866,7 @@ proof(induction arbitrary: s rule: converse_derives_induct)
   then show ?case by simp
 next
   case (step u A v w)
-  then show ?case using derives_append_decomp[where u="[Nt A]" and v=v]
-    by (auto simp: derives_append_decomp)
+  then show ?case by (auto simp: derives_Cons_rule derives_append_decomp)
 qed
 
 lemma derives_append_append:
