@@ -29,6 +29,14 @@ qed (intro rcong_of_intI)
 
 subsection \<open>Definition and basic properties\<close>
 
+(* 
+  TODO: Perhaps a more standard definition that also aligns with dedekind_sum_code 
+  would be better. There is also a generalisation with three parameters instead of two
+  (see Wikipedia) that one could look into.
+*)
+text \<open>
+  Our definition of Dedekind sums follows Apostol~\<^cite>\<open>apostol\<close>. 
+\<close>
 definition dedekind_sum :: "int \<Rightarrow> int \<Rightarrow> real" where
   "dedekind_sum h k \<equiv> \<Sum>r\<in>{1..<k}. (of_int r / of_int k * (frac (of_int (h*r) / of_int k) - 1/2))"
 
@@ -39,6 +47,20 @@ lemma dedekind_frac_int [simp]: "x \<in> \<int> \<Longrightarrow> dedekind_frac 
   by (auto simp: dedekind_frac_def)
 
 notation dedekind_frac ("\<langle>_\<rangle>")
+
+lemma dedekind_sum_le1_right [simp]: "k \<le> 1 \<Longrightarrow> dedekind_sum h k = 0"
+  by (simp add: dedekind_sum_def)
+
+lemma dedekind_sum_2_right: "dedekind_sum h 2 = (if even h then -1/4 else 0)"
+proof -
+  have *: "{1..<2} = {1::int}"
+    by auto
+  have "dedekind_sum h 2 = (frac (real_of_int h / 2) - 1/2) / 2"
+    by (simp add: dedekind_sum_def * field_simps)
+  also have "\<dots> = (if even h then -1/4 else 0)"
+    by (cases "even h") (auto elim!: evenE oddE simp: add_divide_distrib)
+  finally show ?thesis .
+qed
 
 interpretation dedekind_frac: periodic_fun_simple' dedekind_frac
 proof
@@ -601,6 +623,12 @@ subsection \<open>Congruence Properties\<close>
 
 definition dedekind_sum' :: "int \<Rightarrow> int \<Rightarrow> int" where
   "dedekind_sum' h k = \<lfloor>6 * real_of_int k * dedekind_sum h k\<rfloor>"
+
+lemma dedekind_sum'_le1_right [simp]: "k \<le> 1 \<Longrightarrow> dedekind_sum' h k = 0"
+  by (simp add: dedekind_sum'_def)
+
+lemma dedekind_sum'_2_right: "dedekind_sum' h 2 = (if even h then -3 else 0)"
+  by (simp add: dedekind_sum'_def dedekind_sum_2_right)
 
 lemma dedekind_sum'_cong: 
   "[h = h'] (mod k) \<Longrightarrow> coprime h k \<or> coprime h' k \<Longrightarrow> dedekind_sum' h k = dedekind_sum' h' k"
@@ -1402,5 +1430,99 @@ proof -
 qed
 
 no_notation dedekind_frac ("\<langle>_\<rangle>")
+
+(* TODO: formulation in terms of sums over roots of unity or the cotangent *)
+
+
+subsection \<open>Fast evaluation of Dedekind sums\<close>
+
+text \<open>
+  For coprime $h$, $k$ (which is the most important case), the reciprocity identity allows us
+  to express $s(h,k)$ in terms of $s(k,h)$ (modulo some simple rational expressions involving
+  $h$ and $k$). Moreover, it is clear that $s(h, k) = s(h', k)$ whenever 
+  $h = h'\ (\text{mod}\ k)$. Thus we can compute $s(h,k)$ with a straightforward algorithm akin
+  to Euclid's GCD algorithm. The running time ought to be the same as the Euclid's algorithm,
+  i.e.\ $O(\log (\text{max}(h,k))^2)$ bit operations (but the precise analysis takes some work,
+  which we don't do here).
+\<close>
+
+fun dedekind_sum'_code :: "int \<Rightarrow> int \<Rightarrow> int" where
+  "dedekind_sum'_code h k =
+    (if k \<le> 2 then 0
+     else let h = h mod k 
+          in  (k * (k - 3 * h - 2 * dedekind_sum'_code k h) + h\<^sup>2 + 1) div (2*h))"
+
+lemmas [simp del] = dedekind_sum'_code.simps
+
+definition dedekind_sum_code :: "int \<Rightarrow> int \<Rightarrow> rat" where
+  "dedekind_sum_code h k = of_int (dedekind_sum'_code h k) / of_int (6 * k)"
+
+lemma dedekind_sum'_code_correct:
+  assumes "coprime h k"
+  shows   "dedekind_sum' h k = dedekind_sum'_code h k"
+  using assms
+proof (induction h k rule: dedekind_sum'_code.induct)
+  case (1 h k)
+  define h' where "h' = h mod k"
+  show ?case
+  proof (cases "k \<le> 2")
+    case True
+    show ?thesis
+    proof (cases "k \<le> 1")
+      case True
+      thus ?thesis
+        by (simp add: dedekind_sum'_code.simps)
+    next
+      case False
+      with True have "k = 2"
+        by simp
+      thus ?thesis
+        using "1.prems" True by (simp add: dedekind_sum'_2_right dedekind_sum'_code.simps)
+    qed
+  next
+    case False
+    have "\<not>k dvd h"
+      using "1.prems" False by auto
+    hence "h mod k \<noteq> 0"
+      by auto
+    moreover have "h mod k \<ge> 0"
+      by (rule pos_mod_sign) (use False in auto)
+    ultimately have "h' > 0" by (simp add: h'_def)
+      
+    have "dedekind_sum' h k = dedekind_sum' h' k"
+      by (rule dedekind_sum'_cong) (use "1.prems" in \<open>auto simp: h'_def\<close>)
+    also have "2 * h' * \<dots> = (h'\<^sup>2 - 2 * k * dedekind_sum' k h' + k\<^sup>2 - 3 * h' * k + 1)"
+      by (subst dedekind_sum'_reciprocity)
+         (use False "1.prems" \<open>h' > 0\<close> in \<open>auto simp: h'_def\<close>)
+    also have "dedekind_sum' k h' = dedekind_sum'_code k h'"
+      by (rule "1.IH") (use False "1.prems" in \<open>auto simp: h'_def coprime_commute\<close>)
+    also have "(h'\<^sup>2 - 2 * k * \<dots> + k\<^sup>2 - 3 * h' * k + 1) div (2*h') = dedekind_sum'_code h k"
+      using False by (subst (2) dedekind_sum'_code.simps) 
+                     (auto simp: h'_def Let_def algebra_simps power2_eq_square)
+    also have "(2 * h' * dedekind_sum' h k) div (2*h') = dedekind_sum' h k"
+      using \<open>h' > 0\<close> by simp
+    finally show ?thesis .
+  qed
+qed
+
+lemma dedekind_sum_code_correct:
+  assumes "coprime h k"
+  shows   "dedekind_sum h k = of_rat (dedekind_sum_code h k)"
+proof (cases "k > 0")
+  case False
+  thus ?thesis
+    by (auto simp: dedekind_sum_code_def dedekind_sum'_code.simps)
+next
+  case True
+  hence "dedekind_sum h k = of_rat (of_int (dedekind_sum' h k) / of_int (6 * k))"
+    using of_int_dedekind_sum'[of k h] assms by (simp add: field_simps of_rat_divide of_rat_mult)
+  also have "dedekind_sum' h k = dedekind_sum'_code h k"
+    by (rule dedekind_sum'_code_correct) fact
+  also have "of_int \<dots> / of_int (6*k) = dedekind_sum_code h k"
+    by (simp add: dedekind_sum_code_def)
+  finally show ?thesis .
+qed
+
+value "[dedekind_sum_code h 29. h \<leftarrow> [0..<29], coprime h 29]"
 
 end
