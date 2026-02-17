@@ -256,10 +256,13 @@ next
       by transfer (fastforce simp: repl_invariance)
   qed
 next
-  fix upd :: "('v \<times> 'v trm \<Rightarrow> 'v subst \<Rightarrow> 'v subst)" and us us'
-  assume "\<And>x. Var x \<cdot> fold upd us subst_id \<odot> fold upd us' subst_id = Var x \<cdot> subst_id"
+  fix us us' :: "('v \<times> 'v trm) list"
 
-  then show "fold upd us subst_id \<odot> fold upd us' subst_id = subst_id"
+  let ?upd = "\<lambda>(x, b). subst_update (x, b)"
+
+  assume "\<And>x. Var x \<cdot> fold ?upd us subst_id \<odot> fold ?upd us' subst_id = Var x \<cdot> subst_id"
+
+  then show "fold ?upd us subst_id \<odot> fold ?upd us' subst_id = subst_id"
     by transfer (use agreement in blast)
 qed 
 

@@ -120,9 +120,10 @@ locale create_renaming = based_subst_update where
   apply_subst = apply_subst for
   apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) +
   assumes id_fold_subst_comp_ext:
-    "\<And>(us :: ('v \<times> 'base) list) us' upd. exists_nonground \<Longrightarrow>
-      (\<And>x. x \<cdot>v fold upd us id_subst \<odot> fold upd us' id_subst = x \<cdot>v id_subst) \<Longrightarrow>
-      fold upd us id_subst \<odot> fold upd us' id_subst = id_subst"
+    "\<And>us us'. exists_nonground \<Longrightarrow>
+      (\<And>x. x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us id_subst \<odot> fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us' id_subst
+         = x \<cdot>v id_subst) \<Longrightarrow>
+      fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us id_subst \<odot> fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us' id_subst = id_subst"
 begin
 
 lemma create_renaming:
