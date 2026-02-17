@@ -1051,11 +1051,11 @@ fun unfold_map_of_default_fconv ctxt =
 
 fun fold_simpset ctxt =
   Simplifier.clear_simpset ctxt 
-    addsimps @{thms condition_map_of_default_folds L2_fail_top}
-    addsimprocs [@{simproc HOL.NO_MATCH}]
+    |> fold Simplifier.add_simp @{thms condition_map_of_default_folds L2_fail_top}
+    |> Simplifier.add_proc @{simproc HOL.NO_MATCH}
 fun args_simpset ctxt =
   Simplifier.clear_simpset ctxt
-     addsimprocs [@{simproc map_of_default_fun_ptr_abs_args}]
+    |> Simplifier.add_proc @{simproc map_of_default_fun_ptr_abs_args}
 
 fun fold_map_of_default_tac ctxt =
   simp_tac (fold_simpset ctxt) THEN' 

@@ -321,9 +321,10 @@ let
   fun l1conv conv = (Conv.arg_conv (Utils.nth_arg_conv 3 conv))
 
   (* Conversion to simplify guards. *)
-  fun guard_ctxt ctxt = put_simpset simpl_conv_ss ctxt 
-       addsimps @{thms L1_functions.L1_dyn_call_def L1_dyn_call_map_of_default_def pred_conj_def}
-       delsimprocs [Record.upd_simproc]
+  fun guard_ctxt ctxt = ctxt
+    |> put_simpset simpl_conv_ss
+    |> fold Simplifier.add_simp @{thms L1_functions.L1_dyn_call_def L1_dyn_call_map_of_default_def pred_conj_def}
+    |> Simplifier.del_proc Record.upd_simproc
 
   fun guard_conv' ctxt c =
     case (Thm.term_of c) of
