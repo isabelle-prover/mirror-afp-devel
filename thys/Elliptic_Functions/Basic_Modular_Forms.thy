@@ -283,6 +283,21 @@ next
   qed
 qed
 
+lemma eisenstein_series_poly_Eisenstein_G:
+  "poly2 (map_poly2 of_rat (eisenstein_series_poly n))
+     (Eisenstein_G 4 z) (Eisenstein_G 6 z) = Eisenstein_G (2 * n + 4) z"
+proof (cases "z \<in> \<real>")
+  case True
+  thus ?thesis
+    by (simp add: Eisenstein_G_def map_poly2_def hom_distribs poly2_def poly_0_coeff_0 coeff_map_poly)
+next
+  case False
+  interpret complex_lattice 1 z
+    by standard (use False in \<open>auto simp: fundpair_def\<close>)
+  show ?thesis
+    using False by (simp add: Eisenstein_G_def eisenstein_series_poly_correct)
+qed  
+
 
 subsection \<open>The normalised Eisenstein series\<close>
 

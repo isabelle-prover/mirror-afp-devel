@@ -1357,6 +1357,11 @@ lemma eisenstein_series_poly_0 [simp]: "eisenstein_series_poly 0 = [: [:0, 1:] :
                (eisenstein_series_poly i * eisenstein_series_poly (n-2-i)))"
   by (subst eisenstein_series_poly.simps; simp; fail)+
 
+lemma coeff_0_0_eisenstein_series_poly [simp]:
+  "poly.coeff (poly.coeff (eisenstein_series_poly n) 0) 0 = 0"
+  by (induction n rule: eisenstein_series_poly.induct; subst eisenstein_series_poly.simps)
+     (auto simp: coeff_sum coeff_mult_0)
+
 context complex_lattice
 begin
 
