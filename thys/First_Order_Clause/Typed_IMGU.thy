@@ -7,9 +7,8 @@ begin
 locale typed_term_imgu =
   nonground_term where
   term_vars = term.vars and id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and term_subst = "(\<cdot>)" and
-  term_is_ground = term.is_ground and subst_updates = subst_updates and
-  apply_subst = apply_subst and subst_update = fun_upd and term_to_ground = term.to_ground and
-  term_from_ground = term.from_ground and comp_subst = "(\<circ>\<^sub>s)" +
+  term_is_ground = term.is_ground and apply_subst = apply_subst and subst_update = fun_upd and
+  term_to_ground = term.to_ground and term_from_ground = term.from_ground and comp_subst = "(\<circ>\<^sub>s)" +
 
   base_typed_substitution where
   subst = "(\<cdot>)" and vars = term.vars and is_ground = term.is_ground and id_subst = Var and 

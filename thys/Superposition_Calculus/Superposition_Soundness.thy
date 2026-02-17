@@ -28,16 +28,16 @@ proof (cases D C rule: eq_resolution.cases)
     assume
       refl_I: "refl I" and
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. ?I \<TTurnstile> D\<^sub>G" and
-      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
+      C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
       weakly_welltyped_C: "clause.weakly_welltyped \<V> C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
       \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
-      type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
+      D_grounding: "clause.is_ground (D \<cdot> \<mu> \<cdot> \<gamma>')" and
+      type_preserving_\<gamma>': "type_preserving_on (clause.vars C \<union> clause.vars (D \<cdot> \<mu>)) \<V> \<gamma>'" and
       \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
-      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
+      using clause.type_preserving_on_ground_subst_extension[OF C_grounding type_preserving_\<gamma>] .
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?l\<^sub>G = "literal.to_ground (l \<cdot>l \<mu> \<cdot>l \<gamma>')"
@@ -55,15 +55,17 @@ proof (cases D C rule: eq_resolution.cases)
       show "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
         by simp
     next
+  
 
-      show "clause.is_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
+       show "clause.is_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
+        using D_grounding
         by auto
     next
 
       have type_preserving_\<gamma>': 
         "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<mu>) ` clause.vars D)) \<V> \<gamma>'"
-        using type_preserving_\<gamma>' by blast
+        using type_preserving_\<gamma>' clause.vars_subst
+        by blast
 
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
         using term.type_preserving_on_subst_compose[OF type_preserving_\<mu> type_preserving_\<gamma>'] .
@@ -143,16 +145,16 @@ proof (cases D C rule: eq_factoring.cases)
       trans_I: "trans I" and
       sym_I: "sym I" and
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. ?I \<TTurnstile> D\<^sub>G" and
-      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
+      C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
       weakly_welltyped_C: "clause.weakly_welltyped \<V> C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
       \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
-      type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
+      D_grounding: "clause.is_ground (D \<cdot> \<mu> \<cdot> \<gamma>')" and
+      type_preserving_\<gamma>': "type_preserving_on (clause.vars C \<union> clause.vars (D \<cdot> \<mu>)) \<V> \<gamma>'" and
       \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
-      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
+      using clause.type_preserving_on_ground_subst_extension[OF C_grounding type_preserving_\<gamma>] .
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G' = "clause.to_ground (D' \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -176,12 +178,12 @@ proof (cases D C rule: eq_factoring.cases)
     next
 
       show "clause.is_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
+        using D_grounding
         by auto
     next
       have type_preserving_\<gamma>':
         "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<mu>) ` clause.vars D)) \<V> \<gamma>'"
-        using type_preserving_\<gamma>' 
+        using type_preserving_\<gamma>' clause.vars_subst
         by fastforce
 
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
@@ -279,15 +281,21 @@ proof (cases D E C rule: superposition.cases)
       compatible_with_ground_context_I: "ground.compatible_with_context I" and
       E_entails_ground_instances: "\<forall>E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E. ?I \<TTurnstile> E\<^sub>G" and
       D_entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D. ?I \<TTurnstile> D\<^sub>G" and
-      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
+      C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
       weakly_welltyped_C: "clause.weakly_welltyped \<V>\<^sub>3 C" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
-      type_preserving_\<gamma>': "type_preserving \<V>\<^sub>3 \<gamma>'" and
+      "clause.is_ground ((E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> + D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>) \<cdot> \<gamma>')" and
+      type_preserving_\<gamma>':
+        "type_preserving_on (clause.vars C \<union> clause.vars (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> + D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>)) \<V>\<^sub>3 \<gamma>'" and
       \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
-      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
+      using clause.type_preserving_on_ground_subst_extension[OF C_grounding type_preserving_\<gamma>] .
+
+    then have 
+      D_grounding: "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>')" and 
+      E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"
+      by auto
 
     let ?E\<^sub>G = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -310,19 +318,7 @@ proof (cases D E C rule: superposition.cases)
 
     note [simp] = \<P>_simps[OF superpositionI(4)]
 
-    have \<mu>_\<gamma>'_is_ground_subst: "term.is_ground_subst (\<mu> \<odot> \<gamma>')"
-      using term.is_ground_subst_comp_right[OF \<gamma>'_is_ground_subst] .
-
     note type_preserving_\<mu> = superpositionI(11)
-     
-    have type_preserving_\<mu>_\<gamma>:
-      "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
-      using 
-        type_preserving_\<gamma>' type_preserving_\<mu>  \<gamma>'_is_ground_subst
-        term.type_preserving_ground_compose_ground_subst
-      by presburger
-
-    note type_preserving_\<rho>_\<mu>_\<gamma> = term.renaming_ground_subst[OF _ \<mu>_\<gamma>'_is_ground_subst]
 
     have "?E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E"
     proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv, 
@@ -334,15 +330,27 @@ proof (cases D E C rule: superposition.cases)
     next
 
       show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
-        by auto
+        using E_grounding      
+        by simp
     next
 
       show "type_preserving_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
-        using
-          type_preserving_\<mu>_\<gamma>
-          type_preserving_\<rho>_\<mu>_\<gamma>[OF superpositionI(7, 24) _ superpositionI(22)]
-        by (simp add: clause.vars_subst term.assoc)
+      proof (subst term.assoc, 
+             rule term.typed_renaming_grounding_subst_compose[OF
+               superpositionI(7) _ superpositionI(24) _ superpositionI(22)], intro ballI)
+        fix t
+        assume "t \<in> (\<lambda>x. x \<cdot>v \<rho>\<^sub>1 \<odot> (\<mu> \<odot> \<gamma>')) ` clause.vars E" 
+
+        then show "term.is_ground t"
+          using clause.variable_grounding E_grounding clause.vars_grounded_if_is_grounding
+          by force
+      next
+
+        show "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<rho>\<^sub>1) ` clause.vars E)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
+          by 
+            (rule term.type_preserving_on_subst_compose'[OF type_preserving_\<mu> type_preserving_\<gamma>'])
+            (auto simp: clause.vars_subst)
+      qed
     next
 
       show "clause.weakly_welltyped \<V>\<^sub>1 E"
@@ -367,15 +375,27 @@ proof (cases D E C rule: superposition.cases)
     next
 
       show "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
-        by auto
+        using D_grounding
+        by simp
     next
 
       show "type_preserving_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
-        using
-          type_preserving_\<mu>_\<gamma>
-          type_preserving_\<rho>_\<mu>_\<gamma>[OF superpositionI(8, 25) _ superpositionI(23)]
-        by (simp add: term.assoc clause.vars_subst)
+      proof (subst term.assoc, 
+             rule term.typed_renaming_grounding_subst_compose[OF
+               superpositionI(8) _ superpositionI(25) _ superpositionI(23)], intro ballI)
+        fix t
+        assume "t \<in> (\<lambda>x. x \<cdot>v \<rho>\<^sub>2 \<odot> (\<mu> \<odot> \<gamma>')) ` clause.vars D" 
+
+        then show "term.is_ground t"
+          using clause.variable_grounding D_grounding clause.vars_grounded_if_is_grounding
+          by force
+      next
+
+        show "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<rho>\<^sub>2) ` clause.vars D)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
+          by 
+            (rule term.type_preserving_on_subst_compose'[OF type_preserving_\<mu> type_preserving_\<gamma>'])
+            (auto simp: clause.vars_subst)
+      qed
     next
 
       show "clause.weakly_welltyped \<V>\<^sub>2 D"

@@ -7,17 +7,17 @@ begin
 interpretation ground: nonground_term where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_vars = noop_vars and
   subst_update = noop_subst_update and apply_subst = noop_apply_subst and
-  term_subst = noop_subst and subst_updates = noop_subst_updates and term_to_ground = id and
-  term_from_ground = id and term_is_ground = noop_is_ground
+  term_subst = noop_subst and term_to_ground = id and term_from_ground = id and
+  term_is_ground = noop_is_ground
   by unfold_locales (use unit.is_right_invertible_def in simp_all)
 
 interpretation ground: nonground_term_with_context where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_vars = noop_vars and
   subst_update = noop_subst_update and apply_subst = noop_apply_subst and
-  term_subst = noop_subst and subst_updates = noop_subst_updates and term_to_ground = id and
-  term_from_ground = id and apply_context = apply_ground_context and hole = \<box> and 
-  compose_context = "(\<circ>\<^sub>c)" and map_context = map_args_actxt and context_to_set = set2_actxt and
-  ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and to_ground_context_map = map_args_actxt and 
+  term_subst = noop_subst and term_to_ground = id and term_from_ground = id and
+  apply_context = apply_ground_context and hole = \<box> and  compose_context = "(\<circ>\<^sub>c)" and
+  map_context = map_args_actxt and context_to_set = set2_actxt and ground_hole = \<box> and 
+  compose_ground_context = "(\<circ>\<^sub>c)" and to_ground_context_map = map_args_actxt and
   from_ground_context_map = map_args_actxt and ground_context_map = map_args_actxt and
   ground_context_to_set = set2_actxt and apply_ground_context = apply_ground_context and
   occurences = "\<lambda>_ _. 0" and term_is_ground = noop_is_ground

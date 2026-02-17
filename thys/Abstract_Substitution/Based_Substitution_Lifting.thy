@@ -75,4 +75,17 @@ qed
 
 end
 
+locale vars_grounded_iff_is_grounding_lifting = 
+  based_substitution_lifting +
+  sub: vars_grounded_iff_is_grounding where
+  vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
+begin
+
+sublocale vars_grounded_iff_is_grounding where
+  subst = subst and vars = vars and is_ground = is_ground
+  using sub.is_grounding_if_vars_grounded
+  by unfold_locales (simp add: vars_def is_ground_def subst_def)
+
+end
+
 end

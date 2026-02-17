@@ -10,13 +10,13 @@ locale substitution_lifting =
   subst = sub_subst and vars = sub_vars and apply_subst = apply_subst and
   is_ground = sub_is_ground +
   non_empty_natural_functor where map = map and to_set = to_set
-  for
-    sub_vars :: "'sub \<Rightarrow> 'v set" and
-    sub_subst :: "'sub \<Rightarrow> 'subst \<Rightarrow> 'sub" and
-    sub_is_ground :: "'sub \<Rightarrow> bool" and
-    map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr" and
-    to_set :: "'expr \<Rightarrow> 'sub set" and
-    apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69)
+for
+  sub_vars :: "'sub \<Rightarrow> 'v set" and
+  sub_subst :: "'sub \<Rightarrow> 'subst \<Rightarrow> 'sub" and
+  sub_is_ground :: "'sub \<Rightarrow> bool" and
+  map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr" and
+  to_set :: "'expr \<Rightarrow> 'sub set" and
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69)
 begin
 
 definition vars :: "'expr \<Rightarrow> 'v set" where
@@ -73,6 +73,7 @@ lemma ground_subst_iff_sub_ground_subst [simp]: "is_ground_subst \<gamma> \<long
 proof(unfold is_ground_subst_def sub.is_ground_subst_def, intro iffI allI)
   fix sub
   assume all_ground: "\<forall>expr. is_ground (expr \<cdot> \<gamma>)"
+
   show "sub_is_ground (sub \<cdot>\<^sub>s \<gamma>)"
   proof(rule ccontr)
     assume sub_not_ground: "\<not>sub_is_ground (sub \<cdot>\<^sub>s \<gamma>)"
@@ -147,7 +148,7 @@ end
 subsection \<open>Lifting of properties\<close>
 
 locale subst_update_lifting =
-  sub: subst_update where 
+  sub: subst_update where
   vars = "sub_vars :: 'sub \<Rightarrow> 'v set" and subst = sub_subst and is_ground = sub_is_ground +
   substitution_lifting
 begin
@@ -172,33 +173,12 @@ qed simp_all
 
 end
 
-locale subst_updates_lifting =
-  sub: subst_updates where 
-  vars = "sub_vars :: 'sub \<Rightarrow> 'v set" and subst = sub_subst and is_ground = sub_is_ground +
-  substitution_lifting
-begin
-
-sublocale subst_updates where vars = vars and subst = subst and is_ground = is_ground
-proof unfold_locales
-  fix x \<sigma> update 
-  assume "exists_nonground"
-
-  then show "x \<cdot>v \<sigma>\<lbrakk>update\<rbrakk> = get_or (update x) (x \<cdot>v \<sigma>)"
-    by (simp add: exists_nonground_iff_sub_exists_nonground)
-next
-  fix expr \<sigma> b
-
-  show "expr \<cdot> \<sigma>\<lbrakk>\<lambda>x. if x \<in> vars expr then None else b x\<rbrakk> = expr \<cdot> \<sigma>"
-    unfolding subst_def vars_def
-    by (smt (verit, ccfv_SIG) UN_I local.map_cong sub.redundant_subst_updates)
-qed
-
-end
-
 locale finite_variables_lifting =
   sub: finite_variables where 
   vars = "sub_vars :: 'sub \<Rightarrow> 'v set" and subst = sub_subst and is_ground = sub_is_ground +
+
   finite_natural_functor where to_set = "to_set :: 'expr \<Rightarrow> 'sub set" +
+
   substitution_lifting
 begin
 
@@ -250,35 +230,42 @@ qed
 
 end
 
-locale exists_ground_subst_lifting = 
+locale exists_ground_lifting = 
   substitution_lifting +
-  sub: exists_ground_subst where vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
+  sub: exists_ground where vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
 begin
 
-sublocale exists_ground_subst where vars = vars and subst = subst and is_ground = is_ground
+sublocale exists_ground where vars = vars and subst = subst and is_ground = is_ground
 proof unfold_locales
-  show "\<exists>\<gamma>. is_ground_subst \<gamma>"
-    by (simp add: sub.exists_ground_subst)
+
+  show "\<exists>expr. is_ground expr"
+    using sub.exists_ground empty_is_ground
+    unfolding is_ground_def
+    by (metis singletonD to_set_const)
 qed
 
 end
 
 locale grounding_lifting =
   substitution_lifting where sub_vars = sub_vars and sub_subst = sub_subst and map = map +
-  sub: grounding where vars = sub_vars and subst = sub_subst and to_ground = sub_to_ground and
-    from_ground = sub_from_ground and is_ground = sub_is_ground +
-  natural_functor_conversion where map = map and map_to = to_ground_map and
-    map_from = from_ground_map and map' = ground_map and to_set' = to_set_ground
-  for
-    sub_to_ground :: "'sub \<Rightarrow> 'sub\<^sub>G" and
-    sub_from_ground :: "'sub\<^sub>G \<Rightarrow> 'sub" and
-    sub_vars :: "'sub \<Rightarrow> 'var set" and
-    sub_subst :: "'sub \<Rightarrow> 'subst \<Rightarrow> 'sub" and
-    map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr" and
-    to_ground_map :: "('sub \<Rightarrow> 'sub\<^sub>G) \<Rightarrow> 'expr \<Rightarrow> 'expr\<^sub>G" and
-    from_ground_map :: "('sub\<^sub>G \<Rightarrow> 'sub) \<Rightarrow> 'expr\<^sub>G \<Rightarrow> 'expr" and
-    ground_map :: "('sub\<^sub>G \<Rightarrow> 'sub\<^sub>G) \<Rightarrow> 'expr\<^sub>G \<Rightarrow> 'expr\<^sub>G" and
-    to_set_ground :: "'expr\<^sub>G \<Rightarrow> 'sub\<^sub>G set"
+
+  sub: grounding where
+  vars = sub_vars and subst = sub_subst and to_ground = sub_to_ground and
+  from_ground = sub_from_ground and is_ground = sub_is_ground +
+
+  natural_functor_conversion where
+  map = map and map_to = to_ground_map and map_from = from_ground_map and map' = ground_map and
+  to_set' = to_set_ground
+for
+  sub_to_ground :: "'sub \<Rightarrow> 'sub\<^sub>G" and
+  sub_from_ground :: "'sub\<^sub>G \<Rightarrow> 'sub" and
+  sub_vars :: "'sub \<Rightarrow> 'var set" and
+  sub_subst :: "'sub \<Rightarrow> 'subst \<Rightarrow> 'sub" and
+  map :: "('sub \<Rightarrow> 'sub) \<Rightarrow> 'expr \<Rightarrow> 'expr" and
+  to_ground_map :: "('sub \<Rightarrow> 'sub\<^sub>G) \<Rightarrow> 'expr \<Rightarrow> 'expr\<^sub>G" and
+  from_ground_map :: "('sub\<^sub>G \<Rightarrow> 'sub) \<Rightarrow> 'expr\<^sub>G \<Rightarrow> 'expr" and
+  ground_map :: "('sub\<^sub>G \<Rightarrow> 'sub\<^sub>G) \<Rightarrow> 'expr\<^sub>G \<Rightarrow> 'expr\<^sub>G" and
+  to_set_ground :: "'expr\<^sub>G \<Rightarrow> 'sub\<^sub>G set"
 begin
 
 definition to_ground :: "'expr \<Rightarrow> 'expr\<^sub>G" where
@@ -475,7 +462,7 @@ locale natural_magma_grounding_lifting =
 for plus_ground wrap_ground add_ground +
 assumes
   to_ground_plus [simp]:
-   "\<And>expr expr'. to_ground (plus expr expr') = plus_ground (to_ground expr) (to_ground expr')" and
+  "\<And>expr expr'. to_ground (plus expr expr') = plus_ground (to_ground expr) (to_ground expr')" and
   wrap_from_ground: "\<And>sub. from_ground (wrap_ground sub) = wrap (sub_from_ground sub)" and
   wrap_to_ground: "\<And>sub. to_ground (wrap sub) = wrap_ground (sub_to_ground sub)"
 begin
@@ -537,42 +524,39 @@ lemma from_ground_empty' [simp]: "from_ground expr = empty \<longleftrightarrow>
 
 end
 
+locale exists_ground_subst_lifting = 
+  substitution_lifting +
+  sub: exists_ground_subst where vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
+begin
+
+sublocale exists_ground_subst where vars = vars and subst = subst and is_ground = is_ground
+proof unfold_locales
+
+  show "\<exists>\<gamma>. is_ground_subst \<gamma>"
+    by (simp add: sub.exists_ground_subst)
+qed
+
+end
+
 (* TODO: Not compatible with polymorphic terms *)
 locale subst_updates_compat_lifting = 
-  subst_updates_lifting +
+  subst_update_lifting +
   sub: subst_updates_compat where 
   vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground
 begin
 
 sublocale subst_updates_compat where vars = vars and subst = subst and is_ground = is_ground
 proof unfold_locales
-  fix expr X \<sigma> b
+  fix u expr \<sigma>
 
-  assume "vars expr \<subseteq> X"
+  assume "\<forall>x\<in>vars expr. fmlookup u x = Some (x \<cdot>v \<sigma>)"
 
-  then have "\<forall>sub \<in> to_set expr. sub_vars sub \<subseteq> X"
+  then have "\<forall>sub \<in> to_set expr. sub \<cdot>\<^sub>s id_subst\<lbrakk>u\<rbrakk> = sub \<cdot>\<^sub>s \<sigma>"
     unfolding vars_def
-    by blast
-
-  then have "\<forall>sub \<in> to_set expr. sub \<cdot>\<^sub>s id_subst\<lbrakk>\<lambda>x. if x \<in> X then Some (x \<cdot>v \<sigma>) else b x\<rbrakk> = sub \<cdot>\<^sub>s \<sigma>"
     by (simp add: sub.subst_updates_compat(1))
 
-  then show "expr \<cdot> id_subst\<lbrakk>\<lambda>x. if x \<in> X then Some (x \<cdot>v \<sigma>) else b x\<rbrakk> = expr \<cdot> \<sigma>"
-    unfolding subst_def
-    by simp
-next
-  fix expr X \<sigma> b
-  assume "vars expr \<inter> X = {}"
-
-  then have "\<forall>sub \<in> to_set expr. sub_vars sub \<inter> X = {}"
-    unfolding vars_def
-    by blast
-
-  then have "\<forall>sub \<in> to_set expr. sub \<cdot>\<^sub>s id_subst\<lbrakk>\<lambda>x. if x \<in> X then b x else Some (x \<cdot>v \<sigma>)\<rbrakk> = sub \<cdot>\<^sub>s \<sigma>"
-    by (simp add: sub.subst_updates_compat(2))
-  
-  then show "expr \<cdot> id_subst\<lbrakk>\<lambda>x. if x \<in> X then b x else Some (x \<cdot>v \<sigma>)\<rbrakk> = expr \<cdot> \<sigma>"
-    unfolding subst_def
+  then show "expr \<cdot> id_subst\<lbrakk>u\<rbrakk> = expr \<cdot> \<sigma>"
+    unfolding subst_def vars_def
     by simp
 qed
 

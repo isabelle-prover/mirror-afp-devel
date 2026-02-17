@@ -12,7 +12,7 @@ sublocale typed: superposition_calculus where
   welltyped = "\<lambda>_ _ (). True"
   by
     unfold_locales
-    (auto intro: term.ground_exists simp: term.exists_imgu right_unique_def split: unit.splits)
+    (auto simp: term.exists_imgu right_unique_def split: unit.splits)
 
 (* TODO: Move these *)
 lemma atom_weakly_welltyped [simp]: "typed.atom.weakly_welltyped a"

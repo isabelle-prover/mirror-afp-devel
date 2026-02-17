@@ -5,6 +5,8 @@ theory Substitution_HOL_ex_Unification
     Fresh_Identifiers.Fresh
 begin
 
+(* TODO: Make sure to interpret everything that is interpreted for other representation *)
+
 section \<open>Substitutions for first order terms as binary tree\<close>
 
 no_notation Comb (infix \<open>\<cdot>\<close> 60)
@@ -200,7 +202,7 @@ qed simp
 
 subsection \<open>Substitution Properties\<close> \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
 
-global_interpretation "term": based_subst_update where
+global_interpretation "term": create_renaming where
   comp_subst = subst_comp and id_subst = subst_id and subst = subst_apply and vars = vars_of and
   is_ground = is_ground and apply_subst = "\<lambda>x \<sigma>. subst_apply (Var x) \<sigma>" and
   subst_update = "\<lambda>\<sigma> x update. subst_update (x, update) \<sigma>" and
@@ -253,7 +255,13 @@ next
     then show ?case
       by transfer (fastforce simp: repl_invariance)
   qed
-qed
+next
+  fix upd :: "('v \<times> 'v trm \<Rightarrow> 'v subst \<Rightarrow> 'v subst)" and us us'
+  assume "\<And>x. Var x \<cdot> fold upd us subst_id \<odot> fold upd us' subst_id = Var x \<cdot> subst_id"
+
+  then show "fold upd us subst_id \<odot> fold upd us' subst_id = subst_id"
+    by transfer (use agreement in blast)
+qed 
 
 global_interpretation "term": finite_variables where
   comp_subst = subst_comp and id_subst = subst_id and subst = subst_apply and vars = vars_of and
@@ -323,117 +331,6 @@ proof (unfold_locales, intro conjI)
 
     then show ?case
       by (simp add: image_Un subst_apply.rep_eq)
-  qed
-qed
-
-text\<open>@{locale subst_updates} just works with this representation if we have finitely many variables\<close>
-definition subst_updates_list_finite ::
-  "('v :: enum \<times> 'v trm) list \<Rightarrow> ('v \<rightharpoonup> 'v trm) \<Rightarrow> ('v \<times> 'v trm) list" where
-  "subst_updates_list_finite \<sigma> update = (map (\<lambda>x. (x, get_or (update x) (Var x \<lhd> \<sigma>))) (Enum.enum))"
-
-lift_definition subst_updates_finite ::
-  "('v :: enum) subst \<Rightarrow> ('v \<rightharpoonup> 'v trm) \<Rightarrow> 'v subst" (\<open>_\<lbrakk>_\<rbrakk>\<close> [1000, 0] 71)
-  is "subst_updates_list_finite" 
-  unfolding subst_updates_list_finite_def Unification.subst_eq_def
-  by presburger
-
-lemma assoc_map_enum:
-  fixes g :: "'v::enum \<Rightarrow> 'b"
-  shows "assoc x d (map (\<lambda>y. (y, g y)) Enum.enum) = g x"
-proof -
-
-  have "x \<in> set (Enum.enum :: 'v list)"
-    by (simp add: Enum.enum_UNIV)
-
-  then obtain xs ys where enum_split: "Enum.enum = xs @ x # ys"
-    by (meson split_list)
-
-  have "distinct (Enum.enum :: 'v list)"
-    by (rule enum_distinct)
-
-  then have "distinct (xs @ x # ys)"
-    unfolding enum_split .
-
-  then have "x \<notin> set xs"
-    by simp
-
-  then show ?thesis
-    unfolding enum_split
-    by (induction xs arbitrary: d) auto
-qed
-
-(* TODO: Would this be the better representation for the locale assumption? *)
-lemma subst_updates_list_finite_nochange:
-  fixes \<sigma> :: "('v::enum \<times> 'v trm) list"
-  assumes "\<And>x. x \<in> vars_of t \<Longrightarrow> update x = None"
-  shows "t \<lhd> subst_updates_list_finite \<sigma> update = t \<lhd> \<sigma>"
-  using assms
-proof (induction t)
-  case (Var x)
-  then show ?case
-    unfolding subst_updates_list_finite_def
-    by (simp add: assoc_map_enum)
-next
-  case (Const c)
-  show ?case
-    by simp
-next
-  case (Comb t1 t2)
-
-  then show ?case
-    by simp
-qed
-
-
-global_interpretation "term": subst_updates where
-  comp_subst = subst_comp and id_subst = "subst_id :: 'v :: enum subst" and
-  subst = subst_apply and vars = vars_of and is_ground = is_ground and
-  apply_subst = "\<lambda>x \<sigma>. subst_apply (Var x) \<sigma>"  and subst_updates = subst_updates_finite
-proof unfold_locales
-  fix x update and \<sigma> :: "'v :: enum subst"
-
-  show "Var x \<cdot> \<sigma>\<lbrakk>update\<rbrakk> = get_or (update x) (Var x \<cdot> \<sigma>)"
-  proof transfer
-    fix x update and \<sigma> :: "('v :: enum \<times> 'v trm) list"
-
-    show "Var x \<lhd> subst_updates_list_finite \<sigma> update = get_or (update x) (Var x \<lhd> \<sigma>)"
-      unfolding subst_updates_list_finite_def subst.simps assoc_map_enum ..
-  qed
-next
-  fix t b and \<sigma> :: "'v :: enum subst"
-  
-  show "t \<cdot> \<sigma>\<lbrakk>\<lambda>x. if x \<in> vars_of t then None else b x\<rbrakk> = t \<cdot> \<sigma>"
-  proof transfer
-    fix t b and \<sigma> :: "('v :: enum \<times> 'v trm) list"
-
-    let ?update = "(\<lambda>x. if x \<in> vars_of t then None else b x) :: 'v \<rightharpoonup> 'v trm"
-
-    show "t \<lhd> subst_updates_list_finite \<sigma> ?update = t \<lhd> \<sigma>"
-    proof(rule subst_updates_list_finite_nochange)
-
-      show "\<And>x. x \<in> vars_of t \<Longrightarrow> ?update x = None"
-        by simp
-    qed
-  qed
-qed
-
-global_interpretation "term": create_renaming where
-  comp_subst = subst_comp and id_subst = "subst_id :: 'v :: enum subst" and
-  subst = subst_apply and vars = vars_of and is_ground = is_ground and
-  apply_subst = "\<lambda>x \<sigma>. subst_apply (Var x) \<sigma>"  and subst_updates = subst_updates_finite
-proof (unfold_locales, unfold term.is_renaming_def, transfer)
-  fix f :: "'v \<Rightarrow> 'v"
-  assume inj: "inj f"
-
-  let ?\<rho>  = "subst_updates_list_finite [] (\<lambda>x. Some (Var (f x) \<lhd> []))"
-  let ?\<rho>' = "subst_updates_list_finite [] (\<lambda>x. Some (Var (inv f x) \<lhd> []))"
-
-  show "\<exists>\<rho>'. ?\<rho> \<lozenge> \<rho>' \<doteq> []"
-  proof (rule exI, unfold Unification.subst_eq_def, intro allI)
-    fix t
-
-    show "t \<lhd> ?\<rho> \<lozenge> ?\<rho>' = t \<lhd> []"
-      by (induction t) (auto simp: subst_updates_list_finite_def assoc_map_enum inj)
   qed
 qed
 

@@ -28,7 +28,8 @@ locale untyped_ordered_resolution_calculus =
   subst_eq where
   vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst +
   vars_grounded_iff_is_grounding where 
-  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst +
+  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst and
+  base_vars = term_vars and base_subst = "(\<cdot>t)" and base_is_ground = term_is_ground +
   subst_updates_compat where
   vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and id_subst = id_subst
 for

@@ -19,6 +19,7 @@ notation apply_ground_context (\<open>_\<langle>_\<rangle>\<^sub>G\<close> [1000
 end
 
 locale nonground_context =
+  (* TODO: We don't want a lifting here but list the needed properties + prove then for abstract context *)
   term_based_lifting where
   sub_vars = "term_vars :: 't \<Rightarrow> 'v set" and sub_subst = "term_subst :: 't \<Rightarrow> 'subst \<Rightarrow> 't" and
   sub_from_ground = term_from_ground and sub_to_ground = "term_to_ground :: 't \<Rightarrow> 't\<^sub>G" and
@@ -69,7 +70,7 @@ lemmas safe_unfolds =
   term_from_ground_context_from_ground
 
 lemma composed_context_is_ground [simp]: "is_ground (c \<circ>\<^sub>c c') \<longleftrightarrow> is_ground c \<and> is_ground c'"
-  by (metis term.ground_exists apply_context_is_ground compose_context_iff)
+  by (metis term.exists_ground apply_context_is_ground compose_context_iff)
 
 lemma ground_context_ident_iff_hole [simp]: "c\<langle>t\<rangle>\<^sub>G = t \<longleftrightarrow> c = \<box>\<^sub>G"
   by (metis hole_if_context_ident from_ground_eq ground_context.apply_hole
@@ -77,19 +78,22 @@ lemma ground_context_ident_iff_hole [simp]: "c\<langle>t\<rangle>\<^sub>G = t \<
 
 lemma from_ground_hole [simp]: "from_ground c\<^sub>G = \<box> \<longleftrightarrow> c\<^sub>G = \<box>\<^sub>G"
   by (metis apply_hole apply_context_is_ground from_ground_inverse ground_context_ident_iff_hole 
-      term.ground_exists term_to_ground_context_to_ground to_ground_inverse)
+      term.exists_ground term_to_ground_context_to_ground to_ground_inverse)
 
 lemma hole_simps [simp]: "from_ground \<box>\<^sub>G = \<box>" "to_ground \<box> = \<box>\<^sub>G"
   using from_ground_inverse from_ground_hole
   by metis+
 
-lemma to_ground_compose [simp]: "to_ground (c \<circ>\<^sub>c c') = to_ground c \<circ>\<^sub>c\<^sub>G to_ground c'"
-  using from_ground_compose
+(* TODO: *)
+lemma to_ground_compose [simp]: 
+  assumes "is_ground c" "is_ground c'"
+  shows "to_ground (c \<circ>\<^sub>c c') = to_ground c \<circ>\<^sub>c\<^sub>G to_ground c'"
+  using from_ground_compose assms
   unfolding to_ground_def
-  by (metis conversion_map_comp from_ground_def from_ground_inverse map_compose)
+  by (metis from_ground_inverse to_ground_def to_ground_inverse)
 
 lemma hole_subst [simp]: "\<box> \<cdot>t\<^sub>c \<sigma> = \<box>"
-  by (metis all_subst_ident_if_ground apply_hole apply_context_is_ground term.ground_exists)
+  by (metis all_subst_ident_if_ground apply_hole apply_context_is_ground term.exists_ground)
 
 lemma subst_into_Var:
   assumes 
@@ -174,7 +178,7 @@ lemma one_occurence_obtain_context:
   obtains c where
     "t = c\<langle>term.Var x\<rangle>"
     "x \<notin> vars c"
-  using term.ground_exists occurences_obtain_context[OF _ assms[unfolded One_nat_def]]
+  using term.exists_ground occurences_obtain_context[OF _ assms[unfolded One_nat_def]]
   by (metis Un_iff apply_context_vars order_less_irrefl vars_occurences)
 
 end

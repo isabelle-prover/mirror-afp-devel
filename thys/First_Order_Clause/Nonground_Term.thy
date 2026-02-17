@@ -34,16 +34,16 @@ locale base_properties =
   base_substitution +
   based_subst_update where
   base_vars = vars and base_subst = subst and base_is_ground = is_ground +
-  subst_updates +
   all_subst_ident_iff_ground +
   exists_non_ident_subst +
   grounding +
   finite_variables +
   renaming_variables +
-  create_renaming +
+  create_renaming where
+  base_vars = vars and base_subst = subst and base_is_ground = is_ground +
   variables_in_base_imgu where
   base_vars = vars and base_subst = subst and base_is_ground = is_ground +
-  exists_ground_subst
+  exists_ground
 
 locale nonground_term =
   base_properties where
@@ -79,10 +79,9 @@ locale lifting =
   all_subst_ident_iff_ground_lifting +
   grounding_lifting +
   based_subst_update_lifting +
-  subst_updates_lifting +
   renaming_variables_lifting +
   variables_in_base_imgu_lifting +
-  exists_ground_subst_lifting
+  exists_ground_lifting
 
 locale term_based_lifting =
   "term": nonground_term +

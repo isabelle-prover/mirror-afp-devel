@@ -9,7 +9,8 @@ begin
 locale compatibility = 
   base_substitution +
   subst_eq +
-  vars_grounded_iff_is_grounding +
+  vars_grounded_iff_is_grounding where
+  base_subst = subst and base_vars = vars and base_is_ground = is_ground +
   subst_updates_compat
 
 locale base_typing_properties =

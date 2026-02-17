@@ -32,7 +32,8 @@ locale untyped_superposition_calculus =
   (* TODO: *)
   subst_eq where vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground +
   vars_grounded_iff_is_grounding where 
-  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground +
+  vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground and base_vars = term_vars and 
+  base_subst = "(\<cdot>t)" and base_is_ground = term_is_ground +
   subst_updates_compat where vars = term_vars and subst = "(\<cdot>t)" and is_ground = term_is_ground
   for
     select :: "'t atom select" and

@@ -28,14 +28,16 @@ end
 
 locale witnessed_typed_substitution_lifting =
   typed_substitution_lifting +
-  subst_updates_lifting +
+  subst_update_lifting +
+  finite_variables_lifting +
+  vars_grounded_iff_is_grounding_lifting +
   sub: witnessed_typed_substitution where
   vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground and welltyped = sub_welltyped
 begin
 
 sublocale witnessed_typed_substitution where
   vars = vars and subst = subst and is_ground = is_ground and welltyped = welltyped
-  by unfold_locales (simp_all add: sub.types_witnessed exists_nonground_iff_sub_exists_nonground)  
+  by unfold_locales (simp add: sub.types_witnessed)
 
 end
 

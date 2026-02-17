@@ -73,7 +73,7 @@ sublocale "term": base_typing_properties where
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and is_ground = term.is_ground and welltyped = "welltyped" and
   to_ground = term.to_ground and from_ground = term.from_ground and subst_update = fun_upd and
-  subst_updates = subst_updates and apply_subst = apply_subst
+  apply_subst = apply_subst
 proof unfold_locales
   fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
   assume type_preserving_\<sigma>: "\<forall>x\<in>vars t. \<V> \<turnstile> term.Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"
@@ -163,8 +163,8 @@ sublocale "term": typed_term_imgu where
 lemma exists_witness_if_exists_const_for_all_types: 
   assumes "\<And>\<tau>. \<exists>f. \<F> (f, []) = Some \<tau>"
   shows "\<exists>t. term.is_ground t \<and> welltyped \<V> t \<tau>"
-  by (meson Fun_hastypeI assms fun_hastype_def list_all2_Nil2 subst_Term_empty_hastype
-      term.exists_ground_subst term.is_ground_subst_def)
+  by (meson Term_empty_vars_subst assms fun_hastype_def list_all2_Nil2 subst_Term_empty_hastype
+      term.sort_matches)
 
 end
 

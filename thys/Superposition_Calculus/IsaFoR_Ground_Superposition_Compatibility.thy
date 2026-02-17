@@ -19,8 +19,7 @@ abbreviation ground_less_kbo :: "('f :: weighted) gterm \<Rightarrow> 'f gterm \
 interpretation grounded_kbo: context_compatible_nonground_order where 
   less\<^sub>t = "ground_less_kbo :: 'f :: weighted gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_subst = noop_subst and
-  term_vars = noop_vars and subst_updates = noop_subst_updates and
-  apply_subst = noop_apply_subst and subst_update = noop_subst_update and
+  term_vars = noop_vars and apply_subst = noop_apply_subst and subst_update = noop_subst_update and
   compose_context = "(\<circ>\<^sub>c)" and term_from_ground = id and term_to_ground = id and
   map_context = map_args_actxt and to_ground_context_map = map_args_actxt and
   from_ground_context_map = map_args_actxt and context_to_set = set2_actxt and hole = \<box> and
@@ -59,9 +58,8 @@ qed simp_all
 
 interpretation grounded_clause: nonground_clause where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and subst_update = noop_subst_update and
-  subst_updates = noop_subst_updates and apply_subst = noop_apply_subst and
-  term_subst = noop_subst and term_vars = noop_vars and term_to_ground = id and
-  term_from_ground = id and term_is_ground = noop_is_ground
+  apply_subst = noop_apply_subst and term_subst = noop_subst and term_vars = noop_vars and
+  term_to_ground = id and term_from_ground = id and term_is_ground = noop_is_ground
   by unfold_locales
 
 interpretation ground_superposition_compatibility: ground_superposition_compatibility where

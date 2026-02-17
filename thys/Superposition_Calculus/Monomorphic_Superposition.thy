@@ -12,7 +12,7 @@ locale monomorphic_superposition_calculus =
 
   superposition_calculus where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and term_subst = "(\<cdot>)" and term_vars = term.vars and
-  subst_updates = subst_updates and apply_subst = apply_subst and subst_update = fun_upd and
+  apply_subst = apply_subst and subst_update = fun_upd and
   compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and
   term_to_ground = term.to_ground and map_context = map_args_actxt and
   to_ground_context_map = map_args_actxt and from_ground_context_map = map_args_actxt and

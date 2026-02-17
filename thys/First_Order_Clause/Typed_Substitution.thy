@@ -100,92 +100,12 @@ end
 
 locale witnessed_typed_substitution =
   typed_substitution +
-  subst_updates +
+  finite_variables +
+  subst_update +
   (* TODO: *)
-  vars_grounded_iff_is_grounding where
-  vars = base_vars and subst = base_subst and is_ground = base_is_ground +
+  vars_grounded_iff_is_grounding +
 assumes types_witnessed: "\<And>\<V> \<tau>. \<exists>b. base_is_ground b \<and> base_welltyped \<V> b \<tau>"
 begin
-
-lemma type_preserving_ground_subst_extension:
-  assumes
-    grounding: "is_ground (expr \<cdot> \<gamma>)" and
-    \<gamma>_type_preserving_on: "base.type_preserving_on (vars expr) \<V> \<gamma>"
-  obtains \<gamma>'
-  where
-    "base.is_ground_subst \<gamma>'"
-    "base.type_preserving \<V> \<gamma>'"
-    "\<forall>x \<in> vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
-    "expr \<cdot> \<gamma> = expr \<cdot> \<gamma>'"
-proof (cases exists_nonground)
-  case exists_nonground: True
-
-  show ?thesis
-  proof (rule that)
-    let ?update =
-      "\<lambda>x. if x \<in> vars expr
-           then None
-           else Some (SOME b. base_is_ground b \<and> base_welltyped \<V> b (\<V> x))"
-
-    define \<gamma>' where
-      "\<gamma>' \<equiv> \<gamma>\<lbrakk>?update\<rbrakk>"
-
-    show "base.is_ground_subst \<gamma>'"
-    proof(unfold base.is_ground_subst_def, intro allI)
-      fix b
-
-      {
-        fix x
-
-        have "base_is_ground (x \<cdot>v \<gamma>')"
-        proof(cases "x \<in> vars expr")
-          case True
-
-          then show ?thesis
-            unfolding \<gamma>'_def
-            using variable_grounding[OF grounding] subst_updates
-            by (smt (verit, best) variable_grounding option.simps(4))
-        next
-          case False
-
-          then have "x \<cdot>v \<gamma>' = (SOME b. base_is_ground b \<and> base_welltyped \<V> b (\<V> x))"
-            unfolding \<gamma>'_def
-            using exists_nonground
-            by auto
-
-          then show ?thesis
-            by (smt (verit) types_witnessed tfl_some)
-        qed
-      }
-
-      then show "base_is_ground (base_subst b \<gamma>')"
-        using is_grounding_if_vars_grounded
-        by blast
-    qed
-
-    show "base.type_preserving_on UNIV \<V> \<gamma>'"
-      unfolding \<gamma>'_def
-      using \<gamma>_type_preserving_on types_witnessed
-      by (simp add: verit_sko_ex_indirect exists_nonground)
-
-    show "\<forall>x \<in> vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
-      by (simp add: \<gamma>'_def exists_nonground)
-
-    show "expr \<cdot> \<gamma> = expr \<cdot> \<gamma>'"
-      unfolding \<gamma>'_def 
-      by simp
-  qed
-next
-  case False
-
-  show ?thesis 
-  proof (rule that)
-
-    show "base.is_ground_subst id_subst"
-      using False base.is_ground_subst_def exists_nonground_iff_base_exists_nonground
-      by fastforce
-  qed (use False no_vars_if_is_ground in simp_all)
-qed
 
 lemma type_preserving_on_ground_subst_extension:
   assumes
@@ -194,12 +114,61 @@ lemma type_preserving_on_ground_subst_extension:
   obtains \<gamma>'
   where
     "is_ground (expr' \<cdot> \<gamma>')"
-    "base.type_preserving_on (vars expr') \<V> \<gamma>'"
+    "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<gamma>'"
     "\<forall>x \<in> vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
-  using type_preserving_ground_subst_extension[OF assms]
-  unfolding base.is_ground_subst_def 
-  by (metis UNIV_I abstract_substitution_ops.is_ground_subst_def
-      ground_subst_iff_base_ground_subst)
+    "expr \<cdot> \<gamma> = expr \<cdot> \<gamma>'"
+proof (cases base.exists_nonground)
+  case exists_nonground: True
+
+  show ?thesis
+  proof (rule that)
+    let ?update =
+      "\<lambda>x. if x \<in> vars expr
+           then x \<cdot>v \<gamma>
+           else SOME b. base_is_ground b \<and> base_welltyped \<V> b (\<V> x)"
+
+    define \<gamma>' where
+      "\<gamma>' \<equiv> \<gamma>\<lbrakk>fmap_of_set (vars expr \<union> vars expr') ?update\<rbrakk>"
+
+    show "is_ground (expr' \<cdot> \<gamma>')"
+    proof (rule is_grounding_if_vars_grounded, intro ballI)
+      fix x 
+      assume "x \<in> vars expr'"
+
+      moreover have "base_is_ground (SOME b. base_is_ground b \<and> base_welltyped \<V> b (\<V> x))"
+        by (rule someI2_ex[OF types_witnessed]) argo
+
+      ultimately show "base_is_ground (x \<cdot>v \<gamma>')"
+        unfolding \<gamma>'_def
+        using 
+          base.subst_updates_fmap_of_set[OF exists_nonground] 
+          finite_vars
+          grounding 
+          variable_grounding      
+        by auto
+    qed
+
+    show "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<gamma>'"
+      unfolding \<gamma>'_def
+      using \<gamma>_type_preserving_on types_witnessed
+      by (simp add: exists_nonground finite_vars verit_sko_ex_indirect)
+
+    show "\<forall>x\<in>vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
+      unfolding \<gamma>'_def
+      by (simp add: exists_nonground finite_vars)
+
+    show "expr \<cdot> \<gamma> = expr \<cdot> \<gamma>'"
+      unfolding \<gamma>'_def
+      using redundant_subst_updates
+      by (simp add: finite_vars)
+  qed
+next
+  case False
+
+  then show ?thesis
+    using that no_vars_if_is_ground exists_nonground_iff_base_exists_nonground
+    by blast
+qed
 
 end
 
@@ -289,6 +258,15 @@ proof (intro ballI impI exI)
     by fastforce
 qed
 
+lemma type_preserving_on_subst_compose' [intro]:
+  assumes
+    \<sigma>_type_preserving: "type_preserving_on Y \<V> \<sigma>" and 
+    \<sigma>'_type_preserving: "type_preserving_on Z \<V> \<sigma>'" and
+    X_Y: "X \<subseteq> Y" and
+    X_Z: "\<Union>(vars ` var_subst \<sigma> ` X) \<subseteq> Z"
+  shows "type_preserving_on X \<V> (\<sigma> \<odot> \<sigma>')"
+  by (rule type_preserving_on_subst_compose) (use assms in auto)
+
 lemma type_preserving_subst_compose [intro]:
   assumes
     \<sigma>_type_preserving: "type_preserving \<V> \<sigma>" and
@@ -339,8 +317,8 @@ lemma is_ground_subst_replace_\<V>:
     "\<forall>x\<in>X. \<V> x = \<V>' x"
   shows "type_preserving_on X \<V>' \<gamma>"
   using assms
-  by (metis (no_types, lifting) singletonD id_subst_subst is_ground_replace_\<V> is_ground_subst_def replace_\<V>_iff'
-      vars_id_subst_subset)
+  by (metis (no_types, lifting) singletonD id_subst_subst is_ground_replace_\<V> is_ground_subst_def
+      replace_\<V>_iff' vars_id_subst_subset)
 
 end
 
@@ -358,21 +336,71 @@ locale base_typed_renaming =
   base_typed_substitution where
   welltyped = welltyped +
 
-typed_renaming where
-base_subst = subst and base_vars = vars and base_is_ground = is_ground and
-base_welltyped = welltyped and welltyped = welltyped +
+  typed_renaming where
+  base_subst = subst and base_vars = vars and base_is_ground = is_ground and
+  base_welltyped = welltyped and welltyped = welltyped +
 
-replaceable_\<V> where
-base_subst = subst and base_vars = vars and base_is_ground = is_ground and
-base_welltyped = welltyped and welltyped = welltyped +
+  replaceable_\<V> where
+  base_subst = subst and base_vars = vars and base_is_ground = is_ground and
+  base_welltyped = welltyped and welltyped = welltyped +
 
-(* TODO: *)
-subst_updates_compat +
-create_renaming
+  based_subst_update where
+  base_subst = subst and base_vars = vars and base_is_ground = is_ground +
+
+  create_renaming where base_subst = subst and base_vars = vars and base_is_ground = is_ground +
+  (* TODO: *)
+  subst_updates_compat
 for welltyped :: "('v, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
-lemma renaming_ground_subst:
+lemma typed_renaming_grounding_subst_compose:
+  assumes
+    \<rho>: "is_renaming \<rho>" and
+    grounding: "\<forall>expr \<in> (var_subst (\<rho> \<odot> \<gamma>) ` X). is_ground expr" and
+    welltyped_\<rho>: "type_preserving_on X \<V> \<rho>" and
+    welltyped_\<gamma>: "type_preserving_on (\<Union>(vars ` var_subst \<rho> ` X)) \<V>' \<gamma>" and
+    rename: "\<forall>x \<in> X. \<V> x = \<V>' (rename \<rho> x)"
+  shows "type_preserving_on X \<V> (\<rho> \<odot> \<gamma>)"
+proof (cases "exists_nonground")
+  case exists_nonground: True
+
+  show ?thesis
+  proof (intro ballI impI iffI)
+    fix x
+    assume 
+      x_in_X: "x \<in> X" and 
+      \<V>_x: "\<V> \<turnstile> x \<cdot>v id_subst : \<V> x"
+
+    have "\<V> \<turnstile> x \<cdot>v \<rho> : \<V> x"
+      by (metis x_in_X \<V>_x welltyped_\<rho>)
+
+    then have "\<V>' \<turnstile> x \<cdot>v \<rho> : \<V> x"
+      using welltyped_renaming[OF \<rho>] vars_id_subst[OF exists_nonground]
+      by (metis \<V>_x empty_iff id_subst_subst insert_iff rename x_in_X)
+
+    then have "\<V>' \<turnstile> x \<cdot>v \<rho> : \<V>' (rename \<rho> x)"
+      by (simp add: rename x_in_X)
+
+    then have "\<V>' \<turnstile> x \<cdot>v \<rho> \<odot> \<gamma> : \<V>' (rename \<rho> x)"
+      using x_in_X welltyped_\<gamma>  vars_id_subst[OF exists_nonground]
+      using id_subst_rename[OF exists_nonground \<rho>]
+      unfolding comp_subst_iff
+      by (smt (verit, best) UN_iff id_subst_subst image_eqI insertCI)
+
+    then have "\<V>' \<turnstile> x \<cdot>v \<rho> \<odot> \<gamma> : \<V> x"
+      by (simp add: rename x_in_X)
+
+    then show "\<V> \<turnstile> x \<cdot>v \<rho> \<odot> \<gamma> : \<V> x"
+      by (metis grounding imageI is_ground_replace_\<V> x_in_X)
+  qed
+next
+  case False
+
+  then show ?thesis 
+    by (metis all_subst_ident_if_ground id_subst_subst)
+qed
+
+lemma typed_renaming_ground_subst_subst_compose:
   assumes
     \<rho>: "is_renaming \<rho>" and
     \<gamma>: "is_ground_subst \<gamma>" and
@@ -380,56 +408,17 @@ lemma renaming_ground_subst:
     welltyped_\<gamma>: "type_preserving_on (\<Union>(vars ` var_subst \<rho> ` X)) \<V>' \<gamma>" and
     rename: "\<forall>x \<in> X. \<V> x = \<V>' (rename \<rho> x)"
   shows "type_preserving_on X \<V> (\<rho> \<odot> \<gamma>)"
-proof (cases "exists_nonground")
-  case True
-
-  show ?thesis
-  proof(intro ballI impI iffI)
-    fix x
-    assume 
-      x_in_X: "x \<in> X" and 
-      \<V>_x: "\<V> \<turnstile> x \<cdot>v id_subst : \<V> x"
-
-    then have welltyped_\<rho>_x: "\<V> \<turnstile> x \<cdot>v \<rho> : \<V> x"
-      using welltyped_\<rho>
-      by metis
-
-    define y where "y \<equiv> (rename \<rho> x)"
-
-    have "y \<in> \<Union>(vars ` var_subst \<rho> ` X)"
-      using x_in_X True
-      unfolding y_def
-      by (metis UN_iff \<rho> id_subst_rename insert_iff rev_image_eqI vars_id_subst)
-
-    moreover then have "\<V> \<turnstile> y \<cdot>v \<gamma> : \<V>' y"
-      using replace_\<V> \<gamma> welltyped_\<gamma> rename x_in_X welltyped_\<rho>_x id_subst_rename[OF True \<rho>]
-      unfolding y_def is_ground_subst_def
-      by (smt (verit, ccfv_SIG) \<V>_x \<rho> id_subst_subst is_ground_replace_\<V> singletonD vars_id_subst
-          welltyped_renaming)
-
-    ultimately have "\<V> \<turnstile> y \<cdot>v \<gamma> : \<V> x"
-      unfolding y_def
-      using rename x_in_X
-      by fastforce
-
-    moreover have "y \<cdot>v \<gamma> = x \<cdot>v (\<rho> \<odot> \<gamma>)"
-      unfolding y_def
-      by (metis True \<rho> comp_subst_iff id_subst_rename id_subst_subst)
-
-    ultimately show "\<V> \<turnstile> x \<cdot>v (\<rho> \<odot> \<gamma>) : \<V> x"
-      by argo
-  qed
-next
-  case False
-  then show ?thesis 
-    by (metis id_subst_subst all_subst_ident_if_ground)
-qed
+  using 
+    typed_renaming_grounding_subst_compose[OF \<rho> _ welltyped_\<rho> welltyped_\<gamma> rename]
+    is_ground_subst_is_ground[OF \<gamma>]
+  unfolding comp_subst_iff
+  by auto
 
 lemma obtain_type_preserving_renaming:
   fixes \<V> :: "('v, 'ty) var_types"
   assumes
     exists_nonground: "exists_nonground" and
-    finite_X: "finite X" and 
+    finite_X: "finite X" and finite_Y: "finite Y" and 
     \<V>: "infinite_variables_per_type_on Y \<V>"
   obtains \<rho> where
     "is_renaming \<rho>"
@@ -443,40 +432,43 @@ proof -
     preserve_type: "\<forall>x \<in> Y. \<V> (renaming x) = \<V> x"
     using obtain_type_preserving_inj[OF finite_X \<V>] .
 
-  define \<rho> where
-    "\<rho> \<equiv> id_subst\<lbrakk>\<lambda>x. Some (renaming x \<cdot>v id_subst)\<rbrakk>"
+  have bij: "bij_betw renaming Y (renaming ` Y)"
+    by (metis inj bij_betw_subset top_greatest bij_betw_def)
 
+  define \<rho> where
+    "\<rho> \<equiv> renaming_of_bij renaming Y (renaming ` Y)"
+  
   have \<rho>: "is_renaming \<rho>"
-    using create_renaming[OF inj]
+    using create_renaming[OF exists_nonground finite_Y bij]
     unfolding \<rho>_def .
 
   then show ?thesis
   proof (rule that)
 
-    show "var_subst id_subst ` X \<inter> var_subst \<rho> ` Y = {}"
-      using rename_apart inj_id_subst exists_nonground
-      unfolding \<rho>_def inj_def
-      by auto
+    have "\<forall>y \<in> Y. y \<cdot>v \<rho> = renaming y \<cdot>v id_subst"
+      unfolding \<rho>_def
+      by (simp add: bij exists_nonground finite_Y renaming_of_bij_on_S)
+
+    then show "var_subst id_subst ` X \<inter> var_subst \<rho> ` Y = {}"
+      using rename_apart
+      by (smt (verit, best) disjoint_iff exists_nonground image_iff inj_def inj_id_subst)
   next
 
-    {
+    show "type_preserving_on Y \<V> \<rho>"
+    proof (intro ballI impI)
       fix x
       assume x_in_Y: "x \<in> Y" and welltyped_x: "\<V> \<turnstile> x \<cdot>v id_subst : \<V> x"
 
       have "\<forall>x\<in>vars (x \<cdot>v id_subst). \<V> x = \<V> (rename \<rho> x)"
         using \<rho>
         unfolding \<rho>_def
-        by (smt (verit, ccfv_SIG) vars_id_subst exists_nonground id_subst_rename inv_renaming
-            neutral_is_right_invertible option.simps(5) preserve_type singletonD subst_updates(1)
-            x_in_Y)
+        by (metis (lifting) bij exists_nonground finite_Y id_subst_rename preserve_type 
+            renaming_of_bij_on_S singleton_iff vars_id_subst x_in_Y)
 
-      then have "\<V> \<turnstile> x \<cdot>v \<rho> : \<V> x"
+      then show "\<V> \<turnstile> x \<cdot>v \<rho> : \<V> x"
         using welltyped_renaming[OF \<rho>] welltyped_x
         by (metis id_subst_subst)
-    }
-
-    then show "type_preserving_on Y \<V> \<rho>"
-      by metis
+    qed
   qed
 qed
 
@@ -484,7 +476,7 @@ lemma obtain_type_preserving_renamings:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "('v, 'ty) var_types"
   assumes
     "exists_nonground"
-    "finite X"
+    "finite X" "finite Y"
     "infinite_variables_per_type_on Y \<V>\<^sub>2"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 where
     "is_renaming \<rho>\<^sub>1"
@@ -499,7 +491,7 @@ lemma obtain_type_preserving_renamings':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "('v, 'ty) var_types"
   assumes
     "exists_nonground"
-    "finite Y"
+    "finite Y" "finite X"
     "infinite_variables_per_type_on X \<V>\<^sub>1"    
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 where
     "is_renaming \<rho>\<^sub>1"
@@ -750,7 +742,8 @@ lemma obtain_merged_grounding:
     "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
     "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
     \<V>\<^sub>2: "base.exists_nonground \<Longrightarrow> infinite_variables_per_type_on (vars expr') \<V>\<^sub>2" and
-    finite_vars: "finite (vars expr)"
+    finite_vars: "finite (vars expr)" and
+    finite_vars': "finite (vars expr')"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma>  where
     "base.is_renaming \<rho>\<^sub>1"
     "base.is_renaming \<rho>\<^sub>2"
@@ -774,7 +767,7 @@ proof (cases "base.exists_nonground")
     \<rho>\<^sub>1_is_welltyped: "base.type_preserving_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1" and
     \<rho>\<^sub>2_is_welltyped: "base.type_preserving_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     using base.obtain_type_preserving_renamings[OF 
-            base_exists_nonground finite_vars \<V>\<^sub>2[OF base_exists_nonground]] .
+            base_exists_nonground finite_vars finite_vars' \<V>\<^sub>2[OF base_exists_nonground]] .
 
   have rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
     using rename_apart rename_variables_id_subst[OF \<rho>\<^sub>1] rename_variables_id_subst[OF \<rho>\<^sub>2]
@@ -786,11 +779,12 @@ proof (cases "base.exists_nonground")
     unfolding base.is_renaming_def
     by blast
 
-  let ?update =
-    "\<lambda>x. if x \<in> vars (expr \<cdot> \<rho>\<^sub>1) then Some (x \<cdot>v \<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1) else Some (x \<cdot>v \<rho>\<^sub>2_inv \<odot> \<gamma>\<^sub>2)"
+  let ?update = "\<lambda>x. if x \<in> vars (expr \<cdot> \<rho>\<^sub>1)
+                     then x \<cdot>v \<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1
+                     else x \<cdot>v \<rho>\<^sub>2_inv \<odot> \<gamma>\<^sub>2"
 
   define \<gamma> where
-    "\<gamma> \<equiv> id_subst\<lbrakk>?update\<rbrakk>"
+    "\<gamma> \<equiv> id_subst\<lbrakk>fmap_of_set (vars (expr \<cdot> \<rho>\<^sub>1) \<union> vars (expr' \<cdot> \<rho>\<^sub>2)) ?update\<rbrakk>"
 
   show ?thesis
   proof (rule that[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped])
@@ -810,7 +804,7 @@ proof (cases "base.exists_nonground")
       then have "y \<cdot>v \<gamma> = base_subst (y \<cdot>v \<rho>\<^sub>1_inv) \<gamma>\<^sub>1"
         unfolding \<gamma>_def
         using base.comp_subst_iff
-        by (simp add: base_exists_nonground)
+        by (simp add: \<rho>\<^sub>1 \<rho>\<^sub>2 base_exists_nonground finite_vars finite_vars' rename_variables)
 
       then show "x \<cdot>v \<gamma>\<^sub>1 = x \<cdot>v \<rho>\<^sub>1 \<odot> \<gamma>"
         by (metis \<rho>\<^sub>1_inv base.comp_subst_iff base.left_neutral y)
@@ -833,8 +827,8 @@ proof (cases "base.exists_nonground")
         by (metis base.inj_id_subst imageI inj_image_mem_iff)
 
       then have "y \<cdot>v \<gamma> = base_subst (y \<cdot>v \<rho>\<^sub>2_inv) \<gamma>\<^sub>2"
-        unfolding \<gamma>_def
-        using base.comp_subst_iff rename_apart base_exists_nonground
+        unfolding \<gamma>_def base.comp_subst_iff
+        using rename_apart base_exists_nonground \<rho>\<^sub>1 \<rho>\<^sub>2 finite_vars finite_vars' rename_variables
         by auto
 
       then show "x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
@@ -844,18 +838,25 @@ proof (cases "base.exists_nonground")
     then show "\<forall>x \<in> vars expr'. x \<cdot>v \<gamma>\<^sub>2 = x \<cdot>v \<rho>\<^sub>2 \<odot> \<gamma>"
       by auto
 
-    show "expr \<cdot> \<gamma>\<^sub>1 = expr \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>"
-      unfolding \<gamma>_def
-      using
-        subst_updates_compat(1)[of "expr \<cdot> \<rho>\<^sub>1" "vars (expr \<cdot> \<rho>\<^sub>1)" "\<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1"]
-        \<rho>\<^sub>1_inv
-        subst_inv 
-      by simp
+  next
 
-    show "expr' \<cdot> \<gamma>\<^sub>2 = expr' \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>"
+    have "expr \<cdot> \<rho>\<^sub>1 \<cdot> \<gamma> = expr \<cdot> \<rho>\<^sub>1  \<cdot> \<rho>\<^sub>1_inv \<odot> \<gamma>\<^sub>1"
       unfolding \<gamma>_def
-      using subst_updates_compat(2)[of "expr' \<cdot> \<rho>\<^sub>2" "vars (expr \<cdot> \<rho>\<^sub>1)" _ "\<rho>\<^sub>2_inv \<odot> \<gamma>\<^sub>2"]
-      by (simp add: \<rho>\<^sub>2_inv inf_commute rename_apart subst_inv)
+      by (rule subst_updates_compat) (simp add: \<rho>\<^sub>1 \<rho>\<^sub>2 finite_vars finite_vars' rename_variables)      
+
+    then show "expr \<cdot> \<gamma>\<^sub>1 = expr \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>"
+      using \<rho>\<^sub>1_inv subst_id_subst
+      by force
+
+    have "expr' \<cdot> \<rho>\<^sub>2 \<cdot> \<gamma> = expr' \<cdot> \<rho>\<^sub>2  \<cdot> \<rho>\<^sub>2_inv \<odot> \<gamma>\<^sub>2"
+      unfolding \<gamma>_def
+      by 
+        (rule subst_updates_compat)
+        (use \<rho>\<^sub>1 \<rho>\<^sub>2 finite_vars finite_vars' rename_apart rename_variables in auto)
+
+    then show "expr' \<cdot> \<gamma>\<^sub>2 = expr' \<cdot> \<rho>\<^sub>2 \<odot> \<gamma>"
+      using \<rho>\<^sub>2_inv subst_id_subst
+      by force
   qed
 next
   case base_only_ground: False
@@ -879,7 +880,7 @@ lemma obtain_merged_grounding':
     expr_grounding: "is_ground (expr \<cdot> \<gamma>\<^sub>1)" and
     expr'_grounding: "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
     \<V>\<^sub>1: "infinite_variables_per_type_on (vars expr) \<V>\<^sub>1" and
-    finite_vars: "finite (vars expr')"
+    finite_vars: "finite (vars expr')" "finite (vars expr)"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma>  where
     "base.is_renaming \<rho>\<^sub>1"
     "base.is_renaming \<rho>\<^sub>2"

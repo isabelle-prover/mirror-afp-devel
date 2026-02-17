@@ -16,7 +16,8 @@ locale base_substitution = substitution where vars = vars and apply_subst = appl
 
 locale based_substitution =
   substitution where vars = vars and apply_subst = "apply_subst :: 'v \<Rightarrow> 'subst \<Rightarrow> 'base" +
-  base: base_substitution where subst = base_subst and vars = base_vars and is_ground = base_is_ground
+  base: base_substitution where
+  subst = base_subst and vars = base_vars and is_ground = base_is_ground
 for
   base_subst :: "'base \<Rightarrow> 'subst \<Rightarrow> 'base" and
   base_vars :: "'base \<Rightarrow> 'v set" and
@@ -79,7 +80,7 @@ locale based_subst_update =
   based_substitution + 
   subst_update +
   assumes ground_subst_update_in_vars:
-    "\<And>update expr \<gamma> x. base_is_ground update \<Longrightarrow> is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> x \<in> vars expr \<Longrightarrow> 
+    "\<And>update expr \<gamma> x. base_is_ground update \<Longrightarrow> is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> x \<in> vars expr \<Longrightarrow>
       is_ground (expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk>)"
 begin
 
@@ -111,6 +112,84 @@ next
 
   then show ?thesis
     by (simp add: assms(2))
+qed
+
+end
+
+locale create_renaming = based_subst_update where 
+  apply_subst = apply_subst for
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) +
+  assumes id_fold_subst_comp_ext:
+    "\<And>(us :: ('v \<times> 'base) list) us' upd. exists_nonground \<Longrightarrow>
+      (\<And>x. x \<cdot>v fold upd us id_subst \<odot> fold upd us' id_subst = x \<cdot>v id_subst) \<Longrightarrow>
+      fold upd us id_subst \<odot> fold upd us' id_subst = id_subst"
+begin
+
+lemma create_renaming:
+  assumes exists_nonground: exists_nonground and finite_S: "finite S" and bij: "bij_betw f S T"
+  shows "is_renaming (renaming_of_bij f S T)"
+proof (unfold is_renaming_def, intro exI)
+
+  have finite_T: "finite T" and finite_S_T: "finite (S \<union> T)"
+    using bij bij_betw_finite finite_S 
+    by auto
+
+  {
+    fix x
+
+    have "x \<cdot>v renaming_of_bij f S T \<odot> renaming_of_bij_inv f S T = x \<cdot>v id_subst"
+    proof (cases "x \<in> S \<union> T")
+      case False
+
+      then show ?thesis
+        unfolding renaming_of_bij_def renaming_of_bij_inv_def base.comp_subst_iff
+        by (auto simp: exists_nonground finite_S finite_T)
+    next
+      case x_in_S_T: True
+
+      show ?thesis
+      proof (cases "x \<in> S")
+        case x_in_S: True
+
+        moreover then have "f x \<in> T"
+          using bij
+          by (simp add: bij_betwE)
+
+        moreover have "inv_into S f (f x) = x"
+          by (metis x_in_S bij bij_betw_inv_into_left)
+
+        ultimately show ?thesis
+          unfolding renaming_of_bij_def renaming_of_bij_inv_def base.comp_subst_iff
+          using subst_updates_fmap_of_set exists_nonground finite_S_T
+          by auto
+      next
+        case x_notin_S: False
+
+        moreover then have "x \<in> T"
+          using x_in_S_T
+          by simp
+
+        moreover then have 
+          "bij_partition S T x \<in> (S - T)"
+          "inv_into (T \<setminus> S) (bij_partition S T) (bij_partition S T x) = x"
+          using 
+            x_notin_S
+            bij_partition[OF finite_S finite_T bij_betw_same_card[OF bij]]
+            bij_betwE 
+            bij_betw_inv_into_left 
+          by fastforce+
+
+        ultimately show ?thesis
+          unfolding renaming_of_bij_def renaming_of_bij_inv_def base.comp_subst_iff
+          using subst_updates_fmap_of_set exists_nonground finite_S_T
+          by auto       
+      qed
+    qed
+  }
+
+  then show "renaming_of_bij f S T \<odot> renaming_of_bij_inv f S T = id_subst"
+    unfolding renaming_of_bij_def renaming_of_bij_inv_def subst_updates_def
+    by (rule id_fold_subst_comp_ext[OF exists_nonground])
 qed
 
 end
@@ -323,47 +402,6 @@ sublocale variables_in_base_imgu where
 
 end
 
-locale base_exists_ground_subst =
-  base_substitution where
-    vars = "vars :: 'base \<Rightarrow> 'v set" and apply_subst = "apply_subst  :: 'v \<Rightarrow> 'subst \<Rightarrow> 'base" +
-  subst_updates +
-  is_ground_if_no_vars +
-assumes 
-  base_ground_exists: "\<exists>expr. is_ground expr"
-begin
-
-lemma redundant_subst_updates_vars_set' [simp]:
-  assumes "\<And>x. x \<in> X \<Longrightarrow> update x = None" 
-  shows "(\<lambda>x. x \<cdot>v \<sigma>\<lbrakk>update\<rbrakk>) ` X = (\<lambda>x. x \<cdot>v \<sigma>) ` X"
-  using assms subst_updates
-  by (metis id_subst_subst redundant_subst_updates_vars_set subst_ident_if_ground)
-
-sublocale exists_ground_subst
-proof unfold_locales
-
-  obtain b where is_ground: "is_ground b"
-    using base_ground_exists 
-    by blast
-
-  define \<gamma> :: 'subst where
-    "\<gamma> \<equiv> id_subst\<lbrakk>\<lambda>_. Some b\<rbrakk>"
-
-  have vars: "\<And>x. vars (x \<cdot>v \<gamma>) = {}"
-    unfolding \<gamma>_def
-    by (metis is_ground no_vars_if_is_ground option.simps(5) subst_updates(1))
-
-  show "\<exists>\<gamma>. is_ground_subst \<gamma>"
-  proof (rule exI)
-    
-    show "is_ground_subst \<gamma>"
-      using vars
-      unfolding is_ground_subst_def is_ground_iff_no_vars \<gamma>_def vars_subst
-      by fast
-  qed
-qed
-
-end
-
 locale base_exists_non_ident_subst =
   base_substitution where vars = vars + 
   finite_variables where vars = vars +
@@ -428,12 +466,13 @@ qed
 
 end
 
-locale vars_grounded_iff_is_grounding = base_substitution +
+(* TODO: Not compatible with polymorphic terms *)
+locale vars_grounded_iff_is_grounding = based_substitution +
   assumes is_grounding_if_vars_grounded:
-    "\<And>expr \<gamma>. \<forall>x \<in> vars expr. is_ground (x \<cdot>v \<gamma>) \<Longrightarrow> is_ground (expr \<cdot> \<gamma>)"
+    "\<And>expr \<gamma>. \<forall>x \<in> vars expr. base_is_ground (x \<cdot>v \<gamma>) \<Longrightarrow> is_ground (expr \<cdot> \<gamma>)"
 begin
 
-lemma vars_grounded_iff_is_grounding: "(\<forall>x \<in> vars b. is_ground (x \<cdot>v \<gamma>)) \<longleftrightarrow> is_ground (b \<cdot> \<gamma>)"
+lemma vars_grounded_iff_is_grounding: "(\<forall>x \<in> vars b. base_is_ground (x \<cdot>v \<gamma>)) \<longleftrightarrow> is_ground (b \<cdot> \<gamma>)"
   using is_grounding_if_vars_grounded vars_grounded_if_is_grounding
   by blast
 

@@ -1,8 +1,9 @@
 theory Substitution \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
   imports
     Abstract_Substitution
-    "HOL-Library.FSet"
     Option_Extra
+    Finite_Map_Extra
+    Fun_Extra
 begin
 
 section \<open>Substitutions on variables\<close>
@@ -69,26 +70,176 @@ end
 
 subsection \<open>Properties of substitutions\<close>
 
-locale subst_update = 
-  substitution where vars = vars and apply_subst = apply_subst
-  for vars :: "'expr \<Rightarrow> 'v set" and apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) +
-  fixes subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" (\<open>_\<lbrakk>_ := _\<rbrakk>\<close> [1000, 0, 50] 71)
+locale subst_update_def =
+   fixes subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" 
+begin
+
+definition subst_updates :: "'subst \<Rightarrow> ('v, 'base) fmap \<Rightarrow> 'subst" (\<open>_\<lbrakk>_\<rbrakk>\<close> [1000, 0] 71) where
+  "subst_updates \<sigma> m = fold (\<lambda>(x, b) \<sigma>. subst_update \<sigma> x b) (fmap_list m) \<sigma>"
+
+end
+
+locale subst_update =
+  substitution where vars = vars and apply_subst = apply_subst +
+  subst_update_def where subst_update = subst_update
+for 
+  vars :: "'expr \<Rightarrow> 'v set" and 
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) and
+  subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" (\<open>_\<lbrakk>_ := _\<rbrakk>\<close> [1000, 0, 50] 71) +
   assumes 
     subst_update_var [simp]:
       \<comment>\<open>The precondition of the assumption ensures noop substitutions\<close>
-      "\<And>x update \<sigma>. exists_nonground \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>x := update\<rbrakk> = update" 
-      "\<And>x y update \<sigma>. x \<noteq> y \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>y := update\<rbrakk> = x \<cdot>v \<sigma>" and
+      "\<And>x u \<sigma>. exists_nonground \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>x := u\<rbrakk> = u" 
+      "\<And>x y u \<sigma>. x \<noteq> y \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>y := u\<rbrakk> = x \<cdot>v \<sigma>" and
     subst_update [simp]:
-      "\<And>x expr update \<sigma>. x \<notin> vars expr \<Longrightarrow> expr \<cdot> \<sigma>\<lbrakk>x := update\<rbrakk> = expr \<cdot> \<sigma>"
+      "\<And>x expr u \<sigma>. x \<notin> vars expr \<Longrightarrow> expr \<cdot> \<sigma>\<lbrakk>x := u\<rbrakk> = expr \<cdot> \<sigma>"
       "\<And>\<sigma> x. \<sigma>\<lbrakk>x := x \<cdot>v \<sigma>\<rbrakk> = \<sigma>" and
     subst_update_twice [simp]:
       "\<And>\<sigma> x a b. (\<sigma>\<lbrakk>x := a\<rbrakk>)\<lbrakk>x := b\<rbrakk> = \<sigma>\<lbrakk>x := b\<rbrakk>"
+begin
+
+lemma subst_updates_empty [simp]: "\<sigma>\<lbrakk>fmempty\<rbrakk> = \<sigma>"
+  unfolding subst_updates_def
+  by auto
+
+lemma fold_redundant_updates_var [simp]:
+  assumes "x \<notin> set (map fst us)"
+  shows "x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us \<sigma> = x \<cdot>v \<sigma>"
+  using assms
+  by (induction us arbitrary: \<sigma>) (simp_all add: split_beta)
+
+lemma fold_updates_var [simp]:
+  assumes 
+    exists_nonground: exists_nonground and 
+    distinct_updates: "distinct (map fst us)" and 
+    update_in_updates: "(x, b) \<in> set us"
+  shows "x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us \<sigma> = b"
+  using distinct_updates update_in_updates
+proof (induction us arbitrary: \<sigma>)
+  case Nil
+
+  then show ?case 
+    by simp
+next
+  case (Cons u us)
+ 
+  then show ?case
+    using exists_nonground fold_redundant_updates_var
+    by (cases "u = (x, b)") auto
+qed
+
+lemma fold_redundant_updates [simp]: 
+  assumes "\<And>x b. (x, b) \<in> set us \<Longrightarrow> x \<notin> vars expr \<or> b = x \<cdot>v \<sigma>" "distinct (map fst us)"
+  shows "expr \<cdot> fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us \<sigma> = expr \<cdot> \<sigma>"
+  using assms
+proof (induction us arbitrary: \<sigma>)
+  case Nil
+
+  then show ?case
+    by simp
+next
+  case (Cons u us)
+
+  then show ?case
+    by (smt (verit, best) distinct.simps(2) fold_simps(2) list.set_intros(1) list.simps(9) 
+        prod.collapse set_subset_Cons split_beta subsetD subst_update subst_update_var(2))
+qed
+
+lemma subst_updates_var: 
+  assumes exists_nonground: exists_nonground
+  shows "x \<cdot>v \<sigma>\<lbrakk>u\<rbrakk> = get_or (fmlookup u x) (x \<cdot>v \<sigma>)"
+proof (cases "fmlookup u x")
+  case None
+
+  have "x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) (fmap_list u) \<sigma> = x \<cdot>v \<sigma>"
+  proof (rule fold_redundant_updates_var)
+
+    show "x \<notin> set (map fst (fmap_list u))"
+      unfolding set_fst_fmap_list
+      by (simp add: None fmdom'_notI)
+  qed
+
+  then show ?thesis
+    unfolding None subst_updates_def
+    by simp
+next
+  case (Some b)
+
+  then show ?thesis
+    unfolding subst_updates_def
+    by (simp add: exists_nonground fmap_list_mem_iff)
+qed
+
+lemma redundant_subst_updates [simp]:
+  assumes "\<And>x. x \<in> vars expr \<Longrightarrow> fmlookup u x = None \<or> fmlookup u x = Some (x \<cdot>v \<sigma>)" 
+  shows "expr \<cdot> \<sigma>\<lbrakk>u\<rbrakk> = expr \<cdot> \<sigma>"
+proof (unfold subst_updates_def, rule fold_redundant_updates)
+  fix x b
+  assume "(x, b) \<in> set (fmap_list u)"
+
+  then show "x \<notin> vars expr \<or> b = x \<cdot>v \<sigma>"
+    unfolding fmap_list_mem_iff
+    using assms
+    by fastforce
+next
+
+  show "distinct (map fst (fmap_list u))"
+    by simp
+qed
+
+lemma redundant_subst_updates_vars_set [simp]:
+  assumes exists_nonground "\<And>x. x \<in> X \<Longrightarrow> fmlookup u x = None \<or> fmlookup u x = Some (x \<cdot>v \<sigma>)"
+  shows "(\<lambda>x. x \<cdot>v \<sigma>\<lbrakk>u\<rbrakk>) ` X = (\<lambda>x. x \<cdot>v \<sigma>) ` X"
+  using assms(2) subst_updates_var[OF assms(1)]
+  by force
+
+lemma redundant_subst_updates_vars_image [simp]:
+  assumes "\<And>x. x \<in> \<Union>(vars ` X) \<Longrightarrow> fmlookup u x = None \<or> fmlookup u x = Some (x \<cdot>v \<sigma>)"
+  shows "(\<lambda>expr. expr \<cdot> \<sigma>\<lbrakk>u\<rbrakk>) ` X = (\<lambda>expr. expr \<cdot> \<sigma>) ` X"
+  using assms redundant_subst_updates
+  by (meson UN_I image_cong)
+
+lemma subst_updates_fmap_of_set [simp]:
+  assumes exists_nonground "x \<in> X" "finite X"
+  shows "x \<cdot>v \<sigma>\<lbrakk>fmap_of_set X f\<rbrakk> = f x"
+  using assms subst_updates_var 
+  by simp
+
+lemma redundant_subst_updates_fmap_of_set [simp]:
+  assumes exists_nonground "x \<notin> X" "finite X" 
+  shows "x \<cdot>v \<sigma>\<lbrakk>fmap_of_set X f\<rbrakk> = x \<cdot>v \<sigma>"
+  using assms subst_updates_var
+  by simp
+
+definition renaming_of_bij where
+  "renaming_of_bij f S T \<equiv>
+    id_subst\<lbrakk>fmap_of_set (S \<union> T) (\<lambda>x. (if x \<in> S then f x else bij_partition S T x) \<cdot>v id_subst)\<rbrakk>"
+
+definition renaming_of_bij_inv where
+  "renaming_of_bij_inv f S T \<equiv>
+     id_subst\<lbrakk>fmap_of_set (S \<union> T)
+       (\<lambda>x. (if x \<in> T then inv_into S f x else inv_into (T - S) (bij_partition S T) x) \<cdot>v id_subst)\<rbrakk>"
+
+lemma redundant_renaming_of_bij:
+  assumes exists_nonground "finite S" "bij_betw f S T" "x \<notin> S \<union> T"
+  shows "x \<cdot>v renaming_of_bij f S T = x \<cdot>v id_subst"
+  unfolding renaming_of_bij_def
+  using assms
+  by (simp add: bij_betw_finite)
+
+lemma renaming_of_bij_on_S:
+  assumes exists_nonground "finite S" "bij_betw f S T" "x \<in> S" 
+  shows "x \<cdot>v renaming_of_bij f S T = f x \<cdot>v id_subst"
+  unfolding renaming_of_bij_def
+  using assms
+  by (simp add: bij_betw_finite)
+
+end
 
 locale all_subst_ident_iff_ground =
   substitution +
   assumes all_subst_ident_iff_ground: "\<And>expr. is_ground expr \<longleftrightarrow> (\<forall>\<sigma>. expr \<cdot> \<sigma> = expr)"
 
-(* TODO: Use other simpler properties to get this? *)
 locale exists_non_ident_subst =
   substitution where vars = vars
   for vars :: "'expr \<Rightarrow> 'v set" +
@@ -266,6 +417,9 @@ lemma to_ground_eq [simp]:
 
 end
 
+locale exists_ground = substitution +
+  assumes exists_ground: "\<exists>expr. is_ground expr"
+
 locale exists_ground_subst = substitution +
   assumes exists_ground_subst: "\<exists>\<gamma>. is_ground_subst \<gamma>"
 begin
@@ -275,8 +429,8 @@ lemma obtain_ground_subst:
   using exists_ground_subst
   by metis
 
-lemma ground_exists: "\<exists>expr. is_ground expr"
-proof -
+sublocale exists_ground
+proof unfold_locales
   fix expr
 
   obtain \<gamma> where \<gamma>: "is_ground_subst \<gamma>"
@@ -296,44 +450,6 @@ lemma ground_subst_extension:
   where "expr \<cdot> \<gamma> = expr \<cdot> \<gamma>'" and "is_ground_subst \<gamma>'"
   using obtain_ground_subst assms
   by (metis all_subst_ident_if_ground is_ground_subst_comp_right subst_comp_subst)
-
-end
-
-locale subst_updates = substitution where vars = vars and apply_subst = apply_subst
-  for
-    vars :: "'expr \<Rightarrow> 'v set" and
-    apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base"  (infixl \<open>\<cdot>v\<close> 69) +
-  fixes subst_updates :: "'subst \<Rightarrow> ('v \<rightharpoonup> 'base) \<Rightarrow> 'subst" (\<open>_\<lbrakk>_\<rbrakk>\<close> [1000, 0] 71)
-   \<comment>\<open>The precondition of the assumption ensures noop substitutions\<close>
-  assumes subst_updates [simp]:
-    "\<And>x \<sigma> update. exists_nonground \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>update\<rbrakk> = get_or (update x) (x \<cdot>v \<sigma>)"
-    "\<And>expr \<sigma> b. expr \<cdot> \<sigma>\<lbrakk>\<lambda>x. if x \<in> vars expr then None else b x\<rbrakk> = expr \<cdot> \<sigma>"
-begin
-
-lemma redundant_subst_updates [simp]:
-  assumes "\<And>x. x \<in> vars expr \<Longrightarrow> update x = None"
-  shows "expr \<cdot> \<sigma>\<lbrakk>update\<rbrakk> = expr \<cdot> \<sigma>"
-  using assms
-proof -
-  have "\<exists>f. (\<lambda>v. if v \<in> vars expr then None else f v) = update"
-    using assms
-    by force
-
-  then show ?thesis
-    by force
-qed
-
-lemma redundant_subst_updates_vars_image [simp]:
-  assumes "\<And>x. x \<in> \<Union>(vars ` X) \<Longrightarrow> update x = None"
-  shows "(\<lambda>expr. expr \<cdot> \<sigma>\<lbrakk>update\<rbrakk>) ` X = (\<lambda>expr. expr \<cdot> \<sigma>) ` X"
-  using assms subst_updates 
-  by (meson UN_I image_cong redundant_subst_updates)
-
-lemma redundant_subst_updates_vars_set [simp]:
-  assumes "\<And>x. x \<in> X \<Longrightarrow> update x = None" exists_nonground
-  shows "(\<lambda>x. x \<cdot>v \<sigma>\<lbrakk>update\<rbrakk>) ` X = (\<lambda>x. x \<cdot>v \<sigma>) ` X"
-  using assms subst_updates
-  by auto
 
 end
 
@@ -535,18 +651,11 @@ qed
 
 end
 
-locale create_renaming =
-  subst_updates +
-  assumes create_renaming: "\<And>f. inj f \<Longrightarrow> is_renaming (id_subst\<lbrakk>\<lambda>x. Some (f x \<cdot>v id_subst)\<rbrakk>)"
-
 (* TODO: Not compatible with polymorphic terms *)
 locale subst_updates_compat =
-  subst_updates +
+  subst_update +
   assumes subst_updates_compat: 
-    "\<And>expr X \<sigma> b. vars expr \<subseteq> X \<Longrightarrow>
-        expr \<cdot> id_subst\<lbrakk>\<lambda>x. if x \<in> X then Some (x \<cdot>v \<sigma>) else b x\<rbrakk> = expr \<cdot> \<sigma>"
-    "\<And>expr X \<sigma> b. vars expr \<inter> X = {} \<Longrightarrow>
-        expr \<cdot> id_subst\<lbrakk>\<lambda>x. if x \<in> X then b x else Some (x \<cdot>v \<sigma>)\<rbrakk> = expr \<cdot> \<sigma>"
+    "\<And>expr \<sigma>. \<forall>x \<in> vars expr. fmlookup u x = Some (x \<cdot>v \<sigma>) \<Longrightarrow> expr \<cdot> id_subst\<lbrakk>u\<rbrakk> = expr \<cdot> \<sigma>"
 
 locale subst_eq =
   substitution +

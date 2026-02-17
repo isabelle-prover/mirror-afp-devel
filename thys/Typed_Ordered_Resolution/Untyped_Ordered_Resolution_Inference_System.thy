@@ -12,7 +12,7 @@ sublocale typed: ordered_resolution_calculus where
   welltyped = "\<lambda>_ _ (). True"
   by
     unfold_locales
-    (auto intro: term.ground_exists simp: term.exists_imgu right_unique_def split: unit.splits)
+    (auto simp: term.exists_imgu right_unique_def split: unit.splits)
 
 (* TODO: Move *)
 lemma infinite_variables_per_type:

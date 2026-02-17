@@ -2,7 +2,7 @@ theory Abstract_Context
   imports Generic_Term_Context
 begin
 
-datatype ('f, 'extra, 't) "context" =
+datatype ('f, extra_set: 'extra, term_set: 't) "context" =
   Hole (\<open>\<box>\<close>) |
   More
     (fun_sym: 'f) (extra: 'extra) (subterms\<^sub>l: "'t list") 
@@ -90,7 +90,7 @@ proof unfold_locales
     by (metis context.discI context.exhaust_sel)
 qed auto
 
-interpretation ground_context: replace_at_subterm where  
+sublocale replace_at_subterm where  
   hole = \<box> and apply_context = apply_context and compose_context = "(\<circ>\<^sub>c)" and
   hole_position = hole_position and context_at = context_at
 proof unfold_locales

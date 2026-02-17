@@ -9,9 +9,6 @@ section \<open>Substitutions for first order terms\<close>
 
 subsection \<open>Interpretations for first order terms\<close> \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
 
-abbreviation (input) subst_updates where
-  "subst_updates \<sigma> update x \<equiv> get_or (update x) (\<sigma> x)"
-
 abbreviation (input) apply_subst where
   "apply_subst x \<sigma> \<equiv> \<sigma> x"
 
@@ -62,15 +59,14 @@ locale term_properties =
   grounding +
   finite_variables +
   renaming_variables +
-  create_renaming +
-  base_exists_ground_subst +
-  based_subst_update where
+  exists_ground +
+  create_renaming where
   base_vars = vars and base_subst = subst and base_is_ground = is_ground
 
 global_interpretation "term": term_properties where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and subst = "(\<cdot>)" and subst_update = fun_upd and
-  subst_updates = subst_updates and apply_subst = apply_subst and vars = vars_term and
-  to_ground = gterm_of_term and from_ground = term_of_gterm and is_ground = is_ground
+  apply_subst = apply_subst and vars = vars_term and to_ground = gterm_of_term and
+  from_ground = term_of_gterm and is_ground = is_ground
 proof unfold_locales
   fix t :: "('f, 'v) term"
 
@@ -203,23 +199,12 @@ next
   then show "t \<cdot> \<sigma>(x := update) = t \<cdot> \<sigma>"
     by (simp add: eval_with_fresh_var)
 next
-  fix t :: "('f, 'v) term" and \<sigma> :: "('f, 'v) subst" and b
-
-  show "t \<cdot> (\<lambda>x. get_or (if x \<in> vars_term t then None else b x) (\<sigma> x)) = t \<cdot> \<sigma>"
-    by (smt (verit, best) option.simps(4) term_subst_eq)
-next
   fix \<gamma> :: "('f, 'v) subst" and t u :: "('f, 'v) term" and x
   assume "vars_term u = {}" "vars_term (t \<cdot> \<gamma>) = {}" "x \<in> vars_term t" 
   
   then show "vars_term (t \<cdot> \<gamma>(x := u)) = {}"
-    by (metis fun_upd_apply ground_subst ground_vars_term_empty)
-next
-  fix f :: "'v \<Rightarrow> 'v"
-  assume "inj f"
-
-  then show "term.is_renaming (\<lambda>x. get_or (Some (Var (f x))) (Var x))"
-    by (simp add: ex_inverse_of_renaming inj_def term.is_renaming_def)
-qed simp_all
+    by (metis fun_upd_apply ground_subst ground_vars_term_empty) 
+qed auto
 
 lemma exists_nonground_term [intro]: "\<exists>t. vars_term t \<noteq> {}"
   using term.set_intros(3)
@@ -232,8 +217,7 @@ subsection \<open>Compatibility with First\_Order\_Term\<close> \<^marker>\<open
 text \<open>Prefer @{thm [source] term.subst_id_subst} to @{thm [source] subst_apply_term_empty}.\<close>
 declare subst_apply_term_empty[no_atp]
 
-lemma term_context_ground_iff_term_is_ground [simp]: "ground t = is_ground t"
-  by (induction t) simp_all
+lemmas term_context_ground_iff_term_is_ground [simp] = ground_vars_term_empty
 
 text \<open>The other direction does not hold!\<close>
 lemma Term_is_renaming_if_is_renaming:

@@ -11,9 +11,8 @@ locale noop_lifting = term_based_lifting where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_vars = noop_vars and
   term_is_ground = noop_is_ground and subst_update = noop_subst_update and
   apply_subst = noop_apply_subst and term_subst = noop_subst and
-  subst_updates = noop_subst_updates and term_to_ground = id and
-  term_from_ground = id and to_ground_map = map and from_ground_map = map and
-  ground_map = map and to_set_ground = to_set
+  term_to_ground = id and term_from_ground = id and to_ground_map = map and
+  from_ground_map = map and ground_map = map and to_set_ground = to_set
 begin
 
 (* TODO: *)
@@ -46,7 +45,7 @@ sublocale literal.noop: noop_lifting where
 
 sublocale clause.noop: noop_lifting where
   sub_vars = literal.noop.vars and sub_subst = literal.noop.subst and map = image_mset and
-  to_set = set_mset and sub_to_ground = id and sub_from_ground = id  and
+  to_set = set_mset and sub_to_ground = id and sub_from_ground = id and
   sub_is_ground = literal.noop.is_ground
   by unfold_locales (use literal.exists_nonground_iff_sub_exists_nonground in auto)
 
@@ -68,12 +67,11 @@ end
 locale ground_superposition_compatibility = untyped_superposition_calculus where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_vars = noop_vars and
   subst_update = noop_subst_update and apply_subst = noop_apply_subst and
-  term_subst = noop_subst and subst_updates = noop_subst_updates and term_to_ground = id and
+  term_is_ground = noop_is_ground and term_subst = noop_subst and term_to_ground = id and
   term_from_ground = id and ground_hole = hole and compose_ground_context = compose_context and
   from_ground_context_map = map_context and to_ground_context_map = map_context and
   ground_context_map = map_context and ground_context_to_set = context_to_set and
-  apply_ground_context = apply_context and occurences = "\<lambda>_ _. 0" and 
-  term_is_ground = noop_is_ground
+  apply_ground_context = apply_context and occurences = "\<lambda>_ _. 0" 
 begin
 
 interpretation grounded: ground_superposition_calculus where

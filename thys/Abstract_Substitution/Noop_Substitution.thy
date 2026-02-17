@@ -1,4 +1,4 @@
-theory Noop_Substitution
+theory Noop_Substitution \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
   imports Based_Substitution
 begin
 
@@ -20,9 +20,10 @@ locale properties =
   grounding +
   finite_variables +
   renaming_variables +
-  base_exists_ground_subst +
+  exists_ground +
   range_vars_subset_if_is_imgu +
-  exists_imgu
+  exists_imgu +
+  create_renaming where base_subst = subst and base_vars = vars and base_is_ground = is_ground
 
 definition noop_apply_subst where
   "noop_apply_subst _ _ \<equiv> SOME expr. True"
@@ -39,9 +40,6 @@ definition noop_is_ground where
 definition noop_subst_update where
   "noop_subst_update \<sigma> _ _ \<equiv> \<sigma>"
 
-definition noop_subst_updates where
-  "noop_subst_updates \<sigma>  _ \<equiv> \<sigma>"
-
 
 context abstract_substitution_monoid
 begin
@@ -56,8 +54,7 @@ sublocale noop: base_substitution where
 
 sublocale noop: properties where 
   vars = noop_vars and subst_update = noop_subst_update and apply_subst = noop_apply_subst and
-  subst = noop_subst and subst_updates = noop_subst_updates and to_ground = id and
-  from_ground = id and is_ground = noop_is_ground
+  subst = noop_subst and to_ground = id and from_ground = id and is_ground = noop_is_ground
   by 
     unfold_locales 
     (auto simp: noop_vars_def noop.range_vars_def noop.subst_domain_def noop_is_ground_def

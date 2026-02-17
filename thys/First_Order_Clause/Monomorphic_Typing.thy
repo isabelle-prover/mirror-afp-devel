@@ -91,8 +91,8 @@ qed
 sublocale "term": base_typing_properties where
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<circ>\<^sub>s)" and subst = "(\<cdot>)" and
   vars = term.vars and is_ground = term.is_ground and welltyped = welltyped and
-  to_ground = term.to_ground and from_ground = term.from_ground and
-  subst_updates = subst_updates and apply_subst = apply_subst and subst_update = fun_upd
+  to_ground = term.to_ground and from_ground = term.from_ground and apply_subst = apply_subst and
+  subst_update = fun_upd
 proof(unfold_locales; (intro welltyped.Var refl)?)
   fix t :: "('f, 'v) term" and \<V> \<sigma> \<tau>
   assume type_preserving_\<sigma>: " \<forall>x\<in>term.vars t. \<V> \<turnstile> Var x : \<V> x \<longrightarrow> \<V> \<turnstile> \<sigma> x : \<V> x"

@@ -21,15 +21,15 @@ proof (cases D C rule: factoring.cases)
 
     assume
       entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V> D. I \<TTurnstile> D\<^sub>G" and
-      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
+      C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V> \<gamma>" and
       \<V>: "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
-      type_preserving_\<gamma>': "type_preserving \<V> \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
-      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
+      D_grounding: "clause.is_ground (D \<cdot> \<mu> \<cdot> \<gamma>')" and
+      type_preserving_\<gamma>': "type_preserving_on (clause.vars C \<union> clause.vars (D \<cdot> \<mu>)) \<V> \<gamma>'" and
+      \<gamma>_\<gamma>': "\<forall>x\<in>clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
+      using clause.type_preserving_on_ground_subst_extension[OF C_grounding type_preserving_\<gamma>] .
 
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G' = "clause.to_ground (D' \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -47,11 +47,6 @@ proof (cases D C rule: factoring.cases)
       using factoringI(6) term.is_imgu_unifies_pair
       by metis
 
-    have [simp]: "t\<^sub>1 \<cdot>t \<mu> \<cdot>t \<gamma>' =  t\<^sub>1 \<cdot>t \<mu> \<cdot>t \<gamma>"
-      using \<gamma>'_\<gamma> term.subst_eq 
-      unfolding factoringI
-      by fastforce
-
     have "?D\<^sub>G \<in> ground_instances \<V> D"
     proof(unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
           intro exI, intro impI conjI \<V>)
@@ -61,17 +56,17 @@ proof (cases D C rule: factoring.cases)
     next
 
       show "clause.is_ground (D \<cdot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
-        by auto
+        using D_grounding
+        by simp
     next
 
+      have type_preserving_\<gamma>': 
+        "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<mu>) ` clause.vars D)) \<V> \<gamma>'"
+        using type_preserving_\<gamma>' clause.vars_subst
+        by blast
+
       show "type_preserving_on (clause.vars D) \<V> (\<mu> \<odot> \<gamma>')"
-        using 
-          type_preserving_\<mu>
-          type_preserving_\<gamma>'
-          \<gamma>'_is_ground_subst
-          term.type_preserving_ground_compose_ground_subst
-        by presburger
+        using term.type_preserving_on_subst_compose[OF type_preserving_\<mu> type_preserving_\<gamma>'] .
     qed
 
     then have "I \<TTurnstile> ?D\<^sub>G"
@@ -79,9 +74,9 @@ proof (cases D C rule: factoring.cases)
       by blast
 
     then have "I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>)"
-      using clause.subst_eq[OF \<gamma>'_\<gamma>[rule_format]]
+      using clause.subst_eq[OF \<gamma>_\<gamma>'[rule_format]]
       unfolding factoringI
-      by auto
+      by fastforce
   }
 
   then show ?thesis
@@ -106,14 +101,20 @@ proof (cases D E C rule: resolution.cases)
     assume
       E_entails_ground_instances: "\<forall>E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E. I \<TTurnstile> E\<^sub>G" and
       D_entails_ground_instances: "\<forall>D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D. I \<TTurnstile> D\<^sub>G" and
-      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
+      C_grounding: "clause.is_ground (C \<cdot> \<gamma>)" and
       type_preserving_\<gamma>: "type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
 
     obtain \<gamma>' where
-      \<gamma>'_is_ground_subst: "term.is_ground_subst \<gamma>'" and
-      type_preserving_\<gamma>': "type_preserving \<V>\<^sub>3 \<gamma>'" and
-      \<gamma>'_\<gamma>: "\<forall>x \<in> clause.vars C. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
-      using clause.type_preserving_ground_subst_extension[OF C_is_ground type_preserving_\<gamma>] .
+      "clause.is_ground ((E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> + D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>) \<cdot> \<gamma>')" and
+      type_preserving_\<gamma>':
+        "type_preserving_on (clause.vars C \<union> clause.vars (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> + D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu>)) \<V>\<^sub>3 \<gamma>'" and
+      \<gamma>_\<gamma>': "C \<cdot> \<gamma> = C \<cdot> \<gamma>'"
+      using clause.type_preserving_on_ground_subst_extension[OF C_grounding type_preserving_\<gamma>] .
+
+    then have 
+      D_grounding: "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>')" and 
+      E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"
+      by auto
 
     let ?E\<^sub>G = "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>')"
     let ?D\<^sub>G = "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>')"
@@ -129,23 +130,8 @@ proof (cases D E C rule: resolution.cases)
 
     let ?C\<^sub>G = "clause.to_ground (C \<cdot> \<gamma>')"
 
-    have \<mu>_\<gamma>'_is_ground_subst: "term.is_ground_subst (\<mu> \<odot> \<gamma>')"
-      using term.is_ground_subst_comp_right[OF \<gamma>'_is_ground_subst] .
 
-    have type_preserving_\<mu>: "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
-      using resolutionI(9)
-      by blast
-
-    have type_preserving_\<mu>_\<gamma>:
-      "type_preserving_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
-      using 
-        type_preserving_\<gamma>'
-        type_preserving_\<mu>
-        \<gamma>'_is_ground_subst 
-        term.type_preserving_ground_compose_ground_subst 
-      by presburger
-
-    note type_preserving_\<rho>_\<mu>_\<gamma> = term.renaming_ground_subst[OF _ \<mu>_\<gamma>'_is_ground_subst]
+    note type_preserving_\<mu> = resolutionI(9)
 
     have "?E\<^sub>G \<in> ground_instances \<V>\<^sub>1 E"
       proof(
@@ -157,15 +143,27 @@ proof (cases D E C rule: resolution.cases)
     next
 
       show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
-        by auto
+        using E_grounding      
+        by simp
     next
 
       show "type_preserving_on (clause.vars E) \<V>\<^sub>1 (\<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
-        using
-          type_preserving_\<mu>_\<gamma>
-          type_preserving_\<rho>_\<mu>_\<gamma>[OF resolutionI(6, 18) _ resolutionI(16)]
-        by (simp add: term.assoc clause.vars_subst)
+      proof (subst term.assoc,
+             rule term.typed_renaming_grounding_subst_compose[OF
+               resolutionI(6) _ resolutionI(18) _ resolutionI(16)], intro ballI)
+        fix t
+        assume "t \<in> (\<lambda>x. x \<cdot>v \<rho>\<^sub>1 \<odot> (\<mu> \<odot> \<gamma>')) ` clause.vars E" 
+
+        then show "term.is_ground t"
+          using clause.variable_grounding E_grounding clause.vars_grounded_if_is_grounding
+          by force
+      next
+
+        show "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<rho>\<^sub>1) ` clause.vars E)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
+          by 
+            (rule term.type_preserving_on_subst_compose'[OF type_preserving_\<mu> type_preserving_\<gamma>'])
+            (auto simp: clause.vars_subst)
+      qed
     qed
 
     then have entails_E\<^sub>G: "I \<TTurnstile> ?E\<^sub>G"
@@ -173,24 +171,36 @@ proof (cases D E C rule: resolution.cases)
       by blast
 
     have "?D\<^sub>G \<in> ground_instances \<V>\<^sub>2 D"
-    proof(
-        unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
-        intro exI, intro conjI impI resolutionI)
+    proof (unfold ground_instances_def mem_Collect_eq fst_conv snd_conv,
+           intro exI, intro conjI impI resolutionI)
 
       show "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
     next
 
       show "clause.is_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
-        using \<gamma>'_is_ground_subst clause.is_ground_subst_is_ground
-        by auto
+        using D_grounding
+        by simp
     next
 
       show "type_preserving_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
-        using
-          type_preserving_\<mu>_\<gamma>
-          type_preserving_\<rho>_\<mu>_\<gamma>[OF resolutionI(7, 19) _ resolutionI(17)]
-        by (simp add: term.assoc clause.vars_subst)
+      proof (subst term.assoc,
+             rule term.typed_renaming_grounding_subst_compose[OF
+               resolutionI(7) _ resolutionI(19) _ resolutionI(17)], 
+             intro ballI)
+        fix t
+        assume "t \<in> (\<lambda>x. x \<cdot>v \<rho>\<^sub>2 \<odot> (\<mu> \<odot> \<gamma>')) ` clause.vars D" 
+
+        then show "term.is_ground t"
+          using clause.variable_grounding D_grounding clause.vars_grounded_if_is_grounding
+          by force
+      next
+
+        show "type_preserving_on (\<Union> (term.vars ` (\<lambda>x. x \<cdot>v \<rho>\<^sub>2) ` clause.vars D)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
+          by 
+            (rule term.type_preserving_on_subst_compose'[OF type_preserving_\<mu> type_preserving_\<gamma>'])
+            (auto simp: clause.vars_subst)
+      qed
     qed
 
     then have entails_D\<^sub>G: "I \<TTurnstile> ?D\<^sub>G"
@@ -199,6 +209,7 @@ proof (cases D E C rule: resolution.cases)
 
     have "I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>')"
     proof -
+
       have [simp]: "?t\<^sub>G\<^sub>1 = ?t\<^sub>G\<^sub>2"
         using resolutionI(10) term.is_imgu_unifies_pair
         by metis
@@ -235,7 +246,7 @@ proof (cases D E C rule: resolution.cases)
     qed
 
     then have "I \<TTurnstile> clause.to_ground (C \<cdot> \<gamma>)"
-      by (metis \<gamma>'_\<gamma> clause.subst_eq)
+      by (metis \<gamma>_\<gamma>')
   }
 
   then show ?thesis
