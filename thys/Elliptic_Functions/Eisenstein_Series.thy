@@ -723,6 +723,7 @@ theorem
   shows discr_nonzero_aux1: "P = 4 * [:-\<e>\<^sub>1, 1:] * [:-\<e>\<^sub>2, 1:] * [:-\<e>\<^sub>3, 1:]"
   and   discr_nonzero_aux2: "4 * (\<wp> z)^3 - \<g>\<^sub>2 * (\<wp> z) - \<g>\<^sub>3 = 4 * (\<wp> z - \<e>\<^sub>1) * (\<wp> z - \<e>\<^sub>2) * (\<wp> z - \<e>\<^sub>3)" 
   and   discr_nonzero: "discr \<noteq> 0"
+  and   discr_altdef:  "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>2 - \<e>\<^sub>3)) ^ 2"
 proof -
   have zeroI: "poly P (\<wp> (\<omega> / 2)) = 0" if "\<omega> \<in> \<Lambda>" "\<omega> / 2 \<notin> \<Lambda>" for \<omega>
     using half_period_weierstrass_fun_is_root[OF that]
@@ -751,12 +752,17 @@ proof -
     show "4 * (\<wp> z)^3 - \<g>\<^sub>2 * (\<wp> z) - \<g>\<^sub>3 = 4 * (\<wp> z - \<e>\<^sub>1) * (\<wp> z - \<e>\<^sub>2) * (\<wp> z - \<e>\<^sub>3)" 
     by (simp add: P_def numeral_poly algebra_simps power3_eq_cube)
 
-  have "-4 * (-\<g>\<^sub>2) ^ 3 - 27 * 4 * (-\<g>\<^sub>3) ^ 2 = 4 ^ 3 * (\<e>\<^sub>1 - \<e>\<^sub>2)\<^sup>2 * (\<e>\<^sub>1 - \<e>\<^sub>3)\<^sup>2 * (\<e>\<^sub>2 - \<e>\<^sub>3)\<^sup>2"
+  have "discr = (-4 * (-\<g>\<^sub>2) ^ 3 - 27 * 4 * (-\<g>\<^sub>3) ^ 2) / 4"
+    unfolding discr_def by simp
+  also have "-4 * (-\<g>\<^sub>2) ^ 3 - 27 * 4 * (-\<g>\<^sub>3) ^ 2 = 4 ^ 3 * (\<e>\<^sub>1 - \<e>\<^sub>2)\<^sup>2 * (\<e>\<^sub>1 - \<e>\<^sub>3)\<^sup>2 * (\<e>\<^sub>2 - \<e>\<^sub>3)\<^sup>2"
     by (rule sym, rule depressed_cubic_discriminant, fold P_def) (simp add: P_eq' numeral_poly)
-  also have "\<dots> \<noteq> 0"
-    using distinct_e123 by simp
-  finally show "discr \<noteq> 0"
-    by (simp add: discr_def)
+  also have "\<dots> / 4 = 4 ^ 2 * (\<e>\<^sub>1 - \<e>\<^sub>2)\<^sup>2 * (\<e>\<^sub>1 - \<e>\<^sub>3)\<^sup>2 * (\<e>\<^sub>2 - \<e>\<^sub>3)\<^sup>2"
+    by simp
+  finally show discr_eq: "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>2 - \<e>\<^sub>3)) ^ 2"
+    unfolding power_mult_distrib by simp
+
+  show "discr \<noteq> 0"
+    by (subst discr_eq) (use distinct_e123 in auto)
 qed
 
 end
