@@ -47,8 +47,8 @@ proof -
     using u12 by (auto simp: u1'_def u2'_def rel_sym)
 
   text \<open>
-    Let $a$ and $b$ be such that $(u_1, \wp(u_1))$ and $(u_2, \wp(u_2))$ lie on the line 
-    $ax + b = 0$, i.e.\ such that $u_1$ and $u_2$ are both solutions of the linear equation
+    Let $a$ and $b$ be such that $(\wp(u_1), \wp'(u_2))$ and $(\wp(u_2), \wp'(u_2))$ lie on the 
+    line $ax + b = y$, i.e.\ such that $u_1$ and $u_2$ are both solutions of the linear equation
     $\wp'(u) = a \wp(u) + b$.
   \<close>
   define a where "a = (\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2)"
@@ -269,8 +269,8 @@ proof -
     by (simp add: u1'_def u2'_def insert_Diff_if rel_def algebra_simps split: if_splits)
 
   text \<open>
-    By definition of $f$, the fact that $u_3$ is a zero means that $(u_3, \wp(u_3))$ also lies on
-    the line $ax + b = 0$.
+    By definition of $f$, the fact that $u_3$ is a zero means that $(\wp(u_3), \wp'(u_3))$ also
+    lies on the line $ax + b = 0$.
   \<close>
   have "f u3 = 0"
     using u3 f.isolated_zero_iff[of u3] by (auto simp: Z_def)
