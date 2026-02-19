@@ -2546,7 +2546,7 @@ text \<open>
 
   This result is Exercise~1.5 in Apostol's book.
 \<close>
-theorem (in even_elliptic_function) in_terms_of_weierstrass_fun:
+theorem (in elliptic_function) in_terms_of_weierstrass_fun:
   obtains p q r s :: "complex poly" where "q \<noteq> 0" "s \<noteq> 0"
      "\<forall>\<^sub>\<approx>z. f z = poly p (\<wp> z) / poly q (\<wp> z) + \<wp>' z * poly r (\<wp> z) / poly s (\<wp> z)"
 proof -

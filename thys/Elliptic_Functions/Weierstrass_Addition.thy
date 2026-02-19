@@ -33,6 +33,7 @@ lemma weierstrass_fun_add_aux:
   assumes u12: "u1 \<notin> \<Lambda>" "u2 \<notin> \<Lambda>" "\<not>rel u1 u2" "\<not>rel u1 (-u2)"
   assumes general_position: "u1 + 2 * u2 \<notin> \<Lambda>" "2 * u1 + u2 \<notin> \<Lambda>"
   shows   "\<wp> (u1 + u2) = -\<wp> u1 - \<wp> u2 + ((\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2))\<^sup>2 / 4"
+    and   "\<wp>' (u1 + u2) = -\<wp>' u1 + (\<wp> u1 - \<wp> (u1 + u2)) * (\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2)"
 proof -
   note [simp] = weierstrass_fun.eval_to_fund_parallelogram 
                 weierstrass_fun_deriv.eval_to_fund_parallelogram
@@ -381,7 +382,7 @@ proof -
     by (simp only: weierstrass_fun.even)
   also have "\<dots> = \<wp> u3"
     by (rule weierstrass_fun.lattice_cong) (use rel_u3 in \<open>auto simp: rel_sym\<close>)
-  also have "\<dots> =  - \<wp> u1' - \<wp> u2' + a ^ 2 / 4"
+  also have "\<dots> = -\<wp> u1' - \<wp> u2' + a ^ 2 / 4"
   proof -
     have "poly.coeff P 2 = poly.coeff Q 2"
       by (simp only: P_Q)
@@ -394,6 +395,21 @@ proof -
   qed
   finally show "\<wp> (u1 + u2) = -\<wp> u1 - \<wp> u2 + ((\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2))\<^sup>2 / 4"
     by (simp add: u1'_def u2'_def a_def)
+
+  have "\<wp>' (u1 + u2) = -\<wp>' (-(u1 + u2))"
+    by (metis add.inverse_inverse weierstrass_fun_deriv_minus)
+  also have "\<wp>' (-(u1 + u2)) = \<wp>' u3"
+    by (rule weierstrass_fun_deriv.lattice_cong) (use rel_u3 in \<open>auto simp: rel_sym\<close>)
+  also have "\<dots> = a * \<wp> u3 + b"
+    by (fact u3_ab)
+  also have "\<wp> u3 = \<wp> (-(u1 + u2))"
+    by (rule weierstrass_fun.lattice_cong) (use rel_u3 in \<open>auto simp: rel_sym\<close>)
+  also have "\<dots> = \<wp> (u1 + u2)"
+    by (simp only: weierstrass_fun.even)
+  also have "a * \<wp> (u1 + u2) + b = \<wp>' u1 + (\<wp> (u1 + u2) - \<wp> u1) * (\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2)"
+    by (simp add: a_def b_def algebra_simps add_divide_distrib diff_divide_distrib ring_distribs)
+  finally show "\<wp>' (u1 + u2) = -\<wp>' u1 + (\<wp> u1 - \<wp> (u1 + u2)) * (\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2)"
+    by (simp add: divide_simps) (auto simp: algebra_simps)?
 qed
 
 text \<open>
@@ -472,7 +488,7 @@ proof -
       Finally, we apply the restricted version of the identity we already proved before.
     \<close>
     show "?lhs u2 = ?rhs u2" if "u2 \<in> B" for u2
-      using weierstrass_fun_add_aux[of u1 u2] u12(1) that by (auto simp: A_def B_def)
+      using weierstrass_fun_add_aux(1)[of u1 u2] u12(1) that by (auto simp: A_def B_def)
   qed (use u12 in \<open>auto simp: A_def B_def intro!: holomorphic_intros simp: rel_def weierstrass_fun_eq_iff\<close>)
 qed
 
@@ -527,6 +543,128 @@ proof (rule tendsto_unique)
       by (rule * tendsto_intros z')+ auto
     thus ?thesis
       by simp
+  qed
+qed auto
+
+
+theorem weierstrass_fun_deriv_add:
+  assumes u12: "u1 \<notin> \<Lambda>" "u2 \<notin> \<Lambda>" "\<not>rel u1 u2" "\<not>rel u1 (-u2)"
+  shows   "\<wp>' (u1 + u2) = -\<wp>' u1 + (\<wp> u1 - \<wp> (u1 + u2)) * (\<wp>' u1 - \<wp>' u2) / (\<wp> u1 - \<wp> u2)"
+    (is "?lhs u2 = ?rhs u2")
+proof -
+  define A where "A = -(\<Lambda> \<union> {z. rel u1 z} \<union> {z. rel u1 (-z)})"
+  define B where "B = A - {z. u1 + 2 * z \<in> \<Lambda>} - {z. 2 * u1 + z \<in> \<Lambda>}"
+
+  have A_altdef: "A = UNIV - (\<Lambda> \<union> ((+) (-u1) -` \<Lambda>) \<union> ((+) u1 -` \<Lambda>))"
+    by (auto simp: A_def rel_def add_ac diff_in_lattice_commute)
+  have B_altdef: "B = A - (\<lambda>z. 2 * z + u1) -` \<Lambda> -  ((+) (2*u1)) -` \<Lambda>"
+    unfolding B_def A_altdef by (auto simp: A_def add_ac)
+
+  show ?thesis
+  proof (rule analytic_continuation_open[where f = ?lhs and g = ?rhs])
+    text \<open>
+      Our set $B$ can be written as the complex plane minus some shifted and scaled copies of the
+      lattice, i.e.\ an uncountable set minus a countable set. Therefore, $B$ is clearly non-empty.
+    \<close>
+    show "B \<noteq> {}"
+    proof -
+      have "B = UNIV - (\<Lambda> \<union> (+) u1 ` \<Lambda> \<union> (+) (-u1) ` \<Lambda> \<union> (\<lambda>z. 2 * z + u1) -` \<Lambda> \<union> (+) (-2*u1) ` \<Lambda>)"
+        unfolding A_altdef B_altdef unfolding image_plus_conv_vimage_plus by auto
+      also have "(\<lambda>z. 2 * z + u1) -` \<Lambda> = (\<lambda>z. (z - u1) / 2) ` \<Lambda>"
+      proof safe
+        fix z assume "2 * z + u1 \<in> \<Lambda>"
+        thus "z \<in> (\<lambda>z. (z - u1) / 2) ` \<Lambda>"
+          by (intro image_eqI[of _ _ "u1 + 2 * z"]) (auto simp: algebra_simps)
+      qed auto
+      finally have "B = UNIV - (\<Lambda> \<union> (+) u1 ` \<Lambda> \<union> (+) (-u1) ` \<Lambda> \<union> 
+                                (\<lambda>z. (z - u1) / 2) ` \<Lambda> \<union> (+) (-2*u1) ` \<Lambda>)" .
+      also have "uncountable \<dots>"
+        by (intro uncountable_minus_countable countable_Un countable_lattice
+                  countable_image uncountable_UNIV_complex)
+      finally have "uncountable B" .
+      thus "B \<noteq> {}"
+        by auto
+    qed
+  next
+    text \<open>
+      Similarly, $A$ can be written as the complex plane minus some shifted copies of the lattice,
+      i.e.\ the complement of a sparse set. Clearly, what remains is still connected.
+    \<close>
+    show "connected A"
+    proof -
+      have "(\<Lambda> \<union> (+) u1 ` \<Lambda> \<union> (+) (-u1) ` \<Lambda>) sparse_in UNIV"
+        unfolding A_altdef by (intro sparse_in_union' sparse_in_translate_UNIV lattice_sparse)
+      also have "\<Lambda> \<union> (+) u1 ` \<Lambda> \<union> (+) (-u1) ` \<Lambda> = \<Lambda> \<union> (+) (-u1) -` \<Lambda> \<union> (+) u1 -` \<Lambda>"
+        unfolding image_plus_conv_vimage_plus by (simp add: Un_ac)
+      finally have "connected (UNIV - \<dots>)"
+        by (intro sparse_imp_connected) auto
+      also have "\<dots> = A"
+        by (auto simp: A_altdef)
+      finally show "connected A" .
+    qed
+  next
+    text \<open>
+      $A$ and $B$ can both be written in the form ``the complex plane minus continuous
+      deformations of the lattice''. Since the lattice is a closed set, $A$ and $B$ are open.
+    \<close>
+    show "open A" unfolding A_altdef
+      by (intro open_Diff closed_Un closed_lattice closed_vimage continuous_intros) auto?
+    show "open B" unfolding B_altdef
+      by (intro open_Diff \<open>open A\<close> closed_lattice closed_vimage continuous_intros) auto?
+  next
+    text \<open>
+      Finally, we apply the restricted version of the identity we already proved before.
+    \<close>
+    show "?lhs u2 = ?rhs u2" if "u2 \<in> B" for u2
+      using weierstrass_fun_add_aux(2)[of u1 u2] u12(1) that by (auto simp: A_def B_def)
+  qed (use u12 in \<open>auto simp: A_def B_def intro!: holomorphic_intros simp: rel_def weierstrass_fun_eq_iff\<close>)
+qed
+
+theorem weierstrass_fun_deriv_double:
+  assumes z: "2 * z \<notin> \<Lambda>"
+  defines "a \<equiv> deriv \<wp>' z / \<wp>' z"
+  shows   "\<wp>' (2 * z) = -\<wp>' z + 3 * a * \<wp> z - a ^ 3 / 4"
+proof (rule tendsto_unique)
+  have z': "z \<notin> \<Lambda>"
+    using z by (metis assms add_in_lattice mult_2)
+  have z'': "z + z \<notin> \<Lambda>"
+    using z by simp
+
+  show "(\<lambda>w. -\<wp>' z + (\<wp> z - \<wp> (z + w)) * (\<wp>' z - \<wp>' w) / (\<wp> z - \<wp> w)) \<midarrow>z\<rightarrow> \<wp>' (2 * z)"
+  proof (rule Lim_transform_eventually)
+    show "(\<lambda>w. \<wp>' (z + w)) \<midarrow>z\<rightarrow> \<wp>' (2 * z)"
+      by (rule tendsto_eq_intros refl)+ (use z in auto)
+  next
+    have "eventually (\<lambda>w. w \<in> -(\<Lambda> \<union> (+) z -` \<Lambda> \<union> (+) (-z) -` (\<Lambda>-{0})) - {z}) (at z)"
+      using z z' by (intro eventually_at_in_open open_Compl closed_Un closed_vimage
+                           closed_subset_lattice) (auto intro!: continuous_intros)
+    thus "eventually (\<lambda>w. \<wp>' (z + w) = -\<wp>' z + (\<wp> z - \<wp> (z + w)) * (\<wp>' z - \<wp>' w) / (\<wp> z - \<wp> w)) (at z)"
+    proof eventually_elim
+      case (elim w)
+      show ?case
+        by (subst weierstrass_fun_deriv_add)
+           (use z' elim in \<open>auto simp: rel_def diff_in_lattice_commute\<close>)
+    qed
+  qed
+
+  show "(\<lambda>w. -\<wp>' z + (\<wp> z - \<wp> (z + w)) * (\<wp>' z - \<wp>' w) / (\<wp> z - \<wp> w)) \<midarrow>z\<rightarrow> 
+          -\<wp>' z + 3 * a * \<wp> z - a ^ 3 / 4"
+  proof -
+    have "(\<lambda>w. (\<wp>' z - \<wp>' w) / (\<wp> z - \<wp> w)) \<midarrow>z\<rightarrow> (-deriv \<wp>' z) / (-\<wp>' z)"
+      by (rule lhopital_complex_simple[OF _ _ _ _ _ refl])
+        (use z z' in \<open>auto simp: weierstrass_fun_deriv_eq_0_iff weierstrass_fun_ODE2 
+                           intro!: derivative_eq_intros\<close>)
+    hence *: "(\<lambda>w. (\<wp>' z - \<wp>' w) / (\<wp> z - \<wp> w)) \<midarrow>z\<rightarrow> a"
+      by (simp add: a_def)
+    have "(\<lambda>w. -\<wp>' z + (\<wp> z - \<wp> (z + w)) * ((\<wp>' z - \<wp>' w) / (\<wp> z - \<wp> w)))
+                 \<midarrow>z\<rightarrow> -\<wp>' z + (\<wp> z - \<wp> (z + z)) * a"
+      by (rule * tendsto_intros z'')+
+    also have "\<wp> z - \<wp> (z + z) = 3 * \<wp> z - a ^ 2 / 4"
+      using z by (simp add: weierstrass_fun_double a_def)
+    also have "\<dots> * a = 3 * \<wp> z * a - a ^ 3 / 4"
+      by (simp add: algebra_simps power3_eq_cube power2_eq_square)
+    finally show ?thesis
+      by (simp add: algebra_simps)
   qed
 qed auto
 
