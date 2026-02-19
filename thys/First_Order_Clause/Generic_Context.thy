@@ -10,8 +10,9 @@ locale "context" =
     apply_hole [simp]: "\<And>t. \<box>\<langle>t\<rangle> = t" and
     apply_context_eq: "\<And>c t t'. c\<langle>t\<rangle> = c\<langle>t'\<rangle> \<Longrightarrow> t = t'"
 
-locale context_interpretation = "context" where apply_context = apply_context 
-  for apply_context :: "'c \<Rightarrow> 't \<Rightarrow> 't" +
+locale context_interpretation =
+  "context" where apply_context = apply_context 
+for apply_context :: "'c \<Rightarrow> 't \<Rightarrow> 't" +
 fixes 
   More :: "'f \<Rightarrow> 'e \<Rightarrow> 't list \<Rightarrow> 'c \<Rightarrow> 't list \<Rightarrow> 'c" and
   fun_sym :: "'c \<Rightarrow> 'f" and 

@@ -129,12 +129,11 @@ interpretation KBO: context_compatible_nonground_order where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and term_subst = "(\<cdot>)" and term_vars = term.vars and
   apply_subst = apply_subst and subst_update = fun_upd and compose_context = "(\<circ>\<^sub>c)" and
   term_from_ground = term.from_ground and term_to_ground = term.to_ground and
-  map_context = map_args_actxt and to_ground_context_map = map_args_actxt and
-  from_ground_context_map = map_args_actxt and context_to_set = set2_actxt and hole = \<box> and
-  apply_context = ctxt_apply_term and occurences = occurences and ground_hole = \<box> and
+  hole = \<box> and apply_context = ctxt_apply_term and occurences = occurences and ground_hole = \<box> and
   apply_ground_context = apply_ground_context and compose_ground_context = "(\<circ>\<^sub>c)" and
-  ground_context_map = map_args_actxt and ground_context_to_set = set2_actxt and
-  term_is_ground = term.is_ground
+  term_is_ground = term.is_ground and context_is_ground = context.is_ground and
+  context_vars = context.vars and context_subst = context.subst and
+  context_from_ground = context.from_ground and context_to_ground = context.to_ground
 proof unfold_locales
    show "transp less_kbo"
     using KBO.S_trans

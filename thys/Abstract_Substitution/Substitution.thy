@@ -270,6 +270,7 @@ lemma fset_finite_vars [simp]: "fset (finite_vars expr) = vars expr"
 
 end
 
+(* TODO: Merge with First_Order_Clause.Infinite_Variables *)
 locale infinite_variables = substitution where vars = vars
   for vars :: "'expr \<Rightarrow> 'v set" +
   assumes infinite_vars [intro]: "infinite (UNIV :: 'v set)"

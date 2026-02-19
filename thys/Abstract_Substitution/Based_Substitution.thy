@@ -10,7 +10,7 @@ locale base_substitution = substitution where vars = vars and apply_subst = appl
     \<comment>\<open>The precondition of the assumption ensures noop substitutions\<close>
     vars_id_subst: "\<And>x. exists_nonground \<Longrightarrow> vars (x \<cdot>v id_subst) = {x}" and
     comp_subst_iff: "\<And>\<sigma> \<sigma>' x. x \<cdot>v \<sigma> \<odot> \<sigma>' = subst (x \<cdot>v \<sigma>) \<sigma>'" and
-    base_vars_subst: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (vars ` var_subst \<rho> ` vars expr)" and
+    base_vars_subst: "\<And>expr \<sigma>. vars (expr \<cdot> \<sigma>) = \<Union> (vars ` var_subst \<sigma> ` vars expr)" and
     base_vars_grounded_if_is_grounding:
       "\<And>expr \<gamma>. is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> \<forall>x \<in> vars expr. is_ground (x \<cdot>v \<gamma>)"
 
@@ -24,16 +24,11 @@ for
   vars :: "'expr \<Rightarrow> 'v set" and
   base_is_ground +
 assumes
-  ground_subst_iff_base_ground_subst [simp]: "\<And>\<gamma>. is_ground_subst \<gamma> \<longleftrightarrow> base.is_ground_subst \<gamma>" and
+  exists_nonground_iff_base_exists_nonground [simp]: "exists_nonground \<longleftrightarrow> base.exists_nonground" and
   vars_subst: "\<And>expr \<rho>. vars (expr \<cdot> \<rho>) = \<Union> (base_vars ` var_subst \<rho> ` vars expr)" and
   vars_grounded_if_is_grounding:
     "\<And>expr \<gamma>. is_ground (expr \<cdot> \<gamma>) \<Longrightarrow> \<forall>x \<in> vars expr. base_is_ground (x \<cdot>v \<gamma>)"
 begin
-
-lemma exists_nonground_iff_base_exists_nonground:
-  "exists_nonground \<longleftrightarrow> base.exists_nonground"
-  by (metis base.is_ground_subst_def base.subst_id_subst ground_subst_iff_base_ground_subst
-      is_ground_subst_def subst_id_subst)
 
 lemma id_subst_subst [simp]: "base_subst (x \<cdot>v id_subst) \<sigma> = x \<cdot>v \<sigma>"
   by (metis base.comp_subst_iff left_neutral)
@@ -66,7 +61,7 @@ sublocale based_substitution
   where base_subst = subst and base_vars = vars and base_is_ground = is_ground
   by unfold_locales (simp_all add: base_vars_grounded_if_is_grounding base_vars_subst)
 
-declare ground_subst_iff_base_ground_subst [simp del]
+declare exists_nonground_iff_base_exists_nonground [simp del]
 
 end
 
@@ -87,15 +82,18 @@ begin
 lemma vars_id_subst_update: "vars (expr \<cdot> id_subst\<lbrakk>x := b\<rbrakk>) \<subseteq> vars expr \<union> base_vars b"
 proof (cases exists_nonground)
   case True
+
   then show ?thesis
     unfolding vars_subst 
     using subst_update base.vars_id_subst
-    by (smt (verit, ccfv_threshold) SUP_least UnCI exists_nonground_iff_base_exists_nonground
-        imageE singleton_iff subset_eq subst_update_var(1,2))
+    by (smt (verit, del_insts) SUP_least UnCI base.no_vars_if_is_ground imageE singleton_iff
+        subset_eq subst_update_var)
 next
   case False
+
   then show ?thesis
-    by simp
+    using no_vars_if_is_ground
+    by blast
 qed
 
 lemma ground_subst_update [simp]:
@@ -144,7 +142,8 @@ proof (unfold is_renaming_def, intro exI)
 
       then show ?thesis
         unfolding renaming_of_bij_def renaming_of_bij_inv_def base.comp_subst_iff
-        by (auto simp: exists_nonground finite_S finite_T)
+        using exists_nonground finite_S_T
+        by auto
     next
       case x_in_S_T: True
 

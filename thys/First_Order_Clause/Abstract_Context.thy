@@ -2,24 +2,24 @@ theory Abstract_Context
   imports Generic_Term_Context
 begin
 
-datatype ('f, extra_set: 'extra, term_set: 't) "context" =
+datatype ('f, extra_set: 'e, term_set: 't) "context" =
   Hole (\<open>\<box>\<close>) |
   More
-    (fun_sym: 'f) (extra: 'extra) (subterms\<^sub>l: "'t list") 
-    (subcontext: "('f, 'extra, 't) context") (subterms\<^sub>r: "'t list")
+    (fun_sym: 'f) (extra: 'e) (subterms\<^sub>l: "'t list") 
+    (subcontext: "('f, 'e, 't) context") (subterms\<^sub>r: "'t list")
 
 primrec compose_context (infixl \<open>\<circ>\<^sub>c\<close> 75) where
   "Hole \<circ>\<^sub>c c = c"
 | "More f e ls C rs \<circ>\<^sub>c D = More f e ls (C \<circ>\<^sub>c D) rs"
 
-fun hole_position :: "('f, 'extra, 't) context \<Rightarrow> position" where
+fun hole_position :: "('f, 'e, 't) context \<Rightarrow> position" where
   "hole_position \<box> = []"
 | "hole_position (More _  _ ss D _) = length ss # hole_position D"
 
 interpretation abstract_context: smaller_subcontext where
   hole = \<box> and size = size and subcontext = subcontext
 proof unfold_locales
-  fix c :: "('f, 'extra, 't) context"
+  fix c :: "('f, 'e, 't) context"
   assume "c \<noteq> \<box>"
 
   then show "size (subcontext c) < size c"
@@ -28,13 +28,28 @@ qed
 
 locale abstract_context = 
   term_interpretation where Fun = Fun +
-  smaller_subterms 
+  smaller_subterms
 for Fun :: "'f \<Rightarrow> 'e \<Rightarrow> 't list \<Rightarrow> 't"
 begin
 
 primrec apply_context (\<open>_\<langle>_\<rangle>\<close> [1000, 0] 1000) where
   "\<box>\<langle>t\<rangle> = t"
 | "(More f e ls C rs)\<langle>t\<rangle> = Fun f e (ls @ C\<langle>t\<rangle> # rs)"
+
+lemma size_apply_context: "c \<noteq> \<box> \<Longrightarrow> size t < size c\<langle>t\<rangle>"
+proof (induction c)
+  case Hole
+  then show ?case
+    by argo
+next
+  case (More f e ls c rs)
+
+  moreover have "size c\<langle>t\<rangle> < size (Fun f e (ls @ c\<langle>t\<rangle> # rs))"
+    by (simp add: subterms_smaller)
+
+  ultimately show ?case 
+    by fastforce
+qed
 
 primrec context_at :: "'t \<Rightarrow> position \<Rightarrow> ('f, 'e, 't) context" (infixl \<open>!\<^sub>c\<close> 64) where
   "t !\<^sub>c [] = \<box>"
@@ -111,6 +126,14 @@ next
   then show "(t !\<^sub>c p)\<langle>t !\<^sub>t p\<rangle> = t"
   by (induction p arbitrary: t) (auto simp: Cons_nth_drop_Suc)
 qed auto
+
+lemma context_is_subterm [intro]:
+  assumes "t = c\<langle>t'\<rangle>" shows "t' \<unlhd> t"
+  using assms
+  by (induction c arbitrary: t) auto
+
+lemma is_subterm_iff_exists_context: "t' \<unlhd> t \<longleftrightarrow> (\<exists>c. t = c\<langle>t'\<rangle>)"
+  by auto
 
 end
 

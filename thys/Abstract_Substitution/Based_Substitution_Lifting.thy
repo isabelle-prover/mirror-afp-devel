@@ -30,7 +30,12 @@ next
     unfolding is_ground_def vars_def
     using sub.variable_grounding
     by auto
-qed simp
+next
+
+  show "exists_nonground = base.exists_nonground"
+    by (metis sub.exists_nonground_iff_base_exists_nonground
+        exists_nonground_iff_sub_exists_nonground)
+qed 
 
 end
 

@@ -30,6 +30,7 @@ abbreviation "from_ground \<equiv> from_ground_def"
 
 end
 
+(* TODO: Make the properties here independent from the ones needed for superposition *)
 locale base_properties =
   base_substitution +
   based_subst_update where
@@ -71,6 +72,9 @@ sublocale grounding_def where
 
 abbreviation is_Var where
  "is_Var t \<equiv> \<exists>x. t = Var x \<and> exists_nonground"
+
+abbreviation the_Var where
+ "the_Var t \<equiv> SOME x. t = Var x"
 
 end
 

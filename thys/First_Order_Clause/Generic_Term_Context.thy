@@ -12,6 +12,32 @@ for
   More :: "'f \<Rightarrow> 'e \<Rightarrow> 't list \<Rightarrow> 'c \<Rightarrow> 't list \<Rightarrow> 'c" and
   fun_sym\<^sub>c extra\<^sub>c +
 assumes apply_context [simp]: "\<And>f e ls c rs t. (More f e ls c rs)\<langle>t\<rangle> = Fun f e (ls @ c\<langle>t\<rangle> # rs)"
+begin
+
+lemma is_subterm_obtain_context [elim]:
+  assumes "t' \<unlhd> t"
+  obtains c where "t = c\<langle>t'\<rangle>"
+  using assms 
+proof (induction t' t arbitrary: thesis rule: is_subterm_eq.induct)
+  case (subterm_refl t)
+
+  then show ?case 
+    by (metis apply_hole)
+next
+  case (subterm t' t t'')
+ 
+  then obtain c where t': "t' = c\<langle>t''\<rangle>" 
+    by auto
+
+  obtain ts1 ts2 where "subterms t = ts1 @ t' # ts2"
+    by (meson split_list_first subterm.hyps(1))
+
+  show ?case
+    by (metis t' append_is_Nil_conv apply_context interpret_term is_var_subterms split_list_first
+        subterm.hyps(1) subterm.prems)
+qed
+
+end
 
 locale hole_position =
   smaller_subterms where subterms = subterms +
@@ -44,7 +70,7 @@ lemma replace_at_id [simp]: "t\<lbrakk>[] := t\<rbrakk> = t"
 
 end
 
-locale replace_at_subterm = 
+locale replace_at_subterm =
   context_at + 
   term_interpretation +
   assumes

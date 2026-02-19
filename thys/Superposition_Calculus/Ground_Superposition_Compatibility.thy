@@ -17,9 +17,8 @@ begin
 
 (* TODO: *)
 lemma noop_is_ground [simp]: "is_ground expr"
-  unfolding is_ground_def
-  using sub.exists_nonground_iff_base_exists_nonground
-  by auto
+  using exists_nonground_iff_sub_exists_nonground is_ground_def
+  by simp
 
 lemma noop_vars [simp]: "vars expr = {}"
   using no_vars_if_is_ground
@@ -51,27 +50,14 @@ sublocale clause.noop: noop_lifting where
 
 end
 
-context nonground_term_with_context
-begin
-
-
-sublocale context.noop: noop_lifting where
-  sub_vars = noop_vars and  sub_subst = noop_subst and map = map_context and
-  to_set = context_to_set and sub_to_ground = id and sub_from_ground = id and
-  sub_is_ground = noop_is_ground
-  using unit.neutral_is_right_invertible
-  by unfold_locales (auto simp: abstract_substitution_ops.is_ground_subst_def)
-
-end
-
 locale ground_superposition_compatibility = untyped_superposition_calculus where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_vars = noop_vars and
   subst_update = noop_subst_update and apply_subst = noop_apply_subst and
   term_is_ground = noop_is_ground and term_subst = noop_subst and term_to_ground = id and
   term_from_ground = id and ground_hole = hole and compose_ground_context = compose_context and
-  from_ground_context_map = map_context and to_ground_context_map = map_context and
-  ground_context_map = map_context and ground_context_to_set = context_to_set and
-  apply_ground_context = apply_context and occurences = "\<lambda>_ _. 0" 
+  apply_ground_context = apply_context and occurences = "\<lambda>_ _. 0" and
+  context_is_ground = noop_is_ground and context_vars = noop_vars and context_subst = noop_subst and
+  context_to_ground = id and context_from_ground = id
 begin
 
 interpretation grounded: ground_superposition_calculus where
@@ -308,7 +294,7 @@ proof (rule iffI)
     next
 
       show "C = add_mset
-                  (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c noop_id_subst)\<langle>noop_subst t\<^sub>2' noop_id_subst\<rangle> 
+                  (\<P> (Upair (noop_subst c\<^sub>1 noop_id_subst)\<langle>noop_subst t\<^sub>2' noop_id_subst\<rangle> 
                             (noop_subst t\<^sub>1' noop_id_subst)))
                   (E' \<cdot> noop_id_subst + D' \<cdot> noop_id_subst) \<cdot> noop_id_subst"
         using grounded_superpositionI(12) 

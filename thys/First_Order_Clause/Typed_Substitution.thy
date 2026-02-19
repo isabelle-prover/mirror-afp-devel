@@ -92,9 +92,9 @@ sublocale typing "welltyped \<V>"
 lemma only_ground_infinite_variables_per_type_on: 
   assumes "\<not>exists_nonground"
   shows "infinite_variables_per_type_on (vars expr) \<V>"
-  using assms
+  using assms no_vars_if_is_ground
   unfolding infinite_variables_per_type_on_def
-  using no_vars_if_is_ground by simp
+  by blast
 
 end
 
@@ -166,8 +166,8 @@ next
   case False
 
   then show ?thesis
-    using that no_vars_if_is_ground exists_nonground_iff_base_exists_nonground
-    by blast
+    using that no_vars_if_is_ground
+    by (metis base.all_subst_ident_if_ground id_subst_subst vars_grounded_iff_is_grounding)
 qed
 
 end
@@ -711,17 +711,12 @@ proof(intro ballI impI)
     using renaming renaming_inv_into x_in_expr
     by blast
 
-  then have "base_welltyped \<V> (base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>)) (\<V> y)"
-    using \<rho>_\<gamma>_type_preserving y_in_vars welltyped_x x_in_expr \<V>_\<V>'
-    unfolding y_def
-    by (smt (verit, best) is_ground_subst_is_ground base.is_ground_subst_def base.inv_renaming
-        base.vars_id_subst ground_subst_iff_base_ground_subst id_subst_subst empty_not_insert
-        mk_disjoint_insert no_vars_if_is_ground renaming id_subst_rename singleton_iff
-        base.welltyped_renaming)
-
   ultimately have "base_welltyped \<V>' (base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>)) (\<V> y)"
     using base.is_ground_replace_\<V> 
-    by blast
+    by (smt (verit, ccfv_SIG) \<V>_\<V>' \<rho>_\<gamma>_type_preserving base.inv_renaming
+        base.welltyped_renaming base.vars_id_subst empty_iff no_vars_if_is_ground
+        exists_nonground_iff_base_exists_nonground id_subst_rename id_subst_subst renaming
+        singletonD welltyped_x y_def y_in_vars)
 
   moreover have "base_subst (y \<cdot>v id_subst) (\<rho> \<odot> \<gamma>) = x \<cdot>v \<gamma>"
     using x_in_expr base.renaming_inv_into[OF renaming] base.left_neutral
@@ -869,7 +864,10 @@ next
     by auto
 
   show ?thesis
-    by (rule that[OF \<rho> \<rho>]) (use no_vars_if_is_ground only_ground in auto)
+    by 
+      (rule that[OF \<rho> \<rho>]) 
+      (use no_vars_if_is_ground only_ground in
+        \<open>auto simp del: exists_nonground_iff_base_exists_nonground\<close>)
 qed
 
 lemma obtain_merged_grounding':

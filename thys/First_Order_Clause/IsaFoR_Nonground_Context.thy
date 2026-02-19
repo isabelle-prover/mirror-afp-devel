@@ -29,11 +29,11 @@ interpretation "context": nonground_context where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and subst_update = fun_upd and 
   apply_subst = apply_subst and term_subst = "(\<cdot>)" and term_is_ground = term.is_ground and
   term_vars = term.vars and compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and
-  term_to_ground = term.to_ground and map_context = map_args_actxt and
-  to_ground_context_map = map_args_actxt and from_ground_context_map = map_args_actxt and
-  context_to_set = set2_actxt and hole = \<box> and apply_context = ctxt_apply_term and
-  ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
-  ground_context_to_set = set2_actxt and apply_ground_context = apply_ground_context
+  term_to_ground = term.to_ground and hole = \<box> and apply_context = ctxt_apply_term and
+  ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and
+  apply_ground_context = apply_ground_context and is_ground = context.is_ground and
+  subst = "(\<cdot>\<^sub>c)" and vars = context.vars and from_ground = context.from_ground and
+  to_ground = context.to_ground
 proof unfold_locales
   fix c and t :: "('f, 'v) term"
 
@@ -49,11 +49,6 @@ next
 
   show "term.is_ground c\<langle>t\<rangle> \<longleftrightarrow> context.is_ground c \<and> term.is_ground t"
     by (induction c) (auto simp: context.is_ground_def)
-next
-  fix f :: "('f, 'v) term \<Rightarrow> ('f, 'v) term" and c c' :: "('f, 'v) context"
-
-  show "map_args_actxt f (c \<circ>\<^sub>c c') = map_args_actxt f c \<circ>\<^sub>c map_args_actxt f c'"
-    by (induction c) auto
 next
   fix c c' :: "'f gcontext"
 
@@ -176,12 +171,11 @@ interpretation "term": occurences where
   comp_subst = "(\<circ>\<^sub>s)" and id_subst = Var and subst_update = fun_upd and 
   apply_subst = apply_subst and term_subst = "(\<cdot>)" and term_vars = term.vars and
   compose_context = "(\<circ>\<^sub>c)" and term_from_ground = term.from_ground and
-  term_is_ground = term.is_ground and term_to_ground = term.to_ground and
-  map_context = map_args_actxt and to_ground_context_map = map_args_actxt and
-  from_ground_context_map = map_args_actxt and context_to_set = set2_actxt and hole = \<box> and
+  term_is_ground = term.is_ground and term_to_ground = term.to_ground and hole = \<box> and
   apply_context = ctxt_apply_term and ground_hole = \<box> and compose_ground_context = "(\<circ>\<^sub>c)" and
-  ground_context_map = map_args_actxt and ground_context_to_set = set2_actxt and
-  apply_ground_context = apply_ground_context and occurences = occurences
+  apply_ground_context = apply_ground_context and occurences = occurences and
+  is_ground = context.is_ground and subst = "(\<cdot>\<^sub>c)" and vars = context.vars and
+  from_ground = context.from_ground and to_ground = context.to_ground
 proof unfold_locales
   fix x c and t :: "('f, 'v) term"
   assume "term.is_ground t"
