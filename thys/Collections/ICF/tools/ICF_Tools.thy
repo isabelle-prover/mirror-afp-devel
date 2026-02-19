@@ -136,15 +136,15 @@ ML \<open>
     *)
 
     local
-      fun sss_add_single thm ss = let
-        val simps = Simplifier.dest_simps (simpset_of ss) |> map #2;
-        val ess = ss delsimps simps;
-        val thm' = simplify ss thm;
+      fun sss_add_single thm ctxt = let
+        val simps = Simplifier.dest_simps (simpset_of ctxt) |> map #2;
+        val ectxt = ctxt |> Simplifier.del_simps simps;
+        val thm' = simplify ctxt thm;
 
         val new_simps = simps
           |> map (simplify 
-              (ess addsimps [thm']));
-        val ss' = ess addsimps (thm'::new_simps)
+              (ectxt |> Simplifier.add_simp thm'));
+        val ss' = ectxt addsimps (thm'::new_simps)
       in ss' end
     in
       val sss_add = fold sss_add_single

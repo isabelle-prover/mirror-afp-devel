@@ -759,7 +759,7 @@ fun interprete_pointer_array_lense typ getter setter lthy =
 
 fun ptr_valid_instance_tac ctxt =
   let
-    val ctxt = ctxt delsimps @{thms field_lookup_offset_untyped_eq size_simps size_align_simps}
+    val ctxt = ctxt |> Simplifier.del_simps @{thms field_lookup_offset_untyped_eq size_simps size_align_simps}
     val ptr_valid_def = Named_Theorems.get ctxt @{named_theorems ptr_valid_definition}
     val ptr_valid_u_recursion = Named_Theorems.get ctxt @{named_theorems ptr_valid_u_recursion}
     val fold_ptr_valid = Named_Theorems.get ctxt @{named_theorems fold_ptr_valid}

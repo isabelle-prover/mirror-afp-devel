@@ -2088,7 +2088,7 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   val fn_ptr_guard_simps = callee_terms |> Symtab.dest |> map (#2 o #2) |> flat
   val ctxt = ctxt |> AutoCorresTrace.put_trace_info fn_name FunctionInfo.L2 FunctionInfo.PEEP;
   val new_thm = timeit_msg 1 ctxt (fn _ => "Simplification (L2opt): " ^ fn_name) (fn _ =>
-    L2Opt.cleanup_thm_tagged prog_info (ctxt delsimps cleanup_del) fn_ptr_guard_simps [] 
+    L2Opt.cleanup_thm_tagged prog_info (ctxt |> Simplifier.del_simps cleanup_del) fn_ptr_guard_simps [] 
       (SOME map_of_default_args.unfold_map_of_default_conv) new_thm
     L2_opt 5 trace_opt FunctionInfo.L2)
   val _ = verbose_msg 1 ctxt (fn _ => "L2 (L2opt) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt new_thm)

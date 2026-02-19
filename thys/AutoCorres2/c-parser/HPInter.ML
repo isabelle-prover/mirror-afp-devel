@@ -1129,8 +1129,8 @@ let
           val eqs = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_map_of_default_eqs}
           val disj_G_S = Named_Theorems.get lthy @{named_theorems disjoint_\<G>_\<S>}
           val simp_ctxt = lthy 
-            addsimps (def_eq::disj_G_S @ eqs)
-            delsimps @{thms map_of_default.simps}
+            |> Simplifier.add_simps (def_eq :: disj_G_S @ eqs)
+            |> Simplifier.del_simps @{thms map_of_default.simps}
           val fun_ptr_thms = Utils.timeit_label 3 lthy "fun_ptr_thms" (fn _ => 
             map snd fun_ptr_eqs |> map (fn prop => prove' lthy [] [] prop (fn {context, ...} => 
                 asm_full_simp_tac simp_ctxt 1)))

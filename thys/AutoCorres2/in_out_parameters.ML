@@ -545,8 +545,8 @@ fun ptr_to_lense ctxt ct =
               cprop \<open>orig = PTR ('a) (field_lvalue root path)\<close>\<close> ctxt
          val prems = if trivial_guard grd then [] else [Utils.Trueprop_cterm grd]
          val simp_ctxt = ctxt 
-             delsimps @{thms ptr_coerce.simps}
-             addsimps 
+             |> Simplifier.del_simps @{thms ptr_coerce.simps}
+             |> Simplifier.add_simps 
                @{thms ptr_coerce_index_array_ptr_index_conv array_ptr_index_field_lvalue_conv}
 
          val eq_thm = Goal.prove_internal ctxt prems eq (fn prems =>
@@ -563,7 +563,7 @@ fun assume_grds grds ctxt =
  else
    let
      val simp_ctxt = ctxt 
-        delsimps (Named_Theorems.get ctxt @{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def}
+       |> Simplifier.del_simps (Named_Theorems.get ctxt @{named_theorems size_simps} @ @{thms ptr_val.ptr_val_def})
        |> Simplifier.add_cong @{thm HOL.conj_cong}
      val grd = Utils.conjs_cterm grds |> simplified_cterm simp_ctxt
      val ([grd_thm], ctxt) = Assumption.add_assumes [Utils.Trueprop_cterm grd] ctxt
@@ -1065,8 +1065,8 @@ fun assume_distinct ptrs ctxt =
     val disj = Utils.Trueprop_cterm (distinct_spans ptrs ctxt)
     val ([disj_thm], ctxt) = Assumption.add_assumes [disj] ctxt
     val simp_ctxt = ctxt
-      delsimps (Named_Theorems.get ctxt @{named_theorems size_simps})
-      addsimps @{thms disjoint_union_distrib distinct_sets.simps}
+      |> Simplifier.del_simps (Named_Theorems.get ctxt @{named_theorems size_simps})
+      |> Simplifier.add_simps @{thms disjoint_union_distrib distinct_sets.simps}
     val disj_thms = disj_thm |> Simplifier.simplify simp_ctxt |> Simplifier.mksimps ctxt
     val disj_thms_sym = disjoint_syms' disj_thms
     val all_disj_thms = disj_thms @ disj_thms_sym
@@ -1903,7 +1903,7 @@ let
       val disjoint_stack_free = Named_Rules.get alloc_ctxt @{named_rules disjoint_stack_free}
       val simp_eqs = h_val_eq_rule::disjoint_alloc @ disjoint_stack_free
       val size_simps = Named_Theorems.get alloc_ctxt @{named_theorems size_simps}
-      val simp_ctxt = alloc_ctxt addsimps simp_eqs delsimps size_simps
+      val simp_ctxt = alloc_ctxt |> Simplifier.add_simps simp_eqs |> Simplifier.del_simps size_simps
 
       val keep_eqs = keep_props |> map (fn eq => Goal.prove_internal simp_ctxt [] eq (fn _ =>
            asm_full_simp_tac simp_ctxt 1))
@@ -2086,8 +2086,8 @@ let
         |> maps (fn rule => (map_filter (fn p_G => try_OF rule [p_G])) contained_thms)
 
       val simp_ctxt = 
-        ctxt addsimps (disjoint_globals_simps @ disjoint_simps @ [frame_heap_independent_selector])
-          delsimps (@{thms ptr_add_0_id} @ size_simps)
+        ctxt |> Simplifier.add_simps (disjoint_globals_simps @ disjoint_simps @ [frame_heap_independent_selector])
+          |> Simplifier.del_simps (@{thm ptr_add_0_id} :: size_simps)
           |> add_mk_disjoint_global_simps
     in
       simp_ctxt
@@ -2186,12 +2186,12 @@ let
       val e' = eq |> Thm.rhs_of
       val {e', other_ptrs, ...} = fix_params_state ctxt0 (K false) s t params NONE e'
       val (contained_thms, global_grd, needs_guard, _) = global_guard ctxt0 rel_alloc params other_ptrs s t
-      val ctxt = expr_simp_ctxt [] ctxt0
+      val ctxt = ctxt0 |> expr_simp_ctxt []
           (*  sic []: we don't add contained_thms here as they have the global_grd as hyp. 
            *  instead we add the global_grd to the new guard itself. 
            *  conj_cong + add_mk_disjoint_global_simps then do the job. 
            *) 
-        delsimps (Named_Theorems.get ctxt0 @{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def}
+        |> Simplifier.del_simps (Named_Theorems.get ctxt0 @{named_theorems size_simps} @ @{thms ptr_val.ptr_val_def})
         |> Simplifier.add_cong @{thm HOL.conj_cong} 
         |> Context_Position.set_visible false
       val e' = if needs_guard then guard_conj ctxt global_grd e' else e'
@@ -2215,9 +2215,9 @@ let
 
       val (contained_thms, _, needs_guard, guard_ctxt) = global_guard ctxt rel_alloc params other_ptrs s t
       val rel_stack_intros = Named_Theorems.get ctxt @{named_theorems rel_stack_intros}
-      val simp_ctxt = expr_simp_ctxt contained_thms guard_ctxt
-              addsimps @{thms h_val_update_regions_disjoint}
-              delsimps (Named_Theorems.get ctxt @{named_theorems size_simps})
+      val simp_ctxt = guard_ctxt |> expr_simp_ctxt contained_thms
+              |> Simplifier.add_simps @{thms h_val_update_regions_disjoint}
+              |> Simplifier.del_simps (Named_Theorems.get ctxt @{named_theorems size_simps})
 
       val result_rel_thm = Goal.prove_internal guard_ctxt [] goal (fn _ => 
         REPEAT_ALL_NEW (
@@ -2291,8 +2291,8 @@ let
 
         val simp_ctxt = (ctxt |> silent ? Context_Position.set_visible false 
               |> set_derived_rel_alloc_mksimps) 
-              delsimps (size_simps @ @{thms ptr_val_ptr_add_simps replicate_0 replicate_Suc})
-              addsimps (guard_assms @ 
+              |> Simplifier.del_simps (size_simps @ @{thms ptr_val_ptr_add_simps replicate_0 replicate_Suc})
+              |> Simplifier.add_simps (guard_assms @ 
                         frame_eqs @
                         alloc_assms @ 
                         all_disjoint_alloc @ 
@@ -2321,9 +2321,8 @@ let
     let
       val ctxt = Context_Position.set_visible false ctxt
       val h_val_ctxt = L2Opt.cleanup_ss prog_info ctxt [] FunctionInfo.IO FunctionInfo.PEEP
-            delsimps (Named_Theorems.get ctxt (@{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def ptr_val_ptr_add_simps guard_triv})
-            addsimps
-            field_lvalue_eqs 
+            |> Simplifier.del_simps (Named_Theorems.get ctxt (@{named_theorems size_simps}) @ @{thms ptr_val.ptr_val_def ptr_val_ptr_add_simps guard_triv})
+            |> Simplifier.add_simps field_lvalue_eqs 
             |> Simplifier.add_cong @{thm L2_seq_guard_cong_stateless}
       val thm' = thm |> Simplifier.asm_full_simplify h_val_ctxt
     in
@@ -2426,8 +2425,8 @@ let
       val rule = instantiate_thm (~1) ctxt' [("P", P), ("g", g')] refines_to_IOcorres
       val fun_of_rel_intros = Named_Theorems.get ctxt @{named_theorems fun_of_rel_intros}
       val simp_ctxt = ctxt' 
-           delsimps (Named_Theorems.get ctxt @{named_theorems size_simps} @ @{thms ptr_val_ptr_add_simps})
-           addsimps @{thms Hoare.conjE_simp}
+           |> Simplifier.del_simps (Named_Theorems.get ctxt @{named_theorems size_simps} @ @{thms ptr_val_ptr_add_simps})
+           |> Simplifier.add_simps @{thms Hoare.conjE_simp}
       val d = !d1
       val thm = Utils.check_solve_sideconditions (forall is_refines (* fun ptr *) o Thm.prems_of) ctxt' rule ( 
            dprint_tac d ctxt' "IOcorres (0)" THEN
@@ -3034,8 +3033,9 @@ let
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "heap_thm: " ^ Thm.string_of_thm ctxt heap_thm)
 
           val h_val_unfolds = Named_Theorems.get ctxt @{named_theorems h_val_unfold}
-          val embellish_simp_ctxt = mk_simp {silent = !sd6, M = M} ctxt delsimps @{thms inter_commute}
-                     addsimps (Named_Theorems.get ctxt @{named_theorems rel_stack_simps}) @
+          val embellish_simp_ctxt = ctxt |> mk_simp {silent = !sd6, M = M}
+                     |> Simplifier.del_simps @{thms inter_commute}
+                     |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems rel_stack_simps} @
                        @{thms split_paired_all} @
                        h_val_unfolds @ 
                        lense_field_lvalue_eqs @
@@ -3048,7 +3048,7 @@ let
                            array_index_eq
                            index_fupdate_split
                            heap_access_Array_element''
-                           array_ptr_index_field_lvalue_conv}
+                           array_ptr_index_field_lvalue_conv})
 
           val outs = map (out_param return_outs) params |> flat
           fun exit_ptrs thm = 
@@ -3641,7 +3641,7 @@ let
       val cleanup_del = @{thms ptr_coerce.simps ptr_add_0_id}
       val res_ctxt = res_ctxt |> AutoCorresTrace.put_trace_info name FunctionInfo.IO FunctionInfo.PEEP;
       val thm = Utils.timeit_msg 1 res_ctxt (fn _ => "Simplification (IOopt): " ^ name) (fn _ =>
-        L2Opt.cleanup_thm_tagged prog_info (res_ctxt delsimps cleanup_del) [] [] NONE thm
+        L2Opt.cleanup_thm_tagged prog_info (res_ctxt |> Simplifier.del_simps cleanup_del) [] [] NONE thm
         FunctionInfo.PEEP 2 false FunctionInfo.IO)
 
       val thm = thm |> ProgramInfo.get_skip_word_abs (ProgramInfo.get_fun_options prog_info name) ? (fn thm =>
@@ -3675,8 +3675,8 @@ let
       val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement_internal: prop:\n " ^ string_of_cterm res_ctxt prop)
       val widen_modifies = refines_widen_modifies_weaken OF [rel_alloc, thm]
       val simp_ctxt = res_ctxt
-        delsimps (Named_Theorems.get res_ctxt @{named_theorems size_simps} @ @{thms ptr_val_ptr_add_simps})
-        addsimps (Named_Rules.get res_ctxt @{named_rules modifies_assms})
+        |> Simplifier.del_simps (Named_Theorems.get res_ctxt @{named_theorems size_simps} @ @{thms ptr_val_ptr_add_simps})
+        |> Simplifier.add_simps (Named_Rules.get res_ctxt @{named_rules modifies_assms})
       val thm = Goal.prove_internal res_ctxt [] prop (fn _ => 
           resolve_tac res_ctxt [widen_modifies] 1 THEN
           blast_tac res_ctxt 1 THEN

@@ -404,9 +404,9 @@ struct
 
 val analz_image_freshK_ss =
   simpset_of (@{context}
-    delsimps @{thms insert_commute image_Un}
-    delsimps @{thms imp_disjL}    (*reduces blow-up*)
-    addsimps @{thms analz_image_freshK_simps})
+    |> Simplifier.del_simps @{thms insert_commute image_Un}
+    |> Simplifier.del_simps @{thms imp_disjL}    (*reduces blow-up*)
+    |> Simplifier.add_simps @{thms analz_image_freshK_simps})
 
 (*Tactic for possibility theorems*)
 fun possibility_tac ctxt =

@@ -429,7 +429,7 @@ subsection \<open>ML-Level Declarations\<close>
         fun simp_only thms = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps thms)
         val rtac = resolve_tac ctxt
     
-        val cnv_ss = ctxt delsimps @{thms CNV_def}
+        val cnv_ss = ctxt |> Simplifier.del_simps @{thms CNV_def}
     
         (*val uncurry_tac = SELECT_GOAL (ALLGOALS (DETERM o SOLVED' (
           REPEAT' (rtac @{thms auto_weaken_pre_uncurry_step'}) 

@@ -469,7 +469,7 @@ fun mk_corresTA_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Cons
          EVERY [
            Method.insert_tac ctxt [impl, abs_val] 1,
            resolve_tac ctxt @{thms corresTA_assume_and_weaken_pre} 1,
-           asm_full_simp_tac (ctxt addsimps @{thms abstract_val_def} delsimps @{thms map_of_default.simps}) 1,
+           asm_full_simp_tac (ctxt |> Simplifier.add_simps @{thms abstract_val_def} |> Simplifier.del_simps @{thms map_of_default.simps}) 1,
            resolve_tac ctxt [Local_Defs.unfold ctxt @{thms DYN_CALL_def} corres_pre] 1,
            asm_full_simp_tac ctxt 1])
      |> single |> Proof_Context.export ctxt' ctxt
