@@ -660,7 +660,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     by auto
 
   have l\<^sub>1_\<gamma>:
-    "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<gamma> = ?\<P> (Upair (context.from_ground c\<^sub>G)\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle> (term.from_ground t\<^sub>G\<^sub>2))"
+    "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<gamma> = ?\<P> (Upair (context_from_ground c\<^sub>G)\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle> (term.from_ground t\<^sub>G\<^sub>2))"
     unfolding ground_superpositionI l\<^sub>1_\<gamma>
     by simp
 
@@ -668,14 +668,14 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     l\<^sub>1: "l\<^sub>1 = ?\<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1')" and
     t\<^sub>1'_\<gamma>: "t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>2" and
     t\<^sub>1_\<gamma>: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1" and
-    c\<^sub>1_\<gamma>: "c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G" and
+    c\<^sub>1_\<gamma>: "c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context_from_ground c\<^sub>G" and
     t\<^sub>1_is_Fun: "\<not>term.is_Var t\<^sub>1"
   proof -
 
     obtain c\<^sub>1_t\<^sub>1 t\<^sub>1' where
       l\<^sub>1: "l\<^sub>1 = ?\<P> (Upair c\<^sub>1_t\<^sub>1 t\<^sub>1')" and
       t\<^sub>1'_\<gamma>: "t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>2" and
-      c\<^sub>1_t\<^sub>1_\<gamma>: "c\<^sub>1_t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = (context.from_ground c\<^sub>G)\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle>"
+      c\<^sub>1_t\<^sub>1_\<gamma>: "c\<^sub>1_t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = (context_from_ground c\<^sub>G)\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle>"
       using l\<^sub>1_\<gamma>
       by (smt (verit) obtain_from_literal_subst)
 
@@ -683,7 +683,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       "\<exists>c\<^sub>1 t\<^sub>1.
         c\<^sub>1_t\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<and>
         t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1 \<and>
-        c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context.from_ground c\<^sub>G \<and>
+        c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma> = context_from_ground c\<^sub>G \<and>
         \<not>term.is_Var t\<^sub>1"
 
     have "\<not> ?inference_into_Fun \<Longrightarrow> ground.redundant_infer N\<^sub>G \<iota>\<^sub>G"
@@ -699,11 +699,11 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       ultimately obtain t\<^sub>1 c\<^sub>1 c\<^sub>G' where
         c\<^sub>1_t\<^sub>1: "c\<^sub>1_t\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle>" and
         t\<^sub>1_is_Var: "term.is_Var t\<^sub>1" and
-        c\<^sub>G: "context.from_ground c\<^sub>G = (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G'"
+        c\<^sub>G: "context_from_ground c\<^sub>G = (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>) \<circ>\<^sub>c c\<^sub>G'"
         using context.subst_into_Var[OF c\<^sub>1_t\<^sub>1_\<gamma>]
         by metis
 
-      then have c\<^sub>G'_is_ground [simp]: "context.is_ground c\<^sub>G'"
+      then have c\<^sub>G'_is_ground [simp]: "context_is_ground c\<^sub>G'"
         by (metis context.composed_context_is_ground context.ground_is_ground)
 
       obtain x where t\<^sub>1_\<rho>\<^sub>1: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 = term.Var x"
@@ -729,7 +729,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         have t\<^sub>1_\<gamma>: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<odot> \<gamma> = c\<^sub>G'\<langle>term.from_ground t\<^sub>G\<^sub>1\<rangle>"
         proof -
 
-          have "context.is_ground (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>)"
+          have "context_is_ground (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<gamma>)"
             using c\<^sub>G context.composed_context_is_ground context.ground_is_ground
             by metis
 
@@ -853,7 +853,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               unfolding ground_superpositionI
               by auto
 
-            have I: "?I \<TTurnstile>l (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>1\<rangle>\<^sub>G \<approx> (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G"
+            have I: "?I \<TTurnstile>l (context_to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>1\<rangle>\<^sub>G \<approx> (context_to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G"
               using upair_compatible_with_gctxtI[OF t\<^sub>G\<^sub>1_t\<^sub>G\<^sub>3]
               by auto
 
@@ -862,7 +862,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
               using t\<^sub>1_\<gamma>' 
               by auto
 
-            then have "(term.to_ground (x \<cdot>v \<gamma>), (context.to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G) \<in> I"
+            then have "(term.to_ground (x \<cdot>v \<gamma>), (context_to_ground c\<^sub>G')\<langle>t\<^sub>G\<^sub>3\<rangle>\<^sub>G) \<in> I"
               unfolding \<gamma>'_def
               using t\<^sub>1_\<rho>\<^sub>1 sym t\<^sub>1_\<gamma> t\<^sub>G\<^sub>1_t\<^sub>G\<^sub>3 upair_compatible_with_gctxtI
               by auto
@@ -1184,7 +1184,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
       have "C \<cdot> \<gamma> =
               add_mset
-                (?\<P> (Upair (context.from_ground c\<^sub>G)\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle> (term.from_ground t\<^sub>G\<^sub>2)))
+                (?\<P> (Upair (context_from_ground c\<^sub>G)\<langle>term.from_ground t\<^sub>G\<^sub>3\<rangle> (term.from_ground t\<^sub>G\<^sub>2)))
                   (clause.from_ground E\<^sub>G' + clause.from_ground D\<^sub>G')"
         using ground_superpositionI(4, 12) clause.to_ground_inverse[OF C_grounding]
         by auto
@@ -1235,7 +1235,7 @@ proof (cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
             then consider
               (t\<^sub>2') "x \<in> term.vars (t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>)" |
-              (c\<^sub>1) "x \<in> context.vars (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<mu>)" |
+              (c\<^sub>1) "x \<in> context_vars (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1 \<odot> \<mu>)" |
               (t\<^sub>1') "x \<in> term.vars (t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<mu>)" |
               (E') "x \<in> clause.vars (E' \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" |
               (D') "x \<in> clause.vars (D' \<cdot> \<rho>\<^sub>2 \<odot> \<mu>)"

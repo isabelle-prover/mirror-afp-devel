@@ -46,14 +46,14 @@ assumes ground_context_compatibility:
   "\<And>c t\<^sub>1 t\<^sub>2.
       term.is_ground t\<^sub>1 \<Longrightarrow>
       term.is_ground t\<^sub>2 \<Longrightarrow>
-      context.is_ground c \<Longrightarrow>
+      context_is_ground c \<Longrightarrow>
       t\<^sub>1 \<prec> t\<^sub>2 \<Longrightarrow>
       c\<langle>t\<^sub>1\<rangle> \<prec> c\<langle>t\<^sub>2\<rangle>"
 begin
 
 sublocale context_compatible_restricted_order where
-  restriction = "range term.from_ground" and context_restriction = "range context.from_ground" and
-  restricted = term.is_ground and restricted_context = context.is_ground
+  restriction = "range term.from_ground" and context_restriction = "range context_from_ground" and
+  restricted = term.is_ground and restricted_context = context_is_ground
   using ground_context_compatibility
   by unfold_locales
     (auto simp: term.is_ground_iff_range_from_ground context.is_ground_iff_range_from_ground)
@@ -64,11 +64,10 @@ locale ground_subterm_property =
   nonground_term_with_context +
   fixes R
   assumes ground_subterm_property:
-    "\<And>t\<^sub>G c\<^sub>G. term.is_ground t\<^sub>G \<Longrightarrow> context.is_ground c\<^sub>G \<Longrightarrow> c\<^sub>G \<noteq> \<box> \<Longrightarrow> R t\<^sub>G c\<^sub>G\<langle>t\<^sub>G\<rangle>"
+    "\<And>t\<^sub>G c\<^sub>G. term.is_ground t\<^sub>G \<Longrightarrow> context_is_ground c\<^sub>G \<Longrightarrow> c\<^sub>G \<noteq> \<box> \<Longrightarrow> R t\<^sub>G c\<^sub>G\<langle>t\<^sub>G\<rangle>"
 
 locale context_compatible_nonground_term_order =
-  nonground_term_with_context where
-  from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
+  nonground_term_with_context +
   nonground_term_order +
   order: ground_context_compatible_order where less = less\<^sub>t +
   order: ground_subterm_property where R = less\<^sub>t
@@ -91,17 +90,23 @@ proof unfold_locales
   proof (induction "occurences t x - 1" arbitrary: t)
     case 0
 
-    then have "occurences t x = 1"
+    then have one_x: "occurences t x = 1"
       by (simp add: vars_occurences)
 
-    then obtain c where t: "t = c\<langle>term.Var x\<rangle>" and "x \<notin> context.vars c"
-      using one_occurence_obtain_context 
+    then have exists_nonground: "term.exists_nonground"
+      using term.no_vars_if_is_ground x_in_t
+      by auto
+
+    obtain c where t: "t = c\<langle>term.Var x\<rangle>" and "x \<notin> context_vars c"
+      using one_x one_occurence_obtain_context 
       by blast
 
     then have c_update: "c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = (c \<cdot>t\<^sub>c \<gamma>)\<langle>update\<rangle>"
-      by (metis context.apply_context_is_ground context.apply_context_subst
-          context.no_vars_if_is_ground context.subst_update(1) term.id_subst_subst
-          term.no_vars_if_is_ground term.subst_update_var(1) x_in_t)
+      unfolding context.apply_context_subst
+      using term.subst_update_var(1)[OF exists_nonground]
+      by (smt (verit, best) context.apply_context_subst context.apply_context_vars
+          sup_bot.right_neutral term.all_subst_ident_if_ground term.id_subst_subst
+          term.no_vars_if_is_ground term.subst_update(1) update_is_ground)
 
     show ?case
       using 0(3) update_less update_is_ground
@@ -125,7 +130,9 @@ proof unfold_locales
     next
 
       have "occurences c\<langle>update\<rangle> x = Suc n"
-        using Suc.hyps(2) occurences[OF _ update_is_ground] vars_occurences term.no_vars_if_is_ground
+        using
+          Suc.hyps(2) occurences[OF _ update_is_ground]
+          vars_occurences term.no_vars_if_is_ground
         unfolding t
         by fastforce
 
@@ -170,7 +177,7 @@ proof unfold_locales
     unfolding order.less\<^sub>G_def
     by simp
 next
-  fix t :: "'t\<^sub>G" and c :: "'c\<^sub>G"
+  fix t c
   assume "c \<noteq> \<box>\<^sub>G"
 
   then show "t \<prec>\<^sub>t\<^sub>G c\<langle>t\<rangle>\<^sub>G"

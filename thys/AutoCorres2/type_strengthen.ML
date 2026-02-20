@@ -196,7 +196,7 @@ fun mk_corresTS_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Cons
    val corres_pre = @{term DYN_CALL} $ corres
    val goal = Logic.mk_implies (corres_pre, corres)
    val [thm] = Goal.prove ctxt' [] [] goal (fn {context, ...} =>
-      asm_full_simp_tac (context addsimps @{thms DYN_CALL_def} delsimps @{thms map_of_default.simps}) 1) 
+      asm_full_simp_tac (context |> Simplifier.add_simps @{thms DYN_CALL_def} |> Simplifier.del_simps @{thms map_of_default.simps}) 1) 
       |> single |> Proof_Context.export ctxt' ctxt
  in
    [(monad_type, thm)]
@@ -748,9 +748,9 @@ let
                val def = FunctionInfo.get_definition info
                val _ = Utils.verbose_msg 3 ctxt (fn _ => "before guard simplification:\n " ^ Thm.string_of_thm lthy def)
                val size_simps = Named_Theorems.get lthy @{named_theorems size_simps}
-               val ctxt = lthy delsimps 
-                      @{thms map_of_default.simps replicate_0 replicate_Suc replicate_numeral} @ (* Unify with setup in l2_opt.ML ? *)
-                      size_simps
+               val ctxt = lthy |> Simplifier.del_simps 
+                      (@{thms map_of_default.simps replicate_0 replicate_Suc replicate_numeral} @ (* Unify with setup in l2_opt.ML ? *)
+                      size_simps)
                val def' = timeit_msg 1 lthy (fn _ => "Simplifying guards within " ^ f) (fn _ => 
                  Monad_Cong_Simp.monad_simplify_import ctxt def)
                val _ = Utils.verbose_msg 3 ctxt (fn _ => "after guard simplification:\n " ^ Thm.string_of_thm lthy def')

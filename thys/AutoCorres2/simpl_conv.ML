@@ -397,7 +397,7 @@ fun get_l1corres_thm prog_info simpl_defs
                      check_termination ctxt L1_opt trace_opt
                      fn_name callee_terms = 
   let
-    val ctxt = ctxt delsimps @{thms map_of_default.simps} 
+    val ctxt = ctxt |> Simplifier.del_simps @{thms map_of_default.simps} 
       |> HPInter.enter_scope (ProgramInfo.get_prog_name prog_info) fn_name
     val fn_def = Utils.the' ("SimplConv.get_l1corres_thm: no such function: " ^ fn_name)
                    (Symtab.lookup simpl_defs fn_name);

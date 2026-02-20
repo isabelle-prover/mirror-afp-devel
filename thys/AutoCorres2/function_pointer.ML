@@ -279,8 +279,8 @@ fun define_progenvs_and_rewrite_defs prog_name lthy =
         val all_fun_ptrs = DistinctTreeProver.dest_tree (Thm.term_of tree)
         val fun_ptr_map_of_default_eqs = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_map_of_default_eqs}
         val fun_ptr_map_of_default_fallthrough_eqs = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_map_of_default_fallthrough_eqs}
-        val simp_ctxt = (lthy addsimps all_P_eqs @ fun_ptr_map_of_default_eqs @ fun_ptr_map_of_default_fallthrough_eqs 
-             delsimps @{thms map_of_default.simps})
+        val simp_ctxt = lthy |> Simplifier.add_simps (all_P_eqs @ fun_ptr_map_of_default_eqs @ fun_ptr_map_of_default_fallthrough_eqs)
+             |> Simplifier.del_simps @{thms map_of_default.simps}
           |> (!d2) ? Config.put Simplifier.simp_trace true
         fun mk_fun_ptr_eq P p = 
          let

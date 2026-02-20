@@ -191,8 +191,8 @@ fun nat_to_ranking n k =
 
 val inversion_cache_simpset = simpset_of (
   @{context}
-    delsimps @{thms snd_sort_and_count_inversions}
-    addsimps @{thms snd_sort_and_count_inversions[symmetric]
+    |> Simplifier.del_simps @{thms snd_sort_and_count_inversions}
+    |> Simplifier.add_simps @{thms snd_sort_and_count_inversions[symmetric]
                     sort_and_count_inversions.simps split_list_def})
 
 (*

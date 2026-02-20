@@ -1883,18 +1883,22 @@ local
    EX s to s=s' to perform the substitution *)
 
 val conseq1_ss_base =
-  simpset_of (put_simpset HOL_basic_ss @{context}
-    addsimps (@{thms mem_Collect_eq Set.singleton_iff Set.Int_iff
-              Set.empty_iff UNIV_I HOL.conj_assoc disj_assoc Hoare.all_imp_eq_triv}
-              @ K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-    delsimps @{thms Hoare.all_imp_to_ex}
-    |> fold Simplifier.add_cong K_congs)
+  HOL_basic_ss
+  |> simpset_map @{context} (
+    Simplifier.add_simps (@{thms mem_Collect_eq Set.singleton_iff Set.Int_iff Set.empty_iff UNIV_I HOL.conj_assoc disj_assoc Hoare.all_imp_eq_triv}
+      @ K_convs @ @{thms simp_thms ex_simps all_simps})
+    #> Simplifier.del_simps @{thms Hoare.all_imp_to_ex}
+    #> fold Simplifier.add_cong K_congs
+  )
 
 val conseq2_ss_base =
-  simpset_of (put_simpset HOL_basic_ss @{context}
-    addsimps (@{thms Hoare.all_imp_eq_triv} @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-    delsimps [@{thm Hoare.all_imp_to_ex}]
-    |> Simplifier.add_cong @{thm imp_cong});
+  HOL_basic_ss
+  |> simpset_map @{context} (
+    Simplifier.add_simps @{thms Hoare.all_imp_eq_triv simp_thms ex_simps all_simps}
+    #> Simplifier.del_simp @{thm Hoare.all_imp_to_ex}
+    #> Simplifier.add_cong @{thm imp_cong}
+  )
+
 in
 
 fun raw_conseq_simp_tac ctxt state_kind thms i =

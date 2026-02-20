@@ -8,7 +8,7 @@ begin
 section \<open>Polymorphic terms\<close>
 
 datatype ('f, poly_term_vars: 'v, 'tyf, poly_term_type_vars: 'tyv) poly_term =
-  PVar (the_Var: 'v) |
+  PVar (the_PVar: 'v) |
   PFun
     (fun_sym: 'f) (type_args: "('tyf, 'tyv) term list")
     (args: "('f, 'v, 'tyf, 'tyv) poly_term list")
@@ -118,24 +118,6 @@ next
   case (PFun f \<alpha>s ts)
   then show ?case
     by (cases \<sigma>) fastforce
-qed
-
-
-subsection \<open>Generic term interpretations\<close>
-
-interpretation poly_term: term_interpretation where
-  subterms = args and fun_sym = fun_sym and extra = type_args and is_var = is_PVar and
-  Fun = PFun 
-  by unfold_locales fastforce+
-
-interpretation poly_term: smaller_subterms where
-  subterms = args and is_var = is_PVar and size = size
-proof unfold_locales 
-  fix t' t :: "('f, 'v, 'tyf, 'tyv) poly_term"
-  assume "t' \<in> set (poly_term.args t)"
-
-  then show "size t' < size t"
-    by (induction t) (auto simp: elem_size_size_list_size less_Suc_eq trans_less_add2)
 qed
 
 
@@ -264,7 +246,7 @@ global_interpretation poly_term: nonground_term where
   term_is_ground = poly_term_is_ground and apply_subst = "(\<cdot>v)" and comp_subst = "(\<odot>)" and
   subst_update = update_subst and term_from_ground = poly_from_ground and
   term_to_ground = poly_to_ground
-proof unfold_locales
+proof unfold_locales                                       
   fix t :: "('f, 'v, 'tyf, 'tyv) poly_term"
 
   show "poly_term_is_ground t \<longleftrightarrow> (\<forall>\<sigma>. t \<cdot>p \<sigma> = t)"
@@ -507,5 +489,34 @@ next
     unfolding compose_subst_def
     by auto
 qed
+
+
+subsection \<open>Generic term interpretations\<close>
+
+interpretation poly_term: term_interpretation where
+  subterms = args and fun_sym = fun_sym and extra = type_args and is_var = poly_term.is_Var and
+  Fun = PFun and size = size
+proof unfold_locales
+  fix t' t :: "('f, 'v, 'tyf, 'tyv) poly_term"
+  assume "t' \<in> set (poly_term.args t)"
+
+  then show "size t' < size t"
+    by (induction t) (auto simp: elem_size_size_list_size less_Suc_eq trans_less_add2)
+next
+  fix t :: "('f, 'v :: infinite, 'tyf, 'tyv) poly_term"
+
+  show "\<not> poly_term.is_Var t \<longleftrightarrow> (\<exists>f e ts. t = PFun f e ts)"
+  proof (induction t)
+    case (PVar x)
+    then show ?case 
+      by (metis poly_term.set_intros(3) poly_term.distinct(1) fst_conv all_not_in_conv
+          poly_term_subst.simps(1))
+  next
+    case (PFun f \<alpha>s ts)
+    then show ?case 
+      by simp
+  qed
+qed fastforce+
+
 
 end

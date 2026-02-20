@@ -13,16 +13,17 @@ section \<open>Nonground Layer\<close>
 
 locale type_system =
   context_compatible_term_typing_properties where
-  welltyped = welltyped and from_ground_context_map = from_ground_context_map +
+  welltyped = welltyped and context_from_ground = context_from_ground +
   witnessed_nonground_typing where welltyped = welltyped
 for
   welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
-  from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c"
+  context_from_ground :: "'c\<^sub>G \<Rightarrow> 'c"
 
 locale superposition_calculus =
   type_system where
   welltyped = welltyped and id_subst = "id_subst :: 'subst" and
-  from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
+  context_from_ground = "context_from_ground ::'c\<^sub>G \<Rightarrow> 'c" and 
+  term_from_ground = "term_from_ground ::'t\<^sub>G \<Rightarrow> 't" +
 
   context_compatible_nonground_order where less\<^sub>t = less\<^sub>t +
 
@@ -37,7 +38,7 @@ locale superposition_calculus =
 
   infinite_variables where
   exists_nonground = term.exists_nonground and variables = "UNIV :: 'v set"
-  for
+for
     select :: "'t atom select" and
     less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
     tiebreakers :: "('t\<^sub>G atom, 't atom) tiebreakers" and

@@ -12,15 +12,15 @@ begin
 
 locale grounded_superposition_calculus =
   superposition_calculus where select = select and welltyped = welltyped and
-  from_ground_context_map = from_ground_context_map and id_subst = "id_subst :: 'subst" +
+  term_from_ground = "term_from_ground :: 't\<^sub>G \<Rightarrow> 't" and id_subst = "id_subst :: 'subst" +
+
   grounded_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
   atom_is_ground = atom.is_ground and atom_to_ground = atom.to_ground and
   atom_from_ground = atom.from_ground and is_ground_instance = is_ground_instance
-  for
-    select :: "'t atom select" and
-    welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
-    from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c"
+for
+  select :: "'t atom select" and
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 sublocale ground: ground_superposition_calculus where
@@ -192,8 +192,8 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_superposition_calculus.inference_ground_instances
-      (\<odot>) apply_subst (\<cdot>t) term.is_ground term.to_ground term.from_ground apply_ground_context 
-      term.vars (\<prec>\<^sub>t) id_subst select\<^sub>G welltyped"
+      (\<odot>) apply_subst (\<cdot>t) term.is_ground term.to_ground apply_ground_context term.vars (\<prec>\<^sub>t)
+      id_subst term.from_ground select\<^sub>G welltyped"
 
 sublocale
   lifting_intersection

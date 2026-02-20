@@ -21,12 +21,11 @@ interpretation grounded_kbo: context_compatible_nonground_order where
   comp_subst = noop_comp_subst and id_subst = noop_id_subst and term_subst = noop_subst and
   term_vars = noop_vars and apply_subst = noop_apply_subst and subst_update = noop_subst_update and
   compose_context = "(\<circ>\<^sub>c)" and term_from_ground = id and term_to_ground = id and
-  map_context = map_args_actxt and to_ground_context_map = map_args_actxt and
-  from_ground_context_map = map_args_actxt and context_to_set = set2_actxt and hole = \<box> and
-  apply_context = apply_ground_context and 
-  occurences = "\<lambda>_ _. 0" and ground_hole = \<box> and apply_ground_context = apply_ground_context and
-  compose_ground_context = "(\<circ>\<^sub>c)" and ground_context_map = map_args_actxt and
-  ground_context_to_set = set2_actxt and term_is_ground = noop_is_ground
+  hole = \<box> and  apply_context = apply_ground_context and  occurences = "\<lambda>_ _. 0" and
+  ground_hole = \<box> and apply_ground_context = apply_ground_context and
+  compose_ground_context = "(\<circ>\<^sub>c)" and term_is_ground = noop_is_ground and
+  context_is_ground = noop_is_ground and context_vars = noop_vars and
+  context_subst = noop_subst and context_from_ground = id and context_to_ground = id
 proof unfold_locales
 
   show "transp ground_less_kbo"
@@ -64,8 +63,7 @@ interpretation grounded_clause: nonground_clause where
 
 interpretation ground_superposition_compatibility: ground_superposition_compatibility where
   apply_context = apply_ground_context and compose_context = "(\<circ>\<^sub>c)" and hole = \<box> and
-  map_context = map_args_actxt and context_to_set = set2_actxt and select = trivial_select and 
-  tiebreakers = trivial_tiebreakers and
+  select = trivial_select and tiebreakers = trivial_tiebreakers and
   less\<^sub>t = "ground_less_kbo :: 'f :: weighted gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
   ground_subterms = gargs and ground_fun_sym = groot_sym and ground_extra = "\<lambda>_. ()" and
   GFun = "\<lambda>f _. GFun f" and GMore = "\<lambda>f _. More f" and ground_fun_sym\<^sub>c = fun_sym\<^sub>c and

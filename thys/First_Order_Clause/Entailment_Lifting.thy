@@ -78,7 +78,7 @@ next
 
     then show ?thesis
       using expr_\<gamma> based.exists_nonground_iff_base_exists_nonground
-      by auto
+      by (metis based.all_subst_ident_if_ground)
   qed
 qed
 

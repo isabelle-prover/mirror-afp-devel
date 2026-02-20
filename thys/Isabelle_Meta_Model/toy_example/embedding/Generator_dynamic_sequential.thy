@@ -252,8 +252,8 @@ fun semi__thm_mult_l ctxt l = List.concat (map (semi__thm_mult ctxt) l)
 fun semi__method_simp_only l ctxt = clear_simpset ctxt addsimps (semi__thm_mult_l ctxt l)
 fun semi__method_simp_add_del_split (l_add, l_del, l_split) ctxt =
   fold Splitter.add_split (semi__thm_mult_l ctxt l_split)
-                          (ctxt addsimps (semi__thm_mult_l ctxt l_add)
-                                delsimps (semi__thm_mult_l ctxt l_del))
+                          (ctxt |> Simplifier.add_simps (semi__thm_mult_l ctxt l_add)
+                                |> Simplifier.del_simps (semi__thm_mult_l ctxt l_del))
 
 fun semi__method expr = let open META open Method open META_overload in case expr of
     Method_rule o_s => Basic (fn ctxt =>

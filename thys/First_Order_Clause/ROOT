@@ -36,7 +36,7 @@ session First_Order_Clause = Abstract_Substitution +
     Nonground_Typing
     Nonground_Typing_With_Equality
 
-    Polymorphic_Ground_Context
+    Polymorphic_Context
     Polymorphic_Term
 
     Monomorphic_Typing

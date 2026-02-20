@@ -244,7 +244,9 @@ fun field_lookup_aux_simpset thy_ctxt =
          } @
          fl_Some_simps
  in
-  umm_ctxt addsimps simps delsimps @{thms replicate_0 replicate_Suc replicate_numeral}
+  umm_ctxt
+  |> Simplifier.add_simps simps
+  |> Simplifier.del_simps @{thms replicate_0 replicate_Suc replicate_numeral}
   |> Context_Position.restore_visible thy_ctxt
  end
 
@@ -858,7 +860,10 @@ fun umm_packed_type cse recname recty typtag_thm tag_def_thm fgthms (st, lthy) =
            @{thms align_td_array_info}   @
            @{thms max_non_zero_unfold}
 
-  val pt_ss = (lthy addsimps simp_thms delsimps @{thms One_nat_def add_2_eq_Suc add_2_eq_Suc'})
+  val pt_ss = 
+    lthy
+    |> Simplifier.add_simps simp_thms
+    |> Simplifier.del_simps @{thms One_nat_def add_2_eq_Suc add_2_eq_Suc'}
 
 in if ProgramAnalysis.is_packed_struct_or_union cse recname
   then
@@ -1186,8 +1191,10 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
     val tm  = mk_size_aligntd typ_info_TYPE (Var (("s", idx + 1), nat)) (Var (("a", idx + 2), nat))
     val ctxt' = Variable.declare_maxidx (idx + 2) lthy
     val cterm = Thm.cterm_of ctxt' (HOLogic.mk_Trueprop tm)
-    val sa_ss = ctxt' addsimps @{thms typ_info_array array_tag_def align_td_array_tag max_def padup_def}
-                  delsimps @{thms One_nat_def}
+    val sa_ss =
+      ctxt'
+      |> Simplifier.add_simps @{thms typ_info_array array_tag_def align_td_array_tag max_def padup_def}
+      |> Simplifier.del_simp @{thm One_nat_def}
     val tac = let
       fun rectac ctxt   = MEMO_GOAL ctxt upd_acc doit
       and doit ctxt  i  =
@@ -1421,10 +1428,11 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
         Variable.import true
           [@{thm heap_update_fold_toplevel_field_names_no_padding} OF [aggregate_thm]] lthy
       val fold_thm = fold_thm
-        |> Simplifier.asm_full_simplify (ctxt addsimps
-             [filter_toplevel_field_names_eq] @
-             @{thms to_bytes_def[symmetric] size_of_def heap_update_fold}
-             delsimps @{thms heap_list.simps})
+        |> Simplifier.asm_full_simplify (ctxt
+             |> Simplifier.add_simps
+               (filter_toplevel_field_names_eq ::
+                 @{thms to_bytes_def[symmetric] size_of_def heap_update_fold})
+             |> Simplifier.del_simps @{thms heap_list.simps})
         |> singleton (Variable.export ctxt lthy) |>  Drule.zero_var_indexes
       val fold_pointless_thm = comp_pointless_eq lthy fold_thm
     in

@@ -19,7 +19,7 @@ interpretation gcontext: term_context_interpretation where
   Fun = "\<lambda>f _. GFun f" and
   hole = \<box> and apply_context = apply_ground_context and compose_context = "(\<circ>\<^sub>c)" and
   More = "\<lambda>f _. More f" and fun_sym\<^sub>c = fun_sym\<^sub>c and extra\<^sub>c = "\<lambda>_. ()" and subterms\<^sub>l = subterms\<^sub>l and
-  subcontext = subcontext and subterms\<^sub>r = subterms\<^sub>r
+  subcontext = subcontext and subterms\<^sub>r = subterms\<^sub>r and size = size
 proof unfold_locales
   fix c :: "'f gcontext" and t t' 
   assume "c\<langle>t\<rangle>\<^sub>G = c\<langle>t'\<rangle>\<^sub>G" 

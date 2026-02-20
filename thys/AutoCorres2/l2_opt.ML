@@ -545,7 +545,9 @@ fun unbind_proc ctxt f =
       val ((r, cargs), ctxt1) = the (exploded_record_value rT ctxt)
       val mark_f_r = Thm.apply f r |> fold_seq_condition_unfold_STOP ctxt1 
       val f_r = mark_f_r |> Thm.rhs_of
-      val simp_ctxt = ctxt1 addsimps @{thms L2_seq_gets_unfold L2_seq_L2_gets_const} delsimps @{thms L2_seq_condition_def}
+      val simp_ctxt = ctxt1
+        |> Simplifier.add_simps @{thms L2_seq_gets_unfold L2_seq_L2_gets_const}
+        |> Simplifier.del_simps @{thms L2_seq_condition_def}
         |> Prf_Data.map (map_field_fixes (fold Termset.insert (map Thm.term_of cargs)))
       val eq = Utils.timeit_msg 2 ctxt (fn _ => "unbind_proc rhs" ) (fn _ => Simplifier.rewrite simp_ctxt f_r)
       val rhs = Thm.rhs_of eq
@@ -827,9 +829,10 @@ let
   val size_simps = Named_Theorems.get ctxt @{named_theorems size_simps}
 
   val word_simps = @{thms WORD_values WORD_signed_to_unsigned [symmetric]}
-  val guarded_ctxt = put_simpset autocorres_record_ss ctxt 
-       addsimps (guard_simps @ word_simps) 
-       delsimps size_simps @ @{thms ptr_val.ptr_val_def}
+  val guarded_ctxt = ctxt 
+    |> Simplifier.put_simpset autocorres_record_ss 
+    |> Simplifier.add_simps (guard_simps @ word_simps) 
+    |> Simplifier.del_simps (size_simps @ @{thms ptr_val.ptr_val_def})
   (* normalise pointer accesses towards operations on the root pointer *)
   val h_val_fields = Named_Theorems.get ctxt @{named_theorems h_val_fields}
   val fl_ti_simps = Named_Theorems.get ctxt @{named_theorems fl_ti_simps}

@@ -711,13 +711,13 @@ fun simp_map f =
  * Add a thm to the simpset.
  *)
 fun simp_add thms =
-  simp_map (fn ctxt => ctxt addsimps thms)
+  simp_map (Simplifier.add_simps thms)
 
 (*
  * Delete a thm from a simpset.
  *)
 fun simp_del thms =
-  simp_map (fn ctxt => ctxt delsimps thms)
+  simp_map (Simplifier.del_simps thms)
 
 (* Abstract over the given term with a forall constant. *)
 fun forall v t = HOLogic.all_const (fastype_of v) $ lambda v t

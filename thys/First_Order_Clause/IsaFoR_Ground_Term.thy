@@ -15,7 +15,7 @@ interpretation gterm: smaller_subterms where
 
 interpretation gterm: term_interpretation where
   Fun = "\<lambda>f _. GFun f" and fun_sym = groot_sym and subterms = gargs and extra = "\<lambda>_.()" and
-  is_var = is_var
+  is_var = is_var and size = size
   by unfold_locales (auto intro: gterm.exhaust)
 
 end
