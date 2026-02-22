@@ -3222,7 +3222,7 @@ fun record_vanish_tac ctxt state_kind state_space i =
   if Config.get ctxt record_vanish then
     let
         val rem_useless_vars_simps = [Drule.triv_forall_equality,@{thm Hoare.triv_All_eq},@{thm Hoare.triv_Ex_eq}];
-        val rem_useless_vars_simpset = empty_simpset ctxt addsimps rem_useless_vars_simps;
+        val rem_useless_vars_simpset = Simplifier.empty_simpset ctxt addsimps rem_useless_vars_simps;
         fun no_spec (t as (Const (@{const_name All},_)$_)) =
               is_none (try dest_hoare_raw (strip_qnt_body @{const_name All} t))
           | no_spec _ = true;
