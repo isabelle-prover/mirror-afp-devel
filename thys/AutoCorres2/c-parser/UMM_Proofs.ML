@@ -335,7 +335,7 @@ fun field_ti_to_field_lookup t =
   | t => raise TERM ("field_ti_to_field_lookup: unexcpected term", [t])
 
 val _ = Theory.local_setup (Simplifier.define_simproc
-  {name= \<^binding>\<open>field_lookup\<close>, passive = false, kind = Simproc, identifier=[],
+  {name= \<^binding>\<open>field_lookup\<close>, passive = false, kind = Simplifier.Simproc, identifier=[],
   lhss =[\<^term>\<open>field_lookup (typ_info_t (TYPE('a::c_type))) (f1#f2#fs) n\<close>,
          \<^term>\<open>field_lookup (typ_info_t (TYPE('c::c_type['d::finite]))) [f1] n\<close>,
          \<^term>\<open>field_lookup (typ_uinfo_t (TYPE('a::c_type))) fs n\<close>,
@@ -389,7 +389,7 @@ fun gen_typuinfo_simproc augment ctxt =
   in  Cached_Theory_Simproc.gen_simproc (umm_ctxt, Cached_Theory_Simproc.recert, Cached_Theory_Simproc.add_cache) augment end
 
 val _ = Theory.local_setup (Simplifier.define_simproc
-  {name = \<^binding>\<open>type_calculations\<close>, passive = false, kind = Simproc, identifier = [],
+  {name = \<^binding>\<open>type_calculations\<close>, passive = false, kind = Simplifier.Simproc, identifier = [],
   lhss = [
    \<^term>\<open>set (field_names_no_padding (typ_info_t TYPE('a::c_type)) (export_uinfo (typ_info_t TYPE('b::c_type))))\<close>,
    \<^term>\<open>set (all_field_names_no_padding (typ_info_t TYPE('a::c_type)))\<close>,
@@ -424,7 +424,7 @@ val _ = Theory.local_setup (Simplifier.define_simproc
 val (type_calculations_simproc_name, type_calculations_simproc) = Simplifier.check_simproc (Context.the_local_context ()) ("type_calculations", Position.none)
 
 val _ = Theory.local_setup (Simplifier.define_simproc
-  {name = \<^binding>\<open>typuinfo_calculations\<close>, passive = false, kind = Simproc, identifier=[],
+  {name = \<^binding>\<open>typuinfo_calculations\<close>, passive = false, kind = Simplifier.Simproc, identifier=[],
  lhss = [
    \<^term>\<open>export_uinfo (typ_info_t TYPE('a::c_type)) = export_uinfo (typ_info_t TYPE('b::c_type))\<close>,
    \<^term>\<open>typ_uinfo_t TYPE('a::c_type) = export_uinfo (typ_info_t TYPE('b::c_type))\<close>,
@@ -1157,7 +1157,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
       val component_upd = mk_field_update_component_desc_apply recty "bs" "v"
       fun upd_ss ctxt =
         Simplifier.put_simpset
-          (merge_ss (HOL_basic_ss, RecursiveRecordPackage.get_simpset (Proof_Context.theory_of lthy))) ctxt
+          (Simplifier.merge_ss (HOL_basic_ss, RecursiveRecordPackage.get_simpset (Proof_Context.theory_of lthy))) ctxt
 
       val component_upd_thm = Simplifier.asm_full_rewrite ((upd_ss lthy) addsimps entire_update_simps) (Thm.cterm_of lthy component_upd)
           |> Drule.export_without_context

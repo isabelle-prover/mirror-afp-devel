@@ -41,7 +41,7 @@ structure RecursiveRecordData = Theory_Data
   type T = data;
   val empty = make_data HOL_basic_ss HOL_basic_ss Symtab.empty;
   val merge = Utils.fast_merge (fn ({simpset=ss1, no_congs_simpset = nss1, info=info1}, {simpset=ss2, no_congs_simpset = nss2, info=info2}) =>
-    make_data (merge_ss (ss1, ss2)) (merge_ss (nss1, nss2)) (Symtab.merge (K true) (info1, info2)));
+    make_data (Simplifier.merge_ss (ss1, ss2)) (Simplifier.merge_ss (nss1, nss2)) (Symtab.merge (K true) (info1, info2)));
 );
 
 val updateN = Record.updateN

@@ -133,11 +133,12 @@ lemma "(L2_seq (L2_unknown [\<S> ''ret__int''])
           (\<lambda>_. L2_seq (L2_gets G_' [\<S> ''ret'']) (\<lambda>ret__int. L2_gets (\<lambda>_. ret__int) [\<S> ''ret''])))"
   apply (tactic \<open>
 let
-val record_ss = RecursiveRecordPackage.get_simpset (Proof_Context.theory_of @{context});
-val autocorres_record_ss = (merge_ss (AUTOCORRES_SIMPSET, record_ss));
+val record_ss = RecursiveRecordPackage.get_simpset \<^theory>;
+val autocorres_record_ss = Simplifier.merge_ss (AUTOCORRES_SIMPSET, record_ss);
 
 in
-simp_tac (put_simpset autocorres_record_ss @{context}
+simp_tac (\<^context>
+  |> put_simpset autocorres_record_ss
   |> Simplifier.add_simps @{thms L2_unknown_bind_unbound}
   |> Simplifier.add_proc L2Opt.l2_marked_gets_bind_simproc
   |> Simplifier.add_cong @{thm L2_marked_seq_gets_cong}) 1

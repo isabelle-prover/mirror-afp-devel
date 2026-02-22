@@ -1691,7 +1691,7 @@ structure FoldCongData = Theory_Data
 (
   type T = simpset;
   val empty = HOL_basic_ss;
-  val merge = merge_ss;
+  val merge = Simplifier.merge_ss;
 )
 
 val get_foldcong_ss = FoldCongData.get

@@ -629,7 +629,7 @@ fun lifted_globals_lemmas prog_info heap_info lthy = let
         @ (struct_simpset @{named_theorems "fg_cons_simps"})
     val base_ss = simpset_of @{theory_context HeapLift}
     val record_ss = RecordUtils.get_record_simpset lthy
-    val merged_ss = merge_ss (base_ss, record_ss)
+    val merged_ss = Simplifier.merge_ss (base_ss, record_ss)
 
     (* Generate a simpset containing everything we need. *)
     val ss =

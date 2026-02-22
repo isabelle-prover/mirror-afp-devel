@@ -121,7 +121,7 @@ fun add_simproc pos named_thms (intervals: Facts.interval list) thm context =
     else
       context 
       |> Context.map_proof_result (Simplifier.define_simproc
-          {name = Binding.make (base_name, pos), passive=false, kind = Simproc, identifier=[],
+          {name = Binding.make (base_name, pos), passive=false, kind = Simplifier.Simproc, identifier=[],
            lhss = patterns, proc = fn _ => code_simp_prems thm2 positions})
       |-> (fn simproc => Context.map_proof (
             Local_Theory.declaration {pervasive=false, syntax=false, pos = \<^here>} (fn _ =>

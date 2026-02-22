@@ -99,7 +99,7 @@ let
   val thy = Proof_Context.theory_of ctxt
   val record_ss_1 = Record.get_simpset thy
   val record_ss_2 = RecursiveRecordPackage.get_simpset thy
-  val record_ss = merge_ss (record_ss_1, record_ss_2)
+  val record_ss = Simplifier.merge_ss (record_ss_1, record_ss_2)
 in
   put_simpset record_ss ctxt
   |> fold Simplifier.add_proc [

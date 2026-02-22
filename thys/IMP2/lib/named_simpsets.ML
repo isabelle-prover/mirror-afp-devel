@@ -48,7 +48,7 @@ structure Data = Generic_Data
 (
   type T = simpset Name_Space.table;
   val empty: T = Name_Space.empty_table "named-simpset";
-  val merge : T * T -> T = Name_Space.join_tables (K merge_ss);
+  val merge : T * T -> T = Name_Space.join_tables (K Simplifier.merge_ss);
 );
 
 

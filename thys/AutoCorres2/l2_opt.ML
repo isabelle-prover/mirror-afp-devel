@@ -263,7 +263,7 @@ local
 structure  Enabled = Proof_Data(type T = bool val init = K true);
 in
 fun c_fnptr_guard_simproc prog_info phase =
- Simplifier.make_simproc @{context} {name = "c_fnptr_guard_simproc", kind = Simproc, identifier = [],
+ Simplifier.make_simproc @{context} {name = "c_fnptr_guard_simproc", kind = Simplifier.Simproc, identifier = [],
     lhss = [Proof_Context.read_term_pattern @{context} "c_fnptr_guard ?P"],
     proc = fn phi => fn ctxt => fn ct =>
   if Enabled.get ctxt then
@@ -295,7 +295,7 @@ fun c_fnptr_guard_simproc prog_info phase =
 end
 
 fun L2_guarded_local_simproc prog_info phase orig_ctxt =
- Simplifier.make_simproc orig_ctxt {name = "L2_guarded_simproc", kind = Simproc, identifier = [],
+ Simplifier.make_simproc orig_ctxt {name = "L2_guarded_simproc", kind = Simplifier.Simproc, identifier = [],
    lhss =  [Proof_Context.read_term_pattern orig_ctxt "L2_guarded ?g ?c", 
             Proof_Context.read_term_pattern orig_ctxt "L2_seq_guard ?g ?c"],
    proc = fn phi => fn ctxt => fn ct =>
@@ -825,7 +825,7 @@ let
     then RecursiveRecordPackage.get_no_congs_simpset (Proof_Context.theory_of ctxt) 
     else RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt)
 
-  val autocorres_record_ss = (merge_ss (AUTOCORRES_SIMPSET, record_ss))
+  val autocorres_record_ss = (Simplifier.merge_ss (AUTOCORRES_SIMPSET, record_ss))
   val size_simps = Named_Theorems.get ctxt @{named_theorems size_simps}
 
   val word_simps = @{thms WORD_values WORD_signed_to_unsigned [symmetric]}

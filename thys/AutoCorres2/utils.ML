@@ -1026,7 +1026,7 @@ fun solved_tac thm =
 
 (* Convenience function for making simprocs. *)
 fun mk_simproc' ctxt (name : string, pats : string list, proc : Proof.context -> cterm -> thm option) = let
-  in Simplifier.make_simproc ctxt {name = name, kind = Simproc, identifier = [],  
+  in Simplifier.make_simproc ctxt {name = name, kind = Simplifier.Simproc, identifier = [],  
         lhss = map (Proof_Context.read_term_pattern ctxt) pats,
         proc = K proc} end
 
