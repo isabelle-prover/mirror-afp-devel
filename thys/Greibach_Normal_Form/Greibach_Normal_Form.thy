@@ -1002,7 +1002,7 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
             have "(B, w2') \<in> Solve_lrec B B' ?S"
               using  w2'_props w2'_prod unfolding Solve_lrec_defs by (auto)
             then show ?thesis
-              by (simp add: True bu_prod derives_if_bu w2'_prod)
+              by (simp add: True derives_Cons_rule w2'_prod)
           next
             case False
             have solved_prod: "(B, w2' @ [Nt B']) \<in> Solve_lrec B B' ?S"
@@ -1375,7 +1375,7 @@ proof (induction arbitrary: p q rule: nat_less_induct)
 
         have "R \<turnstile> w \<Rightarrow>* map Tm At" using "1.IH" assms pre1 pre2 pre3 P by blast
         then show ?thesis using 2
-          by (meson bu_prod derives_bu_iff rtranclp_trans)
+          by (simp add: derives_Cons_rule)
       qed
     next
       case False
@@ -1387,7 +1387,7 @@ proof (induction arbitrary: p q rule: nat_less_induct)
 
       have "R \<turnstile> w \<Rightarrow>* map Tm At" using "1.IH" pre1 pre2 pre3 P by blast
       then show ?thesis using 2
-        by (meson bu_prod derives_bu_iff rtranclp_trans)
+        by (metis append_Nil2 derives_Cons_rule)
     qed
 
     then show ?thesis using p2_derive
@@ -1421,7 +1421,7 @@ lemma Expand_hd_rec_is_deriveable: "(A, w) \<in> Expand_hd_rec B As P \<Longrigh
 proof (induction B As P arbitrary: A w rule: Expand_hd_rec.induct)
   case (1 B R)
   then show ?case
-    by (simp add: bu_prod derives_if_bu)
+    by (simp add: derives_Cons_rule)
 next
   case (2 B S Ss R)
   then show ?case
@@ -1801,7 +1801,7 @@ lemma Expand_tri_prods_deirvable: "(B, bs) \<in> Expand_tri As P \<Longrightarro
 proof (induction As P arbitrary: B bs rule: Expand_tri.induct)
   case (1 R)
   then show ?case
-    by (simp add: bu_prod derives_if_bu)
+    by (simp add: derives_Cons_rule)
 next
   case (2 A As R)
   then show ?case
@@ -1823,12 +1823,12 @@ next
     next
       case False
       then have "(B, bs) \<in> (Expand_tri As R)" using 2 by (auto simp add: Let_def Subst_hd_def)
-      then show ?thesis using "2.IH" by (simp add: bu_prod derives_if_bu)
+      then show ?thesis using "2.IH" by presburger
     qed
   next
     case False
     then have "(B, bs) \<in> R" using 2 by (auto simp: Expand_tri_simp1 simp del: Expand_tri.simps)
-    then show ?thesis by (simp add: bu_prod derives_if_bu)
+    then show ?thesis by (metis derive_singleton r_into_rtranclp)
   qed
 qed
 
