@@ -20,6 +20,7 @@ session Context_Free_Grammar = Finite_Automata_HF +
     Right_Linear_Automata
     Pumping_Lemma_Regular
     AnBn_Not_Regular
+    Saturation_Algorithms
   document_files
     "root.tex"
     "root.bib"

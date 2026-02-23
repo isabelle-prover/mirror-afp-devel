@@ -330,7 +330,7 @@ lemma Unit_elim_rel_r20_aux:
   shows "\<exists>\<alpha>. P \<turnstile> l @ [Nt A] @ r \<Rightarrow> l @ \<alpha> @ r \<and> P \<turnstile> l @ \<alpha> @ r \<Rightarrow>* map Tm v \<and> (A, \<alpha>) \<in> P"
 proof -
   obtain l' w r' where w: "P \<turnstile> l \<Rightarrow>* l'  \<and> P \<turnstile> [Nt A] \<Rightarrow>* w \<and>  P \<turnstile> r \<Rightarrow>* r' \<and> map Tm v = l' @ w @ r'"
-    using assms(1) by (metis derives_append_decomp)
+    using assms(1) by (metis derives_appendD)
   have "Nt A \<notin> set (map Tm v)" 
     using assms(1) by auto
   hence "[Nt A] \<noteq> w" 
@@ -339,7 +339,7 @@ proof -
     by (metis w converse_rtranclpE)
   hence "(A, \<alpha>) \<in> P" 
     by (simp add: derive_singleton)
-  thus ?thesis by (metis \<alpha> w derive.intros derives_append_decomp) 
+  thus ?thesis by (metis \<alpha> w derive.intros derives_appendD) 
 qed
 
 lemma Unit_elim_rel_r20: 
