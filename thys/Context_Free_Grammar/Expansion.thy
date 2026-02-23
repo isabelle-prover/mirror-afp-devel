@@ -117,7 +117,7 @@ proof (safe intro!: ext elim!: LangsE_deriven)
     proof (cases "\<exists>A. Nt A \<in> set xs")
       case False
       with less.prems have "xs = map Tm w"
-        by (metis (no_types, lifting) deriven_from_TmsD destTm.cases ex_map_conv)
+        by (metis (no_types, lifting) deriven_map_TmD destTm.cases ex_map_conv)
       then show ?thesis by (auto simp: Langs_map_Tm)
     next
       case True
@@ -169,7 +169,7 @@ next
     proof (cases "\<exists>A. Nt A \<in> set xs")
       case False
       with less.prems have "xs = map Tm w"
-        by (metis (no_types, lifting) deriven_from_TmsD destTm.cases ex_map_conv)
+        by (metis (no_types, lifting) deriven_map_TmD destTm.cases ex_map_conv)
       then show ?thesis by (auto simp: Langs_map_Tm)
     next
       case True

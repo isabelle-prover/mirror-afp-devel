@@ -274,7 +274,7 @@ using assms proof (induction n arbitrary: x p q \<gamma> rule: less_induct)
       using derivels_imp_derives[OF relpowp_imp_rtranclp[OF less(2)]] .
     have "p = q \<and> x = []"
     proof -
-      from derives_start1[OF derives] obtain \<alpha> where d1: "Prods G \<turnstile> [Nt (List_sym q \<gamma> p)] \<Rightarrow> \<alpha>" and 
+      from derives_Nt_map_TmD[OF derives] obtain \<alpha> where d1: "Prods G \<turnstile> [Nt (List_sym q \<gamma> p)] \<Rightarrow> \<alpha>" and 
                                                         ds: "Prods G \<turnstile> \<alpha> \<Rightarrow>* map Tm x"
         using derive_singleton by blast
       from Nil d1 have *: "p = q" and \<alpha>_def: "\<alpha> = []"

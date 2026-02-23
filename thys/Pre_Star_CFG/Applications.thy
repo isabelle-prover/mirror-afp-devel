@@ -91,7 +91,7 @@ lemma cfg_Lang_univ: "P \<turnstile> [Nt X] \<Rightarrow>* map Tm \<beta> \<Long
 proof -
   assume "P \<turnstile> [Nt X] \<Rightarrow>* map Tm \<beta>"
   moreover have "Nt X \<in> Syms P"
-    using Syms_def calculation derives_start1 by fastforce
+    using Syms_def calculation derives_Nt_map_TmD by fastforce
   ultimately have "set (map Tm \<beta>) \<subseteq> Syms P"
     using cfg_derives_Syms by force
   moreover have "\<And>t. (t \<in> Tms P) \<longleftrightarrow> Tm t \<in> Syms P"

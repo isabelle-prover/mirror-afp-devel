@@ -52,8 +52,8 @@ shows "P \<turnstile> [Nt A] \<Rightarrow>(n) map Tm w \<Longrightarrow> A \<in>
 proof (induction n arbitrary: A w rule: less_induct)
   case (less n)
   then obtain \<alpha> m where "(A,\<alpha>) \<in> P" and der: "P \<turnstile> \<alpha> \<Rightarrow>(m) map Tm w" and "n = Suc m"
-    by (meson deriven_start1)
-  from deriven_decomp_Tm[OF der] have "\<forall>B \<in> Nts_syms \<alpha>. \<exists>u k. P \<turnstile> [Nt B] \<Rightarrow>(k) map Tm u \<and> k \<le> m"
+    by (meson deriven_Nt_map_TmD)
+  from deriven_to_map_TmD[OF der] have "\<forall>B \<in> Nts_syms \<alpha>. \<exists>u k. P \<turnstile> [Nt B] \<Rightarrow>(k) map Tm u \<and> k \<le> m"
     by(fastforce simp: Nts_syms_def in_set_conv_nth elem_le_sum_list)
   then have "\<forall>B \<in> Nts_syms \<alpha>. B \<in> productive_sat P" using less \<open>n = Suc m\<close> le_imp_less_Suc by blast
   with \<open>(A,\<alpha>) \<in> P\<close> show ?case 
@@ -96,7 +96,7 @@ proof (induction \<alpha>)
   proof (cases s)
     case (Nt x1)
     then show ?thesis
-      using Cons.IH Cons.prems by (fastforce simp: derives_Cons_decomp map_eq_append_conv)
+      using Cons.IH Cons.prems by (fastforce simp: derives_Cons_iff map_eq_append_conv)
   next
     case (Tm x2)
     then show ?thesis using Cons.IH Cons.prems by (auto simp: derives_Tm_Cons map_eq_Cons_conv)
@@ -126,11 +126,11 @@ shows "P \<turnstile> [Nt A] \<Rightarrow>(n) [] \<Longrightarrow> A \<in> nulla
 proof (induction n arbitrary: A rule: less_induct)
   case (less n)
   obtain \<alpha> m where "(A,\<alpha>) \<in> P" and der: "P \<turnstile> \<alpha> \<Rightarrow>(m) []" and "n = Suc m"
-    using deriven_start1[where w= "[]", simplified, OF less.prems] by auto
-  from deriven_decomp[OF der] have "Tms_syms \<alpha> = {}"
+    using deriven_Nt_map_TmD[where w= "[]", simplified, OF less.prems] by auto
+  from derivenD[OF der] have "Tms_syms \<alpha> = {}"
     unfolding Tms_syms_def in_set_conv_nth
     using deriven_Tm_Cons nth_mem by fastforce
-  from deriven_decomp[OF der] have "\<forall>B \<in> Nts_syms \<alpha>. \<exists>u k. P \<turnstile> [Nt B] \<Rightarrow>(k) [] \<and> k \<le> m"
+  from derivenD[OF der] have "\<forall>B \<in> Nts_syms \<alpha>. \<exists>u k. P \<turnstile> [Nt B] \<Rightarrow>(k) [] \<and> k \<le> m"
     by(simp add: Nts_syms_def in_set_conv_nth) (metis elem_le_sum_list in_set_conv_nth)
   then have "\<forall>B \<in> Nts_syms \<alpha>. B \<in> nullable P" using less.IH \<open>n = Suc m\<close> le_imp_less_Suc by metis
   with \<open>(A,\<alpha>) \<in> P\<close> show ?case 
