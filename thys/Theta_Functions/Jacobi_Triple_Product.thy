@@ -921,6 +921,6 @@ lemma jacobi_theta_nome_1_left_nonzero_real:
   by (metis assms jacobi_theta_nome_1_left_nonzero_complex jacobi_theta_nome_of_real 
             norm_of_real of_real_0 of_real_1)
 
-unbundle no_qpochhammer_inf_notation
+unbundle no qpochhammer_inf_notation
 
 end

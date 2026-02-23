@@ -18,7 +18,10 @@ one-dimensional heat equation $\\frac{\\partial^2}{\\partial z^2} f(z,t) =
 \\[\\prod_{n=1}^\\infty (1-q^{2m})(1+q^{2m-1}w^2)(1+q^{2m-1}w^{-2}) = 
   \\sum_{k=-\\infty}^\\infty q^{k^2}w^{2k}\\]
 as well as its corollary, Euler's famous pentagonal number theorem:
-\\[\\prod_{n=1}^\\infty (1-q^n) = \\sum_{k=-\\infty}^\\infty (-1)^k q^{k(3k-1)/2}\\]</p>"""
+\\[\\prod_{n=1}^\\infty (1-q^n) = \\sum_{k=-\\infty}^\\infty (-1)^k q^{k(3k-1)/2}\\]</p>
+<p>Various important theta nullwert identities are also derived, e.g. 
+$\\vartheta_2(q)^4 + \\vartheta_4(q)^4 = \\vartheta_3(q)^4$ and $\\vartheta_1'(q) = 
+\\vartheta_2(q) \\vartheta_3(q) \\vartheta_4(q)$.</p>"""
 license = "bsd"
 note = ""
 

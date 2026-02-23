@@ -1308,6 +1308,15 @@ lemma jacobi_theta_nome_11_holomorphic [holomorphic_intros]:
   unfolding jacobi_theta_nome_11_def
   by (intro holomorphic_intros assms(1,2)) (use assms(3-) in force)+
 
+lemma jacobi_theta_nome_11_holomorphic':
+  assumes "f holomorphic_on A" "\<And>z. z \<in> A \<Longrightarrow> norm (f z) \<noteq> 0" "norm q < 1" "open A"
+  shows   "(\<lambda>z. jacobi_theta_nome_11 (f z) q) holomorphic_on A"
+proof (cases "q = 0")
+  case False
+  thus ?thesis
+    unfolding jacobi_theta_nome_11_def
+    by (intro holomorphic_intros assms(1,2)) (use assms in auto)
+qed auto
 
 lemma jacobi_theta_nome_00_analytic [analytic_intros]:
   assumes "f analytic_on A" "g analytic_on A"
@@ -1339,6 +1348,15 @@ lemma jacobi_theta_nome_11_analytic [analytic_intros]:
   unfolding jacobi_theta_nome_11_def
   by (intro analytic_intros assms(1,2)) (use assms(3-) in force)+
 
+lemma jacobi_theta_nome_11_analytic':
+  assumes "f analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> norm (f z) \<noteq> 0" "norm q < 1"
+  shows   "(\<lambda>z. jacobi_theta_nome_11 (f z) q) analytic_on A"
+proof (cases "q = 0")
+  case False
+  thus ?thesis
+    unfolding jacobi_theta_nome_11_def
+    by (intro analytic_intros assms(1,2)) (use assms in auto)
+qed auto
 
 lemma tendsto_jacobi_theta_nome_00 [tendsto_intros]:
   fixes f g :: "'a \<Rightarrow> 'b :: {real_normed_field, banach, heine_borel}"
