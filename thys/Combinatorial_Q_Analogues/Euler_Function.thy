@@ -267,4 +267,51 @@ theorem deriv_euler_phi:
   shows   "deriv euler_phi q = -lambert of_nat q * euler_phi q / q"
   using deriv_euler_phi_aux[of q] assms by (simp add: field_simps)
 
+lemma has_field_derivative_euler_phi_complex [derivative_intros]:
+  assumes "norm (f x) < 1" "f x \<noteq> (0 :: complex)"
+  assumes "(f has_field_derivative f') (at x within A)"
+  shows "((\<lambda>x. euler_phi (f x)) has_field_derivative
+           (-lambert of_nat (f x) * euler_phi (f x) * f' / f x)) (at x within A)"
+proof -
+  have "(euler_phi has_field_derivative (deriv euler_phi (f x))) (at (f x))"
+    by (intro analytic_derivI analytic_intros) (use assms in auto)
+  also have "deriv euler_phi (f x) = -lambert of_nat (f x) * euler_phi (f x) / f x"
+    by (subst deriv_euler_phi) (use assms in auto)
+  finally have "((euler_phi \<circ> f) has_field_derivative
+                  (-lambert of_nat (f x) * euler_phi (f x) / f x * f')) (at x within A)"
+    by (intro DERIV_chain assms)
+  thus ?thesis
+    by (simp add: mult_ac o_def)
+qed
+
+lemma has_field_derivative_euler_phi_real [derivative_intros]:
+  assumes "\<bar>f x\<bar> < 1" "f x \<noteq> (0 :: real)"
+  assumes "(f has_field_derivative f') (at x within A)"
+  shows "((\<lambda>x. euler_phi (f x)) has_field_derivative
+           (-lambert of_nat (f x) * euler_phi (f x) * f' / f x)) (at x within A)"
+proof -
+  have *: "(euler_phi has_real_derivative -lambert real q * euler_phi q / q) (at q)"
+    if q: "\<bar>q\<bar> < 1" "q \<noteq> 0" for q :: real
+  proof -
+    have "((\<lambda>q. Re (euler_phi (of_real q))) has_field_derivative
+            (-lambert of_nat q * euler_phi q / q)) (at q)"
+      using lambert_of_real[of of_nat q, where ?'a = complex] q
+      by (auto intro!: derivative_eq_intros has_vector_derivative_real_field simp: euler_phi_of_real)
+    also have "?this \<longleftrightarrow> (euler_phi has_field_derivative (-lambert of_nat q * euler_phi q / q)) (at q)"
+    proof (rule DERIV_cong_ev)
+      have "eventually (\<lambda>q. q \<in> ball 0 1) (nhds q)"
+        by (rule eventually_nhds_in_open) (use q in auto)
+      thus "\<forall>\<^sub>F x in nhds q. Re (euler_phi (complex_of_real x)) = euler_phi x"
+        by eventually_elim (auto simp: euler_phi_of_real)
+    qed auto
+    finally show ?thesis .
+  qed
+
+  have "((euler_phi \<circ> f) has_field_derivative
+           (-lambert of_nat (f x) * euler_phi (f x) / f x * f')) (at x within A)"
+    by (intro DERIV_chain assms *)
+  thus ?thesis
+    by (simp add: o_def mult_ac)
+qed
+
 end

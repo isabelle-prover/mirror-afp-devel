@@ -529,7 +529,215 @@ proof -
     using assms by (simp flip: qpochhammer_inf_of_real add: a'_def b'_def)
   finally show ?thesis
     by (simp only: of_real_eq_iff)
-qed 
+qed
+
+
+subsection \<open>A related identity for $\varphi(q)^3$\<close>
+
+text \<open>
+  By instantiating the Jacobi triple product for $f(qz, 1/z)$ and differentiating,
+  we obtain the following identity:
+  \[\varphi(q)^3 = \sum_{n=-\infty}^\infty (-1)^n n q^{n(n+1)/2} = 
+      \sum_{n=0}^\infty (-1)^n (2n+1) q^{n(n+1)/2} \]
+\<close>
+lemma has_sum_euler_phi_cube_complex:
+  fixes q :: complex
+  assumes q: "norm q < 1"
+  shows "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum euler_phi q ^ 3) UNIV"
+proof -
+  include qpochhammer_inf_notation
+  define \<phi> where "\<phi> = euler_phi q"
+  define g where "g = (\<lambda>z. ramanujan_theta (q * z) (1 / z))"
+
+  have lim: "uniform_limit (cball (-1) (1/2)) (\<lambda>X z. \<Sum>n\<in>X. q powi (n * (n + 1) div 2) * z powi n)
+                 g finite_sets_at_top"
+  proof -
+    define B where "B = (\<lambda>z. (q * z, 1 / z)) ` cball (-1) (1/2)"
+    have "uniform_limit (cball (-1) (1/2)) (\<lambda>X z. case (q*z, 1/z) of (a, b) \<Rightarrow>
+             \<Sum>n\<in>X. a powi (n * (n + 1) div 2) * b powi (n * (n - 1) div 2))
+             (\<lambda>z. case (q*z, 1/z) of (a, b) \<Rightarrow> ramanujan_theta a b) finite_sets_at_top"
+    proof (rule uniform_limit_compose[OF uniform_limit_ramanujan_theta[of B]])
+      show "compact B" unfolding B_def
+        by (intro compact_continuous_image continuous_intros) auto
+    qed (use q in \<open>auto simp: B_def\<close>)
+    also have "?this \<longleftrightarrow> uniform_limit (cball (-1) (1/2)) 
+                 (\<lambda>X z. \<Sum>n\<in>X. q powi (n * (n + 1) div 2) * z powi n) g finite_sets_at_top"
+    proof (intro uniform_limit_cong eventually_finite_subsets_at_top_weakI allI ballI, goal_cases)
+      case (1 X z)
+      from 1 have [simp]: "z \<noteq> 0"
+        by auto
+      have "(q*z) powi (n * (n + 1) div 2) * (1/z) powi (n * (n - 1) div 2) =
+              q powi (n*(n+1) div 2) * z powi n" for n
+      proof -
+        have "(q*z) powi (n * (n + 1) div 2) * (1/z) powi (n * (n - 1) div 2) =
+              q powi (n * (n + 1) div 2) * z powi (n * (n + 1) div 2 - n * (n - 1) div 2)"
+          by (simp add: power_int_diff power_int_divide_distrib power_int_mult_distrib)
+        also have "n * (n + 1) div 2 - n * (n - 1) div 2 = n"
+          by (cases "even n") (auto elim!: evenE oddE simp: algebra_simps)
+        finally show ?thesis .
+      qed
+      thus ?case by simp
+    qed (simp_all add: g_def)
+    finally show ?thesis .
+  qed
+
+  have ev: "\<forall>\<^sub>F X in finite_sets_at_top.
+              continuous_on (cball (-1) (1/2)) (\<lambda>z. \<Sum>n\<in>X. q powi (n * (n + 1) div 2) * z powi n) \<and>
+              (\<forall>z\<in>ball (-1) (1/2). ((\<lambda>z. \<Sum>n\<in>X. q powi (n * (n + 1) div 2) * z powi n)
+                  has_field_derivative (\<Sum>n\<in>X. q powi (n * (n + 1) div 2) * n * z powi (n - 1))) (at z))"
+  proof (intro eventually_finite_subsets_at_top_weakI conjI ballI, goal_cases)
+    case 1
+    thus ?case by (auto intro!: continuous_intros)
+  next
+    case 2
+    thus ?case
+      by (auto intro!: derivative_eq_intros simp: field_simps)
+  qed
+
+  obtain g' where g':
+    "\<And>z. z \<in> ball (-1) (1/2) \<Longrightarrow> (g has_field_derivative g' z) (at z)"
+    "\<And>z. z \<in> ball (-1) (1/2) \<Longrightarrow> 
+       ((\<lambda>n. q powi (n * (n + 1) div 2) * of_int n * z powi (n - 1)) has_sum g' z) UNIV"
+    unfolding has_sum_def  by (rule has_complex_derivative_uniform_limit[OF ev lim]) auto
+  note [derivative_intros] = g'(1)
+
+  define f where
+    "f = (\<lambda>z. g z - \<phi> * (1 + 1 / z) * (-q*z ; q)\<^sub>\<infinity> * (-q/z ; q)\<^sub>\<infinity>)"
+
+  have f_eq_0: "f z = 0" if z: "z \<noteq> 0" for z
+  proof -
+    have "f z = ramanujan_theta (q * z) (1 / z) - \<phi> * (1 + 1 / z) * (-q*z ; q)\<^sub>\<infinity> * (-q/z ; q)\<^sub>\<infinity>"
+      by (simp add: g_def f_def)
+    also have "ramanujan_theta (q * z) (1 / z) = \<phi> * (-q*z ; q)\<^sub>\<infinity> * (-1/z ; q)\<^sub>\<infinity>"
+      using q z by (subst ramanujan_theta_triple_product_complex)
+                   (auto simp: abs_mult field_simps euler_phi_def \<phi>_def)
+    also have "(-1/z ; q)\<^sub>\<infinity> = (1 + 1 / z) * (-q/z ; q)\<^sub>\<infinity>"
+      using q z by (subst qpochhammer_inf_mult_q) (auto)
+    also have "\<phi> * (-q*z ; q)\<^sub>\<infinity> * \<dots> = \<phi> * (1 + 1 / z) * (-q*z ; q)\<^sub>\<infinity> * (-q/z ; q)\<^sub>\<infinity>"
+      using z by (simp add: field_simps)
+    finally show "f z = 0"
+      by simp
+  qed
+
+  have [derivative_intros]:
+      "((\<lambda>x. (-q*x ; q)\<^sub>\<infinity>) has_field_derivative deriv (\<lambda>x. (-q*x ; q)\<^sub>\<infinity>) (-1)) (at (-1))"
+    by (intro analytic_derivI analytic_intros) (use q in auto)
+  have [derivative_intros]:
+      "((\<lambda>x. (-q/x ; q)\<^sub>\<infinity>) has_field_derivative deriv (\<lambda>x. (-q/x ; q)\<^sub>\<infinity>) (-1)) (at (-1))"
+    by (intro analytic_derivI analytic_intros) (use q in auto)
+
+  have "(f has_field_derivative (g' (-1) + \<phi> * (q ; q)\<^sub>\<infinity> * (q ; q)\<^sub>\<infinity>)) (at (-1))"
+    unfolding f_def by (rule derivative_eq_intros refl | (simp; fail))+
+  hence "(f has_field_derivative (g' (-1) + \<phi> ^ 3)) (at (-1))"
+    by (simp add: power3_eq_cube \<phi>_def euler_phi_def)
+  also have "?this \<longleftrightarrow> ((\<lambda>_. 0) has_field_derivative (g' (-1) + \<phi> ^ 3)) (at (-1))"
+  proof (rule DERIV_cong_ev)
+    have "eventually (\<lambda>z. z \<in> -{0}) (nhds (-1 :: complex))"
+      by (rule eventually_nhds_in_open) auto
+    thus "eventually (\<lambda>z. f z = 0) (nhds (-1))"
+      by eventually_elim (use f_eq_0 in auto)
+  qed auto
+  finally have "((\<lambda>_. 0) has_field_derivative g' (-1) + \<phi> ^ 3) (at (-1))" .
+  moreover have "((\<lambda>_. 0) has_field_derivative 0) (at (-1 :: complex))"
+    by simp
+  ultimately have "g' (-1) + \<phi> ^ 3 = 0"
+    by (rule DERIV_unique)
+  hence "\<phi> ^ 3 = -g' (-1)"
+    by (simp add: add_eq_0_iff)
+
+  have "((\<lambda>n. -(q powi (n * (n + 1) div 2) * of_int n * (-1) powi (n - 1))) has_sum -g' (-1)) UNIV"
+    unfolding has_sum_uminus using g'(2)[of "-1"] by simp
+  also have "(\<lambda>n. -(q powi (n * (n + 1) div 2) * of_int n * (-1) powi (n - 1))) =
+             (\<lambda>n. q powi (n * (n + 1) div 2) * of_int n * (-1) powi n)"
+    by (simp add: power_int_diff)
+  finally show "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2))
+                  has_sum euler_phi q ^ 3) UNIV"
+    using \<open>\<phi> ^ 3 = -g' (-1)\<close> by (simp add: mult_ac \<phi>_def)
+qed
+
+lemma has_sum_euler_phi_cube_real:
+  fixes q :: real
+  assumes q: "\<bar>q\<bar> < 1"
+  shows "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum euler_phi q ^ 3) UNIV"
+proof -
+  have "((\<lambda>n. (-1) powi n * of_int n * (complex_of_real q) powi (n * (n + 1) div 2)) 
+           has_sum euler_phi (complex_of_real q) ^ 3) UNIV"
+    by (rule has_sum_euler_phi_cube_complex) (use q in auto)
+  also have "(\<lambda>n. (-1) powi n * of_int n * (complex_of_real q) powi (n * (n + 1) div 2)) =
+             (\<lambda>n. of_real ((-1) powi n * of_int n * q powi (n * (n + 1) div 2)))"
+    by simp
+  also have "euler_phi (complex_of_real q) ^ 3  = of_real (euler_phi q ^ 3)"
+    using q by (simp add: euler_phi_of_real)
+  finally show ?thesis
+    by (subst (asm) has_sum_of_real_iff)
+qed
+
+lemma powser_euler_phi_cube_complex:
+  fixes q :: complex
+  assumes q: "norm q < 1"
+  shows "(\<lambda>n. (-1) ^ n * of_nat (2 * n + 1) * q ^ (n * (n + 1) div 2)) sums euler_phi q ^ 3"
+proof -
+  have sum: "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum euler_phi q ^ 3) UNIV"
+    by (rule has_sum_euler_phi_cube_complex) fact
+
+  define S1 where "S1 = (\<Sum>\<^sub>\<infinity> n\<in>{0..}. (-1) powi n * of_int n * q powi (n * (n + 1) div 2))"
+  have "(\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) summable_on {0..}"
+    by (rule summable_on_subset, rule has_sum_imp_summable[OF sum]) auto
+  hence sum1: "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum S1) {0..}"
+    using sum unfolding S1_def by simp
+  also have "?this \<longleftrightarrow> ((\<lambda>n. (-1)^n * of_nat n * q ^ (n * (n + 1) div 2)) has_sum S1) UNIV"
+    by (rule has_sum_reindex_bij_witness[of _ int nat]) 
+       (auto simp: add_ac power_int_def nat_add_distrib nat_mult_distrib nat_div_distrib)
+  finally have "((\<lambda>n. (-1)^n * of_nat n * q ^ (n * (n + 1) div 2)) has_sum S1) UNIV" .
+  hence sums1: "(\<lambda>n. (-1)^n * of_nat n * q ^ (n * (n + 1) div 2)) sums S1"
+    by (rule has_sum_imp_sums)
+
+  define S2 where "S2 = (\<Sum>\<^sub>\<infinity> n\<in>{..-1}. (-1) powi n * of_int n * q powi (n * (n + 1) div 2))"
+  have "(\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) summable_on {..-1}"
+    by (rule summable_on_subset, rule has_sum_imp_summable[OF sum]) auto
+  hence sum2: "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum S2) {..-1}"
+    using sum unfolding S2_def by simp
+  also have "?this \<longleftrightarrow> ((\<lambda>n. (-1) powi n * of_int (n+1) * q powi (n * (n + 1) div 2)) has_sum S2) {0..}"
+    by (rule has_sum_reindex_bij_witness[of _ "\<lambda>n. -n-1" "\<lambda>n. -n-1"])
+       (auto simp: algebra_simps power_int_diff power_int_minus simp flip: power_int_inverse)
+  also have "\<dots> \<longleftrightarrow> ((\<lambda>n. (-1)^n * of_nat (n+1) * q ^ (n * (n + 1) div 2)) has_sum S2) UNIV"
+    by (rule has_sum_reindex_bij_witness[of _ int nat]) 
+       (auto simp: add_ac power_int_def nat_add_distrib nat_mult_distrib nat_div_distrib)
+  finally have "((\<lambda>n. (-1)^n * of_nat (n+1) * q ^ (n * (n + 1) div 2)) has_sum S2) UNIV" .
+  hence sums2: "(\<lambda>n. (-1)^n * of_nat (n+1) * q ^ (n * (n + 1) div 2)) sums S2"
+    by (rule has_sum_imp_sums)
+
+  have "(\<lambda>n. (-1)^n * of_nat (2*n+1) * q ^ (n * (n + 1) div 2)) sums (S1 + S2)"
+    using sums_add[OF sums1 sums2] by (simp add: algebra_simps)
+  also have "S1 + S2 = euler_phi q ^ 3"
+  proof -
+    have "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum (S1 + S2)) ({0..} \<union> {..-1})"
+      by (intro has_sum_Un_disjoint sum1 sum2) auto
+    also have "{0..} \<union> {..-1} = (UNIV :: int set)"
+      by auto
+    finally have "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1) div 2)) has_sum (S1 + S2)) UNIV" .
+    from this and sum show "S1 + S2 = euler_phi q ^ 3"
+      by (rule has_sum_unique)
+  qed
+  finally show ?thesis .
+qed
+
+lemma powser_euler_phi_cube_real:
+  fixes q :: real
+  assumes q: "\<bar>q\<bar> < 1"
+  shows "(\<lambda>n. (-1) ^ n * real (2 * n + 1) * q ^ (n * (n + 1) div 2)) sums euler_phi q ^ 3"
+proof -
+  have "(\<lambda>n. (-1) ^ n * of_nat (2 * n + 1) * complex_of_real q ^ (n * (n + 1) div 2)) sums 
+          euler_phi (of_real q) ^ 3"
+    by (rule powser_euler_phi_cube_complex) (use q in auto)
+  also have "(\<lambda>n. (-1) ^ n * of_nat (2 * n + 1) * complex_of_real q ^ (n * (n + 1) div 2)) =
+             (\<lambda>n. of_real ((-1) ^ n * real (2 * n + 1) * q ^ (n * (n + 1) div 2)))"
+    by simp
+  also have "euler_phi (complex_of_real q) ^ 3 = of_real (euler_phi q ^ 3)"
+    by (subst euler_phi_of_real) (use q in auto)
+  finally show ?thesis
+    by (subst (asm) sums_of_real_iff)
+qed
 
 
 subsection \<open>(Non-)vanishing of theta functinos\<close>

@@ -29,7 +29,7 @@ definition ramanujan_theta :: "'a :: {real_normed_field, banach} \<Rightarrow> '
 lemma ramanujan_theta_outside [simp]: "norm (a * b) \<ge> 1 \<Longrightarrow> ramanujan_theta a b = 0"
   by (simp add: ramanujan_theta_def)
 
-lemma uniform_limit_ramanujan_theta:
+lemma uniform_limit_ramanujan_theta_aux:
   fixes A :: "('a \<times> 'a :: {real_normed_field, banach}) set"
   assumes "compact A" "\<And>a b. (a, b) \<in> A \<Longrightarrow> norm (a * b) < 1"
   shows   "uniform_limit A (\<lambda>X (a,b). \<Sum>n\<in>X. a powi (n*(n+1) div 2) * b powi (n*(n-1) div 2))
@@ -150,15 +150,27 @@ proof (cases "A = {}")
     by (simp add: f_def case_prod_unfold)
 qed auto
 
+lemma uniform_limit_ramanujan_theta:
+  fixes A :: "('a \<times> 'a :: {real_normed_field, banach}) set"
+  assumes "compact A" "\<And>a b. (a, b) \<in> A \<Longrightarrow> norm (a * b) < 1"
+  shows   "uniform_limit A (\<lambda>X (a,b). \<Sum>n\<in>X. a powi (n*(n+1) div 2) * b powi (n*(n-1) div 2))
+             (\<lambda>(a,b). ramanujan_theta a b)
+             (finite_subsets_at_top UNIV)"
+proof -
+  have "uniform_limit A (\<lambda>X (a,b). \<Sum>n\<in>X. a powi (n*(n+1) div 2) * b powi (n*(n-1) div 2))
+          (\<lambda>(a,b). \<Sum>\<^sub>\<infinity>n. a powi (n*(n+1) div 2) * b powi (n*(n-1) div 2))
+          (finite_subsets_at_top UNIV)"
+    by (rule uniform_limit_ramanujan_theta_aux) (use assms in auto)
+  also have "?this \<longleftrightarrow> ?thesis"
+    by (intro uniform_limit_cong always_eventually allI ballI refl)
+       (use assms in \<open>auto simp: ramanujan_theta_def\<close>)
+  finally show ?thesis .
+qed
+
 lemma has_sum_ramanujan_theta:
   assumes "norm (a*b) < 1"
   shows   "((\<lambda>n. a powi (n*(n+1) div 2) * b powi (n*(n-1) div 2)) has_sum ramanujan_theta a b) UNIV"
-proof -
-  show ?thesis
-    using uniform_limit_ramanujan_theta[of "{(a, b)}"] assms
-    by (simp add: ramanujan_theta_def has_sum_def uniform_limit_singleton)
-qed
-
+  using uniform_limit_ramanujan_theta[of "{(a, b)}"] assms by (simp add: has_sum_def)
 
 lemma ramanujan_theta_commute: "ramanujan_theta a b = ramanujan_theta b a"
 proof (cases "norm (a * b) < 1")
@@ -319,7 +331,7 @@ proof -
     obtain r where r: "r > 0" "cball z r \<subseteq> A"
       using \<open>open A\<close> \<open>z \<in> A\<close> open_contains_cball_eq by blast
     define h where "h = (\<lambda>X (w,q). \<Sum>n\<in>X. w powi (n*(n+1) div 2) * q powi (n*(n-1) div 2) :: complex)"
-    define H where "H = (\<lambda>(w,q). \<Sum>\<^sub>\<infinity>n. w powi (n*(n+1) div 2) * q powi (n*(n-1) div 2) :: complex)"
+    define H where "H = (\<lambda>(w,q). ramanujan_theta w q :: complex)"
 
     have lim: "uniform_limit (cball z r)
                  (\<lambda>X x. h X (f x, g x)) (\<lambda>x. H (f x, g x)) (finite_subsets_at_top UNIV)"
@@ -395,19 +407,16 @@ proof -
     ultimately obtain r where r: "r > 0" "cball z r \<subseteq> (\<lambda>z. (fst z * snd z)) -` ball 0 1"
       by (meson open_contains_cball)
 
-    have "continuous_on (cball z r)
-            (\<lambda>(a, b). \<Sum>\<^sub>\<infinity>n. a powi (n * (n + 1) div 2) * b powi (n * (n - 1) div 2))"
+    have "continuous_on (cball z r) (\<lambda>(a, b). ramanujan_theta a b)"
     proof (rule uniform_limit_theorem)
       show "uniform_limit (cball z r)
               (\<lambda>X (a, b). \<Sum>n\<in>X. a powi (n * (n + 1) div 2) * b powi (n * (n - 1) div 2))
-              (\<lambda>(a, b). \<Sum>\<^sub>\<infinity>n. a powi (n * (n + 1) div 2) * b powi (n * (n - 1) div 2)) 
+              (\<lambda>(a, b). ramanujan_theta a b) 
               (finite_subsets_at_top UNIV)"
         by (rule uniform_limit_ramanujan_theta) (use r in auto)
     qed (auto intro!: always_eventually continuous_intros 
               simp: case_prod_unfold dist_norm zero_le_mult_iff)
-    also have "?this \<longleftrightarrow> continuous_on (cball z r) (\<lambda>(a,b). ramanujan_theta a b)"
-      by (intro continuous_on_cong) (use r in \<open>auto simp: ramanujan_theta_def\<close>)
-    finally have "continuous_on (ball z r) (\<lambda>(a,b). ramanujan_theta a b)"
+    hence "continuous_on (ball z r) (\<lambda>(a,b). ramanujan_theta a b)"
       by (rule continuous_on_subset) auto
     thus ?thesis
       using \<open>r > 0\<close> centre_in_ball continuous_on_interior interior_ball by blast
@@ -1741,7 +1750,7 @@ proof -
   let ?F = "finite_subsets_at_top UNIV :: int set filter"
   define f where "f = (\<lambda>n (w,q). \<Sum>n\<in>n. to_nome (of_int n ^ 2 * q + 2 * of_int n * w))"
   have "uniform_limit (A \<times> B) f (\<lambda>(w,q). \<Sum>\<^sub>\<infinity>n. to_nome (of_int n ^ 2 * q + 2 * of_int n * w)) ?F"
-    using uniform_limit_compose'[OF uniform_limit_ramanujan_theta[OF AB'], 
+    using uniform_limit_compose'[OF uniform_limit_ramanujan_theta_aux[OF AB'], 
                                  where B= "A\<times>B" and h=to_ab] 
       AB_subset
     by (simp add: to_ab_def case_prod_unfold to_nome_power_int power_int_mult_distrib f_def subset_iff
@@ -1831,8 +1840,5 @@ proof -
       by simp
   qed auto
 qed
-
-
-(* TODO: transformations under the modular group *)
 
 end
