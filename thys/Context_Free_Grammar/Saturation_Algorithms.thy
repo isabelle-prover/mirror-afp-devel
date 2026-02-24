@@ -249,6 +249,9 @@ definition reachable_fun :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n 
 definition reachable_sat :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n set" where
 "reachable_sat P S = the (while_saturate (reachable_fun P) S)"
 
+definition reachable_main :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n set" where
+"reachable_main P S = (let N = Nts P in (S-N) \<union> reachable_sat P (S \<inter> N))"
+
 lemma mono_reachable_fun:
   "mono (reachable_fun P)"
 unfolding mono_def reachable_fun_def by(fastforce split: prod.splits if_splits)
@@ -258,7 +261,6 @@ fixes P :: "('n,'t)Prods"
 assumes finP: "finite P"
 begin
 
-(* TODO: get rid of \<open>S \<subseteq> Nts P\<close> by generalizing while_saturate_finite_subset_Some *)
 lemma reachable_Some: assumes "S \<subseteq> Nts P"
 shows "\<exists>N. while_saturate (reachable_fun P) S = Some N"
 apply(rule while_saturate_finite_subset_Some[OF mono_reachable_fun _ finite_Nts[OF finP]])
@@ -317,6 +319,41 @@ proof (induction n arbitrary: B \<beta> rule: less_induct)
   qed
 qed
 
+lemma reachable_main_sound: assumes "B \<in> reachable_main P S"
+shows "\<exists>A \<in> S. \<exists>\<beta>. P \<turnstile> [Nt A] \<Rightarrow>* \<beta> \<and> Nt B \<in> set \<beta>"
+using assms reachable_sat_sound unfolding reachable_main_def
+apply(auto simp: Let_def)
+ apply fastforce
+by blast
+
+lemma reachable_main_complete: assumes "A \<in> S" "P \<turnstile> [Nt A] \<Rightarrow>(n) \<beta>" "Nt B \<in> set \<beta>"
+shows "B \<in> reachable_main P S"
+proof -
+  show ?thesis
+  proof (cases n)
+    case 0
+    then show ?thesis
+      using assms reachable_sat_complete[of "S \<inter> Nts P" A n "[Nt A]"] 
+      by(auto simp: reachable_main_def Let_def)
+  next
+    case (Suc m)
+    with assms(2) obtain \<alpha> where "(A,\<alpha>) \<in> P" "P \<turnstile> [Nt A] \<Rightarrow> \<alpha>" "P \<turnstile> \<alpha> \<Rightarrow>(m) \<beta>"
+      using relpowp_Suc_D2[of m "derive P" "[Nt A]" \<beta>]
+      by(auto simp: derive_singleton)
+    moreover then have "A \<in> Nts P" by (metis Nts_Lhss_Rhs_Nts UnI1 in_LhssI)
+    ultimately show ?thesis using assms reachable_sat_complete
+      by(auto simp: reachable_main_def Let_def)
+  qed
+qed
+
 end
+
+text \<open>Test:\<close>
+lemma
+  "reachable_main {(0,[Nt 1, Nt 1]), (1,[Tm 0]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)} {1}
+   = {1} \<and>
+   reachable_main {(0,[Nt 1, Nt 1]), (1,[Tm 0]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)} {2}
+   = {0,1,2}"
+by eval
 
 end
