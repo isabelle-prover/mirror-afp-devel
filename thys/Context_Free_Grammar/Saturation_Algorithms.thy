@@ -1,6 +1,6 @@
 (* Author: Tobias Nipkow *)
 
-section \<open>Compute Productive, Nullable, Reachable, Prestar\<close>
+section \<open>Compute Productive, Reachable, Useful, Nullable, Prestar\<close>
 
 theory Saturation_Algorithms
 imports
@@ -61,11 +61,24 @@ proof (induction n arbitrary: A w rule: less_induct)
     unfolding productive_sat_def productive_fun_def by fastforce
 qed
 
-corollary productive_sat_productive: "finite P \<Longrightarrow> productive_sat P = {A. productive P A}"
-using productive_sat_sound productive_sat_complete unfolding rtranclp_power by fastforce
+text \<open>Code setup:\<close>
+
+definition "productive_set P = {A. productive P A}"
+
+corollary productive_sat_productive_set_if_fin: "finite P \<Longrightarrow> productive_set P = productive_sat P"
+using productive_sat_sound productive_sat_complete unfolding productive_set_def rtranclp_power
+by fastforce
+
+corollary productive_set_code[code]: "productive_set (set ps) = productive_sat (set ps)"
+using productive_sat_productive_set_if_fin by fast
+
+lemma productives_code[code_unfold]: "productives P \<alpha> = (Nts_syms \<alpha> \<subseteq> productive_set P)"
+unfolding productives_if_Productive[of P \<alpha>] productive_set_def by blast
 
 text \<open>Test:\<close>
-lemma "productive_sat {(0,[Nt 1, Nt 1]), (1,[Tm 1]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)} = {0,1}"
+lemma "let P = {(0,[Nt 1, Nt 1]), (1,[Tm 0]), (1, [Nt 2]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)}
+  in productive_set P = {0,1} \<and> productive P 0 \<and> productive P 1 \<and> productives P [Nt 0, Nt 1] \<and>
+     restrict_productive P = {(0,[Nt 1, Nt 1]), (1,[Tm 0])}"
 by eval
 
 
@@ -138,9 +151,17 @@ proof (induction n arbitrary: A rule: less_induct)
     unfolding nullable_def nullable_fun_def by fastforce
 qed
 
+lemma nullable_correct: "finite P \<Longrightarrow> P \<turnstile> [Nt A] \<Rightarrow>* [] \<longleftrightarrow> A \<in> nullable P"
+by (metis nullable_complete nullable_sound rtranclp_imp_relpowp)
+
 text \<open>Test:\<close>
-lemma "nullable {(0,[Nt 1, Nt 1]), (1,[]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)} = {0,1}"
-by eval
+lemma assumes "P = {(0,[Nt 1, Nt 1]), (1,[]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)}"
+shows "P \<turnstile> [Nt 0] \<Rightarrow>* []"
+proof -
+  have "0 \<in> nullable P" unfolding assms by eval
+  thus ?thesis
+    by (simp add: assms nullable_correct)
+qed
 
 
 subsection \<open>Prestar\<close>
@@ -249,6 +270,10 @@ definition reachable_fun :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n 
 definition reachable_sat :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n set" where
 "reachable_sat P S = the (while_saturate (reachable_fun P) S)"
 
+(* useful ?
+definition reachable_main :: "('n,'t)Prods \<Rightarrow> 'n set \<Rightarrow> 'n set" where
+"reachable_main P S = (let N = Nts P in (S-N) \<union> reachable_sat P (S \<inter> N))" *)
+
 lemma mono_reachable_fun:
   "mono (reachable_fun P)"
 unfolding mono_def reachable_fun_def by(fastforce split: prod.splits if_splits)
@@ -258,14 +283,13 @@ fixes P :: "('n,'t)Prods"
 assumes finP: "finite P"
 begin
 
-(* TODO: get rid of \<open>S \<subseteq> Nts P\<close> by generalizing while_saturate_finite_subset_Some *)
 lemma reachable_Some: assumes "S \<subseteq> Nts P"
 shows "\<exists>N. while_saturate (reachable_fun P) S = Some N"
 apply(rule while_saturate_finite_subset_Some[OF mono_reachable_fun _ finite_Nts[OF finP]])
 unfolding reachable_fun_def using assms
 by (auto simp add: Nts_Lhss_Rhs_Nts Rhs_Nts_def Lhss_def Nts_syms_def Rhss_def split: prod.splits if_splits)
 
-lemma reachable_sat_sound: assumes "S \<subseteq> Nts P" and "B \<in> reachable_sat P S"
+lemma reachable_sat_sound_aux: assumes "S \<subseteq> Nts P" and "B \<in> reachable_sat P S"
 shows "\<exists>A \<in> S. \<exists>\<beta>. P \<turnstile> [Nt A] \<Rightarrow>* \<beta> \<and> Nt B \<in> set \<beta>"
 proof -
   obtain R where w: "while_saturate (reachable_fun P) S = Some R"
@@ -287,6 +311,10 @@ proof -
     by fastforce
 qed
 
+corollary reachable_sat_sound: assumes "S \<subseteq> Nts P" "B \<in> reachable_sat P S"
+shows "\<exists>A\<in>S. reachable P A B"
+using reachable_sat_sound_aux[OF assms] unfolding reachable_def by metis
+
 lemma reachable_sat_closed: assumes "S \<subseteq> Nts P" "A \<in> reachable_sat P S" "(A,\<alpha>) \<in> P" "Nt B \<in> set \<alpha>"
 shows "B \<in> reachable_sat P S"
 proof -
@@ -297,7 +325,7 @@ proof -
     by(auto simp:Rhss_def Nts_syms_def)
 qed
 
-lemma reachable_sat_complete: assumes "S \<subseteq> Nts P" and "A \<in> S"
+lemma reachable_sat_complete_aux: assumes "S \<subseteq> Nts P" and "A \<in> S"
 shows "P \<turnstile> [Nt A] \<Rightarrow>(n) \<beta> \<Longrightarrow> Nt B \<in> set \<beta> \<Longrightarrow> B \<in> reachable_sat P S"
 proof (induction n arbitrary: B \<beta> rule: less_induct)
   case (less n)
@@ -317,6 +345,120 @@ proof (induction n arbitrary: B \<beta> rule: less_induct)
   qed
 qed
 
+corollary reachable_sat_complete: assumes "S \<subseteq> Nts P" "A \<in> S"
+shows "reachable P A B \<Longrightarrow> B \<in> reachable_sat P S"
+using reachable_sat_complete_aux[OF assms] unfolding reachable_def
+by (metis rtranclp_power)
+
+(*lemma reachable_main_sound: assumes "B \<in> reachable_main P S"
+shows "\<exists>A \<in> S. \<exists>\<beta>. P \<turnstile> [Nt A] \<Rightarrow>* \<beta> \<and> Nt B \<in> set \<beta>"
+using assms reachable_sat_sound_aux unfolding reachable_main_def
+apply(auto simp: Let_def)
+ apply fastforce
+by blast
+
+lemma reachable_main_complete: assumes "A \<in> S" "P \<turnstile> [Nt A] \<Rightarrow>(n) \<beta>" "Nt B \<in> set \<beta>"
+shows "B \<in> reachable_main P S"
+proof -
+  show ?thesis
+  proof (cases n)
+    case 0
+    then show ?thesis
+      using assms reachable_sat_complete_aux[of "S \<inter> Nts P" A n "[Nt A]"] 
+      by(auto simp: reachable_main_def Let_def)
+  next
+    case (Suc m)
+    with assms(2) obtain \<alpha> where "(A,\<alpha>) \<in> P" "P \<turnstile> [Nt A] \<Rightarrow> \<alpha>" "P \<turnstile> \<alpha> \<Rightarrow>(m) \<beta>"
+      using relpowp_Suc_D2[of m "derive P" "[Nt A]" \<beta>]
+      by(auto simp: derive_singleton)
+    moreover then have "A \<in> Nts P" by (metis Nts_Lhss_Rhs_Nts UnI1 in_LhssI)
+    ultimately show ?thesis using assms reachable_sat_complete_aux
+      by(auto simp: reachable_main_def Let_def)
+  qed
+qed*)
+
+subsubsection \<open>Code setup\<close>
+
+lemma reachable_code[code]:
+  "reachable P S A = (if S \<in> Nts P then A \<in> reachable_sat P {S} else S=A)"
+proof -
+  have "reachable P S S" using reachable_def by fastforce
+  moreover have "S \<notin> Nts P \<Longrightarrow> reachable P S A \<Longrightarrow> S=A"
+    by (auto simp: reachable_def derives_Cons_iff Nts_Lhss_Rhs_Nts in_LhssI)
+  ultimately show ?thesis
+    using reachable_sat_sound[of "{S}" A] by (auto simp: reachable_sat_complete)
+qed
+
+lemma set_reachable_code: "{A \<in> Nts P. reachable P S A} = reachable_sat P ({S} \<inter> Nts P)"
+proof -
+  have "A \<in> reachable_sat P ({S} \<inter> Nts P)" if "A \<in> Nts P" "reachable P S A" for A
+    using that by (simp add: in_Nts_iff_if_derives reachable_sat_complete)
+  moreover have "A \<in> Nts P \<and> reachable P S A" if "A \<in> reachable_sat P ({S} \<inter> Nts P)" for A
+    using reachable_sat_sound[OF _ that] by (auto simp: in_Nts_iff_if_derives)
+  ultimately show ?thesis by blast
+qed
+
 end
+
+lemma reachable_code[code]:
+  "reachable (set ps) S A = (if S \<in> Nts (set ps) then A \<in> reachable_sat (set ps) {S} else S=A)"
+by (simp add: finP.reachable_code finP_def)
+
+definition reachable_set :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> 'n set"  where
+"reachable_set P S = {A \<in> Nts P. reachable P S A}"
+
+lemma reachable_set[code]:
+  "reachable_set (set ps) S = reachable_sat (set ps) ({S} \<inter> Nts (set ps))"
+using finP.set_reachable_code[of "set ps"] unfolding reachable_set_def finP_def by blast
+
+text \<open>Test:\<close>
+lemma "let P = {(0,[Nt 1, Nt 1]), (1,[Tm 0]), (1, [Nt 2]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)}
+  in reachable P 0 2 \<and> {A \<in> Nts P. reachable P 1 A} = {0,1,2} \<and> reachable_set P 2 = {0,1,2}"
+unfolding reachable_set_def[symmetric]
+by eval
+
+
+subsection \<open>Useful\<close>
+
+text \<open>Code setup\<close>
+
+lemma useful_iff_reachable_productive_code[code]:
+  "useful P S A = (if productive P S then reachable (restrict_productive P) S A else False)"
+by (metis (mono_tags, lifting) rtranclp_trans useful_def useful_iff_reachable_productive)
+
+text \<open>Test:\<close>
+lemma "let P = {(0,[Nt 1, Nt 1]), (1,[Tm 0]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)}
+  in useful P 0 0"
+by eval
+
+corollary useful_reachable_productive_code[code]:
+  "restrict_Nts (useful P S) P =
+  (if productive P S then
+     (let P' = restrict_productive P in restrict_Nts (reachable P' S) P')
+   else {})"
+apply (simp add: useful_reachable_productive)
+by (auto simp add: restrict_Nts_def useful_iff_reachable_productive_code)
+
+lemma "let P = {(0,[Nt 1, Nt 1]), (1,[Tm 0]), (1,[Nt 2]), (2,[Nt 2]), (2,[Nt 0,Nt 2]::(int,nat)syms)}
+  in restrict_Nts (useful P 0) P = {(0, [Nt 1, Nt 1]), (1, [Tm 0])}"
+by eval
+
+(* unused
+definition useful_set :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> 'n set" where
+"useful_set P S = (if productive P S then {A \<in> Nts P. useful P S A} else {})"
+
+lemma set_useful_eq_useful_set: "{A. useful P S A} = useful_set P S"
+proof -
+  show ?thesis
+  proof (cases "productive P S")
+    case True
+    then show ?thesis
+      by(force simp: useful_set_def derives_Nt_Cons_map_Tm Nts_Lhss_Rhs_Nts
+          intro: in_LhssI dest: productive_if_useful)
+  next
+    case False
+    then show ?thesis unfolding useful_set_def useful_def by (auto dest: rtranclp_trans)
+  qed
+qed *)
 
 end

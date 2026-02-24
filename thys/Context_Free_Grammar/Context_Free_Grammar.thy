@@ -1859,6 +1859,9 @@ proof (induction \<alpha>)
   qed
 qed simp
 
+lemma productives_if_Productive: "productives P \<alpha> = Productive P (Nts_syms \<alpha>)"
+by (meson in_Nts_syms productive_if_in_productives productives_if_Nts_productive)
+
 definition restrict_Nts :: "('n \<Rightarrow> bool) \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "restrict_Nts R P = {(A,\<alpha>) \<in> P. \<forall>B \<in> {A} \<union> Nts_syms \<alpha>. R B}"
 
@@ -1891,10 +1894,22 @@ next
       by (auto simp: in_set_conv_decomp intro:derives_rule)
     from step(2,4) have "P \<turnstile> [Nt S] \<Rightarrow>* u @ w @ v"
       by (meson derive.intros rtranclp.rtrancl_into_rtrancl)
-    from  step.IH[OF this]  derive.intros[OF uAw] show ?case
+    from  step.IH[OF this] derive.intros[OF uAw] show ?case
       by (meson converse_rtranclp_into_rtranclp)
   qed
   thus "?L \<subseteq> ?L'" by(auto simp: Lang_def)
+qed
+
+lemma in_Nts_iff_if_derives: assumes "reachable P S A"
+shows "S \<in> Nts P \<longleftrightarrow> A \<in> Nts P"
+proof
+  assume "A \<in> Nts P"
+  with assms show "S \<in> Nts P"
+    by(auto simp: reachable_def derives_Cons_iff Nts_Lhss_Rhs_Nts in_LhssI)
+next
+  assume "S \<in> Nts P"
+  with assms derives_Nts_syms_subset show "A \<in> Nts P"
+    using Nts_Lhss_Rhs_Nts in_Nts_syms by (fastforce simp: reachable_def)
 qed
 
 text \<open>Towards: Useful symbols can be computed as \<open>reachable o productive\<close>.\<close>
@@ -1923,9 +1938,6 @@ next
     by (fastforce simp: Lang_def Nts_syms_def in_set_conv_decomp intro!: derives_Cons_rule)
   then show ?case using step.IH unfolding restrict_Nts_def by(auto intro: derives_rule)
 qed
-
-lemma reachable_if_useful: "useful P S A \<Longrightarrow> reachable P S A"
-by (meson reachable_def useful_def)
 
 lemma productive_if_useful: "useful P S A \<Longrightarrow> productive P A"
 using derives_Nt_map_Tm[of P] unfolding useful_def Lang_def
@@ -1977,14 +1989,9 @@ next
   then show ?case using step.IH by(meson converse_rtranclp_into_rtranclp derive.intros)
 qed
 
-lemma derives_restrict_productive_Tms:
-  "P \<turnstile> \<beta> \<Rightarrow>* map Tm w \<Longrightarrow> restrict_productive P \<turnstile> \<beta> \<Rightarrow>* map Tm w"
-by(rule derives_restrict_productiveI) auto
-
-lemma useful_restrict_productive_if_useful: "useful P S A \<Longrightarrow> useful (restrict_productive P) S A"
-unfolding useful_def
-by (metis (mono_tags, lifting) productive_if_in_productives in_Nts_syms derives_restrict_productiveI
-      derives_restrict_productive_Tms)
+lemma reachable_restrict_productive_if_useful: "useful P S A \<Longrightarrow> reachable (restrict_productive P) S A"
+unfolding useful_def reachable_def
+by (metis (mono_tags, lifting) derives_restrict_productiveI in_Nts_syms productive_if_in_productives)
 
 text \<open>One direction:\<close>
 
@@ -1995,8 +2002,7 @@ proof -
   let ?N = "{A} \<union> Nts_syms \<alpha>"
   from assms(1) have 1: "(A,\<alpha>) \<in> P" and 2: "\<forall>A \<in> ?N. useful P S A"
     unfolding restrict_Nts_def by blast+
-  from \<open>P' = _\<close> 2 productive_if_useful[of P S] reachable_if_useful[of P' S]
-    useful_restrict_productive_if_useful[of P S]
+  from \<open>P' = _\<close> 2 productive_if_useful[of P S] reachable_restrict_productive_if_useful[of P S]
   have "\<forall>A \<in> ?N. productive P A \<and> reachable P' S A" by meson
   with 1 \<open>P' = _\<close> show "(A,\<alpha>) \<in> restrict_Nts (reachable P' S) P'"
     unfolding restrict_Nts_def by blast
@@ -2006,8 +2012,7 @@ qed
 lemma
   assumes "(A,\<alpha>) \<in> restrict_Nts (useful P S) P" "P' = restrict_productive P"
   shows "(A,\<alpha>) \<in> restrict_Nts (reachable P' S) P'"
-using assms productive_if_useful[of P S] reachable_if_useful[of P' S]
-  useful_restrict_productive_if_useful[of P S]
+using assms productive_if_useful[of P S] reachable_restrict_productive_if_useful[of P S]
 unfolding restrict_Nts_def by blast
 
 theorem restrict_reachable_P'_subset_restrict_useful_P:
@@ -2015,16 +2020,12 @@ theorem restrict_reachable_P'_subset_restrict_useful_P:
    (let P' = restrict_productive P in restrict_Nts (reachable P' S) P')"
 by(auto simp: Let_def intro: in_restrict_reachable_P'_if_in_restrict_useful_P)
 
-lemma Productive_restrict_productive:
-  "Productive (restrict_productive P) (Nts(restrict_productive P))"
-by (metis (mono_tags, lifting) Nts_restrict_productive restrict_productive_derives)
-
 lemma reachables_productives_if_Productive_Nts:
   "S \<in> Nts P \<Longrightarrow> Productive P (Nts P) \<Longrightarrow> P \<turnstile> [Nt S] \<Rightarrow>* \<beta> \<Longrightarrow> productives P \<beta>"
 by (metis productive_if_useful productives_if_Nts_productive reachable_def useful_reachable)
 
 locale Restrict_Productive =
-fixes P' P S
+fixes P P' S
 assumes P': "P' = restrict_productive P"
 and productive_P_S: "productive P S"
 begin
@@ -2036,7 +2037,7 @@ lemma P_subset_P':  "P' \<subseteq> P"
 unfolding P' by(rule restrict_Nts_subset)
 
 lemma Productive_P': "Productive P' (Nts P')"
-unfolding P' by (rule Productive_restrict_productive) 
+unfolding P' by (metis (mono_tags, lifting) Nts_restrict_productive restrict_productive_derives)
 
 lemma P'_implies_P: "P' \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* \<beta>"
 by(rule derives_mono[OF P_subset_P'])
@@ -2053,23 +2054,36 @@ proof -
     by (meson)
 qed
 
+
 text \<open>The other direction:\<close>
 
 lemma restrict_Nts_usefulI:
   assumes "(A,\<alpha>) \<in> restrict_Nts (reachable P' S) P'" and "P' = restrict_productive P"
   shows "(A,\<alpha>) \<in> restrict_Nts (useful P S) P"
-using assms productive_P_S useful_P_if_reachable_P' restrict_Nts_mono[OF P_subset_P'] by (metis subsetD)
+using assms useful_P_if_reachable_P' restrict_Nts_mono[OF P_subset_P'] by (metis subsetD)
 
 end
 
+text \<open>Just computing the useful symbols:\<close>
+
+lemma useful_iff_reachable_productive:
+  "productive P S \<Longrightarrow> useful P S = reachable (restrict_productive P) S"
+using Restrict_Productive.useful_P_if_reachable_P'[unfolded Restrict_Productive_def]
+  reachable_restrict_productive_if_useful by fastforce
+
+text \<open>Computing the useful productions:\<close>
+
 theorem useful_reachable_productive:
-  "productive P S \<Longrightarrow>
-   restrict_Nts (useful P S) P =
-   (let P' = restrict_productive P in restrict_Nts (reachable P' S) P')"
-using restrict_reachable_P'_subset_restrict_useful_P
-by(auto simp: Let_def
-     intro: in_restrict_reachable_P'_if_in_restrict_useful_P
-            Restrict_Productive.restrict_Nts_usefulI[unfolded Restrict_Productive_def])
+assumes "productive P S" shows
+   "restrict_Nts (useful P S) P =
+   (let P' = restrict_productive P in restrict_Nts (reachable P' S) P')" (is "?L=?R")
+proof -
+  from assms interpret L: Restrict_Productive P "restrict_productive P" S
+    by (simp add: Restrict_Productive_def)
+  have "?R \<subseteq> ?L"
+    by (metis (mono_tags, lifting) L.restrict_Nts_usefulI subrelI)
+  with restrict_reachable_P'_subset_restrict_useful_P show ?thesis by (rule subset_antisym)
+qed
 
 
 subsection \<open>Epsilon-Freeness\<close>
