@@ -69,7 +69,7 @@ fun map_ctxt name f context = map name (simpset_map (Context.proof_of context) f
 
 (* maintain content *)
 
-fun clear name = map_ctxt name clear_simpset;
+fun clear name = map_ctxt name Simplifier.clear_simpset;
 
 fun add_simp name thm = map_ctxt name (Simplifier.add_simp thm)
 fun del_simp name thm = map_ctxt name (Simplifier.del_simp thm)

@@ -1,6 +1,6 @@
 (* Pollutes the global namespace, but we use them everywhere *)
-fun ss_only thms ctxt = clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps thms;
-fun HOL_ss_only thms ctxt = clear_simpset (put_simpset HOL_ss ctxt) addsimps thms;
+fun ss_only thms ctxt = Simplifier.clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps thms;
+fun HOL_ss_only thms ctxt = Simplifier.clear_simpset (put_simpset HOL_ss ctxt) addsimps thms;
 
 signature CIMP =
 sig
