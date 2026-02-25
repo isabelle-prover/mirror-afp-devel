@@ -1407,9 +1407,8 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
   val _ = phase "NAMES"
 
   val lthy =
-      lthy |> More_Local_Theory.in_theory (Context.theory_map
-               (Simplifier.map_ss
-                    (fn ss => ss addsimps (recthms @ flthms @ fgthms))))
+      lthy |> More_Local_Theory.in_theory
+               (Simplifier.map_theory_simpset (Simplifier.add_simps (recthms @ flthms @ fgthms)))
 
   val _ = phase "heap_update_fold_toplevel_fields"
   val _ = trac "About to heap_update_fold_toplevel_fields ..."

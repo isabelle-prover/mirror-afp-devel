@@ -249,8 +249,8 @@ fun widen_tac ctxt =
 end
 \<close>
 
-declaration \<open>fn _ =>
-  Simplifier.map_ss (Simplifier.add_unsafe_solver (Simplifier.mk_solver "widen" widen_tac))
+declaration \<open>
+  K (Simplifier.map_simpset (Simplifier.add_unsafe_solver (Simplifier.mk_solver "widen" widen_tac)))
 \<close>
 
 

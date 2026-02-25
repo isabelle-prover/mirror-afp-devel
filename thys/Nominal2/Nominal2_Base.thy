@@ -2295,7 +2295,7 @@ declaration \<open>fn _ =>
 let
   val mksimps_pairs = (@{const_name Nominal2_Base.fresh}, @{thms fresh_PairD}) :: mksimps_pairs
 in
-  Simplifier.map_ss (fn ss => Simplifier.set_mksimps (mksimps mksimps_pairs) ss)
+  Simplifier.map_simpset (Simplifier.set_mksimps (mksimps mksimps_pairs))
 end
 \<close>
 

@@ -61,7 +61,7 @@ fun hst_prove_globals fullrecname thy = let
                        mk_defeqn(l recty', r hrs recty'))))
                  triples
   val (hst_thms, thy) = thy |> fold_map Global_Theory.add_def_overloaded defs 
-  val thy' = thy |> Context.theory_map (Simplifier.map_ss (fn ss => ss addsimps hst_thms))
+  val thy' = thy |> Simplifier.map_theory_simpset (Simplifier.add_simps hst_thms)
   val hst_instance_t =
       Logic.mk_of_class(recty, "SepFrame.heap_state_type")
   val hst_instance_ct = Thm.cterm_of (thy2ctxt thy') hst_instance_t

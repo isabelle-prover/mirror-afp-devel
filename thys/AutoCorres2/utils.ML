@@ -704,7 +704,7 @@ fun import_universal_prop t ctxt =
 fun simp_map f =
   Context.map_proof (
     Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} (
-      K (Simplifier.map_ss f)))
+      K (Simplifier.map_simpset f)))
   |> Context.proof_map
 
 (*

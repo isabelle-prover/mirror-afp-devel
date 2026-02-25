@@ -2062,7 +2062,7 @@ abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
 
-declaration \<open>K (Simplifier.map_ss (Simplifier.del_loop "split_all_tac"))\<close>
+declaration \<open>K (Simplifier.map_simpset (Simplifier.del_loop "split_all_tac"))\<close>
 setup \<open>map_theory_claset (fn ctxt => ctxt delSWrapper "split_all_tac")\<close>
 
 

@@ -221,7 +221,7 @@ fun int_rewr thm =
 attribute_setup simp_unl = \<open>
     Attrib.add_del
       (Thm.declaration_attribute
-        (fn th => Simplifier.map_ss (Simplifier.add_simp (int_rewr th))))
+        (fn th => Simplifier.map_simpset (Simplifier.add_simp (int_rewr th))))
       (K (NONE, NONE))  (* note only adding -- removing is ignored *)
 \<close> "add thm unlifted from rewrites from intensional formulas or preformulas"
 
