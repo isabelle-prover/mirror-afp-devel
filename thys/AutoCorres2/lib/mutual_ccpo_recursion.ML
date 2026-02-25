@@ -579,7 +579,7 @@ fun mutual_ccpo_fixed_point (fs : functional list) ctxt =
     val functional = tuple_of_btree raw_functionals |> absfree recF
 
     val cleanup_simps = Named_Theorems.get ctxt @{named_theorems fixed_point_cleanup_simps}
-    val cleanup_ss = simpset_map ctxt (fn ctxt => ctxt addsimps cleanup_simps) HOL_basic_ss;
+    val cleanup_ss = Simplifier.simpset_map ctxt (fn ctxt => ctxt addsimps cleanup_simps) HOL_basic_ss;
 
 val _ = TRACE ("prove mono thm ")
 

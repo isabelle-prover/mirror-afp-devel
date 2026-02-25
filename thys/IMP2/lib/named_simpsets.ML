@@ -64,7 +64,7 @@ fun put name ctxt = put_simpset (get ctxt name) ctxt
 fun map name f context =
   (content context name; Data.map (Name_Space.map_table_entry name f) context);
 
-fun map_ctxt name f context = map name (simpset_map (Context.proof_of context) f) context
+fun map_ctxt name f context = map name (Simplifier.simpset_map (Context.proof_of context) f) context
 
 
 (* maintain content *)

@@ -1884,7 +1884,7 @@ local
 
 val conseq1_ss_base =
   HOL_basic_ss
-  |> simpset_map @{context} (
+  |> Simplifier.simpset_map @{context} (
     Simplifier.add_simps (@{thms mem_Collect_eq Set.singleton_iff Set.Int_iff Set.empty_iff UNIV_I HOL.conj_assoc disj_assoc Hoare.all_imp_eq_triv}
       @ K_convs @ @{thms simp_thms ex_simps all_simps})
     #> Simplifier.del_simps @{thms Hoare.all_imp_to_ex}
@@ -1893,7 +1893,7 @@ val conseq1_ss_base =
 
 val conseq2_ss_base =
   HOL_basic_ss
-  |> simpset_map @{context} (
+  |> Simplifier.simpset_map @{context} (
     Simplifier.add_simps @{thms Hoare.all_imp_eq_triv simp_thms ex_simps all_simps}
     #> Simplifier.del_simp @{thm Hoare.all_imp_to_ex}
     #> Simplifier.add_cong @{thm imp_cong}
