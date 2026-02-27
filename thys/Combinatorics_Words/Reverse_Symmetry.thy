@@ -379,7 +379,7 @@ fun prover method ss ctxt rule =
 fun rewrite _ _ [] = Thm.reflexive
   | rewrite method ctxt thms =
       let
-        val p = prover method (simpset_of ctxt)
+        val p = prover method (Simplifier.simpset_of ctxt)
         val ctxt' = Raw_Simplifier.init_simpset thms ctxt
       in
         Raw_Simplifier.rewrite_cterm (true, true, true) p ctxt'

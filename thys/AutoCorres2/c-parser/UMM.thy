@@ -321,7 +321,7 @@ end
 \<close>
 
 
-ML \<open>val UMM_ss = simpset_of \<^context>\<close>
+ML \<open>val UMM_ss = Simplifier.simpset_of \<^context>\<close>
 
 
 lemma heap_update_fold_comp_apply : "heap_update p v (g z) \<equiv> (heap_update p v \<circ> g) z"

@@ -131,7 +131,7 @@ structure RefineG_Transfer = struct
 
   fun get_post_simp_rules context = Context.proof_of context
       |> get_post_ss
-      |> simpset_of 
+      |> Simplifier.simpset_of 
       |> Simplifier.dest_simps
       |> map #2
 

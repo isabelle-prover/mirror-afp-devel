@@ -272,10 +272,11 @@ fun mk_solve_with_tac ctxt thms solver_tac =
 fun simps_of_info info = #case_rewrites info @ #rec_rewrites info @ #inject info @ #distinct info
 
 val my_simp_set =
-  simpset_of (@{context}
-    |> Simplifier.del_simps (simpset_of @{context} |> Simplifier.dest_simps |> map #2)
-    |> Simplifier.add_simps @{thms HOL.simp_thms})
-
+  \<^context> (*TODO prefer stable base*)
+  |> Simplifier.del_simps (\<^context> |> Simplifier.simpset_of |> Simplifier.dest_simps |> map #2)
+  |> Simplifier.add_simps @{thms HOL.simp_thms}  
+  |> Simplifier.simpset_of
+    
 fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype_Aux.info) prop_gen sort same_constructor_tac =
   let
     fun bin_const ty = Const (bin_const_name, ty --> ty --> @{typ bool})

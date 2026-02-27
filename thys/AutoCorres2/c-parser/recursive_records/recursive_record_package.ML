@@ -76,12 +76,8 @@ fun map_info f = RecursiveRecordData.map (fn data => make_data (#simpset data) (
 
 fun gen_add_record_simpset map_ss simps congs thy =
   thy
-  |> map_ss (fn ss =>
-       Proof_Context.init_global thy
-       |> put_simpset ss
-       |> (fn ctxt => ctxt addsimps simps)
-       |> fold Simplifier.add_cong congs
-       |> simpset_of)
+  |> (map_ss o Simplifier.simpset_map (Proof_Context.init_global thy))
+       (Simplifier.add_simps simps #> fold Simplifier.add_cong congs)
 
 datatype no_congs_simp_option = Add | No_Add | Add_Symmetric 
 

@@ -48,8 +48,7 @@ structure Record_Intf: RECORD_INTF = struct
   val get_unf_thms = Data.get #> Simplifier.dest_simps #> map #2
 
   fun add_unf_thms thms context = let
-    val ctxt = Context.proof_of context
-    fun add ss = simpset_of (put_simpset ss ctxt addsimps thms)
+    val add = Simplifier.simpset_map (Context.proof_of context) (Simplifier.add_simps thms)
   in
     context 
     |> Data.map add
@@ -125,9 +124,9 @@ structure Record_Intf: RECORD_INTF = struct
 
   fun setup_simprocs thy = let
     val ctxt = Proof_Context.init_global thy
-    val ss = put_simpset HOL_basic_ss ctxt
-      |> fold Simplifier.add_proc [Record.simproc, Record.upd_simproc]
-      |> simpset_of
+    val ss =
+      HOL_basic_ss
+      |> Simplifier.simpset_map ctxt (Simplifier.add_proc Record.simproc #> Simplifier.add_proc Record.upd_simproc)
 
   in
     Data.map (K ss) (Context.Theory thy) |> Context.the_theory

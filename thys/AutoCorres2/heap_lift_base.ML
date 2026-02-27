@@ -627,21 +627,20 @@ fun lifted_globals_lemmas prog_info heap_info lthy = let
         @ (struct_simpset @{named_theorems "fl_ti_simps"})
         @ (struct_simpset @{named_theorems "fl_Some_simps"})
         @ (struct_simpset @{named_theorems "fg_cons_simps"})
-    val base_ss = simpset_of @{theory_context HeapLift}
+    val base_ss = Simplifier.simpset_of @{theory_context HeapLift}
     val record_ss = RecordUtils.get_record_simpset lthy
     val merged_ss = Simplifier.merge_ss (base_ss, record_ss)
 
     (* Generate a simpset containing everything we need. *)
     val ss =
-      (Context_Position.set_visible false lthy)
-      |> put_simpset merged_ss
-      |> (fn ctxt => ctxt
-                addsimps [#lift_fn_thm heap_info]
+      merged_ss
+      |> Simplifier.simpset_map (Context_Position.set_visible false lthy)
+           (Simplifier.add_simps ([#lift_fn_thm heap_info]
                     @ @{thms typ_simple_heap_simps}
                     @ @{thms valid_globals_field_def}
                     @ @{thms the_fun_upd_lemmas export_tag_adjust_ti}
-                    @ struct_simps)
-      |> simpset_of
+                    @ struct_simps))
+
   in
     fun subgoal_solver_tac ctxt =
       (fast_force_tac (put_simpset ss ctxt) 1)

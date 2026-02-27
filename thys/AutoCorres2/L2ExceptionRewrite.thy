@@ -1025,14 +1025,16 @@ fun smash_unit_vars ctxt = SUBGOAL (fn (t, i) =>
  end)
 
 local
-  val ss = simpset_of (put_simpset HOL_basic_ss @{context}
-             addsimps @{thms HOL.simp_thms
+  val ss =
+    HOL_basic_ss
+    |> Simplifier.simpset_map \<^context>
+      (Simplifier.add_simps @{thms HOL.simp_thms
                surj_def rel_project_conv rel_Nonlocal_conv Product_Type.prod.case c_exntype.case
                rel_liftE_apply rel_sum_eq_apply
                if_True if_False
                Product_Type.prod.inject c_exntype.inject List.list.inject String.char.inject c_exntype.distinct
                sum.map_ident  unit_convs}
-             |> Simplifier.add_cong @{thm if_cong})
+      #> Simplifier.add_cong @{thm if_cong})
 in
 fun clarsimp_solve_tac ctxt i =
   let

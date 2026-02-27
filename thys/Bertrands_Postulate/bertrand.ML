@@ -119,7 +119,9 @@ fun pre_mangoldt_conv ctxt cache =
   (fn thm => thm RS @{thm eq_reflection}) o prove_pre_mangoldt ctxt cache o Thm.term_of
 
 val nat_eq_ss =
-  simpset_of (put_simpset HOL_basic_ss @{context} addsimps @{thms Numeral_Simprocs.semiring_norm})
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps @{thms Numeral_Simprocs.semiring_norm})
 
 fun prove_nat_eq ctxt (t1, t2) =
   let

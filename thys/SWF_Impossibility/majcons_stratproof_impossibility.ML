@@ -37,11 +37,11 @@ type profile =
    allowed_results : int list list,
    allowed_results_thm : thm}
 
-val profile_wf_simpset = simpset_of (put_simpset HOL_basic_ss @{context} addsimps
-  @{thms refl HOL.simp_thms set_mset_add_mset_insert set_mset_empty mset.simps list.pred_inject
+val profile_wf_simpset =
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps @{thms refl HOL.simp_thms set_mset_add_mset_insert set_mset_empty mset.simps list.pred_inject
          add_mset_commute prod.case list.map fst_conv snd_conv list.size})
-
-
 
 fun majority_relation zss =
   let
@@ -72,7 +72,9 @@ val all_rankings_simps =
          if_True if_False remove1.simps refl}
 
 val all_rankings_simpset =
-  (put_simpset HOL_basic_ss @{context} addsimps all_rankings_simps) |> simpset_of
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps all_rankings_simps)
   
 val majority_rel_list_simps =
   @{thms majority_rel_list_aux.simps list.map fst_conv snd_conv
@@ -83,7 +85,9 @@ val majority_rel_list_simps =
          add_mset_commute}
 
 val majority_rel_list_simpset =
-  (put_simpset HOL_basic_ss @{context} addsimps majority_rel_list_simps) |> simpset_of
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps majority_rel_list_simps)
 
 val case_nat_0_thm = @{lemma "case_nat a b 0 = a" by simp}
 val case_nat_numeral_thm = @{lemma "case_nat a b (numeral n) = b (pred_numeral n)" by simp}
@@ -96,7 +100,9 @@ val stratproof_simps =
   @ [case_nat_0_thm, case_nat_numeral_thm]
 
 val stratproof_simpset =
-  (put_simpset HOL_basic_ss @{context} addsimps stratproof_simps) |> simpset_of
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps stratproof_simps)
 
 fun all_profiles m n = lists_of_length n (permutations (0 upto (m-1)))
 

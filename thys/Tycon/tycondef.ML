@@ -30,9 +30,9 @@ fun first  (x,_,_) = x
 fun second (_,x,_) = x
 
 val beta_ss =
-  simpset_of (put_simpset HOL_basic_ss @{context}
-    |> Simplifier.add_simps @{thms simp_thms}
-    |> Simplifier.add_proc @{simproc beta_cfun_proc})
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps @{thms simp_thms} #> Simplifier.add_proc @{simproc beta_cfun_proc})
 
 fun is_cpo thy T = Sign.of_sort thy (T, @{sort cpo})
 

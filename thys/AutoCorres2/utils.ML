@@ -1230,7 +1230,7 @@ fun trace_conv msg ct =
 
 fun trace_simps msg P ctxt =
  let
-   val simps = simpset_of ctxt |> Simplifier.dest_simps |> filter P |> map #2
+   val simps = Simplifier.simpset_of ctxt |> Simplifier.dest_simps |> filter P |> map #2
    val _ = tracing (Pretty.string_of (Pretty.big_list msg (map (Thm.pretty_thm ctxt) simps)))
  in
    ()

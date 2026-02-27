@@ -238,13 +238,13 @@ lemma widen_asm: "(a::Javatype) \<le> b \<Longrightarrow> a \<le> b"
 lemmas direct_subtype_widened = direct_subtype[THEN r_into_rtrancl]
 
 ML \<open>
-local val ss = simpset_of @{context} in
+local val ss = Simplifier.simpset_of @{context} in
 
 fun widen_tac ctxt =
   resolve_tac ctxt @{thms widen_asm} THEN'
-  simp_tac (put_simpset ss ctxt addsimps @{thms le_Javatype_def}) THEN'
+  simp_tac (ctxt |> put_simpset ss |> Simplifier.add_simps @{thms le_Javatype_def}) THEN'
   Method.insert_tac ctxt @{thms direct_subtype_widened} THEN'
-  simp_tac (put_simpset (simpset_of @{theory_context Transitive_Closure}) ctxt)
+  simp_tac (ctxt |> put_simpset (Simplifier.simpset_of @{theory_context Transitive_Closure}))
 
 end
 \<close>

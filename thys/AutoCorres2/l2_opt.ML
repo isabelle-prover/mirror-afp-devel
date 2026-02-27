@@ -308,7 +308,9 @@ fun L2_guarded_local_simproc prog_info phase orig_ctxt =
        val ([s'], ctxt') = Utils.fix_variant_cfrees [("s", stateT)] ctxt
        val guard_ctxt = 
          if seq_guard then ctxt'
-         else (put_simpset (simpset_of orig_ctxt) ctxt') 
+         else
+            ctxt'
+            |> put_simpset (Simplifier.simpset_of orig_ctxt)
             |> Simplifier.add_proc (c_fnptr_guard_simproc prog_info phase)
             |> Simplifier.add_cong @{thm "HOL.conj_cong"}
 

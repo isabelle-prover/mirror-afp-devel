@@ -101,15 +101,15 @@ let
   val record_ss_2 = RecursiveRecordPackage.get_simpset thy
   val record_ss = Simplifier.merge_ss (record_ss_1, record_ss_2)
 in
-  put_simpset record_ss ctxt
-  |> fold Simplifier.add_proc [
+  record_ss
+  |> Simplifier.simpset_map ctxt
+    (fold Simplifier.add_proc [
       Record.simproc,
       Record.upd_simproc,
       Record.eq_simproc,
       Record.ex_sel_eq_simproc,
       Record.split_simproc (K ~1)]
-  |> Simplifier.add_simps (Record.get_extinjects thy)
-  |> simpset_of
+     #> Simplifier.add_simps (Record.get_extinjects thy))
 end
 
 end

@@ -42,11 +42,16 @@ fun dest_multiset (Const (\<^const_name>\<open>zero_class.zero\<close>, Type (\<
   | dest_multiset (Const (\<^const_name>\<open>add_mset\<close>, _) $ t1 $ t2) = t1 :: dest_multiset t2
   | dest_multiset t = raise TERM ("dest_multiset", [t])
 
-val profile_wf_simpset = simpset_of (put_simpset HOL_basic_ss @{context} addsimps
-  @{thms size_add_mset size_empty eval_nat_numeral arith_simps refl HOL.simp_thms
+val profile_wf_simpset =
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps @{thms size_add_mset size_empty eval_nat_numeral arith_simps refl HOL.simp_thms
          set_mset_add_mset_insert set_mset_empty mset.simps Set.ball_simps add_mset_commute})
-val allowed_results_simpset = simpset_of (put_simpset HOL_basic_ss @{context} addsimps
-  @{thms HOL.simp_thms if_False if_True list.set Int_insert_left Inter_empty
+
+val allowed_results_simpset =
+  HOL_basic_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_simps @{thms HOL.simp_thms if_False if_True list.set Int_insert_left Inter_empty
          Int_UNIV_right Int_empty_left Int_empty_right insert_iff empty_iff
          SWF_Impossibility_Automation.unanimity_def set_mset_add_mset_insert set_mset_empty image_insert
          image_empty Inter_insert list.map SWF_Impossibility_Automation.dom_set.simps topo_sorts_aux_Nil 

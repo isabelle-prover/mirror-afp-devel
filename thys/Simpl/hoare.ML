@@ -1666,9 +1666,9 @@ fun gen_call_rec_rule ctxt specs_name n rule =
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
        Thm.instantiate' [] [SOME (Thm.cterm_of ctxt Specs)] rule
-       |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
-              addsimps [@{thm Hoare.conjE_simp},@{thm Hoare.in_Specs_simp},@{thm Hoare.in_set_Un_simp},@{thm split_all_conj},
-                        @{thm image_Un},@{thm image_Un_single_simp}] )
+       |> full_simplify (ctxt |> put_simpset (Simplifier.simpset_of @{theory_context Main})
+              |> Simplifier.add_simps @{thms Hoare.conjE_simp Hoare.in_Specs_simp Hoare.in_set_Un_simp split_all_conj
+                   image_Un image_Un_single_simp})
        |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
   in rule'
   end;
@@ -1696,17 +1696,14 @@ structure FoldCongData = Theory_Data
 
 val get_foldcong_ss = FoldCongData.get
 
-fun add_foldcongs congs thy = FoldCongData.map (fn ss =>
-        Proof_Context.init_global thy
-        |> put_simpset ss
-        |> fold Simplifier.add_cong congs
-        |> simpset_of) thy
+fun map_foldcong_ss f thy =
+  FoldCongData.map (Simplifier.simpset_map (Proof_Context.init_global thy) f) thy
 
-fun add_foldcongsimps simps thy = FoldCongData.map (fn ss =>
-        Proof_Context.init_global thy
-        |> put_simpset ss
-        |> (fn ctxt => ctxt addsimps simps)
-        |> simpset_of) thy
+fun add_foldcongs congs =
+  map_foldcong_ss (fold Simplifier.add_cong congs)
+
+fun add_foldcongsimps simps =
+  map_foldcong_ss (Simplifier.add_simps simps)
 
 (* propagates state into "Collect" sets and simplifies selections updates like:
  *  s:{s. P s} = P s
@@ -1719,7 +1716,8 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
      val state_simps = Named_Theorems.get ctxt @{named_theorems "state_simp"}
  in
    EVERY [simp_tac
-            (put_simpset HOL_basic_ss ctxt
+            (ctxt
+              |> put_simpset HOL_basic_ss
               |> Simplifier.add_simps
                   (@{thms mem_Collect_eq Set.Un_iff Set.Int_iff
                       Set.empty_subsetI Set.empty_iff UNIV_I
@@ -1727,7 +1725,7 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
               |> fold Simplifier.add_proc (state_simprocs ctxt state_kind)
               |> fold Simplifier.add_cong K_congs)  i
            THEN_MAYBE
-           (simp_tac (put_simpset fold_simps ctxt
+           (simp_tac (ctxt |> put_simpset fold_simps
              |> fold Simplifier.add_proc (state_upd_simprocs ctxt state_kind)) i)
          ]
  end;
@@ -2333,7 +2331,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
           fun solve_modifies_tac i =
                 (clarsimp_tac ((ctxt'
                   |> put_claset (claset_of @{theory_context Set})
-                  |> put_simpset (simpset_of @{theory_context Set}))
+                  |> put_simpset (Simplifier.simpset_of @{theory_context Set}))
                   |> Simplifier.add_simps
                       ([@{thm Hoare.mex_def},@{thm Hoare.meq_def}]@K_convs@
                         (Named_Theorems.get ctxt @{named_theorems "state_simp"}))
@@ -2449,7 +2447,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
 fun solve_in_Faults_tac ctxt i =
     resolve_tac ctxt @{thms UNIV_I in_insert_hd} i
     ORELSE
-    SELECT_GOAL (SOLVE (simp_tac (put_simpset (simpset_of @{theory_context Set}) ctxt) 1)) i;
+    SELECT_GOAL (SOLVE (simp_tac (put_simpset (Simplifier.simpset_of @{theory_context Set}) ctxt) 1)) i;
 
 local
 fun triv_simp ctxt = merge_assertion_simp_tac ctxt @{thms mem_Collect_eq} THEN'
@@ -3122,13 +3120,13 @@ fun abs_var ctxt t = (remdeco' ctxt (sel_name t), sel_type t);
 local
 
 val ss =
-  simpset_of
-    (put_simpset (simpset_of @{theory_context Fun}) @{context}
-      |> Simplifier.add_simps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
-        :: @{thms list.inject list.distinct char.inject
-        cong_exp_iff_simps simp_thms})
-      |> fold Simplifier.add_proc [Record.simproc, StateFun.lazy_conj_simproc]
-      |> fold Simplifier.add_cong @{thms block_conj_cong});
+  Simplifier.simpset_of @{theory_context Fun}
+  |> Simplifier.simpset_map @{context}
+      (Simplifier.add_simps @{thms StateFun.lookup_def StateFun.id_id_cancel
+        list.inject list.distinct char.inject cong_exp_iff_simps simp_thms}
+      #> Simplifier.add_proc Record.simproc
+      #> Simplifier.add_proc StateFun.lazy_conj_simproc
+      #> Simplifier.add_cong @{thm block_conj_cong});
 
 in
 
@@ -3287,13 +3285,13 @@ fun record_vanish_tac ctxt state_kind state_space i =
 local
 
 val state_fun_update_ss =
-  simpset_of (put_simpset HOL_basic_ss @{context}
-    |> Simplifier.add_simps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
-      @ @{thms list.inject list.distinct char.inject
-      cong_exp_iff_simps simp_thms} @ K_fun_convs)
-    |> Simplifier.add_proc (DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"])
-    |> Simplifier.add_cong @{thm imp_cong}
-    |> Splitter.add_split @{thm if_split});
+  HOL_basic_ss
+  |> Simplifier.simpset_map @{context}
+    (Simplifier.add_simps (@{thms StateFun.update_def id_def fun_upd_apply if_True if_False
+         list.inject list.distinct char.inject cong_exp_iff_simps simp_thms} @ K_fun_convs)
+    #> Simplifier.add_proc (DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"])
+    #> Simplifier.add_cong @{thm imp_cong}
+    #> Splitter.add_split @{thm if_split});
 
 in
 
@@ -3336,7 +3334,7 @@ fun solve_modifies_tac ctxt state_kind state_space i st =
     ((trace_tac ctxt "solve_modifies_tac" THEN
      clarsimp_tac ((ctxt
         |> put_claset (claset_of @{theory_context HOL})
-        |> put_simpset (simpset_of @{theory_context Set}))
+        |> put_simpset (Simplifier.simpset_of @{theory_context Set}))
         |> Simplifier.add_simps (@{thms Hoare.mex_def Hoare.meq_def} @K_convs@(Named_Theorems.get ctxt @{named_theorems "state_simp"}))
         |> fold Simplifier.add_proc (state_upd_simprocs ctxt Record @ state_simprocs ctxt Record)
         |> fold Simplifier.add_cong K_congs) i)

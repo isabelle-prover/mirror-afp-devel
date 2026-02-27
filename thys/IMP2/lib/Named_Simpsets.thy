@@ -52,7 +52,7 @@ begin
   local_setup \<open> I
     #> Named_Simpsets.declare @{binding HOL_ss} (SOME HOL_ss)
     #> Named_Simpsets.declare @{binding HOL_basic_ss} (SOME HOL_basic_ss)
-    #> Named_Simpsets.declare @{binding Main_ss} (SOME (simpset_of @{context}))
+    #> Named_Simpsets.declare @{binding Main_ss} (SOME (Simplifier.simpset_of @{context}))
   \<close>
 
   (* TODO/FIXME/XXX: Is this the intended way how to add an attribute to simp?*)

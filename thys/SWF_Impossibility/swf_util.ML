@@ -189,11 +189,12 @@ fun nat_to_ranking n k =
   end
 
 
-val inversion_cache_simpset = simpset_of (
+val inversion_cache_simpset =
   @{context}
-    |> Simplifier.del_simps @{thms snd_sort_and_count_inversions}
-    |> Simplifier.add_simps @{thms snd_sort_and_count_inversions[symmetric]
-                    sort_and_count_inversions.simps split_list_def})
+  |> Simplifier.del_simps @{thms snd_sort_and_count_inversions}
+  |> Simplifier.add_simps @{thms snd_sort_and_count_inversions [symmetric]
+       sort_and_count_inversions.simps split_list_def}
+  |> Simplifier.simpset_of
 
 (*
   For given n, build a cache that maps any permutation of [0,..,n-1] to the number of

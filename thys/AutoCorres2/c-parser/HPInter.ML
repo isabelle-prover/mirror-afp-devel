@@ -253,14 +253,14 @@ fun abs_var ctxt t = (HoarePackage.remdeco' ctxt (sel_name t), sel_type t);
 local
 
 val ss =
-  simpset_of
-    (put_simpset (simpset_of @{theory_context Fun}) @{context}
-    |> Simplifier.add_simps (@{thm StateFun.id_id_cancel}
-      :: @{thms list.inject list.distinct char.inject
-      cong_exp_iff_simps simp_thms})
-    |> fold Simplifier.add_proc [Record.simproc, StateFun.lazy_conj_simproc]
-    |> fold Simplifier.add_proc @{code_simprocs state_simp}
-    |> fold Simplifier.add_cong @{thms block_conj_cong});
+  Simplifier.simpset_of @{theory_context Fun}
+  |> Simplifier.simpset_map @{context}
+    (Simplifier.add_simps @{thms StateFun.id_id_cancel list.inject list.distinct char.inject
+      cong_exp_iff_simps simp_thms}
+    #> Simplifier.add_proc Record.simproc
+    #> Simplifier.add_proc StateFun.lazy_conj_simproc
+    #> fold Simplifier.add_proc @{code_simprocs state_simp}
+    #> fold Simplifier.add_cong @{thms block_conj_cong});
 
 in
 
