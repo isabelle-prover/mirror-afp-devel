@@ -46,15 +46,13 @@ proof -
       by (simp add: bij_betw_def)
   qed
   thus ?thesis
-    unfolding type_definition.univ[OF type_definition_mod_ring]
-    unfolding image_def by auto
+    by (auto simp: image_def simp flip: type_definition.Abs_image[OF type_definition_mod_ring])
 qed
 
 instance mod_ring :: (finite) finite 
 proof (intro_classes)
   show "finite (UNIV::'a mod_ring set)" 
-    unfolding type_definition.univ[OF type_definition_mod_ring]
-    using finite by simp
+    using finite by (simp flip: type_definition.Abs_image[OF type_definition_mod_ring])
 qed
 
 
