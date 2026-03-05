@@ -1171,6 +1171,39 @@ proof (cases "norm q < 1")
     by Groebner_Basis.algebra
 qed auto
 
+unbundle jacobi_theta_notation
+
+lemma jacobi_theta_xy_0_pow4_complex:
+  assumes "Im t > 0"
+  shows   "\<theta>\<^sub>1\<^sub>0(0; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0; t) ^ 4 = \<theta>\<^sub>0\<^sub>0(0; t) ^ 4"
+proof (rule analytic_continuation_open[where f = "\<lambda>t. \<theta>\<^sub>1\<^sub>0(0; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0; t) ^ 4"])
+  define A where "A = {z. Im z > 0} \<inter> {z. Re z > -1} \<inter> {z. Re z < 1}"
+  show "(\<lambda>t. \<theta>\<^sub>1\<^sub>0(0 ; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0 ; t) ^ 4) holomorphic_on {z. Im z > 0}"
+    by (auto intro!: holomorphic_intros open_halfspace_Im_gt)
+  show "(\<lambda>t. \<theta>\<^sub>0\<^sub>0(0; t) ^ 4) holomorphic_on {z. Im z > 0}"
+    by (auto intro!: holomorphic_intros open_halfspace_Im_gt)
+  have "\<i> \<in> A"
+    by (auto simp: A_def)
+  thus "A \<noteq> {}"
+    by blast
+  show "connected {z. Im z > 0}" "open {z. Im z > 0}"
+    by (auto simp: connected_halfspace_Im_gt open_halfspace_Im_gt)
+  show "open A"
+    unfolding A_def by (intro open_Int open_halfspace_Im_gt open_halfspace_Re_gt open_halfspace_Re_lt)
+  show "A \<subseteq> {z. Im z > 0}"
+    by (auto simp: A_def)
+  show "t \<in> {z. Im z > 0}"
+    using assms by auto
+  show "\<theta>\<^sub>1\<^sub>0(0; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0; t) ^ 4 = \<theta>\<^sub>0\<^sub>0(0; t) ^ 4" if t: "t \<in> A" for t
+  proof -
+    define q where "q = to_nome t"
+    show ?thesis
+      using jacobi_theta_nw_pow4_complex[of q] t
+      by (auto simp: jacobi_theta_00_conv_nome jacobi_theta_01_conv_nome 
+                     jacobi_theta_10_conv_nome A_def q_def)
+  qed
+qed
+
 lemma jacobi_theta_nw_pow4_real: "q \<ge> 0 \<Longrightarrow> \<theta>\<^sub>2 q ^ 4 + \<theta>\<^sub>4 q ^ 4 = (\<theta>\<^sub>3 q ^ 4 :: real)"
   by (subst of_real_eq_iff [where ?'a = complex, symmetric],
          unfold of_real_add of_real_mult of_real_diff)
@@ -1482,6 +1515,7 @@ lemma jacobi_theta_nw_10_pos:
   shows   "\<theta>\<^sub>2 x > (0::real)"
   using strict_mono_onD[OF strict_mono_jacobi_theta_nw_10, of 0 x] assms by simp
 
+unbundle no jacobi_theta_notation
 unbundle no jacobi_theta_nw_notation
 
 end
