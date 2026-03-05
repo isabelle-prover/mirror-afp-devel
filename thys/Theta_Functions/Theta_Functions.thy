@@ -1004,6 +1004,9 @@ proof
   finally show "jacobi_theta_00 (z + 1) t = jacobi_theta_00 z t" .
 qed
 
+lemma jacobi_theta_00_1_plus_left: "jacobi_theta_00 (1 + z) t = jacobi_theta_00 z t"
+  by (subst add.commute, rule jacobi_theta_00_left.plus_1)
+
 interpretation jacobi_theta_00_right: periodic_fun_simple "\<lambda>t. jacobi_theta_00 z t" 2
 proof
   fix t :: complex
@@ -1617,6 +1620,106 @@ lemma jacobi_theta_11_plus_half_left': "jacobi_theta_11 (z + 1/2) t = -jacobi_th
   by (simp add: jacobi_theta_10_def jacobi_theta_11_def to_nome_add algebra_simps)
 
 
+text \<open>
+  The quasiperiodicity identities for the $\vartheta_{xy}$:
+\<close>
+lemma jacobi_theta_01_plus_quasiperiod:
+  "jacobi_theta_01 (z + t) t = -jacobi_theta_01 z t / to_nome (2 * z + t)"
+proof -
+  have "jacobi_theta_01 (z + t) t = jacobi_theta_00 (z + 1 / 2 + t) t"
+    by (simp add: jacobi_theta_01_def add_ac)
+  also have "\<dots> = -jacobi_theta_01 z t / to_nome (2 * z + t)"
+    by (subst jacobi_theta_00_plus_quasiperiod) (auto simp: add_ac to_nome_add jacobi_theta_01_def)
+  finally show ?thesis .
+qed
+
+lemma jacobi_theta_10_plus_quasiperiod:
+  "jacobi_theta_10 (z + t) t = jacobi_theta_10 z t / to_nome (t + 2 * z)"
+proof -
+  have "jacobi_theta_10 (z + t) t = jacobi_theta_00 (z + t / 2 + t) t * to_nome (z + 5 * t / 4)"
+    by (simp add: jacobi_theta_10_def add_ac)
+  also have "\<dots> = jacobi_theta_00 (z + t / 2) t * (to_nome (z + 5 / 4 * t) / to_nome (2 * t + 2 * z))"
+    by (subst jacobi_theta_00_plus_quasiperiod) 
+       (auto simp: add_ac to_nome_add to_nome_diff to_nome_minus)
+  also have "to_nome (z + 5 / 4 * t) / to_nome (2 * t + 2 * z) =
+             to_nome (z + t / 4 - (t + 2 * z))"
+    unfolding to_nome_diff [symmetric] to_nome_minus [symmetric] by (simp add: algebra_simps)
+  also have "\<dots> = to_nome (z + t / 4) / to_nome (t + 2 * z)"
+    by (subst to_nome_diff) (auto simp: field_simps)
+  also have "jacobi_theta_00 (z + t / 2) t * \<dots> = jacobi_theta_10 z t / to_nome (t + 2 * z)"
+    unfolding jacobi_theta_10_def by simp
+  finally show ?thesis .
+qed
+
+lemma jacobi_theta_11_plus_quasiperiod:
+  "jacobi_theta_11 (z + t) t = -jacobi_theta_11 z t / to_nome (t + 2 * z)"
+proof -
+  have "jacobi_theta_11 (z + t) t = to_nome (z + (1 / 2 + 5 * t / 4)) * 
+           jacobi_theta_00 (z + 1 / 2 + t / 2 + t) t "
+    by (simp add: jacobi_theta_11_def algebra_simps)
+  also have "\<dots> = to_nome (z + (1 / 2 + 5 * t / 4)) / to_nome (t + 2 * (z + 1 / 2 + t / 2)) *
+                    jacobi_theta_00 (z + t / 2 + 1 / 2) t"
+    by (subst jacobi_theta_00_plus_quasiperiod) (simp_all add: field_simps)
+  also have "\<dots> = to_nome (z + (1 / 2 + 5 * t / 4)) / to_nome (t + 2 * (z + 1 / 2 + t / 2)) / 
+                    to_nome (z + t / 4 + 1 / 2) * jacobi_theta_11 z t"
+    unfolding jacobi_theta_11_def by simp
+  also have "\<dots> = to_nome (- 1 - t - 2 * z) * jacobi_theta_11 z t"
+    unfolding to_nome_diff [symmetric] by simp
+  also have "\<dots> = -jacobi_theta_11 z t / to_nome (t + 2 * z)"
+    by (simp add: to_nome_add to_nome_diff field_simps)
+  finally show ?thesis .
+qed
+
+
+text \<open>
+  $\vartheta_{11}$ is odd, the other $\vartheta_{xy}$ are even:
+\<close>
+lemma jacobi_theta_00_minus [simp]: "jacobi_theta_00 (-z) t = jacobi_theta_00 z t"
+  by (simp add: jacobi_theta_00_def to_nome_power to_nome_minus jacobi_theta_nome_def field_simps 
+                ramanujan_theta_commute)
+
+lemma jacobi_theta_01_minus [simp]: "jacobi_theta_01 (-z) t = jacobi_theta_01 z t"
+  by (simp add: jacobi_theta_00_def jacobi_theta_01_def to_nome_power to_nome_minus 
+                jacobi_theta_nome_def to_nome_diff to_nome_add power_mult_distrib power_divide
+                ramanujan_theta_commute)
+
+lemma jacobi_theta_11_minus [simp]: "jacobi_theta_11 (-z) t = -jacobi_theta_11 z t"
+proof -
+  have *: "2 * z = z + z"
+    by simp
+  have "jacobi_theta_11 (-z) t = to_nome (t / 4 - z + 1 / 2) * jacobi_theta_00 (-(z - t / 2 - 1 / 2)) t"
+    by (simp add: jacobi_theta_11_def algebra_simps)
+  also have "\<dots> = to_nome (t / 4 - z + 1 / 2) * jacobi_theta_00 (z - t / 2 - 1 / 2) t"
+    by (subst jacobi_theta_00_minus) auto
+  also have "jacobi_theta_00 (z - t / 2 - 1 / 2) t = jacobi_theta_00 (z - t / 2 - 1 / 2 + 1) t"
+    by (rule jacobi_theta_00_left.plus_1 [symmetric])
+  also have "\<dots> = jacobi_theta_00 (z - t / 2 - 1 / 2 + 1 + t) t * to_nome (t + 2 * (z - t / 2 - 1 / 2 + 1))"
+    by (subst jacobi_theta_00_plus_quasiperiod) auto
+  also have "jacobi_theta_00 (z - t / 2 - 1 / 2 + 1 + t) t = jacobi_theta_11 z t / to_nome (z + t / 4 + 1 / 2)"
+    by (simp add: jacobi_theta_11_def algebra_simps)
+  finally show ?thesis
+    unfolding to_nome_add to_nome_diff ring_distribs * by (simp add: field_simps)
+qed
+
+lemma jacobi_theta_10_minus [simp]: "jacobi_theta_10 (-z) t = jacobi_theta_10 z t"
+proof -
+  have *: "2 * z = z + z"
+    by simp
+  have "jacobi_theta_10 (-z) t = to_nome (t / 4 - z) * jacobi_theta_00 (-(z - t / 2)) t"
+    by (simp add: jacobi_theta_10_def algebra_simps)
+  also have "jacobi_theta_00 (-(z - t / 2)) t = jacobi_theta_00 (z - t / 2) t"
+    by (rule jacobi_theta_00_minus)
+  also have "jacobi_theta_00 (z - t / 2) t = jacobi_theta_00 (z - t / 2 + t) t * to_nome (t + 2 * (z - t / 2))"
+    by (subst jacobi_theta_00_plus_quasiperiod) auto
+  also have "jacobi_theta_00 (z - t / 2 + t) t = jacobi_theta_10 z t / to_nome (z + t / 4)"
+    by (simp add: jacobi_theta_10_def algebra_simps)
+  finally show ?thesis
+    unfolding to_nome_add to_nome_diff * ring_distribs by (simp add: field_simps)
+qed
+
+lemma jacobi_theta_11_0_left [simp]: "jacobi_theta_11 0 t = 0"
+  using jacobi_theta_11_minus[of 0 t] by simp
+
 
 lemma tendsto_jacobi_theta_01 [tendsto_intros]:
   assumes "(f \<longlongrightarrow> w) F" "(g \<longlongrightarrow> q) F" "Im q > 0"
@@ -1707,6 +1810,71 @@ lemma analytic_jacobi_theta_11 [analytic_intros]:
   assumes "f analytic_on A" "g analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> Im (g z) > 0"
   shows   "(\<lambda>z. jacobi_theta_11 (f z) (g z)) analytic_on A"
   unfolding jacobi_theta_11_def by (intro analytic_intros assms(1,2)) (use assms(3-) in auto)
+
+
+text \<open>
+  The derivatives of $\vartheta_{00}$, $\vartheta_{01}$, and $\vartheta_{10}$ at $z = 0$ vanish
+  since they are even.
+\<close>
+lemma deriv_jacobi_theta_00_minus_left: 
+  fixes t :: complex
+  defines "f \<equiv> (\<lambda>z. jacobi_theta_00 z t)"
+  assumes "Im t > 0"
+  shows   "deriv f (-z) = -deriv f z"
+proof -
+  have "(f has_field_derivative deriv f z) (at z)" for z
+    by (rule analytic_derivI) (use assms in \<open>auto simp: f_def intro!: analytic_intros\<close>)
+  note [derivative_intros] = DERIV_chain[OF this, unfolded o_def]
+  have "((\<lambda>z. -f (-z)) has_field_derivative (deriv f (-z))) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  also have "(\<lambda>z. -f (-z)) = (\<lambda>z. -f z)"
+    by (auto simp: f_def)
+  finally have "((\<lambda>z. -f z) has_field_derivative (deriv f (-z))) (at z)" .
+  moreover have "((\<lambda>z. -f z) has_field_derivative (-deriv f z)) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  ultimately show ?thesis
+    using DERIV_unique by blast
+qed
+
+lemma deriv_jacobi_theta_01_minus_left: 
+  fixes t :: complex
+  defines "f \<equiv> (\<lambda>z. jacobi_theta_01 z t)"
+  assumes "Im t > 0"
+  shows   "deriv f (-z) = -deriv f z"
+proof -
+  have "(f has_field_derivative deriv f z) (at z)" for z
+    by (rule analytic_derivI) (use assms in \<open>auto simp: f_def intro!: analytic_intros\<close>)
+  note [derivative_intros] = DERIV_chain[OF this, unfolded o_def]
+  have "((\<lambda>z. -f (-z)) has_field_derivative (deriv f (-z))) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  also have "(\<lambda>z. -f (-z)) = (\<lambda>z. -f z)"
+    by (auto simp: f_def)
+  finally have "((\<lambda>z. -f z) has_field_derivative (deriv f (-z))) (at z)" .
+  moreover have "((\<lambda>z. -f z) has_field_derivative (-deriv f z)) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  ultimately show ?thesis
+    using DERIV_unique by blast
+qed
+
+lemma deriv_jacobi_theta_10_minus_left: 
+  fixes t :: complex
+  defines "f \<equiv> (\<lambda>z. jacobi_theta_10 z t)"
+  assumes "Im t > 0"
+  shows   "deriv f (-z) = -deriv f z"
+proof -
+  have "(f has_field_derivative deriv f z) (at z)" for z
+    by (rule analytic_derivI) (use assms in \<open>auto simp: f_def intro!: analytic_intros\<close>)
+  note [derivative_intros] = DERIV_chain[OF this, unfolded o_def]
+  have "((\<lambda>z. -f (-z)) has_field_derivative (deriv f (-z))) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  also have "(\<lambda>z. -f (-z)) = (\<lambda>z. -f z)"
+    by (auto simp: f_def)
+  finally have "((\<lambda>z. -f z) has_field_derivative (deriv f (-z))) (at z)" .
+  moreover have "((\<lambda>z. -f z) has_field_derivative (-deriv f z)) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  ultimately show ?thesis
+    using DERIV_unique by blast
+qed
 
 
 subsection \<open>The heat equation\<close>
@@ -1858,5 +2026,15 @@ proof -
       by simp
   qed auto
 qed
+
+bundle jacobi_theta_notation
+begin
+
+notation jacobi_theta_00 ("(\<open>notation=\<open>mixfix jacobi_theta_00\<close>\<close>\<theta>\<^sub>0\<^sub>0'(_ ; _'))")
+notation jacobi_theta_01 ("(\<open>notation=\<open>mixfix jacobi_theta_01\<close>\<close>\<theta>\<^sub>0\<^sub>1'(_ ; _'))")
+notation jacobi_theta_10 ("(\<open>notation=\<open>mixfix jacobi_theta_10\<close>\<close>\<theta>\<^sub>1\<^sub>0'(_ ; _'))")
+notation jacobi_theta_11 ("(\<open>notation=\<open>mixfix jacobi_theta_11\<close>\<close>\<theta>\<^sub>1\<^sub>1'(_ ; _'))")
+
+end
 
 end
