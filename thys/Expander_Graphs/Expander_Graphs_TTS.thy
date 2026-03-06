@@ -116,7 +116,7 @@ proof -
 
   have "finite (verts G)" by simp
   thus ?thesis
-    unfolding class.finite_def univ by auto
+    by (auto simp: class.finite_def simp flip: Abs_image)
 qed
 
 lemma remove_finite_premise:

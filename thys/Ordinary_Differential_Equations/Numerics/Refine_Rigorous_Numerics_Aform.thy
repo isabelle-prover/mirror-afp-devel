@@ -1483,10 +1483,7 @@ proof (goal_cases)
       \<langle>lv_aforms_rel\<rangle>nres_rel O \<langle>br Affine top\<rangle>nres_rel"
     by auto
   also have "\<langle>lv_aforms_rel\<rangle>nres_rel O \<langle>br Affine top\<rangle>nres_rel \<subseteq> \<langle>\<langle>lv_rel\<rangle>aforms_relp\<rangle>nres_rel"
-    unfolding nres_rel_comp
-    apply (rule nres_rel_mono)
-    apply (rule lv_aforms_rel_comp_br_Affine_le)
-    done
+    by (simp add: Autoref_Misc.nres_rel_comp lv_aforms_rel_comp_br_Affine_le nres_rel_mono)
   finally
   have step1: "(nres_of (inter_aform_plane_lv CARD('n) optns xi si),
       inter_sctn_spec (Affine (eucl_of_list_aform xi)::'n rvec set) (Sctn (eucl_of_list (normal si)) (pstn si)))
@@ -1578,7 +1575,7 @@ proof -
 
   let ?enum = "(map abs [0..<n])"
   have "class.enum ?enum (Ball (set ?enum)) (Bex (set ?enum))"
-    by standard (auto simp: distinct_map univ Abs_inject intro: inj_onI)
+    by standard (auto simp: distinct_map Abs_inject simp flip: Abs_image intro: inj_onI)
   with bn have "class.enum ?enum (Ball (set ?enum)) (Bex (set ?enum)) \<and> n = CARD('a)"
     by simp
   then show ?thesis ..
