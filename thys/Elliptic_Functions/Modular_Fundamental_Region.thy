@@ -1,7 +1,9 @@
 section \<open>Fundamental regions of the modular group\<close>
 theory Modular_Fundamental_Region
-  imports Modular_Group Complex_Lattices "HOL-Library.Real_Mod"
+  imports Modular_Subgroups "Elliptic_Functions.Complex_Lattices" "HOL-Library.Real_Mod"
 begin
+
+unbundle modgrp_notation
 
 subsection \<open>Definition\<close>
 
@@ -948,7 +950,7 @@ lemma std_fund_region_fundamental_aux4:
   fixes x y :: complex
   assumes xy: "x \<in> \<R>\<^sub>\<Gamma>" "y \<in> \<R>\<^sub>\<Gamma>"
   assumes f: "y = apply_modgrp f x"
-  shows   "f = 1"
+  shows   "\<bar>f\<bar> = 1"
 proof -
   define a where "a = modgrp_a f"
   define b where "b = modgrp_b f"
@@ -985,12 +987,14 @@ proof -
   define n where "n = sgn a * b"
   from c have "\<not>is_singular_modgrp f"
     by (auto simp: is_singular_modgrp_altdef c_def)
-  hence f_eq: "f = shift_modgrp n"
+  hence "\<bar>f\<bar> = \<bar>shift_modgrp n\<bar>"
     using not_is_singular_modgrpD[of f] by (simp add: n_def a_def b_def)
-  from xy f have "n = 0"
-    by (auto simp: std_fund_region_def f_eq)
-  thus "f = 1"
-    by (simp add: f_eq)
+  hence f_eq: "f = shift_modgrp n \<or> f = -shift_modgrp n"
+    by (elim abs_modgrp_eqE) auto
+  from xy f f_eq have "n = 0"
+    by (auto simp: std_fund_region_def)
+  thus "\<bar>f\<bar> = 1"
+    using f_eq by auto
 qed
 
 text \<open>Theorem 2.3\<close>
@@ -1003,10 +1007,10 @@ next
   assume xy: "x \<in> \<R>\<^sub>\<Gamma>" "y \<in> \<R>\<^sub>\<Gamma>" "x \<sim>\<^sub>\<Gamma> y"
   then obtain f where f: "y = apply_modgrp f x"
     by (auto simp: modular_group.rel_def)
-  with xy have "f = 1"
+  with xy have "\<bar>f\<bar> = 1"
     using std_fund_region_fundamental_aux4 by blast
   with f xy show "x = y"
-    by simp
+    by (auto simp: abs_modgrp_eq_1_iff)
 next
   fix x :: complex
   assume x: "Im x > 0"
@@ -1019,16 +1023,64 @@ next
     using x unfolding closure_std_fund_region by (auto simp: modular_group.rel_commutes)
 qed auto
 
+text \<open>
+  Every point in the upper half plane has a canonical representative w.r.t.\ the full modular group
+  in the standard fundamental region.
+\<close>
+lemma canonical_point_in_std_fund_region':
+  assumes "Im z > 0"
+  obtains z' where "z' \<in> \<R>\<^sub>\<Gamma>'" "z \<sim>\<^sub>\<Gamma> z'"
+proof -
+  obtain z' where z': "z' \<in> closure \<R>\<^sub>\<Gamma>" "z \<sim>\<^sub>\<Gamma> z'"
+    using std_fund_region.equiv_in_closure[of z] assms by blast
+  show ?thesis
+  proof (cases "z' \<in> \<R>\<^sub>\<Gamma>'")
+    case True
+    thus ?thesis
+      by (intro that[of z']) (use z' in auto)
+  next
+    case False
+    with z' have "z' \<in> closure \<R>\<^sub>\<Gamma> - \<R>\<^sub>\<Gamma>'"
+      by blast
+    hence "norm z' = 1 \<and> Im z' > 0 \<and> Re z' \<in> {0<..1/2}  \<or>  Re z' = 1 / 2 \<and> Im z' \<ge> sqrt 3 / 2"
+      by (subst (asm) closure_std_fund_region_minus_std_fund_region') simp_all
+    thus ?thesis
+    proof
+      assume *: "norm z' = 1 \<and> Im z' > 0 \<and> Re z' \<in> {0<..1/2}"
+      define z'' where "z'' = apply_modgrp S_modgrp z'"
+      have "z \<sim>\<^sub>\<Gamma> z''"
+        unfolding z''_def using z'(2) by blast
+      moreover have "z'' \<in> \<R>\<^sub>\<Gamma>'"
+        using * by (auto simp: z''_def norm_divide divide_conv_cnj in_std_fund_region'_iff)
+      ultimately show ?thesis
+        by (intro that[of z''])
+    next
+      assume *: "Re z' = 1 / 2 \<and> Im z' \<ge> sqrt 3 / 2"
+      have [simp]: "Re z' = 1 / 2"
+        using * by blast
+      define z'' where "z'' = apply_modgrp (shift_modgrp (-1)) z'"
+      have "z \<sim>\<^sub>\<Gamma> z''"
+        unfolding z''_def using z'(2) by blast
+      moreover have "norm z'' = norm z'"
+        by (auto simp: z''_def cmod_def)
+      hence "z'' \<in> \<R>\<^sub>\<Gamma>'" using z' 
+        by (auto simp: z''_def in_std_fund_region'_iff in_closure_std_fund_region_iff cmod_def)
+      ultimately show ?thesis
+        by (intro that[of z''])
+    qed
+  qed
+qed
+
 theorem std_fund_region_no_fixed_point:
   assumes "z \<in> \<R>\<^sub>\<Gamma>"
   assumes "apply_modgrp f z = z"
-  shows   "f = 1"
+  shows   "\<bar>f\<bar> = 1"
   using std_fund_region_fundamental_aux4[of z "apply_modgrp f z" f] assms by auto
 
 lemma std_fund_region_no_fixed_point':
   assumes "z \<in> \<R>\<^sub>\<Gamma>"
   assumes "apply_modgrp f z = apply_modgrp g z"
-  shows   "f = g"
+  shows   "\<bar>f\<bar> = \<bar>g\<bar>"
 proof -
   have z: "Im z > 0"
     using assms by (auto simp: in_std_fund_region_iff)
@@ -1038,59 +1090,11 @@ proof -
     using z by (intro apply_modgrp_inverse_eqI) auto
   also have "apply_modgrp (inverse f) (apply_modgrp g z) = apply_modgrp (inverse f * g) z"
     by (rule apply_modgrp_mult [symmetric]) (use z in auto)
-  finally have "inverse f * g = 1"
+  finally have "\<bar>inverse f * g\<bar> = 1"
     using assms by (intro std_fund_region_no_fixed_point) auto
   thus ?thesis
-    by (metis modgrp.left_cancel modgrp.left_inverse)
-qed
-
-lemma equiv_point_in_std_fund_region':
-  assumes "Im z > 0"
-  obtains z' where "z \<sim>\<^sub>\<Gamma> z'" "z' \<in> \<R>\<^sub>\<Gamma>'"
-proof -
-  obtain z1 where z1: "z \<sim>\<^sub>\<Gamma> z1" "z1 \<in> closure \<R>\<^sub>\<Gamma>"
-    using std_fund_region.equiv_in_closure assms by blast
-  show ?thesis
-  proof (cases "z1 \<in> \<R>\<^sub>\<Gamma>'")
-    case True
-    thus ?thesis
-      using z1 by (intro that[of z1]) auto
-  next
-    case False
-    hence "z1 \<in> closure \<R>\<^sub>\<Gamma> - \<R>\<^sub>\<Gamma>'"
-      using z1 by blast
-    thus ?thesis
-      unfolding closure_std_fund_region_minus_std_fund_region'
-    proof
-      assume z1': "z1 \<in> {z. cmod z = 1 \<and> 0 < Im z \<and> Re z \<in> {0<..1 / 2}}"
-      define z2 where "z2 = apply_modgrp S_modgrp z1"
-      show ?thesis
-      proof (rule that [of z2])
-        show "z \<sim>\<^sub>\<Gamma> z2"
-          unfolding z2_def using z1
-          by (subst modular_group.rel_apply_modgrp_right_iff) auto
-        have "-cnj z1 \<in> \<R>\<^sub>\<Gamma>'"
-          using z1' by (auto simp: z2_def in_std_fund_region'_iff)
-        also have "-cnj z1 = z2"
-          using z1' by (auto simp: z2_def divide_conv_cnj)
-        finally show "z2 \<in> \<R>\<^sub>\<Gamma>'" .
-      qed
-    next
-      assume z1': "z1 \<in> {z. Re z = 1 / 2 \<and> sqrt 3 / 2 \<le> Im z}"
-      define z2 where "z2 = apply_modgrp (shift_modgrp (-1)) z1"
-      show ?thesis
-      proof (rule that [of z2])
-        show "z \<sim>\<^sub>\<Gamma> z2"
-          unfolding z2_def using z1
-          by (subst modular_group.rel_apply_modgrp_right_iff) auto
-        have "-cnj z1 \<in> \<R>\<^sub>\<Gamma>'"
-          using z1' z1 by (auto simp: z2_def in_std_fund_region'_iff in_closure_std_fund_region_iff)
-        also have "-cnj z1 = z2"
-          using z1' by (auto simp: z2_def complex_eq_iff)
-        finally show "z2 \<in> \<R>\<^sub>\<Gamma>'" .
-      qed
-    qed
-  qed
+    by (metis abs_uminus_modgrp minus_minus_modgrp modgrp.inverse_inverse modgrp.inverse_unique
+          times_modgrp_uminus_right abs_modgrp_eq_1_iff)
 qed
 
 
@@ -1262,6 +1266,499 @@ proof -
 qed
 
 
+subsection \<open>The elliptic points of the modular group\<close>
+
+text \<open>
+  We will now explicitly compute the stabilisers of $i$ and $\rho$ and, from that, 
+  see that they are elliptic points of order 2 and 3, respectively.
+
+  We will later see that these are the only elliptic points of the modular group
+  (up to equivalence w.r.t.\ unimodular transformations, of course).
+\<close>
+
+lemma abs_le_1_iff_int: "abs n \<le> 1 \<longleftrightarrow> n = 0 \<or> n = 1 \<or> n = (-1::int)"
+  by linarith
+
+lemma abs_eq_1_iff: "abs (x :: 'a :: linordered_idom) = 1 \<longleftrightarrow> x = 1 \<or> x = -1"
+  by (auto simp: abs_if)
+
+text \<open>
+  The stabilisers of two equivalent points are related by conjugation.
+\<close>
+lemma bij_betw_stabiliser_modgrp_apply_modgrp:
+  fixes h :: modgrp
+  assumes x: "Im x > 0"
+  defines "Stab \<equiv> (\<lambda>x. {h. apply_modgrp h x = x})"
+  defines "y \<equiv> apply_modgrp h x"
+  shows   "bij_betw (\<lambda>f. h * f * inverse h) (Stab x) (Stab y)"
+proof (rule bij_betwI)
+  show "(\<lambda>f. h * f * inverse h) \<in> Stab x \<rightarrow> Stab y"
+    using x unfolding Stab_def y_def Pi_def mem_Collect_eq
+    by (metis Im_pole_modgrp apply_modgrp_inverse_eqI
+              apply_modgrp_mult assms(3) linorder_not_le
+              modgrp.Im_transform_zero_iff order.refl)
+next
+  show "(\<lambda>f. inverse h * f * h) \<in> Stab y \<rightarrow> Stab x"
+    using x unfolding Stab_def y_def Pi_def mem_Collect_eq
+    by (metis Im_pole_modgrp apply_modgrp_inverse_eqI
+              apply_modgrp_mult assms(3) linorder_not_le
+              modgrp.Im_transform_zero_iff order.refl)
+next
+  show "inverse h * (h * f * inverse h) * h = f" for f
+    by (simp add: mult.assoc)
+next
+  show "h * (inverse h * f * h) * inverse h = f" for f
+    by (simp add: mult.assoc)
+qed
+
+lemma stabiliser_ii_modgrp: "apply_modgrp h \<i> = \<i> \<longleftrightarrow> h \<in> {1, -1, S_modgrp, -S_modgrp}"
+proof
+  assume h: "h \<in> {1, -1, S_modgrp, -S_modgrp}"
+  thus "apply_modgrp h \<i> = \<i>" by auto
+next
+  assume "apply_modgrp h \<i> = \<i>"
+  define a b c d :: int
+    where abcd_def: "a = modgrp_a h" "b = modgrp_b h" "c = modgrp_c h" "d = modgrp_d h"
+  have det: "a * d - b * c = 1"
+    unfolding abcd_def by (metis modgrp.unimodular)
+  define n where "n = (c ^ 2 + d ^ 2)"
+  have "c \<noteq> 0 \<or> d \<noteq> 0"
+    using det by auto
+  hence "n > 0"
+    using det unfolding n_def by (elim disjE) (auto intro: add_pos_nonneg add_nonneg_pos)
+
+  have "\<i> = apply_modgrp h \<i>"
+    by (rule sym) fact
+  also have "apply_modgrp h \<i> = (a * \<i> + b) / (c * \<i> + d)"
+    by (simp add: apply_modgrp_altdef moebius_def field_simps abcd_def)
+  also have "\<dots> = (a * \<i> + b) * (d - c * \<i>) / n"
+    by (subst complex_div_cnj) (auto simp: cmod_def n_def)
+  also have "\<dots> = \<i> \<longleftrightarrow> (a * \<i> + b) * (d - c * \<i>) = n * \<i>"
+    using \<open>n > 0\<close> by (simp add: divide_simps mult_ac)
+  also have "\<dots> \<longleftrightarrow> real_of_int (a * c + b * d) = of_int 0 \<and> real_of_int (a * d - b * c) = of_int n"
+    unfolding of_int_add by (simp add: complex_eq_iff algebra_simps)
+  also have "\<dots> \<longleftrightarrow> a * c + b * d = 0 \<and> a * d - b * c = n"
+    by (simp only: of_int_eq_iff)
+  also have "a * d - b * c = 1"
+    by (rule det)
+  finally have eq: "a * c + b * d = 0" and "n = 1"
+    by auto
+
+  from \<open>n = 1\<close> have "c = 0 \<and> abs d = 1 \<or> abs c = 1 \<and> d = 0" unfolding n_def
+    by (metis (no_types, lifting) abs_mult abs_zmult_eq_1
+        add.right_neutral add_0 add_mono_thms_linordered_field(1) div_0
+        nonzero_mult_div_cancel_left power2_abs power2_eq_square
+        zabs_less_one_iff zero_less_abs_iff)
+  with eq det show "h \<in> {1, -1, S_modgrp, -S_modgrp}" using det
+    unfolding insert_iff modgrp_eq_iff abcd_def [symmetric] abs_eq_1_iff zmult_eq_1_iff
+    by (elim disjE conjE) auto
+qed
+
+lemma ellorder_modgrp_UNIV_ii [simp]: "ellorder_modgrp UNIV \<i> = 2"
+proof -
+  have "ellorder_modgrp UNIV \<i> = card {h. apply_modgrp h \<i> = \<i>} div card {1::modgrp, -1}"
+    by (simp add: ellorder_modgrp_def)
+  also have "card {1::modgrp, -1} = 2"
+    by (auto simp: modgrp_eq_iff)
+  also have "{h. apply_modgrp h \<i> = \<i>} = {1, -1, S_modgrp, -S_modgrp}"
+    by (subst stabiliser_ii_modgrp) auto
+  also have "card \<dots> = 4"
+    by (simp add: modgrp_eq_iff)
+  finally show ?thesis
+    by simp
+qed
+
+lemma ellorder_modgrp_UNIV_ii': "z \<sim>\<^sub>\<Gamma> \<i> \<Longrightarrow> ellorder_modgrp UNIV z = 2"
+  by (metis ellorder_modgrp_UNIV_ii modular_group.ellorder_modgrp_cong)
+
+
+lemma stabiliser_rho_modgrp_aux:
+  assumes "a ^ 2 + a * b + b ^ 2 \<le> (1::int)"
+  shows "\<bar>b\<bar> \<le> 1"
+proof -
+  have "1 \<ge> real_of_int (a ^ 2 + a * b + b ^ 2)"
+    using assms by linarith
+  also have "real_of_int (a ^ 2 + a * b + b ^ 2) = (a + b / 2) ^ 2 + 3 / 4 * b ^ 2"
+    by (simp add: algebra_simps power2_eq_square)
+  finally have "b ^ 2 \<le> 4 / 3 * (1 - (a + b / 2) ^ 2)"
+    by (simp add: algebra_simps)
+  also have "\<dots> \<le> 4 / 3 * (1 - 0) ^ 2"
+    by (intro mult_left_mono diff_left_mono) auto
+  finally have "real_of_int (b ^ 2) \<le> 4 / 3"
+    by simp
+  hence "b ^ 2 \<le> 1"
+    by linarith
+  thus "\<bar>b\<bar> \<le> 1"
+    by (metis abs_square_le_1)
+qed
+
+lemma stabiliser_rho_modgrp:
+  defines "ST \<equiv> S_modgrp * T_modgrp"
+  shows "apply_modgrp h \<^bold>\<rho> = \<^bold>\<rho> \<longleftrightarrow> h \<in> {1, -1, ST, -ST, ST\<^sup>2, -(ST\<^sup>2)}"
+proof
+  assume h: "h \<in> {1, -1, ST, -ST, ST\<^sup>2, -(ST\<^sup>2)}"
+  show "apply_modgrp h \<^bold>\<rho> = \<^bold>\<rho>" using h unfolding ST_def
+    by (elim insertE) 
+       (simp_all add: apply_modgrp_mult power2_eq_square complex_eq_iff Re_divide Im_divide 
+                 del: apply_modgrp_abs)
+next
+  assume "apply_modgrp h \<^bold>\<rho> = \<^bold>\<rho>"
+  define a b c d :: int
+    where abcd_def: "a = modgrp_a h" "b = modgrp_b h" "c = modgrp_c h" "d = modgrp_d h"
+  have det: "a * d - b * c = 1"
+    unfolding abcd_def by (metis modgrp.unimodular)
+  have nz: "c * \<^bold>\<rho> + d \<noteq> 0"
+    using det by (auto simp: complex_eq_iff)
+
+  have "\<^bold>\<rho> = apply_modgrp h \<^bold>\<rho>"
+    by (rule sym) fact
+  also have "apply_modgrp h\<^bold>\<rho> = (a * \<^bold>\<rho> + b) / (c * \<^bold>\<rho> + d)"
+    by (simp add: apply_modgrp_altdef moebius_def field_simps abcd_def)
+  also have "\<dots> = \<^bold>\<rho> \<longleftrightarrow> (a * \<^bold>\<rho> + b) = c * \<^bold>\<rho>\<^sup>2 + d * \<^bold>\<rho>"
+    using nz by (simp add: field_simps power2_eq_square)
+  finally have "(b + c) + \<^bold>\<rho> * (a + c - d) = 0"
+    by (simp add: modfun_rho_square algebra_simps)
+
+  hence "of_int (c + d + 2 * b) = real_of_int a \<and> of_int (a + c) * sqrt 3 = of_int d * sqrt 3"
+    unfolding of_int_add by (auto simp: modfun_rho_altdef algebra_simps complex_eq_iff)
+  also have "of_int (a + c) * sqrt 3 = of_int d * sqrt 3 \<longleftrightarrow> of_int (a + c) = real_of_int d"
+    by (subst mult_cancel_right) auto
+  finally have ac: "c = -b" "a = d - c"
+    unfolding of_int_eq_iff by (auto simp: algebra_simps)
+
+  from ac and det have *: "b ^ 2 + b * d + d ^ 2 = 1"
+    by (auto simp: algebra_simps power2_eq_square)
+  have "\<bar>b\<bar> \<le> 1" "\<bar>d\<bar> \<le> 1"
+    using stabiliser_rho_modgrp_aux[of b d] stabiliser_rho_modgrp_aux[of d b] *
+    by (simp_all add: add_ac mult_ac)
+  with * have "(b, d) \<in> {(1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1)}"
+    unfolding abs_le_1_iff_int insert_iff prod.inject by (elim disjE) simp_all
+  thus "h \<in> {1, -1, ST, -ST, ST\<^sup>2, -(ST\<^sup>2)}" using ac
+    unfolding insert_iff modgrp_eq_iff abcd_def [symmetric] abs_eq_1_iff zmult_eq_1_iff ST_def
+    by (elim disjE conjE) (auto simp: power2_eq_square)
+qed
+
+lemma ellorder_modgrp_UNIV_rho [simp]: "ellorder_modgrp UNIV \<^bold>\<rho> = 3"
+proof -
+  define ST where "ST = S_modgrp * T_modgrp"
+  have "ellorder_modgrp UNIV \<^bold>\<rho> = card {h. apply_modgrp h \<^bold>\<rho> = \<^bold>\<rho>} div card {1::modgrp, -1}"
+    by (simp add: ellorder_modgrp_def)
+  also have "card {1::modgrp, -1} = 2"
+    by (auto simp: modgrp_eq_iff)
+  also have "{h. apply_modgrp h \<^bold>\<rho> = \<^bold>\<rho>} = {1, -1, ST, -ST, ST\<^sup>2, -(ST\<^sup>2)}"
+    by (subst stabiliser_rho_modgrp) (auto simp: ST_def)
+  also have "card \<dots> = 6"
+    by (simp add: modgrp_eq_iff ST_def power2_eq_square)
+  finally show ?thesis
+    by simp
+qed
+
+lemma ellorder_modgrp_UNIV_rho': "z \<sim>\<^sub>\<Gamma> \<^bold>\<rho> \<Longrightarrow> ellorder_modgrp UNIV z = 3"
+  by (metis ellorder_modgrp_UNIV_rho modular_group.ellorder_modgrp_cong)
+
+text \<open>
+  Other than $i$ and $\rho$, no non-trivial unimodular transformation has any fixed points
+  in the fundamental region.
+\<close>
+lemma modgrp_fixed_point_trivial:
+  assumes "z \<in> \<R>\<^sub>\<Gamma>' - {\<i>, \<^bold>\<rho>}" "apply_modgrp h z = z"
+  shows   "abs h = 1"
+proof (cases "z \<in> \<R>\<^sub>\<Gamma>")
+  case True
+  thus ?thesis
+    using assms std_fund_region_no_fixed_point by blast
+next
+  case False
+  define a b c d :: int
+    where abcd_def: "a = modgrp_a h" "b = modgrp_b h" "c = modgrp_c h" "d = modgrp_d h"
+  have h_eq: "h = modgrp a b c d"
+    unfolding abcd_def by (rule modgrp.as_modgrp_altdef) 
+  have det: "a * d - b * c = 1"
+    unfolding abcd_def by (metis modgrp.unimodular)
+
+  from assms have "Im z > 0"
+    by (auto simp: std_fund_region'_def std_fund_region_def)
+  from False have "norm z = 1 \<and> 0 < Im z \<and> Re z \<in> {-1/2..0} \<or> Re z = -1/2 \<and> sqrt 3 / 2 \<le> Im z"
+    using assms std_fund_region'_minus_std_fund_region by blast
+  thus ?thesis
+  proof
+    assume z: "Re z = -1/2 \<and> sqrt 3 / 2 \<le> Im z"
+    define y where "y = Im z"
+    have "y \<noteq> sqrt 3 / 2"
+      using assms z by (auto simp: complex_eq_iff y_def)
+    with z have y: "y > sqrt 3 / 2"
+      by (auto simp: y_def)
+    have z_eq: "z = -1/2 + \<i> * y"
+      using z by (auto simp: y_def complex_eq_iff)
+
+    have nz: "c * z + d \<noteq> 0"
+      using det y by (auto simp: complex_eq_iff z_eq)
+    have "y \<noteq> 0"
+      using y by auto
+  
+    have "z = apply_modgrp h z"
+      by (rule sym) fact
+    also have "\<dots> = (a * z + b) / (c * z + d)"
+      by (simp add: apply_modgrp_altdef moebius_def flip: abcd_def)
+    finally have eq: "c * z ^ 2 + (d - a) * z - b = 0"
+      using nz by (simp add: field_simps power2_eq_square)
+  
+    have "0 = Im (c * z ^ 2 + (d - a) * z - b)"
+      by (subst eq) auto
+    also have "\<dots> = y * (d - a - c)"
+      by (simp add: z_eq power2_eq_square field_simps)
+    finally have a_eq: "a = d - c"
+      using \<open>y \<noteq> 0\<close> by simp
+  
+    from det have bc_eq: "b * c = d ^ 2 - c * d - 1"
+      by (auto simp: a_eq algebra_simps power2_eq_square)
+  
+    have "0 = 4 * c * Re (c * z ^ 2 + (d - a) * z - b)"
+      by (subst eq) auto
+    also have "\<dots> = -(4 * (b * c) + c ^ 2 * (4 * y ^ 2 + 1))"
+      by (simp add: a_eq z_eq power2_eq_square field_simps)
+    also have "\<dots> = 4 - ((c - 2 * d) ^ 2 + (2*c*y)^2)"
+      by (subst bc_eq) (auto simp: algebra_simps power2_eq_square)
+    finally have eq': "(c - 2 * d) ^ 2 + (2 * c * y) ^ 2 = 4"
+      by simp
+  
+    show "abs h = 1"
+    proof (cases "c = 0")
+      case [simp]: True
+      from eq' have d: "d = 1 \<or> d = -1"
+        by (auto simp: power2_eq_1_iff)
+      have "b = 0"
+        using d det eq by auto
+      with d a_eq show ?thesis
+        by (elim disjE) (simp_all add: h_eq modgrp_eq_iff modgrp_abcd_modgrp abs_modgrp_altdef)
+    next
+      case c: False
+      have "3 * c ^ 2 = (2 * c * (sqrt 3 / 2)) ^ 2"
+        by (simp add: power_mult_distrib)
+      also have "\<dots> \<le> (c - 2 * d) ^ 2 + (2 * c * (sqrt 3 / 2)) ^ 2"
+        by simp
+      also have "\<dots> < (c - 2 * d) ^ 2 + (2 * c * y) ^ 2"
+        unfolding power_mult_distrib using c
+        by (intro add_strict_left_mono power_strict_mono mult_strict_left_mono y) auto
+      also have "\<dots> = 4"
+        by (subst eq') auto
+      finally have "real_of_int (c ^ 2) < 4 / 3"
+        by simp
+      hence "c ^ 2 \<le> 1"
+        by linarith
+      hence "c ^ 2 = 1" "abs c = 1"
+        using c by (auto simp: abs_square_le_1 abs_square_eq_1)
+  
+      have "real_of_int ((c - 2 * d)\<^sup>2 + 3) = (c - 2 * d) ^ 2 + (2 * c * (sqrt 3 / 2)) ^ 2"
+        by (simp add: power_mult_distrib \<open>c ^ 2 = 1\<close> flip: of_int_power)
+      also have "\<dots> < (c - 2 * d) ^ 2 + (2 * c * y) ^ 2"
+        unfolding power_mult_distrib using c
+        by (intro add_strict_left_mono power_strict_mono mult_strict_left_mono y) auto
+      also have "\<dots> = 4"
+        by (subst eq') auto
+      finally have "(c - 2 * d) ^ 2 < 1"
+        by linarith
+      hence "c - 2 * d = 0"
+        by (simp add: abs_square_less_1)
+      with \<open>abs c = 1\<close> have False
+        by presburger
+      thus ?thesis ..
+    qed
+
+  next
+    assume z: "norm z = 1 \<and> Im z > 0 \<and> Re z \<in> {-1/2..0}"
+
+    define x y where "x = Re z" and "y = Im z"
+    have z_eq: "z = Complex x y"
+      by (auto simp: complex_eq_iff x_def y_def)
+    have xy: "x ^ 2 + y ^ 2 = 1" "y > 0" "x \<in> {-1/2..0}"
+      using z by (auto simp: x_def y_def cmod_def)
+
+    have "x \<noteq> 0"
+      using assms xy by (auto simp: complex_eq_iff power2_eq_1_iff x_def y_def)
+    moreover have "x \<noteq> -1/2"
+    proof
+      assume "x = -1/2"
+      hence "y ^ 2 = (sqrt 3 / 2) ^ 2"
+        using xy by (auto simp: complex_eq_iff power_divide power2_eq_1_iff x_def y_def)
+      hence "y = sqrt 3 / 2"
+        using \<open>y > 0\<close> by (subst (asm) power2_eq_iff_nonneg) auto
+      with \<open>x = -1/2\<close> show False
+        using assms by (auto simp: complex_eq_iff z_eq)
+    qed
+    ultimately have x: "x \<in> {-1/2<..<0}"
+      using xy by auto
+
+    have nz: "c * z + d \<noteq> 0"
+      using det xy by (auto simp: z_eq complex_eq_iff)
+    have "z = apply_modgrp h z"
+      by (rule sym) fact
+    also have "\<dots> = (a * z + b) / (c * z + d)"
+      by (simp add: apply_modgrp_altdef moebius_def flip: abcd_def)
+    finally have eq: "c * z ^ 2 + (d - a) * z - b = 0"
+      using nz by (simp add: field_simps power2_eq_square)
+  
+    have "0 = Im (c * z ^ 2 + (d - a) * z - b)"
+      by (subst eq) auto
+    also have "\<dots> = y * (d - a + 2 * c * x)"
+      by (simp add: z_eq power2_eq_square field_simps)
+    finally have d_eq: "d = a - 2 * c * x"
+      using \<open>y > 0\<close> by simp
+
+    have "0 = Re (c * z ^ 2 + (d - a) * z - b)"
+      by (subst eq) auto
+    also have "\<dots> = -(b + c * (x ^ 2 + y ^ 2))"
+      by (simp add: z_eq power2_eq_square field_simps d_eq)
+    also have "x ^ 2 + y ^ 2 = 1"
+      using xy by simp
+    finally have b_eq: "b = -c"
+      by auto
+
+    show ?thesis
+    proof (cases "c = 0")
+      case True
+      hence "h = 1 \<or> h = -1"
+        using det b_eq xy eq 
+        by (auto simp: h_eq abs_modgrp_altdef modgrp_abcd_modgrp zmult_eq_1_iff modgrp_eq_iff)
+      thus ?thesis
+        by auto
+    next
+      case False
+      with d_eq have x_eq: "x = (a - d) / (2 * c)"
+        by auto
+      have "\<bar>x\<bar> ^ 2 * (2*c) ^ 2 \<le> (1/2) ^ 2 * (2*c) ^ 2"
+        using xy by (intro mult_right_mono power_mono) auto
+      also have "\<bar>x\<bar> ^ 2 * (2*c) ^ 2 = (a - d) ^ 2"
+        using False by (auto simp: x_eq abs_mult power_divide power_mult_distrib)
+      also have "(1/2) ^ 2 * (2*c) ^ 2 = c ^ 2"
+        by (simp add: power_divide)
+      also have "c ^ 2 = 1 - a * d"
+        using det by (simp add: b_eq power2_eq_square)
+      finally have "(a - d) ^ 2 \<le> 1 - a * d"
+        by linarith
+      hence ineq: "a ^ 2 - a * d + d ^ 2 \<le> 1"
+        by (simp add: power2_eq_square algebra_simps)
+      hence "\<bar>a\<bar> \<le> 1" "\<bar>d\<bar> \<le> 1"
+        using stabiliser_rho_modgrp_aux[of "-a" d] stabiliser_rho_modgrp_aux[of "-d" a]
+        by (simp_all add: mult_ac add_ac)
+      hence False
+        unfolding abs_le_1_iff_int  using det False ineq x
+        by (elim disjE) (auto simp: b_eq x_eq power_divide zmult_eq_1_iff)
+      thus ?thesis ..
+    qed
+  qed
+qed
+
+text \<open>
+  Therefore, all points not equivalent to $i$ or $\<rho>$ have elliptic order 1, i.e.\ are not
+  elliptic points.
+\<close>
+lemma ellorder_modgrp_UNIV_eq_1':
+  assumes "z \<in> \<R>\<^sub>\<Gamma>' - {\<i>, \<^bold>\<rho>}"
+  shows   "ellorder_modgrp UNIV z = 1"
+proof -
+  from assms have "ellorder_modgrp UNIV z = card {h. apply_modgrp h z = z} div 2"
+    by (simp add: ellorder_modgrp_def modgrp_eq_iff numeral_2_eq_2 in_std_fund_region'_iff)
+  also have "{h. apply_modgrp h z = z} = {1, -1}"
+    using modgrp_fixed_point_trivial[of z] assms by (auto simp: abs_modgrp_eq_1_iff)
+  also have "card \<dots> = 2"
+    by (simp add: modgrp_eq_iff numeral_2_eq_2)
+  finally show ?thesis
+    by simp
+qed
+
+lemma ellorder_modgrp_UNIV_eq_1:
+  assumes "Im z > 0" "\<not>(z \<sim>\<^sub>\<Gamma> \<i>)" "\<not>(z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>)"
+  shows   "ellorder_modgrp UNIV z = 1"
+proof -
+  obtain z' where z': "z' \<in> \<R>\<^sub>\<Gamma>'" "z \<sim>\<^sub>\<Gamma> z'"
+    using canonical_point_in_std_fund_region' assms(1) by blast
+  have "Im z' > 0"
+    using z' by (auto simp: in_std_fund_region'_iff)
+  have "ellorder_modgrp UNIV z = ellorder_modgrp UNIV z'"
+    by (intro modular_group.ellorder_modgrp_cong) (use z' in auto)
+  also have "\<dots> = 1"
+    by (rule ellorder_modgrp_UNIV_eq_1') (use z' assms in auto)
+  finally show ?thesis .
+qed
+
+lemma ellorder_modgrp_UNIV_eq:
+  "ellorder_modgrp UNIV z =
+      (if Im z \<le> 0 then 0 else if z \<sim>\<^sub>\<Gamma> \<i> then 2 else if z \<sim>\<^sub>\<Gamma> \<^bold>\<rho> then 3 else 1)"
+proof (cases "Im z > 0")
+  case True
+  thus ?thesis
+    using ellorder_modgrp_UNIV_eq_1[of z] ellorder_modgrp_UNIV_ii ellorder_modgrp_UNIV_rho
+          modular_group.ellorder_modgrp_cong[of z]
+    by (auto dest: modular_group.ellorder_modgrp_cong)
+qed (auto simp: ellorder_modgrp_def)
+
+text \<open>
+  A simple consequence: no unimodular transformation sends $\rho$ to $i$.
+\<close>
+lemma not_rho_equiv_i [simp]: "\<not>(\<^bold>\<rho> \<sim>\<^sub>\<Gamma> \<i>)"
+proof
+  assume "\<^bold>\<rho> \<sim>\<^sub>\<Gamma> \<i>"
+  hence "ellorder_modgrp UNIV \<^bold>\<rho> = ellorder_modgrp UNIV \<i>"
+    by (rule modular_group.ellorder_modgrp_cong)
+  thus False
+    by simp
+qed
+
+lemma not_i_equiv_rho [simp]: "\<not>(\<i> \<sim>\<^sub>\<Gamma> \<^bold>\<rho>)"
+  by (subst modular_group.rel_commutes) simp
+
+lemma not_modular_group_rel_rho_i [simp]: " z \<sim>\<^sub>\<Gamma> \<^bold>\<rho> \<Longrightarrow> \<not>z \<sim>\<^sub>\<Gamma> \<i>"
+  by (meson modular_group.rel_sym modular_group.rel_trans not_i_equiv_rho)
+
+lemma modular_group_rel_rho_i_cases [case_names rho i neither invalid]:
+  obtains "z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" "\<not>z \<sim>\<^sub>\<Gamma> \<i>" | "z \<sim>\<^sub>\<Gamma> \<i>" "\<not>z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" | "Im z > 0" "\<not>z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" "\<not>z \<sim>\<^sub>\<Gamma> \<i>" | "Im z \<le> 0"
+  by (cases "Im z > 0"; cases "z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>"; cases "z \<sim>\<^sub>\<Gamma> \<i>") auto
+
+lemma finite_modgrp_fixpoints:
+  assumes "Im z > 0"
+  shows   "finite {h\<in>G. apply_modgrp h z = z}"
+proof -
+  obtain z' where z': "z' \<in> \<R>\<^sub>\<Gamma>'" "z \<sim>\<^sub>\<Gamma> z'"
+    using canonical_point_in_std_fund_region'[of z] assms by blast
+  then obtain h where h: "z' = apply_modgrp h z"
+    by (elim modular_group.relE)
+  have "finite {h. apply_modgrp h z' = z'}"
+  proof (rule finite_subset)
+    define S where "S = S_modgrp"
+    define ST where "ST = S_modgrp * T_modgrp"
+    show "{h. apply_modgrp h z' = z'} \<subseteq> {1, -1, S, -S, ST, -ST, ST\<^sup>2, -(ST\<^sup>2)}"
+      by (cases "z' = \<i>"; cases "z' = \<^bold>\<rho>")
+         (use  z'(1) stabiliser_ii_modgrp stabiliser_rho_modgrp modgrp_fixed_point_trivial[of z']
+          in  \<open>auto simp: S_def ST_def abs_modgrp_eq_1_iff\<close>)
+  qed auto
+  moreover have "bij_betw (\<lambda>f. h * f * inverse h) {h. apply_modgrp h z = z} {h. apply_modgrp h z' = z'}"
+    unfolding h by (rule bij_betw_stabiliser_modgrp_apply_modgrp) fact
+  hence "finite {h. apply_modgrp h z = z} \<longleftrightarrow> finite {h. apply_modgrp h z' = z'}"
+    by (rule bij_betw_finite)
+  ultimately have "finite {h. apply_modgrp h z = z}"
+    by blast
+  thus ?thesis
+    by simp
+qed
+
+lemma (in modgrp_subgroup) ellorder_modgrp_pos: 
+  assumes "Im z > 0"
+  shows   "ellorder_modgrp G z > 0"
+proof -
+  from assms have "ellorder_modgrp G z = card {h\<in>G. apply_modgrp h z = z} div card (G \<inter> {1, -1})"
+    by (auto simp: ellorder_modgrp_def)
+  also have "\<dots> \<ge> card (G \<inter> {1, -1}) div card (G \<inter> {1, -1})"
+    by (intro div_le_mono card_mono finite_modgrp_fixpoints) (use assms in auto)
+  also have "card (G \<inter> {1, -1}) \<ge> card {1::modgrp}"
+    by (rule card_mono) auto
+  hence "card (G \<inter> {1, - 1}) div card (G \<inter> {1, - 1})  = 1"
+    by simp
+  finally show ?thesis
+    by simp
+qed
+
+
 subsection \<open>Fundamental regions for congruence subgroups\<close>
 
 context hecke_prime_subgroup
@@ -1341,19 +1838,33 @@ next
       by (simp add: rel_commutes)
     then obtain f where f: "f \<in> \<Gamma>'" "apply_modgrp f (ST k x) = x" "Im x > 0"
       unfolding rel_def by blast
-    hence "apply_modgrp (f * S_shift_modgrp k) x = x"
-      by (subst apply_modgrp_mult) (auto simp: ST_def)
-    hence "f * S_shift_modgrp k = 1"
-      using xy by (intro std_fund_region_no_fixed_point) auto
-    hence "f = inverse (S_shift_modgrp k)"
-      by (metis modgrp.inverse_inverse modgrp.inverse_unique)
-    moreover have "modgrp_c (inverse (S_shift_modgrp k)) = 1"
-      by (simp add: S_shift_modgrp_def S_modgrp_code shift_modgrp_code inverse_modgrp_code
-                    times_modgrp_code modgrp_c_code)
-    moreover have "\<not>p dvd 1"
+
+    have "modgrp_c \<bar>f\<bar> = 1"
+    proof -
+      from f have "apply_modgrp (f * S_shift_modgrp k) x = x"
+        by (subst apply_modgrp_mult) (auto simp: ST_def)
+      hence "\<bar>f * S_shift_modgrp k\<bar> = 1"
+        using xy by (intro std_fund_region_no_fixed_point) auto
+      hence "\<bar>f\<bar> = \<bar>inverse (S_shift_modgrp k)\<bar>"
+        by (metis abs_modgrp_congs(3) abs_modgrp_eq_1_iff abs_uminus_modgrp minus_minus_modgrp
+            modgrp.inverse_inverse modgrp.inverse_unique times_modgrp_uminus_right)
+      also have "modgrp_c (\<bar>inverse (S_shift_modgrp k)\<bar>) = 1"
+        by (simp add: S_shift_modgrp_def S_modgrp_code shift_modgrp_code inverse_modgrp_code
+                      times_modgrp_code modgrp_c_code abs_modgrp_code)
+      finally show "modgrp_c \<bar>f\<bar> = 1" .
+    qed
+    hence "\<bar>modgrp_c f\<bar> = 1"
+      by (auto simp: abs_modgrp_altdef split: if_splits)
+    hence "is_unit (modgrp_c f)"
+      by auto
+    moreover have "p dvd modgrp_c f"
+      using \<open>f \<in> \<Gamma>'\<close> unfolding subgrp_def modgrps_hecke_altdef by auto
+    ultimately have "is_unit p"
+      using dvd_trans by blast
+    moreover have "\<not>is_unit p"
       using p_prime using not_prime_unit by blast
     ultimately show False
-      using \<open>f \<in> \<Gamma>'\<close> unfolding subgrp_def modgrps_cong_altdef by auto
+      by contradiction
   qed 
 
   have "x \<in> \<R>\<^sub>\<Gamma> \<union> (\<Union>k\<in>{0..<p}. ST k ` \<R>\<^sub>\<Gamma>)" "y \<in> \<R>\<^sub>\<Gamma> \<union> (\<Union>k\<in>{0..<p}. ST k ` \<R>\<^sub>\<Gamma>)"
@@ -1389,24 +1900,29 @@ next
       using xy xy' by simp
     then obtain f where f: "f \<in> \<Gamma>'" "apply_modgrp f (ST k1 x') = ST k2 y'"
       unfolding rel_def by auto
-    note \<open>apply_modgrp f (ST k1 x') = ST k2 y'\<close>
-    also have "apply_modgrp f (ST k1 x') = apply_modgrp (f * S_shift_modgrp k1) x'"
-      unfolding ST_def using x' by (subst apply_modgrp_mult) auto
-    finally have "f * S_shift_modgrp k1 = S_shift_modgrp k2"
-      unfolding ST_def using xy' by (intro std_fund_region_no_fixed_point'[of x']) auto
-    hence "f = S_shift_modgrp k2 * inverse (S_shift_modgrp k1)"
-      by (metis modgrp.right_inverse modgrp.right_neutral mult.assoc)
-    also have "\<dots> = S_modgrp * shift_modgrp (k2 - k1) * S_modgrp"
-      using shift_modgrp_add[of k2 "-k1"]
-      by (simp add: S_shift_modgrp_def modgrp.inverse_distrib_swap modgrp.assoc
-               flip: shift_modgrp_minus)
-    finally have "f = S_modgrp * shift_modgrp (k2 - k1) * S_modgrp" .
-    moreover have "modgrp_c (S_modgrp * shift_modgrp (k2 - k1) * S_modgrp) = \<bar>k2 - k1\<bar>"
-      by (simp add: S_modgrp_code shift_modgrp_code times_modgrp_code modgrp_c_code)
-    moreover have "p dvd modgrp_c f"
-      using f by (auto simp: subgrp_def modgrps_cong_altdef)
-    ultimately have "p dvd \<bar>k2 - k1\<bar>"
-      by simp
+
+    have "p dvd modgrp_c \<bar>f\<bar>"
+      using f by (auto simp: subgrp_def modgrps_hecke_altdef abs_modgrp_altdef)
+    also have "modgrp_c \<bar>f\<bar> = \<bar>k2 - k1\<bar>"
+    proof -
+      note \<open>apply_modgrp f (ST k1 x') = ST k2 y'\<close>
+      also have "apply_modgrp f (ST k1 x') = apply_modgrp (f * S_shift_modgrp k1) x'"
+        unfolding ST_def using x' by (subst apply_modgrp_mult) auto
+      finally have "\<bar>f * S_shift_modgrp k1\<bar> = \<bar>S_shift_modgrp k2\<bar>"
+        unfolding ST_def using xy' by (intro std_fund_region_no_fixed_point'[of x']) auto
+      hence "\<bar>f\<bar> = \<bar>S_shift_modgrp k2 * inverse (S_shift_modgrp k1)\<bar>"
+        by (smt (verit, ccfv_threshold) abs_modgrp_mult_cong modgrp.assoc modgrp.right_inverse
+              mult_1_right)
+      also have "\<dots> = \<bar>S_modgrp * shift_modgrp (k2 - k1) * S_modgrp\<bar>"
+        using shift_modgrp_add[of k2 "-k1"]
+        by (simp add: S_shift_modgrp_def modgrp.inverse_distrib_swap modgrp.assoc
+                 flip: shift_modgrp_minus)
+      finally have "\<bar>f\<bar> = \<bar>S_modgrp * shift_modgrp (k2 - k1) * S_modgrp\<bar>" .
+      also have "modgrp_c \<bar>S_modgrp * shift_modgrp (k2 - k1) * S_modgrp\<bar> = \<bar>k2 - k1\<bar>"
+        by (simp add: S_modgrp_code shift_modgrp_code times_modgrp_code modgrp_c_code abs_modgrp_code)
+      finally show "modgrp_c \<bar>f\<bar> = \<bar>k2 - k1\<bar>" .
+    qed
+    finally have "p dvd \<bar>k2 - k1\<bar>" .
     moreover from k12 have "\<bar>k2 - k1\<bar> < p"
       by auto
     ultimately have "k1 = k2"
@@ -1427,5 +1943,6 @@ notation modfun_rho ("\<^bold>\<rho>")
 end
 
 unbundle no modfun_region_notation
+unbundle no modgrp_notation
 
 end
