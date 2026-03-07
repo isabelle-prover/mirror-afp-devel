@@ -789,16 +789,32 @@ proof -
     by (subst discr_eq) (use distinct_e123 in auto)
 qed
 
-lemma modulus_neq_0: "modulus \<noteq> 0" and modulus_neq_1: "modulus \<noteq> 1"
+corollary modulus_neq_0: "modulus \<noteq> 0" and modulus_neq_1: "modulus \<noteq> 1"
   using distinct_e123 by (auto simp: modulus_def)
+
+text \<open>
+  The $J$ invariant can be expressed as a rational function of the modulus.
+\<close>
+corollary invariant_J_conv_modulus:
+  defines "x \<equiv> modulus * (1 - modulus)"
+  shows   "invariant_J = 4 / 27 * (1 - x) ^ 3 / x ^ 2"
+proof -
+  define l where "l = modulus"
+  have l: "(\<e>\<^sub>1 - \<e>\<^sub>2) * l = \<e>\<^sub>3 - \<e>\<^sub>2"
+    unfolding l_def modulus_def using distinct_e123 by (auto simp: field_simps)
+  have "256 * (1 - l * (1 - l)) ^ 3 * discr = 1728 * invariant_g2 ^ 3 * (l * (1 - l)) ^ 2"
+    using l sum_e123_0 unfolding modulus_def discr_altdef invariant_g2_conv_e123 
+    by Groebner_Basis.algebra
+  thus "invariant_J = 4 / 27 * (1 - x) ^ 3 / x ^ 2"
+    using modulus_neq_0 modulus_neq_1 discr_nonzero
+    by (simp add: divide_simps invariant_J_def x_def l_def mult_ac)
+qed
 
 end
 
 
 lemma (in complex_lattice_swap) modulus_swap: "swap.modulus = 1 - modulus"
   using distinct_e123 by (auto simp: swap.modulus_def modulus_def field_simps)
-
-
 
 context std_complex_lattice
 begin

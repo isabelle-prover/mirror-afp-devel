@@ -1650,7 +1650,7 @@ next
 qed
 
 text \<open>
-  Therefore, all points not equivalent to $i$ or $\<rho>$ have elliptic order 1, i.e.\ are not
+  Therefore, all points not equivalent to $i$ or $\rho$ have elliptic order 1, i.e.\ are not
   elliptic points.
 \<close>
 lemma ellorder_modgrp_UNIV_eq_1':
