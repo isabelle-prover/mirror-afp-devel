@@ -42,8 +42,8 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
         let
           val totality = Thm.close_derivation \<^here> totality
           val remove_domain_condition =
-            full_simplify (put_simpset HOL_basic_ss lthy
-              addsimps [totality, @{thm True_implies_equals}])
+            full_simplify (lthy |> put_simpset HOL_basic_ss
+              |> Simplifier.add_simps [totality, @{thm True_implies_equals}])
           val tsimps = map remove_domain_condition psimps
           val tinducts = map remove_domain_condition pinducts
           val teqvts = map remove_domain_condition eqvts

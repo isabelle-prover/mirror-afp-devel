@@ -2955,7 +2955,7 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = \<open>fn _ => fn ctx
                member (op =) atms lhs andalso member (op =) atms rhs
              end)
             | _ => false)
-         |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps simp_thms))
+         |> map (simplify (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps simp_thms))
          |> map HOLogic.conj_elims
          |> flat
     in

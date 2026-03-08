@@ -377,9 +377,9 @@ fun prove_permute_zero induct bnfs perm_defs perm_fns ctxt =
     Goal.prove ctxt perm_indnames [] goals
       (fn {context = ctxt', ...} =>
         (Old_Datatype_Aux.ind_tac ctxt' induct perm_indnames THEN_ALL_NEW
-          asm_simp_tac
-            (fold Simplifier.add_cong congs
-              (put_simpset HOL_basic_ss ctxt' addsimps rules))) 1)
+          asm_simp_tac (ctxt' |> put_simpset HOL_basic_ss
+            |> Simplifier.add_simps rules
+            |> fold Simplifier.add_cong congs)) 1)
     |> Old_Datatype_Aux.split_conj_thm
   end
 
@@ -405,9 +405,9 @@ fun prove_permute_plus induct bnfs perm_defs perm_fns ctxt =
     Goal.prove ctxt ("p" :: "q" :: perm_indnames) [] goals
       (fn {context = ctxt', ...} =>
         (Old_Datatype_Aux.ind_tac ctxt' induct perm_indnames THEN_ALL_NEW
-          asm_simp_tac
-            (fold Simplifier.add_cong congs
-              (put_simpset HOL_basic_ss ctxt' addsimps rules))) 1)
+          asm_simp_tac (ctxt' |> put_simpset HOL_basic_ss
+            |> Simplifier.add_simps rules
+            |> fold Simplifier.add_cong congs)) 1)
     |> Old_Datatype_Aux.split_conj_thm
   end
 
@@ -512,9 +512,9 @@ val eqvt_apply_sym = @{thm eqvt_apply[symmetric]}
 fun subproof_tac const_names simps =
   SUBPROOF (fn {prems, context = ctxt, ...} =>
     HEADGOAL
-      (simp_tac (put_simpset HOL_basic_ss ctxt addsimps simps)
+      (simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps simps)
        THEN' eqvt_tac ctxt (eqvt_relaxed_config addexcls const_names)
-       THEN' simp_tac (put_simpset HOL_basic_ss ctxt addsimps (prems @ [eqvt_apply_sym]))))
+       THEN' simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (prems @ [eqvt_apply_sym]))))
 
 fun prove_eqvt_tac insts ind_thms const_names simps ctxt =
   HEADGOAL
