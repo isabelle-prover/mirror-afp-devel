@@ -42,9 +42,9 @@ fun map_opt_simpset use_ugly_rules =
     Simplifier.add_cong @{thm if_cong}
     #> Simplifier.add_cong @{thm split_cong}
     #> Simplifier.add_cong @{thm HOL.conj_cong}
-    #> (fn ctxt => ctxt addsimps @{thms triv_ex_apply}) (* fixme: should already be handled by HOL.ex_simps?*)
+    #> Simplifier.add_simps @{thms triv_ex_apply} (* fixme: should already be handled by HOL.ex_simps?*)
     #> (if use_ugly_rules then
-          (fn ctxt => ctxt addsimps [@{thm split_def}])
+          (Simplifier.add_simp @{thm split_def})
         else
            I)
 
@@ -208,7 +208,7 @@ let
       val new_prems = Simplifier.prems_of ctxt
         |> map (Local_Defs.fold ctxt defs)
         |> filter contains_new_frees
-    in (ctxt |> Simplifier.add_prems new_prems) addsimps new_prems end
+    in ctxt |> Simplifier.add_prems new_prems |> Simplifier.add_simps new_prems end
 
   val (varTs, rets, bdy) = dest_term ct;
 
@@ -326,7 +326,7 @@ fun L2_guarded_local_simproc prog_info phase orig_ctxt =
            \<^infer_instantiate>\<open>c=c and s'=s' in cterm \<open>run (c ()) s'\<close>\<close> ctxt''
          else
            \<^infer_instantiate>\<open>c=c and s'=s' in cterm \<open>run c s'\<close>\<close> ctxt''
-       val c_eq = run |> Simplifier.asm_full_rewrite (ctxt'' addsimps g'_eqs 
+       val c_eq = run |> Simplifier.asm_full_rewrite (ctxt'' |> Simplifier.add_simps g'_eqs 
          |> Utils.add_ariths g'_ariths) |> singleton (Proof_Context.export ctxt'' ctxt)            
        val g_eq' = singleton (Proof_Context.export ctxt' ctxt) g_eq
        val rule = if seq_guard then @{thm L2_seq_guard_cong_stop0} else @{thm L2_guarded_cong_stop'}
@@ -352,8 +352,9 @@ fun arg_simp n ctxt =
  *)
 fun gen_split_fixup_convs thms ctxt =
   Simplifier.asm_full_rewrite (
-    put_simpset HOL_ss ctxt
-    addsimps thms
+    ctxt
+    |> put_simpset HOL_ss
+    |> Simplifier.add_simps thms
     |> fold Simplifier.add_cong @{thms L2_split_fixups_congs})
 
 val fix_L2_while_loop_splits_conv = gen_split_fixup_convs @{thms L2_split_fixups}
@@ -401,7 +402,7 @@ fun mk_unbind_thm ctxt T =
     val unbind = Thm.instantiate (TVars.make [((("'a",0), @{sort c_type}), T)], Vars.empty) @{thm unbind}
     val ((_, [thm]), ctxt') = Variable.import false [unbind] ctxt 
     val unbind_inst = Utils.check_solve_sideconditions (K true) ctxt' thm (
-      asm_full_simp_tac (ctxt' addsimps (Named_Theorems.get ctxt' @{named_theorems recursive_records_split_all_eqs} )) 1)
+      asm_full_simp_tac (ctxt' |> Simplifier.add_simps (Named_Theorems.get ctxt' @{named_theorems recursive_records_split_all_eqs})) 1)
       |> Simpdata.mk_meta_cong ctxt'
       |> singleton (Proof_Context.export ctxt' ctxt) |> Drule.zero_var_indexes 
   in
@@ -575,7 +576,7 @@ fun unbind_conv ctxt cont ct =
         val rhs = Thm.rhs_of f_unbind_eq
         val {update_zeros, ...} = the (get_record_thms ctxt rT)
         (* We propagate the zero less aggressively *)
-        val ctxt1 = add_info (rn, info) ctxt addsimps (update_zeros )
+        val ctxt1 = ctxt |> add_info (rn, info) |> Simplifier.add_simps update_zeros
         val eq = Utils.timeit_msg 2 ctxt (fn _ => "unbind_conv simp" ) (fn _ =>  
           rhs |> (
           unfold_seq_condition ctxt then_conv 
@@ -897,7 +898,7 @@ let
           Simplifier.add_cong @{thm FUSE_cong} #>
           Simplifier.add_cong @{thm STOP_UNBIND_cong} #>
           Simplifier.add_cong @{thm L2_seq_condition_block_cong}) (* Only relevant in L2 *)
-      |> (fn ctxt => ctxt addsimps word_simps)
+      |> Simplifier.add_simps word_simps
 in
   basic_ss ctxt
 end

@@ -530,7 +530,7 @@ fun gen_unfolded {sym} qualifier ctxt thm =
        |> map (fn (_, (_, Entry {def,...})) => Thm.transfer' ctxt def)
    val defs = defs0 |> sym ? map (symmetric ctxt)
  in
-   Simplifier.simplify (Simplifier.put_simpset HOL_basic_ss ctxt addsimps defs) thm
+   Simplifier.simplify (ctxt |> Simplifier.put_simpset HOL_basic_ss |> Simplifier.add_simps defs) thm
  end
 
 val unfolded_with = gen_unfolded {sym = false}

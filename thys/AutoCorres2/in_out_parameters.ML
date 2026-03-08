@@ -573,7 +573,7 @@ fun assume_grds grds ctxt =
      fun add_field_lookup_prems thm = 
        Thm.proof_attributes (map (Attrib.attribute ctxt) @{attributes [field_lookup_prems]}) thm 
        #> snd
-     val ctxt = ctxt addsimps eqs |> fold add_field_lookup_prems eqs
+     val ctxt = ctxt |> Simplifier.add_simps eqs |> fold add_field_lookup_prems eqs
    in
      ({grd = SOME grd_thm, grds = grd_thms}, ctxt)
  end
@@ -672,7 +672,7 @@ fun upd_select_same_root project phi ctxt s lenses =
         val sel_eq = \<^infer_instantiate>\<open>fld_hval = fld_hval and value = root_val and sel = sel in 
           cprop \<open>fld_hval = sel value\<close>\<close> ctxt'
         val thm = Goal.prove_internal ctxt' grds sel_eq (fn prems => 
-            Method.insert_tac ctxt' prems 1 THEN asm_full_simp_tac (ctxt' addsimps @{thms h_val_field_from_bytes'}) 1) 
+            Method.insert_tac ctxt' prems 1 THEN asm_full_simp_tac (ctxt' |> Simplifier.add_simps @{thms h_val_field_from_bytes'}) 1) 
         val thm = thm
            |> singleton (Proof_Context.export ctxt' thy_ctxt)
       in
@@ -1077,7 +1077,7 @@ fun assume_distinct ptrs ctxt =
     val ((_, thms), ctxt) = Proof_Context.note_thms "" ((Binding.empty, []), 
       [(all_disj_thms @ disj_fields @ disj_field_roots1 @ disj_field_roots2, attrs)]) ctxt
     val disj_cons = @{thm distinct_sets_consI} OF [disj_thm]
-    val ctxt = ctxt addsimps [disj_cons]
+    val ctxt = ctxt |> Simplifier.add_simp disj_cons
   in
     ((disj_thm, thms), ctxt)
   end
@@ -1268,7 +1268,7 @@ fun gen_normalise_rule prems ctxt thm =
 val normalise_rule = gen_normalise_rule []
 
 fun normalise_rel_stack prems ctxt =
-  gen_normalise_rule prems (ctxt addsimps (Named_Theorems.get ctxt @{named_theorems rel_stack_simps}))
+  gen_normalise_rule prems (ctxt |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems rel_stack_simps}))
    
 fun instantiate_normalise_thm maxidx prems ctxt insts rule =
   let 
@@ -1368,8 +1368,8 @@ fun norm_accesses ctxt eqs thm =
   let
     (* normalise all accesses except for input function which *)
     val sym_eqs = eqs |> map (Utils.symmetric ctxt)
-    val simp_ctxt = Simplifier.clear_simpset ctxt addsimps eqs
-    val sym_simp_ctxt = Simplifier.clear_simpset ctxt addsimps sym_eqs
+    val simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps eqs
+    val sym_simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps sym_eqs
   in
     thm 
     |> Simplifier.asm_full_simplify simp_ctxt 
@@ -1774,7 +1774,7 @@ let
             |> Utils.fold_subterms_open merge (Thm.term_of g)
             |> these
 
-          val simp_ctxt = context addsimps (disjoint_alloc_subset @ disj_hvals)
+          val simp_ctxt = context |> Simplifier.add_simps (disjoint_alloc_subset @ disj_hvals)
           fun mk_hval_eq (p, s') =
             let
               val prop = \<^morph_infer_instantiate>\<open>p = p and s' = s' and s= s in 
@@ -1798,7 +1798,7 @@ let
                     fold_rev (fn x => fn f => Thm.apply f x) args_s g_fix)
           val eq_thm = Utils.timeit_msg 2 ctxt1 (fn _ => "resolve_refines_g2_normalise eq_thm: ") (fn _ => 
                 Goal.prove_internal ctxt1 [] eq (fn _ =>
-                  asm_full_simp_tac (Simplifier.clear_simpset ctxt1 addsimps all_eqs) 1))
+                  asm_full_simp_tac (ctxt1 |> Simplifier.clear_simpset |> Simplifier.add_simps all_eqs) 1))
           val [eq_thm1] = Utils.timeit_msg 2 ctxt1 (fn _ => "resolve_refines_g2_normalise export: ") (fn _ => 
                  Proof_Context.export ctxt1 context [eq_thm])
           val rule'' = refines_rewr_g eq_thm1 rule_inst
@@ -2035,7 +2035,7 @@ let
             val ({grd, grds=grds'}, guard_ctxt) = assume_grds global_grds' ctxt
             val grds = grds' 
             |> map (Utils.eta_norm o 
-                Simplifier.simplify (Simplifier.clear_simpset guard_ctxt addsimps (keep_eqs @ state_eqs)))
+                Simplifier.simplify (guard_ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps (keep_eqs @ state_eqs)))
             val grd' = Thm.cprop_of (the grd) |> dest_Trueprop
             val abs_guard = cterm_lambda t grd'
          in
@@ -2170,7 +2170,7 @@ let
           val seed_rel_thm = Goal.prove_internal ctxt prems goal (fn thms => 
             REPEAT_ALL_NEW (
               resolve_tac ctxt (rel_stack_intros @ thms)
-              ORELSE' asm_full_simp_tac (ctxt addsimps ([frame_heap_independent_selector]))) 1)
+              ORELSE' asm_full_simp_tac (ctxt |> Simplifier.add_simp frame_heap_independent_selector)) 1)
         in
           (Q, seed_rel_thm, outs, unit_seed)
         end
@@ -2182,7 +2182,7 @@ let
   fun in_out_guard ctxt0 (args as {t0, params, s, t, cguards, static={A, ...},rel_alloc, ...}: args) e =
     let
       val eq_simp_ctxt = expr_simp_ctxt [] ctxt0 |> Context_Position.set_visible false 
-      val eq = Simplifier.asm_full_rewrite (eq_simp_ctxt addsimps cguards) e
+      val eq = Simplifier.asm_full_rewrite (eq_simp_ctxt |> Simplifier.add_simps cguards) e
       val e' = eq |> Thm.rhs_of
       val {e', other_ptrs, ...} = fix_params_state ctxt0 (K false) s t params NONE e'
       val (contained_thms, global_grd, needs_guard, _) = global_guard ctxt0 rel_alloc params other_ptrs s t
@@ -2199,7 +2199,7 @@ let
         cprop \<open>e' (frame A t\<^sub>0 s) ==> e s\<close>\<close> phi ctxt
 
       val thm = Goal.prove_internal ctxt [] goal (fn _ =>
-        asm_full_simp_tac (ctxt addsimps [eq]) 1)
+        asm_full_simp_tac (ctxt |> Simplifier.add_simp eq) 1)
     in
       {e' = e', implication_thm = thm}
     end
@@ -2491,8 +2491,8 @@ let
             val rule = instantiate_thm (~1) ctxt [("R'", Q), ("adj", adj), ("ns", ns)] refines_rel_stack_adjust_result
                |> eta_tupled ctxt
             val f2_thm' = rule OF [f_thm]
-            val simp_ctxt = mk_simp {silent = !sd1, M = M} ctxt
-                  addsimps @{thms split_paired_all}
+            val simp_ctxt = ctxt |> mk_simp {silent = !sd1, M = M}
+                  |> Simplifier.add_simps @{thms split_paired_all}
             val f2_thm' = Utils.solve_sideconditions ctxt f2_thm' (
                   asm_full_simp_tac simp_ctxt 1)
             val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement: L2_seq adapted f2:\n " ^ Thm.string_of_thm ctxt f2_thm')
@@ -2617,14 +2617,14 @@ let
 
   fun assume_spec_tac M ctxt = 
     let
-      val simp_ctxt = mk_simp {silent = !sd14, M = M} ctxt addsimps [h_val_frame_disjoint]
+      val simp_ctxt = ctxt |> mk_simp {silent = !sd14, M = M} |> Simplifier.add_simp h_val_frame_disjoint
       fun heap_unchanged_tac ctxt = Record.split_simp_tac ctxt [] (K ~1) THEN_ALL_NEW
-             clarsimp_tac (simp_ctxt addsimps @{thms mex_def meq_def}) 
+             clarsimp_tac (simp_ctxt |> Simplifier.add_simps @{thms mex_def meq_def}) 
     in
       SOLVED' (heap_unchanged_tac ctxt) 1 THEN
       SOLVED' (heap_unchanged_tac ctxt) 1 THEN
       dprint_tac (!d14) ctxt "assume_spec_tac 0" THEN
-      (clarsimp_tac (simp_ctxt addsimps @{thms mex_def meq_def}) THEN_ALL_NEW
+      (clarsimp_tac (simp_ctxt |> Simplifier.add_simps @{thms mex_def meq_def}) THEN_ALL_NEW
        REPEAT_ALL_NEW (resolve_tac ctxt @{thms exI refl conjI} ORELSE' Method.assm_tac ctxt)) 1 THEN
        dprint_tac (!d14) ctxt "assume_spec_tac 1" 
     end
@@ -2791,7 +2791,7 @@ let
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "in_out_statement: L2_spec (thm) \n " ^ Thm.string_of_thm ctxt thm)
           val thm = Utils.solve_sideconditions ctxt thm (
                 ALLGOALS (Record.split_simp_tac ctxt [] (K ~1) THEN_ALL_NEW
-                  clarsimp_tac (ctxt addsimps @{thms mex_def meq_def})))
+                  clarsimp_tac (ctxt |> Simplifier.add_simps @{thms mex_def meq_def})))
           val _ = Utils.verbose_msg 3 ctxt (fn _ => "in_out_statement: L2_spec:\n " ^ Thm.string_of_thm ctxt thm)
         in
           (thm, ctxt)
@@ -2912,7 +2912,7 @@ let
                     [("R'", R'), ("L'", L'), ("shuffle", shuffle_return), ("shuffle_exit", shuffle_exit), 
                       ("ns", ns_shuffle), ("ns_exit", ns_exit_shuffle)] 
                     refines_rel_stack_shuffle_both 
-               val simp_ctxt = ctxt addsimps @{thms rel_push_def rel_singleton_stack_def split_tupled_all}
+               val simp_ctxt = ctxt |> Simplifier.add_simps @{thms rel_push_def rel_singleton_stack_def split_tupled_all}
                val d = !d2
                val thm = Utils.check_solve_sideconditions (K true) ctxt (rule OF [f_thm_call]) (
                  AutoCorresUtil.WITH_NSUBGOALS (fn n => 
@@ -2928,7 +2928,7 @@ let
             end
 
           val {emb_core, ...} = @{cterm_match \<open>(?emb_core \<circ> the_Nonlocal)\<close>} (decompose_funs ctxt emb)
-          val emb_core_unfolded = emb_core |> Simplifier.rewrite ((Simplifier.clear_simpset ctxt) addsimps @{thms comp_def})
+          val emb_core_unfolded = emb_core |> Simplifier.rewrite (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms comp_def})
                |> Thm.rhs_of
 
           fun canonical thm =
@@ -2979,14 +2979,14 @@ let
               val rule = instantiate_thm maxidx ctxt [("P", P), ("P1", P1), ("P2", P2)] 
                 refines_rel_stack_override_heap_on_exit_guarded_unmodified OF [rel_alloc]
               (* FIXME: same as pop simpset ? *)
-              val simp_ctxt = mk_simp {silent = !sd3, M = M} guard_ctxt
-                    addsimps (grds @ [rel_alloc_modifies_antimono]) @ @{thms 
+              val simp_ctxt = guard_ctxt |> mk_simp {silent = !sd3, M = M}
+                    |> Simplifier.add_simps (grds @ rel_alloc_modifies_antimono :: @{thms 
                       c_guard_field_lvalue
                       field_lvalue_ptr_span_root_contained
                       field_lvalue_ptr_span_trans
                       root_disjoint_field_lvalue_disjoint1 root_disjoint_field_lvalue_disjoint2
                       Un_upper1 Un_upper2 subset_unI1 subset_unI2 sup_aci
-                      }
+                      })
               val d = !d4
               val thm = Utils.solve_sideconditions guard_ctxt rule (
                 dprint_tac d ctxt "override_heap (0)" THEN
@@ -3010,12 +3010,12 @@ let
               val rule = refines_rel_stack_pop_heap {exit= not is_bottom_L, singleton = singleton}
               val maxidx = Thm.maxidx_of thm
               val rule = unchecked_instantiate_thm maxidx ctxt [("ns", ns''), ("ns_exit", ns_exit'')] rule OF [rel_alloc]
-              val simp_ctxt = mk_simp {silent = !sd4, M = M} ctxt
-                    addsimps [rel_alloc_modifies_antimono] @ @{thms 
+              val simp_ctxt = ctxt |> mk_simp {silent = !sd4, M = M}
+                    |> Simplifier.add_simps (rel_alloc_modifies_antimono :: @{thms 
                       field_lvalue_ptr_span_root_contained
                       field_lvalue_ptr_span_trans 
                       root_disjoint_field_lvalue_disjoint1 root_disjoint_field_lvalue_disjoint2
-                      }
+                      })
               val d = !d5
               val thm = Utils.solve_sideconditions ctxt rule (
                 dprint_tac d ctxt "POP (0)" THEN
@@ -3115,13 +3115,13 @@ let
               (L, L', result_rel_thm, emb')
             end
 
-          val simp_ctxt = mk_simp {silent = !sd12, M = M} ctxt
-            addsimps [rel_alloc, rel_alloc_modifies_antimono OF [rel_alloc]] @ 
+          val simp_ctxt = ctxt |> mk_simp {silent = !sd12, M = M}
+            |> Simplifier.add_simps (rel_alloc :: (rel_alloc_modifies_antimono OF [rel_alloc]) ::
             @{thms c_guard_field_lvalue 
                    field_lvalue_ptr_span_root_contained
                    field_lvalue_ptr_span_trans
                    field_lvalue_disjoint_fields_same_root
-                   subset_union_left subset_union_right sup_aci}
+                   subset_union_left subset_union_right sup_aci})
 
           val maxidx = Thm.maxidx_of embellished_exit_thm
           val nest_exit_thm = instantiate_thm maxidx ctxt 
@@ -3131,9 +3131,9 @@ let
             |> Local_Defs.unfold ctxt @{thms comp_def}
 
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "nest_exit_thm (0): " ^ Thm.string_of_thm ctxt nest_exit_thm)
-          val L_simp_ctxt = ctxt addsimps
-                @{thms split_paired_all} @
-                (Named_Theorems.get ctxt @{named_theorems rel_stack_simps})
+          val L_simp_ctxt = ctxt |> Simplifier.add_simps
+                (@{thms split_paired_all} @
+                (Named_Theorems.get ctxt @{named_theorems rel_stack_simps}))
 
           val d = !d7
 
@@ -3202,8 +3202,8 @@ let
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "root_upd_result_thm: " ^ Thm.string_of_thm ctxt root_upd_result_thm)
 
           val thm = root_upd_result_thm
-            |> Simplifier.asm_full_simplify ((Simplifier.clear_simpset ctxt) 
-                  addsimps @{thms L2_call_pre_final_convs})
+            |> Simplifier.asm_full_simplify (ctxt |> Simplifier.clear_simpset
+                  |> Simplifier.add_simps @{thms L2_call_pre_final_convs})
             |> tap (fn thm => Utils.verbose_msg 6 ctxt (fn _ => "after pre_final: " ^ Thm.string_of_thm ctxt thm)) 
             |> rewrs ctxt @{thms L2_call_ETA_TUPLED1 L2_call_ETA_TUPLED2}
             |> tap (fn thm => Utils.verbose_msg 6 ctxt (fn _ => "ETA_TUPLED: " ^ Thm.string_of_thm ctxt thm)) 
@@ -3212,8 +3212,8 @@ let
                  |> Simplifier.add_proc @{simproc ETA_TUPLED})
 
           val _ = Utils.verbose_msg 5 ctxt (fn _ => "thm (0): " ^ Thm.string_of_thm ctxt thm)
-          val thm = thm |> Simplifier.asm_full_simplify ((Simplifier.clear_simpset ctxt) 
-                 addsimps @{thms L2_call_final_convs})
+          val thm = thm |> Simplifier.asm_full_simplify (ctxt |> Simplifier.clear_simpset
+                 |> Simplifier.add_simps @{thms L2_call_final_convs})
           val _ = Utils.verbose_msg 6 ctxt (fn _ => "thm (1): " ^ Thm.string_of_thm ctxt thm)
           val root_h_val_thm = root_h_val_conv prog_info ctxt (map #eq (filter_out #trivial_eq lenses)) thm
           val _ = Utils.verbose_msg 6 ctxt (fn _ => "root_h_val_thm: " ^ Thm.string_of_thm ctxt root_h_val_thm)
@@ -3235,8 +3235,8 @@ let
                     @{thm refines_project_guard_right} OF [thm]
               val thm = Utils.solve_sideconditions ctxt thm (
                 Method.insert_tac ctxt [rel_alloc] 1 THEN 
-                clarsimp_tac ((mk_simp {silent = !sd7, M = M} ctxt) 
-                    addsimps [rel_alloc_def, h_val_frame_disjoint]) 1)
+                clarsimp_tac (ctxt |> mk_simp {silent = !sd7, M = M}
+                    |> Simplifier.add_simps [rel_alloc_def, h_val_frame_disjoint]) 1)
             in thm end)
           val _ = Utils.verbose_msg 6 ctxt (fn _ => "bind_keep_h_val_thm: " ^ Thm.string_of_thm ctxt bind_keep_h_val_thm)
           val final_call_thm = case (try_modified, return) of
@@ -3325,10 +3325,10 @@ let
                (timeit_tac "L2_seq initial" ctxt (
                  dprint_tac d ctxt "before f2_thm" THEN
                  timeit_tac' "L2_seq resolve f2_thm" ctxt
-                   (resolve_refines_g_normalise (simp_ctxt addsimps @{thms split_def}) A s unmodified_ptrs f2_thm) 1 THEN
+                   (resolve_refines_g_normalise (simp_ctxt |> Simplifier.add_simp @{thm split_def}) A s unmodified_ptrs f2_thm) 1 THEN
                  dprint_tac d ctxt "after f2_thm" ))
 
-               (timeit_tac' "L2_seq terminal" ctxt (sidecondition_simp_tac (simp_ctxt addsimps @{thms split_def}))))
+               (timeit_tac' "L2_seq terminal" ctxt (sidecondition_simp_tac (simp_ctxt |> Simplifier.add_simp @{thm split_def}))))
 
          val _ = Utils.verbose_msg 3 ctxt (fn _ => "in_out_statement: L2_seq:\n " ^ Thm.string_of_thm ctxt thm)
        in
@@ -3521,9 +3521,9 @@ let
              val thm = rule OF [f_thm]
              val thm = Utils.check_solve_sideconditions check_domain_bound ctxt'' thm (
                AutoCorresUtil.WITH_NSUBGOALS (fn n =>
-                 asm_full_simp_tac (ctxt'' addsimps
-                   @{thms split_paired_all} @
-                   (Named_Theorems.get ctxt'' @{named_theorems rel_stack_simps})) n))
+                 asm_full_simp_tac (ctxt'' |> Simplifier.add_simps
+                   (@{thms split_paired_all} @
+                   (Named_Theorems.get ctxt'' @{named_theorems rel_stack_simps}))) n))
              val {g, ...} = dest_refines (Thm.cconcl_of thm)
            in (g, thm) end)
 
@@ -3558,10 +3558,10 @@ let
 
 
 
-         val simp_ctxt = mk_simp {silent = !sd11, M = M} ctxt
-               addsimps @{thms root_ptr_valid_c_guard
+         val simp_ctxt = ctxt |> mk_simp {silent = !sd11, M = M}
+               |> Simplifier.add_simps (@{thms root_ptr_valid_c_guard
                   Un_upper1 Un_upper2 subset_unI1 subset_unI2 disjoint_subset_simps sup_aci} @
-                  [equal_upto_disjoint_h_val]
+                  [equal_upto_disjoint_h_val])
 
          val maxidx = Thm.maxidx_of f_thm
          val (g', thm) = 

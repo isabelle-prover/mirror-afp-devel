@@ -469,7 +469,7 @@ fun finalise prog_info skips keep_going existing_ts (cliques, thy) =
               handle Option => raise SimplConv.FunctionNotFound name
           in Thm.transfer' lthy thm end;
     
-        fun simplified ctxt thms = Simplifier.simplify ((Simplifier.clear_simpset ctxt) addsimps thms)
+        fun simplified ctxt thms = Simplifier.simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
         val l1_thm = get_corres_thm fn_name l1_info
         val l2_thm = get_corres_thm fn_name l2_info |> CLocals.folded_with [filename, fn_name] lthy
                      (* If in-out lifting was disabled, we use a placeholder *)
@@ -984,7 +984,7 @@ fun frame_commute_lemmas thy =
     val sel_props = map sel_frame_prop (map (fst o snd) field_funs)
     fun prove (prop, ctxt')  = Goal.prove_future ctxt' [] [] prop (fn {context = ctxt, ...} =>
           Record.split_simp_tac ctxt [] (K ~1) 1 THEN
-          asm_full_simp_tac (ctxt addsimps [frame_def]) 1) 
+          asm_full_simp_tac (ctxt |> Simplifier.add_simp frame_def) 1) 
       |> singleton (Proof_Context.export ctxt' ctxt)
     fun prove1 prop = prove (prop, ctxt1) 
     val sel_thms = map prove1 sel_props
@@ -1103,7 +1103,7 @@ fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename s
           |> Interpretation.global_interpretation expr []
           |> Proof.global_terminal_proof ((Method.Basic (fn ctxt =>  SIMPLE_METHOD (
               (Locale.intro_locales_tac {strict = false, eager = true} ctxt [] THEN 
-                 ALLGOALS (asm_full_simp_tac (ctxt addsimps 
+                 ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simps 
                    @{thms hrs_mem_def hrs_mem_update_def hrs_htd_def hrs_htd_update_def case_prod_unfold}))))), 
               Position.no_range), NONE) 
           |> Local_Theory.exit_global)

@@ -720,8 +720,8 @@ fun strip_args_default args ct =
 
 fun fold_top_conv ctxt =
   let
-    val simp_ctxt1 = Simplifier.clear_simpset ctxt addsimps @{thms top_fun_def}
-    val simp_ctxt2 = Simplifier.clear_simpset ctxt addsimps @{thms top_fun_def[symmetric]}
+    val simp_ctxt1 = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simp @{thm top_fun_def}
+    val simp_ctxt2 = ctxt |> Simplifier.clear_simpset |> Simplifier.flip_simp @{thm top_fun_def}
   in
      Simplifier.rewrite simp_ctxt1 then_conv Simplifier.rewrite simp_ctxt2
   end 
@@ -737,8 +737,8 @@ fun rename_dummy_abs_cterm ct =
   let
     val t = rename_dummy_abs (Thm.term_of ct)
   in Thm.renamed_term t ct end
-end
 
+end
 \<close>
 
 
@@ -777,7 +777,7 @@ in
       |> fold (fn x => fn f => Thm.apply f x) args
     val eq = \<^infer_instantiate>\<open>lhs = ct and rhs = rhs in cprop \<open>lhs = rhs\<close>\<close> ctxt
 
-    val simp_ctxt = (Simplifier.put_simpset basic_ss ctxt) addsimps @{thms map_of_default.simps}
+    val simp_ctxt = ctxt |> Simplifier.put_simpset basic_ss |> Simplifier.add_simps @{thms map_of_default.simps}
     val thm = Goal.prove_internal ctxt [] eq (fn _ => asm_full_simp_tac simp_ctxt 1)
       |> safe_mk_meta_eq
   in 
@@ -836,7 +836,7 @@ in
       |> fold (fn x => fn f => Thm.apply f x) args
     val eq = \<^infer_instantiate>\<open>lhs = ct and rhs = rhs in cprop \<open>lhs = rhs\<close>\<close> ctxt
 
-    val simp_ctxt = (Simplifier.put_simpset basic_ss ctxt) addsimps @{thms map_of_default.simps}
+    val simp_ctxt = ctxt |> Simplifier.put_simpset basic_ss |> Simplifier.add_simps @{thms map_of_default.simps}
     val thm = Goal.prove_internal ctxt [] eq (fn _ => asm_full_simp_tac simp_ctxt 1)
       |> safe_mk_meta_eq
   in 
@@ -1023,15 +1023,15 @@ struct
 fun distrib_L2_call_simpset ctxt =   
   let
     val L2_call_map_of_default_commutes = Named_Theorems.get ctxt @{named_theorems L2_call_map_of_default_commutes}
-    val simp_ctxt = (Simplifier.clear_simpset ctxt) addsimps
-         L2_call_map_of_default_commutes @
+    val simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps
+         (L2_call_map_of_default_commutes @
          @{thms map_of_default.simps(1) list.map apsnd_conv
-            L2_fail_top[symmetric] L2_call_L2_fail}
+            L2_fail_top[symmetric] L2_call_L2_fail})
   in simp_ctxt end
 
 fun unfold_simpset ctxt =   
   let
-    val simp_ctxt = (Simplifier.clear_simpset ctxt) addsimps
+    val simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps
          @{thms map_of_default_cons_L2_condition map_of_default.simps(1) list.map apsnd_conv
             L2_fail_top[symmetric] L2_call_L2_fail}
   in simp_ctxt end
@@ -1544,7 +1544,7 @@ fun fields_from_variables (AstDatatype.Variables {global_vars, heap_vars, ...}) 
 
   fun runs_to_partial_tac s ctxt =  
     (Utils.dprint_subgoal_tac (!d1) "read / write proof start" ctxt THEN'
-    simp_tac (ctxt addsimps @{thms L2_defs L2_guarded_def}) THEN'
+    simp_tac (ctxt |> Simplifier.add_simps @{thms L2_defs L2_guarded_def}) THEN'
     Utils.dprint_subgoal_tac (!d1) "read / write proof after unfold L2_defs" ctxt THEN'
     Runs_To_VCG.runs_to_vcg_tac' NONE (~1) Runs_To_VCG.no_trace_tac false {do_nosplit=false, no_unsafe_hyp_subst=false}
       (K no_tac) ctxt THEN'

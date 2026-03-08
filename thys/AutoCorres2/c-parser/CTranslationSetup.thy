@@ -825,7 +825,7 @@ simproc_setup size_of_bound (\<open>size_of TYPE('a::c_type) \<le> n\<close>) = 
     val _ = (case Thm.term_of ct of
         @{term_pat "size_of ?T \<le> _ "} => if UMM_Proofs.is_ctype T then () else raise Match
       | _ => raise Match)
-    val ctxt' = ctxt addsimps (Named_Theorems.get ctxt @{named_theorems size_simps})
+    val ctxt' = ctxt |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems size_simps})
     val eq = Simplifier.asm_full_rewrite ctxt' ct
     val _ = Utils.verbose_msg 5 ctxt (fn _ => "size_of_bound: " ^ Thm.string_of_thm ctxt eq)
     val rhs = Thm.rhs_of eq |> Thm.term_of

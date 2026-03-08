@@ -361,7 +361,7 @@ fun mk_tuple_up_eq_thm ctxt n =
       |> map (fn (Free (x, _)) => x);
   in
     Goal.prove ctxt fixes [] (mk_tuple_up_eq n) (fn _ =>
-      simp_tac (put_simpset HOL_basic_ss ctxt addsimps [mk_meta_eq @{thm split_def}]) 1)
+      simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp (mk_meta_eq @{thm split_def})) 1)
   end
 
 
@@ -382,7 +382,7 @@ fun mk_tuple_case_eq_thm ctxt n =
       |> map (fn (Free (x, _)) => x)
   in
     Goal.prove ctxt fixes [] (mk_tuple_case_eq n) (fn _ =>
-      simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm Product_Type.prod.case}]) 1)
+      simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm Product_Type.prod.case}) 1)
   end
 
 
@@ -452,7 +452,7 @@ val _ = assert_cterm (mk_split_tupled_all 3)
 
 fun mk_split_tupled_all_thm ctxt n =
   Goal.prove ctxt ["P"] [] (mk_split_tupled_all n) (fn _ => simp_tac
-    (put_simpset HOL_basic_ss ctxt addsimps @{thms split_paired_all}) 1)
+    (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm split_paired_all}) 1)
 
 fun mk_eta_tupled_eq n =
   let
@@ -759,7 +759,7 @@ fun mksimps ctxt thm =
     val thm' = (if exists_subterm is_case_prod_app_Pair (Thm.prop_of thm)
       then
          let
-           val thm' = Simplifier.simplify (put_simpset HOL_ss ctxt addsimps @{thms Product_Type.prod.case}) thm
+           val thm' = Simplifier.simplify (ctxt |> put_simpset HOL_ss |> Simplifier.add_simp @{thm Product_Type.prod.case}) thm
            val _ = cond_trace ctxt ("Tuple_Tools.mksimps: " ^ @{make_string} thm')
          in thm' end (* (%(x,y). f x y) (a,b) = f a b *)
       else thm)
@@ -885,7 +885,7 @@ fun split_rule_simproc ctxt name pattern rule =
         val insts = fold_map mk_inst (rule_vars ~~ (arities ~~ names)) 1 |> fst
 
         val [rule'] = Drule.infer_instantiate ctxt' insts rule
-          |> Simplifier.simplify (put_simpset HOL_basic_ss ctxt' addsimps @{thms case_prod_out})
+          |> Simplifier.simplify (ctxt' |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm case_prod_out})
           |> mk_meta_eq
           |> single
           |> Proof_Context.export ctxt' ctxt
@@ -940,7 +940,7 @@ fun split_rule_simproc ctxt name pattern rule =
 
 fun tuple_inst_simp_tac ctxt i =
    tuple_inst_tac ctxt i THEN
-   simp_tac (put_simpset HOL_ss ctxt addsimps @{thms Product_Type.prod.case}) i
+   simp_tac (ctxt |> put_simpset HOL_ss |> Simplifier.add_simp @{thm Product_Type.prod.case}) i
 
 fun tuple_refl_tac ctxt i =
   resolve_tac ctxt @{thms refl} i
@@ -979,7 +979,7 @@ fun gen_split_rule ctxt0 name_arities thm =
   in
     thm 
     |> Drule.infer_instantiate ctxt'' insts
-    |> Simplifier.asm_full_simplify (put_simpset HOL_basic_ss ctxt'' addsimps 
+    |> Simplifier.asm_full_simplify (ctxt'' |> put_simpset HOL_basic_ss |> Simplifier.add_simps
       (@{thms case_prod_out} @ case_eqs @  splits))
     |> eta_contract ctxt''
     |> single

@@ -1509,7 +1509,7 @@ fun prune_unused_bounds_tac ctxt maxidx all_bounds used_bounds t i =
         else
           EVERY [  
             PRIMITIVE (Thm.instantiate (TVars.empty, Vars.make insts)), 
-            Simplifier.simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms triv_forall_equality}) i] 
+            Simplifier.simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm triv_forall_equality}) i] 
       end 
   end
 

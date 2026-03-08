@@ -384,7 +384,7 @@ let
           SOME a => a
         | NONE => raise LiftingFailed ())
       lifted_functions
-  fun simplified ctxt thms = Simplifier.full_simplify ((Simplifier.clear_simpset ctxt) addsimps thms)
+  fun simplified ctxt thms = Simplifier.full_simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
   val thms = map (simplified lthy @{thms DYN_CALL_def} o #1) lifted_functions 
   val morphs = map #2 lifted_functions
 
@@ -509,7 +509,7 @@ let
          resolve_tac lthy' exp_thms 1,
          (REPEAT (
             FIRST [
-               CHANGED (asm_simp_tac (put_simpset HOL_ss (Context_Position.set_visible false lthy') addsimps simps) 1),
+               CHANGED (asm_simp_tac (lthy' |> Context_Position.set_visible false |> put_simpset HOL_ss |> Simplifier.add_simps simps) 1),
                Method.assm_tac lthy' 1]))
          ]
        )
@@ -728,9 +728,9 @@ let
             val (props, ctxt) = lthy |> fold_map prop fn_names
             val thms = Utils.timeit_label 1 lthy ("Trying unchanged typing proof for " ^ commas fn_names) (fn _ => 
                  AutoCorresUtil.prove_functions is_recursive induct_thms 
-                   (fn ctxt => Unchanged_Typing.unchanged_typing_tac NONE (ctxt addsimps heap_syntax_defs))
+                   (fn ctxt => Unchanged_Typing.unchanged_typing_tac NONE (ctxt |> Simplifier.add_simps heap_syntax_defs))
                    (fn attrss => fn ctxt => ALLGOALS (AutoCorresUtil.prove_induction_case 
-                        (K (Unchanged_Typing.unchanged_typing_tac NONE)) attrss (ctxt addsimps heap_syntax_defs)))
+                        (K (Unchanged_Typing.unchanged_typing_tac NONE)) attrss (ctxt |> Simplifier.add_simps heap_syntax_defs)))
                    ctxt props 
                    handle ERROR msg => 
                     (warning ("Could not prove 'unchanged_typing' for " ^ commas fn_names ^ "\n " ^ msg); []))

@@ -553,7 +553,7 @@ fun gen_mk_typ_heap_simulation_thm prog_info (heap_info:heap_info)
           (fn ctxt =>
               match_tac ctxt [intro_rule ] 1 THEN
               DETERM (Locale.intro_locales_tac {strict = false, eager = true} ctxt []) THEN
-              ALLGOALS (asm_full_simp_tac (ctxt addsimps simps )))
+              ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simps simps)))
       end
     val res_thms0 = 
         let
@@ -763,10 +763,10 @@ fun ptr_valid_instance_tac ctxt =
     val ptr_valid_u_recursion = Named_Theorems.get ctxt @{named_theorems ptr_valid_u_recursion}
     val fold_ptr_valid = Named_Theorems.get ctxt @{named_theorems fold_ptr_valid}
   in
-    simp_tac (ctxt addsimps ptr_valid_def) 1 THEN
+    simp_tac (ctxt |> Simplifier.add_simps ptr_valid_def) 1 THEN
     EqSubst.eqsubst_tac ctxt [0] ptr_valid_u_recursion 1 THEN
     asm_full_simp_tac (Simplifier.add_cong @{thm HOL.conj_cong} ctxt) 1 THEN
-    simp_tac (ctxt addsimps (fold_ptr_valid @
+    simp_tac (ctxt |> Simplifier.add_simps (fold_ptr_valid @
        @{thms fold_root_ptr_valid_u fold_field_lvalue Bex_intvl_conv Bex_union_conv})) 1 THEN
     REPEAT (EqSubst.eqsubst_tac ctxt [0] @{thms fold_exists_ptr} 1)
   end
@@ -970,8 +970,8 @@ let
         params = [open_types_T] }
       (fn ctxt =>
         resolve_tac ctxt @{thms open_types.intro} 1 THEN
-        force_tac (ctxt addsimps [def_thm]) 1 THEN
-        auto_tac (ctxt addsimps [def_thm]))
+        force_tac (ctxt |> Simplifier.add_simp def_thm) 1 THEN
+        auto_tac (ctxt |> Simplifier.add_simp def_thm))
 
    val _ = Utils.verbose_msg 0 lthy (fn _ => "Proving interpretation " ^ quote @{locale open_types_heap_typing_state} ^
            " for:\n " ^ (Thm.string_of_thm lthy def_thm) ^ ", " 
@@ -1016,7 +1016,7 @@ let
       val prop = \<^infer_instantiate>\<open>heap_typing = heap_typing and is_valid = lhs in
             prop (schematic) \<open>heap_typing s = heap_typing s' \<Longrightarrow> is_valid s = is_valid s'\<close>\<close> lthy
       val valid_conv = autofix_prove_future lthy [] [] prop (fn {context, ...} =>
-            asm_simp_tac (context addsimps (valid_array_convs @ @{thms fun_eq_iff})) 1)
+            asm_simp_tac (context |> Simplifier.add_simps (valid_array_convs @ @{thms fun_eq_iff})) 1)
 
       fun valid_upd other_upd =
         let
@@ -1089,7 +1089,7 @@ let
       }
       (fn ctxt =>
           Locale.intro_locales_tac {strict = false, eager = true} ctxt [] THEN
-        ALLGOALS (asm_full_simp_tac (ctxt addsimps [lift_def])))
+        ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simp lift_def)))
 
   (* create getters / setters *)
   fun merge_heap_fields ((T, All_Addressable k)::Ts) hs =
@@ -1149,7 +1149,7 @@ let
         match_tac lthy [thm] THEN'
         SELECT_GOAL (DETERM (Locale.intro_locales_tac {strict = true, eager = false} lthy [])) THEN'
         SOLVED' (field_with_lense_tac gs_us lthy) THEN'
-        SOLVED' (K (ALLGOALS (asm_full_simp_tac (lthy addsimps (@{thms comp_def} @ zero_simps)))))) 1)
+        SOLVED' (K (ALLGOALS (asm_full_simp_tac (lthy |> Simplifier.add_simps (@{thms comp_def} @ zero_simps)))))) 1)
     end
 
   fun typ_heap_simulation T getter setter valid tac lthy =
@@ -1209,7 +1209,7 @@ let
                     match_tac context (@{thms allI list_all_cons list_all_nil} @
                       prems @
                       Named_Theorems.get context @{named_theorems disjnt_heap_fields_comp}) ORELSE'
-                    SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff})))) 1)
+                    SOLVED' (asm_full_simp_tac (context |> Simplifier.add_simp @{thm fun_eq_iff})))) 1)
         in
           note Binding.empty @{attributes [disjnt_heap_fields_comp]} ([disj_thm]) lthy
         end
@@ -1393,9 +1393,9 @@ let
           SOLVED_DETERM_verbose "valid" ctxt
             (asm_full_simp_tac ctxt),
           SOLVED_DETERM_verbose "getter" ctxt
-            (asm_full_simp_tac (ctxt addsimps [getter_thm])),
+            (asm_full_simp_tac (ctxt |> Simplifier.add_simp getter_thm)),
           SOLVED_DETERM_verbose "setter" ctxt
-            (asm_full_simp_tac (ctxt addsimps [setter_thm]))
+            (asm_full_simp_tac (ctxt |> Simplifier.add_simp setter_thm))
         ])) 1)
 
       val [sim_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims four_goal
@@ -1501,7 +1501,7 @@ let
           SOLVED_DETERM_verbose "fs" ctxt
             (asm_full_simp_tac ctxt),
           SOLVED_DETERM_verbose "lense" ctxt
-            (asm_full_simp_tac (ctxt addsimps [@{thm lense_def}])),
+            (asm_full_simp_tac (ctxt |> Simplifier.add_simp @{thm lense_def})),
           SOLVED_DETERM_verbose "len rs" ctxt
             (asm_full_simp_tac ctxt),
           SOLVED_DETERM_verbose "len ws" ctxt
@@ -1515,19 +1515,19 @@ let
             (REPEAT_ALL_NEW (DETERM' (
               match_tac ctxt (@{thms  list_all_cons list_all_nil allI} @
                 Named_Theorems.get ctxt @{named_theorems disjnt_heap_fields_comp})) ORELSE'
-              SOLVED' (asm_full_simp_tac (ctxt addsimps @{thms fun_eq_iff})))),
+              SOLVED' (asm_full_simp_tac (ctxt |> Simplifier.add_simp @{thm fun_eq_iff})))),
           SOLVED_DETERM_verbose "lift setter commute" ctxt
-            (asm_full_simp_tac (ctxt addsimps [lift_def])),
+            (asm_full_simp_tac (ctxt |> Simplifier.add_simp lift_def)),
           SOLVED_DETERM_verbose "r stack zero" ctxt
-            (asm_full_simp_tac (ctxt addsimps [lift_def])),
+            (asm_full_simp_tac (ctxt |> Simplifier.add_simp lift_def)),
           SOLVED_DETERM_verbose "heap_typing u commute" ctxt
             (asm_full_simp_tac ctxt),
           SOLVED_DETERM_verbose "valid" ctxt
             (asm_full_simp_tac ctxt),
           SOLVED_DETERM_verbose "getter" ctxt
-            (asm_full_simp_tac (put_simpset HOL_basic_ss lthy addsimps ([getter_thm] @ @{thms fold.simps comp_apply id_apply}))),
+            (asm_full_simp_tac (lthy |> put_simpset HOL_basic_ss |> Simplifier.add_simps (getter_thm :: @{thms fold.simps comp_apply id_apply}))),
           SOLVED_DETERM_verbose "setter" ctxt
-            (asm_full_simp_tac (put_simpset HOL_basic_ss lthy addsimps ([setter_thm] @ @{thms fold.simps comp_apply id_apply})))
+            (asm_full_simp_tac (lthy |> put_simpset HOL_basic_ss |> Simplifier.add_simps (setter_thm :: @{thms fold.simps comp_apply id_apply})))
         ])) 1)
 
       val [sim_thm, pointer_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims four_goal
@@ -1582,7 +1582,7 @@ let
           (fn ctxt =>
             resolve_tac ctxt [thm] 1 THEN
             DETERM (Locale.intro_locales_tac {strict = false, eager = true} ctxt []) THEN
-            ALLGOALS (asm_full_simp_tac (ctxt addsimps [lift_def])))
+            ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simp lift_def)))
     in
       (Typtab.update_new (T, {
         hget = g, hupd = u, hvalid = v, atomic_upds = atomic_upds,
@@ -1621,7 +1621,7 @@ let
           prop \<open>\<And>p f g. upd p f o w g = w g o upd p f\<close>\<close> lthy)
         (fn { context, ... } => REPEAT_ALL_NEW (
           DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
-          SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
+          SOLVED' (asm_full_simp_tac (context |> Simplifier.add_simp @{thm fun_eq_iff}))) 1)
       val update_thms = [@{thm comp_eq_dest} OF [disj_thm]]
       val read_thms = [@{thm lense.get_commute_of_commute} OF [atomic_lense, disj_thm]]
     in
@@ -1639,7 +1639,7 @@ let
           prop \<open>\<And>f g. pointer_writer_disjnt (\<lambda>p. w1 p f) (\<lambda>p. w2 p g)\<close>\<close> lthy)
         (fn { context, ... } => REPEAT_ALL_NEW (match_tac context
           pointer_writer_disjnt_intros ORELSE'
-          SOLVED' (asm_full_simp_tac (context addsimps @{thms pointer_writer_disjntI})))  1)
+          SOLVED' (asm_full_simp_tac (context |> Simplifier.add_simp @{thm pointer_writer_disjntI})))  1)
     in
       ([@{thm pointer_writer_disjntD} OF [disj_thm]],
        [@{thm pointer_lense.read_commute_of_pointer_writer_disjnt'} OF [#pointer_lense_axiom d1, disj_thm],
@@ -1664,7 +1664,7 @@ let
               prop \<open>\<And>p f g. upd p f o w g = w g o upd p f\<close>\<close> lthy)
             (fn { context, ... } => REPEAT_ALL_NEW (
               DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
-              SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
+              SOLVED' (asm_full_simp_tac (context |> Simplifier.add_simp @{thm fun_eq_iff}))) 1)
         in
           ([@{thm comp_eq_dest} OF [disj_thm]],
            [@{thm lense.get_commute_of_commute} OF [atomic_lense, disj_thm],
@@ -1695,7 +1695,7 @@ let
               prop \<open>\<And>p f q g. upd2 p f o upd1 q g = upd1 q g o upd2 p f\<close>\<close> lthy)
             (fn { context, ... } => REPEAT_ALL_NEW (
               DETERM' (Bires.match_from_net_tac context disjnt_heap_fields_comp) ORELSE'
-              SOLVED' (asm_full_simp_tac (context addsimps @{thms fun_eq_iff}))) 1)
+              SOLVED' (asm_full_simp_tac (context |> Simplifier.add_simp @{thm fun_eq_iff}))) 1)
         in
           ([@{thm comp_eq_dest} OF [disj_thm]],
            [@{thm pointer_lense.read_commute_of_commute'} OF [#pointer_lense_axiom d2, disj_thm],
@@ -2020,7 +2020,7 @@ let
     val pointwise_to_heapwide_thm =
       autofix_prove_future lthy [] [] pointwise_to_heapwide_term (fn {context, ...} =>
         resolve_tac context @{thms meta_ext} 1 THEN
-        asm_full_simp_tac (context addsimps [new_heap_update_thm]) 1)
+        asm_full_simp_tac (context |> Simplifier.add_simp new_heap_update_thm) 1)
 
     (* The struct_pname returned here must match the type_pname returned in heap_syntax.
      * new_heap_update_thm relies on this to determine what kind of thm to generate. *)
@@ -2054,8 +2054,8 @@ fun new_heap_update_thm (getter_type_name, getter_field_name, getter, getter_def
       val prop = \<^infer_instantiate>\<open>lhs = lhs and rhs = rhs in prop \<open>lhs = rhs\<close>\<close> lthy
       val defs = getter_def @ setter_def
       val thm = autofix_prove_future lthy [] [] prop
-                  (fn {context,...} => (simp_tac (context addsimps
-                                @{thms ext fun_upd_apply} @ defs) 1))
+                  (fn {context,...} => (simp_tac (context |> Simplifier.add_simps
+                                (@{thms ext fun_upd_apply} @ defs)) 1))
   in SOME thm end
 
 fun new_heap_valid_thm _ (_, _, _, []) _ = NONE
@@ -2063,7 +2063,7 @@ fun new_heap_valid_thm _ (_, _, _, []) _ = NONE
   let val prop = \<^infer_instantiate>\<open>valid = valid_term and set = setter
                    in prop (schematic) \<open>valid (set s p v) q = valid s q\<close> for valid and set\<close> lthy
       val thm = autofix_prove_future lthy [] [] prop
-                  (fn {context,...} => (simp_tac (context addsimps
+                  (fn {context,...} => (simp_tac (context |> Simplifier.add_simps
                                 [@{thm fun_upd_apply}, setter_def]) 1))
   in SOME thm end
 
@@ -2075,7 +2075,7 @@ fun eta_rhs lthy thm = let
   val Const (@{const_name "Pure.eq"}, _) $ lhs $ (rhs $ Var (("s", s_n), s_typ)) = term_of_thm thm
   val abs_term = \<^infer_instantiate>\<open>a = \<open>lambda (Var (("s", s_n), s_typ)) lhs\<close> and b = rhs in term \<open>a == b\<close>\<close> lthy
   val thm' = Goal.prove_future lthy [] [] abs_term
-               (fn params => simp_tac (put_simpset HOL_basic_ss (#context params) addsimps thm :: @{thms atomize_eq ext}) 1)
+               (fn params => simp_tac (#context params |> put_simpset HOL_basic_ss |> Simplifier.add_simps (thm :: @{thms atomize_eq ext})) 1)
 in thm' end
 
 

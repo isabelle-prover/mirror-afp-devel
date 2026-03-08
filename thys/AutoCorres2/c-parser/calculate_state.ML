@@ -774,8 +774,9 @@ fun gen_eqs_from_all_distinct fnptr_guard_thms all_distinct_thm subset_ptrs ctxt
       \<^infer_instantiate>\<open>xs = xs in term \<open>map fst xs\<close>\<close> ctxt2
       |> Thm.cterm_of ctxt2  |> Simplifier.rewrite ctxt2)
 
-    val simp_ctxt = Simplifier.clear_simpset ctxt2 
-      addsimps (case_prod_beta_pair:: @{thms list_all_Nil_iff list_all_Cons_iff fst_conv snd_conv})
+    val simp_ctxt = ctxt2
+      |> Simplifier.clear_simpset
+      |> Simplifier.add_simps (case_prod_beta_pair:: @{thms list_all_Nil_iff list_all_Cons_iff fst_conv snd_conv})
       |> Simplifier.add_cong @{thm map_of_default_block_cong}
       |> Simplifier.add_cong @{thm list_all_block_cong}
       
@@ -812,7 +813,7 @@ fun gen_eqs_from_all_distinct fnptr_guard_thms all_distinct_thm subset_ptrs ctxt
        end
      val NULL_eqs = if null fnptr_guard_thms then [] else
        let
-         val simp_ctxt = Simplifier.put_simpset HOL_ss ctxt2 addsimps @{thms list_all_Nil_iff list_all_Cons_iff} @ fnptr_guard_thms 
+         val simp_ctxt = ctxt2 |> Simplifier.put_simpset HOL_ss |> Simplifier.add_simps (@{thms list_all_Nil_iff list_all_Cons_iff} @ fnptr_guard_thms)
          val guard = \<^instantiate>\<open>ps = \<open>Thm.cterm_of ctxt ps\<close> 
            in cterm "list_all c_fnptr_guard ps"\<close> |> Simplifier.rewrite simp_ctxt
          val NULL_eq = (@{thm map_of_default_fnptr_guard_NULL} OF [eq_map_fst, guard])
@@ -918,7 +919,7 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
         |> Interpretation.global_interpretation expr []
         |> Proof.global_terminal_proof ((Method.Basic (fn ctxt =>  SIMPLE_METHOD (
             (Locale.intro_locales_tac {strict = false, eager = true} ctxt [] THEN 
-               ALLGOALS (asm_full_simp_tac (ctxt addsimps 
+               ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simps 
                  @{thms hrs_mem_def hrs_mem_update_def hrs_htd_def hrs_htd_update_def case_prod_unfold}))))), 
             Position.no_range), NONE) 
         |> Local_Theory.exit_global
@@ -932,7 +933,7 @@ fun mk_thy_decls prog_name state {owners, mstate_ty = pmstate_ty, gstate_ty, add
         |> Interpretation.global_interpretation expr []
         |> Proof.global_terminal_proof ((Method.Basic (fn ctxt =>  SIMPLE_METHOD (
             (Locale.intro_locales_tac {strict = false, eager = true} ctxt [] THEN 
-               ALLGOALS (asm_full_simp_tac (ctxt addsimps 
+               ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simps 
                  @{thms hrs_mem_def hrs_mem_update_def hrs_htd_def hrs_htd_update_def case_prod_unfold}))))), 
             Position.no_range), NONE) 
         |> Local_Theory.exit_global
