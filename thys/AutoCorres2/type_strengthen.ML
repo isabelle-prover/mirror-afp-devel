@@ -384,7 +384,7 @@ let
           SOME a => a
         | NONE => raise LiftingFailed ())
       lifted_functions
-  fun simplified ctxt thms = Simplifier.full_simplify ((Raw_Simplifier.clear_simpset ctxt) addsimps thms)
+  fun simplified ctxt thms = Simplifier.full_simplify ((Simplifier.clear_simpset ctxt) addsimps thms)
   val thms = map (simplified lthy @{thms DYN_CALL_def} o #1) lifted_functions 
   val morphs = map #2 lifted_functions
 

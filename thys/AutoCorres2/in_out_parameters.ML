@@ -2059,14 +2059,14 @@ let
 
   fun add_mk_disjoint_global_simps ctxt =
     let
-      val current_mk_simps = Raw_Simplifier.get_mksimps_context ctxt
+      val current_mk_simps = Simplifier.get_mksimps_context ctxt
       fun new_mk_simps thm ctxt =
         let
           val (thms, ctxt1) = current_mk_simps thm ctxt
           val more_thms = maps (fn thm => mk_disjoint_global_simps (Thm.cconcl_of thm) thm ctxt) thms
         in (thms @ more_thms, ctxt1) end
     in
-      ctxt |> Raw_Simplifier.set_mksimps_context new_mk_simps
+      ctxt |> Simplifier.set_mksimps_context new_mk_simps
     end
 
   fun expr_simp_ctxt contained_thms ctxt =
