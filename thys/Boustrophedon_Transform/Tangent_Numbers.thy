@@ -244,7 +244,7 @@ proof -
       by simp
     have "fps_nth ?lhs (2*n) = (-1)^n * (2^(2*n) - 4^(2*n)) * of_real (bernoulli (2 * n)) / fact (2*n)"
       using n unfolding F_def fps_nth_compose_linear fps_sub_nth
-      by (simp add: algebra_simps diff_divide_distrib)
+      by (simp add: algebra_simps diff_divide_distrib of_real_bernoulli)
     also note \<open>?lhs = ?rhs\<close>
     also have "fps_nth ?rhs (2*n) = complex_of_int (tangent_number n) / fact (2 * n - 1)"
       using n by (simp add: fps_nth_tan)

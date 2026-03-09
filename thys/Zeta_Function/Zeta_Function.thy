@@ -3485,8 +3485,8 @@ next
           case False
           with \<open>n < 0\<close> have "of_int n = (-of_nat (nat (-n)) :: complex)" by simp
           also have "zeta \<dots> = -(bernoulli' (Suc (nat (-n)))) / of_nat (Suc (nat (-n)))"
-            using \<open>n < 0\<close> by (subst zeta_neg_of_nat) (auto)
-          finally have "bernoulli' (Suc (nat (-n))) = 0" using assms
+            using \<open>n < 0\<close> by (subst zeta_neg_of_nat) (auto simp: of_real_bernoulli')
+          finally have "bernoulli' (Suc (nat (-n))) = (0 :: complex)" using assms
             by (auto simp del: of_nat_Suc)
           with False and \<open>n < 0\<close> show False
             by (auto simp: bernoulli'_zero_iff even_nat_iff)

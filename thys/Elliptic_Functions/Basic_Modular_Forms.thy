@@ -712,10 +712,6 @@ definition Eisenstein_E :: "nat \<Rightarrow> complex \<Rightarrow> complex" whe
 lemma of_real_of_rat [simp]: "of_real (of_rat x) = of_rat x"
   by (cases x) (auto simp: of_rat_rat hom_distribs)
 
-(* TODO Move *)
-lemma bernoulli_rat_conv_bernoulli': "of_rat (bernoulli_rat n) = of_real (bernoulli n)"
-  by (simp flip: bernoulli_rat_conv_bernoulli)
-
 lemma Eisenstein_E_0 [simp]: "z \<notin> \<real> \<Longrightarrow> Eisenstein_E 0 z = 1"
   by (simp add: Eisenstein_E_def)
 
@@ -868,7 +864,7 @@ proof (cases "even k \<and> k > 0")
   define L where "L = Abs_fps (\<lambda>n. of_nat (divisor_sigma (k-1) n) :: complex)"
   have "fps_const (2 * zeta k) * fps_Eisenstein_E k = 
           2 * fps_const c1 * (1 - fps_const (2 * of_nat k / of_real (bernoulli k)) * L)"
-    using True by (auto simp: fps_Eisenstein_E_def L_def c1_def)
+    using True by (auto simp: fps_Eisenstein_E_def L_def c1_def of_real_bernoulli)
   also have "2 * of_nat k / complex_of_real (bernoulli k) = 
                - ((2 * \<i> * pi) ^ k * (of_nat k / fact k) / zeta (of_nat k))"
     using n by (simp add: k_eq zeta_even_nat power_mult_distrib)
@@ -909,7 +905,7 @@ proof (cases "k \<ge> 2 \<and> even k")
           has_fps_expansion (1 - fps_const (2 * of_nat k / of_real (bernoulli k)) * Abs_fps (\<lambda>n. of_nat (divisor_sigma (k-1) n)))"
     by (intro fps_expansion_intros)
   thus ?thesis
-    using True by (auto simp: q_Eisenstein_E_def [abs_def] fps_Eisenstein_E_def)
+    using True by (auto simp: q_Eisenstein_E_def [abs_def] fps_Eisenstein_E_def of_real_bernoulli)
 qed (auto simp: q_Eisenstein_E_def[abs_def] fps_Eisenstein_E_def)
 
 lemma holomorphic_on_q_Eisenstein_E [holomorphic_intros]:
@@ -954,7 +950,7 @@ text \<open>
 
 context
   fixes B :: "nat \<Rightarrow> rat"
-  defines "B \<equiv> bernoulli_rat"
+  defines "B \<equiv> bernoulli"
 begin
 
 definition eisenstein_series_poly'_aux :: "nat \<Rightarrow> nat \<Rightarrow> rat" where
@@ -973,7 +969,7 @@ proof -
                ((2 * pi) ^ (2 * (i + 2)) * (2 * pi) ^ (2 * (n - i)) / (2 * pi) ^ (2 * (n + 2))) *
                ((fact (2 * (n + 2))) / (fact (2 * (i + 2)) * fact (2 * (n - i)))))"
     by (subst (1 2 3) zeta_even_nat) 
-       (simp_all add: mult_ac B_def bernoulli_rat_conv_bernoulli' of_rat_mult of_rat_divide)
+       (simp_all add: mult_ac B_def of_rat_mult of_rat_divide bernoulli_conv_bernoulli' of_rat_bernoulli')
   also have "(-1) ^ Suc (i + 2) * (- 1) ^ Suc (n - i) / (- 1) ^ Suc (n + 2) = (-1::real)"
     using assms by (auto simp: power_neg_one_If)
   also have "(2 * pi) ^ (2 * (i + 2)) * (2 * pi) ^ (2 * (n - i)) / (2 * pi) ^ (2 * (n + 2)) =
@@ -1211,17 +1207,91 @@ lemma eisenstein_series_poly_code [code]:
   "eisenstein_series_poly' n = eisenstein_series_polys' (Suc n) ! n"
   unfolding eisenstein_series_polys'_correct by (subst nth_map) (auto simp del: upt_Suc)
 
-find_theorems bernoulli_rat akiyama_tanigawa
-find_theorems bernoulli_num
-
+text \<open>
+  Again, a number of identities for the normalised Eisenstein series follows directly by simply
+  expressing both sides in terms of $E_4$ and $E_6$ and simplifying. Corresponding identities
+  for the divisor function can be read off directly from the coefficients of these power
+  series.
+\<close>
+context
+  fixes E
+  defines "E \<equiv> fps_Eisenstein_E"
+begin
 
 lemma eisenstein_series_polys'_correct':
   assumes "eisenstein_series_polys' m = ps"
-  defines "E \<equiv> fps_Eisenstein_E"
   shows   "list_all (\<lambda>i. E (2*i+4) = poly2 (map_poly2 (fps_const \<circ> of_rat) (ps ! i)) (E 4) (E 6)) [0..<m]"
   unfolding assms [symmetric] eisenstein_series_polys'_correct
   using eisenstein_series_poly'_fps_Eisenstein_E by (auto simp: list_all_iff E_def)
 
+lemma Eisenstein_E_identities:
+  "E 8 = E 4 ^ 2" (is ?th8)
+  "E 10 = E 4 * E 6" (is ?th10)
+  "E 12 = 441 / 691 * E 4 ^ 3 + 250 / 691 * E 6 ^ 2" (is ?th12)
+  "E 14 = E 4 ^ 2 * E 6" (is ?th14)
+  "E 16 = 1617 / 3617 * E 4 ^ 4 + 2000 / 3617 * E 4 * E 6 ^ 2" (is ?th16)
+  "E 18 = 38367 / 43867 * E 4 ^ 3 * E 6 + 5500 / 43867 * E 6 ^ 3" (is ?th18)
+  "E 20 = 53361 / 174611 * E 4 ^ 5 + 121250 / 174611 * E 4 ^ 2 * E 6 ^ 2" (is ?th20)
+proof -
+  have [simp]: "{..1::nat} = {0,1}"
+    by auto
+  have eq: "eisenstein_series_polys' 9 = [[:[:0, 1:]:], [:0, [:1:]:], [:[:0, 0, 1:]:],
+              [:0, [:0, 1:]:], [:[:0, 0, 0, 441 / 691:], 0, [:250 / 691:]:],
+              [:0, [:0, 0, 1:]:], [:[:0, 0, 0, 0, 1617 / 3617:], 0,
+              [:0, 2000 / 3617:]:], [:0, [:0, 0, 0, 38367 / 43867:], 0, [:5500 / 43867:]:],
+              [:[:0, 0, 0, 0, 0, 53361 / 174611:], 0, [:0, 0, 121250 / 174611:]:]]"
+    by (simp add: eisenstein_series_polys'_def eisenstein_polys'_step_def atMost_nat_numeral
+                  eisenstein_series_poly'_aux_def binomial_fact fact_numeral
+                  funpow_rec_right numeral_poly smult_add_right smult_diff_right 
+             flip: pCons_one One_nat_def)
+  show ?th8 ?th10 ?th12 ?th14 ?th16 ?th18 ?th20
+    using eisenstein_series_polys'_correct'[OF eq]
+    by (simp_all add: upt_rec map_poly2_def of_rat_divide power_numeral_reduce field_simps 
+                      numeral_fps_const flip: E_def pCons_one)
+qed
+
+end
+
+
+text \<open>
+  As an example, we derive the identity that expresses $\sigma_9$ in terms of 
+  $\sigma_3$ and $\sigma_5":
+\<close>
+lemma divisor_sigam_9_conv_3_5:
+  fixes n :: nat
+  assumes n: "n > 0"
+  fixes sigma :: "nat \<Rightarrow> nat \<Rightarrow> int" ("\<sigma>\<^bsub>_\<^esub>")
+  defines "sigma \<equiv> (\<lambda>k n. int (divisor_sigma k n))"
+  shows   "11 * (\<sigma>\<^bsub>9\<^esub> n) = -10 * (\<sigma>\<^bsub>3\<^esub> n) + 21 * (\<sigma>\<^bsub>5\<^esub> n) + 
+             5040 * (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+proof -
+  define F where "F = Abs_fps (\<lambda>n. (\<sigma>\<^bsub>3\<^esub> n) :: int)"
+  define G where "G = Abs_fps (\<lambda>n. (\<sigma>\<^bsub>5\<^esub> n) :: int)"
+  have "fps_nth (fps_Eisenstein_E 10) n = fps_nth (fps_Eisenstein_E 4 * fps_Eisenstein_E 6) n"
+    by (subst Eisenstein_E_identities) (rule refl)
+  hence "complex_of_int (-264 * (\<sigma>\<^bsub>9\<^esub> n)) =
+            of_int (\<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504) + 
+              fps_nth (fps_const (-120960) * (of_int.fps F * of_int.fps G)) n"
+    using n  by (simp add: fps_Eisenstein_E_def ring_distribs mult_ac F_def G_def sigma_def)
+  also have "fps_nth (fps_const (-120960) * (of_int.fps F * of_int.fps G)) n =
+               (-120960 :: complex) * fps_nth (of_int.fps (F * G)) n"
+    unfolding fps_mult_left_const_nth by (simp add: hom_distribs)
+  also have "fps_nth (of_int.fps (F * G)) n = of_int (fps_nth (F * G) n)"
+    by (rule of_int.fps_nth)
+  also have "fps_nth (F * G) n = (\<Sum>i = 0..n. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+    by (simp add: fps_mult_nth F_def G_def)
+  also have "(\<Sum>i = 0..n. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i)) = (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+    by (rule sum.mono_neutral_right) (auto simp: sigma_def)
+  also have "complex_of_int (\<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504) + - 120960 * of_int \<dots> =
+             of_int (\<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504 - 120960 * (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i)))"
+    by simp
+  finally have "-264 * \<sigma>\<^bsub>9\<^esub> n = 
+                  \<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504 - 120960 * (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+    by (subst (asm) of_int_eq_iff)
+  thus ?thesis
+    by simp
+qed
+  
 
 subsection \<open>The modular discriminant\<close>
 
