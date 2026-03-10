@@ -1255,7 +1255,7 @@ end
 
 text \<open>
   As an example, we derive the identity that expresses $\sigma_9$ in terms of 
-  $\sigma_3$ and $\sigma_5":
+  $\sigma_3$ and $\sigma_5$:
 \<close>
 lemma divisor_sigam_9_conv_3_5:
   fixes n :: nat
