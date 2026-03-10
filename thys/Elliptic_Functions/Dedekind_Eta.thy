@@ -485,13 +485,13 @@ text \<open>
   In the this section, we will give a concrete definition of this 24-th root \<open>\<epsilon>\<close> in terms of $A$.
 \<close>
 definition dedekind_eps :: "modgrp \<Rightarrow> complex" ("\<epsilon>") where
-  "\<epsilon> f =
+  "\<epsilon> f = (let f = abs f in
      (if is_singular_modgrp f then
         cis (pi * ((modgrp_a f + modgrp_d f) / (12 * modgrp_c f) -
           dedekind_sum (modgrp_d f) (modgrp_c f) - 1 / 4))
       else
         cis (pi * modgrp_b f / 12)
-     )"
+     ))"
 
 lemma dedekind_eps_1 [simp]: "dedekind_eps 1 = 1"
   by (simp add: dedekind_eps_def)
@@ -502,158 +502,199 @@ lemma dedekind_eps_shift [simp]: "\<epsilon> (shift_modgrp m) = cis (pi * m / 12
 lemma dedekind_eps_S [simp]: "dedekind_eps S_modgrp = cis (-pi / 4)"
   by (simp add: dedekind_eps_def dedekind_sum_def complex_eq_iff)
 
+lemma dedekind_eps_abs [simp]: "dedekind_eps (abs f) = dedekind_eps f"
+  by (simp add: dedekind_eps_def)
+
+lemma dedekind_eps_uminus [simp]: "dedekind_eps (-f) = dedekind_eps f"
+  by (simp add: dedekind_eps_def)
+
+(* TODO Move *)
+lemma is_singular_modgrp_abs_iff [simp]: "is_singular_modgrp (abs f) \<longleftrightarrow> is_singular_modgrp f"
+  by transfer (auto split: if_splits)
+
 lemma dedekind_eps_shift_right [simp]: "\<epsilon> (f * shift_modgrp m) = cis (pi * m / 12) * \<epsilon> f"
 proof (cases "is_singular_modgrp f")
   case True
-  have [simp]: "modgrp_c f \<noteq> 0"
-    using True by (simp add: is_singular_modgrp_altdef)
-  have "dedekind_sum (modgrp_c f * m + modgrp_d f) (modgrp_c f) =
-        dedekind_sum (modgrp_d f) (modgrp_c f)"
+  have [simp]: "\<bar>f * shift_modgrp m\<bar> = \<bar>f\<bar> * shift_modgrp m"
+    by (auto simp: modgrp_eq_iff abs_modgrp_altdef)
+  have [simp]: "modgrp_c (abs f) \<noteq> 0"
+    using True by (simp add: is_singular_modgrp_altdef abs_modgrp_altdef)
+  have "dedekind_sum (modgrp_c \<bar>f\<bar> * m + modgrp_d \<bar>f\<bar>) (modgrp_c \<bar>f\<bar>) =
+        dedekind_sum (modgrp_d \<bar>f\<bar>) (modgrp_c \<bar>f\<bar>)"
   proof (intro dedekind_sum_cong)
-    have "[modgrp_c f * m + modgrp_d f = 0 + modgrp_d f] (mod modgrp_c f)"
+    have "[modgrp_c \<bar>f\<bar> * m + modgrp_d \<bar>f\<bar> = 0 + modgrp_d \<bar>f\<bar>] (mod modgrp_c \<bar>f\<bar>)"
       by (intro cong_add) (auto simp: Cong.cong_def)
-    thus "[modgrp_c f * m + modgrp_d f = modgrp_d f] (mod modgrp_c f)"
+    thus "[modgrp_c \<bar>f\<bar> * m + modgrp_d \<bar>f\<bar> = modgrp_d \<bar>f\<bar>] (mod modgrp_c \<bar>f\<bar>)"
       by simp
-  qed (use coprime_modgrp_c_d[of f] in \<open>auto simp: Rings.coprime_commute\<close>)
+  qed (use coprime_modgrp_c_d[of "\<bar>f\<bar>"] in \<open>auto simp: Rings.coprime_commute\<close>)
   thus ?thesis using True
-    by (simp add: dedekind_eps_def add_divide_distrib ring_distribs is_singular_modgrp_times_iff
-             flip: cis_mult cis_divide)
-next
+    by (auto simp add: dedekind_eps_def add_divide_distrib ring_distribs is_singular_modgrp_times_iff Let_def 
+             simp flip: cis_mult cis_divide)
+  next
   case False
-  define n where "n = modgrp_b f"
-  have f: "f = shift_modgrp n"
-    unfolding n_def using False by (rule not_singular_modgrpD)
-  have "f * shift_modgrp m = shift_modgrp (n + m)"
-    by (simp add: shift_modgrp_add f)
+  define n where "n = modgrp_b (abs f)"
+  have f: "abs f = shift_modgrp n"
+    unfolding n_def using False by (metis not_singular_modgrpD)
+  have "abs (f * shift_modgrp m) = shift_modgrp (n + m)"
+    using f by (metis abs_modgrp_congs(2) abs_shift_modgrp shift_modgrp_add)
   also have "\<epsilon> \<dots> = cis (pi * m / 12) * \<epsilon> f"
     by (simp add: f dedekind_eps_def cis_mult ring_distribs add_divide_distrib add_ac)
-  finally show ?thesis .
+  finally show ?thesis by simp
 qed
 
-lemma dedekind_eps_shift_left [simp]: "\<epsilon> (shift_modgrp m * f) = cis (pi * m / 12) * \<epsilon> f"
-proof (cases "is_singular_modgrp f")
-  case True
-  have [simp]: "modgrp_c f \<noteq> 0"
-    using True by (simp add: is_singular_modgrp_altdef)
-  have a: "modgrp_a (shift_modgrp m * f) = modgrp_a f + m * modgrp_c f"
-    unfolding shift_modgrp_code using modgrp.unimodular[of f] modgrp_c_nonneg[of f]
-    by (subst (3) modgrp_abcd [symmetric], subst times_modgrp_code) (auto simp: modgrp_a_code algebra_simps)
-  show ?thesis using True
-    by (auto simp: dedekind_eps_def a add_divide_distrib ring_distribs simp flip: cis_mult cis_divide)
-next
-  case False
-  then obtain n where [simp]: "f = shift_modgrp n"
-    using not_singular_modgrpD by blast
+lemma dedekind_eps_shift_left:
+  "\<epsilon> (shift_modgrp m * f) = cis (pi * m / 12) * \<epsilon> f"
+proof -
+  have *: "\<epsilon> (shift_modgrp m * f) = cis (pi * m / 12) * \<epsilon> f" if c: "modgrp_c f \<ge> 0" for f
+  proof (cases "is_singular_modgrp f")
+    case True
+    have [simp]: "modgrp_c f \<noteq> 0"
+      using True by (simp add: is_singular_modgrp_altdef)
+    have a: "modgrp_a (shift_modgrp m * f) = modgrp_a f + m * modgrp_c f"
+      unfolding shift_modgrp_code using modgrp.unimodular[of f] c
+      by (subst (3) modgrp_abcd [symmetric], subst times_modgrp_code) (auto simp: modgrp_a_code algebra_simps)
+    show ?thesis using True c
+      by (auto simp: dedekind_eps_def a add_divide_distrib ring_distribs Let_def abs_modgrp_altdef
+               simp flip: cis_mult cis_divide)
+  next
+    case False
+    then obtain n where *: "abs f = shift_modgrp n"
+      using not_singular_modgrpD by blast
+    have "\<epsilon> (shift_modgrp m * f) = \<epsilon> \<bar>shift_modgrp m * f\<bar>"
+      by simp
+    also have "\<bar>shift_modgrp m * f\<bar> = \<bar>shift_modgrp m * \<bar>f\<bar>\<bar>"
+      by (intro abs_modgrp_congs) auto
+    also have "\<dots> = shift_modgrp (m + n)"
+      by (simp add: * flip: shift_modgrp_add)
+    also have "\<epsilon> \<dots> = cis (pi * (real_of_int m + real_of_int n) / 12)"
+      by simp
+    also have "\<dots> = cis (pi * m / 12) * \<epsilon> \<bar>f\<bar>"
+      unfolding * by (simp add: ring_distribs add_divide_distrib cis_mult)
+    finally show ?thesis
+      by simp
+  qed
   show ?thesis
-    by simp
+    using *[of f] *[of "-f"] by (cases "modgrp_c f \<ge> 0") auto
 qed
+
 
 lemma dedekind_eps_S_right:
   assumes "is_singular_modgrp f" "modgrp_d f \<noteq> 0"
-  shows   "\<epsilon> (f * S_modgrp) = cis (-sgn (modgrp_d f) * pi / 4) * \<epsilon> f"
+  shows   "\<epsilon> (f * S_modgrp) = cis (-sgn (modgrp_d f) * sgn (modgrp_c f) * pi / 4) * \<epsilon> f"
 proof -
-  note [simp del] = div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1
-  define a b c d where "a = modgrp_a f" "b = modgrp_b f" "c = modgrp_c f" "d = modgrp_d f"
-  have "c > 0"
-    using assms modgrp_c_nonneg[of f] unfolding is_singular_modgrp_altdef a_b_c_d_def by auto
-  from assms have [simp]: "d \<noteq> 0"
-    by (auto simp: a_b_c_d_def)
-  have "coprime c d"
-    unfolding a_b_c_d_def by (intro coprime_modgrp_c_d)
-  have det: "a * d - b * c = 1"
-    unfolding a_b_c_d_def by (rule modgrp_abcd_det)
-  hence det': "a * d = b * c + 1"
-    by linarith
-
-  have "pole_modgrp f \<noteq> (0 :: real)"
-    using assms by transfer (auto simp: modgrp_rel_def split: if_splits)
-  hence sing: "is_singular_modgrp (f * S_modgrp)"
-    using assms by (auto simp: is_singular_modgrp_times_iff)
+  have *: "\<epsilon> (f * S_modgrp) = cis (-sgn (modgrp_d f) * pi / 4) * \<epsilon> f"
+    if c: "modgrp_c f \<ge> 0" and f: "is_singular_modgrp f" "modgrp_d f \<noteq> 0" for f
+  proof -
+    note [simp del] = div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1
+    define a b c d where "a = modgrp_a f" "b = modgrp_b f" "c = modgrp_c f" "d = modgrp_d f"
+    have "c > 0"
+      using f c unfolding is_singular_modgrp_altdef a_b_c_d_def by auto
+    from f have [simp]: "d \<noteq> 0"
+      by (auto simp: a_b_c_d_def)
+    have "coprime c d"
+      unfolding a_b_c_d_def by (intro coprime_modgrp_c_d)
+    have det: "a * d - b * c = 1"
+      unfolding a_b_c_d_def by (rule modgrp_abcd_det)
+    hence det': "a * d = b * c + 1"
+      by linarith
+  
+    have "pole_modgrp f \<noteq> (0 :: real)"
+      using f by transfer (auto split: if_splits)
+    hence sing: "is_singular_modgrp (f * S_modgrp)"
+      by (auto simp: is_singular_modgrp_times_iff)
+  
+    show ?thesis
+    proof (cases d "0 :: int" rule: linorder_cases)
+      case greater
+      have [simp]: "modgrp_a \<bar>f * S_modgrp\<bar> = b"
+        using greater unfolding a_b_c_d_def by transfer auto
+      have [simp]: "modgrp_b \<bar>f * S_modgrp\<bar> = -a"
+        using greater unfolding a_b_c_d_def by transfer auto
+      have [simp]: "modgrp_c \<bar>f * S_modgrp\<bar> = d"
+        using greater unfolding a_b_c_d_def by transfer auto
+      have [simp]: "modgrp_d \<bar>f * S_modgrp\<bar> = -c"
+        using greater unfolding a_b_c_d_def by transfer (auto split: if_splits)
+  
+      have "dedekind_sum (-c) d = -dedekind_sum c d"
+        using \<open>coprime c d\<close> by (simp add: dedekind_sum_negate)
+      also have "\<dots> = dedekind_sum d c - c / d / 12 - d / c / 12 + 1 / 4 - 1 / (12 * c * d)"
+        using \<open>c > 0\<close> \<open>d > 0\<close> \<open>coprime c d\<close> by (subst dedekind_sum_reciprocity') simp_all
+      finally have *: "dedekind_sum (-c) d = \<dots>" .
+      have [simp]: "cnj (cis (pi / 4)) = 1 / cis (pi / 4)"
+        by (subst divide_conv_cnj) auto
+  
+      have "\<epsilon> (f * S_modgrp) = cis (pi * ((b - c) / (12 * d) + c / (12*d) +
+                                     d / (12*c) + 1 / (12 * c * d) - dedekind_sum d c - 1 / 2))"
+        unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>c > 0\<close> \<open>d > 0\<close> sing
+        by (simp add: * algebra_simps Let_def)
+      also have "(b - c) / (12 * d) + c / (12*d) + d / (12*c) + 1 / (12 * c * d) =
+                 (b * c + 1 + d * d) / (12 * c * d)"
+        using \<open>c > 0\<close> \<open>d > 0\<close> by (simp add: field_simps)
+      also have "b * c + 1 = a * d"
+        using det by (simp add: algebra_simps)
+      also have "(a * d + d * d) / (12 * c * d) = (a + d) / (12 * c)"
+        using \<open>c > 0\<close> \<open>d > 0\<close> by (simp add: field_simps)
+      also have "cis (pi * ((a + d) / (12 * c) - dedekind_sum d c - 1 / 2)) =
+                  cis (-pi / 4) * \<epsilon> f"
+        unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>c > 0\<close> \<open>d > 0\<close> sing f
+        by (auto simp: cis_mult algebra_simps diff_divide_distrib add_divide_distrib 
+                       Let_def a_b_c_d_def abs_modgrp_altdef)
+      finally show ?thesis
+        using \<open>d > 0\<close> by (simp add: a_b_c_d_def)
+  
+    next
+      case less
+      have [simp]: "modgrp_a \<bar>f * S_modgrp\<bar> = -b"
+        using less unfolding a_b_c_d_def by transfer auto
+      have [simp]: "modgrp_b \<bar>f * S_modgrp\<bar> = a"
+        using less unfolding a_b_c_d_def by transfer auto
+      have [simp]: "modgrp_c \<bar>f * S_modgrp\<bar> = -d"
+        using less unfolding a_b_c_d_def by transfer auto
+      have [simp]: "modgrp_d \<bar>f * S_modgrp\<bar> = c"
+        using less unfolding a_b_c_d_def by transfer (auto split: if_splits)
+  
+      have "dedekind_sum c (-d) = 
+              -dedekind_sum (-d) c - c / d / 12 - d / c / 12 - 1 / 4 - 1 / (12 * c * d)"
+        using \<open>c > 0\<close> \<open>d < 0\<close> \<open>coprime c d\<close> by (subst dedekind_sum_reciprocity') simp_all
+      also have "-dedekind_sum (-d) c = dedekind_sum d c"
+        using \<open>coprime c d\<close> by (subst dedekind_sum_negate) (auto simp: Rings.coprime_commute)
+      finally have *: "dedekind_sum c (-d) =
+                        dedekind_sum d c - c / d / 12 - d / c / 12 - 1 / 4 - 1 / (12 * c * d)" .
+  
+      have "\<epsilon> (f * S_modgrp) =
+              cis (pi * (c / (12 * d) + d / (12 * c) + 1 / (12 * c * d) - (c - b) / (12 * d) -
+                         dedekind_sum d c))"
+        unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>d < 0\<close> sing assms
+        by (simp add: * algebra_simps)
+      also have "c / (12 * d) + d / (12 * c) + 1 / (12 * c * d) - (c - b) / (12 * d) =
+                 (d * d + (1 + b * c)) / (12 * c * d)"
+        using \<open>c > 0\<close> \<open>d < 0\<close> by (simp add: field_simps)
+      also have "1 + b * c = a * d"
+        using det by (simp add: algebra_simps)
+      also have "(d * d + a * d) / (12 * c * d) = (a + d) / (12 * c)"
+        using \<open>c > 0\<close> \<open>d < 0\<close> by (simp add: field_simps)
+      also have "cis (pi * ((a + d) / (12 * c) - dedekind_sum d c)) = cis (pi / 4) * \<epsilon> f"
+        unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>c > 0\<close> \<open>d < 0\<close> sing f
+        by (auto simp: cis_mult algebra_simps diff_divide_distrib add_divide_distrib Let_def 
+                       a_b_c_d_def abs_modgrp_altdef)
+      finally show ?thesis
+        using \<open>d < 0\<close> by (simp add: a_b_c_d_def)
+    qed auto
+  qed
 
   show ?thesis
-  proof (cases d "0 :: int" rule: linorder_cases)
-    case greater
-    have [simp]: "modgrp_a (f * S_modgrp) = b"
-      using greater unfolding a_b_c_d_def by transfer auto
-    have [simp]: "modgrp_b (f * S_modgrp) = -a"
-      using greater unfolding a_b_c_d_def by transfer auto
-    have [simp]: "modgrp_c (f * S_modgrp) = d"
-      using greater unfolding a_b_c_d_def by transfer auto
-    have [simp]: "modgrp_d (f * S_modgrp) = -c"
-      using greater unfolding a_b_c_d_def by transfer (auto split: if_splits)
-
-    have "dedekind_sum (-c) d = -dedekind_sum c d"
-      using \<open>coprime c d\<close> by (simp add: dedekind_sum_negate)
-    also have "\<dots> = dedekind_sum d c - c / d / 12 - d / c / 12 + 1 / 4 - 1 / (12 * c * d)"
-      using \<open>c > 0\<close> \<open>d > 0\<close> \<open>coprime c d\<close> by (subst dedekind_sum_reciprocity') simp_all
-    finally have *: "dedekind_sum (-c) d = \<dots>" .
-    have [simp]: "cnj (cis (pi / 4)) = 1 / cis (pi / 4)"
-      by (subst divide_conv_cnj) auto
-
-    have "\<epsilon> (f * S_modgrp) = cis (pi * ((b - c) / (12 * d) + c / (12*d) +
-                                   d / (12*c) + 1 / (12 * c * d) - dedekind_sum d c - 1 / 2))"
-      unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>d > 0\<close> sing assms
-      by (simp add: * algebra_simps)
-    also have "(b - c) / (12 * d) + c / (12*d) + d / (12*c) + 1 / (12 * c * d) =
-               (b * c + 1 + d * d) / (12 * c * d)"
-      using \<open>c > 0\<close> \<open>d > 0\<close> by (simp add: field_simps)
-    also have "b * c + 1 = a * d"
-      using det by (simp add: algebra_simps)
-    also have "(a * d + d * d) / (12 * c * d) = (a + d) / (12 * c)"
-      using \<open>c > 0\<close> \<open>d > 0\<close> by (simp add: field_simps)
-    also have "cis (pi * ((a + d) / (12 * c) - dedekind_sum d c - 1 / 2)) =
-                cis (-pi / 4) * \<epsilon> f"
-      unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>d > 0\<close> sing assms
-      by (auto simp: cis_mult algebra_simps diff_divide_distrib add_divide_distrib)
-    finally show ?thesis
-      using \<open>d > 0\<close> by (simp add: a_b_c_d_def)
-
-  next
-    case less
-    have [simp]: "modgrp_a (f * S_modgrp) = -b"
-      using less unfolding a_b_c_d_def by transfer (auto split: if_splits)
-    have [simp]: "modgrp_b (f * S_modgrp) = a"
-      using less unfolding a_b_c_d_def by transfer (auto split: if_splits)
-    have [simp]: "modgrp_c (f * S_modgrp) = -d"
-      using less unfolding a_b_c_d_def by transfer (auto split: if_splits)
-    have [simp]: "modgrp_d (f * S_modgrp) = c"
-      using less unfolding a_b_c_d_def by transfer (auto split: if_splits)
-
-    have "dedekind_sum c (-d) = 
-            -dedekind_sum (-d) c - c / d / 12 - d / c / 12 - 1 / 4 - 1 / (12 * c * d)"
-      using \<open>c > 0\<close> \<open>d < 0\<close> \<open>coprime c d\<close> by (subst dedekind_sum_reciprocity') simp_all
-    also have "-dedekind_sum (-d) c = dedekind_sum d c"
-      using \<open>coprime c d\<close> by (subst dedekind_sum_negate) (auto simp: Rings.coprime_commute)
-    finally have *: "dedekind_sum c (-d) =
-                      dedekind_sum d c - c / d / 12 - d / c / 12 - 1 / 4 - 1 / (12 * c * d)" .
-
-    have "\<epsilon> (f * S_modgrp) =
-            cis (pi * (c / (12 * d) + d / (12 * c) + 1 / (12 * c * d) - (c - b) / (12 * d) -
-                       dedekind_sum d c))"
-      unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>d < 0\<close> sing assms
-      by (simp add: * algebra_simps)
-    also have "c / (12 * d) + d / (12 * c) + 1 / (12 * c * d) - (c - b) / (12 * d) =
-               (d * d + (1 + b * c)) / (12 * c * d)"
-      using \<open>c > 0\<close> \<open>d < 0\<close> by (simp add: field_simps)
-    also have "1 + b * c = a * d"
-      using det by (simp add: algebra_simps)
-    also have "(d * d + a * d) / (12 * c * d) = (a + d) / (12 * c)"
-      using \<open>c > 0\<close> \<open>d < 0\<close> by (simp add: field_simps)
-    also have "cis (pi * ((a + d) / (12 * c) - dedekind_sum d c)) = cis (pi / 4) * \<epsilon> f"
-      unfolding dedekind_eps_def a_b_c_d_def [symmetric] using \<open>d < 0\<close> sing assms
-      by (auto simp: cis_mult algebra_simps diff_divide_distrib add_divide_distrib)
-    finally show ?thesis
-      using \<open>d < 0\<close> by (simp add: a_b_c_d_def)
-  qed auto
+    using *[of f] *[of "-f"] assms
+    by (cases "modgrp_c f \<ge> 0") (auto simp: sgn_if is_singular_modgrp_altdef)
 qed
+
 
 lemma dedekind_eps_root_of_unity: "\<epsilon> f ^ 24 = 1"
 proof -
   have not_sing: "\<epsilon> f ^ 24 = 1" if "\<not>is_singular_modgrp f" for f
   proof -
-    have "\<epsilon> f ^ 24 = cis (2 * (pi * real_of_int (modgrp_b f)))"
+    have "\<epsilon> f ^ 24 = cis (2 * (pi * real_of_int (modgrp_b \<bar>f\<bar>)))"
       using that by (auto simp: dedekind_eps_def Complex.DeMoivre)
-    also have "2 * (pi * real_of_int (modgrp_b f)) = 2 * pi * real_of_int (modgrp_b f)"
+    also have "2 * (pi * real_of_int (modgrp_b \<bar>f\<bar>)) = 2 * pi * real_of_int (modgrp_b \<bar>f\<bar>)"
       by (simp add: mult_ac)
     also have "cis \<dots> = 1"
       by (rule cis_multiple_2pi) auto
@@ -666,8 +707,8 @@ proof -
     show ?case
     proof (cases "modgrp_d f = 0")
       case True
-      hence "\<epsilon> (f * S_modgrp) ^ 24 = cis (real_of_int (modgrp_b (f * S_modgrp)) * (2 * pi))"
-        by (simp add: dedekind_eps_def Complex.DeMoivre mult_ac)
+      hence "\<epsilon> (f * S_modgrp) ^ 24 = cis (real_of_int (modgrp_b \<bar>f * S_modgrp\<bar>) * (2 * pi))"
+        by (auto simp: dedekind_eps_def Complex.DeMoivre mult_ac abs_modgrp_altdef)
       also have "\<dots> = 1"
         by (subst cis_power_int [symmetric]) auto
       finally show ?thesis
@@ -677,19 +718,25 @@ proof -
       show ?thesis
       proof (cases "is_singular_modgrp f")
         case sing: True
-        have "\<epsilon> (f * S_modgrp) ^ 24 = cis (- (pi * (real_of_int (sgn (modgrp_d f)) * 6)))"
-          using d sing by (simp add: dedekind_eps_S_right field_simps Complex.DeMoivre S)
-        also have "- (pi * (real_of_int (sgn (modgrp_d f)) * 6)) = 2 * pi * of_int (-3 * sgn (modgrp_d f))"
+        define s where "s = sgn (modgrp_c f) * sgn (modgrp_d f)"
+        have "\<epsilon> (f * S_modgrp) ^ 24 = cis (- (pi * (real_of_int s * 6)))"
+          using d sing by (simp add: dedekind_eps_S_right field_simps Complex.DeMoivre S s_def)
+        also have "- (pi * (real_of_int s * 6)) = 2 * pi * of_int (-3 * s)"
           by simp
         also have "cis \<dots> = 1"
           by (rule cis_multiple_2pi) auto
         finally show ?thesis .
       next
         case False
-        then obtain n where [simp]: "f = shift_modgrp n"
+        then obtain n where [simp]: "abs f = shift_modgrp n"
           using not_singular_modgrpD by blast
-        have "\<epsilon> (f * S_modgrp) ^ 24 = cis (pi * (real_of_int n * 2) - pi * 6)"
-          by (simp add: algebra_simps Complex.DeMoivre cis_mult)
+        have "\<epsilon> (f * S_modgrp) = \<epsilon> \<bar>f * S_modgrp\<bar>"
+          by simp
+        also have "\<bar>f * S_modgrp\<bar> = \<bar>shift_modgrp n * S_modgrp\<bar>"
+          by (intro abs_modgrp_congs) auto
+        also have "\<epsilon> \<dots> ^ 24 = cis (pi * (real_of_int n * 2) - pi * 6)"
+          by (subst dedekind_eps_abs, subst dedekind_eps_shift_left)
+             (simp add: algebra_simps Complex.DeMoivre cis_mult)
         also have "pi * (real_of_int n * 2) - pi * 6 = (real_of_int (n-3) * (2 * pi))"
           by (simp add: algebra_simps)
         also have "cis \<dots> = 1"
@@ -719,7 +766,7 @@ text \<open>
 \<close>
 theorem dedekind_eta_apply_modgrp:
   assumes "Im z > 0"
-  shows   "\<eta> (apply_modgrp f z) = \<epsilon> f * csqrt (modgrp_factor f z) * \<eta> z"
+  shows   "\<eta> (apply_modgrp f z) = \<epsilon> f * csqrt (automorphy_factor \<bar>f\<bar> z) * \<eta> z"
   using assms
 proof (induction f arbitrary: z rule: modgrp_induct_S_shift')
   case id
@@ -728,14 +775,16 @@ next
   case (shift f n z)
   have "\<eta> (apply_modgrp (f * shift_modgrp n) z) = \<eta> (apply_modgrp f (z + of_int n))"
     using shift.prems by (subst apply_modgrp_mult) auto
-  also have "\<dots> = \<epsilon> f * csqrt (modgrp_factor f (z + of_int n)) * \<eta> (z + of_int n)"
-    using shift.prems by (subst shift.IH) auto
+  also have "\<dots> = \<epsilon> f * csqrt (automorphy_factor f (z + of_int n)) * \<eta> (z + of_int n)"
+    using shift.prems by (subst shift.IH) (use shift.hyps in auto)
   also have "\<eta> (z + of_int n) = cis (pi * n / 12) * \<eta> z"
     using shift.prems by (subst dedekind_eta_plus_int) auto
-  also have "\<epsilon> f * csqrt (modgrp_factor f (z + of_int n)) * (cis (pi * n / 12) * \<eta> z) =
-             \<epsilon> (f * shift_modgrp n) * csqrt (modgrp_factor (f * shift_modgrp n) z) * \<eta> z"
+  also have "\<epsilon> f * csqrt (automorphy_factor f (z + of_int n)) * (cis (pi * n / 12) * \<eta> z) =
+             \<epsilon> (f * shift_modgrp n) * csqrt (automorphy_factor (f * shift_modgrp n) z) * \<eta> z"
     by simp
-  finally show ?case .
+  also have "f * shift_modgrp n = \<bar>f * shift_modgrp n\<bar>"
+    using shift.hyps by (auto simp: modgrp_eq_iff abs_modgrp_altdef)
+  finally show ?case using shift.hyps by simp
 next
   case (S f z)
   note [simp del] = div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1
@@ -748,7 +797,7 @@ next
   proof (cases "is_singular_modgrp f")
     case False
     hence f: "f = shift_modgrp b"
-      unfolding a_b_c_d_def by (rule not_singular_modgrpD)
+      unfolding a_b_c_d_def using \<open>\<bar>f\<bar> = f\<close> not_singular_modgrpD[of f] by auto
     have *: "f * S_modgrp = modgrp b (-1) 1 0"
       unfolding f shift_modgrp_code S_modgrp_code times_modgrp_code by simp
     have [simp]: "modgrp_a (f * S_modgrp) = b"
@@ -757,7 +806,7 @@ next
                  "modgrp_d (f * S_modgrp) = 0"
       by (simp_all add: * modgrp_a_code modgrp_b_code modgrp_c_code modgrp_d_code)
     have eps: "\<epsilon> (f * S_modgrp) = cis (pi * (b / 12 - 1 / 4))"
-      by (simp add: dedekind_eps_def dedekind_sum_def is_singular_modgrp_altdef)
+      unfolding f by (subst dedekind_eps_shift_left) (auto simp: cis_mult ring_distribs)
 
     have "\<eta> (apply_modgrp (f * S_modgrp) z) = \<eta> (-1 / z + of_int b)"
       using S.prems by (subst apply_modgrp_mult) (auto simp: f algebra_simps)
@@ -789,11 +838,12 @@ next
     also have "\<dots> = csqrt z"
       by (rule rcis_cmod_Arg)
     finally show ?thesis
-      by (simp add: f)
+      by (simp add: f automorphy_factor_altdef abs_modgrp_altdef)
   next
     case sing: True
     hence "c > 0"
-      unfolding a_b_c_d_def by (meson is_singular_modgrp_altdef modgrp_cd_signs)
+      unfolding a_b_c_d_def using \<open>abs f = f\<close> 
+      by (auto simp: is_singular_modgrp_altdef abs_modgrp_altdef split: if_splits)
     have "Im (1 / z) < 0"
       using S.prems Im_one_over_neg_iff by blast
     have Arg_z: "Arg z \<in> {0<..<pi}"
@@ -807,13 +857,17 @@ next
     proof (cases d "0 :: int" rule: linorder_cases)
       case equal
       hence *: "\<not>is_singular_modgrp (f * S_modgrp)"
-        unfolding a_b_c_d_def
-        by transfer (auto simp: modgrp_rel_def split: if_splits)
-      define n where "n = modgrp_b (f * S_modgrp)"
-      have **: "f * S_modgrp = shift_modgrp n"
+        unfolding a_b_c_d_def by transfer (auto split: if_splits)
+      define n where "n = modgrp_b \<bar>f * S_modgrp\<bar>"
+      have **: "abs (f * S_modgrp) = shift_modgrp n"
         unfolding n_def using * by (rule not_singular_modgrpD)
-      show ?thesis using S.prems
-        by (simp add: ** dedekind_eta_plus_int)
+      have ***: "apply_modgrp (abs (f * S_modgrp)) z = z + of_int n"
+        unfolding ** by simp
+      have ****: "\<epsilon> (abs (f * S_modgrp)) = cis (pi * real_of_int n / 12)"
+        unfolding ** by simp
+      show ?thesis
+        using S.prems *** **** unfolding apply_modgrp_abs dedekind_eps_abs
+        by (auto simp: dedekind_eta_plus_int **)
     next
       case greater
       have "modgrp a b c d * S_modgrp = modgrp b (-a) d (-c)"
@@ -827,10 +881,10 @@ next
 
       have "\<eta> (apply_modgrp (f * S_modgrp) z) = \<eta> (apply_modgrp f (- (1 / z)))"
         using S.prems by (subst apply_modgrp_mult) auto
-      also have "\<dots> = \<epsilon> f * csqrt (modgrp_factor f (- (1 / z))) * \<eta> (- (1 / z))"
-        using S.prems by (subst S.IH) auto
-      also have "modgrp_factor f (- (1 / z)) = d - c / z"
-        unfolding modgrp_factor_def by (simp add: a_b_c_d_def)
+      also have "\<dots> = \<epsilon> f * csqrt (automorphy_factor f (- (1 / z))) * \<eta> (- (1 / z))"
+        using S.prems S.hyps by (subst S.IH) auto
+      also have "automorphy_factor f (- (1 / z)) = d - c / z"
+        unfolding automorphy_factor_altdef by (simp add: a_b_c_d_def)
       also have "\<eta> (- (1 / z)) = csqrt (-\<i> * z) * \<eta> z"
         using S.prems by (subst dedekind_eta_minus_one_over) auto
       also have "\<epsilon> f * csqrt (d - c / z) * (csqrt (-\<i> * z) * \<eta> z) =
@@ -886,27 +940,29 @@ next
         by (simp add: csqrt_exp_Ln cis_conv_exp)
       also have "cis (-pi / 4) * csqrt (d * z - c) * \<epsilon> f * \<eta> z =
                  \<epsilon> (f * S_modgrp) * csqrt (d * z - c) * \<eta> z"
-        using \<open>d > 0\<close> sing by (subst dedekind_eps_S_right) (auto simp: a_b_c_d_def)
-      also have "\<dots> = \<epsilon> (f * S_modgrp) * csqrt (modgrp_factor (f * S_modgrp) z) * \<eta> z"
-        unfolding modgrp_factor_def by simp
-      finally show ?thesis .
+        using \<open>c > 0\<close> \<open>d > 0\<close> sing by (subst dedekind_eps_S_right) (auto simp: a_b_c_d_def)
+      also have "\<dots> = \<epsilon> (f * S_modgrp) * csqrt (automorphy_factor (f * S_modgrp) z) * \<eta> z"
+        unfolding automorphy_factor_altdef by (simp add: a_b_c_d_def)
+      also have "f * S_modgrp = \<bar>f * S_modgrp\<bar>"
+        using \<open>c > 0\<close> \<open>d > 0\<close> by (auto simp: abs_modgrp_altdef a_b_c_d_def)
+      finally show ?thesis by simp
     next
       case less
       have "modgrp a b c d * S_modgrp = modgrp b (-a) d (-c)"
         unfolding shift_modgrp_code S_modgrp_code times_modgrp_code det by simp
       hence *: "f * S_modgrp = modgrp b (-a) d (-c)"
         by (simp add: a_b_c_d_def)
-      have [simp]: "modgrp_a (f * S_modgrp) = -b" "modgrp_b (f * S_modgrp) = a"
-                   "modgrp_c (f * S_modgrp) = -d" "modgrp_d (f * S_modgrp) = c"
+      have [simp]: "modgrp_a (f * S_modgrp) = b" "modgrp_b (f * S_modgrp) = -a"
+                   "modgrp_c (f * S_modgrp) = d" "modgrp_d (f * S_modgrp) = -c"
         unfolding * modgrp_a_code modgrp_b_code modgrp_c_code modgrp_d_code
-        using less det by auto
+        using less det \<open>c > 0\<close> by auto
 
       have "\<eta> (apply_modgrp (f * S_modgrp) z) = \<eta> (apply_modgrp f (- (1 / z)))"
         using S.prems by (subst apply_modgrp_mult) auto
-      also have "\<dots> = \<epsilon> f * csqrt (modgrp_factor f (- (1 / z))) * \<eta> (- (1 / z))"
-        using S.prems by (subst S.IH) auto
-      also have "modgrp_factor f (- (1 / z)) = d - c / z"
-        unfolding modgrp_factor_def by (simp add: a_b_c_d_def)
+      also have "\<dots> = \<epsilon> f * csqrt (automorphy_factor f (- (1 / z))) * \<eta> (- (1 / z))"
+        using S.prems S.hyps by (subst S.IH) auto
+      also have "automorphy_factor f (- (1 / z)) = d - c / z"
+        unfolding automorphy_factor_altdef by (simp add: a_b_c_d_def)
       also have "\<eta> (- (1 / z)) = csqrt (-\<i> * z) * \<eta> z"
         using S.prems by (subst dedekind_eta_minus_one_over) auto
       also have "\<epsilon> f * csqrt (d - c / z) * (csqrt (-\<i> * z) * \<eta> z) =
@@ -938,13 +994,16 @@ next
         by (simp add: csqrt_exp_Ln complex_eq_iff cos_45 sin_45 field_simps)
       also have "cis (pi / 4) * csqrt (c - d * z) * \<epsilon> f * \<eta> z =
                  \<epsilon> (f * S_modgrp) * csqrt (c - d * z) * \<eta> z"
-        using \<open>d < 0\<close> sing by (subst dedekind_eps_S_right) (auto simp: a_b_c_d_def)
-      also have "\<dots> = \<epsilon> (f * S_modgrp) * csqrt (modgrp_factor (f * S_modgrp) z) * \<eta> z"
-        unfolding modgrp_factor_def by simp
+        using \<open>c > 0\<close> \<open>d < 0\<close> sing by (subst dedekind_eps_S_right) (auto simp: a_b_c_d_def)
+      also have "\<dots> = \<epsilon> (f * S_modgrp) * csqrt (automorphy_factor (-f * S_modgrp) z) * \<eta> z"
+        unfolding automorphy_factor_altdef \<open>d < 0\<close> \<open>c > 0\<close> 
+        by (auto simp add: a_b_c_d_def abs_modgrp_altdef)
+      also have "-f * S_modgrp = \<bar>f * S_modgrp\<bar>"
+        using \<open>c > 0\<close> \<open>d < 0\<close> by (auto simp: abs_modgrp_altdef a_b_c_d_def)
       finally show ?thesis .
     qed
   qed
-qed
+qed simp_all
 
 no_notation dedekind_eta ("\<eta>")
 no_notation dedekind_eps ("\<epsilon>")

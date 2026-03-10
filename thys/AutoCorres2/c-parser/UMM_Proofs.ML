@@ -225,13 +225,10 @@ end
 val field_ti_rules = @{thms wf_fd_field_ti_mem_type [OF meta_eq_to_obj_eq]}
 
 fun typuinfo_aux_simpset thy_ctxt =
- let
-   val umm_ctxt = Context_Position.set_visible false thy_ctxt
-   val simps = @{thms export_uinfo_eq_sub_typ_conv typ_uinfo_eq_sub_typ_conv}
- in
-  umm_ctxt addsimps simps
-  |> Context_Position.restore_visible thy_ctxt
- end
+ thy_ctxt
+ |> Context_Position.set_visible false
+ |> Simplifier.add_simps @{thms export_uinfo_eq_sub_typ_conv typ_uinfo_eq_sub_typ_conv}
+ |> Context_Position.restore_visible thy_ctxt
 
 fun field_lookup_aux_simpset thy_ctxt =
  let
@@ -244,7 +241,9 @@ fun field_lookup_aux_simpset thy_ctxt =
          } @
          fl_Some_simps
  in
-  umm_ctxt addsimps simps delsimps @{thms replicate_0 replicate_Suc replicate_numeral}
+  umm_ctxt
+  |> Simplifier.add_simps simps
+  |> Simplifier.del_simps @{thms replicate_0 replicate_Suc replicate_numeral}
   |> Context_Position.restore_visible thy_ctxt
  end
 
@@ -298,7 +297,7 @@ fun field_lookup_to_field_ti thm = @{thm field_lookup_field_ti [THEN eq_reflecti
 
 fun augment_field_lookup ctxt thm = [field_lookup_to_field_ti thm, thm]
 
-fun simplified ctxt thms = Simplifier.simplify ((Simplifier.clear_simpset ctxt) addsimps thms)
+fun simplified ctxt thms = Simplifier.simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
 
 fun fold_typ_uinfo_t ctxt thm = simplified ctxt @{thms fold_typ_uinfo_t} thm
 
@@ -333,7 +332,7 @@ fun field_ti_to_field_lookup t =
   | t => raise TERM ("field_ti_to_field_lookup: unexcpected term", [t])
 
 val _ = Theory.local_setup (Simplifier.define_simproc
-  {name= \<^binding>\<open>field_lookup\<close>, passive = false, kind = Simproc, identifier=[],
+  {name= \<^binding>\<open>field_lookup\<close>, passive = false, kind = Simplifier.Simproc, identifier=[],
   lhss =[\<^term>\<open>field_lookup (typ_info_t (TYPE('a::c_type))) (f1#f2#fs) n\<close>,
          \<^term>\<open>field_lookup (typ_info_t (TYPE('c::c_type['d::finite]))) [f1] n\<close>,
          \<^term>\<open>field_lookup (typ_uinfo_t (TYPE('a::c_type))) fs n\<close>,
@@ -387,7 +386,7 @@ fun gen_typuinfo_simproc augment ctxt =
   in  Cached_Theory_Simproc.gen_simproc (umm_ctxt, Cached_Theory_Simproc.recert, Cached_Theory_Simproc.add_cache) augment end
 
 val _ = Theory.local_setup (Simplifier.define_simproc
-  {name = \<^binding>\<open>type_calculations\<close>, passive = false, kind = Simproc, identifier = [],
+  {name = \<^binding>\<open>type_calculations\<close>, passive = false, kind = Simplifier.Simproc, identifier = [],
   lhss = [
    \<^term>\<open>set (field_names_no_padding (typ_info_t TYPE('a::c_type)) (export_uinfo (typ_info_t TYPE('b::c_type))))\<close>,
    \<^term>\<open>set (all_field_names_no_padding (typ_info_t TYPE('a::c_type)))\<close>,
@@ -422,7 +421,7 @@ val _ = Theory.local_setup (Simplifier.define_simproc
 val (type_calculations_simproc_name, type_calculations_simproc) = Simplifier.check_simproc (Context.the_local_context ()) ("type_calculations", Position.none)
 
 val _ = Theory.local_setup (Simplifier.define_simproc
-  {name = \<^binding>\<open>typuinfo_calculations\<close>, passive = false, kind = Simproc, identifier=[],
+  {name = \<^binding>\<open>typuinfo_calculations\<close>, passive = false, kind = Simplifier.Simproc, identifier=[],
  lhss = [
    \<^term>\<open>export_uinfo (typ_info_t TYPE('a::c_type)) = export_uinfo (typ_info_t TYPE('b::c_type))\<close>,
    \<^term>\<open>typ_uinfo_t TYPE('a::c_type) = export_uinfo (typ_info_t TYPE('b::c_type))\<close>,
@@ -537,9 +536,9 @@ fun umm_finalise (st:T) lthy =
 
         val thm = Thm.cterm_of lthy (mk_td_names (Thm.term_of (Thm.lhs_of typtag_thm)))
           |> Simplifier.asm_full_rewrite
-               (lthy addsimps
-                  (#typ_info_thms st) @
-                  @{thms insert_commute nat_to_bin_string.simps})
+               (lthy |> Simplifier.add_simps 
+                  (#typ_info_thms st @
+                  @{thms insert_commute nat_to_bin_string.simps}))
           |> Drule.export_without_context
       in
         lthy
@@ -716,18 +715,18 @@ fun umm_mem_type st recname fld_count recty typtag_thm tag_def_thm entire_compon
   (* typ_tag TYPE('a struct_scheme) = struct_tag_def *)
   val t_def_thms = [typtag_thm, tag_def_thm, @{thm "align_of_def"},
                     @{thm "size_of_def"}]
-  val t_def_step = ALLGOALS (asm_full_simp_tac (lthy addsimps t_def_thms))
+  val t_def_step = ALLGOALS (asm_full_simp_tac (lthy |> Simplifier.add_simps t_def_thms))
 
   (* wf_desc *)
   val wf_desc_Is = lthy addIs [@{thm "wf_desc_final_pad"},
                                 @{thm "wf_desc_ti_typ_pad_combine"}]
-  val wf_desc_step = force_tac (wf_desc_Is addsimps t_def_thms) 1
+  val wf_desc_step = force_tac (wf_desc_Is |> Simplifier.add_simps t_def_thms) 1
 
   (* wf_size_desc *)
   val wf_size_desc_Is =
       lthy addIs
       [@{thm "wf_size_desc_ti_typ_pad_combine"}, @{thm "wf_size_desc_final_pad"}]
-  val wf_size_desc_step = force_tac (wf_size_desc_Is addsimps t_def_thms) 1
+  val wf_size_desc_step = force_tac (wf_size_desc_Is |> Simplifier.add_simps t_def_thms) 1
 
   val entire_update_step = resolve_tac lthy [entire_component_upd_thm] 1
 
@@ -746,52 +745,52 @@ fun umm_mem_type st recname fld_count recty typtag_thm tag_def_thm entire_compon
   fun asm_full_simp_tac' ctxt = SUBGOAL (fn (goal, i) =>
     let
       val depth = strip_comb_depth_of_term goal
-      val ctxt' = ctxt |> Config.map simp_depth_limit (K (depth + 20))
+      val ctxt' = ctxt |> Config.map Simplifier.simp_depth_limit (K (depth + 20))
     in
       SOLVED' (asm_full_simp_tac ctxt') i
     end)
 
   val align_dvd_size_step =
       asm_full_simp_tac
-          (lthy addsimps t_def_thms @ [
-             @{thm "align_of_def"}, @{thm "size_of_def"}]) 1
+          (lthy |> Simplifier.add_simps (t_def_thms @
+             @{thms align_of_def size_of_def})) 1
 
   val align_field_step =
-      simp_tac (lthy addsimps t_def_thms) 1 THEN
+      simp_tac (lthy |> Simplifier.add_simps t_def_thms) 1 THEN
       asm_full_simp_tac'
-          (lthy addsimps [
-             @{thm "align_td_array_tag"},
-             @{thm "typ_info_array"}, @{thm "array_tag_def"}] @ @{thms wf_align_field_simps}) 1
+          (lthy |> Simplifier.add_simps
+             @{thms align_td_array_tag
+               typ_info_array array_tag_def wf_align_field_simps}) 1
 
   val size_lt_step =
-      simp_tac (lthy addsimps t_def_thms) 1 THEN
+      simp_tac (lthy |> Simplifier.add_simps t_def_thms) 1 THEN
       asm_full_simp_tac'
-          (lthy addsimps
-            size_td_simps_arr @
-            [@{thm "addr_card"}, @{thm "align_of_def"},
-             @{thm "size_of_def"}, @{thm "align_of_final_pad"}]) 1
+          (lthy |> Simplifier.add_simps
+            (size_td_simps_arr @
+             @{thms addr_card align_of_def
+               size_of_def align_of_final_pad})) 1
 
    val wf_component_descs_step =
-          simp_tac (lthy addsimps t_def_thms) 1 THEN
+          simp_tac (lthy |> Simplifier.add_simps t_def_thms) 1 THEN
           UMM_Tools.wf_component_descs_tac lthy []
 
    val component_descs_independent_step =
-          simp_tac (lthy addsimps t_def_thms) 1 THEN
+          simp_tac (lthy |> Simplifier.add_simps t_def_thms) 1 THEN
           UMM_Tools.component_descs_independent_tac lthy []
 
    val wf_field_descs_step =
-          simp_tac (lthy addsimps t_def_thms) 1 THEN
+          simp_tac (lthy |> Simplifier.add_simps t_def_thms) 1 THEN
           UMM_Tools.wf_field_descs_tac lthy []
 
    val contained_field_descs_step =
-          simp_tac (lthy addsimps t_def_thms) 1 THEN
+          simp_tac (lthy |> Simplifier.add_simps t_def_thms) 1 THEN
           UMM_Tools.contained_field_descs_tac lthy []
 
    val wf_padding_step =
           let
-            val ctxt = lthy addsimps (t_def_thms @ @{thms wf_padding_combinator_simps wf_padding})
-              |> Config.map simp_depth_limit (K (fld_count + 20))
-          in  asm_full_simp_tac ctxt 1 end
+            val ctxt = lthy |> Simplifier.add_simps (t_def_thms @ @{thms wf_padding_combinator_simps wf_padding})
+              |> Config.map Simplifier.simp_depth_limit (K (fld_count + 20))
+          in asm_full_simp_tac ctxt 1 end
 
   val is_mem_type_thm =
     if Config.get lthy skip_umm_proofs then
@@ -836,8 +835,8 @@ fun umm_mem_type st recname fld_count recty typtag_thm tag_def_thm entire_compon
       Goal.prove_future lthy [] [] stack_type_instance_t (fn {context,...} =>
         dprint_tac "stack_type_class_intro" THEN
         Class.intro_classes_tac context [] THEN
-        simp_tac (context addsimps t_def_thms) 1 THEN
-        asm_full_simp_tac' (context addsimps @{thms stack_typ_info_intros stack_byte_name_def}) 1)
+        simp_tac (context |> Simplifier.add_simps t_def_thms) 1 THEN
+        asm_full_simp_tac' (context |> Simplifier.add_simps @{thms stack_typ_info_intros stack_byte_name_def}) 1)
 in
   lthy
   |> More_Local_Theory.in_theory (Axclass.add_arity is_mem_type_thm)
@@ -858,7 +857,10 @@ fun umm_packed_type cse recname recty typtag_thm tag_def_thm fgthms (st, lthy) =
            @{thms align_td_array_info}   @
            @{thms max_non_zero_unfold}
 
-  val pt_ss = (lthy addsimps simp_thms delsimps @{thms One_nat_def add_2_eq_Suc add_2_eq_Suc'})
+  val pt_ss = 
+    lthy
+    |> Simplifier.add_simps simp_thms
+    |> Simplifier.del_simps @{thms One_nat_def add_2_eq_Suc add_2_eq_Suc'}
 
 in if ProgramAnalysis.is_packed_struct_or_union cse recname
   then
@@ -902,10 +904,10 @@ fun calculate_record_size recname (st, lthy) ths ty =
   else let
       val tysize_th =
           Simplifier.rewrite
-              (lthy addsimps
-                          ((@{thm "size_of_def"} :: @{thm "typ_info_array"} ::
-                            @{thm "array_tag_def"} :: @{thm "TWO"} ::
-                            @{thms size_td_simps_3 max_non_zero_unfold} @ ths)))
+              (lthy |> Simplifier.add_simps
+                          (@{thms size_of_def typ_info_array
+                            array_tag_def TWO
+                            size_td_simps_3 max_non_zero_unfold} @ ths))
               (Thm.cterm_of lthy (mk_sizeof (mk_TYPE ty)))
       val _ = let
         val size_t = Thm.term_of (Thm.rhs_of tysize_th)
@@ -952,7 +954,7 @@ fun pointless_eq ctxt eq =
         val ext = Drule.infer_instantiate' ctxt [SOME (Thm.cterm_of ctxt f), SOME (Thm.cterm_of ctxt g)] ext
       in
         (ext OF [eq])
-        |> Simplifier.full_simplify (Simplifier.clear_simpset ctxt addsimps @{thms triv_forall_equality})
+        |> Simplifier.full_simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms triv_forall_equality})
       end
 
     else
@@ -999,7 +1001,7 @@ fun c_type_name_instantiation recname lthy =
 fun c_type_instance recname = gen_c_type_instantiation @{sort c_type}
         (fn ctxt => fn thm =>
           Class.intro_classes_tac ctxt [] THEN
-          ALLGOALS (asm_full_simp_tac (ctxt addsimps [thm])))
+          ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simp thm)))
         recname
 
 val node = RegionExtras.node
@@ -1152,9 +1154,9 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
       val component_upd = mk_field_update_component_desc_apply recty "bs" "v"
       fun upd_ss ctxt =
         Simplifier.put_simpset
-          (merge_ss (HOL_basic_ss, RecursiveRecordPackage.get_simpset (Proof_Context.theory_of lthy))) ctxt
+          (Simplifier.merge_ss (HOL_basic_ss, RecursiveRecordPackage.get_simpset (Proof_Context.theory_of lthy))) ctxt
 
-      val component_upd_thm = Simplifier.asm_full_rewrite ((upd_ss lthy) addsimps entire_update_simps) (Thm.cterm_of lthy component_upd)
+      val component_upd_thm = Simplifier.asm_full_rewrite (lthy |> upd_ss |> Simplifier.add_simps entire_update_simps) (Thm.cterm_of lthy component_upd)
           |> Drule.export_without_context
 
       val c_bs = Thm.cterm_of lthy (Free ("bs",@{typ "byte list"}))
@@ -1186,8 +1188,10 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
     val tm  = mk_size_aligntd typ_info_TYPE (Var (("s", idx + 1), nat)) (Var (("a", idx + 2), nat))
     val ctxt' = Variable.declare_maxidx (idx + 2) lthy
     val cterm = Thm.cterm_of ctxt' (HOLogic.mk_Trueprop tm)
-    val sa_ss = ctxt' addsimps @{thms typ_info_array array_tag_def align_td_array_tag max_def padup_def}
-                  delsimps @{thms One_nat_def}
+    val sa_ss =
+      ctxt'
+      |> Simplifier.add_simps @{thms typ_info_array array_tag_def align_td_array_tag max_def padup_def}
+      |> Simplifier.del_simp @{thm One_nat_def}
     val tac = let
       fun rectac ctxt   = MEMO_GOAL ctxt upd_acc doit
       and doit ctxt  i  =
@@ -1220,7 +1224,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
       val (t, ctxt) = mk_align_of lthy recty
       val [thm] = Variable.export ctxt lthy (* FIXME: this seems to unfold typ_info_t TYPE... but should not *)
         [Simplifier.asm_full_rewrite
-          (ctxt addsimps (@{thms align_of_def} @ [align_td_thm]))
+          (ctxt |> Simplifier.add_simps (@{thms align_of_def} @ [align_td_thm]))
           (Thm.cterm_of ctxt t)]
     in
       thm
@@ -1282,7 +1286,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
   val _ = trac "About to About to type typ_nametype typ_name ..."
   val typ_name_thm =
       Simplifier.asm_full_rewrite
-          (lthy addsimps [typtag_thm])
+          (lthy |> Simplifier.add_simp typtag_thm)
           (Thm.cterm_of lthy (mk_typ_name_of recty))
   val (typ_name_thm, lthy) =
     lthy
@@ -1299,7 +1303,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
     (* This will keep adding new subgoals to the end, then start solving in a LIFO fashion.
        We want LIFO as we want to simplify the arithmetic from the inside out.
      *)
-    val ss = lthy addsimps (@{thms padup_def max_def align_of_def align_td_array'} @ partial_size_align_tds)
+    val ss = lthy |> Simplifier.add_simps (@{thms padup_def max_def align_of_def align_td_array'} @ partial_size_align_tds)
     fun tac ctxt =
         rewrite_goal_tac ctxt [typtag_thm, tag_def_thm] 1
           THEN
@@ -1336,7 +1340,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
     fun fg_thm f = Goal.prove_future lthy [] []
       (mk_prop (mk_fg_cons_tm recty (#2 f) (node (#1 f)) lthy))
       (fn _ => asm_full_simp_tac
-          (lthy addsimps [@{thm "fg_cons_def"}, @{thm comp_def}]) 1)
+          (lthy |> Simplifier.add_simps @{thms fg_cons_def comp_def}) 1)
   in
     Par_List.map fg_thm flds
   end;
@@ -1353,7 +1357,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
           val name = node name_wrap
           val concl_lhs = mk_field_lookup_nofs (recty, name)
           val thm =
-              Simplifier.asm_full_rewrite (lthy addsimps [fl, @{thm TWO}])
+              Simplifier.asm_full_rewrite (lthy |> Simplifier.add_simps [fl, @{thm TWO}])
                                           (Thm.cterm_of lthy concl_lhs) |>
                                           Drule.export_without_context
           val kind = "offsetof(" ^ recname ^ ", " ^ name^ ")"
@@ -1400,9 +1404,8 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
   val _ = phase "NAMES"
 
   val lthy =
-      lthy |> More_Local_Theory.in_theory (Context.theory_map
-               (Simplifier.map_ss
-                    (fn ss => ss addsimps (recthms @ flthms @ fgthms))))
+      lthy |> More_Local_Theory.in_theory
+               (Simplifier.map_theory_simpset (Simplifier.add_simps (recthms @ flthms @ fgthms)))
 
   val _ = phase "heap_update_fold_toplevel_fields"
   val _ = trac "About to heap_update_fold_toplevel_fields ..."
@@ -1411,20 +1414,21 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
     let
       val aggregate = \<^infer_instantiate>\<open>t = typ_info_TYPE in prop \<open>aggregate t\<close>\<close> lthy
       val aggregate_thm = Goal.prove lthy [] [] aggregate (fn {context, ...} =>
-             Simplifier.asm_full_simp_tac (context addsimps [typtag_thm]) 1)
+             Simplifier.asm_full_simp_tac (context |> Simplifier.add_simp typtag_thm) 1)
       val lhs = \<^infer_instantiate>\<open>t = typ_info_TYPE in term \<open>filter (Not \<circ> padding_field_name) (toplevel_field_names t)\<close>\<close> lthy
       val filter_toplevel_field_names_eq = Thm.cterm_of lthy lhs
-        |> Simplifier.asm_full_rewrite (lthy addsimps
-             [typtag_thm] @
-             @{thms toplevel_field_names_no_padding_combinator_simps})
+        |> Simplifier.asm_full_rewrite (lthy |> Simplifier.add_simps
+             (typtag_thm ::
+             @{thms toplevel_field_names_no_padding_combinator_simps}))
       val ((_, [fold_thm]), ctxt) =
         Variable.import true
           [@{thm heap_update_fold_toplevel_field_names_no_padding} OF [aggregate_thm]] lthy
       val fold_thm = fold_thm
-        |> Simplifier.asm_full_simplify (ctxt addsimps
-             [filter_toplevel_field_names_eq] @
-             @{thms to_bytes_def[symmetric] size_of_def heap_update_fold}
-             delsimps @{thms heap_list.simps})
+        |> Simplifier.asm_full_simplify (ctxt
+             |> Simplifier.add_simps
+               (filter_toplevel_field_names_eq ::
+                 @{thms to_bytes_def[symmetric] size_of_def heap_update_fold})
+             |> Simplifier.del_simps @{thms heap_list.simps})
         |> singleton (Variable.export ctxt lthy) |>  Drule.zero_var_indexes
       val fold_pointless_thm = comp_pointless_eq lthy fold_thm
     in
@@ -1446,8 +1450,8 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
     let
       val h_val_field_eq_trms = map (fn (fldnm, ty, _, _) => mk_h_val_field_eq lthy recty ty "h" "p" (node fldnm) ) flds
       fun prove eq = Goal.prove_future lthy ["h", "p"] [] eq (fn {context,...} =>
-           asm_full_simp_tac (context addsimps fl_ti_thms @
-                @{thms h_val_field_from_bytes' }) 1)
+           asm_full_simp_tac (context |> Simplifier.add_simps (fl_ti_thms @
+                @{thms h_val_field_from_bytes'})) 1)
       val eqs = map prove h_val_field_eq_trms
     in
       eqs
@@ -1468,7 +1472,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
        |> map (Simplifier.simplify lthy)
 
       fun prove eq = Goal.prove_future lthy ["h", "p", "v"] [] eq (fn {context,...} =>
-           asm_full_simp_tac (context addsimps root_convs @ @{thms h_val_field_from_bytes' }) 1)
+           asm_full_simp_tac (context |> Simplifier.add_simps (root_convs @ @{thms h_val_field_from_bytes'})) 1)
       val eqs = map prove heap_update_field_eq_trms
     in
       eqs
@@ -1488,7 +1492,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
        val unfold = mk_h_val_unfold lthy recty "h" "p" fs
        val idupdates = Proof_Context.get_thms lthy (recname ^ "_idupdates")
        fun prove eq = Goal.prove_future lthy ["h", "p"] [] eq (fn {context,...} =>
-           asm_full_simp_tac (context addsimps h_val_field_eqs) 1)
+           asm_full_simp_tac (context |> Simplifier.add_simps h_val_field_eqs) 1)
        val unfold_thm = prove unfold
      in
        unfold_thm
@@ -1507,12 +1511,12 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
      val lhs = \<^infer_instantiate>\<open>t = typ_info_TYPE in term \<open>all_field_names_no_padding t\<close>\<close> lthy
      val lhs_set = \<^infer_instantiate>\<open>t = typ_info_TYPE in term \<open>set (all_field_names_no_padding t)\<close>\<close> lthy
      val eq = Thm.cterm_of lthy lhs
-       |> Simplifier.asm_full_rewrite (lthy addsimps
-              [typtag_thm] @
+       |> Simplifier.asm_full_rewrite (lthy |> Simplifier.add_simps
+              (typtag_thm ::
               all_field_names_no_padding_thms @
-              @{thms all_field_names_no_padding_combinator_simps})
+              @{thms all_field_names_no_padding_combinator_simps}))
      val eq_set = Thm.cterm_of lthy lhs_set
-       |> Simplifier.asm_full_rewrite (lthy addsimps [eq])
+       |> Simplifier.asm_full_rewrite (lthy |> Simplifier.add_simp eq)
    in
      (eq, eq_set)
    end
@@ -1563,7 +1567,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
       val zero = \<^Const>\<open>c_type_class.zero recty\<close> |> Thm.cterm_of lthy
       val make_thm = nth (Proof_Context.get_thms lthy (recname ^ "_idupdates")) 0
         |> Drule.infer_instantiate' lthy [SOME zero]
-        |> Conv.fconv_rule (Simplifier.asm_full_rewrite (lthy addsimps zero_simps))
+        |> Conv.fconv_rule (Simplifier.asm_full_rewrite (lthy |> Simplifier.add_simps zero_simps))
     in
       make_thm
     end
@@ -1578,7 +1582,7 @@ fun umm_struct_calculation cse ((recname, (flds:fld list, attrs, region: Region.
      val update_defs = updates |> map (Proof_Context.get_thm lthy o (suffix "_def" o fst))
      fun mk_zero T = \<^Const>\<open>c_type_class.zero T\<close>
      val zero_args = fields |> map (Thm.cterm_of lthy o mk_zero o snd)
-     val simp_ctxt = lthy addsimps [make_zero]
+     val simp_ctxt = lthy |> Simplifier.add_simp make_zero
      fun upd_zero thm = Drule.infer_instantiate' lthy (NONE::(map SOME zero_args)) thm 
        |> Simplifier.simplify simp_ctxt
      val update_zero_thms = map upd_zero update_defs
@@ -1738,4 +1742,3 @@ end
 
 
 end; (* struct *)
-

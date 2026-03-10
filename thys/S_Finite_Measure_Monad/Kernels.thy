@@ -1561,7 +1561,7 @@ lemma nn_integral_measurable_kernel:
 proof induction
   case (cong f g)
   then show ?case
-    by(auto intro!: measurable_cong[where f="\<lambda>x. \<integral>\<^sup>+ y. f y \<partial>(\<kappa> x)" and g= "\<lambda>x. \<integral>\<^sup>+ y. g y \<partial>(\<kappa> x)",THEN iffD2] nn_integral_cong simp: sets_eq_imp_space_eq[OF kernel_sets])
+  by (smt (verit, ccfv_threshold) kernel_space measurable_cong nn_integral_cong) 
 next
   case (set A)
   then show ?case
@@ -1569,7 +1569,7 @@ next
 next
   case (mult u c)
   then show ?case
-    by(auto intro!: measurable_cong[where f="\<lambda>x. \<integral>\<^sup>+ y. c * u y \<partial>\<kappa> x" and g="\<lambda>x. c * \<integral>\<^sup>+ y. u y \<partial>\<kappa> x",THEN iffD2] simp: nn_integral_cmult)
+    by(auto intro!: measurable_cong[where f="\<lambda>x. \<integral>\<^sup>+ y. c * u y \<partial>\<kappa> x" and g="\<lambda>x. c * (\<integral>\<^sup>+ y. u y \<partial>\<kappa> x)",THEN iffD2] simp: nn_integral_cmult)
 next
   case (add u v)
   then show ?case
@@ -1696,7 +1696,7 @@ next
       by(auto simp: emeasure_bind_kernel[OF 1(1)] sets_eq_imp_space_eq[OF 1(1)] intro!: nn_integral_cong)
   next
     case ih:(mult u c)
-    then have "(\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. c * u y \<partial>\<kappa> x \<partial>\<mu>) = (\<integral>\<^sup>+ x. c * \<integral>\<^sup>+ y. u y \<partial>\<kappa> x \<partial>\<mu>)"
+    then have "(\<integral>\<^sup>+ x. \<integral>\<^sup>+ y. c * u y \<partial>\<kappa> x \<partial>\<mu>) = (\<integral>\<^sup>+ x. c * (\<integral>\<^sup>+ y. u y \<partial>\<kappa> x) \<partial>\<mu>)"
       by(auto intro!: nn_integral_cong nn_integral_cmult simp: sets_eq_imp_space_eq[OF 1(1)])
     with ih nn_integral_measurable_kernel[of "\<lambda>y. u y"] show ?case
       by(auto simp: nn_integral_cmult intro!: nn_integral_cong)

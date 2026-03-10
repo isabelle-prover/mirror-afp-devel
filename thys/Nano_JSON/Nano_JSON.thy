@@ -120,10 +120,12 @@ signature NANO_JSON_TYPE = sig
     val term_of_real: bool -> IEEEReal.decimal_approx -> term 
     val term_of_json: bool -> typ -> typ -> json -> term
     val json_of_term: term -> json
+    val ieee_real_to_rat_approx: bool -> IEEEReal.decimal_approx -> (int * int)
 end
 \<close>
 
 ML_file Nano_JSON_Type.ML
+
 text\<open>
  The file @{file \<open>Nano_JSON_Type.ML\<close>} provides the Isabelle/ML structure 
  @{ML_structure \<open>Nano_Json_Type:NANO_JSON_TYPE\<close>}. When first argument of 

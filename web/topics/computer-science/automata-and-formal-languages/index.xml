@@ -4,6 +4,15 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>A Bridge between CSP Processes and Functional Automata</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_Proc-Omata.html</link>
+  <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
+  <description>A Bridge between CSP Processes and Functional Automata in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Dynamic Pushdown Networks</title>
   <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
   <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>

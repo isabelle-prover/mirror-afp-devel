@@ -342,9 +342,10 @@ val simplify_landau_product_simproc = try o simplify_landau_product_conv
 
 fun reify_prod_bigtheta_conv ctxt =
   let
-    val ss = simpset_of (ctxt addsimps @{thms eventually_nonzero_simps eventually_nonneg_primfun})
+    val ss = ctxt |> Simplifier.add_simps @{thms eventually_nonzero_simps eventually_nonneg_primfun}
+      |> Simplifier.simpset_of
     val set_subgoaler = Simplifier.set_subgoaler (asm_full_simp_tac o put_simpset ss)
-    fun put_ss thms ctxt = put_simpset HOL_basic_ss ctxt addsimps thms
+    fun put_ss thms ctxt = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps thms
     val ctxt_transforms = 
       [
         set_subgoaler o put_ss 

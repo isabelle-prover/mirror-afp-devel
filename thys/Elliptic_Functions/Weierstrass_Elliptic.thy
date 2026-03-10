@@ -3,6 +3,7 @@ theory Weierstrass_Elliptic
 imports 
   Elliptic_Functions
   Modular_Group
+  Theta_Functions.Theta_Nullwert
 begin
 
 text \<open>
@@ -415,7 +416,7 @@ qed
 
 definition eisenstein_fun_aux :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
   "eisenstein_fun_aux n z =
-     (if n = 0 then 1 else if n < 3 \<or> z \<in> \<Lambda>\<^sup>* then 0 else (\<Sum>\<^sub>\<infinity>\<omega>\<in>\<Lambda>\<^sup>*. 1 / (z - \<omega>) ^ n))"
+     (if n = 0 then -1 else if n < 3 \<or> z \<in> \<Lambda>\<^sup>* then 0 else (\<Sum>\<^sub>\<infinity>\<omega>\<in>\<Lambda>\<^sup>*. 1 / (z - \<omega>) ^ n))"
 
 lemma eisenstein_fun_aux_at_pole_eq_0: "n > 0 \<Longrightarrow> z \<in> \<Lambda>\<^sup>* \<Longrightarrow> eisenstein_fun_aux n z = 0"
   by (simp add: eisenstein_fun_aux_def)
@@ -1597,6 +1598,9 @@ definition number_e3:: "complex" ("\<e>\<^sub>3") where
 
 lemmas number_e123_defs = number_e1_def number_e2_def number_e3_def
 
+definition modulus :: complex where
+  "modulus = (\<e>\<^sub>3 - \<e>\<^sub>2) / (\<e>\<^sub>1 - \<e>\<^sub>2)"
+
 text \<open>
   The half-lattice points are those that are equivalent to one of the three points
   $\frac{\omega_1}{2}$, $\frac{\omega_2}{2}$, and $\frac{\omega_1 + \omega_2}{2}$.
@@ -2359,9 +2363,10 @@ end
 lemma (in even_elliptic_function) in_terms_of_weierstrass_fun_even_aux:
   assumes nontrivial: "\<not>eventually (\<lambda>z. f z = 0) (cosparse UNIV)"
   defines "Z \<equiv> {z\<in>half_fund_parallelogram - {0}. is_pole f z \<or> isolated_zero f z}"
-  defines "h \<equiv> (\<lambda>z. if z \<in> Z then zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1) else 0)"
+  defines "h \<equiv> (\<lambda>z. zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1))"
   obtains c where "eventually (\<lambda>z. f z = c * (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w)) (cosparse UNIV)"
 proof -
+  define h' where "h' = (\<lambda>z. if z \<in> Z then h z else 0)"
   define g where "g = (\<lambda>z. (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w))"
   have [intro]: "finite Z"
   proof (rule finite_subset)
@@ -2386,10 +2391,10 @@ proof -
       thus "(if rel z w \<or> rel z (-w) then if 2 * w \<in> \<Lambda> then 2 * h w else h w else 0) = 0"
         using rel_in_half_fund_parallelogram_imp_eq[of z w] z by (auto simp: Z_def)
     qed auto
-    also have "\<dots> = (if 2 * z \<in> \<Lambda> then 2 * h z else h z)"
-      by (auto simp: h_def)
+    also have "\<dots> = (if 2 * z \<in> \<Lambda> then 2 * h' z else h' z)"
+      by (auto simp: h_def h'_def)
     also have "\<dots> = (if z \<in> Z then zorder f z else 0)"
-      using even_zorder[of z] nontrivial by (auto simp: h_def)
+      using even_zorder[of z] nontrivial by (auto simp: h_def h'_def)
     also have "\<dots> = zorder f z"
     proof (cases "z \<in> Z")
       case False
@@ -2485,7 +2490,7 @@ proof (cases "eventually (\<lambda>z. f z = 0) (cosparse UNIV)")
 next
   case False
   define Z where "Z = {z\<in>half_fund_parallelogram - {0}. is_pole f z \<or> isolated_zero f z}"
-  define h where "h = (\<lambda>z. if z \<in> Z then zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1) else 0)"
+  define h where "h = (\<lambda>z. zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1))"
   obtain c where *: "eventually (\<lambda>z. f z = c * (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w)) (cosparse UNIV)"
     using False in_terms_of_weierstrass_fun_even_aux unfolding Z_def h_def by metis
   define p where "p = Polynomial.smult c (\<Prod>w\<in>{w\<in>Z. h w \<ge> 0}. [:-\<wp> w, 1:] ^ nat (h w))"
@@ -2546,7 +2551,7 @@ text \<open>
 
   This result is Exercise~1.5 in Apostol's book.
 \<close>
-theorem (in even_elliptic_function) in_terms_of_weierstrass_fun:
+theorem (in elliptic_function) in_terms_of_weierstrass_fun:
   obtains p q r s :: "complex poly" where "q \<noteq> 0" "s \<noteq> 0"
      "\<forall>\<^sub>\<approx>z. f z = poly p (\<wp> z) / poly q (\<wp> z) + \<wp>' z * poly r (\<wp> z) / poly s (\<wp> z)"
 proof -

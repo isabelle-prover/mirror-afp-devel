@@ -4,10 +4,70 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>A Bridge between CSP Processes and Functional Automata</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_Proc-Omata.html</link>
+  <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
+  <description>A Bridge between CSP Processes and Functional Automata in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Parameterized Termination for Sequential Composition and Synchronization Product</title>
+  <link>https://isa-afp.org/entries/HOL-CSP_PTick.html</link>
+  <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Parameterized Termination for Sequential Composition and Synchronization Product in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Concentrated Liquidity Market Making Operations</title>
+  <link>https://isa-afp.org/entries/Concentrated_Liquidity_Market_Making_Operations.html</link>
+  <pubDate>Fri, 30 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Concentrated Liquidity Market Making Operations in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>&#39;Sets&#39; Revisited: Working with a Large Category in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Sets_Revisited.html</link>
+  <pubDate>Wed, 28 Jan 2026 00:00:00 +0000</pubDate>
+  <description>&#39;Sets&#39; Revisited: Working with a Large Category in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Category theory</category>
+</item>
+<item>
+  <title>Swap Distance</title>
+  <link>https://isa-afp.org/entries/Swap_Distance.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Swap Distance in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Impossibility of Strategyproof Rank Aggregation</title>
+  <link>https://isa-afp.org/entries/SWF_Impossibility.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>The Impossibility of Strategyproof Rank Aggregation in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Linear orders as rankings</title>
+  <link>https://isa-afp.org/entries/Rankings.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Linear orders as rankings in the AFP</description>
+    <category>Mathematics/Order</category>
+</item>
+<item>
   <title>Actuarial Mathematics</title>
   <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
   <pubDate>Fri, 16 Jan 2026 00:00:00 +0000</pubDate>
   <description>Actuarial Mathematics in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Arbitrage Opportunities Correspond to Probability Inequality Identities</title>
+  <link>https://isa-afp.org/entries/Arbitrage_Probability_Correspondence.html</link>
+  <pubDate>Mon, 12 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Arbitrage Opportunities Correspond to Probability Inequality Identities in the AFP</description>
+    <category>Mathematics/Probability theory</category>
     <category>Mathematics/Games and economics</category>
 </item>
 <item>
@@ -60,6 +120,13 @@
     <category>Computer science/Semantics and reasoning</category>
     <category>Logic/General logic/Modal logic</category>
     <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>Abel&#39;s Limit Theorem</title>
+  <link>https://isa-afp.org/entries/Abel_Limit_Theorem.html</link>
+  <pubDate>Thu, 13 Nov 2025 00:00:00 +0000</pubDate>
+  <description>Abel&#39;s Limit Theorem in the AFP</description>
+    <category>Mathematics/Analysis</category>
 </item>
 <item>
   <title>Zippy - Generic White-Box Proof Search with Zippers</title>

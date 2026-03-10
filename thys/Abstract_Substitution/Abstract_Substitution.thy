@@ -5,6 +5,7 @@ begin
 abbreviation set_prod where
   "set_prod \<equiv> \<lambda>(t, t'). {t, t'}"
 
+
 section \<open>Assumption-free Substitution\<close>
 
 locale abstract_substitution_ops =
@@ -78,7 +79,7 @@ lemma mem_ground_instances_setE[elim]:
   by blast
 
 definition is_unifier :: "'s \<Rightarrow> 'x set \<Rightarrow> bool" where
-  "is_unifier \<upsilon> X \<longleftrightarrow> card (subst_set X \<upsilon>) \<le> 1"
+  "is_unifier \<upsilon> X \<longleftrightarrow> X = {} \<or> card (subst_set X \<upsilon>) = 1"
 
 definition is_unifier_set :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
   "is_unifier_set \<upsilon> XX \<longleftrightarrow> (\<forall>X \<in> XX. is_unifier \<upsilon> X)"
@@ -89,30 +90,26 @@ definition is_mgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
 definition is_imgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
   "is_imgu \<mu> XX \<longleftrightarrow> is_unifier_set \<mu> XX \<and> (\<forall>\<tau>. is_unifier_set \<tau> XX \<longrightarrow> \<mu> \<odot> \<tau> = \<tau>)"
 
-(* TODO: Ask Martin: What would be the problem of taking this as the definition 
-   and not restricting it to finite sets?
-   Or using: "is_unifier \<upsilon> X \<longleftrightarrow> card (subst_set X \<upsilon>) = 1 \<or> X = {}" 
-   Because with the current definition we have a weird behavior for infinite sets
-*)
-lemma is_unifier_iff_if_finite:
-  assumes "finite X"
-  shows "is_unifier \<sigma> X \<longleftrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>)" 
+lemma is_unifier_iff:  "is_unifier \<sigma> X \<longleftrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>)" 
 proof (rule iffI)
+
   show "is_unifier \<sigma> X \<Longrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>)"
-    using assms
-    unfolding is_unifier_def
-    by (metis One_nat_def card_le_Suc0_iff_eq finite_imageI image_eqI subst_set_def)
+    unfolding is_unifier_def subst_set_def
+    by (smt (verit, best) all_not_in_conv card_1_singletonE imageI singletonD)
 next
+
   show "(\<forall>x\<in>X. \<forall>y\<in>X. x \<cdot> \<sigma> = y \<cdot> \<sigma>) \<Longrightarrow> is_unifier \<sigma> X"
     unfolding is_unifier_def subst_set_def
-    by (smt (verit, best) One_nat_def assms card_le_Suc0_iff_eq finite_imageI image_iff)
+    by (smt (verit, del_insts) ex_in_conv image_iff is_singletonI' is_singleton_altdef)
 qed
 
 lemma is_unifier_singleton[simp]: "is_unifier \<upsilon> {x}"
-  by (simp add: is_unifier_iff_if_finite)
+  by (simp add: is_unifier_iff)
 
-lemma is_unifier_set_empty[simp]:
-  "is_unifier_set \<sigma> {}"
+lemma is_unifier_empty[simp]: "is_unifier \<sigma> {}"
+  by (simp add: is_unifier_iff)
+
+lemma is_unifier_set_empty[simp]: "is_unifier_set \<sigma> {}"
   by (simp add: is_unifier_set_def)
 
 lemma is_unifier_set_insert:
@@ -151,9 +148,9 @@ lemma is_unifier_set_union:
   "is_unifier_set \<upsilon> (XX\<^sub>1 \<union> XX\<^sub>2) \<longleftrightarrow> is_unifier_set \<upsilon> XX\<^sub>1 \<and> is_unifier_set \<upsilon> XX\<^sub>2"
   by (auto simp add: is_unifier_set_def)
 
-lemma is_unifier_subset: "is_unifier \<upsilon> A \<Longrightarrow> finite A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> is_unifier \<upsilon> B"
-  by (smt (verit, best) card_mono dual_order.trans finite_imageI image_mono is_unifier_def
-      subst_set_def)
+lemma is_unifier_subset: "is_unifier \<upsilon> A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> is_unifier \<upsilon> B"
+  unfolding is_unifier_iff
+  by auto
 
 lemma is_ground_set_subset: "is_ground_set A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> is_ground_set B"
   by (auto simp: is_ground_set_def)
@@ -193,6 +190,14 @@ definition is_idem :: "'s \<Rightarrow> bool" where
 lemma is_idem_id_subst [simp]: "is_idem id_subst"
   by (simp add: is_idem_def)
 
+lemma exists_renaming [intro]: "\<exists>\<rho>. is_renaming \<rho>"
+  using neutral_is_right_invertible
+  by blast
+
+lemma exists_idem [intro]: "\<exists>\<sigma>. is_idem \<sigma>"
+  using is_idem_id_subst
+  by blast
+
 end
 
 locale abstract_substitution =
@@ -230,28 +235,23 @@ lemmas subst_id_subst = comp_subst.action_neutral
 lemmas subst_set_id_subst = comp_subst_set.action_neutral
 lemmas subst_list_id_subst = comp_subst_list.action_neutral
 
-lemma is_unifier_id_subst_empty[simp]: "is_unifier id_subst {}"
-  by (simp add: is_unifier_def)
-
-lemma is_unifier_set_id_subst_empty[simp]: "is_unifier_set id_subst {}"
-  by (simp add: is_unifier_set_def)
-
 lemma is_mgu_id_subst_empty[simp]: "is_mgu id_subst {}"
   by (simp add: is_mgu_def)
 
 lemma is_imgu_id_subst_empty[simp]: "is_imgu id_subst {}"
   by (simp add: is_imgu_def)
 
-lemma is_unifier_id_subst: "is_unifier id_subst X \<longleftrightarrow> card X \<le> 1"
-  by (simp add: is_unifier_def)
+lemma is_unifier_id_subst: "is_unifier id_subst X \<longleftrightarrow> X = {} \<or> card X = 1"
+  unfolding is_unifier_def
+  by auto
 
-lemma is_unifier_set_id_subst: "is_unifier_set id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. card X \<le> 1)"
+lemma is_unifier_set_id_subst: "is_unifier_set id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. X = {} \<or> card X = 1)"
   by (simp add: is_unifier_set_def is_unifier_id_subst)
 
-lemma is_mgu_id_subst: "is_mgu id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. card X \<le> 1)"
+lemma is_mgu_id_subst: "is_mgu id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. X = {} \<or> card X = 1)"
   by (simp add: is_mgu_def is_unifier_set_id_subst)
 
-lemma is_imgu_id_subst: "is_imgu id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. card X \<le> 1)"
+lemma is_imgu_id_subst: "is_imgu id_subst XX \<longleftrightarrow> (\<forall>X \<in> XX. X = {} \<or> card X = 1)"
   by (simp add: is_imgu_def is_unifier_set_id_subst)
 
 
@@ -331,22 +331,15 @@ corollary ground_eq_ground_if_imgu:
   by blast
 
 lemma ball_eq_constant_if_unifier:
-  assumes "finite X" and "x \<in> X" and "is_unifier \<upsilon> X" and "is_ground_set X"
+  assumes "x \<in> X" and "is_unifier \<upsilon> X" and "is_ground_set X"
   shows "\<forall>y \<in> X. y = x"
   using assms
-proof (induction X rule: finite_induct)
-  case empty
-  show ?case by simp
-next
-  case (insert z F)
-  then show ?case
-    by (metis is_ground_set_def finite.insertI is_unifier_iff_if_finite subst_ident_if_ground)
-qed
+  by (simp add: is_ground_set_def is_unifier_iff)
 
 lemma is_mgu_unifies: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
-  assumes "is_mgu \<mu> XX" "\<forall>X \<in> XX. finite X"
+  assumes "is_mgu \<mu> XX"
   shows "\<forall>X \<in> XX. \<forall>t \<in> X. \<forall>t' \<in> X. t \<cdot> \<mu> = t' \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite
+  using assms is_unifier_iff
   unfolding is_mgu_def is_unifier_set_def
   by blast
 
@@ -354,14 +347,14 @@ corollary is_mgu_unifies_pair: \<^marker>\<open>contributor \<open>Balazs Toth\<
   assumes "is_mgu \<mu> {{t, t'}}"
   shows "t \<cdot> \<mu> = t' \<cdot> \<mu>"
   using is_mgu_unifies[OF assms]
-  by (metis finite.emptyI finite.insertI insertCI singletonD)
+  by (meson insert_iff)
 
 lemmas subst_mgu_eq_subst_mgu = is_mgu_unifies_pair
 
 lemma is_imgu_unifies: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
-  assumes "is_imgu \<mu> XX" "\<forall>X \<in> XX. finite X"
+  assumes "is_imgu \<mu> XX"
   shows "\<forall>X \<in> XX. \<forall>t \<in> X. \<forall>t' \<in> X. t \<cdot> \<mu> = t' \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite
+  using assms is_unifier_iff
   unfolding is_imgu_def is_unifier_set_def
   by blast
 
@@ -369,7 +362,7 @@ corollary is_imgu_unifies_pair: \<^marker>\<open>contributor \<open>Balazs Toth\
   assumes "is_imgu \<mu> {{t, t'}}"
   shows "t \<cdot> \<mu> = t' \<cdot> \<mu>"
   using is_imgu_unifies[OF assms]
-  by (metis finite.emptyI finite.insertI insertCI singletonD)
+  by (metis insertCI)
 
 lemmas subst_imgu_eq_subst_imgu = is_imgu_unifies_pair
 

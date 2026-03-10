@@ -60,7 +60,7 @@ fun simp_only thms ctxt =
    Perhaps surprisingly, this saves minutes in some of the proofs that use a lot of
    invariants of the form (l = P-:n --> P). *)
 fun shallow_simp ctxt =
-  let val ctxt' = Config.put simp_depth_limit 2 ctxt in
+  let val ctxt' = Config.put Simplifier.simp_depth_limit 2 ctxt in
     TRY o safe_asm_full_simp_tac ctxt'
   end
 

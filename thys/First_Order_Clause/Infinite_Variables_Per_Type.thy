@@ -21,17 +21,21 @@ qed
 lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = \<tau>} \<Longrightarrow> infinite {x. f (g x) = \<tau>}"
   by (smt (verit) UNIV_I finite_imageI image_iff mem_Collect_eq rev_finite_subset subset_eq)
 
-definition infinite_variables_per_type_on :: "'var set \<Rightarrow> ('var \<Rightarrow> 'ty) \<Rightarrow> bool" where
+definition infinite_variables_per_type_on :: "'v set \<Rightarrow> ('v \<Rightarrow> 'ty) \<Rightarrow> bool" where
   "infinite_variables_per_type_on X \<V> \<equiv> \<forall>\<tau> \<in> \<V> ` X. infinite {x. \<V> x = \<tau>}"
 
-abbreviation infinite_variables_per_type :: "('var \<Rightarrow> 'ty) \<Rightarrow> bool" where
+abbreviation infinite_variables_per_type :: "('v \<Rightarrow> 'ty) \<Rightarrow> bool" where
   "infinite_variables_per_type \<equiv> infinite_variables_per_type_on UNIV"
+
+lemma infinite_variables_per_type_on_empty [simp]: "infinite_variables_per_type_on {} \<V>"
+  unfolding infinite_variables_per_type_on_def
+  by simp
 
 lemma obtain_type_preserving_inj:
   fixes \<V> :: "'v \<Rightarrow> 'ty"
   assumes
     finite_X: "finite X" and
-    \<V>: "infinite_variables_per_type \<V>"
+    \<V>: "infinite_variables_per_type_on Y \<V>"
   obtains f :: "'v \<Rightarrow> 'v" where
     "inj f"
     "X \<inter> f ` Y = {}"
@@ -40,7 +44,7 @@ proof (rule that)
 
   {
     fix \<tau>
-    assume "\<tau> \<in> range \<V>"
+    assume "\<tau> \<in> \<V> ` Y"
 
     then have "|{x. \<V> x = \<tau>}| =o |{x. \<V> x = \<tau> } - X|"
       using \<V> finite_X card_of_infinite_diff_finite ordIso_symmetric
@@ -58,7 +62,10 @@ proof (rule that)
   note exists_g = this
 
   define get_g where
-    "\<And>\<tau>. get_g \<tau> \<equiv> SOME g. bij_betw g {x. \<V> x = \<tau>} {x. \<V> x = \<tau> \<and> x \<notin> X}"
+    "\<And>\<tau>. get_g \<tau> \<equiv>
+       (if \<tau> \<in> \<V> ` Y
+        then SOME g. bij_betw g {x. \<V> x = \<tau> } {x. \<V> x = \<tau> \<and> x \<notin> X}
+        else (\<lambda>x. x))"
 
   define f where
     "\<And>x. f x \<equiv> get_g (\<V> x) x"
@@ -66,14 +73,20 @@ proof (rule that)
   {
     fix y
 
+    assume y: "y \<in> Y"
+
     have "\<And>g. bij_betw g {x. \<V> x = \<V> y} {x. \<V> x = \<V> y \<and> x \<notin> X} \<Longrightarrow> g y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
       using exists_g bij_betwE
       by blast
 
-    then have "f y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
-      using exists_g get_g_def
-      unfolding f_def 
-      by (metis (no_types, lifting) ext rangeI verit_sko_ex')     
+    moreover have "\<exists>g. bij_betw g {x. \<V> x = \<V> y} {x. \<V> x = \<V> y \<and> x \<notin> X}"
+      using exists_g y 
+      by (auto simp: image_iff)
+
+    ultimately have "f y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
+      using exists_g get_g_def y
+      unfolding f_def
+      by (smt (verit) bij_betwE image_iff mem_Collect_eq someI)
   }
 
   then show "X \<inter> f ` Y = {}"  "\<forall>y\<in>Y. \<V> (f y) = \<V> y"
@@ -88,7 +101,7 @@ proof (rule that)
     then show "x = y"
       using get_g_def f_def exists_g
       unfolding some_eq_ex[symmetric]
-      by (smt (verit) bij_betw_iff_bijections mem_Collect_eq rangeI)
+      by (smt (verit, best) bij_betwE bij_betw_def inj_on_def mem_Collect_eq)
   qed
 qed
 
@@ -96,7 +109,7 @@ lemma obtain_type_preserving_injs:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes
     finite_X: "finite X" and
-    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2"
+    \<V>\<^sub>2: "infinite_variables_per_type_on Y \<V>\<^sub>2"
   obtains f f' :: "'v \<Rightarrow> 'v" where
     "inj f" "inj f'"
     "f ` X \<inter> f' ` Y = {}"
@@ -118,7 +131,7 @@ lemma obtain_type_preserving_injs':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes
     finite_Y: "finite Y" and
-    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1"
+    \<V>\<^sub>1: "infinite_variables_per_type_on X \<V>\<^sub>1"
   obtains f f' :: "'v \<Rightarrow> 'v" where
     "inj f" "inj f'"
     "f ` X \<inter> f' ` Y = {}"
@@ -130,8 +143,8 @@ lemma obtain_type_preserving_injs':
 lemma obtain_infinite_variables_per_type_on:
   assumes 
     infinite_UNIV: "infinite (UNIV :: 'v set)" and 
-    finite_Y: "finite Y" and (* Could be made weaker: infinite (UNIV - Y) *)
-    finite_Z: "finite Z" and (* Could be made weaker: infinite (UNIV - Z) *)
+    finite_Y: "finite Y" and
+    finite_Z: "finite Z" and
     disjoint: "Y \<inter> Z = {}"
   obtains \<V> :: "'v \<Rightarrow> 'ty"
   where "infinite_variables_per_type_on X \<V>" "\<forall>x \<in> Y. \<V> x = \<V>' x" "\<forall>x \<in> Z. \<V> x = \<V>'' x"

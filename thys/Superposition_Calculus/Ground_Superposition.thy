@@ -1,18 +1,19 @@
 theory Ground_Superposition
   imports
-    First_Order_Clause.Ground_Critical_Pairs
-    First_Order_Clause.Selection_Function
+    Ground_Term_Context
     First_Order_Clause.Ground_Order_With_Equality
+    First_Order_Clause.Selection_Function
+
+    First_Order_Clause.Ground_Term_Rewrite_System
     First_Order_Clause.Uprod_Literal_Functor
 begin
 
 section \<open>Superposition Calculus\<close>
 
 locale ground_superposition_calculus =
-  "context" where apply_context = apply_context +
+  ground_term_context where apply_context = apply_context +
   context_compatible_ground_order where less\<^sub>t = less\<^sub>t and apply_context = apply_context +
-  selection_function select +
-  ground_critical_pairs where apply_context = apply_context
+  selection_function select 
 for
   apply_context :: "'c \<Rightarrow> 't \<Rightarrow> 't" and
   less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
@@ -185,6 +186,9 @@ qed
 
 
 subsection \<open>Ground Layer\<close>
+
+sublocale ground_term_rewrite_system
+  by unfold_locales
 
 definition G_Inf :: "'t clause inference set" where
   "G_Inf =

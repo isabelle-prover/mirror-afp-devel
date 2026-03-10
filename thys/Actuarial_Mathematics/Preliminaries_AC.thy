@@ -2639,7 +2639,7 @@ proof -
   have [simp]: "AE x in M. 0 \<le> indicat_real A x * X x" using nonneg by fastforce
   have "integral\<^sup>L (M\<downharpoonright>A) X = enn2real (\<integral>\<^sup>+ x. ennreal (X x) \<partial>(M\<downharpoonright>A))"
     by (rewrite integral_eq_nn_integral; simp)
-  also have "\<dots> = enn2real (1 / prob A * \<integral>\<^sup>+ x. ennreal (X x) \<partial>(restrict_space M A))"
+  also have "\<dots> = enn2real (1 / prob A * (\<integral>\<^sup>+ x. ennreal (X x) \<partial>(restrict_space M A)))"
     using divide_ennreal assms
     by(auto simp: nn_integral_scale_measure cond_prob_space_def measurable_restrict_space1
         emeasure_eq_measure ennreal_1[symmetric] simp del: ennreal_1)

@@ -63,11 +63,11 @@ begin
 
 sublocale sub: grounded_restricted_total_strict_order where
   subst = sub_subst and vars = sub_vars and to_ground = sub_to_ground and
-  from_ground = sub_from_ground
+  from_ground = sub_from_ground and is_ground = sub_is_ground
   by unfold_locales
 
 sublocale grounded_restricted_total_strict_order where
-  subst = subst and vars = vars and to_ground = to_ground and
+  subst = subst and vars = vars and is_ground = is_ground and to_ground = to_ground and
   from_ground = from_ground and less = "(\<prec>\<^sub>m)"
 proof unfold_locales
   have "totalp_on {expr. set_mset expr \<subseteq> range sub_from_ground} (multp (\<prec>))"
@@ -87,7 +87,7 @@ qed
 end
 
 locale based_grounded_multiset_extension =
-  based_substitution_lifting where base_vars = base_vars +
+  based_subst_update_lifting where base_vars = base_vars +
   grounded_multiset_extension +
   base: strict_order where less = base_less
 for
@@ -99,13 +99,13 @@ subsection \<open>Ground substitution stability\<close>
 locale ground_subst_stable_multiset_extension =
   grounded_multiset_extension +
   sub: ground_subst_stable_grounded_order where
-  less = less and subst = sub_subst and vars = sub_vars and from_ground = sub_from_ground and
-  to_ground = sub_to_ground
+  less = less and subst = sub_subst and vars = sub_vars and is_ground = sub_is_ground and
+  from_ground = sub_from_ground and to_ground = sub_to_ground
 begin
 
 sublocale ground_subst_stable_grounded_order where
-  less = "(\<prec>\<^sub>m)" and subst = subst and vars = vars and from_ground = from_ground and
-  to_ground = to_ground
+  less = "(\<prec>\<^sub>m)" and subst = subst and vars = vars and is_ground = is_ground and
+  from_ground = from_ground and to_ground = to_ground
 proof unfold_locales
 
   fix expr\<^sub>1 expr\<^sub>2 \<gamma>
@@ -130,34 +130,34 @@ subsection \<open>Substitution update stability\<close>
 locale subst_update_stable_multiset_extension =
   based_grounded_multiset_extension +
   sub: subst_update_stable_grounded_order where
-  vars = sub_vars and subst = sub_subst and to_ground = sub_to_ground and
-  from_ground = sub_from_ground
+  vars = sub_vars and subst = sub_subst and is_ground = sub_is_ground and
+  to_ground = sub_to_ground and from_ground = sub_from_ground
 begin
 
 (* TODO *)
 no_notation less_eq (infix "\<preceq>" 50)
 
 sublocale subst_update_stable_grounded_order where
-  less = "(\<prec>\<^sub>m)"  and vars = vars and subst = subst and from_ground = from_ground and
-  to_ground = to_ground
+  less = "(\<prec>\<^sub>m)"  and vars = vars and subst = subst and is_ground = is_ground and
+  from_ground = from_ground and to_ground = to_ground
 proof unfold_locales
   fix update x \<gamma> expr
 
   assume assms:
-    "base.is_ground update" "base_less update (x \<cdot>v \<gamma>)" "is_ground (expr \<cdot> \<gamma>)" "x \<in> vars expr"
+    "base_is_ground update" "base_less update (x \<cdot>v \<gamma>)" "is_ground (expr \<cdot> \<gamma>)" "x \<in> vars expr"
 
   moreover then have "\<forall>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<gamma>\<lbrakk>x := update\<rbrakk> \<preceq> sub \<cdot>\<^sub>s \<gamma>"
     using
-      sub.subst_update_stability
-      sub.subst_reduntant_upd
+      sub.subst_update_stability 
       to_mset_to_set
       to_set_is_ground_subst
-    by blast
+    by fastforce
 
   moreover have "\<exists>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<gamma>\<lbrakk>x := update\<rbrakk> \<prec> (sub \<cdot>\<^sub>s \<gamma>)"
     using sub.subst_update_stability assms
-    unfolding vars_def subst_def to_mset_to_set
-    by fastforce
+    unfolding vars_def to_mset_to_set
+    using assms(3)
+    by blast
 
   ultimately show "expr \<cdot> \<gamma>\<lbrakk>x := update\<rbrakk> \<prec>\<^sub>m expr \<cdot> \<gamma>"
     using less_if_all_lesseq_ex_less

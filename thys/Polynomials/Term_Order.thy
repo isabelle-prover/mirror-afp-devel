@@ -6,8 +6,6 @@ theory Term_Order
   imports Poly_Mapping_OAlist "HOL-Library.Product_Lexorder"
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Type Class \<open>nat\<close>\<close>
 
 class nat = zero + plus + minus + order + equal +
@@ -444,10 +442,10 @@ instantiation pp :: (nat, nat) nat_pp_compare
 begin
 
 definition rep_nat_pp_pp :: "('a, 'b) pp \<Rightarrow> (nat, nat) pp"
-  where rep_nat_pp_pp_def [code del]: "rep_nat_pp_pp x = pp_of_fun (\<lambda>n::nat. rep_nat (lookup_pp x (abs_nat n)))"
+  where rep_nat_pp_pp_def [code abort]: "rep_nat_pp_pp x = pp_of_fun (\<lambda>n::nat. rep_nat (lookup_pp x (abs_nat n)))"
 
 definition abs_nat_pp_pp :: "(nat, nat) pp \<Rightarrow> ('a, 'b) pp"
-  where abs_nat_pp_pp_def [code del]: "abs_nat_pp_pp t = pp_of_fun (\<lambda>n::'a. abs_nat (lookup_pp t (rep_nat n)))"
+  where abs_nat_pp_pp_def [code abort]: "abs_nat_pp_pp t = pp_of_fun (\<lambda>n::'a. abs_nat (lookup_pp t (rep_nat n)))"
 
 definition lex_comp'_pp :: "('a, 'b) pp comparator"
   where lex_comp'_pp_def: "lex_comp'_pp = comp_of_ord lex_pp"

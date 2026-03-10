@@ -241,14 +241,14 @@ proof -
 qed
 
 private lemma poly_newton_poly: "poly (newton_poly n) y = sum_list (map (\<lambda> i. c i * poly (N i) y) [0 ..< Suc n])"
-  unfolding newton_poly_sum poly_sum_list map_map o_def by simp
+  unfolding newton_poly_sum poly_sum_list_eq map_map o_def by simp
 
 private definition "pprod k i j = (\<Prod>l\<leftarrow>[i..<j]. xd k l)"
 
 private lemma poly_N_xi: "poly (N i) (x j) = pprod j 0 i"
 proof -
   have "poly (N i) (x j) = (\<Prod>l\<leftarrow>[0..<i]. xd j l)"
-    unfolding N_def Xij_def poly_prod_list X_def[abs_def] map_map o_def xd_def by simp
+    unfolding N_def Xij_def poly_prod_list_eq X_def[abs_def] map_map o_def xd_def by simp
   also have "\<dots> = pprod j 0 i" unfolding pprod_def ..
   finally show ?thesis .
 qed

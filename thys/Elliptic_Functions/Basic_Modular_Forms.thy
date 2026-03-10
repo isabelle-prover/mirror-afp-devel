@@ -1,7 +1,28 @@
 section \<open>Eisenstein series and related invariants as modular forms\<close>
 theory Basic_Modular_Forms
-  imports Eisenstein_Series Modular_Fundamental_Region
+imports
+  Eisenstein_Series Modular_Fundamental_Region
+  Elliptic_Functions_Library FPS_Homomorphism
+  "Kummer_Congruence.Kummer_Library"
 begin
+
+(* TODO: Move? *)
+lemma zeta_of_nat_eq_0_iff: "zeta (of_nat n) = 0 \<longleftrightarrow> n = 1"
+proof -
+  consider "n = 0" | "n = 1" | "n \<ge> 2"
+    by linarith
+  thus ?thesis
+  proof cases
+    assume "n \<ge> 2"
+    hence "zeta (of_nat n) \<noteq> 0"
+      by (intro zeta_Re_gt_1_nonzero) auto
+    with \<open>n \<ge> 2\<close> show ?thesis
+      by auto
+  qed (auto simp: zeta_1)
+qed
+
+
+unbundle modgrp_notation
 
 text \<open>
   In a previous section we defined the Eisenstein series $g_k$, the modular discriminant $\Delta$,
@@ -47,12 +68,20 @@ proof -
     by simp
 qed
 
+lemma (in complex_lattice) invariant_g2_eq_Eisenstein_G:
+  "invariant_g2 = 60 * Eisenstein_G 4 (\<omega>2 / \<omega>1) / \<omega>1 ^ 4"
+  unfolding invariant_g2_def eisenstein_series_eq_Eisenstein_G by simp
+
+lemma (in complex_lattice) invariant_g3_eq_Eisenstein_G:
+  "invariant_g3 = 140 * Eisenstein_G 6 (\<omega>2 / \<omega>1) / \<omega>1 ^ 6"
+  unfolding invariant_g3_def eisenstein_series_eq_Eisenstein_G by simp
+
 lemma Eisenstein_G_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> Eisenstein_G k z = 0"
   by (simp add: Eisenstein_G_def)
 
 lemma Eisenstein_G_0 [simp]: 
   assumes [simp]: "z \<notin> \<real>"
-  shows   "Eisenstein_G 0 z = 1"
+  shows   "Eisenstein_G 0 z = -1"
 proof -
   interpret complex_lattice 1 z
     by unfold_locales (auto simp: fundpair_def)
@@ -135,7 +164,7 @@ proof (cases "k = 0 \<or> odd k")
   thus ?thesis
   proof
     assume [simp]: "k = 0"
-    have "(\<lambda>_. 1) holomorphic_on -\<real>"
+    have "(\<lambda>_. -1) holomorphic_on -\<real>"
       by (rule holomorphic_intros)
     also have "?this \<longleftrightarrow> Eisenstein_G k holomorphic_on -\<real>"
       by (rule holomorphic_cong) auto
@@ -202,6 +231,29 @@ lemma Eisenstein_G_meromorphic [meromorphic_intros]:
   by (rule meromorphic_on_compose[OF _ assms(1) order.refl])
      (use assms(2) in \<open>auto intro!: analytic_intros analytic_on_imp_meromorphic_on\<close>)
 
+lemma tendsto_Eisenstein_G [tendsto_intros]:
+  assumes "(f \<longlongrightarrow> z) F" "odd k \<or> z \<notin> \<real>"
+  shows   "((\<lambda>z. Eisenstein_G k (f z)) \<longlongrightarrow> Eisenstein_G k z) F"
+proof -
+  have "Eisenstein_G k analytic_on {z}"
+    by (rule analytic_intros) (use assms in auto)
+  with assms(1) show ?thesis
+    by (metis analytic_at_imp_isCont isCont_tendsto_compose)
+qed
+
+lemma continuous_Eisenstein_G [continuous_intros]:
+  "continuous (at x within A) f \<Longrightarrow> odd k \<or> f x \<notin> \<real> \<Longrightarrow>
+     continuous (at x within A) (\<lambda>z. Eisenstein_G k (f z))"
+  unfolding continuous_def
+  using tendsto_Eisenstein_G[of f "f x" "at x within A"]
+  by (cases "at x within A = bot") (auto simp: Lim_ident_at)
+
+lemma continuous_on_Eisenstein_G [continuous_intros]:
+  "continuous_on A f \<Longrightarrow> odd k \<or> (\<forall>x\<in>A. f x \<notin> \<real>) \<Longrightarrow>
+     continuous_on A (\<lambda>z. Eisenstein_G k (f z))"
+  by (rule continuous_on_compose2[of "if even k then -\<real> else UNIV" _ _ f])
+     (auto intro!: holomorphic_on_imp_continuous_on holomorphic_intros)
+
 text \<open>
   We can also lift our earlier results about the Fourier expansion of $G_k$ to this new
   viewpoint of $G_k(z)$. This is Theorem~1.18 in Apostol's book.
@@ -223,13 +275,252 @@ proof -
   finally show ?thesis .
 qed
 
+
 text \<open>
-  We show how the modular group acts on $G_k$. The case $k = 2$ is more complicated and will
+  We explicitly define the $q$-expansion of $G_n$ as a holomorphic function on the unit disc.
+\<close>
+definition q_Eisenstein_G :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
+  "q_Eisenstein_G k q = (if k = 0 then -1 else if odd k then 0 else
+     2 * (zeta k + (2*\<i>*pi) ^ k / fact (k - 1) * lambert (\<lambda>n. of_nat n ^ (k - 1)) q))"
+
+lemma holomorphic_on_q_Eisenstein_G [holomorphic_intros]:
+  "f holomorphic_on A \<Longrightarrow> (\<And>z. z \<in> A \<Longrightarrow> norm (f z) < 1) \<Longrightarrow>
+     (\<lambda>z. q_Eisenstein_G k (f z)) holomorphic_on A"
+  unfolding q_Eisenstein_G_def
+  by (cases "k = 0"; cases "even k")
+     (force intro!: holomorphic_intros simp: lambert_conv_radius_power_of_nat)+
+
+lemma analytic_on_q_Eisenstein_G [analytic_intros]:
+  "f analytic_on A \<Longrightarrow> (\<And>z. z \<in> A \<Longrightarrow> norm (f z) < 1) \<Longrightarrow>
+     (\<lambda>z. q_Eisenstein_G k (f z)) analytic_on A"
+  unfolding q_Eisenstein_G_def
+  by (cases "k = 0"; cases "even k")
+     (force intro!: analytic_intros simp: lambert_conv_radius_power_of_nat)+
+
+lemma tendsto_q_Eisenstein_G [tendsto_intros]:
+  assumes "(f \<longlongrightarrow> q) F" "norm q < 1"
+  shows   "((\<lambda>z. q_Eisenstein_G k (f z)) \<longlongrightarrow> q_Eisenstein_G k q) F"
+proof -
+  have "q_Eisenstein_G k analytic_on {q}"
+    by (rule analytic_intros) (use assms in auto)
+  with assms(1) show ?thesis
+    by (metis analytic_at_imp_isCont isCont_tendsto_compose)
+qed
+
+lemma continuous_q_Eisenstein_G [continuous_intros]:
+  "continuous (at x within A) f \<Longrightarrow> norm (f x) < 1 \<Longrightarrow>
+     continuous (at x within A) (\<lambda>z. q_Eisenstein_G k (f z))"
+  unfolding continuous_def
+  using tendsto_q_Eisenstein_G[of f "f x" "at x within A"]
+  by (cases "at x within A = bot") (auto simp: Lim_ident_at)
+
+
+text \<open>
+  The following is the formal $q$-expansion of $G_n$.
+\<close>
+definition fps_Eisenstein_G :: "nat \<Rightarrow> complex fps" where
+  "fps_Eisenstein_G k = (if k = 0 then -1 else if odd k then 0 else
+     2 * (fps_const (zeta k) + 
+          fps_const ((2*\<i>*pi) ^ k / fact (k-1)) * Abs_fps (divisor_sigma (k-1))))"
+
+lemma has_fps_expansion_lambert_sigma_power [fps_expansion_intros]:
+  "lambert (\<lambda>n. of_nat n ^ k :: 'a :: {nat_power_normed_field,banach}) has_fps_expansion 
+     Abs_fps (\<lambda>n. of_nat (divisor_sigma k n))"
+proof (rule has_fps_expansionI)
+  let ?F = "Abs_fps (\<lambda>n. of_nat (divisor_sigma k n))"
+  have "eventually (\<lambda>q. q \<in> ball 0 1) (nhds (0::'a))"
+    by (rule eventually_nhds_in_open) auto
+  thus "eventually (\<lambda>q. (\<lambda>n. fps_nth ?F n * q ^ n) sums lambert (\<lambda>n. of_nat n ^ k) q) (nhds (0::'a))"
+  proof eventually_elim
+    case (elim q)
+    thus ?case
+      using divisor_sigma_powser_conv_lambert[of q "of_nat k"] by (simp add: divisor_sigma_of_nat)
+  qed
+qed
+
+lemma has_fps_expansion_q_Eisenstein_G [fps_expansion_intros]:
+  "q_Eisenstein_G k has_fps_expansion fps_Eisenstein_G k"
+proof (cases "k = 0 \<or> odd k")
+  case True
+  thus ?thesis
+    by (auto simp: q_Eisenstein_G_def [abs_def] fps_Eisenstein_G_def intro: fps_expansion_intros)
+next
+  case k: False
+  have "(\<lambda>q. 2 * (zeta k + (2*\<i>*pi) ^ k / fact (k - 1) * lambert (\<lambda>n. of_nat n ^ (k - 1)) q))
+          has_fps_expansion 2 * (fps_const (zeta k) +
+                            fps_const ((2*\<i>*pi) ^ k / fact (k-1)) * Abs_fps (divisor_sigma (k-1)))"
+    by (intro fps_expansion_intros)
+  thus ?thesis using k
+    by (auto simp: q_Eisenstein_G_def [abs_def] fps_Eisenstein_G_def simp flip: divisor_sigma_of_nat)
+qed
+
+lemma Eisenstein_G_conv_q:
+  assumes z: "Im z > 0"
+  shows   "Eisenstein_G k z = q_Eisenstein_G k (to_q 1 z)"
+proof -
+  from assms have [simp]: "z \<notin> \<real>"
+    by (auto elim!: Reals_cases)
+  consider "k = 0" | "odd k" | "even k" "k \<ge> 2"
+    by force
+  thus ?thesis
+  proof cases
+    assume [simp]: "k = 0"
+    thus ?thesis by (use z in \<open>auto simp: q_Eisenstein_G_def\<close>)
+  next
+    assume "odd k"
+    moreover from this have "k > 0"
+      by (auto elim!: oddE)
+    ultimately show ?thesis
+      by (auto simp: q_Eisenstein_G_def)
+  next
+    assume "even k" "k \<ge> 2"
+    thus ?thesis
+      using Eisenstein_G_fourier_expansion[of z k] z by (auto simp: q_Eisenstein_G_def)
+  qed
+qed
+
+
+text \<open>
+  We translate our machinery for deducing representations of $G_n$ in terms of $G_4$ and $G_6$
+  to work for our new views of $G_n$, including its $q$-series.
+\<close>
+lemma eisenstein_series_poly_Eisenstein_G:
+  "poly2 (map_poly2 of_rat (eisenstein_series_poly n))
+     (Eisenstein_G 4 z) (Eisenstein_G 6 z) = Eisenstein_G (2 * n + 4) z"
+proof (cases "z \<in> \<real>")
+  case True
+  thus ?thesis
+    by (simp add: Eisenstein_G_def map_poly2_def hom_distribs poly2_def poly_0_coeff_0 coeff_map_poly)
+next
+  case False
+  interpret complex_lattice 1 z
+    by standard (use False in \<open>auto simp: fundpair_def\<close>)
+  show ?thesis
+    using False by (simp add: Eisenstein_G_def eisenstein_series_poly_correct)
+qed
+
+lemma eisenstein_series_poly_q_Eisenstein_G:
+  assumes "norm q < 1"
+  shows   "poly2 (map_poly2 of_rat (eisenstein_series_poly n))
+             (q_Eisenstein_G 4 q) (q_Eisenstein_G 6 q) = q_Eisenstein_G (2 * n + 4) q"
+          (is "?lhs q = ?rhs q")
+proof -
+  define f where "f = (\<lambda>q. ?lhs q - ?rhs q)"
+  have f_eq_0: "f q = 0" if q: "norm q < 1" "q \<noteq> 0" for q
+  proof -
+    show ?thesis
+      using eisenstein_series_poly_Eisenstein_G[of n "of_q 1 q"] q
+      by (simp add: f_def Eisenstein_G_conv_q Im_of_q divide_less_0_iff)
+  qed
+
+  show ?thesis
+  proof (cases "q = 0")
+    case True
+    have "isCont f 0"
+      unfolding f_def  by (intro continuous_intros continuous_within_poly2) auto
+    hence "f \<midarrow>0\<rightarrow> f 0"
+      by (rule isContD)
+    moreover have "eventually (\<lambda>q. q \<in> ball 0 1 - {0}) (at (0::complex))"
+      by (rule eventually_at_in_open) auto
+    hence "eventually (\<lambda>q. f q = 0) (at 0)"
+      by eventually_elim (use f_eq_0 in auto)
+    hence "f \<midarrow>0\<rightarrow> 0"
+      using tendsto_eventually by blast
+    ultimately have "f 0 = 0"
+      by (rule tendsto_unique[rotated]) auto
+    thus ?thesis
+      using True by (simp add: f_def)
+  qed (use f_eq_0[of q] assms in \<open>auto simp: f_def\<close>)
+qed
+
+lemma eisenstein_series_poly_fps_Eisenstein_G:
+  "poly2 (map_poly2 (fps_const \<circ> of_rat) (eisenstein_series_poly n))
+     (fps_Eisenstein_G 4) (fps_Eisenstein_G 6) = fps_Eisenstein_G (2 * n + 4)" (is "?lhs = ?rhs")
+proof -
+  define F where "F = poly2 (map_poly2 fps_const (map_poly2 of_rat (eisenstein_series_poly n)))
+     (fps_Eisenstein_G 4) (fps_Eisenstein_G 6) - fps_Eisenstein_G (2 * n + 4)"
+  define f where "f = (\<lambda>q. poly2 (map_poly2 of_rat (eisenstein_series_poly n))
+                        (q_Eisenstein_G 4 q) (q_Eisenstein_G 6 q) - q_Eisenstein_G (2 * n + 4) q)"
+  have "f has_fps_expansion F"
+    unfolding f_def F_def by (intro fps_expansion_intros)
+  moreover have "eventually (\<lambda>q. q \<in> ball 0 1) (nhds (0::complex))"
+      by (rule eventually_nhds_in_open) auto
+  hence "eventually (\<lambda>q. f q = 0) (nhds 0)"
+  proof eventually_elim
+    case (elim q)
+    thus ?case using eisenstein_series_poly_q_Eisenstein_G[of q n] by (simp add: f_def)
+  qed
+  ultimately have "F = 0"
+    by (metis fps_expansion_unique_complex has_fps_expansion_0_iff)
+  also have "F = ?lhs - ?rhs"
+    unfolding F_def by (subst map_poly2_compose) auto
+  finally show ?thesis by simp
+qed
+
+text \<open>
+  As an application, we show that the identities for $G_n$ give rise to related identities on 
+  the divisor function by looking at the coefficients of the $q$-expansions, i.e.\ 
+  $G_8 = \frac{3}{7}G_4^2$ gives rise to
+  \[\sigma_7(n) = \sigma_3(n) + 120 \sum_{k=1}^{n-1} \sigma_3(k)\sigma_3(n-k)\ .\]
+\<close>
+theorem divisor_sigma_7_conv_3:
+  "divisor_sigma 7 n = 
+     divisor_sigma 3 n + 120 * (\<Sum>k=1..<n. divisor_sigma 3 k * divisor_sigma 3 (n - k))"
+proof (cases "n > 0")
+  case n: True
+  define G where "G = fps_Eisenstein_G"
+  define a where "a = fps_const (3/7::complex)"
+  define b where "b = fps_const (zeta 4)"
+  define c where "c = (32 / 315 * pi ^ 8)"
+  write divisor_sigma ("\<sigma>")
+
+  have "G 8 = a * G 4 ^ 2"
+    using eisenstein_series_poly_fps_Eisenstein_G[of 2]
+    by (simp add: a_def eisenstein_series_poly_rec numeral_poly G_def power2_eq_square of_rat_divide mult_ac)
+  hence "Re (fps_nth (G 8) n) / c = Re (fps_nth (a * G 4 ^ 2) n) / c"
+    by (rule arg_cong)
+  also have "fps_nth (G 8) n = of_real (32 / 315 * pi ^ 8 * \<sigma> 7 n)"
+    using n by (simp add: a_def G_def fps_Eisenstein_G_def fact_numeral power_mult_distrib 
+                     flip: divisor_sigma_of_real)
+  also have "a * G 4 ^ 2 = 4 * a * (b + fps_const (240 * zeta 4) * Abs_fps (\<sigma> 3))\<^sup>2"
+    by (simp add: G_def fps_Eisenstein_G_def fact_numeral zeta_even_numeral 
+                  b_def power2_eq_square algebra_simps)
+  also have "fps_const (240 * zeta 4) = 240 * b"
+    by (simp add: b_def)
+  also have "4 * a * (b + 240 * b * Abs_fps (\<sigma> 3))\<^sup>2 =
+             4 * a * b\<^sup>2 * (1 + 240 * Abs_fps (\<sigma> 3))\<^sup>2"
+    by (simp add: power2_eq_square algebra_simps)
+  also have "fps_nth \<dots> n = 
+               of_real pi ^ 8 / 4725 * fps_nth ((1 + 240 * Abs_fps (\<sigma> 3)) ^ 2) n"
+    by (simp add: a_def b_def mult.assoc zeta_even_numeral power_mult_distrib fact_numeral power_divide)
+  also have "fps_nth ((1 + 240 * Abs_fps (\<sigma> (3::complex))) ^ 2) n = 
+               480 * \<sigma> 3 n + 57600 * fps_nth (Abs_fps (\<sigma> 3) ^ 2) n"
+    using n by (simp add: power2_eq_square ring_distribs)
+  also have "fps_nth (Abs_fps (\<sigma> (3::complex)) ^ 2) n = (\<Sum>i=0..n. \<sigma> 3 i * \<sigma> 3 (n - i))"
+    by (simp add: power2_eq_square fps_mult_nth)
+  also have "\<dots> = (\<Sum>i=1..<n. \<sigma> 3 i * \<sigma> 3 (n - i))"
+    by (rule sum.mono_neutral_right) (auto simp: Suc_le_eq)
+  finally have "(\<sigma> 7 n :: real) = \<sigma> 3 n + 120 * (\<Sum>k=1..<n. \<sigma> 3 k * \<sigma> 3 (n - k))"
+    by (simp add: c_def)
+
+  hence "real (\<sigma> 7 n) = real (\<sigma> 3 n + 120 * (\<Sum>k=1..<n. \<sigma> 3 k * \<sigma> 3 (n - k)))"
+    unfolding of_nat_add by (simp flip: divisor_sigma_of_nat)
+  hence "\<sigma> (7::nat) n = \<sigma> 3 n + 120 * (\<Sum>k=1..<n. \<sigma> 3 k * \<sigma> 3 (n - k))"
+    by (subst (asm) of_nat_eq_iff)
+  hence "of_nat (\<sigma> 7 n) = (of_nat (\<sigma> 3 n + 120 * (\<Sum>k=1..<n. \<sigma> 3 k * \<sigma> 3 (n - k))) :: 'a)"
+    by (rule arg_cong)
+  thus ?thesis
+    by (simp flip: divisor_sigma_of_nat)
+qed auto  
+
+
+text \<open>
+  We now show how the modular group acts on $G_k$. The case $k = 2$ is more complicated and will
   be dealt with later.
 \<close>
 theorem Eisenstein_G_apply_modgrp:
   assumes "k \<noteq> 2"
-  shows   "Eisenstein_G k (apply_modgrp f z) = modgrp_factor f z ^ k * Eisenstein_G k z"
+  shows   "Eisenstein_G k (apply_modgrp f z) = automorphy_factor f z ^ k * Eisenstein_G k z"
 proof (cases "z \<in> \<real>")
   case False
   interpret complex_lattice 1 z
@@ -239,12 +530,12 @@ proof (cases "z \<in> \<real>")
   have "Eisenstein_G k (apply_modgrp f z) = Eisenstein_G k (\<omega>2' / \<omega>1')"
     unfolding moebius_def modgrp.\<phi>_def \<omega>1'_def \<omega>2'_def 
     by (simp add: apply_modgrp_altdef moebius_def)
-  also have "\<dots> = modgrp_factor f z ^ k * transformed.eisenstein_series k"
+  also have "\<dots> = automorphy_factor f z ^ k * transformed.eisenstein_series k"
     by (subst transformed.eisenstein_series_eq_Eisenstein_G)
-       (auto simp: \<omega>1'_def power_int_minus field_simps modgrp_factor_def)
-  also have "\<dots> = modgrp_factor f z ^ k * eisenstein_series k"
+       (auto simp: \<omega>1'_def power_int_minus field_simps automorphy_factor_altdef)
+  also have "\<dots> = automorphy_factor f z ^ k * eisenstein_series k"
     using assms by simp
-  also have "\<dots> = modgrp_factor f z ^ k * Eisenstein_G k z"
+  also have "\<dots> = automorphy_factor f z ^ k * Eisenstein_G k z"
     by (subst eisenstein_series_eq_Eisenstein_G) auto
   finally show ?thesis .
 qed auto
@@ -283,6 +574,128 @@ next
   qed
 qed
 
+lemma Eisenstein_G_plus1: "Eisenstein_G k (z + 1) = Eisenstein_G k z"
+  using Eisenstein_G_plus_int[of k z 1] by simp
+
+
+subsection \<open>The monomials of the Eisenstein polynomial\<close>
+
+text \<open>
+  The polynomial $P(X,Y)$ that gives us $E_{2n+4} = P(E_4, E_6)$ only has monomials of the form
+  $X^i Y^j$ with $4i + 6j = 2n+4$.
+\<close>
+definition coeff2 where "coeff2 p m n = poly.coeff (poly.coeff p n) m"
+
+definition is_46_poly :: "nat \<Rightarrow> 'a :: comm_ring_1 poly poly \<Rightarrow> bool" where
+  "is_46_poly n p \<longleftrightarrow> (\<forall>i j. coeff2 p i j \<noteq> 0 \<longrightarrow> 4 * i + 6 * j = n)"
+
+lemma is_46_poly_induct [consumes 1, case_names zero add smult monom]:
+  assumes "is_46_poly n p"
+  assumes "P 0"
+  assumes "\<And>p q. P p \<Longrightarrow> P q \<Longrightarrow> P (p + q)"
+  assumes "\<And>p c. P p \<Longrightarrow> P (Polynomial.smult [:c:] p)"
+  assumes "\<And>i j. 4 * i + 6 * j = n \<Longrightarrow> P (Polynomial.monom (Polynomial.monom 1 i) j)"
+  shows   "P p"
+proof -
+  define I where "I = (SIGMA j:{..degree p}. {i\<in>{..degree (poly.coeff p j)}. coeff2 p i j \<noteq> 0})"
+  have sum: "P (\<Sum>x\<in>I. f x)" if "\<And>x. x \<in> I \<Longrightarrow> P (f x)" for f
+    using that by (induction I rule: infinite_finite_induct) (auto intro!: assms)
+
+  have "p = (\<Sum>j\<le>degree p. \<Sum>i\<le>degree (poly.coeff p j). Polynomial.monom (Polynomial.monom (coeff2 p i j) i) j)"
+    by (subst poly_as_sum_of_monoms [symmetric], subst (2) poly_as_sum_of_monoms [symmetric])
+       (simp add: monom_sum coeff2_def)
+  also have "\<dots> = (\<Sum>(i,j)\<in>(SIGMA i:{..degree p}. {..degree (poly.coeff p i)}). 
+                     Polynomial.monom (Polynomial.monom (coeff2 p j i) j) i)"
+    by (subst sum.Sigma) (auto simp: case_prod_unfold)
+  also have "\<dots> = (\<Sum>(i,j)\<in>I. Polynomial.monom (Polynomial.monom (coeff2 p j i) j) i)"
+    by (intro sum.mono_neutral_right) (auto simp: I_def)
+  also have "\<dots> = (\<Sum>(i,j)\<in>I. Polynomial.smult [:coeff2 p j i:] (Polynomial.monom (Polynomial.monom 1 j) i))"
+    by (intro sum.cong) (auto simp: smult_monom)
+  also have "P \<dots>" unfolding case_prod_unfold 
+    by (intro sum assms) (use assms(1) in \<open>auto simp: I_def is_46_poly_def\<close>)
+  finally show ?thesis .
+qed
+
+lemma is_46_poly_0: "is_46_poly n 0"
+  by (force simp: is_46_poly_def coeff2_def)
+
+lemma is_46_poly_1: "is_46_poly 0 1"
+  by (force simp: is_46_poly_def coeff2_def)
+
+lemma is_46_poly_const: "is_46_poly 0 [: [:c:] :]"
+  by (auto simp: is_46_poly_def coeff2_def coeff_pCons split: nat.splits)
+
+lemma is_46_poly_x: "is_46_poly 4 [: [: 0, 1 :] :]"
+  by (auto simp: is_46_poly_def coeff2_def coeff_pCons split: nat.splits)
+
+lemma is_46_poly_y: "is_46_poly 6 [: 0, [:1:] :]"
+  by (auto simp: is_46_poly_def coeff2_def coeff_pCons split: nat.splits)
+
+lemma is_46_poly_x_power: "m = 4 * n \<Longrightarrow> is_46_poly m [: Polynomial.monom c n :]"
+  by (auto simp: is_46_poly_def coeff2_def coeff_pCons split: nat.splits)
+
+lemma is_46_poly_y_power: "m = 6 * n \<Longrightarrow> is_46_poly m (Polynomial.monom [:c:] n)"
+  by (auto simp: is_46_poly_def coeff2_def coeff_pCons split: nat.splits)
+
+lemma is_46_poly_smult:
+  assumes "is_46_poly n p"
+  shows   "is_46_poly n (Polynomial.smult [:c:] p)"
+  using assms by (force simp: is_46_poly_def coeff2_def coeff_smult)
+
+lemma is_46_poly_add:
+  assumes "is_46_poly n p" "is_46_poly n q"
+  shows   "is_46_poly n (p + q)"
+  using assms by (force simp: is_46_poly_def coeff2_def)
+
+lemma is_46_poly_diff:
+  assumes "is_46_poly n p" "is_46_poly n q"
+  shows   "is_46_poly n (p - q)"
+  using assms by (force simp: is_46_poly_def coeff2_def)
+
+lemma is_46_poly_uminus:
+  assumes "is_46_poly n p"
+  shows   "is_46_poly n (-p)"
+  using assms by (force simp: is_46_poly_def coeff2_def)
+
+lemma is_46_poly_sum:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> is_46_poly n (p x)"
+  shows   "is_46_poly n (\<Sum>x\<in>A. p x)" using assms 
+  by (induction A rule: infinite_finite_induct) (auto intro: is_46_poly_add is_46_poly_0)
+
+lemma is_46_poly_mult:
+  assumes "is_46_poly n1 p" "is_46_poly n2 q" "n = n1 + n2"
+  shows   "is_46_poly n (p * q)"
+  unfolding is_46_poly_def
+proof safe
+  fix i j assume "coeff2 (p * q) i j \<noteq> 0"
+  then obtain i' j' where *: "i' \<le> i" "j' \<le> j" "coeff2 p i' j' \<noteq> 0" "coeff2 q (i - i') (j - j') \<noteq> 0"
+    by (auto simp: is_46_poly_def coeff_mult coeff2_def coeff_sum 
+             elim!: sum.not_neutral_contains_not_neutral dest!: mult_not_zero)
+  with assms have "4 * i' + 6 * j' = n1" "4 * (i - i') + 6 * (j - j') = n2" 
+    unfolding is_46_poly_def by force+
+  thus "4 * i + 6 * j = n"
+    using *(1,2) \<open>n = n1 + n2\<close> by (simp add: algebra_simps)
+qed
+
+lemma is_46_poly_power:
+  assumes "is_46_poly n' p" "n = m * n'"
+  shows   "is_46_poly n (p ^ m)" using assms(1) unfolding assms(2)
+  by (induction m) (auto intro!: is_46_poly_mult is_46_poly_1)
+
+lemma is_46_poly_eisenstein_series_poly: "is_46_poly (2*n+4) (eisenstein_series_poly n)"
+proof (induction n rule: less_induct)
+  case (less n)
+  consider "n = 0" | "n = 1" | "n \<ge> 2"
+    by linarith
+  thus ?case
+  proof cases
+    assume n: "n \<ge> 2"
+    show ?thesis using n
+      by (auto intro!: is_46_poly_x is_46_poly_y is_46_poly_smult is_46_poly_sum is_46_poly_mult less.IH
+               simp: of_nat_poly eisenstein_series_poly_rec simp flip: pCons_one)
+  qed (use is_46_poly_x is_46_poly_y in auto)
+qed
+
 
 subsection \<open>The normalised Eisenstein series\<close>
 
@@ -292,25 +705,12 @@ text \<open>
   \[E_k(z) = 1 - \frac{2k}{B_k} \sum_{n=1}^\infty \sigma_{k-1}(n) q^n\ .\]
 \<close>
 definition Eisenstein_E :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
-  "Eisenstein_E k z = (if k = 0 then if z \<in> \<real> then 0 else 1 else Eisenstein_G k z / (2 * zeta k))"
+  "Eisenstein_E k z = Eisenstein_G k z / (2 * zeta k)"
 
-lemma Eisenstein_E_fourier:
-  assumes "Im z > 0" "k \<ge> 2" "even k"
-  shows   "Eisenstein_E k z = 1 - 2 * k / bernoulli k * lambert (\<lambda>n. n^(k-1)) (to_q 1 z)"
-proof -
-  obtain l where l: "k = 2 * l" "l > 0"
-    using assms by (elim evenE) auto
-  have "Eisenstein_E k z = 1 + (2 * \<i> * pi) ^ k / (fact (k - 1) * zeta k) * lambert (\<lambda>n. n^(k-1)) (to_q 1 z)"
-    using assms unfolding Eisenstein_E_def
-    by (subst Eisenstein_G_fourier_expansion)
-       (auto simp: add_divide_distrib zeta_Re_gt_1_nonzero)
-  also have "fact (k - 1) = fact k / complex_of_nat k"
-    using assms by (subst fact_reduce) auto
-  also have "(2 * \<i> * pi) ^ k / (\<dots> * zeta k) = -2 * k / bernoulli k"
-    using l(2) by (auto simp: l zeta_even_nat power_mult_distrib)
-  finally show ?thesis 
-    by simp
-qed
+
+(* TODO Move *)
+lemma of_real_of_rat [simp]: "of_real (of_rat x) = of_rat x"
+  by (cases x) (auto simp: of_rat_rat hom_distribs)
 
 lemma Eisenstein_E_0 [simp]: "z \<notin> \<real> \<Longrightarrow> Eisenstein_E 0 z = 1"
   by (simp add: Eisenstein_E_def)
@@ -326,6 +726,12 @@ lemma Eisenstein_E_odd [simp]:
   shows   "Eisenstein_E k z = 0"
   using assms by (auto simp: Eisenstein_E_def elim!: oddE)
 
+lemma Eisenstein_E_plus_int: "Eisenstein_E k (z + of_int m) = Eisenstein_E k z"
+  by (auto simp: Eisenstein_E_def Eisenstein_G_plus_int complex_is_Real_iff)
+
+lemma Eisenstein_E_plus1: "Eisenstein_E k (z + 1) = Eisenstein_E k z"
+  using Eisenstein_E_plus_int[of k z 1] by simp
+
 lemma Eisenstein_E_uminus: "Eisenstein_E k (-z) = Eisenstein_E k z"
   by (simp add: Eisenstein_E_def Eisenstein_G_uminus)
 
@@ -333,23 +739,12 @@ lemma Eisenstein_E_analytic [analytic_intros]:
   assumes "f analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> odd k \<or> f z \<notin> \<real>"
   shows   "(\<lambda>z. Eisenstein_E k (f z)) analytic_on A"
 proof -
-  consider "k = 0" | "k = 1" | "k \<ge> 2"
-    by linarith
-  thus ?thesis
-  proof cases
-    assume [simp]: "k = 0"
-    have "(\<lambda>z. Eisenstein_G 0 (f z)) analytic_on A"
-      using assms by (auto intro!: analytic_intros)
-    also have "(\<lambda>z. Eisenstein_G 0 (f z)) = (\<lambda>z. Eisenstein_E 0 (f z))"
-      by (auto simp: Eisenstein_E_def)
-    finally show ?thesis
-      by simp
-  next
-    assume "k \<ge> 2"
-    thus ?thesis 
-      unfolding Eisenstein_E_def using assms
-      by (auto intro!: analytic_intros simp: zeta_Re_gt_1_nonzero)
-  qed (auto simp: Eisenstein_E_def)
+  define c where "c = inverse (2 * zeta (of_nat k) :: complex)"
+  have "(\<lambda>z. c * Eisenstein_G k (f z)) analytic_on A"
+    by (intro analytic_intros) (use assms in auto)
+  also have "(\<lambda>z. c * Eisenstein_G k (f z)) = (\<lambda>z. Eisenstein_E k (f z))"
+    by (auto simp: Eisenstein_E_def fun_eq_iff c_def field_simps)
+  finally show ?thesis .
 qed
 
 lemma Eisenstein_E_holomorphic [holomorphic_intros]:
@@ -369,16 +764,548 @@ lemma Eisenstein_E_meromorphic [meromorphic_intros]:
   by (rule meromorphic_on_compose[OF _ assms(1) order.refl])
      (use assms(2) in \<open>auto intro!: analytic_intros analytic_on_imp_meromorphic_on\<close>)
 
+lemma continuous_on_Eisenstein_E [continuous_intros]:
+  "continuous_on A f \<Longrightarrow> odd k \<or> (\<forall>x\<in>A. f x \<notin> \<real>) \<Longrightarrow>
+     continuous_on A (\<lambda>z. Eisenstein_E k (f z))"
+  by (rule continuous_on_compose2[of "if even k then -\<real> else UNIV" _ _ f])
+     (auto intro!: holomorphic_on_imp_continuous_on holomorphic_intros)
+
+
 theorem Eisenstein_E_apply_modgrp:
   assumes "k \<noteq> 2"
-  shows   "Eisenstein_E k (apply_modgrp f z) = modgrp_factor f z ^ k * Eisenstein_E k z"
+  shows   "Eisenstein_E k (apply_modgrp f z) = automorphy_factor f z ^ k * Eisenstein_E k z"
   unfolding Eisenstein_E_def by (subst Eisenstein_G_apply_modgrp) (use assms in auto)
 
 
+text \<open>
+  The Fourier expansion of $E_k(z)$:
+\<close>
+definition q_Eisenstein_E :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
+  "q_Eisenstein_E k q = (if k = 0 then 1 else if odd k then 0 else
+     1 - 2 * of_nat k / of_real (bernoulli k) * lambert (\<lambda>n. of_nat n ^ (k - 1)) q)"
+
+lemma q_Eisenstein_G_conv_E: "q_Eisenstein_G k q = 2 * zeta k * q_Eisenstein_E k q"
+proof (cases "even k \<and> k > 0")
+  case True
+  have "k \<ge> 2"
+    using True by auto
+  from True obtain n where n: "n > 0" and k_eq: "k = 2 * n"
+    by (elim conjE evenE) auto
+  define L where "L = lambert (\<lambda>n. of_nat n ^ (k-1)) q"
+  have "2 * zeta k * q_Eisenstein_E k q = 
+          2 * zeta (of_nat k) * (1 - 2 * of_nat k / of_real (bernoulli k) * L)"
+    using True by (auto simp: q_Eisenstein_E_def L_def)
+  also have "2 * of_nat k / complex_of_real (bernoulli k) = 
+               - ((2 * \<i> * pi) ^ k * (of_nat k / fact k) / zeta (of_nat k))"
+    using n by (simp add: k_eq zeta_even_nat power_mult_distrib)
+  also have "of_nat k / fact k = 1 / (fact (k - 1) :: complex)"
+    using True by (simp add: fact_reduce)
+  also have "2 * zeta (of_nat k) * (1 - -((2 * \<i> * pi) ^ k * (1 / fact (k - 1)) / zeta (of_nat k)) * L) =
+             2 * (zeta (of_nat k) + (2*\<i>*pi)^k / fact (k-1) * L)"
+    using \<open>k \<ge> 2\<close> zeta_Re_gt_1_nonzero[of "of_nat k"] by (simp add: algebra_simps)
+  also have "\<dots> = q_Eisenstein_G k q"
+    using True by (simp add: q_Eisenstein_G_def L_def)
+  finally show ?thesis ..
+qed (auto simp: q_Eisenstein_G_def q_Eisenstein_E_def)
+
+lemma Eisenstein_E_conv_q:
+  assumes z: "Im z > 0"
+  shows   "Eisenstein_E k z = q_Eisenstein_E k (to_q 1 z)"
+proof (cases "k = 1")
+  case False
+  thus ?thesis
+    using assms zeta_of_nat_eq_0_iff[of k]
+    by (auto simp: Eisenstein_E_def Eisenstein_G_conv_q q_Eisenstein_G_conv_E)
+qed (auto simp: q_Eisenstein_E_def)
+
+lemma Eisenstein_E_fourier:
+  assumes "Im z > 0"
+  shows   "Eisenstein_E k z = q_Eisenstein_E k (to_q 1 z)"
+proof (cases "k \<ge> 2 \<and> even k")
+  case True
+  obtain l where l: "k = 2 * l" "l > 0"
+    using assms True by (elim conjE evenE) auto
+  have "Eisenstein_E k z = 1 + (2 * \<i> * pi) ^ k / (fact (k - 1) * zeta k) * lambert (\<lambda>n. n^(k-1)) (to_q 1 z)"
+    using assms True unfolding Eisenstein_E_def
+    by (subst Eisenstein_G_fourier_expansion)
+       (auto simp: add_divide_distrib zeta_Re_gt_1_nonzero)
+  also have "fact (k - 1) = fact k / complex_of_nat k"
+    using assms True by (subst fact_reduce) auto
+  also have "(2 * \<i> * pi) ^ k / (\<dots> * zeta k) = -2 * k / bernoulli k"
+    using l(2) by (auto simp: l zeta_even_nat power_mult_distrib)
+  finally show ?thesis 
+    using assms True by (simp add: q_Eisenstein_E_def)
+qed (use assms in \<open>auto simp: Eisenstein_E_def q_Eisenstein_E_def complex_is_Real_iff
+                        elim!: oddE Reals_cases\<close>)
+
+
+text \<open>
+  The formal power series corresponding to this Fourier expansion:
+\<close>
+definition fps_Eisenstein_E :: "nat \<Rightarrow> complex fps" where
+  "fps_Eisenstein_E k =
+     (if k = 0 then 1 else if odd k then 0 
+      else 1 - fps_const (2 * of_nat k / bernoulli k) * Abs_fps (\<lambda>n. of_nat (divisor_sigma (k-1) n)))"
+
+lemma fps_nth_0_Eisenstein_E [simp]: "even k \<Longrightarrow> fps_nth (fps_Eisenstein_E k) 0 = 1"
+  by (auto simp: fps_Eisenstein_E_def)
+
+lemma fps_Eisenstein_G_conv_E:
+  "fps_Eisenstein_G k = fps_const (2 * zeta k) * fps_Eisenstein_E k"
+proof (cases "even k \<and> k > 0")
+  case True
+  have "k \<ge> 2"
+    using True by auto
+  from True obtain n where n: "n > 0" and k_eq: "k = 2 * n"
+    by (elim conjE evenE) auto
+  define c1 where "c1 = zeta (of_nat k)"
+  define c2 where "c2 = ((2 * \<i> * pi) ^ k / fact (k - 1) / zeta (of_nat k))"
+
+  define L where "L = Abs_fps (\<lambda>n. of_nat (divisor_sigma (k-1) n) :: complex)"
+  have "fps_const (2 * zeta k) * fps_Eisenstein_E k = 
+          2 * fps_const c1 * (1 - fps_const (2 * of_nat k / of_real (bernoulli k)) * L)"
+    using True by (auto simp: fps_Eisenstein_E_def L_def c1_def of_real_bernoulli)
+  also have "2 * of_nat k / complex_of_real (bernoulli k) = 
+               - ((2 * \<i> * pi) ^ k * (of_nat k / fact k) / zeta (of_nat k))"
+    using n by (simp add: k_eq zeta_even_nat power_mult_distrib)
+  also have "of_nat k / fact k = 1 / (fact (k - 1) :: complex)"
+    using True by (simp add: fact_reduce)
+  also have "(2 * \<i> * pi) ^ k * (1 / fact (k - 1)) / zeta (of_nat k) = c2"
+    by (simp add: c2_def)
+  also have "2 * fps_const c1 * (1 - fps_const (-c2) * L) =
+             2 * (fps_const c1 + fps_const (c1 * c2) * L)"
+    by (simp add: algebra_simps flip: fps_const_neg)
+  also have "\<dots> = fps_Eisenstein_G k"
+    using \<open>k \<ge> 2\<close> True zeta_Re_gt_1_nonzero[of "of_nat k"] 
+    by (simp add: c1_def c2_def fps_Eisenstein_G_def L_def flip: divisor_sigma_of_nat)
+  finally show ?thesis ..
+qed (auto simp: fps_Eisenstein_G_def fps_Eisenstein_E_def)
+
+lemma fps_Eisenstein_E_eq_0_iff [simp]: "fps_Eisenstein_E k = 0 \<longleftrightarrow> odd k"
+proof (cases "even k")
+  case True
+  hence "fps_nth (fps_Eisenstein_E k) 0 \<noteq> 0" "fps_nth (0 :: complex fps) 0 = 0"
+    by (auto simp: fps_Eisenstein_E_def)
+  thus ?thesis using True
+    by metis
+qed (auto simp: fps_Eisenstein_E_def elim!: oddE)
+
+lemma subdegree_fps_Eisenstein_E [simp]: "subdegree (fps_Eisenstein_E k) = 0"
+proof (cases "even k")
+  case True
+  thus ?thesis
+    by (intro subdegree_eq_0) (auto simp: fps_Eisenstein_E_def)
+qed (auto simp: fps_Eisenstein_E_def)
+
+lemma has_fps_expansion_q_Eisenstein_E [fps_expansion_intros]:
+  "q_Eisenstein_E k has_fps_expansion fps_Eisenstein_E k"
+proof (cases "k \<ge> 2 \<and> even k")
+  case True
+  have "(\<lambda>q. 1 - 2 * of_nat k / of_real (bernoulli k) * lambert (\<lambda>n. of_nat n ^ (k - 1) :: complex) q)
+          has_fps_expansion (1 - fps_const (2 * of_nat k / of_real (bernoulli k)) * Abs_fps (\<lambda>n. of_nat (divisor_sigma (k-1) n)))"
+    by (intro fps_expansion_intros)
+  thus ?thesis
+    using True by (auto simp: q_Eisenstein_E_def [abs_def] fps_Eisenstein_E_def of_real_bernoulli)
+qed (auto simp: q_Eisenstein_E_def[abs_def] fps_Eisenstein_E_def)
+
+lemma holomorphic_on_q_Eisenstein_E [holomorphic_intros]:
+  "f holomorphic_on A \<Longrightarrow> (\<And>z. z \<in> A \<Longrightarrow> norm (f z) < 1) \<Longrightarrow>
+     (\<lambda>z. q_Eisenstein_E k (f z)) holomorphic_on A"
+  unfolding q_Eisenstein_E_def
+  by (cases "k = 0"; cases "even k")
+     (force intro!: holomorphic_intros simp: lambert_conv_radius_power_of_nat)+
+
+lemma analytic_on_q_Eisenstein_E [analytic_intros]:
+  "f analytic_on A \<Longrightarrow> (\<And>z. z \<in> A \<Longrightarrow> norm (f z) < 1) \<Longrightarrow>
+     (\<lambda>z. q_Eisenstein_E k (f z)) analytic_on A"
+  unfolding q_Eisenstein_E_def
+  by (cases "k = 0"; cases "even k")
+     (force intro!: analytic_intros simp: lambert_conv_radius_power_of_nat bernoulli_zero_iff)+
+
+lemma tendsto_q_Eisenstein_E [tendsto_intros]:
+  assumes "(f \<longlongrightarrow> q) F" "norm q < 1"
+  shows   "((\<lambda>z. q_Eisenstein_E k (f z)) \<longlongrightarrow> q_Eisenstein_E k q) F"
+proof -
+  have "q_Eisenstein_E k analytic_on {q}"
+    by (rule analytic_intros) (use assms in auto)
+  with assms(1) show ?thesis
+    by (metis analytic_at_imp_isCont isCont_tendsto_compose)
+qed
+
+lemma continuous_q_Eisenstein_E [continuous_intros]:
+  "continuous (at x within A) f \<Longrightarrow> norm (f x) < 1 \<Longrightarrow>
+     continuous (at x within A) (\<lambda>z. q_Eisenstein_E k (f z))"
+  unfolding continuous_def
+  using tendsto_q_Eisenstein_E[of f "f x" "at x within A"]
+  by (cases "at x within A = bot") (auto simp: Lim_ident_at)
+
+
+
+subsection \<open>Identities for normalised Eisenstein series\<close>
+
+text \<open>
+  Just like $G_{2n}$,  $E_{2n}$ can be given as a polynomial in $E_4$ and $E_6$ with rational 
+  coefficients. The identities resulting from this tend to look a bit nicer than those for $G$.
+\<close>
+
+context
+  fixes B :: "nat \<Rightarrow> rat"
+  defines "B \<equiv> bernoulli"
+begin
+
+definition eisenstein_series_poly'_aux :: "nat \<Rightarrow> nat \<Rightarrow> rat" where
+  "eisenstein_series_poly'_aux n i = 
+     -(B (2 * (i + 2)) * B (2 * (n - i)) / B (2 * (n + 2))) *
+        (of_nat (2 * (n + 2) choose 2 * (i + 2)))"
+
+lemma of_rat_eisenstein_series_poly'_aux:
+  assumes "i + 2 \<le> n"
+  shows   "of_rat (eisenstein_series_poly'_aux n i) =
+             2 * zeta (2 * of_nat (i+2)) * zeta (2 * of_nat (n-i)) / zeta (2 * of_nat (n+2))"
+proof -
+  have "2 * zeta (2 * of_nat (i+2)) * zeta (2 * of_nat (n-i)) / zeta (2 * of_nat (n+2)) =
+             complex_of_real (((-1) ^ Suc (i + 2) * (- 1) ^ Suc (n - i) / (- 1) ^ Suc (n + 2)) *
+               of_rat (B (2 * (i + 2)) * B (2 * (n - i)) / B (2 * (n + 2))) *
+               ((2 * pi) ^ (2 * (i + 2)) * (2 * pi) ^ (2 * (n - i)) / (2 * pi) ^ (2 * (n + 2))) *
+               ((fact (2 * (n + 2))) / (fact (2 * (i + 2)) * fact (2 * (n - i)))))"
+    by (subst (1 2 3) zeta_even_nat) 
+       (simp_all add: mult_ac B_def of_rat_mult of_rat_divide bernoulli_conv_bernoulli' of_rat_bernoulli')
+  also have "(-1) ^ Suc (i + 2) * (- 1) ^ Suc (n - i) / (- 1) ^ Suc (n + 2) = (-1::real)"
+    using assms by (auto simp: power_neg_one_If)
+  also have "(2 * pi) ^ (2 * (i + 2)) * (2 * pi) ^ (2 * (n - i)) / (2 * pi) ^ (2 * (n + 2)) =
+             (2 * pi) ^ (2 * (i + 2) + 2 * (n - i) - 2 * (n + 2))"
+    by (subst power_diff) (simp_all add: power_add)
+  also have "2 * (i + 2) + 2 * (n - i) - 2 * (n + 2) = 0"
+    using assms by (auto simp: algebra_simps)
+  also have "fact (2 * (n + 2)) / (fact (2 * (i + 2)) * fact (2 * (n - i))) =
+             ((2*(n+2)) choose (2*(i+2)))"
+    using assms by (subst binomial_fact) (simp_all add: algebra_simps)
+  finally show ?thesis
+    by (simp add: power_mult_distrib mult_ac of_rat_mult of_rat_divide
+                  eisenstein_series_poly'_aux_def of_rat_minus
+             del: binomial_Suc_Suc)
+qed
+
+fun eisenstein_series_poly' :: "nat \<Rightarrow> rat poly poly" where
+  "eisenstein_series_poly' n =
+     (if n = 0 then [: [:0, 1:] :]
+      else if n = 1 then [:0, 1:]
+      else
+        Polynomial.smult [:3 / of_nat ((2*n+5) * (n-1) * (2*n+3)):]
+          (\<Sum>i\<le>n-2. Polynomial.smult [: of_nat ((2*i+3)*(2*(n-i)-1)) * eisenstein_series_poly'_aux n i:] 
+            (eisenstein_series_poly' i * eisenstein_series_poly' (n-2-i))))"
+
+lemmas [simp del] = eisenstein_series_poly'.simps
+
+lemma eisenstein_series_poly'_0 [simp]: "eisenstein_series_poly' 0 = [: [:0, 1:] :]"
+  and eisenstein_series_poly'_1 [simp]: "eisenstein_series_poly' (Suc 0) = [:0, 1:]"
+  and eisenstein_series_poly'_rec:
+        "n \<ge> 2 \<Longrightarrow> eisenstein_series_poly' n =
+           Polynomial.smult [:3 / of_nat ((2*n+5) * (n-1) * (2*n+3)):]
+             (\<Sum>i\<le>n-2. Polynomial.smult [: of_nat ((2*i+3)*(2*(n-i)-1)) * eisenstein_series_poly'_aux n i:] 
+               (eisenstein_series_poly' i * eisenstein_series_poly' (n-2-i)))"
+  by (subst eisenstein_series_poly'.simps; simp; fail)+
+
+lemma is_46_poly_eisenstein_series_poly': "is_46_poly (2*n+4) (eisenstein_series_poly' n)"
+proof (induction n rule: less_induct)
+  case (less n)
+  consider "n = 0" | "n = 1" | "n \<ge> 2"
+    by linarith
+  thus ?case
+  proof cases
+    assume n: "n \<ge> 2"
+    show ?thesis using n
+      by (auto intro!: is_46_poly_x is_46_poly_y is_46_poly_smult is_46_poly_sum is_46_poly_mult less.IH
+               simp: of_nat_poly eisenstein_series_poly'_rec simp flip: pCons_one)
+  qed (use is_46_poly_x is_46_poly_y in auto)
+qed
+
+lemma eisenstein_series_poly'_correct:
+  assumes z: "Im z > 0"
+  defines "E \<equiv> (\<lambda>n. Eisenstein_E n z)"
+  shows "poly2 (map_poly2 of_rat (eisenstein_series_poly' n)) (E 4) (E 6) = E (2 * n + 4)"
+proof (induction n rule: eisenstein_series_poly.induct)
+  case (1 n)
+  interpret map1: map_poly_comm_ring_hom "of_rat :: rat \<Rightarrow> complex"
+    by standard auto
+  interpret map2: map_poly_comm_ring_hom "map_poly (of_rat :: rat \<Rightarrow> complex)"
+    by standard auto
+  interpret std_complex_lattice z
+    by standard (use z in auto)
+  have E_conv_G: "E n = G n / (2 * zeta (of_nat n))" for n
+    by (auto simp: E_def Eisenstein_E_def eisenstein_series_eq_Eisenstein_G)
+
+  consider "n = 0" | "n = 1" | "n \<ge> 2"
+    by linarith
+  thus ?case
+  proof cases
+    case 3
+    define c1 where "c1 = inverse ((2 * of_nat n + 5) * (of_nat n - 1) * (2 * of_nat n + 3) :: complex)"
+    define c2 where "c2 = (\<lambda>i. ((2 * of_nat i + 3) * (2 * of_nat n - 2 * of_nat i - 1)) :: complex)"
+    have "poly2 (map_poly2 of_rat (eisenstein_series_poly' n)) (E 4) (E 6) =
+            (\<Sum>i\<le>n-2. 3 * (of_rat (eisenstein_series_poly'_aux n i) * c2 i * 
+                         (E (2 * i + 4) * E (2 * (n - i - 2) + 4))) * c1)"
+      using 3 1 by (subst eisenstein_series_poly'.simps) 
+                   (simp add: hom_distribs map_poly2_def c1_def c2_def inverse_eq_divide)
+    also have "\<dots> = 1 / (2 * zeta (2*n+4)) * 
+                      (3 * c1 * (\<Sum>i\<le>n-2. c2 i * (G (4 + i * 2) * G (4 + 2 * (n - 2 - i)))))"
+      unfolding sum_distrib_left
+    proof (rule sum.cong, goal_cases)
+      case (2 i)
+      have "zeta (2 * complex_of_nat n - 2 * complex_of_nat i) \<noteq> 0"
+        using zeta_of_nat_eq_0_iff[of "2 * (n - i)"] 2 3 by simp
+      moreover have "zeta (2 * complex_of_nat i + 4) \<noteq> 0"
+        using zeta_of_nat_eq_0_iff[of "2 * i + 4"] by simp
+      ultimately show ?case
+        using 2 3 by (subst of_rat_eisenstein_series_poly'_aux) (auto simp: E_conv_G field_simps)
+    qed auto
+    also have "3 * c1 * (\<Sum>i\<le>n-2. c2 i * (G (4 + i * 2) * G (4 + 2 * (n - 2 - i)))) = G (2 * n + 4)"
+      using 3 by (subst eisenstein_series_recurrence) (auto simp: c1_def c2_def field_simps)
+    also have "1 / (2 * zeta (2*n+4)) * G (2 * n + 4) = E (2 * n + 4)"
+      by (simp add: E_conv_G)
+    finally show ?thesis .
+  qed (auto simp: map_poly2_def)
+qed
+
+end
+
+lemma eisenstein_series_poly_q_Eisenstein_E:
+  assumes "norm q < 1"
+  shows   "poly2 (map_poly2 of_rat (eisenstein_series_poly' n))
+             (q_Eisenstein_E 4 q) (q_Eisenstein_E 6 q) = q_Eisenstein_E (2 * n + 4) q"
+          (is "?lhs q = ?rhs q")
+proof -
+  define f where "f = (\<lambda>q. ?lhs q - ?rhs q)"
+  have f_eq_0: "f q = 0" if q: "norm q < 1" "q \<noteq> 0" for q
+  proof -
+    show ?thesis
+      using eisenstein_series_poly'_correct[of "of_q 1 q" n] q
+      by (simp add: f_def Eisenstein_E_conv_q Im_of_q divide_less_0_iff)
+  qed
+
+  show ?thesis
+  proof (cases "q = 0")
+    case True
+    have "isCont f 0"
+      unfolding f_def  by (intro continuous_intros continuous_within_poly2) auto
+    hence "f \<midarrow>0\<rightarrow> f 0"
+      by (rule isContD)
+    moreover have "eventually (\<lambda>q. q \<in> ball 0 1 - {0}) (at (0::complex))"
+      by (rule eventually_at_in_open) auto
+    hence "eventually (\<lambda>q. f q = 0) (at 0)"
+      by eventually_elim (use f_eq_0 in auto)
+    hence "f \<midarrow>0\<rightarrow> 0"
+      using tendsto_eventually by blast
+    ultimately have "f 0 = 0"
+      by (rule tendsto_unique[rotated]) auto
+    thus ?thesis
+      using True by (simp add: f_def)
+  qed (use f_eq_0[of q] assms in \<open>auto simp: f_def\<close>)
+qed
+
+lemma eisenstein_series_poly'_fps_Eisenstein_E:
+  "poly2 (map_poly2 (fps_const \<circ> of_rat) (eisenstein_series_poly' n))
+     (fps_Eisenstein_E 4) (fps_Eisenstein_E 6) = fps_Eisenstein_E (2 * n + 4)" (is "?lhs = ?rhs")
+proof -
+  define F where "F = poly2 (map_poly2 fps_const (map_poly2 of_rat (eisenstein_series_poly' n)))
+     (fps_Eisenstein_E 4) (fps_Eisenstein_E 6) - fps_Eisenstein_E (2 * n + 4)"
+  define f where "f = (\<lambda>q. poly2 (map_poly2 of_rat (eisenstein_series_poly' n))
+                        (q_Eisenstein_E 4 q) (q_Eisenstein_E 6 q) - q_Eisenstein_E (2 * n + 4) q)"
+  have "f has_fps_expansion F"
+    unfolding f_def F_def by (intro fps_expansion_intros)
+  moreover have "eventually (\<lambda>q. q \<in> ball 0 1) (nhds (0::complex))"
+      by (rule eventually_nhds_in_open) auto
+  hence "eventually (\<lambda>q. f q = 0) (nhds 0)"
+  proof eventually_elim
+    case (elim q)
+    thus ?case using eisenstein_series_poly_q_Eisenstein_E[of q n] by (simp add: f_def)
+  qed
+  ultimately have "F = 0"
+    by (metis fps_expansion_unique_complex has_fps_expansion_0_iff)
+  also have "F = ?lhs - ?rhs"
+    unfolding F_def by (subst map_poly2_compose) auto
+  finally show ?thesis by simp
+qed
+
+
+text \<open>
+  More efficient computation:
+\<close>
+definition eisenstein_polys'_step :: "rat poly poly list \<Rightarrow> rat poly poly list" where
+  "eisenstein_polys'_step ps =
+     (let n = length ps
+      in  ps @ [Polynomial.smult [:3 / of_nat ((2*n+5) * (n-1) * (2*n+3)):]
+             (\<Sum>i\<le>n-2. Polynomial.smult [: of_nat ((2*i+3)*(2*(n-i)-1)) * eisenstein_series_poly'_aux n i :]
+               (ps ! i * ps ! (n-2-i)))])"
+
+definition eisenstein_series_polys' :: "nat \<Rightarrow> rat poly poly list" where
+  "eisenstein_series_polys' n = (eisenstein_polys'_step ^^ (n - 2)) [[: [:0, 1:] :], [:0, 1:]]"
+
+lemma eisenstein_polys'_step_correct:
+  assumes n: "n \<ge> 2" and ps_eq: "ps = map eisenstein_series_poly' [0..<n]"
+  shows   "eisenstein_polys'_step ps = map eisenstein_series_poly' [0..<Suc n]"
+proof (rule nth_equalityI)
+  fix i assume "i < length (eisenstein_polys'_step ps)"
+  have length: "length ps = n"
+    by (simp add: ps_eq)
+  define p where "p = Polynomial.smult [:3 / of_nat ((2*n+5) * (n-1) * (2*n+3)):]
+             (\<Sum>i\<le>n-2. Polynomial.smult [:of_nat ((2*i+3)*(2*(n-i)-1)) * eisenstein_series_poly'_aux n i:]
+               (ps ! i * ps ! (n-2-i)))"
+  have step: "eisenstein_polys'_step ps = ps @ [p]"
+    by (simp add: eisenstein_polys'_step_def p_def length Let_def)
+  have i: "i \<le> n"
+    using \<open>i < _\<close> unfolding ps_eq length eisenstein_polys'_step_def by simp
+  show "eisenstein_polys'_step ps ! i = map eisenstein_series_poly' [0..<Suc n] ! i"
+  proof (cases "i = n")
+    case False
+    thus ?thesis
+      using i unfolding step by (auto simp: ps_eq nth_append simp del: upt_Suc)
+  next
+    case [simp]: True
+    have "eisenstein_polys'_step ps ! i = p"
+      by (auto simp: step nth_append length)
+    also have "p = eisenstein_series_poly' n"
+      unfolding eisenstein_series_poly'_rec[OF n] p_def ps_eq
+      by (intro arg_cong2[of _ _ _ _ Polynomial.smult] refl sum.cong) (use n in auto)
+    also have "\<dots> = map eisenstein_series_poly' [0..<Suc n] ! i"
+      by (simp del: upt_Suc)
+    finally show ?thesis .
+  qed
+qed (auto simp: eisenstein_polys'_step_def ps_eq)
+
+lemma eisenstein_series_polys'_correct:
+  "eisenstein_series_polys' n = map eisenstein_series_poly' [0..<max 2 n]"
+proof (induction n rule: less_induct)
+  case (less n)
+  show ?case
+  proof (cases "n \<ge> 3")
+    case False
+    thus ?thesis
+      by (auto simp: eisenstein_series_polys'_def upt_rec)
+  next
+    case True
+    define m where "m = n - 3"
+    have n_eq: "n = Suc (Suc (Suc m))"
+      using True unfolding m_def by simp
+    have "eisenstein_polys'_step (eisenstein_series_polys' (n-1)) =
+            map eisenstein_series_poly' [0..<Suc (n-1)]"
+    proof (rule eisenstein_polys'_step_correct)
+      have "eisenstein_series_polys' (n - 1) = map eisenstein_series_poly' [0..<max 2 (n-1)]"
+        by (rule less.IH) (use True in auto)
+      thus "eisenstein_series_polys' (n - 1) = map eisenstein_series_poly' [0..<n-1]"
+        using True by simp
+    qed (use True in auto)
+    also have "eisenstein_polys'_step (eisenstein_series_polys' (n-1)) = eisenstein_series_polys' n"
+      by (simp add: eisenstein_series_polys'_def eval_nat_numeral n_eq)
+    also have "Suc (n - 1) = max 2 n"
+      using True by auto
+    finally show ?thesis .
+  qed
+qed
+
+lemma eisenstein_series_poly_code [code]:
+  "eisenstein_series_poly' n = eisenstein_series_polys' (Suc n) ! n"
+  unfolding eisenstein_series_polys'_correct by (subst nth_map) (auto simp del: upt_Suc)
+
+text \<open>
+  Again, a number of identities for the normalised Eisenstein series follows directly by simply
+  expressing both sides in terms of $E_4$ and $E_6$ and simplifying. Corresponding identities
+  for the divisor function can be read off directly from the coefficients of these power
+  series.
+\<close>
+context
+  fixes E
+  defines "E \<equiv> fps_Eisenstein_E"
+begin
+
+lemma eisenstein_series_polys'_correct':
+  assumes "eisenstein_series_polys' m = ps"
+  shows   "list_all (\<lambda>i. E (2*i+4) = poly2 (map_poly2 (fps_const \<circ> of_rat) (ps ! i)) (E 4) (E 6)) [0..<m]"
+  unfolding assms [symmetric] eisenstein_series_polys'_correct
+  using eisenstein_series_poly'_fps_Eisenstein_E by (auto simp: list_all_iff E_def)
+
+lemma Eisenstein_E_identities:
+  "E 8 = E 4 ^ 2" (is ?th8)
+  "E 10 = E 4 * E 6" (is ?th10)
+  "E 12 = 441 / 691 * E 4 ^ 3 + 250 / 691 * E 6 ^ 2" (is ?th12)
+  "E 14 = E 4 ^ 2 * E 6" (is ?th14)
+  "E 16 = 1617 / 3617 * E 4 ^ 4 + 2000 / 3617 * E 4 * E 6 ^ 2" (is ?th16)
+  "E 18 = 38367 / 43867 * E 4 ^ 3 * E 6 + 5500 / 43867 * E 6 ^ 3" (is ?th18)
+  "E 20 = 53361 / 174611 * E 4 ^ 5 + 121250 / 174611 * E 4 ^ 2 * E 6 ^ 2" (is ?th20)
+proof -
+  have [simp]: "{..1::nat} = {0,1}"
+    by auto
+  have eq: "eisenstein_series_polys' 9 = [[:[:0, 1:]:], [:0, [:1:]:], [:[:0, 0, 1:]:],
+              [:0, [:0, 1:]:], [:[:0, 0, 0, 441 / 691:], 0, [:250 / 691:]:],
+              [:0, [:0, 0, 1:]:], [:[:0, 0, 0, 0, 1617 / 3617:], 0,
+              [:0, 2000 / 3617:]:], [:0, [:0, 0, 0, 38367 / 43867:], 0, [:5500 / 43867:]:],
+              [:[:0, 0, 0, 0, 0, 53361 / 174611:], 0, [:0, 0, 121250 / 174611:]:]]"
+    by (simp add: eisenstein_series_polys'_def eisenstein_polys'_step_def atMost_nat_numeral
+                  eisenstein_series_poly'_aux_def binomial_fact fact_numeral
+                  funpow_rec_right numeral_poly smult_add_right smult_diff_right 
+             flip: pCons_one One_nat_def)
+  show ?th8 ?th10 ?th12 ?th14 ?th16 ?th18 ?th20
+    using eisenstein_series_polys'_correct'[OF eq]
+    by (simp_all add: upt_rec map_poly2_def of_rat_divide power_numeral_reduce field_simps 
+                      numeral_fps_const flip: E_def pCons_one)
+qed
+
+end
+
+
+text \<open>
+  As an example, we derive the identity that expresses $\sigma_9$ in terms of 
+  $\sigma_3$ and $\sigma_5$:
+\<close>
+lemma divisor_sigam_9_conv_3_5:
+  fixes n :: nat
+  assumes n: "n > 0"
+  fixes sigma :: "nat \<Rightarrow> nat \<Rightarrow> int" ("\<sigma>\<^bsub>_\<^esub>")
+  defines "sigma \<equiv> (\<lambda>k n. int (divisor_sigma k n))"
+  shows   "11 * (\<sigma>\<^bsub>9\<^esub> n) = -10 * (\<sigma>\<^bsub>3\<^esub> n) + 21 * (\<sigma>\<^bsub>5\<^esub> n) + 
+             5040 * (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+proof -
+  define F where "F = Abs_fps (\<lambda>n. (\<sigma>\<^bsub>3\<^esub> n) :: int)"
+  define G where "G = Abs_fps (\<lambda>n. (\<sigma>\<^bsub>5\<^esub> n) :: int)"
+  have "fps_nth (fps_Eisenstein_E 10) n = fps_nth (fps_Eisenstein_E 4 * fps_Eisenstein_E 6) n"
+    by (subst Eisenstein_E_identities) (rule refl)
+  hence "complex_of_int (-264 * (\<sigma>\<^bsub>9\<^esub> n)) =
+            of_int (\<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504) + 
+              fps_nth (fps_const (-120960) * (of_int.fps F * of_int.fps G)) n"
+    using n  by (simp add: fps_Eisenstein_E_def ring_distribs mult_ac F_def G_def sigma_def)
+  also have "fps_nth (fps_const (-120960) * (of_int.fps F * of_int.fps G)) n =
+               (-120960 :: complex) * fps_nth (of_int.fps (F * G)) n"
+    unfolding fps_mult_left_const_nth by (simp add: hom_distribs)
+  also have "fps_nth (of_int.fps (F * G)) n = of_int (fps_nth (F * G) n)"
+    by (rule of_int.fps_nth)
+  also have "fps_nth (F * G) n = (\<Sum>i = 0..n. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+    by (simp add: fps_mult_nth F_def G_def)
+  also have "(\<Sum>i = 0..n. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i)) = (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+    by (rule sum.mono_neutral_right) (auto simp: sigma_def)
+  also have "complex_of_int (\<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504) + - 120960 * of_int \<dots> =
+             of_int (\<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504 - 120960 * (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i)))"
+    by simp
+  finally have "-264 * \<sigma>\<^bsub>9\<^esub> n = 
+                  \<sigma>\<^bsub>3\<^esub> n * 240 - \<sigma>\<^bsub>5\<^esub> n * 504 - 120960 * (\<Sum>i\<in>{0<..<n}. \<sigma>\<^bsub>3\<^esub> i * \<sigma>\<^bsub>5\<^esub> (n - i))"
+    by (subst (asm) of_int_eq_iff)
+  thus ?thesis
+    by simp
+qed
+  
+
 subsection \<open>The modular discriminant\<close>
+
+text \<open>
+  As before, the modular discriminant is defined as $(60 G_4^3) - 27 (140 G_6)^2$.
+  It is non-zero everywhere and (as we will see later) vanishes at $i\infty$.
+\<close>
 
 definition modular_discr :: "complex \<Rightarrow> complex" where
   "modular_discr z = (60 * Eisenstein_G 4 z) ^ 3 - 27 * (140 * Eisenstein_G 6 z) ^ 2"
+
+lemma modular_discr_altdef:
+  "modular_discr z = (4/3)^3 * of_real pi ^ 12 * (Eisenstein_E 4 z ^ 3 - Eisenstein_E 6 z ^ 2)"
+  by (auto simp: modular_discr_def Eisenstein_E_def zeta_even_numeral field_simps fact_numeral)
 
 lemma (in complex_lattice) discr_eq_modular_discr: "discr = modular_discr (\<omega>2 / \<omega>1) / \<omega>1 ^ 12"
   unfolding discr_def modular_discr_def invariant_g2_def invariant_g3_def
@@ -401,6 +1328,16 @@ lemma modular_discr_holomorphic [holomorphic_intros]:
   shows   "(\<lambda>z. modular_discr (f z)) holomorphic_on A"
   unfolding modular_discr_def using assms by (auto intro!: holomorphic_intros)
 
+lemma continuous_modular_discr [continuous_intros]:
+  "continuous (at x within A) f \<Longrightarrow> f x \<notin> \<real> \<Longrightarrow>
+     continuous (at x within A) (\<lambda>z. modular_discr (f z))"
+  unfolding modular_discr_def by (intro continuous_intros) auto
+
+lemma continuous_on_modular_discr [continuous_intros]:
+  "continuous_on A f \<Longrightarrow> (\<forall>x\<in>A. f x \<notin> \<real>) \<Longrightarrow>
+     continuous_on A (\<lambda>z. modular_discr (f z))"
+  unfolding modular_discr_def by (intro continuous_intros) auto
+
 lemma modular_discr_uminus: "modular_discr (-z) = modular_discr z"
   by (simp add: modular_discr_def Eisenstein_G_uminus)
 
@@ -421,7 +1358,7 @@ lemma modular_discr_eq_0_iff: "modular_discr z = 0 \<longleftrightarrow> z \<in>
   using modular_discr_nonzero[of z] by auto
 
 theorem modular_discr_apply_modgrp:
-  "modular_discr (apply_modgrp f z) = modgrp_factor f z ^ 12 * modular_discr z"
+  "modular_discr (apply_modgrp f z) = automorphy_factor f z ^ 12 * modular_discr z"
   by (simp add: modular_discr_def Eisenstein_G_apply_modgrp algebra_simps)
 
 lemma modular_discr_plus_int: "modular_discr (z + of_int m) = modular_discr z"
@@ -431,14 +1368,155 @@ lemma modular_discr_minus_one_over: "modular_discr (-(1/z)) = z ^ 12 * modular_d
   using modular_discr_apply_modgrp[of "S_modgrp" z] by simp
 
 
+subsection \<open>Ramanujan's tau function\<close>
+
+text \<open>
+  The Ramanujan $\tau$ function are the integer coefficients of the normalised modular 
+  discriminant $\Delta / (2\pi)^{12}$.
+\<close>
+
+definition ramanujan_tau :: "nat \<Rightarrow> int" where
+  "ramanujan_tau n =
+     (let F = (\<lambda>k. Abs_fps (divisor_sigma k))
+      in  fps_nth ((1 + 240 * F 3) ^ 3 - (1 - 504 * F 5) ^ 2) n div 12 ^ 3)"
+
+definition fps_modular_discr :: "complex fps" where
+  "fps_modular_discr = fps_const ((2 * pi) ^ 12) * of_int.fps (Abs_fps ramanujan_tau)"
+
+lemma fps_ramanujan_tau_eq:
+  "of_int.fps (Abs_fps ramanujan_tau) =
+     fps_const (1 / 12 ^ 3) * (fps_Eisenstein_E 4 ^ 3 - fps_Eisenstein_E 6 ^ 2)"
+proof -
+  define c where "c = complex_of_real ((2 * pi) ^ 12)"
+  define A :: "int fps" where "A = Abs_fps (divisor_sigma 3)"
+  define B :: "int fps" where "B = Abs_fps (divisor_sigma 5)"
+  define C :: "int fps" where "C = Abs_fps (\<lambda>n. (5 * fps_nth A n + 7 * fps_nth B n) div 12)"
+  define D where "D = 100 * A ^ 2 - 147 * B ^ 2 + 8000 * A ^ 3"
+
+  define F0 :: "complex fps" where
+    "F0 = (fps_const (complex_of_real (4 / 3 * pi ^ 4)) * of_int.fps (1 + 240 * A)) ^ 3 -
+          27 * (fps_const (complex_of_real (8 / 27 * pi ^ 6)) * of_int.fps (1 - 504 * B)) ^ 2"
+  define F :: "complex fps"  where "F = fps_modular_discr"
+
+  have "12 dvd 5 * fps_nth A n + 7 * fps_nth B n" for n :: nat
+  proof -
+    have "12 dvd 5 * d ^ 3 + 7 * d ^ 5" for d :: nat
+    proof -
+      have "d mod 12 \<in> {..<12}"
+        by simp
+      hence "[0 = 5 * (d mod 12) ^ 3 + 7 * (d mod 12) ^ 5] (mod 12)"
+        unfolding lessThan_nat_numeral arith_simps pred_numeral_simps lessThan_0
+        by (elim insertE emptyE) (auto simp: Cong.cong_def)
+      also have "[5 * (d mod 12) ^ 3 + 7 * (d mod 12) ^ 5 = 5 * d ^ 3 + 7 * d ^ 5] (mod 12)"
+        by (intro cong_add cong_mult cong_pow) auto
+      finally show ?thesis
+        by (metis cong_0_iff cong_iff_lin_nat)
+    qed
+    hence "int 12 dvd int (\<Sum>d | d dvd n. 5 * d ^ 3 + 7 * d ^ 5)"
+      unfolding int_dvd_int_iff by (intro dvd_sum) auto
+    also have "\<dots> = 5 * fps_nth A n + 7 * fps_nth B n"
+      by (simp add: A_def B_def divisor_sigma_def sum.distrib algebra_simps 
+                    sum_distrib_left sum_distrib_right)
+    finally show ?thesis by simp
+  qed
+  hence "5 * A + 7 * B = 12 * C"
+    by (auto simp: A_def B_def C_def fps_eq_iff numeral_fps_const)
+
+  have "(1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2 =
+             12 ^ 2 * (5 * A + 7 * B) + 12 ^ 3 * D"
+    by (simp add: algebra_simps power2_eq_square power3_eq_cube D_def)
+  also have "5 * A + 7 * B = 12 * C"
+    by fact
+  also have "12 ^ 2 * (12 * C) = 12 ^ 3 * C"
+    by (simp add: eval_nat_numeral)
+  finally have eq: "(1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2 = 12 ^ 3 * (C + D)"
+    by (simp add: algebra_simps)
+
+  have dvd: "12 ^ 3 dvd fps_nth ((1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2) n" for n
+    by (subst eq) auto
+
+  show "of_int.fps (Abs_fps ramanujan_tau) =
+          fps_const (1 / 12 ^ 3) * (fps_Eisenstein_E 4 ^ 3 - fps_Eisenstein_E 6 ^ 2)"
+  proof (rule fps_ext)
+    fix n :: nat
+    have "12 ^ 3 * ramanujan_tau n =
+            12 ^ 3 * (fps_nth ((1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2) n div 12 ^ 3)"
+      by (simp add: ramanujan_tau_def A_def B_def Let_def)
+    also have "\<dots> = fps_nth ((1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2) n"
+      using dvd[of n] by simp
+    also have "of_int \<dots> = fps_nth (of_int.fps ((1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2)) n"
+      by simp
+    also have "of_int.fps ((1 + 240 * A) ^ 3 - (1 - 504 * B) ^ 2) =
+                 of_int.fps (1 + 240 * A) ^ 3 - (of_int.fps (1 - 504 * B) ^ 2 :: complex fps)"
+      by (simp add: hom_distribs)
+    also have "of_int.fps (1 + 240 * A) = fps_Eisenstein_E 4"
+      unfolding fps_Eisenstein_E_def by (simp add: hom_distribs A_def)
+    also have "of_int.fps (1 - 504 * B) = fps_Eisenstein_E 6"
+      unfolding fps_Eisenstein_E_def by (simp add: hom_distribs B_def)
+    finally show "fps_nth (of_int.fps (Abs_fps ramanujan_tau)) n =
+                    fps_nth (fps_const (1/12^3) * (fps_Eisenstein_E 4 ^ 3 - (fps_Eisenstein_E 6)\<^sup>2)) n"
+      by (simp add: mult_ac)
+  qed
+qed
+
+lemma fps_modular_discr_conv_Eisenstein:
+  "fps_modular_discr =
+     fps_const ((4/3)^3 * of_real pi ^ 12) * 
+       (fps_Eisenstein_E 4 ^ 3 - fps_Eisenstein_E 6 ^ 2)"
+  unfolding fps_modular_discr_def fps_ramanujan_tau_eq
+  by (simp add: power_divide flip: mult.assoc)
+
+lemma atLeastAtMost_nat_numeral_right:
+  "a \<le> numeral b \<Longrightarrow> {(a::nat)..numeral b} = insert (numeral b) {a..pred_numeral b}"
+  by (auto simp: numeral_eq_Suc)
+
+lemma ramanujan_tau_0 [simp]: "ramanujan_tau 0 = 0"
+  and ramanujan_tau_1 [simp]: "ramanujan_tau (Suc 0) = 1"
+  and ramanujan_tau_2: "ramanujan_tau 2 = -24"
+  and ramanujan_tau_3: "ramanujan_tau 3 = 252"
+  and ramanujan_tau_4: "ramanujan_tau 4 = -1472"
+  and ramanujan_tau_5: "ramanujan_tau 5 = 4830"
+  and ramanujan_tau_6: "ramanujan_tau 6 = -6048"
+  by (simp_all add: ramanujan_tau_def power2_eq_square power3_eq_cube fps_mult_nth fps_numeral_nth
+                    divisor_sigma_naive fold_atLeastAtMost_nat.simps atLeastAtMost_nat_numeral_right
+               flip: numeral_2_eq_2)
+
+lemma fps_modular_discr_nonzero [simp]: "fps_modular_discr \<noteq> 0"
+  and subdegree_fps_modular_discr [simp]: "subdegree fps_modular_discr = 1"
+proof -
+  note simps = fps_modular_discr_def fps_Eisenstein_E_def power2_eq_square power3_eq_cube
+  have 0: "fps_nth fps_modular_discr 0 = 0"
+    by (auto simp: fps_eq_iff simps)
+  have 1: "fps_nth fps_modular_discr (Suc 0) = 4096 * of_real pi ^ 12"
+    by (auto simp: fps_eq_iff simps)
+
+  from 1 show [simp]: "fps_modular_discr \<noteq> 0"
+    by auto
+  have "subdegree fps_modular_discr > 0"
+    by (rule subdegree_greaterI) (auto simp: 0)
+  moreover have "subdegree fps_modular_discr \<le> 1"
+    by (rule subdegree_leI) (auto simp: 1)
+  ultimately show "subdegree fps_modular_discr = 1"
+    by linarith
+qed
+
+
 subsection \<open>Klein's $J$ invariant\<close>
+
+text \<open>
+  Klein's $J$ invariant is defined as $(60 G_4)^3 / \Delta$, or equivalently
+  $E_4^3 / (E_4^3 - E_6^2)$. It is exactly the $J$ invariant of a lattice we saw earlier.
+
+  Note that there are a number of different conventions, e.g.\ sometimes one also calls
+  what we would write as $1728 J$ the $j$ invariant (with a lower case $j$).
+\<close>
 
 definition Klein_J :: "complex \<Rightarrow> complex" where
   "Klein_J z = (60 * Eisenstein_G 4 z) ^ 3 / modular_discr z"
 
-lemma (in complex_lattice) invariant_j_eq_Klein_J: 
-  "invariant_j = Klein_J (\<omega>2 / \<omega>1)"
-  unfolding invariant_j_def discr_eq_modular_discr Klein_J_def invariant_g2_def
+lemma (in complex_lattice) invariant_J_eq_Klein_J: 
+  "invariant_J = Klein_J (\<omega>2 / \<omega>1)"
+  unfolding invariant_J_def discr_eq_modular_discr Klein_J_def invariant_g2_def
             eisenstein_series_eq_Eisenstein_G by (simp add: field_simps)
 
 lemma Klein_J_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> Klein_J z = 0"
@@ -460,6 +1538,17 @@ lemma Klein_J_holomorphic [holomorphic_intros]:
   shows   "(\<lambda>z. Klein_J (f z)) holomorphic_on A"
   unfolding Klein_J_def using assms by (auto intro!: holomorphic_intros simp: modular_discr_nonzero)
 
+lemma continuous_Klein_J [continuous_intros]:
+  "continuous (at x within A) f \<Longrightarrow> f x \<notin> \<real> \<Longrightarrow>
+     continuous (at x within A) (\<lambda>z. Klein_J (f z))"
+  unfolding Klein_J_def by (intro continuous_intros) (auto simp: modular_discr_nonzero)
+
+lemma continuous_on_Klein_J [continuous_intros]:
+  "continuous_on A f \<Longrightarrow> (\<forall>x\<in>A. f x \<notin> \<real>) \<Longrightarrow>
+     continuous_on A (\<lambda>z. Klein_J (f z))"
+  unfolding Klein_J_def by (intro continuous_intros) (auto simp: modular_discr_nonzero)
+
+
 text \<open>
   It is trivial to show that Klein's $J$ function is invariant under the modular group.
   This is Apostol's Theorem~1.16.
@@ -476,6 +1565,9 @@ qed auto
 lemma Klein_J_plus_int: "Klein_J (z + of_int m) = Klein_J z"
   using Klein_J_apply_modgrp[of "shift_modgrp m" z] by simp
 
+lemma Klein_J_plus1: "Klein_J (z + 1) = Klein_J z"
+  using Klein_J_apply_modgrp[of "T_modgrp" z] by simp
+
 lemma Klein_J_minus_one_over: "Klein_J (-(1/z)) = Klein_J z"
   using Klein_J_apply_modgrp[of "S_modgrp" z] by simp
 
@@ -485,6 +1577,123 @@ lemma Klein_J_cong:
   using assms by (metis Klein_J_apply_modgrp modular_group.rel_def)
 
 
+subsection \<open>Klein's $c$\<close>
+
+definition Klein_c :: "nat \<Rightarrow> int" where
+  "Klein_c n = (let A = of_nat.fps (Abs_fps (divisor_sigma 3));
+                    C = fps_left_inverse (fps_shift 1 (Abs_fps ramanujan_tau)) 1
+                in  fps_nth (C * (1 + 240 * A) ^ 3) (n + 1))"
+
+definition fls_Klein_j :: "complex fls"
+  where "fls_Klein_j = fls_X_inv + fps_to_fls (Abs_fps (\<lambda>x. of_int (Klein_c x)))"
+
+definition fls_Klein_J :: "complex fls"
+  where "fls_Klein_J = fls_const (1 / 1728) * fls_Klein_j"
+
+lemma fls_Klein_J_conv_modular_discr:
+  "fls_Klein_J = fps_to_fls ((60 * fps_Eisenstein_G 4) ^ 3) / fps_to_fls fps_modular_discr"
+proof -
+  define A :: "complex fps" where "A = of_nat.fps (Abs_fps (divisor_sigma 3))"
+  define B :: "complex fps" where "B = of_int.fps (Abs_fps ramanujan_tau)"
+  define C :: "complex fps" where
+    "C = of_int.fps (fps_left_inverse (fps_shift 1 (Abs_fps ramanujan_tau)) 1)"
+  have "fps_nth B 1 \<noteq> 0"
+    by (simp add: B_def ramanujan_tau_1)
+  hence [simp]: "B \<noteq> 0"
+    by auto
+
+  define F where "F = fps_to_fls ((60 * fps_Eisenstein_G 4) ^ 3) / fps_to_fls fps_modular_discr"
+
+  have "F = fps_to_fls ((60 * fps_Eisenstein_G 4) ^ 3) / fps_to_fls fps_modular_discr"
+    by (simp add: F_def)
+  also have "\<dots> = fls_const (60^3) * fps_to_fls (fps_Eisenstein_G 4 ^ 3) / fps_to_fls fps_modular_discr"
+    by (simp add: power_mult_distrib hom_distribs)
+  also have "fps_Eisenstein_G 4 = fps_const (of_real pi ^ 4 / 45) * fps_Eisenstein_E 4"
+    by (subst fps_Eisenstein_G_conv_E) (auto simp: zeta_4)
+  also have "\<dots> ^ 3 = fps_const (of_real pi ^ 12 / 91125) * fps_Eisenstein_E 4 ^ 3"
+    by (simp add: power_mult_distrib power_divide)
+  also have "fps_Eisenstein_E 4 = 1 + 240 * A"
+    by (simp add: fps_Eisenstein_E_def hom_distribs A_def flip: divisor_sigma_of_nat)
+  also have "fps_modular_discr = fps_const (4096 * of_real pi ^ 12) * B"
+    by (simp add: fps_modular_discr_def B_def)
+  also have "fls_const (60 ^ 3) * fps_to_fls (fps_const (of_real pi ^ 12 / 91125) * (1 + 240 * A) ^ 3) /
+               fps_to_fls (fps_const (4096 * of_real pi ^ 12) * B) =
+             fls_const (1/12^3) * (fps_to_fls ((1 + 240 * A) ^ 3) / fps_to_fls B)"
+    by (simp add: fps_to_fls.hom_mult field_simps fls_const.hom_div fls_const.hom_power fls_const.hom_mult)
+
+  also have B_eq: "B = fps_X * fps_shift 1 B"
+    by (simp add: B_def fps_eq_iff)
+  also have "fps_to_fls ((1 + 240 * A) ^ 3) / fps_to_fls (fps_X * fps_shift 1 B) =
+             1 / fls_X * (fps_to_fls ((1 + 240 * A) ^ 3) * inverse (fps_to_fls (fps_shift 1 B)))"
+    by (simp add: divide_simps fls_times_fps_to_fls del: fls_divide_X)
+  also have "inverse (fps_to_fls (fps_shift 1 B)) = fps_to_fls (inverse (fps_shift 1 B))"
+    by (intro fls_inverse_fps_to_fls subdegree_eq_0) (auto simp: B_def ramanujan_tau_1)
+  also have "fps_left_inverse (fps_shift 1 (Abs_fps ramanujan_tau)) 1 *
+               fps_shift 1 (Abs_fps ramanujan_tau) = 1"
+    unfolding C_def by (intro fps_left_inverse) (auto simp: ramanujan_tau_1)
+  hence "of_int.fps (fps_left_inverse (fps_shift 1 (Abs_fps ramanujan_tau)) 1 *
+           fps_shift 1 (Abs_fps ramanujan_tau)) = of_int.fps 1"
+    by (simp only: )
+  hence "C * fps_shift 1 B = 1"
+    unfolding of_int.fps_1 by (simp add: C_def B_def)
+  hence "inverse (fps_shift 1 B) = C"
+    by (metis fps_inverse_unique mult.commute)
+  also have "fps_to_fls ((1 + 240 * A) ^ 3) * fps_to_fls C = fps_to_fls (C * (1 + 240 * A) ^ 3)"
+    by (simp add: fls_times_fps_to_fls mult_ac)
+  also have "1 / fls_X * \<dots> = fls_shift 1 (fps_to_fls (C * (1 + 240 * A) ^ 3))"
+    by (simp add: fls_shifted_times_simps(2))
+  also have "C * (1 + 240 * A) ^ 3 = 1 + fps_X * of_int.fps (Abs_fps Klein_c)"
+    by (simp add: Klein_c_def C_def A_def B_def fps_eq_iff fps_nth_power_0 flip: of_int.fps_nth)
+  also have "fls_shift 1 (fps_to_fls \<dots>) = fls_X_inv + fps_to_fls (Abs_fps Klein_c)"
+    by (rule fls_eqI) (auto simp: nat_add_distrib)
+  also have "\<dots> = fls_Klein_j"
+    by (simp add: fls_Klein_j_def)
+  finally show ?thesis unfolding F_def [symmetric]
+    by (simp add: field_simps fls_const.hom_div fls_Klein_J_def)
+qed
+
+lemma fls_Klein_J_conv_Eisenstein_E:
+  "fls_Klein_J =
+      fps_to_fls (fps_Eisenstein_E 4 ^ 3) / 
+        fps_to_fls (fps_Eisenstein_E 4 ^ 3 - fps_Eisenstein_E 6 ^ 2)"
+  using fps_modular_discr_nonzero
+  unfolding fls_Klein_J_conv_modular_discr fps_modular_discr_conv_Eisenstein
+  by (simp add: fps_to_fls.hom_mult fps_to_fls.hom_power fls_const.hom_mult fls_const.hom_power
+                fls_const.hom_div fps_Eisenstein_G_conv_E divide_simps zeta_4
+           del: fls_const_mult_const fps_modular_discr_nonzero)
+
+lemma fps_left_inverse_constructor_numeral:
+  "fps_left_inverse_constructor a b (numeral n) =
+     - (\<Sum>i = 0..pred_numeral n. fps_left_inverse_constructor a b i * a $ (Suc (pred_numeral n) - i)) * b"
+  unfolding numeral_eq_Suc fps_left_inverse_constructor.simps ..
+
+lemma Klein_c_0: "Klein_c 0 = 744"
+  and Klein_c_1: "Klein_c (Suc 0) = 196884"
+  and Klein_c_2: "Klein_c 2 = 21493760"
+  and Klein_c_3: "Klein_c 3 = 864299970"
+  and Klein_c_4: "Klein_c 4 = 20245856256"
+  using ramanujan_tau_2 ramanujan_tau_3 ramanujan_tau_4 ramanujan_tau_5 ramanujan_tau_6
+  by (simp_all add: Klein_c_def divisor_sigma_naive fold_atLeastAtMost_nat.simps
+                    power3_eq_cube Let_def fps_mult_nth atLeastAtMost_nat_numeral_right
+                    numeral_fps_const fps_left_inverse_constructor_numeral
+               flip: numeral_2_eq_2)
+
+lemma fls_Klein_j_subdegree [simp]: "fls_subdegree fls_Klein_j = -1"
+  by (intro fls_subdegree_eqI) (auto simp: fls_Klein_j_def Klein_c_0)
+
+lemma fls_Klein_j_nonzero [simp]: "fls_Klein_j \<noteq> 0"
+proof -
+  have "fls_nth fls_Klein_j 0 = 744"
+    by (simp add: fls_Klein_j_def Klein_c_0)
+  thus ?thesis
+    by auto
+qed
+
+lemma fls_Klein_J_subdegree [simp]: "fls_subdegree fls_Klein_J = -1"
+  by (simp add: fls_Klein_J_def)
+
+lemma fls_Klein_J_nonzero [simp]: "fls_Klein_J \<noteq> 0"
+  by (simp add: fls_Klein_J_def)
 
 
 subsection \<open>Values at specific points\<close>
@@ -516,8 +1725,17 @@ proof (cases "even k")
     by (auto elim!: evenE simp: power_neg_one_If split: if_splits)
 qed auto
 
+lemma Eisenstein_E_ii_eq_0:
+  assumes "k \<noteq> 2" "\<not>4 dvd k"
+  shows   "Eisenstein_E k \<i> = 0"
+  using assms Eisenstein_G_ii_eq_0[of k] by (cases "k = 0") (auto simp: Eisenstein_E_def)
+
 lemma Eisenstein_G_6_ii [simp]: "Eisenstein_G 6 \<i> = 0"
   by (rule Eisenstein_G_ii_eq_0) auto
+
+lemma Eisenstein_E_6_ii [simp]: "Eisenstein_E 6 \<i> = 0"
+  by (rule Eisenstein_E_ii_eq_0) auto
+
 
 lemma Eisenstein_G_rho_eq_0:
   assumes "k \<noteq> 2" "\<not>6 dvd k"
@@ -547,9 +1765,16 @@ proof (cases "even k")
   qed
 qed auto
 
+lemma Eisenstein_E_rho_eq_0:
+  assumes "k \<noteq> 2" "\<not>6 dvd k"
+  shows   "Eisenstein_E k \<^bold>\<rho> = 0"
+  using assms Eisenstein_G_rho_eq_0[of k] by (cases "k = 0") (auto simp: Eisenstein_E_def)
+
 lemma Eisenstein_G_4_rho [simp]: "Eisenstein_G 4 \<^bold>\<rho> = 0"
   by (rule Eisenstein_G_rho_eq_0) auto
 
+lemma Eisenstein_E_4_rho [simp]: "Eisenstein_E 4 \<^bold>\<rho> = 0"
+  by (rule Eisenstein_E_rho_eq_0) auto
 
 corollary Eisenstein_G_6_rho_nonzero: "Eisenstein_G 6 \<^bold>\<rho> \<noteq> 0"
 proof -
@@ -559,6 +1784,9 @@ proof -
     by (auto simp: modular_discr_def)
 qed
 
+corollary Eisenstein_E_6_rho_nonzero: "Eisenstein_E 6 \<^bold>\<rho> \<noteq> 0"
+  by (auto simp: Eisenstein_E_def Eisenstein_G_6_rho_nonzero zeta_Re_gt_1_nonzero)
+
 corollary Eisenstein_G_4_ii_nonzero: "Eisenstein_G 4 \<i> \<noteq> 0"
 proof -
   have "modular_discr \<i> \<noteq> 0"
@@ -567,6 +1795,8 @@ proof -
     by (auto simp: modular_discr_def)
 qed
 
+corollary Eisenstein_E_4_ii_nonzero: "Eisenstein_E 4 \<i> \<noteq> 0"
+  by (auto simp: Eisenstein_E_def Eisenstein_G_4_ii_nonzero zeta_Re_gt_1_nonzero)
 
 corollary Klein_J_rho [simp]: "Klein_J \<^bold>\<rho> = 0"
   by (simp add: Klein_J_def)
@@ -579,32 +1809,14 @@ corollary Klein_J_ii [simp]: "Klein_J \<i> = 1"
 subsection \<open>Consequences for the fundamental region\<close>
 
 text \<open>
-  One immediate consequence of the fact that $J(\rho) = 0$ and $J(i) = 1$ is that
-  $\rho$ and $i$ are not equivalent w.r.t.\ the modular group.
-\<close>
-lemma not_rho_equiv_i [simp]: "\<not>(\<^bold>\<rho> \<sim>\<^sub>\<Gamma> \<i>)"
-proof
-  assume "\<^bold>\<rho> \<sim>\<^sub>\<Gamma> \<i>"
-  hence "Klein_J \<^bold>\<rho> = Klein_J \<i>"
-    by (rule Klein_J_cong)
-  thus False
-    by simp
-qed
-
-lemma not_i_equiv_rho [simp]: "\<not>(\<i> \<sim>\<^sub>\<Gamma> \<^bold>\<rho>)"
-  by (subst modular_group.rel_commutes) simp
-
-lemma not_modular_group_rel_rho_i [simp]: " z \<sim>\<^sub>\<Gamma> \<^bold>\<rho> \<Longrightarrow> \<not>z \<sim>\<^sub>\<Gamma> \<i>"
-  by (meson modular_group.rel_sym modular_group.rel_trans not_i_equiv_rho)
-
-lemma modular_group_rel_rho_i_cases [case_names rho i neither invalid]:
-  obtains "z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" "\<not>z \<sim>\<^sub>\<Gamma> \<i>" | "z \<sim>\<^sub>\<Gamma> \<i>" "\<not>z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" | "Im z > 0" "\<not>z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" "\<not>z \<sim>\<^sub>\<Gamma> \<i>" | "Im z \<le> 0"
-  by (cases "Im z > 0"; cases "z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>"; cases "z \<sim>\<^sub>\<Gamma> \<i>") auto
-
-text \<open>
-  Another application of the Klein \<open>J\<close> function: We can show that subgroups of the modular
+  One application of the Klein \<open>J\<close> function: We can show that subgroups of the modular
   group have discrete orbits. That is: every point has a neighbourhood in which no equivalent 
   points are.
+
+  Otherwise, if there were a point $x$ and a sequence $x_n$ of points equivalent to it and
+  converging to it, the function $f(z) = J(z) - J(x)$ would have a zero at every $x_n$ and
+  therefore be identically zero by analytic continuation. This would make $J$ a constant function,
+  but since $J(i) = 1$ and $J(\rho) = 0$, this gives a contradiction.
 \<close>
 lemma (in modgrp_subgroup) isolated_in_orbit:
   assumes "Im y > 0"
@@ -655,5 +1867,6 @@ lemma (in modgrp_subgroup) closed_orbit [intro]: "closedin (top_of_set {z. Im z 
   using isolated_in_orbit[of _ x] by (auto simp: closedin_limpt orbit_imp_Im_pos)
 
 unbundle no modfun_region_notation
+unbundle no modgrp_notation
 
 end

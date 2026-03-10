@@ -871,11 +871,11 @@ next
   also have "... = ?N + emeasure (distr ?R \<D> (fst \<circ> the \<circ> m) \<Otimes>\<^sub>M \<B>)
     {(v,bs). map_option fst (f v bs) \<in> A \<and> v \<in> range_rm m}"
     unfolding N_def remainder_indep[OF wf_m] by simp
-  also have "... =  ?N + \<integral>\<^sup>+ v. emeasure \<B>
-    {bs. map_option fst (f v bs) \<in> A \<and> v \<in> range_rm m} \<partial>distr ?R \<D> (fst \<circ> (the \<circ> m))"
+  also have "... =  ?N + (\<integral>\<^sup>+ v. emeasure \<B>
+    {bs. map_option fst (f v bs) \<in> A \<and> v \<in> range_rm m} \<partial>distr ?R \<D> (fst \<circ> (the \<circ> m)))"
     using 2 by (subst coin_space.emeasure_pair_measure_alt) (simp_all add:vimage_def comp_assoc)
-  also have "... =  ?N + \<integral>\<^sup>+ x. emeasure \<B>
-    {bs. map_option fst (f ((fst \<circ> (the \<circ> m)) x) bs) \<in> A \<and> (fst \<circ> (the \<circ> m)) x \<in> range_rm m} \<partial>?R"
+  also have "... =  ?N + (\<integral>\<^sup>+ x. emeasure \<B>
+    {bs. map_option fst (f ((fst \<circ> (the \<circ> m)) x) bs) \<in> A \<and> (fst \<circ> (the \<circ> m)) x \<in> range_rm m} \<partial>?R)"
     using the_f_measurable[OF wf_m]
     by (intro arg_cong2[where f="(+)"] refl nn_integral_distr) simp_all
   also have "... = ?N + (\<integral>\<^sup>+x\<in>{bs. m bs \<noteq> None}. emeasure \<B>

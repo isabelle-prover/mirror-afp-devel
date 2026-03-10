@@ -12,6 +12,7 @@ session Elliptic_Functions (AFP) = Zeta_Function +
     Dedekind_Sums
     Theta_Functions
     Pentagonal_Number_Theorem
+    Kummer_Congruence
   theories
     Z_Plane_Q_Disc
     Parallelogram_Paths
@@ -28,6 +29,7 @@ session Elliptic_Functions (AFP) = Zeta_Function +
     Dedekind_Eta
     Eisenstein_G2
     Theta_Inversion
+    Complex_Lattices_Theta
   document_files
     "root.tex"
     "root.bib"

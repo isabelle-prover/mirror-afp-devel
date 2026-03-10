@@ -445,77 +445,9 @@ proof -
 qed
 
 
-subsection \<open>Facts about Bernoulli numbers\<close>
-
-(* TODO: it might be better to generalise the type of "bernoulli" in the library. *)
-definition bernoulli_rat :: "nat \<Rightarrow> rat"
-  where "bernoulli_rat n = of_int (bernoulli_num n) / of_int (bernoulli_denom n)"
-
 bundle bernoulli_syntax
 begin
-notation bernoulli_rat (\<open>\<B>\<close>)
+notation bernoulli (\<open>\<B>\<close>)
 end
-
-lemma bernoulli_num_eq_0_iff: "bernoulli_num n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
-proof -
-  have "bernoulli_num n = 0 \<longleftrightarrow> real_of_int (bernoulli_num n) / real (bernoulli_denom n) = 0"
-    by auto
-  also have "real_of_int (bernoulli_num n) / real (bernoulli_denom n) = bernoulli n"
-    by (rule bernoulli_conv_num_denom [symmetric])
-  also have "bernoulli n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
-    by (rule bernoulli_zero_iff)
-  finally show ?thesis .
-qed
-
-lemma bernoulli_num_odd_eq_0: "odd k \<Longrightarrow> k \<noteq> 1 \<Longrightarrow> bernoulli_num k = 0"
-  by (simp add: bernoulli_num_def bernoulli_odd_eq_0)
-
-lemma prime_dvd_bernoulli_denom_iff:
-  assumes "prime p" "even k" "k > 0"
-  shows   "p dvd bernoulli_denom k \<longleftrightarrow> (p - 1) dvd k"
-proof -
-  have fin: "finite {p. prime p \<and> p - Suc 0 dvd k}"
-    by (rule finite_subset[of _ "{..k+1}"]) (use assms in \<open>auto dest!: dvd_imp_le\<close>)
-  have "bernoulli_denom k = \<Prod>{p. prime p \<and> p - 1 dvd k}"
-    unfolding bernoulli_denom_def using assms by auto
-  also have "p dvd \<dots> \<longleftrightarrow> (p - 1) dvd k"
-    using assms fin primes_dvd_imp_eq by (subst prime_dvd_prod_iff) auto
-  finally show ?thesis .
-qed
-
-lemma bernoulli_num_denom_eqI:
-  assumes "bernoulli k = of_int a / of_nat b" "coprime a b" "b > 0"
-  shows   "bernoulli_num k = a" "bernoulli_denom k = b"
-proof -
-  have "bernoulli k = of_rat (of_int (bernoulli_num k) / of_nat (bernoulli_denom k))"
-    by (simp add: bernoulli_conv_num_denom of_rat_divide)
-  also have "bernoulli k = of_rat (of_int a / of_nat b)"
-    by (simp add: assms(1) of_rat_divide)
-  finally have *: "of_int (bernoulli_num k) / of_nat (bernoulli_denom k) = (of_int a / of_nat b :: rat)"
-    by simp
-
-  have "quotient_of (of_int (bernoulli_num k) / of_nat (bernoulli_denom k)) =
-          (bernoulli_num k, int (bernoulli_denom k))"    
-    by (intro quotient_of_eqI coprime_bernoulli_num_denom) (auto simp: bernoulli_denom_pos)
-  also note *
-  also have "quotient_of (of_int a / of_nat b) = (a, int b)"
-    by (intro quotient_of_eqI) (use assms in auto)
-  finally show "bernoulli_num k = a" "bernoulli_denom k = b"
-    by simp_all
-qed
-
-lemma bernoulli_rat_eq_0_iff: "bernoulli_rat n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
-  by (auto simp: bernoulli_rat_def bernoulli_num_eq_0_iff)
-
-lemma bernoulli_rat_odd_eq_0: "odd n \<Longrightarrow> n \<noteq> 1 \<Longrightarrow> bernoulli_rat n = 0"
-  by (auto simp: bernoulli_rat_def bernoulli_num_odd_eq_0)
-
-lemma bernoulli_rat_conv_bernoulli: "of_rat (bernoulli_rat n) = bernoulli n"
-  unfolding bernoulli_rat_def by (simp add: bernoulli_conv_num_denom of_rat_divide)
-
-lemma quotient_of_bernoulli_rat [simp]:
-  "quotient_of (bernoulli_rat n) = (bernoulli_num n, int (bernoulli_denom n))"
-  unfolding bernoulli_rat_def
-  by (rule quotient_of_eqI) (auto intro: bernoulli_denom_pos coprime_bernoulli_num_denom)
 
 end

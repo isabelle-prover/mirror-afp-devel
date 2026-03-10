@@ -704,20 +704,20 @@ fun import_universal_prop t ctxt =
 fun simp_map f =
   Context.map_proof (
     Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>} (
-      K (Simplifier.map_ss f)))
+      K (Simplifier.map_simpset f)))
   |> Context.proof_map
 
 (*
  * Add a thm to the simpset.
  *)
 fun simp_add thms =
-  simp_map (fn ctxt => ctxt addsimps thms)
+  simp_map (Simplifier.add_simps thms)
 
 (*
  * Delete a thm from a simpset.
  *)
 fun simp_del thms =
-  simp_map (fn ctxt => ctxt delsimps thms)
+  simp_map (Simplifier.del_simps thms)
 
 (* Abstract over the given term with a forall constant. *)
 fun forall v t = HOLogic.all_const (fastype_of v) $ lambda v t
@@ -1026,7 +1026,7 @@ fun solved_tac thm =
 
 (* Convenience function for making simprocs. *)
 fun mk_simproc' ctxt (name : string, pats : string list, proc : Proof.context -> cterm -> thm option) = let
-  in Simplifier.make_simproc ctxt {name = name, kind = Simproc, identifier = [],  
+  in Simplifier.make_simproc ctxt {name = name, kind = Simplifier.Simproc, identifier = [],  
         lhss = map (Proof_Context.read_term_pattern ctxt) pats,
         proc = K proc} end
 
@@ -1230,7 +1230,7 @@ fun trace_conv msg ct =
 
 fun trace_simps msg P ctxt =
  let
-   val simps = simpset_of ctxt |> Simplifier.dest_simps |> filter P |> map #2
+   val simps = Simplifier.simpset_of ctxt |> Simplifier.dest_simps |> filter P |> map #2
    val _ = tracing (Pretty.string_of (Pretty.big_list msg (map (Thm.pretty_thm ctxt) simps)))
  in
    ()
@@ -1509,7 +1509,7 @@ fun prune_unused_bounds_tac ctxt maxidx all_bounds used_bounds t i =
         else
           EVERY [  
             PRIMITIVE (Thm.instantiate (TVars.empty, Vars.make insts)), 
-            Simplifier.simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms triv_forall_equality}) i] 
+            Simplifier.simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm triv_forall_equality}) i] 
       end 
   end
 

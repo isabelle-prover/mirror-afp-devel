@@ -3,11 +3,127 @@ theory Ground_Superposition_Completeness
     Ground_Superposition
 
     First_Order_Clause.HOL_Extra
+    First_Order_Clause.Ground_Critical_Pairs
+
     Abstract_Rewriting_Extra
     Relation_Extra
 begin
 
 subsection \<open>Model Construction\<close>
+
+(* TODO: Move *)
+lemma singleton_eq_CollectD: "{x} = {y. P y} \<Longrightarrow> P x"
+  by blast
+
+lemma subset_Union_mem_CollectI: "P x \<Longrightarrow> f x \<subseteq> (\<Union>y \<in> {z. P z}. f y)"
+  by blast
+
+lemma from_neq_double_rtrancl_to_eqE:
+  assumes "x \<noteq> y" and "(x, z) \<in> r\<^sup>*" and "(y, z) \<in> r\<^sup>*"
+  obtains
+    w where "(x, w) \<in> r" and "(w, z) \<in> r\<^sup>*" |
+    w where "(y, w) \<in> r" and "(w, z) \<in> r\<^sup>*"
+  using assms
+  by (metis converse_rtranclE)
+
+lemma ex_step_if_joinable:
+  assumes "asymp R" "(x, z) \<in> r\<^sup>*" and "(y, z) \<in> r\<^sup>*"
+  shows
+    "R\<^sup>=\<^sup>= z y \<Longrightarrow> R y x \<Longrightarrow> \<exists>w. (x, w) \<in> r \<and> (w, z) \<in> r\<^sup>*"
+    "R\<^sup>=\<^sup>= z x \<Longrightarrow> R x y \<Longrightarrow> \<exists>w. (y, w) \<in> r \<and> (w, z) \<in> r\<^sup>*"
+  using assms
+  by (metis asympD converse_rtranclE reflclp_iff)+
+
+lemma (in ground_order) mem_join_union_iff_mem_join_lhs':
+  assumes
+    ball_R\<^sub>1_rhs_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>1 \<Longrightarrow> t2 \<prec>\<^sub>t t1" and
+    ball_R\<^sub>2_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>2 \<Longrightarrow> s \<prec>\<^sub>t t1 \<and> t \<prec>\<^sub>t t1"
+  shows "(s, t) \<in> (R\<^sub>1 \<union> R\<^sub>2)\<^sup>\<down> \<longleftrightarrow> (s, t) \<in> R\<^sub>1\<^sup>\<down>"
+proof -
+  have ball_R\<^sub>1_rhs_lt_lhs': "(t1, t2) \<in> R\<^sub>1\<^sup>* \<Longrightarrow> t2 \<preceq>\<^sub>t t1" for t1 t2
+  proof (induction t2 rule: rtrancl_induct)
+    case base
+    show ?case
+      by order
+  next
+    case (step y z)
+    thus ?case
+      using ball_R\<^sub>1_rhs_lt_lhs
+      by (metis reflclp_iff transpD term.order.transp)
+  qed
+
+  show ?thesis
+  proof (rule mem_join_union_iff_mem_join_lhs)
+    fix u assume "(s, u) \<in> R\<^sub>1\<^sup>*"
+    hence "u \<preceq>\<^sub>t s"
+      using ball_R\<^sub>1_rhs_lt_lhs' by metis
+
+    show "u \<notin> Domain R\<^sub>2"
+    proof (rule notI)
+      assume "u \<in> Domain R\<^sub>2"
+      then obtain u' where "(u, u') \<in> R\<^sub>2"
+        by auto
+
+      hence "s \<prec>\<^sub>t u"
+        using ball_R\<^sub>2_lt_lhs
+        by simp
+
+      with \<open>u \<preceq>\<^sub>t s\<close> show False
+        by order
+    qed
+  next
+    fix u assume "(t, u) \<in> R\<^sub>1\<^sup>*"
+    hence "u \<preceq>\<^sub>t t"
+      using ball_R\<^sub>1_rhs_lt_lhs'
+      by simp
+
+    show "u \<notin> Domain R\<^sub>2"
+    proof (rule notI)
+      assume "u \<in> Domain R\<^sub>2"
+      then obtain u' where "(u, u') \<in> R\<^sub>2"
+        by auto
+
+      hence "t \<prec>\<^sub>t u"
+        using ball_R\<^sub>2_lt_lhs
+        by simp
+
+      with \<open>u \<preceq>\<^sub>t t\<close> show False
+        by order
+    qed
+  qed
+qed
+
+lemma (in ground_order) mem_join_union_iff_mem_join_rhs':
+  assumes
+    ball_R\<^sub>1_rhs_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>2 \<Longrightarrow> t2 \<prec>\<^sub>t t1" and
+    ball_R\<^sub>2_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>1 \<Longrightarrow> s \<prec>\<^sub>t t1 \<and> t \<prec>\<^sub>t t1"
+  shows "(s, t) \<in> (R\<^sub>1 \<union> R\<^sub>2)\<^sup>\<down> \<longleftrightarrow> (s, t) \<in> R\<^sub>2\<^sup>\<down>"
+  using assms mem_join_union_iff_mem_join_lhs'
+  by (metis (no_types, opaque_lifting) sup_commute)
+
+lemma (in ground_order) mem_join_union_iff_mem_join_lhs'':
+  assumes
+    Range_R\<^sub>1_lt_Domain_R\<^sub>2: "\<And>t1 t2. t1 \<in> Range R\<^sub>1 \<Longrightarrow> t2 \<in> Domain R\<^sub>2 \<Longrightarrow> t1 \<prec>\<^sub>t t2" and
+    s_lt_Domain_R\<^sub>2: "\<And>t2. t2 \<in> Domain R\<^sub>2 \<Longrightarrow> s \<prec>\<^sub>t t2" and
+    t_lt_Domain_R\<^sub>2: "\<And>t2. t2 \<in> Domain R\<^sub>2 \<Longrightarrow> t \<prec>\<^sub>t t2"
+  shows "(s, t) \<in> (R\<^sub>1 \<union> R\<^sub>2)\<^sup>\<down> \<longleftrightarrow> (s, t) \<in> R\<^sub>1\<^sup>\<down>"
+proof (rule mem_join_union_iff_mem_join_lhs)
+  fix u assume "(s, u) \<in> R\<^sub>1\<^sup>*"
+  hence "u = s \<or> u \<in> Range R\<^sub>1"
+    by (meson Range.intros rtrancl.cases)
+
+  thus "u \<notin> Domain R\<^sub>2"
+    using Range_R\<^sub>1_lt_Domain_R\<^sub>2 s_lt_Domain_R\<^sub>2
+    by (metis irreflpD term.order.irreflp_on_less)
+next
+  fix u assume "(t, u) \<in> R\<^sub>1\<^sup>*"
+  hence "u = t \<or> u \<in> Range R\<^sub>1"
+    by (meson Range.intros rtrancl.cases)
+
+  thus "u \<notin> Domain R\<^sub>2"
+    using Range_R\<^sub>1_lt_Domain_R\<^sub>2 t_lt_Domain_R\<^sub>2
+    by (metis irreflpD term.order.irreflp_on_less)
+qed
 
 context ground_superposition_calculus begin
 
@@ -94,9 +210,7 @@ next
     unfolding epsilon.simps[of _ C] by simp
 qed
 
-end
-
-lemma (in ground_superposition_calculus) epsilon_eq_empty_or_singleton:
+lemma epsilon_eq_empty_or_singleton:
   "epsilon N C = {} \<or> (\<exists>s t. epsilon N C = {(s, t)})"
 proof -
   have "\<exists>\<^sub>\<le>\<^sub>1 (x, y). \<exists>C'.
@@ -126,19 +240,18 @@ proof -
         insertCI mem_Collect_eq)
 qed
 
-lemma (in ground_superposition_calculus) card_epsilon_le_one:
+lemma card_epsilon_le_one:
   "card (epsilon N C) \<le> 1"
   using epsilon_eq_empty_or_singleton[of N C]
   by auto
 
-definition (in ground_superposition_calculus) rewrite_sys where
+definition rewrite_sys where
   "rewrite_sys N C \<equiv> (\<Union>D \<in> {D \<in> N. D \<prec>\<^sub>c C}. epsilon {E \<in> N. E \<preceq>\<^sub>c D} D)"
 
-definition (in ground_superposition_calculus) rewrite_sys' where
+definition rewrite_sys' where
   "rewrite_sys' N \<equiv> (\<Union>C \<in> N. epsilon N C)"
 
-lemma (in ground_superposition_calculus) rewrite_sys_alt:
-  "rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C} = rewrite_sys N C"
+lemma rewrite_sys_alt: "rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C} = rewrite_sys N C"
   unfolding rewrite_sys'_def rewrite_sys_def
 proof (rule SUP_cong)
   show "{D \<in> N. D \<prec>\<^sub>c C} = {D \<in> N. D \<prec>\<^sub>c C}" ..
@@ -148,7 +261,7 @@ next
     by (smt (verit, best) Collect_cong clause.order.le_less_trans mem_Collect_eq)
 qed
 
-lemma (in ground_superposition_calculus) mem_epsilonE:
+lemma mem_epsilonE:
   assumes rule_in: "rule \<in> epsilon N C"
   obtains l r C' where
     "C \<in> N" and
@@ -164,7 +277,7 @@ lemma (in ground_superposition_calculus) mem_epsilonE:
   unfolding epsilon.simps[of N C] mem_Collect_eq Let_def rewrite_sys_def
   by (metis (no_types, lifting))
 
-lemma (in ground_superposition_calculus) mem_epsilon_iff:
+lemma mem_epsilon_iff:
   "(l, r) \<in> epsilon N C \<longleftrightarrow>
     (\<exists>C'. C \<in> N \<and> C = add_mset (Pos (Upair l r)) C' \<and> select C = {#} \<and>
       is_strictly_maximal (Pos (Upair l r)) C \<and> r \<prec>\<^sub>t l \<and>
@@ -184,14 +297,14 @@ next
     unfolding rewrite_sys_alt rewrite_sys_def by auto
 qed
 
-lemma (in ground_superposition_calculus) rhs_lt_lhs_if_mem_rewrite_sys:
+lemma rhs_lt_lhs_if_mem_rewrite_sys:
   assumes "(t1, t2) \<in> rewrite_sys N C"
   shows "t2 \<prec>\<^sub>t t1"
   using assms
   unfolding rewrite_sys_def
   by (smt (verit, best) UN_iff mem_epsilonE prod.inject)
 
-lemma (in ground_superposition_calculus) rhs_less_trm_lhs_if_mem_rewrite_inside_gctxt_rewrite_sys:
+lemma rhs_less_trm_lhs_if_mem_rewrite_inside_gctxt_rewrite_sys:
   assumes rule_in: "(t1, t2) \<in> rewrite_in_context (rewrite_sys N C)"
   shows "t2 \<prec>\<^sub>t t1"
 proof -
@@ -205,7 +318,7 @@ proof -
   by (metis Pair_inject term.order.context_compatibility)
 qed
 
-lemma (in ground_superposition_calculus) rhs_lesseq_trm_lhs_if_mem_rtrancl_rewrite_inside_gctxt_rewrite_sys:
+lemma rhs_lesseq_trm_lhs_if_mem_rtrancl_rewrite_inside_gctxt_rewrite_sys:
   assumes rule_in: "(t1, t2) \<in> (rewrite_in_context (rewrite_sys N C))\<^sup>*"
   shows "t2 \<preceq>\<^sub>t t1"
   using rule_in
@@ -222,19 +335,13 @@ next
     by order
 qed
 
-lemma singleton_eq_CollectD: "{x} = {y. P y} \<Longrightarrow> P x"
-  by blast
-
-lemma subset_Union_mem_CollectI: "P x \<Longrightarrow> f x \<subseteq> (\<Union>y \<in> {z. P z}. f y)"
-  by blast
-
-lemma (in ground_superposition_calculus) rewrite_sys_subset_if_less_cls:
+lemma rewrite_sys_subset_if_less_cls:
   "C \<prec>\<^sub>c D \<Longrightarrow> rewrite_sys N C \<subseteq> rewrite_sys N D"
   unfolding rewrite_sys_def
   unfolding epsilon_filter_le_conv
   by (smt (verit, del_insts) SUP_mono clause.order.dual_order.strict_trans mem_Collect_eq subset_eq)
 
-lemma (in ground_superposition_calculus) mem_rewrite_sys_if_less_cls:
+lemma mem_rewrite_sys_if_less_cls:
   assumes "D \<in> N" and "D \<prec>\<^sub>c C" and "(u, v) \<in> epsilon N D"
   shows "(u, v) \<in> rewrite_sys N C"
   unfolding rewrite_sys_def UN_iff
@@ -246,7 +353,7 @@ next
     using \<open>(u, v) \<in> epsilon N D\<close> epsilon_filter_le_conv by simp
 qed
 
-lemma (in ground_superposition_calculus) less_trm_iff_less_cls_if_lhs_epsilon:
+lemma less_trm_iff_less_cls_if_lhs_epsilon:
   assumes E\<^sub>C: "epsilon N C = {(s, t)}" and E\<^sub>D: "epsilon N D = {(u, v)}"
   shows "u \<prec>\<^sub>t s \<longleftrightarrow> D \<prec>\<^sub>c C"
 proof -
@@ -340,7 +447,7 @@ proof -
   qed
 qed
 
-lemma (in ground_superposition_calculus) termination_rewrite_sys: "wf ((rewrite_sys N C)\<inverse>)"
+lemma termination_rewrite_sys: "wf ((rewrite_sys N C)\<inverse>)"
 proof (rule wf_if_convertible_to_wf)
   show "wf {(x, y). x \<prec>\<^sub>t y}"
     using term.order.wfp
@@ -358,8 +465,7 @@ next
     by (simp add: )
 qed
 
-lemma (in ground_superposition_calculus) termination_Union_rewrite_sys:
-  "wf ((\<Union>D \<in> N. rewrite_sys N D)\<inverse>)"
+lemma termination_Union_rewrite_sys: "wf ((\<Union>D \<in> N. rewrite_sys N D)\<inverse>)"
 proof (rule wf_if_convertible_to_wf)
   show "wf {(x, y). x \<prec>\<^sub>t y}"
     using term.order.wfp
@@ -385,8 +491,7 @@ next
     by simp
 qed
 
-lemma (in ground_superposition_calculus) no_crit_pairs:
-  "{(t1, t2) \<in> ground_critical_pairs (\<Union> (epsilon N2 ` N)). t1 \<noteq> t2} = {}"
+lemma no_crit_pairs: "{(t1, t2) \<in> ground_critical_pairs (\<Union> (epsilon N2 ` N)). t1 \<noteq> t2} = {}"
 proof (rule ccontr)
   assume "{(t1, t2).
     (t1, t2) \<in> ground_critical_pairs (\<Union> (epsilon N2 ` N)) \<and> t1 \<noteq> t2} \<noteq> {}"
@@ -470,8 +575,10 @@ proof (rule ccontr)
   qed
 qed
 
-lemma (in ground_superposition_calculus) WCR_Union_rewrite_sys:
-  "WCR (rewrite_in_context (\<Union>D \<in> N. epsilon N2 D))"
+sublocale ground_critical_pairs
+  by unfold_locales
+
+lemma WCR_Union_rewrite_sys: "WCR (rewrite_in_context (\<Union>D \<in> N. epsilon N2 D))"
   unfolding ground_critical_pair_theorem
 proof (intro subsetI ballI)
   fix tuple
@@ -492,7 +599,7 @@ proof (intro subsetI ballI)
     by (cases "t1 = t2") simp_all
 qed
 
-lemma (in ground_superposition_calculus)
+lemma
   assumes
     "D \<preceq>\<^sub>c C" and
     E\<^sub>C_eq: "epsilon N C = {(s, t)}" and
@@ -584,7 +691,7 @@ proof -
     by argo+
 qed
 
-lemma (in ground_superposition_calculus) less_trm_const_lhs_if_mem_rewrite_inside_gctxt:
+lemma less_trm_const_lhs_if_mem_rewrite_inside_gctxt:
   fixes t t1 t2 r
   assumes
     rule_in: "(t1, t2) \<in> rewrite_in_context r" and
@@ -602,7 +709,7 @@ proof -
     by order
 qed
 
-lemma (in ground_superposition_calculus) split_Union_epsilon:
+lemma split_Union_epsilon:
   assumes D_in: "D \<in> N"
   shows "(\<Union>C \<in> N. epsilon N C) =
     rewrite_sys N D \<union> epsilon N D \<union> (\<Union>C \<in> {C \<in> N. D \<prec>\<^sub>c C}. epsilon N C)"
@@ -626,13 +733,13 @@ proof -
     by simp
 qed
 
-lemma (in ground_superposition_calculus) split_Union_epsilon':
+lemma split_Union_epsilon':
   assumes D_in: "D \<in> N"
   shows "(\<Union>C \<in> N. epsilon N C) = rewrite_sys N D \<union> (\<Union>C \<in> {C \<in> N. D \<preceq>\<^sub>c C}. epsilon N C)"
   using split_Union_epsilon[OF D_in] D_in
   by auto
 
-lemma (in ground_superposition_calculus) split_rewrite_sys:
+lemma split_rewrite_sys:
   assumes "C \<in> N" and D_in: "D \<in> N" and "D \<prec>\<^sub>c C"
   shows "rewrite_sys N C = rewrite_sys N D \<union> (\<Union>C' \<in> {C' \<in> N. D \<preceq>\<^sub>c C' \<and> C' \<prec>\<^sub>c C}. epsilon N C')"
 proof -
@@ -670,98 +777,7 @@ proof -
     by simp
 qed
 
-lemma (in ground_order) mem_join_union_iff_mem_join_lhs':
-  assumes
-    ball_R\<^sub>1_rhs_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>1 \<Longrightarrow> t2 \<prec>\<^sub>t t1" and
-    ball_R\<^sub>2_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>2 \<Longrightarrow> s \<prec>\<^sub>t t1 \<and> t \<prec>\<^sub>t t1"
-  shows "(s, t) \<in> (R\<^sub>1 \<union> R\<^sub>2)\<^sup>\<down> \<longleftrightarrow> (s, t) \<in> R\<^sub>1\<^sup>\<down>"
-proof -
-  have ball_R\<^sub>1_rhs_lt_lhs': "(t1, t2) \<in> R\<^sub>1\<^sup>* \<Longrightarrow> t2 \<preceq>\<^sub>t t1" for t1 t2
-  proof (induction t2 rule: rtrancl_induct)
-    case base
-    show ?case
-      by order
-  next
-    case (step y z)
-    thus ?case
-      using ball_R\<^sub>1_rhs_lt_lhs
-      by (metis reflclp_iff transpD term.order.transp)
-  qed
-
-  show ?thesis
-  proof (rule mem_join_union_iff_mem_join_lhs)
-    fix u assume "(s, u) \<in> R\<^sub>1\<^sup>*"
-    hence "u \<preceq>\<^sub>t s"
-      using ball_R\<^sub>1_rhs_lt_lhs' by metis
-
-    show "u \<notin> Domain R\<^sub>2"
-    proof (rule notI)
-      assume "u \<in> Domain R\<^sub>2"
-      then obtain u' where "(u, u') \<in> R\<^sub>2"
-        by auto
-
-      hence "s \<prec>\<^sub>t u"
-        using ball_R\<^sub>2_lt_lhs
-        by simp
-
-      with \<open>u \<preceq>\<^sub>t s\<close> show False
-        by order
-    qed
-  next
-    fix u assume "(t, u) \<in> R\<^sub>1\<^sup>*"
-    hence "u \<preceq>\<^sub>t t"
-      using ball_R\<^sub>1_rhs_lt_lhs'
-      by simp
-
-    show "u \<notin> Domain R\<^sub>2"
-    proof (rule notI)
-      assume "u \<in> Domain R\<^sub>2"
-      then obtain u' where "(u, u') \<in> R\<^sub>2"
-        by auto
-
-      hence "t \<prec>\<^sub>t u"
-        using ball_R\<^sub>2_lt_lhs
-        by simp
-
-      with \<open>u \<preceq>\<^sub>t t\<close> show False
-        by order
-    qed
-  qed
-qed
-
-lemma (in ground_order) mem_join_union_iff_mem_join_rhs':
-  assumes
-    ball_R\<^sub>1_rhs_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>2 \<Longrightarrow> t2 \<prec>\<^sub>t t1" and
-    ball_R\<^sub>2_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>1 \<Longrightarrow> s \<prec>\<^sub>t t1 \<and> t \<prec>\<^sub>t t1"
-  shows "(s, t) \<in> (R\<^sub>1 \<union> R\<^sub>2)\<^sup>\<down> \<longleftrightarrow> (s, t) \<in> R\<^sub>2\<^sup>\<down>"
-  using assms mem_join_union_iff_mem_join_lhs'
-  by (metis (no_types, opaque_lifting) sup_commute)
-
-lemma (in ground_order) mem_join_union_iff_mem_join_lhs'':
-  assumes
-    Range_R\<^sub>1_lt_Domain_R\<^sub>2: "\<And>t1 t2. t1 \<in> Range R\<^sub>1 \<Longrightarrow> t2 \<in> Domain R\<^sub>2 \<Longrightarrow> t1 \<prec>\<^sub>t t2" and
-    s_lt_Domain_R\<^sub>2: "\<And>t2. t2 \<in> Domain R\<^sub>2 \<Longrightarrow> s \<prec>\<^sub>t t2" and
-    t_lt_Domain_R\<^sub>2: "\<And>t2. t2 \<in> Domain R\<^sub>2 \<Longrightarrow> t \<prec>\<^sub>t t2"
-  shows "(s, t) \<in> (R\<^sub>1 \<union> R\<^sub>2)\<^sup>\<down> \<longleftrightarrow> (s, t) \<in> R\<^sub>1\<^sup>\<down>"
-proof (rule mem_join_union_iff_mem_join_lhs)
-  fix u assume "(s, u) \<in> R\<^sub>1\<^sup>*"
-  hence "u = s \<or> u \<in> Range R\<^sub>1"
-    by (meson Range.intros rtrancl.cases)
-
-  thus "u \<notin> Domain R\<^sub>2"
-    using Range_R\<^sub>1_lt_Domain_R\<^sub>2 s_lt_Domain_R\<^sub>2
-    by (metis irreflpD term.order.irreflp_on_less)
-next
-  fix u assume "(t, u) \<in> R\<^sub>1\<^sup>*"
-  hence "u = t \<or> u \<in> Range R\<^sub>1"
-    by (meson Range.intros rtrancl.cases)
-
-  thus "u \<notin> Domain R\<^sub>2"
-    using Range_R\<^sub>1_lt_Domain_R\<^sub>2 t_lt_Domain_R\<^sub>2
-    by (metis irreflpD term.order.irreflp_on_less)
-qed
-
-lemma (in ground_superposition_calculus) lift_entailment_to_Union:
+lemma lift_entailment_to_Union:
   fixes N D
   defines "R\<^sub>D \<equiv> rewrite_sys N D"
   assumes
@@ -900,7 +916,7 @@ proof -
   qed
 qed
 
-lemma (in ground_superposition_calculus)
+lemma
   assumes productive: "epsilon N C = {(l, r)}"
   shows
     true_cls_if_productive_epsilon:
@@ -1129,24 +1145,7 @@ proof -
     by (simp add: C_def)
 qed
 
-lemma from_neq_double_rtrancl_to_eqE:
-  assumes "x \<noteq> y" and "(x, z) \<in> r\<^sup>*" and "(y, z) \<in> r\<^sup>*"
-  obtains
-    w where "(x, w) \<in> r" and "(w, z) \<in> r\<^sup>*" |
-    w where "(y, w) \<in> r" and "(w, z) \<in> r\<^sup>*"
-  using assms
-  by (metis converse_rtranclE)
-
-lemma ex_step_if_joinable:
-  assumes "asymp R" "(x, z) \<in> r\<^sup>*" and "(y, z) \<in> r\<^sup>*"
-  shows
-    "R\<^sup>=\<^sup>= z y \<Longrightarrow> R y x \<Longrightarrow> \<exists>w. (x, w) \<in> r \<and> (w, z) \<in> r\<^sup>*"
-    "R\<^sup>=\<^sup>= z x \<Longrightarrow> R x y \<Longrightarrow> \<exists>w. (y, w) \<in> r \<and> (w, z) \<in> r\<^sup>*"
-  using assms
-  by (metis asympD converse_rtranclE reflclp_iff)+
-
-lemma (in ground_superposition_calculus) trans_join_rewrite_inside_gctxt_rewrite_sys:
-  "trans ((rewrite_in_context (rewrite_sys N C))\<^sup>\<down>)"
+lemma trans_join_rewrite_inside_gctxt_rewrite_sys: "trans ((rewrite_in_context (rewrite_sys N C))\<^sup>\<down>)"
 proof (rule trans_join)
   have "wf ((rewrite_in_context (rewrite_sys N C))\<inverse>)"
   proof (rule wf_converse_rewrite_in_context)
@@ -1170,7 +1169,7 @@ next
     by (metis (mono_tags, lifting))
 qed
 
-lemma (in ground_superposition_calculus) true_cls_insert_and_not_true_clsE:
+lemma true_cls_insert_and_not_true_clsE:
   assumes
     "upair ` (rewrite_in_context (insert r R))\<^sup>\<down> \<TTurnstile> C" and
     "\<not> upair ` (rewrite_in_context R)\<^sup>\<down> \<TTurnstile> C"
@@ -1245,7 +1244,7 @@ proof -
   qed
 qed
 
-lemma (in ground_superposition_calculus) model_preconstruction:
+lemma model_preconstruction:
   fixes
     N :: "'t clause set" and
     C :: "'t clause"
@@ -2041,7 +2040,7 @@ proof (induction C rule: wfp_induct_rule)
     by argo
 qed
 
-lemma (in ground_superposition_calculus) model_construction:
+lemma model_construction:
   fixes
     N :: "'t clause set" and
     C :: "'t clause"
@@ -2069,7 +2068,7 @@ qed
 
 subsection \<open>Static Refutational Completeness\<close>
 
-lemma (in ground_superposition_calculus) statically_complete:
+lemma statically_complete:
   fixes N :: "'t clause set"
   assumes "saturated N" and "G_entails N {{#}}"
   shows "{#} \<in> N"
@@ -2123,7 +2122,7 @@ proof (rule contrapos_pp)
   qed
 qed
 
-sublocale ground_superposition_calculus \<subseteq> statically_complete_calculus where
+sublocale statically_complete_calculus where
   Bot = G_Bot and
   Inf = G_Inf and
   entails = G_entails and
@@ -2131,5 +2130,7 @@ sublocale ground_superposition_calculus \<subseteq> statically_complete_calculus
   Red_F = Red_F
   using statically_complete
   by unfold_locales simp
+
+end
 
 end

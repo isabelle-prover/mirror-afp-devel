@@ -364,7 +364,7 @@ lemma unit_factor_poly_altdef: "unit_factor p = monom (unit_factor (lead_coeff p
   by (simp add: unit_factor_poly_def monom_altdef)
 
 lemma div_const_poly: "p div [:c::'a::field:] = smult (inverse c) p"
-  by (cases "c = 0") (simp_all add: unit_eq_div1 is_unit_triv)
+  by (metis div_by_1 div_smult_right smult_one)
 
 lemma fps_of_ratfps_inverse [simp]: "fps_of_ratfps (inverse x) = inverse (fps_of_ratfps x)"
 proof (transfer, goal_cases)

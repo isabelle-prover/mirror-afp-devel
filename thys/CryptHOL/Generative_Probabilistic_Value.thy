@@ -5910,7 +5910,8 @@ next
   also have "\<dots> = \<integral>\<^sup>+ generat. \<integral>\<^sup>+ b. indicator {True} b + ennreal k * (if consider (output generat) then n - 1 else n) * indicator {False} b \<partial>measure_spmf (map_spmf (bad \<circ> snd) (callee s (output generat))) \<partial>?M"
     (is "_ = \<integral>\<^sup>+ generat. \<integral>\<^sup>+ _. _ \<partial>?O' generat \<partial>_")
     by(auto intro!: nn_integral_cong)
-  also have "\<dots> = \<integral>\<^sup>+ generat. (\<integral>\<^sup>+ b. indicator {True} b \<partial>?O' generat) + ennreal k * (if consider (output generat) then n - 1 else n) * \<integral>\<^sup>+ b. indicator {False} b \<partial>?O' generat \<partial>?M"
+  also have "\<dots> = \<integral>\<^sup>+ generat. (\<integral>\<^sup>+ b. indicator {True} b \<partial>?O' generat) 
+      + ennreal k * (if consider (output generat) then n - 1 else n) * (\<integral>\<^sup>+ b. indicator {False} b \<partial>?O' generat) \<partial>?M"
     by(subst nn_integral_add)(simp_all add: k_nonneg nn_integral_cmult o_def)
   also have "\<dots> = \<integral>\<^sup>+ generat. ennreal (spmf (map_spmf (bad \<circ> snd) (callee s (output generat))) True) + ennreal k * (if consider (output generat) then n - 1 else n) * spmf (map_spmf (bad \<circ> snd) (callee s (output generat))) False \<partial>?M"
     by(simp del: nn_integral_map_spmf add: emeasure_spmf_single ereal_of_enat_mult)

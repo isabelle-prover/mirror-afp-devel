@@ -255,7 +255,7 @@ fun simpl_conv'
             val T = \<^Type>\<open>spec_monad \<open>@{typ "unit option"}\<close> \<open>@{typ unit}\<close> sT\<close>
             val assoc = callee_infos |> map (fn (p, (v, _)) => HOLogic.mk_prod (p,v)) |> HOLogic.mk_list \<^Type>\<open>prod \<open>@{typ "unit ptr"}\<close> T\<close>
             val g' = \<^infer_instantiate>\<open>g = g in term \<open>L1_set_to_pred g\<close>\<close> ctxt
-            val ghost_ss = (put_simpset HOL_basic_ss ctxt) addsimps 
+            val ghost_ss = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
                @{thms list.map comp_apply snd_conv L1_set_to_pred_def in_set_to_pred 
                  Int_iff mem_Collect_eq} 
             val eq = Simplifier.rewrite ghost_ss (Thm.cterm_of ctxt g')
@@ -279,9 +279,9 @@ fun simpl_conv'
              EVERY [
               resolve_tac ctxt [rule] 1,
               dprint_tac (!d1) ctxt ("L1 dyn_call after resolve in " ^ fn_name),
-              solve_guards (simp_ctxt addsimps (fun_ptr_simps @ fun_ptr_guards)) 1,
+              solve_guards (simp_ctxt |> Simplifier.add_simps (fun_ptr_simps @ fun_ptr_guards)) 1,
               dprint_tac (!d1) ctxt ("L1 dyn_call after simp (1) in " ^ fn_name),
-              asm_full_simp_tac (simp_ctxt addsimps callee_thms) 1,
+              asm_full_simp_tac (simp_ctxt |> Simplifier.add_simps callee_thms) 1,
               dprint_tac (!d1) ctxt ("L1 dyn_call after simp (2) in " ^ fn_name),
               dprint_tac (!d1) ctxt ("L1 dyn_call in " ^ fn_name)])
 
@@ -321,9 +321,10 @@ let
   fun l1conv conv = (Conv.arg_conv (Utils.nth_arg_conv 3 conv))
 
   (* Conversion to simplify guards. *)
-  fun guard_ctxt ctxt = put_simpset simpl_conv_ss ctxt 
-       addsimps @{thms L1_functions.L1_dyn_call_def L1_dyn_call_map_of_default_def pred_conj_def}
-       delsimprocs [Record.upd_simproc]
+  fun guard_ctxt ctxt = ctxt
+    |> put_simpset simpl_conv_ss
+    |> fold Simplifier.add_simp @{thms L1_functions.L1_dyn_call_def L1_dyn_call_map_of_default_def pred_conj_def}
+    |> Simplifier.del_proc Record.upd_simproc
 
   fun guard_conv' ctxt c =
     case (Thm.term_of c) of
@@ -335,7 +336,7 @@ let
     | _ =>
         Conv.all_conv c
   val guard_conv = Conv.top_conv (guard_conv') ctxt
-  val simp_ctxt = put_simpset HOL_basic_ss ctxt addsimps @{thms scast_numerals}
+  val simp_ctxt = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms scast_numerals}
   (* Apply all the conversions on the generated term. *)
   val _ = verbose_msg 1 ctxt (fn _ => "L1 (raw) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt thm);
   val _ = ctxt |> AutoCorresTrace.put_trace_info fn_name FunctionInfo.L1 FunctionInfo.RAW;
@@ -346,7 +347,7 @@ let
   val _ = ctxt |> AutoCorresTrace.put_trace_info_stage FunctionInfo.PEEP;
   val thm = timeit_msg 1 ctxt (fn _ => "L1 (peephole-opt) - " ^ fn_name)  (fn _ =>
     AutoCorresTrace.fconv_rule_maybe_traced ctxt
-      (l1conv (Simplifier.rewrite (simp_ctxt addsimps
+      (l1conv (Simplifier.rewrite (simp_ctxt |> Simplifier.add_simps
                      (if not (L1_opt = FunctionInfo.RAW) then Utils.get_rules ctxt @{named_theorems L1opt} else []))))
       thm trace_opt);
   val _ = verbose_msg 1 ctxt (fn _ => "L1 (peephole-opt) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt thm);
@@ -373,7 +374,7 @@ let
   (* Unfold terms in the body which we don't want to deal with. *)
   val unfolded_simpl_thm =
       Conv.fconv_rule (Utils.rhs_conv
-          (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
+          (Simplifier.rewrite (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
              (Utils.get_rules ctxt @{named_theorems L1unfold}))))
           simpl_thm
   val unfolded_simpl_term = Thm.concl_of unfolded_simpl_thm |> Utils.rhs_of;
@@ -396,7 +397,7 @@ fun get_l1corres_thm prog_info simpl_defs
                      check_termination ctxt L1_opt trace_opt
                      fn_name callee_terms = 
   let
-    val ctxt = ctxt delsimps @{thms map_of_default.simps} 
+    val ctxt = ctxt |> Simplifier.del_simps @{thms map_of_default.simps} 
       |> HPInter.enter_scope (ProgramInfo.get_prog_name prog_info) fn_name
     val fn_def = Utils.the' ("SimplConv.get_l1corres_thm: no such function: " ^ fn_name)
                    (Symtab.lookup simpl_defs fn_name);

@@ -177,7 +177,7 @@ fun sim_nondet prog_info phase ctxt
     val cache = Synthesize_Rules.gen_cond_cache check_compound l2_index (lift lift_prev) sim_rules
 
     val thm = Goal.prove ctxt' [] [] goal (fn {context, ...} => 
-       full_simp_tac (Simplifier.clear_simpset context addsimps @{thms DYN_CALL_def}) 1 THEN
+       full_simp_tac (context |> Simplifier.clear_simpset |> Simplifier.add_simp @{thm DYN_CALL_def}) 1 THEN
        EqSubst.eqsubst_tac context [0] [prev_def] 1 THEN       
        Context_Tactic.NO_CONTEXT_TACTIC context (
          CT.cache_deepen_tac (fn ctxt => Config.get ctxt Utils.verbose) cache
@@ -212,7 +212,7 @@ let
   val congs = if do_polish then Utils.get_rules ctxt @{named_theorems polish_cong} else []
   (* Simplify using polish rules. *)
   val record_ss = RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt)
-  val basic_ss = merge_ss (HOL_ss, record_ss)
+  val basic_ss = Simplifier.merge_ss (HOL_ss, record_ss)
   val simp_ctxt = put_simpset basic_ss ctxt 
     |> Simplifier.add_simps simps 
     |> fold Simplifier.add_proc [@{simproc NO_MATCH}, @{simproc ETA_TUPLED_HINT}]

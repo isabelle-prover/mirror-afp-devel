@@ -469,7 +469,7 @@ fun mk_corresXF_prop ctxt prog_info name_map return_vars except_vars precond_var
  *)
 fun mk_corresXF_thm ctxt prog_info  name_map return_vars except_vars precond_vars l2_term l1_term tac =
 let
-  val ctxt = ctxt addsimps @{thms split_def}
+  val ctxt = ctxt |> Simplifier.add_simp @{thm split_def}
   val prop = timeit_msg 2 ctxt (fn _ => "mk_corresXF_prop: ") (fn _ => mk_corresXF_prop ctxt prog_info name_map
        return_vars except_vars precond_vars l2_term l1_term)
 in
@@ -496,7 +496,7 @@ fun mk_corresXF_thm_direct ctxt prog_info name_map return_vars except_vars preco
     val nprems = Thm.prems_of thm |> length
     val (ty_insts, trm_insts) = Utils.match_or_unify ctxt concl goal
     val st = Thm.instantiate (TVars.make ty_insts, Vars.make trm_insts) thm |> Goal.protect nprems
-    val ctxt = ctxt addsimps @{thms split_def}
+    val ctxt = ctxt |> Simplifier.add_simp @{thm split_def}
   in
     Utils.simple_cprove ctxt st
       (timeap_msg_tac 2 ctxt (fn _ => "mk_corresXF_thm_direct - solve sideconditions")
@@ -1731,7 +1731,7 @@ in
 
           val all_callee_thms = callee_thms @
                 Named_Theorems.get ctxt @{named_theorems "l2_corres"}
-          val grds' = map (Simplifier.asm_full_simplify (ctxt addsimps @{thms More_Lib.pred_conj_def})) grds
+          val grds' = map (Simplifier.asm_full_simplify (ctxt |> Simplifier.add_simp @{thm More_Lib.pred_conj_def})) grds
           val _ = if !d1 then tracing (big_list_of_thms "grds': " ctxt grds') else ()
           fun dtrace ctxt = if !d2 then Config.put Simplifier.simp_trace true ctxt else ctxt
           val thm =
@@ -1739,7 +1739,7 @@ in
               (my_debug_tac "unfold folded_gets"
                     THEN (REPEAT (resolve_tac ctxt @{thms L2corres_folded_gets} 1)))
               THEN (my_debug_tac "propagate fixed function pointer parameters"
-                    THEN (asm_full_simp_tac (dtrace ctxt addsimps (@{thms More_Lib.pred_conj_def} @ grds')
+                    THEN (asm_full_simp_tac (dtrace ctxt |> Simplifier.add_simps (@{thms More_Lib.pred_conj_def} @ grds')
                           |> Simplifier.add_cong @{thm L2corres_l2_propagate_fixed_cong''}  ) 1)
                     THEN (my_debug_tac "apply callee proof")
                     THEN FIRST (map_index (fn (i, thm) =>
@@ -1785,9 +1785,9 @@ in
             in mk_monad @{const_name "L2_seq"} ret_t throw_vars [get, Abs (name, T, t)] end) args'
 
            val thm = mk_corresXF_thm ctxt prog_info name_map ret_vars throw_vars read_vars l2 t (fn {context=ctxt, ...} =>
-             simp_tac (Simplifier.clear_simpset ctxt addsimps @{thms L2_remove_scaffolding_1}) 1 THEN
+             simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms L2_remove_scaffolding_1}) 1 THEN
              match_tac ctxt @{thms L2corres_exec_spec_monad_globals' L2corres_exec_spec_monad'} 1 THEN
-             ALLGOALS (asm_full_simp_tac (ctxt addsimps @{thms refines_right_eq_id} @ [unit_range_eq])))
+             ALLGOALS (asm_full_simp_tac (ctxt |> Simplifier.add_simps (@{thms refines_right_eq_id} @ [unit_range_eq]))))
         in 
           inject (read_vars, ret_vars, l2, thm, cache)
           before (timing_msg' 2 ctxt (fn _ => "Exec_Spec_Monad") start)
@@ -2088,7 +2088,7 @@ fun get_l2corres_thm ctxt skips prog_info l1_infos fn_ptr_infos l1_call_info L2_
   val fn_ptr_guard_simps = callee_terms |> Symtab.dest |> map (#2 o #2) |> flat
   val ctxt = ctxt |> AutoCorresTrace.put_trace_info fn_name FunctionInfo.L2 FunctionInfo.PEEP;
   val new_thm = timeit_msg 1 ctxt (fn _ => "Simplification (L2opt): " ^ fn_name) (fn _ =>
-    L2Opt.cleanup_thm_tagged prog_info (ctxt delsimps cleanup_del) fn_ptr_guard_simps [] 
+    L2Opt.cleanup_thm_tagged prog_info (ctxt |> Simplifier.del_simps cleanup_del) fn_ptr_guard_simps [] 
       (SOME map_of_default_args.unfold_map_of_default_conv) new_thm
     L2_opt 5 trace_opt FunctionInfo.L2)
   val _ = verbose_msg 1 ctxt (fn _ => "L2 (L2opt) - " ^ fn_name ^ ": " ^ Thm.string_of_thm ctxt new_thm)

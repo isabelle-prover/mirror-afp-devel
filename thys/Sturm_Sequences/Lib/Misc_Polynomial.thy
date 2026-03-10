@@ -196,18 +196,18 @@ proof-
   have "?A \<and> (\<forall>x. ?B x)"
   proof (cases "pderiv p = 0")
     case False
-      from poly_div_gcd_squarefree_aux[OF this] show ?thesis
-          unfolding d_def by auto
+    from poly_div_gcd_squarefree_aux[OF this] show ?thesis
+      unfolding d_def by auto
   next
     case True
-      then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
-      from assms(1) have "c \<noteq> 0" by simp
-      from True have "d = smult (inverse c) p"
-        by (simp add: d_def normalize_poly_def map_poly_pCons field_simps)
-      with \<open>p \<noteq> 0\<close> \<open>c \<noteq> 0\<close> have "p div d = [:c:]"
-        by (simp add: pCons_one)
-      with \<open>c \<noteq> 0\<close> show ?thesis
-        by (simp add: normalize_const_poly is_unit_triv)
+    then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast 
+    from assms(1) have "c \<noteq> 0" by simp
+    from True have "d = smult (inverse c) p"
+      by (simp add: d_def normalize_poly_def map_poly_pCons field_simps)
+    with \<open>p \<noteq> 0\<close> \<open>c \<noteq> 0\<close> have "p div d = [:c:]"
+      by (simp add: pCons_one)
+    with \<open>c \<noteq> 0\<close> show ?thesis
+      by (simp add: is_unit_pCons_iff)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed

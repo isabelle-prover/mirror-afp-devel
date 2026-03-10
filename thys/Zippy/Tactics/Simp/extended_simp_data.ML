@@ -25,7 +25,7 @@ fun wrap_simp_tac f_timeout tac args ctxt i state =
   let
     val timeout = the_default 0.0 (PA.get_timeout_safe args)
     val ctxt = PA.get_depth_safe args
-      |> Option.map (fn depth => Config.put Raw_Simplifier.simp_depth_limit depth ctxt)
+      |> Option.map (fn depth => Config.put Simplifier.simp_depth_limit depth ctxt)
       |> the_default ctxt
   in
     Seq.make (fn _ => tac ctxt i state |> Seq.pull)

@@ -50,10 +50,10 @@ proof -
   let ?m1x = "[ A $$ (i,j) . A <- map fst ABs, i <- ?n, j <- ?n]"
   let ?m2y = "[ B $$ (i,j) . B <- map snd ABs, i <- ?n, j <- ?n]"
   let ?pairs = "concat (map (\<lambda> x. map (\<lambda> y. (x,y)) ?m2y) ?m1x)"
-  let ?strict = "filter (\<lambda> (x,y). weak_gt x y) ?pairs"
-  have "\<forall> x y. (x,y) \<in> set ?strict \<longrightarrow> weak_gt x y" by auto
+  define strict where "strict = filter (\<lambda> (x,y). weak_gt x y) ?pairs"
+  have "\<forall> x y. (x,y) \<in> set strict \<longrightarrow> weak_gt x y" by (auto simp: strict_def)
   from weak_gt_mono[OF this] obtain gt bound where order: "mono_matrix_carrier gt default bound mono" 
-    and orient2: "\<And> x y. (x, y) \<in> set ?strict \<Longrightarrow> gt x y" by auto
+    and orient2: "\<And> x y. (x, y) \<in> set strict \<Longrightarrow> gt x y" by auto
   show ?thesis
   proof (intro exI allI conjI impI, rule order)
     fix A B
@@ -65,7 +65,7 @@ proof -
       by auto
     from ij \<open>sd \<le> n\<close> have ij': "i < n" "j < n" by auto
     have gt: "gt (A $$ (i,j)) (B $$ (i,j))"
-      by (rule orient2, insert ij' AB wgt, force)
+      by (rule orient2, insert ij' AB wgt, force simp: strict_def)
     show "mat_gt gt sd A B" using ij gt ge by auto
   qed
 qed

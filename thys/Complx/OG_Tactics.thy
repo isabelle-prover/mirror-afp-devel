@@ -533,7 +533,7 @@ fun simp ctxt extra =
   simp_tac (put_simpset HOL_basic_ss ctxt addsimps extra)
 
 fun simp_only ctxt simps =
-  simp_tac ((clear_simpset ctxt) addsimps simps)
+  simp_tac ((Simplifier.clear_simpset ctxt) addsimps simps)
 
 fun prod_sel_simp ctxt =
   simp_only ctxt @{thms prod.sel}

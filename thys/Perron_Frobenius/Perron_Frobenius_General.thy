@@ -540,7 +540,7 @@ proof -
           using sr1 p_conv[of sr2 k x] 2 by auto
         have "?wit A sr1 ks1 (f1 * f2 * prod_list (map (p sr2) ks2))" unfolding char
           by (insert 1 2 sr1 lt, auto simp: p.hom_mult p.hom_prod_list 
-          poly_prod_list prod_list_zero_iff)
+          poly_prod_list_eq prod_list_zero_iff)
         thus ?thesis by blast
       qed
     next
@@ -625,7 +625,7 @@ proof (atomize(full), goal_cases)
       fix x
       note [simp] = prod_list_zero_iff o_def poly_monom
       assume "poly (charpoly ?A) x = 0" 
-      from this[unfolded cpc poly_mult poly_prod_list] small[of x]
+      from this[unfolded cpc poly_mult poly_prod_list_eq] small[of x]
       consider (lt) "cmod x < sr" | (mem) k where "k \<in> set ks" "x ^ k = (?c sr) ^ k" by force
       hence "cmod x \<le> sr" 
       proof (cases)

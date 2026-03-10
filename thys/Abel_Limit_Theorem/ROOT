@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Abel_Limit_Theorem" (AFP) = Catalan_Numbers + 
+  options [timeout="600"]
+  sessions
+    "HOL-Real_Asymp"
+    "Catalan_Numbers"
+  theories 
+    Abel_Limit_Theorem 
+    Binomial_Sqrt_Series_Boundary
+  document_files
+    "root.tex"
+    "root.bib"

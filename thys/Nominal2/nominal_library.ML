@@ -330,7 +330,7 @@ fun all_dtyp_constrs_types descr =
 fun pat_completeness_simp simps ctxt =
   let
     val simpset =
-      put_simpset HOL_basic_ss ctxt addsimps (@{thms sum.inject sum.distinct} @ simps)
+      ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (@{thms sum.inject sum.distinct} @ simps)
   in
     Pat_Completeness.pat_completeness_tac ctxt 1
       THEN ALLGOALS (asm_full_simp_tac simpset)
@@ -338,10 +338,10 @@ fun pat_completeness_simp simps ctxt =
 
 (* simpset for size goals *)
 val size_ss =
-  simpset_of (put_simpset HOL_ss @{context}
-   |> Simplifier.add_proc @{simproc natless_cancel_numerals}
-   |> Simplifier.add_simps @{thms in_measure wf_measure sum.case add_Suc_right add.right_neutral
-     zero_less_Suc prod.size(1) mult_Suc_right})
+  HOL_ss
+  |> Simplifier.simpset_map \<^context>
+    (Simplifier.add_proc @{simproc natless_cancel_numerals}
+    #> Simplifier.add_simps @{thms in_measure wf_measure sum.case add_Suc_right add.right_neutral zero_less_Suc prod.size(1) mult_Suc_right})
 
 val natT = @{typ nat}
 
@@ -387,7 +387,7 @@ let
 
   val tac =
     Function_Relation.relation_tac ctxt measure_trm
-    THEN_ALL_NEW simp_tac (put_simpset size_ss ctxt addsimps size_simps)
+    THEN_ALL_NEW simp_tac (ctxt |> put_simpset size_ss |> Simplifier.add_simps size_simps)
   in
     Function.prove_termination NONE (HEADGOAL tac) ctxt
   end
@@ -420,7 +420,7 @@ and map_term' f (t $ u) =
 fun map_thm_tac ctxt tac thm =
   let
     val monos = Inductive.get_monos ctxt
-    val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms split_def}
+    val simpset = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm split_def}
   in
     EVERY [cut_facts_tac [thm] 1, eresolve_tac ctxt [rev_mp] 1,
       REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac ctxt monos)),

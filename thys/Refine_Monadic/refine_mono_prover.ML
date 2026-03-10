@@ -115,7 +115,7 @@ structure Refine_Mono_Prover : REFINE_MONO_PROVER = struct
     val name = @{binding refine_mono} 
     val description = "Refinement Framework: Monotonicity theorems"
     val sort = K I
-    val transform = fn context => split_meta_conjunction #> map (norm_hhf (Context.proof_of context))
+    val transform = fn context => split_meta_conjunction #> map (Simplifier.norm_hhf (Context.proof_of context))
   )
 
   val get_mono_thms = Mono_Thms.get

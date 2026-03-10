@@ -1424,13 +1424,13 @@ object AFP_Submit {
 
   class Server(
     paths: Web_App.Paths,
-    afp: AFP_Structure,
-    mode: Mode.Value,
     handler: Handler,
-    devel: Boolean,
-    verbose: Boolean,
-    progress: Progress,
-    port: Int
+    afp: AFP_Structure = AFP_Structure(),
+    mode: Mode.Value = Mode.SUBMISSION,
+    devel: Boolean = false,
+    verbose: Boolean = false,
+    progress: Progress = new Progress,
+    port: Int = 0
   ) extends Web_App.Server[Model.T](paths, port, verbose, progress) {
     private var _state: State = State.load(afp)
 
@@ -1711,8 +1711,8 @@ Usage: isabelle afp_submit [OPTIONS] DIR
 
       val paths = Web_App.Paths(Url(frontend + ":" + port), backend_path, serve_frontend = devel,
         landing = Page.SUBMIT)
-      val server = new Server(paths = paths, afp = afp, mode = Mode.SUBMISSION,
-        handler = handler, devel = devel, verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths, handler, afp = afp, mode = Mode.SUBMISSION, devel = devel,
+        verbose = verbose, progress = progress, port = port)
 
       server.run()
     })
@@ -1745,8 +1745,8 @@ Usage: isabelle afp_edit_metadata [OPTIONS]
 
       val paths = Web_App.Paths(Url("http://localhost:" + port), Path.current,
         serve_frontend = true, landing = Page.SUBMISSIONS)
-      val server = new Server(paths = paths, afp = afp, mode = Mode.EDIT, handler = handler,
-        devel = true, verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths, handler, afp = afp, mode = Mode.EDIT, devel = true,
+        verbose = verbose, progress = progress, port = port)
 
       server.run()
     })

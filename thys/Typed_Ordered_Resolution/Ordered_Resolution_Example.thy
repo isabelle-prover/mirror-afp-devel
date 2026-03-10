@@ -25,7 +25,9 @@ interpretation example1: monomorphic_ordered_resolution_calculus where
     less\<^sub>t = less_kbo and
     \<F> = unit_typing and
     tiebreakers = trivial_tiebreakers
-  by unfold_locales (auto intro: unit_types.exists_witness_if_exists_const_for_all_types)
+  by
+    unfold_locales
+    (auto simp: infinite_UNIV intro: unit_types.exists_witness_if_exists_const_for_all_types)
 
 instantiation nat :: infinite
 begin

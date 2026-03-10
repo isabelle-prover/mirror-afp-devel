@@ -85,11 +85,7 @@ structure Locale_Code :LOCALE_CODE = struct
     val ctxt = Proof_Context.init_global thy
     val thms = map Thm.symmetric thms
   in 
-    FoldSSData.map (fn ss => 
-         put_simpset ss ctxt 
-      |> sss_add thms
-      |> simpset_of
-    ) thy
+    FoldSSData.map (Simplifier.simpset_map ctxt (sss_add thms)) thy
   end
   
   val get_unf_ss = FoldSSData.get;

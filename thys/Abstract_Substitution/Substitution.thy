@@ -1,37 +1,27 @@
 theory Substitution \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
   imports
     Abstract_Substitution
-    "HOL-Library.FSet"
     Option_Extra
+    Finite_Map_Extra
+    Fun_Extra
 begin
 
 section \<open>Substitutions on variables\<close>
 
 locale substitution = abstract_substitution where
-  subst = subst and is_ground = "\<lambda>expr. vars expr = {}"
+  subst = subst
 for
   subst :: "'expr \<Rightarrow> 'subst \<Rightarrow> 'expr" (infixl "\<cdot>" 69) and
   apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) and
-  subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" (\<open>_\<lbrakk>_ := _\<rbrakk>\<close> [1000, 0, 50] 71) and
   vars :: "'expr \<Rightarrow> 'v set" +
-assumes
-  (* Interesting that not both directions are required *)
-  subst_eq: "\<And>expr \<sigma> \<tau>. (\<And>x. x \<in> vars expr \<Longrightarrow> x \<cdot>v \<sigma> = x \<cdot>v \<tau>) \<Longrightarrow> expr \<cdot> \<sigma> = expr \<cdot> \<tau>" and
-  subst_update [simp]:
-    "\<And>x update. x \<cdot>v \<sigma>\<lbrakk>x := update\<rbrakk> = update" 
-    "\<And>x y update. x \<noteq> y \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>y := update\<rbrakk> = x \<cdot>v \<sigma>"
+assumes no_vars_if_is_ground [intro]: "\<And>expr. is_ground expr \<Longrightarrow> vars expr = {}"
 begin
 
-abbreviation is_ground where "is_ground expr \<equiv> vars expr = {}"
+abbreviation exists_nonground where
+  "exists_nonground \<equiv> \<exists>expr. \<not>is_ground expr"
 
 definition vars_set :: "'expr set \<Rightarrow> 'v set" where
   "vars_set exprs \<equiv> \<Union>expr \<in> exprs. vars expr"
-
-lemma subst_reduntant_upd [simp]:
-  assumes "x \<notin> vars expr"
-  shows "expr \<cdot> \<sigma>\<lbrakk>x := update\<rbrakk> = expr \<cdot> \<sigma>"
-  using assms subst_eq subst_update
-  by metis
 
 lemma subst_cannot_unground:
   assumes "\<not>is_ground (expr \<cdot> \<sigma>)"
@@ -78,8 +68,173 @@ lemma obtain_imgu_absorption:
 
 end
 
-
 subsection \<open>Properties of substitutions\<close>
+
+locale subst_update_def =
+   fixes subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" 
+begin
+
+definition subst_updates :: "'subst \<Rightarrow> ('v, 'base) fmap \<Rightarrow> 'subst" (\<open>_\<lbrakk>_\<rbrakk>\<close> [1000, 0] 71) where
+  "subst_updates \<sigma> m = fold (\<lambda>(x, b) \<sigma>. subst_update \<sigma> x b) (fmap_list m) \<sigma>"
+
+end
+
+locale subst_update =
+  substitution where vars = vars and apply_subst = apply_subst +
+  subst_update_def where subst_update = subst_update
+for 
+  vars :: "'expr \<Rightarrow> 'v set" and 
+  apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base" (infixl "\<cdot>v" 69) and
+  subst_update :: "'subst \<Rightarrow> 'v \<Rightarrow> 'base \<Rightarrow> 'subst" (\<open>_\<lbrakk>_ := _\<rbrakk>\<close> [1000, 0, 50] 71) +
+  assumes 
+    subst_update_var [simp]:
+      \<comment>\<open>The precondition of the assumption ensures noop substitutions\<close>
+      "\<And>x u \<sigma>. exists_nonground \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>x := u\<rbrakk> = u" 
+      "\<And>x y u \<sigma>. x \<noteq> y \<Longrightarrow> x \<cdot>v \<sigma>\<lbrakk>y := u\<rbrakk> = x \<cdot>v \<sigma>" and
+    subst_update [simp]:
+      "\<And>x expr u \<sigma>. x \<notin> vars expr \<Longrightarrow> expr \<cdot> \<sigma>\<lbrakk>x := u\<rbrakk> = expr \<cdot> \<sigma>"
+      "\<And>\<sigma> x. \<sigma>\<lbrakk>x := x \<cdot>v \<sigma>\<rbrakk> = \<sigma>" and
+    subst_update_twice [simp]:
+      "\<And>\<sigma> x a b. (\<sigma>\<lbrakk>x := a\<rbrakk>)\<lbrakk>x := b\<rbrakk> = \<sigma>\<lbrakk>x := b\<rbrakk>"
+begin
+
+lemma subst_updates_empty [simp]: "\<sigma>\<lbrakk>fmempty\<rbrakk> = \<sigma>"
+  unfolding subst_updates_def
+  by auto
+
+lemma fold_redundant_updates_var [simp]:
+  assumes "x \<notin> set (map fst us)"
+  shows "x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us \<sigma> = x \<cdot>v \<sigma>"
+  using assms
+  by (induction us arbitrary: \<sigma>) (simp_all add: split_beta)
+
+lemma fold_updates_var [simp]:
+  assumes 
+    exists_nonground: exists_nonground and 
+    distinct_updates: "distinct (map fst us)" and 
+    update_in_updates: "(x, b) \<in> set us"
+  shows "x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us \<sigma> = b"
+  using distinct_updates update_in_updates
+proof (induction us arbitrary: \<sigma>)
+  case Nil
+
+  then show ?case 
+    by simp
+next
+  case (Cons u us)
+ 
+  then show ?case
+    using exists_nonground fold_redundant_updates_var
+    by (cases "u = (x, b)") auto
+qed
+
+lemma fold_redundant_updates [simp]: 
+  assumes "\<And>x b. (x, b) \<in> set us \<Longrightarrow> x \<notin> vars expr \<or> b = x \<cdot>v \<sigma>" "distinct (map fst us)"
+  shows "expr \<cdot> fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) us \<sigma> = expr \<cdot> \<sigma>"
+  using assms
+proof (induction us arbitrary: \<sigma>)
+  case Nil
+
+  then show ?case
+    by simp
+next
+  case (Cons u us)
+
+  then show ?case
+    by (smt (verit, best) distinct.simps(2) fold_simps(2) list.set_intros(1) list.simps(9) 
+        prod.collapse set_subset_Cons split_beta subsetD subst_update subst_update_var(2))
+qed
+
+lemma subst_updates_var: 
+  assumes exists_nonground: exists_nonground
+  shows "x \<cdot>v \<sigma>\<lbrakk>u\<rbrakk> = get_or (fmlookup u x) (x \<cdot>v \<sigma>)"
+proof (cases "fmlookup u x")
+  case None
+
+  have "x \<cdot>v fold (\<lambda>(x, b) \<sigma>. \<sigma>\<lbrakk>x := b\<rbrakk>) (fmap_list u) \<sigma> = x \<cdot>v \<sigma>"
+  proof (rule fold_redundant_updates_var)
+
+    show "x \<notin> set (map fst (fmap_list u))"
+      unfolding set_fst_fmap_list
+      by (simp add: None fmdom'_notI)
+  qed
+
+  then show ?thesis
+    unfolding None subst_updates_def
+    by simp
+next
+  case (Some b)
+
+  then show ?thesis
+    unfolding subst_updates_def
+    by (simp add: exists_nonground fmap_list_mem_iff)
+qed
+
+lemma redundant_subst_updates [simp]:
+  assumes "\<And>x. x \<in> vars expr \<Longrightarrow> fmlookup u x = None \<or> fmlookup u x = Some (x \<cdot>v \<sigma>)" 
+  shows "expr \<cdot> \<sigma>\<lbrakk>u\<rbrakk> = expr \<cdot> \<sigma>"
+proof (unfold subst_updates_def, rule fold_redundant_updates)
+  fix x b
+  assume "(x, b) \<in> set (fmap_list u)"
+
+  then show "x \<notin> vars expr \<or> b = x \<cdot>v \<sigma>"
+    unfolding fmap_list_mem_iff
+    using assms
+    by fastforce
+next
+
+  show "distinct (map fst (fmap_list u))"
+    by simp
+qed
+
+lemma redundant_subst_updates_vars_set [simp]:
+  assumes exists_nonground "\<And>x. x \<in> X \<Longrightarrow> fmlookup u x = None \<or> fmlookup u x = Some (x \<cdot>v \<sigma>)"
+  shows "(\<lambda>x. x \<cdot>v \<sigma>\<lbrakk>u\<rbrakk>) ` X = (\<lambda>x. x \<cdot>v \<sigma>) ` X"
+  using assms(2) subst_updates_var[OF assms(1)]
+  by force
+
+lemma redundant_subst_updates_vars_image [simp]:
+  assumes "\<And>x. x \<in> \<Union>(vars ` X) \<Longrightarrow> fmlookup u x = None \<or> fmlookup u x = Some (x \<cdot>v \<sigma>)"
+  shows "(\<lambda>expr. expr \<cdot> \<sigma>\<lbrakk>u\<rbrakk>) ` X = (\<lambda>expr. expr \<cdot> \<sigma>) ` X"
+  using assms redundant_subst_updates
+  by (meson UN_I image_cong)
+
+lemma subst_updates_fmap_of_set [simp]:
+  assumes exists_nonground "x \<in> X" "finite X"
+  shows "x \<cdot>v \<sigma>\<lbrakk>fmap_of_set X f\<rbrakk> = f x"
+  using assms subst_updates_var 
+  by simp
+
+lemma redundant_subst_updates_fmap_of_set [simp]:
+  assumes exists_nonground "x \<notin> X" "finite X" 
+  shows "x \<cdot>v \<sigma>\<lbrakk>fmap_of_set X f\<rbrakk> = x \<cdot>v \<sigma>"
+  using assms subst_updates_var
+  by simp
+
+definition renaming_of_bij where
+  "renaming_of_bij f S T \<equiv>
+    id_subst\<lbrakk>fmap_of_set (S \<union> T) (\<lambda>x. (if x \<in> S then f x else bij_partition S T x) \<cdot>v id_subst)\<rbrakk>"
+
+definition renaming_of_bij_inv where
+  "renaming_of_bij_inv f S T \<equiv>
+     id_subst\<lbrakk>fmap_of_set (S \<union> T)
+       (\<lambda>x. (if x \<in> T then inv_into S f x else inv_into (T - S) (bij_partition S T) x) \<cdot>v id_subst)\<rbrakk>"
+
+lemma redundant_renaming_of_bij:
+  assumes exists_nonground "finite S" "bij_betw f S T" "x \<notin> S \<union> T"
+  shows "x \<cdot>v renaming_of_bij f S T = x \<cdot>v id_subst"
+  unfolding renaming_of_bij_def
+  using assms
+  by (simp add: bij_betw_finite)
+
+lemma renaming_of_bij_on_S:
+  assumes exists_nonground "finite S" "bij_betw f S T" "x \<in> S" 
+  shows "x \<cdot>v renaming_of_bij f S T = f x \<cdot>v id_subst"
+  unfolding renaming_of_bij_def
+  using assms
+  by (simp add: bij_betw_finite)
+
+end
 
 locale all_subst_ident_iff_ground =
   substitution +
@@ -93,20 +248,11 @@ locale exists_non_ident_subst =
       "\<And>expr S. finite S \<Longrightarrow> \<not>is_ground expr \<Longrightarrow> \<exists>\<sigma>. expr \<cdot> \<sigma> \<noteq> expr \<and> expr \<cdot> \<sigma> \<notin> S"
 begin
 
-lemma infinite_expr:
-  assumes "\<exists>expr. vars expr \<noteq> {}"
+lemma infinite_exprs:
+  assumes "exists_nonground"
   shows "infinite (UNIV :: 'expr set)"
-proof 
-  assume finite: "finite (UNIV :: 'expr set)"
-
-  obtain expr where expr: "vars expr \<noteq> {}"
-    using assms
-    by metis
-
-  show False
-    using exists_non_ident_subst[OF finite expr]
-    by simp
-qed
+  using assms exists_non_ident_subst
+  by auto
 
 end
 
@@ -124,54 +270,56 @@ lemma fset_finite_vars [simp]: "fset (finite_vars expr) = vars expr"
 
 end
 
+(* TODO: Merge with First_Order_Clause.Infinite_Variables *)
 locale infinite_variables = substitution where vars = vars
   for vars :: "'expr \<Rightarrow> 'v set" +
   assumes infinite_vars [intro]: "infinite (UNIV :: 'v set)"
 
 locale renaming_variables = substitution +
   assumes
-    is_renaming_iff:
-      "\<And>\<rho>. is_renaming \<rho> \<longleftrightarrow> inj (var_subst \<rho>) \<and> (\<forall>x. \<exists>x'. x \<cdot>v \<rho> = x' \<cdot>v id_subst)" and
+     \<comment>\<open>The precondition of the assumption ensures noop substitutions\<close>
+    is_renaming_imp:
+      "\<And>\<rho>. exists_nonground \<Longrightarrow>
+           is_renaming \<rho> \<Longrightarrow> inj (var_subst \<rho>) \<and> (\<forall>x. \<exists>x'. x \<cdot>v \<rho> = x' \<cdot>v id_subst)" and
     rename_variables: "\<And>expr \<rho>. is_renaming \<rho> \<Longrightarrow> vars (expr \<cdot> \<rho>) = rename \<rho> ` (vars expr)"
 begin
 
 lemma renaming_range_id_subst:
-  assumes "is_renaming \<rho>"
+  assumes exists_nonground: "exists_nonground" and \<rho>: "is_renaming \<rho>"
   shows "x \<cdot>v \<rho> \<in> range (var_subst id_subst)"
-  using assms
-  unfolding is_renaming_iff
+  using is_renaming_imp[OF exists_nonground \<rho>]
   by auto
 
 lemma obtain_renamed_variable:
-  assumes "is_renaming \<rho>"
+  assumes "exists_nonground" "is_renaming \<rho>"
   obtains x' where "x \<cdot>v \<rho> = x' \<cdot>v id_subst"
   using renaming_range_id_subst[OF assms]
   by auto
 
 lemma id_subst_rename [simp]:
-  assumes "is_renaming \<rho>"
+  assumes "exists_nonground" and \<rho>: "is_renaming \<rho>"
   shows "rename \<rho> x \<cdot>v id_subst = x \<cdot>v \<rho>"
-  unfolding rename_def[OF assms]
+  unfolding rename_def[OF \<rho>]
   using obtain_renamed_variable[OF assms]
   by (metis (mono_tags, lifting) someI)
 
 lemma rename_variables_id_subst: 
   assumes "is_renaming \<rho>" 
   shows "var_subst id_subst ` vars (expr \<cdot> \<rho>) = var_subst \<rho> ` (vars expr)"
-  using rename_variables[OF assms] id_subst_rename[OF assms]
-  by (smt (verit, best) image_cong image_image)
+  using rename_variables[OF assms] id_subst_rename[OF _ assms]
+  by (smt (verit, best) empty_is_image image_cong image_image no_vars_if_is_ground)
 
 lemma surj_inv_renaming:
-  assumes "is_renaming \<rho>"
+  assumes exists_nonground: "exists_nonground" and \<rho>: "is_renaming \<rho>"
   shows "surj (\<lambda>x. inv (var_subst \<rho>) (x \<cdot>v id_subst))"
-  using assms inv_f_f
-  unfolding is_renaming_iff surj_def
+  using inv_f_f is_renaming_imp[OF exists_nonground \<rho>]
+  unfolding surj_def
   by metis
 
 lemma renaming_range:
-  assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
+  assumes \<rho>: "is_renaming \<rho>" and x: "x \<in> vars (expr \<cdot> \<rho>)"
   shows "x \<cdot>v id_subst \<in> range (var_subst \<rho>)"
-  using rename_variables_id_subst[OF assms(1)] assms(2)
+  using rename_variables_id_subst[OF \<rho>] x
   by fastforce
 
 lemma renaming_inv_into:
@@ -180,20 +328,22 @@ lemma renaming_inv_into:
   using f_inv_into_f[OF renaming_range[OF assms]].
 
 lemma inv_renaming:
-  assumes "is_renaming \<rho>"
-  shows "inv (var_subst \<rho>) (x \<cdot>v \<rho>)  = x"
-  using assms
-  unfolding is_renaming_iff
+  assumes exists_nonground: "exists_nonground" and \<rho>: "is_renaming \<rho>"
+  shows "inv (var_subst \<rho>) (x \<cdot>v \<rho>) = x"
+  using is_renaming_imp[OF exists_nonground \<rho>]
   by (simp add: inv_into_f_eq)
 
 lemma renaming_inv_in_vars:
-  assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
+  assumes \<rho>: "is_renaming \<rho>" and x: "x \<in> vars (expr \<cdot> \<rho>)"
   shows "inv (var_subst \<rho>) (x \<cdot>v id_subst) \<in> vars expr"
-  using assms rename_variables_id_subst[OF assms(1)]
-  by (metis image_eqI image_inv_f_f is_renaming_iff)
+  using assms rename_variables_id_subst[OF \<rho>]
+  by (metis no_vars_if_is_ground imageI image_inv_f_f insert_not_empty is_renaming_imp
+      mk_disjoint_insert)
 
-lemma inj_id_subst: "inj (var_subst id_subst)"
-  using is_renaming_id_subst is_renaming_iff
+lemma inj_id_subst: 
+  assumes "exists_nonground"
+  shows "inj (var_subst id_subst)"
+  using is_renaming_id_subst is_renaming_imp[OF assms]
   by blast
 
 end
@@ -268,6 +418,9 @@ lemma to_ground_eq [simp]:
 
 end
 
+locale exists_ground = substitution +
+  assumes exists_ground: "\<exists>expr. is_ground expr"
+
 locale exists_ground_subst = substitution +
   assumes exists_ground_subst: "\<exists>\<gamma>. is_ground_subst \<gamma>"
 begin
@@ -277,8 +430,8 @@ lemma obtain_ground_subst:
   using exists_ground_subst
   by metis
 
-lemma ground_exists: "\<exists>expr. is_ground expr"
-proof -
+sublocale exists_ground
+proof unfold_locales
   fix expr
 
   obtain \<gamma> where \<gamma>: "is_ground_subst \<gamma>"
@@ -301,17 +454,29 @@ lemma ground_subst_extension:
 
 end
 
-locale subst_updates = substitution where vars = vars and apply_subst = apply_subst
- for
-    vars :: "'expr \<Rightarrow> 'v set" and
-    apply_subst :: "'v \<Rightarrow> 'subst \<Rightarrow> 'base"  (infixl \<open>\<cdot>v\<close> 69) +
-  fixes subst_updates :: "'subst \<Rightarrow> ('v \<rightharpoonup> 'base) \<Rightarrow> 'subst" 
-  assumes
-    subst_updates [simp]: "\<And>x. x \<cdot>v subst_updates \<sigma> update = get_or (update x) (x \<cdot>v \<sigma>)"
-
 locale exists_imgu = substitution +
-  assumes exists_imgu: "\<And>\<upsilon> expr expr'. expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon> \<Longrightarrow> \<exists>\<mu>. is_imgu \<mu> {{expr, expr'}}"
+  assumes
+    "\<And>\<upsilon> expr expr'. exists_nonground \<Longrightarrow> expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon> \<Longrightarrow> \<exists>\<mu>. is_imgu \<mu> {{expr, expr'}}"
 begin
+
+lemma exists_imgu:
+  assumes "expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>" 
+  shows "\<exists>\<mu>. is_imgu \<mu> {{expr, expr'}}"
+proof (cases exists_nonground)
+  case True
+
+  then show ?thesis
+    by (metis assms exists_imgu_axioms exists_imgu_axioms_def exists_imgu_def)
+next
+  case False
+
+  then have "expr = expr'"
+    using assms
+    by simp
+
+  then show ?thesis
+    by (metis insert_absorb2 is_imgu_id_subst_empty is_imgu_insert_singleton)
+qed
 
 lemma obtains_imgu:
   assumes "expr \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
@@ -319,15 +484,19 @@ lemma obtains_imgu:
   using exists_imgu[OF assms]
   by metis
 
+(* TODO: Add version with "\<exists>Y \<subseteq> X. finite Y \<and> (\<forall>\<tau>. is_unifier \<tau> X \<longleftrightarrow> is_unifier \<tau> Y)" +
+  prove under this assumption compactness of substitions  *)
 lemma exists_imgu_set:
-  assumes finite_X: "finite X" and unifier: "is_unifier \<upsilon> X" 
+  assumes
+    finite_X: "finite X" and
+    unifier: "is_unifier \<upsilon> X"
   shows "\<exists>\<mu>. is_imgu \<mu> {X}"
-  using assms
+  using finite_X unifier
 proof (cases X)
   case emptyI
 
   then show ?thesis
-    using is_imgu_id_subst is_unifier_id_subst is_unifier_id_subst_empty
+    using is_imgu_id_subst
     by blast
 next
   case (insertI X' x)
@@ -363,14 +532,15 @@ next
     have \<mu>_absorbs_\<tau>: "\<And>expr. expr \<cdot> \<mu> \<cdot> \<upsilon> =  expr \<cdot> \<upsilon>"
         using \<mu> insert.prems insert.hyps(1)
         unfolding is_imgu_def is_unifier_set_def
-        by (metis comp_subst.left.monoid_action_compatibility finite_insert is_unifier_subset
-            singletonD subset_insertI)
+        by (metis is_unifier_subset comp_subst.left.monoid_action_compatibility
+             singletonD subset_insertI)
 
     obtain \<mu>' where \<mu>': "is_imgu \<mu>' {{expr \<cdot> \<mu>, expr'}}"
     proof (rule obtains_imgu)
 
       obtain expr'' where "expr'' \<in> X'"
-        using insert.hyps(2) by auto
+        using insert.hyps(2)
+        by auto
 
       moreover then have expr': "expr' = expr'' \<cdot> \<mu>"
         using expr'
@@ -379,8 +549,7 @@ next
       ultimately show "expr \<cdot> \<mu> \<cdot> \<upsilon> = expr' \<cdot> \<upsilon>"
         using \<mu>_absorbs_\<tau>
         unfolding expr'
-        by (metis finite.insertI insert.hyps(1) insert.prems insertI1 insertI2
-            is_unifier_iff_if_finite)
+        by (metis insert.prems insertCI is_unifier_iff)
     qed
 
     define \<mu>'' where "\<mu>'' = \<mu> \<odot> \<mu>'"
@@ -394,8 +563,7 @@ next
         show "is_unifier_set \<mu>'' {insert expr X'}"
           using \<mu>'
           unfolding \<mu>''_def 
-          by (simp add: is_unifier_iff_if_finite is_unifier_set_insert expr' insert.hyps(1)
-              subst_imgu_eq_subst_imgu)
+          by (simp add: expr' is_unifier_iff is_unifier_set_insert subst_imgu_eq_subst_imgu)
       next
         fix \<tau>
         assume "is_unifier_set \<tau> {insert expr X'}"
@@ -403,20 +571,23 @@ next
         moreover then have "is_unifier_set \<tau> {{expr \<cdot> \<mu>, expr'}}"
           using \<mu> 
           unfolding is_imgu_def is_unifier_set_insert
-          by (metis X'_\<mu> is_unifier_subset subst_set_insert finite_insert insert.hyps(1) 
-              is_unifier_def subset_insertI subst_set_comp_subst)
+          by (metis X'_\<mu> is_unifier_def is_unifier_subset subst_set_insert empty_iff insertCI 
+              subset_insertI subst_set_comp_subst)
 
         ultimately show "\<mu>'' \<odot> \<tau> = \<tau>"
           using \<mu> \<mu>'
           unfolding \<mu>''_def is_imgu_def is_unifier_set_insert
-          by (metis finite.insertI insert.hyps(1) is_unifier_subset assoc subset_insertI)
+          by (metis is_unifier_subset assoc subset_insertI)
       qed
     qed
   qed
 qed
 
 lemma exists_imgu_sets:
-  assumes finite_XX: "finite XX" and finite_X: "\<forall>X\<in>XX. finite X" and unifier: "is_unifier_set \<upsilon> XX"
+  assumes
+    finite_XX: "finite XX" and
+    finite_X: "\<forall>X\<in>XX. finite X" and
+    unifier: "is_unifier_set \<upsilon> XX"
   shows "\<exists>\<mu>. is_imgu \<mu> XX"
 using finite_XX finite_X unifier
 proof (induction XX rule: finite_induct)
@@ -447,8 +618,9 @@ next
 
     then have "is_unifier \<upsilon> X_\<mu>"
       using insert.prems(2)
-      unfolding is_unifier_set_def is_unifier_def X_\<mu>_def
-      by (metis insertCI subst_set_comp_subst)
+      unfolding is_unifier_set_def is_unifier_iff X_\<mu>_def subst_set_def
+      by (smt (verit, ccfv_threshold) comp_subst.left.monoid_action_compatibility image_iff 
+          insertCI)
 
     ultimately show ?thesis
       using that exists_imgu_set
@@ -461,10 +633,11 @@ next
   proof (unfold is_imgu_def, intro exI conjI allI impI)
 
     show "is_unifier_set \<mu>'' (insert X XX)"
-      using \<mu> \<mu>' insert.prems(1) is_unifier_iff_if_finite
-      unfolding \<mu>''_def is_imgu_def X_\<mu>_def is_unifier_def is_unifier_set_def 
-      by (smt (verit, best) comp_subst.left.monoid_action_compatibility insert_iff
-          subst_set_comp_subst)
+      using \<mu> \<mu>' insert.prems(1) 
+      unfolding \<mu>''_def is_imgu_def X_\<mu>_def is_unifier_iff is_unifier_set_def
+      by (metis comp_subst.left.monoid_action_compatibility insert_absorb insert_iff 
+          subst_set_insert)
+     
   next
     fix \<tau>
     assume "is_unifier_set \<tau> (insert X XX)"
@@ -472,9 +645,38 @@ next
     then show "\<mu>'' \<odot> \<tau> = \<tau>"
       using \<mu> \<mu>'
       unfolding \<mu>''_def X_\<mu>_def is_imgu_def is_unifier_set_insert is_unifier_def
-      by (metis comp_subst.left.assoc is_unifier_set_empty subst_set_comp_subst)
+      by (metis abstract_substitution_ops.subst_set_empty comp_subst.left.assoc 
+          is_unifier_set_empty subst_set_comp_subst)
   qed
 qed
+
+end
+
+(* TODO: Not compatible with polymorphic terms *)
+locale subst_updates_compat =
+  subst_update +
+  assumes subst_updates_compat: 
+    "\<And>expr \<sigma>. \<forall>x \<in> vars expr. fmlookup u x = Some (x \<cdot>v \<sigma>) \<Longrightarrow> expr \<cdot> id_subst\<lbrakk>u\<rbrakk> = expr \<cdot> \<sigma>"
+
+locale subst_eq =
+  substitution +
+  assumes subst_eq: "\<And>expr \<sigma> \<tau>. (\<And>x. x \<in> vars expr \<Longrightarrow> x \<cdot>v \<sigma> = x \<cdot>v \<tau>) \<Longrightarrow> expr \<cdot> \<sigma> = expr \<cdot> \<tau>"
+begin
+
+lemma subset_subst_eq:
+  assumes "\<forall>x\<in>vars C. x \<cdot>v \<sigma>\<^sub>1 = x \<cdot>v \<sigma>\<^sub>2" "vars D \<subseteq> vars C" 
+  shows "D \<cdot> \<sigma>\<^sub>1 = D \<cdot> \<sigma>\<^sub>2"
+  using assms
+  by (meson subset_iff subst_eq)
+
+end
+
+locale is_ground_if_no_vars = substitution + 
+  assumes is_ground_if_no_vars: "\<And>expr. vars expr = {} \<Longrightarrow> is_ground expr"
+begin
+
+lemma is_ground_iff_no_vars: "is_ground expr \<longleftrightarrow> vars expr = {}"
+  by (metis is_ground_if_no_vars no_vars_if_is_ground)
 
 end
 

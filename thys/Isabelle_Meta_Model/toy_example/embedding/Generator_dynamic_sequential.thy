@@ -213,7 +213,7 @@ fun semi__thm_attribute ctxt = let open META open META_overload val S = fn Thms_
          (Thms_single' e1, Thms_single' e2) => Thms_single' (e1 RSN (1, e2))
        | (Thms_mult' e1, Thms_mult' e2) => Thms_mult' (e1 RLN (1, e2)))
   | Thm_simplified (e1, e2) =>
-      Thms_single' (asm_full_simplify (clear_simpset ctxt addsimps [S (semi__thm_attribute ctxt e2)])
+      Thms_single' (asm_full_simplify (Simplifier.clear_simpset ctxt addsimps [S (semi__thm_attribute ctxt e2)])
                                       (S (semi__thm_attribute ctxt e1)))
   | Thm_OF (e1, e2) =>
       Thms_single' ([S (semi__thm_attribute ctxt e2)] MRS (S (semi__thm_attribute ctxt e1)))
@@ -249,11 +249,11 @@ fun semi__thm_mult ctxt =
 
 fun semi__thm_mult_l ctxt l = List.concat (map (semi__thm_mult ctxt) l)
 
-fun semi__method_simp_only l ctxt = clear_simpset ctxt addsimps (semi__thm_mult_l ctxt l)
+fun semi__method_simp_only l ctxt = Simplifier.clear_simpset ctxt addsimps (semi__thm_mult_l ctxt l)
 fun semi__method_simp_add_del_split (l_add, l_del, l_split) ctxt =
   fold Splitter.add_split (semi__thm_mult_l ctxt l_split)
-                          (ctxt addsimps (semi__thm_mult_l ctxt l_add)
-                                delsimps (semi__thm_mult_l ctxt l_del))
+                          (ctxt |> Simplifier.add_simps (semi__thm_mult_l ctxt l_add)
+                                |> Simplifier.del_simps (semi__thm_mult_l ctxt l_del))
 
 fun semi__method expr = let open META open Method open META_overload in case expr of
     Method_rule o_s => Basic (fn ctxt =>

@@ -21,7 +21,7 @@ end
 
 locale typing_lifting = sub: typing where welltyped = sub_welltyped 
   for sub_welltyped :: "'sub \<Rightarrow> 'ty \<Rightarrow> bool" +
-  fixes to_set :: "'expr \<Rightarrow> 'sub set" 
+  fixes to_set :: "'expr \<Rightarrow> 'sub set"
 begin
 
 definition is_welltyped where

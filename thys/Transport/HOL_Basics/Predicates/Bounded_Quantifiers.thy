@@ -105,7 +105,7 @@ struct
 end
 open Simpdata
 \<close>
-declaration \<open>fn _ => Simplifier.map_ss (Simplifier.set_mksimps (mksimps mksimps_pairs))\<close>
+declaration \<open>K (Simplifier.map_simpset (Simplifier.set_mksimps (mksimps mksimps_pairs)))\<close>
 
 lemma atomize_ball: "(\<And>x. P x \<Longrightarrow> Q x) \<equiv> Trueprop (\<forall>x : P. Q x)"
   by (simp only: ball_pred_def atomize_all atomize_imp)

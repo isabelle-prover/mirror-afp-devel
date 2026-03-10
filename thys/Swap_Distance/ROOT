@@ -1,0 +1,13 @@
+chapter AFP
+
+session Swap_Distance = "HOL-Combinatorics" +
+  options [timeout = 900]
+  sessions
+    "List-Index"
+    List_Inversions
+    Rankings
+  theories
+    Swap_Distance
+  document_files
+    root.tex
+    root.bib

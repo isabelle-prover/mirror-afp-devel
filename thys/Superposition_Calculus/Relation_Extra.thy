@@ -2,6 +2,7 @@ theory Relation_Extra
   imports Main
 begin
 
+(* TODO: This exists also in Typed_Ordered_Resolution *)
 lemma partition_set_around_element:
   assumes tot: "totalp_on N R" and x_in: "x \<in> N"
   shows "N = {y \<in> N. R y x} \<union> {x} \<union> {y \<in> N. R x y}"

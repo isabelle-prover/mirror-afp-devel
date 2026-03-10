@@ -6,6 +6,46 @@ begin
 (* TODO Move *)
 lemmas [simp del] = div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4
 
+(* TODO Move *)
+lemma (in -) image_plus_conv_vimage_plus:
+  fixes c :: "'a :: group_add"
+  shows "(+) c ` A = (+) (-c) -` A"
+proof safe
+  fix z assume "-c + z \<in> A"
+  thus "z \<in> (+) c ` A"
+    by (intro image_eqI[of _ _ "-c + z"]) (auto simp: algebra_simps)
+qed auto
+
+(* TODO Move *)
+lemma filtermap_cosparse_translate:
+  "filtermap ((+) (c :: 'a :: real_normed_vector)) (cosparse A) = cosparse ((+) c ` A)"
+proof (rule antisym)
+  have *: "filtermap ((+) c) (cosparse A) \<ge> cosparse ((+) c ` A)" for c :: 'a and A
+  proof (rule filter_leI)
+    fix P assume P: "eventually P (filtermap ((+) c) (cosparse A))"
+    hence "(+) c ` {x. \<not> P (c + x)} sparse_in (+) c ` A"
+      using sparse_in_translate[of "{x. \<not>P (c + x)}" A c] 
+      by (simp add: eventually_filtermap eventually_cosparse)
+    also have "(+) c ` {x. \<not> P (c + x)} = {x. \<not>P x}"
+      unfolding image_plus_conv_vimage_plus by auto
+    finally show "eventually P (cosparse ((+) c ` A))"
+      by (simp add: eventually_cosparse)
+  qed
+
+  show "filtermap ((+) c) (cosparse A) \<ge> cosparse ((+) c ` A)"
+    by (rule *)
+  have "filtermap ((+) (-c)) (cosparse ((+) c ` A)) \<ge> cosparse ((+) (-c) ` (+) c ` A)"
+    by (rule *)
+  also have "((+) (-c) ` (+) c ` A) = A"
+    by (simp add: image_image)
+  finally have "filtermap ((+) c) (cosparse A) \<le> filtermap ((+) c) (filtermap ((+) (-c)) (cosparse ((+) c ` A)))"
+    by (intro filtermap_mono)
+  also have "\<dots> = cosparse ((+) c ` A)"
+    by (simp add: filtermap_filtermap)
+  finally show "filtermap ((+) c) (cosparse A) \<le> cosparse ((+) c ` A)" .
+qed
+
+
 
 subsection \<open>Basic definitions and useful lemmas\<close>
 
@@ -652,15 +692,6 @@ proof (rule simple_path_continuous_image)
       by (intro complex_eqI) (simp_all add: of_\<omega>12_coords_eq_iff)
   qed
 qed
-
-lemma (in -) image_plus_conv_vimage_plus:
-  fixes c :: "'a :: group_add"
-  shows "(+) c ` A = (+) (-c) -` A"
-proof safe
-  fix z assume "-c + z \<in> A"
-  thus "z \<in> (+) c ` A"
-    by (intro image_eqI[of _ _ "-c + z"]) (auto simp: algebra_simps)
-qed auto
 
 lemma period_parallelogram_altdef:
   "period_parallelogram z = {w. \<omega>12_coords (w - z) \<in> {0..<1} \<times> {0..<1}}"
@@ -1804,6 +1835,24 @@ lemma closed_lattice: "closed lattice"
 
 lemma lattice_sparse: "\<Lambda> sparse_in UNIV"
   using not_islimpt_lattice sparse_in_def by blast
+
+lemma eventually_not_in_lattice_cosparse:
+  "eventually (\<lambda>z. z \<notin> \<Lambda>) (cosparse UNIV)"
+  using eventually_not_in_cosparse lattice_sparse by blast
+
+lemma eventually_not_rel_cosparse:
+  "eventually (\<lambda>z. \<not>rel z w) (cosparse UNIV)"
+proof -
+  have "eventually (\<lambda>z. \<not>rel z w) (cosparse UNIV) \<longleftrightarrow>
+          eventually (\<lambda>z. \<not>z - w \<in> \<Lambda>) (cosparse UNIV)"
+    by (simp add: rel_def)
+  also have "\<dots> \<longleftrightarrow> eventually (\<lambda>z. \<not>z \<in> \<Lambda>) (filtermap ((+) (-w)) (cosparse UNIV))"
+    by (simp add: eventually_filtermap)
+  also have "filtermap ((+) (-w)) (cosparse UNIV) = cosparse UNIV"
+    by (simp add: filtermap_cosparse_translate)
+  finally show ?thesis
+    using eventually_not_in_lattice_cosparse by blast
+qed
 
 text \<open>
   Any non-empty set of lattice points has one lattice point that is closer to the origin 

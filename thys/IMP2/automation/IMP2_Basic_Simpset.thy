@@ -19,7 +19,7 @@ begin
   
   declaration \<open>K
     let
-      val asm_sol = mk_solver "ASSUMPTION" (fn ctxt =>
+      val asm_sol = Simplifier.mk_solver "ASSUMPTION" (fn ctxt =>
         resolve_tac ctxt [@{thm ASSUMPTION_I}] THEN'
         resolve_tac ctxt (Simplifier.prems_of ctxt))
     in

@@ -253,14 +253,14 @@ fun abs_var ctxt t = (HoarePackage.remdeco' ctxt (sel_name t), sel_type t);
 local
 
 val ss =
-  simpset_of
-    (put_simpset (simpset_of @{theory_context Fun}) @{context}
-    |> Simplifier.add_simps (@{thm StateFun.id_id_cancel}
-      :: @{thms list.inject list.distinct char.inject
-      cong_exp_iff_simps simp_thms})
-    |> fold Simplifier.add_proc [Record.simproc, StateFun.lazy_conj_simproc]
-    |> fold Simplifier.add_proc @{code_simprocs state_simp}
-    |> fold Simplifier.add_cong @{thms block_conj_cong});
+  Simplifier.simpset_of @{theory_context Fun}
+  |> Simplifier.simpset_map @{context}
+    (Simplifier.add_simps @{thms StateFun.id_id_cancel list.inject list.distinct char.inject
+      cong_exp_iff_simps simp_thms}
+    #> Simplifier.add_proc Record.simproc
+    #> Simplifier.add_proc StateFun.lazy_conj_simproc
+    #> fold Simplifier.add_proc @{code_simprocs state_simp}
+    #> fold Simplifier.add_cong @{thms block_conj_cong});
 
 in
 
@@ -322,8 +322,8 @@ fun ex_tac ctxt vs = SUBGOAL (fn (goal, i) =>
     EVERY
       [REPEAT_DETERM_N (length vs) (eresolve_tac ctxt [exE] i),
        lift_inst_ex_tac i,
-       simp_tac (put_simpset ss ctxt
-         addsimps (Named_Theorems.get @{context} @{named_theorems "state_simp"})) i
+       simp_tac (ctxt |> put_simpset ss
+         |> Simplifier.add_simps (Named_Theorems.get @{context} @{named_theorems state_simp})) i
       ]
   end
 )
@@ -1129,8 +1129,8 @@ let
           val eqs = Named_Bindings.get_thms lthy @{named_bindings fun_ptr_map_of_default_eqs}
           val disj_G_S = Named_Theorems.get lthy @{named_theorems disjoint_\<G>_\<S>}
           val simp_ctxt = lthy 
-            addsimps (def_eq::disj_G_S @ eqs)
-            delsimps @{thms map_of_default.simps}
+            |> Simplifier.add_simps (def_eq :: disj_G_S @ eqs)
+            |> Simplifier.del_simps @{thms map_of_default.simps}
           val fun_ptr_thms = Utils.timeit_label 3 lthy "fun_ptr_thms" (fn _ => 
             map snd fun_ptr_eqs |> map (fn prop => prove' lthy [] [] prop (fn {context, ...} => 
                 asm_full_simp_tac simp_ctxt 1)))

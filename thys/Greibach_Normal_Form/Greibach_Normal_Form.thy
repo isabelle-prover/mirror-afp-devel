@@ -933,7 +933,7 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
       case True
       then obtain pt where "p = map Tm pt" using Nts_syms_empty_iff by blast
       then have "map Tm q = p"
-        using deriven_from_TmsD "1.prems"(2) by blast
+        using deriven_map_TmD "1.prems"(2) by blast
       then show ?thesis by simp
     next
       case False
@@ -959,12 +959,12 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
           by (simp add: deriveln_imp_deriven)
         have "\<nexists>v2. q2 = Nt B #v2 \<and> R \<turnstile> p2 \<Rightarrow>(n) v2" using q2_tms by auto
         then have "\<exists>n1 n2 w v1 v2. n = Suc (n1 + n2) \<and> q2 = v1 @ v2 \<and>
-            (B,w) \<in> R \<and> R \<turnstile> w \<Rightarrow>(n1) v1 \<and> R \<turnstile> p2 \<Rightarrow>(n2) v2" using n_derive deriven_Cons_decomp
-          by (smt (verit) sym.inject(1))
+            (B,w) \<in> R \<and> R \<turnstile> w \<Rightarrow>(n1) v1 \<and> R \<turnstile> p2 \<Rightarrow>(n2) v2"
+          using n_derive deriven_Cons_iff by (smt (verit) sym.inject(1))
         then obtain n1 n2 w v1 v2 where decomp: "n = Suc (n1 + n2) \<and> q2 = v1 @ v2 \<and>
             (B,w) \<in> R \<and> R \<turnstile> w \<Rightarrow>(n1) v1 \<and> R \<turnstile> p2 \<Rightarrow>(n2) v2" by blast
         then have derive_from_singleton: "R \<turnstile> [Nt B] \<Rightarrow>(Suc n1) v1"
-          using deriven_Suc_decomp_left by force
+          using deriven_Suc_iff by force
   
         have "v1 \<noteq> []"
           using assms(1) Eps_free_deriven_Nil derive_from_singleton by auto
@@ -1002,7 +1002,7 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
             have "(B, w2') \<in> Solve_lrec B B' ?S"
               using  w2'_props w2'_prod unfolding Solve_lrec_defs by (auto)
             then show ?thesis
-              by (simp add: True bu_prod derives_if_bu w2'_prod)
+              by (simp add: True derives_Cons_rule w2'_prod)
           next
             case False
             have solved_prod: "(B, w2' @ [Nt B']) \<in> Solve_lrec B B' ?S"
@@ -1043,7 +1043,7 @@ proof (induction n arbitrary: p q rule: nat_less_induct)
           by (metis derives_from_empty relpowp_imp_rtranclp)
   
         have "Solve_lrec B B' R \<turnstile> Nt B # p2 \<Rightarrow>* q2" using 4 5 decomp
-          by (metis append_Cons append_Nil derives_append_decomp)
+          by (metis append_Cons append_Nil derives_appendD)
         then show ?thesis
           by (simp add: P P1 True derives_prepend)
       next
@@ -1268,7 +1268,7 @@ proof (induction arbitrary: p q rule: nat_less_induct)
   proof (cases "Nts_syms p = {}")
     case True
     then show ?thesis
-      using "1.prems"(3) deriven_from_TmsD derives_from_Tms_iff
+      using "1.prems"(3) deriven_map_TmD derives_map_Tm_iff
       by (metis Nts_syms_empty_iff)
   next
     case False
@@ -1303,7 +1303,7 @@ proof (induction arbitrary: p q rule: nat_less_induct)
         then obtain w1 where w_decomp: "w = w1 @ [Nt B']" by blast
         then have "\<exists>w1' b k1 m1. ?R' \<turnstile> w1 \<Rightarrow>(k1) w1' \<and> ?R' \<turnstile> [Nt B'] \<Rightarrow>(m1) b \<and> map Tm At = w1' @ b 
            \<and> m = k1 + m1"
-          using P deriven_append_decomp by blast
+          using P deriven_appendD by blast
         then obtain w1' b k1 m1 
           where w_derive_decomp: "?R' \<turnstile> w1 \<Rightarrow>(k1) w1' \<and> ?R' \<turnstile> [Nt B'] \<Rightarrow>(m1) b 
            \<and> map Tm At = w1' @ b \<and> m = k1 + m1" 
@@ -1353,7 +1353,7 @@ proof (induction arbitrary: p q rule: nat_less_induct)
         have pre2: "k2 < n" using rec_decomp pre1 by auto
         have "v \<noteq> []" using rec_decomp
           by (metis (lifting) assms(1) Eps_free_deriven_Nil Eps_free_Solve_lrec tms
-              deriven_from_TmsD derivern_imp_deriven list.simps(8) not_Cons_self2 w_derive_decomp)
+              deriven_map_TmD derivern_imp_deriven list.simps(8) not_Cons_self2 w_derive_decomp)
         then have "R \<turnstile> v \<Rightarrow>* map Tm bt"
           using "1.IH" 1 pre2 rec_decomp
           by (auto simp add: derivern_iff_deriven)
@@ -1375,7 +1375,7 @@ proof (induction arbitrary: p q rule: nat_less_induct)
 
         have "R \<turnstile> w \<Rightarrow>* map Tm At" using "1.IH" assms pre1 pre2 pre3 P by blast
         then show ?thesis using 2
-          by (meson bu_prod derives_bu_iff rtranclp_trans)
+          by (simp add: derives_Cons_rule)
       qed
     next
       case False
@@ -1387,11 +1387,11 @@ proof (induction arbitrary: p q rule: nat_less_induct)
 
       have "R \<turnstile> w \<Rightarrow>* map Tm At" using "1.IH" pre1 pre2 pre3 P by blast
       then show ?thesis using 2
-        by (meson bu_prod derives_bu_iff rtranclp_trans)
+        by (metis append_Nil2 derives_Cons_rule)
     qed
 
     then show ?thesis using p2_derive
-      by (metis P derives_append derives_append_decomp map_append p_decomp)
+      by (metis P derives_append derives_appendD map_append p_decomp)
   qed
 qed
 
@@ -1421,7 +1421,7 @@ lemma Expand_hd_rec_is_deriveable: "(A, w) \<in> Expand_hd_rec B As P \<Longrigh
 proof (induction B As P arbitrary: A w rule: Expand_hd_rec.induct)
   case (1 B R)
   then show ?case
-    by (simp add: bu_prod derives_if_bu)
+    by (simp add: derives_Cons_rule)
 next
   case (2 B S Ss R)
   then show ?case
@@ -1482,11 +1482,11 @@ proof
     proof (cases "\<exists>pt. p = map Tm pt")
       case True
       then obtain pt where "p = map Tm pt" by blast
-      then show ?thesis using "1.prems" deriven_from_TmsD derives_from_Tms_iff by blast
+      then show ?thesis using "1.prems" deriven_map_TmD derives_map_Tm_iff by blast
     next
       case False
       then have "\<exists>uu V ww. p = uu @ Nt V # ww"
-        by (smt (verit, best) "1.prems" deriven_Suc_decomp_left relpowp_E)
+        by (smt (verit, best) "1.prems" deriven_Suc_iff relpowp_E)
       then obtain uu V ww where p_eq: "p = uu @ Nt V # ww" by blast
       then have "\<not> R \<turnstile> p \<Rightarrow>(0) map Tm x"
         using False by auto
@@ -1505,7 +1505,7 @@ proof
           using start_deriven by auto
         then have "\<not> R \<turnstile> (uu @ a1) @ Nt B # (a2 @ ww) \<Rightarrow>(0) map Tm x"
           by (metis (mono_tags, lifting) append.left_neutral append_Cons derive.intros insertI1 
-              not_derive_from_Tms relpowp.simps(1))
+              not_derive_map_Tm relpowp.simps(1))
         then have "\<exists>k. m = Suc k"
           using m_deriven "1.prems" old.nat.exhaust by blast
         then obtain k where m_Suc: "m = Suc k" by blast
@@ -1534,7 +1534,7 @@ proof
         case False
         then have Vv_subst: "(V,v) \<in> ?subst" using S_props start_deriven by auto
         then have "?subst \<turnstile> uu @ v @ ww \<Rightarrow>* map Tm x" using 1 start_deriven n_Suc by auto
-        then show ?thesis using Vv_subst derives_append_decomp
+        then show ?thesis using Vv_subst derives_appendD
           by (metis (no_types, lifting) derives_Cons_rule p_eq)
       qed
     qed
@@ -1801,7 +1801,7 @@ lemma Expand_tri_prods_deirvable: "(B, bs) \<in> Expand_tri As P \<Longrightarro
 proof (induction As P arbitrary: B bs rule: Expand_tri.induct)
   case (1 R)
   then show ?case
-    by (simp add: bu_prod derives_if_bu)
+    by (simp add: derives_Cons_rule)
 next
   case (2 A As R)
   then show ?case
@@ -1823,12 +1823,12 @@ next
     next
       case False
       then have "(B, bs) \<in> (Expand_tri As R)" using 2 by (auto simp add: Let_def Subst_hd_def)
-      then show ?thesis using "2.IH" by (simp add: bu_prod derives_if_bu)
+      then show ?thesis using "2.IH" by presburger
     qed
   next
     case False
     then have "(B, bs) \<in> R" using 2 by (auto simp: Expand_tri_simp1 simp del: Expand_tri.simps)
-    then show ?thesis by (simp add: bu_prod derives_if_bu)
+    then show ?thesis by (metis derive_singleton r_into_rtranclp)
   qed
 qed
 
@@ -2145,9 +2145,6 @@ next
     by auto (* takes time *)
 qed
 
-lemma finite_bad_grammar: "finite (set (bad_grammar As))"
-  by (induction As rule: bad_grammar.induct) (auto simp: bad_grammar.simps(2))
-
 lemma finite_Expand_tri: "finite R \<Longrightarrow> finite (Expand_tri As R)"
 proof (induction As R rule: Expand_tri.induct)
   case (1 R)
@@ -2252,7 +2249,7 @@ next
   then have cardS2: "card {v@[Tm True] | v. (n,v) \<in> ?R'} = 2 ^ Suc n" 
     using cardCvR by (auto simp add: bij_betw_same_card)
 
-  have fin_R': "finite ?R'" using finite_bad_grammar finite_Expand_tri by blast
+  have fin_R': "finite ?R'" using finite_set finite_Expand_tri by blast
   let ?f1 = "\<lambda>(C,v). v@[Tm False]"
   have "{v@[Tm False] | v. (n,v) \<in> ?R'} \<subseteq> ?f1 ` ?R'" by auto
   then have fin1: "finite {v@[Tm False] | v. (n,v) \<in> ?R'}"
@@ -2278,7 +2275,7 @@ theorem Expand_tri_blowup:
 (is "card ?R \<ge> _")
 proof -
   have fin: "finite ?R"
-    using finite_bad_grammar finite_Expand_tri by blast
+    using finite_set finite_Expand_tri by blast
   have "{v. (n,v) \<in> ?R} \<subseteq> snd ` ?R" by (force simp del: upt_Suc simp: image_def)
   from fin card_mono[OF _ this, unfolded bad_gram_last_expanded_card]
     card_image_le[OF fin, of snd]

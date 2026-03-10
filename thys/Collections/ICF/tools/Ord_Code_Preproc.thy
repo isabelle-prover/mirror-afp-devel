@@ -83,7 +83,7 @@ ML \<open>
   functor Oc_Simpset(val prio:int val name:string): OC_SIMPSET = struct
     structure Data = Theory_Data (
       type T = simpset
-      val empty = empty_ss
+      val empty = Simplifier.empty_ss
       val merge = Simplifier.merge_ss
     );
 

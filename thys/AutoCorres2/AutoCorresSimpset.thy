@@ -59,7 +59,7 @@ val AUTOCORRES_SIMPSET =
     )
   |> Simplifier.add_simps @{thms ptr_NULL_conv}
   |> fold Simplifier.del_proc [@{simproc case_prod_beta}, @{simproc case_prod_eta}]
-  |> simpset_of
+  |> Simplifier.simpset_of
 
 \<close>
 

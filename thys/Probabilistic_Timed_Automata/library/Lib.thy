@@ -414,7 +414,7 @@ proof -
     case (Suc n)
     { fix x 
       have "(\<integral>\<^sup>+ t. \<integral>\<^sup>+ t'. emeasure (T t') {x\<in>space S. t\<in>X \<and> t\<in>Y \<and> t'\<in>Y \<and> gfp run x} \<partial>K t \<partial>K x) \<le>
-        (\<integral>\<^sup>+ t. indicator (X \<inter> Y) t * \<integral>\<^sup>+ t'. indicator Y t' * ennreal (r ^ n) \<partial>K t \<partial>K x)"
+        (\<integral>\<^sup>+ t. indicator (X \<inter> Y) t * (\<integral>\<^sup>+ t'. indicator Y t' * ennreal (r ^ n) \<partial>K t) \<partial>K x)"
         using Suc by (auto intro!: nn_integral_mono split: split_indicator)
       also have "\<dots> \<le> (\<integral>\<^sup>+ t. indicator (X \<inter> Y) t * r \<partial>K x) * ennreal (r^n)"
         by (auto intro!: nn_integral_mono mult_right_mono r ennreal_leI split: split_indicator

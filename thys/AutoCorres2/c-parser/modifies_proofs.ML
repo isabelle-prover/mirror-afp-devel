@@ -258,7 +258,7 @@ let
         |> Proof.local_terminal_proof ((Method.Basic (fn ctxt =>  SIMPLE_METHOD (
             (Locale.intro_locales_tac {strict = false, eager = true} ctxt [] THEN
               resolve_tac ctxt [mod_inv_prop] 1 THEN
-              ALLGOALS (simp_tac (ctxt addsimps @{thms hrs_mem_update_def hrs_htd_update_def})) THEN
+              ALLGOALS (simp_tac (ctxt |> Simplifier.add_simps @{thms hrs_mem_update_def hrs_htd_update_def})) THEN
               ALLGOALS (Hoare.solve_modifies_tac ctxt
                 (Hoare.get_default_state_kind ctxt) (K ~1))))),
             Position.no_range), NONE)
@@ -276,8 +276,8 @@ let
           ALLGOALS (clarsimp_tac lthy),
           ALLGOALS (TRY o resolve_tac lthy @{thms asm_spec_enabled}),
           ALLGOALS (clarsimp_tac
-                      (lthy addSEs @{thms asm_specE state_eqE} addsimps (gsp @ @{thms state.splits}))),
-          ALLGOALS (clarsimp_tac (lthy addsimps geqs)),
+                      (lthy addSEs @{thms asm_specE state_eqE} |> Simplifier.add_simps (gsp @ @{thms state.splits}))),
+          ALLGOALS (clarsimp_tac (lthy |> Simplifier.add_simps geqs)),
           ALLGOALS (TRY o REPEAT_ALL_NEW (resolve_tac lthy [exI])),
           ALLGOALS (asm_full_simp_tac lthy)
         ]
@@ -297,14 +297,14 @@ fun get_mod_inv_prop ctxt post_abs mod_inv_props = let
     fun mi_prop_tac _ = let
       val globals_equality = Proof_Context.get_thm ctxt "globals.equality"
       fun mi_refl_tac _ =
-        simp_tac (clear_simpset ctxt addsimps @{thms modifies_inv_refl_def mex_def meq_def}) 1 THEN
+        simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms modifies_inv_refl_def mex_def meq_def}) 1 THEN
         resolve_tac ctxt @{thms allI} 1 THEN
         resolve_tac ctxt @{thms CollectI} 1 THEN
         TRY (REPEAT_ALL_NEW (resolve_tac ctxt @{thms exI}) 1) THEN
         resolve_tac ctxt [globals_equality] 1 THEN
-        ALLGOALS (simp_tac (clear_simpset ctxt |> Simplifier.add_proc Record.simproc))
+        ALLGOALS (simp_tac (Simplifier.clear_simpset ctxt |> Simplifier.add_proc Record.simproc))
       fun mi_incl_tac _ =
-        simp_tac (clear_simpset ctxt addsimps @{thms modifies_inv_incl_def mex_def meq_def}) 1 THEN
+        simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms modifies_inv_incl_def mex_def meq_def}) 1 THEN
         resolve_tac ctxt @{thms allI} 1 THEN
         resolve_tac ctxt @{thms allI} 1 THEN
         resolve_tac ctxt @{thms impI} 1 THEN

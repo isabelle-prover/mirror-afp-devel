@@ -588,9 +588,9 @@ lemma emeasure_dens_ctxt_measure_insert':
   assumes dens: "has_parametrized_subprob_density (state_measure (V\<union>V') \<Gamma>) F (stock_measure t) f"
   assumes \<rho>: "\<rho> \<in> space (state_measure (Suc`V') (case_nat t \<Gamma>))"
   assumes X: "X \<in> sets M"
-  shows "emeasure M X = \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>, \<rho> \<circ> Suc)) * \<integral>\<^sup>+y. f (merge V V' (\<sigma>, \<rho> \<circ> Suc)) y *
+  shows "emeasure M X = \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>, \<rho> \<circ> Suc)) * (\<integral>\<^sup>+y. f (merge V V' (\<sigma>, \<rho> \<circ> Suc)) y *
                        indicator X (merge (shift_var_set V) (Suc`V') (case_nat y \<sigma>, \<rho>))
-                  \<partial>stock_measure t \<partial>state_measure V \<Gamma>" (is "_ = ?I")
+                  \<partial>stock_measure t) \<partial>state_measure V \<Gamma>" (is "_ = ?I")
 proof-
   let ?m = "\<lambda>x y. merge (insert 0 (Suc ` V)) (Suc ` V') (x(0 := y), \<rho>)"
   from dens have Mf:
@@ -671,9 +671,9 @@ proof-
     apply (intro nn_integral_cong)
     apply (simp add: m_eq)
     done
-  also have "... = \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>, \<rho> \<circ> Suc)) * \<integral>\<^sup>+y. f (merge V V' (\<sigma>, \<rho> \<circ> Suc)) y *
+  also have "... = \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>, \<rho> \<circ> Suc)) * (\<integral>\<^sup>+y. f (merge V V' (\<sigma>, \<rho> \<circ> Suc)) y *
                        indicator X (merge (shift_var_set V) (Suc`V') (case_nat y \<sigma>, \<rho>))
-                  \<partial>stock_measure t \<partial>state_measure V \<Gamma>" using \<rho> X
+                  \<partial>stock_measure t) \<partial>state_measure V \<Gamma>" using \<rho> X
     apply (intro nn_integral_cong)
     apply (subst nn_integral_cmult[symmetric])
     apply (erule meas')
@@ -844,8 +844,8 @@ proof (intro measure_eqI)
     apply (simp_all add: dens_ctxt_measure_def state_measure'_def)
     done
   also from X have "... = \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) *
-                              \<integral>\<^sup>+y. indicator X (case_nat y (merge V V' (x, \<rho>)))
-                                   \<partial>M (merge V V' (x, \<rho>)) \<partial>state_measure V \<Gamma>" (is "_ = ?I")
+                              (\<integral>\<^sup>+y. indicator X (case_nat y (merge V V' (x, \<rho>)))
+                                   \<partial>M (merge V V' (x, \<rho>))) \<partial>state_measure V \<Gamma>" (is "_ = ?I")
     apply (intro nn_integral_cong)
     apply (subst emeasure_bind, rule nonempty', simp add: merge_in_space)
     apply (rule measurable_compose[OF _ return_measurable], simp add: merge_in_space meas_M_eq)
@@ -855,12 +855,12 @@ proof (intro measure_eqI)
                   M (merge V V' (x, \<rho>)) = density (stock_measure t) (f (merge V V' (x, \<rho>)))"
     by (intro has_subprob_densityD[OF has_dens]) (simp add: merge_in_state_measure \<rho>)
   hence "?I = \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) *
-                \<integral>\<^sup>+y. indicator X (case_nat y (merge V V' (x, \<rho>)))
-                \<partial>density (stock_measure t) (f (merge V V' (x, \<rho>))) \<partial>state_measure V \<Gamma>"
+                (\<integral>\<^sup>+y. indicator X (case_nat y (merge V V' (x, \<rho>)))
+                \<partial>density (stock_measure t) (f (merge V V' (x, \<rho>)))) \<partial>state_measure V \<Gamma>"
     by (intro nn_integral_cong) simp
   also have "... = \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) *
-                     \<integral>\<^sup>+y. f (merge V V' (x, \<rho>)) y * indicator X (case_nat y (merge V V' (x, \<rho>)))
-                   \<partial>stock_measure t \<partial>state_measure V \<Gamma>" (is "_ = ?I") using X
+                     (\<integral>\<^sup>+y. f (merge V V' (x, \<rho>)) y * indicator X (case_nat y (merge V V' (x, \<rho>)))
+                   \<partial>stock_measure t) \<partial>state_measure V \<Gamma>" (is "_ = ?I") using X
     by (intro nn_integral_cong, subst nn_integral_density, simp)
        (auto simp: mult.assoc dens_ctxt_measure_def state_measure'_def
              intro!: merge_in_state_measure \<rho> AE_I'[of "{}"]

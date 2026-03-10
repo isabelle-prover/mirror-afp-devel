@@ -1100,17 +1100,17 @@ end
 
 end
 
-context ord_order_ow 
+context ord_preorder_ow 
 begin
 
 tts_context
   tts: (?'a to U\<^sub>2) and (?'b to U\<^sub>1)
-  sbterms: (\<open>(\<le>)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
-    and (\<open>(<)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
+  sbterms: (\<open>(\<le>)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
+    and (\<open>(<)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
     and (\<open>(\<le>)::[?'b::ord, ?'b::ord] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
     and (\<open>(<)::[?'b::ord, ?'b::ord] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
   rewriting ctr_simps
-  substituting ord\<^sub>2.order_ow_axioms
+  substituting ord\<^sub>2.preorder_ow_axioms
   eliminating through clarsimp
 begin
 
@@ -1140,17 +1140,17 @@ end
 
 end
 
-context order_pair_ow 
+context preorder_pair_ow 
 begin
 
 tts_context
   tts: (?'a to U\<^sub>1) and (?'b to U\<^sub>2)
-  sbterms: (\<open>(\<le>)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
-    and (\<open>(<)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
-    and (\<open>(\<le>)::[?'b::order, ?'b::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
-    and (\<open>(<)::[?'b::order, ?'b::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>)
+  sbterms: (\<open>(\<le>)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
+    and (\<open>(<)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
+    and (\<open>(\<le>)::[?'b::preorder, ?'b::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
+    and (\<open>(<)::[?'b::preorder, ?'b::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>)
   rewriting ctr_simps
-  substituting ord\<^sub>1.order_ow_axioms and ord\<^sub>2.order_ow_axioms
+  substituting ord\<^sub>1.preorder_ow_axioms and ord\<^sub>2.preorder_ow_axioms
   eliminating through clarsimp
 begin
 
@@ -1224,12 +1224,12 @@ end
 
 tts_context
   tts: (?'a to U\<^sub>1) and (?'b to U\<^sub>2)
-  sbterms: (\<open>(\<le>)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
-    and (\<open>(<)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>)  
-    and (\<open>(\<le>)::[?'b::order, ?'b::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
-    and (\<open>(<)::[?'b::order, ?'b::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>)
+  sbterms: (\<open>(\<le>)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
+    and (\<open>(<)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>)  
+    and (\<open>(\<le>)::[?'b::preorder, ?'b::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
+    and (\<open>(<)::[?'b::preorder, ?'b::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>)
   rewriting ctr_simps
-  substituting ord\<^sub>1.order_ow_axioms and ord\<^sub>2.order_ow_axioms
+  substituting ord\<^sub>1.preorder_ow_axioms and ord\<^sub>2.preorder_ow_axioms
   eliminating through simp
 begin
 
@@ -1259,12 +1259,12 @@ end
 
 tts_context
   tts: (?'a to U\<^sub>1) and (?'c to U\<^sub>2)
-  sbterms: (\<open>(\<le>)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
-    and (\<open>(<)::[?'a::order, ?'a::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
-    and (\<open>(\<le>)::[?'c::order, ?'c::order] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
-    and (\<open>(<)::[?'c::order, ?'c::order] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>)
+  sbterms: (\<open>(\<le>)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
+    and (\<open>(<)::[?'a::preorder, ?'a::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>1)\<close>) 
+    and (\<open>(\<le>)::[?'c::preorder, ?'c::preorder] \<Rightarrow> bool\<close> to \<open>(\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>) 
+    and (\<open>(<)::[?'c::preorder, ?'c::preorder] \<Rightarrow> bool\<close> to \<open>(<\<^sub>o\<^sub>w\<^sub>.\<^sub>2)\<close>)
   rewriting ctr_simps
-  substituting ord\<^sub>1.order_ow_axioms and ord\<^sub>2.order_ow_axioms
+  substituting ord\<^sub>1.preorder_ow_axioms and ord\<^sub>2.preorder_ow_axioms
   eliminating through simp
 begin
 

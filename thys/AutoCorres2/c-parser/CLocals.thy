@@ -121,7 +121,7 @@ fun add_simproc pos named_thms (intervals: Facts.interval list) thm context =
     else
       context 
       |> Context.map_proof_result (Simplifier.define_simproc
-          {name = Binding.make (base_name, pos), passive=false, kind = Simproc, identifier=[],
+          {name = Binding.make (base_name, pos), passive=false, kind = Simplifier.Simproc, identifier=[],
            lhss = patterns, proc = fn _ => code_simp_prems thm2 positions})
       |-> (fn simproc => Context.map_proof (
             Local_Theory.declaration {pervasive=false, syntax=false, pos = \<^here>} (fn _ =>
@@ -530,7 +530,7 @@ fun gen_unfolded {sym} qualifier ctxt thm =
        |> map (fn (_, (_, Entry {def,...})) => Thm.transfer' ctxt def)
    val defs = defs0 |> sym ? map (symmetric ctxt)
  in
-   Simplifier.simplify (Simplifier.put_simpset HOL_basic_ss ctxt addsimps defs) thm
+   Simplifier.simplify (ctxt |> Simplifier.put_simpset HOL_basic_ss |> Simplifier.add_simps defs) thm
  end
 
 val unfolded_with = gen_unfolded {sym = false}

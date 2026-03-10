@@ -19,10 +19,11 @@ begin
 
 sublocale equation:
   nonground_typing_lifting where
-  base_vars = vars_term and base_subst = subst_apply_term and map = "\<lambda>f. map_prod f f" and
-  to_set = set_prod and comp_subst = subst_compose and id_subst = Var and
-  sub_vars = vars_term and sub_subst = subst_apply_term and
-  sub_welltyped = "welltyped \<F>" and subst_update = fun_upd and apply_subst = apply_subst
+  base_vars = vars_term and base_subst = subst_apply_term and base_is_ground = is_ground and
+  map = "\<lambda>f. map_prod f f" and to_set = set_prod and comp_subst = subst_compose and 
+  id_subst = Var and sub_vars = vars_term and sub_subst = subst_apply_term and
+  sub_is_ground = is_ground and sub_welltyped = "welltyped \<F>" and apply_subst = apply_subst and
+  subst_update = fun_upd
   by unfold_locales
 
 text \<open>Lifted lemmas and definitions\<close>
@@ -36,10 +37,11 @@ text \<open>We can lift multiple levels\<close>
 
 sublocale equation_set:
   nonground_typing_lifting where
-  base_vars = vars_term and base_subst = subst_apply_term and map = fimage and
-  to_set = fset and comp_subst = subst_compose and id_subst = Var and
+  base_vars = vars_term and base_subst = subst_apply_term and base_is_ground = is_ground and
+  map = fimage and to_set = fset and comp_subst = subst_compose and id_subst = Var and
   sub_vars = equation_subst.vars and sub_subst = equation_subst.subst and
-  sub_welltyped = equation.welltyped and subst_update = fun_upd and apply_subst = apply_subst
+  sub_is_ground = equation_subst.is_ground and sub_welltyped = equation.welltyped and
+  apply_subst = apply_subst and subst_update = fun_upd
   by unfold_locales
 
 text \<open>Lifted lemmas and definitions\<close>

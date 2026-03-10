@@ -171,7 +171,7 @@ proof (rule ccontr)
   also have "card ((\<lambda>k. w ^ k) ` {..<n}) \<le> card {z. poly (?lhs - ?rhs) z = 0}"
     by (intro card_mono poly_roots_finite) (use neq root1 root2 in auto)
   also have "card {z. poly (?lhs - ?rhs) z = 0} \<le> degree (?lhs - ?rhs)"
-    by (rule card_poly_roots_bound) (use neq in auto)
+    by (rule poly_roots_degree) (use neq in auto)
   also have "\<dots> < n"
     by fact
   finally show False

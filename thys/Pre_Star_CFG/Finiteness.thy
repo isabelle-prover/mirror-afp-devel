@@ -44,7 +44,7 @@ definition is_non_nullable_all :: "bool" where
 lemma derives_concat:
   assumes "P \<turnstile> X\<^sub>1 \<Rightarrow>* w\<^sub>1" and "P \<turnstile> X\<^sub>2 \<Rightarrow>* w\<^sub>2"
   shows "P \<turnstile> (X\<^sub>1@X\<^sub>2) \<Rightarrow>* (w\<^sub>1@w\<^sub>2)"
-  using assms derives_append_decomp by blast
+  using assms derives_appendD by blast
 
 lemma derives_split:
   assumes "P \<turnstile> X \<Rightarrow>* w"
@@ -120,7 +120,7 @@ proof -
     then obtain x xs' where "xs = x#xs'"
       using list.exhaust by blast
     moreover have "P \<turnstile> ([x]@xs') \<Rightarrow>* [] \<Longrightarrow> (P \<turnstile> [x] \<Rightarrow>* [] \<and> P \<turnstile> xs' \<Rightarrow>* [])"
-      using derives_split by (metis Nil_is_append_conv derives_append_decomp)
+      using derives_split by (metis Nil_is_append_conv derives_appendD)
     moreover have "\<not> P \<turnstile> [x] \<Rightarrow>* []"
       by (simp add: nonNullAll)
     ultimately show "w = [] \<Longrightarrow> False"
@@ -275,7 +275,7 @@ proof -
         then have "P \<turnstile> [Nt B]@[Nt C] \<Rightarrow>* w"
           by simp
         then obtain b c where "P \<turnstile> [Nt B] \<Rightarrow>* b" and "P \<turnstile> [Nt C] \<Rightarrow>* c" and "w = b@c"
-          using derives_append_decomp by blast
+          using derives_appendD by blast
         then show "w \<in> (\<lambda>(b,c). b@c) ` ({w. P \<turnstile> [Nt B] \<Rightarrow>* w} \<times> {w. P \<turnstile> [Nt C] \<Rightarrow>* w})"
           by blast
       next
@@ -316,7 +316,7 @@ proof -
     have "finite {w. \<exists>\<beta>. (X, \<beta>) \<in> P \<and> P \<turnstile> \<beta> \<Rightarrow>* w}"
       unfolding un by (intro finite_UnI; use finA finB in simp)
     moreover have "\<And>X. {w. P \<turnstile> [Nt X] \<Rightarrow>* w} = {[Nt X]} \<union> {w. \<exists>\<beta>. (X, \<beta>) \<in> P \<and> P \<turnstile> \<beta> \<Rightarrow>* w}"
-      by (auto split: prod.splits simp: derives_Cons_decomp)
+      by (auto split: prod.splits simp: derives_Cons_iff)
     ultimately show ?case
       by simp
   qed

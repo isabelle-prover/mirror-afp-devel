@@ -195,7 +195,7 @@ next
   proof (cases s)
     case (Nt A)
     then show ?thesis using Cons
-      unfolding inst_syms_def concats_def inst_sym_def by(fastforce simp: derives_Cons_decomp)
+      unfolding inst_syms_def concats_def inst_sym_def by(fastforce simp: derives_Cons_iff)
   next
     case (Tm a)
     then show ?thesis using Cons
@@ -252,11 +252,11 @@ proof(induction n arbitrary: w A rule: less_induct)
   next
     case (Suc m)
     then obtain \<alpha> where \<alpha>_intro: "(A,\<alpha>) \<in> P" "P \<turnstile> \<alpha> \<Rightarrow>(m) map Tm w"
-      by (metis deriven_start1 less.prems nat.inject)
+      by (metis deriven_Nt_map_TmD less.prems nat.inject)
     then obtain ws ms where *:
       "w = concat ws \<and> length \<alpha> = length ws \<and> length \<alpha> = length ms
         \<and> sum_list ms = m \<and> (\<forall>i < length ws. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ms ! i) map Tm (ws ! i))"
-      using derive_decomp_Tm by metis
+      using deriven_to_map_TmD by metis
 
     have "\<forall>i < length ws. ws ! i \<in> inst_sym (\<lambda>A. ((subst_lang P)^^m) (\<lambda>A. {}) A) (\<alpha> ! i)"
     proof (rule allI | rule impI)+
@@ -276,7 +276,7 @@ proof(induction n arbitrary: w A rule: less_induct)
       next
         case (Tm a)
         with * have "P \<turnstile> map Tm [a] \<Rightarrow>(ms ! i) map Tm (ws ! i)" by fastforce
-        then have "ws ! i \<in> {[a]}" using deriven_from_TmsD by fastforce
+        then have "ws ! i \<in> {[a]}" using deriven_map_TmD by fastforce
         with Tm show ?case by (metis sym.simps(6))
       qed
     qed

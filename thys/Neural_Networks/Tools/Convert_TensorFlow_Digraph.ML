@@ -188,12 +188,12 @@ structure Convert_TensorFlow_Digraph:CONVERT_TENSORFLOW_DIGRAPH = struct
       let
         fun get_local_thm n = Proof_Context.get_thm lthy (Local_Theory.full_name lthy (Binding.qualify_name false (Binding.name (defN)) n))
         fun get_local_thms n = Proof_Context.get_thms lthy (Local_Theory.full_name lthy (Binding.qualify_name false (Binding.name (defN)) n))
-        fun mk_ss ctx thms = put_simpset (simpset_of ctx) ctx addsimps thms
+        fun mk_ss ctx thms = Simplifier.add_simps thms ctx
         fun simp_meth thms = (Method.Basic (fn ctx => Method.SIMPLE_METHOD (
-                 asm_full_simp_tac (mk_ss ctx ([get_local_thm "NeuralNet_def"]@thms)) 1 
+                 asm_full_simp_tac (ctx |> Simplifier.add_simps (get_local_thm "NeuralNet_def" :: thms)) 1 
                  )))
         val force_meth = (Method.Basic (fn ctx => Method.SIMPLE_METHOD (
-                 force_tac (mk_ss ctx ([get_local_thm "NeuralNet_def"])) 1 
+                 force_tac (ctx |> Simplifier.add_simp (get_local_thm "NeuralNet_def")) 1 
                  )))
         val code_simp_meth = (Method.Basic (fn ctx => Method.SIMPLE_METHOD (
                  Code_Simp.dynamic_tac ctx 1 

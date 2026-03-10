@@ -84,10 +84,14 @@ object AFP_Build_CI {
     for (mail_system <- context.mail_system if !results.ok) {
       progress.echo(Build_CI.section("NOTIFICATIONS"))
 
+      def relevant_failure(session: String, result: Process_Result): Boolean =
+        if (result.ok || result.interrupted || results.cancelled(session)) false
+        else results.deps.sessions_structure(session).imports.forall(results(_).ok)
+
       for {
         session <- results.sessions
         result = results(session)
-        if !result.ok && !result.interrupted && !results.cancelled(session)
+        if relevant_failure(session, result)
         entry <- context.session_entry(session)
       } {
         val subject = "Build of AFP entry " + entry + " failed"

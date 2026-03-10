@@ -4,9 +4,7 @@ theory Ordered_Resolution
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Nonground_Typing
     First_Order_Clause.Typed_Tiebreakers
-    Saturation_Framework.Lifting_to_Non_Ground_Calculi
-  
-    Ground_Ordered_Resolution
+    First_Order_Clause.Infinite_Variables
 begin
 
 locale ordered_resolution_calculus =
@@ -18,13 +16,16 @@ locale ordered_resolution_calculus =
 
   nonground_selection_function where
   select = select and atom_subst = "(\<cdot>t)" and atom_vars = term.vars and
-  atom_from_ground = term.from_ground and atom_to_ground = term.to_ground +
-  tiebreakers tiebreakers
+  atom_from_ground = term.from_ground and atom_to_ground = term.to_ground and
+  atom_is_ground = term.is_ground +
+  tiebreakers tiebreakers +
+  infinite_variables where
+  exists_nonground = term.exists_nonground and variables = "UNIV :: 'v set"
 for
   select :: "'t select" and
   less\<^sub>t :: "'t \<Rightarrow> 't \<Rightarrow> bool" and
   tiebreakers :: "('t\<^sub>G, 't) tiebreakers" and
-  welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 inductive factoring :: "('t, 'v, 'ty) typed_clause \<Rightarrow> ('t, 'v, 'ty) typed_clause \<Rightarrow> bool" where
@@ -52,8 +53,8 @@ inductive resolution ::
    C = (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2) \<cdot> \<mu> \<Longrightarrow>
    resolution (\<V>\<^sub>2, D) (\<V>\<^sub>1, E) (\<V>\<^sub>3, C)"
 if
-  "infinite_variables_per_type \<V>\<^sub>1"
-  "infinite_variables_per_type \<V>\<^sub>2"
+  "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>1"
+  "term.exists_nonground \<Longrightarrow> infinite_variables_per_type \<V>\<^sub>2"
   "term.is_renaming \<rho>\<^sub>1"
   "term.is_renaming \<rho>\<^sub>2"
   "clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {}"
@@ -79,7 +80,7 @@ definition inferences :: "('t, 'v, 'ty) typed_clause inference set" where
  "inferences \<equiv> resolution_inferences \<union> factoring_inferences"
 
 abbreviation bottom\<^sub>F :: "('t, 'v, 'ty) typed_clause set" ("\<bottom>\<^sub>F") where
-  "bottom\<^sub>F \<equiv> {(\<V>, {#}) | \<V>. infinite_variables_per_type \<V> }"
+  "bottom\<^sub>F \<equiv> {(\<V>, {#}) | \<V>. term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V> }"
 
 end
 

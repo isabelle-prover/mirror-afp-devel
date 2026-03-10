@@ -1727,9 +1727,9 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
           with IO out step.prems have WT_c [WT_intro]: "\<I> \<turnstile>g c x' \<surd>" by(auto dest: WT_gpvD)
           from x have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> expectation_gpv' (c x')" by(rule INF_lower)
           also have "\<dots> \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c x') s')" using WT_c s' by(rule step.IH)
-          also have "\<dots> = \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
+          also have "\<dots> = (\<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
                | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 1 \<I>' (\<lambda>(r, s'). expectation_gpv 1 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
-            \<partial>measure_spmf (inline1 callee (c x') s') + ennreal (pmf (the_gpv (inline callee (c x') s')) None)"
+            \<partial>measure_spmf (inline1 callee (c x') s')) + ennreal (pmf (the_gpv (inline callee (c x') s')) None)"
             unfolding expectation_gpv2_def
             by(subst expectation_gpv.simps)(auto simp add: inline_sel split_def o_def intro!: nn_integral_cong split: generat.split sum.split)
           also have "\<dots> = (\<Sum>\<^sup>+ xx. ennreal (pmf (inline1 callee (c x') s') xx) * (case xx of None \<Rightarrow> 1 | Some (Inl (x, _)) \<Rightarrow> f x 
@@ -1800,9 +1800,10 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
     by(rewrite in "_ = \<hole>" inline1.simps)
       (auto simp add: bind_spmf_def ennreal_pmf_bind nn_integral_multc[symmetric] nn_integral_measure_pmf intro!: nn_integral_cong split: option.split generat.split)
   also have "\<dots> = (\<integral>\<^sup>+ res. (case res of Inl (a, s) \<Rightarrow> f a
-            | Inr (out, rpv, rpv') \<Rightarrow> \<Sqinter>x\<in>responses_\<I> \<I>' out. expectation_gpv 1 \<I>' (\<lambda>(x, s'). expectation_gpv 1 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv' x) s')) (rpv x))
-       \<partial>measure_spmf (inline1 callee gpv s) +
-    ennreal (pmf (inline1 callee gpv s) None))"
+                             | Inr (out, rpv, rpv') \<Rightarrow>
+                                  \<Sqinter>x\<in>responses_\<I> \<I>' out. expectation_gpv 1 \<I>' (\<lambda>(x, s'). expectation_gpv 1 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv' x) s')) (rpv x))
+       \<partial>measure_spmf (inline1 callee gpv s)) +
+    ennreal (pmf (inline1 callee gpv s) None)"
     apply(simp add: nn_integral_measure_spmf_conv_measure_pmf nn_integral_restrict_space nn_integral_measure_pmf)
     apply(subst nn_integral_disjoint_pair_countspace[where B="range Some" and C="{None}", simplified, folded UNIV_option_conv, simplified])
     apply(auto simp add: mult.commute intro!: nn_integral_cong split: split_indicator)
@@ -2054,15 +2055,11 @@ proof -
   from start have "S p q \<or> trace_callee_eq callee1 callee2 A p q" by simp
   thus ?thesis
     apply(rule trace_callee_eq_coinduct)
-     apply(erule disjE)
-      apply(erule (1) step)
-     apply(drule trace_callee_eqD[where xs="[]"]; simp)
+    apply (metis step trace_callee_eq_complete)
     apply(erule disjE)
      apply(erule (5) sim)
-    apply(rule disjI2)
-    apply(rule trace_callee_eqI)
-    apply(drule trace_callee_eqD[where xs="(_, _) # _"])
-    apply simp_all
+    apply(intro disjI2 trace_callee_eqI)
+    apply (fastforce dest!: trace_callee_eqD [where xs="_ # _"])
     done
 qed
 

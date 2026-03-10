@@ -727,7 +727,7 @@ lemma fun_cong_meta: "f = g \<Longrightarrow> (f x = g x) \<equiv> True"
 simproc_setup fun_cong (\<open>x = y\<close>) = \<open>fn phi => fn ctxt => fn ct =>
   let
     val {f, g, x, ...} = @{cterm_match (fo) \<open>?f ?x = ?g ?x\<close>} ct
-    val ctxt = ctxt delsimps @{thms fun_eq_iff} (* prevent looping *)
+    val ctxt = ctxt |> Simplifier.del_simps @{thms fun_eq_iff} (* prevent looping *)
     val eq = \<^infer_instantiate>\<open>f = f and g = g in cprop \<open>f = g\<close>\<close> ctxt
   in
     try (Goal.prove_internal ctxt [] eq) (fn _ => asm_full_simp_tac ctxt 1) 

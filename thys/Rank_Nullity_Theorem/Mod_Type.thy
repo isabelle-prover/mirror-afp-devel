@@ -93,27 +93,15 @@ proof (unfold bij_betw_def, rule conjI)
   show "range Rep = {0..<int CARD('a)}" using Typedef.type_definition.Rep_range[OF type] .
 qed
 
-lemma Rep_ge_0: "0 \<le> Rep x" using bij_Rep unfolding bij_betw_def by auto
+lemma Rep_ge_0: "0 \<le> Rep x" 
+  using bij_Rep unfolding bij_betw_def by auto
 
 lemma bij_Abs: "bij_betw (Abs) {0..<int CARD('a)} (UNIV::'a set)"
-proof (unfold bij_betw_def, rule conjI)
-  show "inj_on Abs {0..<int CARD('a)}" 
-    by (metis inj_on_inverseI type type_definition.Abs_inverse)
-  show "Abs ` {0..<int CARD('a)} = (UNIV::'a set)" 
-    by (metis type type_definition.univ)
-qed
+  by (metis Rep_inverse bij_Rep bij_betw_comp_iff comp_def involuntory_imp_bij)
 
-corollary bij_Abs': "bij_betw (Abs') {0..<int CARD('a)} (UNIV::'a set)"
-proof (unfold bij_betw_def, rule conjI)
-  show "inj_on Abs' {0..<int CARD('a)}"
-    unfolding inj_on_def Abs'_def
-    by (auto, metis Rep_Abs_mod mod_pos_pos_trivial)
-  show "Abs' ` {0..<int CARD('a)} = (UNIV::'a set)"
-  proof (unfold image_def Abs'_def, auto)
-    fix x show "\<exists>xa\<in>{0..<int CARD('a)}. x = Abs xa"
-      by (rule bexI[of _ "Rep x"], auto simp add: Rep_less_n[of x] Rep_ge_0[of x], metis Rep_inverse)
-  qed
-qed
+lemma bij_Abs': "bij_betw (Abs') {0..<int CARD('a)} (UNIV::'a set)"
+  by (metis Abs'_def Rep_inverse Rep_mod bij_Rep bij_betw_comp_iff comp_def
+    involuntory_imp_bij)
 
 lemma bij_from_nat: "bij_betw (from_nat) {0..<CARD('a)} (UNIV::'a set)"
 proof (unfold bij_betw_def, rule conjI)
@@ -423,14 +411,7 @@ lemma a_eq_minus_1: "\<forall>a::'a. a+1 = 0 \<longrightarrow> a = -1"
 
 lemma forall_from_nat_rw:
   shows "(\<forall>x\<in>{0..<CARD('a)}. P (from_nat x::'a)) = (\<forall>x. P (from_nat x))"
-proof (auto)
-  fix y assume *: "\<forall>x\<in>{0..<CARD('a)}. P (from_nat x)"
-  have "from_nat y \<in> (UNIV::'a set)" by auto
-  from this obtain x where x1: "from_nat y = (from_nat x::'a)" and x2: "x\<in>{0..<CARD('a)}"
-    using bij_from_nat unfolding bij_betw_def
-    by (metis from_nat_to_nat_id rangeI the_inv_into_onto to_nat_is_inv)
-  show "P (from_nat y::'a)" unfolding x1 using * x2 by simp
-qed
+  by (metis from_nat_to_nat_id le0 mod_type_forall_eq ord_class.atLeastLessThan_iff) 
 
 lemma from_nat_eq_imp_eq:
   assumes f_eq: "from_nat x = (from_nat xa::'a)"
@@ -444,7 +425,9 @@ lemma to_nat_less_card:
 
 lemma from_nat_0: "from_nat 0 = 0"
   unfolding from_nat_def o_def of_nat_0 Abs'_def mod_0 zero_def ..
+
 lemma to_nat_0: "to_nat 0 = 0" unfolding to_nat_def o_def Rep_0 nat_0 ..
+
 lemma to_nat_eq_0: "(to_nat x = 0) = (x = 0)"
   by (auto simp add: to_nat_0 from_nat_0 dest: to_nat_from_nat)
 

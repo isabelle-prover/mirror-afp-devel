@@ -1554,7 +1554,7 @@ fun inst_split_rule ctxt ({apply_thm, split_vars, ...}:rule) ct =
                     val eta_eq_prop = \<^infer_instantiate>\<open>eta_lhs = lhs_eta_inst_rule and orig_lhs = ct 
                       in cterm \<open>eta_lhs \<equiv> orig_lhs\<close>\<close> ctxt
                     val eta_eq = Goal.prove_internal ctxt [] eta_eq_prop 
-                      (fn _ => asm_full_simp_tac ((Simplifier.clear_simpset ctxt) addsimps 
+                      (fn _ => asm_full_simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps
                          @{thms case_prod_eta bind_case_prod_trivial case_prod_beta 
                             case_prod_beta' prod.sel prod.collapse}) 1)
                     val obj = Thm.term_of (Thm.lhs_of eta_eq)
@@ -1691,7 +1691,7 @@ fun case_prod_bdy_conv ctxt ct =
      val g = Utils.lambdas_tupled fixes' rhs
      val eq_prop = \<^infer_instantiate>\<open>f = f and g = g in cprop "f \<equiv> g"\<close> ctxt
      val simps = if (Thm.term_of f) aconv (Thm.term_of g)  then [] else (Proof_Context.export ctxt' ctxt [bdy_eq])
-     val simp_ctxt = Simplifier.clear_simpset ctxt addsimps (@{thms fun_eq_iff} @ simps)  
+     val simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps (@{thms fun_eq_iff} @ simps)  
      val eq = Goal.prove_internal simp_ctxt [] eq_prop 
             (fn _ => simp_tac simp_ctxt 1)
   in 
@@ -1817,7 +1817,7 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                        cprop \<open>run (f x) s \<equiv> run (f' x) s\<close>\<close> ctxt
                  val simps = if Utils.trivial_meta_eq_thm run_f_eq then [] else (timeit_export "RUN_CASE_PROD" ctxt' ctxt [run_f_eq])
                            @ @{thms Spec_Monad.run_case_prod_distrib}
-                 val simp_ctxt = Simplifier.clear_simpset ctxt addsimps (@{thms fun_eq_iff} @ simps)  
+                 val simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps (@{thms fun_eq_iff} @ simps)  
                  val eq = Goal.prove_internal simp_ctxt [] eq_prop
                     (fn _ => simp_tac simp_ctxt 1)
                  val thm = @{thm RUN_CASE_PROD_I} OF [x_eq, eq]
@@ -1876,11 +1876,11 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                    |> Utils.Trueprop_cterm
                  val fact1 = Goal.prove_internal ctxt1 [] fact0 (fn _ => 
                        Method.insert_tac ctxt1 [fact] 1 THEN 
-                       asm_full_simp_tac (ctxt1 addsimps @{thms ADD_FACT_def}) 1)
+                       asm_full_simp_tac (ctxt1 |> Simplifier.add_simps @{thms ADD_FACT_def}) 1)
                  val fact_eqs = gen_mksimps true ctxt1 fact1
                  val fact_ariths = Utils.iariths_of_eqs fact_eqs
-                 val ctxt2 = (ctxt1 |> map_facts (cons {pred = P, thms = fact_eqs})) 
-                       addsimps fact_eqs
+                 val ctxt2 = ctxt1 |> map_facts (cons {pred = P, thms = fact_eqs})
+                       |> Simplifier.add_simps fact_eqs
                        |> Utils.add_ariths fact_ariths
                        |> Simplifier.add_prems fact_eqs
                  val _ = Utils.timing_msg' 3 ctxt (fn _ => "ADD_FACT (0)") start0
@@ -1918,7 +1918,7 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                        Method.insert_tac ctxt [preserved] 1 THEN
                        (SOLVED_DETERM_verbose "preserved" ctxt 
                          (asm_full_simp_tac (ctxt 
-                           addsimps @{thms PRESERVED_FACTS_def} @ s_eqs))) 1 
+                           |> Simplifier.add_simps (@{thms PRESERVED_FACTS_def} @ s_eqs)))) 1 
                    end
                  val derived_facts1 = derived_props |> map_filter (fn (pred, prop) => 
                        try (fn prop => Goal.prove_internal ctxt1 [] prop (fn _ => prover ctxt1)) prop |> 
@@ -1928,7 +1928,7 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val derived_eqs = maps #thms derived_facts
                  val derived_ariths = Utils.iariths_of_eqs (maps #thms derived_facts)
                  val ctxt2 = ctxt1 
-                   addsimps derived_eqs
+                   |> Simplifier.add_simps derived_eqs
                    |> Simplifier.add_prems derived_eqs
                    |> map_states (cons t)
                    |> map_facts (K derived_facts)
@@ -1972,7 +1972,7 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                        (pred, Thm.apply pred t |> Utils.Trueprop_cterm))
                  fun prover ctxt =
                       Method.insert_tac ctxt [preserved] 1 THEN
-                      asm_full_simp_tac (ctxt addsimps @{thms PRESERVED_FACTS_WHILE_def} @ s_eqs) 1
+                      asm_full_simp_tac (ctxt |> Simplifier.add_simps (@{thms PRESERVED_FACTS_WHILE_def} @ s_eqs)) 1
                  val derived_facts = derived_props |> map_filter (fn (pred, prop) => 
                        try (fn prop => Goal.prove_internal ctxt1 [] prop (fn _ => prover ctxt1)) prop |> 
                        Option.map (fn thm => ({pred = pred, thms = mksimps ctxt1 thm})))
@@ -1980,7 +1980,7 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val derived_ariths = Utils.iariths_of_eqs (maps #thms derived_facts)
 
                  val ctxt2 = ctxt1
-                   addsimps derived_eqs
+                   |> Simplifier.add_simps derived_eqs
                    |> Simplifier.add_prems derived_eqs
                    |> map_states (cons t)
                    |> map_facts (K derived_facts)
@@ -2000,8 +2000,8 @@ fun monad_state_conv (rule as {split_vars, ...}) ctxt ct =
                  val ([C'_thm], ctxt3) = Assumption.add_assumes [Utils.Trueprop_cterm C'1] ctxt2
                  val C'_eqs = mksimps ctxt3 C'_thm
                  val C'_ariths = Utils.iariths_of_eqs C'_eqs
-                 val ctxt4 = (ctxt3 |> map_facts (cons {pred = C'_pred, thms = C'_eqs}))
-                       addsimps C'_eqs
+                 val ctxt4 = ctxt3 |> map_facts (cons {pred = C'_pred, thms = C'_eqs})
+                       |> Simplifier.add_simps C'_eqs
                        |> Simplifier.add_prems C'_eqs
                        |> Utils.add_ariths C'_ariths
                  val _ = Utils.timing_msg' 3 ctxt (fn _ => "while (1)") start1
@@ -2265,7 +2265,7 @@ fun prepare_simpset max_depth ctxt =
       |> Simplifier.add_simps monad_cong_simps
       |> Simplifier.add_simps @{thms Arrays.fupdate_def [symmetric]}
       |> Context_Position.set_visible visible
-      |> Config.map simp_depth_limit (K (max_depth + 20))
+      |> Config.map Simplifier.simp_depth_limit (K (max_depth + 20))
    in ctxt' end
 
 fun monad_simp_tac ctxt = SUBGOAL (fn (goal, i) =>
@@ -2275,7 +2275,7 @@ fun monad_simp_tac ctxt = SUBGOAL (fn (goal, i) =>
   in
     (asm_full_simp_tac ctxt' THEN_ALL_NEW 
      (Utils.verbose_print_subgoal_tac 7 "before monad_simp polish" ctxt THEN'
-      full_simp_tac (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish}))) i
+      full_simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms STOP_def polish}))) i
   end)
 
 fun gen_monad_simplify simplify ctxt thm = 
@@ -2284,7 +2284,7 @@ fun gen_monad_simplify simplify ctxt thm =
     val ctxt' = prepare_simpset depth ctxt
   in
     thm |> simplify ctxt' |>
-    simplify (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish})
+    simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms STOP_def polish})
   end
 
 val monad_simplify = gen_monad_simplify simplify
@@ -2296,7 +2296,7 @@ fun monad_asm_full_rewrite ctxt ct =
     val ctxt' = prepare_simpset depth ctxt
   in
     ct |> (Simplifier.asm_full_rewrite ctxt' then_conv
-    Simplifier.full_rewrite (Simplifier.clear_simpset ctxt addsimps @{thms STOP_def polish}))
+    Simplifier.full_rewrite (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms STOP_def polish}))
   end
 
 fun gen_monad_simplify_import simplify ctxt thm =

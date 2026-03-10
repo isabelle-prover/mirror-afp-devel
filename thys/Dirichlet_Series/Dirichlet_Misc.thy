@@ -8,24 +8,6 @@ theory Dirichlet_Misc
     "HOL-Number_Theory.Number_Theory"
 begin
 
-lemma
-  fixes a k :: nat
-  assumes "a > 1" "k > 0"
-  shows geometric_sum_nat_aux: "(a - 1) * (\<Sum>i<k. a ^ i) = a ^ k - 1"
-    and geometric_sum_nat_dvd: "a - 1 dvd a ^ k - 1"
-    and geometric_sum_nat:     "(\<Sum>i<k. a ^ i) = (a ^ k - 1) div (a - 1)"
-proof -
-  have "(real a - 1) * (\<Sum>i<k. real a ^ i) = real a ^ k - 1"
-    using assms by (subst geometric_sum) auto
-  also have "(real a - 1) * (\<Sum>i<k. real a ^ i) = real ((a - 1) * (\<Sum>i<k. a ^ i))" 
-    using assms by (simp add: of_nat_diff)
-  also have "real a ^ k - 1 = real (a ^ k - 1)" using assms by (subst of_nat_diff) auto
-  finally show *: "(a - 1) * (\<Sum>i<k. a ^ i) = a ^ k - 1" by (subst (asm) of_nat_eq_iff)
-  show "a - 1 dvd a ^ k - 1" by (subst * [symmetric]) simp
-  from assms show "(\<Sum>i<k. a ^ i) = (a ^ k - 1) div (a - 1)" 
-    by (subst * [symmetric]) simp
-qed
-
 lemma dvd_div_gt0: "d dvd n \<Longrightarrow> n > 0 \<Longrightarrow> n div d > (0::nat)"
   by auto
 

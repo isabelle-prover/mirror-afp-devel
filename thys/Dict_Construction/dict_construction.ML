@@ -160,7 +160,7 @@ fun fun_cert_tac base_thms base_certs simps code_thms =
       val param_dests = all_nodes ctxt |> Symtab.dest |> maps (#3 o #cert_thms o snd)
       val congs = Function_Context_Tree.get_function_congs ctxt @ map safe_mk_meta_eq @{thms cong}
 
-      val simp_context = (clear_simpset ctxt) addsimps (certs @ super_certs @ base_certs @ base_thms @ param_dests)
+      val simp_context = (Simplifier.clear_simpset ctxt) addsimps (certs @ super_certs @ base_certs @ base_thms @ param_dests)
         |> Simplifier.add_loop ("overload", CONVERSION o changed_conv o Axclass.overload_conv)
 
       val ihs = map (Simplifier.asm_full_simplify simp_context) ihs

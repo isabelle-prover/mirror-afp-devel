@@ -2295,7 +2295,7 @@ declaration \<open>fn _ =>
 let
   val mksimps_pairs = (@{const_name Nominal2_Base.fresh}, @{thms fresh_PairD}) :: mksimps_pairs
 in
-  Simplifier.map_ss (fn ss => Simplifier.set_mksimps (mksimps mksimps_pairs) ss)
+  Simplifier.map_simpset (Simplifier.set_mksimps (mksimps mksimps_pairs))
 end
 \<close>
 
@@ -2955,7 +2955,7 @@ simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = \<open>fn _ => fn ctx
                member (op =) atms lhs andalso member (op =) atms rhs
              end)
             | _ => false)
-         |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps simp_thms))
+         |> map (simplify (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps simp_thms))
          |> map HOLogic.conj_elims
          |> flat
     in
