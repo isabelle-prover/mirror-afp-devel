@@ -961,6 +961,69 @@ proof -
 qed
 
 text \<open>
+  An equivalent identity for $\frac{\text{d}}{\text{d}z} \theta_11(z;\tau)$ also follows from
+  this. However, we need analytic continuation in order to deal with the branch cuts.
+\<close>
+lemma deriv_jacobi_theta_11_at_0:
+  assumes t: "Im t > 0"
+  shows   "deriv (\<lambda>z. jacobi_theta_11 z t) 0 =
+             -of_real pi * jacobi_theta_10 0 t * jacobi_theta_00 0 t * jacobi_theta_01 0 t"
+proof -
+  include jacobi_theta_nw_notation
+  define A where "A = {t. Re t > -1} \<inter> {t. Re t < 1} \<inter> {t. Im t > 0}"
+  define f where "f = (\<lambda>t. deriv (\<lambda>z. jacobi_theta_11 z t) 0)"
+  define g where "g = (\<lambda>t. -of_real pi * jacobi_theta_10 0 t * jacobi_theta_00 0 t * jacobi_theta_01 0 t)"
+
+  have ana: "f analytic_on {t. Im t > 0}"
+    unfolding f_def by (rule analytic_deriv_jacobi_theta_11_left)
+
+  have "f t = g t"
+  proof (rule analytic_continuation_open[where f = f])
+    show "f holomorphic_on {t. Im t > 0}"
+      using ana by (simp add: analytic_on_open open_halfspace_Im_gt)
+    show "g holomorphic_on {t. Im t > 0}"
+      unfolding g_def by (auto intro!: holomorphic_intros open_halfspace_Im_gt)
+    have "\<i> \<in> A"
+      by (auto simp: A_def)
+    thus "A \<noteq> {}"
+      by blast
+    show "open A"
+      unfolding A_def by (intro open_Int open_halfspace_Im_gt open_halfspace_Re_gt open_halfspace_Re_lt)
+    show "open {t. Im t > 0}" "connected {t. Im t > 0}"
+      by (auto simp: open_halfspace_Im_gt connected_halfspace_Im_gt)
+    show "A \<subseteq> {t. Im t > 0}" and "t \<in> {t. Im t > 0}"
+      using t by (auto simp: A_def)
+  next
+    fix t assume t: "t \<in> A"
+    define q where "q = to_nome t"
+    have q: "norm q < 1"
+      using t by (auto simp: q_def norm_to_nome A_def)
+
+    note [derivative_intros] = has_field_derivative_jacobi_theta_nw_11
+    have "(((\<lambda>z. jacobi_theta_nome_11 z q) \<circ> to_nome) has_field_derivative 
+             (\<i> * \<theta>\<^sub>1' q) * (pi * \<i>)) (at 0)"
+      using q by (intro DERIV_chain) (auto intro!: derivative_eq_intros)
+    also have "?this \<longleftrightarrow> ((\<lambda>z. jacobi_theta_11 z t) has_field_derivative (-pi * \<theta>\<^sub>1' q)) (at 0)"
+    proof (rule DERIV_cong_ev)
+      have "eventually (\<lambda>z. z \<in> {z. Re z > -1} \<inter> {z. Re z < 1}) (nhds 0)"
+        by (intro eventually_nhds_in_open open_Int open_halfspace_Re_gt open_halfspace_Re_lt) auto
+      thus "\<forall>\<^sub>F z in nhds 0. ((\<lambda>z. jacobi_theta_nome_11 z q) \<circ> to_nome) z =
+                              jacobi_theta_11 z t"
+        by eventually_elim (use t in \<open>auto simp: jacobi_theta_11_conv_nome q_def A_def\<close>)
+    qed (auto simp: algebra_simps)
+    also have "\<theta>\<^sub>1' q = \<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q"
+      using jacobi_theta_nw_10_00_01_conv_11'[of q] q by simp
+    also have "\<dots> = jacobi_theta_10 0 t * jacobi_theta_00 0 t * jacobi_theta_01 0 t" using t
+      by (simp add: q_def jacobi_theta_10_conv_nome jacobi_theta_00_conv_nome
+                    jacobi_theta_01_conv_nome A_def)
+    finally show "f t = g t"
+      unfolding f_def g_def by (intro DERIV_imp_deriv) (auto simp: algebra_simps)
+  qed
+  thus ?thesis
+    by (simp add: f_def g_def)
+qed
+
+text \<open>
   Next, we focus on some identities between $\vartheta_2$, $\vartheta_3$, and $\vartheta_4$.
 \<close>
 theorem jacobi_theta_nw_00_plus_01_complex: "\<theta>\<^sub>3 q + \<theta>\<^sub>4 q = 2 * \<theta>\<^sub>3 (q ^ 4 :: complex)"
