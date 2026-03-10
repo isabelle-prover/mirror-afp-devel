@@ -4,13 +4,12 @@
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
    https://idus.us.es/handle/11441/57780. In Spanish.
-     Last modified: 29 Sep, 2025   *)
+     Last modified: 3 Mar, 2026   *)
 
-(*<*)
+
 theory BinaryTreeEnumeration
 imports MaximalHintikka 
 begin
-(*>*)
 
 lemma enumeration: "enumeration f = (\<exists>g. \<forall>y. f(g y) = y)"
   by (metis enumeration_def)
@@ -54,11 +53,6 @@ function diag_tree_b :: "nat \<Rightarrow> tree_b" where
       | Suc z \<Rightarrow> Tree (diag_tree_b z) (diag_tree_b (snd (diag n))))"
 by auto
 
-(*<*)
-
-(*>*)
-
-(*<*)
 lemma diag_le1: "fst (diag (Suc n)) < Suc n"
 by (induct n) (simp_all add: Let_def split_def split: nat.split) 
 
@@ -131,10 +125,7 @@ proof -
   thus ?thesis using enumeration[of diag_tree_b] by auto
 qed
 
-(*<*)
-declare diag_tree_b.simps [simp del] undiag_tree_b.simps [simp del]
-(*>*)
 
-(*<*)
+declare diag_tree_b.simps [simp del] undiag_tree_b.simps [simp del]
+
 end
-(*>*)

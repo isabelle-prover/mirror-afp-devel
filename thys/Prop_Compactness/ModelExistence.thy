@@ -4,13 +4,13 @@
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
    https://idus.us.es/handle/11441/57780.  In Spanish 
-   Last modified: 29 Sep, 2025 *)
+   Last modified: 3 Mar, 2026 *)
 
-(*<*)
+
 theory ModelExistence
 imports FormulaEnumeration
 begin
-(*>*)
+
 section    \<open> Model Existence Theorem  \<close>
 
 text   \<open> This theory formalises the Model Existence Theorem according to Smullyan's textbook \cite{Smullyan} as presented by Fitting in \cite{Fitting}.  \<close>
@@ -142,6 +142,6 @@ corollary Satisfiable_SetP2:
   assumes "consistenceP \<C>" and "(S:: nat formula set) \<in> \<C>"
   shows "satisfiable S"
   using  enum_nat assms Satisfiable_SetP1 by auto 
-(*<*)
+
 end
-(*>*)
+

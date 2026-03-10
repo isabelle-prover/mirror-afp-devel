@@ -2,7 +2,7 @@
    Fabian Fernando Serrano Suárez  UNAL Manizales
    Thaynara Arielly de Lima        Universidade Federal de Goiáis 
    Mauricio Ayala-Rincón           Universidade de Brasília
-   Last modified: 29 Sep, 2025
+   Last modified: 3 Mar, 2026
 *)
 theory Hall_Theorem_Graphs
   imports
@@ -235,8 +235,6 @@ proof(rule impI)
   qed
 qed
 
-
-
 (* Graph version of Hall's Theorem *)
 
 theorem Hall_digraph:
@@ -259,13 +257,8 @@ next
   qed
 qed
 
-(*Feedback from and to LPAR 2023 - reviewer on "best proofs" 
-Short proofs are of interest when the main objective is automating proofs. However, such an aim can be reached by applying hammers nowadays. When the central aim is generating proofs that provide meaningful feedback on the importance of proof assistants for the profession of a mathematician, short proofs are not necessarily a plus; instead, the focus is on detailed and didactic proofs. From this perspective, having an automatically generated single-step proof is neither elegant nor advantageous. Below, we include the specification provided by a reviewer and show how short proofs can be obtained through the application of the Isabelle Sledgehammer, providing, in contrast, complete proofs, those that are most convenient for our primary educational purposes. 
-*)
-
 (* Below a specification of sdr in families of indexed sets and perfect matchings
 in bipartite digraphs using locales provided by the reviewer *) 
-
 
 (* Family of indexed sets *) 
 locale set_family =
@@ -301,16 +294,6 @@ locale matching = bipartite_digraph_loc +
 (* Perfect matchings in bipartite digraphs *)
 locale perfect_matching = matching +
   assumes M_perfect: "fst ` M = X"
-
-(* Regarding the above style of specification, it is clear that
-some basic concepts related to Graph Theory are not visible to
-the specifier: vertex, edge, whether the left- and right-hand
-side sets of vertexes of a bipartite digraph may or not be 
-disjunct, etc.  Questions related to types may arise, such as 
-whether sets of type "a" and sets of type "b" are different classes 
-only nominally, that is only because the type names "a"
-and "b" are other.  
-*) 
 
 (* Formalization of a perfect matching associated to an sdr in indexed families of sets *)
 lemma (in sdr) perfect_matching: 
