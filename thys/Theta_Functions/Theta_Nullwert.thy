@@ -961,7 +961,7 @@ proof -
 qed
 
 text \<open>
-  An equivalent identity for $\frac{\text{d}}{\text{d}z} \theta_11(z;\tau)$ also follows from
+  An equivalent identity for $\frac{\text{d}}{\text{d}z} \vartheta_11(z;\tau)$ also follows from
   this. However, we need analytic continuation in order to deal with the branch cuts.
 \<close>
 lemma deriv_jacobi_theta_11_at_0:

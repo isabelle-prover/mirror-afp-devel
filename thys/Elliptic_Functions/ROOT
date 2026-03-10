@@ -24,12 +24,12 @@ session Elliptic_Functions (AFP) = Zeta_Function +
     Weierstrass_Elliptic
     Eisenstein_Series
     Weierstrass_Addition
-    Complex_Lattices_Theta
 
     Basic_Modular_Forms
     Dedekind_Eta
     Eisenstein_G2
     Theta_Inversion
+    Complex_Lattices_Theta
   document_files
     "root.tex"
     "root.bib"

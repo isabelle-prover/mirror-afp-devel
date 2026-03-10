@@ -1,7 +1,10 @@
 section \<open>Connection between complex lattices and theta functions\<close>
 theory Complex_Lattices_Theta
-  imports "Elliptic_Functions.Eisenstein_Series" "Theta_Functions.Theta_Nullwert"
+  imports Eisenstein_Series "Theta_Functions.Theta_Nullwert" Dedekind_Eta
 begin
+
+(* TODO Move. Or rather, fix whatever causes these problems. *)
+lemmas [simp del] = div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4
 
 (* TODO Move *)
 lemma analytic_at_continuation:
@@ -147,9 +150,9 @@ proof -
 qed
 
 text \<open>
-  By comparing the zeros of $\wp(z) - e_2$ and $(\theta_{01}(z)/\theta_{11}(z))^2$ we
+  By comparing the zeros of $\wp(z) - e_2$ and $(\vartheta_{01}(z)/\vartheta_{11}(z))^2$ we
   find that the two functions are identical up to a constant factor, which we then determine
-  to be $(pi\theta_{10}(0)\theta_{00}(0)/\omega_1)^2$ by comparing the Laurent series expansions
+  to be $(\pi\vartheta_{10}(0)\vartheta_{00}(0)/\omega_1)^2$ by comparing the Laurent series expansions
   of the two functions at their pole at the origin.
 
   It follows that we can express $\wp$ in terms of the constant $e_2$ and the theta functions.
@@ -481,6 +484,30 @@ lemma weierstrass_fun_conv_theta':
   shows   "\<wp> z = (pi / \<omega>1)\<^sup>2 * (-1/3 * (\<theta>\<^sub>0\<^sub>0(0)^4 + \<theta>\<^sub>1\<^sub>0(0)^4) + (\<theta>\<^sub>1\<^sub>0(0) * \<theta>\<^sub>0\<^sub>0(0))\<^sup>2 * \<theta>\<^sub>0\<^sub>1(z)\<^sup>2 / \<theta>\<^sub>1\<^sub>1(z)\<^sup>2)"
   by (subst weierstrass_fun_conv_theta[OF assms], subst e2_conv_theta)
      (simp_all add: field_simps)
+
+text \<open>
+  Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
+  we also get the following deep connection between the discriminant and $\eta$.
+
+  This can also alternatively be derived very elegantly using modular forms. More precisely: 
+  $\eta^24$ and the modular discriminant are both cusp forms of weight 12 and that the space of
+  cusp forms of weight 12 is one-dimensional. However, since we already have access to the theta
+  functions and the above connections to the lattice properties, this proof is very simple now as
+  well, without using the heavy tooling of modular forms.
+\<close>
+theorem discr_conv_dedekind_eta: "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
+proof -
+  have "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>3 - \<e>\<^sub>2))\<^sup>2"
+    by (simp add: discr_altdef power2_commute power_mult_distrib)
+  also have "\<dots> = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
+    unfolding discr_altdef unfolding e12_conv_theta e13_conv_theta e32_conv_theta
+    by (simp add: power_mult_distrib power_divide mult_ac)
+  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0) = 2 * dedekind_eta \<tau> ^ 3 "
+    by (simp add: theta_00_def theta_01_def theta_10_def 
+                  jacobi_theta_00_01_10_nw_conv_dedekind_eta Im_ratio_pos)
+  finally show "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
+    by (simp add: power_mult_distrib)
+qed
 
 end
 
