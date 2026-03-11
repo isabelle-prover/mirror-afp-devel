@@ -1977,6 +1977,9 @@ lemma number_e1_cnj [simp]: "cnj.number_e1 = cnj number_e1"
   by (simp_all add: number_e1_def cnj.number_e1_def number_e2_def 
                     cnj.number_e2_def number_e3_def cnj.number_e3_def weierstrass_fun_cnj)
 
+lemma modulus_cnj [simp]: "cnj.modulus = cnj modulus"
+  by (simp add: modulus_def cnj.modulus_def)
+
 end
 
 
@@ -2025,6 +2028,69 @@ lemma bij_betw_stretch_lattice0:
   unfolding lattice0_def stretched.lattice0_def
   by (intro bij_betw_DiffI bij_betw_stretch_lattice) auto
 
+lemma in_stretch_lattice_iff: "z \<in> stretched.lattice \<longleftrightarrow> z / c \<in> lattice"
+  proof
+  assume "z \<in> stretched.lattice"
+  hence "inverse c * z \<in> lattice"
+    using mult_into_stretched_lattice' by blast
+  thus "z / c \<in> lattice"
+    by (simp add: field_simps)
+next
+  assume "z / c \<in> lattice"
+  hence "c * (z / c) \<in> stretched.lattice"
+    using mult_into_stretched_lattice by blast
+  thus "z \<in> stretched.lattice"
+    using stretch_nonzero by (auto simp: field_simps)
+qed
+
+lemma in_stretch_lattice0_iff: "z \<in> stretched.lattice0 \<longleftrightarrow> z / c \<in> lattice0"
+  by (auto simp: stretched.lattice0_def lattice0_def in_stretch_lattice_iff stretch_nonzero)
+
+lemma weierstrass_fun_aux_stretch: "stretched.weierstrass_fun_aux z = weierstrass_fun_aux (z / c) / c ^ 2"
+proof (cases "z \<in> stretched.lattice0")
+  case True
+  thus ?thesis using stretch_nonzero
+    by (auto simp: in_stretch_lattice0_iff stretched.weierstrass_fun_aux_def weierstrass_fun_aux_def)
+next
+  case False
+  hence *: "z / c \<notin> lattice0"
+    by (auto simp: in_stretch_lattice0_iff stretch_nonzero)
+  have "((\<lambda>\<omega>. 1 / (z - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) has_sum stretched.weierstrass_fun_aux z) stretched.lattice0"
+    by (rule stretched.weierstrass_fun_aux_has_sum) fact
+  also have "?this \<longleftrightarrow> ((\<lambda>\<omega>. 1 / (z - c * \<omega>)\<^sup>2 - 1 / (c * \<omega>)\<^sup>2) has_sum 
+                         stretched.weierstrass_fun_aux z) lattice0"
+    by (intro has_sum_reindex_bij_betw [symmetric] bij_betw_stretch_lattice0)
+  also have "\<dots> \<longleftrightarrow> ((\<lambda>\<omega>. (1 / (z / c - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) / c ^ 2) has_sum 
+                       stretched.weierstrass_fun_aux z) lattice0"
+    by (intro has_sum_cong) (auto simp: field_simps lattice0_def stretch_nonzero)
+  finally have "((\<lambda>\<omega>. (1 / (z / c - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) / c ^ 2) has_sum  
+                  stretched.weierstrass_fun_aux z) lattice0" .
+  moreover have "((\<lambda>\<omega>. (1 / (z / c - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) / c ^ 2) has_sum  
+                    weierstrass_fun_aux (z / c) / c ^ 2) lattice0"
+    by (intro has_sum_divide_const weierstrass_fun_aux_has_sum) fact
+  ultimately show ?thesis
+    using has_sum_unique by blast
+qed
+
+lemma weierstrass_fun_stretch: "stretched.weierstrass_fun z = weierstrass_fun (z / c) / c ^ 2"
+  by (auto simp: stretched.weierstrass_fun_def weierstrass_fun_def weierstrass_fun_aux_stretch
+                 in_stretch_lattice_iff divide_simps)
+
+lemma number_e1_stretch [simp]: "stretched.number_e1 = number_e1 / c ^ 2"
+  by (simp add: stretched.number_e1_def number_e1_def weierstrass_fun_stretch stretch_nonzero)
+
+lemma number_e2_stretch [simp]: "stretched.number_e2 = number_e2 / c ^ 2"
+  by (simp add: stretched.number_e2_def number_e2_def weierstrass_fun_stretch stretch_nonzero)
+
+lemma number_e3_stretch [simp]: "stretched.number_e3 = number_e3 / c ^ 2"
+  by (simp add: stretched.number_e3_def number_e3_def weierstrass_fun_stretch 
+                stretch_nonzero add_divide_distrib)
+
+lemma modulus_stretch [simp]: "stretched.modulus = modulus"
+  using stretch_nonzero
+  unfolding stretched.modulus_def modulus_def number_e1_stretch number_e2_stretch number_e3_stretch
+  by (simp add: divide_simps)
+
 end
 
                                                                         
@@ -2036,14 +2102,13 @@ definition \<omega>2' where "\<omega>2' = of_int a * \<omega>2 + of_int b * \<om
 
 sublocale transformed: complex_lattice \<omega>1' \<omega>2'
 proof unfold_locales
-  define \<tau> where "\<tau> = \<omega>2 / \<omega>1"
   have "Im (\<phi> \<tau>) \<noteq> 0"
-    using fundpair Im_transform_zero_iff[of \<tau>] unfolding \<tau>_def
+    using fundpair Im_transform_zero_iff[of \<tau>] unfolding ratio_def
     by (auto simp: fundpair_def complex_is_Real_iff)
   also have "\<phi> \<tau> = \<omega>2' / \<omega>1'"
-    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def \<tau>_def divide_simps)
+    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def ratio_def divide_simps)
   finally show "fundpair (\<omega>1', \<omega>2')"
-    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def \<tau>_def field_simps 
+    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def ratio_def field_simps 
                   fundpair_def complex_is_Real_iff)
 qed
 

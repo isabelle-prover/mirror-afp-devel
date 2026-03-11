@@ -3,6 +3,7 @@ theory Dedekind_Eta
 imports
   Bernoulli.Bernoulli
   Theta_Inversion
+  Complex_Lattices_Theta
   Basic_Modular_Forms
   Dedekind_Sums.Dedekind_Sums
   Pentagonal_Number_Theorem.Pentagonal_Number_Theorem
@@ -358,6 +359,32 @@ lemma jacobi_theta_00_01_10_nw_conv_dedekind_eta:
   using t by (simp add: jacobi_theta_00_nw_conv_dedekind_eta' field_simps eval_nat_numeral
                 jacobi_theta_01_nw_conv_dedekind_eta jacobi_theta_10_nw_conv_dedekind_eta)
 
+
+text \<open>
+  Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
+  we also get the following deep connection between the discriminant of a complex lattice
+  and $\eta$.
+
+  This can also alternatively be derived very elegantly using modular forms. More precisely: 
+  $\eta^24$ and the modular discriminant are both cusp forms of weight 12 and that the space of
+  cusp forms of weight 12 is one-dimensional. However, since we already have access to the theta
+  functions and the above connections to the lattice properties, this proof is very simple now as
+  well, without using the heavy tooling of modular forms.
+\<close>
+theorem (in complex_lattice_Im_pos) discr_conv_dedekind_eta:
+  "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
+proof -
+  have "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>3 - \<e>\<^sub>2))\<^sup>2"
+    by (simp add: discr_altdef power2_commute power_mult_distrib)
+  also have "\<dots> = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
+    unfolding discr_altdef unfolding e12_conv_theta e13_conv_theta e32_conv_theta
+    by (simp add: power_mult_distrib power_divide mult_ac)
+  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0) = 2 * dedekind_eta \<tau> ^ 3 "
+    by (simp add: theta_00_def theta_01_def theta_10_def 
+                  jacobi_theta_00_01_10_nw_conv_dedekind_eta Im_ratio_pos)
+  finally show "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
+    by (simp add: power_mult_distrib)
+qed
 
 
 

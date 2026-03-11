@@ -373,6 +373,11 @@ locale complex_lattice = pre_complex_lattice +
   assumes fundpair: "fundpair (\<omega>1, \<omega>2)"
 begin
 
+definition ratio :: complex ("\<tau>") where "\<tau> = \<omega>2 / \<omega>1"
+
+lemma ratio_not_in_Reals: "\<tau> \<notin> \<real>"
+  unfolding ratio_def using fundpair by (simp add: fundpair_def)
+
 lemma \<omega>1_neq_\<omega>2 [simp]: "\<omega>1 \<noteq> \<omega>2" and \<omega>2_neq_\<omega>1 [simp]: "\<omega>2 \<noteq> \<omega>1"
   using fundpair fundpair_imp_neq by blast+
 

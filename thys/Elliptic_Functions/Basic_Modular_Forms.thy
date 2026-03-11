@@ -4,6 +4,7 @@ imports
   Eisenstein_Series Modular_Fundamental_Region
   Elliptic_Functions_Library FPS_Homomorphism
   "Kummer_Congruence.Kummer_Library"
+  Complex_Lattices_Theta
 begin
 
 (* TODO: Move? *)
@@ -1501,6 +1502,152 @@ proof -
 qed
 
 
+subsection \<open>The modular $\lambda$ function\<close>
+
+definition modular_lambda :: "complex \<Rightarrow> complex" where
+  "modular_lambda z = (if z \<in> \<real> then 0 else complex_lattice.modulus 1 z)"
+
+
+lemma (in complex_lattice) modulus_eq_modular_lambda:
+  "modulus = modular_lambda (\<omega>2 / \<omega>1)"
+proof -
+  interpret complex_lattice_stretch \<omega>1 \<omega>2 "1 / \<omega>1"
+    by standard auto
+  have "stretched.modulus = modulus"
+    by (rule modulus_stretch)
+  also have "stretched.modulus = modular_lambda (\<omega>2 / \<omega>1)"
+    using stretched.fundpair unfolding modular_lambda_def fundpair_def by simp
+  finally show ?thesis
+    by simp
+qed
+
+lemma modular_lambda_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> modular_lambda z = 0"
+  by (simp add: modular_lambda_def)
+
+lemma modular_lambda_cnj: "modular_lambda (cnj z) = cnj (modular_lambda z)"
+proof (cases "z \<in> \<real>")
+  case False
+  interpret complex_lattice 1 z
+    using False by unfold_locales (auto simp: fundpair_def)
+  interpret complex_lattice_cnj 1 z ..
+  show ?thesis
+    using modulus_cnj modulus_eq_modular_lambda cnj.modulus_eq_modular_lambda by simp
+qed auto
+
+lemma modular_lambda_uminus: "modular_lambda (-z) = modular_lambda z"
+proof (cases "z \<in> \<real>")
+  case False
+  interpret lattice1: complex_lattice 1 z
+    by standard (use False in \<open>auto simp: fundpair_def\<close>)
+  interpret lattice2: complex_lattice 1 "-z"
+    by standard (use False in \<open>auto simp: fundpair_def\<close>)
+  have *: "fundpair (1, z)" "fundpair (1, -z)"
+    using False by (auto simp: fundpair_def)
+  have "\<bar>(-1) * 1 - 0 * 0 :: int\<bar> = 1 \<and> 
+        - z = of_int (-1) * z + of_int 0 * 1 \<and> 1 = of_int 0 * z + of_int 1 * 1"
+    by auto
+  hence "equiv_fundpair (1, z) (1, -z)"
+    using equiv_fundpair_iff[OF *] by blast
+  hence [simp]: "lattice2.lattice = lattice1.lattice"
+    by (auto simp: equiv_fundpair_def)
+  hence [simp]: "lattice2.lattice0 = lattice1.lattice0"
+    by (auto simp: lattice1.lattice0_def lattice2.lattice0_def)
+  have **: "lattice2.weierstrass_fun = lattice1.weierstrass_fun"
+    unfolding lattice1.weierstrass_fun_def lattice2.weierstrass_fun_def
+              lattice1.weierstrass_fun_aux_def lattice2.weierstrass_fun_aux_def 
+    by (simp cong: if_cong)
+  have "lattice1.modulus = lattice2.modulus"
+    unfolding lattice1.modulus_def lattice2.modulus_def
+              lattice1.number_e1_def lattice1.number_e2_def lattice1.number_e3_def
+              lattice2.number_e1_def lattice2.number_e2_def lattice2.number_e3_def **
+    by (intro arg_cong2[of _ _ _ _ "(/)"] arg_cong2[of _ _ _ _ "(-)"]
+              lattice1.weierstrass_fun.lattice_cong)
+       (auto simp: lattice1.rel_def add_divide_distrib diff_divide_distrib
+             intro: lattice1.lattice_intros)
+  thus ?thesis
+    by (simp add: lattice1.modulus_eq_modular_lambda lattice2.modulus_eq_modular_lambda)
+qed (auto simp: modular_lambda_def)  
+
+lemma modular_lambda_conv_jacobi_theta:
+  assumes z: "Im z > 0"
+  shows   "modular_lambda z = jacobi_theta_10 0 z ^ 4 / jacobi_theta_00 0 z ^ 4"
+proof -
+  interpret std_complex_lattice z
+    by unfold_locales (use z in auto)
+  show ?thesis
+    using modulus_eq_modular_lambda modulus_conv_theta by (simp add: theta_10_def theta_00_def)
+qed
+
+lemma modular_lambda_analytic [analytic_intros]:
+  assumes "f analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> f z \<notin> \<real>"
+  shows   "(\<lambda>z. modular_lambda (f z)) analytic_on A"
+proof -
+  have "(\<lambda>z. jacobi_theta_10 0 z ^ 4 / jacobi_theta_00 0 z ^ 4) holomorphic_on {z. Im z > 0}"
+    by (intro holomorphic_intros open_halfspace_Im_gt)
+       (use assms in \<open>auto simp: jacobi_theta_00_0_left_nonzero\<close>)
+  also have "?this \<longleftrightarrow> modular_lambda holomorphic_on {z. Im z > 0}"
+    by (rule holomorphic_cong) (use modular_lambda_conv_jacobi_theta in auto)
+  finally have *: "modular_lambda analytic_on {z. Im z > 0}"
+    by (simp add: analytic_on_open open_halfspace_Im_gt)
+
+  have "(modular_lambda \<circ> uminus) analytic_on {z. Im z < 0}"
+    by (intro analytic_on_compose analytic_intros analytic_on_subset[OF *]) auto
+  also have "(modular_lambda \<circ> uminus) = modular_lambda"
+    by (auto simp: fun_eq_iff modular_lambda_uminus)
+  finally have "modular_lambda analytic_on ({z. Im z < 0} \<union> {z. Im z > 0})"
+    using * analytic_on_Un by blast
+  also have "{z. Im z < 0} \<union> {z. Im z > 0} = -\<real>"
+    by (auto simp: complex_is_Real_iff)
+  finally have **: "modular_lambda analytic_on - \<real>" .
+  have "(modular_lambda \<circ> f) analytic_on A"
+    by (intro analytic_on_compose assms(1) analytic_on_subset[OF **]) (use assms(2) in auto)
+  thus ?thesis
+    by (simp add: o_def)
+qed
+
+lemma modular_lambda_holomorphic [holomorphic_intros]:
+  assumes "f holomorphic_on A" "\<And>z. z \<in> A \<Longrightarrow> f z \<notin> \<real>"
+  shows   "(\<lambda>z. modular_lambda (f z)) holomorphic_on A"
+proof -
+  from assms(1) have "(modular_lambda \<circ> f) holomorphic_on A"
+    by (rule holomorphic_on_compose) 
+       (use assms in \<open>auto intro!: analytic_imp_holomorphic analytic_intros\<close>)
+  thus ?thesis
+    by (simp add: o_def)
+qed
+
+lemma modular_lambda_meromorphic [meromorphic_intros]:
+  assumes "f analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> f z \<notin> \<real>"
+  shows   "(\<lambda>z. modular_lambda (f z)) meromorphic_on A"
+  by (rule meromorphic_on_compose[OF _ assms(1) order.refl])
+     (use assms(2) in \<open>auto intro!: analytic_intros analytic_on_imp_meromorphic_on\<close>)
+
+lemma tendsto_modular_lambda [tendsto_intros]:
+  assumes "(f \<longlongrightarrow> z) F" "z \<notin> \<real>"
+  shows   "((\<lambda>z. modular_lambda (f z)) \<longlongrightarrow> modular_lambda z) F"
+proof -
+  have "modular_lambda analytic_on {z}"
+    by (rule analytic_intros) (use assms in auto)
+  with assms(1) show ?thesis
+    by (metis analytic_at_imp_isCont isCont_tendsto_compose)
+qed
+
+lemma continuous_modular_lambda [continuous_intros]:
+  "continuous (at x within A) f \<Longrightarrow> f x \<notin> \<real> \<Longrightarrow>
+     continuous (at x within A) (\<lambda>z. modular_lambda (f z))"
+  unfolding continuous_def
+  using tendsto_modular_lambda[of f "f x" "at x within A"]
+  by (cases "at x within A = bot") (auto simp: Lim_ident_at)
+
+lemma continuous_on_modular_lambda [continuous_intros]:
+  "continuous_on A f \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> f x \<notin> \<real>) \<Longrightarrow>
+     continuous_on A (\<lambda>z. modular_lambda (f z))"
+  by (rule continuous_on_compose2[of "-\<real>" _ _ f])
+     (auto intro!: holomorphic_on_imp_continuous_on holomorphic_intros)
+
+(* TODO: Weierstrass \<wp> function in terms of both z and \<tau>? *)
+
+
 subsection \<open>Klein's $J$ invariant\<close>
 
 text \<open>
@@ -1518,6 +1665,18 @@ lemma (in complex_lattice) invariant_J_eq_Klein_J:
   "invariant_J = Klein_J (\<omega>2 / \<omega>1)"
   unfolding invariant_J_def discr_eq_modular_discr Klein_J_def invariant_g2_def
             eisenstein_series_eq_Eisenstein_G by (simp add: field_simps)
+
+lemma Klein_J_conv_modular_lambda:
+  assumes "z \<notin> \<real>"
+  defines "x \<equiv> modular_lambda z"
+  shows   "Klein_J z = 4 * (1 - x * (1 - x)) ^ 3 / (27 * (x * (1 - x)) ^ 2)"
+proof -
+  interpret complex_lattice 1 z
+    using assms(1) by unfold_locales (auto simp: fundpair_def)
+  show ?thesis
+    using invariant_J_conv_modulus
+    by (simp add: modulus_eq_modular_lambda invariant_J_eq_Klein_J flip: x_def)
+qed
 
 lemma Klein_J_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> Klein_J z = 0"
   by (simp add: Klein_J_def)

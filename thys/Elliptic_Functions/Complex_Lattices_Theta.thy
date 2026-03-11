@@ -1,6 +1,6 @@
 section \<open>Connection between complex lattices and theta functions\<close>
 theory Complex_Lattices_Theta
-  imports Eisenstein_Series "Theta_Functions.Theta_Nullwert" Dedekind_Eta
+  imports Eisenstein_Series "Theta_Functions.Theta_Nullwert"
 begin
 
 (* TODO Move. Or rather, fix whatever causes these problems. *)
@@ -37,13 +37,8 @@ text \<open>
   positive imaginary part.
 \<close>
 locale complex_lattice_Im_pos = complex_lattice +
-  assumes Im_ratio_pos': "Im (\<omega>2 / \<omega>1) > 0"
+  assumes Im_ratio_pos: "Im ratio > 0"
 begin
-
-definition ratio :: complex ("\<tau>") where "\<tau> = \<omega>2 / \<omega>1"
-
-lemma Im_ratio_pos: "Im \<tau> > 0"
-  using Im_ratio_pos' by (simp add: ratio_def)
 
 text \<open>
   We fix this ratio $\tau$ as the second parameter of the theta functions so that the theta
@@ -485,29 +480,15 @@ lemma weierstrass_fun_conv_theta':
   by (subst weierstrass_fun_conv_theta[OF assms], subst e2_conv_theta)
      (simp_all add: field_simps)
 
-text \<open>
-  Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
-  we also get the following deep connection between the discriminant and $\eta$.
+end
 
-  This can also alternatively be derived very elegantly using modular forms. More precisely: 
-  $\eta^24$ and the modular discriminant are both cusp forms of weight 12 and that the space of
-  cusp forms of weight 12 is one-dimensional. However, since we already have access to the theta
-  functions and the above connections to the lattice properties, this proof is very simple now as
-  well, without using the heavy tooling of modular forms.
-\<close>
-theorem discr_conv_dedekind_eta: "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
-proof -
-  have "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>3 - \<e>\<^sub>2))\<^sup>2"
-    by (simp add: discr_altdef power2_commute power_mult_distrib)
-  also have "\<dots> = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
-    unfolding discr_altdef unfolding e12_conv_theta e13_conv_theta e32_conv_theta
-    by (simp add: power_mult_distrib power_divide mult_ac)
-  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0) = 2 * dedekind_eta \<tau> ^ 3 "
-    by (simp add: theta_00_def theta_01_def theta_10_def 
-                  jacobi_theta_00_01_10_nw_conv_dedekind_eta Im_ratio_pos)
-  finally show "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
-    by (simp add: power_mult_distrib)
-qed
+
+context std_complex_lattice
+begin
+
+sublocale complex_lattice_Im_pos 1 \<tau>
+  rewrites "ratio = \<tau>"
+  by unfold_locales (auto simp: ratio_def Im_\<tau>_pos)
 
 end
 
