@@ -20,15 +20,6 @@ proof -
   thus ?thesis by (intro bigoI[of _ c]) auto
 qed
 
-(* TODO: move to HOL-Analysis.Harmonic_Numbers *)
-lemma harm_le: "n \<ge> 1 \<Longrightarrow> harm n \<le> ln n + 1"
-  using euler_mascheroni_sequence_decreasing[of 1 n]
-  by (simp add: harm_expand)
-
-(* TODO: Move to HOL.Filter *)
-lemma frequently_mono_filter: "frequently P F \<Longrightarrow> F \<le> F' \<Longrightarrow> frequently P F'"
-  using filter_leD[of F F' "\<lambda>x. \<not>P x"] by (auto simp: frequently_def)
-
 lemma sum_upto_ln_stirling_weak_bigo: "(\<lambda>x. sum_upto ln x - x * ln x + x) \<in> O(ln)"
 proof -
   let ?f = "\<lambda>x. x * ln x - x + ln (2 * pi * x) / 2"
@@ -261,45 +252,6 @@ proof -
   }
   moreover from c1(1) c2(1) have "max c1 c2 > 0" by simp
   ultimately show ?thesis by blast
-qed
-
-(* TODO: Move to HOL_Computational_Algebra.Factorial_Ring *)
-lemma (in factorial_semiring) primepow_divisors_induct [case_names zero unit factor]:
-  assumes "P 0" "\<And>x. is_unit x \<Longrightarrow> P x"
-          "\<And>p k x. prime p \<Longrightarrow> k > 0 \<Longrightarrow> \<not>p dvd x \<Longrightarrow> P x \<Longrightarrow> P (p ^ k * x)"
-  shows   "P x"
-proof -
-  have "finite (prime_factors x)" by simp
-  thus ?thesis
-  proof (induction "prime_factors x" arbitrary: x rule: finite_induct)
-    case empty
-    hence "prime_factors x = {}" by metis
-    hence "prime_factorization x = {#}" by simp
-    thus ?case using assms(1,2) by (auto simp: prime_factorization_empty_iff)
-  next
-    case (insert p A x)
-    define k where "k = multiplicity p x"
-    have "k > 0" using insert.hyps
-      by (auto simp: prime_factors_multiplicity k_def)
-    have p: "p \<in> prime_factors x" using insert.hyps by auto
-    from p have "x \<noteq> 0" "\<not>is_unit p" by (auto simp: in_prime_factors_iff)
-
-    from multiplicity_decompose'[OF this] obtain y where y: "x = p ^ k * y" "\<not>p dvd y"
-      by (auto simp: k_def)
-    have "prime_factorization x = replicate_mset k p + prime_factorization y"
-      using p \<open>k > 0\<close> y unfolding y
-      by (subst prime_factorization_mult)
-         (auto simp: prime_factorization_prime_power in_prime_factors_iff)
-    moreover from y p have "p \<notin> prime_factors y"
-      by (auto simp: in_prime_factors_iff)
-    ultimately have "prime_factors y = prime_factors x - {p}"
-      by auto
-    also have "\<dots> = A"
-      using insert.hyps by auto
-    finally have "P y" using insert by auto
-    thus "P x"
-      unfolding y using y \<open>k > 0\<close> p by (intro assms(3)) (auto simp: in_prime_factors_iff)
-  qed
 qed
 
 end
