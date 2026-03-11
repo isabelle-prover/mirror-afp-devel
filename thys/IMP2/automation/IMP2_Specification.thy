@@ -312,7 +312,7 @@ lemma mk_lhsv_thm:
       (* HT \<rightarrow> HT_mods *) 
       fun mk_HT_mods ctxt thm = let
         (* Local_Defs.unfold will destroy names of bound variables here!?, so using simplify! *)
-        fun simplified ctxt thms = simplify (Simplifier.clear_simpset ctxt addsimps thms)
+        fun simplified ctxt thms = simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
       
         val ctxt = Named_Simpsets.put @{named_simpset vcg_bb} ctxt
       in
@@ -579,7 +579,7 @@ ML \<open>structure IMP2_Parameters
       val retvs = IMP_Syntax.zip_with_ret_names imp_retvs
       
       val ctxt = Named_Simpsets.put @{named_simpset vcg_bb} ctxt
-      val ctxt = ctxt addsimps @{thms ADJUST_unfolds}
+      val ctxt = ctxt |> Simplifier.add_simps @{thms ADJUST_unfolds}
   
       val thm = thm
         |> fold_rev (uncurry (adjust_retv_rl ctxt)) retvs

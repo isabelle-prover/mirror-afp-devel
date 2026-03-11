@@ -38,7 +38,7 @@ fun kat_hom_tac ctxt n =
   let
     val rev_rules = map (fn thm => thm RS @{thm sym}) (KATHomRules.get ctxt)
   in
-    asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps rev_rules) n
+    asm_full_simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps rev_rules) n
   end
 \<close>
 

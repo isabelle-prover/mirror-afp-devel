@@ -950,8 +950,8 @@ structure trac_definitorial_package = struct
         in
           Class.prove_instantiation_exit (fn ctxt => 
             (Class.intro_classes_tac ctxt [])  THEN
-               PARALLEL_ALLGOALS (simp_tac (ctxt addsimps  [Proof_Context.get_thm ctxt (name^"_UNIV"),  
-                                                           enum_def, enum_all_def, enum_ex_def]) ) 
+               PARALLEL_ALLGOALS (simp_tac (ctxt
+                 |> Simplifier.add_simps [Proof_Context.get_thm ctxt (name ^ "_UNIV"), enum_def, enum_all_def, enum_ex_def]))
             )lthy
         end
       fun inst_and_prove_finite thy = 
@@ -960,7 +960,7 @@ structure trac_definitorial_package = struct
         in 
           Class.prove_instantiation_exit (fn ctxt => 
             (Class.intro_classes_tac ctxt []) THEN 
-             (simp_tac (ctxt addsimps[Proof_Context.get_thm ctxt (name^"_UNIV")])) 1) lthy
+             (simp_tac (ctxt |> Simplifier.add_simp (Proof_Context.get_thm ctxt (name ^ "_UNIV")))) 1) lthy
         end
     in 
       lthy

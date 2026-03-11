@@ -250,14 +250,14 @@ fun generate_sat_problem ctxt locale_thm profs sp_clauses =
         |> HOLogic.mk_list rankingT
         |> Thm.cterm_of ctxt
       val all_rankings_ctxt =
-        put_simpset all_rankings_simpset ctxt addsimps alts_distinct_thms
+        ctxt |> put_simpset all_rankings_simpset |> Simplifier.add_simps alts_distinct_thms
       val all_rankings_thm =
          \<^instantiate>\<open>alts_list = ct_alts_list and yss = ct_all_rankings and
                      'a = caltT in cprop "permutations_of_set_list alts_list = (yss :: 'a list list)"\<close>
          |> simp_prove all_rankings_ctxt        
 
       val majority_rel_list_ctxt =
-        put_simpset majority_rel_list_simpset ctxt addsimps alts_distinct_thms
+        ctxt |> put_simpset majority_rel_list_simpset |> Simplifier.add_simps alts_distinct_thms
       fun compute_allowed ((rankings, ct), wf_thm) =
         case linorder (majority_relation rankings) of
           NONE =>
@@ -336,7 +336,7 @@ fun generate_sat_problem ctxt locale_thm profs sp_clauses =
       (* cache for theorems of the form "index xs y = i", where xs is a ranking *)
       val idx_cache =
         let
-          val idx_ctxt = ctxt addsimps alts_distinct_thms
+          val idx_ctxt = ctxt |> Simplifier.add_simps alts_distinct_thms
           fun f j =
             let
               val (xs, y) = (nat_to_ranking m (j div m), j mod m)

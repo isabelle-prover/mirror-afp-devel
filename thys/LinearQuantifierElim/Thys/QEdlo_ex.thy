@@ -26,7 +26,7 @@ method_setup dlo_reify = \<open>
   Scan.succeed
   (fn ctxt =>
     Method.SIMPLE_METHOD' (Reification.tac ctxt @{thms reify_eqs} NONE
-     THEN' simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm"interpret_def"}])))
+     THEN' simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm interpret_def})))
 \<close> "dlo reification"
 
 (* leave just enough equations in to convert back to True/False by eval *)

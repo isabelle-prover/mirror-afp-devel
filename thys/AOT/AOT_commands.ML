@@ -223,7 +223,7 @@ let
       ]
       val thm = (Goal.prove ctxt [] [] trm (fn _ =>
         resolve_tac ctxt [witness_exI] 1
-        THEN simp_tac (ctxt addsimps simps) 1))
+        THEN simp_tac (ctxt |> Simplifier.add_simps simps) 1))
       val match = Thm.match (Thm.cprop_of thm, Thm.cterm_of ctxt trm)
     in Drule.instantiate_normalize match thm end
 
@@ -283,7 +283,7 @@ let
     ]
     val thm = (Goal.prove ctxt [] [] trm (fn _ =>
       resolve_tac ctxt [witness_exI] 1
-      THEN simp_tac (ctxt addsimps simps) 1))
+      THEN simp_tac (ctxt |> Simplifier.add_simps simps) 1))
     val match = Thm.match (Thm.cprop_of thm, Thm.cterm_of ctxt trm)
   in
     Drule.instantiate_normalize match thm

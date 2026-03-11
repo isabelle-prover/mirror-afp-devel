@@ -170,13 +170,13 @@ structure Convert_TensorFlow_Digraph:CONVERT_TENSORFLOW_DIGRAPH = struct
 
     fun interpretation_nn_pregraph lthy =
       let
-        fun mk_ss ctx thms = put_simpset HOL_basic_ss ctx addsimps thms
-        val meth = (Method.Basic (fn ctx => Method.SIMPLE_METHOD (
-                simp_tac (mk_ss ctx [Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Graph_def")), 
+        fun mk_ss thms ctx = ctx |> put_simpset HOL_basic_ss |> Simplifier.add_simps thms
+        val meth = Method.Basic (fn ctx => Method.SIMPLE_METHOD (
+                simp_tac (ctx |> mk_ss [Proof_Context.get_thm ctx (Local_Theory.full_name ctx (Binding.qualify_name false (Binding.name defN) "Graph_def")),
                                      @{thm nn_pregraph_def}]) 1
                 THEN 
-                simp_tac (mk_ss ctx (@{thm nn_pregraph_mk}::(@{thms "nn_pregraph.axioms"}))) 1
-              )))
+                simp_tac (ctx |> mk_ss @{thms nn_pregraph_mk nn_pregraph.axioms}) 1
+              ))
         fun f x y z = ([((x,Position.none),((y,true),(Expression.Positional z,[])))],[])
         val pexpr = f "nn_pregraph" defN [SOME (defN^".Graph")]
         val proof_state = Interpretation.global_interpretation_cmd pexpr [] lthy
@@ -188,7 +188,6 @@ structure Convert_TensorFlow_Digraph:CONVERT_TENSORFLOW_DIGRAPH = struct
       let
         fun get_local_thm n = Proof_Context.get_thm lthy (Local_Theory.full_name lthy (Binding.qualify_name false (Binding.name (defN)) n))
         fun get_local_thms n = Proof_Context.get_thms lthy (Local_Theory.full_name lthy (Binding.qualify_name false (Binding.name (defN)) n))
-        fun mk_ss ctx thms = Simplifier.add_simps thms ctx
         fun simp_meth thms = (Method.Basic (fn ctx => Method.SIMPLE_METHOD (
                  asm_full_simp_tac (ctx |> Simplifier.add_simps (get_local_thm "NeuralNet_def" :: thms)) 1 
                  )))
@@ -201,7 +200,7 @@ structure Convert_TensorFlow_Digraph:CONVERT_TENSORFLOW_DIGRAPH = struct
         val normalization_meth = (Method.Basic (fn ctxt => SIMPLE_METHOD' (CHANGED_PROP o
                                                       (CONVERSION (Nbe.dynamic_conv ctxt)
                                                    THEN_ALL_NEW (TRY o resolve_tac ctxt [TrueI])))))
-        fun auto_meth thms = (Method.Basic (fn ctx => SIMPLE_METHOD (auto_tac (mk_ss ctx thms))))
+        fun auto_meth thms = (Method.Basic (fn ctx => SIMPLE_METHOD (auto_tac (ctx |> Simplifier.add_simps thms))))
 
         fun f x y z = ([((x,Position.none),((y,true),(Expression.Positional z,[])))],[])
         val pexpr = case mode of 

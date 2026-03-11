@@ -155,7 +155,8 @@ val trace = Attrib.setup_config_bool @{binding "stream_fusion_trace"} (K false)
 
 fun tracing ctxt msg = if Config.get ctxt trace then Output.tracing (msg ()) else ()
 
-fun fusion_conv ctxt = Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps get_rules ctxt)
+fun fusion_conv ctxt =
+  Simplifier.rewrite (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (get_rules ctxt))
 
 fun fusion_simproc ctxt ct =
   let

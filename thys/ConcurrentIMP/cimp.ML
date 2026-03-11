@@ -1,6 +1,6 @@
 (* Pollutes the global namespace, but we use them everywhere *)
-fun ss_only thms ctxt = Simplifier.clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps thms;
-fun HOL_ss_only thms ctxt = Simplifier.clear_simpset (put_simpset HOL_ss ctxt) addsimps thms;
+fun ss_only thms ctxt = ctxt |> Simplifier.clear_simpset  |> put_simpset HOL_basic_ss |> Simplifier.add_simps thms;
+fun HOL_ss_only thms ctxt = ctxt |> Simplifier.clear_simpset |> put_simpset HOL_ss |> Simplifier.add_simps thms;
 
 signature CIMP =
 sig
@@ -102,7 +102,7 @@ fun def_locset thm ctxt =
 FIXME trim simpsets: 1: sets 2: not much 3: not much
 *)
     val loc_defs = Proof_Context.get_fact ctxt (Facts.named "loc_defs")
-    val membership_ctxt = ctxt addsimps ([thm] @ loc_defs)
+    val membership_ctxt = ctxt |> Simplifier.add_simps (thm :: loc_defs)
     val cleanup_ctxt = HOL_ss_only (@{thms cleanup_simps} @ Named_Theorems.get ctxt \<^named_theorems>\<open>locset_cache\<close>) ctxt
     val rewrite_tac =
           Simplifier.rewrite membership_ctxt

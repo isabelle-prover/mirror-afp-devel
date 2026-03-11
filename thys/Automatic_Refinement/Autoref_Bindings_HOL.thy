@@ -31,7 +31,7 @@ ML \<open>
     )
 
     fun expand_tac ctxt = let
-      val ss = put_simpset HOL_basic_ss ctxt addsimps autoref_struct_expand.get ctxt
+      val ss = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (autoref_struct_expand.get ctxt)
     in
       SOLVED' (asm_simp_tac ss)
     end

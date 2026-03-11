@@ -1047,7 +1047,7 @@ fun interpret_floatariths_congs ctxt =
 ML \<open>
 fun preproc_form_conv ctxt =
   Simplifier.rewrite
-   (put_simpset HOL_basic_ss ctxt addsimps
+   (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
      (Named_Theorems.get ctxt @{named_theorems approximation_preproc}))\<close>
 
 ML \<open>fun reify_floatariths_tac ctxt i =

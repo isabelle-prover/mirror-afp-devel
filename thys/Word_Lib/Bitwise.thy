@@ -415,7 +415,7 @@ fun nat_get_Suc_simproc_fn n_sucs ctxt ct =
         (K (simp_tac (put_simpset word_ss ctxt) 1));
   in
     Goal.prove_internal ctxt [] (propfn (curry (op $) f))
-      (K (simp_tac (put_simpset HOL_ss ctxt addsimps [eq1]) 1))
+      (K (simp_tac (ctxt |> put_simpset HOL_ss |> Simplifier.add_simp eq1) 1))
     |> mk_meta_eq |> SOME
   end handle TERM _ => NONE;
 

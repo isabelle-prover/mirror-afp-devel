@@ -130,10 +130,10 @@ end;
 (**Simp_tacs**)
 
 fun before_set2pred_simp_tac ctxt =
-  simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm Collect_conj_eq} RS sym, @{thm Compl_Collect}]);
+  simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps [@{thm Collect_conj_eq} RS sym, @{thm Compl_Collect}]);
 
 fun split_simp_tac ctxt =
-  simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]);
+  simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm split_conv});
 
 (*****************************************************************************)
 (** set_to_pred_tac transforms sets inclusion into predicates implication,  **)
@@ -155,7 +155,7 @@ fun set_to_pred_tac ctxt var_names = SUBGOAL (fn (_, i) =>
     dresolve_tac ctxt @{thms CollectD} i,
     TRY (split_all_tac ctxt i) THEN_MAYBE
      (rename_tac var_names i THEN
-      full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms split_conv}) i)]);
+      full_simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm split_conv}) i)]);
 
 (*******************************************************************************)
 (** basic_simp_tac is called to simplify all verification conditions. It does **)

@@ -10,8 +10,8 @@ begin
   
   ML \<open>
     (* Handy shortcuts *)
-    fun vcg_bb_simplify thms ctxt = simplify (Named_Simpsets.put @{named_simpset vcg_bb} ctxt addsimps thms)
-    fun vcg_bb_simp_tac thms ctxt = simp_tac (Named_Simpsets.put @{named_simpset vcg_bb} ctxt addsimps thms)
+    fun vcg_bb_simplify thms ctxt = simplify (ctxt |> Named_Simpsets.put @{named_simpset vcg_bb} |> Simplifier.add_simps thms)
+    fun vcg_bb_simp_tac thms ctxt = simp_tac (ctxt |> Named_Simpsets.put @{named_simpset vcg_bb} |> Simplifier.add_simps thms)
   \<close>
   
   text \<open>Put in ASSUMPTION and NO_MATCH\<close>  

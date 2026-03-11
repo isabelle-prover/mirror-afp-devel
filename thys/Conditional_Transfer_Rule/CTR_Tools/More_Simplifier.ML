@@ -22,8 +22,8 @@ fun asm_full_var_simplify ctxt thm =
     |> Drule.zero_var_indexes
   end;
 
-fun var_simplify_only ctxt ths thm =
-  asm_full_var_simplify (Simplifier.clear_simpset ctxt addsimps ths) thm;
+fun var_simplify_only ctxt ths =
+  asm_full_var_simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps ths);
 
 val var_simplified = Attrib.thms >>
   (fn ths => Thm.rule_attribute ths

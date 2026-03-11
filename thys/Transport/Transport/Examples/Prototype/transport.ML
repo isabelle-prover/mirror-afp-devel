@@ -26,7 +26,7 @@ val simp_rhs = Simplifier.rewrite #> Conversion_Util.rhs_conv #> Conversion_Util
 (*simplifies the generated definition of a transported term*)
 fun simp_transported_def ctxt simps y_def =
   let
-    val ctxt = ctxt addsimps simps
+    val ctxt = ctxt |> Simplifier.add_simps simps
     val y_def_eta_expanded = Util.equality_eta_expand ctxt "x" y_def
   in apply2 (simp_rhs ctxt) (y_def, y_def_eta_expanded) end
 
@@ -83,7 +83,7 @@ val _ = Theory.setup (
 (* blackbox prover *)
 
 (*first derives the PER equivalence, then looks for registered domain lemmas.*)
-fun unfold_tac thms ctxt = simp_tac (Simplifier.clear_simpset ctxt addsimps thms)
+fun unfold_tac thms ctxt = simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
 val unfold_transport_defs_tac = get_theorems_tac unfold_tac Transport_Defs.get
 
 fun transport_prover ctxt i =
@@ -128,7 +128,7 @@ fun transport_relator_rewrite ctxt thm =
   let
     val transport_defs = Transport_Defs.get ctxt
     val transport_relator_rewrites = Transport_Relator_Rewrites.get ctxt
-    val ctxt = (Simplifier.clear_simpset ctxt) addsimps transport_relator_rewrites
+    val ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps transport_relator_rewrites
   in
     Local_Defs.fold ctxt transport_defs thm
     |> Simplifier.rewrite_thm (false, false, false) per_simp_prover ctxt
@@ -191,7 +191,7 @@ fun note_facts attrs (binding, mixfix) ctxt related_thm y binding_thms_attribs =
     fun prepare_fact (suffix, thm, attribs) =
       let
         val binding = (Util.add_suffix binding suffix, [])
-        val ctxt = (Simplifier.clear_simpset ctxt) addsimps transport_defs
+        val ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps transport_defs
         val folded_thm =
           (*fold definition of transported term*)
           Local_Defs.fold ctxt [y_def] thm

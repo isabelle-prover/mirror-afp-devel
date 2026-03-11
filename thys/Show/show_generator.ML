@@ -107,7 +107,7 @@ fun mk_shows_parens _ [t] = t
       (\<^Const>\<open>shows_pl for p\<close> :: separate \<^Const>\<open>shows_space\<close> ts @ [\<^Const>\<open>shows_pr for p\<close>])
 
 fun simp_only_tac ctxt ths =
-  CHANGED o full_simp_tac (Simplifier.clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps ths)
+  CHANGED o full_simp_tac (ctxt |> Simplifier.clear_simpset |> put_simpset HOL_basic_ss |> Simplifier.add_simps ths)
 
 fun generate_showsp tyco lthy =
   let

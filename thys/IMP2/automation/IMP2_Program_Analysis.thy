@@ -115,7 +115,7 @@ begin
           
         val thms = map_product (mk_mod_thm) vars prems |> map_filter I 
         
-        val ctxt = Simplifier.put_simpset HOL_basic_ss ctxt addsimps thms
+        val ctxt = ctxt |> Simplifier.put_simpset HOL_basic_ss |> Simplifier.add_simps thms
         
       
       in HEADGOAL (asm_full_simp_tac ctxt) end)

@@ -62,7 +62,7 @@ fun qbs_tac ctxt facts =
         handle TERM _ => no_tac) 1
        val thms = facts @ get (Context.Proof ctxt)
        val single_step_tac =
-         CHANGED (asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps ((map (Simplifier.norm_hhf ctxt) thms))) 1)
+         CHANGED (asm_full_simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (map (Simplifier.norm_hhf ctxt) thms)) 1)
          ORELSE resolve_tac ctxt thms 1
          ORELSE instantiate_tac
    in

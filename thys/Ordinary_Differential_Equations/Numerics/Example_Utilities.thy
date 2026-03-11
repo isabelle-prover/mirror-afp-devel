@@ -2449,10 +2449,10 @@ fun real_subset_approx_tac ctxt p =
       THEN' ode_numerics_tac ctxt
   end
 
-fun basic_nt_ss ctxt nt =
-  put_simpset HOL_basic_ss ctxt addsimps Named_Theorems.get ctxt nt
+fun basic_nt_ss nt ctxt =
+  ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (Named_Theorems.get ctxt nt)
 
-fun DIM_tac defs ctxt = (Simplifier.simp_tac (basic_nt_ss ctxt @{named_theorems DIM_simps} addsimps defs))
+fun DIM_tac defs ctxt = (Simplifier.simp_tac (ctxt |> basic_nt_ss @{named_theorems DIM_simps} |> Simplifier.add_simps defs))
 
 fun subset_approx_preconds_tac ctxt p thm =
   let
@@ -2479,7 +2479,7 @@ val static_simpset = Simplifier.simpset_of @{context}
 
 fun nth_tac ctxt =
   Simplifier.simp_tac
-    (put_simpset HOL_basic_ss ctxt addsimps @{thms nth_Cons_0 nth_Cons_Suc numeral_nat})
+    (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms nth_Cons_0 nth_Cons_Suc numeral_nat})
 fun nth_list_eq_tac ctxt n = Subgoal.FOCUS_PARAMS (fn {context, concl, ...} =>
   case try (Thm.term_of #> HOLogic.dest_Trueprop #> HOLogic.dest_eq) concl
   of
@@ -2549,7 +2549,7 @@ fun numeric_precond_step_tac defs thms p = Subgoal.FOCUS_PARAMS (fn {context, co
         then
           tracing_tac context "numeric_precond_step: ode_numerics_tac"
           THEN HEADGOAL (
-            CONVERSION (Simplifier.rewrite (put_simpset HOL_basic_ss context addsimps defs))
+            CONVERSION (Simplifier.rewrite (context |> put_simpset HOL_basic_ss |> Simplifier.add_simps defs))
             THEN' tracing_tac' context "numeric_precond_step: ode_numerics_tac (unfolded)"
             THEN' ode_numerics_tac context)
         else if member (op=)
@@ -2557,7 +2557,7 @@ fun numeric_precond_step_tac defs thms p = Subgoal.FOCUS_PARAMS (fn {context, co
         then
           tracing_tac context "numeric_precond_step: isFDERIV"
           THEN HEADGOAL (SOLVED'(Simplifier.asm_full_simp_tac
-              (put_simpset static_simpset context addsimps (@{thms isFDERIV_def less_Suc_eq_0_disj isDERIV_Power_iff} @ thms @ defs))
+              (context |> put_simpset static_simpset |> Simplifier.add_simps (@{thms isFDERIV_def less_Suc_eq_0_disj isDERIV_Power_iff} @ thms @ defs))
               THEN' tracing_tac' context "numeric_precond_step: simplified isFDERIV"
           ))
         else

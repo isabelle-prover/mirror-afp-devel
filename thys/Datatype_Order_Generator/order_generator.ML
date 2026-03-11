@@ -180,8 +180,8 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
             val simp_ctxt =
               (ctxt
                 |> Context_Position.set_visible false
-                |> put_simpset my_simp_set)
-                addsimps (simps_of_info info @ simps_of_info linfo @ thms)
+                |> put_simpset my_simp_set
+                |> Simplifier.add_simps (simps_of_info info @ simps_of_info linfo @ thms))
           in mk_solve_with_tac simp_ctxt thms (asm_full_simp_tac simp_ctxt 1) end
 
         fun case_tac ctxt y_z = mk_case_tac ctxt [[SOME y_z]] (#exhaust linfo)

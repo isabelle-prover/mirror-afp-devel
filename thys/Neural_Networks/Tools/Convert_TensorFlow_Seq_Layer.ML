@@ -130,34 +130,33 @@ fun convert_weights [] = []
       let
         val proof_mode = get_nn_proof_mode lthy
         val _ = nn_log.info 2 "interpretation_nn_seq_layer: " lthy 
-        fun mk_ctx_ss ctx thms = ctx addsimps thms
         val meth = (Method.Basic (fn ctx => Method.SIMPLE_METHOD (
                 print_tac ctx "Unfolding locale neural_network_sequential_layers NeuralNet"
-                     THEN simp_tac (mk_ctx_ss ctx ([#layer_def layer_config])) 1
+                     THEN simp_tac (ctx |> Simplifier.add_simps ([#layer_def layer_config])) 1
                 THEN print_tac ctx "Separating locale axioms into subgoals"
                      THEN safe_tac ctx  
                 THEN print_tac ctx "Proving first axiom: isIn (list.hd (layers NeuralNet))" 
-                     THEN simp_tac (mk_ctx_ss ctx (([ Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Layers_def")),
+                     THEN simp_tac (ctx |> Simplifier.add_simps (([ Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Layers_def")),
                                      Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "NeuralNet_def")),
                                      #layer_def layer_config,
                                      @{thm o_def}]))) 1
-                     THEN simp_tac (mk_ctx_ss ctx ((Proof_Context.get_thms ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "layer_defs")))@[
+                     THEN simp_tac (ctx |> Simplifier.add_simps ((Proof_Context.get_thms ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "layer_defs")))@[
                                      @{thm o_def}])) 1
                 THEN print_tac ctx "Proving second axiom: isOut (last (layers NeuralNet))" 
-                     THEN simp_tac (mk_ctx_ss ctx (([Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Layers_def")),
+                     THEN simp_tac (ctx |> Simplifier.add_simps (([Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Layers_def")),
                                      Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "NeuralNet_def")),
                                      #layer_def layer_config,
                                      @{thm o_def}]))) 1
-                     THEN simp_tac (mk_ctx_ss ctx ((Proof_Context.get_thms ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "layer_defs")))@[
+                     THEN simp_tac (ctx |> Simplifier.add_simps ((Proof_Context.get_thms ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "layer_defs")))@[
                                      @{thm o_def}])) 1
                 THEN print_tac ctx "Proving third axiom: list_all isInternal (list.tl (butlast (layers NeuralNet)))" 
-                     THEN simp_tac (mk_ctx_ss ctx (([Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Layers_def")),
+                     THEN simp_tac (ctx |> Simplifier.add_simps (([Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "Layers_def")),
                                      Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "NeuralNet_def")),
                                      #layer_def layer_config,
                                      @{thm o_def}]))) 1
                 THEN nn_tactics.eval_or_normalize_tac ctx ctx 1
                 THEN print_tac ctx "Proving fourth axiom: valid_activation_tab\<^sub>l (neural_network_seq_layers.activation_tab NeuralNet)"
-                       THEN simp_tac (mk_ctx_ss ctx ([#valid_activation_tab layer_config,
+                       THEN simp_tac (ctx |> Simplifier.add_simps ([#valid_activation_tab layer_config,
                                      Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "NeuralNet_def")),
                                      Proof_Context.get_thm ctx (Local_Theory.full_name  ctx (Binding.qualify_name false (Binding.name (defN)) "\<phi>_ran"))
                                    ])) 1

@@ -147,8 +147,8 @@ structure Activation_Term:ACTIVATION_TERM = struct
 
       fun lemma_phi_ran mode defN phitab lthy = 
       let 
-         fun get_local_thms n0 n1 = Proof_Context.get_thms lthy (Local_Theory.full_name lthy (Binding.qualify false defN (Binding.qualify_name false (Binding.name (n0))  n1) ))
-        fun mk_ss ctx thms = put_simpset HOL_basic_ss ctx addsimps thms
+        fun get_local_thms n0 n1 = Proof_Context.get_thms lthy (Local_Theory.full_name lthy (Binding.qualify false defN (Binding.qualify_name false (Binding.name (n0))  n1) ))
+        fun mk_ss thms ctx = ctx |> put_simpset HOL_basic_ss |> Simplifier.add_simps thms
         val phitab = remdups phitab
         val Phi = Local_Theory.full_name lthy (Binding.qualify_name false (Binding.name defN) ("\<phi>_"^defN))
         val phi_const = case mode of 
@@ -168,9 +168,9 @@ structure Activation_Term:ACTIVATION_TERM = struct
          nn_tactics.prove_simple (Binding.qualify_name false (Binding.name defN) "\<phi>_ran")
                       (mk_Trueprop_eq (lhs,rhs))
     
-                    (fn ctx =>  auto_tac (mk_ss ctx [@{thm "ran_def"},@{thm "ranI"}]) 
+                    (fn ctx =>  auto_tac (ctx |> mk_ss [@{thm "ran_def"},@{thm "ranI"}]) 
                            THEN eresolve_tac ctx (get_local_thms ("\<phi>_"^defN) "elims") 1  
-                           THEN auto_tac (mk_ss ctx [@{thm "ran_def"},@{thm "ranI"}])
+                           THEN auto_tac (ctx |> mk_ss [@{thm "ran_def"},@{thm "ranI"}])
                            THEN ALLGOALS (Meson.meson_tac ctx ([@{thm "bot.extremum"}, @{thm "insert_subsetI"}, @{thm "ranI"}]@(get_local_thms ("\<phi>_"^defN) "simps")) )
                      )  lthy 
 (*  

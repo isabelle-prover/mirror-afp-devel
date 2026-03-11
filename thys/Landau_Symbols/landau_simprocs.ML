@@ -189,7 +189,7 @@ fun cancel_factor_conv' ctxt ct =
           let
             val simps = Named_Theorems.get ctxt @{named_theorems eventually_nonzero_simps}
           in
-            ALLGOALS (Simplifier.asm_full_simp_tac (ctxt addsimps simps))
+            ALLGOALS (Simplifier.asm_full_simp_tac (ctxt |> Simplifier.add_simps simps))
           end
         fun do_cancel thm =
           let
@@ -325,9 +325,9 @@ fun landau_conv conv ctxt = changed_conv (fn ct =>
 
 fun simplify_landau_product_conv ctxt ct =
   let
-    val ctxt1 = put_simpset HOL_basic_ss ctxt |> Simplifier.add_simps @{thms bigtheta_factors_eq}
-    val ctxt2 = ctxt addsimps @{thms landau_simps} |> fold Simplifier.del_proc (landau_simprocs ctxt)
-    val ctxt3 = put_simpset HOL_basic_ss ctxt |> Simplifier.add_simps @{thms bigtheta_factors_eq[symmetric]}
+    val ctxt1 = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms bigtheta_factors_eq}
+    val ctxt2 = ctxt |> Simplifier.add_simps @{thms landau_simps} |> fold Simplifier.del_proc (landau_simprocs ctxt)
+    val ctxt3 = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms bigtheta_factors_eq[symmetric]}
     val conv = 
       Simplifier.rewrite ctxt1 
       then_conv Simplifier.asm_full_rewrite ctxt2
@@ -383,11 +383,11 @@ fun reify_landau_prod_prop_conv ctxt ct =
 
 fun simplify_landau_real_prod_prop_conv ctxt = 
   let
-    val ctxt' = put_simpset HOL_ss ctxt addsimps 
-      @{thms list.map inverse_primfun.simps minus_minus append.simps}
+    val ctxt' = ctxt |> put_simpset HOL_ss
+      |> Simplifier.add_simps @{thms list.map inverse_primfun.simps minus_minus append.simps}
   in
-    Conv.try_conv (Conv.rewrs_conv (@{thms bigomega_iff_bigo[THEN eq_reflection] 
-      smallomega_iff_smallo[THEN eq_reflection]}))
+    Conv.try_conv (Conv.rewrs_conv @{thms bigomega_iff_bigo[THEN eq_reflection] 
+      smallomega_iff_smallo[THEN eq_reflection]})
     then_conv reify_landau_prod_prop_conv ctxt
     then_conv Simplifier.rewrite ctxt'
     then_conv Conv.rewrs_conv @{thms LANDAU_PROD_iff[THEN eq_reflection]} 

@@ -3030,7 +3030,7 @@ val reversed = case reversed of SOME _ => true | _ => false
 val simpThms = [@{thm AOT_subst_cond_\<o>_def}, @{thm AOT_subst_cond_fun_def}]
 in
 resolve_tac ctxt [getSubstThm ctxt reversed phi p q] 1
-THEN simp_tac (ctxt addsimps simpThms) 1
+THEN simp_tac (ctxt |> Simplifier.add_simps simpThms) 1
 THEN (REPEAT (resolve_tac ctxt [@{thm allI}] 1))
 THEN (TRY (resolve_tac ctxt thms 1))
 end
@@ -3059,7 +3059,7 @@ val simpThms = [@{thm AOT_subst_cond_\<o>_def},
 val substCondThm = Goal.prove ctxt [] [] substCond
   (fn {context=ctxt, prems=prems} =>
       (SUBGOAL (fn (trm,int) =>
-        auto_tac (ctxt addsimps simpThms)) 1))
+        auto_tac (ctxt |> Simplifier.add_simps simpThms)) 1))
 val substThm = substCondThm RSN (2,@{thm AOT_subst})
 in
 resolve_tac ctxt [substThm RS
@@ -3094,7 +3094,7 @@ val simpThms = [@{thm AOT_subst_cond_\<o>_def},
   fact]
 val substCondThm = Goal.prove ctxt [] [] substCond
   (fn {context=ctxt, prems=prems} =>
-      (SUBGOAL (fn (trm,int) => auto_tac (ctxt addsimps simpThms)) 1))
+      (SUBGOAL (fn (trm,int) => auto_tac (ctxt |> Simplifier.add_simps simpThms)) 1))
 val substThm = substCondThm RSN (2,@{thm AOT_subst})
 in
 resolve_tac ctxt [substThm RS

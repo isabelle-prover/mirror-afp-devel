@@ -303,8 +303,8 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype
           let val simp_ctxt =
             (ctxt
               |> Context_Position.set_visible false
-              |> put_simpset my_simp_set)
-              addsimps (simps_of_info info @ simps_of_info linfo)
+              |> put_simpset my_simp_set
+              |> Simplifier.add_simps (simps_of_info info @ simps_of_info linfo))
           in mk_solve_with_tac ctxt thms (force_tac simp_ctxt 1) end
         fun case_tac ctxt = mk_case_tac ctxt [[SOME y]] (#exhaust linfo)
         fun sub_case_tac (ctxt,k,prems,iparams_y) =

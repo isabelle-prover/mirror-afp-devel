@@ -120,8 +120,8 @@ fun ceq_instance_via_equality tname thy =
       | _ => HOLogic.mk_eq (main_is_ceq,HOLogic_list_conj param_is_ceq))
     val is_ceq_thm = Goal.prove (Proof_Context.init_global thy) [] [] is_ceq_thm_trm 
       (fn {context = ctxt, prems = _} => 
-        simp_tac (Splitter.add_split @{thm option.split} ctxt 
-          addsimps (eq_thm :: @{thms ID_Some ID_None is_ceq_def})
+        simp_tac (ctxt |> Splitter.add_split @{thm option.split}
+          |> Simplifier.add_simps (eq_thm :: @{thms ID_Some ID_None is_ceq_def})
         ) 1
       )
     val thy = register_is_c_dots_lemma @{const_name is_ceq} (Long_Name.base_name tname) 

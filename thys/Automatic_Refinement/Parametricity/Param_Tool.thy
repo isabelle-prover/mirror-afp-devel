@@ -330,7 +330,7 @@ begin
     fun to_relAPP_conv ctxt = Refine_Util.f_tac_conv ctxt 
       cnv_relAPP 
       (fn goal_ctxt => ALLGOALS (simp_tac 
-        (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms relAPP_def})))
+        (goal_ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm relAPP_def})))
   
   
     val to_relAPP_attr = Thm.rule_attribute [] (fn context => let

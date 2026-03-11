@@ -173,7 +173,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   
   (* Obtain new def_thm *)
   val def_unfold_ss = 
-    put_simpset HOL_basic_ss lthy addsimps (orig_def_thm::def_thms)
+    lthy |> put_simpset HOL_basic_ss |> Simplifier.add_simps (orig_def_thm :: def_thms)
   val new_def_thm = Goal.prove_internal lthy
     [] (Logic.mk_equals (lhs,rhs') |> Thm.cterm_of lthy) (K (simp_tac def_unfold_ss 1))
 
