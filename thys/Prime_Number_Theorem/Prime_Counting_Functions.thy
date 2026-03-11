@@ -21,6 +21,9 @@ subsection \<open>Definitions\<close>
 definition prime_sum_upto :: "(nat \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> 'a :: semiring_1" where
   "prime_sum_upto f x = (\<Sum>p | prime p \<and> real p \<le> x. f p)"
 
+lemma finite_primes_le_real: "finite {p::nat. prime p \<and> real p \<le> x}"
+  by (rule finite_subset[of _ "{..nat \<lfloor>x\<rfloor>}"]) (auto simp: le_nat_iff le_floor_iff)
+
 lemma prime_sum_upto_altdef1:
   "prime_sum_upto f x = sum_upto (\<lambda>p. ind prime p * f p) x"
   unfolding sum_upto_def prime_sum_upto_def
@@ -209,6 +212,41 @@ lemma \<psi>_nonneg [intro]: "\<psi> x \<ge> 0"
 
 lemma \<psi>_mono: "x \<le> y \<Longrightarrow> \<psi> x \<le> \<psi> y"
   unfolding \<psi>_def sum_upto_def by (intro sum_mono2 mangoldt_nonneg) auto
+
+lemma abs_\<pi> [simp]: "\<bar>primes_pi x\<bar> = primes_pi x"
+  by (subst abs_of_nonneg) auto
+
+lemma \<pi>_less_self:
+  includes prime_counting_syntax
+  assumes "x > 0"
+  shows   "\<pi> x < x"
+proof -
+  have "\<pi> x \<le> (\<Sum>n\<in>{1<..nat \<lfloor>x\<rfloor>}. 1)"
+    unfolding \<pi>_def prime_sum_upto_altdef2 by (intro sum_mono2) (auto dest: prime_gt_1_nat)
+  also have "\<dots> = real (nat \<lfloor>x\<rfloor> - 1)"
+    using assms by simp
+  also have "\<dots> < x" using assms by linarith
+  finally show ?thesis .
+qed
+
+lemma \<pi>_le_self':
+  includes prime_counting_syntax
+  assumes "x \<ge> 1"
+  shows   "\<pi> x \<le> x - 1"
+proof -
+  have "\<pi> x \<le> (\<Sum>n\<in>{1<..nat \<lfloor>x\<rfloor>}. 1)"
+    unfolding \<pi>_def prime_sum_upto_altdef2 by (intro sum_mono2) (auto dest: prime_gt_1_nat)
+  also have "\<dots> = real (nat \<lfloor>x\<rfloor> - 1)"
+    using assms by simp
+  also have "\<dots> \<le> x - 1" using assms by linarith
+  finally show ?thesis .
+qed
+
+lemma \<pi>_le_self:
+  includes prime_counting_syntax
+  assumes "x \<ge> 0"
+  shows   "\<pi> x \<le> x"
+  using \<pi>_less_self[of x] assms by (cases "x = 0") auto
 
 
 subsection \<open>The $n$-th prime number\<close>
@@ -478,6 +516,46 @@ proof -
   with n show ?thesis 
     by simp
 qed
+
+(* TODO: Move to HOL-Number_Theory.Eratosthenes *)
+lemma smallest_prime_beyond_eval:
+  "prime n \<Longrightarrow> smallest_prime_beyond n = n"
+  "\<not>prime n \<Longrightarrow> smallest_prime_beyond n = smallest_prime_beyond (Suc n)"
+proof -
+  assume "prime n"
+  thus "smallest_prime_beyond n = n"
+    by (rule smallest_prime_beyond_eq) auto
+next
+  assume "\<not>prime n"
+  show "smallest_prime_beyond n = smallest_prime_beyond (Suc n)"
+  proof (rule antisym)
+    show "smallest_prime_beyond n \<le> smallest_prime_beyond (Suc n)"
+      by (rule smallest_prime_beyond_smallest)
+         (auto intro: order.trans[OF _ smallest_prime_beyond_le])
+  next
+    have "smallest_prime_beyond n \<noteq> n"
+      using prime_smallest_prime_beyond[of n] \<open>\<not>prime n\<close> by metis
+    hence "smallest_prime_beyond n > n"
+      using smallest_prime_beyond_le[of n] by linarith
+    thus "smallest_prime_beyond n \<ge> smallest_prime_beyond (Suc n)"
+      by (intro smallest_prime_beyond_smallest) auto
+  qed
+qed
+
+lemma nth_prime_numeral:
+  "nth_prime (numeral n) = smallest_prime_beyond (Suc (nth_prime (pred_numeral n)))"
+  by (subst nth_prime_Suc[symmetric]) auto
+
+lemmas nth_prime_eval = smallest_prime_beyond_eval nth_prime_Suc nth_prime_numeral
+
+lemma nth_prime_1 [simp]: "nth_prime (Suc 0) = 3"
+  by (simp add: nth_prime_eval)
+
+lemma nth_prime_2 [simp]: "nth_prime 2 = 5"
+  by (simp add: nth_prime_eval)
+
+lemma nth_prime_3 [simp]: "nth_prime 3 = 7"
+  by (simp add: nth_prime_eval)
 
 
 subsection \<open>Relations between different prime-counting functions\<close>
@@ -1505,6 +1583,180 @@ proof -
   finally have "(\<lambda>x. \<MM> x - ln x + ln x) \<in> O(\<lambda>x. ln x)"
     by (rule sum_in_bigo) auto
   thus ?thesis by simp
+qed
+
+
+
+subsection \<open>Legendre's identity\<close>
+
+definition legendre_aux :: "real \<Rightarrow> nat \<Rightarrow> nat" where
+  "legendre_aux x p = (if prime p then (\<Sum>m | m > 0 \<and> real (p ^ m) \<le> x. nat \<lfloor>x / p ^ m\<rfloor>) else 0)"
+
+lemma legendre_aux_not_prime [simp]: "\<not>prime p \<Longrightarrow> legendre_aux x p = 0"
+  by (simp add: legendre_aux_def)
+
+lemma legendre_aux_eq_0:
+  assumes "real p > x"
+  shows   "legendre_aux x p = 0"
+proof (cases "prime p")
+  case True
+  have [simp]: "\<not>real p ^ m \<le> x" if "m > 0" for m
+  proof -
+    have "x < real p ^ 1" using assms by simp
+    also have "\<dots> \<le> real p ^ m"
+      using prime_gt_1_nat[OF True] that by (intro power_increasing) auto
+    finally show ?thesis by auto
+  qed
+  from assms have *: "{m. m > 0 \<and> real (p ^ m) \<le> x} = {}"
+    using prime_gt_1_nat[OF True] by auto
+  show ?thesis unfolding legendre_aux_def
+    by (subst *) auto
+qed (auto simp: legendre_aux_def)
+
+lemma legendre_aux_posD:
+  assumes "legendre_aux x p > 0"
+  shows   "prime p" "real p \<le> x"
+proof -
+  show "real p \<le> x" using legendre_aux_eq_0[of x p] assms
+    by (cases "real p \<le> x") auto
+qed (use assms in \<open>auto simp: legendre_aux_def split: if_splits\<close>)
+
+lemma exponents_le_finite:
+  assumes "p > (1 :: nat)" "k > 0"
+  shows   "finite {i. real (p ^ (k * i + l)) \<le> x}"
+proof (rule finite_subset)
+  show "{i. real (p ^ (k * i + l)) \<le> x} \<subseteq> {..nat \<lfloor>x\<rfloor>}"
+  proof safe
+    fix i assume i: "real (p ^ (k * i + l)) \<le> x"
+    have "i < 2 ^ i"
+      by (rule less_exp)
+    also from assms have "i \<le> k * i + l" by (cases k) auto
+    hence "2 ^ i \<le> (2 ^ (k * i + l) :: nat)"
+      using assms by (intro power_increasing) auto
+    also have "\<dots> \<le> p ^ (k * i + l)" using assms by (intro power_mono) auto
+    also have "real \<dots> \<le> x" using i by simp
+    finally show "i \<le> nat \<lfloor>x\<rfloor>" by linarith
+  qed
+qed auto
+
+lemma finite_sum_legendre_aux: 
+  assumes "prime p"
+  shows   "finite {m. m > 0 \<and> real (p ^ m) \<le> x}"
+  by (rule finite_subset[OF _ exponents_le_finite[where k = 1 and l = 0 and p = p]])
+     (use assms prime_gt_1_nat[of p] in auto)
+
+lemma legendre_aux_set_eq:
+  assumes "prime p" "x \<ge> 1"
+  shows   "{m. m > 0 \<and> real (p ^ m) \<le> x} = {0<..nat \<lfloor>log (real p) x\<rfloor>}"
+  using prime_gt_1_nat[OF assms(1)] assms
+  by (auto simp: le_nat_iff le_log_iff le_floor_iff powr_realpow)
+
+lemma legendre_aux_altdef1:
+  "legendre_aux x p = (if prime p \<and> x \<ge> 1 then
+                         (\<Sum>m\<in>{0<..nat \<lfloor>log (real p) x\<rfloor>}. nat \<lfloor>x / p ^ m\<rfloor>) else 0)"
+proof (cases "prime p \<and> x < 1")
+  case False
+  thus ?thesis using legendre_aux_set_eq[of p x] by (auto simp: legendre_aux_def)
+next
+  case True
+  have [simp]: "\<not>(real p ^ m \<le> x)" for m
+  proof -
+    have "x < real 1" using True by simp
+    also have "real 1 \<le> real (p ^ m)"
+      unfolding of_nat_le_iff by (intro one_le_power) (use prime_gt_1_nat[of p] True in auto)
+    finally show "\<not>(real p ^ m \<le> x)" by auto
+  qed
+  have "{m. m > 0 \<and> real (p ^ m) \<le> x} = {}" by simp
+  with True show ?thesis by (simp add: legendre_aux_def)
+qed
+
+lemma legendre_aux_altdef2:
+  assumes "x \<ge> 1" "prime p" "real p ^ Suc k > x"
+  shows   "legendre_aux x p = (\<Sum>m\<in>{0<..k}. nat \<lfloor>x / p ^ m\<rfloor>)"
+proof -
+  have "legendre_aux x p = (\<Sum>m | m > 0 \<and> real (p ^ m) \<le> x. nat \<lfloor>x / p ^ m\<rfloor>)"
+    using assms by (simp add: legendre_aux_def)
+  also have "\<dots> = (\<Sum>m\<in>{0<..k}. nat \<lfloor>x / p ^ m\<rfloor>)"
+  proof (intro sum.mono_neutral_left)
+    show "{m. 0 < m \<and> real (p ^ m) \<le> x} \<subseteq> {0<..k}"
+    proof safe
+      fix m assume "m > 0" "real (p ^ m) \<le> x"
+      hence "real p ^ m \<le> x" by simp
+      also note \<open>x < real p ^ Suc k\<close>
+      finally show "m \<in> {0<..k}" using \<open>m > 0\<close>
+        using prime_gt_1_nat[OF \<open>prime p\<close>] by (subst (asm) power_strict_increasing_iff) auto
+    qed
+  qed (use prime_gt_0_nat[of p] assms in \<open>auto simp: field_simps\<close>)
+  finally show ?thesis .
+qed
+
+(* 3.14 *)
+theorem legendre_identity:
+  "sum_upto ln x = prime_sum_upto (\<lambda>p. legendre_aux x p * ln p) x"
+proof -
+  define S where "S = (SIGMA p:{p. prime p \<and> real p \<le> x}. {i. i > 0 \<and> real (p ^ i) \<le> x})"
+
+  have prime_power_leD: "real p \<le> x" if "real p ^ i \<le> x" "prime p" "i > 0" for p i
+  proof -
+    have "real p ^ 1 \<le> real p ^ i"
+      using that prime_gt_1_nat[of p] by (intro power_increasing) auto
+    also have "\<dots> \<le> x" by fact
+    finally show "real p \<le> x" by simp
+  qed
+
+  have "sum_upto ln x = sum_upto (\<lambda>n. mangoldt n * real (nat \<lfloor>x / real n\<rfloor>)) x"
+    by (rule sum_upto_ln_conv_sum_upto_mangoldt)
+  also have "\<dots> = (\<Sum>(p, i) | prime p \<and> 0 < i \<and> real (p ^ i) \<le> x.
+                     ln p * real (nat \<lfloor>x / real (p ^ i)\<rfloor>))"
+    by (subst sum_upto_primepows[where g = "\<lambda>p i. ln p * real (nat \<lfloor>x / real (p ^ i)\<rfloor>)"])
+       (auto simp: mangoldt_non_primepow)
+  also have "\<dots> = (\<Sum>(p,i)\<in>S. ln p * real (nat \<lfloor>x / p ^ i\<rfloor>))"
+    using prime_power_leD by (intro sum.cong refl) (auto simp: S_def)
+  also have "\<dots> = (\<Sum>p | prime p \<and> real p \<le> x. \<Sum>i | i > 0 \<and> real (p ^ i) \<le> x.
+                     ln p * real (nat \<lfloor>x / p ^ i\<rfloor>))"
+  proof (unfold S_def, subst sum.Sigma)
+    have "{p. prime p \<and> real p \<le> x} \<subseteq> {..nat \<lfloor>x\<rfloor>}"
+      by (auto simp: le_nat_iff le_floor_iff)
+    thus "finite {p. prime p \<and> real p \<le> x}"
+      by (rule finite_subset) auto
+  next
+    show "\<forall>p\<in>{p. prime p \<and> real p \<le> x}. finite {i. 0 < i \<and> real (p ^ i) \<le> x}"
+      by (intro ballI finite_sum_legendre_aux) auto
+  qed auto
+  also have "\<dots> = (\<Sum>p | prime p \<and> real p \<le> x. ln p *
+                    real (\<Sum>i | i > 0 \<and> real (p ^ i) \<le> x. (nat \<lfloor>x / p ^ i\<rfloor>)))"
+    by (simp add: sum_distrib_left)
+  also have "\<dots> = (\<Sum>p | prime p \<and> real p \<le> x. ln p * real (legendre_aux x p))"
+    by (intro sum.cong refl) (auto simp: legendre_aux_def)
+  also have "\<dots> = prime_sum_upto (\<lambda>p. ln p * real (legendre_aux x p)) x"
+    by (simp add: prime_sum_upto_def)
+  finally show ?thesis by (simp add: mult_ac)
+qed
+
+lemma legendre_identity':
+  "fact (nat \<lfloor>x\<rfloor>) = (\<Prod>p | prime p \<and> real p \<le> x. p ^ legendre_aux x p)"
+proof -
+  have fin: "finite {p. prime p \<and> real p \<le> x}"
+    by (rule finite_subset[of _ "{..nat \<lfloor>x\<rfloor>}"]) (auto simp: le_nat_iff le_floor_iff)
+  have "real (fact (nat \<lfloor>x\<rfloor>)) = exp (sum_upto ln x)"
+    by (subst sum_upto_ln_conv_ln_fact) auto
+  also have "sum_upto ln x = prime_sum_upto (\<lambda>p. legendre_aux x p * ln p) x"
+    by (rule legendre_identity)
+  also have "exp \<dots> = (\<Prod>p | prime p \<and> real p \<le> x. exp (ln (real p) * legendre_aux x p))"
+    unfolding prime_sum_upto_def using fin by (subst exp_sum) (auto simp: mult_ac)
+  also have "\<dots> = (\<Prod>p | prime p \<and> real p \<le> x. real (p ^ legendre_aux x p))"
+  proof (intro prod.cong refl)
+    fix p assume "p \<in> {p. prime p \<and> real p \<le> x}"
+    hence "p > 0" using prime_gt_0_nat[of p] by auto
+    from \<open>p > 0\<close> have "exp (ln (real p) * legendre_aux x p) = real p powr real (legendre_aux x p)"
+      by (simp add: powr_def)
+    also from \<open>p > 0\<close> have "\<dots> = real (p ^ legendre_aux x p)"
+      by (subst powr_realpow) auto
+    finally show "exp (ln (real p) * legendre_aux x p) = \<dots>" .
+  qed
+  also have "\<dots> = real (\<Prod>p | prime p \<and> real p \<le> x. p ^ legendre_aux x p)"
+    by simp
+  finally show ?thesis unfolding of_nat_eq_iff .
 qed
 
 (*<*)

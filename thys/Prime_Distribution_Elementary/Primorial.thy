@@ -6,7 +6,7 @@
 *)
 section \<open>The Primorial function\<close>
 theory Primorial
-  imports Prime_Distribution_Elementary_Library Primes_Omega
+  imports Prime_Distribution_Elementary_Library
 begin
 
 subsection \<open>Definition and basic properties\<close>
@@ -17,13 +17,13 @@ definition primorial :: "real \<Rightarrow> nat" where
 lemma primorial_mono: "x \<le> y \<Longrightarrow> primorial x \<le> primorial y"
   unfolding primorial_def
   by (intro dvd_imp_le prod_dvd_prod_subset)
-     (auto intro!: prod_pos finite_primes_le dest: prime_gt_0_nat)
+     (auto intro!: prod_pos finite_primes_le_real dest: prime_gt_0_nat)
 
 lemma prime_factorization_primorial:
   "prime_factorization (primorial x) = mset_set {p. prime p \<and> real p \<le> x}"
 proof (intro multiset_eqI)
   fix p :: nat
-  note fin = finite_primes_le[of x]
+  note fin = finite_primes_le_real[of x]
   show "count (prime_factorization (primorial x)) p =
           count (mset_set {p. prime p \<and> real p \<le> x}) p"
   proof (cases "prime p")
@@ -42,7 +42,7 @@ qed
 
 lemma prime_factors_primorial [simp]:
   "prime_factors (primorial x) = {p. prime p \<and> real p \<le> x}"
-  unfolding prime_factorization_primorial using finite_primes_le[of x] by simp
+  unfolding prime_factorization_primorial using finite_primes_le_real[of x] by simp
 
 lemma primorial_pos [simp, intro]: "primorial x > 0"
   unfolding primorial_def by (intro prod_pos) (auto dest: prime_gt_0_nat)
@@ -57,7 +57,7 @@ lemma primes_omega_primorial: "primes_omega (primorial x) = nat \<lfloor>primes_
   by (simp add: primes_omega_def primes_pi_def prime_sum_upto_def)
 
 lemma prime_dvd_primorial_iff: "prime p \<Longrightarrow> p dvd primorial x \<longleftrightarrow> p \<le> x"
-  using finite_primes_le[of x]
+  using finite_primes_le_real[of x]
   by (auto simp: primorial_def prime_dvd_prod_iff dest: primes_dvd_imp_eq)
 
 lemma squarefree_primorial [intro]: "squarefree (primorial x)"

@@ -29,6 +29,15 @@ lemma divisor_sigma_1 [simp]: "divisor_sigma x 1 = 1"
 lemma fds_divisor_sigma: "fds (divisor_sigma x) = fds_zeta * fds_shift x fds_zeta"
   by (rule fds_eqI) (simp add: fds_nth_mult dirichlet_prod_altdef1 divisor_sigma_def)
 
+lemma divisor_sigma_conv_dirichlet_prod:
+  "divisor_sigma x n = dirichlet_prod (\<lambda>n. real n powr x) (\<lambda>_. 1) n"
+proof (cases "n = 0")
+  case False
+  have "fds (divisor_sigma x) = fds_shift x fds_zeta * fds_zeta"
+    using fds_divisor_sigma[of x] by (simp add: mult_ac)
+  thus ?thesis using False by (auto simp: fds_eq_iff fds_nth_mult)
+qed simp_all
+
 interpretation divisor_sigma: multiplicative_function "divisor_sigma x"
 proof -
   have "multiplicative_function (dirichlet_prod (\<lambda>n. if n = 0 then 0 else 1) 
@@ -180,6 +189,15 @@ lemma divisor_sigma_0_left: "divisor_sigma 0 n = of_nat (divisor_count n)"
 lemma divisor_count_altdef: "divisor_count n = divisor_sigma 0 n"
   by (simp add: divisor_sigma_0_left)
 
+lemma divisor_count_pos [intro]: "n > 0 \<Longrightarrow> divisor_count n > 0"
+  by (auto simp: divisor_count_def intro!: Nat.gr0I)
+
+lemma divisor_count_eq_0_iff [simp]: "divisor_count n = 0 \<longleftrightarrow> n = 0"
+  by (cases "n = 0") auto
+
+lemma divisor_count_pos_iff [simp]: "divisor_count n > 0 \<longleftrightarrow> n > 0"
+  by (cases "n = 0") auto
+
 lemma divisor_count_naive [code]:
   "divisor_count n = (if n = 0 then 0 else 
      fold_atLeastAtMost_nat (\<lambda>d acc. if d dvd n then Suc acc else acc) 1 n 0)"
@@ -249,7 +267,25 @@ lemma fds_shift_zeta_Suc_0: "fds_shift (Suc 0) fds_zeta = fds id"
 
 lemma fds_divisor_sum: "fds divisor_sum = fds_zeta * fds id"
   by (rule fds_eqI) (simp add: fds_nth_mult dirichlet_prod_altdef1 divisor_sum_def)
-    
+
+lemma (in completely_multiplicative_function) dirichlet_prod_self:
+  "dirichlet_prod f f n = f n * of_nat (divisor_count n)"
+proof (cases "n = 0")
+  case False
+  have "dirichlet_prod f f n = (\<Sum>(r, d) | r * d = n. f (r * d))"
+    by (simp add: dirichlet_prod_altdef2 mult)
+  also have "\<dots> = (\<Sum>(r, d) | r * d = n. f n)"
+    by (intro sum.cong) auto
+  also have "\<dots> = f n * of_nat (card {(r, d). r * d = n})"
+    by (simp add: mult.commute)
+  also have "bij_betw fst {(r, d). r * d = n} {r. r dvd n}"
+    by (rule bij_betwI[of _ _ _ "\<lambda>r. (r, n div r)"]) (use False in auto)
+  hence "card {(r, d). r * d = n} = card {r. r dvd n}"
+    by (rule bij_betw_same_card)
+  also have "\<dots> = divisor_count n"
+    by (simp add: divisor_count_def)
+  finally show ?thesis .
+qed auto
 
 lemma fds_divisor_sum_eq_totient_times_d: "fds divisor_sum = fds totient * fds divisor_count"
 proof -
@@ -259,7 +295,7 @@ proof -
     using fds_divisor_count by (simp add: power2_eq_square mult_ac)
   finally show ?thesis .
 qed
-   
+
 lemma fds_divisor_sum_times_moebius_mu: 
   "fds (divisor_sigma (1 :: 'a :: {nat_power,comm_ring_1})) * fds moebius_mu = fds of_nat"
 proof -

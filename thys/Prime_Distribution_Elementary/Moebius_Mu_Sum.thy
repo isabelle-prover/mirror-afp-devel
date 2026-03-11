@@ -8,7 +8,6 @@
 section \<open>The summatory Möbius \<open>\<mu>\<close> function\<close>
 theory Moebius_Mu_Sum
 imports
-  More_Dirichlet_Misc
   Dirichlet_Series.Partial_Summation
   Prime_Number_Theorem.Prime_Counting_Functions
   Dirichlet_Series.Arithmetic_Summatory_Asymptotics

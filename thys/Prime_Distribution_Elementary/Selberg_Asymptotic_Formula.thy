@@ -8,7 +8,6 @@
 section \<open>Selberg's asymptotic formula\<close>
 theory Selberg_Asymptotic_Formula
 imports
-  More_Dirichlet_Misc
   Prime_Number_Theorem.Prime_Counting_Functions
   Shapiro_Tauberian
   Euler_MacLaurin.Euler_MacLaurin_Landau

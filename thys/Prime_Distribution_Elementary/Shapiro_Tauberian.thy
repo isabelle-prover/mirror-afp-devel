@@ -8,7 +8,6 @@
 section \<open>Shapiro's Tauberian Theorem\<close>
 theory Shapiro_Tauberian
 imports
-  More_Dirichlet_Misc
   Prime_Number_Theorem.Prime_Counting_Functions
   Prime_Distribution_Elementary_Library
 begin
@@ -336,13 +335,15 @@ lemma dirichlet_prod_mangoldt1_floor_bigo:
   includes prime_counting_syntax
   shows "(\<lambda>x. dirichlet_prod' (\<lambda>n. ind prime n * ln n) floor x - x * ln x) \<in> O(\<lambda>x. x)"
 proof -
-  \<comment> \<open>This is a perhaps somewhat roundabout way of proving this statement. We show this using
-      the asymptotics of \<open>\<MM>\<close>: $\mathfrak{M}(x) = \ln x + O(1)$
+  text \<open>
+    This is a perhaps somewhat roundabout way of proving this statement. We show this using
+    the asymptotics of \<open>\<MM>\<close>: $\mathfrak{M}(x) = \ln x + O(1)$
      
-      We proved this before (which was a bit of work, but not that much).
-      Apostol, on the other hand, shows the following statement first and then deduces the
-      asymptotics of \<open>\<MM>\<close> with Shapiro's Tauberian theorem instead. This might save a bit of
-      work, but it is probably negligible.\<close>
+    We proved this before (which was a bit of work, but not that much).
+    Apostol, on the other hand, shows the following statement first and then deduces the
+    asymptotics of \<open>\<MM>\<close> with Shapiro's Tauberian theorem instead. This might save a bit of
+    work, but it is probably negligible.
+  \<close>
   define R where "R = (\<lambda>x. sum_upto (\<lambda>i. ind prime i * ln i * frac (x / i)) x)"
   have *: "R x \<in> {0..ln 4 * x}" if "x \<ge> 1" for x
   proof -
@@ -378,7 +379,7 @@ lemma dirichlet_prod'_mangoldt_floor_asymptotics:
 proof -
   have "dirichlet_prod' mangoldt floor = (\<lambda>x. sum_upto ln x)"
     unfolding sum_upto_ln_conv_sum_upto_mangoldt dirichlet_prod'_def
-    by (intro sum_upto_cong' ext) auto
+    by (intro sum_upto_cong ext) auto
   hence "(\<lambda>x. dirichlet_prod' mangoldt floor x - x * ln x + x) = (\<lambda>x. sum_upto ln x - x * ln x + x)"
     by simp
   also have "\<dots> \<in> O(ln)"
@@ -392,7 +393,7 @@ interpretation \<psi>: shapiro_tauberian mangoldt "sum_upto (\<lambda>n. mangold
 proof unfold_locales
   have "dirichlet_prod' mangoldt floor = (\<lambda>x. sum_upto ln x)"
     unfolding sum_upto_ln_conv_sum_upto_mangoldt dirichlet_prod'_def
-    by (intro sum_upto_cong' ext) auto
+    by (intro sum_upto_cong ext) auto
   hence "(\<lambda>x. dirichlet_prod' mangoldt floor x - x * ln x + x) = (\<lambda>x. sum_upto ln x - x * ln x + x)"
     by simp
   also have "\<dots> \<in> O(ln)"

@@ -4,7 +4,7 @@
 *)
 section \<open>Q4\<close>
 theory IMO2019_Q4
-  imports "Prime_Distribution_Elementary.More_Dirichlet_Misc"
+  imports "Prime_Number_Theorem.Prime_Counting_Functions" "Stirling_Formula.Stirling_Formula"
 begin
 
 text \<open>
