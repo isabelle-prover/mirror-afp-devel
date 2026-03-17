@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-02-07T00:00:00+00:00</lastmod>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-02-07T00:00:00+00:00</lastmod>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</loc>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Workflow_Net_Fitness_Measures.html</loc>
     <lastmod>2026-02-07T00:00:00+00:00</lastmod>
@@ -4751,6 +4754,12 @@
     <loc>https://isa-afp.org/authors/bergstroem/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/christfort/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Axiom_Free_Ontological_Trinity/Axiom_And_Assumption_Audit.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Axiom_Free_Ontological_Trinity/Axiom_Free_Ontological_Trinity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Axiom_Free_Ontological_Trinity/Diagnostics_Nitpick.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/AxiomaticCategoryTheory/AxiomaticCategoryTheory.html</loc>
   </url><url>
@@ -16041,6 +16050,8 @@
     <loc>https://isa-afp.org/thys/AFP/Khovanskii_Theorem/FiniteProduct.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Khovanskii_Theorem/Khovanskii.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/dock/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/peters/</loc>
   </url><url>

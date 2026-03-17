@@ -1814,6 +1814,22 @@ host = [
 [divason.homepages]
 divason_homepage = "https://www.unirioja.es/cu/jodivaso/"
 
+[dock]
+name = "Kim, Yong-Dock"
+
+[dock.emails]
+
+[dock.emails.dock_email]
+user = [
+  "01yesterday",
+]
+host = [
+  "naver",
+  "com",
+]
+
+[dock.homepages]
+
 [doczkal]
 name = "Christian Doczkal"
 

@@ -1,0 +1,11 @@
+chapter AFP
+
+session Axiom_Free_Ontological_Trinity = HOL +
+  options [document_build = pdflatex, timeout = 600]
+  theories
+    Axiom_Free_Ontological_Trinity
+    Diagnostics_Nitpick
+    Axiom_And_Assumption_Audit
+  document_files
+    "root.tex"
+    "root.bib"

@@ -1,0 +1,989 @@
+\documentclass[a4paper, 11pt]{article}
+
+% =========================================================
+% [1] ESSENTIAL PACKAGES (Safe Configuration)
+% =========================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}           % Fixes font build errors
+\usepackage{kotex}             % Korean text support
+\usepackage{isabelle,isabellesym} % For Isabelle content
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{left=25mm, right=25mm, top=30mm, bottom=30mm}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{listings}          % For code listing
+\usepackage{mdframed}          % For audit result boxes
+\usepackage{xcolor}            % Color support
+\usepackage{colortbl}          % Table background color
+
+% --- PDF Metadata & Link Setup ---
+\usepackage[hidelinks,
+            pdfauthor={YongDock Kim},
+            pdftitle={Axiom-Free Ontological Trinity},
+            pdfsubject={Automated Reasoning in Metaphysics},
+            pdfkeywords={Isabelle, Godel, Ontological Argument, Trinity, Modal Collapse, Automated Reasoning, Metaphysics}]{hyperref}
+
+% =========================================================
+% [2] THEOREM ENVIRONMENTS
+% =========================================================
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+
+% =========================================================
+% [3] CUSTOM MACROS (Formal Logic Symbols)
+% =========================================================
+\newcommand{\U}{\mathcal{U}}               % U-Layer
+\newcommand{\Args}{\mathcal{A}}           % Argument objects
+\newcommand{\SuppU}{\mathsf{SuppU}}       % Support set (supporters of an argument object)
+\newcommand{\Arg}{\mathsf{Arg}}           % Argument map
+\newcommand{\TrueNow}{\mathsf{TrueNow}}   % Truth-at-actuality
+\newcommand{\Hopt}{\mathsf{H_{opt}}}       % H-optimality (Safe math mode)
+\newcommand{\PH}{\mathsf{PH}}             % Pan-domain Height
+\newcommand{\EH}{\mathsf{EH}}             % Epistemic Horizon
+\newcommand{\THH}{\mathsf{TH}}            % TrueNow Horizon
+\newcommand{\PDom}{\mathsf{PDom}}         % Pan Domain
+\newcommand{\Refuted}{\mathsf{Refuted}}   % Refutation predicate
+\newcommand{\diamondE}{\Diamond_{e}}      % Epistemic possibility
+\newcommand{\eZero}{\mathbf{e_0}}         % Actuality ground
+\renewcommand{\Box}{\square}              % Box operator
+\newcommand{\sqinter}{\sqcap}             % Fix for Isabelle's sqinter symbol
+
+% =========================================================
+% [4] DOCUMENT TITLE & AUTHOR
+% =========================================================
+\title{\textbf{Axiom-Free Ontological Trinity}}
+\author{YongDock Kim}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This study reconstructs metaphysical arguments within a framework of computational formalization and machine verification, thereby recasting ontological claims as candidates for formal validation.
+
+This paper presents a formal development in \textbf{automated reasoning for metaphysical systems}, treating ontological arguments as precisely specified logical theories subject to machine verification. We provide an Isabelle/HOL formalization that reconstructs and verifies the core claims of \textbf{two prior philosophical arguments} within higher-order logic.
+
+Working entirely within HOL and introducing no additional axioms beyond the base logic, the development proceeds by conservative definitional extension (U-layer methodology). We define the concept of \textbf{H-Optimality} ($\Hopt$)---capturing the ultimate truth concept of ``a truth so certain that no more certain truth can be conceived''---as a structurally maximal admissible ground characterized by maximal non-trivial support relations and a finality condition.
+
+A Hilbert-style flat-model interpretation establishes the internal consistency and non-vacuity of this definitional package. This confirmation of the concept's consistency fulfills the core objective pursued by ontological arguments since G. W. Leibniz. Within this framework, we formally derive structural exclusion results for $\Hopt$ at the level of argument-classes: the cases $N=1$ (singularity), $N=2$ (strict duality), and $N \ge 4$ independent maxima are ruled out by $\approx$-collapse ($\Arg$-equivalence collapse) and $=$-collapse (numerical-identity collapse) mechanisms. Consequently, $N=3$ emerges as the unique admissible cardinality compatible with the stated maximality and exclusion conditions.
+
+We further prove a \textbf{Definitional Finality Theorem}: assuming $\Hopt(q)$ and that any definition $D$ ranges over the pan-domain ($\PDom$), there does not exist an $r$ satisfying $D(r)$ such that $\Arg(q) \prec \Arg(r)$. This establishes a precise formal boundary for admissible strengthening under the given definitions, proving that the definition of a truth strictly superior to $\Hopt$ is impossible.
+
+Finally, bounded finite-model search (Nitpick) identifies a genuine satisfying model, providing mechanized evidence for the existence of a non-vacuous and genuine triune model.
+\end{abstract}
+
+\subsection*{Contributions}
+\label{subsec:contributions}
+
+\noindent
+The central technical result is an \textbf{Isabelle-kernel-certified consistency and satisfiability guarantee}:
+without introducing additional axioms at the U-layer (axiom-free), the candidate supreme-truth structure
+$\Hopt$ remains internally coherent and avoids informational vacuity or unintended identifications across minimal and flat interpretations.
+Its satisfiability is witnessed by an explicit \textbf{Hilbert-style flat-model construction}.
+
+\begin{itemize}
+
+  \item \textbf{Axiom-free, definition-only foundation (U-layer).}
+  All principal results are derived by conservative definitional extension within HOL, without additional user-level axioms, and are accompanied by an explicit \textbf{axiom-audit artifact}.
+
+  \item \textbf{Epistemic Admissibility, Not Ontological Postulation.}
+  Crucially, in deriving the necessary multiplicity of the ground, the relational \textbf{Edge}
+  is not assumed as an ontological fact but treated as an epistemically admissible configuration---i.e.,
+  Edge has not been refuted in the current proof-theoretic state. The exclusion results therefore rely on formal admissibility status, not on ontological postulation.
+
+  \item \textbf{Maximality via Cantorian size comparison (injection-based).}
+  The maximality core of $\Hopt$ compares support-edge sets using injections ($\preceq_c$), enabling the treatment of infinite support structures without reliance on finite cardinal arithmetic.
+
+  \item \textbf{Vacuity Diagnosis via $\approx$-Collapse ($\Arg$-equivalence collapse).}
+  As rigorously detailed in \textbf{Section 11}, the framework introduces a computational ``Vacuity Diagnosis.'' It mathematically proves that when hypostases undergo an \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)}, the \textbf{joint-support between them becomes vacuous}, thereby yielding a \textbf{relationally vacuous triune structure of $\mathsf{MaxNT}$-satisfiers} (i.e., a triune configuration of $\mathsf{MaxNT}$-satisfiers whose $\Arg$-images fall into a single equivalence class, so that $\mathsf{MaxNT}$ loses its relational discriminative content under $\Arg$-equivalence). \textbf{Crucially, the necessity of the triune configuration ($N=3$) persists as the unique logical fixed point even under this vacuous support state, as any other cardinality remains strictly inconsistent.}
+
+  \item \textbf{Structural exclusions at the level of argument-classes.}
+  The formalization excludes $N=1$ (singularity), $N=2$ (strict duality), and $N\ge 4$ independent maximal configurations via \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)} and \textbf{$=$-collapse (numerical-identity collapse)} mechanisms, thereby establishing \textbf{$N=3$ as the unique cardinality} compatible with the stated maximality and exclusion conditions.
+
+  \item \textbf{Triune closure derived as an internal theorem ($N3$).}
+  From the exclusion results together with maximality and coverage conditions, the system derives a fully symmetric ``pair implies third'' closure pattern, formalized as the $N3$ case.
+
+  \item \textbf{Definitional Finality and Formal Limit.}
+  The system establishes a \textbf{Definitional Finality Theorem}: assuming $\Hopt(q)$ and that a definition $D$ ranges over $\PDom$, there does not exist an $r$ satisfying $D(r)$ such that $\Arg(q) \prec \Arg(r)$. Accordingly, $\Hopt$ constitutes a \textbf{logically maximal admissible structure} under the given definitional package, identifying a precise formal boundary for structurally coherent strengthening within the system.
+
+  \item \textbf{Leibnizian possibility via internal consistency proof.}
+  The consistency of $\Hopt$ is formally established through a flat-model interpretation without additional axioms, providing a \textbf{mechanized realization of Leibniz's requirement} that the possibility (non-contradiction) of the most perfect being be secured within the system.
+
+  \item \textbf{Avoidance of G\"{o}delian modal collapse.}
+  Unlike many G\"{o}del-style ontological formalizations, the present system preserves modal contingency and \textbf{avoids the standard modal collapse phenomenon} associated with certain G\"{o}del-style axiom systems, while admitting a concrete satisfying model.
+
+  \item \textbf{Mechanized witness of non-vacuity (Nitpick genuine model).}
+  Automated finite-model search identifies a \textbf{genuine model} witnessing satisfiability, confirming that the $N=3$ configuration constitutes a non-vacuous logical structure.
+
+  \item \textbf{Actuality specialization at the designated point $\eZero$ (\texttt{TriuneGod\_e0}).}
+  The universal $N3$ closure is instantiated at the distinguished U-point $\eZero$ and packaged as a single internal theorem, yielding an \textbf{``actuality-at-$\eZero$''} result without invoking external modal axioms.
+
+  \item \textbf{Structural reinterpretation of G. Frege's ``The True.''}
+  By identifying the triune structure of $\Hopt$ as a structured logical object that can be interpreted as corresponding to Frege's \textit{Das Wahre}, the formalization offers a constructive account of how the referent (\textit{Bedeutung}) of true propositions may possess \textbf{internal, non-trivial structure} rather than being informationally trivial.
+
+  \item \textbf{Ordinal/Cardinal Transcendence of Triune Unity.}
+  The formalization mathematically demonstrates that the triune relational pattern cannot be embedded into a simple linear ordinal chain. It proves that the symmetric ``pair implies third'' joint-support structure is mutually irreducible and exceeds linear hierarchies, formally modeling the plurality of persons and unity of essence as distinct, non-contradictory dimensions.
+
+\end{itemize}
+
+\vspace{1em}
+\noindent\textbf{Hierarchical Dependency of the Core Conditions} \\
+The \textbf{$\mathsf{MaxNT}$} framework, which serves as the formal engine of this development, is governed by a precise four-level dependency. This architecture establishes a rigorous ontological foundation, blocks informationally vacuous states, and guarantees structural stability:
+\begin{enumerate}
+  \item \textbf{Internal Consistency} (\emph{satisfiability}): The definitional package of \textbf{$\mathsf{MaxNT}$} is formally proven to be free of contradiction via a flat-model witness. This satisfies Leibniz's strict prerequisite that the supreme concept must first be demonstrated as logically possible before any structural properties are derived.
+  \item \textbf{Finality} (\emph{no-superiority}): Within the epistemic domain, no strictly higher certainty point exists, arresting infinite regress.
+  \item \textbf{Relational Maximality} (\emph{structural richness}): \textbf{$\mathsf{MaxNT}$} maximizes non-trivial incoming relational structure. This maximal richness exerts decisive logical pressure toward a \emph{triune} realization rather than a degenerate or \textbf{$\approx$-collapsible} form.
+  \item \textbf{Non-vacuity} (\emph{triune realization, strong level}): The triune form is upgraded to a genuine, non-vacuous structure by \emph{forbidding \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)}}. Importantly, non-vacuity is \textbf{not} a necessary condition for the Trinity-necessity claim itself; it functions as an anti-vacuity certification that the triune distinction is \textbf{structurally non-$\approx$-collapsible}.
+\end{enumerate}
+
+\noindent Accordingly, the structural fixed point is \emph{founded} upon proven consistency, \emph{motivated} by relational maximality, and strictly deduced via Arg-nonidentity, while non-vacuity \emph{strengthens} the overall result by certifying a non-collapsible, non-empty realization.
+
+\vspace{1em}
+\noindent\textbf{Keywords:} Automated Reasoning in Metaphysics, Modal Collapse, Kurt G\"odel, Ontological Argument, Epistemic Modal Logic, Consistency, Necessity, Trinity, Isabelle/HOL.
+
+\tableofcontents
+\newpage
+
+% =================================================================================
+% PART I-IV: MAIN THESIS BODY
+% =================================================================================
+
+\section{Introduction and Axiom-Free Methodology}
+\label{sec:intro}
+
+\subsection{Motivation: Historical Context and Limitations}
+The ontological argument, from Anselm to G\"odel, aims to derive the existence (and attributes) of a Supreme Being from conceptual structure. However, traditional ontological arguments remain in an incomplete state because the consistency of the concept of a ``most perfect being'' has never been rigorously demonstrated. This limitation stems from the fact that ``perfection''---the core concept of such proofs---suffers from ambiguity in its definition and allows for divergent metaphysical interpretations.
+
+\paragraph{Additional technical limitation: modal collapse.}
+A further well-known fragility in G\"odel-style ontological encodings under strong modal backgrounds is the \emph{modal collapse} pattern, where local modal principles can propagate globally and erase contingency. In this development, this risk is addressed explicitly at the mechanized level in \textbf{Section 7 of the Diagnostics file} by a targeted pattern whose intent is to block derivations of the strengthened implication (Trinity $\rightarrow R$) from the weaker enabling implication (Trinity $\rightarrow \diamond R$). A \textit{Nitpick} countermodel witness is recorded to confirm that Trinity and $\neg R$ can co-exist consistently while $\diamond R$ holds.
+
+\subsection{The Paradigm Shift: From Ambiguity to Mathematical Definition}
+A critical flaw in G\"odel's original formulation is its reliance on the concepts of \textbf{``Perfection''} and \textbf{``Positive Properties.''} Traditionally, the supreme being is defined as an entity so perfect that no greater perfection can be conceived. However, these notions are semantically ambiguous and lack a precise decision procedure, making the logical foundation vulnerable to subjective interpretation.
+
+In contrast, this paper eliminates such ambiguity by introducing the concept of \textbf{``Relative Certainty''} and defining it mathematically via the support order ($a \preceq b$). By replacing vague qualitative notions with a rigorous structural definition, we ensure that the deduction proceeds from clear logical properties rather than intuitive moral qualities. Consequently, this work shifts the axis of the theistic argumentation from \textbf{``Existence and Perfection''} to \textbf{``Truth and Maximal Certainty,''} achieving a formal verification that is logically robust. Specifically, the concept of \textbf{``a truth so certain that no greater certainty can be conceived''} corresponds directly to $\Hopt$ in our formalization, and the mechanized development rigorously proves the existence of an argument satisfying this $\Hopt$. Ultimately, this formalization is grounded in the principle that certainty is intrinsically tied to universality: the most certain truth is the most universal truth.
+
+\paragraph{Clarification on ``Axiom-Free'' Methodology}
+In this paper, the term \emph{axiom-free} is used in a relative, Isabelle/HOL--internal sense.
+It does \emph{not} mean that the axioms and inference principles of Higher-Order Logic (HOL),
+on which Isabelle is based, are avoided or questioned.
+Rather, it means that the development introduces \textbf{no additional axioms beyond HOL}
+in the user theory---in particular, no extra metaphysical or modal postulates
+(e.g.\ S5 axioms, ``positive property'' axioms, or existence postulates for distinguished predicates).
+All results are obtained by \textbf{definitional (conservative) extensions} and standard HOL reasoning.
+Accordingly, the trust base is the standard Isabelle/HOL kernel (and the definitions stated in this development),
+and an \textbf{axiom-audit} is provided to document that no unintended axioms are assumed. From a positioning perspective, this axiom-free development can be read as engaging with a Fregean constraint on truth: the objectivity of truth is treated not as a semantic stipulation, but as a consequence of definitional closure within the mechanization.
+
+\subsection{Why G\"odel-style Ontological Arguments Often Become Fragile}
+The technical difficulty of ontological arguments is not merely to derive some modal conclusion from a few premises, but to do so without allowing modal strength to \emph{leak} into the entire system. G\"odel-style arguments are typically based on: (i) a strong modal logic (e.g., S5), (ii) a substantive axiom system about ``positive properties,'' and (iii) a definition of God designed to interact maximally with both. Small changes in any component can produce disproportionate consequences, such as inconsistency, vacuity, or \emph{modal collapse}.
+
+A further source of fragility is \emph{domain confusion}: the ``supreme being'' is frequently treated as an object fully internal to the same domain as ordinary truths, while the proof simultaneously requires it to function as a regulator of that domain. This is precisely the kind of setting in which collapse phenomena are easiest to trigger.
+
+\subsection{Resolution in the Diagnostics File: Blocking Modal Collapse by a targeted pattern and witness}
+The collapse route is probed and blocked explicitly in the mechanization by the \textbf{Trinity truthmaking pattern} introduced in \textbf{Section 7 of the Diagnostics file}. The design intent is to keep necessity confined to the supreme structure while avoiding a system-level strengthening that would force creaturely truths.
+
+Formally, the development records the enabling pattern:
+\[
+\text{Trinity}(\Phi,\Omega,\psi)\ \longrightarrow\ \diamond R
+\qquad\text{and}\qquad
+\neg\text{Trinity}(\Phi,\Omega,\psi)\ \longrightarrow\ \neg R,
+\]
+and then runs a bounded countermodel search to refute the strengthened implication (Trinity $\rightarrow R$). A genuine \textit{Nitpick} countermodel witness is recorded to confirm that $\text{Trinity}(\Phi,\Omega,\psi)\land \neg R$ is consistent while $\diamond R$ holds.
+This block is diagnostic: within tested bounds, it shows that the enabling implication does not force the stronger one.
+
+\subsection{Formal Blueprint: The Four Phases}
+To address these challenges, this paper structures the formal verification into four logical phases:
+
+\paragraph{Phase I: Foundations (Sections 1--2)} We establish the \textbf{U-Layer}, an abstract universe of discourse, relying on a primitive entailment relation ($\vdash$) and a designated world-point $\eZero$.
+
+\paragraph{Phase II: Core Principles and Existence (Sections 3--4)} We rigorously define \textbf{H-Optimality} ($\Hopt$) and provide a \textbf{Consistency Proof} using a \textit{flat-model witness} to demonstrate satisfiability.
+
+\paragraph{Phase III: Uniqueness and Necessity (Sections 5--6)} We introduce the \textit{Sandwich Theorem} and \textit{Band $\approx$-Collapse}, proving that any attempt to introduce a fourth independent principle forces an $\approx$-collapse into the existing core. Combined with the exclusion of $N=1$ and $N=2$, we derive that a triune structure (\textit{TriSupport}) is the only stable maximal configuration.
+
+\paragraph{Phase IV: Actuality and Diagnostics (Section 17 \& Diagnostics File)} We prove that the triune structure is actual at $\eZero$ (\texttt{TriuneGod\_e0}), explicitly discharge methodological preconditions, and report sanity checks via bounded finite-model search (Nitpick).
+
+\paragraph{Phase V: Final Locale Audit (Section 28)} We mathematically discharge the core locale assumptions via a \texttt{sublocale} proof. This section features two distinct subsections (\textbf{28.1} for discharging No-Superfluous and related core conditions, and \textbf{28.2} for discharging the Excl4 constraint for the Uniqueness of the Trinity), finalizing the strictly axiom-free certification of the system.
+
+\subsection{Reproducibility and Trust Base}
+\label{subsec:repro}
+All formal claims in this paper refer to theorems checked by the Isabelle/HOL kernel (\texttt{theorem \dots\ proof \dots\ qed}). The intended trust base is therefore:
+\begin{itemize}
+  \item the standard Isabelle/HOL kernel and its standard libraries,
+  \item the conservative definitions introduced in this development, and
+  \item an accompanying axiom-audit artifact documenting that no unintended axioms are assumed in user space.
+\end{itemize}
+
+\noindent\textbf{Build recipe (template).} The development is intended to be buildable by the standard command:
+\begin{quote}
+\texttt{isabelle build -D .}
+\end{quote}
+\noindent The following metadata should be recorded in the final camera-ready version:
+\begin{itemize}
+  \item Isabelle version: \texttt{Isabelle2025}
+  \item Platform: \texttt{Windows x86\_64 (Poly/ML 5.9.1)}
+  \item Session name(s): \texttt{Trinity\_necessity\_Proof}
+  \item Optional: \texttt{Nitpick used for diagnostic model exploration}.
+\end{itemize}
+
+\section{Related Work and Positioning}
+\label{sec:related}
+This work is positioned at the intersection of (i) classical ontological arguments, (ii) formal metaphysics, and (iii) interactive theorem proving. The standard G\"odel-style lineage proceeds by stipulating a \emph{positivity} predicate and adopting strong modal axioms (commonly S5), then defining a Godlike being to interact maximally with both. Subsequent variants refine the axiom set or the definition of positivity, often motivated by known fragilities (e.g.\ inconsistency risks, modal collapse patterns, or sensitivity to domain assumptions).
+
+In contrast, the present development shifts the core engine from ``positive properties'' to a \emph{structural order} on grounds (support-based $\preceq$), and formulates supreme truth via a definitional package ($\Hopt$) expressing \emph{maximal non-trivial support}. The headline methodological distinction is that we assume no additional metaphysical or modal axioms in user space beyond HOL; instead we push all strength into conservative definitions and prove consequences inside the standard kernel. In this sense the contribution is less about proposing another axiom set, and more about presenting a verified \emph{definition-driven} reconstruction whose exclusion results force a uniquely stable triune configuration (up to argument-equivalence).
+
+\noindent\textbf{Formal-methods note.} In the tradition of mechanized metaphysics, our emphasis is not only on producing a derivation, but also on making the trust base explicit (kernel + definitions) and adding diagnostics that guard against vacuity or ``toy-model'' readings.
+
+% =================================================================================
+% PART II: FORMAL PRELIMINARIES
+% =================================================================================
+
+\section{Formal Preliminaries: The U-Layer and $\eZero$}
+\label{sec:prelimaries}
+
+\subsection{Propositions, grounds, and support}
+\begin{definition}[U-Layer, Propositions, and Grounds]
+\label{def:ulayer}
+To perfectly match the structural definitions within the Isabelle/HOL formalization, we define the foundational elements as follows:
+\begin{itemize}
+  \item Propositions are standard HOL booleans (\texttt{bool}).
+  \item $\U$ (\texttt{U}) is an abstract type representing the universe of grounds (or world-points).
+  \item $\Arg : \texttt{bool} \to \U$ maps propositions to their corresponding argument-objects (grounds).
+  \item $\SuppU(u) = \{ e \in \U \mid e \vdash u \}$ defines the support set for a ground $u$, based on a primitive entailment relation ($\vdash$).
+  \item $Supports(e, p) \equiv e \vdash \Arg(p)$ abbreviates the relation: ``ground $e$ supports proposition $p$.''
+\end{itemize}
+\end{definition}
+
+\subsection{Strength order on grounds}
+\begin{definition}[Support order $\preceq$]
+\label{def:preceq}
+For argument objects $a, b \in \U$, define
+\[
+a \preceq b \quad \Longleftrightarrow \quad \SuppU(a) \subseteq \SuppU(b).
+\]
+\end{definition}
+
+\begin{definition}[Equivalence of grounds]
+\label{def:eq}
+For argument objects $a, b \in \U$,
+\[
+a \approx b \quad \Longleftrightarrow \quad (a \preceq b)\land(b \preceq a).
+\]
+\end{definition}
+
+\subsection{Epistemic possibility}
+\begin{definition}[Epistemic possibility, $\diamondE$]
+\label{def:diamond}
+We formally define the refutation status as follows:
+\begin{itemize}
+    \item $\Refuted(p)$\footnote{In the Isabelle development, the refutation predicate is named \texttt{Ref}.}: The truth-bearer $p$ is in a \textbf{currently refuted state} (a proof of falsity exists within the current system).
+    \item $\neg \Refuted(p)$: The truth-bearer $p$ is in a \textbf{currently unrefuted state} (currently no proof of falsity exists).
+\end{itemize}
+Consequently, epistemic possibility is defined as:
+\[
+\diamondE p \quad \Longleftrightarrow \quad \neg \Refuted(p).
+\]
+\end{definition}
+
+\noindent
+In our code, \textbf{``Not-refuted''} means that no proof of falsity has been obtained yet(It may be that it is inherently unfalsifiable, or simply that the proof of its impossibility has not yet been attained; regardless, no refutation of it currently exists.); hence the proposition remains epistemically admissible. For example, the Riemann hypothesis may in fact be true or false; however, since no proof of its falsity has been established, it remains epistemically possible.
+
+\subsection{The designated actuality ground $\eZero$}
+\begin{definition}[Actuality ground $\eZero$]
+\label{def:e0}
+$\eZero\in\U$ is a designated ground representing the actual state of affairs (the ``now'' of this paper).
+\end{definition}
+
+\begin{definition}[Truth-at-actuality, $\TrueNow$]
+\label{def:truenow}
+A proposition $p$ is true-at-actuality iff it is supported by $\eZero$:
+\[
+\TrueNow(p) \quad \Longleftrightarrow \quad Supports(\eZero,p).
+\]
+\end{definition}
+
+\newpage
+
+
+
+% =================================================================================
+% PART III: H-OPTIMALITY AND CONSISTENCY
+% =================================================================================
+
+\section{The H-Optimality ($\Hopt$)}
+\label{sec:h_opt}
+
+We now introduce the core engine of the argument: $\Hopt$. The role of $\Hopt$ is to capture ``supreme truth grounding'' structurally. In the formalization, this is realized via the concept of \textbf{Maximal Non-Trivial ($\mathsf{MaxNT}$)} support edges.
+
+\subsection{Structure of H-Optimality and Cantorian Size}
+The definition of $\Hopt$ is designed to identify a structural maximum in the universe of grounds without resorting to arbitrary ``positive properties.''
+
+\begin{definition}[Maximality via Cantorian One-to-One Correspondence]
+The formalization utilizes a score-based maximality where $\Hopt(q)$ implies that the argument-class of $q$ maximizes the set of incoming non-trivial support edges among possible heads.
+\textbf{As detailed in Section 9}, this size comparison is not limited to finite cardinality. Instead, it employs the \textbf{Cantorian method of one-to-one correspondence} (injections) to handle potentially infinite sets of supporting grounds. Formally, we define $A \preceq_c B$ iff there exists an injection from $A$ into $B$. Thus, maximality implies that no other head has a support-set strictly larger (in the Cantorian sense) than that of $q$.
+\end{definition}
+
+\begin{definition}[Strict Superiority Block]
+A candidate $q$ satisfying $\Hopt$ includes a strict anti-above condition, ensuring no other argument in the relevant domain is strictly superior to it.
+\end{definition}
+
+\subsection{The Core Mechanism: The H-Principle}
+\label{sec:h_principle}
+
+\noindent
+The definition of $\Hopt$ directly entails a structural \emph{grounding participation} constraint, which we term the \textbf{H-Principle}.
+It is important to emphasize that the H-Principle is \textbf{not introduced as an additional premise or axiom}; rather, it is a \textbf{formally proven theorem} derived exclusively from the definitional structure of $\Hopt$ and the deductive rules of Higher-Order Logic (HOL).
+Intuitively: any truth that is strictly less certain than the Supreme Truth must \emph{contribute to its grounding}.
+
+\begin{definition}[Strict order on grounds]
+For $a,b\in\U$, define the strict part of $\preceq$ by
+\[
+a \prec b \quad \Longleftrightarrow \quad (a \preceq b)\ \land\ \neg(b \preceq a).
+\]
+\end{definition}
+
+\begin{definition}[H-Principle (grounding participation)]
+Let $K\in\U$ be an $\Hopt$-candidate. Then every pan-domain truth strictly below $K$ supports $K$.
+This principle is formally defined and verified in the mechanization purely from base logic (cf.\ \texttt{H\_principle\_ep\_basic} in \textbf{Code Sec 13.1} and \texttt{H\_principle\_self} in \textbf{Code Sec 7.3}). Furthermore, \textbf{Section 9.2} formally demonstrates that satisfying $\Hopt$ necessarily implies satisfying this H-Principle (\texttt{Hopt\_implies\_H\_principle}).
+It functions as the logical engine behind the exclusion results: any attempt to introduce a superfluous ``supreme'' candidate would violate this required grounding participation pattern.
+\end{definition}
+
+% =================================================================================
+% NEW SECTION: ONTOLOGICAL SUPREMACY AND DEFINITIONAL FINALITY
+% =================================================================================
+\section{Ontological Supremacy and Definitional Finality}
+
+In this formalization, the philosophical concept of the ``Supreme Being'' is strictly stripped of subjective or anthropomorphic attributes. Instead, it is rigorously reconstructed through the lens of relational structure and epistemic support. At the core of this reconstruction lies the definitional equivalence between the ontological label and its mathematical mechanism.
+
+\subsection{The Structural Equivalence: $\Hopt \equiv \mathsf{MaxNT}$}
+We define the Supreme Truth, denoted as $\Hopt$ (Optimal Head), not by an arbitrary list of perfections, but by a purely graph-theoretic and order-theoretic property: $\mathsf{MaxNT}$ (Maximal Non-Trivial Support). In Section 9.1 of our formalization, the definition is explicitly given as:
+\begin{center}
+    \texttt{definition H\_opt :: "bool $\Rightarrow$ bool" where}\\
+    \texttt{"H\_opt q $\equiv$ MaxNT q"}
+\end{center}
+Crucially, the use of the $\equiv$ symbol in Isabelle/HOL signifies a \textit{meta-equality} rather than mere logical equality ($=$). This means that to the verification kernel, the ontological label $\Hopt$ is instantly and unconditionally substituted by its mathematical mechanism $\mathsf{MaxNT}$. Furthermore, in Section 9.2, this identity is formally operationalized via the lemma \texttt{Hopt\_to\_MaxNT}.
+
+This definitional identity is not an isolated occurrence. In Section 13.1, the exact same structural equivalence is mirrored in the epistemic layer:
+\begin{center}
+    \texttt{definition H\_opt\_ep :: "bool $\Rightarrow$ bool" where}\\
+    \texttt{"H\_opt\_ep q $\equiv$ MaxNT\_ep q"}
+\end{center}
+This demonstrates that the equivalence between the ontological label and its structural mechanism is a universal principle systematically maintained across all domains of the formalization. $\mathsf{MaxNT}$ (and its epistemic counterpart $\mathsf{MaxNT\_ep}$) structurally measures the maximal cardinality of incoming non-trivial support edges ($\preceq_c$) within the logical universe.
+
+Philosophically, to identify the Supreme Being with $\mathsf{MaxNT}$ is to redefine God not as an isolated, static entity, but as the ultimate ``Ground of Being'' structurally realized. If God is the foundational truth from which all other truths derive their reality, then in a formal network of epistemic dependence, God must mathematically appear as the ultimate node that maximally sustains the fabric of reality without relying on a strictly superior support.
+
+By establishing this meta-equivalence at the kernel level across multiple layers, we demonstrate that the ``nature of God'' in this logical framework is mathematically identical to the ``most robust, non-collapsing structural network of truths.''
+
+\subsection{Definitional Finality Theorem: The Absolute Bound of Conception}
+One major achievements of this formalization is the mechanical verification of Anselm's intuition---``that than which nothing greater can be conceived''---translated into the strict bounds of Higher-Order Logic (HOL).
+
+In Section 27, the theorem \texttt{God\_finality} establishes that if a proposition $q$ satisfies $\Hopt$, there exists no conceivable truth $\zeta$ within the entire domain of epistemic possibility ($\PDom$) that is strictly more certain or foundational than $q$:
+\begin{center}
+    $\forall \zeta \in \PDom.\ \neg (\Arg(q) \prec \Arg(\zeta))$
+\end{center}
+
+Furthermore, we elevate this to a meta-logical absolute in Section 9.4. We prove the \textbf{Definitional Finality Theorem} (mechanized as \texttt{no\_definition\_strictly\_superior\_than\_H\_opt}): assuming $\Hopt(q)$ and that a logical definition $D$ ranges over the pan-domain ($\forall r.\ D\ r \longrightarrow r \in \PDom$), there does not exist an $r$ satisfying $D(r)$ such that its argument is strictly superior to the argument of $\Hopt$:
+\begin{center}
+    $\neg (\exists r.\ D\ r \land \Arg(q) \prec \Arg(r))$
+\end{center}
+This corollary (\texttt{no\_definition\_strictly\_superior\_than\_H\_opt}) serves as a definitive closure to ontological infinite regress. It proves that $\Hopt$ is a truth so absolutely certain that a more certain truth cannot even be defined or imagined within the logical system. Any attempt to define a concept ``greater'' or ``more fundamental'' than the Supreme Truth is not merely philosophically unsound, but is strictly blocked by the definitional boundaries of the system.
+
+
+\section{Consistency of $\Hopt$: The Flat-Model Witness}
+\label{sec:consistency}
+
+A definition is uninformative if it is contradictory (i.e.\ unsatisfiable). Before deriving the $N=3$ structure, we justify that $\exists x.\Hopt(x)$ is not vacuous by exhibiting a simple interpretation (a ``flat model'') in which the clauses of Definition can be simultaneously satisfied.
+
+\subsection{Abstract sanity checks}
+In the mechanization, automated tools (e.g.\ SMT via proof reconstruction, and finite countermodel search where appropriate) are used to probe for inconsistency in local configurations of definitions. The intended outcome is evidence that no immediate contradiction is forced by the definitional package.
+
+\subsection{Concrete flat-model idea}
+Let $W=\{i_1,\dots,i_n\}$ be a nonempty index set. Interpret:
+\begin{itemize}
+  \item Interpret the abstract ground type $\U$ as $\mathcal{P}(W)$.
+  \item Interpret the primitive entailment $\vdash$ by inclusion: for $e,u\in\U$, define $e \vdash u$ iff $u \subseteq e$.
+  \item Then $\SuppU(u) := \{\,e\in\U \mid e \vdash u\,\} = \{\,e\in\U \mid u\subseteq e\,\}$.
+  \item The interpretation of the map $\Arg: \texttt{bool} \to \U$ is defined trivially (e.g., $\Arg(p) := \emptyset$ for all $p$), as provided by the mechanized flat-model witness in the Isabelle development.
+  \item The actuality ground is interpreted as the total set: $\eZero := W$.
+\end{itemize}
+
+\noindent Under this interpretation, since $\Arg(p) \in \mathcal{P}(W)$, the condition $\TrueNow(p)$ equates to $\Arg(p) \subseteq W$, which holds trivially. Hence every proposition is ``true-at-actuality'' in the degenerate flat witness. Epistemic possibility $\diamondE$ can be interpreted by taking $\Refuted$ to be empty (no proposition is refuted) so that all propositions are epistemically possible.
+
+Define a candidate proposition $g$ such that its argument evaluates to the empty set, $\Arg(g) := \emptyset$. Then for any proposition $p$, since $\emptyset \subseteq e$ is always true, $\SuppU(\Arg(p)) = \U = \SuppU(\Arg(g))$ holds trivially, hence $\Arg(p) \preceq \Arg(g)$ is satisfied, making $g$ maximal and final by construction.
+
+\begin{theorem}[Existence in the flat witness]
+\label{thm:flat_ex}
+In the flat-model interpretation above, there exists a candidate $g$ such that $\Hopt(g)$ holds.
+\[
+\exists p::\texttt{bool}.\, \Hopt(p).
+\]
+\end{theorem}
+
+\begin{remark}
+This flat witness is intentionally degenerate: its sole role is to establish \emph{satisfiability} (hence consistency) of the definitional package, i.e.\ that the definitions do not immediately collapse into contradiction.
+It is therefore only a \emph{Stage~I} guarantee.
+
+The \emph{informational non-vacuity} and \emph{structural richness} of the framework are secured independently in later sections: non-trivial joint-support edges ($\mathsf{NT\_edge}$), the anti-collapse results, and (within stated bounds) Nitpick's explicit genuine satisfying witness for a \emph{non-vacuous triune} configuration (Section 8 in Diagnostics file).
+Accordingly, the present development goes beyond the flat witness by separately analyzing non-vacuity and structural differentiation.
+\end{remark}
+
+\newpage
+
+% =================================================================================
+% PART IV: EXCLUSION OF ALTERNATIVES AND N3 NECESSITY
+% =================================================================================
+
+\section{Exclusion of Alternatives and N3 Necessity}
+\label{sec:exclusion}
+
+Having established that $\exists x.\Hopt(x)$ is non-vacuous, we turn to the structural question:
+
+\begin{quote}
+\emph{How many mutually non-equivalent $\Hopt$-witnesses can coexist without $\approx$-collapse ($\Arg$-equivalence collapse) at the argument level?}
+\end{quote}
+
+The key point is that we do \emph{not} count witnesses extensionally (as mere syntactic objects), but \emph{modulo argument-equivalence}.
+Hence, ``many'' witnesses are only meaningful insofar as they inhabit genuinely different argument classes.
+We proceed by structural exclusion, eliminating $N=1$, $N=2$, and $N\ge 4$, and then exhibiting the positive stability of $N=3$.
+
+\subsection{Method: Epistemic Distinctness via Argument Classes}
+
+\begin{definition}[Epistemic Distinctness]
+\[
+\text{Distinct}_{ep}(A,B) \;:=\; \neg(\Arg(A)\approx \Arg(B)).
+\]
+\end{definition}
+
+\noindent
+When we speak of $N$ witnesses, we mean $N$ candidates satisfying $\Hopt$ that are pairwise $\text{Distinct}_{ep}$.
+This choice is crucial: in the U-layer, two objects can be syntactically different while still being indistinguishable as grounds/reasons once passed through $\Arg(\cdot)$.
+
+\medskip
+\noindent\textbf{Interpretive Note.} Intuitively, $\Arg(X) \preceq \Arg(Y)$ reads as ``the grounds carried by Y cover (at least) those carried by X.'' Therefore, $\Arg(X) \approx \Arg(Y)$ means that the joint-support between X and Y degenerates into a \textbf{relationally vacuous (trivial) state}, losing genuine informational distinction. Crucially, even under such an $\approx$-collapse, the structural necessity of the triune configuration ($N=3$) remains strictly intact; it is merely the relational \emph{content} that becomes vacuous. To ensure we are counting genuinely non-vacuous pillars of truth, we define epistemic distinctness via non-equivalence. Our exclusion results show that any attempt to introduce additional independent pillars (e.g., $N \ge 4$) inevitably forces them to undergo this vacuous $\approx$-collapse.
+
+
+\subsection{The Epistemic Fact of the Edge: Foundation of Exclusion}
+The structural exclusion of Monism ($N=1$) and Dualism ($N=2$) hinges on a single, undeniable pivot: \textbf{The Non-Refutation of the Edge.} Within the framework of the $\U$-layer, a non-trivial, creative relationship (an ``Edge'') is not assumed to be an objective reality; rather, it is treated strictly as an \textbf{not yet unrefuted epistemic possibility} ($\diamondE$). \textbf{The appeal to non-refutation is not an ontological commitment to the existence of the Edge, but a bookkeeping constraint within the admissibility layer: any structure claiming maximal coverage must remain compatible with unrefuted configurations.}
+
+\paragraph{The role of non-refutation.}
+Under $\diamondE p \leftrightarrow \neg\Refuted(p)$, the Edge proposition is treated as an \emph{admissible} configuration unless it is refuted in the current theory-state.
+This does not assert the Edge as an objective ontological fact; it only constrains maximal-coverage claims to remain compatible with currently unrefuted configurations.
+Non-degeneracy of $\diamondE$ is separately guarded by the sanity checks reported in the Diagnostics file (Section 7).
+
+Therefore, the mere fact that a relational Edge (which structurally requires at least three distinct entities: $A \neq B \neq r$) remains in the set of currently not-yet-refuted epistemic possibilities is logically sufficient to trigger the \textbf{H-Principle}. Because the Edge is epistemically admissible, the Optimal Head ($\Hopt$) is strictly obligated to be structurally capable of supporting and covering it. Since $N=1$ and $N=2$ lack the combinatorial capacity to host three distinct entities (by the Pigeonhole Principle), they are structurally incapable of providing this coverage and are thus disqualified by their own structural poverty. (As diagnostically explored later in Section \ref{sec:nitpick_analysis}(Diagnostics file), the existence of a genuine triadic model within the tested scopes supports the reading that this Edge is a logically viable configuration, not a spurious construct.)
+
+\textbf{The computational diagnostics detailed in Section \ref{sec:nitpick_analysis}(Diagnostics file) provide bounded computational evidence of the epistemic admissibility of the Edge by exhibiting a non-vacuous model of the trinitarian structure. The existence of this genuine model serves as an ancillary witness supporting the core premise of the exclusion results: that the relational Edge constitutes a non-explosive possibility within the Isabelle/HOL environment.}
+
+\subsection{Section 11: Vacuity Diagnosis: If NT-edge is dead, a relationally vacuous triune structure of MaxNT-satisfiers emerges}
+In Section 11(Main Code), we establish the strict mathematical criterion for Maximality ($\mathsf{MaxNT}$) via a formal vacuity diagnosis. It proves that if hypostases undergo an \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)}---for instance, if the $\Arg$-images of the triune form an equivalence class induced by pervasive $1$-to-$1$ mutual support---then the relational (joint) support among the Trinity is reduced to vacuous support, yielding a \textbf{relationally vacuous triune structure of $\mathsf{MaxNT}$-satisfiers} (a triune configuration of $\mathsf{MaxNT}$-satisfiers whose $\Arg$-images are $\approx$-equivalent, so that $\mathsf{MaxNT}$ loses its relational discriminative content and collapses to a purely head-like condition). This formally establishes that without non-trivial distinction, the structural supports become informationally vacuous.
+
+\vspace{0.5em}
+\noindent\textbf{Fixed-point invariance.} Even under $\approx$-collapse ($\Arg$-equivalence collapse) where joint-support becomes vacuous, the cardinality exclusions ($\neg (N=1), \neg (N=2), \neg (N\ge 4)$) remain intact; hence $N=3$ persists as the unique consistency-preserving fixed point. Vacuity affects informational content, not the structural necessity. Relational vacuity affects only informational content, and does not affect the \textbf{structural necessity ($N=3$)}.
+
+% --- Non-trivial edge (text-level definition) ---
+\newcommand{\NTedge}{\mathsf{NT\_edge}}
+
+\begin{definition}[Non-trivial joint-support edge]
+\label{def:nt_edge}
+We say that $(A,B)\Rightarrow C$ is a \emph{non-trivial} joint-support edge iff
+\[
+\NTedge(A,B,C)\;:\!\!\Longleftrightarrow\;
+\bigl(\Arg(A\wedge B)\preceq \Arg(C)\bigr)\ \land\
+\neg\bigl(\Arg(A\wedge B)\approx \Arg(A)\bigr)\ \land\
+\neg\bigl(\Arg(A\wedge B)\approx \Arg(B)\bigr).
+\]
+Thus a joint-support counts as non-trivial only if the conjunction does \emph{not}
+undergo an $\approx$-collapse ($\Arg$-equivalence collapse) to either conjunct.
+\end{definition}
+
+\begin{lemma}[Binary subordination forces $\approx$-collapse on joint support]
+\label{lem:subordination_collapse}
+If $\Arg(A)\preceq \Arg(B)$, then $\Arg(A\wedge B)\approx \Arg(A)$.
+\end{lemma}
+
+\begin{proof}[Kernel-certified reference]
+This is the mechanized collapse lemma proved in the formalization.
+\end{proof}
+
+\begin{corollary}[$\approx$-collapse blocks non-trivial edges]
+\label{cor:collapse_blocks_ntedge}
+If $\Arg(A)\preceq \Arg(B)$, then for any $C$, $\neg\,\NTedge(A,B,C)$.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:subordination_collapse}, $\Arg(A\wedge B)\approx \Arg(A)$, contradicting
+Definition~\ref{def:nt_edge}.
+\end{proof}
+
+\subsection{Section 12: TriSupport-Joint and Ternary Semantics (No 1-to-1)}
+Building upon the vacuity diagnosis of Section 11--12 mechanically verifies how 1-to-1 subordination destroys the trinitarian engine. If 1-to-1 mutual support is allowed between any elements $a$ and $b$, the ternary joint-support equation ($\Arg(a \land b) \preceq \Arg(c)$) devolves into a mere linear derivation ($\Arg(a) \preceq \Arg(c)$). In this informationally vacuous state, the joint participation of the second entity ($b$) becomes mathematically superfluous, failing to generate a genuine, non-reductive triadic relation.
+
+Because the Supreme Truth ($\Hopt$) is defined mathematically by the maximization of \textit{non-trivial} relational edges ($\mathsf{MaxNT}$), any configuration that trivializes joint support inherently fails to reach the maximum cardinality of $\mathsf{MaxNT}$. Therefore, the kernel-verified code explicitly proves that the strict structural exclusion of 1-to-1 mutual support ($\neg(\Arg(a) \preceq \Arg(b))$) is not an arbitrary theological constraint, but a strict mathematical necessity to prevent the vacuity collapse proven in Section 11.
+
+\subsection{Section 13.3: Rescue block: Hopt3 $\Rightarrow$ N3 (with pure joint support)}
+Section 13.3 explicitly formulates the \texttt{Hopt3} rescue block, logically guaranteeing that three optimal heads ($\Hopt$) can strictly co-support a third without falling into 1-to-1 subordination. This section verifies that the pure ternary joint-support structure (\texttt{TriSupport\_Joint}) seamlessly bridges into the $N=3$ necessity, successfully preserving the maximal non-triviality required by $\Hopt$ without succumbing to the informational vacuity proven in Section 11.
+
+\subsection{Section 15.2: Structural Collapse of Monism ($N=1$)}
+\label{sec:excludeN1}
+Section 15.2 demonstrates the logical impossibility of a single-headed ground ($N=1$) through the lens of the \textbf{H-Principle (Coverage Principle)}.
+
+\begin{itemize}
+    \item \textbf{The Requirement of Plurality:} A non-trivial relationship or ``Edge'' ($A, B \to r$) structurally requires at least two distinct participants ($A \neq B$). In a Monistic model where exactly one Head exists, any potential relation undergoes a \textbf{$=$-collapse (numerical-identity collapse)}, rendering the set of creative edges necessarily empty ($\emptyset$).
+    \item \textbf{The H-Principle Contradiction:} According to the \textbf{H-Principle}, an Optimal Head ($\Hopt$) must cover and support the entire domain of epistemic possibilities ($\diamondE$) (proved in \textbf{Code Sec 13.1 and 7.3}, and \textbf{Code Sec 9.2} formally demonstrates that satisfying $\Hopt$ implies satisfying this H-Principle). Since \textbf{EdgeExist remains in the set of currently not-yet-refuted epistemic possibilities}, an $N=1$ head---which is structurally incapable of relations---cannot provide the required coverage.
+    \item \textbf{Conclusion:} The $N=1$ model is disqualified not by an external axiom, but by its own structural poverty; it is too ``small'' to ground a universe that contains the possibility of relationship.
+\end{itemize}
+
+To use a simple analogy: being the sole top student in a weaker school does not yet guarantee absolute supremacy, since a stronger student may still exist in a more demanding school. By contrast, sharing first place in the most elite school, already populated by the strongest admissible students, leaves no such open possibility. Structurally, the same point holds here. A solitary top element in an impoverished comparison domain may still fail to be genuinely unsurpassable, since a richer domain could in principle contain a stronger candidate. By contrast, a co-maximal structure realized within a comparison domain already saturated by the strongest admissible candidates removes that possibility altogether. Hence the decisive issue is not merely whether a candidate is ``top'', but whether its top-status is realized within the maximally relevant comparison space.
+
+\subsection{Section 16: Exclusion of \(N=2\): duality cannot strictly exceed \(N=1\) in MaxNT (mutual vs.\ non-mutual cases)}
+\label{sec:paircollapse}
+
+Section 16 excludes the dualistic model (\(N=2\)) by a two-pronged formal analysis, showing both its internal structural instability and its inability to sustain the higher-order creative richness required by MaxNT.
+
+\begin{itemize}
+    \item \textbf{Internal collapse dilemma (mutual vs.\ non-mutual):}
+    As established in the formal development, an \(N=2\) configuration faces a strict dilemma. If the two ultimate Heads mutually support one another, they immediately undergo an \(\approx\)-collapse at the level of \(\Arg\)-equivalence. If, on the other hand, they are non-mutual yet perfectly symmetric, they generate identically empty relational scores \((A \approx_{NT} B)\), so that no epistemically significant distinction is preserved (\textsf{Distinct\_ep} fails). In either case, a genuinely functionally differentiated dual structure fails to arise. Thus, \(N=2\) cannot establish a structure that strictly surpasses the effective capacity of \(N=1\).
+
+    \item \textbf{Combinatorial incapacity (pigeonhole constraint):}
+    Within this framework, a non-trivial creative edge requires at least three distinct relata \((A \neq B \neq r)\), so that the relation is genuinely productive rather than a disguised form of self-circularity. But in an exactly \(N=2\) world, only two Heads are available in total. Hence, by a simple pigeonhole constraint, it is impossible to assign three distinct relational roles from a domain of size two.
+
+    \item \textbf{Epistemic disqualification (MaxNT candidate failure):}
+    Following the exact formal refutation architecture used for \(N=1\), the \(N=2\) model is formally disqualified as a viable \textsf{MaxNT\_candidate}. The proof hinges on the epistemically unrefuted status of a non-trivial edge \((\diamond_E\,\textsf{EdgeExist})\). Because \textsf{EdgeExist} structurally requires three distinct relational nodes, it entails \(\neg\textsf{ExactlyTwoHeadsP}\). Consequently, the epistemic admissibility of the edge entails the epistemic admissibility of \(\neg\textsf{ExactlyTwoHeadsP}\). Within the \textsf{MaxNT} evaluation, this renders \(\neg\textsf{ExactlyTwoHeadsP}\) a strictly \textsf{stronger\_edge} alternative than \(N=2\) itself. The \(N=2\) configuration therefore formally fails the \textsf{MaxNT\_candidate\_N2} condition and is accordingly excluded.
+\end{itemize}
+
+\subsection{Exclusion of Multiplicity ($N\ge 4$): Band $\approx$-Collapse}
+
+\begin{theorem}[No Four Distinct Argument Classes: Band $\approx$-Collapse]
+\label{thm:no4}
+As proven in the mechanization (cf.\ \texttt{no\_four\_distinct\_classes}), there do not exist four $\Hopt$-witnesses that are pairwise $\text{Distinct}_{ep}$.
+\end{theorem}
+
+\begin{proof}[Proof Sketch]
+The proof utilizes a \textbf{Band $\approx$-Collapse} argument. If we assume a core structure (e.g., $S = \Omega \land \Psi$) and introduce a fourth independent pillar $\Delta$, the \emph{Sandwich Theorem} demonstrates that $\Delta$ must sit between the core and the covering band. Under the structural constraints of $\Hopt$, this position is unstable for an independent pillar, forcing $\Delta$ to undergo an \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)} into the core ($\Arg( \Delta ) \approx \Arg(S)$). Thus, any attempt to proliferate beyond three results in an \textbf{$\approx$-collapse}.
+\end{proof}
+
+\subsection{The Dual Avoidance: Identity vs. Equivalence}
+The structural proof rigorously distinguishes between numerical identity and logical equivalence, thereby avoiding two distinct logical cliffs:
+\begin{itemize}
+    \item \textbf{Identity ($=$-collapse) $\Rightarrow$ Inconsistency (Contradiction):} If the hypostases undergo a \textbf{$=$-collapse (numerical-identity collapse)} ($A = B = C$), the system is forced into a monistic state ($N=1$). As established, a strictly monistic ground is structurally incapable of hosting the non-trivial relational support required by the definitions. Forcing $N=1$ into the maximal coverage system induces a \textbf{logical contradiction}, causing the system to collapse entirely. This proves that \textit{a non-triune configuration is formally impossible to exist}.
+    \item \textbf{Equivalence Class ($\approx$-collapse) $\Rightarrow$ Vacuity (Informational Emptiness):} If the hypostases maintain the $N=3$ structural boundary but their argument-grounds ($\Arg$) undergo an \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)}, the system avoids formal contradiction. However, the joint-support relations cease to produce non-trivial information, devolving into \textbf{vacuous support}. This is the ``vacuous $\approx$-collapse'' diagnosed in Section 11.
+\end{itemize}
+
+Identity collapse ($=$) yields inconsistency; equivalence collapse ($\approx$) yields relational vacuity. Thus $N=3$ is the unique consistency-preserving fixed point, while non-$\approx$ is the condition for non-vacuous maximality.
+
+\subsection{Synthesis: The Necessity of the Trinity ($N=3$)}
+The formalization demonstrates why the proof successfully avoids both cliffs. The necessity of $N=3$ overcomes the cliff of \textbf{Inconsistency} (since $N=1, 2, 4+$ are formally impossible), while the non-trivial edge ($\NTedge$) overcomes the cliff of \textbf{Vacuity}. The logical sequence of Sections 15.2 and 16 establishes a \textbf{``Stability Threshold.''}
+
+Through these exclusions, the \textbf{Trinity ($N=3$)} emerges as the unique, minimal, and optimal configuration—the first structure capable of supporting the ``pair $\to$ third'' perichoretic law while maintaining maximal coverage over the epistemic universe. Therefore, a non-vacuous, mutually supporting triune structure is the unique, mathematically stable fixed point of the entire formal architecture.
+
+\subsection{Ordinal/Cardinal Transcendence and the Unity of the Trinity}
+\label{sec:ordinal_transcendence}
+In the formal development (corresponding to Section 25 of the mechanization), we provide an ordinal/cardinal diagnostic for the unity of the Trinity. A fundamental question is whether a triune relational pattern can be faithfully embedded into a simple linear three-step order (e.g., an ordinal chain $O1 < O2 < O3$).
+
+We model a finite ordinal chain with three points, equip it with a meet-like operation ($\mathsf{CAP}$), and mathematically ask whether three distinct hypostases can be mapped bijectively into this linear structure while preserving the triune ``pair implies third'' pattern.
+
+The formal verification yields a negative result: \textbf{no such embedding exists}. The reason is purely structural. In a linear chain, the meet operation behaves like a minimum, causing any pairwise joint structure to inevitably collapse downward into a lower point. However, the triune pattern requires a symmetric and irreducible relational form in which each pair stands in a directed, non-collapsing relation to the third. This demand cannot be realized inside a merely linear ordinal hierarchy.
+
+Consequently, the formalization mathematically proves that the unity of the Trinity is not representable as a simple ordinal ranking or as a one-dimensional cardinal ladder. The triune structure possesses a mode of unity that \emph{transcends} linear order: it is not a serial progression of ranks, but a mutually irreducible relational whole. This establishes that the plurality of persons and the unity of essence are modeled not as a mathematical contradiction, but as two formally distinct dimensions.
+
+\newpage
+
+% =================================================================================
+% PART V: THE ACTUALITY OF THE SUPREME TRUTH
+% =================================================================================
+
+\section{The Actuality of the Supreme Truth}
+\label{sec:actuality}
+
+In the previous sections, we established (within the U-layer development) that the only structurally stable configuration for $\Hopt$-witnesses, measured up to argument-equivalence, is the triune case ($N=3$).
+A natural next question is how this structure connects to the designated actuality point $\eZero$ introduced in the preliminaries.
+
+\subsection{Designated Actuality: Formal vs. Interpretive}
+
+Formally, $\eZero$ is a designated constant of the U-layer, and $\TrueNow(\varphi)$ was introduced as the notion of truth-at-$\eZero$ via support.
+Accordingly, the \emph{formal} claim of this section is:
+
+\begin{quote}
+If the triune structure holds universally in the U-layer sense, then its characteristic support/closure pattern holds at the designated point $\eZero$.
+\end{quote}
+
+Any further identification of $\eZero$ with ``our actual world'' is an \emph{interpretive} move. We treat this identification as a methodology premise: that the U-layer structure captures the logical substrate of reality.
+
+We do not insert this identification as an ``axiom'' inside the U-layer (that would be circular). Rather, it is a methodological identification we adopt when interpreting mathematics:
+
+For example, we ordinarily accept that what is proven in mathematics also holds in our world. The mathematical fact $1+1=2$ is proved internally on the basis of axioms, yet we naturally interpret it as ``true in reality as well.'' This amounts to assuming that the axioms/rules that make the proof possible are applicable to our reasoning and to the description of the actual world.
+
+Likewise, the basic commitments of HOL are constructed only from principles regarded as strictly self-evident (otherwise we would have no reason to trust HOL at all). Therefore, treating HOL's basic commitments as applicable in our world is not an arbitrary stipulation, but a methodologically justified interpretation (i.e., an adoption of the formal structure as a model for reality).
+
+\subsection{Instantiation at $\eZero$ (Formal Derivation)}
+
+In the mechanization, the $N3$ package is formulated with universal quantification over U-layer points (typically of the form $\forall e.\, \cdots$).
+By applying the standard Universal Instantiation rule of Higher-Order Logic, we specialize this universal quantifier to the constant $\eZero$.
+
+\begin{theorem}[Instantiation at $\eZero$]
+\label{thm:inst_e0}
+If $N3$ holds in the U-layer development, then the triune closure/support pattern holds at the designated point $\eZero$.
+More precisely, from an $N3$ statement of the schematic form
+\[
+N3 \;\Longrightarrow\; \exists a\,b\,c.\; (\cdots)\ \land\ \forall e.\; \mathsf{MS}(e;a,b,c),
+\]
+we obtain
+\[
+N3 \;\Longrightarrow\; \exists a\,b\,c.\; (\cdots)\ \land\ \mathsf{MS}(\eZero;a,b,c),
+\]
+where $\mathsf{MS}(e;a,b,c)$ abbreviates the triune mutual-support clause used in the formal development.
+\end{theorem}
+
+\subsection{Packaging as the Constant}
+
+\begin{definition}[Constant: Triune God at $\eZero$]
+\label{def:TriuneGod_e0}
+We define \texttt{TriuneGod\_e0} as the existence of three $\Hopt$-witnesses whose triune mutual-support/closure pattern holds at $\eZero$:
+\[
+\texttt{TriuneGod\_e0}\;:=\;\exists a\,b\,c.\;
+\bigl(\Hopt(a)\land \Hopt(b)\land \Hopt(c)\bigr)\ \land\ \mathsf{MS}(\eZero;a,b,c).
+\]
+\end{definition}
+
+\begin{theorem}[Actuality at the Designated Point]
+\label{thm:TriuneGod_e0}
+In the mechanization, $N3$ entails \texttt{TriuneGod\_e0}. Specifically, based on the lemma \texttt{TriuneGod\_e0\_holds\_from\_N3}:
+\[
+N3 \;\Longrightarrow\; \texttt{TriuneGod\_e0}.
+\]
+\end{theorem}
+
+\noindent\textbf{Interpretive note.}
+If one accepts the bridge that $\eZero$ corresponds to the actual world, \texttt{TriuneGod\_e0} can be read as asserting that the triune closure pattern is operative at the designated actuality point. The formal content of the paper, however, is the derivation inside HOL and the specialization to $\eZero$ by universal instantiation.
+
+\subsection{On Double Negation and Existence}
+
+Finally, we address the non-vacuity of the argument. Isabelle/HOL is a classical logic system, meaning Double Negation Elimination is available:
+\[
+\neg\neg(\exists x.\Hopt(x)) \Longrightarrow \exists x.\Hopt(x).
+\]
+While the consistency proof (Flat-Model) in Part III ensures that $\Hopt$ is not contradictory, the logical derivation of existence in a classical setting may utilize this principle. We define the existence of the Supreme Truth in the world as follows:
+
+\begin{definition}[Constant: God Exists in the World]
+\[
+\texttt{GodExists\_world}\;:=\;\exists x.\Hopt(x).
+\]
+\end{definition}
+
+\newpage
+
+% =================================================================================
+% PART VI: COMPUTATIONAL VERIFICATION (SECTION 28 ANALYSIS)
+% =================================================================================
+
+\section{Computational Diagnostics and Model Existence (Nitpick)}
+\label{sec:nitpick_analysis}
+
+In the final phase of the formalization (referencing \textbf{Section 8--9 of the Diagnostics\_Nitpick file}), we subject the derived trinitarian structure to exhaustive finite-model search using the \textit{Nitpick} tool. This phase serves as a computational ``experiment'' to verify the theory's structural predictions.
+
+\subsection{8.1 Trinity Model existence Nitpick Test- MaxNT}
+The diagnostics perform a sweep across different universe sizes ($N$) to identify where the definitional package allows for a \textit{genuine} model.
+
+\begin{itemize}
+    \item \textbf{Singularity and Duality ($N=1, 2$):} When the search space is restricted to $N=1$ or $N=2$ by the definitions, the system reports \texttt{expect = none} (UNSAT).
+    \item \textbf{Triunity ($N=3$):} Upon reaching $N=3$ (verified in the $U10$ universe), Nitpick identifies a \textbf{genuine model} (\texttt{expect = genuine}).
+    \item \textbf{Significance:} This result provides bounded computational evidence that the theory is \textbf{Non-Trivial}. In particular, under the present definitional package, models do not appear at $N=1,2$ but do appear at $N=3$; this is consistent with the analytic derivation that the trinitarian configuration is not obtained by an informationally vacuous relaxation, but emerges only once the relevant constraints become jointly satisfiable.
+\end{itemize}
+
+The attainment of a \textbf{genuine model} within the bounded scopes of the finite-model search under full universal quantification ($\forall$) and axiom-free conditions indicates that the internal ``gears'' of the $\Hopt$ engine—specifically \textit{Maximality} ($\mathsf{MaxNT}$) and \textit{Support-Density}—remain coherent when checked against Nitpick's stricter (less approximative) treatment of the higher-order constraints.
+
+\subsection{8.2 Numerical Diagnostics for Trinity Necessity with number of distinct MaxCov entities}
+We additionally tested whether a configuration with \emph{four} MaxCov points can exist such that they are
+pairwise non-$\approx$. Concretely, the diagnostic asks for $A,B,C,D$ satisfying:
+(i) $\mathsf{MaxCov}(A),\mathsf{MaxCov}(B),\mathsf{MaxCov}(C),\mathsf{MaxCov}(D)$, and
+(ii) \emph{pairwise non-equivalence} $\,\neg(A\approx B),\neg(A\approx C),\neg(A\approx D),\neg(B\approx C),\neg(B\approx D),\neg(C\approx D)$.
+Note that there are $\binom{4}{2}=6$ such non-$\approx$ constraints.
+
+Within the chosen finite scopes, \textit{Nitpick} reports \texttt{UNSAT} (\texttt{expect = none}) for this query.
+The fact that Nitpick fails to find a model for $N \ge 4$ within the tested bounds provides supporting diagnostic evidence that the current framework does not employ any axioms to exclude a specific $N$, and that the semantic impossibility of $N \ge 4$ is already inherent at the level of pure definitions.
+
+We therefore record this result as a smoke test supporting the intended ``no $N\ge 4$ independent maxima'' reading,
+while maintaining the formal separation between (i) kernel-checked theorems and (ii) bounded model-search diagnostics.
+
+The computational diagnostics serve as a crucial empirical complement to the abstract deduction. The fact that the $N \ge 4$ search reports UNSAT within the tested scopes supports the hypothesis that the definitional framework inherently resists configurations with four or more independent maxima. While Nitpick is a bounded diagnostic tool and not a universal proof, its failure to find an $N \ge 4$ model—combined with its success in finding an $N=3$ model—is consistent with the formal derivation that the trinitarian ground is not an informationally vacuous ``toy'' concept, but a robust structural reality structurally favored by the laws of consistency and maximality.
+
+\subsection{9. Non-vacuous Genuine Trinity Model (Nitpick Witness and Sanity Check)}
+\label{subsec:nonvacuous_trinity}
+
+To sanity-check that the $N=3$ configuration can realize genuinely non-vacuous relational content, we introduce the strict predicate \texttt{Trinity\_nonvacuousP}. It simultaneously requires
+(i) \texttt{TriSupport\_JointP}, enforcing pure ternary joint-support while prohibiting any pairwise $1$-to-$1$ subordination (six constraints of the form $\neg(\mathrm{ArgP}\,x \preceq \mathrm{ArgP}\,y)$), and
+(ii) \texttt{NT\_edgeP} in all three directions, enforcing non-trivial edges by forbidding $\approx$-collapse of each conjunction into either conjunct (six constraints of the form $\neg(\mathrm{ArgP}(x \sqinter y) \approx \mathrm{ArgP}\,x)$ and $\neg(\mathrm{ArgP}(x \sqinter y) \approx \mathrm{ArgP}\,y)$).
+Together this yields a negation-heavy, anti-triviality specification.
+
+Automated finite-model search (\textit{Nitpick}) finds a \texttt{genuine} satisfying model for \texttt{Trinity\_nonvacuousP} already in the minimal scope $\mathrm{card}(P)=3$ and $\mathrm{card}(U)=3$. In the returned witness (up to renaming of elements), the Skolem triple $P_1,P_2,P_3$ satisfies the cyclic law
+\[
+P_1 \sqinter P_2 = P_3,\qquad
+P_2 \sqinter P_3 = P_1,\qquad
+P_3 \sqinter P_1 = P_2.
+\]
+Moreover, a diagnostic check on the negation, \texttt{\char`\\\char`\<not\char`\> Trinity\_nonvacuousP}, also yields a \texttt{genuine} model under the same bounds. Hence \texttt{Trinity\_nonvacuousP} is satisfiable but not valid (i.e., not forced by the definitions) in the tested finite scope.
+
+\paragraph{Significance.}
+These finite-scope witnesses provide evidence that the ``non-vacuous Trinity'' package is neither definitionally inconsistent nor definitionally trivial. In particular, the existence of a model satisfying the anti-collapse and anti-subordination constraints shows that the intended non-vacuous $N=3$ pattern is realizable within the framework, complementing the deductive results established elsewhere in this development.
+
+\newpage
+
+% =================================================================================
+% PART VII: DISCUSSION AND CONCLUSION
+% =================================================================================
+
+\section{Discussion: Computational Verification}
+\label{sec:discussion}
+
+This section interprets the computational diagnostic tests performed in the later portion of the mechanization.
+
+\subsection{Anti-vacuity / soundness sanity check}
+\label{subsec:antivacuity}
+
+In a Diagnostics-Optional.thy file of the Isabelle source, we utilized \textit{Nitpick} to perform sanity checks. The following check is intended as a guard against accidental trivialization and vacuous readings, and is ancillary to the kernel-checked theorems.
+
+\begin{enumerate}
+    \item \textbf{Anti-vacuity / soundness sanity check (\texttt{not\_explosion}):}
+    We tested for accidental trivialization by attempting to realize logical falsehood under the diagnostic discipline. Nitpick did not produce a model for \texttt{False} in this setting.
+    \begin{itemize}
+        \item \textbf{Interpretation:} This is a diagnostic against ``everything becomes true'' readings. The primary guarantee of correctness remains the Isabelle/HOL kernel proof-checking of the theorems.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Diagnostics Section 7: Anti-``modal collapse'' witness}
+The mechanization contains a focused diagnostic block in \textbf{Section 7 of the Diagnostics file} to probe for collapse-style strengthening.
+Specifically, the development records a \textit{Nitpick} countermodel search refuting the implication (Trinity $\rightarrow R$) under the enabling pattern (Trinity $\rightarrow \diamond R$), thereby witnessing that the strengthening is not forced by the definitional package.
+Two short sanity checks are also recorded to guard against vacuous readings of $\diamond$: (i) $\neg(\forall P.\ \diamond P)$ and (ii) $\neg(\diamond \texttt{False})$ is not forced.
+These diagnostics are bounded and ancillary; the primary correctness guarantee remains kernel-level proof checking of the proved theorems.
+
+\subsection{The Principled Impossibility of Higher Truth}
+\label{sec:impossibility_higher_truth}
+
+As established earlier, the definitional package blocks any attempt to define a truth strictly superior to $\Hopt$ within the relevant domain.
+
+\section{The H-Principle: Structural Properties of the argument of H-Optimality}
+\label{sec:h_principle_structural}
+
+\subsection{From H-opt to H-Principle}
+\label{subsec:Hopt_to_principle}
+$\Hopt$ does not merely exist as a passive state of highest certainty. It actively exhibits the \textbf{H-Principle} as its defining structural property. \textbf{The so-called H-Principle is not introduced as an independent assumption or normative constraint. Crucially, the principle is a formally proven theorem within the Isabelle/HOL environment, derived exclusively from the internal deductive rules of Higher-Order Logic (HOL) prior to the definition of $\Hopt$ (cf. Code Sec 13.1 and 7.3). Subsequently, Section 9.2 formally demonstrates that any candidate satisfying $\Hopt$ necessarily satisfies this H-Principle (\texttt{Hopt\_implies\_H\_principle}).} No additional metaphysical, modal, or ontological premise is invoked at this stage.
+
+\textbf{Accordingly, $\Hopt$ mathematically inherits and triggers this universal law by virtue of its structural maximality. The H-Principle performs no substantive inferential work beyond what is already implicit in the raw mathematical order of the $\U$-layer.} Any appearance of obligation or necessity should therefore be read purely as a structural property derived from the underlying definitions. This principle dictates a state of \textbf{Maximal Coverage}: if any contingent truth ($\zeta$) exists, it must necessarily be supported by $\Hopt$. In the mechanization, this is established by demonstrating that the argument of $\Hopt$ provides a comprehensive epistemic ground for the pan-domain ($\PDom$).
+
+\subsection{The Self-Reflexive Structure}
+The formulation of $\Hopt$ captures the philosophical notion that the highest truth must be a self-reflexive subject. The H-Principle requires no external observer to validate its operations; instead, $\Hopt$ internally supports its own hypostases. This formalizes a structure where the truth is not an inert object but a dynamic, self-sustaining logical entity, mirroring the concept of `Truth as Subject.'
+
+\subsection{Trinitarian Closure}
+The H-Principle operates flawlessly within the $N=3$ structure, establishing what we term \textbf{Trinitarian Closure}.
+\begin{itemize}
+    \item \textbf{Exclusion of Instability:} As shown in earlier sections, $N=1$ and $N=2$ configurations lack the internal relational capacity to provide the sufficient grounding required by the H-Principle, leading to structural collapse.
+    \item \textbf{Mutual Necessity:} Within the $N=3$ configuration, the H-Principle ensures that each element mutually and optimally supports the others. This cyclic, perichoretic support network constitutes the core structural mechanism of the supreme ground, demonstrating that the trinitarian form is the necessary expression of H-Optimality.
+\end{itemize}
+
+\section{Analytic Self-Evidence of Core Logical Assumptions (Locale Audit)}
+\label{sec:locale_audit}
+
+This section performs a comprehensive audit of the ten core locales utilized in the Isabelle/HOL formalization. Crucially, this audit was mechanically executed and verified by the dedicated \texttt{Axiom\_And\_Assumption\_Audit.thy} file, which formally certifies a strict zero-axiom count (i.e., exactly zero unproven axioms are injected into the global context). Consequently, we demonstrate that the local assumptions (\textit{assumes}) within these ten locales are not external metaphysical postulates or smuggled modal axioms. Rather, they constitute strictly bounded components: either analytic truths of classical Boolean logic, deductive consequences of the \(\Hopt\) definition, or controlled diagnostic hypotheses used exclusively for structural exclusion and simulation.
+
+\subsection{Locales 1 \& 2: Band\_Collapse\_From\_Hopt and Band\_Collapse\_Superfluous}
+These locales formalize the structural minimality of the supreme truth, ensuring no redundant or independent pillars coexist with the optimal core.
+
+\begin{itemize}
+    \item \textbf{ES: Epistemic Possibility ($EDia\_ep (\Omega \wedge \Psi)$)} \\
+\textit{Status: Evidential Non-Refutation.} In this framework, epistemic possibility ($EDia\_ep$) does not assert absolute metaphysical possibility. Rather, it is strictly defined as the absence of formal refutation within the current theory-state ($\neg Ref$). Whether the core ($\Omega \wedge \Psi$) is ultimately irrefutable or merely not yet refuted is irrelevant at this level. So long as no formal proof of its falsity has been derived, it remains an epistemically live (i.e., admissible) configuration. Accordingly, the premise $EDia\_ep (\Omega \wedge \Psi)$ functions not as a heavyweight modal axiom, but as a logical bookkeeping condition recording the current non-refuted status of the core. Furthermore, this epistemic admissibility is computationally corroborated by Sections 8 and 9 of the auxiliary \texttt{Diagnostics} file, which explicitly exhibit non-vacuous models of the core and thereby verify its non-explosive status within the Isabelle/HOL environment.
+   
+    \item \textbf{Cov: Ontological Coverage ($\Arg (\Omega \wedge \Psi) \preceq \Arg \Phi$)} \\
+    \textit{Status: Geometric Projection of the H-principle.} $\Phi$, defined as $\Hopt$, must by definition cover all valid propositions in the domain. Consequently, the moment $\Phi$ is identified as $\Hopt$, this relation is deductively generated.
+   
+    \item \textbf{MCL, MCR, MCI: Analytic Validity of Conjunction} \\
+    \textit{Status: Standard Boolean Axiomatics.} The rules for decomposing or composing $A \wedge B$ are grammatically self-evident within Boolean algebra, providing a guideline for the Isabelle kernel rather than a new framework.
+   
+    \item \textbf{NS (No-Superfluous): The Principle of Parsimonious Exclusion} \\
+    \textit{Status: Discharged Theorem.} If $\Hopt$ is optimal, there can be no superfluous information existing independently. This condition is fully proven and \textbf{discharged}(Section 28.1) in the subsequent stages; thus, it places no axiomatic burden on the system.
+\end{itemize}
+
+\vspace{0.5em}
+\noindent \textbf{Mechanical Discharge of Locale Assumptions (Section 28.1):}
+It is crucial to note that the assumptions underlying these locales(Cov, MCL, MCR, MCI, NS) are completely discharged. As demonstrated in \textbf{Section 28.1 (Final Locale Audit)}, the Isabelle kernel mechanically verifies via a \texttt{sublocale} proof that all premises of \texttt{Band\_Collapse\_From\_Hopt} and \texttt{Band\_Collapse\_Superfluous} are entirely satisfied by minimal analytic Boolean grammar and the definitional properties of $\Hopt$. This confirms that no hidden axioms remain.
+
+\subsection{Locale 3: Boolean\_at\_our\_world}
+\textit{Status: Logical Homogeneity at the World-Point.} \\
+This locale assumes that logical operators ($\wedge, \neg$) behave according to standard truth-functional rules at the distinguished world-point $\eZero$. It is a technical necessity for the ``World-Lift,'' asserting that the logic of the $\U$-layer is identical to the logic operative in our actuality, ensuring that formal results remain relevant to reality.
+
+\subsection{Locale 4: Epistemic\_N1\_Exclusion}
+This locale provides the infrastructure to refute solitary, isolated ontological states.
+
+\begin{itemize}
+    \item \textbf{ref\_back: Refutation Back-propagation} \\
+    \textit{Status: The Contrapositive Principle.} Asserts that if $P$ entails $Q$, a refutation of $Q$ implies a refutation of $P$. This invokes standard ``physical laws'' of logical inference.
+   
+    \item \textbf{poss\_edge / EdgeExist: Epistemic Possibility of Relational Support} \\
+    \textit{Status: Non-vacuosity Verification.} Asserts that relational support is possible. Since models for $N \ge 3$ are satisfiable (cf. Section \ref{sec:nitpick_analysis}(Diagnostics file), this is a mathematically verified fact of the system's geometry.
+   
+    \item \textbf{notEdia\_False: Epistemic Impossibility of Contradiction} \\
+    \textit{Status: Fundamental Logical Consistency.} Prevents the ``Principle of Explosion'' by asserting that a logical contradiction cannot be epistemically possible.
+\end{itemize}
+
+\subsection{Locale 5: FullIdBridge}
+\textit{Status: Auxiliary Model-Theoretic Construction.} \\
+The assumptions introduced within this locale have no direct relation to the core ontological argument or the formal proof of $N=3$ necessity. The main exclusion theorems remain entirely independent of \texttt{FullIdBridge}. It is provided solely as an auxiliary \textbf{``Satisfiability Witness''} to demonstrate how the abstract $\U$-layer logic harmonizes with standard possible-world semantics, thereby ensuring that the definitional framework is model-theoretically sound and free from vacuity.
+
+\subsection{Locale 6: Refuted\_Backprop}
+\textit{Status: Formalization of Epistemic Modus Tollens.} \\
+It ensures that refutations propagate backward through the chain of necessity. By the logic of the contrapositive, it ensures that the potentiality of a relational ``Edge'' flows forward to validate the possibility of the Triune configuration, systematically refuting structures that preclude such possibility (e.g., $N=1, 2$).
+
+\subsection{Locales 7 \& 8: Riemann\_Toy and Riemann\_Toy\_Core}
+\textit{Status: Diagnostic Sandbox (Simulation Only).} \\
+It is imperative to clarify that these locales are not constituent parts of the core proof. They function as a ``simulation chamber'' to verify consistency. By introducing contingent propositions (e.g., the Riemann Hypothesis), they prove that the necessity of the Trinity does not force a global ``Modal Collapse.'' They act as logical instrumentation to confirm the engine's capacity.
+
+\subsection{Locale 9: Trinity\_Truthmaking}
+\textit{Status: Post-Deductive Interpretative Application.} \\
+This locale also have no direct relation to the core ontological argument or the formal proof of $N=3$ necessity. This locale is an interpretative blueprint describing how the established Triune ground relates to contingent reality ($R$).
+\begin{itemize}
+    \item \textbf{T-Pattern:} Defines the ground as the provider of logical space for existence.
+    \item \textbf{S-Pattern:} Defines ``Ultimacy''—that no contingent reality can exist outside the scope of the $\Hopt$. It is an analytic consequence of the definition of the $\PH$.
+\end{itemize}
+
+\subsection{Locale 10: Trinity\_Uniqueness\_MaxCov}
+\textit{Status: The Final Seal (Interpretative Framework).} \\
+This locale does not help create the Trinity; it proves that the Trinity derived is \textbf{Unique}.
+\begin{itemize}
+    \item \textbf{Excl4:} Not a new premise, but the discharged result of the Band $\approx$-Collapse theorems. It is a manifestation of the \textbf{Pigeonhole Principle} applied to ontological coverage.
+    \item \textbf{SYM \& TRANS:} Self-evident properties of equivalence classes, invoked as grammatical rules to interpret the $N=3$ structure as a unified essence.
+\end{itemize}
+
+\vspace{0.5em}
+\noindent \textbf{Mechanical Discharge of Uniqueness Locale (Section 28.2):}
+As formally proven in Section 28.2, the \texttt{Trinity\_Uniqueness\_MaxCov} locale is strictly discharged. The \texttt{Excl4} assumption is not a postulate but is mechanically verified by the first-order logic solver (\texttt{blast}) directly applying the Band $\approx$-Collapse theorems from Section 14.4.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+By reconstructing metaphysical arguments within a framework of computational formalization and machine-assisted verification, this study repositions ontological discourse from an interpretation-centered tradition toward the domain of formal validation. While inheriting classical formalization efforts—most notably the post-Kurt G\"odel tradition—it advances a distinctive research direction by treating metaphysical propositions directly within computational structures. Ultimately, this approach suggests that metaphysics can extend beyond purely speculative reflection into a theoretically disciplined inquiry grounded in demonstrable logical coherence.
+
+This paper has presented a formally verified, axiom-free (in the Isabelle/HOL--internal sense) reconstruction of an ontological argument using the Isabelle/HOL proof assistant. By constructing the \textbf{U-Layer} substrate, we have:
+
+\begin{enumerate}
+    \item \textbf{H-Optimality ($\Hopt$)} is defined purely structurally as maximal non-trivial relational support (\textsf{MaxNT}), thereby avoiding the traditional injection of ``positive property'' axioms.
+    \item Proved the \textbf{consistency of the H-optimality concept} ($\Hopt$)---corresponding to the concept of ``a truth so certain that no greater certainty can be conceived''---within an axiom-free framework and identified a flat-model witness.
+    \item Demonstrated through \textbf{Structural Exclusion} that maximality is incompatible with Singularity ($N=1$), Duality ($N=2$), or Multiplicity ($N \ge 4$)
+    \item Proved the \textbf{Necessity of the Triune Structure ($N=3$)}, characterized by a cyclic \texttt{TriSupport} pattern, as the uniquely stable configuration for $\Hopt$-witnesses modulo argument-equivalence.
+    \item Established the \textbf{specialization of the structure to the designated actuality point $\eZero$}, packaged as \texttt{TriuneGod\_e0}.
+    \item Verified the \textbf{Definitional Finality Theorem} (\texttt{no\_definition\_strictly\_superior\_than\_H\_opt}), which formally blocks the existence of any strictly superior truth definable over the pan-domain.
+    \item Included a targeted diagnostic block (Section 7 of the Diagnostics file) addressing the standard collapse fragility in Gödel-style encodings by recording a \textit{Nitpick} countermodel witness against (Trinity $\rightarrow R$) under the enabling pattern (Trinity $\rightarrow \diamond R$), together with non-degeneracy sanity checks for $\diamond$.
+    \item Documented the development as an explicit axiom-audit artifact documentation that no unintended axioms are assumed beyond HOL.
+    \item Formalized the maximality core using Cantorian size comparison (injection-based), ensuring that the framework remains robust even when support structures are infinite.
+    \item \textbf{Total Mechanical Discharge of Core Locales:} Citing the results of Section 28, we mechanically proved that the locale assumptions for \texttt{Band\_Collapse\_From\_Hopt}, \texttt{Band\_Collapse\_Superfluous}, and \texttt{Trinity\_Uniqueness\_MaxCov} are not newly added metaphysical premises. The code definitively demonstrates that these assumptions are either self-evident analytic rules or theorems strictly proven from the definitions, effectively discharging them via a \texttt{sublocale} command and sealing the axiom-free status of the derivation.
+\end{enumerate}
+
+We conclude that the concept of a supreme truth-ground, when analyzed through the order-theoretic semantics of grounding strength, yields a rigorously checkable structure whose internal logic forces a triune closure pattern. The resulting development is fully mechanized in Isabelle/HOL and documented as an axiom-audited definitional extension beyond HOL. In this sense, the present results suggest that a Fregean objectivity of truth—assumed but not derived in the original semantic framework—can be obtained here as a formal consequence in an axiom-free, kernel-checked setting.
+
+Finally, this theory opens a coherent possibility for resolving the classical Fregean dilemma concerning truth-referents. Frege succeeded in securing logical objectivity by identifying the referent of a true sentence with an undifferentiated truth value; however, this achievement came at the cost of externalizing informational content from the logical core itself. The difficulty arises because, if distinct sentences are assumed to refer to the same single truth (the truth), there is no way to account for their semantic distinctions at the level of reference.
+
+By contrast, our theory formalizes truth as a structurally articulated, triune referent, thereby offering a coherent theoretical possibility for internalizing informational differentiation directly within the domain of reference. Informational richness is no longer a secondary byproduct of sense, but a primary, formally tractable constituent of the Highest Truth ($\Hopt$).
+
+This suggests that the triune structure is not merely a theological postulate within the present framework, but a formally motivated candidate for preserving informational differentiation at the level of reference.
+
+\vspace{1em}
+\noindent\textbf{Final Remarks: The Structural Fixed Point of the Supreme Truth} \\
+The formal development establishes that \textbf{$\mathsf{MaxNT}$} is not merely a terminal element of an ordering, but a \emph{structural fixed point} within the epistemic domain. This fixed point is governed by the aforementioned four-level dependency:
+\begin{enumerate}
+    \item \textbf{Internal Consistency}: The supreme truth candidate is mathematically certified to be non-contradictory.
+    \item \textbf{Finality}: No strictly higher certainty point exists \emph{within the domain}.
+    \item \textbf{Relational Maximality}: Non-trivial incoming structure is maximized under Cantor-style comparison, thereby forcing the system away from monadic degeneration and toward a pluralistic ground.
+    \item \textbf{Non-vacuity}: Genuine \textit{NT\_edge} structure survives the diagnostic filter, forbidding \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)}.
+\end{enumerate}
+
+\noindent As Section 11 shows, when relational structure globally undergoes an \textbf{$\approx$-collapse ($\Arg$-equivalence collapse)} (e.g., under universal $1$-to-$1$ comparability), $\mathsf{MaxNT}$ does not become inconsistent; rather, the joint-support among the hypostases undergoes an \textbf{$\approx$-collapse} into an informationally vacuous state. \textbf{This demonstrates that the necessity of the triune structure is invariant: even when the relational structure becomes informationally vacuous due to $\Arg$-equivalence, the system is structurally forced toward $N=3$ as the only architecture that avoids formal inconsistency.} Hence, these conditions are not independent: together they characterize the unique stability of the ``supreme truth'' candidate not as a solitary monad, but as an irreducibly \emph{triune} structure. \emph{Moreover, non-vacuity is not required to obtain the Trinity-necessity claim itself; it is required only to rule out informationally vacuous ($\Arg$-equivalent) realizations and to certify that the triune distinction is \textbf{structurally non-$\approx$-collapsible}.} The triune logic is therefore not a theological postulate inserted into the system, but the only mathematically stable configuration that survives the stringent demands of consistency, finality, and maximality---and, where imposed, the anti-vacuity demand.
+
+% -----------------------------------------------------------------
+% [CRITICAL] Generated Isabelle Content
+% -----------------------------------------------------------------
+\newpage
+\section*{Appendix A: Formalized Isabelle Source Code}
+\label{sec:source_code}
+\noindent\textit{The formalization is structured into two files: the Main Argument Body and the Developer-only Diagnostics. The following includes the full kernel-checked Isabelle/HOL formalization, constituting the core verification engine of the argument.}
+\begin{small}
+\input{session}
+\end{small}
+
+% =================================================================================
+% APPENDIX B: FINAL VERIFICATION AUDIT
+% =================================================================================
+\newpage
+\section*{Appendix B: Final Verification and Integrity Audit}
+\label{sec:final_audit}
+
+\noindent\textit{This section contains the official verification report generated by the Isabelle/HOL kernel, certifying that the triune necessity result is axiom-free and internally consistent.}
+
+\vspace{1em}
+
+\begin{mdframed}[linecolor=black, linewidth=1.5pt, roundcorner=10pt, backgroundcolor=gray!5]
+\subsection*{1. Mechanical Consistency \& Satisfiability}
+\begin{itemize}
+    \item \textbf{Kernel Verification:} \textcolor{blue}{\textbf{PASSED}} (Isabelle/HOL-2025 Kernel)
+    \item \textbf{Consistency Status:} \textbf{SOUND}. Verified via flat-model interpretation.
+    \item \textbf{Satisfiability Witness:} \textbf{GENUINE}. Nitpick found satisfying model at scope $N=3$.
+\end{itemize}
+
+\subsection*{2. Logical Integrity Guarantee (Axiom Audit)}
+\textit{Documents the axiom-free status of the development via direct ML kernel query.}
+\begin{mdframed}[linecolor=black, linewidth=1pt, backgroundcolor=white]
+\begin{lstlisting}[basicstyle=\small\ttfamily]
+> ML_val { (* Strict filter for user-defined axioms *) }
+val it = [] : (string * term) list
+(* SUCCESS: Axiom-Free verified *)
+\end{lstlisting}
+\end{mdframed}
+
+\subsection*{3. Core Logical Assumptions (Locale Audit)}
+\textit{Documenting every assumption operative within the system's locales.}
+
+\begin{center}
+    \textbf{Project Locale Audit}
+\end{center}
+
+\vspace{0.5em}
+\end{mdframed}
+
+\begin{lstlisting}[frame=single, backgroundcolor=\color{gray!10}, basicstyle=\ttfamily\footnotesize, breaklines=true, title={Core Logical Assumptions}]
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Band_Collapse_From_Hopt ---
+assumes "Band_Collapse_From_Hopt \<Omega> \<Psi> \<Phi>"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Band_Collapse_Superfluous ---
+assumes "Band_Collapse_Superfluous \<Omega> \<Psi> \<Phi>"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Boolean_at_our_world ---
+assumes "Boolean_at_our_world Val w\<^sub>0"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Epistemic_N1_Exclusion ---
+assumes "Epistemic_N1_Exclusion"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Final_NS_Audit ---
+assumes "Final_NS_Audit \<Omega> \<Psi> \<Phi>"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.FullIdBridge ---
+assumes "FullIdBridge Val iw"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Refuted_Backprop ---
+assumes "Refuted_Backprop"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Riemann_Toy ---
+assumes "Riemann_Toy Val iw R \<Phi> \<Phi>'"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Riemann_Toy_Core ---
+assumes "Riemann_Toy_Core eI eII R Phi Phi'"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Trinity_Truthmaking ---
+assumes "Trinity_Truthmaking \<Phi> \<Omega> \<psi> R"
+--- Locale: Verification_of_Axiom_free_Godelian_Ontological_Argument_and_Trinity_Necessity_Proof.Trinity_Uniqueness_MaxCov ---
+assumes "Trinity_Uniqueness_MaxCov MaxCov"
+\end{lstlisting}
+
+\newpage
+\nocite{*}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

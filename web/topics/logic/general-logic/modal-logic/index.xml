@@ -4,6 +4,15 @@
     <title>Logic/General logic/Modal logic</title>
     <link>https://isa-afp.org/topics/logic/general-logic/modal-logic/</link>
     <description>AFP entries in Modal logic</description><item>
+  <title>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL</title>
+  <link>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</link>
+  <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
   <title>The Weak Spectroscopy Game to Characterize Behavioral Equivalences</title>
   <link>https://isa-afp.org/entries/Weak_Spectroscopy.html</link>
   <pubDate>Mon, 17 Nov 2025 00:00:00 +0000</pubDate>
