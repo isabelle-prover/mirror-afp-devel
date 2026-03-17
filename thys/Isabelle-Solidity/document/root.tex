@@ -1,0 +1,167 @@
+\RequirePackage{ifvtex}
+\documentclass[10pt,DIV17,a4paper,abstract=true,twoside=semi,openright]
+{scrreprt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\bibliographystyle{abbrvnat}
+\usepackage[english]{babel}
+\RequirePackage[caption]{subfig}
+\usepackage{isabelle}
+\usepackage{isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{orcidlink}
+\setcounter{tocdepth}{3} 
+\hypersetup{%
+   bookmarksdepth=3
+  ,pdfpagelabels
+  ,pageanchor=true
+  ,bookmarksnumbered
+  ,plainpages=false
+} % more detailed digital TOC (aka bookmarks)
+\sloppy
+\allowdisplaybreaks[4]
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\newenvironment{frontmatter}{}{}
+
+\pagestyle{headings}
+\isabellestyle{default}
+\setcounter{tocdepth}{1}
+\newcommand{\ie}{i.\,e.\xspace}
+\newcommand{\eg}{e.\,g.\xspace}
+\newcommand{\thy}{\isabellecontext}
+\renewcommand{\isamarkupsection}[1]{%
+  \begingroup% 
+  \def\isacharunderscore{\textunderscore}%
+  \section{#1 (\thy)}%
+  \endgroup% 
+}
+
+\title{Isabelle/Solidity}
+\subtitle{A shallow Embedding of Solidity in Isabelle/HOL}
+\author{Diego Marmsoler\textsuperscript{\orcidlink{0000-0003-2859-7673}}
+        and Asad Ahmed
+		and Achim D. Brucker\textsuperscript{\orcidlink{0000-0002-6355-1200}}}%
+\publishers{
+Department of Computer Science, University of Exeter, Exeter, UK\texorpdfstring{\\}{, }
+\texttt{\{d.marmsoler, a.brucker, a.ahmed6\}@exeter.ac.uk}
+}
+\begin{document}
+\begin{frontmatter}
+\maketitle
+\begin{abstract}
+  \begin{quote}
+    Smart contracts, typically written in high-level languages such as Solidity, are
+    programs deployed on the blockchain to automate financial transactions. Due to
+    the high-stakes nature of these applications, bugs can result in severe financial
+    consequences. In this paper, we present a verification framework for Solidity smart
+    contracts built within the Isabelle/HOL proof assistant. Our approach introduces
+    a novel formalization of Solidity’s storage model, a shallow embedding of its
+    expressions and statements, and custom Isabelle commands to facilitate contract
+    specification and verification. To aid in the verification process, we also provide
+    a verification condition generator. We validate the semantics through a suite
+    of unit tests and evaluate the framework using four case studies. The results
+    demonstrate that our framework enables the verification of complex contracts
+    with manageable effort. Furthermore, the use of shallow embedding significantly
+    reduces verification complexity compared to a deep embedding approach.
+	\bigskip
+	\noindent\textbf{Keywords:} {Program Verification, Smart Contracts, Isabelle, Solidity} 
+  \end{quote}
+\end{abstract}
+
+\tableofcontents
+\cleardoublepage
+\end{frontmatter}
+
+\chapter{Introduction}
+
+This document presents a shallow embedding of Solidity in Isabelle.
+The embedding is described in a corresponding paper \cite{marmsoler2024}.
+The shallow embedding is related to the corresponding deep embedding which is available as a separate AFP entry \cite{Solidity-AFP}.
+
+The rest of this document is automatically generated from the formalization in
+Isabelle/HOL, i.e., all content is checked by Isabelle. The structure follows
+the theory dependencies (see \autoref{fig:session-graph}).
+
+\begin{figure}
+  \centering
+  \includegraphics[height=.9\textheight, width=\textwidth,keepaspectratio]{session_graph}
+  \caption{The Dependency Graph of the Isabelle Theories.\label{fig:session-graph}}
+\end{figure}
+
+\clearpage
+
+\chapter{Preliminaries}
+In this chapter, we discuss auxiliary formalizations and functions that
+are used in our Solidity semantics but are more generic, i.e., not
+specific to Solidity.
+
+\input{Utils}
+\input{State_Monad.tex}
+
+\chapter{Stores and State}
+In this chapter, we formalize the different types of stores for Solidity.
+In particular, we present a formalization for Storage, Memory, Calldata, and Stack.
+Then we define the state consisting of a configuration of all the stores as well as account balances.
+
+\input{Memory.tex}
+\input{Stores.tex}
+\input{State.tex}
+
+\chapter{Expressions and Statements}
+
+In this chapter, we formalize expressions and statements as shallow embeddings for Isabelle/HOL.
+semantics. 
+
+\input{Solidity.tex}
+
+\chapter{ML Commands}
+In this chapter, we present the implementation of the Isabelle commands to specify
+a contract and verify invariants.
+
+\input{Contract.tex}
+
+\chapter{Weakest Precondition Calculus}
+In this chapter, we present a weakest precondition calculus and corresponding
+verification condition generator.
+
+\input{WP.tex}
+
+\chapter{Unit Tests}
+
+In this chapter, we validate the compliance of the semantics with the official Solidity specification.
+To this end we implemented a set of unit tests which were also executed on the Remix IDE.
+
+\input{Unit_Tests.tex}
+
+\chapter{Applications}
+
+In this chapter we present three case studies in which we use Isabelle/Solidity to verify
+invariants for Solidity smart contracts.
+
+\input{Token.tex}
+
+\input{Bank.tex}
+
+\input{Casino.tex}
+
+\input{Voting.tex}
+
+\input{SimpleAuction.tex}
+
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

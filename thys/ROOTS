@@ -429,9 +429,10 @@ IsaGeoCoq
 IsaNet
 Isabelle_C
 Isabelle_DOF
+Isabelle_hoops
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
-Isabelle_hoops
+Isabelle-Solidity
 Jacobson_Basic_Algebra
 Jinja
 JinjaDCI
