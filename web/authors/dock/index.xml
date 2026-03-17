@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kim, Yong-Dock</title>
+    <link>https://isa-afp.org/authors/dock/</link>
+    <description>AFP entries of Kim, Yong-Dock</description><item>
+  <title>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL</title>
+  <link>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</link>
+  <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+
+  </channel>
+</rss>
