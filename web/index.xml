@@ -13,6 +13,15 @@
     <category>Logic/General logic/Modal logic</category>
 </item>
 <item>
+  <title>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Isabelle-Solidity.html</link>
+  <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages</category>
+    <category>Tools</category>
+</item>
+<item>
   <title>Workflow Net Fitness Measures</title>
   <link>https://isa-afp.org/entries/Workflow_Net_Fitness_Measures.html</link>
   <pubDate>Sat, 07 Feb 2026 00:00:00 +0000</pubDate>

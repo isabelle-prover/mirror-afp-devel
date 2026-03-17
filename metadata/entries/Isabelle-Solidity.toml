@@ -1,0 +1,38 @@
+title = "Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL"
+date = 2026-02-25
+topics = [
+  "Computer science/Semantics and reasoning",
+  "Computer science/Programming languages",
+  "Tools",
+]
+abstract = "Smart contracts, typically written in high-level languages such as Solidity, are programs deployed on the blockchain to automate financial transactions. Due to the high-stakes nature of these applications, bugs can result in severe financial consequences. In this paper, we present a verification framework for Solidity smart contracts built within the Isabelle/HOL proof assistant. Our approach introduces a novel formalization of Solidity’s storage model, a shallow embedding of its expressions and statements, and custom Isabelle commands to facilitate contract specification and verification. To aid in the verification process, we also provide a verification condition generator. We validate the semantics through a suite of unit tests and evaluate the framework using four case studies. The results demonstrate that our framework enables the verification of complex contracts with manageable effort. Furthermore, the use of shallow embedding significantly reduces verification complexity compared to a deep embedding approach."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.marmsoler]
+email = "marmsoler_email"
+
+[authors.ahmeda]
+email = "ahmeda_email"
+
+[authors.brucker]
+email = "brucker_email2"
+
+[contributors]
+
+[notify]
+marmsoler = "marmsoler_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-77382-2_10",
+]
+pubs = [
+  "https://isa-afp.org/entries/Solidity.html",
+]

@@ -20,6 +20,28 @@
   "year": "2026"
  },
  {
+  "abstract": "Smart contracts, typically written in high-level languages such as Solidity, are programs deployed on the blockchain to automate financial transactions. Due to the high-stakes nature of these applications, bugs can result in severe financial consequences. In this paper, we present a verification framework for Solidity smart contracts built within the Isabelle/HOL proof assistant. Our approach introduces a novel formalization of Solidity’s storage model, a shallow embedding of its expressions and statements, and custom Isabelle commands to facilitate contract specification and verification. To aid in the verification process, we also provide a verification condition generator. We validate the semantics through a suite of unit tests and evaluate the framework using four case studies. The results demonstrate that our framework enables the verification of complex contracts with manageable effort. Furthermore, the use of shallow embedding significantly reduces verification complexity compared to a deep embedding approach.",
+  "authors": [
+   "Diego Marmsoler",
+   "Asad Ahmed",
+   "Achim D. Brucker"
+  ],
+  "link": "../entries/Isabelle-Solidity.html",
+  "shortname": "Isabelle-Solidity",
+  "title": "Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL",
+  "topic_links": [
+   "../topics/computer-science/semantics-and-reasoning/",
+   "../topics/computer-science/programming-languages/",
+   "../topics/tools/"
+  ],
+  "topics": [
+   "Computer science/Semantics and reasoning",
+   "Computer science/Programming languages",
+   "Tools"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry covers workflow nets, a specialization of Petri nets, which are especially useful for modelling business processes. It then defines measures for the fitness of these nets, namely trace fitness and causal footprint fitness. These attempt to measure how well a model covers all of the traces in an event log (a multiset of traces, which have happened in the business). Most fitness measures are far from perfect and a number of attributes have been defined in literature. The main goal of this entry is to formalize proofs for some of these attributes of fitness measures and learning how to correctly define the measures and attributes along the way.",
   "authors": [
    "Moritz Manke"

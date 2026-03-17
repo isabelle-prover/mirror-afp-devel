@@ -71,6 +71,24 @@ host = [
 
 [ahmed.homepages]
 
+[ahmeda]
+name = "Asad Ahmed"
+
+[ahmeda.emails]
+
+[ahmeda.emails.ahmeda_email]
+user = [
+  "A",
+  "Ahmed6",
+]
+host = [
+  "exeter",
+  "ac",
+  "uk",
+]
+
+[ahmeda.homepages]
+
 [aissat]
 name = "Romain Aissat"
 

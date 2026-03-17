@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</loc>
     <lastmod>2026-03-17T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Isabelle-Solidity.html</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Workflow_Net_Fitness_Measures.html</loc>
     <lastmod>2026-02-07T00:00:00+00:00</lastmod>
   </url><url>
@@ -3660,6 +3663,8 @@
     <loc>https://isa-afp.org/thys/AFP/ArrowImpossibilityGS/Arrow_Utility.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/ArrowImpossibilityGS/GS.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/ahmeda/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/from/</loc>
   </url><url>
@@ -14832,6 +14837,36 @@
     <loc>https://isa-afp.org/thys/AFP/Isabelle_Meta_Model/Toy_Library.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Isabelle_Meta_Model/Toy_Library_Static.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Bank.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Casino.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Contract.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Memory.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/SimpleAuction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Solidity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Solidity_Main.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/State.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/State_Monad.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Stores.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Token.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Unit_Tests.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Utils.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/Voting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Isabelle-Solidity/WP.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/IsaGeoCoq/Gupta_Euclidean.html</loc>
   </url><url>
