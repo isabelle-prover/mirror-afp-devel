@@ -1460,7 +1460,7 @@ text \<open>
   Other than $i$ and $\rho$, no non-trivial unimodular transformation has any fixed points
   in the fundamental region.
 \<close>
-lemma modgrp_fixed_point_trivial:
+lemma modgrp_fixed_point_trivial_std_fund_region':
   assumes "z \<in> \<R>\<^sub>\<Gamma>' - {\<i>, \<^bold>\<rho>}" "apply_modgrp h z = z"
   shows   "abs h = 1"
 proof (cases "z \<in> \<R>\<^sub>\<Gamma>")
@@ -1653,14 +1653,15 @@ text \<open>
   Therefore, all points not equivalent to $i$ or $\rho$ have elliptic order 1, i.e.\ are not
   elliptic points.
 \<close>
-lemma ellorder_modgrp_UNIV_eq_1':
+lemma ellorder_modgrp_UNIV_eq_1_std_fund_region':
   assumes "z \<in> \<R>\<^sub>\<Gamma>' - {\<i>, \<^bold>\<rho>}"
   shows   "ellorder_modgrp UNIV z = 1"
 proof -
   from assms have "ellorder_modgrp UNIV z = card {h. apply_modgrp h z = z} div 2"
     by (simp add: ellorder_modgrp_def modgrp_eq_iff numeral_2_eq_2 in_std_fund_region'_iff)
   also have "{h. apply_modgrp h z = z} = {1, -1}"
-    using modgrp_fixed_point_trivial[of z] assms by (auto simp: abs_modgrp_eq_1_iff)
+    using modgrp_fixed_point_trivial_std_fund_region'[of z] assms
+    by (auto simp: abs_modgrp_eq_1_iff)
   also have "card \<dots> = 2"
     by (simp add: modgrp_eq_iff numeral_2_eq_2)
   finally show ?thesis
@@ -1678,7 +1679,7 @@ proof -
   have "ellorder_modgrp UNIV z = ellorder_modgrp UNIV z'"
     by (intro modular_group.ellorder_modgrp_cong) (use z' in auto)
   also have "\<dots> = 1"
-    by (rule ellorder_modgrp_UNIV_eq_1') (use z' assms in auto)
+    by (rule ellorder_modgrp_UNIV_eq_1_std_fund_region') (use z' assms in auto)
   finally show ?thesis .
 qed
 
@@ -1729,7 +1730,8 @@ proof -
     define ST where "ST = S_modgrp * T_modgrp"
     show "{h. apply_modgrp h z' = z'} \<subseteq> {1, -1, S, -S, ST, -ST, ST\<^sup>2, -(ST\<^sup>2)}"
       by (cases "z' = \<i>"; cases "z' = \<^bold>\<rho>")
-         (use  z'(1) stabiliser_ii_modgrp stabiliser_rho_modgrp modgrp_fixed_point_trivial[of z']
+         (use  z'(1) stabiliser_ii_modgrp stabiliser_rho_modgrp 
+               modgrp_fixed_point_trivial_std_fund_region'[of z']
           in  \<open>auto simp: S_def ST_def abs_modgrp_eq_1_iff\<close>)
   qed auto
   moreover have "bij_betw (\<lambda>f. h * f * inverse h) {h. apply_modgrp h z = z} {h. apply_modgrp h z' = z'}"
@@ -1758,6 +1760,87 @@ proof -
     by simp
 qed
 
+lemma (in modgrp_subgroup)
+  assumes "Im z > 0"
+  shows   ellorder_modgrp_dvd: "card (G \<inter> {1, -1}) dvd card {h\<in>G. apply_modgrp h z = z}"
+    and   card_modgrp_fixpoints:
+            "card {h\<in>G. apply_modgrp h z = z} = ellorder_modgrp G z * card (G \<inter> {1, -1})"
+proof -
+  define B where "B = {h \<in> G. apply_modgrp h z = z}"
+  define n where "n = card (G \<inter> {1, -1})"
+  show "n dvd card B"
+  proof (cases "-1 \<in> G")
+    case False
+    thus ?thesis by (simp add: n_def)
+  next
+    case True
+    define A where "A = abs ` {h \<in> G. apply_modgrp h z = z}"
+    have [simp]: "-f \<in> G \<longleftrightarrow> f \<in> G" for f
+      using times_in_G[OF True, of f] times_in_G[OF True, of "-f"] by auto
+    have [simp]: "abs f \<in> G \<longleftrightarrow> f \<in> G" for f
+      by (auto simp: abs_modgrp_altdef)
+    have **: "-abs f = f" if "abs f \<noteq> f" for f :: modgrp
+      using that by (auto simp: abs_modgrp_altdef split: if_splits)
+    have bij: "bij_betw (\<lambda>(b,f). if b then -f else f) (UNIV \<times> A) B"
+      by (rule bij_betwI[of _ _ _ "\<lambda>f. (abs f \<noteq> f, abs f)"])
+         (auto simp: A_def B_def ** split: if_splits)
+    have "card B = n * card A"  
+      using bij_betw_same_card[OF bij] by (simp add: card_cartesian_product n_def)
+    thus ?thesis
+      by simp
+  qed
+
+  have "ellorder_modgrp G z * n = card B div n * n"
+    using assms by (simp add: ellorder_modgrp_def B_def n_def)
+  also have "\<dots> = card B"
+    using \<open>n dvd card B\<close> by simp
+  finally show "card B = ellorder_modgrp G z * n" ..
+qed
+
+text \<open>
+  A point having an elliptic order of 1 means that the point is fixed only by the trivial
+  maps $\pm I$.
+\<close>
+lemma (in modgrp_subgroup) ellorder_modgrp_eq_1_iff: 
+  assumes "Im z > 0"
+  shows   "ellorder_modgrp G z = 1 \<longleftrightarrow> (\<forall>f\<in>G. apply_modgrp f z = z \<longleftrightarrow> \<bar>f\<bar> = 1)"
+proof
+  assume *: "(\<forall>f\<in>G. apply_modgrp f z = z \<longleftrightarrow> \<bar>f\<bar> = 1)"
+  have "ellorder_modgrp G z = card {h \<in> G. apply_modgrp h z = z} div card (G \<inter> {1, -1})"
+    using assms by (simp add: ellorder_modgrp_def)
+  also from * have "{f\<in>G. apply_modgrp f z = z} = {f\<in>G. abs f = 1}"
+    by blast
+  also have "\<dots> = G \<inter> {1, -1}"
+    by (auto simp: abs_modgrp_eq_1_iff)
+  finally show "ellorder_modgrp G z = 1"
+    by simp
+next
+  assume *: "ellorder_modgrp G z = 1"
+  have "G \<inter> {1, -1} = {h \<in> G. apply_modgrp h z = z}"
+  proof (rule card_subset_eq)
+    from * show "card (G \<inter> {1, -1}) = card {h \<in> G. apply_modgrp h z = z}"
+      by (subst card_modgrp_fixpoints) (use assms in auto)
+    show "G \<inter> {1, -1} \<subseteq> {h \<in> G. apply_modgrp h z = z}"
+      by auto
+    show "finite {h \<in> G. apply_modgrp h z = z}"
+      by (rule finite_modgrp_fixpoints) (use assms in auto)
+  qed
+  also have "G \<inter> {1, -1} = {f\<in>G. abs f = 1}"
+    by (auto simp: abs_modgrp_eq_1_iff)
+  finally show "\<forall>f\<in>G. apply_modgrp f z = z \<longleftrightarrow> \<bar>f\<bar> = 1"
+    by blast
+qed
+
+lemma modgrp_fixed_point_trivial:
+  assumes "Im z > 0" "\<not>z \<sim>\<^sub>\<Gamma> \<i>" "\<not>z \<sim>\<^sub>\<Gamma> \<^bold>\<rho>" "apply_modgrp f z = z"
+  shows   "\<bar>f\<bar> = 1"
+proof -
+  have "ellorder_modgrp UNIV z = 1"
+    by (rule ellorder_modgrp_UNIV_eq_1) (use assms in auto)
+  thus "\<bar>f\<bar> = 1"
+    by (subst (asm) modular_group.ellorder_modgrp_eq_1_iff) (use assms in auto)
+qed
+  
 
 subsection \<open>Fundamental regions for congruence subgroups\<close>
 
