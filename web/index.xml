@@ -13,6 +13,13 @@
     <category>Logic/General logic/Modal logic</category>
 </item>
 <item>
+  <title>Lebesgue-Stieltjes Integral</title>
+  <link>https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html</link>
+  <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Lebesgue-Stieltjes Integral in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Isabelle-Solidity.html</link>
   <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>

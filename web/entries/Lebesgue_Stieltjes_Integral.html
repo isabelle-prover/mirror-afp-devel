@@ -2,11 +2,11 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Without Loss of Generality - Archive of Formal Proofs</title>
-    <meta name="description" content="Without Loss of Generality in the Archive of Formal Proofs">
-    <meta property="og:description" content="Without Loss of Generality in the Archive of Formal Proofs">
-    <meta property="og:title" content="Without Loss of Generality">
-    <meta property="og:url" content="https://isa-afp.org/entries/Wlog.html">
+    <title>Lebesgue-Stieltjes Integral - Archive of Formal Proofs</title>
+    <meta name="description" content="Lebesgue-Stieltjes Integral in the Archive of Formal Proofs">
+    <meta property="og:description" content="Lebesgue-Stieltjes Integral in the Archive of Formal Proofs">
+    <meta property="og:title" content="Lebesgue-Stieltjes Integral">
+    <meta property="og:url" content="https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html">
     <meta property="og:image" content="https://isa-afp.org/images/afp.png">
     <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -87,19 +87,23 @@
       </div>
     </form>
   <h1>
-    <span class='first'>W</span>ithout <span class='first'>L</span>oss of <span class='first'>G</span>enerality
+    <span class='first'>L</span>ebesgue-<span class='first'>S</span>tieltjes <span class='first'>I</span>ntegral
   </h1>
   <div>
-      <p><a href="../authors/unruh/">Dominique Unruh</a> <a href="https://qis.rwth-aachen.de/people/unruh/">🌐</a>
+      <p><a href="../authors/ito/">Yosuke Ito</a> <a class="obfuscated" data="eyJ1c2VyIjpbImdsYWNpZXIzNDUiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a>
       </p>
-      <p class="date">August 30, 2024</p>
+      <p class="date">March 4, 2026</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">We introduce a new command <code>wlog</code> in Isabelle/HOL that allows us to (soundly) assume facts without loss of generality inside a proof.</div>
+    <div class="abstract mathjax_process">This entry formalizes some basic facts and lemmas relating to the integration with respect to the Lebesgue-Stieltjes measure (interval measure).
+It includes the well-known formula to calculate the Lebesgue-Stieltjes integral:
+\[
+    \int g(x) \, dF(x) = \int g(x) F'(x) \, dx.
+\]</div>
 
     <h3>License</h3>
     <div>
@@ -107,29 +111,19 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/tools/">Tools</a></li>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
       </ul>
-      <h3>Session Wlog</h3>
+      <h3>Session Lebesgue_Stieltjes_Integral</h3>
       <ul>
-          <li><a href="../thys/AFP/Wlog/Wlog.html">Wlog</a></li>
-          <li><a href="../thys/AFP/Wlog/Wlog_Examples.html">Wlog_Examples</a></li>
+          <li><a href="../thys/AFP/Lebesgue_Stieltjes_Integral/Preliminaries_LSI.html">Preliminaries_LSI</a></li>
+          <li><a href="../thys/AFP/Lebesgue_Stieltjes_Integral/Lebesgue_Stieltjes_Integral.html">Lebesgue_Stieltjes_Integral</a></li>
       </ul>
 
     <div class="flex-wrap">
         <div>
           <h3>Depends on</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Mersenne_Primes.html">Mersenne primes and the Lucas–Lehmer test</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3>Used by</h3>
-          <ul class="horizontal-list">
-              <li><a href="../entries/Complex_Bounded_Operators.html">Complex Bounded Operators</a></li>
-              <li><a href="../entries/Hilbert_Space_Tensor_Product.html">The Tensor Product on Hilbert Spaces</a></li>
-              <li><a href="../entries/Sophie_Germain.html">Sophie Germain’s Theorem</a></li>
-              <li><a href="../entries/Kraus_Maps.html">Kraus Maps</a></li>
-              <li><a href="../entries/Lebesgue_Stieltjes_Integral.html">Lebesgue-Stieltjes Integral</a></li>
+              <li><a href="../entries/Wlog.html">Without Loss of Generality</a></li>
           </ul>
         </div>
     </div>
@@ -139,9 +133,9 @@
     <a class="popup-button" href="#cite-popup">Cite</a>
     <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wlog/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wlog/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wlog/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Lebesgue_Stieltjes_Integral/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Lebesgue_Stieltjes_Integral/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Lebesgue_Stieltjes_Integral/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -150,14 +144,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Wlog-AFP</p>
-        <pre id="copy-text">@article{Wlog-AFP,
-  author  = {Dominique Unruh},
-  title   = {Without Loss of Generality},
+        <p style="display:none;" id="bibtex-filename">Lebesgue_Stieltjes_Integral-AFP</p>
+        <pre id="copy-text">@article{Lebesgue_Stieltjes_Integral-AFP,
+  author  = {Yosuke Ito},
+  title   = {Lebesgue-Stieltjes Integral},
   journal = {Archive of Formal Proofs},
-  month   = {August},
-  year    = {2024},
-  note    = {\url{https://isa-afp.org/entries/Wlog.html},
+  month   = {March},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -171,35 +165,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Wlog-current.tar.gz" download>
+      <a href="https://www.isa-afp.org/release/afp-Lebesgue_Stieltjes_Integral-current.tar.gz" download>
         Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Wlog-2026-02-06.tar.gz">
-                Feb 6, 2026
-              </a>
-              : Isabelle2025-2
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Wlog-2025-12-19.tar.gz">
-                Dec 19, 2025
-              </a>
-              : Isabelle2025-1
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Wlog-2025-03-17.tar.gz">
-                Mar 17, 2025
-              </a>
-              : Isabelle2025
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Wlog-2024-09-06.tar.gz">
-                Sep 6, 2024
-              </a>
-              : Isabelle2024
-            </li>
-        </ul>
     </div>
   </div>
       </div>

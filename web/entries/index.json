@@ -20,6 +20,22 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry formalizes some basic facts and lemmas relating to the integration with respect to the Lebesgue-Stieltjes measure (interval measure). It includes the well-known formula to calculate the Lebesgue-Stieltjes integral: \\[     \\int g(x) \\, dF(x) = \\int g(x) F'(x) \\, dx. \\]",
+  "authors": [
+   "Yosuke Ito"
+  ],
+  "link": "../entries/Lebesgue_Stieltjes_Integral.html",
+  "shortname": "Lebesgue_Stieltjes_Integral",
+  "title": "Lebesgue-Stieltjes Integral",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Smart contracts, typically written in high-level languages such as Solidity, are programs deployed on the blockchain to automate financial transactions. Due to the high-stakes nature of these applications, bugs can result in severe financial consequences. In this paper, we present a verification framework for Solidity smart contracts built within the Isabelle/HOL proof assistant. Our approach introduces a novel formalization of Solidity’s storage model, a shallow embedding of its expressions and statements, and custom Isabelle commands to facilitate contract specification and verification. To aid in the verification process, we also provide a verification condition generator. We validate the semantics through a suite of unit tests and evaluate the framework using four case studies. The results demonstrate that our framework enables the verification of complex contracts with manageable effort. Furthermore, the use of shallow embedding significantly reduces verification complexity compared to a deep embedding approach.",
   "authors": [
    "Diego Marmsoler",
