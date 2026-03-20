@@ -475,6 +475,21 @@ next
   qed
 qed (auto simp: modgrps_pcong_altdef cong_modgrp_def cong_0_iff)
 
+lemma infinite_modgrp_pcong:
+  assumes "n \<noteq> 0"
+  shows   "infinite (modgrps_pcong n)"
+proof -
+  have "infinite (UNIV :: int set)"
+    by simp
+  moreover have "inj (\<lambda>k. shift_modgrp (k * n))"
+    by (rule injI) (use assms in \<open>auto simp: modgrp_eq_iff\<close>)
+  ultimately have "infinite (range (\<lambda>k. shift_modgrp (k * n)))"
+    using finite_image_iff by blast
+  moreover have "range (\<lambda>k. shift_modgrp (k * n)) \<subseteq> modgrps_pcong n"
+    by (auto simp: shift_in_modgrps_pcong_iff)
+  ultimately show ?thesis
+    using finite_subset by blast
+qed
 
 text \<open>
   The level of a subgroup is the smallest $n$ such that it contains $\Gamma(n)$.
@@ -730,6 +745,16 @@ proof
     by (intro Nat.gr0I) auto
   thus "\<exists>n>0. shift_modgrp n \<in> G"
     by (intro exI[of _ "int (cusp_width_at_ii_inf G)"]) (auto simp: shift_modgrp_in_G_iff)
+qed
+
+lemma infinite: "infinite G"
+proof -
+  have "modgrps_pcong (level_modgrp G) \<subseteq> G"
+    using contains_modgrps_pcong_iff by simp
+  moreover have "infinite (modgrps_pcong (level_modgrp G))"
+    by (intro infinite_modgrp_pcong) (use level_pos in auto)
+  ultimately show ?thesis
+    using finite_subset by blast
 qed
 
 end
