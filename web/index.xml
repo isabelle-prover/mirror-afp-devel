@@ -13,6 +13,13 @@
     <category>Logic/General logic/Modal logic</category>
 </item>
 <item>
+  <title>Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting</title>
+  <link>https://isa-afp.org/entries/Sorted_Rewriting.html</link>
+  <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
   <title>Lebesgue-Stieltjes Integral</title>
   <link>https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html</link>
   <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>

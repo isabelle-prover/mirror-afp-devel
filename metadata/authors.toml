@@ -8805,6 +8805,16 @@ host = [
   "jp",
 ]
 
+[yamada.emails.yamada_email4]
+user = [
+  "akih",
+  "yamada",
+]
+host = [
+  "gmail",
+  "com",
+]
+
 [yamada.homepages]
 yamada_homepage = "http://group-mmm.org/~ayamada/"
 

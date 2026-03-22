@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</loc>
     <lastmod>2026-03-17T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Sorted_Rewriting.html</loc>
+    <lastmod>2026-03-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html</loc>
     <lastmod>2026-03-04T00:00:00+00:00</lastmod>
   </url><url>
@@ -22881,6 +22884,46 @@
     <loc>https://isa-afp.org/thys/AFP/Sort_Encodings/TermsAndClauses.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Sort_Encodings/U.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Algebra_Extensions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Binary_Relations_More.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Conditional_Rewriting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Constrained_Rewriting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Core_Logic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Ints_Logic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Logic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Logic_Extensions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Models.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Monotone_Algebras.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Nats_Logic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Ordered_Algebras.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Sorted_Injections.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Sorted_Relations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Sorted_Rewrite_Relations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Sorted_Rewriting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Sorted_Rules.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Sorted_Terms_More.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Test_Sorted_Rewriting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/AFP/Sorted_Rewriting/Variadic_Signature.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AFP/Sorted_Terms/Basic_Terms.html</loc>
   </url><url>

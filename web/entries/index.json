@@ -20,6 +20,22 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry provides various materials for sorted term rewrite systems (sorted TRSs), (sorted) conditional TRSs (CTRSs), and logically constrained TRSs (LCTRSs). For (C)TRSs we formalize the fundamental result that the rewrite steps induced by a (C)TRS is the least rewrite relation that models the (C)TRS. For LCTRSs we simply formulate logics as sorted algebras with the bool sort and logical symbols which are interpreted as expected. This allows us to define rewrite steps of LCTRSs as rewrite steps of an (infinite) TRS.",
+  "authors": [
+   "Akihisa Yamada"
+  ],
+  "link": "../entries/Sorted_Rewriting.html",
+  "shortname": "Sorted_Rewriting",
+  "title": "Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting",
+  "topic_links": [
+   "../topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalizes some basic facts and lemmas relating to the integration with respect to the Lebesgue-Stieltjes measure (interval measure). It includes the well-known formula to calculate the Lebesgue-Stieltjes integral: \\[     \\int g(x) \\, dF(x) = \\int g(x) F'(x) \\, dx. \\]",
   "authors": [
    "Yosuke Ito"
