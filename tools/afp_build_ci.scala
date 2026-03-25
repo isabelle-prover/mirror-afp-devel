@@ -172,17 +172,17 @@ Last 50 lines from stderr (if available):
         val rsync_context = Rsync.Context(ssh = ssh)
 
         val website_source = File.standard_path(output_dir)
-        Rsync.exec(rsync_context, clean = true, args = List("--", Url.direct_path(website_source),
+        rsync_context.exec(clean = true, args = List("--", Url.direct_path(website_source),
           rsync_context.target(context.website_dir))).check
 
         val release_source = File.standard_path(release_dir)
-        Rsync.exec(rsync_context, args = List("--", Url.direct_path(release_source),
+        rsync_context.exec(args = List("--", Url.direct_path(release_source),
           rsync_context.target(context.website_dir + Path.basic("release")))).check
 
         val browser_info_source = File.standard_path(context.store.presentation_dir)
         val browser_info_dir = context.website_dir + Path.basic("browser_info")
         ssh.make_directory(browser_info_dir)
-        Rsync.exec(rsync_context, args = List("--", Url.direct_path(browser_info_source),
+        rsync_context.exec(args = List("--", Url.direct_path(browser_info_source),
           rsync_context.target(browser_info_dir + Path.basic("current")))).check
       }
     }
