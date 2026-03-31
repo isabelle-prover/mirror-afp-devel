@@ -7,7 +7,7 @@ const ATTRIBUTE_DATA = 'data'
 
 /* handler */
 
-const deobfuscate_href = (ev) => {
+function deobfuscate_href(ev) {
   const elem = ev.target
   if (elem.classList.contains(CLASS_OBFUSCATED)) {
     const data = elem.getAttribute(ATTRIBUTE_DATA)

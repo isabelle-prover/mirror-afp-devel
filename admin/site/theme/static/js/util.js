@@ -1,19 +1,19 @@
 
 /* utilities */
 
-const strip_prefix = (str, prefix) => {
+function strip_prefix(str, prefix) {
   if (str.startsWith(prefix)) return str.slice(prefix.length)
   else return str
 }
 
-const parse_elem = (html_str) => {
+function parse_elem(html_str) {
   const template = document.createElement('template')
   template.innerHTML = html_str
   return template.content
 }
 
-const escape_html = (html) => {
-  return html.replace(/[&<>"']/g, function(m) {
+function escape_html(html) {
+  return html.replace(/[&<>"']/g, (m) => {
     switch (m) {
       case '&':
         return '&amp;'

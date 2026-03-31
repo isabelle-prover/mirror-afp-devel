@@ -3,7 +3,7 @@
 const ID_AUTOCOMPLETE = "autocomplete"
 const ID_SEARCH_INPUT = "search-input"
 
-const get_suggest_index = (keywords) => {
+function get_suggest_index(keywords) {
   const index = new FlexSearch.Document({
     encoder: "icase",
     tokenize: "forward",
@@ -16,7 +16,7 @@ const get_suggest_index = (keywords) => {
   return index
 }
 
-const add_suggestions = (index, query) => {
+function add_suggestions(index, query) {
   const suggest_results = index.search(query, { pluck: 'keyword', enrich: true }).map(d => d.doc)
 
   if (!(suggest_results.length === 1 && suggest_results[0].keyword === query)) {
@@ -79,7 +79,7 @@ function load_search(keywords) {
   })
 }
 
-const init_autocomplete = async () => {
+async function init_autocomplete() {
   const response = await fetch("/data/keywords.json")
   const keywords = await response.json()
   load_search(keywords)
