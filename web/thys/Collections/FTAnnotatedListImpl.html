@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../css/front.min.css">
+    <link rel="stylesheet" type="text/css" href="../../css/isabelle.css">
+  <link rel="icon" href="../../images/favicon.ico" type="image/icon">
+
+  <script src="../../js/library.js"></script>
+  <script src="../../js/flexsearch.bundle.js"></script>
+  <script src="../../js/search-autocomplete.js"></script>
+    <script src="../../js/theory.js"></script>
+</head>
+
+  <body class="mathjax_ignore theories">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../../" class="logo-link">
+    <img src="../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../../" class="logo-link">
+        <img src="../../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+          <ul id="return">
+            <li>
+              <a href="../../entries/Collections.html">Return to entry</a>
+            </li>
+          </ul>
+          <hr>
+      <ul>
+          <li >
+            <a href="../../thys/Collections/Sorted_List_Operations.html">Sorted_List_Operations</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/HashCode.html">HashCode</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetIterator.html">SetIterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetIteratorOperations.html">SetIteratorOperations</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Proper_Iterator.html">Proper_Iterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/It_to_It.html">It_to_It</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetIteratorGA.html">SetIteratorGA</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Gen_Iterator.html">Gen_Iterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Idx_Iterator.html">Idx_Iterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Iterator.html">Iterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/RBT_add.html">RBT_add</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Dlist_add.html">Dlist_add</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Assoc_List.html">Assoc_List</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Diff_Array.html">Diff_Array</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Partial_Equivalence_Relation.html">Partial_Equivalence_Relation</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Tools.html">ICF_Tools</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Ord_Code_Preproc.html">Ord_Code_Preproc</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Record_Intf.html">Record_Intf</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Locale_Code.html">Locale_Code</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Spec_Base.html">ICF_Spec_Base</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/MapSpec.html">MapSpec</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Robdd.html">Robdd</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Locale_Code_Ex.html">Locale_Code_Ex</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/DatRef.html">DatRef</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetAbstractionIterator.html">SetAbstractionIterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/GenCF_Chapter.html">GenCF_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/GenCF_Intf_Chapter.html">GenCF_Intf_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Intf_Map.html">Intf_Map</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Intf_Set.html">Intf_Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Intf_Hash.html">Intf_Hash</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Intf_Comp.html">Intf_Comp</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/GenCF_Gen_Chapter.html">GenCF_Gen_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Gen_Set.html">Gen_Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Gen_Map.html">Gen_Map</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Gen_Map2Set.html">Gen_Map2Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Gen_Comp.html">Gen_Comp</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/GenCF_Impl_Chapter.html">GenCF_Impl_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_Array_Stack.html">Impl_Array_Stack</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_List_Set.html">Impl_List_Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Array_Iterator.html">Array_Iterator</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_List_Map.html">Impl_List_Map</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_Array_Hash_Map.html">Impl_Array_Hash_Map</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_RBT_Map.html">Impl_RBT_Map</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_Cfun_Set.html">Impl_Cfun_Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_Array_Map.html">Impl_Array_Map</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_Bit_Set.html">Impl_Bit_Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Impl_Uv_Set.html">Impl_Uv_Set</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Gen_Hash.html">Gen_Hash</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/GenCF.html">GenCF</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Chapter.html">ICF_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Spec_Chapter.html">ICF_Spec_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetSpec.html">SetSpec</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListSpec.html">ListSpec</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/AnnotatedListSpec.html">AnnotatedListSpec</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/PrioSpec.html">PrioSpec</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/PrioUniqueSpec.html">PrioUniqueSpec</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Gen_Algo_Chapter.html">ICF_Gen_Algo_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetIteratorCollectionsGA.html">SetIteratorCollectionsGA</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/MapGA.html">MapGA</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetGA.html">SetGA</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetByMap.html">SetByMap</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListGA.html">ListGA</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetIndex.html">SetIndex</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Algos.html">Algos</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/PrioByAnnotatedList.html">PrioByAnnotatedList</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/PrioUniqueByAnnotatedList.html">PrioUniqueByAnnotatedList</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Impl_Chapter.html">ICF_Impl_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListMapImpl.html">ListMapImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListMapImpl_Invar.html">ListMapImpl_Invar</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/RBTMapImpl.html">RBTMapImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/HashMap_Impl.html">HashMap_Impl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/HashMap.html">HashMap</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Trie_Impl.html">Trie_Impl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Trie2.html">Trie2</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/TrieMapImpl.html">TrieMapImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ArrayHashMap_Impl.html">ArrayHashMap_Impl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ArrayHashMap.html">ArrayHashMap</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ArrayMapImpl.html">ArrayMapImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/MapStdImpl.html">MapStdImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListSetImpl.html">ListSetImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListSetImpl_Invar.html">ListSetImpl_Invar</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListSetImpl_NotDist.html">ListSetImpl_NotDist</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ListSetImpl_Sorted.html">ListSetImpl_Sorted</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/RBTSetImpl.html">RBTSetImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/HashSet.html">HashSet</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/TrieSetImpl.html">TrieSetImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ArrayHashSet.html">ArrayHashSet</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ArraySetImpl.html">ArraySetImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SetStdImpl.html">SetStdImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Fifo.html">Fifo</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/BinoPrioImpl.html">BinoPrioImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/SkewPrioImpl.html">SkewPrioImpl</a>
+          </li>
+          <li class="active" >
+            <a href="../../thys/Collections/FTAnnotatedListImpl.html">FTAnnotatedListImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/FTPrioImpl.html">FTPrioImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/FTPrioUniqueImpl.html">FTPrioUniqueImpl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Impl.html">ICF_Impl</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Refine_Monadic.html">ICF_Refine_Monadic</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Autoref.html">ICF_Autoref</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Entrypoints_Chapter.html">ICF_Entrypoints_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Collections.html">Collections</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/CollectionsV1.html">CollectionsV1</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Collections_Entrypoints_Chapter.html">Collections_Entrypoints_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Refine_Dflt.html">Refine_Dflt</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Refine_Dflt_ICF.html">Refine_Dflt_ICF</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Refine_Dflt_Only_ICF.html">Refine_Dflt_Only_ICF</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Userguides_Chapter.html">Userguides_Chapter</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/Refine_Monadic_Userguide.html">Refine_Monadic_Userguide</a>
+          </li>
+          <li >
+            <a href="../../thys/Collections/ICF_Userguide.html">ICF_Userguide</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content"><header>
+    <form autocomplete="off" action="../../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>ollections.<span class='first'>F</span><span class='first'>T</span><span class='first'>A</span>nnotated<span class='first'>L</span>ist<span class='first'>I</span>mpl
+  </h1>
+  <div>
+  </div>
+</header>
+      <div>
+  <main>
+    <a id="theory" href="https://www.isa-afp.org/browser_info/current/AFP/Collections/FTAnnotatedListImpl.html">
+      HTML Presentation
+    </a>
+  </main>
+      </div>
+    </div>
+  </body>
+</html>
