@@ -15,7 +15,7 @@ function target(base, href) {
   const url = new URL(href, base)
   const is_not_theory =
     !url.pathname.startsWith(BROWSER_INFO) ||
-    strip_prefix(url.pathname, BROWSER_INFO).split('/').length > 3
+    perhaps_unprefix(BROWSER_INFO, url.pathname).split('/').length > 3
 
   if (is_not_theory) return url.href
   else return href

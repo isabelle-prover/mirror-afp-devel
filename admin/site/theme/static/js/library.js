@@ -3,10 +3,18 @@
 Basic library.
  */
 
-function strip_prefix(str, prefix) {
-  if (str.startsWith(prefix)) return str.slice(prefix.length)
-  else return str
+function try_unprefix(prfx, s) {
+  if (s.startsWith(prfx)) return s.slice(prfx.length)
+  else return null
 }
+
+function try_unsuffix(sffx, s) {
+  if (s.endsWith(sffx)) return s.slice(0, -sffx.length)
+  else return null
+}
+
+function perhaps_unprefix(prfx, s) { return try_unprefix(prfx, s) ?? s }
+function perhaps_unsuffix(sffx, s) { return try_unsuffix(sffx, s) ?? s }
 
 function parse_elem(html_str) {
   const template = document.createElement('template')
