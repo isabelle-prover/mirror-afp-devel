@@ -55,6 +55,8 @@ const load_theory = async () => {
 
     const thy_pre = Array(...thy_body.getElementsByTagName("pre"))[0]
     document.getElementById("spinner").replaceWith(thy_pre)
+    const id = location.hash.slice(1)
+    if (id) document.getElementById(id)?.scrollIntoView()
   }
 }
 
