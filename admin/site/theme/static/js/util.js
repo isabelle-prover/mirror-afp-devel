@@ -12,37 +12,7 @@ function parse_elem(html_str) {
   return template.content
 }
 
-function escape_html(html) {
-  return html.replace(/[&<>"']/g, (m) => {
-    switch (m) {
-      case '&':
-        return '&amp;'
-      case '<':
-        return '&lt;'
-      case '>':
-        return '&gt;'
-      case '"':
-        return '&quot;'
-      case "'":
-        return '&#39;'
-    }
-  })
-}
-
 function get_query(attribute) {
   const params = new URLSearchParams(window.location.search)
   return params.get(attribute)
-}
-
-function memoize(fun) {
-  const cache = {}
-  return function (n) {
-    if (cache[n] !== undefined) {
-      return cache[n]
-    } else {
-      let result = fun(...n)
-      cache[n] = result
-      return result
-    }
-  }
 }
