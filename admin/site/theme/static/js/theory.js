@@ -30,7 +30,11 @@ function target(base, href) {
       }
 
       if (theory_parts.length === 1) return thy_href(session, theory)
-      else return url.href
+      else if (theory_parts.length !== 2) return url.href
+      else {
+        const [static_session , theory] = theory_parts
+        return thy_href(static_session, theory)
+      }
     }
   }
 }
