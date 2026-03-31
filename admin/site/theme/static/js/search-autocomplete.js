@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Keyword autocomplete for search components.
+ */
 
 const ID_AUTOCOMPLETE = "autocomplete"
 const ID_SEARCH_INPUT = "search-input"

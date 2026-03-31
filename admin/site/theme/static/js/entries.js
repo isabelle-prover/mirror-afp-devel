@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Active content of entry pages.
+ */
 
 const ID_COPY_TEXT = 'copy-text'
 const ID_COPY_BIBTEX = 'copy-bibtex'

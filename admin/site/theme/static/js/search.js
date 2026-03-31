@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Search application.
+ */
 
 const NUM_MAX_SIDE_RESULTS = 4
 const NUM_MAX_MAIN_RESULTS = 15

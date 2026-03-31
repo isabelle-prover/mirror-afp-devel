@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Dynamic loading of HTML presentation for theories.
+ */
 
 const BROWSER_INFO = '/browser_info/current/'
 const CLASS_LOADER = 'loader'

@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Obfuscated e-mail addresses within html page, to stop automated web scraping.
+ */
 
 const CLASS_OBFUSCATED = 'obfuscated'
 const CLASS_LINK = 'link'

@@ -1,5 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
 
-/* utilities */
+Basic library.
+ */
 
 function strip_prefix(str, prefix) {
   if (str.startsWith(prefix)) return str.slice(prefix.length)
