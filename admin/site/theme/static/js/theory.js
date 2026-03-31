@@ -13,12 +13,20 @@ const ID_THEORY = 'theory'
 
 function target(base, href) {
   const url = new URL(href, base)
-  const is_not_theory =
-    !url.pathname.startsWith(BROWSER_INFO) ||
-    perhaps_unprefix(BROWSER_INFO, url.pathname).split('/').length > 3
+  if (!url.pathname.startsWith(BROWSER_INFO)) return url.href
+  else {
+    const path = perhaps_unsuffix(".html", perhaps_unprefix(BROWSER_INFO, url.pathname))
 
-  if (is_not_theory) return url.href
-  else return href
+    const name_parts = path.split('/')
+    if (name_parts.length !== 3) return url.href
+    else {
+      const [chapter, session, theory] = name_parts
+      const theory_parts = theory.split('.')
+
+      if (theory_parts.length === 1) return href
+      else return url.href
+    }
+  }
 }
 
 
