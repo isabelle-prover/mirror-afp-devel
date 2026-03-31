@@ -23,7 +23,13 @@ function target(base, href) {
       const [chapter, session, theory] = name_parts
       const theory_parts = theory.split('.')
 
-      if (theory_parts.length === 1) return href
+      function thy_href(session, theory) {
+        const path = '../' + session + '/' + theory + '.html'
+        if (url.hash === '') return path
+        else return path + url.hash
+      }
+
+      if (theory_parts.length === 1) return thy_href(session, theory)
       else return url.href
     }
   }
