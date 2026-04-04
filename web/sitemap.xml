@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/SAT_Not_Const_Time.html</loc>
+    <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</loc>
     <lastmod>2026-03-17T00:00:00+00:00</lastmod>
@@ -8223,6 +8226,8 @@
     <loc>https://isa-afp.org/authors/matichuk/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/schoepe/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/shea/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/somogyi/</loc>
   </url><url>
@@ -21789,6 +21794,8 @@
     <loc>https://isa-afp.org/authors/winkler/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/boehme/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/SAT_Not_Const_Time/SAT_Not_Const_Time.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/SATSolverVerification/AssertLiteral.html</loc>
   </url><url>

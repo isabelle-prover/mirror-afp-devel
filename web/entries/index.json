@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "This entry establishes that the Boolean Satisfiability Problem (SAT) cannot be decided by a deterministic Turing machine in constant time \\(O(1)\\). The core of the argument rests on an indistinguishability invariant: a Turing machine bounded by constant time \\(C\\) can only ever read the first \\(C+1\\) cells of its input tape. Consequently, any language decided in constant time must be a prefix language. We then show that SAT is not uniquely determined by any finite prefix, yielding the impossibility result.",
+  "authors": [
+   "Daniel Shea"
+  ],
+  "link": "../entries/SAT_Not_Const_Time.html",
+  "shortname": "SAT_Not_Const_Time",
+  "title": "SAT is Not Solvable in Constant Time",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/",
+   "../topics/logic/computability/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages",
+   "Logic/Computability"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This study reconstructs metaphysical arguments within a framework of computational formalization and machine verification, thereby recasting ontological claims as candidates for formal validation.\nThis paper presents a formal development in automated reasoning for metaphysical systems, treating ontological arguments as precisely specified logical theories subject to machine verification. We provide an Isabelle/HOL formalization that reconstructs and verifies the core claims of two prior philosophical arguments within higher-order logic.\nWorking entirely within HOL and introducing no additional axioms beyond the base logic, the development proceeds by conservative definitional extension (U-layer methodology). We define the concept of H-Optimality ($H_{opt}$) \u0026mdash; capturing the ultimate truth concept of \"a truth so certain that no more certain truth can be conceived\" \u0026mdash; as a structurally maximal admissible ground characterized by maximal non-trivial support relations and a finality condition.\nA Hilbert-style flat-model interpretation establishes the internal consistency and non-vacuity of this definitional package. This confirmation of the concept's consistency fulfills the core objective pursued by ontological arguments since G. W. Leibniz. Within this framework, we formally derive structural exclusion results for $H_{opt}$ at the level of argument-classes: the cases $N=1$ (singularity), $N=2$ (strict duality), and $N \\ge 4$ independent maxima are ruled out by $\\approx$-collapse ($\\mathrm{Arg}$-equivalence collapse) and $=$-collapse (numerical-identity collapse) mechanisms. Consequently, $N=3$ emerges as the unique admissible cardinality compatible with the stated maximality and exclusion conditions.\nWe further prove a Definitional Finality Theorem: assuming $H_{opt}(q)$ and that any definition $D$ ranges over the pan-domain ($\\mathrm{PDom}$), there does not exist an $r$ satisfying $D(r)$ such that $\\mathrm{Arg}(q) \\prec \\mathrm{Arg}(r)$. This establishes a precise formal boundary for admissible strengthening under the given definitions, proving that the definition of a truth strictly superior to $H_{opt}$ is impossible.\nFinally, bounded finite-model search (Nitpick) identifies a genuine satisfying model, providing mechanized evidence for the existence of a non-vacuous and genuine triune model.\n",
   "authors": [
    "Kim, Yong-Dock"

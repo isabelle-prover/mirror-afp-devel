@@ -767,6 +767,7 @@ Roth_Arithmetic_Progressions
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification
+SAT_Not_Const_Time
 SCC_Bloemen_Sequential
 SCL_Simulates_Ground_Resolution
 SC_DOM_Components

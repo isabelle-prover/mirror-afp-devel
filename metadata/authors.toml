@@ -7080,6 +7080,23 @@ name = "Thomas Sewell"
 
 [sewell.homepages]
 
+[shea]
+name = "Daniel Shea"
+orcid = "0009-0008-4488-5169"
+
+[shea.emails]
+
+[shea.emails.shea_email]
+user = [
+  "dbj6",
+]
+host = [
+  "usnh",
+  "edu",
+]
+
+[shea.homepages]
+
 [sickert]
 name = "Salomon Sickert"
 
