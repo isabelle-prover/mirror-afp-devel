@@ -336,12 +336,13 @@ orcid = "0009-0000-4941-187X"
 
 [ballenghien.emails.ballenghien_email]
 user = [
+  "docteur",
   "benoit",
   "ballenghien",
 ]
 host = [
-  "universite-paris-saclay",
-  "fr",
+  "gmail",
+  "com",
 ]
 
 [ballenghien.homepages]
