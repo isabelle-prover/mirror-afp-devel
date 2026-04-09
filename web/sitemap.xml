@@ -5,6 +5,9 @@
     <loc>https://isa-afp.org/entries/index.json</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Abstract_Consistency_Property.html</loc>
+    <lastmod>2026-03-26T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -2954,6 +2957,14 @@
     <loc>https://isa-afp.org/thys/Abstract_Completeness/Abstract_Completeness.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Abstract_Completeness/Propositional_Logic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Abstract_Consistency_Property/Abstract_Consistency_Property.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Abstract_Consistency_Property/Example_Bounded_FOL.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Abstract_Consistency_Property/Example_PIL.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Abstract_Consistency_Property/Example_SOL.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Abstract_Soundness/Finite_Proof_Soundness.html</loc>
   </url><url>
