@@ -49,6 +49,8 @@ fun defs qual inds f ctx =
         let val (thm, ctx') = def qual (i, f i) ctx 
         in (thms @ [thm], ctx') end) inds ([], ctx)
 
+fun abbreviation a b c d = Interactive.setmp false (Specification.abbreviation a b c d)
+
 fun compile_chantype (name, chans) ctx =
   let 
     val ctrs = map (fn (n, t) => (((Binding.empty, Binding.name (n ^ ctor_suffix)), [(Binding.empty, t)]), Mixfix.NoSyn)) chans 
@@ -67,11 +69,11 @@ fun compile_chantype (name, chans) ctx =
   (* The datatype package does not produce a discriminator for the second constructor when
      there are two constructors. We here generate one for uniformity. *)
   #> (if (length pnames = 2)
-      then Specification.abbreviation 
+      then abbreviation 
              Syntax.mode_default (SOME (Binding.qualify false name (Binding.name (is_prefix ^ nth pnames 1 ^ ctor_suffix)), NONE, NoSyn)) [] 
              (mk_def dummyT 
                 (is_prefix ^ nth pnames 1 ^ ctor_suffix) 
-                (Syntax.const @{const_name comp} $ @{term Not} $ Syntax.const (prefix ^ is_prefix ^ nth pnames 0 ^ ctor_suffix))) false
+                (Syntax.const @{const_name comp} $ @{term Not} $ Syntax.const (prefix ^ is_prefix ^ nth pnames 0 ^ ctor_suffix)))
       else I)
   #> defs name pnames (fn x => (Syntax.const @{const_name ctor_prism}
                          $ Syntax.const (prefix ^ x ^ ctor_suffix)

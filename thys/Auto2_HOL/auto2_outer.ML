@@ -372,7 +372,7 @@ fun qed_cmd state =
 val _ =
     Outer_Syntax.command Auto2_Keywords.qed "end of proof"
     (Scan.succeed (
-        Toplevel.end_proof (K qed_cmd)))
+        Toplevel.end_proof qed_cmd))
 
 (* Given theorem As ==> EX y. P(y), a term C, and a list of variables
    x, obtain the theorem (!!x y. As ==> P(y) ==> C) ==> (!!x. As ==>

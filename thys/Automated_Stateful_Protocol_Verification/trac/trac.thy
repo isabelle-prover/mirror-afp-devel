@@ -140,7 +140,7 @@ fun protocol_model_interpretation_params name lthy =
 fun declare_thm_attr attribute name print lthy =
   let 
     val arg = [(Facts.named name, [[Token.make_string (attribute, Position.none)]])]
-    val (_, lthy') = Specification.theorems_cmd "" [(Binding.empty_atts, arg)] [] print lthy
+    val (_, lthy') = Interactive.setmp print (Specification.theorems_cmd "" [(Binding.empty_atts, arg)] []) lthy
   in
     lthy'
   end
@@ -1739,24 +1739,24 @@ end
 ML\<open>
   val fileNameP = Parse.name -- Parse.name
 
-  val _ = Outer_Syntax.local_theory' @{command_keyword "trac"}
+  val _ = Outer_Syntax.local_theory @{command_keyword "trac"}
           "Define protocol and (optionally) fixpoint using trac format."
           ((Parse.cartouche -- Scan.optional Parse.cartouche "" >> (
-            fn (trac,fp) => fn print => fn lthy =>
+            fn (trac,fp) => fn lthy =>
           let
             val opt_fp = if fp = "" then NONE else SOME fp
-            val trac = trac.def_trac trac opt_fp print #> snd
+            val trac = trac.def_trac trac opt_fp (Interactive.enabled ()) #> snd
           in
             trac_time.ap_lthy lthy ("trac") trac lthy 
           end)));
 
-  val _ = Outer_Syntax.local_theory' @{command_keyword "trac_import"} 
+  val _ = Outer_Syntax.local_theory @{command_keyword "trac_import"} 
           "Import protocol and (optionally) fixpoint from trac files." 
           ((Parse.name -- Scan.optional Parse.name "" >> (
-            fn (trac_filename, fp_filename) => fn print => fn lthy =>
+            fn (trac_filename, fp_filename) => fn lthy =>
           let
             val opt_fp_filename = if fp_filename = "" then NONE else SOME fp_filename
-            val trac = trac.def_trac_file trac_filename opt_fp_filename print #> snd
+            val trac = trac.def_trac_file trac_filename opt_fp_filename (Interactive.enabled ()) #> snd
           in
             trac_time.ap_lthy lthy ("trac_import") trac lthy 
           end)));
@@ -2131,50 +2131,50 @@ end
 
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof\<close>
+  Outer_Syntax.local_theory \<^command_keyword>\<open>protocol_security_proof\<close>
     "prove interpretation of secure protocol locale into global theory"
     (security_proof_locale_parser_with_method_choice >> 
-    (fn params => fn print => fn lthy =>
+    (fn params => fn lthy =>
     let 
         val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof.protocol_security_proof_with_error_messages (params, (name, prefix, opt_defs, opt_meth_level), print, lthy)
+                        protocol_security_proof.protocol_security_proof_with_error_messages (params, (name, prefix, opt_defs, opt_meth_level), Interactive.enabled (), lthy)
     end));
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof_parallel\<close>
+  Outer_Syntax.local_theory \<^command_keyword>\<open>protocol_security_proof_parallel\<close>
     "prove interpretation of secure protocol locale into global theory"
     (security_proof_locale_parser_with_method_choice >> 
-    (fn params => fn print => fn lthy =>
+    (fn params => fn lthy =>
     let 
         val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof.parallel (params, (name, prefix, opt_defs, opt_meth_level), print, lthy)
+                        protocol_security_proof.parallel (params, (name, prefix, opt_defs, opt_meth_level), Interactive.enabled (), lthy)
     end));
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_security_proof_safe_heuristic\<close>
+  Outer_Syntax.local_theory \<^command_keyword>\<open>protocol_security_proof_safe_heuristic\<close>
     "prove interpretation of secure protocol locale into global theory"
     (security_proof_locale_parser_with_method_choice >> 
-    (fn params => fn print => fn lthy =>
+    (fn params => fn lthy =>
     let 
         val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof.heuristic (params, (name, prefix, opt_defs), print, lthy)
+                        protocol_security_proof.heuristic (params, (name, prefix, opt_defs), Interactive.enabled (), lthy)
     end));
 
 
 val _ =
-  Outer_Syntax.local_theory_to_proof' \<^command_keyword>\<open>manual_protocol_security_proof\<close>
+  Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>manual_protocol_security_proof\<close>
     "prove interpretation of secure protocol locale into global theory"
-    (security_proof_locale_parser >> (fn params => fn print => fn lthy =>
+    (security_proof_locale_parser >> (fn params => fn lthy =>
     let
       val ((name,prefix),opt_defs) = params
       val (defs, proof_state) =
-        protocol_security_proof_proof_state true name prefix opt_defs "safe" print lthy
+        protocol_security_proof_proof_state true name prefix opt_defs "safe" (Interactive.enabled ()) lthy
       val subgoal_proof =
         let
           val m = "code_simp" (* case opt_meth_level of
@@ -2200,15 +2200,15 @@ val _ =
     ));
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>protocol_composition_proof\<close>
+  Outer_Syntax.local_theory \<^command_keyword>\<open>protocol_composition_proof\<close>
     "prove interpretation of composed protocol locale into global theory"
-    (composed_protocol_locale_parser_with_method_choice >> (fn params => fn print => fn lthy =>
+    (composed_protocol_locale_parser_with_method_choice >> (fn params => fn lthy =>
     let val ((_,(name,_)),_) = params
         fun protocol_composition_proof (params,lthy) = 
       let
         val ((opt_meth_level,(name,prefix)),remaining_params) = params
         val proof_state =
-              protocol_composition_proof_proof_state name prefix remaining_params print lthy
+              protocol_composition_proof_proof_state name prefix remaining_params (Interactive.enabled ()) lthy
         val meth =
           let
             val m = select_proof_method_compositionality "use" opt_meth_level
@@ -2227,13 +2227,13 @@ val _ =
     end));
 
 val _ =
-  Outer_Syntax.local_theory_to_proof' \<^command_keyword>\<open>manual_protocol_composition_proof\<close>
+  Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>manual_protocol_composition_proof\<close>
     "prove interpretation of composed protocol locale into global theory"
-    (composed_protocol_locale_parser >> (fn params => fn print => fn lthy =>
+    (composed_protocol_locale_parser >> (fn params => fn lthy =>
     let
       val ((name,prefix),remaining_params) = params
       val proof_state =
-            protocol_composition_proof_proof_state name prefix remaining_params print lthy
+            protocol_composition_proof_proof_state name prefix remaining_params (Interactive.enabled ()) lthy
       val subgoal_proof = "  subgoal by code_simp\n"
       val _ = Output.information ("Example proof:\n" ^
                 Active.sendback_markup_command ("  apply check_protocol_intro\n"^
@@ -2509,10 +2509,10 @@ in
   print_trs transactiontermlist
 end
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "print_transaction_strand"}
+val _ = Outer_Syntax.local_theory @{command_keyword "print_transaction_strand"}
         "print protocol transaction as transaction strand"
         (Parse.name -- Parse.name >>
-        (fn (protocol, transaction) => fn print => fn lthy =>
+        (fn (protocol, transaction) => fn lthy =>
           let fun print_tr ((protocol,transaction), _, lthy) = 
             let
               val _ = assert_defined lthy transaction
@@ -2530,14 +2530,14 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_transaction_strand"}
             trac_time.ap_lthy lthy
               ("print_transaction_strand ("^protocol^")")
               print_tr
-              ((protocol,transaction), print, lthy)
+              ((protocol,transaction), Interactive.enabled (), lthy)
           end ));
 
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "print_transaction_strand_list"}
+val _ = Outer_Syntax.local_theory @{command_keyword "print_transaction_strand_list"}
         "print protocol transaction list as transaction strand list"
         (Parse.name -- Parse.name >>
-        (fn (protocol, transaction_list) => fn print => fn lthy =>
+        (fn (protocol, transaction_list) => fn lthy =>
           let fun print_tr ((protocol,transaction_list), _, lthy) = 
             let
               val _ = assert_defined lthy transaction_list
@@ -2555,13 +2555,13 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_transaction_strand_l
             trac_time.ap_lthy lthy
               ("print_transaction_strand_list ("^protocol^")")
               print_tr
-              ((protocol,transaction_list), print, lthy)
+              ((protocol,transaction_list), Interactive.enabled (), lthy)
           end ));
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "print_attack_trace"}
+val _ = Outer_Syntax.local_theory @{command_keyword "print_attack_trace"}
         "print attack trace"
         (Parse.name -- Parse.name -- Parse.name >>
-        (fn ((protocol, protocol_def), attack_trace) => fn print => fn lthy =>
+        (fn ((protocol, protocol_def), attack_trace) => fn lthy =>
           let fun print_tr ((protocol,protocol_def,attack_trace), _, lthy) = 
             let
               val evaltrm = eval_term lthy o Syntax.read_term lthy
@@ -2593,13 +2593,13 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_attack_trace"}
             trac_time.ap_lthy lthy
               ("print_attack_trace ("^protocol^","^protocol_def^","^attack_trace^")")
               print_tr
-              ((protocol,protocol_def,attack_trace), print, lthy)
+              ((protocol,protocol_def,attack_trace), Interactive.enabled (), lthy)
           end ));
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"} 
+val _ = Outer_Syntax.local_theory @{command_keyword "print_fixpoint"} 
         "print protocol fixpoint"
         (Parse.name -- Parse.name >>
-        (fn (protocol, fixpoint) => fn print => fn lthy =>
+        (fn (protocol, fixpoint) => fn lthy =>
           let fun print_fixpoint ((protocol,fixpoint), _, lthy) = 
             let
               val _ = assert_defined lthy fixpoint
@@ -2608,13 +2608,13 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
               lthy
             end
           in 
-            trac_time.ap_lthy lthy ("print_fixpoint ("^protocol^")") print_fixpoint ((protocol,fixpoint), print, lthy) 
+            trac_time.ap_lthy lthy ("print_fixpoint ("^protocol^")") print_fixpoint ((protocol,fixpoint), Interactive.enabled (), lthy) 
           end ));
 
-  val _ = Outer_Syntax.local_theory' @{command_keyword "save_fixpoint"} 
+  val _ = Outer_Syntax.local_theory @{command_keyword "save_fixpoint"} 
           "Write fixpoint to file." 
           ((Parse.name -- Parse.name -- Parse.name >> (
-            fn ((protocol_name, fixpoint_filename), fixpoint_name) => fn _ => fn lthy =>
+            fn ((protocol_name, fixpoint_filename), fixpoint_name) => fn lthy =>
           let
             fun save_fixpoint ((protocol_name, fixpoint_name), fixpoint_filename, lthy) =
               let
@@ -2713,10 +2713,10 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
   end
 
   (* TODO: chunks *)
-  val _ = Outer_Syntax.local_theory' @{command_keyword "load_fixpoint"} 
+  val _ = Outer_Syntax.local_theory @{command_keyword "load_fixpoint"} 
           "Import fixpoint from file." 
           ((Parse.name -- Parse.name -- Parse.name >> (
-            fn ((protocol_name, fixpoint_filename), fixpoint_name) => fn print => fn lthy =>
+            fn ((protocol_name, fixpoint_filename), fixpoint_name) => fn lthy =>
           let
             fun load_fixpoint ((protocol_name, fixpoint_filename), fixpoint_name, lthy) =
               let
@@ -2736,17 +2736,17 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "print_fixpoint"}
                 val cert_trac = TracProtocolCert.certifyProtocol trac
                 val fp_trm = trac_definitorial_package.fp_triple_to_hol cert_fp cert_trac lthy
               in
-                #2 (ml_isar_wrapper.define_constant_definition' (fixpoint_name, fp_trm) print lthy)
+                #2 (ml_isar_wrapper.define_constant_definition' (fixpoint_name, fp_trm) (Interactive.enabled ()) lthy)
               end
           in
             trac_time.ap_lthy lthy ("load_fixpoint") load_fixpoint ((protocol_name, fixpoint_filename), fixpoint_name, lthy)
           end)));
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "compute_fixpoint"} 
+val _ = Outer_Syntax.local_theory @{command_keyword "compute_fixpoint"} 
         "evaluate and define protocol fixpoint"
         ((Scan.option (\<^keyword>\<open>[\<close> |-- Parse.name --| \<^keyword>\<open>]\<close>)) --
          Parse.name -- Parse.name -- Scan.option Parse.name >>
-        (fn (((opt, protocol), fixpoint), opt_trace) => fn print => fn lthy =>
+        (fn (((opt, protocol), fixpoint), opt_trace) => fn lthy =>
           let fun compute_fixpoint (((protocol,fixpoint),opt_trace), print, lthy) = 
             let
               val _ = assert_defined lthy protocol
@@ -2792,13 +2792,13 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "compute_fixpoint"}
               
             end
           in 
-            trac_time.ap_lthy lthy ("compute_fixpoint ("^protocol^")") compute_fixpoint (((protocol,fixpoint),opt_trace), print, lthy)  
+            trac_time.ap_lthy lthy ("compute_fixpoint ("^protocol^")") compute_fixpoint (((protocol,fixpoint),opt_trace), Interactive.enabled (), lthy)  
           end ));
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "compute_SMP"} 
+val _ = Outer_Syntax.local_theory @{command_keyword "compute_SMP"} 
         "evaluate and define a finite representation of the sub-message patterns of a protocol"
         ((Scan.optional (\<^keyword>\<open>[\<close> |-- Parse.name --| \<^keyword>\<open>]\<close>) "no_optimizations") --
-          Parse.name -- Parse.name >> (fn ((opt,prot), smp) => fn print => fn lthy =>
+          Parse.name -- Parse.name >> (fn ((opt,prot), smp) => fn lthy =>
           let fun compute_smp (((opt, prot), smp), print, lthy) = 
           let
             val prot' = prot
@@ -2854,12 +2854,12 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "compute_SMP"}
                 end
           end 
         in
-         trac_time.ap_lthy lthy ("compute_SMP ("^prot^")") compute_smp (((opt, prot), smp), print, lthy)
+         trac_time.ap_lthy lthy ("compute_SMP ("^prot^")") compute_smp (((opt, prot), smp), Interactive.enabled (), lthy)
         end));
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "compute_shared_secrets"} 
+val _ = Outer_Syntax.local_theory @{command_keyword "compute_shared_secrets"} 
         "evaluate and define a finite representation of shared secrets as the intersection of GSMP sets"
-        (Scan.repeat1 Parse.name >> (fn params => fn print => fn lthy =>
+        (Scan.repeat1 Parse.name >> (fn params => fn lthy =>
           let fun compute_shared_secrets (params, print, lthy) = 
           let
             val _ = if length params < 3 then error "Not enough arguments" else ()
@@ -2892,13 +2892,13 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "compute_shared_secrets"}
         in
          trac_time.ap_lthy lthy
           ("compute_shared_secrets (["^String.concatWith ", " params^"])")
-          compute_shared_secrets (params, print, lthy)
+          compute_shared_secrets (params, Interactive.enabled (), lthy)
         end));
 
-val _ = Outer_Syntax.local_theory' @{command_keyword "setup_protocol_checks"}
+val _ = Outer_Syntax.local_theory @{command_keyword "setup_protocol_checks"}
         "setup protocol checks"
         (Parse.name -- Scan.repeat Parse.name >>
-        (fn params => fn print => fn lthy =>
+        (fn params => fn lthy =>
         let fun setup_protocol_checks ((protocol_model, protocol_names), print, lthy) =
           let
             fun f s = protocol_model ^ "." ^ s
@@ -2920,7 +2920,7 @@ val _ = Outer_Syntax.local_theory' @{command_keyword "setup_protocol_checks"}
         in 
           trac_time.ap_lthy lthy
             ("setup_protocol_checks (("^fst params^",["^String.concatWith "," (snd params)^"]))")
-            setup_protocol_checks (params, print, lthy)
+            setup_protocol_checks (params, Interactive.enabled (), lthy)
         end ));
 \<close>
 

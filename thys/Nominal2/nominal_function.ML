@@ -17,7 +17,7 @@ sig
 
   val add_nominal_function_cmd: (binding * string option * mixfix) list ->
     Specification.multi_specs_cmd ->  Nominal_Function_Common.nominal_function_config ->
-    (Proof.context -> tactic) -> bool -> local_theory -> nominal_info * local_theory
+    (Proof.context -> tactic) -> local_theory -> nominal_info * local_theory
 
   val nominal_function: (binding * typ option * mixfix) list ->
     Specification.multi_specs ->  Nominal_Function_Common.nominal_function_config ->
@@ -25,7 +25,7 @@ sig
 
   val nominal_function_cmd: (binding * string option * mixfix) list ->
     Specification.multi_specs_cmd ->  Nominal_Function_Common.nominal_function_config ->
-    bool -> local_theory -> Proof.state
+    local_theory -> Proof.state
 
   val get_info : Proof.context -> term -> nominal_info
 end
@@ -196,8 +196,8 @@ fun gen_add_nominal_function do_print prep default_constraint fixspec eqns confi
 
 val add_nominal_function =
   gen_add_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
-fun add_nominal_function_cmd a b c d int =
-  gen_add_nominal_function int Specification.read_multi_specs "_::type" a b c d
+fun add_nominal_function_cmd a b c d lthy =
+  gen_add_nominal_function (Interactive.enabled ()) Specification.read_multi_specs "_::type" a b c d lthy
 
 fun gen_nominal_function do_print prep default_constraint fixspec eqns config lthy =
   let
@@ -211,8 +211,8 @@ fun gen_nominal_function do_print prep default_constraint fixspec eqns config lt
 
 val nominal_function =
   gen_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
-fun nominal_function_cmd a b c int =
-  gen_nominal_function int Specification.read_multi_specs "_::type" a b c
+fun nominal_function_cmd a b c lthy =
+  gen_nominal_function (Interactive.enabled ()) Specification.read_multi_specs "_::type" a b c lthy
 
 fun get_info ctxt t = Item_Net.retrieve (get_function ctxt) t
   |> the_single |> snd
@@ -237,7 +237,7 @@ in
 end
 
 val _ =
-  Outer_Syntax.local_theory_to_proof' @{command_keyword nominal_function}
+  Outer_Syntax.local_theory_to_proof @{command_keyword nominal_function}
     "define general recursive nominal functions"
        (nominal_function_parser nominal_default_config
           >> (fn (config, (fixes, specs)) => nominal_function_cmd fixes specs config))

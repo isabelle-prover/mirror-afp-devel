@@ -539,7 +539,6 @@ fun directive_update_define pos f_toks f_antiq =
                           []
                           []
                           (Binding.empty_atts, ident ^ " \<equiv> " ^ integer)
-                          true
                          #> tap (fn ((_, (_, t)), ctxt) =>
                                  Output.information
                                    ("Generating "
@@ -614,7 +613,7 @@ fun local_theory' target f gthy =
     val (finish, lthy) = Target_Context.switch_named_cmd target gthy;
     val lthy' = lthy
       |> Local_Theory.new_group
-      |> f false
+      |> Interactive.setmp false f
       |> Local_Theory.reset_group;
   in finish lthy' end
 val generic_theory = I
@@ -769,11 +768,11 @@ signature C_INNER_SYNTAX =
     val local_command':
        string * Position.T * Position.T * Position.T ->
          ((string -> string) -> Token.T list -> 'a * Token.T list) ->
-           ('a -> bool -> local_theory -> local_theory) -> theory -> theory
+           ('a -> local_theory -> local_theory) -> theory -> theory
     val local_command'':
        string * Position.T * Position.T * Position.T ->
          (Token.T list -> 'a * Token.T list) ->
-           ('a -> bool -> local_theory -> local_theory) -> theory -> theory
+           ('a -> local_theory -> local_theory) -> theory -> theory
     val pref_bot: 'a -> 'a
     val pref_lex: string -> string
     val pref_top: string -> string
@@ -954,20 +953,17 @@ signature C_ISAR_CMD =
     val text   :    Input.source -> generic_theory -> generic_theory
     val declare:    (Facts.ref * Token.src list) list list * 
                     (binding * string option * mixfix) list 
-                    -> bool 
                     -> local_theory -> local_theory
     val definition: (((binding * string option * mixfix) option 
                       * (Attrib.binding * string)) 
                       * string list) 
                     * (binding * string option * mixfix) list
-                    -> bool 
                     -> local_theory -> local_theory
     val theorem:  bool ->
                    (bool * Attrib.binding * Bundle.xname list 
                     * Element.context list * Element.statement) 
                    * (Method.text_range list 
                       * (Method.text_range * Method.text_range option) option)
-                   -> bool 
                    -> local_theory -> local_theory
   end
 
@@ -989,9 +985,9 @@ fun text source = ML_Context.exec (fn () =>
                    ML_Context.eval_source (ML_Compiler.verbose true ML_Compiler.flags) source) #>
                  Local_Theory.propagate_ml_env
 
-fun theorem schematic ((long, binding, includes, elems, concl), (l_meth, o_meth)) int lthy =
+fun theorem schematic ((long, binding, includes, elems, concl), (l_meth, o_meth)) lthy =
      (if schematic then Specification.schematic_theorem_cmd else Specification.theorem_cmd)
-       long Thm.theoremK NONE (K I) binding includes elems concl int lthy
+       long Thm.theoremK NONE (K I) binding includes elems concl lthy
   |> fold (fn m => tap (fn _ => Method.report m) #> Proof.apply m #> Seq.the_result "") l_meth
   |> (case o_meth of
         NONE => Proof.global_done_proof
@@ -1000,10 +996,10 @@ fun theorem schematic ((long, binding, includes, elems, concl), (l_meth, o_meth)
           #> Proof.global_terminal_proof (m1, m2))
 
 fun definition (((decl, spec), prems), params) =
-  #2 oo Specification.definition_cmd decl params prems spec
+  #2 o Specification.definition_cmd decl params prems spec
 
 fun declare (facts, fixes) =
-  #2 oo Specification.theorems_cmd "" [(Binding.empty_atts, flat facts)] fixes
+  #2 o Specification.theorems_cmd "" [(Binding.empty_atts, flat facts)] fixes
 end
 
 local

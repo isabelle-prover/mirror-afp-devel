@@ -132,8 +132,8 @@ val _ =
     (Parse.thms1 >> (fn facts => fn ctxt => List.foldl (fn ((f, _), ctxt) => Cimp.intern_com f ctxt) ctxt facts));
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>locset_definition\<close> "constant definition for sets of locations"
+  Outer_Syntax.local_theory \<^command_keyword>\<open>locset_definition\<close> "constant definition for sets of locations"
     (Scan.option Parse_Spec.constdecl -- (Parse_Spec.opt_thm_name ":" -- Parse.prop) --
-      Parse_Spec.if_assumes -- Parse.for_fixes >> (fn (((decl, spec), prems), params) => fn b => fn lthy =>
-        Specification.definition_cmd decl params prems spec b lthy
+      Parse_Spec.if_assumes -- Parse.for_fixes >> (fn (((decl, spec), prems), params) => fn lthy =>
+        Specification.definition_cmd decl params prems spec lthy
         |> (fn ((_, (_, thm)), lthy) => (thm, lthy)) |> uncurry Cimp.def_locset));
