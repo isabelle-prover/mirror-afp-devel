@@ -2639,7 +2639,7 @@ fun gen_def prep_spec prep_att raw_var raw_params raw_prems ((a, raw_atts), raw_
     val lhs' = Morphism.term (Local_Theory.target_morphism lthy) lhs;
 
     val _ =
-      Proof_Display.print_consts (Interactive.enabled ()) (Position.thread_data ()) lthy4
+      Proof_Display.print_consts {verbose = true, pos = Position.thread_data ()} lthy4
         (Frees.defined (Frees.build (Frees.add_frees lhs'))) [(x, T)];
   in ((lhs, (def_name, th')), lthy4) end;
 
@@ -2708,7 +2708,7 @@ fun gen_theorem schematic bundle_includes prep_att prep_stmt
     val atts = more_atts @ map (prep_att lthy) raw_atts;
 
     val print_results =
-      Proof_Display.print_results {interactive = Interactive.enabled (), pos = Position.thread_data ()};
+      Proof_Display.print_results {verbose = true, pos = Position.thread_data ()};
 
     fun after_qed' results goal_ctxt' =
       let
@@ -3077,10 +3077,10 @@ fun read_fields raw_fields ctxt =
 
 fun def_cmd (decl, spec, prems, params) lthy =
   let
-    val ((lhs as Free (x, T), _), lthy') = Specification.definition decl params prems spec lthy;
+    val ((lhs as Free (x, T), _), lthy') = Specification.definition {verbose = false} decl params prems spec lthy;
     val lhs' = Morphism.term (Local_Theory.target_morphism lthy') lhs;
     val _ =
-      Proof_Display.print_consts true (Position.thread_data ()) lthy'
+      Proof_Display.print_consts {verbose = true, pos = Position.thread_data ()} lthy'
         (Frees.defined (Frees.build (Frees.add_frees lhs'))) [(x, T)]
   in lthy' end
 
@@ -3265,7 +3265,7 @@ fun add_onto_morphism classes_mappings eqs thy =
       val lthy = Named_Target.theory_init thy
       val updated_lthy = fold (fn (decl, spec, prems, params) => fn lthy => 
                         let
-                          val (_, lthy') = Specification.definition_cmd decl params prems spec lthy
+                          val (_, lthy') = Specification.definition_cmd {verbose = false} decl params prems spec lthy
                         in lthy' end) args lthy
     in Local_Theory.exit_global updated_lthy end
     (* alternative way to update the theory using the Theory.join_theory function *)

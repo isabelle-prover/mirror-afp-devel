@@ -554,7 +554,7 @@ fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding
     val _ = fold (fn ((bnd,_),_) => fn _ =>
       AOT_print_item_number (Binding.name_of bnd)) stmts ()
   in
-    Specification.theorem long "AOT_theorem" NONE afterQed thmBinding []
+    Specification.theorem {verbose = false, long = long, kind = Thm.theoremK} NONE afterQed thmBinding []
       assumptions (Element.Shows stmts) ctxt
   end
 

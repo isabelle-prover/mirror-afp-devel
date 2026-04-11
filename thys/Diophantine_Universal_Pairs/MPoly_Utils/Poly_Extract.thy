@@ -23,7 +23,7 @@ fun gen_def spec lthy =
       |> Code.declare_default_eqns [(th', true)];
     val lhs' = Morphism.term (Local_Theory.target_morphism lthy5) lhs;
     val _ =
-      Proof_Display.print_consts true (Position.thread_data ()) lthy5
+      Proof_Display.print_consts {verbose = true, pos = Position.thread_data ()} lthy5
         (Frees.defined (Frees.build (Frees.add_frees lhs'))) [(x, T)];
   in ((lhs, (def_name, th')), lthy5) end;
 
@@ -35,7 +35,7 @@ fun gen_theorems (name, thms) lthy =
     val (res, lthy') = lthy |> Local_Theory.notes_kind kind facts';
     val _ =
       Proof_Display.print_results
-        {interactive = true, pos = Position.thread_data ()}
+        {verbose = true, pos = Position.thread_data ()}
         lthy' ((kind, ""), res);
   in (res, lthy') end;
 

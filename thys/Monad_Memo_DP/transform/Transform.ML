@@ -132,7 +132,7 @@ fun do_monadify heap_name scope tm mem_locale_opt def_thms_opt lthy =
       new_defT = new_defT
     }) lthy
 
-    val _ = Proof_Display.print_consts true (Position.thread_data ()) lthy3 (K false) [
+    val _ = Proof_Display.print_consts {verbose = true, pos = Position.thread_data ()} lthy3 (K false) [
       (Binding.name_of new_bind, Term.type_of head'),
       (Binding.name_of new_bindT, Term.type_of headTC)]
   in lthy3 end

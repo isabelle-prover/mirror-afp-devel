@@ -244,8 +244,8 @@ fun process_tts_lemma
       map (single #> Attrib.eval_thms lthy |> apsnd) tts_thms_specs
   in
     lthy
-    |> Specification.theorem_cmd
-      long Thm.theoremK NONE (K I) binding includes elems concl
+    |> Specification.theorem_cmd {verbose = true, long = long, kind = Thm.theoremK}
+      NONE (K I) binding includes elems concl
     |> mk_tts_goal tts_thms_specs lthy
   end;
 

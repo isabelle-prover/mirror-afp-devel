@@ -534,7 +534,7 @@ fun directive_update_define pos f_toks f_antiq =
                   C_Env.map_context
                     (Context.map_theory
                       (Named_Target.theory_map
-                        (Specification.definition_cmd
+                        (Specification.definition_cmd {verbose = true}
                           (SOME (Binding.make (ident, pos), NONE, NoSyn))
                           []
                           []
@@ -987,7 +987,7 @@ fun text source = ML_Context.exec (fn () =>
 
 fun theorem schematic ((long, binding, includes, elems, concl), (l_meth, o_meth)) lthy =
      (if schematic then Specification.schematic_theorem_cmd else Specification.theorem_cmd)
-       long Thm.theoremK NONE (K I) binding includes elems concl lthy
+       {verbose = false, long = long, kind = Thm.theoremK} NONE (K I) binding includes elems concl lthy
   |> fold (fn m => tap (fn _ => Method.report m) #> Proof.apply m #> Seq.the_result "") l_meth
   |> (case o_meth of
         NONE => Proof.global_done_proof
@@ -996,10 +996,10 @@ fun theorem schematic ((long, binding, includes, elems, concl), (l_meth, o_meth)
           #> Proof.global_terminal_proof (m1, m2))
 
 fun definition (((decl, spec), prems), params) =
-  #2 o Specification.definition_cmd decl params prems spec
+  #2 o Specification.definition_cmd {verbose = true} decl params prems spec
 
 fun declare (facts, fixes) =
-  #2 o Specification.theorems_cmd "" [(Binding.empty_atts, flat facts)] fixes
+  #2 o Specification.theorems_cmd {verbose = true, kind = ""} [(Binding.empty_atts, flat facts)] fixes
 end
 
 local

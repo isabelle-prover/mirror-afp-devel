@@ -40,7 +40,8 @@ val un_prefix = "un_";
 fun def qual (x, tm) ctx = 
   let 
     val ((_, (_, thm)), d) =
-      Specification.definition (SOME (Binding.qualify false qual (Binding.name x), NONE, NoSyn)) [] [] ((Binding.empty, [Attrib.check_src @{context} (Token.make_src ("lens_defs", Position.none) [])]), mk_def dummyT x tm) ctx
+      Specification.definition {verbose = false}
+        (SOME (Binding.qualify false qual (Binding.name x), NONE, NoSyn)) [] [] ((Binding.empty, [Attrib.check_src @{context} (Token.make_src ("lens_defs", Position.none) [])]), mk_def dummyT x tm) ctx
   in (thm, d) end
 
 
@@ -48,8 +49,6 @@ fun defs qual inds f ctx =
   fold (fn i => fn (thms, ctx) =>
         let val (thm, ctx') = def qual (i, f i) ctx 
         in (thms @ [thm], ctx') end) inds ([], ctx)
-
-fun abbreviation a b c d = Interactive.setmp false (Specification.abbreviation a b c d)
 
 fun compile_chantype (name, chans) ctx =
   let 
@@ -69,7 +68,7 @@ fun compile_chantype (name, chans) ctx =
   (* The datatype package does not produce a discriminator for the second constructor when
      there are two constructors. We here generate one for uniformity. *)
   #> (if (length pnames = 2)
-      then abbreviation 
+      then Specification.abbreviation {verbose = false}
              Syntax.mode_default (SOME (Binding.qualify false name (Binding.name (is_prefix ^ nth pnames 1 ^ ctor_suffix)), NONE, NoSyn)) [] 
              (mk_def dummyT 
                 (is_prefix ^ nth pnames 1 ^ ctor_suffix) 

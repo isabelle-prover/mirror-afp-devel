@@ -119,7 +119,7 @@ fun define_raw_bns raw_dt_info raw_bn_funs raw_bn_eqs lthy =
         lthy
         |> Local_Theory.begin_nested
         |> snd
-        |> Function.add_function raw_bn_funs raw_bn_eqs
+        |> Function.add_function {verbose = false} raw_bn_funs raw_bn_eqs
             Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms))
         |> snd
         |> Local_Theory.end_nested;
@@ -261,7 +261,7 @@ fun define_raw_fvs raw_dt_info bn_info bclausesss lthy =
       lthy
       |> Local_Theory.begin_nested
       |> snd
-      |> Function.add_function all_fun_names all_fun_eqs
+      |> Function.add_function {verbose = false} all_fun_names all_fun_eqs
           Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms))
       |> snd
       |> Local_Theory.end_nested;
@@ -339,7 +339,7 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
         lthy
         |> Local_Theory.begin_nested
         |> snd
-        |> Function.add_function all_fun_names all_fun_eqs
+        |> Function.add_function {verbose = false} all_fun_names all_fun_eqs
             Function_Common.default_config (pat_completeness_simp (prod_simps @ raw_inject_thms @ raw_distinct_thms))
         |> snd
         |> Local_Theory.end_nested;

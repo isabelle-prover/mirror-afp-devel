@@ -208,7 +208,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
       lthy
       |> Local_Theory.begin_nested
       |> snd
-      |> BNF_LFP_Rec_Sugar.primrec false [] bindings
+      |> BNF_LFP_Rec_Sugar.primrec {verbose = false} [] bindings
           (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
       |> Local_Theory.end_nested_result
           (fn phi => fn (phashs, _, phash_simps) => (map (Morphism.term phi) phashs, map (Morphism.fact phi) phash_simps))

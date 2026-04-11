@@ -732,7 +732,7 @@ ML \<open>structure Spec_Postprocessing
       (* Define *)
       val lhs = Free (Binding.name_of binding, fastype_of cmd)
       val eqn = Logic.mk_equals (lhs,cmd)
-      val ((lhs,(_,def_thm)),lthy) = Specification.definition (SOME (binding,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,[]),eqn) lthy
+      val ((lhs,(_,def_thm)),lthy) = Specification.definition {verbose = false} (SOME (binding,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,[]),eqn) lthy
       
       (* Fold definition in theorem *)
       val thm = Local_Defs.fold lthy [def_thm] thm

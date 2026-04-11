@@ -969,7 +969,7 @@ fun gen_c_type_instantiation sort tac recname def thy =
     thy
     |> Class.instantiation ([recname], [], sort)
     |> `(fn lthy => apsnd (Syntax.check_term lthy) def)
-    |-> Specification.definition NONE [] []
+    |-> Specification.definition {verbose = false} NONE [] []
     |-> (fn (_, (_, eq_def)) =>
        Class.prove_instantiation_exit_result Morphism.thm tac eq_def)
   end

@@ -1119,7 +1119,7 @@ let
         let
           val _ = Feedback.informStr ctxt (0, "defining \<Gamma>")
           val ((_,(_, def_eq)), lthy') = 
-             Specification.definition NONE [] [] ((Binding.empty, []), eq) lthy
+             Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), eq) lthy
           val _ = Feedback.informStr ctxt (2, Thm.string_of_thm lthy' def_eq)
         in (def_eq, lthy') end
 

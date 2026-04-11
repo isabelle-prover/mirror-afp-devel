@@ -848,7 +848,7 @@ fun consts consts proof group lthy =
       let
         val specs = map (fn eq => (((Binding.empty, []), eq), [], [])) eqs
         val (info, lthy') =
-          Function.add_function bindings specs fun_config pat_completeness_auto lthy
+          Function.add_function {verbose = false} bindings specs fun_config pat_completeness_auto lthy
           |-> prove_termination
         val simps = the (#simps info)
         val (_, lthy'') =

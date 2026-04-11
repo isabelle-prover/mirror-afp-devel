@@ -36,9 +36,9 @@ structure Convert_TensorFlow_Seq_Layer :CONVERT_TENSORFLOW_SEQ_LAYER = struct
    val make_const_def = Nano_Json_Parser_Isar.make_const_def
 
    fun define_lemmas name thm_names =
-     Interactive.setmp false (Specification.theorems_cmd "" 
+     Specification.theorems_cmd {verbose = false, kind = ""}
                                   [((name, []), map (fn n => (Facts.named n, [])) thm_names)] 
-                                  [])
+                                  []
 (*******************)
 (* TODO: also implemented in Convert_TensorFlow_Json *)
 fun enumerate _ [] = []

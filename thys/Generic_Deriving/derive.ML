@@ -112,7 +112,7 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
           HOLogic.mk_eq ((list_comb (eq_head,args)), Logic.unvarify_global def_right)
         val eq' = map_types (map_atyps remove_constraints) eq
 
-        val ((_,(_,def_thm)),lthy') = Specification.definition NONE [] [] ((Binding.empty, []), eq') lthy
+        val ((_,(_,def_thm)),lthy') = Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), eq') lthy
 
         val left = left |> dest_TVar |> (fn ((s,_),_) => TFree (s,\<^sort>\<open>type\<close>))
         val right = right |> dest_TVar |> (fn ((s,_),_) => TFree (s,\<^sort>\<open>type\<close>))
@@ -222,7 +222,7 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
         val modularT = typ_subst_atomic [(tvar,rep_type)] t
         val modular_instance_eq = HOLogic.Trueprop $ HOLogic.mk_eq (Free (modular_folded_name, modularT),modular_instance)
         val modular_eq_constr = change_constraints t modular_instance_eq
-        val ((_,(_,modular_folded_thm)),lthy''') = Specification.definition NONE [] [] ((Binding.empty, []), modular_eq_constr) lthy''
+        val ((_,(_,modular_folded_thm)),lthy''') = Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), modular_eq_constr) lthy''
 
         val modular_unfolded = Local_Defs.unfold lthy''' [prod_def_thm,sum_def_thm] modular_folded_thm
                                  |> Thm.full_prop_of |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> snd |> map_types (K dummyT)
@@ -234,10 +234,10 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
         val eq = HOLogic.Trueprop $ HOLogic.mk_eq (lhs, rhs)
       in 
         if xs = [] then 
-          Specification.definition NONE [] [] ((Binding.empty, []), eq) lthy |> snd
+          Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), eq) lthy |> snd
         else 
           if constr_names then
-             Function.add_function
+             Function.add_function {verbose = false}
                [(Binding.name fun_name, NONE, NoSyn)]
                [((Binding.empty_atts, eq), [], [])]
                Function_Fun.fun_config 
@@ -247,7 +247,7 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
              |> tagged_function_termination_tac
              |> snd
            else
-             Function_Fun.add_fun 
+             Function_Fun.add_fun {verbose = false}
                [(Binding.name fun_name, NONE, NoSyn)]
                [((Binding.empty_atts, eq), [], [])]
                Function_Fun.fun_config lthy
@@ -295,7 +295,7 @@ fun define_operation lthy tname T (opname,t) =
     val rhs_inner = list_comb (Const (opname, dummyT), map (make_rep T lthy from_func) (binders ~~ names))
     val rhs = from_rep body lthy to_func rhs_inner
     val eq = HOLogic.Trueprop $ HOLogic.mk_eq (lhs, rhs)
-    val ((_,(_,thm)),lthy') = (Specification.definition NONE [] [] ((Binding.empty, []), eq) lthy)
+    val ((_,(_,thm)),lthy') = (Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), eq) lthy)
   in 
     (thm,lthy')
 end

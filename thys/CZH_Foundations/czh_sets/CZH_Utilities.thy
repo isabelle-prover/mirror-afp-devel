@@ -26,7 +26,7 @@ val _ =
       Parse.for_fixes >> 
       (
         fn (((attrs),facts), fixes) =>
-          #2 o Specification.theorems_cmd Thm.theoremK
+          #2 o Specification.theorems_cmd {verbose = true, kind = Thm.theoremK}
           (map (apsnd (map (apsnd (fn xs => attrs@xs)))) facts) fixes
       )
     )

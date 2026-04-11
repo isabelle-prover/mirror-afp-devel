@@ -214,7 +214,7 @@ fun define_const_args name qualify concealed term args decls attrs lthy =
     (* Define the constant. *)
    val lthy = lthy 
    val ((lhs, (def_name, thm)), lthy) =
-        Specification.definition (SOME (maybe_hide (Binding.name name), NONE, NoSyn))
+        Specification.definition {verbose = false} (SOME (maybe_hide (Binding.name name), NONE, NoSyn))
             [] [] ((def_binding, attrs), new_term) lthy
        handle ERROR x => (tracing ("define_const_args: " ^ @{make_string} (Thm.cterm_of lthy term)); raise ERROR x)
    val lthy = lthy |> fold (fn thm_decl => thm_decl thm) decls
@@ -237,7 +237,7 @@ fun define_global_const binding concealed term args attribs lthy =
      * Free def_name \<equiv> Const global_const from the lthy 
      *)
     val ((lhs, (def_name, thm)), lthy) = lthy |> Local_Theory.begin_nested |> snd |>
-        Specification.definition (SOME (maybe_hide (binding), NONE, NoSyn))
+        Specification.definition {verbose = false} (SOME (maybe_hide (binding), NONE, NoSyn))
             [] [] ((Binding.empty, attribs), new_term) 
        handle ERROR x => (tracing ("define_global_const: " ^ @{make_string} (Thm.cterm_of lthy term)); raise ERROR x)
     val export = Local_Theory.target_morphism lthy 
@@ -352,7 +352,7 @@ fun define_const_eq name eq lthy =
   let
   
    val ((_, (def_name, _)), lthy) =
-        Specification.definition (SOME (Binding.name name, NONE, NoSyn))
+        Specification.definition {verbose = false} (SOME (Binding.name name, NONE, NoSyn))
             [] [] (Binding.empty_atts, eq) lthy
   in
     (fetch_thm def_name, lthy)

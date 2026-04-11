@@ -134,7 +134,7 @@ structure Activation_Term:ACTIVATION_TERM = struct
       domintros=true, partials=false}
       val eq_defs = map (fn eq => (((Binding.empty, []), eq), [], [])) eqs
       val ctx =
-        Function_Fun.add_fun [(binding, NONE, NoSyn)]
+        Function_Fun.add_fun {verbose = false} [(binding, NONE, NoSyn)]
           eq_defs
           cfg  lthy;
     in

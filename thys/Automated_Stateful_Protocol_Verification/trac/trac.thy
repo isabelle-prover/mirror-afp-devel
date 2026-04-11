@@ -137,10 +137,10 @@ fun protocol_model_interpretation_params name lthy =
     map SOME (defs@["0::nat", "1::nat"])
   end
 
-fun declare_thm_attr attribute name print lthy =
+fun declare_thm_attr attribute name {verbose} lthy =
   let 
     val arg = [(Facts.named name, [[Token.make_string (attribute, Position.none)]])]
-    val (_, lthy') = Interactive.setmp print (Specification.theorems_cmd "" [(Binding.empty_atts, arg)] []) lthy
+    val (_, lthy') = Specification.theorems_cmd {verbose = verbose, kind = ""} [(Binding.empty_atts, arg)] [] lthy
   in
     lthy'
   end
@@ -231,14 +231,14 @@ structure ml_isar_wrapper = struct
      let
        val rec_eqs = map (fn (lhs,rhs) => (((Binding.empty,[]), HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))),[],[])) precs 
      in
-       snd (BNF_LFP_Rec_Sugar.primrec false [] [(Binding.name pname, NONE, NoSyn)] rec_eqs lthy)
+       snd (BNF_LFP_Rec_Sugar.primrec {verbose = false} [] [(Binding.name pname, NONE, NoSyn)] rec_eqs lthy)
      end
 
    fun define_simple_fun pname precs lthy = 
      let
        val rec_eqs = map (fn (lhs,rhs) => (((Binding.empty,[]), HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))),[],[])) precs 
      in
-       Function_Fun.add_fun [(Binding.name pname, NONE, NoSyn)] rec_eqs  Function_Common.default_config lthy
+       Function_Fun.add_fun {verbose = false} [(Binding.name pname, NONE, NoSyn)] rec_eqs  Function_Common.default_config lthy
      end
 
    fun prove_simple name stmt tactic lthy = 
@@ -923,7 +923,7 @@ structure trac_definitorial_package = struct
                              $Const(@{const_name "enum_class.enum"},mk_listT typ)
                              $(mk_list typ elems)
 
-          val ((_, (_, enum_def')), lthy) = Specification.definition NONE [] [] 
+          val ((_, (_, enum_def')), lthy) = Specification.definition {verbose = false} NONE [] [] 
                                                 ((Binding.name ("enum_"^name),[]), enum_eq) lthy
           val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
           val enum_def = singleton (Proof_Context.export lthy ctxt_thy) enum_def'
@@ -933,7 +933,7 @@ structure trac_definitorial_package = struct
                                                   $Free("P",typ --> boolT))
                              $(Const(@{const_name "list_all"},(typ --> boolT) --> (mk_listT typ) --> boolT)
                                     $Free("P",typ --> boolT)$(mk_list typ elems))
-          val ((_, (_, enum_all_def')), lthy) = Specification.definition NONE [] [] 
+          val ((_, (_, enum_all_def')), lthy) = Specification.definition {verbose = false} NONE [] [] 
                                                 ((Binding.name ("enum_all_"^name),[]), enum_all_eq) lthy
           val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
           val enum_all_def = singleton (Proof_Context.export lthy ctxt_thy) enum_all_def'
@@ -943,7 +943,7 @@ structure trac_definitorial_package = struct
                                                   $Free("P",typ --> boolT))
                              $(Const(@{const_name "list_ex"},(typ --> boolT) --> (mk_listT typ) --> boolT)
                                     $Free("P",typ --> boolT)$(mk_list typ elems))
-          val ((_, (_, enum_ex_def')), lthy) = Specification.definition NONE [] [] 
+          val ((_, (_, enum_ex_def')), lthy) = Specification.definition {verbose = false} NONE [] [] 
                                                 ((Binding.name ("enum_ex_"^name),[]), enum_ex_eq) lthy
           val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
           val enum_ex_def = singleton (Proof_Context.export lthy ctxt_thy) enum_ex_def'
@@ -1506,7 +1506,7 @@ structure trac_definitorial_package = struct
 
         fun def_trm trm print lthy =
           #2 (ml_isar_wrapper.define_constant_definition' (defname, trm) print lthy)
-          |> declare_def_attr "protocol_defs" defname false
+          |> declare_def_attr "protocol_defs" defname {verbose = false}
 
 
         val value_ineqs_from_unsat_set_constrs =
@@ -1588,7 +1588,7 @@ structure trac_definitorial_package = struct
           fun mk_prot_def (name,trm) lthy =
             let val _ = info("  Defining "^name)
             in #2 (ml_isar_wrapper.define_constant_definition' (name,trm) print lthy) 
-                   |> declare_def_attr "protocol_def" name false
+                   |> declare_def_attr "protocol_def" name {verbose = false}
              end
 
           val prots = #transaction_spec trac
@@ -1745,7 +1745,7 @@ ML\<open>
             fn (trac,fp) => fn lthy =>
           let
             val opt_fp = if fp = "" then NONE else SOME fp
-            val trac = trac.def_trac trac opt_fp (Interactive.enabled ()) #> snd
+            val trac = trac.def_trac trac opt_fp true #> snd
           in
             trac_time.ap_lthy lthy ("trac") trac lthy 
           end)));
@@ -1756,7 +1756,7 @@ ML\<open>
             fn (trac_filename, fp_filename) => fn lthy =>
           let
             val opt_fp_filename = if fp_filename = "" then NONE else SOME fp_filename
-            val trac = trac.def_trac_file trac_filename opt_fp_filename (Interactive.enabled ()) #> snd
+            val trac = trac.def_trac_file trac_filename opt_fp_filename true #> snd
           in
             trac_time.ap_lthy lthy ("trac_import") trac lthy 
           end)));
@@ -1840,7 +1840,7 @@ fun protocol_security_proof_proof_state manual_proof name prefix opt_defs opt_me
   let
     val (prot_fp_smp_names, pexpr) =
       protocol_security_proof_defs manual_proof name prefix opt_defs opt_meth_level lthy
-    val proof_state = lthy |> declare_protocol_checks print
+    val proof_state = lthy |> declare_protocol_checks {verbose = print}
                            |> Interpretation.global_interpretation_cmd pexpr []
   in
     (prot_fp_smp_names, proof_state)
@@ -2139,7 +2139,7 @@ val _ =
         val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof.protocol_security_proof_with_error_messages (params, (name, prefix, opt_defs, opt_meth_level), Interactive.enabled (), lthy)
+                        protocol_security_proof.protocol_security_proof_with_error_messages (params, (name, prefix, opt_defs, opt_meth_level), true, lthy)
     end));
 
 val _ =
@@ -2151,7 +2151,7 @@ val _ =
         val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof.parallel (params, (name, prefix, opt_defs, opt_meth_level), Interactive.enabled (), lthy)
+                        protocol_security_proof.parallel (params, (name, prefix, opt_defs, opt_meth_level), true, lthy)
     end));
 
 val _ =
@@ -2163,7 +2163,7 @@ val _ =
         val ((opt_meth_level,(name,prefix)),opt_defs) = params
     in 
       trac_time.ap_lthy lthy ("protocol_security_proof ("^name^")")
-                        protocol_security_proof.heuristic (params, (name, prefix, opt_defs), Interactive.enabled (), lthy)
+                        protocol_security_proof.heuristic (params, (name, prefix, opt_defs), true, lthy)
     end));
 
 
@@ -2174,7 +2174,7 @@ val _ =
     let
       val ((name,prefix),opt_defs) = params
       val (defs, proof_state) =
-        protocol_security_proof_proof_state true name prefix opt_defs "safe" (Interactive.enabled ()) lthy
+        protocol_security_proof_proof_state true name prefix opt_defs "safe" true lthy
       val subgoal_proof =
         let
           val m = "code_simp" (* case opt_meth_level of
@@ -2208,7 +2208,7 @@ val _ =
       let
         val ((opt_meth_level,(name,prefix)),remaining_params) = params
         val proof_state =
-              protocol_composition_proof_proof_state name prefix remaining_params (Interactive.enabled ()) lthy
+              protocol_composition_proof_proof_state name prefix remaining_params {verbose = true} lthy
         val meth =
           let
             val m = select_proof_method_compositionality "use" opt_meth_level
@@ -2233,7 +2233,7 @@ val _ =
     let
       val ((name,prefix),remaining_params) = params
       val proof_state =
-            protocol_composition_proof_proof_state name prefix remaining_params (Interactive.enabled ()) lthy
+            protocol_composition_proof_proof_state name prefix remaining_params {verbose = true} lthy
       val subgoal_proof = "  subgoal by code_simp\n"
       val _ = Output.information ("Example proof:\n" ^
                 Active.sendback_markup_command ("  apply check_protocol_intro\n"^
@@ -2530,7 +2530,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "print_transaction_strand"}
             trac_time.ap_lthy lthy
               ("print_transaction_strand ("^protocol^")")
               print_tr
-              ((protocol,transaction), Interactive.enabled (), lthy)
+              ((protocol,transaction), true, lthy)
           end ));
 
 
@@ -2555,7 +2555,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "print_transaction_strand_li
             trac_time.ap_lthy lthy
               ("print_transaction_strand_list ("^protocol^")")
               print_tr
-              ((protocol,transaction_list), Interactive.enabled (), lthy)
+              ((protocol,transaction_list), true, lthy)
           end ));
 
 val _ = Outer_Syntax.local_theory @{command_keyword "print_attack_trace"}
@@ -2593,7 +2593,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "print_attack_trace"}
             trac_time.ap_lthy lthy
               ("print_attack_trace ("^protocol^","^protocol_def^","^attack_trace^")")
               print_tr
-              ((protocol,protocol_def,attack_trace), Interactive.enabled (), lthy)
+              ((protocol,protocol_def,attack_trace), true, lthy)
           end ));
 
 val _ = Outer_Syntax.local_theory @{command_keyword "print_fixpoint"} 
@@ -2608,7 +2608,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "print_fixpoint"}
               lthy
             end
           in 
-            trac_time.ap_lthy lthy ("print_fixpoint ("^protocol^")") print_fixpoint ((protocol,fixpoint), Interactive.enabled (), lthy) 
+            trac_time.ap_lthy lthy ("print_fixpoint ("^protocol^")") print_fixpoint ((protocol,fixpoint), true, lthy) 
           end ));
 
   val _ = Outer_Syntax.local_theory @{command_keyword "save_fixpoint"} 
@@ -2736,7 +2736,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "print_fixpoint"}
                 val cert_trac = TracProtocolCert.certifyProtocol trac
                 val fp_trm = trac_definitorial_package.fp_triple_to_hol cert_fp cert_trac lthy
               in
-                #2 (ml_isar_wrapper.define_constant_definition' (fixpoint_name, fp_trm) (Interactive.enabled ()) lthy)
+                #2 (ml_isar_wrapper.define_constant_definition' (fixpoint_name, fp_trm) true lthy)
               end
           in
             trac_time.ap_lthy lthy ("load_fixpoint") load_fixpoint ((protocol_name, fixpoint_filename), fixpoint_name, lthy)
@@ -2792,7 +2792,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "compute_fixpoint"}
               
             end
           in 
-            trac_time.ap_lthy lthy ("compute_fixpoint ("^protocol^")") compute_fixpoint (((protocol,fixpoint),opt_trace), Interactive.enabled (), lthy)  
+            trac_time.ap_lthy lthy ("compute_fixpoint ("^protocol^")") compute_fixpoint (((protocol,fixpoint),opt_trace), true, lthy)  
           end ));
 
 val _ = Outer_Syntax.local_theory @{command_keyword "compute_SMP"} 
@@ -2854,7 +2854,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "compute_SMP"}
                 end
           end 
         in
-         trac_time.ap_lthy lthy ("compute_SMP ("^prot^")") compute_smp (((opt, prot), smp), Interactive.enabled (), lthy)
+         trac_time.ap_lthy lthy ("compute_SMP ("^prot^")") compute_smp (((opt, prot), smp), true, lthy)
         end));
 
 val _ = Outer_Syntax.local_theory @{command_keyword "compute_shared_secrets"} 
@@ -2892,7 +2892,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "compute_shared_secrets"}
         in
          trac_time.ap_lthy lthy
           ("compute_shared_secrets (["^String.concatWith ", " params^"])")
-          compute_shared_secrets (params, Interactive.enabled (), lthy)
+          compute_shared_secrets (params, true, lthy)
         end));
 
 val _ = Outer_Syntax.local_theory @{command_keyword "setup_protocol_checks"}
@@ -2920,7 +2920,7 @@ val _ = Outer_Syntax.local_theory @{command_keyword "setup_protocol_checks"}
         in 
           trac_time.ap_lthy lthy
             ("setup_protocol_checks (("^fst params^",["^String.concatWith "," (snd params)^"]))")
-            setup_protocol_checks (params, Interactive.enabled (), lthy)
+            setup_protocol_checks (params, {verbose = true}, lthy)
         end ));
 \<close>
 
