@@ -613,7 +613,7 @@ fun local_theory' target f gthy =
     val (finish, lthy) = Target_Context.switch_named_cmd target gthy;
     val lthy' = lthy
       |> Local_Theory.new_group
-      |> Interactive.setmp false f
+      |> f
       |> Local_Theory.reset_group;
   in finish lthy' end
 val generic_theory = I
