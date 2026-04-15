@@ -5594,7 +5594,7 @@ host = [
 ]
 
 [nipkow.homepages]
-nipkow_homepage = "https://www.in.tum.de/~nipkow/"
+nipkow_homepage = "https://www.proof.cit.tum.de/~nipkow/"
 
 [nishihara]
 name = "Toshiaki Nishihara"
