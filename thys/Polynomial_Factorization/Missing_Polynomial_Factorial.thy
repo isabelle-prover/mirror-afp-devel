@@ -1,6 +1,6 @@
 section \<open>More on Polynomials\<close>
 
-text \<open>This theory contains several results on content, gcd, primitive part, etc..
+text \<open>This theory contains several results on Polynomial.content, gcd, primitive part, etc..
   Moreover, there is a slightly improved code-equation for computing the gcd.\<close>
 
 theory Missing_Polynomial_Factorial
@@ -9,24 +9,24 @@ theory Missing_Polynomial_Factorial
 begin
 
 text \<open>Improved code equation for @{const gcd_poly_code}
-  which avoids computing the content twice.\<close>
+  which avoids computing the Polynomial.content twice.\<close>
 lemma gcd_poly_code_code[code]: "gcd_poly_code p q =
            (if p = 0 then normalize q else if q = 0 then normalize p else let
-              c1 = content p;
-              c2 = content q;
+              c1 = Polynomial.content p;
+              c2 = Polynomial.content q;
               p' = map_poly (\<lambda> x. x div c1) p;
               q' = map_poly (\<lambda> x. x div c2) q
               in smult (gcd c1 c2) (gcd_poly_code_aux p' q'))"
   unfolding gcd_poly_code_def Let_def primitive_part_def by simp
 
 lemma gcd_smult: fixes f g :: "'a :: {factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
-  defines cf: "cf \<equiv> content f"
-  and cg: "cg \<equiv> content g"
+  defines cf: "cf \<equiv> Polynomial.content f"
+  and cg: "cg \<equiv> Polynomial.content g"
 shows "gcd (smult a f) g = (if a = 0 \<or> f = 0 then normalize g else
   smult (gcd a (cg div (gcd cf cg))) (gcd f g))"
 proof (cases "a = 0 \<or> f = 0")
   case False
-  let ?c = "content"
+  let ?c = "Polynomial.content"
   let ?pp = primitive_part
   let ?ua = "unit_factor a"
   let ?na = "normalize a"
@@ -88,14 +88,14 @@ lemma primitive_part_idemp[simp]:
   by (metis content_primitive_part[of f] primitive_part_eq_0_iff primitive_part_prim)
 
 lemma content_gcd_primitive:
-   "f \<noteq> 0 \<Longrightarrow> content (gcd (primitive_part f) g) = 1"
-   "f \<noteq> 0 \<Longrightarrow> content (gcd (primitive_part f) (primitive_part g)) = 1"
+   "f \<noteq> 0 \<Longrightarrow> Polynomial.content (gcd (primitive_part f) g) = 1"
+   "f \<noteq> 0 \<Longrightarrow> Polynomial.content (gcd (primitive_part f) (primitive_part g)) = 1"
   by (metis (no_types, lifting) content_dvd_contentI content_primitive_part gcd_dvd1 is_unit_content_iff)+
 
-lemma content_gcd_content: "content (gcd f g) = gcd (content f) (content g)"
+lemma content_gcd_content: "Polynomial.content (gcd f g) = gcd (Polynomial.content f) (Polynomial.content g)"
   (is "?l = ?r")
 proof -
-  let ?c = "content"
+  let ?c = "Polynomial.content"
   have "?l = normalize (gcd (?c f) (?c g)) *
     ?c (gcd (primitive_part f) (primitive_part g))"
     unfolding gcd_poly_decompose[of f g] content_smult ..
@@ -115,7 +115,7 @@ lemma gcd_primitive_part:
       by (simp add: associatedI primitive_part_dvd_primitive_partI)
   next
     case False
-    have "normalize 1 = normalize (unit_factor (gcd (content f) (content g)))"
+    have "normalize 1 = normalize (unit_factor (gcd (Polynomial.content f) (Polynomial.content g)))"
       by (simp add: False)
     then show ?thesis unfolding gcd_poly_decompose[of f g]
       by (metis (no_types) Polynomial.normalize_smult content_gcd_primitive(1)[OF False] content_times_primitive_part normalize_gcd primitive_part_smult)
@@ -137,14 +137,14 @@ proof (cases "f = 0")
   thus ?thesis by simp
 next
   case False
-  have "normalize (content (normalize (primitive_part f))) = 1"
+  have "normalize (Polynomial.content (normalize (primitive_part f))) = 1"
     using content_primitive_part[OF False] content_dvd content_const
           content_dvd_contentI dvd_normalize_iff is_unit_content_iff by (metis (no_types))
-  then have "content (normalize (primitive_part f)) = 1" by fastforce
-  then have "content (normalize f) = 1 * content f"
+  then have "Polynomial.content (normalize (primitive_part f)) = 1" by fastforce
+  then have "Polynomial.content (normalize f) = 1 * Polynomial.content f"
     by (metis (no_types) content_smult mult.commute normalize_content
     smult_content_normalize_primitive_part)
-  then have "content f = content (normalize f)"
+  then have "Polynomial.content f = Polynomial.content (normalize f)"
     by simp
   then show ?thesis unfolding smult_content_normalize_primitive_part[of f,symmetric]
     by (metis (no_types) False content_times_primitive_part mult.commute mult_cancel_left
@@ -170,7 +170,7 @@ proof (cases "f = 0")
   finally show ?thesis by simp
 qed simp
   
-lemma content_iff: "x dvd content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)"
+lemma content_iff: "x dvd Polynomial.content p \<longleftrightarrow> (\<forall> c \<in> set (coeffs p). x dvd c)"
   by (simp add: content_def dvd_gcd_list_iff)
   
 lemma is_unit_field_poly[simp]: "(p::'a::field poly) dvd 1 \<longleftrightarrow> p \<noteq> 0 \<and> degree p = 0"
@@ -210,18 +210,18 @@ lemma not_primitiveE:
 
 lemma primitive_iff_content_eq_1[simp]:
   fixes f :: "'a :: semiring_gcd poly"
-  shows "primitive f \<longleftrightarrow> content f = 1"
+  shows "primitive f \<longleftrightarrow> Polynomial.content f = 1"
 proof(intro iffI primitiveI)
   fix x
   assume "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y)"
   from gcd_list_greatest[of "coeffs f", OF this]
-  have "x dvd content f" by (simp add: content_def)
-  also assume "content f = 1"
+  have "x dvd Polynomial.content f" by (simp add: content_def)
+  also assume "Polynomial.content f = 1"
   finally show "x dvd 1".
 next
   assume "primitive f"
   from primitiveD[OF this list_gcd[of _ "coeffs f"], folded content_def]
-  show "content f = 1" by simp
+  show "Polynomial.content f = 1" by simp
 qed
 
 lemma primitive_prod_list:
@@ -230,9 +230,9 @@ lemma primitive_prod_list:
 proof (insert assms, induct fs arbitrary: f)
   case (Cons f' fs)
   from Cons.prems
-  have "is_unit (content f' * content (prod_list fs))" by (auto simp: content_mult)
+  have "is_unit (Polynomial.content f' * Polynomial.content (prod_list fs))" by (auto simp: content_mult)
   from this[unfolded is_unit_mult_iff]
-  have "content f' = 1" and "content (prod_list fs) = 1" by auto
+  have "Polynomial.content f' = 1" and "Polynomial.content (prod_list fs) = 1" by auto
   moreover from Cons.prems have "f = f' \<or> f \<in> set fs" by auto
   ultimately show ?case using Cons.hyps[of f] by auto
 qed auto
@@ -242,8 +242,8 @@ lemma irreducible_imp_primitive:
   assumes irr: "irreducible f" and deg: "degree f \<noteq> 0" shows "primitive f"
 proof (rule ccontr)
   assume not: "\<not> ?thesis"
-  then have "\<not> [:content f:] dvd 1" by simp
-  moreover have "f = [:content f:] * primitive_part f" by simp
+  then have "\<not> [:Polynomial.content f:] dvd 1" by simp
+  moreover have "f = [:Polynomial.content f:] * primitive_part f" by simp
     note Factorial_Ring.irreducibleD[OF irr this]
   ultimately
   have "primitive_part f dvd 1" by auto
@@ -271,7 +271,7 @@ proof
     proof(elim disjE)
       assume "degree a = 0"
       then obtain c where ac: "a = [:c:]" by (auto dest: degree0_coeffs)
-      from fab[unfolded ac] have "c dvd content f" by (simp add: content_iff coeffs_smult)
+      from fab[unfolded ac] have "c dvd Polynomial.content f" by (simp add: content_iff coeffs_smult)
       with cf have "c dvd 1" by simp
       then have "a dvd 1" by (auto simp: ac)
       with a1 show False by auto
@@ -279,7 +279,7 @@ proof
       assume dega: "degree a = degree f"
       with f0 degree_mult_eq[OF a0 b0] fab have "degree b = 0" by (auto simp: ac_simps)
       then obtain c where bc: "b = [:c:]" by (auto dest: degree0_coeffs)
-      from fab[unfolded bc] have "c dvd content f" by (simp add: content_iff coeffs_smult)
+      from fab[unfolded bc] have "c dvd Polynomial.content f" by (simp add: content_iff coeffs_smult)
       with cf have "c dvd 1" by simp
       then have "b dvd 1" by (auto simp: bc)
       with b1 show False by auto
@@ -317,7 +317,7 @@ proof -
   thus "\<not> is_unit f" using normalize_1_iff by auto
 qed
 
-lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
+lemma content_pCons[simp]: "Polynomial.content (pCons a p) = gcd a (Polynomial.content p)"
 proof(induct p arbitrary: a)
   case 0 show ?case by simp
 next
@@ -327,7 +327,7 @@ qed
 
 lemma content_field_poly:
   fixes f :: "'a :: {field,semiring_gcd} poly"
-  shows "content f = (if f = 0 then 0 else 1)"
+  shows "Polynomial.content f = (if f = 0 then 0 else 1)"
   by(induct f, auto simp: dvd_field_iff is_unit_normalize)
 
 
