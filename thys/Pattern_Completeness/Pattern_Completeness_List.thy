@@ -1049,14 +1049,15 @@ proof (atomize(full), goal_cases)
           obtain z where z: "z \<in> vars s" and y: "(yn,\<iota>) \<in> vars (\<tau> z)" by auto
           obtain f ss where info: "info = (f,ss)" by (cases info, auto)
           with len have len: "length ss \<le> m" by auto
-          define ts :: "('f,_)term list" where "ts = map Var (zip [n..<n + length ss] ss)" 
+          define ts :: "('f,_)term list" where "ts = map Var (indexed_from n ss)" 
           from tau[unfolded \<tau>c_def info split]
           have tau: "\<tau> = subst x (Fun f ts)" unfolding ts_def by auto
           from infoCl[unfolded Cl info]
           have f: "f : ss \<rightarrow> snd x in C" by auto
           from C_sub_S[OF this] have ssS: "set ss \<subseteq> S" by simp
           from ssS
-          have "vars (Fun f ts) \<subseteq> {..< n + length ss} \<times> S" unfolding ts_def by (auto simp: set_zip)
+          have "vars (Fun f ts) \<subseteq> {..< n + length ss} \<times> S"
+            by (auto simp add: ts_def in_set_indexed_from_eq) (use nth_mem in auto)
           also have "\<dots> \<subseteq> {..< n + m} \<times> S" using len by auto
           finally have subst: "vars (Fun f ts) \<subseteq> {..< n + m} \<times> S" by auto
           show "yn \<in> {..<n + m} \<and> \<iota> \<in> S"
@@ -2419,14 +2420,15 @@ proof (atomize(full), goal_cases)
           obtain z where z: "z \<in> vars s" and y: "(yn,\<iota>) \<in> vars (\<tau> z)" by auto
           obtain f ss where info: "info = (f,ss)" by (cases info, auto)
           with len have len: "length ss \<le> m" by auto
-          define ts :: "('f,_)term list" where "ts = map Var (zip [n..<n + length ss] ss)" 
+          define ts :: "('f,_)term list" where "ts = map Var (indexed_from n ss)" 
           from tau[unfolded \<tau>c_def info split]
           have tau: "\<tau> = subst x (Fun f ts)" unfolding ts_def by auto
           from infoCl[unfolded Cl info]
           have f: "f : ss \<rightarrow> snd x in C" by auto
           from C_sub_S[OF this] have ssS: "set ss \<subseteq> S" by simp
           from ssS
-          have "vars (Fun f ts) \<subseteq> {..< n + length ss} \<times> S" unfolding ts_def by (auto simp: set_zip)
+          have "vars (Fun f ts) \<subseteq> {..< n + length ss} \<times> S"
+            by (auto simp add: ts_def in_set_indexed_from_eq) (use nth_mem in auto)
           also have "\<dots> \<subseteq> {..< n + m} \<times> S" using len by auto
           finally have subst: "vars (Fun f ts) \<subseteq> {..< n + m} \<times> S" by auto
           show "yn \<in> {..<n + m} \<and> \<iota> \<in> S"

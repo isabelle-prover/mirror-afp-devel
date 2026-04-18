@@ -66,7 +66,7 @@ structure nn_common_utils = struct
 end
 \<close>
 
-definition \<open>map_of_list =  map_of o  (List.enumerate 0)\<close>
+definition \<open>map_of_list = map_of o indexed_from 0\<close>
 
 subsection\<open>Data Import\<close>
 

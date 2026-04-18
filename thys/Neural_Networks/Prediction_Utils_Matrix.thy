@@ -290,14 +290,14 @@ lemma prediction2percentage_id:
 paragraph\<open>Maximum Prediction\<close>
 
 definition posmax_of :: \<open>'a::linorder Matrix.vec \<Rightarrow> (nat \<times> 'a) option\<close> where
-  \<open>posmax_of l = (let m = max\<^sub>v\<^sub>e\<^sub>c l in find (\<lambda> e. snd e = m) (enumerate 0 (list_of_vec l)))\<close>
+  \<open>posmax_of l = (let m = max\<^sub>v\<^sub>e\<^sub>c l in find (\<lambda> e. snd e = m) (indexed_from 0 (list_of_vec l)))\<close>
 definition pos_of_max :: \<open>'a::linorder Matrix.vec \<Rightarrow> nat option\<close> where
   \<open>pos_of_max l = map_option fst (posmax_of l)\<close>
 
 definition posmax_of' :: \<open>'a::linorder Matrix.vec \<Rightarrow> (nat \<times> 'a) option\<close> where
   \<open>posmax_of' l = (let l' = list_of_vec l in 
                           (if l' = [] then None
-                                      else Some ((hd o rev o (sort_key snd) o (enumerate 0)) l')))\<close>
+                                      else Some ((hd o rev o (sort_key snd) o (indexed_from 0)) l')))\<close>
 definition pos_of_max' :: \<open>'a::linorder Matrix.vec \<Rightarrow> nat option\<close> where
   \<open>pos_of_max' l = map_option fst (posmax_of' l)\<close>
 

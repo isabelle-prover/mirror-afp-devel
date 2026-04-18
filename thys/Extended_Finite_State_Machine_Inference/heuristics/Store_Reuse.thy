@@ -80,7 +80,7 @@ definition io_index :: "nat \<Rightarrow> value list \<Rightarrow> value list \<
   "io_index actionNo inputs outputs = (index inputs actionNo In 0) |\<union>| (index outputs actionNo Out 0)"
 
 definition indices :: "trace \<Rightarrow> index fset" where
-  "indices e = foldl (|\<union>|) {||} (map (\<lambda>(actionNo, (label, inputs, outputs)). io_index actionNo inputs outputs) (enumerate 0 e))"
+  "indices e = foldl (|\<union>|) {||} (map (\<lambda>(actionNo, (label, inputs, outputs)). io_index actionNo inputs outputs) (indexed_from 0 e))"
 
 definition get_by_id_intratrace_matches :: "trace \<Rightarrow> (index \<times> index) fset" where
   "get_by_id_intratrace_matches e = ffilter (\<lambda>(a, b). lookup a e = lookup b e \<and> actionNum a \<le> actionNum b \<and> a \<noteq> b) (indices e |\<times>| indices e)"

@@ -383,10 +383,11 @@ lemma isidx_v_away[simp]: "isidx xs \<noteq> v_away"
   unfolding isidx_def v_away_def by simp
 
 
-definition mapWithIndex where "mapWithIndex f xs = map (\<lambda> (i,t) . f i t) (List.enumerate 0 xs)"
+definition mapWithIndex
+  where "mapWithIndex f xs = map (\<lambda>(i, t). f i t) (indexed_from 0 xs)"
 lemma mapWithIndex_cong [fundef_cong]:
   "xs = ys \<Longrightarrow> (\<And>x i. x \<in> set ys \<Longrightarrow> f i x = g i x) \<Longrightarrow> mapWithIndex f xs = mapWithIndex g ys"
-unfolding mapWithIndex_def by (auto simp add: in_set_enumerate_eq)
+unfolding mapWithIndex_def by (auto simp add: in_set_indexed_from_eq)
 
 lemma mapWithIndex_Nil[simp]: "mapWithIndex f [] = []"
   unfolding mapWithIndex_def by simp
@@ -395,14 +396,14 @@ lemma length_mapWithIndex[simp]: "length (mapWithIndex f xs) = length xs"
   unfolding mapWithIndex_def by simp
 
 lemma nth_mapWithIndex[simp]: "i < length xs \<Longrightarrow> mapWithIndex f xs ! i = f i (xs ! i)"
-  unfolding mapWithIndex_def by (auto simp add: nth_enumerate_eq)
+  unfolding mapWithIndex_def by (auto simp add: nth_indexed_from_eq)
 
 lemma list_all2_mapWithIndex2E:
   assumes "list_all2 P as bs"
   assumes "\<And> i a b . i < length bs \<Longrightarrow> P a b \<Longrightarrow> Q a (f i b)"
   shows "list_all2 Q as (mapWithIndex f bs)"
 using assms(1)
-by (auto simp add: list_all2_conv_all_nth mapWithIndex_def nth_enumerate_eq intro: assms(2) split: prod.split)
+by (auto simp add: list_all2_conv_all_nth mapWithIndex_def nth_indexed_from_eq intro: assms(2) split: prod.split)
 
 text \<open>The globalize function, which renames all local constants so that they cannot clash with 
 local constants occurring anywhere else in the tree.\<close>

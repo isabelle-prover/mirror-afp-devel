@@ -542,7 +542,7 @@ fun Bell_list_aux :: "nat \<Rightarrow> nat list"
   "Bell_list_aux 0 = [1]" |
   "Bell_list_aux (Suc n) = (
     let prev_list = Bell_list_aux n; 
-        next_val = (\<Sum>(k,z) \<leftarrow> List.enumerate 0 prev_list. z * (n choose (n-k))) 
+        next_val = (\<Sum>(k,z) \<leftarrow> indexed_from 0 prev_list. z * (n choose (n-k))) 
     in next_val#prev_list)"
 
 definition Bell_list :: "nat \<Rightarrow> nat list"
@@ -557,27 +557,27 @@ proof -
   next
     case (Suc n)
     define x where "x = Bell_list_aux n"
-    define y where "y = (\<Sum>(k,z) \<leftarrow> List.enumerate 0 x. z * (n choose (n-k)))"
+    define y where "y = (\<Sum>(k,z) \<leftarrow> indexed_from 0 x. z * (n choose (n-k)))"
     define sn where "sn = n+1"
     have b:"x = rev (map Bell [0..<sn])"
       using Suc x_def sn_def by simp
     have c: "length x = sn"
       unfolding b by simp
 
-    have "snd i = Bell (n - fst i)" if "i \<in> set (List.enumerate 0 x)" for i
+    have "snd i = Bell (n - fst i)" if "i \<in> set (indexed_from 0 x)" for i
     proof -
-      have "fst i < length x" "snd i = x ! fst i" 
-        using iffD1[OF in_set_enumerate_eq that] by auto
+      from that have "fst i < length x" "snd i = x ! fst i"
+        by (simp_all add: in_set_indexed_from_eq) 
       hence "snd i = Bell (sn - Suc (fst i))"
         unfolding b by (simp add:rev_nth)
       thus ?thesis
         unfolding sn_def by simp
     qed
 
-    hence "y = (\<Sum>i\<leftarrow>enumerate 0 x. Bell (n - fst i) * (n choose (n - fst i)))"
+    hence "y = (\<Sum>i\<leftarrow>indexed_from 0 x. Bell (n - fst i) * (n choose (n - fst i)))"
       unfolding y_def by (intro arg_cong[where f="sum_list"] map_cong refl)  
         (simp add:case_prod_beta)
-    also have "... = (\<Sum>i\<leftarrow>map fst (enumerate 0 x). Bell (n - i) * (n choose (n - i)))"
+    also have "... = (\<Sum>i\<leftarrow>map fst (indexed_from 0 x). Bell (n - i) * (n choose (n - i)))"
       by (subst map_map) (simp add:comp_def)
     also have "... = (\<Sum>i = 0..<length x. Bell (n-i) * (n choose (n-i)))"
       by (simp add:interv_sum_list_conv_sum_set_nat)
