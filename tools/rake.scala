@@ -6,6 +6,7 @@ documents. Text mining: applications and theory, 1(1-20), 10-1002.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 

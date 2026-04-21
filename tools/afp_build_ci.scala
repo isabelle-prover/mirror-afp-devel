@@ -4,6 +4,7 @@ CI jobs for AFP build.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 import isabelle.find_facts.Find_Facts

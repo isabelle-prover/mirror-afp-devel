@@ -8,6 +8,7 @@ from current measurements and entry history.
 
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle._
 

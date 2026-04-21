@@ -4,6 +4,7 @@ AFP submission system backend.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 import isabelle.HTML.*

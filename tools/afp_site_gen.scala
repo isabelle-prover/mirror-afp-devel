@@ -4,6 +4,7 @@ Generation and compilation of SSG project for the AFP website.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 

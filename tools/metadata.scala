@@ -4,6 +4,7 @@ AFP metadata model and TOML serialization.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 
