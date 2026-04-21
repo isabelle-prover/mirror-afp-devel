@@ -143,20 +143,16 @@ lemma finiteUnit_prods: "finite P \<Longrightarrow> finite (Unit_prods P)"
 unfolding Unit_prods_def
 by (metis (no_types, lifting) case_prodE finite_subset mem_Collect_eq subsetI)
 
-(* finiteness for Unit_rtc *)
-definition NtsCross :: "('n, 't) Prods  \<Rightarrow> ('n \<times> 'n) set" where
-"NtsCross P = Nts P \<times> Nts P"
-
 lemma finite_Unit_rtc: 
   assumes "finite P"
   shows  "finite (Unit_rtc P)"
 proof -
   have "finite (Nts P)"
     unfolding Nts_def using assms finite_Nts_syms by auto
-  hence "finite (NtsCross P)"
-    unfolding NtsCross_def by auto
-  moreover have "Unit_rtc P \<subseteq> NtsCross P"
-    unfolding Unit_rtc_def NtsCross_def by blast
+  hence "finite (Nts P \<times> Nts P)"
+    by auto
+  moreover have "Unit_rtc P \<subseteq> Nts P \<times> Nts P"
+    unfolding Unit_rtc_def by blast
   ultimately show ?thesis
     using assms infinite_super by fastforce 
 qed
@@ -342,10 +338,10 @@ proof -
   thus ?thesis by (metis \<alpha> w derive.intros derives_appendD) 
 qed
 
-lemma Unit_elim_rel_r20: 
-  assumes "P \<turnstile> u \<Rightarrow>* map Tm v" "Unit_elim_rel P P'"
+lemma Unit_elim_rel_complete: 
+  assumes "Unit_elim_rel P P'" "P \<turnstile> u \<Rightarrow>* map Tm v"
   shows "P' \<turnstile> u \<Rightarrow>* map Tm v"
-  using assms proof (induction rule: converse_derives_induct)
+  using assms(2) proof (induction rule: converse_derives_induct)
   case base
   then show ?case by blast
 next
@@ -356,11 +352,11 @@ next
     from this obtain B where "w = [Nt B]"
       unfolding Unit_prods_def by blast
     have "P' \<turnstile> l @ w @ r \<Rightarrow>* map Tm v \<and> Nt B \<notin> set (map Tm v)"
-      using step.IH assms(2) by auto
+      using step.IH by auto
     obtain \<alpha> where \<alpha>: "P' \<turnstile> l @ [Nt B] @ r \<Rightarrow> l @ \<alpha> @ r \<and> P' \<turnstile> l @ \<alpha> @ r \<Rightarrow>* map Tm v \<and> (B, \<alpha>) \<in> P'"
-      using assms(2) step.IH \<open>w=_\<close>  Unit_elim_rel_r20_aux[of P' l B r v] by blast
+      using step.IH \<open>w=_\<close>  Unit_elim_rel_r20_aux[of P' l B r v] by blast
     hence "(A, \<alpha>) \<in> P'"
-      using assms(2) step.hyps(2) \<open>w=_\<close> Unit_elim_rel_r14[of P P' A B \<alpha>] by (simp add: derive_singleton)
+      using step.hyps(2) \<open>w=_\<close> Unit_elim_rel_r14[OF assms(1)] by (simp add: derive_singleton)
     hence "P' \<turnstile> l @ [Nt A] @ r \<Rightarrow>* l @ \<alpha> @ r"
       using derive.simps by fastforce
     then show ?thesis 
@@ -370,7 +366,7 @@ next
     hence "(A, w) \<in> Unit_rm P"
       unfolding Unit_rm_def using step.hyps(2) by blast
     hence "(A, w) \<in> P'"
-      using assms(2) unfolding Unit_elim_rel_def  by simp
+      using assms(1) unfolding Unit_elim_rel_def  by simp
     hence "P' \<turnstile> l @ [Nt A] @ r \<Rightarrow> l @ w @ r"
       by (auto simp: derive.simps)
     then show ?thesis
@@ -379,7 +375,7 @@ next
 qed
 
 theorem Unit_elim_rel_Lang_eq: "Unit_elim_rel P P' \<Longrightarrow> Lang P' S = Lang P S"
-  unfolding Lang_def using Unit_elim_rel_r4 Unit_elim_rel_r20 by blast
+  unfolding Lang_def using Unit_elim_rel_r4 Unit_elim_rel_complete by blast
 
 corollary Lang_Unit_elim: "Lang (Unit_elim P) A = Lang P A"
 by (simp add: Unit_elim_def Unit_elim_rel_Lang_eq Unit_elim_rel_def)
