@@ -109,8 +109,7 @@ object AFP_Check_Roots {
             thy_files = theory_nodes.map(node => rel_path(entry_dir, node.path))
 
             physical_files =
-              for (path <- File.find_files(entry_dir,
-                pred = path => path.is_file && File.is_thy(path), include_dirs = true))
+              for (path <- File.find_files(entry_dir, pred = File.is_thy))
               yield rel_path(entry_dir, path.absolute)
 
             unused = physical_files.toSet -- thy_files.toSet
@@ -137,8 +136,7 @@ object AFP_Check_Roots {
             physical_files =
               for {
                 document_dir <- session_document_files.map(_._1.file).distinct
-                document_file <-
-                  File.find_files(File.path(document_dir), _.is_file, include_dirs = true)
+                document_file <- File.find_files(File.path(document_dir))
               } yield rel_path(entry_dir, document_file.absolute)
 
             unused = physical_files.toSet -- document_files.toSet
