@@ -191,9 +191,9 @@ object AFP_Submit {
               }
             val authors = updated_authors(state)
 
-            var ident = suffix.toLowerCase
+            var ident = Word.lowercase(suffix)
             for {
-              c <- prefix.toLowerCase
+              c <- Word.lowercase(prefix)
               if authors.contains(ident)
             } ident += c.toString
 
@@ -594,7 +594,7 @@ object AFP_Submit {
       private def down(id: ID): Path = submission_dir + Path.basic("down") + Path.basic(id)
 
       private def signal(id: ID, s: String): Unit =
-        File.write(up(id) + Path.basic(s), s.toUpperCase)
+        File.write(up(id) + Path.basic(s), Word.uppercase(s))
       private def is_signal(id: ID, s: String): Boolean = (up(id) + Path.basic(s)).file.exists()
 
       private def read_build(id: ID): Model.Build.Value = {
