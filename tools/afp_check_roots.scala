@@ -27,8 +27,6 @@ object AFP_Check_Roots {
   private def rel_path(entry_dir: Path, path: Path): Path =
     File.relative_path(entry_dir.absolute, path.absolute).get
 
-  private def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
-
 
   /* checks */
 
@@ -111,8 +109,9 @@ object AFP_Check_Roots {
             thy_files = theory_nodes.map(node => rel_path(entry_dir, node.path))
 
             physical_files =
-              for (file <- File.find_files(entry_dir.file, is_thy_file, include_dirs = true))
-              yield rel_path(entry_dir, Path.explode(file.getAbsolutePath))
+              for (path <- File.find_files(entry_dir,
+                pred = path => path.is_file && File.is_thy(path), include_dirs = true))
+              yield rel_path(entry_dir, path.absolute)
 
             unused = physical_files.toSet -- thy_files.toSet
             if unused.nonEmpty
@@ -138,8 +137,9 @@ object AFP_Check_Roots {
             physical_files =
               for {
                 document_dir <- session_document_files.map(_._1.file).distinct
-                document_file <- File.find_files(document_dir, _.isFile, include_dirs = true)
-              } yield rel_path(entry_dir, Path.explode(document_file.getAbsolutePath))
+                document_file <-
+                  File.find_files(File.path(document_dir), _.is_file, include_dirs = true)
+              } yield rel_path(entry_dir, document_file.absolute)
 
             unused = physical_files.toSet -- document_files.toSet
 
