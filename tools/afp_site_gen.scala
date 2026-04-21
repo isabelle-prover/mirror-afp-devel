@@ -4,6 +4,7 @@ Generation and compilation of SSG project for the AFP website.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 
@@ -55,7 +56,7 @@ object AFP_Site_Gen {
   /* json params for hugo templates */
 
   class JSON_Encode(cache: Cache, authors: Metadata.Authors) {
-    def topic_id(topic: Topic): String = topic.id.toLowerCase.replace(' ', '-').replace("/", "_")
+    def topic_id(topic: Topic): String = Word.lowercase(topic.id).replacing(" " -> "-", "/" -> "_")
 
     def email(email: Email): JSON.Object.T = {
       val user = email.user.split('.').toList
@@ -130,7 +131,7 @@ object AFP_Site_Gen {
       related match {
         case d: DOI =>
           val href = d.url.toString
-          cache.resolve_doi(d).replace(href, "<a href=" + quote(href) + ">" + href + "</a>")
+          cache.resolve_doi(d).replacing(href -> ("<a href=" + quote(href) + ">" + href + "</a>"))
         case Formatted(text) => text
       }
 
@@ -314,7 +315,7 @@ object AFP_Site_Gen {
     hugo.write_content(Hugo.Index("topics", topics_meta))
 
     for (topic <- topics.values.toList.sortBy(_.id)) {
-      val url = "/topics/" + topic.id.toLowerCase.replace(' ', '-')
+      val url = "/topics/" + Word.lowercase(topic.id).replacing(" " -> "-")
       val topic_entries = entries1.filter(_.topics.contains(topic))
       val is_root = root_topics.contains(topic)
       val params = json_encode.topic(topic, is_root, topic_entries)
