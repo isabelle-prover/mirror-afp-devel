@@ -37,7 +37,7 @@ sig
   val do_cpp : Proof.context -> {cpp_path: Path.T option, error_detail: int} ->
                {includes: string list, lines: string list, src_path: Path.T}
                -> (string list * ProgramAnalysis.clang_record_info list)
-  val install_C_file : ((theory -> Token.file list * theory)  * CParser_Options.opts) ->
+  val install_C_file : ((theory -> Token.file list)  * CParser_Options.opts) ->
                        theory -> theory
 
   val extra_trace_filename : string Config.T
@@ -530,12 +530,12 @@ in
   recurse (Binaryset.empty string_ord) slist
 end
 
-fun map_file_pos f ({src_path, lines, digest, pos}: Token.file) =
-  ({src_path = src_path, lines = lines, digest = digest, pos = f pos}: Token.file)
+fun map_file_pos f ({src_path, lines, pos}: Token.file) =
+  ({src_path = src_path, lines = lines, pos = f pos}: Token.file)
 
 fun include_C_file (files, main) thy =
   let
-    val (files, thy) = files thy
+    val files = files thy
     val file as {src_path,...}:Token.file = the_single files
     val thy = thy |> C_Files.map_file main (Path.implode src_path) (K (file, Position.thread_data ()))
   in
@@ -544,7 +544,7 @@ fun include_C_file (files, main) thy =
 
 fun install_C_file0 (files, options) thy = let
   val _ = setup_feedback_thy thy
-  val (files, thy) = files thy
+  val files = files thy
   val file as {src_path, lines, pos,...}:Token.file = the_single files
 
   val file_name = Path.file_name (Path.base src_path)
@@ -786,7 +786,7 @@ fun install_C_file_expect_reject args thy =
 
 fun install_C_types files thy = let
   open CalculateState ProgramAnalysis
-  val (files, thy) = files thy
+  val files = files thy
   val {src_path, lines, ...}:Token.file = the_single files
   val lthy = Named_Target.init [] "" thy
   val full_src_path = Path.append (Resources.master_directory thy) src_path
@@ -859,14 +859,14 @@ val _ = Outer_Syntax.command @{command_keyword "new_C_include_dir"}
                             (P.embedded >> (Toplevel.theory o new_include))
 
 fun file_inclusion install =
-  Resources.provide_parse_files single -- (Option_Scanner.get_options O.default_options opts)
+  Resources.parse_files single -- (Option_Scanner.get_options O.default_options opts)
    >> (Toplevel.theory o install)
 
 val _ =
     Outer_Syntax.command
      @{command_keyword "include_C_file"}
      "include a C file"
-     (Resources.provide_parse_files single --
+     (Resources.parse_files single --
        (@{keyword "for"} |-- P.path)  >> (Toplevel.theory o include_C_file))
 
 val _ =
@@ -885,7 +885,7 @@ val _ =
     Outer_Syntax.command
       @{command_keyword "install_C_types"}
       "install types from a C file"
-      (Resources.provide_parse_files single >> (Toplevel.theory o install_C_types))
+      (Resources.parse_files single >> (Toplevel.theory o install_C_types))
 
 end
 

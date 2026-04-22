@@ -648,7 +648,7 @@ object AFP_Submit {
         val patches =
           for {
             file <- structure.authors_file :: metadata.entries.map(_.name).map(structure.entry_file)
-            relative = File.relative_path(structure.base_dir, file).get
+            relative = File.the_relative_path(structure.base_dir, file)
           } yield Isabelle_System.make_patch(afp.base_dir, relative, file)
         File.write(patch_file(id), cat_lines(patches))
 
