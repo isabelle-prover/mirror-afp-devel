@@ -440,9 +440,9 @@ qed
 
 (* correctness *)
 lemma noe_lang_Eps_elim_rel_aux: 
-  assumes "ps \<turnstile> [Nt S] \<Rightarrow>* w" "w = []"  
-  shows "\<exists>A. ps \<turnstile> [Nt S] \<Rightarrow>* [Nt A] \<and> (A, w) \<in> ps"
-  using assms by (induction w rule: rtranclp_induct) (auto simp: derive.simps)
+  assumes "ps \<turnstile> [Nt S] \<Rightarrow>* []"
+  shows "\<exists>A. ps \<turnstile> [Nt S] \<Rightarrow>* [Nt A] \<and> (A, []) \<in> ps"
+  using assms[unfolded rtranclp.simps[of _  _ "[]"]] derive.cases by fastforce
 
 lemma noe_lang_Eps_elim_rel: "[] \<notin> Lang (Eps_elim ps) S"
 proof (rule notI)

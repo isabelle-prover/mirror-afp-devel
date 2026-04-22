@@ -24,23 +24,14 @@ definition New_prods :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
 definition Unit_elim :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
 "Unit_elim P = Unit_rm P \<union> New_prods P"
 
-definition Unit_elim_rel :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods \<Rightarrow> bool" where
-"Unit_elim_rel P P' \<equiv> P' = (Unit_rm P \<union> New_prods P)"
-
-corollary Unit_elim_correct: "Unit_elim_rel P (Unit_elim P)"
-by (metis Unit_elim_def Unit_elim_rel_def)
-
-lemma Unit_free_if_Unit_elim_rel: "Unit_elim_rel P P' \<Longrightarrow> Unit_free P'" 
-unfolding Unit_elim_rel_def Unit_rm_def New_prods_def Unit_prods_def Unit_free_def by simp
-
-corollary Unit_Free_Unit_elim: "Unit_free (Unit_elim P)"
-by (simp add: Unit_elim_def Unit_elim_rel_def Unit_free_if_Unit_elim_rel)
+lemma Unit_Free_Unit_elim: "Unit_free (Unit_elim P)" 
+unfolding Unit_elim_def Unit_rm_def New_prods_def Unit_prods_def Unit_free_def by simp
 
 lemma Unit_elim_rel_Eps_free:
-  assumes "Eps_free P" and "Unit_elim_rel P P'"
-  shows "Eps_free P'"
+  assumes "Eps_free P"
+  shows "Eps_free (Unit_elim P)"
   using assms 
-  unfolding Unit_elim_rel_def Eps_free_def Unit_rm_def Unit_prods_def New_prods_def by auto
+  unfolding Unit_elim_def Eps_free_def Unit_rm_def Unit_prods_def New_prods_def by auto
 
 lemma Tms_Unit_elim_subset: "Tms (Unit_elim P) \<subseteq> Tms P"
 unfolding Unit_elim_def Unit_rm_def New_prods_def Tms_def by(auto)
@@ -124,13 +115,9 @@ lemma Unit_rm_Un_New_prods_eq: "Unit_rm (set ps) \<union> New_prods (set ps) = U
 unfolding New_prods_def Unit_rm_def
 by(auto intro: rtc_Unit_prods_if_tc_unit_pairs dest: tc_unit_pairs_if_rtc_Unit_prods)
 
-lemma Unit_elim_set_code[code]: "Unit_elim (set ps) = set(unit_elim ps)"
+lemma Unit_elim_unit_elim[code]: "Unit_elim (set ps) = set(unit_elim ps)"
 unfolding unit_elim_def Unit_elim_def Unit_rm_Un_New_prods_eq
 by(auto simp add: set_unit_rm new_prods_def)
-
-corollary unit_elim_correct: "Unit_elim_rel (set ps) (set(unit_elim ps))"
-by (metis Unit_elim_set_code Unit_elim_correct)
-
 
 (* Test for executability only *)
 lemma "Unit_elim {(0::int, [Nt 1]), (1, [Tm(2::int)])} = {(0, [Tm 2]), (1, [Tm 2])}"
@@ -194,9 +181,6 @@ qed
 lemma finiteUnit_elim_relRules: "finite P \<Longrightarrow> finite (Unit_rm P \<union> New_prods P)"
 by (simp add: finite_New_prods finite_Unit_rm)
 
-lemma Unit_elim_rel_exists: "finite P \<Longrightarrow> \<exists>P'. Unit_elim_rel P P' \<and> finite P'"
-unfolding Unit_elim_rel_def using finite_list[OF finiteUnit_elim_relRules] by blast
-
 (* towards theorem 4.4 *)
 
 lemma inNonUnitProds:
@@ -226,13 +210,13 @@ proof -
 qed
 
 lemma Unit_elim_rel_r3:
-  assumes "Unit_elim_rel P P'" and "P' \<turnstile> u \<Rightarrow> v"
+  assumes "Unit_elim P \<turnstile> u \<Rightarrow> v"
   shows "P \<turnstile> u \<Rightarrow>* v"
 proof -
-  obtain A \<alpha> r1 r2 where A: "(A, \<alpha>) \<in> P' \<and> u = r1 @ [Nt A] @ r2 \<and> v = r1 @ \<alpha> @ r2"
+  obtain A \<alpha> r1 r2 where A: "(A, \<alpha>) \<in> Unit_elim P \<and> u = r1 @ [Nt A] @ r2 \<and> v = r1 @ \<alpha> @ r2"
     using assms derive.cases by meson
   hence "(A, \<alpha>) \<in> Unit_rm P \<or> (A, \<alpha>) \<in> New_prods P"
-    using assms(1) unfolding Unit_elim_rel_def by simp
+    using assms(1) unfolding Unit_elim_def by simp
   thus ?thesis
   proof
     assume "(A, \<alpha>) \<in> Unit_rm P"
@@ -261,8 +245,7 @@ proof -
 qed
 
 lemma Unit_elim_rel_r4: 
-  assumes "P' \<turnstile> u \<Rightarrow>* v"
-    and "Unit_elim_rel P P'"
+  assumes "Unit_elim P \<turnstile> u \<Rightarrow>* v"
   shows "P \<turnstile> u \<Rightarrow>* v"
   using assms by (induction rule: rtranclp.induct) (auto simp: Unit_elim_rel_r3 rtranclp_trans)
 
@@ -283,30 +266,29 @@ proof -
 qed
 
 lemma Unit_elim_rel_r12: 
-  assumes "Unit_elim_rel P P'" "(A, \<alpha>) \<in> P'"
+  assumes "(A, \<alpha>) \<in> Unit_elim P"
   shows "(A, \<alpha>) \<notin> Unit_prods P"
-  using assms unfolding Unit_elim_rel_def Unit_rm_def Unit_prods_def New_prods_def by blast
+  using assms unfolding Unit_elim_def Unit_rm_def Unit_prods_def New_prods_def by blast
 
 lemma Unit_elim_rel_r14: 
-  assumes "Unit_elim_rel P P'" 
-    and "P \<turnstile> [Nt A] \<Rightarrow> [Nt B]" "P' \<turnstile> [Nt B] \<Rightarrow> v"
-  shows "P' \<turnstile> [Nt A] \<Rightarrow> v"
+  assumes "P \<turnstile> [Nt A] \<Rightarrow> [Nt B]" "Unit_elim P \<turnstile> [Nt B] \<Rightarrow> v"
+  shows "Unit_elim P \<turnstile> [Nt A] \<Rightarrow> v"
 proof -
   have 1: "(A, B) \<in> Unit_rtc (Unit_prods P)"
-    using deriv_Unit_rtc assms(2) by fast
-  have 2: "(B, v) \<in> P'"
-    using assms(3) by (simp add: derive_singleton)
+    using deriv_Unit_rtc assms(1) by fast
+  have 2: "(B, v) \<in> Unit_elim P"
+    using assms(2) by (simp add: derive_singleton)
   thus ?thesis
   proof (cases "(B, v) \<in> P")
     case True
     hence "(B, v) \<in> Unit_rm P"
-      unfolding Unit_rm_def using assms(1) assms(3) Unit_elim_rel_r12[of P P' B v] by (simp add: derive_singleton)
+      unfolding Unit_rm_def using Unit_elim_rel_r12[OF 2] by (simp)
     then show ?thesis
-    using 1 assms(1) unfolding Unit_elim_rel_def New_prods_def derive_singleton by blast
+    using 1 unfolding Unit_elim_def New_prods_def derive_singleton by blast
   next
     case False
     hence "(B, v) \<in> New_prods P"
-      using assms(1) 2 unfolding Unit_rm_def Unit_elim_rel_def  by simp
+      using assms(1) 2 unfolding Unit_rm_def Unit_elim_def  by simp
     from this obtain C where C: "(C, v) \<in> Unit_rm P \<and> (B, C) \<in> Unit_rtc (Unit_prods P)"
       unfolding New_prods_def by blast
     hence "Unit_prods P \<turnstile> [Nt A] \<Rightarrow>* [Nt C]"
@@ -315,8 +297,8 @@ proof -
       unfolding Unit_rtc_def using 1 C Unit_rtc_def by fastforce
     hence "(A, v) \<in> New_prods P"
       unfolding New_prods_def using C by blast
-    hence "(A, v) \<in> P'"
-      using assms(1) unfolding Unit_elim_rel_def  by blast
+    hence "(A, v) \<in> Unit_elim P"
+      using assms(1) unfolding Unit_elim_def  by blast
     thus ?thesis by (simp add: derive_singleton)
   qed
 qed
@@ -339,25 +321,26 @@ proof -
 qed
 
 lemma Unit_elim_rel_complete: 
-  assumes "Unit_elim_rel P P'" "P \<turnstile> u \<Rightarrow>* map Tm v"
-  shows "P' \<turnstile> u \<Rightarrow>* map Tm v"
-  using assms(2) proof (induction rule: converse_derives_induct)
+  assumes "P \<turnstile> u \<Rightarrow>* map Tm v"
+  shows "Unit_elim P \<turnstile> u \<Rightarrow>* map Tm v"
+  using assms proof (induction rule: converse_derives_induct)
   case base
   then show ?case by blast
 next
   case (step l A r w)
-  then show ?case 
+  let ?P = "Unit_elim P"
+  show ?case 
   proof (cases "(A, w) \<in> Unit_prods P")
     case True
     from this obtain B where "w = [Nt B]"
       unfolding Unit_prods_def by blast
-    have "P' \<turnstile> l @ w @ r \<Rightarrow>* map Tm v \<and> Nt B \<notin> set (map Tm v)"
+    have "?P \<turnstile> l @ w @ r \<Rightarrow>* map Tm v \<and> Nt B \<notin> set (map Tm v)"
       using step.IH by auto
-    obtain \<alpha> where \<alpha>: "P' \<turnstile> l @ [Nt B] @ r \<Rightarrow> l @ \<alpha> @ r \<and> P' \<turnstile> l @ \<alpha> @ r \<Rightarrow>* map Tm v \<and> (B, \<alpha>) \<in> P'"
-      using step.IH \<open>w=_\<close>  Unit_elim_rel_r20_aux[of P' l B r v] by blast
-    hence "(A, \<alpha>) \<in> P'"
-      using step.hyps(2) \<open>w=_\<close> Unit_elim_rel_r14[OF assms(1)] by (simp add: derive_singleton)
-    hence "P' \<turnstile> l @ [Nt A] @ r \<Rightarrow>* l @ \<alpha> @ r"
+    obtain \<alpha> where \<alpha>: "?P \<turnstile> l @ [Nt B] @ r \<Rightarrow> l @ \<alpha> @ r \<and> ?P \<turnstile> l @ \<alpha> @ r \<Rightarrow>* map Tm v \<and> (B, \<alpha>) \<in> ?P"
+      using step.IH \<open>w=_\<close>  Unit_elim_rel_r20_aux[of ?P l B r v] by blast
+    hence "(A, \<alpha>) \<in> ?P"
+      using step.hyps(2) \<open>w=_\<close> Unit_elim_rel_r14[of P] by (simp add: derive_singleton)
+    hence "?P \<turnstile> l @ [Nt A] @ r \<Rightarrow>* l @ \<alpha> @ r"
       using derive.simps by fastforce
     then show ?thesis 
       using \<alpha> by auto
@@ -365,22 +348,19 @@ next
     case False
     hence "(A, w) \<in> Unit_rm P"
       unfolding Unit_rm_def using step.hyps(2) by blast
-    hence "(A, w) \<in> P'"
-      using assms(1) unfolding Unit_elim_rel_def  by simp
-    hence "P' \<turnstile> l @ [Nt A] @ r \<Rightarrow> l @ w @ r"
+    hence "(A, w) \<in> ?P"
+      using assms(1) unfolding Unit_elim_def  by simp
+    hence "?P \<turnstile> l @ [Nt A] @ r \<Rightarrow> l @ w @ r"
       by (auto simp: derive.simps)
     then show ?thesis
       using step by simp
   qed
 qed
 
-theorem Unit_elim_rel_Lang_eq: "Unit_elim_rel P P' \<Longrightarrow> Lang P' S = Lang P S"
+theorem Lang_Unit_elim: "Lang (Unit_elim P) S = Lang P S"
   unfolding Lang_def using Unit_elim_rel_r4 Unit_elim_rel_complete by blast
 
-corollary Lang_Unit_elim: "Lang (Unit_elim P) A = Lang P A"
-by (simp add: Unit_elim_def Unit_elim_rel_Lang_eq Unit_elim_rel_def)
-
 corollary lang_unit_elim: "lang (unit_elim ps) A = lang ps A"
-by (metis unit_elim_correct Unit_elim_rel_Lang_eq)
+by (metis Lang_Unit_elim Unit_elim_unit_elim)
 
 end
