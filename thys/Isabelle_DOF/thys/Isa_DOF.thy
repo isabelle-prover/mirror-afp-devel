@@ -3586,24 +3586,24 @@ val _ =
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>define_template\<close>
     "define DOF document template (via LaTeX root file)"
-    (Parse.position (Resources.provide_parse_file -- Parse.name) >>
+    (Parse.position (Resources.parse_file -- Parse.name) >>
       (fn ((get_file, desc), pos) => Toplevel.theory (fn thy =>
         let
-          val (file, thy') = get_file thy;
+          val file = get_file thy;
           val binding = Binding.make (strip_template (#src_path file, pos), pos);
           val text = cat_lines (#lines file);
-        in #2 (define_template (binding, (text, desc)) thy') end)));
+        in #2 (define_template (binding, (text, desc)) thy) end)));
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>define_ontology\<close>
     "define DOF document ontology (via LaTeX style file)"
-    (Parse.position (Resources.provide_parse_file -- Parse.name) >>
+    (Parse.position (Resources.parse_file -- Parse.name) >>
       (fn ((get_file, desc), pos) => Toplevel.theory (fn thy =>
         let
-          val (file, thy') = get_file thy;
-          val binding = Binding.qualify false (Long_Name.qualifier (Context.theory_long_name thy')) (Binding.make (strip_ontology (#src_path file, pos), pos));
+          val file = get_file thy;
+          val binding = Binding.qualify false (Long_Name.qualifier (Context.theory_long_name thy)) (Binding.make (strip_ontology (#src_path file, pos), pos));
           val text = cat_lines (#lines file);
-        in #2 (define_ontology (binding, (text, desc)) thy') end)));
+        in #2 (define_ontology (binding, (text, desc)) thy) end)));
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>list_templates\<close>

@@ -1177,13 +1177,8 @@ structure C_Outer_File : sig
   end =
 struct
 
-fun command_c ({src_path, lines, digest, pos}: Token.file) =
-  let
-    val provide = Resources.provide (src_path, digest);
-  in I
-     #> C_Module.C (Input.source true (cat_lines lines) (pos, pos))
-     #> Context.mapping provide (Local_Theory.background_theory provide)
-  end;
+fun command_c ({lines, pos, ...}: Token.file) =
+  C_Module.C (Input.source true (cat_lines lines) (pos, pos));
 
 fun C get_file gthy =
   command_c (get_file (Context.theory_of gthy)) gthy;
