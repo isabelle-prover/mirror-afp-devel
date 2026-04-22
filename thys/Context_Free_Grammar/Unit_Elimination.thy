@@ -1,5 +1,5 @@
 (*
-Author: August Martin Stimpfle
+Author: August Martin Stimpfle; Tobias Nipkow (simplification)
 Based on HOL4 theories by Aditi Barthwal
 *)
 
@@ -27,7 +27,7 @@ definition Unit_elim :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
 lemma Unit_Free_Unit_elim: "Unit_free (Unit_elim P)" 
 unfolding Unit_elim_def Unit_rm_def New_prods_def Unit_prods_def Unit_free_def by simp
 
-lemma Unit_elim_rel_Eps_free:
+lemma Unit_elim_Eps_free:
   assumes "Eps_free P"
   shows "Eps_free (Unit_elim P)"
   using assms 
@@ -148,7 +148,7 @@ qed
 definition nPSlambda :: "('n, 't) Prods \<Rightarrow> ('n \<times> 'n) \<Rightarrow> ('n, 't) Prods" where
 "nPSlambda P d = {fst d} \<times> {r. (snd d, r) \<in> P}"
 
-lemma npsImage: "\<Union>((nPSlambda (Unit_rm P)) ` (Unit_rtc (Unit_prods P))) = New_prods P"
+lemma npsImage: "New_prods P = \<Union>((nPSlambda (Unit_rm P)) ` (Unit_rtc (Unit_prods P)))"
   unfolding New_prods_def nPSlambda_def by fastforce
 
 lemma finite_nPSlambda:
@@ -167,19 +167,16 @@ proof -
     using assms unfolding nPSlambda_def by simp
 qed
 
-lemma finite_Unit_rm: "finite P \<Longrightarrow> finite (Unit_rm P)"
-unfolding Unit_rm_def by simp
-
 lemma finite_New_prods: assumes "finite P" shows "finite (New_prods P)"
 proof -
   have "finite (Unit_rtc (Unit_prods P))"
     using finiteUnit_prods finite_Unit_rtc assms by blast
   then show ?thesis
-    using assms finite_Unit_rm npsImage finite_nPSlambda finite_UN by metis
+    by(simp add:  npsImage Unit_rm_def finite_nPSlambda assms)
 qed
 
-lemma finiteUnit_elim_relRules: "finite P \<Longrightarrow> finite (Unit_rm P \<union> New_prods P)"
-by (simp add: finite_New_prods finite_Unit_rm)
+lemma finite_Unit_elim: "finite P \<Longrightarrow> finite (Unit_elim P)"
+by (simp add: Unit_elim_def finite_New_prods Unit_rm_def)
 
 (* towards theorem 4.4 *)
 
