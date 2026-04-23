@@ -1,10 +1,34 @@
-(* Author: Tassilo Lemke *)
+(* Authors: Tassilo Lemke; Tobias Nipkow *)
 
 section\<open>Finiteness of Context-Free Languages\<close>
 
 theory Finiteness
   imports Applications
 begin
+
+(* TODO mv *)
+
+lemma derive_Nts_iff: "P \<turnstile> \<alpha> \<Rightarrow> \<beta> \<Longrightarrow> Nts_syms \<beta> \<subseteq> Nts P \<longleftrightarrow> Nts_syms \<alpha> \<subseteq> Nts P"
+  apply(frule derive_Nts_syms_subset) 
+  by (auto simp: derive.simps Nts_Lhss_Rhs_Nts intro: in_LhssI)
+
+lemma derives_Nts_iff: "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> Nts_syms \<alpha> \<subseteq> Nts P \<longleftrightarrow> Nts_syms \<beta> \<subseteq> Nts P"
+apply(induction rule: derives_induct)
+ apply simp
+by (meson derive.intros derive_Nts_iff)
+
+
+text \<open>An alternative way of expressing that all Nts are useful:\<close>
+
+definition useful_all :: "('n,'y)Prods \<Rightarrow> 'n \<Rightarrow> bool" where
+"useful_all P S = (\<forall>X \<in> Nts P. reachable P S X \<and> productive P X)"
+
+lemma useful_all_iff:
+  "S \<in> Nts P \<Longrightarrow> useful_all P S = (\<forall>X \<in> Nts P. useful P S X)"
+unfolding useful_all_def by (metis productive_if_useful useful_reachable)
+
+text \<open>NB: \<open>is_useful_all\<close> is more efficient than \<^prop>\<open>\<forall>X \<in> Nts P. useful P S X\<close>
+because the former needs to check only once for each symbol if it is productive.\<close>
 
 (* This theory could be generalized from CNF to arbitrary grammars (with some work) *)
 (* The dependence on theory Applications could be minimized in the process
@@ -33,13 +57,11 @@ subsection\<open>Preliminaries and Assumptions\<close>
 locale CFG =
   fixes P :: "('n, 't) Prods" and S :: 'n
   assumes cnf: "\<And>p. p \<in> P \<Longrightarrow> (\<exists>A a. p = (A, [Tm a]) \<or> (\<exists>A B C. p = (A, [Nt B, Nt C])))"
+  and S_in_P: "S \<in> Nts P"
 begin \<comment>\<open>begin-context CFG\<close>
 
-definition is_useful_all :: "bool" where
-  "is_useful_all \<equiv> (\<forall>X::'n. is_useful P S X)"
-
 definition is_non_nullable_all :: "bool" where
-  "is_non_nullable_all \<equiv> (\<forall>X::'n. \<not> is_nullable P X)"
+  "is_non_nullable_all \<equiv> (\<forall>X \<in> Nts P. \<not> is_nullable P X)"
 
 lemma derives_concat:
   assumes "P \<turnstile> X\<^sub>1 \<Rightarrow>* w\<^sub>1" and "P \<turnstile> X\<^sub>2 \<Rightarrow>* w\<^sub>2"
@@ -64,57 +86,25 @@ proof -
 qed
 
 lemma is_useful_all_derive:
-  assumes "is_useful_all"
-  shows "\<exists>w. P \<turnstile> xs \<Rightarrow>* map Tm w"
-using assms proof (induction xs)
-  case Nil
-  moreover have "P \<turnstile> [] \<Rightarrow>* map Tm []"
-    by simp
-  ultimately show ?case
-    by (elim exI)
-next
-  case (Cons a xs)
-  then obtain w' where w'_def: "P \<turnstile> xs \<Rightarrow>* map Tm w'"
-    by blast
-
-  have "\<exists>w. P \<turnstile> [a] \<Rightarrow>* map Tm w"
-  proof (cases a)
-    case (Nt X)
-    then have "Lang P X \<noteq> {}"
-      using Cons(2) by (simp add: is_useful_all_def is_useful_def)
-    then show ?thesis
-      by (simp add: Nt Lang_def)
-  next
-    case (Tm c)
-    then have "P \<turnstile> [Tm c] \<Rightarrow>* map Tm [c]"
-      by simp
-    then show ?thesis
-      using Tm by blast
-  qed
-  then obtain w where w_def: "P \<turnstile> [a] \<Rightarrow>* map Tm w"
-    by blast
-
-  from w_def w'_def have "P \<turnstile> (a#xs) \<Rightarrow>* map Tm (w@w')"
-    using derives_concat by fastforce
-  then show ?case
-    by blast
-qed
+  "\<lbrakk> useful_all P S; Nts_syms xs \<subseteq> Nts P \<rbrakk> \<Longrightarrow> productives P xs"
+  unfolding useful_all_def
+  by (meson productives_if_Productive subset_eq)
 
 lemma is_non_nullable_all_derive:
-  assumes "is_non_nullable_all" and "P \<turnstile> xs \<Rightarrow>* w"
+  assumes "is_non_nullable_all" "Nts_syms xs \<subseteq> Nts P" and "P \<turnstile> xs \<Rightarrow>* w"
   shows "xs = [] \<longleftrightarrow> w = []"
 proof -
-  have "\<And>X. \<not> P \<turnstile> [Nt X] \<Rightarrow>* []"
+  have "\<And>X. X \<in> Nts P \<Longrightarrow> \<not> P \<turnstile> [Nt X] \<Rightarrow>* []"
     using assms(1) by (simp add: is_non_nullable_all_def is_nullable_def)
   moreover have "\<And>c. \<not> P \<turnstile> [Tm c] \<Rightarrow>* []"
     by simp
   ultimately have nonNullAll: "\<And>x. \<not> P \<turnstile> [x] \<Rightarrow>* []"
-    using sym.exhaust by metis
+    by (metis Nts_Lhss_Rhs_Nts Un_iff derives_Cons_Nil in_LhssI)
 
-  have thm1: "xs = [] \<Longrightarrow> w = []"
-    using assms(2) derives_from_empty by blast
+  have 1: "xs = [] \<Longrightarrow> w = []"
+    using assms(3) by auto
 
-  have thm2: "xs \<noteq> [] \<Longrightarrow> w \<noteq> []"
+  have 2: "xs \<noteq> [] \<Longrightarrow> w \<noteq> []"
   proof
     assume "xs \<noteq> []"
     then obtain x xs' where "xs = x#xs'"
@@ -124,11 +114,11 @@ proof -
     moreover have "\<not> P \<turnstile> [x] \<Rightarrow>* []"
       by (simp add: nonNullAll)
     ultimately show "w = [] \<Longrightarrow> False"
-      using assms(2) by simp
+      using assms(3) by simp
   qed
 
   show ?thesis
-    using thm1 thm2 by blast
+    using 1 2 by blast
 qed
 
 subsection\<open>Criterion of Finiteness\<close>
@@ -141,8 +131,15 @@ text\<open>
 definition is_reachable_step :: "'n \<Rightarrow> 'n \<Rightarrow> bool" (infix "\<rightarrow>\<^sup>?" 80) where
   "(X \<rightarrow>\<^sup>? Y) \<equiv> (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt X] \<Rightarrow>* (\<alpha>@[Nt Y]@\<beta>) \<and> \<alpha>@\<beta> \<noteq> [])"
 
+lemma in_Nts_if_is_reachable_step1: "X \<rightarrow>\<^sup>? Y \<Longrightarrow> X \<in> Nts P"
+by(auto simp add: is_reachable_step_def Nts_Lhss_Rhs_Nts neq_Nil_conv derives_Cons_iff in_LhssI)
+
+lemma in_Nts_if_is_reachable_step2: "X \<rightarrow>\<^sup>? Y \<Longrightarrow> Y \<in> Nts P"
+by (metis append_Cons in_Nts_if_is_reachable_step1 in_Nts_iff_if_derives in_set_conv_decomp
+      is_reachable_step_def reachable_def)
+
 definition is_infinite :: "bool" where
-  "is_infinite \<equiv> (\<exists>X. X \<rightarrow>\<^sup>? X)"
+  "is_infinite \<equiv> (\<exists>X \<in> Nts P. X \<rightarrow>\<^sup>? X)"
 
 fun is_infinite_derives :: "'n \<Rightarrow> ('n, 't) sym list \<Rightarrow> ('n, 't) sym list \<Rightarrow> nat \<Rightarrow> ('n, 't) sym list" where
   "is_infinite_derives X \<alpha> \<beta> (Suc n) = \<alpha>@(is_infinite_derives X \<alpha> \<beta> n)@\<beta>" |
@@ -213,7 +210,7 @@ qed
 lemma reachable_rel_wf:
   assumes "finite P"
     and cnf: "\<And>p. p \<in> P \<Longrightarrow> (\<exists>A a. p = (A, [Tm a]) \<or> (\<exists>A B C. p = (A, [Nt B, Nt C])))"
-    and loopfree: "\<And>X. \<not> X \<rightarrow>\<^sup>? X"
+    and loopfree: "\<And>X. X \<in> Nts P \<Longrightarrow> \<not> X \<rightarrow>\<^sup>? X"
   shows "wf reachable_rel"
 proof -
   define Nt2 :: "'n \<times> 'n \<Rightarrow> ('n, 't) sym \<times> ('n, 't) sym"
@@ -237,14 +234,14 @@ proof -
     using finite_image_iff by blast
 
   have "acyclic reachable_rel"
-  unfolding acyclic_def using loopfree reachable_rel_tran by blast
+  unfolding acyclic_def using loopfree reachable_rel_tran in_Nts_if_is_reachable_step1 by blast
 
   from finite_acyclic_wf[OF finite this] show "wf reachable_rel" .
 qed
 
 lemma is_infinite_implies_finite:
-  assumes "finite P"
-    and loopfree: "\<And>X. \<not> X \<rightarrow>\<^sup>? X"
+  assumes "finite P" "X \<in> Nts P"
+    and loopfree: "\<And>X. X \<in> Nts P \<Longrightarrow> \<not> X \<rightarrow>\<^sup>? X"
   shows "finite {w. P \<turnstile> [Nt X] \<Rightarrow>* w}"
 proof -
   have "wf reachable_rel"
@@ -323,12 +320,12 @@ proof -
 qed
 
 theorem is_infinite_correct:
-  assumes "is_useful_all" and "is_non_nullable_all" and "finite P"
+  assumes "useful_all P S" and "is_non_nullable_all" and "finite P"
   shows "\<not> finite (Lang P S) \<longleftrightarrow> is_infinite"
 proof (standard, erule contrapos_pp)
   assume "\<not> is_infinite"
   then have finA: "finite {w. P \<turnstile> [Nt S] \<Rightarrow>* w}"
-    using is_infinite_implies_finite assms(3) by (simp add: is_infinite_def)
+    using is_infinite_implies_finite assms(3) S_in_P by (simp add: is_infinite_def)
   have "finite (map Tm ` {w. P \<turnstile> [Nt S] \<Rightarrow>* map Tm w}::('n, 't) sym list set)"
     by (rule finite_subset[where B="{w. P \<turnstile> [Nt S] \<Rightarrow>* w}"]; use finA in blast)
   moreover have "inj_on (map Tm) {w. P \<turnstile> [Nt S] \<Rightarrow>* map Tm w}"
@@ -339,30 +336,34 @@ proof (standard, erule contrapos_pp)
     by (simp add: Lang_def)
 next
   assume "is_infinite"
-  then obtain X where "X \<rightarrow>\<^sup>? X"
+  then obtain X where "X \<in> Nts P" "X \<rightarrow>\<^sup>? X"
     unfolding is_infinite_def by blast
   then obtain \<alpha> \<beta> where deriveX: "P \<turnstile> [Nt X] \<Rightarrow>* (\<alpha>@[Nt X]@\<beta>)" and "\<alpha>@\<beta> \<noteq> []"
-    unfolding is_reachable_step_def by blast
+    and Nts\<alpha>\<beta>: "Nts_syms \<alpha> \<subseteq> Nts P \<and> Nts_syms \<beta> \<subseteq> Nts P"
+    unfolding is_reachable_step_def Nts_syms_def
+    using in_Nts_iff_if_derives reachable_def by fastforce
 
   obtain w\<^sub>X where w\<^sub>X_def: "P \<turnstile> [Nt X] \<Rightarrow>* map Tm w\<^sub>X"
-    using assms(1) is_useful_all_derive by blast
+    using assms(1) is_useful_all_derive \<open>X \<in> Nts P\<close> by fastforce
 
   obtain w\<^sub>\<alpha> w\<^sub>\<beta> where w\<^sub>\<alpha>_def: "P \<turnstile> \<alpha> \<Rightarrow>* map Tm w\<^sub>\<alpha>" and w\<^sub>\<beta>_def: "P \<turnstile> \<beta> \<Rightarrow>* map Tm w\<^sub>\<beta>"
-    using assms(1) is_useful_all_derive by blast+
+    using assms(1) is_useful_all_derive \<open>X \<in> Nts P\<close> Nts\<alpha>\<beta> by blast
   then have "w\<^sub>\<alpha>@w\<^sub>\<beta> \<noteq> []"
-    using \<open>\<alpha>@\<beta> \<noteq> []\<close> by (simp add: assms(2) is_non_nullable_all_derive)
+    using \<open>\<alpha>@\<beta> \<noteq> []\<close> by (simp add: Nts\<alpha>\<beta> assms(2) is_non_nullable_all_derive)
 
   define f\<^sub>d where "f\<^sub>d \<equiv> is_infinite_derives X \<alpha> \<beta>"
   define f\<^sub>w where "f\<^sub>w \<equiv> is_infinite_words w\<^sub>X w\<^sub>\<alpha> w\<^sub>\<beta>"
 
-  have "P \<turnstile> S \<Rightarrow>\<^sup>? X"
-    using assms(1) by (simp add: is_useful_all_def is_useful_def)
+  have "reachable P S X"
+    using assms(1) \<open>X \<in> Nts P\<close> by (simp add: useful_all_def)
   then obtain p s where "P \<turnstile> [Nt S] \<Rightarrow>* (p@[Nt X]@s)"
-    unfolding is_reachable_from_def by blast
+    and Ntsps: "Nts_syms p \<subseteq> Nts P \<and> Nts_syms s \<subseteq> Nts P"
+    unfolding reachable_def using split_list[of "Nt X"] S_in_P derives_Nts_iff[of P "[Nt S]"]
+    by force
   moreover obtain w\<^sub>p where w\<^sub>p_def: "P \<turnstile> p \<Rightarrow>* map Tm w\<^sub>p"
-    using assms(1) is_useful_all_derive by blast
+    using assms(1) \<open>X \<in> Nts P\<close> is_useful_all_derive Ntsps by blast
   moreover obtain w\<^sub>s where w\<^sub>s_def: "P \<turnstile> s \<Rightarrow>* map Tm w\<^sub>s"
-    using assms(1) is_useful_all_derive by blast
+    using assms(1) is_useful_all_derive Ntsps by blast
   ultimately have fromS: "P \<turnstile> [Nt S] \<Rightarrow>* (map Tm w\<^sub>p@[Nt X]@map Tm w\<^sub>s)"
     by (meson local.derives_concat rtranclp.rtrancl_refl rtranclp_trans)
 
@@ -420,12 +421,12 @@ no_notation is_reachable_step (infix "\<rightarrow>\<^sup>?" 80)
 subsection\<open>Finiteness Problem\<close>
 
 lemma is_infinite_check:
-  "is_infinite \<longleftrightarrow> (\<exists>X. [Nt X] \<in> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. \<alpha>@\<beta> \<noteq> [] })"
+  "is_infinite \<longleftrightarrow> (\<exists>X \<in> Nts P. [Nt X] \<in> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. \<alpha>@\<beta> \<noteq> [] })"
   unfolding is_infinite_def is_reachable_step_def by (auto simp: pre_star_term)
 
 theorem is_infinite_by_prestar:
-  assumes "is_useful_all" and "is_non_nullable_all" and "finite P"
-  shows "finite (Lang P S) \<longleftrightarrow> (\<forall>X. [Nt X] \<notin> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. \<alpha>@\<beta> \<noteq> [] })"
+  assumes "useful_all P S" and "is_non_nullable_all" and "finite P"
+  shows "finite (Lang P S) \<longleftrightarrow> (\<forall>X \<in> Nts P. [Nt X] \<notin> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. \<alpha>@\<beta> \<noteq> [] })"
   using assms is_infinite_correct is_infinite_check by blast
 
 end \<comment>\<open>end-context CFG\<close>
