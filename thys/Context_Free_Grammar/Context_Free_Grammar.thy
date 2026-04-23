@@ -1871,7 +1871,7 @@ definition reachable :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> 'n \<Righta
 "reachable P S A = (\<exists>\<beta>. P \<turnstile> [Nt S] \<Rightarrow>* \<beta> \<and> Nt A \<in> set \<beta>)"
 
 definition useful :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> bool" where
-"useful P S A = (\<exists>\<beta>. P \<turnstile> [Nt S] \<Rightarrow>* \<beta> \<and> Nt A \<in> set \<beta> \<and> (\<exists>w. P \<turnstile> \<beta> \<Rightarrow>* map Tm w))"
+"useful P S A = (\<exists>\<beta>. P \<turnstile> [Nt S] \<Rightarrow>* \<beta> \<and> Nt A \<in> set \<beta> \<and> productives P \<beta>)"
 
 text \<open>Restriction to useful symbols preserves language:\<close>
 
