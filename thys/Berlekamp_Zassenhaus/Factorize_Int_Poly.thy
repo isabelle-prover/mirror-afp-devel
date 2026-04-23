@@ -84,7 +84,7 @@ lemma gcd_list_sub:
   by (metis Gcd_fin.subset assms semiring_gcd_class.gcd_dvd1)
 
 lemma content_reflect_poly:
-  "content (reflect_poly f) = content f" (is "?l = ?r")
+  "Polynomial.content (reflect_poly f) = Polynomial.content f" (is "?l = ?r")
 proof-
   have l: "?l = gcd_list (dropWhile ((=) 0) (coeffs f))" (is "_ = gcd_list ?xs")
     by (simp add: content_def reflect_poly_def)
@@ -99,7 +99,7 @@ proof-
   from rl lr show "?l = ?r" by (simp add: associated_eqI)
 qed
 
-lemma coeff_primitive_part: "content f * coeff (primitive_part f) i = coeff f i"
+lemma coeff_primitive_part: "Polynomial.content f * coeff (primitive_part f) i = coeff f i"
   using arg_cong[OF content_times_primitive_part[of f], of "\<lambda>f. coeff f _", unfolded coeff_smult].
 
 (* TODO: move *)
@@ -118,8 +118,8 @@ lemma primitive_part_reflect_poly:
   using content_times_primitive_part[of "reflect_poly f"]
 proof-
   note content_reflect_poly[of f, symmetric]
-  also have "smult (content (reflect_poly f)) ?l = reflect_poly f" by simp
-  also have "... = reflect_poly (smult (content f) (primitive_part f))" by simp
+  also have "smult (Polynomial.content (reflect_poly f)) ?l = reflect_poly f" by simp
+  also have "... = reflect_poly (smult (Polynomial.content f) (primitive_part f))" by simp
   finally show ?thesis unfolding reflect_poly_smult smult_cancel by auto
 qed
 
@@ -288,7 +288,7 @@ qed
 context
   fixes alg :: int_poly_factorization_algorithm
 begin
-(* main factorization algorithm for square-free, content-free, non-constant polynomial
+(* main factorization algorithm for square-free, Polynomial.content-free, non-constant polynomial
    that do not have 0 as root, with special cases and reciprocal polynomials *)
 definition main_int_poly_factorization :: "int poly \<Rightarrow> int poly list" where
   "main_int_poly_factorization f = (let df = degree f
@@ -313,7 +313,7 @@ lemma internal_int_poly_factorization_code[code]: "internal_int_poly_factorizati
    with special treatment of polynomials of degree at most 1 *)
 definition factorize_int_last_nz_poly :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat) list" where
   "factorize_int_last_nz_poly f = (let df = degree f
-    in if df = 0 then (coeff f 0, []) else if df = 1 then (content f,[(primitive_part f,1)]) else
+    in if df = 0 then (coeff f 0, []) else if df = 1 then (Polynomial.content f,[(primitive_part f,1)]) else
     internal_int_poly_factorization f)"
 
 (* factorization for arbitrary polynomials *)
@@ -404,7 +404,7 @@ proof -
   from fi[unfolded d split fact] have fi: "fi \<in> set hs" by auto
   from main_int_poly_factorization[OF d _ _ nz_fi[OF psi]] sff'(2)[OF psi] cnt[OF psi]
   have main: "d = prod_list hs" "\<And> fi. fi \<in> set hs \<Longrightarrow> irreducible\<^sub>d fi" by auto
-  from main split_list[OF fi] have "content fi dvd content d" by auto
+  from main split_list[OF fi] have "Polynomial.content fi dvd Polynomial.content d" by auto
   with cnt[OF psi] show cnt: "primitive fi" by simp
   from main(2)[OF fi] show irr: "irreducible\<^sub>d fi" .
   show "irreducible fi" 
@@ -516,10 +516,10 @@ proof -
         have fi: "fi = bz ! l" "Fi = bz ! L"
           unfolding id bz by (metis fst_conv nth_map)+
         from d[folded bz] have sf: "square_free (prod_list bz)" by auto
-        from d[folded bz] cnt have cnt: "content (prod_list bz) = 1" by auto
+        from d[folded bz] cnt have cnt: "Polynomial.content (prod_list bz) = 1" by auto
         from l have l: "l < length bz" "L < length bz" unfolding bz id by auto
         from l fi have "fi \<in> set bz" by auto
-        from content_dvd_1[OF cnt prod_list_dvd[OF this]] have cnt: "content fi = 1" .
+        from content_dvd_1[OF cnt prod_list_dvd[OF this]] have cnt: "Polynomial.content fi = 1" .
         obtain g where g: "g = gcd fi Fi" by auto
         have g': "g dvd fi" "g dvd Fi" unfolding g by auto
         define bef where "bef = take l bz"
@@ -533,7 +533,7 @@ proof -
         finally have "fi * Fi dvd prod_list bz" by auto
         with g' have "g * g dvd prod_list bz" by (meson dvd_trans mult_dvd_mono)
         with sf[unfolded square_free_def] have deg: "degree g = 0" by auto
-        from content_dvd_1[OF cnt g'(1)] have cnt: "content g = 1" .
+        from content_dvd_1[OF cnt g'(1)] have cnt: "Polynomial.content g = 1" .
         from degree0_coeffs[OF deg] obtain c where gc: "g = [: c :]" by auto
         from cnt[unfolded gc content_def, simplified] have "abs c = 1"
           by (cases "c = 0", auto)
@@ -618,7 +618,7 @@ proof (atomize(full))
     hence "coeff g 0 \<noteq> 0" by (simp add: monom_1_dvd_iff')
     note fact = factorize_int_last_nz_poly[OF fact this]
     let ?x = "monom 1 1 :: int poly"
-    have x: "content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
+    have x: "Polynomial.content ?x = 1 \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
       by (auto simp add: degree_monom_eq monom_Suc content_def)
     from res False have res: "(if n = 0 then (d, hs) else (d, (?x, n) # hs)) = (c, fs)" by auto
     show ?thesis
@@ -651,7 +651,7 @@ proof (atomize(full))
         proof (rule gcdI)
           fix d
           assume d: "d dvd ?x" "d dvd a"
-          from content_dvd_contentI[OF d(1)] x have cnt: "is_unit (content d)" by auto
+          from content_dvd_contentI[OF d(1)] x have cnt: "is_unit (Polynomial.content d)" by auto
           show "is_unit d"
           proof (cases "degree d = 1")
             case False
@@ -667,10 +667,10 @@ proof (atomize(full))
               by (metis True add.right_neutral degree_0 degree_mult_eq one_neq_zero)
             with True have "degree e = 0" by auto
             from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
-            from arg_cong[OF this, of content, unfolded content_mult] x
-            have "content [:e:] * content d = 1" by auto
-            also have "content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
-            finally have "\<bar>e\<bar> * content d = 1" .
+            from arg_cong[OF this, of Polynomial.content, unfolded content_mult] x
+            have "Polynomial.content [:e:] * Polynomial.content d = 1" by auto
+            also have "Polynomial.content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
+            finally have "\<bar>e\<bar> * Polynomial.content d = 1" .
             from pos_zmult_eq_1_iff_lemma[OF this] have "e * e = 1" by (cases "e = 1"; cases "e = -1", auto)
             with arg_cong[OF xde, of "smult e"] have "d = ?x * [:e:]" by auto
             hence "?x dvd d" unfolding dvd_def by blast

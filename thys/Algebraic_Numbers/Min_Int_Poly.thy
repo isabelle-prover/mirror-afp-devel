@@ -61,7 +61,7 @@ lemma min_int_poly_primitive [intro]:
 
 lemma min_int_poly_content [simp]:
   fixes x :: "'a :: {field_char_0, field_gcd}"
-  shows "content (min_int_poly x) = 1"
+  shows "Polynomial.content (min_int_poly x) = 1"
   using min_int_poly_primitive[of x] by (simp add: primitive_def)
 
 lemma ipoly_min_int_poly [simp]: 

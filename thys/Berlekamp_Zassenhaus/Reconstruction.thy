@@ -572,17 +572,17 @@ proof -
         have f: "f = u' * prod_list ?res'" using f u by auto
         let ?fact = "smult lu (prod_mset (mset ws))" 
         have Mp_vb: "Mp vb = Mp (smult lu (prod_list ws))"  unfolding vb_def by simp
-        have pp_vb_vb: "smult (content vb) pp_vb = vb" unfolding pp_vb_def by (rule content_times_primitive_part)
+        have pp_vb_vb: "smult (Polynomial.content vb) pp_vb = vb" unfolding pp_vb_def by (rule content_times_primitive_part)
         {
-          have "smult (content vb) u = (smult (content vb) pp_vb) * u'" unfolding u by simp
-          also have "smult (content vb) pp_vb = vb" by fact
-          finally have "smult (content vb) u = vb * u'" by simp
+          have "smult (Polynomial.content vb) u = (smult (Polynomial.content vb) pp_vb) * u'" unfolding u by simp
+          also have "smult (Polynomial.content vb) pp_vb = vb" by fact
+          finally have "smult (Polynomial.content vb) u = vb * u'" by simp
           from arg_cong[OF this, of Mp]
-          have "Mp (Mp vb * u') = Mp (smult (content vb) u)" by simp
-          hence "Mp (smult (content vb) u) = Mp (?fact * u')" unfolding Mp_vb by simp
+          have "Mp (Mp vb * u') = Mp (smult (Polynomial.content vb) u)" by simp
+          hence "Mp (smult (Polynomial.content vb) u) = Mp (?fact * u')" unfolding Mp_vb by simp
         } note prod = this
         from arg_cong[OF this, of p.Mp]
-        have prod': "p.Mp (smult (content vb) u) = p.Mp (?fact * u')" by simp
+        have prod': "p.Mp (smult (Polynomial.content vb) u) = p.Mp (?fact * u')" by simp
         from dvd have "lead_coeff vb dvd lead_coeff (smult lu u)" 
           by (metis dvd_def lead_coeff_mult)
         hence ldvd: "lead_coeff vb dvd lu * lu" unfolding lead_coeff_smult lu by simp
@@ -590,7 +590,7 @@ proof -
           by simp
         from coprime_divisors [OF ldvd dvd_refl] cop_lu
         have cop_lvb: "coprime (lead_coeff vb) p" by simp
-        then have cop_vb: "coprime (content vb) p" 
+        then have cop_vb: "coprime (Polynomial.content vb) p" 
           by (auto intro: coprime_divisors[OF content_dvd_coeff dvd_refl])
         from u have "u' dvd u" unfolding dvd_def by auto
         hence "lead_coeff u' dvd lu" unfolding lu by (metis dvd_def lead_coeff_mult)
@@ -600,21 +600,21 @@ proof -
           using cop by (auto simp: lu'_def)
         hence cop': "coprime (lead_coeff (?fact * u')) p" 
           unfolding lead_coeff_mult lead_coeff_smult l_ws by simp
-        have "p.square_free_m (smult (content vb) u)" using cop_vb sf p_inv
+        have "p.square_free_m (smult (Polynomial.content vb) u)" using cop_vb sf p_inv
           by (auto intro!: p.square_free_m_smultI)
         from p.square_free_m_cong[OF this prod']
         have sf': "p.square_free_m (?fact * u')" by simp
         from p.square_free_m_factor[OF this] 
         have sf_u': "p.square_free_m u'" by simp
-        have "unique_factorization_m (smult (content vb) u) (lu * content vb, mset vs)"
+        have "unique_factorization_m (smult (Polynomial.content vb) u) (lu * Polynomial.content vb, mset vs)"
           using cop_vb factors inv by (auto intro: unique_factorization_m_smult)
         from unique_factorization_m_cong[OF this prod]
-        have uf: "unique_factorization_m (?fact * u') (lu * content vb, mset vs)" .
+        have uf: "unique_factorization_m (?fact * u') (lu * Polynomial.content vb, mset vs)" .
         {
           from unique_factorization_m_factor[OF prime uf cop' sf' n m] 
           obtain fs gs where uf1: "unique_factorization_m ?fact (lu, fs)"
             and uf2: "unique_factorization_m u' (lu', gs)"
-            and eq: "Mf (lu * content vb, mset vs) = Mf (lu * lead_coeff u', fs + gs)" 
+            and eq: "Mf (lu * Polynomial.content vb, mset vs) = Mf (lu * lead_coeff u', fs + gs)" 
             unfolding lead_coeff_smult l_ws lu'_def
             by auto
           have "factorization_m ?fact (lu, mset ws)"
@@ -662,11 +662,11 @@ proof -
           from dvd_trans[OF qvb ppu] have qu: "q dvd u" .
           have "degree pp_vb = degree q + degree r" unfolding pp_qr
             by (subst degree_mult_eq, insert pp_qr pp_vb0, auto)
-          have uf: "unique_factorization_m (smult (content vb) pp_vb) (lu, mset ws)" 
+          have uf: "unique_factorization_m (smult (Polynomial.content vb) pp_vb) (lu, mset ws)" 
             unfolding pp_vb_vb
             by (rule unique_factorization_m_cong[OF factors(2)], insert Mp_vb, auto)
           from unique_factorization_m_smultD[OF uf inv] cop_vb
-          have uf: "unique_factorization_m pp_vb (lu * inverse_mod (content vb) m, mset ws)" by auto
+          have uf: "unique_factorization_m pp_vb (lu * inverse_mod (Polynomial.content vb) m, mset ws)" by auto
           from ppu have "lead_coeff pp_vb dvd lu" unfolding lu by (metis dvd_def lead_coeff_mult)
           from coprime_divisors[OF this dvd_refl] cop
           have cop_pp: "coprime (lead_coeff pp_vb) p" by simp

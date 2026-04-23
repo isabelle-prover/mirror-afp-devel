@@ -70,7 +70,7 @@ lemma coprime_mod_imp_coprime: assumes
   p: "prime p" and 
   cop_m: "poly_mod.coprime_m p f g" and 
   cop: "coprime (lead_coeff f) p \<or> coprime (lead_coeff g) p" and
-  cnt: "content f = 1 \<or> content g = 1" 
+  cnt: "Polynomial.content f = 1 \<or> Polynomial.content g = 1" 
   shows "coprime f g"
 proof -
   interpret poly_mod_prime p by (standard, rule p)
@@ -82,7 +82,7 @@ proof -
     hence "h dvdm f" "h dvdm g" unfolding dvdm_def dvd_def by auto
     from cop_m[OF this] obtain k where unit: "Mp (h * Mp k) = 1" unfolding dvdm_def by auto
     from content_dvd_contentI[OF dvd(1)] content_dvd_contentI[OF dvd(2)] cnt
-    have cnt: "content h = 1" by auto 
+    have cnt: "Polynomial.content h = 1" by auto 
     let ?k = "Mp k" 
     from unit have h0: "h \<noteq> 0" by auto
     from unit have k0: "?k \<noteq> 0" by fastforce
@@ -109,7 +109,7 @@ proof -
     from this[unfolded degm0] have "degree (h * Mp k) = 0" by simp
     with degree_mult_eq[OF h0 k0] have deg0: "degree h = 0" by auto
     from degree0_coeffs[OF this] obtain h0 where h: "h = [:h0:]" by auto
-    have "content h = abs h0" unfolding content_def h by (cases "h0 = 0", auto)
+    have "Polynomial.content h = abs h0" unfolding content_def h by (cases "h0 = 0", auto)
     hence "abs h0 = 1" using cnt by auto
     hence "h0 \<in> {-1,1}" by auto
     hence "h = 1 \<or> h = -1" unfolding h by (auto)
@@ -144,7 +144,7 @@ definition coprime_heuristic :: "int poly \<Rightarrow> int poly \<Rightarrow> b
     gcd_primes64 \<noteq> None)" 
 
 lemma coprime_heuristic: assumes "coprime_heuristic f g" 
-  and "content f = 1 \<or> content g = 1" 
+  and "Polynomial.content f = 1 \<or> Polynomial.content g = 1" 
   shows "coprime f g" 
 proof (cases "find (\<lambda>p. (coprime (lead_coeff f) p \<or> coprime (lead_coeff g) p) \<and>
             coprime_approx_main p (finite_field_ops64 (uint64_of_int p)) f g)

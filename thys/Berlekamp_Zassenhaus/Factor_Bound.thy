@@ -282,8 +282,8 @@ lemma factor_bound_smult: assumes f: "f \<noteq> 0" and d: "d \<noteq> 0"
   and dvd: "g dvd smult d f" and deg: "degree g \<le> n" 
   shows "\<bar>coeff g k\<bar> \<le> \<bar>d\<bar> * factor_bound f n" 
 proof -
-  let ?nf = "primitive_part f" let ?cf = "content f" 
-  let ?ng = "primitive_part g" let ?cg = "content g" 
+  let ?nf = "primitive_part f" let ?cf = "Polynomial.content f" 
+  let ?ng = "primitive_part g" let ?cg = "Polynomial.content g" 
   from content_dvd_contentI[OF dvd] have "?cg dvd abs d * ?cf" 
     unfolding content_smult_int .  
   hence dvd_c: "?cg dvd d * ?cf" using d
@@ -300,12 +300,12 @@ proof -
   have cg_dvd: "cg dvd ?cg" unfolding cg_def gc_def using g by (simp add: div_dvd_iff_mult)
   have cg_id: "?cg = cg * gc" unfolding gc_def cg_def using g cf by simp
   from dvd_smult_int[OF d dvd] have ngf: "?ng dvd f" .
-  have gcf: "\<bar>gc\<bar> dvd content f" unfolding gc_def by auto
+  have gcf: "\<bar>gc\<bar> dvd Polynomial.content f" unfolding gc_def by auto
   have dvd_f: "smult gc ?ng dvd f" 
   proof (rule dvd_content_dvd, 
       unfold content_smult_int content_primitive_part[OF g] 
       primitive_part_smult_int primitive_part_idemp)
-    show "\<bar>gc\<bar> * 1 dvd content f" using gcf by auto
+    show "\<bar>gc\<bar> * 1 dvd Polynomial.content f" using gcf by auto
     show "smult (sgn gc) (primitive_part g) dvd primitive_part f" 
       using dvd_n cf gc using zsgn_def by force
   qed    
