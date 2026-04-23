@@ -191,10 +191,10 @@ lemma (in poly_mod_prime) eq_m_smult_p_removal: "poly_mod.eq_m (p * p ^ k) (smul
   \<Longrightarrow> poly_mod.eq_m (p^k) f g" using Mp_smult_p_removal[of k "f - g"]
   by (metis add_diff_cancel_left' diff_add_cancel diff_self poly_mod.Mp_0 poly_mod.minus_Mp(2) smult_diff_right)
 
-lemma content_le_lead_coeff: "abs (content (f :: int poly)) \<le> abs (lead_coeff f)"
+lemma content_le_lead_coeff: "abs (Polynomial.content (f :: int poly)) \<le> abs (lead_coeff f)"
 proof (cases "f = 0")
   case False
-  from content_dvd_coeff[of f "degree f"] have "abs (content f) dvd abs (lead_coeff f)" by auto
+  from content_dvd_coeff[of f "degree f"] have "abs (Polynomial.content f) dvd abs (lead_coeff f)" by auto
   moreover have "abs (lead_coeff f) \<noteq> 0" using False by auto
   ultimately show ?thesis by (smt dvd_imp_le_int)
 qed auto
@@ -746,7 +746,7 @@ proof -
    and f: "f = ?ppg * rest" by (auto split: if_splits)
   with div_int_then_rqp[OF rest] show ?g1 ?g3 by auto
   from \<open>?g1\<close> f0 have h0: "h \<noteq> 0" by auto
-  let ?c = "content g" 
+  let ?c = "Polynomial.content g" 
   from g0 have ct0: "?c \<noteq> 0" by auto
   have "\<bar>?c\<bar> \<le> \<bar>lead_coeff g\<bar>" by (rule content_le_lead_coeff)
   also have "\<dots> < p^ll" by fact
