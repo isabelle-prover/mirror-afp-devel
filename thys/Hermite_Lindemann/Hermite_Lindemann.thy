@@ -16,7 +16,7 @@ imports
   Misc_HLW
 begin
 
-hide_const (open) Henstock_Kurzweil_Integration.content  Module.smult
+hide_const (open) Module.smult
 
 
 text \<open>
@@ -1249,7 +1249,7 @@ proof (rule ccontr)
   \<close>
   obtain Q :: "complex multiset \<Rightarrow> int poly"
     where Q: "\<And>X. X \<in> Roots_ms \<Longrightarrow> poly_roots (of_int_poly (Q X)) = R X"
-             "\<And>X. X \<in> Roots_ms \<Longrightarrow> content (Q X) = 1"
+             "\<And>X. X \<in> Roots_ms \<Longrightarrow> Polynomial.content (Q X) = 1"
   proof -
     {
       fix X :: "complex multiset"
@@ -1359,7 +1359,7 @@ proof (rule ccontr)
       with Q2 have "Q2 \<noteq> 0"
         by auto
       obtain Q3 :: "int poly" and lc :: rat
-        where Q3: "Q2 = Polynomial.smult lc (of_int_poly Q3)" and "lc > 0" and "content Q3 = 1"
+        where Q3: "Q2 = Polynomial.smult lc (of_int_poly Q3)" and "lc > 0" and "Polynomial.content Q3 = 1"
         using rat_to_normalized_int_poly_exists[OF \<open>Q2 \<noteq> 0\<close>] by metis
 
       have "poly_roots (of_int_poly Q3) = poly_roots (map_poly (of_rat \<circ> of_int) Q3)"
@@ -1377,10 +1377,10 @@ proof (rule ccontr)
         unfolding Q1_def
         by (subst poly_roots_prod, force, subst poly_roots_linear)
            (auto simp: R_def perms_def sum_mset_image_mset_singleton sum_unfold_sum_mset)
-      finally have "\<exists>Q. poly_roots (of_int_poly Q) = R X \<and> content Q = 1"
-        using \<open>content Q3 = 1\<close> by metis
+      finally have "\<exists>Q. poly_roots (of_int_poly Q) = R X \<and> Polynomial.content Q = 1"
+        using \<open>Polynomial.content Q3 = 1\<close> by metis
     }
-    hence "\<exists>Q. \<forall>X\<in>Roots_ms. poly_roots (of_int_poly (Q X)) = R X \<and> content (Q X) = 1"
+    hence "\<exists>Q. \<forall>X\<in>Roots_ms. poly_roots (of_int_poly (Q X)) = R X \<and> Polynomial.content (Q X) = 1"
       by metis
     thus ?thesis using that by metis
   qed

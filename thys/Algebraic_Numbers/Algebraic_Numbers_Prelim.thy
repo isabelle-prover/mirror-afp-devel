@@ -12,12 +12,11 @@ text \<open>This theory contains basic definition and results on algebraic numbe
   polynomial witnesses are available.
 
   Moreover, this theory contains the uniqueness result,
-  that for every algebraic number there is exactly one Polynomial.content-free irreducible polynomial with
   positive leading coefficient for it.
   This result is stronger than similar ones which you find in many textbooks.
   The reason is that here we do not require a least degree construction.
 
-  This is essential, since given some Polynomial.content-free irreducible polynomial for x,
+  This is essential, since given some content-free irreducible polynomial for x,
   how should we check whether the degree is optimal. In the formalized result, this is
   not required. The result is proven via GCDs, and that the GCD does not change
   when executed on the rational numbers or on the reals or complex numbers, and that

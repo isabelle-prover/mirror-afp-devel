@@ -288,7 +288,7 @@ qed
 context
   fixes alg :: int_poly_factorization_algorithm
 begin
-(* main factorization algorithm for square-free, Polynomial.content-free, non-constant polynomial
+(* main factorization algorithm for square-free, content-free, non-constant polynomial
    that do not have 0 as root, with special cases and reciprocal polynomials *)
 definition main_int_poly_factorization :: "int poly \<Rightarrow> int poly list" where
   "main_int_poly_factorization f = (let df = degree f
