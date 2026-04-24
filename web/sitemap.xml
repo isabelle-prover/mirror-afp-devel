@@ -3,12 +3,15 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-03-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Abstract_Consistency_Property.html</loc>
-    <lastmod>2026-03-26T00:00:00+00:00</lastmod>
+    <lastmod>2026-04-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
+    <lastmod>2026-04-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Nominal_Unification.html</loc>
+    <lastmod>2026-04-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Abstract_Consistency_Property.html</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/SAT_Not_Const_Time.html</loc>
@@ -8250,6 +8253,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/kaufmann/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/sobrinho/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/petrovic/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/simic/</loc>
@@ -11249,6 +11254,8 @@
     <loc>https://isa-afp.org/thys/Group-Ring-Module/Algebra9.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/grov/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/brandao/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/GyrovectorSpaces/Abe.html</loc>
   </url><url>
@@ -17174,6 +17181,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/spichkova/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/fernandezm/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/cousin/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/gaudel/</loc>
@@ -17335,6 +17344,8 @@
     <loc>https://isa-afp.org/authors/brun/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/loibl/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/rincion/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/rincon/</loc>
   </url><url>
@@ -18765,6 +18776,28 @@
     <loc>https://isa-afp.org/thys/No_FTL_observers/SpecRel.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Nominal_Myhill_Nerode/Nominal_Myhill_Nerode.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Atoms.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Disagreement.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Equ.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Fresh.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Mgu.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_PreEqu.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Substs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Swap.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Termination.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nominal_Unification/NU_Terms.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Nominal2/Atoms.html</loc>
   </url><url>

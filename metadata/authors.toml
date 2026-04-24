@@ -993,6 +993,13 @@ host = [
 
 [bracevac.homepages]
 
+[brandao]
+name = "Guilherme Borges Brandão"
+
+[brandao.emails]
+
+[brandao.homepages]
+
 [brandt]
 name = "Felix Brandt"
 
@@ -2205,6 +2212,13 @@ name = "Matthew Fernandez"
 [fernandez.emails]
 
 [fernandez.homepages]
+
+[fernandezm]
+name = "Maribel Fernández"
+
+[fernandezm.emails]
+
+[fernandezm.homepages]
 
 [fiedler]
 name = "Ben Fiedler"
@@ -6515,6 +6529,13 @@ name = "Tom Ridge"
 
 [ridge.homepages]
 
+[rincion]
+name = "Mauricio Ayala-Rinción"
+
+[rincion.emails]
+
+[rincion.homepages]
+
 [rincon]
 name = "Mauricio Ayala-Rincón"
 orcid = "0000-0003-0089-3905"
@@ -7210,6 +7231,13 @@ name = "Gregor Snelting"
 
 [snelting.homepages]
 snelting_homepage = "http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php"
+
+[sobrinho]
+name = "Daniele Nantes Sobrinho"
+
+[sobrinho.emails]
+
+[sobrinho.homepages]
 
 [somaini]
 name = "Ivano Somaini"

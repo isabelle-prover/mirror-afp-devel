@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Nominal Unification</title>
+  <link>https://isa-afp.org/entries/Nominal_Unification.html</link>
+  <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  <description>Nominal Unification in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
   <title>SAT is Not Solvable in Constant Time</title>
   <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
   <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>

@@ -590,6 +590,7 @@ No_FTL_observers_Gen_Rel
 No_Free_Lunch_ML
 Nominal2
 Nominal_Myhill_Nerode
+Nominal_Unification
 Noninterference_CSP
 Noninterference_Concurrent_Composition
 Noninterference_Generic_Unwinding

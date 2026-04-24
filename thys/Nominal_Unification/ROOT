@@ -1,0 +1,24 @@
+chapter AFP
+
+session Nominal_Unification = HOL +
+  options [timeout = 600]
+
+  sessions
+    "HOL-Library"
+
+  theories
+     "NU_Swap"	
+     "NU_Atoms"
+     "NU_Terms"
+     "NU_Disagreement"
+     "NU_Fresh"
+     "NU_PreEqu"
+     "NU_Equ"
+     "NU_Substs"
+     "NU_Mgu"
+     "NU_Termination"
+     "NU"
+
+  document_files
+    "root.tex"
+    "root.bib"
