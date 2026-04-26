@@ -22,6 +22,22 @@
   "year": "2026"
  },
  {
+  "abstract": " In the 3rd century BC, Archimedes challenged the mathematicians of the time with a puzzle that involved computing the size of the cattle herd of the sun god, based on a number of linear equations and other restrictions, which ultimately result in a Pell equation with the gigantic parameter $D = 410{,}286{,}423{,}278{,}424$. Since the solution to that Pell equation has 103,266 digits, solving the problem was far beyond the computational capabilities at the time. The first approximate solution was computed by Amthor in 1880, and the exact solution by Williams et al. using electronic computers in 1965. This article gives a formal description of the problem and proves the general shape of the solutions in terms of the solutions of the Pell equation. It then uses existing machinery from the AFP using continued fractions to explicitly compute the smallest solution, which has 266,454 decimal digits. ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "link": "../entries/Archimedes_Cattle.html",
+  "shortname": "Archimedes_Cattle",
+  "title": "Archimedes' Cattle Problem",
+  "topic_links": [
+   "../topics/mathematics/algebra/"
+  ],
+  "topics": [
+   "Mathematics/Algebra"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Smullyan used abstract consistency properties to great effect in unifying meta-theoretical results in first-order logic. By abstractly specifying when a set of formulas is consistent, he proved a single model existence result for all sets that met the specification, reusing this result in proving completeness, compactness, etc. Fitting later defined abstract consistency properties for a range of other logics.  In this work we use locales to mechanize abstract consistency properties without fixing a particular logic or syntax, generalizing the work of Smullyan and Fitting. We use Fitting's technique for closing a consistency property under limits to guarantee the existence of a maximal element. This yields a maximal consistent set for any notion of consistency expressible in the framework. The usual conjunctive, disjunctive, universal and existential conditions of abstract consistency properties ---based on Smullyan's uniform notation--- arise as special cases of our abstract development. Users of the framework can define an abstract consistency property for their own syntax and logic, prove that it is well behaved, and receive a corresponding maximal consistent set from which to prove model existence.  We provide three example instantiations. First, compactness and completeness for a first-order logic where we only instantiate universal quantifiers with already occurring terms. Second, completeness over general models for a second-order logic. Third, completeness of our own natural deduction system for Prior's Ideal Language, a recently developed hybrid logic with propositional quantification.",
   "authors": [
    "Asta Halkjær From",

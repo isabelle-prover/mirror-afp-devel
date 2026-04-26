@@ -11,6 +11,13 @@
     <category>Computer science/Algorithms</category>
 </item>
 <item>
+  <title>Archimedes&#39; Cattle Problem</title>
+  <link>https://isa-afp.org/entries/Archimedes_Cattle.html</link>
+  <pubDate>Wed, 01 Apr 2026 00:00:00 +0000</pubDate>
+  <description>Archimedes&#39; Cattle Problem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
   <title>SAT is Not Solvable in Constant Time</title>
   <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
   <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
