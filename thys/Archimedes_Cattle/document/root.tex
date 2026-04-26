@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[english]{babel}
+\usepackage{wasysym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Archimedes' Cattle Problem}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+In the 3rd century BC, Archimedes challenged the mathematicians of the time with a puzzle that 
+involved computing the size of the cattle herd of the sun god, based on a number of linear 
+equations and other restrictions, which ultimately result in a Pell equation with the gigantic 
+parameter $D = 410{,}286{,}423{,}278{,}424$. Since the solution to that Pell equation has 
+103{,}266 digits, solving the problem was far beyond the computational capabilities at the time.
+The first approximate solution was computed by Amthor~\cite{amthor} in 1880, and the exact
+solution by Williams et al.~\cite{williams} using electronic computers in 1965.
+
+This article gives a formal description of the problem and proves the general shape of the 
+solutions in terms of the solutions of the Pell equation. It then uses existing machinery from 
+the AFP using continued fractions to explicitly compute the smallest solution, which has
+266{,}454 decimal digits.
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+
+\nocite{nelson,amthor,williams}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
