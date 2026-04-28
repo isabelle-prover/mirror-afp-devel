@@ -6,35 +6,38 @@ Based on HOL4 theories by Aditi Barthwal
 section \<open>Elimination of Unit Productions\<close>
 
 theory Unit_Elimination
-imports Context_Free_Grammar (*"HOL-Library.While_Combinator"*)
+imports Context_Free_Grammar
 begin
 
 definition Unit_prods :: "('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
 "Unit_prods P = {(l,r) \<in> P. \<exists>A. r = [Nt A]}"
 
 definition Unit_rtc :: "('n, 't) Prods \<Rightarrow> ('n \<times> 'n) set" where
-"Unit_rtc P = {(A,B). P \<turnstile> [Nt A] \<Rightarrow>* [Nt B] \<and> {A,B} \<subseteq> Nts P}"
+"Unit_rtc P = {(A,B). Unit_prods P \<turnstile> [Nt A] \<Rightarrow>* [Nt B] \<and> A \<in> Nts P}"
 
 definition Unit_rm :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
 "Unit_rm P = P - Unit_prods P"
 
-definition New_prods :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where 
-"New_prods P = {(A,r). \<exists>B. (B,r) \<in> Unit_rm P \<and> (A, B) \<in> Unit_rtc (Unit_prods P)}"
+definition Unit_elim :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where 
+"Unit_elim P = {(A,r). \<exists>B. (B,r) \<in> Unit_rm P \<and> (A, B) \<in> Unit_rtc P}"
 
-definition Unit_elim :: "('n, 't) Prods \<Rightarrow> ('n, 't) Prods" where
-"Unit_elim P = Unit_rm P \<union> New_prods P"
+lemma Unit_rtc_refl: "(A, \<alpha>) \<in> P \<Longrightarrow> (A, A) \<in> Unit_rtc P"
+by (auto simp add: Unit_rtc_def Nts_Lhss_Rhs_Nts in_LhssI)
 
 lemma Unit_Free_Unit_elim: "Unit_free (Unit_elim P)" 
-unfolding Unit_elim_def Unit_rm_def New_prods_def Unit_prods_def Unit_free_def by simp
+unfolding Unit_elim_def Unit_rm_def Unit_prods_def Unit_free_def by simp
 
 lemma Unit_elim_Eps_free:
   assumes "Eps_free P"
   shows "Eps_free (Unit_elim P)"
   using assms 
-  unfolding Unit_elim_def Eps_free_def Unit_rm_def Unit_prods_def New_prods_def by auto
+  unfolding Unit_elim_def Eps_free_def Unit_rm_def Unit_prods_def by auto
 
 lemma Tms_Unit_elim_subset: "Tms (Unit_elim P) \<subseteq> Tms P"
-unfolding Unit_elim_def Unit_rm_def New_prods_def Tms_def by(auto)
+unfolding Unit_elim_def Unit_rm_def Tms_def by(auto)
+
+lemma derives_Unit_in_Nts: "\<lbrakk> P \<turnstile> [Nt A] \<Rightarrow>* [Nt B]; A \<in> Nts P \<rbrakk> \<Longrightarrow> B \<in> Nts P"
+by (meson in_Nts_iff_if_derives list.set_intros(1) reachable_def)
 
 subsection \<open>Code on lists\<close>
 
@@ -47,11 +50,8 @@ definition unit_pairs :: "('n,'t) prods \<Rightarrow> ('n \<times> 'n) list" whe
 definition unit_rm :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
 "unit_rm ps = minus_list_set ps (unit_prods ps)"
 
-definition new_prods :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
-"new_prods ps = [(A,r). (B,r) \<leftarrow> unit_rm ps, (A,B') \<leftarrow> trancl_list(unit_pairs ps), B'=B]"
-
 definition unit_elim :: "('n, 't) prods \<Rightarrow> ('n, 't) prods" where
-"unit_elim ps = unit_rm ps @ new_prods ps"
+"unit_elim ps = [(A,r). (B,r) \<leftarrow> unit_rm ps, (A,B') \<leftarrow> (B,B)#trancl_list(unit_pairs ps), B'=B]"
 
 lemma set_unit_prods: "set (unit_prods ps) = Unit_prods (set ps)"
 unfolding unit_prods_def Unit_prods_def
@@ -69,15 +69,14 @@ lemma Unit_prods_iff_unit_pairs:
 unfolding unit_pairs_def Unit_prods_def by(auto simp add: derive_singleton)
 
 lemma Nts_Unit_prods: "(A, B) \<in> set(unit_pairs ps)
-  \<Longrightarrow> A \<in> Lhss (Unit_prods (set ps)) \<and> B \<in> Rhs_Nts (Unit_prods(set ps))"
-apply(auto simp: Unit_prods_unit_pairs image_def Nts_Lhss_Rhs_Nts Lhss_def Rhs_Nts_def
+  \<Longrightarrow> A \<in> Lhss (set ps) \<and> B \<in> Rhs_Nts (set ps)"
+apply(auto simp: image_def Nts_Lhss_Rhs_Nts Lhss_def Rhs_Nts_def unit_pairs_def Bex_def
            split: prod.splits)
- apply blast
+  apply blast
 by force
 
 lemma rtc_Unit_prods_if_tc_unit_pairs:
-  "(A,B) \<in> set(trancl_list(unit_pairs ps)) \<Longrightarrow> (A,B) \<in> Unit_rtc (Unit_prods (set ps))"
-unfolding set_trancl_list
+  "(A,B) \<in> (set(unit_pairs ps))^+ \<Longrightarrow> (A,B) \<in> Unit_rtc (set ps)"
 proof(induction rule: converse_trancl_induct)
   case (base A)
   then show ?case unfolding Unit_rtc_def
@@ -92,8 +91,8 @@ qed
 
 lemma tc_unit_pairs_if_rtc_Unit_prods:
   fixes ps :: "('n,'t)prods"
-  assumes "(A,B) \<in> Unit_rtc (Unit_prods(set ps))"
-  shows "A=B \<or> (A,B) \<in> set(trancl_list(unit_pairs ps))"
+  assumes "(A,B) \<in> Unit_rtc (set ps)"
+  shows "A=B \<or> (A,B) \<in> (set(unit_pairs ps))^+"
 proof -
   have *: "Unit_prods(set ps) \<turnstile> [Nt B] \<Rightarrow>* [Nt A] \<Longrightarrow> B=A \<or> (B,A) \<in> (set(unit_pairs ps))^+" for A B
   proof(induction "[Nt B]::('n,'t)syms" arbitrary: B rule: converse_rtranclp_induct)
@@ -107,17 +106,13 @@ proof -
       by (metis trancl.r_into_trancl trancl_into_trancl2)
   qed
   with assms show ?thesis
-    by (simp add: set_trancl_list Unit_rtc_def)
+    by (simp add: Unit_rtc_def)
 qed
 
-lemma Unit_rm_Un_New_prods_eq: "Unit_rm (set ps) \<union> New_prods (set ps) = Unit_rm (set ps) \<union>
-  {(A,r). \<exists>B. (B,r) \<in> Unit_rm (set ps) \<and> (A, B) \<in> set(trancl_list(unit_pairs ps))}"
-unfolding New_prods_def Unit_rm_def
-by(auto intro: rtc_Unit_prods_if_tc_unit_pairs dest: tc_unit_pairs_if_rtc_Unit_prods)
-
-lemma Unit_elim_unit_elim[code]: "Unit_elim (set ps) = set(unit_elim ps)"
-unfolding unit_elim_def Unit_elim_def Unit_rm_Un_New_prods_eq
-by(auto simp add: set_unit_rm new_prods_def)
+lemma Unit_elim_set[code]: "Unit_elim (set ps) = set (unit_elim ps)"
+unfolding Unit_elim_def unit_elim_def
+by (auto simp: set_unit_rm Unit_rm_def Unit_rtc_refl set_trancl_list rtc_Unit_prods_if_tc_unit_pairs
+  dest!: tc_unit_pairs_if_rtc_Unit_prods)
 
 (* Test for executability only *)
 lemma "Unit_elim {(0::int, [Nt 1]), (1, [Tm(2::int)])} = {(0, [Tm 2]), (1, [Tm 2])}"
@@ -130,6 +125,8 @@ lemma finiteUnit_prods: "finite P \<Longrightarrow> finite (Unit_prods P)"
 unfolding Unit_prods_def
 by (metis (no_types, lifting) case_prodE finite_subset mem_Collect_eq subsetI)
 
+lemma Unit_prods_subset: "Unit_prods P \<subseteq> P"
+  unfolding Unit_prods_def by auto
 lemma finite_Unit_rtc: 
   assumes "finite P"
   shows  "finite (Unit_rtc P)"
@@ -139,7 +136,8 @@ proof -
   hence "finite (Nts P \<times> Nts P)"
     by auto
   moreover have "Unit_rtc P \<subseteq> Nts P \<times> Nts P"
-    unfolding Unit_rtc_def by blast
+    using derives_Unit_in_Nts[of P] derives_mono[OF Unit_prods_subset[of P]]
+    by (auto simp:Unit_rtc_def)
   ultimately show ?thesis
     using assms infinite_super by fastforce 
 qed
@@ -148,8 +146,8 @@ qed
 definition nPSlambda :: "('n, 't) Prods \<Rightarrow> ('n \<times> 'n) \<Rightarrow> ('n, 't) Prods" where
 "nPSlambda P d = {fst d} \<times> {r. (snd d, r) \<in> P}"
 
-lemma npsImage: "New_prods P = \<Union>((nPSlambda (Unit_rm P)) ` (Unit_rtc (Unit_prods P)))"
-  unfolding New_prods_def nPSlambda_def by fastforce
+lemma npsImage: "Unit_elim P = \<Union>((nPSlambda (Unit_rm P)) ` (Unit_rtc P))"
+  unfolding Unit_elim_def nPSlambda_def by fastforce
 
 lemma finite_nPSlambda:
   assumes "finite P" 
@@ -167,16 +165,13 @@ proof -
     using assms unfolding nPSlambda_def by simp
 qed
 
-lemma finite_New_prods: assumes "finite P" shows "finite (New_prods P)"
+lemma finite_Unit_elim: assumes "finite P" shows "finite (Unit_elim P)"
 proof -
-  have "finite (Unit_rtc (Unit_prods P))"
+  have "finite (Unit_rtc P)"
     using finiteUnit_prods finite_Unit_rtc assms by blast
   then show ?thesis
     by(simp add:  npsImage Unit_rm_def finite_nPSlambda assms)
 qed
-
-lemma finite_Unit_elim: "finite P \<Longrightarrow> finite (Unit_elim P)"
-by (simp add: Unit_elim_def finite_New_prods Unit_rm_def)
 
 (* towards theorem 4.4 *)
 
@@ -184,61 +179,28 @@ lemma inNonUnitProds:
   "p \<in> Unit_rm P \<Longrightarrow> p \<in> P"
   unfolding Unit_rm_def by blast
 
-lemma psubDeriv:
-  assumes "P \<turnstile> u \<Rightarrow> v"
-    and "\<forall>p \<in> P. p \<in> P'"
-  shows "P' \<turnstile> u \<Rightarrow> v"
-  using assms by (meson derive_iff)
-
-lemma psubRtcDeriv:
-  assumes "P \<turnstile> u \<Rightarrow>* v"
-    and "\<forall>p \<in> P. p \<in> P'"
-  shows "P' \<turnstile> u \<Rightarrow>* v"
-  using assms by (induction rule: rtranclp.induct) (auto simp: psubDeriv rtranclp.rtrancl_into_rtrancl)
-
-lemma Unit_prods_deriv: 
-  assumes "Unit_prods P \<turnstile> u \<Rightarrow>* v"
-  shows "P \<turnstile> u \<Rightarrow>* v"
-proof -
-  have "\<forall>p \<in> Unit_prods P. p \<in> P"
-    unfolding Unit_prods_def by blast
-  thus ?thesis 
-    using assms psubRtcDeriv by blast
-qed
-
 lemma Unit_elim_rel_r3:
   assumes "Unit_elim P \<turnstile> u \<Rightarrow> v"
   shows "P \<turnstile> u \<Rightarrow>* v"
 proof -
   obtain A \<alpha> r1 r2 where A: "(A, \<alpha>) \<in> Unit_elim P \<and> u = r1 @ [Nt A] @ r2 \<and> v = r1 @ \<alpha> @ r2"
     using assms derive.cases by meson
-  hence "(A, \<alpha>) \<in> Unit_rm P \<or> (A, \<alpha>) \<in> New_prods P"
+  hence "(A, \<alpha>) \<in> Unit_elim P"
     using assms(1) unfolding Unit_elim_def by simp
-  thus ?thesis
-  proof
-    assume "(A, \<alpha>) \<in> Unit_rm P"
-    hence "(A, \<alpha>) \<in> P"
-      using inNonUnitProds by blast
-    hence "P \<turnstile> r1 @ [Nt A] @ r2 \<Rightarrow> r1 @ \<alpha> @ r2"
-      by (auto simp: derive.simps)
-    thus ?thesis using A by simp
-  next 
-    assume "(A, \<alpha>) \<in> New_prods P"
-    from this obtain B where B: "(B, \<alpha>) \<in> Unit_rm P \<and> (A, B) \<in> Unit_rtc (Unit_prods P)"
-      unfolding New_prods_def by blast
-    hence "Unit_prods P \<turnstile> [Nt A] \<Rightarrow>* [Nt B]"
-      unfolding Unit_rtc_def by simp
-    hence "P \<turnstile> [Nt A] \<Rightarrow>* [Nt B]"
-      using Unit_prods_deriv by blast
-    hence 1: "P \<turnstile> r1 @ [Nt A] @ r2 \<Rightarrow>* r1 @ [Nt B] @ r2"
-      using derives_append derives_prepend by blast
-    have "(B, \<alpha>) \<in> P"
-      using B inNonUnitProds by blast
-    hence "P \<turnstile> r1 @ [Nt B] @ r2 \<Rightarrow> r1 @ \<alpha> @ r2"
-      by (auto simp: derive.simps)
-    thus ?thesis 
-      using 1 A by simp
-  qed
+  from this obtain B where B: "(B, \<alpha>) \<in> Unit_rm P \<and> (A, B) \<in> Unit_rtc P"
+    unfolding Unit_elim_def by blast
+  hence "Unit_prods P \<turnstile> [Nt A] \<Rightarrow>* [Nt B]"
+    unfolding Unit_rtc_def by simp
+  hence "P \<turnstile> [Nt A] \<Rightarrow>* [Nt B]"
+    using  Unit_prods_subset derives_mono by blast
+  hence 1: "P \<turnstile> r1 @ [Nt A] @ r2 \<Rightarrow>* r1 @ [Nt B] @ r2"
+    using derives_append derives_prepend by blast
+  have "(B, \<alpha>) \<in> P"
+    using B inNonUnitProds by blast
+  hence "P \<turnstile> r1 @ [Nt B] @ r2 \<Rightarrow> r1 @ \<alpha> @ r2"
+    by (auto simp: derive.simps)
+  thus ?thesis 
+    using 1 A by simp
 qed
 
 lemma Unit_elim_rel_r4: 
@@ -248,7 +210,7 @@ lemma Unit_elim_rel_r4:
 
 lemma deriv_Unit_rtc:
   assumes "P \<turnstile> [Nt A] \<Rightarrow> [Nt B]"
-  shows "(A, B) \<in> Unit_rtc (Unit_prods P)"
+  shows "(A, B) \<in> Unit_rtc P"
 proof -
   have "(A, [Nt B]) \<in> P"
     using assms by (simp add: derive_singleton)
@@ -256,22 +218,17 @@ proof -
     unfolding Unit_prods_def by blast
   hence "Unit_prods P \<turnstile> [Nt A] \<Rightarrow> [Nt B]"
     by (simp add: derive_singleton)
-  moreover have "B \<in> Nts (Unit_prods P) \<and> A \<in> Nts (Unit_prods P)"
-    using \<open>(A, [Nt B]) \<in> Unit_prods P\<close> Nts_def Nts_syms_def by fastforce
+  moreover have "B \<in> Nts P \<and> A \<in> Nts P"
+    using \<open>(A, [Nt B]) \<in> P\<close> Nts_def Nts_syms_def by fastforce
   ultimately show ?thesis
     unfolding Unit_rtc_def by blast
 qed
-
-lemma Unit_elim_rel_r12: 
-  assumes "(A, \<alpha>) \<in> Unit_elim P"
-  shows "(A, \<alpha>) \<notin> Unit_prods P"
-  using assms unfolding Unit_elim_def Unit_rm_def Unit_prods_def New_prods_def by blast
 
 lemma Unit_elim_rel_r14: 
   assumes "P \<turnstile> [Nt A] \<Rightarrow> [Nt B]" "Unit_elim P \<turnstile> [Nt B] \<Rightarrow> v"
   shows "Unit_elim P \<turnstile> [Nt A] \<Rightarrow> v"
 proof -
-  have 1: "(A, B) \<in> Unit_rtc (Unit_prods P)"
+  have 1: "(A, B) \<in> Unit_rtc P"
     using deriv_Unit_rtc assms(1) by fast
   have 2: "(B, v) \<in> Unit_elim P"
     using assms(2) by (simp add: derive_singleton)
@@ -279,21 +236,21 @@ proof -
   proof (cases "(B, v) \<in> P")
     case True
     hence "(B, v) \<in> Unit_rm P"
-      unfolding Unit_rm_def using Unit_elim_rel_r12[OF 2] by (simp)
+      using 2 unfolding Unit_rm_def Unit_elim_def Unit_prods_def by blast
     then show ?thesis
-    using 1 unfolding Unit_elim_def New_prods_def derive_singleton by blast
+    using 1 unfolding Unit_elim_def derive_singleton by blast
   next
     case False
-    hence "(B, v) \<in> New_prods P"
+    hence "(B, v) \<in> Unit_elim P"
       using assms(1) 2 unfolding Unit_rm_def Unit_elim_def  by simp
-    from this obtain C where C: "(C, v) \<in> Unit_rm P \<and> (B, C) \<in> Unit_rtc (Unit_prods P)"
-      unfolding New_prods_def by blast
+    from this obtain C where C: "(C, v) \<in> Unit_rm P \<and> (B, C) \<in> Unit_rtc P"
+      unfolding Unit_elim_def by blast
     hence "Unit_prods P \<turnstile> [Nt A] \<Rightarrow>* [Nt C]"
       using 1 unfolding Unit_rtc_def by auto
-    hence "(A, C) \<in> Unit_rtc (Unit_prods P)"
+    hence "(A, C) \<in> Unit_rtc P"
       unfolding Unit_rtc_def using 1 C Unit_rtc_def by fastforce
-    hence "(A, v) \<in> New_prods P"
-      unfolding New_prods_def using C by blast
+    hence "(A, v) \<in> Unit_elim P"
+      unfolding Unit_elim_def using C by blast
     hence "(A, v) \<in> Unit_elim P"
       using assms(1) unfolding Unit_elim_def  by blast
     thus ?thesis by (simp add: derive_singleton)
@@ -346,7 +303,7 @@ next
     hence "(A, w) \<in> Unit_rm P"
       unfolding Unit_rm_def using step.hyps(2) by blast
     hence "(A, w) \<in> ?P"
-      using assms(1) unfolding Unit_elim_def  by simp
+      using assms(1) Unit_rtc_refl step.hyps(2) unfolding Unit_elim_def by fastforce
     hence "?P \<turnstile> l @ [Nt A] @ r \<Rightarrow> l @ w @ r"
       by (auto simp: derive.simps)
     then show ?thesis
@@ -358,6 +315,6 @@ theorem Lang_Unit_elim: "Lang (Unit_elim P) S = Lang P S"
   unfolding Lang_def using Unit_elim_rel_r4 Unit_elim_rel_complete by blast
 
 corollary lang_unit_elim: "lang (unit_elim ps) A = lang ps A"
-by (metis Lang_Unit_elim Unit_elim_unit_elim)
+by (metis Lang_Unit_elim Unit_elim_set)
 
 end

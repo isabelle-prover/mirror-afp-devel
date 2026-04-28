@@ -512,13 +512,8 @@ proof -
     by (simp add: Unit_prods_def)
   hence 1: "rlin2 (Unit_rm P)"
     by (simp add: Unit_rm_def)
-  hence 2: "rlin2 (New_prods P)"
-    unfolding New_prods_def rlin2_def by fastforce
-  from 1 2 have "rlin2 (Unit_rm P \<union> New_prods P)"
-    unfolding rlin2_def by auto
-  hence "rlin2 (Unit_elim P)"
-    by (simp add: Unit_elim_def)
-  thus ?thesis .
+  thus ?thesis
+    unfolding rlin2_def Unit_elim_def by auto
 qed
 
 text

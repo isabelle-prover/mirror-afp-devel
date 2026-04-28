@@ -1013,8 +1013,8 @@ proof -
   let ?ps1 = "eps_elim ps" let ?ps2 = "unit_elim ?ps1"
   let ?ps3 = "uniformize S ?ps2" let ?ps4 = "binarize S ?ps3"
   have "eps_free ?ps1" by (rule eps_free_eps_elim)
-  hence "eps_free ?ps2" by (metis Unit_elim_unit_elim Unit_elim_Eps_free)
-  have "Unit_free(set ?ps2)" by (metis Unit_Free_Unit_elim Unit_elim_unit_elim)
+  hence "eps_free ?ps2" by (metis Unit_elim_set Unit_elim_Eps_free)
+  have "Unit_free(set ?ps2)" by (metis Unit_Free_Unit_elim Unit_elim_set)
   have "eps_free ?ps3" by(rule eps_free_uniformize[OF \<open>eps_free ?ps2\<close>])
   have "Unit_free(set ?ps3)" by (rule Unit_free_uniformize[OF \<open>Unit_free(set ?ps2)\<close>])
   have "uniform (set ?ps3)" by (rule uniform_uniformize)
