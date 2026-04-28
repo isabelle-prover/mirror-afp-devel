@@ -14,6 +14,8 @@ import scala.collection.immutable.ListMap
 
 
 object Metadata {
+  /** content **/
+
   /* affiliations */
 
   sealed trait Affiliation { def author: Author.ID }
@@ -198,7 +200,7 @@ object Metadata {
   }
 
 
-  /* toml */
+  /** TOML encoding **/
 
   private def by_id[A](elems: Map[String, A], id: String): A =
     elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
@@ -443,7 +445,7 @@ object Metadata {
   }
 
 
-  /* RDF export */
+  /** RDF export **/
 
   object RDF {
     def from_entry(entry: Entry, authors: Authors): Properties.T = {
