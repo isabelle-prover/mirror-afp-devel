@@ -1434,7 +1434,7 @@ object AFP_Submit {
   ) extends Web_App.Server[Model.T](paths, port, verbose, progress) {
     private var _state: State = State.load(afp)
 
-    val repo = Mercurial.the_repository(afp.base_dir)
+    val repo = Mercurial.repository(afp.base_dir)
 
     val view = new View(paths, mode)
 
