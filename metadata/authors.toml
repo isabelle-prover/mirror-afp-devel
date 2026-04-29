@@ -3935,8 +3935,17 @@ host = [
   "au",
 ]
 
+[klein.emails.klein_email2]
+user = [
+  "gerwin.klein",
+]
+host = [
+  "proofcraft",
+  "systems",
+]
+
 [klein.homepages]
-klein_homepage = "http://www.cse.unsw.edu.au/~kleing/"
+klein_homepage = "https://doclsf.de/"
 
 [klenze]
 name = "Tobias Klenze"
