@@ -440,7 +440,7 @@ object Metadata {
         change_history = to_change_history(entry.table("history")),
         extra = entry.table("extra").string.values.map((k, v) => (k, v.rep)).toMap,
         releases = releases,
-        statistics_ignore = entry.boolean.get("statistics_ignore").map(_.rep).getOrElse(false),
+        statistics_ignore = entry.boolean.get("statistics_ignore").exists(_.rep),
         related = to_related(entry.table("related")))
   }
 
