@@ -273,7 +273,7 @@ object AFP_Site_Gen {
     val entries = afp.load_entries(authors, topics, licenses, releases)
     val entries1 = entries.values.toList.filterNot(_.statistics_ignore)
 
-    val sessions_structure = afp.sessions_structure
+    val sessions_structure = afp.sessions_structure()
     val entry_sessions = entries.values.map(entry => entry -> afp.entry_sessions(entry.name)).toMap
     val session_entry =
       for {
