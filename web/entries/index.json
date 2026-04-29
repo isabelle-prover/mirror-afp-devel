@@ -1,5 +1,26 @@
 [
  {
+  "abstract": " Fixed points are a recurring theme in computer science and are often constructed as limits of suitably seeded fixed point iterations. This entry formalises an instance of the algebra of iterative constructions (AIC) from the paper The Algebra of Iterative Constructions. AIC is a purely algebraic approach to reasoning about fixed point iterations of continuous endomaps on complete lattices. AIC allows derivations of constructive fixed point theorems via equational logic and avoids explicit computations with indices. We demonstrate the applicability of AIC by providing algebraic proofs of several well- and less-well-known fixed point theorems: Among others, we prove the Tarski-Kantorovich principle \u0026mdash; a generalization of the Kleene fixed point theorem \u0026mdash; as well as a fixed point-theoretic generalization of k-induction. We moreover improve upon a recent generalization of the Tarski-Kantorovich principle due to Olszewski for obtaining pre- and postfixed points from lattice-theoretic limit inferiors and limit superiors trough iterating an endomap on an arbitrary seed element: We identify sufficient continuity conditions on the endomaps so that these limits become \\proper fixed points. ",
+  "authors": [
+   "Kevin Batz",
+   "Benjamin Lucien Kaminski",
+   "Lucas Kehrer",
+   "Gerwin Klein",
+   "Henning Urbat",
+   "Todd Schmid"
+  ],
+  "link": "../entries/Iteration_Algebra.html",
+  "shortname": "Iteration_Algebra",
+  "title": "The Algebra of Iterative Constructions",
+  "topic_links": [
+   "../topics/logic/general-logic/modal-logic/"
+  ],
+  "topics": [
+   "Logic/General logic/Modal logic"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This is an improved and updated formalisation of the nominal unification algorithm.  Nominal unification is a generalisation of the classic first-order unification to the practically important case of equations between terms involving binding operations. A simple, possibly capturing substitution of terms for variables solves such equations if it makes the equated terms alpha-equivalent, i.e.~equal up to renaming bound names. While nominal unification can be seen as equivalent to Miller's higher-order pattern unification (unification problems can be inter-coded), nominal unification has the advantage of involving only first-order syntax. This means in the presented formalisation we only need to reason about standard inductive datatypes and first-order operations. The main improvement of this development is a much simpler proof for establishing the equivalence relation properties for an inductive definition characterising when two terms are alpha-equivalent. In the original literature, this involved a clunky mutual induction over the size of terms involving three properties. Here we can separate the proofs and use just structural inductions. This results in a much smoother formalisation of the nominal unification algorithm.",
   "authors": [
    "Guilherme Borges Brandão",
