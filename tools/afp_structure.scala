@@ -96,8 +96,6 @@ class AFP_Structure private(val base_dir: Path) {
 
   /* sessions */
 
-  def example_entry: Metadata.Entry.Name = "Example-Submission"
-
   def entries_unchecked: List[Metadata.Entry.Name] = {
     val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
     File.read_dir(entries_dir).map {
