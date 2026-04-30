@@ -30,7 +30,7 @@ object AFP_Structure {
     val session_entries = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
 
     val session_set = session_entries.toSet
-    val metadata_set = Metadata.files.entries_unchecked.toSet
+    val metadata_set = Metadata.files.entries.toSet
 
     if (session_set != metadata_set) {
       val inter = session_set.intersect(metadata_set)

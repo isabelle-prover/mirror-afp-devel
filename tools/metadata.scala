@@ -452,14 +452,14 @@ object Metadata {
   case class Files(base_dir: Path = AFP.BASE) {
     val metadata_dir = base_dir + Path.basic("metadata")
 
-    val authors_file = metadata_dir + Path.basic("authors.toml")
-    val releases_file = metadata_dir + Path.basic("releases.toml")
-    val licenses_file = metadata_dir + Path.basic("licenses.toml")
-    val topics_file = metadata_dir + Path.basic("topics.toml")
+    val authors_toml = metadata_dir + Path.basic("authors.toml")
+    val releases_toml = metadata_dir + Path.basic("releases.toml")
+    val licenses_toml = metadata_dir + Path.basic("licenses.toml")
+    val topics_toml = metadata_dir + Path.basic("topics.toml")
 
     val entries_dir = metadata_dir + Path.basic("entries")
 
-    def entry_file(name: Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
+    def entry_toml(name: Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
 
 
     /* load */
@@ -473,16 +473,16 @@ object Metadata {
     }
 
     def load_authors: Authors =
-      Authors(load(authors_file, TOML.to_authors))
+      Authors(load(authors_toml, TOML.to_authors))
 
     def load_releases: Releases =
-      Releases(load(releases_file, TOML.to_releases))
+      Releases(load(releases_toml, TOML.to_releases))
 
     def load_licenses: Licenses =
-      Licenses(load(licenses_file, TOML.to_licenses))
+      Licenses(load(licenses_toml, TOML.to_licenses))
 
     def load_topics: Topics =
-      Topics(load(topics_file, TOML.to_topics))
+      Topics(load(topics_toml, TOML.to_topics))
 
     def load_entry(
       name: Entry.Name,
@@ -492,11 +492,11 @@ object Metadata {
       releases: Releases
     ): Entry = {
       val entry_releases = releases.getOrElse(name, Nil)
-      load(entry_file(name), toml =>
+      load(entry_toml(name), toml =>
         TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
     }
 
-    def entries_unchecked: List[Entry.Name] = {
+    def entries: List[Entry.Name] = {
       val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
       File.read_dir(entries_dir).map {
         case Entry(name) => name
@@ -512,19 +512,19 @@ object Metadata {
     }
 
     def save_authors(authors: List[Author]): Unit =
-      save(authors_file, TOML.from_authors(authors))
+      save(authors_toml, TOML.from_authors(authors))
 
     def save_releases(releases: List[Release]): Unit =
-      save(releases_file, TOML.from_releases(releases))
+      save(releases_toml, TOML.from_releases(releases))
 
     def save_topics(root_topics: List[Topic]): Unit =
-      save(topics_file, TOML.from_topics(root_topics))
+      save(topics_toml, TOML.from_topics(root_topics))
 
     def save_licenses(licenses: List[License]): Unit =
-      save(licenses_file, TOML.from_licenses(licenses))
+      save(licenses_toml, TOML.from_licenses(licenses))
 
     def save_entry(entry: Entry): Unit =
-      save(entry_file(entry.name), TOML.from_entry(entry))
+      save(entry_toml(entry.name), TOML.from_entry(entry))
   }
 
 

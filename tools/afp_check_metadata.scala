@@ -80,11 +80,11 @@ object AFP_Check_Metadata {
       if (diff_keys.nonEmpty) warn("Unused fields: " + commas_quote(diff_keys))
     }
 
-    check_unused_toml(Metadata.files.authors_file, TOML.to_authors, TOML.from_authors)
-    check_unused_toml(Metadata.files.topics_file, TOML.to_topics, TOML.from_topics)
-    check_unused_toml(Metadata.files.licenses_file, TOML.to_licenses, TOML.from_licenses)
-    check_unused_toml(Metadata.files.releases_file, TOML.to_releases, TOML.from_releases)
-    entries.foreach(entry => check_unused_toml(Metadata.files.entry_file(entry.name), t =>
+    check_unused_toml(Metadata.files.authors_toml, TOML.to_authors, TOML.from_authors)
+    check_unused_toml(Metadata.files.topics_toml, TOML.to_topics, TOML.from_topics)
+    check_unused_toml(Metadata.files.licenses_toml, TOML.to_licenses, TOML.from_licenses)
+    check_unused_toml(Metadata.files.releases_toml, TOML.to_releases, TOML.from_releases)
+    entries.foreach(entry => check_unused_toml(Metadata.files.entry_toml(entry.name), t =>
       TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil)),
       TOML.from_entry))
 
@@ -133,15 +133,15 @@ object AFP_Check_Metadata {
       }
 
       progress.echo_if(verbose, "Checking formatting...")
-      check_toml_format(TOML.from_authors(authors.values.toList), Metadata.files.authors_file)
+      check_toml_format(TOML.from_authors(authors.values.toList), Metadata.files.authors_toml)
 
       if (format_all) {
-        check_toml_format(TOML.from_topics(topics.values.toList), Metadata.files.topics_file)
-        check_toml_format(TOML.from_licenses(licenses.values.toList), Metadata.files.licenses_file)
+        check_toml_format(TOML.from_topics(topics.values.toList), Metadata.files.topics_toml)
+        check_toml_format(TOML.from_licenses(licenses.values.toList), Metadata.files.licenses_toml)
         check_toml_format(TOML.from_releases(releases.values.toList.flatten),
-          Metadata.files.releases_file)
+          Metadata.files.releases_toml)
         entries.foreach(entry =>
-          check_toml_format(TOML.from_entry(entry), Metadata.files.entry_file(entry.name)))
+          check_toml_format(TOML.from_entry(entry), Metadata.files.entry_toml(entry.name)))
       }
     }
 

@@ -648,7 +648,7 @@ object AFP_Submit {
         Bytes.write(archive_file, archive)
 
         val files =
-          metadata_files.authors_file :: metadata.entries.map(_.name).map(metadata_files.entry_file)
+          metadata_files.authors_toml :: metadata.entries.map(_.name).map(metadata_files.entry_toml)
         val patches =
           for {
             file <- files
@@ -673,14 +673,14 @@ object AFP_Submit {
             val id = ID(date)
             val day = date.rep.toLocalDate
             read_status(id).map(
-              Model.Overview(id, day, Metadata.Files(base_dir = up(id)).entries_unchecked.head, _))
+              Model.Overview(id, day, Metadata.Files(base_dir = up(id)).entries.head, _))
           })
 
       def get(id: ID, state: State): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
           val metadata_files = Metadata.Files(base_dir = up(id))
           val authors = metadata_files.load_authors
-          val entries = metadata_files.entries_unchecked.map(
+          val entries = metadata_files.entries.map(
             metadata_files.load_entry(_, authors, state.topics, state.licenses, state.releases))
 
           val log_file = down(id) + Path.basic("isabelle.log")
