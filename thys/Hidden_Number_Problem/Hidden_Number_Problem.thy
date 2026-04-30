@@ -3378,8 +3378,8 @@ proof-
     moreover have carrier_Mt: "?Mt \<in> carrier_mat (d + 1) (d + 1)" using carrier_M by simp
     moreover have "0 \<notin> set (diag_mat ?Mt)" using diag unfolding diag_mat_def
       by fastforce
-    ultimately have "det ?Mt \<noteq> 0" using upper_triangular_imp_det_eq_0_iff[of ?Mt] by blast
-    then have det_M: "det ?M \<noteq> 0"
+    ultimately have "Determinant.det ?Mt \<noteq> 0" using upper_triangular_imp_det_eq_0_iff[of ?Mt] by blast
+    then have det_M: "Determinant.det ?M \<noteq> 0"
       by (metis Determinant.det_transpose Matrix.transpose_transpose carrier_Mt)
     then have "lin_indpt (set (Matrix.rows ?M))" using det_not_0_imp_lin_indpt_rows[of ?M] carrier_M
       by fast

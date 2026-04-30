@@ -59,15 +59,15 @@ constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.
 
 subsubsection\<open>Examples\<close>
 
-value "det test_int_3x3"
+value "matrix_det test_int_3x3"
 
-value "det test_int_3x3_03"
+value "matrix_det test_int_3x3_03"
 
-value "det test_int_6x6"
+value "matrix_det test_int_6x6"
 
-value "det test_int_8x8"
+value "matrix_det test_int_8x8"
 
-value "det test_int_20x20"
+value "matrix_det test_int_20x20"
 
 value "charpoly test_real_3x3"
   
@@ -89,7 +89,7 @@ text\<open>The following computations are much faster when code is exported.\<cl
 
 text\<open>The following matrix will have an integer inverse since its determinant is equal to one\<close>
 
-value "det test_int_3x3_03"
+value "matrix_det test_int_3x3_03"
 
 value "the (matrix_to_iarray_option (inverse_matrix test_int_3x3_03))"
 
@@ -106,11 +106,11 @@ value "matrix_matrix_mult_iarray
 text\<open>The following matrices have determinant different from zero, 
     and thus do not have an integer inverse\<close>
               
-value "det test_int_6x6"
+value "matrix_det test_int_6x6"
               
 value "matrix_to_iarray_option (inverse_matrix test_int_6x6)"
 
-value "det test_int_20x20"
+value "matrix_det test_int_20x20"
              
 value "matrix_to_iarray_option (inverse_matrix test_int_20x20)"
 
@@ -131,7 +131,7 @@ has elements between $0$ and $1010$. The computation of its echelon form (by mea
 of \<open>print_echelon_int\<close> too) needs about 0.310 seconds. These benchmarks have been carried
 out in a laptop with an i5-3360M processor with 4 GB of RAM.\<close>
 
-export_code charpoly det echelon_form_of test_int_8x8 test_int_20x20 test_int_20x20_2 print_echelon_int
+export_code charpoly matrix_det echelon_form_of test_int_8x8 test_int_20x20 test_int_20x20_2 print_echelon_int
   in SML module_name Echelon (*file "Echelon.sml"*)
 
 (*
