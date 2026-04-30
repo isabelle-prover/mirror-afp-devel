@@ -517,7 +517,7 @@ declare [[zip_init_gc \<open>
   let
     open Zippy; open ZLPC MU; open A Mo
     val name = "asm_full_simp"
-    val id = Zippy_Identifier.make (SOME @{here}) name
+    val id = Identifier.make (SOME @{here}) name
     val tacs = (safe_asm_full_simp_tac, asm_full_simp_tac)
     fun f_timeout ctxt i state n time = (@{log Logger.WARN Zip.Simp.logger} ctxt
       (fn _ => Pretty.breaks [

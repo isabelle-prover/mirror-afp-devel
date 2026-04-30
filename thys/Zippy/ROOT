@@ -62,7 +62,6 @@ session Zippy = HOL +
     "Zippy/Goals"
     "Zippy/Goals/Base"
     "Zippy/Goals/Lists"
-    "Zippy/Identifiers"
     "Zippy/Instances"
     "Zippy/Instances/Cases"
     "Zippy/Instances/Classical"

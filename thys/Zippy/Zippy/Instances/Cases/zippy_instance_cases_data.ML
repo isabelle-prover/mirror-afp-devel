@@ -706,7 +706,7 @@ fun cons_action exn meta tac opt_default_update_action =
 
 fun cons_nth_action exn meta tac opt_default_update_action ctxt i data =
   let val meta = AMeta.metadata (
-    Zippy_Identifier.suffix_name NONE (string_of_int i) (ACMeta.Id.getter meta),
+    Identifier.suffix_name NONE (string_of_int i) (ACMeta.Id.getter meta),
     Lazy.lazy (fn _ => Pretty.breaks [
         Pretty.str (ACMeta.Descr.getter meta |> Lazy.force),
         Pretty.block [Pretty.str "Cases data: ",

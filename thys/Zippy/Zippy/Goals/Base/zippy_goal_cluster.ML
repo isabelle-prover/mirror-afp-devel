@@ -9,7 +9,7 @@ sig
   val get_state : gcluster -> GCS.state
   val get_thm : gcluster -> thm
   val get_goals : gcluster -> term list
-  val get_stripped_goals : gcluster -> ((string * typ) list * (term list * term)) list
+  val get_stripped_goals : gcluster -> Term_Util.subgoal list
   val get_ngoals : gcluster -> int
   val has_meta_vars : gcluster -> bool
   val meta_vars : gcluster -> Vars.set
@@ -31,7 +31,7 @@ datatype gcluster = GCluster of {
     pos : GCS.cluster_pos,
     state : TS.state,
     goals : term list,
-    stripped_goals : ((string * typ) list * (term list * term)) list,
+    stripped_goals : Term_Util.subgoal list,
     ngoals : int
   }
 fun get_pos (GCluster {pos,...}) = pos

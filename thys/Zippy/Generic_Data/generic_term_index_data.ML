@@ -27,7 +27,7 @@ sig
   val map_index : (index -> index) -> Context.generic -> Context.generic
   val pretty_Data : Proof.context -> Pretty.T
 
-  val insert : term * value -> Context.generic -> Context.generic
+  val insert : term_value -> Context.generic -> Context.generic
   val delete : term * (term_value -> bool) -> Context.generic -> Context.generic
 
   val binding : Binding.binding

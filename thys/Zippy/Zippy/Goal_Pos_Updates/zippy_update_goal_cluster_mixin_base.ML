@@ -9,11 +9,10 @@ sig
   (*run an update (e.g. add an action cluster) for the given goal cluster with the given focus*)
   type update_gcluster = GPU.F.focus -> (@{ParaT_args} @{AllT_args} GCluster.L.container) emorph
   structure Data : GENERIC_TABLE_DATA
-  where type key = Zippy_Identifier.id
+  where type key = Identifier.id
   (*performance optimisation: additionally pass goal state and subgoals data
   since most actions in practice depend on that data*)
-  where type value = GClusters.GCS.state * ((string * typ) list * (term list * term)) list ->
-    update_gcluster
+  where type value = GClusters.GCS.state * Term_Util.subgoal list -> update_gcluster
 end
 
 functor Zippy_Update_Goal_Cluster_Mixin_Base(A :
@@ -37,11 +36,10 @@ type update_gcluster = GPU.F.focus -> (@{ParaT_args} @{AllT_args} GCluster.L.con
   path: \<open>FI.long_name\<close>
   more_args: \<open>
     val parent_logger = Log.logger
-    type key = Zippy_Identifier.id
-    val pretty_key = Zippy_Identifier.pretty
-    val ord_key = Zippy_Identifier.ord
-    type value = Zippy_Thm_State.state * ((string * typ) list * (term list * term)) list ->
-      update_gcluster
+    type key = Identifier.id
+    val pretty_key = Identifier.pretty
+    val ord_key = Identifier.ord
+    type value = Zippy_Thm_State.state * Term_Util.subgoal list list -> update_gcluster
     val pretty_value = Library.K (Library.K (Pretty.str "<init goal cluster morphism>"))\<close>\<close>
 
 end

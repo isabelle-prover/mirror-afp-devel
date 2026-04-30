@@ -7,8 +7,10 @@ Customisable context parsers.
 
 signature CONTEXT_PARSERS =
 sig
+  structure PA : PARSE_CONTEXT_PARSERS_ARGS
+
   structure Parsers_Data : GENERIC_TABLE_DATA
-  where type key = Zippy_Identifier.id
+  where type key = Identifier.id
   where type value = unit context_parser
 
   val get_parsers_table : Context.generic -> Parsers_Data.table
@@ -50,7 +52,7 @@ struct
 val logger = Logger.setup_new_logger parent_logger "Context_Parsers"
 
 structure FI =  Functor_Instance(FI)
-structure Id = Zippy_Identifier
+structure Id = Identifier
 structure MCU = ML_Code_Util
 structure PU = Parse_Util
 structure PKV = Parse_Key_Value

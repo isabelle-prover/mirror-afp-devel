@@ -2,8 +2,8 @@
 section \<open>Action Clusters\<close>
 theory Zippy_Action_Clusters
   imports
+    ML_Unification.ML_Identifiers
     Zippy_Enums
-    Zippy_Identifiers
 begin
 
 ML_file\<open>zippy_copy_mixin_base.ML\<close>

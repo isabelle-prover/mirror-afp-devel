@@ -153,8 +153,6 @@ declare [[zip_init_gc \<open>
       |> Tac_AAM.Tac.zSOME_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.content #> Library.K
-    fun lookup_goal ctxt = retrieval (Data.get_index (Context.Proof ctxt))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt =>
       Data.TI.content (Data.get_index (Context.Proof ctxt))
       |> List.map (snd #> transfer_data (Proof_Context.theory_of ctxt))

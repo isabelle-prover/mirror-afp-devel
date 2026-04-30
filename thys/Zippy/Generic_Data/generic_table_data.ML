@@ -39,13 +39,13 @@ sig
 end
 
 functor Generic_Table_Data(A : sig
-  structure FI : FUNCTOR_INSTANCE_BASE
-  val parent_logger : Logger.logger_binding
-  type key
-  val ord_key : key ord
-  val pretty_key : key -> Pretty.T
-  type value
-  val pretty_value : Proof.context ->value -> Pretty.T
+    structure FI : FUNCTOR_INSTANCE_BASE
+    val parent_logger : Logger.logger_binding
+    type key
+    val ord_key : key ord
+    val pretty_key : key -> Pretty.T
+    type value
+    val pretty_value : Proof.context ->value -> Pretty.T
   end) : GENERIC_TABLE_DATA =
 struct
 

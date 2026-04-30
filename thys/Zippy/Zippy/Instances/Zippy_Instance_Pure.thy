@@ -194,12 +194,14 @@ structure Step =
 struct
   local structure Log = Zippy_Logger_Mixin_Base(val parent_logger = Logging.logger; val name =  "Step")
   in open Log end
-  local structure ZCost = Zippy_Collect_Trace_Mixin(ZLPC.ZCollect)
-  in
+
   fun check_depth_limit opt_limit = ZP.ZZDepth_Co4.getter
     #> (fn depth => case opt_limit of
         NONE => pure depth
       | SOME l => if depth <= l then pure depth else Exn.ME.throw Util.exn)
+
+  local structure ZCost = Zippy_Collect_Trace_Mixin(ZLPC.ZCollect)
+  in
   structure AStar =
   struct
     structure Logging =
@@ -366,7 +368,7 @@ struct
     val mk_prio_depth_limit = Depth_First.mk_prio_depth_limit
   end
   end
-  end
+end
 
 (* run *)
 structure Run =
