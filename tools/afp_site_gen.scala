@@ -264,16 +264,12 @@ object AFP_Site_Gen {
 
     progress.echo("Loading data ...")
 
-    val topics = Metadata.files.load_topics()
-    val licenses = Metadata.files.load_licenses()
-    val releases = Metadata.files.load_releases()
-    val authors = Metadata.files.load_authors()
-    val entries = AFP_Structure.load_entries(authors, topics, licenses, releases)
-    val entries1 = entries.values.toList.filterNot(_.statistics_ignore)
+    val afp = AFP_Structure.load()
+    val entries1 = afp.entries.values.toList.filterNot(_.statistics_ignore)
 
     val sessions_structure = AFP_Structure.sessions_structure()
     val entry_sessions =
-      entries.values.map(entry => entry -> AFP_Structure.entry_sessions(entry.name)).toMap
+      afp.entries.values.map(entry => entry -> AFP_Structure.entry_sessions(entry.name)).toMap
     val session_entry =
       for {
         (entry, sessions) <- entry_sessions
@@ -281,7 +277,7 @@ object AFP_Site_Gen {
       } yield session.name -> entry
 
     val entry_deps =
-      (for (entry <- entries.values.toList)
+      (for (entry <- afp.entries.values.toList)
       yield {
         entry.name ->
           (for {
@@ -293,7 +289,7 @@ object AFP_Site_Gen {
           } yield dep.name).distinct
       }).toMap
 
-    val json_encode = new JSON_Encode(cache, authors)
+    val json_encode = new JSON_Encode(cache, afp.authors)
 
     val home_meta =
       Hugo.Metadata(title = "Archive of Formal Proofs", menu = Some(Hugo.Menu_Item("Home", 1)),
@@ -305,14 +301,14 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing topics ...")
 
-    val root_topics = Metadata.Topics.root_topics(topics)
+    val root_topics = Metadata.Topics.root_topics(afp.topics)
 
     val topics_meta =
       Hugo.Metadata(title = "Topics", menu = Some(Hugo.Menu_Item("Topics", 2)),
         outputs = List("html", "json"))
     hugo.write_content(Hugo.Index("topics", topics_meta))
 
-    for (topic <- topics.values.toList.sortBy(_.id)) {
+    for (topic <- afp.topics.values.toList.sortBy(_.id)) {
       val url = "/topics/" + topic.id.toLowerCase.replace(' ', '-')
       val topic_entries = entries1.filter(_.topics.contains(topic))
       val is_root = root_topics.contains(topic)
@@ -330,13 +326,13 @@ object AFP_Site_Gen {
     progress.echo("Preparing authors ...")
 
     val seen_affiliations =
-      entries.values.toList.flatMap(entry => entry.authors ::: entry.contributors).distinct
+      afp.entries.values.toList.flatMap(entry => entry.authors ::: entry.contributors).distinct
     val seen_authors =
       Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
         case (id, affiliations) =>
           val seen_emails = affiliations.collect { case e: Email => e }
           val seen_homepages = affiliations.collect { case h: Homepage => h }
-          authors(id).copy(emails = seen_emails, homepages = seen_homepages)
+          afp.authors(id).copy(emails = seen_emails, homepages = seen_homepages)
       }
 
     val authors_meta =
@@ -396,7 +392,7 @@ object AFP_Site_Gen {
 
     val afp_sessions =
       for {
-        entry <- entries.values.toList
+        entry <- afp.entries.values.toList
         session <- entry_sessions(entry)
       } yield session.name -> Some(entry.name)
 
@@ -437,9 +433,9 @@ object AFP_Site_Gen {
     hugo.write_content(Hugo.Index("entries", Hugo.Metadata(outputs = List("json"))))
 
     val graph = Graph.make(for ((entry, deps) <- entry_deps.toList) yield ((entry, ()), deps))
-    entries.values.toList.foreach { entry =>
+    afp.entries.values.toList.foreach { entry =>
       val deps = entry_deps(entry.name)
-      val used_by = graph.imm_preds(entry.name).toList.sortBy(entries(_).date)
+      val used_by = graph.imm_preds(entry.name).toList.sortBy(afp.entries(_).date)
 
       val keywords = get_keywords(entry.name)
       val words = keywords.flatMap(space_explode(' ', _))

@@ -43,7 +43,7 @@ object AFP_Build_CI {
     val store: Store,
     val mail_system: Option[Build_CI.Mail_System],
   ) {
-    lazy val entries = AFP_Structure.load_entries()
+    lazy val entries = AFP_Structure.load().entries
     lazy val entry_sessions: Map[Metadata.Entry.Name, List[String]] =
       entries.values.map(entry =>
         entry.name -> AFP_Structure.entry_sessions(entry.name).map(_.name)).toMap

@@ -1403,13 +1403,8 @@ object AFP_Submit {
 
   object State {
     def load(): State = {
-      val authors = Metadata.files.load_authors()
-      val topics = Metadata.files.load_topics()
-      val licenses = Metadata.files.load_licenses()
-      val releases = Metadata.files.load_releases()
-      val entries = AFP_Structure.load_entries(authors, topics, licenses, releases)
-
-      State(authors, topics, licenses, releases, entries)
+      val afp = AFP_Structure.load()
+      State(afp.authors, afp.topics, afp.licenses, afp.releases, afp.entries)
     }
   }
 

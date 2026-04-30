@@ -39,13 +39,26 @@ object AFP_Structure {
     } else session_entries
   }
 
-  def load_entries(
-    authors: Metadata.Authors = Metadata.files.load_authors(),
-    topics: Metadata.Topics = Metadata.files.load_topics(),
-    licenses: Metadata.Licenses = Metadata.files.load_licenses(),
-    releases: Metadata.Releases = Metadata.files.load_releases()
-  ): Metadata.Entries = {
-    Metadata.Entries(entry_names.map(name =>
-      Metadata.files.load_entry(name, authors, topics, licenses, releases)))
+
+  /* cumulative information */
+
+  def load(): AFP = {
+    val authors = Metadata.files.load_authors()
+    val topics = Metadata.files.load_topics()
+    val licenses = Metadata.files.load_licenses()
+    val releases = Metadata.files.load_releases()
+    val entries =
+      Metadata.Entries(entry_names.map(name =>
+        Metadata.files.load_entry(name, authors, topics, licenses, releases)))
+
+    new AFP(authors, topics, licenses, releases, entries, sessions_structure())
   }
+
+  class AFP private[AFP_Structure](
+    val authors: Metadata.Authors,
+    val topics: Metadata.Topics,
+    val licenses: Metadata.Licenses,
+    val releases: Metadata.Releases,
+    val entries: Metadata.Entries,
+    val sessions_structure: Sessions.Structure)
 }

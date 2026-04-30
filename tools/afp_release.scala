@@ -46,7 +46,7 @@ object AFP_Release {
     def add_release(entry: Metadata.Entry): Metadata.Entry =
       entry.copy(releases = entry.releases :+ Metadata.Release(entry.name, date, isabelle))
 
-    val releases = AFP_Structure.load_entries().values.toList.map(add_release).flatMap(_.releases)
+    val releases = AFP_Structure.load().entries.values.toList.map(add_release).flatMap(_.releases)
 
     Metadata.files.save_releases(releases)
   }
