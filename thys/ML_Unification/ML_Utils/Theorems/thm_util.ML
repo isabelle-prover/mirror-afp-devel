@@ -7,6 +7,10 @@ signature THM_UTIL =
 sig
   include HAS_LOGGER
 
+  val pretty_nth_subgoal : Proof.context -> int -> thm -> Pretty.T
+  val pretty_nth_subgoal_concl : Proof.context -> int -> thm -> Pretty.T
+  val pretty_subgoals : Proof.context -> thm -> Pretty.T
+
   val pretty_THM : Proof.context -> string * int * thm list -> Pretty.T
 
   (*fails if the theorem contains a tpair or implicit Assumption mentioning the bound variable*)
@@ -29,6 +33,16 @@ structure Thm_Util : THM_UTIL =
 struct
 
 val logger = Logger.setup_new_logger Logger.root "Thm_Util"
+
+fun gen_pretty_nth_subgoal f ctxt i st = Term_Util.nth_subgoal i st |> f ctxt
+  handle TERM _ => Pretty.block [
+      Pretty.str "State ",
+      Thm.pretty_thm ctxt st,
+      Pretty.str (implode_space [" has fewer than", string_of_int i, "subgoals."])
+    ]
+val pretty_nth_subgoal = gen_pretty_nth_subgoal Term_Util.pretty_subgoal
+val pretty_nth_subgoal_concl = gen_pretty_nth_subgoal Term_Util.pretty_subgoal_concl
+fun pretty_subgoals ctxt = Thm.prems_of #> Term_Util.pretty_subgoals ctxt
 
 fun pretty_THM ctxt (msg, subgoal, thms) = Pretty.fbreaks [
     Pretty.str msg,

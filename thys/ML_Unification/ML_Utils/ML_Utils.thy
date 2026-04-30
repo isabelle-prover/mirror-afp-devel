@@ -8,6 +8,7 @@ theory ML_Utils
     ML_Functor_Instances
     ML_General_Utils
     ML_Generic_Data_Utils
+    ML_Identifiers
     ML_Method_Utils
     ML_Attributes
     ML_Code_Utils

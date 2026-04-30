@@ -114,7 +114,7 @@ struct
   fun between (p1, p2) = Prio ((dest_prio p1 + dest_prio p2) / two_rat)
   (*assumption: BOTTOM_EXCLUSIVE = 0*)
   fun halve p = between (BOTTOM_EXCLUSIVE, p)
-  fun scale r p = Prio (dest_prio p * r)
+  fun scale r p = Prio (r * dest_prio p)
   val double = scale two_rat
 
   local
@@ -155,7 +155,7 @@ struct
   fun between (c1, c2) = Cost ((dest_cost c1 + dest_cost c2) / two_rat)
   (*assumption: BOTTOM_EXCLUSIVE = 0*)
   fun halve c = between (BOTTOM_EXCLUSIVE, c)
-  fun scale r c = Cost (dest_cost c * r)
+  fun scale r c = Cost (r * dest_cost c)
   val double = scale two_rat
 
   val [VERY_LOW, VERY_LOW1, VERY_LOW2, VERY_LOW3, VERY_LOW4, VERY_LOW5,

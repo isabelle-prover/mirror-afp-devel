@@ -42,12 +42,14 @@ sig
   val FOCUS' : (Subgoal.focus -> int -> tactic) -> Proof.context -> int -> tactic
   val SUBPROOF' : (Subgoal.focus -> int -> tactic) -> Proof.context -> int -> tactic
 
-  val CSUBGOAL_DATA : (cterm -> 'a) -> ('a -> int -> tactic) -> int -> tactic
+  val CSUBGOAL : (cterm -> int -> thm -> 'a Seq.seq) -> int -> thm -> 'a  Seq.seq
+  val SUBGOAL : (term -> int -> thm -> 'a Seq.seq) -> int -> thm -> 'a  Seq.seq
+  val CSUBGOAL_DATA : (cterm -> 'a) -> ('a -> int -> thm -> 'b Seq.seq) -> int -> thm -> 'b Seq.seq
   val CSUBGOAL_STRIPPED : (cterm Binders.binders * (cterm list * cterm) -> 'a) ->
-    ('a -> int -> tactic) -> int -> tactic
-  val SUBGOAL_DATA : (term -> 'a) -> ('a -> int -> tactic) -> int -> tactic
-  val SUBGOAL_STRIPPED : ((string * typ) list * (term list * term) -> 'a) ->
-    ('a -> int -> tactic) -> int -> tactic
+    ('a -> int -> thm -> 'b Seq.seq) -> int -> thm -> 'b Seq.seq
+  val SUBGOAL_DATA : (term -> 'a) -> ('a -> int -> thm -> 'b Seq.seq) -> int -> thm -> 'b Seq.seq
+  val SUBGOAL_STRIPPED : (Term_Util.subgoal -> 'a) -> ('a -> int -> thm -> 'b Seq.seq) ->
+    int -> thm -> 'b Seq.seq
 
   (* tactics *)
   val insert_tac : thm list -> Proof.context -> int -> tactic
@@ -147,9 +149,14 @@ fun SUBPROOF' tac = Subgoal.SUBPROOF (HEADGOAL o tac)
 fun FOCUS_PARAMS_CTXT tac = Subgoal.FOCUS_PARAMS (#context #> tac)
 fun FOCUS_PARAMS_CTXT' tac = FOCUS_PARAMS' (#context #> tac)
 
-fun CSUBGOAL_DATA f tac = CSUBGOAL (uncurry tac o apfst f)
+fun CSUBGOAL goalfun i st = case SOME (Thm.cprem_of st i) handle THM _ => NONE of
+    SOME goal => goalfun goal i st
+  | NONE => Seq.empty
+fun SUBGOAL goalfun = CSUBGOAL (Thm.term_of #> goalfun)
+
+fun CSUBGOAL_DATA f tac = CSUBGOAL (tac o f)
 fun CSUBGOAL_STRIPPED f = CSUBGOAL_DATA (f o Term_Util.strip_csubgoal)
-fun SUBGOAL_DATA f tac = SUBGOAL (uncurry tac o apfst f)
+fun SUBGOAL_DATA f tac = SUBGOAL (tac o f)
 fun SUBGOAL_STRIPPED f = SUBGOAL_DATA (f o Term_Util.strip_subgoal)
 
 (* tactics *)

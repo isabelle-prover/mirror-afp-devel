@@ -28,6 +28,9 @@ sig
   val norm_term_unif : term_normaliser
   (*with beta-normalisation*)
   val beta_norm_term_unif : term_normaliser
+  (*no normalisation, just reduction*)
+  val beta_head_unif : term_normaliser
+  val beta_weak_head_unif : term_normaliser
 
   (* theorems *)
   type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
@@ -158,6 +161,18 @@ fun norm_term_unif_same beta_norm (envir as Envir.Envir {tenv, tyenv, ...}) =
 
 val norm_term_unif = norm_term_unif_same false
 val beta_norm_term_unif = norm_term_unif_same true
+
+val beta_head_unif = Envir.head_norm
+fun beta_weak_head_unif env =
+  let fun norm (Var v) = (case Envir.lookup env v of
+        SOME u => beta_weak_head_unif env u
+      | NONE => raise Same.SAME)
+    | norm (Abs (_, _, body) $ t) = Same.commit norm (subst_bound (t, body))
+    | norm (f $ t) = (case norm f of
+        Abs (_, _, body) => Same.commit norm (subst_bound (t, body))
+      | nf => nf $ t)
+    | norm _ = raise Same.SAME
+  in Same.commit norm end
 
 type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
 type thm_type_normaliser = thm_normaliser

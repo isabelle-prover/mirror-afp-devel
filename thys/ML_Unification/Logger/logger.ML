@@ -106,6 +106,8 @@ val DEBUG = 500
 val TRACE = 600
 val ALL = 1000
 
+fun should_log level log_level = level <= log_level andalso level > OFF
+
 type logger_name = bstring
 datatype logger_binding = Logger_Binding of binding
 

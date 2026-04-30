@@ -7,6 +7,8 @@ signature TERM_NORMALISATION =
 sig
   type term_normaliser = term Same.operation
   val beta : term_normaliser
+  val beta_head : term_normaliser
+  val beta_weak_head : term_normaliser
   val eta_short : term_normaliser
   val beta_eta_short : term_normaliser
   val dummy_var : term
@@ -19,6 +21,21 @@ struct
 type term_normaliser = term Same.operation
 
 val beta = Envir.norm_term_same Envir.init
+val beta_head =
+  let fun norm (Abs (a, T, body)) = Abs (a, T, norm body)
+    | norm (Abs (_, _, body) $ t) = Same.commit norm (subst_bound (t, body))
+    | norm (f $ t) = (case norm f of
+        Abs (_, _, body) => Same.commit norm (subst_bound (t, body))
+      | nf => nf $ t)
+    | norm _ = raise Same.SAME
+  in Same.commit norm end
+val beta_weak_head =
+  let fun norm (Abs (_, _, body) $ t) = Same.commit norm (subst_bound (t, body))
+    | norm (f $ t) = (case norm f of
+        Abs (_, _, body) => Same.commit norm (subst_bound (t, body))
+      | nf => nf $ t)
+    | norm _ = raise Same.SAME
+  in Same.commit norm end
 
 local (*copied from envir.ML*)
 fun decr_same lev (Bound i) = if i >= lev then Bound (i - 1) else raise Same.SAME

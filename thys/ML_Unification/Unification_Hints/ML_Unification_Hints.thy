@@ -70,9 +70,9 @@ ML\<open>
 \<close>
 local_setup \<open>Unification_Hints.setup_attribute NONE\<close>
 declare [[uhint config concl_unifier: \<open>fn binders =>
-  Unification_Combine.delete_id Unification_Hints.binding
+  Unification_Combine.Data.delete_id Unification_Hints.binding
   (*TODO: should we also remove the recursive hint unifier here? time will tell...*)
-  (* #> Unification_Combine.delete_id Unification_Hints_Rec.binding *)
+  (* #> Unification_Combine.Data.delete_id Unification_Hints_Rec.binding *)
   |> Context.proof_map
   #> Mixed_Comb_Unification.fo_hop_comb_unify binders\<close>]]
 

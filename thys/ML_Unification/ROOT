@@ -18,6 +18,7 @@ session ML_Unification = HOL +
     "ML_Utils/Functor_Instances"
     "ML_Utils/General"
     "ML_Utils/Generic_Data"
+    "ML_Utils/Identifiers"
     "ML_Utils/Methods"
     "ML_Utils/ML_Attributes"
     "ML_Utils/ML_Code"

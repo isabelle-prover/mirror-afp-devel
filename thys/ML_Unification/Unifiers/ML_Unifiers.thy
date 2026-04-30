@@ -2,7 +2,7 @@
 theory ML_Unifiers
   imports
     ML_Costs_Priorities
-    ML_Functor_Instances
+    ML_Generic_Data_Utils
     ML_Unifiers_Base
     Simps_To
 begin
@@ -12,7 +12,7 @@ text \<open>More unifiers.\<close>
 
 paragraph \<open>Derived Unifiers\<close>
 
-ML_file\<open>var_higher_order_pattern_unification.ML\<close>
+ML_file\<open>higher_order_pattern_var_unification.ML\<close>
 
 subparagraph \<open>Unification via Simplification\<close>
 
@@ -45,8 +45,8 @@ ML\<open>
 \<close>
 
 declare [[ucombine \<open>Unification_Combine.eunif_data
-  (Unification_Combine.metadata (\<^binding>\<open>var_hop_unify\<close>, Prio.HIGH1),
-  Var_Higher_Order_Pattern_Unification.e_unify
+  (Unification_Combine.metadata (\<^binding>\<open>hop_var_unify\<close>, Prio.HIGH1),
+  Higher_Order_Pattern_Var_Unification.e_unify
   #> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
     Mixed_Comb_Unification.norms_fo_hop_comb_unify))\<close>]]
 

@@ -161,7 +161,7 @@ fun unify_dresolve_tac norms unify rule ctxt =
           Pretty.str " has no premises."
         ] |> Pretty.string_of);
       K no_tac)
-    else unify_eresolve_tac HOPU.norms_unify HOPU.unify norms
+    else unify_eresolve_tac HOPU.norms_match HOPU.match norms
       (Unification_Combinator.flip_unifier unify) (make_elim ctxt rule) ctxt
   end
 

@@ -21,10 +21,16 @@ sig
   val strip_cimp : cterm -> cterm list * cterm
 
   (*returns outer parameters in reversed order, premises, and conclusion*)
-  val strip_subgoal : term -> (string * typ) list * (term list * term)
+  type subgoal = (string * typ) list * (term list * term)
+  val strip_subgoal : term -> subgoal
   val strip_csubgoal : cterm -> cterm Binders.binders * (cterm list * cterm)
-  val strip_nth_subgoal : int -> thm -> (string * typ) list * (term list * term)
+  val nth_subgoal : int -> thm -> term
+  val strip_nth_subgoal : int -> thm -> subgoal
   val strip_nth_csubgoal : int -> thm -> cterm Binders.binders * (cterm list * cterm)
+
+  val pretty_subgoal : Proof.context -> term -> Pretty.T
+  val pretty_subgoal_concl : Proof.context -> term -> Pretty.T
+  val pretty_subgoals : Proof.context -> term list -> Pretty.T
 
   (*replace outer parameters by fresh meta variables*)
   val forall_elim_vars : term -> int -> term * int
@@ -90,10 +96,20 @@ fun strip_cimp ct =
   in (cprem :: cprems, cconcl) end)
   handle TERM _ => ([], ct)
 
+type subgoal = (string * typ) list * (term list * term)
 val strip_subgoal = strip_all ##> strip_imp
 val strip_csubgoal = strip_call ##> strip_cimp
+fun nth_subgoal i = Thm.prop_of #> pair i #> Logic.nth_prem
 fun strip_nth_subgoal i = Thm.prop_of #> pair i #> Logic.nth_prem #> strip_subgoal
 fun strip_nth_csubgoal i state = Thm.cprem_of state i |> strip_csubgoal
+
+fun gen_pretty_subgoal f ctxt = strip_all
+  #> apfst (fn params => Binders.fix_binders params ctxt)
+  #> (fn ((binders, ctxt), t) => f t |> Binders.replace_binders binders |> Syntax.pretty_term ctxt)
+val pretty_subgoal = gen_pretty_subgoal I
+val pretty_subgoal_concl = gen_pretty_subgoal (strip_imp #> snd)
+fun pretty_subgoals ctxt = map (Syntax.pretty_term ctxt #> single #> Pretty.block)
+  #> Pretty.fbreaks #> Pretty.block0
 
 fun forall_elim_vars t i =
   let val (params, tbody) = strip_all t
