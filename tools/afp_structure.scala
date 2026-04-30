@@ -12,14 +12,17 @@ object AFP_Structure {
   val thys_dir = AFP.main_dir()
   val site_dir = AFP.BASE + Path.explode("admin/site")
 
+  def entry_dir(name: String): Path = thys_dir + Path.basic(name)
   def entry_sessions(name: String): List[Sessions.Session_Entry] =
-    Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
+    Sessions.parse_root_entries(entry_dir(name) + Sessions.ROOT)
+
+  def roots_entries: List[String] = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
 
   def sessions_structure(options: Options = Options.init()): Sessions.Structure =
     Sessions.load_structure(options, select_dirs = List(thys_dir))
 
   def entries: List[Metadata.Entry.Name] = {
-    val session_entries = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
+    val session_entries = roots_entries
 
     val session_set = session_entries.toSet
     val metadata_set = Metadata.files.entries.toSet
