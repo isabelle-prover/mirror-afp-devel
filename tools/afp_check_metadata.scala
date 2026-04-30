@@ -38,6 +38,9 @@ object AFP_Check_Metadata {
 
     /* TOML encoding/decoding */
 
+    def to_entry(name: String, t: isabelle.TOML.Table): Metadata.Entry =
+      TOML.to_entry(name, t, authors, topics, licenses, releases.getOrElse(name, Nil))
+
     def check_toml[A](kind: String, a: A, from: A => Table, to: Table => A): Unit =
       if (to(from(a)) != a) error("Inconsistent toml encode/decode: " + kind)
 
@@ -46,8 +49,8 @@ object AFP_Check_Metadata {
     check_toml("topics", Metadata.Topics.root_topics(topics), TOML.from_topics, TOML.to_topics)
     check_toml("licenses", licenses.values.toList, TOML.from_licenses, TOML.to_licenses)
     check_toml("releases", releases.values.flatten.toList, TOML.from_releases, TOML.to_releases)
-    entries.foreach(entry => check_toml("entry " + entry.name, entry, TOML.from_entry, t =>
-      TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil))))
+    entries.foreach(entry =>
+      check_toml("entry " + entry.name, entry, TOML.from_entry, to_entry(entry.name, _)))
 
 
     /* duplicate ids */
@@ -83,9 +86,9 @@ object AFP_Check_Metadata {
     check_unused_toml(Metadata.files.topics_toml, TOML.to_topics, TOML.from_topics)
     check_unused_toml(Metadata.files.licenses_toml, TOML.to_licenses, TOML.from_licenses)
     check_unused_toml(Metadata.files.releases_toml, TOML.to_releases, TOML.from_releases)
-    entries.foreach(entry => check_unused_toml(Metadata.files.entry_toml(entry.name), t =>
-      TOML.to_entry(entry.name, t, authors, topics, licenses, releases.getOrElse(entry.name, Nil)),
-      TOML.from_entry))
+    entries.foreach(entry =>
+      check_unused_toml(Metadata.files.entry_toml(entry.name), to_entry(entry.name, _),
+        TOML.from_entry))
 
 
     /* unused values */
