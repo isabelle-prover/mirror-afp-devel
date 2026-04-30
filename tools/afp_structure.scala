@@ -40,10 +40,10 @@ object AFP_Structure {
   }
 
   def load_entries(
-    authors: Metadata.Authors = Metadata.files.load_authors,
-    topics: Metadata.Topics = Metadata.files.load_topics,
-    licenses: Metadata.Licenses = Metadata.files.load_licenses,
-    releases: Metadata.Releases = Metadata.files.load_releases
+    authors: Metadata.Authors = Metadata.files.load_authors(),
+    topics: Metadata.Topics = Metadata.files.load_topics(),
+    licenses: Metadata.Licenses = Metadata.files.load_licenses(),
+    releases: Metadata.Releases = Metadata.files.load_releases()
   ): Metadata.Entries =
     Metadata.Entries(entries.map(name =>
       Metadata.files.load_entry(name, authors, topics, licenses, releases)))

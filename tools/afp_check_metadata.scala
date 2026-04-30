@@ -29,10 +29,10 @@ object AFP_Check_Metadata {
     def warn(msg: String): Unit = if (strict) error(msg) else progress.echo_warning(msg)
 
     progress.echo_if(verbose, "Loading metadata...")
-    val authors = Metadata.files.load_authors
-    val topics = Metadata.files.load_topics
-    val licenses = Metadata.files.load_licenses
-    val releases = Metadata.files.load_releases
+    val authors = Metadata.files.load_authors()
+    val topics = Metadata.files.load_topics()
+    val licenses = Metadata.files.load_licenses()
+    val releases = Metadata.files.load_releases()
     val entries = AFP_Structure.load_entries(authors, topics, licenses, releases).values.toList
 
 

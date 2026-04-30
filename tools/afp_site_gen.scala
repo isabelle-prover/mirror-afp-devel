@@ -264,10 +264,10 @@ object AFP_Site_Gen {
 
     progress.echo("Loading data ...")
 
-    val topics = Metadata.files.load_topics
-    val licenses = Metadata.files.load_licenses
-    val releases = Metadata.files.load_releases
-    val authors = Metadata.files.load_authors
+    val topics = Metadata.files.load_topics()
+    val licenses = Metadata.files.load_licenses()
+    val releases = Metadata.files.load_releases()
+    val authors = Metadata.files.load_authors()
     val entries = AFP_Structure.load_entries(authors, topics, licenses, releases)
     val entries1 = entries.values.toList.filterNot(_.statistics_ignore)
 

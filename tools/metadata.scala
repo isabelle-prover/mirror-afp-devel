@@ -472,16 +472,16 @@ object Metadata {
       parser(toml)
     }
 
-    def load_authors: Authors =
+    def load_authors(): Authors =
       Authors(load(authors_toml, TOML.to_authors))
 
-    def load_releases: Releases =
+    def load_releases(): Releases =
       Releases(load(releases_toml, TOML.to_releases))
 
-    def load_licenses: Licenses =
+    def load_licenses(): Licenses =
       Licenses(load(licenses_toml, TOML.to_licenses))
 
-    def load_topics: Topics =
+    def load_topics(): Topics =
       Topics(load(topics_toml, TOML.to_topics))
 
     def load_entry(

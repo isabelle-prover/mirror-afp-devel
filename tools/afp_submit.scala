@@ -679,7 +679,7 @@ object AFP_Submit {
       def get(id: ID, state: State): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
           val metadata_files = Metadata.Files(base_dir = up(id))
-          val authors = metadata_files.load_authors
+          val authors = metadata_files.load_authors()
           val entries = metadata_files.entries.map(
             metadata_files.load_entry(_, authors, state.topics, state.licenses, state.releases))
 
@@ -1403,10 +1403,10 @@ object AFP_Submit {
 
   object State {
     def load(): State = {
-      val authors = Metadata.files.load_authors
-      val topics = Metadata.files.load_topics
-      val licenses = Metadata.files.load_licenses
-      val releases = Metadata.files.load_releases
+      val authors = Metadata.files.load_authors()
+      val topics = Metadata.files.load_topics()
+      val licenses = Metadata.files.load_licenses()
+      val releases = Metadata.files.load_releases()
       val entries = AFP_Structure.load_entries(authors, topics, licenses, releases)
 
       State(authors, topics, licenses, releases, entries)
