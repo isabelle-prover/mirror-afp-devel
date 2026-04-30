@@ -18,7 +18,7 @@ object AFP_Structure {
 
   def roots_entries: List[String] = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
 
-  def sessions_structure(options: Options = Options.init()): Sessions.Structure =
+  def sessions(options: Options = Options.init()): Sessions.Structure =
     Sessions.load_structure(options, select_dirs = List(thys_dir))
 
   def entry_names: List[String] = {
@@ -51,7 +51,7 @@ object AFP_Structure {
       Metadata.Entries(entry_names.map(name =>
         Metadata.files.load_entry(name, authors, topics, licenses, releases)))
 
-    new AFP(authors, topics, licenses, releases, entries, sessions_structure())
+    new AFP(authors, topics, licenses, releases, entries, sessions())
   }
 
   class AFP private[AFP_Structure](
