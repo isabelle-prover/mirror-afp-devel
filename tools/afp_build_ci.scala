@@ -43,15 +43,7 @@ object AFP_Build_CI {
     val store: Store,
     val mail_system: Option[Build_CI.Mail_System],
   ) {
-    lazy val entries = AFP_Structure.load().entries
-    lazy val entry_sessions: Map[Metadata.Entry.Name, List[String]] =
-      entries.values.map(entry =>
-        entry.name -> AFP_Structure.entry_sessions(entry.name).map(_.name)).toMap
-
-    def session_entry(session_name: String): Option[Metadata.Entry.Name] = {
-      val entry = entry_sessions.find { case (_, sessions) => sessions.contains(session_name) }
-      entry.map { case (name, _) => name }
-    }
+    lazy val afp = AFP_Structure.load()
 
     val isabelle_path = Path.explode("$ISABELLE_HOME")
     val isabelle_id =
@@ -88,7 +80,7 @@ object AFP_Build_CI {
         session <- results.sessions
         result = results(session)
         if !result.ok && !result.interrupted && !results.cancelled(session)
-        entry <- context.session_entry(session)
+        entry <- context.afp.perhaps_session_entry(session)
       } {
         val subject = "Build of AFP entry " + entry + " failed"
         val content = """
@@ -112,7 +104,7 @@ Last 50 lines from stderr (if available):
 
 """ + result.err_lines.takeRight(50).mkString("\n") + "\n"
 
-        val recipients = context.entries.get(entry).map(_.notifies).getOrElse(Nil)
+        val recipients = entry.metadata.notifies
         if (recipients.isEmpty) progress.echo("Entry " + entry + ": no maintainers specified")
         else {
           val to = recipients.map(mail => Mail.address(mail.address))
@@ -129,7 +121,7 @@ Last 50 lines from stderr (if available):
   ): Unit = {
     val entry_status =
       for {
-        (entry, sessions) <- results.sessions.groupBy(context.session_entry).toList
+        (entry, sessions) <- results.sessions.groupBy(context.afp.perhaps_session_entry).toList
         entry <- entry
         session_status = sessions.map(Status.from_results(results, _))
       } yield JSON.Object("entry" -> entry, "status" -> Status.merge(session_status.toList).str)
@@ -157,9 +149,9 @@ Last 50 lines from stderr (if available):
       Isabelle_System.make_directory(release_dir)
 
       progress.echo("Packing tars...")
-      for ((name, _) <- context.entries) {
-        val archive = release_dir + Path.basic("afp-" + name + "-current.tar.gz")
-        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(name),
+      for (entry <- context.afp.entry_list) {
+        val archive = release_dir + Path.basic("afp-" + entry.name + "-current.tar.gz")
+        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(entry.name),
           dir = AFP_Structure.thys_dir).check
       }
 
