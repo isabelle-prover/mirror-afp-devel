@@ -637,14 +637,14 @@ object AFP_Submit {
         file_extension: String
       ): (ID, State) = {
         val id = ID(Date.now())
-        val dir = up(id)
-        dir.file.mkdirs()
+        val base_dir = up(id)
+        base_dir.file.mkdirs()
 
-        val metadata_files = Metadata.Files(base_dir = dir)
+        val metadata_files = Metadata.Files(base_dir = base_dir)
         metadata_files.save_authors(metadata.authors.values.toList.sortBy(_.id))
         metadata.entries.foreach(metadata_files.save_entry)
 
-        val archive_file = dir + Path.basic(archive_name + file_extension)
+        val archive_file = base_dir + Path.basic(archive_name + file_extension)
         Bytes.write(archive_file, archive)
 
         val files =
@@ -652,8 +652,8 @@ object AFP_Submit {
         val patches =
           for {
             file <- files
-            relative = File.relative_path(dir, file).get
-          } yield Isabelle_System.make_patch(dir, relative, file)
+            relative = File.relative_path(base_dir, file).get
+          } yield Isabelle_System.make_patch(base_dir, relative, file)
         File.write(patch_file(id), cat_lines(patches))
 
         val info =
