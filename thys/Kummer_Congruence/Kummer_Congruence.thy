@@ -100,8 +100,8 @@ proof -
       using multiplicity_prime_bernoulli_num_ge[of p k] k p by auto
     finally show ?thesis by (simp add: mult_ac)
   qed auto
-  also have "of_int (N k) / of_int (D k * k) = bernoulli_rat k / of_nat k"
-    by (simp add: bernoulli_rat_def N_def D_def)
+  also have "of_int (N k) / of_int (D k * k) = bernoulli k / of_nat k"
+    by (simp add: bernoulli_conv_num_denom N_def D_def)
   finally show ?thesis .
 qed
 
@@ -230,7 +230,7 @@ proof (cases "e > 0")
   also have "of_int N' / of_nat (k1 * D k) = of_int (N k) / (of_nat (k * D k) :: rat)"
     unfolding N_eq unfolding k_eq using p by simp
   finally show ?thesis
-    by (simp add: M1_def bernoulli_rat_def N_def D_def mult_ac)
+    by (simp add: M1_def bernoulli_conv_num_denom N_def D_def mult_ac)
 qed auto
 
 theorem kummer_congruence:

@@ -4,6 +4,7 @@ AFP Metadata file structure with save and load operations.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 

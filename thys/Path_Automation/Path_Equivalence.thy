@@ -1422,6 +1422,20 @@ proof -
     by (rule homotopic_loops_subset) (use assms eq_loops_imp_path_image_eq[OF assms(1)] in auto)
 qed
 
+lemma eq_loops_imp_contour_integral_eq:
+  assumes "eq_loops p q" "valid_path p" "valid_path q"
+  assumes "f analytic_on (path_image p \<inter> path_image q)"
+  shows   "contour_integral p f = contour_integral q f"
+proof -
+  from assms(4) obtain A where A: "open A" "f holomorphic_on A" "path_image p \<inter> path_image q \<subseteq> A"
+    using analytic_on_holomorphic by auto
+  show ?thesis
+  proof (rule Cauchy_theorem_homotopic_loops)
+    show "homotopic_loops A p q"
+      by (intro eq_loops_imp_homotopic assms A)
+  qed (use assms A in auto)
+qed
+
 lemma eq_loops_homotopic_loops_trans [trans]:
   "eq_loops p q \<Longrightarrow> homotopic_loops A q r \<Longrightarrow> homotopic_loops A p r"
   "homotopic_loops A p q \<Longrightarrow> eq_loops q r \<Longrightarrow> homotopic_loops A p r"
@@ -1676,17 +1690,29 @@ proof -
   finally show ?thesis .
 qed
 
+lemma eq_loops_part_circlepath:
+  assumes "b = a + 2 * of_int n * pi" "b' = a' + 2 * of_int n * pi" "n \<noteq> 0"
+  shows   "eq_loops (part_circlepath x r a b) (part_circlepath x r a' b')"
+proof -
+  define c where "c = (a'-a)/(2*n*pi)"
+  have "eq_loops (part_circlepath x r a b) (shiftpath' c (part_circlepath x r a b))"
+    by (rule eq_loops_shiftpath'_right)
+       (auto simp: assms exp_eq_polar cis_multiple_2pi' simp flip: cis_mult)
+  also have "shiftpath' c (part_circlepath x r a b) = 
+               part_circlepath x r (a + 2 * real_of_int n * pi * c) (a + 2 * real_of_int n * pi * (c + 1))"
+      using shiftpath'_full_part_circlepath[of c x r a n] by (auto simp: assms)
+  also have "a + 2 * of_int n * pi * c = a'"
+    using \<open>n \<noteq> 0\<close> by (auto simp: c_def field_simps)
+  also have "a + 2 * real_of_int n * pi * (c + 1) = b'"
+    using \<open>n \<noteq> 0\<close> by (auto simp: c_def assms(1,2) field_simps)
+  finally show ?thesis .
+qed
+
 lemma eq_loops_full_part_circlepath:
   assumes "b = a + 2 * pi"
   shows   "eq_loops (part_circlepath x r a b) (circlepath x r)"
-proof -
-  have "eq_loops (circlepath x r) (shiftpath' (a / (2 * pi)) (circlepath x r))"
-    by simp
-  also have "shiftpath' (a / (2 * pi)) (circlepath x r) = part_circlepath x r a b"
-    by (simp add: shiftpath'_circlepath add_divide_distrib ring_distribs assms)
-  finally show ?thesis
-    by (rule eq_loops_sym)
-qed
+  unfolding circlepath_def
+  by (rule eq_loops_part_circlepath[where n = 1]) (simp_all add: assms)
 
 
 subsection \<open>Notation\<close>

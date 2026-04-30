@@ -760,7 +760,7 @@ fun construct_update is_pop binding sty thy =
            val attrS = StateMgt_core.filter_attr_of long_name thy
        in  fold (map_to_update sty is_pop thy) (attrS) (Free("\<sigma>",sty)) end
 
-fun cmd (decl, spec, prems, params) = #2 o Specification.definition decl params prems spec
+fun cmd (decl, spec, prems, params) = #2 o Specification.definition {verbose = false} decl params prems spec
 
 fun mk_push_name binding = Binding.prefix_name "push_" binding
 

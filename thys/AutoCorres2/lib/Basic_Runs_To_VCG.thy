@@ -70,8 +70,8 @@ method cleanup_ASSMs = simp_all only: remove_ASSMs
 
 definition SIMP_ASSM :: "bool \<Rightarrow> bool" where [remove_ASSMs]: "SIMP_ASSM P \<longleftrightarrow> P"
 lemma SIMP_ASSM_D: "SIMP_ASSM P \<Longrightarrow> P" by (simp add: SIMP_ASSM_def)
-setup \<open> Marked_Assumptions.add_marker @{const_name SIMP_ASSM} (fn thm => fn ctxt =>
-  ctxt addsimps [thm RS @{thm SIMP_ASSM_D}]) \<close>
+setup \<open>Marked_Assumptions.add_marker @{const_name SIMP_ASSM} (fn thm =>
+  Simplifier.add_simp (thm RS @{thm SIMP_ASSM_D}))\<close>
 
 section \<open>\<open>THEN_ALL_NEW_FORWARD\<close>\<close>
 
@@ -163,7 +163,7 @@ fun trace_print_tac ctxt msg st = print_tac ctxt (msg ()) st;
 val no_trace_tac = K (K (all_tac)):  Proof.context -> (unit -> string) -> tactic
 
 fun split_paired_all ctxt =
-  simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms split_paired_all})
+  simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm split_paired_all})
 
 fun prepare {do_nosplit, no_unsafe_hyp_subst} ctxt =
 let

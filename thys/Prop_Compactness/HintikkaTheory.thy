@@ -4,7 +4,7 @@
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
    https://idus.us.es/handle/11441/57780.In Spanish; 
-   Last modified: 11 Aug, 2025
+   Last modified: 3 Mar, 2026
  *)
 
 
@@ -43,16 +43,6 @@ assumes "ClosedPredicate H
 fun IH :: "'b formula set  \<Rightarrow> 'b \<Rightarrow> bool" where
   "IH H P = (if atom P \<in> H then True else False)"
 
-(*
-d. You claim to follow Fitting's book, but your proof that every Hintikka set is
-satisfiable is more complicated than needed. Here is an alternative method that
-use the suggestion in the book to proceed by structural induction in formulas
-(your strengthening is needed for negation and implication).
-
-
- - First prove that a Hintikka set ``realises'' the canonical version of each
- formula. For instance, if "\<not>. (F \<and>. G) \<in> H", then "\<not>. F \<in> H \<or> \<not>.G \<in> H".
-*)
 
 lemma (in HintikkaProp) HintikkaConj:
   assumes "(F \<and>. G) \<in> H"
@@ -208,42 +198,5 @@ lemma HintikkaEq :  "HintikkaP H = HintikkaProp H"
     DNegPredicate_def AlphaPredicate_def BetaPredicate_def ClosedPredicate_def
     by simp
 
-(*
-lemma consistenceEq : "consistenceP' C = consistenceP C"
-    unfolding consistenceP'_def consistenceP_def ClosedPredicate_def
-    AtomPredicate_def ConstPredicate_def DNegPredicate_def AlphaPredicate_def
-    BetaPredicate_def by simp
 
-
-Why bother to do this? Because now is clearer that you are doing almost the same
-thing in several theories: in HintikkaTheory, in Closedness, in
-FinitenessClosedCharProp, in MaximalHintikka, and in PropCompactness.
-
-
-Let us say that, at least, the names of each of the properties would become more
-significant.
-
-
-f. You might use locales, for example in FinitenessClosedCharProp to assume
-the consistent set \<C>.
-
-
-g. You use finite_character both to name a property and for a lemma; I find this
-a bit confusing.
-
-
-h. I understand that you want to keep your formalization self-contained but
-it would be ok to import HOL.Relation.
-
-
-i. I would rename nodes_formulas to atoms and put it in SyntaxAndSemantics.
-
-
-Minor issues:
--------------
-
-*)
-
-(*<*)
 end
-(*>*)

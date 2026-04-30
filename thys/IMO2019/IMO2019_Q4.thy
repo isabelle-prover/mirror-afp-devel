@@ -4,7 +4,7 @@
 *)
 section \<open>Q4\<close>
 theory IMO2019_Q4
-  imports "Prime_Distribution_Elementary.More_Dirichlet_Misc"
+  imports "Prime_Number_Theorem.Prime_Counting_Functions" "Stirling_Formula.Stirling_Formula"
 begin
 
 text \<open>
@@ -14,9 +14,6 @@ text \<open>
 subsection \<open>Auxiliary facts\<close>
 
 (* TODO: Move stuff from this section? *)
-lemma Sigma_insert: "Sigma (insert x A) f = (\<lambda>y. (x, y)) ` f x \<union> Sigma A f"
-  by auto
-
 lemma atLeastAtMost_nat_numeral:
   "{(m::nat)..numeral k} = 
      (if m \<le> numeral k then insert (numeral k) {m..pred_numeral k} else {})"

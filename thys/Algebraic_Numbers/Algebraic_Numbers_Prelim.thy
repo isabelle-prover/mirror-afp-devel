@@ -12,7 +12,6 @@ text \<open>This theory contains basic definition and results on algebraic numbe
   polynomial witnesses are available.
 
   Moreover, this theory contains the uniqueness result,
-  that for every algebraic number there is exactly one content-free irreducible polynomial with
   positive leading coefficient for it.
   This result is stronger than similar ones which you find in many textbooks.
   The reason is that here we do not require a least degree construction.
@@ -100,14 +99,14 @@ qed
 (* TODO: move *)
 lemma linear_irreducible_int:
   fixes p :: "int poly"
-  assumes deg: "degree p = 1" and cp: "content p dvd 1"
+  assumes deg: "degree p = 1" and cp: "Polynomial.content p dvd 1"
   shows "irreducible p"
 proof (intro irreducibleI)
   from deg show p0: "p \<noteq> 0" by auto
   from deg show "\<not> p dvd 1" by (auto simp: poly_dvd_1)
   fix a b assume p: "p = a * b"
   note * = cp[unfolded p is_unit_content_iff, unfolded content_mult]
-  have a1: "content a dvd 1" and b1: "content b dvd 1"
+  have a1: "Polynomial.content a dvd 1" and b1: "Polynomial.content b dvd 1"
     using content_ge_0_int[of a] pos_zmult_eq_1_iff_lemma[OF *] * by (auto simp: abs_mult)
   with p0 have a0: "a \<noteq> 0" and b0: "b \<noteq> 0" by auto
   from degree_mult_eq[OF this, folded p] assms
@@ -310,11 +309,11 @@ lemma abs_int_poly_represents[simp]:
 
 
 (* TODO: Move *)
-lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
+lemma content_pCons[simp]: "Polynomial.content (pCons a p) = gcd a (Polynomial.content p)"
   by (unfold content_def coeffs_pCons_eq_cCons cCons_def, auto)
 
 lemma content_uminus[simp]:
-  fixes p :: "'a :: ring_gcd poly" shows "content (-p) = content p"
+  fixes p :: "'a :: ring_gcd poly" shows "Polynomial.content (-p) = Polynomial.content p"
   by (induct p, auto)
 
 lemma primitive_abs_int_poly[simp]:
@@ -327,11 +326,11 @@ lemma abs_int_poly_inv[simp]: "smult (sgn (lead_coeff p)) (abs_int_poly p) = p"
 
 
 definition cf_pos :: "int poly \<Rightarrow> bool" where
-  "cf_pos p = (content p = 1 \<and> lead_coeff p > 0)"
+  "cf_pos p = (Polynomial.content p = 1 \<and> lead_coeff p > 0)"
 
 definition cf_pos_poly :: "int poly \<Rightarrow> int poly" where
   "cf_pos_poly f = (let
-      c = content f;
+      c = Polynomial.content f;
       d = (sgn (lead_coeff f) * c)
     in sdiv_poly f d)"
 
@@ -349,7 +348,7 @@ proof(cases "f = 0")
 next
   case False
   then have lc0: "lead_coeff f \<noteq> 0" by auto
-  then have s0: "sgn (lead_coeff f) \<noteq> 0" (is "?s \<noteq> 0") and "content f \<noteq> 0" (is "?c \<noteq> 0") by (auto simp: sgn_0_0)
+  then have s0: "sgn (lead_coeff f) \<noteq> 0" (is "?s \<noteq> 0") and "Polynomial.content f \<noteq> 0" (is "?c \<noteq> 0") by (auto simp: sgn_0_0)
   then have sc0: "?s * ?c \<noteq> 0" by auto
   { fix i
     from content_dvd_coeff sgn_is_unit[OF lc0]
@@ -360,8 +359,8 @@ next
 qed
 
 lemma
-  shows cf_pos_poly_main: "smult (sgn (lead_coeff f) * content f) (cf_pos_poly f) = f" (is ?g1)
-    and content_cf_pos_poly[simp]: "content (cf_pos_poly f) = (if f = 0 then 0 else 1)" (is ?g2)
+  shows cf_pos_poly_main: "smult (sgn (lead_coeff f) * Polynomial.content f) (cf_pos_poly f) = f" (is ?g1)
+    and content_cf_pos_poly[simp]: "Polynomial.content (cf_pos_poly f) = (if f = 0 then 0 else 1)" (is ?g2)
     and lead_coeff_cf_pos_poly[simp]: "lead_coeff (cf_pos_poly f) > 0 \<longleftrightarrow> f \<noteq> 0" (is ?g3)
     and cf_pos_poly_dvd[simp]: "cf_pos_poly f dvd f" (is ?g4)
 proof(atomize(full), (cases "f = 0"; intro conjI))
@@ -372,17 +371,17 @@ next
   let ?s = "sgn (lead_coeff f)"
   have s: "?s \<in> {-1,1}" using f0 unfolding sgn_if by auto
   define g where "g \<equiv> smult ?s f"
-  define d where "d \<equiv> ?s * content f"
-  have "content g = content ([:?s:] * f)" unfolding g_def by simp
-  also have "\<dots> = content [:?s:] * content f" unfolding content_mult by simp
-  also have "content [:?s:] = 1" using s by (auto simp: content_def)
-  finally have cg: "content g = content f" by simp
+  define d where "d \<equiv> ?s * Polynomial.content f"
+  have "Polynomial.content g = Polynomial.content ([:?s:] * f)" unfolding g_def by simp
+  also have "\<dots> = Polynomial.content [:?s:] * Polynomial.content f" unfolding content_mult by simp
+  also have "Polynomial.content [:?s:] = 1" using s by (auto simp: content_def)
+  finally have cg: "Polynomial.content g = Polynomial.content f" by simp
   from f0
   have d: "cf_pos_poly f = sdiv_poly f d"  by (auto simp: cf_pos_poly_def Let_def d_def)
   let ?g = "primitive_part g"
   define ng where "ng = primitive_part g"
   note d
-  also have "sdiv_poly f d = sdiv_poly g (content g)" unfolding cg unfolding g_def d_def
+  also have "sdiv_poly f d = sdiv_poly g (Polynomial.content g)" unfolding cg unfolding g_def d_def
     by (rule poly_eqI, unfold coeff_sdiv_poly coeff_smult, insert s, auto simp: div_minus_right)
   finally have fg: "cf_pos_poly f = primitive_part g" unfolding primitive_part_alt_def .
   have "lead_coeff f \<noteq> 0" using f0 by auto
@@ -391,18 +390,18 @@ next
   hence g0: "g \<noteq> 0" by auto
   from f0 content_primitive_part[OF this]
   show ?g2 unfolding fg by auto
-  from g0 have "content g \<noteq> 0" by simp
+  from g0 have "Polynomial.content g \<noteq> 0" by simp
   with arg_cong[OF content_times_primitive_part[of g], of lead_coeff, unfolded lead_coeff_smult]
     lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def
     by (metis dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
   with f0 show ?g3 unfolding fg ng_def by auto
 
   have d0: "d \<noteq> 0" using s f0 by (force simp add: d_def)
-  have "smult d (cf_pos_poly f) = smult ?s (smult (content f) (sdiv_poly (smult ?s f) (content f)))"
+  have "smult d (cf_pos_poly f) = smult ?s (smult (Polynomial.content f) (sdiv_poly (smult ?s f) (Polynomial.content f)))"
     unfolding fg primitive_part_alt_def cg by (simp add: g_def d_def)
-  also have "sdiv_poly (smult ?s f) (content f) = smult ?s (sdiv_poly f (content f))"
+  also have "sdiv_poly (smult ?s f) (Polynomial.content f) = smult ?s (sdiv_poly f (Polynomial.content f))"
     using s by (metis cg g_def primitive_part_alt_def primitive_part_smult_int sgn_sgn)
-  finally have "smult d (cf_pos_poly f) = smult (content f) (primitive_part f)"
+  finally have "smult d (cf_pos_poly f) = smult (Polynomial.content f) (primitive_part f)"
     unfolding primitive_part_alt_def using s by auto
   also have "\<dots> = f" by (rule content_times_primitive_part)
   finally have df: "smult d (cf_pos_poly f) = f" .
@@ -414,7 +413,7 @@ qed
 (* TODO: remove *)
 lemma irreducible_connect_int:
   fixes p :: "int poly"
-  assumes ir: "irreducible\<^sub>d p" and c: "content p = 1"
+  assumes ir: "irreducible\<^sub>d p" and c: "Polynomial.content p = 1"
   shows "irreducible p"
   using c primitive_iff_content_eq_1 ir irreducible_primitive_connect by blast
 
@@ -569,7 +568,7 @@ lemma of_int_monom:"of_int_poly p = [:rat_of_int c:] \<longleftrightarrow> p = [
 
 lemma degree_0_content:
   fixes p :: "int poly"
-  assumes deg: "degree p = 0" shows "content p = abs (coeff p 0)"
+  assumes deg: "degree p = 0" shows "Polynomial.content p = abs (coeff p 0)"
 proof-
   from deg obtain a where p: "p = [:a:]" by (auto dest: degree0_coeffs)
   show ?thesis by (auto simp: p)
@@ -791,7 +790,7 @@ qed
 
 lemma content_poly_uminus_inner[simp]:
   fixes as :: "'a :: ring_gcd list"
-  shows "content (poly_uminus_inner as) = content (Poly as)"
+  shows "Polynomial.content (poly_uminus_inner as) = Polynomial.content (Poly as)"
   by (induct as rule: poly_uminus_inner.induct, auto)
 
 

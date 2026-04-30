@@ -237,6 +237,31 @@ qed
 lemma fds_mangoldt: "fds mangoldt = fds moebius_mu * fds (\<lambda>n. of_real (ln (real n)))"
   by (subst fds_moebius_inversion) (rule fds_mangoldt_times_zeta [symmetric])
 
+lemma fds_mangoldt':
+  "fds mangoldt = fds_zeta * fds_deriv (fds moebius_mu)"
+proof -
+  have "fds mangoldt = (fds moebius_mu * fds (\<lambda>n. of_real (ln (real n)) :: 'a))"
+    (is "_ = ?f") by (subst fds_mangoldt) auto
+  also have "\<dots> = fds_zeta * fds_deriv (fds moebius_mu)"
+  proof (intro fds_eqI)
+    fix n :: nat assume n: "n > 0"
+    have "fds_nth ?f n = (\<Sum>d | d dvd n. moebius_mu d * of_real (ln (real (n div d))))"
+      by (auto simp: fds_eq_iff fds_nth_mult dirichlet_prod_def)
+    also have "\<dots> = (\<Sum>d | d dvd n. moebius_mu d * of_real (ln (real n / real d)))"
+      by (intro sum.cong) (auto elim!: dvdE simp: ln_mult split: if_splits)
+    also have "\<dots> = (\<Sum>d | d dvd n. moebius_mu d * of_real (ln n - ln d))"
+      using n by (intro sum.cong refl) (subst ln_div, auto elim!: dvdE)
+    also have "\<dots> = of_real (ln n) * (\<Sum>d | d dvd n. moebius_mu d) -
+                      (\<Sum>d | d dvd n. of_real (ln d) * moebius_mu d)"
+      by (simp add: sum_subtractf sum_distrib_left sum_distrib_right algebra_simps)
+    also have "of_real (ln n) * (\<Sum>d | d dvd n. moebius_mu d) = 0"
+      by (subst sum_moebius_mu_divisors') auto
+    finally show "fds_nth ?f n = fds_nth (fds_zeta * fds_deriv (fds moebius_mu) :: 'a fds) n"
+      by (simp add: fds_nth_mult dirichlet_prod_altdef1 fds_nth_deriv sum_negf scaleR_conv_of_real)
+  qed
+  finally show ?thesis .
+qed
+
 (* 2.18 *)
 lemma sum_divisors_moebius_mu_times_multiplicative:
   fixes f :: "nat \<Rightarrow> 'a :: {comm_ring_1}"
@@ -354,7 +379,30 @@ lemma completely_multiplicative_fds_inverse':
   assumes "completely_multiplicative_function (fds_nth f)"
   shows   "inverse f = fds (\<lambda>n. moebius_mu n * fds_nth f n)"
   by (metis assms completely_multiplicative_fds_inverse fds_fds_nth)
-    
+
+lemma completely_multiplicative_imp_moebius_mu_inverse:
+  fixes f :: "nat \<Rightarrow> 'a :: {comm_ring_1}"
+  assumes "completely_multiplicative_function f"
+  shows   "dirichlet_prod f (\<lambda>n. moebius_mu n * f n) n = (if n = 1 then 1 else 0)"
+proof -
+  interpret completely_multiplicative_function f by fact
+  have [simp]: "fds f \<noteq> 0" by (auto simp: fds_eq_iff)
+  have "dirichlet_prod f (\<lambda>n. moebius_mu n * f n) n =
+          (\<Sum>(r, d) | r * d = n. moebius_mu r * f (r * d))"
+    by (subst dirichlet_prod_commutes)
+       (simp add: fds_eq_iff fds_nth_mult fds_nth_fds dirichlet_prod_altdef2 mult_ac mult)
+  also have "\<dots> = (\<Sum>(r, d) | r * d = n. moebius_mu r * f n)"
+    by (intro sum.cong) auto
+  also have "\<dots> = dirichlet_prod moebius_mu (\<lambda>_. 1) n * f n"
+    by (simp add: dirichlet_prod_altdef2 sum_distrib_right case_prod_unfold mult)
+  also have "dirichlet_prod moebius_mu (\<lambda>_. 1) n = fds_nth (fds moebius_mu * fds_zeta) n"
+    by (simp add: fds_nth_mult)
+  also have "fds moebius_mu * fds_zeta = 1"
+    by (simp add: mult_ac fds_zeta_times_moebius_mu)
+  also have "fds_nth 1 n * f n = fds_nth 1 n"
+    by (auto simp: fds_eq_iff fds_nth_one)
+  finally show ?thesis by (simp add: fds_nth_one)
+qed
 
 context
   includes fds_syntax

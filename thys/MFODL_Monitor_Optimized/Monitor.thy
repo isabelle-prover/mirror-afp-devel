@@ -1135,7 +1135,7 @@ primrec (in maux) meval :: "nat \<Rightarrow> ts \<Rightarrow> Formula.database 
 definition (in maux) mstep :: "Formula.database \<times> ts \<Rightarrow> ('msaux, 'muaux) mstate \<Rightarrow> (nat \<times> event_data table) list \<times> ('msaux, 'muaux) mstate" where
   "mstep tdb st =
      (let (xs, m) = meval (mstate_n st) (snd tdb) (fst tdb) (mstate_m st)
-     in (List.enumerate (mstate_i st) xs,
+     in (indexed_from (mstate_i st) xs,
       \<lparr>mstate_i = mstate_i st + length xs, mstate_m = m, mstate_n = mstate_n st\<rparr>))"
 
 subsection \<open>Verdict delay\<close>
@@ -5438,7 +5438,7 @@ proof -
         dest!: spec[of _ "(i - progress \<sigma> Map.empty \<phi> (plen \<pi>))"])
   ultimately show ?thesis
     using assms(4) unfolding mstep_def Let_def flatten_verdicts_def
-    by (auto simp: in_set_enumerate_eq list_all2_conv_all_nth progress_mono le_imp_diff_is_add
+    by (auto simp: in_set_indexed_from_eq list_all2_conv_all_nth progress_mono le_imp_diff_is_add
         elim!: in_qtableE in_qtableI intro!: bexI[of _ "(i, Vs ! (i - progress \<sigma> Map.empty \<phi> (plen \<pi>)))"])
 qed
 

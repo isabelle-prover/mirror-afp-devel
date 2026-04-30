@@ -1098,9 +1098,9 @@ fun wellformed_tac ctxt L i =
         resolve_tac ctxt [AddSA_CompFun_ran_IFF] i,
         resolve_tac ctxt [insert_inter] i,
         resolve_tac ctxt [insert_notmem] i,
-        CHANGED (simp_tac (put_simpset HOL_basic_ss ctxt addsimps
-           [PseudoHA_HARoot, PseudoHA_CompFun, PseudoHA_CompFun_ran,PseudoHA_Events,PseudoHA_SAs,insert_union,
-            PseudoHA_HAInitValue,Un_empty_right]@ L) i),
+        CHANGED (simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
+           ([PseudoHA_HARoot, PseudoHA_CompFun, PseudoHA_CompFun_ran,PseudoHA_Events,PseudoHA_SAs,insert_union,
+            PseudoHA_HAInitValue,Un_empty_right] @ L)) i),
         fast_tac ctxt i,
         CHANGED (simp_tac ctxt i)];
 \<close>

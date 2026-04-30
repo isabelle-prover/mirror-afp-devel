@@ -119,8 +119,8 @@ fun ccompare_instance_via_comparator tname thy =
       | _ => HOLogic.mk_eq (main_is_ccompare,HOLogic_list_conj param_is_ccompare))
     val is_ccompare_thm = Goal.prove (Proof_Context.init_global thy) [] [] is_ccompare_thm_trm 
       (fn {context = ctxt, prems = _} => 
-        simp_tac (Splitter.add_split @{thm option.split} ctxt 
-          addsimps (cmp_thm :: @{thms ID_Some ID_None is_ccompare_def})
+        simp_tac (ctxt |> Splitter.add_split @{thm option.split}
+          |> Simplifier.add_simps (cmp_thm :: @{thms ID_Some ID_None is_ccompare_def})
         ) 1
       )
     val thy = register_is_c_dots_lemma @{const_name is_ccompare} (Long_Name.base_name tname) 

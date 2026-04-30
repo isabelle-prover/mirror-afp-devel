@@ -61,9 +61,9 @@ fun disp_msg title msg status = title ^ ": '" ^ msg ^ "' " ^ status
 fun lemma msg specification_theorem concl in_local thy =
   SOME
     (in_local (fn lthy =>
-           specification_theorem Thm.theoremK NONE (K I) Binding.empty_atts [] [] 
-             (Element.Shows [(Binding.empty_atts, [(concl lthy, [])])])
-             false lthy
+           specification_theorem NONE (K I) Binding.empty_atts [] []
+               (Element.Shows [(Binding.empty_atts, [(concl lthy, [])])])
+               lthy
         |> Proof.global_terminal_proof
              ((Method.Combinator ( Method.no_combinator_info
                                  , Method.Then
@@ -77,7 +77,7 @@ fun outer_syntax_command command_spec theory in_local =
   Outer_Syntax.command command_spec "assert that the given specification is true"
     (Parse.term >> (fn elems_concl => theory (fn thy =>
       case
-        lemma "nbe" (Specification.theorem true)
+        lemma "nbe" (Specification.theorem {verbose = false, kind = Thm.theoremK, long = true})
           (fn lthy => 
             let val expr = Nbe.dynamic_value lthy (Syntax.read_term lthy elems_concl)
                 val thy = Proof_Context.theory_of lthy
@@ -90,7 +90,7 @@ fun outer_syntax_command command_spec theory in_local =
           thy
       of  NONE => 
             let val attr_simp = "simp" in
-            case lemma attr_simp (Specification.theorem_cmd true) (K elems_concl) in_local thy of
+            case lemma attr_simp (Specification.theorem_cmd {verbose = false, kind = Thm.theoremK, long = true}) (K elems_concl) in_local thy of
                NONE => raise (ERROR "Assertion failed")
              | SOME thy => 
                 (writeln (disp_msg "OK" "simp" "finished the normalization");

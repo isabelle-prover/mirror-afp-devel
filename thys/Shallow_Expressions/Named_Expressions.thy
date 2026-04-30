@@ -26,7 +26,7 @@ struct
   fun expr_def attr decl term ctx =
   let val named_expr_defs = @{attributes [named_expr_defs]}
       val (n, eq) = mk_expr_def_eq ctx term
-      val (thm, ctx0) = Specification.definition 
+      val (thm, ctx0) = Specification.definition {verbose = false}
                    (Option.map (fn x => fst (Proof_Context.read_var x ctx)) decl) [] [] 
                    ((fst attr, map (Attrib.check_src ctx) (named_expr_defs @ snd attr)), eq) (snd (Local_Theory.begin_nested ctx))
       val ctx1 = ExprFun_Const.exprfun_const n (Local_Theory.end_nested ctx0)
@@ -36,7 +36,7 @@ struct
   fun named_expr n typ stateT expr ctx =
     let val named_expr_defs = @{attributes [named_expr_defs]}
         val term = Const (@{const_name "HOL.eq"}, dummyT) $ Syntax.free n $ expr
-        val ctx' = snd (Specification.definition 
+        val ctx' = snd (Specification.definition {verbose = false}
                        (SOME (Binding.name n, SOME (stateT --> typ), Mixfix.NoSyn)) [] [] 
                        ((Binding.name (n ^ "_def"), named_expr_defs), snd (mk_expr_def_eq ctx term)) (snd (Local_Theory.begin_nested ctx)))
         (* When adding an expression in a locale, the named recorded below may be the 

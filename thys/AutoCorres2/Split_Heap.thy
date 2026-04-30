@@ -3408,14 +3408,14 @@ qed
 
 local_setup \<open>
 let
-  fun unfold_ss ctxt = ctxt addsimps
-    Named_Theorems.get ctxt @{named_theorems "\<T>_def"} @
+  fun unfold_ss ctxt = ctxt |> Simplifier.add_simps
+    (Named_Theorems.get ctxt @{named_theorems "\<T>_def"} @
     @{thms
       list_ex_iff
       fun_upd_other
       field_lookup_typ_uinfo_t_Some
       fold_typ_uinfo_t
-      exists_nat_numeral}
+      exists_nat_numeral})
 in
   Cached_Theory_Simproc.declare_init_thy_simpset @{named_theorems "\<T>_def"} unfold_ss
 end

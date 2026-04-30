@@ -223,7 +223,7 @@ let
       ]
       val thm = (Goal.prove ctxt [] [] trm (fn _ =>
         resolve_tac ctxt [witness_exI] 1
-        THEN simp_tac (ctxt addsimps simps) 1))
+        THEN simp_tac (ctxt |> Simplifier.add_simps simps) 1))
       val match = Thm.match (Thm.cprop_of thm, Thm.cterm_of ctxt trm)
     in Drule.instantiate_normalize match thm end
 
@@ -283,7 +283,7 @@ let
     ]
     val thm = (Goal.prove ctxt [] [] trm (fn _ =>
       resolve_tac ctxt [witness_exI] 1
-      THEN simp_tac (ctxt addsimps simps) 1))
+      THEN simp_tac (ctxt |> Simplifier.add_simps simps) 1))
     val match = Thm.match (Thm.cprop_of thm, Thm.cterm_of ctxt trm)
   in
     Drule.instantiate_normalize match thm
@@ -539,7 +539,7 @@ fun mapCtxt mapTerm mapTyp ctxtElem = Element.map_ctxt
   ctxtElem
 
 fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding
-  includes assumptions shows int ctxt =
+  includes assumptions shows ctxt =
   let
     val ctxt = Bundle.includes_cmd includes ctxt
     val ctxt = if modallyStrict then setupStrictWorld ctxt else setupWeakWorld ctxt
@@ -554,12 +554,12 @@ fun AOT_theorem_cmd axiom modallyStrict long afterQed thmBinding
     val _ = fold (fn ((bnd,_),_) => fn _ =>
       AOT_print_item_number (Binding.name_of bnd)) stmts ()
   in
-    Specification.theorem long "AOT_theorem" NONE afterQed thmBinding []
-      assumptions (Element.Shows stmts) int ctxt
+    Specification.theorem {verbose = false, long = long, kind = Thm.theoremK} NONE afterQed thmBinding []
+      assumptions (Element.Shows stmts) ctxt
   end
 
 fun AOT_theorem spec note axiom modallyStrict descr =
-  Outer_Syntax.local_theory_to_proof' spec ("state " ^ descr)
+  Outer_Syntax.local_theory_to_proof spec ("state " ^ descr)
     ((long_statement || short_statement) >>
       (fn (long, binding, includes, elems, concl) =>
         (AOT_theorem_cmd axiom modallyStrict long
@@ -596,27 +596,27 @@ fun prep_stmt (fixes, assumes, shows) ctxt = let
   val concl = map (mapAttr |> apfst) concl
 in (fixes, assumes, concl) end
 
-fun gen_cmd kind stmt int state = let
+fun gen_cmd kind stmt state = let
     val (fixes, assumes, shows) = prep_stmt stmt (Proof.context_of state)
-  in (kind true NONE (K I) fixes assumes shows int) state end
+  in (kind true NONE (K I) fixes assumes shows) state end
 in
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_show\<close>
     "state local AOT goal, to refine pending subgoals"
     (structured_statement >> (fn stmt =>
-      Toplevel.proof' (fn int => (gen_cmd Proof.show stmt int #> #2))));
+      Toplevel.proof (gen_cmd Proof.show stmt #> #2)));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_thus\<close> "alias of  \"then AOT_show\""
     (structured_statement >> (fn stmt =>
-      Toplevel.proof' (fn int => Proof.chain #> (gen_cmd Proof.show stmt int #> #2))));
+      Toplevel.proof (Proof.chain #> (gen_cmd Proof.show stmt #> #2))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_have\<close> "state local AOT goal"
     (structured_statement >> (fn stmt =>
-      Toplevel.proof' (fn int => (gen_cmd Proof.have stmt int #> #2))));
+      Toplevel.proof (gen_cmd Proof.have stmt #> #2)));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_hence\<close> "alias of  \"then AOT_have\""
     (structured_statement >> (fn stmt =>
-      Toplevel.proof' (fn int => Proof.chain #> (gen_cmd Proof.have stmt int #> #2))));
+      Toplevel.proof (Proof.chain #> (gen_cmd Proof.have stmt #> #2))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_modally_strict {\<close>
     "begin explicit AOT modally-strict proof block"
@@ -635,20 +635,20 @@ val _ =
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_assume\<close> "assume AOT propositions"
     (structured_statement >> (fn stmt =>
-      Toplevel.proof' (fn _ => fn state => (let
+      Toplevel.proof (fn state => (let
             val (fixes, assumes, shows) = prep_stmt stmt (Proof.context_of state)
         in Proof.assume fixes (map snd assumes) shows state end))));
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_obtain\<close> "generalized AOT elimination"
     (Parse.parbinding -- Scan.optional (Parse.vars --| Parse.where_) [] --
-      structured_statement >> (fn ((a, b), stmt) => Toplevel.proof'
-        (fn int => fn state => (let
+      structured_statement >> (fn ((a, b), stmt) => Toplevel.proof
+        (fn state => (let
           val ctxt = Proof.context_of state
           val b = map (fn (a,b,c) => (a,Option.map (Syntax.read_typ ctxt) b, c)) b
           val bnds = map (fn (a,_,_) => a) b
           val (_,ctxt) = Variable.add_fixes_binding bnds ctxt
           val (fixes, assumes, shows) = prep_stmt stmt ctxt
-  in Obtain.obtain a b fixes (map snd assumes) shows int state end))));
+  in Obtain.obtain a b fixes (map snd assumes) shows state end))));
 
 end
 

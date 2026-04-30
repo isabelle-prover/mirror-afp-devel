@@ -74,11 +74,11 @@ instantiation natL :: semiring_modulo
 begin
 
 lift_definition divide_natL :: "natL \<Rightarrow> natL \<Rightarrow> natL" is divide
-  apply (auto simp: div_int_pos_iff)
+  apply (simp add: div_int_pos_iff)
   by (smt (verit) div_by_0 div_by_1 zdiv_mono2)
 
 lift_definition modulo_natL :: "natL \<Rightarrow> natL \<Rightarrow> natL" is modulo
-  apply (auto simp: mod_int_pos_iff)
+  apply (simp add: mod_int_pos_iff)
   by (smt (verit) zmod_le_nonneg_dividend)
 
 instance
@@ -87,16 +87,10 @@ instance
 end
 
 instance natL :: finite
-  apply standard
-  unfolding type_definition.univ[OF type_definition_natL]
-  by simp
+  by standard (simp flip: type_definition.Abs_image[OF type_definition_natL])
 
-lemma natL_card[simp]:
-  "CARD(natL) = L"
-  unfolding type_definition.univ[OF type_definition_natL]
-  apply (subst card_image)
-  subgoal by (meson Abs_natL_inject inj_onI)
-  subgoal by simp
-  done
+lemma natL_card[simp]: "CARD(natL) = L"
+  by (metis card_atLeastZeroLessThan_int nat_int type_definition.card
+    type_definition_natL)
 
 end

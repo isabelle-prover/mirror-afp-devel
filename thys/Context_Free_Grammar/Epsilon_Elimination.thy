@@ -239,7 +239,7 @@ next
     using Cons Un_iff by auto
 qed
 
-lemma Eps_elim_rel_1: "r' \<in> set (eps_closure ps r) \<Longrightarrow> ps \<turnstile> r \<Rightarrow>* r'"
+lemma Eps_elim_1: "r' \<in> set (eps_closure ps r) \<Longrightarrow> ps \<turnstile> r \<Rightarrow>* r'"
 proof (induction r arbitrary: r')
   case (Cons a r)
   then show ?case 
@@ -270,7 +270,7 @@ proof (induction r arbitrary: r')
   qed
 qed simp
 
-lemma Eps_elim_rel_r2: 
+lemma Eps_elim_r2: 
   assumes "Eps_elim ps \<turnstile> u \<Rightarrow> v"
   shows "ps \<turnstile> u \<Rightarrow>* v"
   using assms 
@@ -282,7 +282,7 @@ proof -
   obtain r where r: "(A, r) \<in> ps \<and> \<alpha> \<in> set (eps_closure ps r)"
     using 1 by blast
   hence "ps \<turnstile> r \<Rightarrow>* \<alpha>" 
-    using Eps_elim_rel_1 by blast
+    using Eps_elim_1 by blast
   hence 2: "ps \<turnstile> x @ r @ y \<Rightarrow>* x @ \<alpha> @ y"
     using r derives_prepend derives_append by blast
   hence "ps \<turnstile> x @ [Nt A] @ y \<Rightarrow> x @ r @ y" 
@@ -291,22 +291,22 @@ proof -
     using 2 by (simp add: A)
 qed
 
-lemma Eps_elim_rel_r3:
+lemma Eps_elim_r3:
   assumes "Eps_elim ps \<turnstile> u \<Rightarrow>* v"
   shows "ps \<turnstile> u \<Rightarrow>* v"
-    using assms by (induction v rule: rtranclp_induct) (auto simp: Eps_elim_rel_r2 rtranclp_trans)
+    using assms by (induction v rule: rtranclp_induct) (auto simp: Eps_elim_r2 rtranclp_trans)
 
-lemma Eps_elim_rel_r5: "r \<in> set (eps_closure ps r)" 
+lemma Eps_elim_r5: "r \<in> set (eps_closure ps r)" 
   by (induction r) auto
 
-lemma Eps_elim_rel_r4:
+lemma Eps_elim_r4:
   assumes "(l,r) \<in> ps"
     and "(r' \<noteq> [])" 
     and "r' \<in> set (eps_closure ps r)"
   shows "(l,r') \<in> Eps_elim ps"
   using assms unfolding Eps_elim_def by blast
 
-lemma Eps_elim_rel_r7: 
+lemma Eps_elim_r7: 
   assumes "ps \<turnstile> [Nt A] \<Rightarrow> v"
     and "v' \<in> set (eps_closure ps v) \<and> (v' \<noteq> [])"
   shows "Eps_elim ps \<turnstile> [Nt A] \<Rightarrow> v'"
@@ -314,26 +314,26 @@ proof -
   have "(A,v) \<in> ps" 
     using assms(1) by (simp add: derive_singleton)
   hence "(A,v') \<in> Eps_elim ps" 
-    using assms Eps_elim_rel_r4 conjE by fastforce
+    using assms Eps_elim_r4 conjE by fastforce
   thus ?thesis 
     using derive_singleton by fast
 qed
 
-lemma Eps_elim_rel_r12a: 
+lemma Eps_elim_r12a: 
   assumes "x' \<in> set (eps_closure ps x)"
     and "y' \<in> set (eps_closure ps y)"
   shows "(x'@y') \<in> set (eps_closure ps (x@y))"
   using assms by (induction x arbitrary: x' y y' rule: eps_closure.induct) auto
 
-lemma Eps_elim_rel_r12b:
+lemma Eps_elim_r12b:
   assumes "x' \<in> set (eps_closure ps x)"
     and "y' \<in> set (eps_closure ps y)"
     and "z' \<in> set (eps_closure ps z)"
   shows "(x'@y'@z') \<in> set (eps_closure ps (x@y@z))"
   using assms 
-  by (induction x arbitrary: x' y y' z z' rule: eps_closure.induct) (auto simp: Eps_elim_rel_r12a)
+  by (induction x arbitrary: x' y y' z z' rule: eps_closure.induct) (auto simp: Eps_elim_r12a)
 
-lemma Eps_elim_rel_r14:
+lemma Eps_elim_r14:
   assumes "r' \<in> set (eps_closure ps (x@y))"
   shows "\<exists>x' y'. (r'=x'@y') \<and> x' \<in> set (eps_closure ps x) \<and> y' \<in> set (eps_closure ps y)"
   using assms
@@ -365,7 +365,7 @@ proof (induction x arbitrary: y r' rule: eps_closure.induct)
   qed
 qed simp
 
-lemma Eps_elim_rel_r15:
+lemma Eps_elim_r15:
   assumes "ps \<turnstile> [Nt S] \<Rightarrow>* u"
     and "v \<in> set (eps_closure ps u) \<and> (v \<noteq> [])"
   shows "Eps_elim ps \<turnstile> [Nt S] \<Rightarrow>* v"
@@ -378,7 +378,7 @@ next
   case (step x A y w)
   then obtain x' w' y' where 
     v: "(v = (x'@w'@y')) \<and> x' \<in> set (eps_closure ps x) \<and> w' \<in> set (eps_closure ps w) \<and> y' \<in> set (eps_closure ps y)"
-    using step Eps_elim_rel_r14 by metis
+    using step Eps_elim_r14 by metis
   then show ?case
   proof (cases "w' = []")
     case True
@@ -391,19 +391,19 @@ next
       hence "[] \<in> set (eps_closure ps [Nt A])" 
         using step(2) NullableSym by fastforce
       hence "(x'@y') \<in> set (eps_closure ps (x@[Nt A]@y))"
-        using Eps_elim_rel_r12b[of x' ps x \<open>[]\<close> \<open>[Nt A]\<close> y' y] v by simp
+        using Eps_elim_r12b[of x' ps x \<open>[]\<close> \<open>[Nt A]\<close> y' y] v by simp
       then show ?thesis 
         using \<open>v = x' @ y'\<close> step by blast
   next
     case False
       have "(x'@[Nt A]@y') \<in> set (eps_closure ps (x@[Nt A]@y)) "
-        using Eps_elim_rel_r12b[of x' ps x \<open>[Nt A]\<close> \<open>[Nt A]\<close> y' y] Eps_elim_rel_r5[of \<open>[Nt A]\<close> ps] v by blast
+        using Eps_elim_r12b[of x' ps x \<open>[Nt A]\<close> \<open>[Nt A]\<close> y' y] Eps_elim_r5[of \<open>[Nt A]\<close> ps] v by blast
       hence 1: "Eps_elim ps \<turnstile> [Nt S] \<Rightarrow>* (x'@[Nt A]@y')" 
         using step by blast
       have "ps \<turnstile> [Nt A] \<Rightarrow> w" 
         using step(2) derive_singleton by blast
       hence "Eps_elim ps \<turnstile> [Nt A] \<Rightarrow> w'"
-        using Eps_elim_rel_r7[of ps A w w'] False step v by blast
+        using Eps_elim_r7[of ps A w w'] False step v by blast
       hence "Eps_elim ps \<turnstile> (x'@[Nt A]@y') \<Rightarrow> (x'@w'@y')" 
         using derive_append derive_prepend by blast
       thus ?thesis using 1
@@ -411,7 +411,7 @@ next
   qed
 qed
 
-theorem Eps_elim_rel_eq_if_noe:
+theorem Eps_elim_eq_if_noe:
   assumes "[] \<notin> Lang ps S"
   shows "Lang ps S = Lang (Eps_elim ps) S"
 proof 
@@ -422,9 +422,9 @@ proof
     have "\<forall>x. ps \<turnstile> [Nt S] \<Rightarrow>* x \<longrightarrow> x \<noteq> []"
       using assms Lang_def by fastforce
     hence "(map Tm x) \<in> set (eps_closure ps (map Tm x))" 
-      using Eps_elim_rel_r5 by auto
+      using Eps_elim_r5 by auto
     hence "Eps_elim ps \<turnstile> [Nt S] \<Rightarrow>* (map Tm x)"
-      using assms \<open>x \<in> Lang ps S\<close> Lang_def Eps_elim_rel_r15[of ps S \<open>map Tm x\<close>] by fast
+      using assms \<open>x \<in> Lang ps S\<close> Lang_def Eps_elim_r15[of ps S \<open>map Tm x\<close>] by fast
     thus "x \<in> Lang (Eps_elim ps) S"
       using Lang_def \<open>x \<in> Lang ps S\<close> by fast 
   qed
@@ -434,15 +434,15 @@ next
     fix x'
     assume "x' \<in> Lang (Eps_elim ps) S"
     show "x' \<in> Lang ps S" 
-      using assms Lang_def \<open>x' \<in> Lang (Eps_elim ps) S\<close> Eps_elim_rel_r3[of ps \<open>[Nt S]\<close> \<open>map Tm x'\<close>] by fast
+      using assms Lang_def \<open>x' \<in> Lang (Eps_elim ps) S\<close> Eps_elim_r3[of ps \<open>[Nt S]\<close> \<open>map Tm x'\<close>] by fast
   qed
 qed
 
 (* correctness *)
-lemma noe_lang_Eps_elim_rel_aux: 
-  assumes "ps \<turnstile> [Nt S] \<Rightarrow>* w" "w = []"  
-  shows "\<exists>A. ps \<turnstile> [Nt S] \<Rightarrow>* [Nt A] \<and> (A, w) \<in> ps"
-  using assms by (induction w rule: rtranclp_induct) (auto simp: derive.simps)
+lemma noe_lang_Eps_elim_aux: 
+  assumes "ps \<turnstile> [Nt S] \<Rightarrow>* []"
+  shows "\<exists>A. ps \<turnstile> [Nt S] \<Rightarrow>* [Nt A] \<and> (A, []) \<in> ps"
+  using assms[unfolded rtranclp.simps[of _  _ "[]"]] derive.cases by fastforce
 
 lemma noe_lang_Eps_elim_rel: "[] \<notin> Lang (Eps_elim ps) S"
 proof (rule notI)
@@ -452,7 +452,7 @@ proof (rule notI)
   hence "Eps_elim ps \<turnstile> [Nt S] \<Rightarrow>* []"
     by simp
   hence "\<exists>A. Eps_elim ps \<turnstile> [Nt S] \<Rightarrow>* [Nt A] \<and> (A, []) \<in> Eps_elim ps"
-    using noe_lang_Eps_elim_rel_aux[of \<open>Eps_elim ps\<close>] by blast
+    using noe_lang_Eps_elim_aux[of \<open>Eps_elim ps\<close>] by blast
   thus False 
     unfolding Eps_elim_def by blast
 qed
@@ -466,7 +466,7 @@ proof
     hence "w \<in> Lang (Eps_elim ps) S - {[]}"
       by (simp add: noe_lang_Eps_elim_rel)
     thus "w \<in> Lang ps S - {[]}"
-      by (auto simp: Lang_def Eps_elim_rel_r3)
+      by (auto simp: Lang_def Eps_elim_r3)
   qed
 next
   show "Lang ps S - {[]} \<subseteq> Lang (Eps_elim ps) S"
@@ -478,9 +478,9 @@ next
     have 2: "ps \<turnstile> [Nt S] \<Rightarrow>* (map Tm w)"
       using \<open>w \<in> Lang ps S - {[]}\<close> Lang_def by fast
     have "(map Tm w) \<in> set (eps_closure ps (map Tm w)) "
-      using \<open>w \<in> Lang ps S - {[]}\<close> Eps_elim_rel_r5 by blast
+      using \<open>w \<in> Lang ps S - {[]}\<close> Eps_elim_r5 by blast
     hence "Eps_elim ps \<turnstile> [Nt S] \<Rightarrow>* (map Tm w)"
-      using 1 2 Eps_elim_rel_r15[of ps] by simp
+      using 1 2 Eps_elim_r15[of ps] by simp
     thus "w \<in> Lang (Eps_elim ps) S"
       by (simp add: Lang_def)
   qed

@@ -407,7 +407,7 @@ definition "TO_SUC (n::nat) \<equiv> n"
 
 simproc_setup TO_SUC (\<open>TO_SUC (numeral x)\<close>) = \<open>
 fn phi => fn ctxt => fn ct =>
-  SOME (Simplifier.rewrite (ctxt addsimps @{thms TO_SUC_def Num.numeral_nat}) ct)
+  SOME (Simplifier.rewrite (ctxt |> Simplifier.add_simps @{thms TO_SUC_def Num.numeral_nat}) ct)
 \<close>
 declare [[simproc del: TO_SUC]]
 
@@ -647,7 +647,7 @@ lemma nat_to_bin_string_inj [simp]: "nat_to_bin_string n = nat_to_bin_string m \
 
 simproc_setup nat_to_bin_string (\<open>nat_to_bin_string (numeral x)\<close>) = \<open>
 fn phi => fn ctxt => fn ct =>
-  SOME (Simplifier.rewrite (ctxt addsimps @{thms nat_to_bin_string.simps}) ct)
+  SOME (Simplifier.rewrite (ctxt |> Simplifier.add_simps @{thms nat_to_bin_string.simps}) ct)
 \<close>
 
 lemma rewrite_solve_prop:

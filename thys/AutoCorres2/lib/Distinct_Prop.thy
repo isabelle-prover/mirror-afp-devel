@@ -211,24 +211,6 @@ lemma Union_list_update:
     done
   done
 
-lemma fst_enumerate:
-  "i < length xs \<Longrightarrow> fst (enumerate n xs ! i) = i + n"
-  by (metis add.commute fst_conv nth_enumerate_eq)
-
-lemma snd_enumerate:
-  "i < length xs \<Longrightarrow> snd (enumerate n xs ! i) = xs ! i"
-  by (metis nth_enumerate_eq snd_conv)
-
-lemma enumerate_member:
-  assumes "i < length xs"
-  shows "(n + i, xs ! i) \<in> set (enumerate n xs)"
-proof -
-  have pair_unpack: "\<And>a b x. ((a, b) = x) = (a = fst x \<and> b = snd x)" by fastforce
-  from assms have "(n + i, xs ! i) = enumerate n xs ! i"
-    by (auto simp: fst_enumerate snd_enumerate pair_unpack)
-  with assms show ?thesis by simp
-qed
-
 lemma distinct_prop_nth:
   "\<lbrakk> distinct_prop P ls; n < n'; n' < length ls \<rbrakk> \<Longrightarrow> P (ls ! n) (ls ! n')"
   apply (induct ls arbitrary: n n'; simp)

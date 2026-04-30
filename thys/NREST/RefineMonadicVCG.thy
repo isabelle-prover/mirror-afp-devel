@@ -92,7 +92,7 @@ ML \<open>
       case dest_case ctxt case_term of
         NONE => no_tac
       | SOME (arg,case_thms) => let 
-            val stac = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps case_thms) 
+            val stac = asm_full_simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps case_thms) 
           in 
           (*CHANGED o stac
           ORELSE'*)

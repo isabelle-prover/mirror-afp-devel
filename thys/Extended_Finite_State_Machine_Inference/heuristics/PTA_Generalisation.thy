@@ -61,7 +61,7 @@ fun observe_all :: "iEFSM \<Rightarrow>  cfstate \<Rightarrow> registers \<Right
     )"
 
 definition transition_groups_exec :: "iEFSM \<Rightarrow> trace \<Rightarrow> (nat \<times> tids \<times> transition) list list" where
-  "transition_groups_exec e t = group_by (\<lambda>(_, _, t1) (_, _, t2). same_structure t1 t2) (enumerate 0 (observe_all e 0 <> t))"
+  "transition_groups_exec e t = group_by (\<lambda>(_, _, t1) (_, _, t2). same_structure t1 t2) (indexed_from 0 (observe_all e 0 <> t))"
 
 type_synonym struct = "(label \<times> arity \<times> value_type list)"
 
@@ -340,7 +340,7 @@ definition get_output :: "label \<Rightarrow> nat \<Rightarrow> value list \<Rig
 code_printing constant get_output \<rightharpoonup> (Scala) "Dirties.getOutput"
 
 definition get_outputs :: "label \<Rightarrow> nat \<Rightarrow> value list \<Rightarrow> inputs list \<Rightarrow> registers list \<Rightarrow> value list list \<Rightarrow> (vname aexp \<times> (vname \<Rightarrow>f String.literal)) option list" where
-  "get_outputs l maxReg values I r outputs = List.map_tailrec (\<lambda>(maxReg, ps). get_output l maxReg values (zip I (zip r ps))) (enumerate maxReg (transpose outputs))"
+  "get_outputs l maxReg values I r outputs = List.map_tailrec (\<lambda>(maxReg, ps). get_output l maxReg values (zip I (zip r ps))) (indexed_from maxReg (transpose outputs))"
 
 definition enumerate_exec_values :: "trace \<Rightarrow> value list" where
   "enumerate_exec_values vs = fold (\<lambda>(_, i, p) I. List.union (List.union i p) I) vs []"
@@ -359,7 +359,7 @@ definition generalise_and_update :: "log \<Rightarrow> iEFSM \<Rightarrow> trans
       max_reg = max_reg_total e;
       outputs = get_outputs label max_reg values I R P
     in
-      put_updates log values gp (enumerate 0 outputs) e
+      put_updates log values gp (indexed_from 0 outputs) e
   )"
 
 text \<open>Splitting structural groups up into subgroups by previous transition can cause different

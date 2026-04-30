@@ -3,6 +3,7 @@ theory Weierstrass_Elliptic
 imports 
   Elliptic_Functions
   Modular_Group
+  Theta_Functions.Theta_Nullwert
 begin
 
 text \<open>
@@ -415,7 +416,7 @@ qed
 
 definition eisenstein_fun_aux :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
   "eisenstein_fun_aux n z =
-     (if n = 0 then 1 else if n < 3 \<or> z \<in> \<Lambda>\<^sup>* then 0 else (\<Sum>\<^sub>\<infinity>\<omega>\<in>\<Lambda>\<^sup>*. 1 / (z - \<omega>) ^ n))"
+     (if n = 0 then -1 else if n < 3 \<or> z \<in> \<Lambda>\<^sup>* then 0 else (\<Sum>\<^sub>\<infinity>\<omega>\<in>\<Lambda>\<^sup>*. 1 / (z - \<omega>) ^ n))"
 
 lemma eisenstein_fun_aux_at_pole_eq_0: "n > 0 \<Longrightarrow> z \<in> \<Lambda>\<^sup>* \<Longrightarrow> eisenstein_fun_aux n z = 0"
   by (simp add: eisenstein_fun_aux_def)
@@ -1597,6 +1598,9 @@ definition number_e3:: "complex" ("\<e>\<^sub>3") where
 
 lemmas number_e123_defs = number_e1_def number_e2_def number_e3_def
 
+definition modulus :: complex where
+  "modulus = (\<e>\<^sub>3 - \<e>\<^sub>2) / (\<e>\<^sub>1 - \<e>\<^sub>2)"
+
 text \<open>
   The half-lattice points are those that are equivalent to one of the three points
   $\frac{\omega_1}{2}$, $\frac{\omega_2}{2}$, and $\frac{\omega_1 + \omega_2}{2}$.
@@ -1973,6 +1977,9 @@ lemma number_e1_cnj [simp]: "cnj.number_e1 = cnj number_e1"
   by (simp_all add: number_e1_def cnj.number_e1_def number_e2_def 
                     cnj.number_e2_def number_e3_def cnj.number_e3_def weierstrass_fun_cnj)
 
+lemma modulus_cnj [simp]: "cnj.modulus = cnj modulus"
+  by (simp add: modulus_def cnj.modulus_def)
+
 end
 
 
@@ -2021,6 +2028,69 @@ lemma bij_betw_stretch_lattice0:
   unfolding lattice0_def stretched.lattice0_def
   by (intro bij_betw_DiffI bij_betw_stretch_lattice) auto
 
+lemma in_stretch_lattice_iff: "z \<in> stretched.lattice \<longleftrightarrow> z / c \<in> lattice"
+  proof
+  assume "z \<in> stretched.lattice"
+  hence "inverse c * z \<in> lattice"
+    using mult_into_stretched_lattice' by blast
+  thus "z / c \<in> lattice"
+    by (simp add: field_simps)
+next
+  assume "z / c \<in> lattice"
+  hence "c * (z / c) \<in> stretched.lattice"
+    using mult_into_stretched_lattice by blast
+  thus "z \<in> stretched.lattice"
+    using stretch_nonzero by (auto simp: field_simps)
+qed
+
+lemma in_stretch_lattice0_iff: "z \<in> stretched.lattice0 \<longleftrightarrow> z / c \<in> lattice0"
+  by (auto simp: stretched.lattice0_def lattice0_def in_stretch_lattice_iff stretch_nonzero)
+
+lemma weierstrass_fun_aux_stretch: "stretched.weierstrass_fun_aux z = weierstrass_fun_aux (z / c) / c ^ 2"
+proof (cases "z \<in> stretched.lattice0")
+  case True
+  thus ?thesis using stretch_nonzero
+    by (auto simp: in_stretch_lattice0_iff stretched.weierstrass_fun_aux_def weierstrass_fun_aux_def)
+next
+  case False
+  hence *: "z / c \<notin> lattice0"
+    by (auto simp: in_stretch_lattice0_iff stretch_nonzero)
+  have "((\<lambda>\<omega>. 1 / (z - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) has_sum stretched.weierstrass_fun_aux z) stretched.lattice0"
+    by (rule stretched.weierstrass_fun_aux_has_sum) fact
+  also have "?this \<longleftrightarrow> ((\<lambda>\<omega>. 1 / (z - c * \<omega>)\<^sup>2 - 1 / (c * \<omega>)\<^sup>2) has_sum 
+                         stretched.weierstrass_fun_aux z) lattice0"
+    by (intro has_sum_reindex_bij_betw [symmetric] bij_betw_stretch_lattice0)
+  also have "\<dots> \<longleftrightarrow> ((\<lambda>\<omega>. (1 / (z / c - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) / c ^ 2) has_sum 
+                       stretched.weierstrass_fun_aux z) lattice0"
+    by (intro has_sum_cong) (auto simp: field_simps lattice0_def stretch_nonzero)
+  finally have "((\<lambda>\<omega>. (1 / (z / c - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) / c ^ 2) has_sum  
+                  stretched.weierstrass_fun_aux z) lattice0" .
+  moreover have "((\<lambda>\<omega>. (1 / (z / c - \<omega>)\<^sup>2 - 1 / \<omega>\<^sup>2) / c ^ 2) has_sum  
+                    weierstrass_fun_aux (z / c) / c ^ 2) lattice0"
+    by (intro has_sum_divide_const weierstrass_fun_aux_has_sum) fact
+  ultimately show ?thesis
+    using has_sum_unique by blast
+qed
+
+lemma weierstrass_fun_stretch: "stretched.weierstrass_fun z = weierstrass_fun (z / c) / c ^ 2"
+  by (auto simp: stretched.weierstrass_fun_def weierstrass_fun_def weierstrass_fun_aux_stretch
+                 in_stretch_lattice_iff divide_simps)
+
+lemma number_e1_stretch [simp]: "stretched.number_e1 = number_e1 / c ^ 2"
+  by (simp add: stretched.number_e1_def number_e1_def weierstrass_fun_stretch stretch_nonzero)
+
+lemma number_e2_stretch [simp]: "stretched.number_e2 = number_e2 / c ^ 2"
+  by (simp add: stretched.number_e2_def number_e2_def weierstrass_fun_stretch stretch_nonzero)
+
+lemma number_e3_stretch [simp]: "stretched.number_e3 = number_e3 / c ^ 2"
+  by (simp add: stretched.number_e3_def number_e3_def weierstrass_fun_stretch 
+                stretch_nonzero add_divide_distrib)
+
+lemma modulus_stretch [simp]: "stretched.modulus = modulus"
+  using stretch_nonzero
+  unfolding stretched.modulus_def modulus_def number_e1_stretch number_e2_stretch number_e3_stretch
+  by (simp add: divide_simps)
+
 end
 
                                                                         
@@ -2032,14 +2102,13 @@ definition \<omega>2' where "\<omega>2' = of_int a * \<omega>2 + of_int b * \<om
 
 sublocale transformed: complex_lattice \<omega>1' \<omega>2'
 proof unfold_locales
-  define \<tau> where "\<tau> = \<omega>2 / \<omega>1"
   have "Im (\<phi> \<tau>) \<noteq> 0"
-    using fundpair Im_transform_zero_iff[of \<tau>] unfolding \<tau>_def
+    using fundpair Im_transform_zero_iff[of \<tau>] unfolding ratio_def
     by (auto simp: fundpair_def complex_is_Real_iff)
   also have "\<phi> \<tau> = \<omega>2' / \<omega>1'"
-    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def \<tau>_def divide_simps)
+    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def ratio_def divide_simps)
   finally show "fundpair (\<omega>1', \<omega>2')"
-    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def \<tau>_def field_simps 
+    by (simp add: \<phi>_def \<omega>1'_def \<omega>2'_def moebius_def ratio_def field_simps 
                   fundpair_def complex_is_Real_iff)
 qed
 
@@ -2359,9 +2428,10 @@ end
 lemma (in even_elliptic_function) in_terms_of_weierstrass_fun_even_aux:
   assumes nontrivial: "\<not>eventually (\<lambda>z. f z = 0) (cosparse UNIV)"
   defines "Z \<equiv> {z\<in>half_fund_parallelogram - {0}. is_pole f z \<or> isolated_zero f z}"
-  defines "h \<equiv> (\<lambda>z. if z \<in> Z then zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1) else 0)"
+  defines "h \<equiv> (\<lambda>z. zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1))"
   obtains c where "eventually (\<lambda>z. f z = c * (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w)) (cosparse UNIV)"
 proof -
+  define h' where "h' = (\<lambda>z. if z \<in> Z then h z else 0)"
   define g where "g = (\<lambda>z. (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w))"
   have [intro]: "finite Z"
   proof (rule finite_subset)
@@ -2386,10 +2456,10 @@ proof -
       thus "(if rel z w \<or> rel z (-w) then if 2 * w \<in> \<Lambda> then 2 * h w else h w else 0) = 0"
         using rel_in_half_fund_parallelogram_imp_eq[of z w] z by (auto simp: Z_def)
     qed auto
-    also have "\<dots> = (if 2 * z \<in> \<Lambda> then 2 * h z else h z)"
-      by (auto simp: h_def)
+    also have "\<dots> = (if 2 * z \<in> \<Lambda> then 2 * h' z else h' z)"
+      by (auto simp: h_def h'_def)
     also have "\<dots> = (if z \<in> Z then zorder f z else 0)"
-      using even_zorder[of z] nontrivial by (auto simp: h_def)
+      using even_zorder[of z] nontrivial by (auto simp: h_def h'_def)
     also have "\<dots> = zorder f z"
     proof (cases "z \<in> Z")
       case False
@@ -2485,7 +2555,7 @@ proof (cases "eventually (\<lambda>z. f z = 0) (cosparse UNIV)")
 next
   case False
   define Z where "Z = {z\<in>half_fund_parallelogram - {0}. is_pole f z \<or> isolated_zero f z}"
-  define h where "h = (\<lambda>z. if z \<in> Z then zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1) else 0)"
+  define h where "h = (\<lambda>z. zorder f z div (if 2 * z \<in> \<Lambda> then 2 else 1))"
   obtain c where *: "eventually (\<lambda>z. f z = c * (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w)) (cosparse UNIV)"
     using False in_terms_of_weierstrass_fun_even_aux unfolding Z_def h_def by metis
   define p where "p = Polynomial.smult c (\<Prod>w\<in>{w\<in>Z. h w \<ge> 0}. [:-\<wp> w, 1:] ^ nat (h w))"

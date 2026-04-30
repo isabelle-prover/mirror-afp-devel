@@ -223,7 +223,7 @@ fun pretty_monad_rules ctxt =
   end
 
 val add_monad_rules_simp =
-  Context.map_proof (fn ctxt => ctxt addsimps (get_monad_rules (Context.Proof ctxt)))
+  Context.map_proof (fn ctxt => ctxt |> Simplifier.add_simps (get_monad_rules (Context.Proof ctxt)))
 
 val _ = Theory.setup
  (Attrib.setup @{binding monad_rule} (Scan.succeed (Thm.declaration_attribute add_monad_rule))

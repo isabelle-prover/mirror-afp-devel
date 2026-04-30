@@ -34,7 +34,7 @@ fun mk_show_eq n ctx =
 
 fun mk_show_fun tname ctrs ctx =
   let val typ = Syntax.read_typ ctx tname in
-  Function_Fun.add_fun 
+  Function_Fun.add_fun {verbose = false}
     [(Binding.name ("show_" ^ tname), SOME (typ --> @{typ "String.literal"}), NoSyn)]
     (map (fn n => ((Binding.empty_atts, mk_show_eq n ctx), [], [])) ctrs)
     (Function_Fun.fun_config) ctx
@@ -66,7 +66,7 @@ fun enum_type tname cs thy =
     val thy1 = Class.prove_instantiation_exit
           (fn _ => EVERY [Class.intro_classes_tac ctx5 [], auto_tac (fold Simplifier.add_simp ([thm1, thm2, thm3]) ctx5), ALLGOALS (fn i => Induct_Tacs.case_tac ctx5 "x" [] NONE i THEN auto_tac ctx5)]) ctx5;
     val ctx6 = Class.instantiation_cmd ([tname], [], "default") thy1;
-    val (_, ctx7) = Specification.definition (SOME (Binding.name ("default_" ^ tname), NONE, NoSyn)) [] [] ((Binding.empty, []), mk_def dummyT ("default_" ^ tname) (nth cs' 0)) ctx6
+    val (_, ctx7) = Specification.definition {verbose = false} (SOME (Binding.name ("default_" ^ tname), NONE, NoSyn)) [] [] ((Binding.empty, []), mk_def dummyT ("default_" ^ tname) (nth cs' 0)) ctx6
     val thy2 = Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac ctx7 []) ctx7
     val thy3 = mk_show_inst tname cs thy2
     val ctx7 = Named_Target.theory_init thy3

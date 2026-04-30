@@ -322,8 +322,8 @@ fun ex_tac ctxt vs = SUBGOAL (fn (goal, i) =>
     EVERY
       [REPEAT_DETERM_N (length vs) (eresolve_tac ctxt [exE] i),
        lift_inst_ex_tac i,
-       simp_tac (put_simpset ss ctxt
-         addsimps (Named_Theorems.get @{context} @{named_theorems "state_simp"})) i
+       simp_tac (ctxt |> put_simpset ss
+         |> Simplifier.add_simps (Named_Theorems.get @{context} @{named_theorems state_simp})) i
       ]
   end
 )
@@ -1119,7 +1119,7 @@ let
         let
           val _ = Feedback.informStr ctxt (0, "defining \<Gamma>")
           val ((_,(_, def_eq)), lthy') = 
-             Specification.definition NONE [] [] ((Binding.empty, []), eq) lthy
+             Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), eq) lthy
           val _ = Feedback.informStr ctxt (2, Thm.string_of_thm lthy' def_eq)
         in (def_eq, lthy') end
 

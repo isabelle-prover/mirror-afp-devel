@@ -1,6 +1,6 @@
 (* Pollutes the global namespace, but we use them everywhere *)
-fun ss_only thms ctxt = Simplifier.clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps thms;
-fun HOL_ss_only thms ctxt = Simplifier.clear_simpset (put_simpset HOL_ss ctxt) addsimps thms;
+fun ss_only thms ctxt = ctxt |> Simplifier.clear_simpset  |> put_simpset HOL_basic_ss |> Simplifier.add_simps thms;
+fun HOL_ss_only thms ctxt = ctxt |> Simplifier.clear_simpset |> put_simpset HOL_ss |> Simplifier.add_simps thms;
 
 signature CIMP =
 sig
@@ -102,7 +102,7 @@ fun def_locset thm ctxt =
 FIXME trim simpsets: 1: sets 2: not much 3: not much
 *)
     val loc_defs = Proof_Context.get_fact ctxt (Facts.named "loc_defs")
-    val membership_ctxt = ctxt addsimps ([thm] @ loc_defs)
+    val membership_ctxt = ctxt |> Simplifier.add_simps (thm :: loc_defs)
     val cleanup_ctxt = HOL_ss_only (@{thms cleanup_simps} @ Named_Theorems.get ctxt \<^named_theorems>\<open>locset_cache\<close>) ctxt
     val rewrite_tac =
           Simplifier.rewrite membership_ctxt
@@ -132,8 +132,8 @@ val _ =
     (Parse.thms1 >> (fn facts => fn ctxt => List.foldl (fn ((f, _), ctxt) => Cimp.intern_com f ctxt) ctxt facts));
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>locset_definition\<close> "constant definition for sets of locations"
+  Outer_Syntax.local_theory \<^command_keyword>\<open>locset_definition\<close> "constant definition for sets of locations"
     (Scan.option Parse_Spec.constdecl -- (Parse_Spec.opt_thm_name ":" -- Parse.prop) --
-      Parse_Spec.if_assumes -- Parse.for_fixes >> (fn (((decl, spec), prems), params) => fn b => fn lthy =>
-        Specification.definition_cmd decl params prems spec b lthy
+      Parse_Spec.if_assumes -- Parse.for_fixes >> (fn (((decl, spec), prems), params) => fn lthy =>
+        Specification.definition_cmd {verbose = true} decl params prems spec lthy
         |> (fn ((_, (_, thm)), lthy) => (thm, lthy)) |> uncurry Cimp.def_locset));

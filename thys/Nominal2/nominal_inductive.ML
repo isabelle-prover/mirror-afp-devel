@@ -167,7 +167,7 @@ fun helper_tac flag prm p ctxt =
         |> flag ? (all_elims [p])
         |> flag ? (eqvt_srule ctxt')
     in
-      asm_full_simp_tac (put_simpset HOL_ss ctxt' addsimps (prm' :: @{thms HOL.induct_forall_def})) 1
+      asm_full_simp_tac (ctxt' |> put_simpset HOL_ss |> Simplifier.add_simps (prm' :: @{thms HOL.induct_forall_def})) 1
     end) ctxt
 
 fun non_binder_tac prem intr_cvars Ps ctxt =
@@ -209,7 +209,7 @@ fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
 
     val ss = @{thms finite_supp supp_Pair finite_Un permute_finite} @
              @{thms fresh_star_Pair fresh_star_permute_iff}
-    val simp = asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps ss)
+    val simp = asm_full_simp_tac (ctxt |> put_simpset HOL_ss |> Simplifier.add_simps ss)
   in
     Goal.prove ctxt [] [] fresh_goal
       (fn {context = goal_ctxt, ...} =>
@@ -236,14 +236,14 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val concl_args' = map (subst_free (param_trms ~~ prm_trms)) concl_args
 
       val user_thm' = map (infer_instantiate ctxt (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ prms)) user_thm
-        |> map (full_simplify (put_simpset HOL_ss ctxt addsimps (@{thm fresh_star_Pair}::prems)))
+        |> map (full_simplify (ctxt |> put_simpset HOL_ss |> Simplifier.add_simps (@{thm fresh_star_Pair} :: prems)))
 
       val fthm = fresh_thm ctxt user_thm' (Thm.term_of p) (Thm.term_of c) concl_args' avoid_trm'
 
       val (([(_, q)], fprop :: fresh_eqs), ctxt') = Obtain.result
               (K (EVERY1 [eresolve_tac ctxt @{thms exE},
-                          full_simp_tac (put_simpset HOL_basic_ss ctxt
-                            addsimps @{thms supp_Pair fresh_star_Un}),
+                          full_simp_tac (ctxt |> put_simpset HOL_basic_ss 
+                            |> Simplifier.add_simps @{thms supp_Pair fresh_star_Un}),
                           REPEAT o eresolve_tac ctxt @{thms conjE},
                           dresolve_tac ctxt [fresh_star_plus],
                           REPEAT o dresolve_tac ctxt [supp_perm_eq']])) [fthm] ctxt
@@ -258,7 +258,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
         |> eqvt_srule ctxt'
 
       val fprop' = eqvt_srule ctxt' fprop
-      val tac_fresh = simp_tac (put_simpset HOL_basic_ss ctxt' addsimps [fprop'])
+      val tac_fresh = simp_tac (ctxt' |> put_simpset HOL_basic_ss |> Simplifier.add_simp fprop')
 
       (* for inductive-premises*)
       fun tac1 goal_ctxt prm = helper_tac true prm (mk_cplus q p) goal_ctxt
@@ -365,8 +365,8 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
           |> singleton (Proof_Context.export ctxt ctxt_outside)
           |> Old_Datatype_Aux.split_conj_thm
           |> map (fn thm => thm RS normalise)
-          |> map (asm_full_simplify (put_simpset HOL_basic_ss ctxt
-              addsimps @{thms permute_zero induct_rulify}))
+          |> map (asm_full_simplify (ctxt |> put_simpset HOL_basic_ss 
+              |> Simplifier.add_simps @{thms permute_zero induct_rulify}))
           |> map (Drule.rotate_prems (length ind_prems'))
           |> map zero_var_indexes
 

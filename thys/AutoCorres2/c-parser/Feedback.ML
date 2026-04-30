@@ -39,7 +39,7 @@ struct
        val {main, files} = get thy 
      in the_default Symtab.empty (Option.map #sources (Symtab.lookup files main)) end
 
-   val default_file = ({src_path = Path.root, lines = [], digest=SHA1.fake "", pos = Position.none}, Position.none)
+   val default_file = ({src_path = Path.root, lines = [], pos = Position.none}, Position.none)
 
    fun get_file thy main name = Symtab.lookup (#files (get thy)) main 
      |> Option.mapPartial (fn {sources, ...} => Symtab.lookup sources name)

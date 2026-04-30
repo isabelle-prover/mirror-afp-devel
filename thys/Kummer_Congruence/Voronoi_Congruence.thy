@@ -494,7 +494,7 @@ proof -
     using assms voronoi_congruence[of k p a]
     by (subst qcong_fraction_iff) (auto simp: D_def coprime_commute prime_gt_0_nat mult_ac)
   thus ?thesis
-    by (simp add: bernoulli_rat_def mult_ac N_def D_def of_rat_divide)
+    by (simp add: bernoulli_conv_num_denom mult_ac N_def D_def of_rat_divide)
 qed
 
 corollary voronoi_congruence_harvey:
@@ -654,7 +654,7 @@ proof -
                     rat_of_nat k * (\<Sum>m=1..<p. rat_of_nat m^(k-1) * h m) / rat_of_int (1 - c ^ k)] (qmod p)"
     using c by (subst qcong_divide_of_int_right_iff) (auto simp: mult_ac)
   thus ?thesis
-    by (simp add: bernoulli_rat_def mult_ac N_def D_def)
+    by (simp add: bernoulli_conv_num_denom mult_ac N_def D_def)
 qed
 
 corollary voronoi_congruence_harvey':

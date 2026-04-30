@@ -9,7 +9,6 @@ theory Elementary_Prime_Bounds
 imports
   Prime_Number_Theorem.Prime_Counting_Functions
   Prime_Distribution_Elementary_Library
-  More_Dirichlet_Misc
 begin
 
 text \<open>

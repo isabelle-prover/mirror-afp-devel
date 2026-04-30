@@ -285,7 +285,7 @@ fun on_thms_complete f thms =
 (* theory *)
 
 fun define_params_nosyn term =
-  Specification.definition NONE [] [] ((Binding.empty, []), term)
+  Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), term)
   #>> snd #>> snd
 
 fun note_thm binding thm =

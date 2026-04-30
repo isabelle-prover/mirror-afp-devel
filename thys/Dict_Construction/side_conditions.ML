@@ -74,12 +74,13 @@ fun set_alt t thm context =
       error "Alternative is not fully general"
   end
 
-fun apply_simps ctxt clear thms t =
+fun apply_simps ctxt clear thms =
   let
     val ctxt' =
       Context_Position.not_really ctxt
       |> clear ? put_simpset HOL_ss
-  in conv_result (Simplifier.asm_full_rewrite (ctxt' addsimps thms)) t end
+      |> Simplifier.add_simps thms
+  in conv_result (Simplifier.asm_full_rewrite ctxt') end
 
 fun apply_alts ctxt =
   Item_Net.content (Predicates.get (Context.Proof ctxt))
@@ -203,7 +204,10 @@ fun mk_side simps inducts lthy =
     fun tactic {context = ctxt, ...} =
       let
         val simp_context =
-          put_simpset HOL_ss (Context_Position.not_really ctxt) addsimps (#intrs result)
+          ctxt
+          |> Context_Position.not_really
+          |> put_simpset HOL_ss
+          |> Simplifier.add_simps (#intrs result)
       in
        maybe_induct_tac inducts instss [] ctxt THEN
           PARALLEL_ALLGOALS (Nitpick_Util.DETERM_TIMEOUT time o asm_full_simp_tac simp_context)

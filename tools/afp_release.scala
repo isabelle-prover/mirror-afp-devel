@@ -4,6 +4,7 @@ Tooling to manage AFP releases.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 

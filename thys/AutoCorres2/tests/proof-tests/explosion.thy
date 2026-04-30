@@ -86,7 +86,7 @@ lemma "
                                                  (\<lambda>global_exn_var. L2_gets (\<lambda>_. ret__int) [\<S> ''ret''])))))))))
      = XXX"
   apply (tactic \<open>
-simp_tac (put_simpset AUTOCORRES_SIMPSET @{context} addsimps @{thms  L2_unknown_bind}  ) 1
+    simp_tac (\<^context> |> put_simpset AUTOCORRES_SIMPSET |> Simplifier.add_simp @{thm L2_unknown_bind}) 1
   \<close>)
   oops
 

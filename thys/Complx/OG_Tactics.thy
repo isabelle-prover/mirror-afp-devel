@@ -530,10 +530,10 @@ fun get_oghoare_simps ctxt =
  Proof_Context.get_thms ctxt "oghoare_simps"
 
 fun simp ctxt extra =
-  simp_tac (put_simpset HOL_basic_ss ctxt addsimps extra)
+  simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps extra)
 
 fun simp_only ctxt simps =
-  simp_tac ((Simplifier.clear_simpset ctxt) addsimps simps)
+  simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps simps)
 
 fun prod_sel_simp ctxt =
   simp_only ctxt @{thms prod.sel}
@@ -542,7 +542,7 @@ fun oghoare_simp ctxt =
    simp_only ctxt (get_oghoare_simps ctxt)
 
 fun ParallelConseq ctxt =
-  clarsimp_tac (put_simpset HOL_basic_ss ctxt addsimps (@{thms ParallelConseq_list} @ @{thms my_simp_list}))
+  clarsimp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms ParallelConseq_list my_simp_list})
 
 val enable_trace = false;
 fun trace str = if enable_trace then tracing str else ();

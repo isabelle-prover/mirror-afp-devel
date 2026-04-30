@@ -91,7 +91,7 @@ fun unchanged_typing_tac splitter ctxt =
       
     val vcg_attrs = map (Attrib.attribute ctxt) @{attributes [runs_to_vcg]}
     val (_, ctxt) = ctxt |> fold_map (Thm.proof_attributes vcg_attrs) unchanged_typing
-    val ctxt = ctxt addsimps unchanged_typing_on_simps
+    val ctxt = ctxt |> Simplifier.add_simps unchanged_typing_on_simps
          |> !d2 ? Config.put Simplifier.simp_trace true
 
     val trace_tac = if !d1 then Runs_To_VCG.trace_print_tac else Runs_To_VCG.no_trace_tac

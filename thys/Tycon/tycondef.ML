@@ -326,8 +326,8 @@ fun define_map_functions
           [rewrite_goals_tac ctxt map_apply_thms,
            resolve_tac ctxt [map_cont_thm RS @{thm cont_fix_ind}] 1,
            REPEAT (resolve_tac ctxt adm_rules 1),
-           simp_tac (put_simpset HOL_basic_ss ctxt addsimps bottom_rules) 1,
-           simp_tac (put_simpset HOL_basic_ss ctxt addsimps tuple_rules) 1,
+           simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps bottom_rules) 1,
+           simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps tuple_rules) 1,
            REPEAT (eresolve_tac ctxt @{thms conjE} 1),
            REPEAT (resolve_tac ctxt (deflation_rules @ prems) 1 ORELSE assume_tac ctxt 1)])
       end
@@ -497,7 +497,7 @@ fun domain_isomorphism
         val tc_eqn = Logic.mk_equals (tc_const newT, Abs ("", Term.itselfT newT, tc))
         val ((_, (_, tc_ldef)), lthy) = thy
           |> Class.instantiation ([full_tname], lhs_tfrees, @{sort tycon})
-          |> Specification.definition NONE [] []
+          |> Specification.definition {verbose = false} NONE [] []
               ((Binding.prefix_name "tc_" (Binding.suffix_name "_def" tbind), []), tc_eqn)
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
         val tc_def = singleton (Proof_Context.export lthy ctxt_thy) tc_ldef
@@ -642,9 +642,9 @@ fun domain_isomorphism
           [rewrite_goals_tac ctxt (defl_apply_thms @ map_apply_thms),
            resolve_tac ctxt [@{thm cont_parallel_fix_ind} OF [defl_cont_thm, map_cont_thm]] 1,
            REPEAT (resolve_tac ctxt adm_rules 1),
-           simp_tac (put_simpset HOL_basic_ss ctxt addsimps bottom_rules) 1,
-           simp_tac (put_simpset HOL_basic_ss ctxt addsimps tuple_rules) 1,
-           simp_tac (put_simpset HOL_basic_ss ctxt addsimps map_ID_simps) 1,
+           simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps bottom_rules) 1,
+           simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps tuple_rules) 1,
+           simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps map_ID_simps) 1,
            REPEAT (eresolve_tac ctxt @{thms conjE} 1),
            REPEAT (resolve_tac ctxt (isodefl_rules @ prems) 1 ORELSE assume_tac ctxt 1)])
       end
@@ -714,12 +714,12 @@ fun domain_isomorphism
             @ take_Suc_thms
         fun tac ctxt =
             EVERY
-            [simp_tac (put_simpset HOL_basic_ss ctxt addsimps start_rules) 1,
-             simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms fix_def2}) 1,
+            [simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps start_rules) 1,
+             simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm fix_def2}) 1,
              resolve_tac ctxt @{thms lub_eq} 1,
              resolve_tac ctxt @{thms nat.induct} 1,
-             simp_tac (put_simpset HOL_basic_ss ctxt addsimps rules0) 1,
-             asm_full_simp_tac (put_simpset beta_ss ctxt addsimps rules1) 1]
+             simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps rules0) 1,
+             asm_full_simp_tac (ctxt |> put_simpset beta_ss |> Simplifier.add_simps rules1) 1]
       in
         Goal.prove_global thy [] [] goal (tac o #context)
       end
@@ -769,7 +769,7 @@ fun domain_isomorphism
           |> Binding.prefix_name "fmapU_"
         val ((_, (_, fmap_ldef)), lthy) = thy
           |> Class.instantiation ([full_tname], lhs_tfrees, @{sort prefunctor})
-          |> Specification.definition NONE [] [] ((fmap_def_bind, []), fmap_eqn)
+          |> Specification.definition {verbose = false} NONE [] [] ((fmap_def_bind, []), fmap_eqn)
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
         val fmap_def = singleton (Proof_Context.export lthy ctxt_thy) fmap_ldef
         fun tacf ctxt = EVERY

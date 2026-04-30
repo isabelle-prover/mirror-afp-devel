@@ -291,7 +291,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
 
       val thm = Goal.prove_internal ctxt [] (mk_cequals (ct,new_ct)) 
         (fn _ => simp_tac 
-          (put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci}) 1)
+          (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms star_aci}) 1)
 
     in
       thm
@@ -360,7 +360,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
 
   fun prepare_frame_tac ctxt = let
     open Refine_Util Conv
-    val frame_ss = put_simpset HOL_basic_ss ctxt addsimps 
+    val frame_ss = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
       @{thms mult_1_right[where 'a=assn] mult_1_left[where 'a=assn]}
   in
     CONVERSION Thm.eta_conversion THEN'
@@ -386,7 +386,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
         Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_frame_match_rules} 
       val merge_thms = @{thms merge_thms} @
         Named_Theorems.get ctxt @{named_theorems sepref_frame_merge_rules}
-      val ss = put_simpset HOL_basic_ss ctxt addsimps normrel_eqs.get ctxt
+      val ss = ctxt |> put_simpset HOL_basic_ss|> Simplifier.add_simps (normrel_eqs.get ctxt)
       fun frame_thm_tac dbg = wrap_side_tac side_tac dbg (resolve_tac ctxt frame_thms)
       fun merge_thm_tac dbg = wrap_side_tac side_tac dbg (resolve_tac ctxt merge_thms)
   
@@ -425,7 +425,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
   in
     CONVERSION Thm.eta_conversion THEN'
     CONCL_COND' is_merge THEN'
-    simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci}) THEN'
+    simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms star_aci}) THEN'
     CONVERSION (HOL_concl_conv merge_conv ctxt) THEN'
     frame_loop_tac side_tac ctxt
   end
@@ -490,7 +490,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
 
 
     fun normrel_conv ctxt = let
-      val ss = put_simpset HOL_basic_ss ctxt addsimps normrel_eqs.get ctxt
+      val ss = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps (normrel_eqs.get ctxt)
     in
       Simplifier.rewrite ss
     end

@@ -237,7 +237,7 @@ fun generate_sat_problem ctxt locale_thm profs sp_clauses extra_clauses =
       val cconsts = map (Thm.cterm_of ctxt o mk_rankings) profs
       val profile_wf_ctxt = put_simpset profile_wf_simpset ctxt
       val allowed_results_ctxt =
-            put_simpset allowed_results_simpset ctxt addsimps alts_distinct_thms
+            ctxt |> put_simpset allowed_results_simpset |> Simplifier.add_simps alts_distinct_thms
       val ceq = \<^instantiate>\<open>'a = caltT in cterm "(=) :: 'a list \<Rightarrow> 'a list \<Rightarrow> bool"\<close>
       val cswf = \<^instantiate>\<open>agents = ct_agents and alts = ct_alts and swf = ct_swf and
                   'a = cagentT and 'b = caltT
@@ -383,7 +383,7 @@ fun generate_sat_problem ctxt locale_thm profs sp_clauses extra_clauses =
       (* cache for theorems of the form "index xs y = i", where xs is a ranking *)
       val idx_cache =
         let
-          val idx_ctxt = ctxt addsimps alts_distinct_thms
+          val idx_ctxt = ctxt |> Simplifier.add_simps alts_distinct_thms
           fun f j =
             let
               val (xs, y) = (nat_to_ranking m (j div m), j mod m)
@@ -425,7 +425,7 @@ fun generate_sat_problem ctxt locale_thm profs sp_clauses extra_clauses =
 
       fun swap_dist xs ys =
         map (fn x => find_index (fn y => y = x) xs) ys |> mk_inversion_thm |> fst
-      val stratproof_ctxt = ctxt addsimps (alts_distinct_thms)
+      val stratproof_ctxt = ctxt |> Simplifier.add_simps alts_distinct_thms
       val add_mset = Thm.cterm_of ctxt (multiset_add_mset rankingT)
 
       fun prove_stratproof_clause (prof1 : profile) (prof2 : profile) (s1, s2) =

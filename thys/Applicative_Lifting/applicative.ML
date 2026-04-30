@@ -806,7 +806,7 @@ fun forward_lift_attrib name =
 (* High-level tactics *)
 
 fun unfold_wrapper_tac ctxt = AUTO_AFUNS false (fn afs =>
-  Simplifier.safe_asm_full_simp_tac (ctxt addsimps flat (map unfolds_of_afun afs))) ctxt;
+  Simplifier.safe_asm_full_simp_tac (ctxt |> fold Simplifier.add_simps (map unfolds_of_afun afs))) ctxt;
 
 fun fold_wrapper_tac ctxt = AUTO_AFUN true (fold_goal_tac ctxt o unfolds_of_afun) ctxt;
 

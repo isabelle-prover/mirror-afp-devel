@@ -370,7 +370,7 @@ proof -
   have "Abs_fps (\<lambda>n. bernpoly n x / fact n :: 'a) = bernoulli_fps * fps_exp x"
     unfolding fps_times_def
     by (simp add: bernpoly_def fps_eq_iff sum_divide_distrib binomial_fact
-                  field_simps atLeast0AtMost)
+                  field_simps atLeast0AtMost of_real_bernoulli)
   also have "\<dots> = fps_X * fps_exp x / (fps_exp 1 - 1)"
     unfolding bernoulli_fps_def by (subst fps_divide_times2) auto
   finally show ?thesis .

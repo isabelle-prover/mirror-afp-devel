@@ -2359,8 +2359,8 @@ fun document_output_reports name {markdown, body} sem_attrs transform_attr meta_
 fun document_command (name, pos) descr mark cmd sem_attrs transform_attr =
   Outer_Syntax.command (name, pos) descr
   (ODL_Meta_Args_Parser.attributes -- Parse.document_source >> (fn (meta_args, text) =>
-      Toplevel.theory' (fn _ => cmd meta_args)
-          (SOME (Toplevel.presentation_context #> document_output_reports name mark sem_attrs transform_attr meta_args text)))); 
+      Toplevel.theory_presentation (cmd meta_args)
+          (Toplevel.presentation_context #> document_output_reports name mark sem_attrs transform_attr meta_args text))); 
 
 fun onto_macro_cmd_output_reports output_cmd (meta_args, text) ctxt =
  let
@@ -2371,10 +2371,10 @@ fun onto_macro_cmd_command (name, pos) descr cmd output_cmd =
   Outer_Syntax.command (name, pos) descr 
   (ODL_Meta_Args_Parser.attributes -- Parse.document_source >>  
      (fn (meta_args, text) =>
-          Toplevel.theory' (fn _ => cmd meta_args)
-             (SOME (Toplevel.presentation_context
+          Toplevel.theory_presentation (cmd meta_args)
+             (Toplevel.presentation_context
               #> onto_macro_cmd_output_reports output_cmd  (meta_args, text)
-              ))))
+              )))
 
 
 
@@ -2609,7 +2609,7 @@ val read_spec_open = prep_spec_open Proof_Context.read_var Syntax.parse_prop;
 
 (* definition *)
 
-fun gen_def prep_spec prep_att raw_var raw_params raw_prems ((a, raw_atts), raw_spec) int lthy =
+fun gen_def prep_spec prep_att raw_var raw_params raw_prems ((a, raw_atts), raw_spec) lthy =
   let
     val atts = map (prep_att lthy) raw_atts;
 
@@ -2639,23 +2639,23 @@ fun gen_def prep_spec prep_att raw_var raw_params raw_prems ((a, raw_atts), raw_
     val lhs' = Morphism.term (Local_Theory.target_morphism lthy) lhs;
 
     val _ =
-      Proof_Display.print_consts int (Position.thread_data ()) lthy4
+      Proof_Display.print_consts {verbose = true, pos = Position.thread_data ()} lthy4
         (Frees.defined (Frees.build (Frees.add_frees lhs'))) [(x, T)];
   in ((lhs, (def_name, th')), lthy4) end;
 
 val definition_cmd = gen_def read_spec_open Attrib.check_src;
 
-fun definition_cmd' meta_args_opt decl params prems spec bool ctxt =
+fun definition_cmd' meta_args_opt decl params prems spec ctxt =
   Local_Theory.background_theory (Value_Command.meta_args_exec meta_args_opt) ctxt
-  |> definition_cmd decl params prems spec bool
+  |> definition_cmd decl params prems spec
 
 val _ =
-  Outer_Syntax.local_theory' \<^command_keyword>\<open>definition*\<close> "constant definition"
+  Outer_Syntax.local_theory \<^command_keyword>\<open>definition*\<close> "constant definition"
     (ODL_Meta_Args_Parser.opt_attributes --
       (Scan.option Parse_Spec.constdecl -- (Parse_Spec.opt_thm_name ":" -- Parse.prop) --
         Parse_Spec.if_assumes -- Parse.for_fixes)
      >> (fn (meta_args_opt, (((decl, spec), prems), params)) => 
-                                    #2 oo definition_cmd' meta_args_opt decl params prems spec));
+                                    #2 o definition_cmd' meta_args_opt decl params prems spec));
 end
 \<close>
 
@@ -2697,7 +2697,7 @@ fun prep_statement prep_att prep_stmt raw_elems raw_stmt ctxt =
   end;
 
 fun gen_theorem schematic bundle_includes prep_att prep_stmt
-    long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl int lthy =
+    long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl lthy =
   let
     val _ = Local_Theory.assert lthy;
 
@@ -2708,7 +2708,7 @@ fun gen_theorem schematic bundle_includes prep_att prep_stmt
     val atts = more_atts @ map (prep_att lthy) raw_atts;
 
     val print_results =
-      Proof_Display.print_results {interactive = int, pos = Position.thread_data ()};
+      Proof_Display.print_results {verbose = true, pos = Position.thread_data ()};
 
     fun after_qed' results goal_ctxt' =
       let
@@ -2746,16 +2746,16 @@ in
 val theorem_cmd =
   gen_theorem false Bundle.includes_cmd Attrib.check_src Expression.read_statement;
 
-fun theorem_cmd' meta_args_opt long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl int lthy =
+fun theorem_cmd' meta_args_opt long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl lthy =
   Local_Theory.background_theory (Value_Command.meta_args_exec meta_args_opt) lthy
-  |> theorem_cmd long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl int;
+  |> theorem_cmd long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl;
 
 val schematic_theorem_cmd =
   gen_theorem true Bundle.includes_cmd Attrib.check_src Expression.read_statement;
 
-fun schematic_theorem_cmd' meta_args_opt long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl int lthy =
+fun schematic_theorem_cmd' meta_args_opt long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl lthy =
   Local_Theory.background_theory (Value_Command.meta_args_exec meta_args_opt) lthy
-  |> schematic_theorem_cmd long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl int;
+  |> schematic_theorem_cmd long kind before_qed after_qed (name, raw_atts) raw_includes raw_elems raw_concl;
 
 end;
 
@@ -2778,7 +2778,7 @@ val short_statement =
         Element.Shows shows));
 
 fun theorem spec schematic descr =
-  Outer_Syntax.local_theory_to_proof' spec ("state " ^ descr)
+  Outer_Syntax.local_theory_to_proof spec ("state " ^ descr)
     ((long_statement || short_statement) >> (fn (meta_args_opt, long, binding, includes, elems, concl) =>
       ((if schematic then schematic_theorem_cmd' else theorem_cmd')
         meta_args_opt long Thm.theoremK NONE (K I) binding includes elems concl)));
@@ -3077,10 +3077,10 @@ fun read_fields raw_fields ctxt =
 
 fun def_cmd (decl, spec, prems, params) lthy =
   let
-    val ((lhs as Free (x, T), _), lthy') = Specification.definition decl params prems spec lthy;
+    val ((lhs as Free (x, T), _), lthy') = Specification.definition {verbose = false} decl params prems spec lthy;
     val lhs' = Morphism.term (Local_Theory.target_morphism lthy') lhs;
     val _ =
-      Proof_Display.print_consts true (Position.thread_data ()) lthy'
+      Proof_Display.print_consts {verbose = true, pos = Position.thread_data ()} lthy'
         (Frees.defined (Frees.build (Frees.add_frees lhs'))) [(x, T)]
   in lthy' end
 
@@ -3265,7 +3265,7 @@ fun add_onto_morphism classes_mappings eqs thy =
       val lthy = Named_Target.theory_init thy
       val updated_lthy = fold (fn (decl, spec, prems, params) => fn lthy => 
                         let
-                          val (_, lthy') = Specification.definition_cmd decl params prems spec true lthy
+                          val (_, lthy') = Specification.definition_cmd {verbose = false} decl params prems spec lthy
                         in lthy' end) args lthy
     in Local_Theory.exit_global updated_lthy end
     (* alternative way to update the theory using the Theory.join_theory function *)
@@ -3586,24 +3586,24 @@ val _ =
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>define_template\<close>
     "define DOF document template (via LaTeX root file)"
-    (Parse.position (Resources.provide_parse_file -- Parse.name) >>
+    (Parse.position (Resources.parse_file -- Parse.name) >>
       (fn ((get_file, desc), pos) => Toplevel.theory (fn thy =>
         let
-          val (file, thy') = get_file thy;
+          val file = get_file thy;
           val binding = Binding.make (strip_template (#src_path file, pos), pos);
           val text = cat_lines (#lines file);
-        in #2 (define_template (binding, (text, desc)) thy') end)));
+        in #2 (define_template (binding, (text, desc)) thy) end)));
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>define_ontology\<close>
     "define DOF document ontology (via LaTeX style file)"
-    (Parse.position (Resources.provide_parse_file -- Parse.name) >>
+    (Parse.position (Resources.parse_file -- Parse.name) >>
       (fn ((get_file, desc), pos) => Toplevel.theory (fn thy =>
         let
-          val (file, thy') = get_file thy;
-          val binding = Binding.qualify false (Long_Name.qualifier (Context.theory_long_name thy')) (Binding.make (strip_ontology (#src_path file, pos), pos));
+          val file = get_file thy;
+          val binding = Binding.qualify false (Long_Name.qualifier (Context.theory_long_name thy)) (Binding.make (strip_ontology (#src_path file, pos), pos));
           val text = cat_lines (#lines file);
-        in #2 (define_ontology (binding, (text, desc)) thy') end)));
+        in #2 (define_ontology (binding, (text, desc)) thy) end)));
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>list_templates\<close>

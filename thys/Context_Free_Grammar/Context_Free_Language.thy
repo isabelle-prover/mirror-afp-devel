@@ -6,7 +6,6 @@ section "Context-Free Languages"
 
 theory Context_Free_Language
 imports
-  "Regular-Sets.Regular_Set"
   Renaming_CFG
   Disjoint_Union_CFG
 begin

@@ -6,14 +6,12 @@
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
    https://idus.us.es/handle/11441/57780.  In Spanish 
-   Last modified: 29 Sep, 2025 *)
+   Last modified: 3 Mar, 2026 *)
 
-(*<*)
+
 theory FormulaEnumeration
 imports BinaryTreeEnumeration
 begin
-(*>*)
-
  
 fun formulaP_from_tree_b :: "(nat \<Rightarrow> 'b) \<Rightarrow> tree_b \<Rightarrow> 'b formula" where
   "formulaP_from_tree_b g (Leaf 0) = \<bottom>."
@@ -31,35 +29,21 @@ fun formulaP_from_tree_b :: "(nat \<Rightarrow> 'b) \<Rightarrow> tree_b \<Right
 
 lemma "formulaP_from_tree_b  (\<lambda>n. n) (Leaf  0) = \<bottom>."
 by simp
-(*
-normal_form 
-  "formulaP_from_tree_b (\<lambda>n. n) (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0)))"
-*)
+
 lemma 
   "formulaP_from_tree_b 
    (\<lambda>n. n) (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0))) = \<bottom>. \<and>. \<bottom>." 
 by simp 
-(*
-normal_form 
-  "formulaP_from_tree_b g (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0)))"
-*)
+
 lemma 
   "formulaP_from_tree_b g (Tree (Leaf (Suc 0)) (Tree (Leaf 0) (Leaf 0))) 
    = \<bottom>. \<and>. \<bottom>." 
 by simp
-(*
-normal_form  "formulaP_from_tree_b (\<lambda>n. n) (Leaf  0) = \<bottom>."
-normal_form  "formulaP_from_tree_b (\<lambda>n. n) (Leaf  0)"
-normal_form 
-  "formulaP_from_tree_b  
-   (\<lambda>n. n) (Tree (Leaf (Suc (Suc (Suc (Suc 0))))) (Leaf 0))"
-*)
+
 lemma 
   "formulaP_from_tree_b 
   (\<lambda>n. n) (Tree (Leaf (Suc (Suc (Suc (Suc 0))))) (Leaf 0)) = (\<not>. \<bottom>.)"
 by simp
-(*>*)
-
 
 primrec tree_b_from_formulaP :: "('b \<Rightarrow> nat) \<Rightarrow>  'b formula \<Rightarrow> tree_b" where
   "tree_b_from_formulaP  g \<bottom>. = Leaf 0"
@@ -123,6 +107,5 @@ corollary EnumeracionFormulasNat:
     thus  "\<exists> f. enumeration (f:: nat \<Rightarrow> nat formula)"  
       using  enum_nat EnumerationFormulasP1 by auto
 qed
-(*<*)
+
 end
-(*>*)

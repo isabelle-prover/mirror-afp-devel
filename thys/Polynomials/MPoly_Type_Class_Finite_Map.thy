@@ -304,7 +304,7 @@ text \<open>A simproc for postprocessing with \<open>mpoly_simps\<close> and not
 
 simproc_setup passive mpoly ("Pm_fmap mpp::(_ \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 _") =
   \<open>K (fn ctxt => fn ct =>
-        SOME (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
+        SOME (Simplifier.rewrite (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
           (Named_Theorems.get ctxt (\<^named_theorems>\<open>mpoly_simps\<close>))) ct))\<close>
 
 (* The simproc slows down computations *a lot*, so it is deactivated by default. *)

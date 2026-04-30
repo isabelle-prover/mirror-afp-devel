@@ -7,7 +7,7 @@
    It includes a minimum minimorum on graphs to avoid calling big
    Isabelle theories on graphs. 
 
-   Last modified: 29 Sep, 2025
+   Last modified: 26 Jan, 2026
 *)
 
 theory Background_on_graphs

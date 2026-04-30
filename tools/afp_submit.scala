@@ -4,6 +4,7 @@ AFP submission system backend.
  */
 package afp
 
+import scala.language.unsafeNulls
 
 import isabelle.*
 import isabelle.HTML.*
@@ -169,13 +170,10 @@ object AFP_Submit {
         val name = new_author_input.trim
         if (name.isEmpty) copy(new_authors = new_authors.with_err("Name must not be empty"))
         else {
-          def as_ascii(str: String) = {
-            var res: String = str
-            List("ö" -> "oe", "ü" -> "ue", "ä" -> "ae", "ß" -> "ss").foreach {
-              case (c, rep) => res = res.replace(c, rep)
-            }
-            Normalizer.normalize(res, Normalizer.Form.NFD).replaceAll("[^\\x00-\\x7F]", "")
-          }
+          def as_ascii(str: String) =
+            Normalizer.normalize(
+              str.replacing("ö" -> "oe", "ü" -> "ue", "ä" -> "ae", "ß" -> "ss"),
+              Normalizer.Form.NFD).replacing("[^\\x00-\\x7F]".r -> "")
 
           def make_author_id(name: String): String = {
             val normalized = as_ascii(name)
@@ -193,9 +191,9 @@ object AFP_Submit {
               }
             val authors = updated_authors(state)
 
-            var ident = suffix.toLowerCase
+            var ident = Word.lowercase(suffix)
             for {
-              c <- prefix.toLowerCase
+              c <- Word.lowercase(prefix)
               if authors.contains(ident)
             } ident += c.toString
 
@@ -596,7 +594,7 @@ object AFP_Submit {
       private def down(id: ID): Path = submission_dir + Path.basic("down") + Path.basic(id)
 
       private def signal(id: ID, s: String): Unit =
-        File.write(up(id) + Path.basic(s), s.toUpperCase)
+        File.write(up(id) + Path.basic(s), Word.uppercase(s))
       private def is_signal(id: ID, s: String): Boolean = (up(id) + Path.basic(s)).file.exists()
 
       private def read_build(id: ID): Model.Build.Value = {
@@ -650,7 +648,7 @@ object AFP_Submit {
         val patches =
           for {
             file <- structure.authors_file :: metadata.entries.map(_.name).map(structure.entry_file)
-            relative = File.relative_path(structure.base_dir, file).get
+            relative = File.the_relative_path(structure.base_dir, file)
           } yield Isabelle_System.make_patch(afp.base_dir, relative, file)
         File.write(patch_file(id), cat_lines(patches))
 

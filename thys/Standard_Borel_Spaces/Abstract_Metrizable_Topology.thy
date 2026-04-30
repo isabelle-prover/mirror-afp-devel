@@ -1392,4 +1392,66 @@ proof -
   qed
 qed
 
+
+subsection \<open>Metrics and Metrizability\<close>
+(* TODO: Move the following to Standard_Borel_Spaces.Abstract_Metrizable_Topology *)
+lemma metrizable_space_metric_space:
+  assumes d:"Metric_space UNIV d" "Metric_space.mtopology UNIV d = euclidean"
+  shows "class.metric_space d (\<Sqinter>e\<in>{0<..}. principal {(x,y). d x y < e}) open"
+proof -
+  interpret Metric_space UNIV d by fact
+  show ?thesis
+  proof
+    show "open U \<longleftrightarrow> (\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in \<Sqinter>e\<in>{0<..}. principal {(F, y). d F y < e}.  x' = x \<longrightarrow> y \<in> U)" for U
+    proof(subst eventually_INF_base)
+      show "a \<in> {0<..} \<Longrightarrow> b \<in> {0<..} \<Longrightarrow> \<exists>x\<in>{0<..}. principal {(F, y). d F y < x} \<le> principal {(F, y). d F y < a} \<sqinter> principal {(F, y). d F y < b}" for a b
+        by(auto intro!: bexI[where x="min a b"])
+    next
+      show "open U \<longleftrightarrow> (\<forall>x\<in>U. \<exists>b\<in>{0<..}. \<forall>\<^sub>F (x', y) in principal {(F, y). d F y < b}. x' = x \<longrightarrow> y \<in> U)"
+        by(fastforce simp: openin_mtopology[simplified d(2),simplified] eventually_principal)
+    qed simp
+  qed(auto simp: triangle')
+qed
+
+corollary metrizable_space_metric_space_ex:
+  assumes "metrizable_space (euclidean :: 'a :: topological_space topology)"
+  shows "\<exists>(d :: 'a \<Rightarrow> 'a \<Rightarrow> real) F. class.metric_space d F open"
+proof -
+  from assms obtain d :: "'a \<Rightarrow> 'a \<Rightarrow> real" where "Metric_space UNIV d" "Metric_space.mtopology UNIV d = euclidean"
+    by (metis Metric_space.topspace_mtopology metrizable_space_def topspace_euclidean)
+  from metrizable_space_metric_space[OF this] show ?thesis
+    by blast
+qed
+
+lemma completely_metrizable_space_metric_space:
+  assumes "Metric_space (UNIV :: 'a ::topological_space set) d" "Metric_space.mtopology UNIV d = euclidean" "Metric_space.mcomplete UNIV d"
+  shows "class.complete_space d (\<Sqinter>e\<in>{0<..}. principal {(x,y). d x y < e}) open"
+proof -
+  interpret Metric_space UNIV d by fact
+  interpret m:metric_space d "\<Sqinter>e\<in>{0<..}. principal {(x,y). d x y < e}" "open"
+    by(auto intro!: metrizable_space_metric_space assms)
+  (* Why do we need the following? *)
+  have [simp]:"topological_space.convergent (open :: 'a set \<Rightarrow> bool) = convergent"
+  proof
+    fix x :: "nat \<Rightarrow> 'a"
+    have *:"class.topological_space (open :: 'a set \<Rightarrow> bool)"
+      by standard auto
+    show "topological_space.convergent open x = convergent x"
+      by(simp add: topological_space.convergent_def[OF *] topological_space.nhds_def[OF *] convergent_def nhds_def)
+  qed
+  show ?thesis
+    apply unfold_locales
+    using assms(3) by(auto simp: mcomplete_def assms(2) MCauchy_def m.Cauchy_def convergent_def)
+qed
+
+lemma completely_metrizable_space_metric_space_ex:
+  assumes "completely_metrizable_space (euclidean :: 'a :: topological_space topology)"
+  shows "\<exists>(d :: 'a \<Rightarrow> 'a \<Rightarrow> real) F. class.complete_space d F open"
+proof -
+  from assms obtain d :: "'a \<Rightarrow> 'a \<Rightarrow> real" where "Metric_space UNIV d" "Metric_space.mtopology UNIV d = euclidean" "Metric_space.mcomplete UNIV d"
+    by (metis Metric_space.topspace_mtopology completely_metrizable_space_def topspace_euclidean)
+  from completely_metrizable_space_metric_space[OF this] show ?thesis
+    by blast
+qed
+
 end

@@ -46,7 +46,7 @@ struct
       val fixes = [(bind, NONE, NoSyn)];
       val specs = map (fn def => (((Binding.empty, []), def), [], [])) defs
     in
-      Function.add_function fixes specs Function_Fun.fun_config
+      Function.add_function {verbose = false} fixes specs Function_Fun.fun_config
         (fn ctxt => Pat_Completeness.pat_completeness_tac ctxt 1 THEN auto_tac ctxt)
     end
 

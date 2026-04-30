@@ -1381,9 +1381,10 @@ proof -
   let ?tau = "subst_match_problem_mset \<tau> :: ('f,'v,'s) match_problem_mset \<Rightarrow> _"
   from assms[unfolded \<tau>s_def] obtain f ss  
     where f: "f : ss \<rightarrow> snd x in C" and \<tau>: "\<tau> = \<tau>c n x (f,ss)" by auto
-  define vs where "vs = (zip [n..<n + length ss] ss)" 
+  define vs where "vs = indexed_from n ss" 
   define s where "s = (Fun f (map Var vs))" 
-  have tau: "\<tau> = subst x s" unfolding \<tau> \<tau>c_def s_def vs_def by auto
+  have tau: "\<tau> = subst x s"
+    using \<tau> by (simp add: \<tau>c_def s_def vs_def)
   have "meas_dupl (?tau_mset p) = sum_ms (max_dupl_mp o ?tau) p" 
     unfolding meas_dupl_def subst_pat_problem_mset_def o_def image_mset.compositionality ..
   also have "\<dots> \<le> sum_ms max_dupl_mp p" unfolding o_def
@@ -1454,15 +1455,15 @@ proof -
             with d show ?thesis unfolding terms_def by auto
           next
             case True
-            have dist: "distinct vs" unfolding vs_def
-              by (metis distinct_enumerate enumerate_eq_zip)
+            have dist: "distinct vs"
+              by (simp add: vs_def)
             from split_list[OF True] obtain vs1 vs2 where vs: "vs = vs1 @ y # vs2" by auto
             with dist have nmem: "y \<notin> set vs1" "y \<notin> set vs2" by auto
             have "count (syms_term s) (Inl y) = 1" unfolding syms_s vs using nmem
               by (auto simp: count_eq_zero_iff) 
             with d have d: "d \<le> ?symsy + ?symsx" by auto
-            from True have ynm: "fst y \<in> {n..<n + m}" unfolding vs_def using m[OF f] 
-              by (auto simp: set_zip)
+            from True have ynm: "fst y \<in> {n..<n + m}" using m [OF f] 
+              by (simp add: set_zip in_set_indexed_from_eq vs_def)
             from mp have "mp_mset mp \<in> pat_mset p" by auto
             from assms(2)[unfolded tvars_disj_pp_def, rule_format, OF this] ynm
             have "y \<notin> tvars_match (mp_mset mp)" unfolding tvars_match_def by force
@@ -1570,13 +1571,15 @@ next
   let ?tau_mset = "subst_pat_problem_mset \<tau> :: ('f,'v,'s) pat_problem_mset \<Rightarrow> _"
   let ?tau = "subst_match_problem_mset \<tau> :: ('f,'v,'s) match_problem_mset \<Rightarrow> _"
   from \<tau>s[unfolded \<tau>s_def \<tau>c_def]
-  obtain c sorts where c: "c : sorts \<rightarrow> ?s in C" and tau: "\<tau> = subst x (Fun c (map Var (zip [n..<n + length sorts] sorts)))" 
+  obtain c sorts where c: "c : sorts \<rightarrow> ?s in C"
+    and tau: "\<tau> = subst x (Fun c (map Var (indexed_from n sorts)))" 
     by (clarsimp simp add: \<tau>s_def \<tau>c_def)
   with C_sub_S have sS: "?s \<in> S" and sorts: "set sorts \<subseteq> S" by auto
-  define vs where "vs = zip [n..<n + length sorts] sorts" 
-  have \<tau>: "\<tau> = subst x (Fun c (map Var vs))" unfolding tau vs_def by auto
+  define vs where "vs = indexed_from n sorts" 
+  have \<tau>: "\<tau> = subst x (Fun c (map Var vs))"
+    unfolding tau vs_def by auto
   have "snd ` vars (\<tau> y) \<subseteq> insert (snd y) S" for y
-    using sorts unfolding tau by (auto simp: subst_def set_zip set_conv_nth)
+    using sorts unfolding tau by (auto simp: subst_def set_zip set_conv_nth nth_indexed_from_eq)
   hence vars_sort: "(a,b) \<in> vars (\<tau> y) \<Longrightarrow> b \<in> insert (snd y) S" for a b y by fastforce 
   from st obtain mp' where mp: "mp = add_mset (s,t) mp'" by (rule mset_add)
   from choice have "?p \<succ> ?tau_mset ?p \<and> (improved \<longrightarrow> measure_pat_poly ?c ?p > measure_pat_poly ?c (?tau_mset ?p))" 

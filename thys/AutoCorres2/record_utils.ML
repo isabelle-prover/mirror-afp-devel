@@ -76,7 +76,7 @@ let
       |> Thm.cterm_of ctxt
       |> Goal.init
       |> Utils.apply_tac ctxt "solve simple record proof"
-          (simp_tac (ctxt addsimps [def_thm]) 1)
+          (simp_tac (ctxt |> Simplifier.add_simp def_thm) 1)
       |> Goal.finish ctxt
   val thms = map gen_simp_proof (fields ~~ components)
 

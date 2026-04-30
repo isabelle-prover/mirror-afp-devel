@@ -67,8 +67,8 @@ text \<open>
 theorem Eisenstein_G2_apply_modgrp:
   assumes "Im z > 0"
   shows   "Eisenstein_G 2 (apply_modgrp f z) = 
-             modgrp_factor f z ^ 2 * Eisenstein_G 2 z -
-             2 * \<i> * pi * modgrp_c f * modgrp_factor f z"
+             automorphy_factor f z ^ 2 * Eisenstein_G 2 z -
+             2 * \<i> * pi * modgrp_c f * automorphy_factor f z"
   using assms
 proof (induction f arbitrary: z rule: modgrp_induct_S_shift')
   case id
@@ -78,8 +78,8 @@ next
   have "Eisenstein_G 2 (apply_modgrp (f * shift_modgrp n) z) = 
           Eisenstein_G 2 (apply_modgrp f (z + of_int n))"
     using shift.prems by (subst apply_modgrp_mult) auto
-  also have "\<dots> = (modgrp_factor f (z + of_int n))\<^sup>2 * Eisenstein_G 2 (z + of_int n) -
-                  2 * \<i> * of_real pi * of_int (modgrp_c f) * modgrp_factor f (z + of_int n)"
+  also have "\<dots> = (automorphy_factor f (z + of_int n))\<^sup>2 * Eisenstein_G 2 (z + of_int n) -
+                  2 * \<i> * of_real pi * of_int (modgrp_c f) * automorphy_factor f (z + of_int n)"
     using shift.prems by (subst shift.IH) auto
   also have "Eisenstein_G 2 (z + of_int n) = Eisenstein_G 2 z"
     by (rule Eisenstein_G_plus_int)
@@ -98,7 +98,7 @@ next
   proof (cases "is_singular_modgrp f")
     case False
     hence f: "f = shift_modgrp b"
-      unfolding a_b_c_d_def by (rule not_singular_modgrpD)
+      unfolding a_b_c_d_def using S.hyps not_singular_modgrpD[of f] by auto
     have *: "f * S_modgrp = modgrp b (-1) 1 0"
       unfolding f shift_modgrp_code S_modgrp_code times_modgrp_code by simp
     have [simp]: "modgrp_a (f * S_modgrp) = b"
@@ -113,14 +113,15 @@ next
       by (subst Eisenstein_G_plus_int) auto
     also have "\<dots> = z\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * z"
       by (subst Eisenstein_G2_minus_one_over) (use S.prems in auto)
-    also have "\<dots> = (modgrp_factor (f * S_modgrp) z)\<^sup>2 * Eisenstein_G 2 z -
-                    2 * \<i> * pi * complex_of_int (modgrp_c (f * S_modgrp)) * modgrp_factor (f * S_modgrp) z"
-      by (simp add: modgrp_factor_def)
+    also have "\<dots> = (automorphy_factor (f * S_modgrp) z)\<^sup>2 * Eisenstein_G 2 z -
+                    2 * \<i> * pi * complex_of_int (modgrp_c (f * S_modgrp)) * automorphy_factor (f * S_modgrp) z"
+      by (simp add: automorphy_factor_altdef f)
     finally show ?thesis .
   next
     case sing: True
-    hence "c > 0"
-      unfolding a_b_c_d_def by (meson is_singular_modgrp_altdef modgrp_cd_signs)
+    hence "c > 0" using S.hyps
+      unfolding a_b_c_d_def 
+      by (auto simp: is_singular_modgrp_altdef abs_modgrp_altdef split: if_splits)
     have "Im (1 / z) < 0"
       using S.prems Im_one_over_neg_iff by blast
     have Arg_z: "Arg z \<in> {0<..<pi}"
@@ -130,91 +131,45 @@ next
     have [simp]: "Arg (-z) = Arg z - pi"
       using Arg_z by (subst Arg_minus) auto
 
-    show ?thesis
-    proof (cases d "0 :: int" rule: linorder_cases)
-      case equal
-      hence *: "\<not>is_singular_modgrp (f * S_modgrp)"
-        unfolding a_b_c_d_def
-        by transfer (auto simp: modgrp_rel_def split: if_splits)
-      define n where "n = modgrp_b (f * S_modgrp)"
-      have **: "f * S_modgrp = shift_modgrp n"
-        unfolding n_def using * by (rule not_singular_modgrpD)
-      show ?thesis using S.prems
-        by (simp add: ** Eisenstein_G_plus_int)
-    next
-      case greater
-      have "modgrp a b c d * S_modgrp = modgrp b (-a) d (-c)"
-        unfolding shift_modgrp_code S_modgrp_code times_modgrp_code det by simp
-      hence *: "f * S_modgrp = modgrp b (-a) d (-c)"
-        by (simp add: a_b_c_d_def)
-      have [simp]: "modgrp_a (f * S_modgrp) = b" "modgrp_b (f * S_modgrp) = -a"
-                   "modgrp_c (f * S_modgrp) = d" "modgrp_d (f * S_modgrp) = -c"
-        unfolding * modgrp_a_code modgrp_b_code modgrp_c_code modgrp_d_code
-        using greater det by auto
-      define F where "F = modgrp_factor (f * S_modgrp) z"
+    have "modgrp a b c d * S_modgrp = modgrp b (-a) d (-c)"
+      unfolding shift_modgrp_code S_modgrp_code times_modgrp_code det by simp
+    hence *: "f * S_modgrp = modgrp b (-a) d (-c)"
+      by (simp add: a_b_c_d_def)
+    have [simp]: "modgrp_a (f * S_modgrp) = b" "modgrp_b (f * S_modgrp) = -a"
+                 "modgrp_c (f * S_modgrp) = d" "modgrp_d (f * S_modgrp) = -c"
+      unfolding * modgrp_a_code modgrp_b_code modgrp_c_code modgrp_d_code
+      using det by auto
+    define F where "F = automorphy_factor (f * S_modgrp) z"
 
-      have "Eisenstein_G 2 (apply_modgrp (f * S_modgrp) z) = 
-              Eisenstein_G 2 (apply_modgrp f (- (1 / z)))"
-        using S.prems by (subst apply_modgrp_mult) auto
-      also have "\<dots> = (modgrp_factor f (- (1 / z)))\<^sup>2 * Eisenstein_G 2 (-(1 / z)) -
-                      2 * \<i> * complex_of_real pi * c * modgrp_factor f (- (1 / z))"
-        using S.prems by (subst S.IH) (auto simp flip: a_b_c_d_def)
-      also have "modgrp_factor f (- (1 / z)) = F / z"
-        unfolding F_def modgrp_factor_def by (simp add: a_b_c_d_def field_simps)
-      also have "Eisenstein_G 2 (-(1 / z)) = z\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * z"
-        by (subst Eisenstein_G2_minus_one_over) (use S.prems in auto)
-      also have "(F / z)\<^sup>2 * (z\<^sup>2 * Eisenstein_G 2 z - of_real (2 * pi) * \<i> * z) =
-                 F ^ 2 * Eisenstein_G 2 z - 2 * pi * \<i> * F ^ 2 / z"
-        using S.prems by (simp add: field_simps power2_eq_square modgrp_factor_def F_def)
-      also have "F\<^sup>2 * Eisenstein_G 2 z - of_real (2 * pi) * \<i> * F\<^sup>2 / z -
-                   2 * \<i> * of_real pi * of_int c * (F / z) =
-                 F\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * ((F\<^sup>2 + of_int c * F) / z)"
-        by (simp add: field_simps)
-      also have "(F\<^sup>2 + of_int c * F) / z = of_int (modgrp_c (f * S_modgrp)) * F"
-        by (simp add: F_def modgrp_factor_def field_simps power2_eq_square flip: modgrp_c_def)
-      finally show ?thesis
-        unfolding F_def by simp
-    next
-      case less
-      have "modgrp a b c d * S_modgrp = modgrp b (-a) d (-c)"
-        unfolding shift_modgrp_code S_modgrp_code times_modgrp_code det by simp
-      hence *: "f * S_modgrp = modgrp b (-a) d (-c)"
-        by (simp add: a_b_c_d_def)
-      have [simp]: "modgrp_a (f * S_modgrp) = -b" "modgrp_b (f * S_modgrp) = a"
-                   "modgrp_c (f * S_modgrp) = -d" "modgrp_d (f * S_modgrp) = c"
-        unfolding * modgrp_a_code modgrp_b_code modgrp_c_code modgrp_d_code
-        using less det by auto
-      define F where "F = modgrp_factor (f * S_modgrp) z"
-
-      have "Eisenstein_G 2 (apply_modgrp (f * S_modgrp) z) = 
-              Eisenstein_G 2 (apply_modgrp f (- (1 / z)))"
-        using S.prems by (subst apply_modgrp_mult) auto
-      also have "\<dots> = (modgrp_factor f (- (1 / z)))\<^sup>2 * Eisenstein_G 2 (-(1 / z)) -
-                      2 * \<i> * complex_of_real pi * c * modgrp_factor f (- (1 / z))"
-        using S.prems by (subst S.IH) (auto simp flip: a_b_c_d_def)
-      also have "modgrp_factor f (- (1 / z)) = -F / z"
-        unfolding F_def modgrp_factor_def by (simp add: a_b_c_d_def field_simps)
-      also have "Eisenstein_G 2 (-(1 / z)) = z\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * z"
-        by (subst Eisenstein_G2_minus_one_over) (use S.prems in auto)
-      also have "(-F / z)\<^sup>2 * (z\<^sup>2 * Eisenstein_G 2 z - of_real (2 * pi) * \<i> * z) =
-                 F ^ 2 * Eisenstein_G 2 z - 2 * pi * \<i> * F ^ 2 / z"
-        using S.prems by (simp add: field_simps power2_eq_square modgrp_factor_def F_def)
-      also have "F\<^sup>2 * Eisenstein_G 2 z - of_real (2 * pi) * \<i> * F\<^sup>2 / z -
-                   2 * \<i> * of_real pi * of_int c * (-F / z) =
-                 F\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * ((F\<^sup>2 - of_int c * F) / z)"
-        by (simp add: field_simps)
-      also have "(F\<^sup>2 - of_int c * F) / z = of_int (modgrp_c (f * S_modgrp)) * F"
-        by (simp add: F_def modgrp_factor_def field_simps power2_eq_square flip: modgrp_c_def)
-      finally show ?thesis
-        unfolding F_def by simp
-    qed
+    have "Eisenstein_G 2 (apply_modgrp (f * S_modgrp) z) = 
+            Eisenstein_G 2 (apply_modgrp f (- (1 / z)))"
+      using S.prems by (subst apply_modgrp_mult) auto
+    also have "\<dots> = (automorphy_factor f (- (1 / z)))\<^sup>2 * Eisenstein_G 2 (-(1 / z)) -
+                    2 * \<i> * complex_of_real pi * c * automorphy_factor f (- (1 / z))"
+      using S.prems by (subst S.IH) (auto simp flip: a_b_c_d_def)
+    also have "automorphy_factor f (- (1 / z)) = F / z"
+      unfolding F_def automorphy_factor_altdef by (simp add: a_b_c_d_def field_simps)
+    also have "Eisenstein_G 2 (-(1 / z)) = z\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * z"
+      by (subst Eisenstein_G2_minus_one_over) (use S.prems in auto)
+    also have "(F / z)\<^sup>2 * (z\<^sup>2 * Eisenstein_G 2 z - of_real (2 * pi) * \<i> * z) =
+               F ^ 2 * Eisenstein_G 2 z - 2 * pi * \<i> * F ^ 2 / z"
+      using S.prems by (simp add: field_simps power2_eq_square automorphy_factor_def F_def)
+    also have "F\<^sup>2 * Eisenstein_G 2 z - of_real (2 * pi) * \<i> * F\<^sup>2 / z -
+                 2 * \<i> * of_real pi * of_int c * (F / z) =
+               F\<^sup>2 * Eisenstein_G 2 z - 2 * pi * \<i> * ((F\<^sup>2 + of_int c * F) / z)"
+      by (simp add: field_simps)
+    also have "(F\<^sup>2 + of_int c * F) / z = of_int (modgrp_c (f * S_modgrp)) * F"
+      by (simp add: F_def automorphy_factor_altdef field_simps power2_eq_square 
+               flip: modgrp_c_def a_b_c_d_def)
+    finally show ?thesis
+      unfolding F_def by simp
   qed
-qed
+qed simp_all
 
 lemma Eisenstein_E2_apply_modgrp:
   assumes "Im z > 0"
   shows   "Eisenstein_E 2 (apply_modgrp f z) = 
-             modgrp_factor f z ^ 2 * Eisenstein_E 2 z - 6 * \<i> / pi * modgrp_c f * modgrp_factor f z"
+             automorphy_factor f z ^ 2 * Eisenstein_E 2 z - 6 * \<i> / pi * modgrp_c f * automorphy_factor f z"
   unfolding Eisenstein_E_def
   by (simp add: Eisenstein_G2_apply_modgrp[OF assms] power2_eq_square zeta_2 field_simps)
 

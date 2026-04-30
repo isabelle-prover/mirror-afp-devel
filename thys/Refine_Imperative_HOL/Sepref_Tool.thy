@@ -56,7 +56,7 @@ ML \<open>
 
     fun preproc_tac ctxt = let
       val ctxt = put_simpset HOL_basic_ss ctxt
-      val ctxt = ctxt addsimps (sepref_preproc_simps.get ctxt)  
+      val ctxt = ctxt |> Simplifier.add_simps (sepref_preproc_simps.get ctxt)  
     in
       Sepref_Rules.prepare_hfref_synth_tac ctxt THEN'
       Simplifier.simp_tac ctxt
@@ -94,9 +94,10 @@ ML \<open>
         |> Simplifier.add_cong @{thm SP_cong}
         |> Simplifier.add_cong @{thm PR_CONST_cong}
 
-      val unsp_ss = put_simpset HOL_basic_ss ctxt addsimps @{thms SP_def}
+      val unsp_ss = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm SP_def}
 
-      val opt2_ss = put_simpset HOL_basic_ss ctxt
+      val opt2_ss = ctxt
+        |> put_simpset HOL_basic_ss
         |> Simplifier.add_simps (sepref_opt_simps2.get ctxt)
         |> Simplifier.add_proc @{simproc "HOL.let_simp"}
 
@@ -296,8 +297,9 @@ method_setup sepref_to_hnr = \<open>SIMPLE_METHOD_NOPARAM' (fn ctxt =>
 method_setup sepref_to_hoare = \<open>
   let
     fun sepref_to_hoare_tac ctxt = let
-      val ss = put_simpset HOL_basic_ss ctxt
-        addsimps @{thms hn_ctxt_def pure_def}
+      val ss = ctxt
+        |> put_simpset HOL_basic_ss
+        |> Simplifier.add_simps @{thms hn_ctxt_def pure_def}
 
     in
       Sepref.preproc_tac ctxt 

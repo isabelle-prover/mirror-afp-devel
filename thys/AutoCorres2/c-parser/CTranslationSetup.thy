@@ -323,7 +323,7 @@ fun copy_file qualify_ref src0 dst0 =
 
 fun file_command qualify_ref tag exts f files thy = 
   let
-    val (files, thy) = files thy
+    val files = files thy
     val {src_path, lines,...}: Token.file = the_single files
     val filename = Path.file_name src_path
     val full_src_path = Path.append (Resources.master_directory thy) src_path
@@ -374,11 +374,11 @@ in
 val _ =
   Outer_Syntax.command
     @{command_keyword "mllex"} "generate lexer" 
-   (Resources.provide_parse_files single >> (Toplevel.theory o (file_command true "mllex" ["sml"] LexGen.lexGen)))
+   (Resources.parse_files single >> (Toplevel.theory o (file_command true "mllex" ["sml"] LexGen.lexGen)))
 val _ =
   Outer_Syntax.command
     @{command_keyword "mlyacc"} "generate parser" 
-   (Resources.provide_parse_files single >> (Toplevel.theory o (file_command true "mlyacc" ["sig", "sml"] ParseGen.parseGen)))
+   (Resources.parse_files single >> (Toplevel.theory o (file_command true "mlyacc" ["sig", "sml"] ParseGen.parseGen)))
 
 end
 \<close>
@@ -825,7 +825,7 @@ simproc_setup size_of_bound (\<open>size_of TYPE('a::c_type) \<le> n\<close>) = 
     val _ = (case Thm.term_of ct of
         @{term_pat "size_of ?T \<le> _ "} => if UMM_Proofs.is_ctype T then () else raise Match
       | _ => raise Match)
-    val ctxt' = ctxt addsimps (Named_Theorems.get ctxt @{named_theorems size_simps})
+    val ctxt' = ctxt |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems size_simps})
     val eq = Simplifier.asm_full_rewrite ctxt' ct
     val _ = Utils.verbose_msg 5 ctxt (fn _ => "size_of_bound: " ^ Thm.string_of_thm ctxt eq)
     val rhs = Thm.rhs_of eq |> Thm.term_of

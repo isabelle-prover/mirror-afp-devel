@@ -11,21 +11,21 @@ signature NOMINAL_FUNCTION =
 sig
   include NOMINAL_FUNCTION_DATA
 
-  val add_nominal_function: (binding * typ option * mixfix) list ->
+  val add_nominal_function: {verbose: bool} -> (binding * typ option * mixfix) list ->
     Specification.multi_specs ->  Nominal_Function_Common.nominal_function_config ->
     (Proof.context -> tactic) -> local_theory -> nominal_info * local_theory
 
-  val add_nominal_function_cmd: (binding * string option * mixfix) list ->
+  val add_nominal_function_cmd: {verbose: bool} -> (binding * string option * mixfix) list ->
     Specification.multi_specs_cmd ->  Nominal_Function_Common.nominal_function_config ->
-    (Proof.context -> tactic) -> bool -> local_theory -> nominal_info * local_theory
+    (Proof.context -> tactic) -> local_theory -> nominal_info * local_theory
 
-  val nominal_function: (binding * typ option * mixfix) list ->
+  val nominal_function: {verbose: bool} -> (binding * typ option * mixfix) list ->
     Specification.multi_specs ->  Nominal_Function_Common.nominal_function_config ->
     local_theory -> Proof.state
 
-  val nominal_function_cmd: (binding * string option * mixfix) list ->
+  val nominal_function_cmd: {verbose: bool} -> (binding * string option * mixfix) list ->
     Specification.multi_specs_cmd ->  Nominal_Function_Common.nominal_function_config ->
-    bool -> local_theory -> Proof.state
+    local_theory -> Proof.state
 
   val get_info : Proof.context -> term -> nominal_info
 end
@@ -124,7 +124,7 @@ fun add_simps fnames post sort extra_qualify label mod_binding moreatts
   end
 
 (* nominal *)
-fun prepare_nominal_function do_print prep default_constraint fixspec eqns config lthy =
+fun prepare_nominal_function prep default_constraint {verbose} fixspec eqns config lthy =
   let
     val constrn_fxs = map (fn (b, T, mx) => (b, SOME (the_default default_constraint T), mx))
     val ((fixes0, spec0), ctxt') = prep (constrn_fxs fixspec) eqns lthy
@@ -170,8 +170,9 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
           pinducts=snd pinducts', simps=NONE, inducts=NONE, termination=termination',
           fs=fs, R=R, defname=defname, is_partial=true, eqvts=eqvts}
 
-        val _ = Proof_Display.print_consts do_print
-          (Position.thread_data ()) lthy (K false) (map fst fixes)
+        val _ =
+          Proof_Display.print_consts {verbose = verbose, pos = Position.thread_data ()} lthy
+            (K false) (map fst fixes)
       in
         (info,
          lthy |> Local_Theory.declaration {syntax = false, pervasive = false, pos = \<^here>}
@@ -181,10 +182,10 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
     ((goal_state, afterqed), lthy')
   end
 
-fun gen_add_nominal_function do_print prep default_constraint fixspec eqns config tac lthy =
+fun gen_add_nominal_function prep default_constraint verbose fixspec eqns config tac lthy =
   let
     val ((goal_state, afterqed), lthy') =
-      prepare_nominal_function do_print prep default_constraint fixspec eqns config lthy
+      prepare_nominal_function prep default_constraint verbose fixspec eqns config lthy
     val pattern_thm =
       case SINGLE (tac lthy') goal_state of
         NONE => error "pattern completeness and compatibility proof failed"
@@ -195,14 +196,14 @@ fun gen_add_nominal_function do_print prep default_constraint fixspec eqns confi
   end
 
 val add_nominal_function =
-  gen_add_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
-fun add_nominal_function_cmd a b c d int =
-  gen_add_nominal_function int Specification.read_multi_specs "_::type" a b c d
+  gen_add_nominal_function Specification.check_multi_specs (Type_Infer.anyT @{sort type})
+val add_nominal_function_cmd =
+  gen_add_nominal_function Specification.read_multi_specs "_::type"
 
-fun gen_nominal_function do_print prep default_constraint fixspec eqns config lthy =
+fun gen_nominal_function prep verbose default_constraint fixspec eqns config lthy =
   let
     val ((goal_state, afterqed), lthy') =
-      prepare_nominal_function do_print prep default_constraint fixspec eqns config lthy
+      prepare_nominal_function prep verbose default_constraint fixspec eqns config lthy
   in
     lthy'
     |> Proof.theorem NONE (snd oo afterqed) [[(Logic.unprotect (Thm.concl_of goal_state), [])]]
@@ -210,9 +211,9 @@ fun gen_nominal_function do_print prep default_constraint fixspec eqns config lt
   end
 
 val nominal_function =
-  gen_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
-fun nominal_function_cmd a b c int =
-  gen_nominal_function int Specification.read_multi_specs "_::type" a b c
+  gen_nominal_function Specification.check_multi_specs (Type_Infer.anyT @{sort type})
+val nominal_function_cmd =
+  gen_nominal_function Specification.read_multi_specs "_::type"
 
 fun get_info ctxt t = Item_Net.retrieve (get_function ctxt) t
   |> the_single |> snd
@@ -237,9 +238,9 @@ in
 end
 
 val _ =
-  Outer_Syntax.local_theory_to_proof' @{command_keyword nominal_function}
+  Outer_Syntax.local_theory_to_proof @{command_keyword nominal_function}
     "define general recursive nominal functions"
        (nominal_function_parser nominal_default_config
-          >> (fn (config, (fixes, specs)) => nominal_function_cmd fixes specs config))
+          >> (fn (config, (fixes, specs)) => nominal_function_cmd {verbose = true} fixes specs config))
 
 end

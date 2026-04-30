@@ -72,7 +72,7 @@ fun hst_prove_globals fullrecname thy = let
           (fn _ =>
               Class.intro_classes_tac (thy2ctxt thy') [] THEN
               ALLGOALS (asm_full_simp_tac
-                            (thy2ctxt thy' addsimps hst_thms)))
+                            (thy2ctxt thy' |> Simplifier.add_simps hst_thms)))
 in
   Axclass.add_arity is_hst_thm thy'
 end

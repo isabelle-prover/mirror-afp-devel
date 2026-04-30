@@ -221,7 +221,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
       lthy
       |> Local_Theory.begin_nested
       |> snd
-      |> (BNF_LFP_Rec_Sugar.primrec false [] bindings
+      |> (BNF_LFP_Rec_Sugar.primrec {verbose = false} [] bindings
           (map (fn t => ((Binding.empty_atts, t), [], [])) eqs))
       |> Local_Theory.end_nested_result
           (fn phi => fn (pcomps, _, pcomp_simps) => (map (Morphism.term phi) pcomps, map (Morphism.fact phi) pcomp_simps))

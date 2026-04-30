@@ -15,7 +15,7 @@ begin
 
 (*TODO: Move*)
 interpretation content_hom: monoid_mult_hom
-  "content::'a::{factorial_semiring, semiring_gcd, normalization_semidom_multiplicative} poly \<Rightarrow> _"
+  "Polynomial.content::'a::{factorial_semiring, semiring_gcd, normalization_semidom_multiplicative} poly \<Rightarrow> _"
 by (unfold_locales, auto simp: content_mult)
 
 lemma prod_dvd_1_imp_all_dvd_1:
@@ -60,7 +60,7 @@ next
     from res[unfolded factorize_rat_poly_generic_def ri fi split]
     have c: "c = d * ?r e" and fs: "fs = map (\<lambda> (fi,i). (?rp fi, i)) gs" by auto
     from factorize_int_poly[OF fi]
-    have irr: "(fi, i) \<in> set gs \<Longrightarrow> irreducible fi \<and> content fi = 1" for fi i
+    have irr: "(fi, i) \<in> set gs \<Longrightarrow> irreducible fi \<and> Polynomial.content fi = 1" for fi i
       using irreducible_imp_primitive[of fi] by auto
     note sff = factorize_int_poly(1)[OF fi]
     note sff' = square_free_factorizationD[OF sff]

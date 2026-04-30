@@ -177,7 +177,7 @@ fun sim_nondet prog_info phase ctxt
     val cache = Synthesize_Rules.gen_cond_cache check_compound l2_index (lift lift_prev) sim_rules
 
     val thm = Goal.prove ctxt' [] [] goal (fn {context, ...} => 
-       full_simp_tac (Simplifier.clear_simpset context addsimps @{thms DYN_CALL_def}) 1 THEN
+       full_simp_tac (context |> Simplifier.clear_simpset |> Simplifier.add_simp @{thm DYN_CALL_def}) 1 THEN
        EqSubst.eqsubst_tac context [0] [prev_def] 1 THEN       
        Context_Tactic.NO_CONTEXT_TACTIC context (
          CT.cache_deepen_tac (fn ctxt => Config.get ctxt Utils.verbose) cache

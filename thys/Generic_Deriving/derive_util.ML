@@ -191,7 +191,7 @@ fun add_fun' binding specs config lthy =
       Function.prove_termination NONE (Function_Common.termination_prover_tac false lthy) lthy
   in
     lthy |>
-    (Function.add_function binding specs config) pat_completeness_auto |> snd
+    (Function.add_function {verbose = false} binding specs config) pat_completeness_auto |> snd
     |> prove_termination
   end
 

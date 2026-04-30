@@ -6,9 +6,7 @@ session Prime_Distribution_Elementary = Zeta_Function +
     Prime_Number_Theorem
   theories
     Prime_Distribution_Elementary_Library
-    More_Dirichlet_Misc
     Primorial
-    Primes_Omega
     Lcm_Nat_Upto
     Moebius_Mu_Sum
     Elementary_Prime_Bounds

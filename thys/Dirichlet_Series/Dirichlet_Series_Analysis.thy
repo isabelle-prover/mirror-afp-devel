@@ -10,6 +10,7 @@ imports
   "HOL-Real_Asymp.Real_Asymp"
   Dirichlet_Series
   Moebius_Mu
+  Primes_Omega
   Partial_Summation
   Euler_Products
 begin

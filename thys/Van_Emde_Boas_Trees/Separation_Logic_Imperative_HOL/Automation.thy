@@ -484,7 +484,7 @@ struct
       in t' end) terms;
     val new_form = list_comb (f,nterms);
 
-    val res_ss = (put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci});
+    val res_ss = (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms star_aci});
     val result = Option.map (export o mk_meta_eq) (Arith_Data.prove_conv_nohyps
       [simp_tac res_ss 1] ctxt' (redex,new_form)
     );
@@ -527,12 +527,12 @@ struct
   fun match_frame_tac imp_solve_tac ctxt = let
     (* Normalize star-lists *)
     val norm_tac = simp_tac (
-      put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_normalize});
+      ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms SLN_normalize});
 
     (* Strip star-lists *)
     val strip_tac = 
-      simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_strip}) THEN'
-      simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_def});
+      simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms SLN_strip}) THEN'
+      simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm SLN_def});
 
     (* Do a match step *)
     val match_tac = resolve_tac ctxt @{thms FI_match} (* Separate p,q*)
@@ -587,7 +587,7 @@ struct
       dflt_tac ctxt 
       THEN' extract_ex_tac ctxt
       THEN' simp_tac 
-        (put_simpset HOL_ss ctxt addsimps @{thms solve_ent_preprocess_simps});
+        (ctxt |> put_simpset HOL_ss |> Simplifier.add_simps @{thms solve_ent_preprocess_simps});
 
     val match_entails_tac =
       resolve_tac ctxt @{thms entails_solve_init} 
@@ -857,8 +857,8 @@ method_setup fr_rot = \<open>
   let
     fun rot_tac ctxt = 
       resolve_tac ctxt @{thms fr_rot} THEN'
-      simp_tac (put_simpset HOL_basic_ss ctxt 
-        addsimps @{thms star_assoc[symmetric]})
+      simp_tac (ctxt |> put_simpset HOL_basic_ss
+        |> Simplifier.flip_simp @{thm star_assoc})
 
   in
     Scan.lift Parse.nat >> 
@@ -872,8 +872,8 @@ method_setup fr_rot_rhs = \<open>
   let
     fun rot_tac ctxt = 
       resolve_tac ctxt @{thms fr_rot_rhs} THEN'
-      simp_tac (put_simpset HOL_basic_ss ctxt 
-        addsimps @{thms star_assoc[symmetric]})
+      simp_tac (ctxt |> put_simpset HOL_basic_ss
+        |> Simplifier.flip_simp @{thm star_assoc})
 
   in
     Scan.lift Parse.nat >> 

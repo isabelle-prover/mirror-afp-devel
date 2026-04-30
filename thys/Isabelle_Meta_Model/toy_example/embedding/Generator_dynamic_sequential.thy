@@ -213,7 +213,7 @@ fun semi__thm_attribute ctxt = let open META open META_overload val S = fn Thms_
          (Thms_single' e1, Thms_single' e2) => Thms_single' (e1 RSN (1, e2))
        | (Thms_mult' e1, Thms_mult' e2) => Thms_mult' (e1 RLN (1, e2)))
   | Thm_simplified (e1, e2) =>
-      Thms_single' (asm_full_simplify (Simplifier.clear_simpset ctxt addsimps [S (semi__thm_attribute ctxt e2)])
+      Thms_single' (asm_full_simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simp (S (semi__thm_attribute ctxt e2)))
                                       (S (semi__thm_attribute ctxt e1)))
   | Thm_OF (e1, e2) =>
       Thms_single' ([S (semi__thm_attribute ctxt e2)] MRS (S (semi__thm_attribute ctxt e1)))
@@ -249,7 +249,7 @@ fun semi__thm_mult ctxt =
 
 fun semi__thm_mult_l ctxt l = List.concat (map (semi__thm_mult ctxt) l)
 
-fun semi__method_simp_only l ctxt = Simplifier.clear_simpset ctxt addsimps (semi__thm_mult_l ctxt l)
+fun semi__method_simp_only l ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps (semi__thm_mult_l ctxt l)
 fun semi__method_simp_add_del_split (l_add, l_del, l_split) ctxt =
   fold Splitter.add_split (semi__thm_mult_l ctxt l_split)
                           (ctxt |> Simplifier.add_simps (semi__thm_mult_l ctxt l_add)
@@ -308,13 +308,13 @@ end
 
 fun local_terminal_proof o_by = let open META in case o_by of
    Command_done => Proof.local_done_proof
- | Command_sorry => Proof.local_skip_proof true
+ | Command_sorry => Interactive.setmp true Proof.local_skip_proof
  | Command_by l_apply => Proof.local_terminal_proof (then_tactic l_apply, NONE)
 end
 
 fun global_terminal_proof o_by = let open META in case o_by of
    Command_done => Proof.global_done_proof
- | Command_sorry => Proof.global_skip_proof true
+ | Command_sorry => Interactive.setmp true Proof.global_skip_proof
  | Command_by l_apply => Proof.global_terminal_proof (then_tactic l_apply, NONE)
 end
 
@@ -331,7 +331,6 @@ fun proof_show_gen f (thes, thes_when) st = st
        []
        (if thes_when = [] then [] else [(Binding.empty_atts, map (fn t => (t, [])) thes_when)])
        [(Binding.empty_atts, [(thes, [])])]
-       true
   |> snd
 
 val semi__command_state = let open META_overload in
@@ -358,7 +357,6 @@ val semi__command_proof = let open META_overload
        |> Proof.have_cmd true NONE (K I) [] []
                          [( (To_sbinding n, if b then [[Token.make_string ("simp", Position.none)]] else [])
                           , [(of_semi__term e, [])])]
-                         true
        |> snd
        |> local_terminal_proof e_pr)
    | META.Command_fix_let (l, l_let, o_exp, _) =>
@@ -401,10 +399,11 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     thy
     |> Class.instantiation (tycos, [], Syntax.read_sort (Proof_Context.init_global thy) "object")
     |> fold_map (fn _ => fn thy =>
-        let val ((_, (_, ty)), thy) = Specification.definition_cmd
+        let val ((_, (_, ty)), thy) =
+          Specification.definition_cmd {verbose = false}
                                        NONE [] []
                                        ((To_binding (To_string0 n_def ^ "_" ^ name ^ "_def"), [])
-                                         , of_semi__term expr) false thy in
+                                         , of_semi__term expr) thy in
          (ty, thy)
         end) tycos
     |-> Class.prove_instantiation_exit_result (map o Morphism.thm) (fn ctxt => fn thms =>
@@ -414,7 +413,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
 | Theory_overloading (Overloading (n_c, e_c, n, e)) => in_theory
    (fn thy => thy
     |> Overloading.overloading_cmd [(To_string0 n_c, of_semi__term e_c, true)]
-    |> snd o Specification.definition_cmd NONE [] [] ((To_sbinding n, []), of_semi__term e) false
+    |> snd o Specification.definition_cmd {verbose = false} NONE [] [] ((To_sbinding n, []), of_semi__term e)
     |> Local_Theory.exit_global)
 | Theory_consts (Consts (n, ty, symb)) => in_theory
    (Sign.add_consts_cmd [( To_sbinding n
@@ -431,34 +430,32 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
           (SOME ( To_sbinding name
                 , NONE
                 , Mixfix (Input.string ("(" ^ of_semi__term abbrev ^ ")"), [], 1000, Position.no_range)), e) in
-    (snd o Specification.definition_cmd def [] [] (Binding.empty_atts, of_semi__term e) false)
+    (snd o Specification.definition_cmd {verbose = false} def [] [] (Binding.empty_atts, of_semi__term e))
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
-   (fn lthy => (snd o Specification.theorems Thm.theoremK
+   (fn lthy => (snd o Specification.theorems {verbose = false, kind = Thm.theoremK}
       [((To_sbinding s, List.map (fn s => Attrib.check_src lthy [Token.make_string (s, Position.none)])
                           (if simp then ["simp", "code_unfold"] else [])),
         List.map (fn x => ([semi__thm_attribute_single lthy x], [])) l)]
-      []
-      false) lthy)
+      []) lthy)
 | Theory_lemmas (Lemmas_simp_thms (s, l)) => in_local
-   (fn lthy => (snd o Specification.theorems Thm.theoremK
+   (fn lthy => (snd o Specification.theorems {verbose = false, kind = Thm.theoremK}
       [((To_sbinding s, List.map (fn s => Attrib.check_src lthy [Token.make_string (s, Position.none)])
                           ["simp", "code_unfold"]),
         List.map (fn x => (Proof_Context.get_thms lthy (To_string0 x), [])) l)]
-      []
-      false) lthy)
+      []) lthy)
 | Theory_lemma (Lemma (n, l_spec, l_apply, o_by)) => in_local
    (fn lthy =>
-           Specification.theorem_cmd true Thm.theoremK NONE (K I)
+        Specification.theorem_cmd {verbose = false, long = true, kind = Thm.theoremK} NONE (K I)
              Binding.empty_atts [] [] (Element.Shows [((To_sbinding n, [])
                                                        ,[((String.concatWith (" \<Longrightarrow> ")
                                                              (List.map of_semi__term l_spec)), [])])])
-             false lthy
+             lthy
         |> fold (semi__command_proof o META.Command_apply) l_apply
         |> global_terminal_proof o_by)
 | Theory_lemma (Lemma_assumes (n, l_spec, concl, l_apply, o_by)) => in_local
    (fn lthy => lthy
-        |> Specification.theorem_cmd true Thm.theoremK NONE (K I)
+        |> Specification.theorem_cmd {verbose = false, long = true, kind = Thm.theoremK} NONE (K I)
              (To_sbinding n, [])
              []
              (List.map (fn (n, (b, e)) =>
@@ -467,7 +464,6 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
                                           , [(of_semi__term e, [])])])
                        l_spec)
              (Element.Shows [(Binding.empty_atts, [(of_semi__term concl, [])])])
-             false
         |> fold semi__command_proof l_apply
         |> (case map_filter (fn META.Command_let _ => SOME []
                               | META.Command_have _ => SOME []
@@ -1101,7 +1097,7 @@ ML\<open>
 fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code, l_obj) thy0 =
   let open Generation_mode in
   let val of_arg = META.isabelle_of_compiler_env_config META.isabelle_apply I in
-  let fun def s = Named_Target.theory_map (snd o Specification.definition_cmd NONE [] [] (Binding.empty_atts, s) false) in
+  let fun def s = Named_Target.theory_map (snd o Specification.definition_cmd {verbose = false} NONE [] [] (Binding.empty_atts, s)) in
   let val name_main = Deep.mk_free (Proof_Context.init_global thy0)
                                    Deep0.Export_code_env.Isabelle.argument_main [] in
   thy0

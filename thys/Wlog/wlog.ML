@@ -5,11 +5,10 @@ val wlog : Position.T -> (* Position (for bindings and markup) *)
            term -> (* Goal to operate on *)
            (binding * string * typ) list -> (* Generalizing *)
            (string * thm list) list -> (* Assumptions to keep *)
-           bool -> (* internal (as in Proof.show, Proof.have) *)
            Proof.state -> Proof.state
 
 val wlog_cmd : Position.T -> Attrib.binding * string list -> string -> binding list -> 
-               (Facts.ref * Token.src list) list -> bool -> Proof.state -> Proof.state
+               (Facts.ref * Token.src list) list -> Proof.state -> Proof.state
 
 end = struct
 
@@ -165,7 +164,6 @@ fun wlog (pos:Position.T)  (* Position where the wlog-command was entered *)
          (goal: term)  (* Which goal to work on (should be something that "show" accepts. *)
          (fixes: (binding*string*typ) list) (* Variables to be generalized (keyword "generalizing") *)
          (assms: (string*thm list) list)  (* Assumptions to keep (keyword "keeping") *)
-         (int: bool)  (* internal (as in Proof.show, Proof.have) *)
          (state: Proof.state) : Proof.state =
   let
       (* initial_ctxt: context at the beginning of the execution. (Does not change much until the `next` command.) *)
@@ -213,7 +211,7 @@ fun wlog (pos:Position.T)  (* Position where the wlog-command was entered *)
           val proven_thm = Proof.the_fact state
           (* show \<open>`goal`\<close> *)
           val (_,state) = Proof.show true NONE (fn _ => I) [] [] 
-                             [((Binding.empty,[]),[(goal,[])])] int state
+                             [((Binding.empty,[]),[(goal,[])])] state
           (* Prove this goal using `negation_tac` and `hyp_thm` and `assms`. *)
           val state = Proof.apply (Method.Basic (fn ctxt => 
               (Method.SIMPLE_METHOD (wlog_aux_tac ctxt proven_thm hyp_thm (length newassm) (assms |> map snd |> List.concat)))),
@@ -261,7 +259,7 @@ fun wlog (pos:Position.T)  (* Position where the wlog-command was entered *)
          After this, the user can write their proof, and then control flow continues in `after_qed` above. *)
       val (_,state) = Proof.have true NONE after_qed [] 
              [((Binding.make ("negation", pos),[]), [(negated_newassm, [])])]
-             [((Binding.empty,[]), [(goal,[])])] int state
+             [((Binding.empty,[]), [(goal,[])])] state
   in state end
 
 (* See `fun wlog` above for documentation-comments.
@@ -271,7 +269,7 @@ fun wlog_cmd (pos: Position.T)
              (goal: string)
              (fixes : binding list)
              (assms : (Facts.ref * Token.src list) list)
-             int state =
+             state =
   let val ctxt = Proof.context_of state
       val stmt = map (Syntax.read_prop ctxt) stmt
       val assms' = map (fn (fact,_) => (Facts.ref_name fact, Proof_Context.get_fact ctxt fact)) assms
@@ -281,7 +279,7 @@ fun wlog_cmd (pos: Position.T)
                                     val T = Vartab.lookup constr (internal,~1) |> Option.valOf
                                 in (b,internal,T) end) fixes
       val attrib2 = map (Attrib.attribute_cmd ctxt) attrib
-  in wlog pos (bind,attrib2,stmt) goal' fixes' assms' int state end                 
+  in wlog pos (bind,attrib2,stmt) goal' fixes' assms' state end                 
 
 (* Parser for the Isar-command "wlog". *)
 val wlog_parser = (Parse_Spec.opt_thm_name ":" -- Scan.repeat1 Parse.prop) -- 
@@ -293,6 +291,6 @@ val wlog_parser = (Parse_Spec.opt_thm_name ":" -- Scan.repeat1 Parse.prop) --
 (* Declare the Isar-command "wlog", to essentially invoke the function `wlog` defined above. *)
 val _ =
   Outer_Syntax.command @{command_keyword wlog} "Adds an assumption that holds without loss of generality"
-    (wlog_parser >> (fn ((((stmt,goal),fixes),assms),pos) => Toplevel.proof' (wlog_cmd pos stmt goal fixes assms)));
+    (wlog_parser >> (fn ((((stmt,goal),fixes),assms),pos) => Toplevel.proof (wlog_cmd pos stmt goal fixes assms)));
 
 end

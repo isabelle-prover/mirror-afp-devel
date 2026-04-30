@@ -865,7 +865,7 @@ ML \<open>
   
     val is_hn_refine_concl = can (HOLogic.dest_Trueprop #> dest_hn_refine)
   
-    fun star_permute_tac ctxt = ALLGOALS (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms star_aci}))
+    fun star_permute_tac ctxt = ALLGOALS (simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms star_aci}))
       
 
     type phases_ctrl = {

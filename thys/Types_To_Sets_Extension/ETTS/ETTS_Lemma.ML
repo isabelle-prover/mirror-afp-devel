@@ -238,14 +238,14 @@ end;
 (**** Evaluation ****)
 
 fun process_tts_lemma
-  (long, binding, includes, elems, concl, tts_thms_specs) b lthy = 
+  (long, binding, includes, elems, concl, tts_thms_specs) lthy = 
   let
     val tts_thms_specs = 
       map (single #> Attrib.eval_thms lthy |> apsnd) tts_thms_specs
   in
     lthy
-    |> Specification.theorem_cmd
-      long Thm.theoremK NONE (K I) binding includes elems concl b
+    |> Specification.theorem_cmd {verbose = true, long = long, kind = Thm.theoremK}
+      NONE (K I) binding includes elems concl
     |> mk_tts_goal tts_thms_specs lthy
   end;
 
@@ -254,7 +254,7 @@ fun process_tts_lemma
 
 (**** Interface ****)
 
-fun tts_lemma spec descr = Outer_Syntax.local_theory_to_proof' 
+fun tts_lemma spec descr = Outer_Syntax.local_theory_to_proof 
   spec ("state " ^ descr) (parse_tts_lemma >> process_tts_lemma);
 
 end;

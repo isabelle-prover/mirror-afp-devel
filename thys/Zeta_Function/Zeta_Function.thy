@@ -709,6 +709,26 @@ proof -
     by simp
 qed
 
+lemma hurwitz_zeta_shift:
+  fixes s :: complex
+  assumes "a > 0" and "s \<noteq> 1"
+  shows   "hurwitz_zeta (a + real n) s = hurwitz_zeta a s - (\<Sum>k<n. (a + real k) powr -s)"
+proof (rule analytic_continuation_open[where f = "\<lambda>s. hurwitz_zeta (a + real n) s"])
+  fix s assume s: "s \<in> {s. Re s > 1}"
+  have "(\<lambda>k. (a + of_nat (k + n)) powr -s) sums hurwitz_zeta (a + real n) s"
+    using sums_hurwitz_zeta[of "a + real n" s] s assms by (simp add: add_ac)
+  moreover have "(\<lambda>k. (a + of_nat k) powr -s) sums hurwitz_zeta a s"
+    using sums_hurwitz_zeta[of a s] s assms by (simp add: add_ac)
+  hence "(\<lambda>k. (a + of_nat (k + n)) powr -s) sums
+            (hurwitz_zeta a s - (\<Sum>k<n. (a + of_nat k) powr -s))"
+    by (rule sums_split_initial_segment)
+  ultimately show "hurwitz_zeta (a + real n) s = hurwitz_zeta a s - (\<Sum>k<n. (a + real k) powr -s)"
+    by (simp add: sums_iff)
+next
+  show "connected (-{1::complex})"
+    by (rule connected_punctured_universe) auto
+qed (use assms in \<open>auto intro!: holomorphic_intros open_halfspace_Re_gt exI[of _ 2]\<close>)
+
 corollary
   assumes "Re s > 1"
   shows zeta_conv_suminf: "zeta s = (\<Sum>n. of_nat (Suc n) powr -s)"
@@ -3485,8 +3505,8 @@ next
           case False
           with \<open>n < 0\<close> have "of_int n = (-of_nat (nat (-n)) :: complex)" by simp
           also have "zeta \<dots> = -(bernoulli' (Suc (nat (-n)))) / of_nat (Suc (nat (-n)))"
-            using \<open>n < 0\<close> by (subst zeta_neg_of_nat) (auto)
-          finally have "bernoulli' (Suc (nat (-n))) = 0" using assms
+            using \<open>n < 0\<close> by (subst zeta_neg_of_nat) (auto simp: of_real_bernoulli')
+          finally have "bernoulli' (Suc (nat (-n))) = (0 :: complex)" using assms
             by (auto simp del: of_nat_Suc)
           with False and \<open>n < 0\<close> show False
             by (auto simp: bernoulli'_zero_iff even_nat_iff)
