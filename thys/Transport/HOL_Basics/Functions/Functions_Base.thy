@@ -50,13 +50,13 @@ translations
   "(x : f) \<leadsto> g" \<rightleftharpoons> "CONST dep_fun_map f (\<lambda>x. g)"
 end
 
-lemma fun_map_eq_dep_fun_map: "(f \<leadsto> g) = ((_ :  f) \<leadsto> (\<lambda>_. g))"
+lemma fun_map_eq_dep_fun_map: "(f \<leadsto> g) = ((_ : f) \<leadsto> (\<lambda>_. g))"
   unfolding fun_map_def by simp
 
 lemma fun_map_eq_dep_fun_map_uhint [uhint]:
   assumes "f \<equiv> f'"
   and "g' \<equiv> \<lambda>_ _. g"
-  shows "(f \<leadsto> g) = ((x :  f') \<leadsto> g' x)"
+  shows "(f \<leadsto> g) = ((x : f') \<leadsto> g' x)"
   using assms by (simp add: fun_map_eq_dep_fun_map)
 
 lemma dep_fun_map_eq [simp]: "((x : f) \<leadsto> g x) h x = g x (f x) (h (f x))"

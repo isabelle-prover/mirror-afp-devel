@@ -56,7 +56,7 @@ lemma galois_equivalence_if_mono_if_galois_equivalence_mono_assms_leftI:
   and "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<le>\<^bsub>L1\<^esub> x3 \<and> x4 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x3\<rparr> \<Rrightarrow> (\<ge>)) L2" (is ?goal2)
 proof -
   show ?goal1
-  proof (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Fun_Rel_relI rel_if_if_impI)
+  proof (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Fun_Rel_relI rel_if_if_imp)
     fix x1 x2 x3 x4 presume "x1 \<le>\<^bsub>L1\<^esub> x2"
     moreover with galois_equiv1 preorder_L1 have "x2 \<le>\<^bsub>L1\<^esub> \<eta>\<^sub>1 x2"
       by (blast intro: t1.rel_unit_if_reflexive_on_if_galois_connection)

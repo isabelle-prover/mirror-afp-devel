@@ -120,13 +120,13 @@ lemma Fun_Rel_relE:
   obtains "\<And>x y. R x y \<Longrightarrow> S x y (f x) (g y)"
   using assms by (urule (e) Dep_Fun_Rel_relE)
 
-lemma Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if [simp]:
+lemma Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if:
   "((x y \<Colon> \<lparr>x y \<Colon> R | P x y\<rparr>) \<Rrightarrow> S x y) = ((x y \<Colon> R | P x y) \<Rrightarrow> S x y)"
   by fastforce
 
-lemma Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if [simp]:
+lemma Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if:
   "(\<lparr>x y \<Colon> R | P x y\<rparr> \<Rrightarrow> S) = ((x y \<Colon> R | P x y) \<Rrightarrow> S)"
-  by fastforce
+  by (urule Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if)
 
 lemma Dep_Fun_Rel_predI [intro]:
   assumes "\<And>x. P x \<Longrightarrow> R x (f x) (g x)"
@@ -187,6 +187,17 @@ lemma Dep_Fun_Rel_pred_rel_inv_eq [simp]:
 lemma Fun_Rel_eq_eq_eq [simp]: "((=) \<Rrightarrow> (=)) = (=)"
   by (intro ext) auto
 
+lemma Dep_Fun_Rel_rel_le_Dep_Fun_Rel_relI:
+  assumes "R' \<le> R"
+  and "\<And>x y. R' x y \<Longrightarrow> R x y \<Longrightarrow> S x y \<le> S' x y"
+  shows "((x y \<Colon> R) \<Rrightarrow> S x y) \<le> ((x y \<Colon> R') \<Rrightarrow> S' x y)"
+  using assms by (intro le_funI) (force dest: le_funD)
+
+lemma Fun_Rel_rel_le_Fun_Rel_relI:
+  assumes "(R' :: _ \<Rightarrow> _ \<Rightarrow> bool) \<le> R"
+  and "\<And>x y. R' x y \<Longrightarrow> R x y \<Longrightarrow> S \<le> S'"
+  shows "(R \<Rrightarrow> S) \<le> (R' \<Rrightarrow> S')"
+  using assms by (urule Dep_Fun_Rel_rel_le_Dep_Fun_Rel_relI)
 
 paragraph \<open>Composition\<close>
 

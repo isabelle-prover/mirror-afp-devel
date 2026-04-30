@@ -454,7 +454,7 @@ consts rel_if :: "bool \<Rightarrow> 'a \<Rightarrow> 'a"
 
 open_bundle rel_if_syntax
 begin
-notation rel_if (infixr \<open>\<longrightarrow>\<^sub>r\<close> 50)
+notation rel_if (infixr \<open>\<longrightarrow>\<^sub>r\<close> 30)
 end
 
 definition "rel_if_rel B R x y \<equiv> B \<longrightarrow> R x y"
@@ -475,7 +475,7 @@ corollary rel_if_True_eq_self [simp]: "(True \<longrightarrow>\<^sub>r R) = R"
 corollary rel_if_False_eq_top [simp]: "(False \<longrightarrow>\<^sub>r R) = \<top>"
   by (simp add: rel_if_eq_top_if_not_pred)
 
-lemma rel_if_if_impI [intro]:
+lemma rel_if_if_imp [intro]:
   assumes "B \<Longrightarrow> R x y"
   shows "(B \<longrightarrow>\<^sub>r R) x y"
    using assms by (cases B) simp_all

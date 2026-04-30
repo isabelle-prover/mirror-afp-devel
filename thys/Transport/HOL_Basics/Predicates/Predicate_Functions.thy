@@ -49,7 +49,7 @@ consts pred_if :: "bool \<Rightarrow> 'a \<Rightarrow> 'a"
 
 open_bundle pred_if_syntax
 begin
-notation pred_if (infixr \<open>\<longrightarrow>\<^sub>p\<close> 50)
+notation pred_if (infixr \<open>\<longrightarrow>\<^sub>p\<close> 30)
 end
 
 definition "pred_if_rel B P x \<equiv> B \<longrightarrow> P x"

@@ -61,7 +61,7 @@ lemma half_galois_prop_left_if_imp_if_half_galois_prop_left:
   assumes "B \<Longrightarrow> B' \<Longrightarrow> ((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   and "B' \<Longrightarrow> B"
   shows "((B \<longrightarrow>\<^sub>r (\<le>\<^bsub>L\<^esub>)) \<^sub>h\<unlhd> (B' \<longrightarrow>\<^sub>r (\<le>\<^bsub>R\<^esub>))) l r"
-  using assms by (intro half_galois_prop_leftI rel_if_if_impI) fast
+  using assms by (intro half_galois_prop_leftI rel_if_if_imp) fast
 
 lemma half_galois_prop_right_if_imp_if_half_galois_prop_right:
   assumes "B \<Longrightarrow> B' \<Longrightarrow> ((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
@@ -112,6 +112,17 @@ lemma partial_equivalence_rel_equivalence_if_iff_if_partial_equivalence_rel_equi
     partial_equivalence_rel_equivalence_if_galois_equivalenceI
     galois_equivalence_if_iff_if_galois_equivalence)
   fastforce+
+
+lemma left_Galois_eq_rel_if_left_Galois_if_iff:
+  assumes "B \<longleftrightarrow> B'"
+  shows "Galois = ((B \<and> B') \<longrightarrow>\<^sub>r (\<^bsub>L\<^esub>\<lessapprox>))"
+  using assms by (fastforce intro: galois_rel.left_GaloisI)
+
+corollary left_Galois_if_iff_if_left_Galois:
+  assumes "B \<Longrightarrow> B' \<Longrightarrow> x \<^bsub>L\<^esub>\<lessapprox> y"
+  and "B \<longleftrightarrow> B'"
+  shows "Galois x y"
+  using assms left_Galois_eq_rel_if_left_Galois_if_iff by auto
 
 end
 

@@ -102,7 +102,6 @@ paragraph \<open>General ML setups\<close>
 ML_file\<open>transport_util.ML\<close>
 
 paragraph \<open>Unification Setup\<close>
-
 ML\<open>
 \<^functor_instance>\<open>struct_name: Transport_Unification_Combine
   functor_name: Unification_Combine_Functor
@@ -117,8 +116,8 @@ ML\<open>
   more_args: \<open>structure UC = Transport_Unification_Combine\<close>\<close>
 \<close>
 declare [[trp_ucombine \<open>Transport_Unification_Combine.eunif_data
-  (Transport_Unification_Combine.metadata (\<^binding>\<open>var_hop_unif\<close>, Prio.HIGH1),
-  Var_Higher_Order_Pattern_Unification.e_unify
+  (Transport_Unification_Combine.metadata (\<^binding>\<open>hop_var_unif\<close>, Prio.HIGH1),
+  Higher_Order_Pattern_Var_Unification.e_unify
   #> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
     Transport_Mixed_Comb_Unification.norms_fo_hop_comb_unify))\<close>]]
 ML\<open>
