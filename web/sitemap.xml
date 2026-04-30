@@ -14,6 +14,9 @@
     <loc>https://isa-afp.org/entries/Nominal_Unification.html</loc>
     <lastmod>2026-04-23T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Nagata-Factoriality.html</loc>
+    <lastmod>2026-04-20T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Archimedes_Cattle.html</loc>
     <lastmod>2026-04-01T00:00:00+00:00</lastmod>
   </url><url>
@@ -3694,6 +3697,8 @@
     <loc>https://isa-afp.org/thys/ArrowImpossibilityGS/Arrow_Utility.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ArrowImpossibilityGS/GS.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/ramos/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ahmeda/</loc>
   </url><url>
@@ -8290,6 +8295,8 @@
     <loc>https://isa-afp.org/thys/Datatype_Order_Generator/Order_Generator.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/aspinall/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/hulak/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/butler/</loc>
   </url><url>
@@ -18367,6 +18374,18 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Myhill-Nerode/Non_Regular_Languages.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Fraction_Field_Applications.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Localization_Interface.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Nagata_Factoriality.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Nagata_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Polynomial_Applications.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Prime_Generated.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/zhann/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Name_Carrying_Type_Inference/Fresh.html</loc>
@@ -21778,6 +21797,8 @@
     <loc>https://isa-afp.org/thys/RSAPSS/Wordarith.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/RSAPSS/WordOperations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/queiroz/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/S_Finite_Measure_Monad/Kernels.html</loc>
   </url><url>

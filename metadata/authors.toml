@@ -3397,6 +3397,22 @@ host = [
 [huffman.homepages]
 huffman_homepage = "http://cs.pdx.edu/~brianh/"
 
+[hulak]
+name = "David Barros Hulak"
+
+[hulak.emails]
+
+[hulak.emails.hulak_email]
+user = [
+  "dbhulak",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[hulak.homepages]
+
 [hupel]
 name = "Lars Hupel"
 
@@ -6290,6 +6306,23 @@ host = [
 
 [qiu.homepages]
 
+[queiroz]
+name = "Ruy Jose Guerra Barretto de Queiroz"
+
+[queiroz.emails]
+
+[queiroz.emails.queiroz_email]
+user = [
+  "ruy",
+]
+host = [
+  "cin",
+  "ufpe",
+  "br",
+]
+
+[queiroz.homepages]
+
 [raabjerg]
 name = "Palle Raabjerg"
 
@@ -6358,6 +6391,22 @@ host = [
 ]
 
 [raedle.homepages]
+
+[ramos]
+name = "Arthur Freitas Ramos"
+
+[ramos.emails]
+
+[ramos.emails.ramos_email]
+user = [
+  "arfreita",
+]
+host = [
+  "microsoft",
+  "com",
+]
+
+[ramos.homepages]
 
 [raska]
 name = "Martin Raška"
