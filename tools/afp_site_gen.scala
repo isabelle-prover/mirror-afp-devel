@@ -265,43 +265,19 @@ object AFP_Site_Gen {
     progress.echo("Loading data ...")
 
     val afp = AFP_Structure.load()
-    val entries1 = afp.entries.values.toList.filterNot(_.statistics_ignore)
-
-    val sessions_structure = AFP_Structure.sessions()
-    val entry_sessions =
-      afp.entries.values.map(entry => entry -> AFP_Structure.entry_sessions(entry.name)).toMap
-    val session_entry =
-      for {
-        (entry, sessions) <- entry_sessions
-        session <- sessions
-      } yield session.name -> entry
-
-    val entry_deps =
-      (for (entry <- afp.entries.values.toList)
-      yield {
-        entry.name ->
-          (for {
-            session <- entry_sessions(entry)
-            dep_session <- sessions_structure.imports_graph.imm_preds(session.name)
-            if sessions_structure(dep_session).is_afp
-            dep <- session_entry.get(dep_session)
-            if dep != entry
-          } yield dep.name).distinct
-      }).toMap
+    val proper_entries = afp.entry_list.filter(_.is_proper).map(_.metadata)
 
     val json_encode = new JSON_Encode(cache, afp.authors)
 
     val home_meta =
       Hugo.Metadata(title = "Archive of Formal Proofs", menu = Some(Hugo.Menu_Item("Home", 1)),
-        params = json_encode.home(entries1))
+        params = json_encode.home(proper_entries))
     hugo.write_content(Hugo.Index("", home_meta))
 
 
     /* add topics */
 
     progress.echo("Preparing topics ...")
-
-    val root_topics = Metadata.Topics.root_topics(afp.topics)
 
     val topics_meta =
       Hugo.Metadata(title = "Topics", menu = Some(Hugo.Menu_Item("Topics", 2)),
@@ -310,8 +286,8 @@ object AFP_Site_Gen {
 
     for (topic <- afp.topics.values.toList.sortBy(_.id)) {
       val url = "/topics/" + topic.id.toLowerCase.replace(' ', '-')
-      val topic_entries = entries1.filter(_.topics.contains(topic))
-      val is_root = root_topics.contains(topic)
+      val topic_entries = proper_entries.filter(_.topics.contains(topic))
+      val is_root = afp.root_topics.contains(topic)
       val params = json_encode.topic(topic, is_root, topic_entries)
       val meta =
         Hugo.Metadata(title = topic.id, url = url, outputs = List("html", "rss"),  params = params)
@@ -326,7 +302,7 @@ object AFP_Site_Gen {
     progress.echo("Preparing authors ...")
 
     val seen_affiliations =
-      afp.entries.values.toList.flatMap(entry => entry.authors ::: entry.contributors).distinct
+      afp.entry_list.map(_.metadata).flatMap(entry => entry.authors ::: entry.contributors).distinct
     val seen_authors =
       Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
         case (id, affiliations) =>
@@ -341,7 +317,7 @@ object AFP_Site_Gen {
     hugo.write_content(Hugo.Index("authors", authors_meta))
     for { 
       author <- seen_authors 
-      author_entries = entries1.filter(_.authors.map(_.author).contains(author.id))
+      author_entries = proper_entries.filter(_.authors.map(_.author).contains(author.id))
       if author_entries.nonEmpty
     } {
       val meta =
@@ -356,7 +332,7 @@ object AFP_Site_Gen {
     progress.echo("Extracting keywords ...")
 
     val entry_keywords =
-      (for (entry <- entries1) yield {
+      (for (entry <- proper_entries) yield {
         val scored_keywords = Rake.extract_keywords(entry.`abstract`)
         entry.name -> scored_keywords.map(_._1)
       }).toMap
@@ -380,37 +356,21 @@ object AFP_Site_Gen {
       .groupMapReduce(identity)(_ => 1)(_ + _)
 
 
-    /* add sessions and theory listings */
+    /* add theory listings */
 
     progress.echo("Preparing sessions ...")
 
-    val sessions_deps = Sessions.deps(sessions_structure)
-    val browser_info = Browser_Info.context(sessions_structure)
-
-    def theories_of(session_name: String): List[String] =
-      sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
-
-    val afp_sessions =
-      for {
-        entry <- afp.entries.values.toList
-        session <- entry_sessions(entry)
-      } yield session.name -> Some(entry.name)
-
-    val distro_sessions =
-      for {
-        session_name <- sessions_structure.imports_graph.all_preds(afp_sessions.map(_._1))
-        info = sessions_structure(session_name)
-        if !info.is_afp
-      } yield session_name -> None
+    val browser_info = Browser_Info.context(afp.sessions_structure)
+    val sessions_deps = Sessions.deps(afp.sessions_structure)
 
     def theory_page(
       num_thy: Int,
-      entry: Option[Entry.Name],
+      entry: Option[AFP_Structure.Entry],
       session_name: String,
       name: Document.Node.Name
     ): String = {
       val path = browser_info.session_dir(session_name) + Path.basic(name.theory_base_name).html
-      val params = json_encode.theory(entry, session_name, name.theory_base_name, path)
+      val params = json_encode.theory(entry.map(_.name), session_name, name.theory_base_name, path)
       val url = "/" + Path.make(List("thys", session_name, name.theory_base_name)).html.implode
 
       val  menu = Some(Hugo.Menu_Item(name.theory_base_name, num_thy + 1, menu = session_name))
@@ -419,44 +379,50 @@ object AFP_Site_Gen {
       name.theory
     }
 
-    val session_theories = 
-      (for {
-        (session_name, entry) <- afp_sessions ::: distro_sessions
-        (theory_node, i) <- sessions_deps(session_name).proper_session_theories.zipWithIndex
-      } yield session_name -> theory_page(i, entry, session_name, theory_node)).groupMap(_._1)(_._2)
+    val afp_deps = afp.sessions_structure.imports_graph.all_preds(afp.sessions.map(_.name))
+    for {
+      session <- afp_deps
+      if !afp.sessions_structure(session).is_afp
+      (theory, i) <- sessions_deps(session).proper_session_theories.zipWithIndex
+    } theory_page(i, None, session, theory)
+
+    val entry_theories =
+      afp.entry_list.map(entry => entry ->
+        entry.sessions.map(session => session.name ->
+          (for ((theory, i) <- sessions_deps(session.name).proper_session_theories.zipWithIndex)
+          yield theory_page(i, Some(entry), session.name, theory)))).toMap
 
 
-    /* add entries and theory listings */
+    /* add entries */
 
     progress.echo("Preparing entries ...")
 
     hugo.write_content(Hugo.Index("entries", Hugo.Metadata(outputs = List("json"))))
 
-    val graph = Graph.make(for ((entry, deps) <- entry_deps.toList) yield ((entry, ()), deps))
-    afp.entries.values.toList.foreach { entry =>
-      val deps = entry_deps(entry.name)
-      val used_by = graph.imm_preds(entry.name).toList.sortBy(afp.entries(_).date)
+    afp.entry_list.foreach { entry =>
+      val used_by =
+        afp.uses_graph.imm_succs(entry.name).toList.sortBy(afp.the_entry(_).metadata.date)
 
       val keywords = get_keywords(entry.name)
       val words = keywords.flatMap(space_explode(' ', _))
-      val sessions =
-        for (session <- AFP_Structure.entry_sessions(entry.name))
-        yield (session.name, session_theories.getOrElse(session.name, Nil))
 
       val similar =
         (for {
-          other <- entries1
-          if other.name != entry.name
-          if !deps.contains(other.name) && !entry_deps(other.name).contains(entry.name)
+          other <- afp.entry_list
+          if other != entry
+          if !afp.uses_graph.imm_preds(entry.name).contains(other.name)
+          if !afp.uses_graph.imm_succs(entry.name).contains(other.name)
           score = get_words(other.name).intersect(words).map(1.0 / word_counts(_).toDouble).sum
           if score > 1.0
         } yield (other.name, score)).sortBy(_._2).reverse.map(_._1)
 
-      val entry_json = json_encode.entry(entry, sessions, used_by, deps, similar)
+      val deps = afp.uses_graph.imm_preds(entry.name).toList
+      val entry_json =
+        json_encode.entry(entry.metadata, entry_theories(entry), used_by, deps, similar)
 
       val metadata =
-        Hugo.Metadata(title = entry.title, url = "/entries/" + entry.name + ".html", date =
-          entry.date.toString, keywords = keywords, params = entry_json)
+        Hugo.Metadata(title = entry.metadata.title, url = "/entries/" + entry.name + ".html", date =
+          entry.metadata.date.toString, keywords = keywords, params = entry_json)
 
       hugo.write_content(Hugo.Content("entries", Path.basic(entry.name), metadata))
     }
@@ -466,11 +432,13 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing statistics ...")
 
-    val num_used = for (entry <- entries1) yield entry.name -> graph.imm_preds(entry.name).size
+    val num_used =
+      for (entry <- proper_entries) yield entry.name -> afp.uses_graph.imm_succs(entry.name).size
+
     val top_10 = num_used.sortBy(_.swap).reverse.take(10).map(_._1)
     val num_authors = seen_authors.size
-    val num_entries = entries1.filterNot(_.statistics_ignore).length
-    val stats = AFP_Stats.statistics(sessions_deps, entries1)
+    val num_entries = proper_entries.filterNot(_.statistics_ignore).length
+    val stats = AFP_Stats.statistics(sessions_deps, proper_entries)
     val statistics_json = json_encode.statistics(stats, num_entries, num_authors, top_10)
 
     hugo.write_data(Path.basic("statistics").json, JSON.Format(statistics_json))
