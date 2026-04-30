@@ -21,7 +21,7 @@ object AFP_Structure {
   def sessions_structure(options: Options = Options.init()): Sessions.Structure =
     Sessions.load_structure(options, select_dirs = List(thys_dir))
 
-  def entries: List[Metadata.Entry.Name] = {
+  def entry_names: List[String] = {
     val session_entries = roots_entries
 
     val session_set = session_entries.toSet
@@ -44,7 +44,8 @@ object AFP_Structure {
     topics: Metadata.Topics = Metadata.files.load_topics(),
     licenses: Metadata.Licenses = Metadata.files.load_licenses(),
     releases: Metadata.Releases = Metadata.files.load_releases()
-  ): Metadata.Entries =
-    Metadata.Entries(entries.map(name =>
+  ): Metadata.Entries = {
+    Metadata.Entries(entry_names.map(name =>
       Metadata.files.load_entry(name, authors, topics, licenses, releases)))
+  }
 }
