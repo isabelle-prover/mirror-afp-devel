@@ -33,8 +33,7 @@ object AFP_Check_Metadata {
     val topics = Metadata.files.load_topics
     val licenses = Metadata.files.load_licenses
     val releases = Metadata.files.load_releases
-    val entries = AFP_Structure.entries.map(name =>
-      Metadata.files.load_entry(name, authors, topics, licenses, releases))
+    val entries = AFP_Structure.load_entries(authors, topics, licenses, releases).values.toList
 
 
     /* TOML encoding/decoding */
