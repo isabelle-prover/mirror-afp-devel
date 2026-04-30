@@ -30,7 +30,7 @@ object AFP_Check_Metadata {
 
     progress.echo_if(verbose, "Loading metadata...")
     val afp = AFP_Structure.load()
-    val entries = afp.entries.values.toList
+    val entries = afp.entry_list.map(_.metadata)
 
 
     /* TOML encoding/decoding */
@@ -44,7 +44,7 @@ object AFP_Check_Metadata {
 
     progress.echo_if(verbose, "Checking toml conversions...")
     check_toml("authors", afp.authors.values.toList, TOML.from_authors, TOML.to_authors)
-    check_toml("topics", Metadata.Topics.root_topics(afp.topics), TOML.from_topics, TOML.to_topics)
+    check_toml("topics", afp.root_topics, TOML.from_topics, TOML.to_topics)
     check_toml("licenses", afp.licenses.values.toList, TOML.from_licenses, TOML.to_licenses)
     check_toml("releases", afp.releases.values.flatten.toList, TOML.from_releases, TOML.to_releases)
     entries.foreach(entry =>
@@ -119,7 +119,7 @@ object AFP_Check_Metadata {
       Metadata.files.save_authors(afp.authors.values.toList)
 
       if (format_all) {
-        Metadata.files.save_topics(Metadata.Topics.root_topics(afp.topics))
+        Metadata.files.save_topics(afp.root_topics)
         Metadata.files.save_licenses(afp.licenses.values.toList)
         Metadata.files.save_releases(afp.releases.values.toList.flatten)
         entries.foreach(Metadata.files.save_entry)
