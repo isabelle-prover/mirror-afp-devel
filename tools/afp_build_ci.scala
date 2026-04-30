@@ -42,11 +42,11 @@ object AFP_Build_CI {
     options: Options,
     val store: Store,
     val mail_system: Option[Build_CI.Mail_System],
-    val afp: AFP_Structure,
   ) {
-    lazy val entries = afp.load_entries()
+    lazy val entries = AFP_Structure.load_entries()
     lazy val entry_sessions: Map[Metadata.Entry.Name, List[String]] =
-      entries.values.map(entry => entry.name -> afp.entry_sessions(entry.name).map(_.name)).toMap
+      entries.values.map(entry =>
+        entry.name -> AFP_Structure.entry_sessions(entry.name).map(_.name)).toMap
 
     def session_entry(session_name: String): Option[Metadata.Entry.Name] = {
       val entry = entry_sessions.find { case (_, sessions) => sessions.contains(session_name) }
@@ -68,8 +68,8 @@ object AFP_Build_CI {
   }
 
   object Context {
-    def apply(options: Options, afp: AFP_Structure = AFP_Structure()): Context =
-      new Context(options, Store(options), Build_CI.Mail_System.try_open(options), afp)
+    def apply(options: Options): Context =
+      new Context(options, Store(options), Build_CI.Mail_System.try_open(options))
   }
 
 
@@ -151,8 +151,7 @@ Last 50 lines from stderr (if available):
 
       val output_dir = dir + Path.basic("output")
 
-      AFP_Site_Gen.afp_site_gen(output_dir, afp = context.afp, status_file = Some(status_file),
-        progress = progress)
+      AFP_Site_Gen.afp_site_gen(output_dir, status_file = Some(status_file), progress = progress)
 
       val release_dir = dir + Path.basic("release")
       Isabelle_System.make_directory(release_dir)
@@ -161,7 +160,7 @@ Last 50 lines from stderr (if available):
       for ((name, _) <- context.entries) {
         val archive = release_dir + Path.basic("afp-" + name + "-current.tar.gz")
         Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(name),
-          dir = context.afp.thys_dir).check
+          dir = AFP_Structure.thys_dir).check
       }
 
       using(context.open_ssh()) { ssh =>
@@ -259,7 +258,6 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val dirs = AFP.main_dirs(Some(AFP.BASE))
-          val afp = AFP_Structure()
           val database = "afp-" + AFP_System.hg_id
           val find_facts_options =
             List(

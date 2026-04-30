@@ -220,15 +220,14 @@ object AFP_Site_Gen {
 
   def init_project(
     hugo: Hugo.Project,
-    afp: AFP_Structure = AFP_Structure(),
     symlinks: Boolean = false
   ): Unit = {
     Isabelle_System.make_directory(hugo.dir)
     Isabelle_System.make_directory(hugo.themes_dir)
 
-    val config_file = afp.site_dir + Path.basic("hugo").ext("toml")
-    val theme_dir = afp.site_dir + Path.basic("theme")
-    val content_dir = afp.site_dir + Path.basic("content")
+    val config_file = AFP_Structure.site_dir + Path.basic("hugo").ext("toml")
+    val theme_dir = AFP_Structure.site_dir + Path.basic("theme")
+    val content_dir = AFP_Structure.site_dir + Path.basic("content")
 
     if (symlinks) {
       Isabelle_System.symlink(config_file, hugo.dir)
@@ -247,14 +246,13 @@ object AFP_Site_Gen {
   def afp_hugo_gen(
     hugo: Hugo.Project,
     cache: Cache,
-    afp: AFP_Structure = AFP_Structure(),
     status_file: Option[Path] = None,
     symlinks: Boolean = false,
     progress: Progress = new Progress()
   ): Unit = {
     /* initialize project with dynamic Isabelle assets */
 
-    init_project(hugo, afp, symlinks)
+    init_project(hugo, symlinks)
     HTML.init_fonts(hugo.static_dir)
 
     val css_dir = Isabelle_System.make_directory(hugo.static_dir + Path.basic("css"))
@@ -266,15 +264,16 @@ object AFP_Site_Gen {
 
     progress.echo("Loading data ...")
 
-    val topics = afp.load_topics
-    val licenses = afp.load_licenses
-    val releases = afp.load_releases
-    val authors = afp.load_authors
-    val entries = afp.load_entries(authors, topics, licenses, releases)
+    val topics = Metadata.files.load_topics
+    val licenses = Metadata.files.load_licenses
+    val releases = Metadata.files.load_releases
+    val authors = Metadata.files.load_authors
+    val entries = AFP_Structure.load_entries(authors, topics, licenses, releases)
     val entries1 = entries.values.toList.filterNot(_.statistics_ignore)
 
-    val sessions_structure = afp.sessions_structure()
-    val entry_sessions = entries.values.map(entry => entry -> afp.entry_sessions(entry.name)).toMap
+    val sessions_structure = AFP_Structure.sessions_structure()
+    val entry_sessions =
+      entries.values.map(entry => entry -> AFP_Structure.entry_sessions(entry.name)).toMap
     val session_entry =
       for {
         (entry, sessions) <- entry_sessions
@@ -445,7 +444,7 @@ object AFP_Site_Gen {
       val keywords = get_keywords(entry.name)
       val words = keywords.flatMap(space_explode(' ', _))
       val sessions =
-        for (session <- afp.entry_sessions(entry.name))
+        for (session <- AFP_Structure.entry_sessions(entry.name))
         yield (session.name, session_theories.getOrElse(session.name, Nil))
 
       val similar =
@@ -475,7 +474,7 @@ object AFP_Site_Gen {
     val top_10 = num_used.sortBy(_.swap).reverse.take(10).map(_._1)
     val num_authors = seen_authors.size
     val num_entries = entries1.filterNot(_.statistics_ignore).length
-    val stats = AFP_Stats.statistics(sessions_deps, afp, entries1)
+    val stats = AFP_Stats.statistics(sessions_deps, entries1)
     val statistics_json = json_encode.statistics(stats, num_entries, num_authors, top_10)
 
     hugo.write_data(Path.basic("statistics").json, JSON.Format(statistics_json))
@@ -525,7 +524,6 @@ object AFP_Site_Gen {
     out_dir: Path,
     read_dir: Option[Path] = None,
     write_dir: Option[Path] = None,
-    afp: AFP_Structure = AFP_Structure(),
     status_file: Option[Path] = None,
     clean: Boolean = false,
     devel: Boolean = false,
@@ -539,7 +537,7 @@ object AFP_Site_Gen {
         if (clean && write_dir.nonEmpty) Isabelle_System.rm_tree(dir1)
 
         val hugo = Hugo.project(dir1, theme)
-        afp_hugo_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
+        afp_hugo_gen(hugo, cache, status_file = status_file, symlinks = devel,
           progress = progress)
       }
 
@@ -595,10 +593,9 @@ object AFP_Site_Gen {
       status_file.foreach(path =>
         if (!path.is_file || !path.file.exists()) error("Invalid status file: " + path))
 
-      val afp = AFP_Structure()
       val progress = new Console_Progress(verbose = verbose || devel)
 
-      afp_site_gen(out_dir, read_dir = read_dir, write_dir = write_dir, afp = afp, status_file =
-        status_file, clean = clean, devel = devel, progress = progress)
+      afp_site_gen(out_dir, read_dir = read_dir, write_dir = write_dir, status_file = status_file,
+        clean = clean, devel = devel, progress = progress)
     })
 }

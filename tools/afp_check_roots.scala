@@ -229,9 +229,9 @@ Usage: isabelle afp_check_roots [OPTIONS]
       val progress = new Console_Progress()
 
       if (check_dirs.isEmpty) {
-        check_dirs ::= AFP_Structure().thys_dir
+        check_dirs ::= AFP_Structure.thys_dir
       } else {
-        dirs ::= AFP_Structure().thys_dir
+        dirs ::= AFP_Structure.thys_dir
       }
 
       afp_check_roots(checks, dirs, check_dirs, progress)
