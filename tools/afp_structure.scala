@@ -9,22 +9,14 @@ import isabelle.*
 
 
 object AFP_Structure {
-  /* files */
-
   val thys_dir = AFP.main_dir()
   val site_dir = AFP.BASE + Path.explode("admin/site")
 
-  def load_entries(
-    authors: Metadata.Authors = Metadata.files.load_authors,
-    topics: Metadata.Topics = Metadata.files.load_topics,
-    licenses: Metadata.Licenses = Metadata.files.load_licenses,
-    releases: Metadata.Releases = Metadata.files.load_releases
-  ): Metadata.Entries =
-    Metadata.Entries(entries.map(name =>
-      Metadata.files.load_entry(name, authors, topics, licenses, releases)))
+  def entry_sessions(name: String): List[Sessions.Session_Entry] =
+    Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
 
-
-  /* sessions */
+  def sessions_structure(options: Options = Options.init()): Sessions.Structure =
+    Sessions.load_structure(options, select_dirs = List(thys_dir))
 
   def entries: List[Metadata.Entry.Name] = {
     val session_entries = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
@@ -44,9 +36,12 @@ object AFP_Structure {
     } else session_entries
   }
 
-  def sessions_structure(options: Options = Options.init()): Sessions.Structure =
-    Sessions.load_structure(options, select_dirs = List(thys_dir))
-
-  def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
-    Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
+  def load_entries(
+    authors: Metadata.Authors = Metadata.files.load_authors,
+    topics: Metadata.Topics = Metadata.files.load_topics,
+    licenses: Metadata.Licenses = Metadata.files.load_licenses,
+    releases: Metadata.Releases = Metadata.files.load_releases
+  ): Metadata.Entries =
+    Metadata.Entries(entries.map(name =>
+      Metadata.files.load_entry(name, authors, topics, licenses, releases)))
 }
