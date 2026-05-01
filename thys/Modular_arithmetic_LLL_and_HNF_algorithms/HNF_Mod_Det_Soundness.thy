@@ -234,13 +234,13 @@ begin
 lemma lin_indpt_cols_imp_det_not_0:
   fixes A::"'a mat"
   assumes A: "A \<in> carrier_mat n n" and li: "lin_indpt (set (cols A))" and d: "distinct (cols A)" 
-  shows "det A \<noteq> 0"  
+  shows "Determinant.det A \<noteq> 0"  
   using A li d det_rank_iff lin_indpt_full_rank by blast
 
 corollary lin_indpt_rows_imp_det_not_0:
   fixes A::"'a mat"
   assumes A: "A \<in> carrier_mat n n" and li: "lin_indpt (set (rows A))" and d: "distinct (rows A)" 
-  shows "det A \<noteq> 0"  
+  shows "Determinant.det A \<noteq> 0"  
   using A li d det_rank_iff lin_indpt_full_rank
   by (metis (full_types) Determinant.det_transpose cols_transpose transpose_carrier_mat)
 end
@@ -310,7 +310,7 @@ next
       2) gs = fs * Q', similar proof as the previous one.
       3) fs = fs * Q' * Q
       4) fs * (?Q' * ?Q - 1\<^sub>m n) = 0\<^sub>m n n and hence (?Q' * ?Q - 1\<^sub>m n) = 0 since fs independent
-      5) det ?Q' = det ?Q = det 1 = 1, then det ?Q = \<plusminus>1 and ?Q invertible since the determinant 
+      5) matrix_det ?Q' = matrix_det ?Q = matrix_det 1 = 1, then matrix_det ?Q = \<plusminus>1 and ?Q invertible since the determinant 
          divides a unit.
     *)
     proof -
@@ -351,12 +351,12 @@ next
         finally show "col (mat_of_cols n gs) j = col (mat_of_cols n fs * ?Q') j" .      
       qed (insert length_fs fs, auto)
       
-      have det_fs_not_zero: "rat_of_int (det (mat_of_cols n fs)) \<noteq> 0"
+      have det_fs_not_zero: "rat_of_int (Determinant.det (mat_of_cols n fs)) \<noteq> 0"
       proof -
         let ?A = "(of_int_hom.mat_hom (mat_of_cols n fs)):: rat mat"
-        have "rat_of_int (det (mat_of_cols n fs)) = det ?A"
+        have "rat_of_int (Determinant.det (mat_of_cols n fs)) = Determinant.det ?A"
           by simp
-        moreover have "det ?A \<noteq> 0"
+        moreover have "Determinant.det ?A \<noteq> 0"
         proof (rule gs.lin_indpt_cols_imp_det_not_0[of ?A])
           have c_eq: "(set (cols ?A)) = set (RAT fs)"
             by (metis assms(3) cof_vec_space.lin_indpt_list_def cols_mat_of_cols fs mat_of_cols_map)
@@ -377,12 +377,12 @@ next
       also have "... = mat_of_cols n fs * (?Q' * ?Q - 1\<^sub>m n)"
         by (rule mult_minus_distrib_mat[symmetric, OF fs_carrier Q'Q], auto)      
       finally have "mat_of_cols n fs * (?Q' * ?Q - 1\<^sub>m n) = 0\<^sub>m n n" ..
-      have "det (?Q' * ?Q) = 1"
+      have "Determinant.det (?Q' * ?Q) = 1"
         by (smt (verit) Determinant.det_mult Q Q' Q'Q fs_fs_Q'Q assoc_mult_mat det_fs_not_zero 
             fs_carrier mult_cancel_left2 of_int_code(2))
-      hence det_Q'_Q_1: "det ?Q * det ?Q' = 1"
+      hence det_Q'_Q_1: "Determinant.det ?Q * Determinant.det ?Q' = 1"
         by (metis (no_types, lifting) Determinant.det_mult Groups.mult_ac(2) Q Q')
-      hence "det ?Q = 1 \<or> det ?Q = -1" by (rule pos_zmult_eq_1_iff_lemma)
+      hence "Determinant.det ?Q = 1 \<or> Determinant.det ?Q = -1" by (rule pos_zmult_eq_1_iff_lemma)
       thus ?thesis using invertible_iff_is_unit_JNF[OF Q] by fastforce
     qed
   qed
@@ -666,9 +666,9 @@ lemma invertible_mat_first_column_not0:
   shows "col A 0 \<noteq> (0\<^sub>v n)"
 proof (rule ccontr)
   assume " \<not> col A 0 \<noteq> 0\<^sub>v n" hence col_A0: "col A 0 = 0\<^sub>v n" by simp
-  have "(det A dvd 1)" using inv_A invertible_iff_is_unit_JNF[OF A] by auto
-  hence 1: "det A \<noteq> 0" by auto
-  have "det A = (\<Sum>i<n. A $$ (i, 0) * Determinant.cofactor A i 0)" 
+  have "(Determinant.det A dvd 1)" using inv_A invertible_iff_is_unit_JNF[OF A] by auto
+  hence 1: "Determinant.det A \<noteq> 0" by auto
+  have "Determinant.det A = (\<Sum>i<n. A $$ (i, 0) * Determinant.cofactor A i 0)" 
     by (rule laplace_expansion_column[OF A n0])
   also have "... = 0" 
     by (rule sum.neutral, insert col_A0 n0 A, auto simp add: col_def,
@@ -1692,8 +1692,8 @@ proof -
     proof (rule mat_mult_invertible_lattice_eq)
       let ?P = "(- 1::int) \<cdot>\<^sub>m 1\<^sub>m m"
       show P: "?P \<in> carrier_mat m m" by simp
-      have "det ?P = 1 \<or> det ?P = -1" unfolding det_smult by (auto simp add: minus_1_power_even)
-      hence "det ?P dvd 1" by (smt (verit) minus_dvd_iff one_dvd)
+      have "Determinant.det ?P = 1 \<or> Determinant.det ?P = -1" unfolding det_smult by (auto simp add: minus_1_power_even)
+      hence "Determinant.det ?P dvd 1" by (smt (verit) minus_dvd_iff one_dvd)
       thus " invertible_mat ?P" unfolding invertible_iff_is_unit_JNF[OF P] .
       have "(- k \<cdot>\<^sub>m 1\<^sub>m m) = ?P * (k \<cdot>\<^sub>m 1\<^sub>m m)"
         unfolding mat_diag_smult[symmetric] unfolding mat_diag_diag by auto
@@ -9919,7 +9919,7 @@ proof -
   let ?RAT = "of_int_hom.mat_hom :: int mat \<Rightarrow> rat mat"
   have RAT_A: "?RAT A \<in> carrier_mat n n"
     using A map_carrier_mat mat_of_rows_carrier(1) mn by auto 
-  have det_RAT_fs_init: "det (?RAT A) \<noteq> 0"
+  have det_RAT_fs_init: "Determinant.det (?RAT A) \<noteq> 0"
     using inv_RAT_A unfolding invertible_iff_is_unit_JNF[OF RAT_A] by auto
   moreover have "mat_of_rows n (map (Matrix.row A') [0..<n]) = A"
   proof
@@ -10010,7 +10010,7 @@ proof -
       using s unfolding B.lin_indpt_list_def by auto
   qed (simp)
   have A_eq: "mat_of_rows n (Matrix.rows A) = A" using A mat_of_rows_rows by blast
-  have D_A: "D = \<bar>det (mat_of_rows n (rows A))\<bar>" using D_def A_eq by auto
+  have D_A: "D = \<bar>Determinant.det (mat_of_rows n (rows A))\<bar>" using D_def A_eq by auto
   have Hermite_H': "Hermite_JNF ?ass ?res H'"
     by (rule A.Hermite_append_det_id(1)[OF _ mn _ H' H_H'0 P'Q' inv_P'Q' A'_P'Q'H Hermite_H],
          insert D_def A'_def mn A inv_RAT_A D_A A_eq, auto) 
@@ -11059,7 +11059,7 @@ next
   hence mn: "m=n" and det_A_not0:"(Determinant.det A) \<noteq> 0" by auto
   have inv_RAT_A: "invertible_mat (map_mat rat_of_int A)"
   proof -
-    have "det (map_mat rat_of_int A) \<noteq> 0" using det_A_not0 by auto
+    have "Determinant.det (map_mat rat_of_int A) \<noteq> 0" using det_A_not0 by auto
     thus ?thesis 
       by (metis False assms dvd_field_iff invertible_iff_is_unit_JNF map_carrier_mat)
   qed

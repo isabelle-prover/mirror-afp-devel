@@ -17,7 +17,7 @@ lemma map_matrix_rat_of_int_mult:
 
 lemma det_map_matrix:
   fixes A :: "int^'n::mod_type^'n::mod_type"
-  shows "det (map_matrix rat_of_int A) = rat_of_int (det A)" 
+  shows "matrix_det (map_matrix rat_of_int A) = rat_of_int (matrix_det A)" 
   unfolding map_matrix_def unfolding Determinants.det_def by auto
 
 lemma inv_Z_imp_inv_Q:
@@ -25,8 +25,8 @@ lemma inv_Z_imp_inv_Q:
   assumes inv_A: "invertible A"
   shows "invertible (map_matrix rat_of_int A)"
 proof -
-  have "is_unit (det A)" using inv_A invertible_iff_is_unit by blast
-  hence "is_unit (det (map_matrix rat_of_int A))"
+  have "is_unit (matrix_det A)" using inv_A invertible_iff_is_unit by blast
+  hence "is_unit (matrix_det (map_matrix rat_of_int A))"
     by (simp add: det_map_matrix dvd_if_abs_eq)
   thus ?thesis using invertible_iff_is_unit by blast
 qed
@@ -43,7 +43,7 @@ proof -
   let ?RAT_H = "(map_matrix rat_of_int H)"
   have up_RAT_H: "upper_triangular ?RAT_H"
     using up_H unfolding upper_triangular_def by auto
-  have "is_unit (det ?RAT_H)" using inv_H using invertible_iff_is_unit by blast
+  have "is_unit (matrix_det ?RAT_H)" using inv_H using invertible_iff_is_unit by blast
   hence "?RAT_H $ i $ i \<noteq> 0" using inv_H up_RAT_H is_unit_diagonal
     by (metis not_is_unit_0)
   thus ?thesis by auto
@@ -121,7 +121,7 @@ proof -
     by (metis U_def inv_P inv_Q invertible_def invertible_mult matrix_inv_left matrix_inv_right)
   have H_UK: "H = U ** K" using A_PH A_QK inv_P 
     by (metis U_def matrix_inv_left matrix_mul_assoc matrix_mul_lid)
-  have "Determinants.det K *k U = H ** adjugate K"
+  have "matrix_det K *k U = H ** adjugate K"
     unfolding H_UK matrix_mul_assoc[symmetric] mult_adjugate_det matrix_mul_mat ..
   have upper_triangular_H: "upper_triangular H"
     by (metis H Hermite_def echelon_form_imp_upper_triagular)
@@ -138,7 +138,7 @@ proof -
           auto simp add: upper_triangular_H upper_triangular_Z_eq_Q)
     thus ?thesis using upper_triangular_Z_eq_Q by auto
   qed
-  have unit_det_U: "is_unit (det U)" by (metis inv_U invertible_iff_is_unit)
+  have unit_det_U: "is_unit (matrix_det U)" by (metis inv_U invertible_iff_is_unit)
   have is_unit_diagonal_U: "(\<forall>i. is_unit (U $ i $ i))"
     by (rule is_unit_diagonal[OF upper_triangular_U unit_det_U])
   have Uii_1: "(\<forall>i. (U $ i $ i) = 1)" and Hii_Kii: "(\<forall>i. (H $ i $ i) = (K $ i $ i))"
