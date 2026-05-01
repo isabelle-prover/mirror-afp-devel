@@ -813,6 +813,10 @@ lemma deriven_to_map_TmD: "P \<turnstile> \<alpha> \<Rightarrow>(n) map Tm \<bet
           \<and> (\<forall>i < length \<beta>s. P \<turnstile> [\<alpha> ! i] \<Rightarrow>(ns!i) map Tm (\<beta>s ! i))"
 by(drule derivenD)(fastforce simp add: map_eq_concat_iff)
 
+corollary derives_concatD: "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow>
+  \<exists>\<beta>s. \<beta> = concat \<beta>s \<and> length \<alpha> = length \<beta>s \<and> (\<forall>i < length \<beta>s. P \<turnstile> [\<alpha> ! i] \<Rightarrow>* \<beta>s ! i)"
+using derivenD by (metis rtranclp_power)
+
 lemma deriven_Suc_iff:
   "P \<turnstile> u \<Rightarrow>(Suc n) v \<longleftrightarrow> (\<exists>p A u2 w v1 v2 n1 n2.
   u = p @ Nt A # u2 \<and> v = p @ v1 @ v2 \<and> n = n1 + n2 \<and>
@@ -1049,6 +1053,14 @@ by (auto simp: Lang_def derives_mono)
 
 lemma Langs_mono: "P \<subseteq> P' \<Longrightarrow> Langs P w \<subseteq> Langs P' w"
   using derives_mono by (auto simp: Langs_def)
+
+lemma Langs_mono_derive:
+  "P \<turnstile> \<alpha> \<Rightarrow> \<beta> \<Longrightarrow> Langs P \<beta> \<subseteq> Langs P \<alpha>"
+by(auto simp: derive.simps Langs_def derives_rule[OF _ rtranclp.rtrancl_refl])
+
+lemma Langs_mono_derives:
+  "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> Langs P \<beta> \<subseteq> Langs P \<alpha>"
+by(induction rule: rtranclp_induct) (auto dest: Langs_mono_derive)
 
 lemma Lang_eqI_derives:
   assumes "\<And>v. R \<turnstile> [Nt A] \<Rightarrow>* map Tm v \<longleftrightarrow> S \<turnstile> [Nt A] \<Rightarrow>* map Tm v"
