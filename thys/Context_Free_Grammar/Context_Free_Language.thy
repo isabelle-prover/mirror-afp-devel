@@ -13,6 +13,33 @@ begin
 
 subsection \<open>Basic Definitions\<close>
 
+subsubsection \<open>\<open>concats\<close>\<close>
+
+definition concats :: "'a lang list \<Rightarrow> 'a lang" where
+"concats Ls = foldr (@@) Ls {[]}"
+
+lemma concats_simps[simp]:
+  "concats [] = {[]}"
+  "concats (L#Ls) = L @@ concats Ls"
+by(auto simp: concats_def)
+
+lemma concats_empty_iff:
+  "concats Ls = {} \<longleftrightarrow> (\<exists>L\<in>set Ls. L = {})"
+by(induction Ls) auto
+
+lemma finite_concats: "\<forall>L \<in> set Ls. finite L \<Longrightarrow> finite(concats Ls)"
+by(induction Ls) (simp_all add: finite_conc_if)
+
+lemma infinite_concats:
+  "\<lbrakk> \<forall>L \<in> set Ls. L \<noteq> {};  L \<in> set Ls; infinite L \<rbrakk> \<Longrightarrow> infinite(concats Ls)"
+apply(induction Ls arbitrary: L)
+ apply simp
+apply (simp)
+by (metis concats_empty_iff if_finite_conc1 if_finite_conc2)
+
+
+subsubsection \<open>\<open>CFL\<close>\<close>
+
 text \<open>This definition depends on the type of nonterminals of the grammar.\<close>
 
 definition CFL :: "'n itself \<Rightarrow> 't list set \<Rightarrow> bool" where
@@ -95,9 +122,6 @@ text \<open>A CFG can be viewed as a system of equations. The least solution is 
 definition inst_sym :: "('n \<Rightarrow> 't lang) \<Rightarrow> ('n, 't) sym \<Rightarrow> 't lang" where
 "inst_sym L s = (case s of Tm a \<Rightarrow> {[a]} | Nt A \<Rightarrow> L A)"
 
-definition concats :: "'a lang list \<Rightarrow> 'a lang" where
-"concats Ls = foldr (@@) Ls {[]}"
-
 definition inst_syms :: "('n \<Rightarrow> 't lang) \<Rightarrow> ('n, 't) syms \<Rightarrow> 't lang" where
 "inst_syms L w = concats (map (inst_sym L) w)"
 
@@ -107,7 +131,42 @@ definition subst_lang :: "('n,'t)Prods \<Rightarrow> ('n \<Rightarrow> 't lang) 
 definition Lang_lfp :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> 't lang" where
 "Lang_lfp P = lfp (subst_lang P)"
 
-text \<open>Now we show that this \<open>lfp\<close> is a Kleene fixpoint.\<close>
+
+subsubsection \<open>Basics\<close>
+
+lemma inst_syms_Tms:
+  "inst_syms L (map Tm w) = {w}"
+unfolding inst_syms_def
+by(induction w) (auto simp add: inst_sym_def conc_def)
+
+lemma inst_syms_empty:
+  assumes "L B = {}"
+  shows "B \<in> Nts_syms \<alpha> \<Longrightarrow> inst_syms L \<alpha> = {}"
+unfolding inst_syms_def
+by(induction \<alpha>) (auto simp add: assms inst_sym_def split: sym.splits)
+
+lemma finite_inst_syms:
+  assumes "\<forall>B \<in> Nts_syms \<alpha>. finite (L B)"
+  shows "finite (inst_syms L \<alpha>)"
+proof -
+  have "\<And>X. X \<in> set(map (inst_sym L) \<alpha>) \<Longrightarrow> finite X"
+    using assms by (auto simp: inst_sym_def Nts_syms_def split:sym.splits)
+  thus ?thesis
+    unfolding inst_syms_def using finite_concats by blast
+qed
+
+lemma infinite_inst_syms:
+  assumes "\<forall>B \<in> Nts_syms \<alpha>. L B \<noteq> {}" "B \<in> Nts_syms \<alpha>" "infinite(L B)"
+  shows "infinite (inst_syms L \<alpha>)"
+proof -
+  have "\<forall>X \<in> set(map (inst_sym L) \<alpha>). X \<noteq> {}"
+    using assms(1) by (auto simp: inst_sym_def Nts_syms_def split:sym.splits)
+  from infinite_concats[OF this, of "inst_sym L (Nt B)"] show ?thesis
+    using assms(2,3) unfolding inst_syms_def in_Nts_syms inst_sym_def by force
+qed
+
+
+subsubsection \<open>\<open>Lang_lfp\<close>is a Kleene fixpoint\<close>
 
 lemma inst_sym_Sup_range:  "inst_sym (Sup(range F)) = (\<lambda>s. UN i. inst_sym (F i) s)"
   by(auto simp: inst_sym_def fun_eq_iff split: sym.splits)
@@ -162,6 +221,12 @@ qed
 
 theorem Lang_lfp_SUP: "Lang_lfp P = (SUP n. ((subst_lang P)^^n) (\<lambda>A. {}))"
 using Kleene_lfp[OF omega_cont_Lang_lfp] unfolding Lang_lfp_def bot_fun_def by blast
+
+lemma Lang_lfp_unfold:
+  "Lang_lfp P A = (\<Union>\<alpha> \<in> Rhss P A. inst_syms (Lang_lfp P) \<alpha>)"
+unfolding Lang_lfp_def
+using fun_cong[OF subst_lang_def[of P "lfp(subst_lang P)"], of A,symmetric]
+by (metis lfp_unfold[OF mono_if_omega_cont[OF omega_cont_Lang_lfp]])
 
 
 subsection \<open>\<open>Lang_lfp = Lang\<close>\<close>
@@ -298,5 +363,8 @@ qed
 
 theorem Lang_lfp_eq_Lang: "Lang_lfp P A = Lang P A"
 unfolding Lang_def by(blast intro: Lang_lfp_if_derives derives_if_Lang_lfp)
+
+corollary Lang_unfold: "Lang P A = (\<Union>\<alpha> \<in> Rhss P A. inst_syms (Lang P) \<alpha>)"
+by(fact Lang_lfp_unfold[unfolded Lang_lfp_eq_Lang])
 
 end

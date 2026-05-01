@@ -340,6 +340,9 @@ abbreviation deriven ("(2_ \<turnstile>/ (_ /\<Rightarrow>'(_')/ _))" [50, 0, 0,
 abbreviation derives ("(2_ \<turnstile>/ (_/ \<Rightarrow>*/ _))" [50, 0, 50] 50) where
 "P \<turnstile> u \<Rightarrow>* v \<equiv> ((derive P) ^**) u v"
 
+abbreviation derivep ("(2_ \<turnstile>/ (_/ \<Rightarrow>+/ _))" [50, 0, 50] 50) where
+"P \<turnstile> u \<Rightarrow>+ v \<equiv> ((derive P) ^++) u v"
+
 definition Ders :: "('n,'t)Prods \<Rightarrow> 'n \<Rightarrow> ('n,'t)syms set" where
 "Ders P A = {w. P \<turnstile> [Nt A] \<Rightarrow>* w}"
 
@@ -365,11 +368,17 @@ using derive_mono relpowp_mono[of "derive P" "derive P'"] by metis
 lemma derives_mono: "P \<subseteq> P' \<Longrightarrow> P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> P' \<turnstile> u \<Rightarrow>* v"
 by (meson deriven_mono rtranclp_power)
 
-lemma derive_iff: "R \<turnstile> u \<Rightarrow> v \<longleftrightarrow> (\<exists> (A,w) \<in> R. \<exists>u1 u2. u = u1 @ Nt A # u2 \<and> v = u1 @ w @ u2)"
-  apply (rule iffI)
-   apply (induction rule: derive.induct)
-   apply (fastforce)
-  using derive.intros by fastforce 
+text \<open>Seems to work better that \<open>derive.simps\<close> despite equivalence.\<close>
+lemma derive_iff:
+  "R \<turnstile> u \<Rightarrow> v \<longleftrightarrow> (\<exists> (A,w) \<in> R. \<exists>u1 u2. u = u1 @ Nt A # u2 \<and> v = u1 @ w @ u2)"
+by(auto simp: derive.simps)
+
+lemma derive_singleton:
+  "P \<turnstile> [a] \<Rightarrow> u \<longleftrightarrow> (\<exists>A. (A,u) \<in> P \<and> a = Nt A)"
+by (auto simp: derive_iff Cons_eq_append_conv)
+
+corollary derivep_Nt_in_Lhss: "P \<turnstile> [Nt A] \<Rightarrow>+ v \<Longrightarrow> A \<in> Lhss P"
+by (metis derive_singleton in_LhssI sym.inject(1) tranclpD)
 
 lemma Un_derive: "R \<union> S \<turnstile> y \<Rightarrow> z \<longleftrightarrow> R \<turnstile> y \<Rightarrow> z \<or> S \<turnstile> y \<Rightarrow> z"
   by (fastforce simp: derive_iff)
@@ -478,6 +487,9 @@ lemma derives_append:
 lemma derives_prepend:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> P \<turnstile> w@u \<Rightarrow>* w@v"
   by (metis deriven_prepend rtranclp_power)
+
+lemma derives_embed: "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> P \<turnstile> u @ \<alpha> @ v \<Rightarrow>* u @ \<beta> @ v"
+by (meson derives_append derives_prepend)
 
 lemma derive_Cons:
 "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> P \<turnstile> a#u \<Rightarrow> a#v"
@@ -674,9 +686,6 @@ lemma derives_Tm_Cons:
 
 lemma derives_Tm[simp]: "P \<turnstile> [Tm a] \<Rightarrow>* w \<longleftrightarrow> w = [Tm a]"
 by(simp add: derives_Tm_Cons)
-
-lemma derive_singleton: "P \<turnstile> [a] \<Rightarrow> u \<longleftrightarrow> (\<exists>A. (A,u) \<in> P \<and> a = Nt A)"
-  by (auto simp: derive_iff Cons_eq_append_conv)
 
 lemma deriven_singleton: "P \<turnstile> [a] \<Rightarrow>(n) u \<longleftrightarrow> (
   case n of 0 \<Rightarrow> u = [a]
@@ -1861,6 +1870,9 @@ qed simp
 
 lemma productives_if_Productive: "productives P \<alpha> = Productive P (Nts_syms \<alpha>)"
 by (meson in_Nts_syms productive_if_in_productives productives_if_Nts_productive)
+
+lemma productives_if_Langs_nonempty: "\<forall>B\<in>Nts_syms \<alpha>. Lang P B \<noteq> {} \<Longrightarrow> productives P \<alpha>"
+unfolding Lang_def using productives_if_Productive by auto
 
 definition restrict_Nts :: "('n \<Rightarrow> bool) \<Rightarrow> ('n,'t)Prods \<Rightarrow> ('n,'t)Prods" where
 "restrict_Nts R P = {(A,\<alpha>) \<in> P. \<forall>B \<in> {A} \<union> Nts_syms \<alpha>. R B}"
