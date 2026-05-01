@@ -380,6 +380,24 @@ name = "Lisa A. Barthel"
 
 [barthel.homepages]
 
+[batz]
+name = "Kevin Batz"
+
+[batz.emails]
+
+[batz.emails.batz_email]
+user = [
+  "kevin",
+  "batz",
+]
+host = [
+  "cs",
+  "rwth-aachen",
+  "de",
+]
+
+[batz.homepages]
+
 [bauer]
 name = "Gertrud Bauer"
 
@@ -3379,6 +3397,22 @@ host = [
 [huffman.homepages]
 huffman_homepage = "http://cs.pdx.edu/~brianh/"
 
+[hulak]
+name = "David Barros Hulak"
+
+[hulak.emails]
+
+[hulak.emails.hulak_email]
+user = [
+  "dbhulak",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[hulak.homepages]
+
 [hupel]
 name = "Lars Hupel"
 
@@ -3683,6 +3717,23 @@ host = [
 [kaliszyk.homepages]
 kaliszyk_homepage = "http://cl-informatik.uibk.ac.at/users/cek/"
 
+[kaminski]
+name = "Benjamin Lucien Kaminski"
+
+[kaminski.emails]
+
+[kaminski.emails.kaminski_email]
+user = [
+  "kaminski",
+]
+host = [
+  "cs",
+  "uni-saarland",
+  "de",
+]
+
+[kaminski.homepages]
+
 [kammueller]
 name = "Florian Kammüller"
 
@@ -3797,6 +3848,23 @@ name = "Greg O'Keefe"
 
 [keefe.homepages]
 keefe_homepage = "http://users.rsise.anu.edu.au/~okeefe/"
+
+[kehrer]
+name = "Lucas Kehrer"
+
+[kehrer.emails]
+
+[kehrer.emails.kehrer_email]
+user = [
+  "kehrer",
+]
+host = [
+  "cs",
+  "uni-saarland",
+  "de",
+]
+
+[kehrer.homepages]
 
 [keinholz]
 name = "Jonas Keinholz"
@@ -3935,8 +4003,28 @@ host = [
   "au",
 ]
 
+[klein.emails.klein_email2]
+user = [
+  "gerwin",
+  "klein",
+]
+host = [
+  "proofcraft",
+  "systems",
+]
+
+[klein.emails.klein_email1]
+user = [
+  "gerwin",
+  "klein",
+]
+host = [
+  "proofcraft",
+  "systems",
+]
+
 [klein.homepages]
-klein_homepage = "http://www.cse.unsw.edu.au/~kleing/"
+klein_homepage = "https://doclsf.de/"
 
 [klenze]
 name = "Tobias Klenze"
@@ -6218,6 +6306,23 @@ host = [
 
 [qiu.homepages]
 
+[queiroz]
+name = "Ruy Jose Guerra Barretto de Queiroz"
+
+[queiroz.emails]
+
+[queiroz.emails.queiroz_email]
+user = [
+  "ruy",
+]
+host = [
+  "cin",
+  "ufpe",
+  "br",
+]
+
+[queiroz.homepages]
+
 [raabjerg]
 name = "Palle Raabjerg"
 
@@ -6286,6 +6391,22 @@ host = [
 ]
 
 [raedle.homepages]
+
+[ramos]
+name = "Arthur Freitas Ramos"
+
+[ramos.emails]
+
+[ramos.emails.ramos_email]
+user = [
+  "arfreita",
+]
+host = [
+  "microsoft",
+  "com",
+]
+
+[ramos.homepages]
 
 [raska]
 name = "Martin Raška"
@@ -6903,6 +7024,23 @@ host = [
 ]
 
 [schmaltz.homepages]
+
+[schmid]
+name = "Todd Schmid"
+
+[schmid.emails]
+
+[schmid.emails.schmid_email]
+user = [
+  "t",
+  "schmid",
+]
+host = [
+  "bucknell",
+  "edu",
+]
+
+[schmid.homepages]
 
 [schmidinger]
 name = "Lukas Schmidinger"
@@ -8358,6 +8496,23 @@ host = [
 
 [urban.homepages]
 urban_homepage = "https://nms.kcl.ac.uk/christian.urban/"
+
+[urbat]
+name = "Henning Urbat"
+
+[urbat.emails]
+
+[urbat.emails.urbat_email]
+user = [
+  "henning",
+  "urbat",
+]
+host = [
+  "fau",
+  "de",
+]
+
+[urbat.homepages]
 
 [van]
 name = "Hai Nguyen Van"

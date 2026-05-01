@@ -3,13 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2026-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2026-04-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Iteration_Algebra.html</loc>
+    <lastmod>2026-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Nominal_Unification.html</loc>
     <lastmod>2026-04-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Nagata-Factoriality.html</loc>
+    <lastmod>2026-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Archimedes_Cattle.html</loc>
     <lastmod>2026-04-01T00:00:00+00:00</lastmod>
@@ -3692,6 +3698,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/ArrowImpossibilityGS/GS.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/ramos/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/ahmeda/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/from/</loc>
@@ -4875,6 +4883,8 @@
     <loc>https://isa-afp.org/authors/stock/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bisping/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/kaminski/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/porter/</loc>
   </url><url>
@@ -8286,6 +8296,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/aspinall/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/hulak/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/butler/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/cock/</loc>
@@ -11377,6 +11389,8 @@
     <loc>https://isa-afp.org/authors/seidler/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/sudbrock/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/urbat/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/debrat/</loc>
   </url><url>
@@ -15068,6 +15082,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/nemeti/</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Iteration_Algebra/Iteration.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/somaini/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/fosterj/</loc>
@@ -16051,6 +16067,8 @@
     <loc>https://isa-afp.org/thys/KD_Tree/Nearest_Neighbors.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/KD_Tree/Range_Search.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/batz/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/kappelmann/</loc>
   </url><url>
@@ -17147,6 +17165,8 @@
     <loc>https://isa-afp.org/thys/LTL3_Semantics/LTL3.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/LTL3_Semantics/Traces.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/kehrer/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Lucas_Theorem/Lucas_Theorem.html</loc>
   </url><url>
@@ -18353,6 +18373,18 @@
     <loc>https://isa-afp.org/thys/Myhill-Nerode/Myhill_2.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Myhill-Nerode/Non_Regular_Languages.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Fraction_Field_Applications.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Localization_Interface.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Nagata_Factoriality.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Nagata_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Polynomial_Applications.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nagata-Factoriality/Prime_Generated.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/zhann/</loc>
   </url><url>
@@ -21766,6 +21798,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/RSAPSS/WordOperations.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/queiroz/</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/S_Finite_Measure_Monad/Kernels.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/S_Finite_Measure_Monad/Lemmas_S_Finite_Measure_Monad.html</loc>
@@ -23814,6 +23848,8 @@
     <loc>https://isa-afp.org/authors/nipkow/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/murray/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/schmid/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/demeulemeester/</loc>
   </url><url>
