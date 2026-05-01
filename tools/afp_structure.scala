@@ -106,6 +106,8 @@ object AFP_Structure {
     val uses_graph: Graph[String, Entry],
     val sessions_structure: Sessions.Structure
   ) {
+    override def toString: String = "AFP(" + AFP.BASE.absolute + ")"
+
     def root_topics: List[Metadata.Topic] = Metadata.Topics.root_topics(topics)
 
     def the_entry(name: String): Entry =
