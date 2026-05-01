@@ -23,6 +23,12 @@ lemma concats_simps[simp]:
   "concats (L#Ls) = L @@ concats Ls"
 by(auto simp: concats_def)
 
+lemma foldr_conc_conc: "foldr (@@) xs {[]} @@ A = foldr (@@) xs A"
+by (induction xs)(auto simp: conc_assoc)
+
+lemma concats_append[simp]: "concats (Ls1 @ Ls2) = concats Ls1 @@ concats Ls2"
+by (simp add: concats_def foldr_conc_conc)
+
 lemma concats_empty_iff:
   "concats Ls = {} \<longleftrightarrow> (\<exists>L\<in>set Ls. L = {})"
 by(induction Ls) auto
@@ -134,16 +140,28 @@ definition Lang_lfp :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> 't lang" w
 
 subsubsection \<open>Basics\<close>
 
+lemma inst_sym_simps[simp]:
+  "inst_sym L (Tm a) = {[a]}"
+  "inst_sym L (Nt A) = L A"
+by(auto simp: inst_sym_def)
+
+lemma inst_syms_Nil[simp]: "inst_syms L [] = {[]}"
+by(simp add: inst_syms_def)
+
+lemma inst_syms_Cons[simp]: "inst_syms L (s # \<beta>) = inst_sym L s @@ inst_syms L \<beta>"
+by(simp add: inst_syms_def)
+
+lemma inst_syms_append[simp]: "inst_syms L (\<alpha> @ \<beta>) = inst_syms L \<alpha> @@ inst_syms L \<beta>"
+by(simp add: inst_syms_def)
+
 lemma inst_syms_Tms:
   "inst_syms L (map Tm w) = {w}"
-unfolding inst_syms_def
-by(induction w) (auto simp add: inst_sym_def conc_def)
+by(induction w) (auto simp add: conc_def)
 
 lemma inst_syms_empty:
   assumes "L B = {}"
   shows "B \<in> Nts_syms \<alpha> \<Longrightarrow> inst_syms L \<alpha> = {}"
-unfolding inst_syms_def
-by(induction \<alpha>) (auto simp add: assms inst_sym_def split: sym.splits)
+by(induction \<alpha>) (auto simp add: assms split: sym.splits)
 
 lemma finite_inst_syms:
   assumes "\<forall>B \<in> Nts_syms \<alpha>. finite (L B)"
@@ -162,7 +180,7 @@ proof -
   have "\<forall>X \<in> set(map (inst_sym L) \<alpha>). X \<noteq> {}"
     using assms(1) by (auto simp: inst_sym_def Nts_syms_def split:sym.splits)
   from infinite_concats[OF this, of "inst_sym L (Nt B)"] show ?thesis
-    using assms(2,3) unfolding inst_syms_def in_Nts_syms inst_sym_def by force
+    using assms(2,3) unfolding inst_syms_def in_Nts_syms by force
 qed
 
 
@@ -243,51 +261,48 @@ lemma omega_cont_Lang_lfp_iterates: "omega_chain (\<lambda>n. ((subst_lang P)^^n
   unfolding bot_fun_def by blast
 
 lemma in_subst_langD_inst_syms: "w \<in> subst_lang P L A \<Longrightarrow> \<exists>\<alpha>. (A,\<alpha>)\<in>P \<and> w \<in> inst_syms L \<alpha>"
-unfolding subst_lang_def inst_syms_def Rhss_def by (auto split: prod.splits)
-
-lemma foldr_conc_conc: "foldr (@@) xs {[]} @@ A = foldr (@@) xs A"
-by (induction xs)(auto simp: conc_assoc)
+unfolding subst_lang_def Rhss_def by (auto split: prod.splits)
 
 lemma derives_if_inst_syms:
-  "w \<in> inst_syms (\<lambda>A. {w. P \<turnstile> [Nt A] \<Rightarrow>* map Tm w}) \<alpha> \<Longrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
+  "w \<in> inst_syms (Lang P) \<alpha> \<Longrightarrow> P \<turnstile> \<alpha> \<Rightarrow>* map Tm w"
 proof (induction \<alpha> arbitrary: w)
   case Nil
-  then show ?case unfolding inst_syms_def concats_def by(auto)
+  then show ?case by(auto)
 next
   case (Cons s \<alpha>)
   show ?case
   proof (cases s)
     case (Nt A)
-    then show ?thesis using Cons
-      unfolding inst_syms_def concats_def inst_sym_def by(fastforce simp: derives_Cons_iff)
+    then show ?thesis using Cons unfolding Lang_def
+      by(fastforce simp: derives_Cons_iff)
   next
     case (Tm a)
     then show ?thesis using Cons
-      unfolding inst_syms_def concats_def inst_sym_def by(auto simp:derives_Tm_Cons)
+      by(auto simp:derives_Tm_Cons)
   qed
 qed
 
-lemma derives_if_in_subst_lang: "w \<in> ((subst_lang P)^^n) (\<lambda>A. {}) A \<Longrightarrow> P \<turnstile> [Nt A] \<Rightarrow>* map Tm w"
+lemma derives_if_in_subst_lang: "w \<in> ((subst_lang P)^^n) (\<lambda>A. {}) A \<Longrightarrow> w \<in> Lang P A"
 proof(induction n arbitrary: w A)
   case 0
   then show ?case by simp
 next
   case (Suc n)
   let ?L = "((subst_lang P)^^n) (\<lambda>A. {})"
-  have *: "?L A \<subseteq> {w. P \<turnstile> [Nt A] \<Rightarrow>* map Tm w}" for A
+  have *: "?L A \<subseteq> Lang P A" for A
     using Suc.IH by blast
   obtain \<alpha> where \<alpha>: "(A,\<alpha>) \<in> P" "w \<in> inst_syms ?L \<alpha>"
     using in_subst_langD_inst_syms[OF Suc.prems[simplified]] by blast
   show ?case using \<alpha>(1) derives_if_inst_syms[OF inst_syms_mono[OF *, of _ "\<lambda>A. A", OF \<alpha>(2)]]
-    by (simp add: derives_Cons_rule)
+    unfolding Lang_def by (simp add: derives_Cons_rule)
 qed
 
-lemma derives_if_Lang_lfp: "w \<in> Lang_lfp P A \<Longrightarrow> P \<turnstile> [Nt A] \<Rightarrow>* map Tm w"
+lemma derives_if_Lang_lfp: "w \<in> Lang_lfp P A \<Longrightarrow> w \<in> Lang P A"
   unfolding Lang_lfp_SUP using derives_if_in_subst_lang
   by (metis (mono_tags, lifting) SUP_apply UN_E)
 
 lemma Lang_lfp_subset_Lang: "Lang_lfp P A \<subseteq> Lang P A"
-unfolding Lang_def by(blast intro:derives_if_Lang_lfp)
+by (auto simp add: derives_if_Lang_lfp)
 
 text \<open>The other direction:\<close>
 
@@ -296,7 +311,7 @@ lemma inst_syms_decomp:
   \<Longrightarrow> concat ws \<in> inst_syms L \<alpha>"
 proof (induction ws arbitrary: \<alpha>)
   case Nil
-  then show ?case unfolding inst_syms_def concats_def by simp
+  then show ?case by simp
 next
   case (Cons w ws)
   then obtain \<alpha>1 \<alpha>r where *: "\<alpha> = \<alpha>1 # \<alpha>r" by (metis Suc_length_conv)
@@ -304,10 +319,11 @@ next
   moreover from Cons.prems * have "\<forall>i<length ws. ws ! i \<in> inst_sym L (\<alpha>r ! i)" by auto
   ultimately have "concat ws \<in> inst_syms L \<alpha>r" using Cons.IH by blast
   moreover from Cons.prems * have "w \<in> inst_sym L \<alpha>1" by fastforce
-  ultimately show ?case unfolding inst_syms_def concats_def using * by force
+  ultimately show ?case using * by force
 qed
 
-lemma Lang_lfp_if_derives_aux: "P \<turnstile> [Nt A] \<Rightarrow>(n) map Tm w \<Longrightarrow> w \<in> ((subst_lang P)^^n) (\<lambda>A. {}) A"
+lemma Lang_lfp_if_derives_aux:
+  "P \<turnstile> [Nt A] \<Rightarrow>(n) map Tm w \<Longrightarrow> w \<in> ((subst_lang P)^^n) (\<lambda>A. {}) A"
 proof(induction n arbitrary: w A rule: less_induct)
   case (less n)
   show ?case
@@ -352,19 +368,40 @@ proof(induction n arbitrary: w A rule: less_induct)
   qed
 qed
 
-
-lemma Lang_lfp_if_derives: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm w \<Longrightarrow> w \<in> Lang_lfp P A"
-proof -
-  assume "P \<turnstile> [Nt A] \<Rightarrow>* map Tm w"
-  then obtain n where "P \<turnstile> [Nt A] \<Rightarrow>(n) map Tm w" by (meson rtranclp_power)
+lemma Lang_subset_Lang_lfp:
+  "Lang P A \<subseteq> Lang_lfp P A"
+proof
+  fix w assume "w \<in> Lang P A"
+  then obtain n where "P \<turnstile> [Nt A] \<Rightarrow>(n) map Tm w"
+    by (simp add: Lang_def) (meson rtranclp_power)
   from Lang_lfp_if_derives_aux[OF this] have "w \<in> ((subst_lang P)^^n) (\<lambda>A. {}) A" by argo
   with Lang_lfp_SUP show "w \<in> Lang_lfp P A" by (metis (mono_tags, lifting) SUP_apply UNIV_I UN_iff)
 qed
 
-theorem Lang_lfp_eq_Lang: "Lang_lfp P A = Lang P A"
-unfolding Lang_def by(blast intro: Lang_lfp_if_derives derives_if_Lang_lfp)
+theorem Lang_lfp_eq_Lang:
+  "Lang_lfp P A = Lang P A"
+using Lang_subset_Lang_lfp Lang_lfp_subset_Lang by (metis subset_antisym)
+
+subsection \<open>More\<close>
 
 corollary Lang_unfold: "Lang P A = (\<Union>\<alpha> \<in> Rhss P A. inst_syms (Lang P) \<alpha>)"
-by(fact Lang_lfp_unfold[unfolded Lang_lfp_eq_Lang])
+  by(fact Lang_lfp_unfold[unfolded Lang_lfp_eq_Lang])
+
+corollary inst_syms_Lang_subset_Langs:
+  "inst_syms (Lang P) \<alpha> \<subseteq> Langs P \<alpha>"
+using Langs_iff_derives derives_if_inst_syms by blast
+
+lemma inst_syms_LangI: "P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<Longrightarrow> w \<in> inst_syms (Lang P) \<alpha>"
+proof(induction rule: converse_derives_induct)
+  case base
+  then show ?case by (simp add: inst_syms_Tms)
+next
+  case (step u A v \<alpha>)
+  then show ?case using Langs_prod_subset[OF \<open>(A, \<alpha>) \<in> P\<close>] conc_mono inst_syms_Lang_subset_Langs
+    by fastforce
+qed
+
+lemma Langs_eq_inst_syms_Lang: "Langs P \<alpha> = inst_syms (Lang P) \<alpha>"
+using Langs_iff_derives inst_syms_LangI inst_syms_Lang_subset_Langs by blast
 
 end
