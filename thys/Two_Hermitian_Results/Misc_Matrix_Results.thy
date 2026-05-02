@@ -107,7 +107,7 @@ lemma eigvals_of_mset_eq:
 lemma det_is_prod_of_eigenvalues:
   fixes A :: "complex mat"
   assumes "square_mat A"
-  shows "det A = (\<Prod>e \<leftarrow> (eigvals A). e)"
+  shows "Determinant.det A = (\<Prod>e \<leftarrow> (eigvals A). e)"
 proof-
   define es where "es \<equiv> eigvals A"
   define n where "n \<equiv> dim_row A"
@@ -119,12 +119,12 @@ proof-
   obtain Q Q' B where *: "similar_mat_wit A B Q Q' \<and> upper_triangular B \<and> diag_mat B = es"
     using schur_decomposition[OF 1 2] by (metis surj_pair)
 
-  then have "det A = det (Q * B * Q')" unfolding similar_mat_wit_def by metis
-  also have "\<dots> = det Q * det B * det Q'"
+  then have "Determinant.det A = Determinant.det (Q * B * Q')" unfolding similar_mat_wit_def by metis
+  also have "\<dots> = Determinant.det Q * Determinant.det B * Determinant.det Q'"
     by (smt (verit, ccfv_SIG) "*" "1" det_mult mult_carrier_mat similar_mat_witD2(5) similar_mat_witD2(6) similar_mat_witD2(7))
-  also have "\<dots> = det Q * det B * 1/(det Q)"
+  also have "\<dots> = Determinant.det Q * Determinant.det B * 1/(Determinant.det Q)"
     by (smt (verit, ccfv_threshold) "*" "1" det_mult det_one div_by_0 helper mult_cancel_left1 n_def nonzero_mult_div_cancel_left similar_mat_witD(6) similar_mat_witD(7) similar_mat_witD2(1))
-  also have "\<dots> = det Q * (\<Prod>e \<leftarrow> diag_mat B. e) * 1/(det Q)"
+  also have "\<dots> = Determinant.det Q * (\<Prod>e \<leftarrow> diag_mat B. e) * 1/(Determinant.det Q)"
     by (metis "*" det_upper_triangular list.map_ident similar_mat_witD(5))
   also have "\<dots> = (\<Prod>e \<leftarrow> (eigvals A). e)"
     by (metis (no_types, lifting) * es_def "1" Groups.mult_ac(2) class_field.zero_not_one det_mult det_one mult_cancel_left2 nonzero_mult_div_cancel_left similar_mat_witD(6) similar_mat_witD(7) similar_mat_witD2(2))
@@ -204,7 +204,7 @@ lemma trivial_kernel_imp_det_nz:
   fixes M :: "complex mat"
   assumes "square_mat M"
   assumes "mat_kernel M \<subseteq> {0\<^sub>v (dim_row M)}"
-  shows "det M \<noteq> 0"
+  shows "Determinant.det M \<noteq> 0"
   using trivial_kernel_imp_invertible[OF assms(1) assms(2)]
   using invertible_det assms(1) square_mat.simps
   by blast
@@ -900,7 +900,7 @@ proposition schur_formula:
   assumes "square_mat A"
   assumes "inverts_mat A' A"
   assumes A'_dim: "A' \<in> carrier_mat r r"
-  shows "det M = det A * det (D - C * A' * B)"
+  shows "Determinant.det M = Determinant.det A * Determinant.det (D - C * A' * B)"
 proof-
   let ?r\<^sub>M = "dim_row M"
   let ?c\<^sub>M = "dim_col M"
@@ -1003,15 +1003,15 @@ proof-
     also have "\<dots> = M" unfolding M by simp
     finally show ?thesis by argo
   qed
-  hence "det M = det ?P * det ?Q * det ?R"
+  hence "Determinant.det M = Determinant.det ?P * Determinant.det ?Q * Determinant.det ?R"
     by (smt (verit, best) det_mult P_dim Q_dim R_dim assms(4) mult_carrier_mat square_mat.elims(2))
-  moreover have "det ?P = 1"
+  moreover have "Determinant.det ?P = 1"
     using det_four_block_mat_upper_right_zero[OF _ _ C_A'_dim, of ?I\<^sub>A ?O\<^sub>B ?I\<^sub>D]
     by (simp add: square)
-  moreover have "det ?Q = det A * det (D - C * A' * B)"
+  moreover have "Determinant.det ?Q = Determinant.det A * Determinant.det (D - C * A' * B)"
     using det_four_block_mat_upper_right_zero[OF A_dim _ _ D_min_C_A'_B_dim, of ?O\<^sub>B ?O\<^sub>C]
     by (simp add: square)
-  moreover have "det ?R = 1"
+  moreover have "Determinant.det ?R = 1"
     using det_four_block_mat_lower_left_zero[OF _ A'_B_dim, of ?I\<^sub>A "?O\<^sub>C" ?I\<^sub>D]
     by (simp add: square)
   ultimately show ?thesis by fastforce
@@ -1114,7 +1114,7 @@ qed
 lemma positive_definite_det_nz:
   fixes A :: "complex mat"
   assumes "positive_definite A"
-  shows "det A \<noteq> 0"
+  shows "Determinant.det A \<noteq> 0"
   using positive_definite_invertible[OF assms] invertible_det invertible_mat_def square_mat.simps
   by blast
 

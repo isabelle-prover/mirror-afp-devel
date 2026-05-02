@@ -93,6 +93,49 @@ by (fastforce simp: Cons_eq_append_conv append_eq_Cons_conv
        conc_Diff_if_Nil1 conc_Diff_if_Nil2)
 
 
+lemma if_finite_conc1:
+  assumes "finite (L1 @@ L2)" "L2 \<noteq> {}"
+  shows "finite L1"
+proof -
+  have "finite L1" if asm: "finite (L1 @@ {y})" for y
+  proof -
+    have "L1 @@ {y} = (\<lambda>x. x@y) ` L1"
+      unfolding conc_def by auto
+    with finite_image_iff[of "\<lambda>x. x @ y" L1] show ?thesis
+      unfolding inj_on_def using asm by auto
+  qed
+  moreover have "L1 @@ L2 = (\<Union>y \<in> L2. L1 @@ {y})"
+    unfolding conc_def by auto
+  ultimately show ?thesis using assms
+    by (metis UN_insert Un_infinite ex_in_conv insert_absorb)
+qed
+
+lemma if_finite_conc2: assumes "finite (L1 @@ L2)" "L1 \<noteq> {}" shows "finite L2"
+proof -
+  have "finite L2" if asm: "finite ({x} @@ L2)" for x
+  proof -
+    have "{x} @@ L2 = (\<lambda>y. x@y) ` L2"
+      unfolding conc_def by auto
+    with finite_image_iff[of "\<lambda>y. x @ y" L2] show ?thesis
+      unfolding inj_on_def using asm by auto
+  qed
+  moreover have "L1 @@ L2 = (\<Union>x \<in> L1. {x} @@ L2)"
+    unfolding conc_def by auto
+  ultimately show ?thesis using assms
+    by (metis UN_insert Un_infinite ex_in_conv insert_absorb)
+qed
+
+lemma finite_conc_if: assumes "finite L1" "finite L2" shows "finite (L1 @@ L2)"
+proof -
+  have "finite (L1 \<times> L2)"
+    using assms by simp
+  moreover have "L1 @@ L2 = (\<lambda>(x,y). x@y) ` (L1 \<times> L2)"
+    unfolding conc_def by auto
+  ultimately show ?thesis
+    by simp
+qed
+
+
 subsection\<open>@{term "A ^^ n"}\<close>
 
 lemma lang_pow_mono:

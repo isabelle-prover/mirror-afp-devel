@@ -100,15 +100,15 @@ text \<open>
   we first need to show that GL is an open set. Notice this GL is already restricted to
   have much more powerful entries, since we require topology (continuity) now.
 \<close>
-lemma GL_preimage_det: "det -` (UNIV - {0::'a::real_normed_eucl}) = GL"
+lemma GL_preimage_det: "matrix_det -` (UNIV - {0::'a::real_normed_eucl}) = GL"
 proof (safe)
   fix x::"('a::real_normed_eucl, 'n::finite) square_matrix"
   assume "in_GL x"
-  then show "x \<in> det -` (UNIV - {0})"
+  then show "x \<in> matrix_det -` (UNIV - {0})"
       using invertible_det_nz by auto
 next
   fix x::"('a::real_normed_eucl, 'n::finite) square_matrix"
-  assume "det x \<noteq> 0"
+  assume "matrix_det x \<noteq> 0"
   then show "in_GL x"
     by (simp add: invertible_det_nz)
 qed

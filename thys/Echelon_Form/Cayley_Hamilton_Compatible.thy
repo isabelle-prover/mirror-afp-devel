@@ -20,7 +20,7 @@ hide_fact (open) row_def
 hide_fact (open) col_def
 hide_fact (open) transpose_def
 
-lemma det_sq_matrix_eq: "Square_Matrix.det (from_vec A) = det A"
+lemma det_sq_matrix_eq: "Square_Matrix.det (from_vec A) = matrix_det A"
   unfolding Square_Matrix.det.rep_eq Determinants.det_def from_vec.rep_eq ..
 
 lemma to_vec_matrix_scalar_mult: "to_vec (x *\<^sub>S A) = x *k to_vec A"
@@ -42,18 +42,18 @@ subsection\<open>Some preliminary lemmas and results\<close>
 
 lemma invertible_iff_is_unit:
   fixes A::"'a::{comm_ring_1}^'n^'n"
-  shows "invertible A \<longleftrightarrow> (det A) dvd 1"
+  shows "invertible A \<longleftrightarrow> (matrix_det A) dvd 1"
 proof 
   assume inv_A: "invertible A"
   obtain B where AB_mat: "A ** B = mat 1" using inv_A unfolding invertible_def by auto
-  have "1 = det (mat 1::'a^'n^'n)" unfolding det_I ..
-  also have "... = det (A ** B)" unfolding AB_mat ..
-  also have "... = det A * det B" unfolding det_mul ..
-  finally have "1 = det A * det B" by simp
-  thus "(det A) dvd 1" unfolding dvd_def by auto
+  have "1 = matrix_det (mat 1::'a^'n^'n)" unfolding det_I ..
+  also have "... = matrix_det (A ** B)" unfolding AB_mat ..
+  also have "... = matrix_det A * matrix_det B" unfolding det_mul ..
+  finally have "1 = matrix_det A * matrix_det B" by simp
+  thus "(matrix_det A) dvd 1" unfolding dvd_def by auto
 next
-  assume det_unit: "(det A) dvd 1"
-  from this obtain a where a: "(det A) * a = 1" unfolding dvd_def by auto
+  assume det_unit: "(matrix_det A) dvd 1"
+  from this obtain a where a: "(matrix_det A) * a = 1" unfolding dvd_def by auto
   let ?A = "to_vec (Square_Matrix.adjugate (from_vec A))"
   show "invertible A"
   proof (unfold invertible_def, rule exI[of _ "a *k ?A"])
@@ -73,7 +73,7 @@ definition "minorM M i j = (\<chi> k l. if k = i \<and> l = j then 1 else if k =
 lemma minorM_eq: "minorM M i j = to_vec (minor (from_vec M) i j)"
   unfolding minorM_def by transfer standard
 
-definition cofactor where "cofactor A i j = det (minorM A i j)"
+definition cofactor where "cofactor A i j = matrix_det (minorM A i j)"
 
 definition cofactorM where "cofactorM A = (\<chi> i j. cofactor A i j)"
 
@@ -88,7 +88,7 @@ lemma cofactorM_eq: "cofactorM = to_vec \<circ> Square_Matrix.cofactor \<circ> f
 
 definition mat2matofpoly where "mat2matofpoly A = (\<chi> i j. [: A $ i $ j :])"
 
-definition charpoly where charpoly_def: "charpoly A = det (mat (monom 1 (Suc 0)) - mat2matofpoly A)"
+definition charpoly where charpoly_def: "charpoly A = matrix_det (mat (monom 1 (Suc 0)) - mat2matofpoly A)"
 
 lemma charpoly_eq: "charpoly A = Cayley_Hamilton.charpoly (from_vec A)"
   unfolding charpoly_def Cayley_Hamilton.charpoly_def det_sq_matrix_eq[symmetric] X_def C_def
