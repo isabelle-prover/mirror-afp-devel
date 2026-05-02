@@ -19,7 +19,7 @@ sig
 
   type hint_prio = Unification_Hints_Base.unif_hint * Prio.prio
   val pretty_hint_prio : Proof.context -> hint_prio -> Pretty.T
-  val transfer_hint_prio : theory -> hint_prio -> hint_prio
+  val morph_hint_prio : morphism -> hint_prio -> hint_prio
 
   val retrieve_left : (Proof.context -> 'ti -> term -> hint_prio list) -> Proof.context ->
     'ti * 'ti -> term * term -> hint_prio list
@@ -29,8 +29,6 @@ sig
     'ti * 'ti -> term * term -> hint_prio list
   val retrieve_sym : (Proof.context -> 'ti -> term * term -> hint_prio list) -> Proof.context ->
     'ti -> term * term -> hint_prio list
-  val retrieve_transfer : (Proof.context -> 'ti -> 't -> hint_prio list) ->
-    Proof.context -> 'ti -> 't -> hint_prio list
 
   val sort_hint_prios : hint_prio list -> hint_prio list
   val sorted_hint_seq_of_hint_prios : hint_prio list -> thm Seq.seq
@@ -81,7 +79,7 @@ fun pretty_hint_prio ctxt (hint, prio) = Pretty.block [
     UHB.pretty_hint ctxt hint,
     Pretty.enclose " (" ")" [Pretty.str "priority: ", Prio.pretty prio]
   ]
-fun transfer_hint_prio thy = apfst (Thm.transfer thy)
+fun morph_hint_prio phi = apfst (Morphism.thm phi)
 
 fun retrieve_left retrieve ctxt (ti,_) (t, _) = retrieve ctxt ti t
 fun retrieve_right retrieve ctxt (_, ti) (_, t) = retrieve ctxt ti t
@@ -93,20 +91,18 @@ fun interleave [] ys = ys
   | interleave xs [] = xs
   | interleave (x :: xs) (y :: ys) = x :: y :: interleave xs ys
 
-fun retrieve_sym retrieve ctxt ti tp = interleave
-  (retrieve ctxt ti tp)
-  (retrieve ctxt ti (swap tp) |> map (apfst Unification_Hints_Base.symmetric_hint))
-
-fun retrieve_transfer retrieve ctxt = map (transfer_hint_prio (Proof_Context.theory_of ctxt)) oo
-  retrieve ctxt
+fun retrieve_sym retrieve ctxt ti tp = interleave (retrieve ctxt ti tp)
+  (retrieve ctxt ti (swap tp) |> map (morph_hint_prio (Morphism.transfer_morphism' ctxt)
+    #> apfst Unification_Hints_Base.symmetric_hint))
 
 (*FIXME: use priority queue instead of sorted lists?*)
 val sort_hint_prios = sort (rev_order o Prio.ord o apply2 snd)
 
 val sorted_hint_seq_of_hint_prios = sort_hint_prios #> Seq.of_list #> Seq.map fst
 
-fun mk_retrieval retrieve norm_terms ti _ ctxt tp _ =
-  retrieve ctxt ti (norm_terms tp) |> sorted_hint_seq_of_hint_prios
+fun mk_retrieval retrieve norm_terms ti _ ctxt tp _ = retrieve ctxt ti (norm_terms tp)
+  |> map (morph_hint_prio (Morphism.transfer_morphism' ctxt))
+  |> sorted_hint_seq_of_hint_prios
 
 fun mk_retrieval_left retrieve = mk_retrieval (retrieve_left retrieve) o apfst o Same.commit
 fun mk_retrieval_right retrieve = mk_retrieval (retrieve_right retrieve) o apsnd o Same.commit
@@ -268,6 +264,7 @@ val map_lhs_index = map_indexes o apfst
 val map_rhs_index = map_indexes o apsnd
 
 fun pretty_index ctxt = TI.content
+  #> map (TUHA.morph_hint_prio (Morphism.transfer_morphism' ctxt))
   #> TUHA.sort_hint_prios
   #> map (TUHA.pretty_hint_prio ctxt)
   #> Pretty.fbreaks
@@ -301,8 +298,9 @@ fun msg_illegal_hint_format ctxt hint = pretty_spaced_block [
 
 fun preprocess_hint context = get_hint_preprocessor context (Context.proof_of context)
 
-local fun add_hint_prio index_description get_index map_index key (hint, prio) context =
+local fun add_hint_prio index_description get_index map_index key hint_prio context =
   let
+    val (hint, prio) = TUHA.morph_hint_prio Morphism.trim_context_morphism hint_prio
     val ctxt = Context.proof_of context
     val is_hint_variant = curry are_hint_variants hint o fst
   in
@@ -312,7 +310,7 @@ local fun add_hint_prio index_description get_index map_index key (hint, prio) c
         Pretty.str "to",
         index_description
       ]);
-    TI.insert is_hint_variant (key, (Thm.trim_context hint, prio)) (get_index context)
+    TI.insert is_hint_variant (key, (hint, prio)) (get_index context)
     |> (fn ti => map_index (K ti) context))
     handle Term_Index_Base.INSERT =>
       (@{log Logger.WARN} ctxt

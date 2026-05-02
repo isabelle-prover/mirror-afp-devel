@@ -28,6 +28,7 @@ sig
 
   type id
   type data
+  val morph_data : morphism -> data -> data
 
   type datas = data Ord_List.T
   structure Data : GENERIC_DATA
@@ -53,6 +54,7 @@ functor Generic_Ord_List_Id_Data_Functor(
     structure FI : FUNCTOR_INSTANCE_BASE
     val parent_logger : Logger.logger_binding
     type data
+    val morph_data : morphism -> data -> data
     val ord_data : data ord
     val pretty_data : Proof.context -> data -> Pretty.T
     type id
@@ -72,6 +74,7 @@ val logger = Logger.setup_new_logger parent_logger FI.name
 
 type id = id
 type data = data
+val morph_data = morph_data
 
 type datas = data Ord_List.T
 
@@ -81,19 +84,24 @@ structure Data = Generic_Data(
   val empty = []
   fun merge (xs, ys) = Ord_List.subtract ord_data_id xs ys |> curry (Ord_List.merge ord_data) xs)
 
-val get_datas = Data.get
+fun get_datas context = Data.get context
+  |> map (morph_data (Morphism.transfer_morphism'' context))
 val map_datas = Data.map
 
-fun insert_data data context = Data.map (fn datas =>
-  if Ord_List.member ord_data_id datas data
-  then let val ctxt = Context.proof_of context
-    in
-      (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
-          Pretty.str "Data ", pretty_data ctxt data, Pretty.str " already added."
-        ] |> Pretty.string_of);
-      datas)
-    end
-  else Ord_List.insert ord_data data datas) context
+fun insert_data data context =
+  let val data = morph_data Morphism.trim_context_morphism data
+  in
+    Data.map (fn datas =>
+      if Ord_List.member ord_data_id datas data
+      then let val ctxt = Context.proof_of context
+        in
+          (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
+              Pretty.str "Data ", pretty_data ctxt data, Pretty.str " already added."
+            ] |> Pretty.string_of);
+          datas)
+        end
+      else Ord_List.insert ord_data data datas) context
+  end
 
 fun delete_id id context =
   let val id_data_ord = apsnd get_id #> ord_id
@@ -105,7 +113,7 @@ fun delete_id id context =
         let val ctxt = Context.proof_of context
         in
           (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
-              Pretty.str "Id ", pretty_id ctxt id, Pretty.str " not found."
+              Pretty.str "Identifier ", pretty_id ctxt id, Pretty.str " not found."
             ] |> Pretty.string_of);
           datas)
         end) context
@@ -154,6 +162,7 @@ functor Generic_Ord_List_Id_Data(A :
     structure FI : FUNCTOR_INSTANCE_BASE
     val parent_logger : Logger.logger_binding
     type data
+    val morph_data : morphism -> data -> data
     val ord_data : data ord
     val pretty_data : Proof.context -> data -> Pretty.T
     val get_id : data -> Identifier.id

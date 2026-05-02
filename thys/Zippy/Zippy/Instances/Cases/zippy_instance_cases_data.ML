@@ -139,14 +139,14 @@ sig
       @{AllT_args} Result_Action.mk_copy_update_data,
       @{AllT_args} PResults.presultsq) Zippy_Instance_Cases_Data_Args.PD.entries
 
+    val morph_data : morphism -> data -> data
     val data_ord : data ord
     val eq_data : data * data -> bool
     val pretty_data : Proof.context -> data -> Pretty.T
-    val map_data_thms : (thm -> thm) -> data -> data
-    val transfer_data : theory -> data -> data
 
-    structure Data : GENERIC_DATA
-    where type T = data Ord_List.T
+    structure Data : GENERIC_ORD_LIST_ID_DATA
+    where type data = data
+    where type id = data
 
     type add_args = (Cases_Data_Args.insts, thm option, bool, thm list, Cases_Data_Args.match,
       Tac_AAM.mk_meta,
@@ -340,6 +340,14 @@ type data = (CDA.insts, thm option, bool, thm list, CDA.match,
   @{AllT_args} Result_Action.mk_copy_update_data,
   @{AllT_args} PResults.presultsq) PD.entries
 
+fun morph_data phi =
+  (*TODO: is this safe (i.e. could it be that "ngoals (phi rule)" does not align with "|updates|"?*)
+  let fun morph (PD.insts insts) = PD.insts (CDA.morph_insts phi insts)
+        | morph (PD.rule rule) = PD.rule (Option.map (Morphism.thm phi) rule)
+        | morph (PD.facts facts) = PD.facts (map (Morphism.thm phi) facts)
+        | morph entry = entry
+  in PD.key_entry_entries_from_entries #> map (snd #> morph) #> PD.entries_from_entry_list end
+
 val data_ord = option_ord Thm.thm_ord o apply2 PD.get_rule
   ||| CDA.insts_ord o apply2 PD.get_insts
   ||| list_ord Thm.thm_ord o apply2 PD.get_facts
@@ -352,13 +360,21 @@ fun pretty_data ctxt data = SShow.record [
   ("facts", SShow.list (SShow.thm ctxt) (PD.get_facts data)),
   ("simp", SShow.bool (PD.get_simp data))
 ]
-fun map_data_thms f = PD.map_rule (Option.map f) #> PD.map_facts (map f)
-fun transfer_data thy = map_data_thms (Thm.transfer thy)
 
-structure Data = Generic_Data(
-  type T = data Ord_List.T
-  val empty = []
-  val merge = Ord_List.merge data_ord)
+\<^functor_instance>\<open>struct_name: Data
+  functor_name: Generic_Ord_List_Id_Data_Functor
+  id: \<open>FI.id\<close>
+  path: \<open>FI.long_name\<close>
+  more_args: \<open>
+    val parent_logger = logger
+    type data = data
+    val morph_data = morph_data
+    val ord_data = data_ord
+    val pretty_data = pretty_data
+    type id = data
+    val ord_id = ord_data
+    val pretty_id = pretty_data
+    val get_id = I\<close>\<close>
 
 type add_args = (CDA.insts, thm option, bool, thm list, CDA.match,
   Tac_AAM.mk_meta,
@@ -376,28 +392,21 @@ fun insert args context = context |>
     val opt_rule = PD.get_rule args
     val facts = PD.get_facts args
     val num_new_goals = opt_rule |> Option.map (num_new_goals facts)
-    val ctxt = Context.proof_of context
   in
     if num_new_goals <> nupdates
-    then error (Pretty.breaks [
-        Pretty.block [Pretty.str "Number of updates ",
-          Pretty.enclose "(" ")" [SShow.option SShow.int nupdates]],
-        Pretty.block [Pretty.str "does not match number of new goals ",
-          Pretty.enclose "(" ")" [SShow.option SShow.int num_new_goals]],
-        Pretty.block [Pretty.str "for theorem ", SShow.option (Thm.pretty_thm ctxt) opt_rule],
-        Pretty.block [Pretty.str "and facts ", SShow.list (Thm.pretty_thm ctxt) facts]
-      ] |> Pretty.block |> Pretty.string_of)
-    else let val args = map_data_thms Thm.trim_context args
+    then let val ctxt = Context.proof_of context
       in
-        Data.map (fn data => if Ord_List.member data_ord data args
-          then (@{log Logger.WARN} ctxt (fn _ => Pretty.breaks [
-                Pretty.str "Similar cases data already added. Skipping insertion of",
-                pretty_data ctxt args
-              ] |> Pretty.block |> Pretty.string_of);
-            data)
-          else Ord_List.insert data_ord args data)
-        end
-    end
+        error (Pretty.breaks [
+          Pretty.block [Pretty.str "Number of updates ",
+            Pretty.enclose "(" ")" [SShow.option SShow.int nupdates]],
+          Pretty.block [Pretty.str "does not match number of new goals ",
+            Pretty.enclose "(" ")" [SShow.option SShow.int num_new_goals]],
+          Pretty.block [Pretty.str "for theorem ", SShow.option (Thm.pretty_thm ctxt) opt_rule],
+          Pretty.block [Pretty.str "and facts ", SShow.list (Thm.pretty_thm ctxt) facts]
+        ] |> Pretty.block |> Pretty.string_of)
+      end
+    else Data.insert_data args
+  end
 
 val prepare_attr_rule = Option.filter (Thm.is_dummy #> not)
 
@@ -436,15 +445,7 @@ fun insert_declaration_attribute_context_defaults args thm context =
 
 type del_args = (CDA.insts, thm option, bool, thm list) PDA.entries
 
-fun delete args context = Data.map (fn data => if Ord_List.member data_ord data args
-  then Ord_List.remove data_ord args data
-  else let val ctxt = Context.proof_of context
-    in
-      (@{log Logger.WARN} ctxt (fn _ => Pretty.breaks [
-          Pretty.str "Cases data", pretty_data ctxt args, Pretty.str "not found. Skipping deletion."
-        ] |> Pretty.block |> Pretty.string_of);
-      data)
-    end) context
+val delete = Data.delete_id
 
 fun delete_declaration_attribute args thm =
   [PD.insts (PDA.get_insts args),
@@ -520,7 +521,7 @@ structure Facts_Data_Internal = Generic_Data(
 val code_bool = Value.print_bool #> MCU.read
 val code_get_facts = FI.code_struct_op "Facts_Data_Internal.get"
 fun gen_code_operation operation code_parse_op code_entries =
-  let val [thm, context, get_facts] = map MCU.internal_name ["thm", "context", "get_facts"]
+  let val (thm, context, get_facts) = @{apply 3} MCU.internal_name ("thm", "context", "get_facts")
   in
     MCU.reads ["fn", thm, "=> fn", context, "=>"] @ FI.code_struct_op operation @
       MCU.atomic (code_parse_op "entries_from_entry_list" @ code_entries @

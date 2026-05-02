@@ -4,6 +4,7 @@
 signature INDUCTION_TACTIC_BASE =
 sig
   type def_inst = binding option * (term * bool)
+  val morph_def_inst : morphism -> def_inst -> def_inst
   val with_eq : binding option * term -> def_inst
   val without_eq : binding option * term -> def_inst
   val pretty_def_inst : Proof.context -> def_inst -> Pretty.T
@@ -16,6 +17,7 @@ struct
 structure Show = SpecCheck_Show
 
 type def_inst = binding option * (term * bool)
+fun morph_def_inst phi (b, (t, f)) = (Option.map (Morphism.binding phi) b, (Morphism.term phi t, f))
 fun with_eq (b, t) = (b, (t, false))
 fun without_eq (b, t) = (b, (t, true))
 fun pretty_def_inst ctxt = Show.zip (Show.option Binding.pretty)

@@ -70,6 +70,7 @@ structure Show = SpecCheck_Show_Base
     val pretty_key = Id.pretty
     val ord_key = Id.ord
     type value = unit context_parser
+    val morph_value = K I
     val pretty_value = K (K (Pretty.str "<context parser>"))\<close>\<close>
 
 val get_parsers_table = Parsers_Data.get_table

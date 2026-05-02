@@ -1,4 +1,4 @@
-(*  Title:      Zippy/generic_term_index_data.ML
+(*  Title:      ML_Unification/generic_term_index_data.ML
     Author:     Kevin Kappelmann
 
 Term index stored in the generic context.
@@ -12,18 +12,20 @@ sig
   structure TI : TERM_INDEX
 
   type value
+  val morph_value : morphism -> value -> value
   val eq_value : value * value -> bool
   val pretty_value : Proof.context -> value -> Pretty.T
 
   type term_value = term * value
+  val morph_term_value : morphism -> term_value -> term_value
   val pretty_term_value : Proof.context -> term_value -> Pretty.T
 
   type index = term_value TI.term_index
-  val pretty_index : Proof.context -> index -> Pretty.T
 
   structure Data : GENERIC_DATA
   where type T = index
   val get_index : Context.generic -> index
+  val retrieve : term_value TI.retrieval -> term -> Context.generic -> term_value list
   val map_index : (index -> index) -> Context.generic -> Context.generic
   val pretty_Data : Proof.context -> Pretty.T
 
@@ -47,6 +49,7 @@ functor Generic_Term_Index_Data(A :
     val parent_logger : Logger.logger_binding
     structure TI : TERM_INDEX
     type value
+    val morph_value : morphism -> value -> value
     val eq_value : value * value -> bool
     val pretty_value : Proof.context -> value -> Pretty.T
   end) : GENERIC_TERM_INDEX_DATA =
@@ -63,10 +66,10 @@ val logger = Logger.setup_new_logger parent_logger FI.name
 @{parse_entries (struct) PM [add, del]}
 
 type term_value = term * value
+fun morph_term_value phi = apfst (Morphism.term phi) #> apsnd (morph_value phi)
 fun pretty_term_value ctxt = Show.zip (Syntax.pretty_term ctxt) (pretty_value ctxt)
 
 type index = term_value TI.term_index
-fun pretty_index ctxt = TI.content #> Show.list (pretty_term_value ctxt)
 
 val eq_insert = eq_snd eq_value
 structure Data = Generic_Data(Term_Index_Generic_Data_Args(
@@ -76,10 +79,16 @@ structure Data = Generic_Data(Term_Index_Generic_Data_Args(
 
 val get_index = Data.get
 val map_index = Data.map
-fun pretty_Data ctxt = get_index (Context.Proof ctxt) |> pretty_index ctxt
+
+fun pretty_Data ctxt = get_index (Context.Proof ctxt) |> TI.content
+  |> map (morph_term_value (Morphism.transfer_morphism' ctxt))
+  |> Show.list (pretty_term_value ctxt)
+fun retrieve retrieval t context = retrieval (get_index context) t
+  |> map (morph_term_value (Morphism.transfer_morphism'' context))
 
 fun insert (t, value) context = map_index (fn ti =>
   let
+    val value = morph_value Morphism.trim_context_morphism value
     val ctxt = Context.proof_of context
     val term_value = (t, value)
     val key = Same.commit TI.norm_term t

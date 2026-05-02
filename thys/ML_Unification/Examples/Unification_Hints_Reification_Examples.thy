@@ -30,8 +30,8 @@ ML\<open>
       prems_unifier = NONE, (*will be set later*)
       normalisers = SOME Higher_Order_Pattern_Unification.norms_unify,
       (*only retrieve hints based on hints' left-hand sides*)
-      retrieval = SOME (Args.mk_retrieval_sym
-        (Library.K TI.unifiables |> Args.retrieve_transfer |> Args.retrieve_left) TI.norm_term),
+      retrieval = SOME (Args.mk_retrieval_sym (Library.K TI.unifiables |> Args.retrieve_left)
+        TI.norm_term),
       hint_preprocessor = SOME (Unification_Hints.get_hint_preprocessor
         (Context.the_generic_context ()))}\<close>\<close>
 
@@ -113,10 +113,8 @@ instead, we only allow the hint unifier to match the hint's conclusion against t
 declare [[reify_uhint config concl_unifier:
   \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>
   retrieval: \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
-  (K Reification_Unification_Hints.TI.generalisations
-    |> Term_Index_Unification_Hints_Args.retrieve_transfer
-    |> Term_Index_Unification_Hints_Args.retrieve_left)
-  Reification_Unification_Hints.TI.norm_term\<close>]]
+    (K Reification_Unification_Hints.TI.generalisations |> Term_Index_Unification_Hints_Args.retrieve_left)
+    Reification_Unification_Hints.TI.norm_term\<close>]]
 
 text \<open>However, this also means that we now have to write our hints such that the hint's
 conclusion can successfully be matched against the disagreement terms. In particular,

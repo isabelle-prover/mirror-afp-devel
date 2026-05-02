@@ -17,17 +17,3 @@ type T = data TI.term_index
 val empty = TI.empty
 fun merge (ti1, ti2) = TI.merge data_eq ti1 ti2
 end
-
-signature TERM_INDEX_DATA =
-sig
-  structure TI : TERM_INDEX
-  structure TI_Data : GENERIC_DATA
-end
-
-functor Term_Index_Data(P : TERM_INDEX_DATA_ARGS) : TERM_INDEX_DATA =
-struct
-
-structure TI = P.TI
-structure TI_Data = Generic_Data(Term_Index_Generic_Data_Args(P))
-
-end

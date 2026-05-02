@@ -15,25 +15,27 @@ sig
 
   type insts = (Induction_Tactic_Base.def_inst option list, (term * term list) option list,
     (Term_Zipper.T -> bool) option list) Cases_Data_Args.PIM.entry
+  val morph_insts : morphism -> insts -> insts
   val insts_ord : insts ord
   val pretty_insts : Proof.context -> insts -> Pretty.T
 
   type arbitrary = ((string * typ) list, term list * term list, Term_Zipper.T -> bool)
     Cases_Data_Args.PIM.entry
+  val morph_arbitrary : morphism -> arbitrary -> arbitrary
   val arbitrary_ord : arbitrary ord
   val pretty_arbitrary : Proof.context -> arbitrary -> Pretty.T
 
   type taking = term option list
+  val morph_taking : morphism -> taking -> taking
   val taking_ord : taking ord
   val pretty_taking : Proof.context -> taking -> Pretty.T
 
   type data = (insts, thm option, arbitrary, taking, bool, thm list, Cases_Data_Args.match)
     PD.entries
+  val morph_data : morphism -> data -> data
   val data_ord : data ord
   val eq_data : data * data -> bool
   val pretty_data : Proof.context -> data -> Pretty.T
-  val map_data_thms : (thm -> thm) -> data -> data
-  val transfer_data : theory -> data -> data
 
   type config = (bool, Cases_Data_Args.match) PDC.entries
 
@@ -81,6 +83,11 @@ fun term_ord tp = if Term_Util.are_term_variants tp then EQUAL else Term_Ord.fas
 val pred_ord = K EQUAL
 val pretty_pred = Pretty.str "<predicate>"
 
+fun morph_insts phi (PIM.fix fix) = PIM.fix (map (Option.map (IHB.morph_def_inst phi)) fix)
+  | morph_insts phi (PIM.pat pat) = let val morph = Morphism.term phi
+      in PIM.pat (map (Option.map (apfst morph #> apsnd (map morph))) pat) end
+  | morph_insts _ entry = entry
+
 fun insts_ord (PIM.fix x, PIM.fix y) = list_ord (option_ord (IHB.def_inst_ord term_ord)) (x, y)
   | insts_ord (PIM.fix _, _) = LESS
   | insts_ord (_, PIM.fix _) = GREATER
@@ -95,6 +102,12 @@ fun pretty_insts _ (PIM.pred x) = Show.list (Show.option (K pretty_pred)) x
   | pretty_insts ctxt (PIM.fix x) = Show.list (Show.option (IHB.pretty_def_inst ctxt)) x
 
 type arbitrary = ((string * typ) list, term list * term list, Term_Zipper.T -> bool) CDA.PIM.entry
+
+fun morph_arbitrary phi (PIM.fix fix) = PIM.fix (map (apsnd (Morphism.typ phi)) fix)
+  | morph_arbitrary phi (PIM.pat pat) = let val morph = map (Morphism.term phi)
+      in PIM.pat (apply2 morph pat) end
+  | morph_arbitrary _ entry = entry
+
 fun arbitrary_ord (PIM.fix x, PIM.fix y) =
       list_ord (prod_ord fast_string_ord Term_Ord.typ_ord) (x, y)
   | arbitrary_ord (PIM.fix _, _) = LESS
@@ -110,10 +123,21 @@ fun pretty_arbitrary _ (PIM.pred _) = pretty_pred
   | pretty_arbitrary ctxt (PIM.fix x) = Show.list (Show.zip Show.string (Show.typ ctxt)) x
 
 type taking = term option list
+
+fun morph_taking phi = map (Option.map (Morphism.term phi))
 val taking_ord = list_ord (option_ord Term_Ord.fast_term_ord)
 fun pretty_taking ctxt = Show.list (Show.option (Show.term ctxt))
 
 type data = (insts, thm option, arbitrary, taking, bool, thm list, CDA.match) PD.entries
+
+fun morph_data phi =
+  let fun morph (PD.insts insts) = PD.insts (morph_insts phi insts)
+        | morph (PD.rule rule) = PD.rule (Option.map (Morphism.thm phi) rule)
+        | morph (PD.arbitrary arbitrary) = PD.arbitrary (morph_arbitrary phi arbitrary)
+        | morph (PD.taking taking) = PD.taking (morph_taking phi taking)
+        | morph (PD.facts facts) = PD.facts (map (Morphism.thm phi) facts)
+        | morph entry = entry
+  in PD.key_entry_entries_from_entries #> map (snd #> morph) #> PD.entries_from_entry_list end
 
 val data_ord = option_ord Thm.thm_ord o apply2 PD.get_rule
   ||| insts_ord o apply2 PD.get_insts
@@ -130,8 +154,6 @@ fun pretty_data ctxt data = Show.record [
   ("facts", Show.list (Show.thm ctxt) (PD.get_facts data)),
   ("simp", Show.bool (PD.get_simp data))
 ]
-fun map_data_thms f = PD.map_rule (Option.map f) #> PD.map_facts (map f)
-fun transfer_data thy = map_data_thms (Thm.transfer thy)
 
 type config = (bool, CDA.match) PDC.entries
 
@@ -264,8 +286,9 @@ sig
   val map_match : (Cases_Data_Args.match -> Cases_Data_Args.match) ->
     Context.generic -> Context.generic
 
-  structure Data : GENERIC_DATA
-  where type T = Induction_Data_Args.data Ord_List.T
+  structure Data : GENERIC_ORD_LIST_ID_DATA
+  where type data = Induction_Data_Args.data
+  where type id = Induction_Data_Args.data
 
   val insert : Induction_Data_Args.data -> Context.generic -> Context.generic
   val insert_declaration_attribute : Induction_Data_Args.data -> thm -> Context.generic -> Context.generic
@@ -346,25 +369,22 @@ val map_simp = map_config o PDC.map_simp
 val get_match = PDC.get_match o get_config
 val map_match = map_config o PDC.map_match
 
-structure Data = Generic_Data(
-  type T = data Ord_List.T
-  val empty = []
-  val merge = Ord_List.merge data_ord)
+\<^functor_instance>\<open>struct_name: Data
+  functor_name: Generic_Ord_List_Id_Data_Functor
+  id: \<open>FI.id\<close>
+  path: \<open>FI.long_name\<close>
+  more_args: \<open>
+    val parent_logger = logger
+    type data = data
+    val morph_data = morph_data
+    val ord_data = data_ord
+    val pretty_data = pretty_data
+    type id = data
+    val ord_id = ord_data
+    val pretty_id = pretty_data
+    val get_id = I\<close>\<close>
 
-fun insert args context = context |>
-  let val args = map_data_thms Thm.trim_context args
-  in
-    Data.map (fn data => if Ord_List.member data_ord data args
-      then let val ctxt = Context.proof_of context
-        in
-          (@{log Logger.WARN} ctxt (fn _ => Pretty.breaks [
-              Pretty.str "Similar induction data already added. Skipping insertion of",
-              pretty_data ctxt args
-            ] |> Pretty.block |> Pretty.string_of);
-          data)
-        end
-      else Ord_List.insert data_ord args data)
-  end
+val insert = Data.insert_data
 
 val prepare_attr_rule = Option.filter (Thm.is_dummy #> not)
 fun with_prepared_attr_rule f args thm = f (PD.map_rule_safe (K (SOME (prepare_attr_rule thm))) args)
@@ -378,15 +398,7 @@ fun data_context_defaults args = get_config
 fun with_context_defaults f args thm context = f (data_context_defaults args context) thm context
 val insert_declaration_attribute_context_defaults = with_context_defaults insert_declaration_attribute
 
-fun delete args context = Data.map (fn data => if Ord_List.member data_ord data args
-  then Ord_List.remove data_ord args data
-  else let val ctxt = (Context.proof_of context)
-    in
-      (@{log Logger.WARN} ctxt (fn _ => Pretty.breaks [
-          Pretty.str "Induction data", pretty_data ctxt args, Pretty.str "not found. Skipping deletion."
-        ] |> Pretty.block |> Pretty.string_of);
-      data)
-    end) context
+val delete = Data.delete_id
 val delete_declaration_attribute = with_prepared_attr_rule delete
 val delete_declaration_attribute_context_defaults = with_context_defaults delete_declaration_attribute
 
@@ -457,7 +469,7 @@ fun gen_attribute operation (entries, pos) (context, thm) =
       |> map (fn (k, v) => code_from_key k @ MCU.atomic (code_from_entry v))
       |> MCU.list
     val code =
-      let val [thm, context, get_facts] = map MCU.internal_name ["thm", "context", "get_facts"]
+      let val (thm, context, get_facts) = @{apply 3} MCU.internal_name ("thm", "context", "get_facts")
       in
         MCU.reads ["fn", thm, "=> fn", context, "=>"] @ FI.code_struct_op operation @
           MCU.atomic (code_PD_op "entries_from_entry_list" @ code_entries @

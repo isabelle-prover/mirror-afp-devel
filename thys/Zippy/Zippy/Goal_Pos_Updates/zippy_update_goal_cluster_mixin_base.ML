@@ -40,6 +40,7 @@ type update_gcluster = GPU.F.focus -> (@{ParaT_args} @{AllT_args} GCluster.L.con
     val pretty_key = Identifier.pretty
     val ord_key = Identifier.ord
     type value = Zippy_Thm_State.state * Term_Util.subgoal list -> update_gcluster
+    val morph_value = K I
     val pretty_value = Library.K (Library.K (Pretty.str "<init goal cluster morphism>"))\<close>\<close>
 
 end

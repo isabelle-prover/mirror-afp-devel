@@ -195,8 +195,7 @@ declare [[zip_init_gc \<open>
       |> arr)
     val retrieval = Data.TI.unifiables
     fun lookup_goal ctxt = snd #> snd #> Same.commit Data.TI.norm_term
-      #> retrieval (Data.get_index (Context.Proof ctxt))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt)
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals =
         lookup_each_focused_data (lookup_goal ctxt) goals focus
@@ -222,8 +221,7 @@ declare [[zip_init_gc \<open>
       |> arr)
     val retrieval = Data.TI.generalisations
     fun lookup_goal ctxt = snd #> snd #> Same.commit Data.TI.norm_term
-      #> retrieval (Data.get_index (Context.Proof ctxt))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt)
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -250,9 +248,9 @@ declare [[zip_init_gc \<open>
     large rule set, one can use an incomplete retrieval returning only those rules whose
     left-hand or right-hand side potentially higher-order unifies with a disagreement term.
     Cf. the retrieval used in ML_Unification.ML_Unification_Hints*)
-    val retrieval = Data.TI.content
-    fun lookup_goal ctxt _ = retrieval (Data.get_index (Context.Proof ctxt))
-      |> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    val retrieval = Data.TI.content #> Library.K
+    fun lookup_goal ctxt = snd #> snd
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt)
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -278,9 +276,8 @@ declare [[zip_init_gc
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.unifiables
-    fun lookup_goal ctxt = snd #> fst #>
-      maps (Same.commit Data.TI.norm_term #> retrieval (Data.get_index (Context.Proof ctxt)))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    fun lookup_goal ctxt = snd #> fst #> maps (Same.commit Data.TI.norm_term
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -303,9 +300,8 @@ declare [[zip_init_gc
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.generalisations
-    fun lookup_goal ctxt = snd #> fst
-      #> maps (Same.commit Data.TI.norm_term #> retrieval (Data.get_index (Context.Proof ctxt)))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    fun lookup_goal ctxt = snd #> fst #> maps (Same.commit Data.TI.norm_term
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -327,9 +323,9 @@ declare [[zip_init_gc
       #> Tac_AAM.lift_tac mk_meta
       #> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       #> arr)
-    val retrieval = Data.TI.content
-    fun lookup_goal ctxt _ = retrieval (Data.get_index (Context.Proof ctxt))
-      |> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    val retrieval = Data.TI.content #> Library.K
+    fun lookup_goal ctxt = snd #> fst #> try hd
+      #> Option.map (General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt)) #> these
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -360,9 +356,8 @@ declare [[zip_init_gc
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.unifiables
-    fun lookup_goal ctxt = snd #> fst #>
-      maps (Same.commit Data.TI.norm_term #> retrieval (Data.get_index (Context.Proof ctxt)))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    fun lookup_goal ctxt = snd #> fst #> maps (Same.commit Data.TI.norm_term
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -390,9 +385,8 @@ declare [[zip_init_gc
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.generalisations
-    fun lookup_goal ctxt = snd #> fst #>
-      maps (Same.commit Data.TI.norm_term #> retrieval (Data.get_index (Context.Proof ctxt)))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    fun lookup_goal ctxt = snd #> fst #> maps (Same.commit Data.TI.norm_term
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -414,9 +408,9 @@ declare [[zip_init_gc
       #> Tac_AAM.lift_tac mk_meta
       #> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       #> arr)
-    val retrieval = Data.TI.content
-    fun lookup_goal ctxt _ = retrieval (Data.get_index (Context.Proof ctxt))
-      |> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    val retrieval = Data.TI.content #> Library.K
+    fun lookup_goal ctxt = snd #> fst #> try hd
+      #> Option.map (General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt)) #> these
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -441,9 +435,8 @@ declare [[zip_init_gc
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.unifiables
-    fun lookup_goal ctxt = snd #> fst
-      #> maps (Same.commit Data.TI.norm_term #> retrieval (Data.get_index (Context.Proof ctxt)))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    fun lookup_goal ctxt = snd #> fst #> maps (Same.commit Data.TI.norm_term
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
@@ -468,10 +461,9 @@ declare [[zip_init_gc
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.generalisations
-    fun lookup_goal ctxt = snd #> fst
-      #> maps (Same.commit Data.TI.norm_term #> retrieval (Data.get_index (Context.Proof ctxt)))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
-     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
+    fun lookup_goal ctxt = snd #> fst #> maps (Same.commit Data.TI.norm_term
+      #> General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt))
+    fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>
           cons_nth_action Util.exn meta ztac ctxt i data focus >>> Up4.morph)
@@ -492,9 +484,9 @@ declare [[zip_init_gc
       #> Tac_AAM.lift_tac mk_meta
       #> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
       #> arr)
-    val retrieval = Data.TI.content
-    fun lookup_goal ctxt _ = retrieval (Data.get_index (Context.Proof ctxt))
-      |> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
+    val retrieval = Data.TI.content #> Library.K
+    fun lookup_goal ctxt = snd #> fst #> try hd
+      #> Option.map (General_Util.flip (Data.retrieve retrieval) (Context.Proof ctxt)) #> these
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => fn z =>
       let fun lookup_cons_goals goals = lookup_each_focused_data (lookup_goal ctxt) goals focus
         |> map_index (fn (i, (focus, data)) =>

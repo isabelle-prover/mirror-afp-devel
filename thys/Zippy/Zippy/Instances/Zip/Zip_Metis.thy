@@ -38,7 +38,7 @@ declare [[zip_init_gc \<open>
         can, we skip the metis call.*)
         val zip_progress_tac =
           let
-            val steps = 20 (*should be sufficient to get an estimation*)
+            val steps = 20 (*constant chosen experimentally; it should be sufficient to get an estimate for progress*)
             val _ = @{log Logger.TRACE} ctxt (fn _ => implode_space ["Checking if",
               guard_name, "can make any promising progress in", string_of_int steps, "steps."])
           in

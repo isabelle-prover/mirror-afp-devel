@@ -75,6 +75,7 @@ fun pretty_eunif_data (EUnif_Data (meta, _)) = pretty_metadata meta
   more_args: \<open>
     val parent_logger = logger
     type data = eunif_data
+    val morph_data = K I
     val ord_data = ord_eunif_data
     val pretty_data = K pretty_eunif_data
     val get_id = get_eunif_data_metadata #> get_metadata_id\<close>\<close>

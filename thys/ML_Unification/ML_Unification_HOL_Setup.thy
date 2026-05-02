@@ -14,10 +14,10 @@ and [[rec_uhint config hint_preprocessor: \<open>Unification_Hints_Base.obj_logi
 
 lemma eq_TrueI: "PROP P \<Longrightarrow> PROP P \<equiv> Trueprop True" by (standard) simp
 declare [[ucombine \<open>Unification_Combine.eunif_data
-  (Unification_Combine.metadata (\<^binding>\<open>SIMPS_TO_unify\<close>, Prio.HIGH),
-  Simplifier_Unification.SIMPS_TO_unify @{thm eq_TrueI}
-  |> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
-      Mixed_Comb_Unification.norms_fo_hop_comb_unify)
+    (Unification_Combine.metadata (\<^binding>\<open>SIMPS_TO_unify\<close>, Prio.HIGH),
+    Simplifier_Unification.SIMPS_TO_unify @{thm eq_TrueI}
+  |> Unification_Combinator.norm_unifier
+    (Unification_Util.inst_norm_term' Mixed_Comb_Unification.norms_fo_hop_comb_unify)
   |> K)\<close>]]
 
 declare [[ucombine \<open>
@@ -27,13 +27,11 @@ declare [[ucombine \<open>
     fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
       (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI}
         Mixed_Comb_Unification.norms_fo_hop_comb_unify)
-      (Unification_Util.inst_norm_term'
-        Mixed_Comb_Unification.norms_fo_hop_comb_unify)
-      (Mixed_Comb_Unification.fo_hop_comb_e_unify Unification_Util.unify_types
-        unify_theory)
+      (Unification_Util.inst_norm_term' Mixed_Comb_Unification.norms_fo_hop_comb_unify)
+      (Mixed_Comb_Unification.fo_hop_comb_e_unify Unification_Util.unify_types unify_theory)
   in
     Unification_Combine.eunif_data
-    (Unification_Combine.metadata (\<^binding>\<open>SIMPS_TO_UNIF_unify\<close>, Prio.HIGH), simp_unif)
+      (Unification_Combine.metadata (\<^binding>\<open>SIMPS_TO_UNIF_unify\<close>, Prio.HIGH), simp_unif)
   end\<close>]]
 
 end

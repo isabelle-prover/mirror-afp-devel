@@ -1,4 +1,4 @@
-(*  Title:      Zippy/generic_table_data.ML
+(*  Title:      ML_Unification/generic_table_data.ML
     Author:     Kevin Kappelmann
 
 Table stored in the generic context.
@@ -16,9 +16,9 @@ sig
   val pretty_key : key -> Pretty.T
 
   type value
+  val morph_value : morphism -> value -> value
 
   type table = value Table.table
-  val pretty_table : Proof.context -> table -> Pretty.T
 
   structure Data : GENERIC_DATA
   where type T = table
@@ -45,6 +45,7 @@ functor Generic_Table_Data(A : sig
     val ord_key : key ord
     val pretty_key : key -> Pretty.T
     type value
+    val morph_value : morphism -> value -> value
     val pretty_value : Proof.context ->value -> Pretty.T
   end) : GENERIC_TABLE_DATA =
 struct
@@ -61,7 +62,6 @@ val logger = Logger.setup_new_logger parent_logger FI.name
 
 structure Table = Table(type key = key; val ord = ord_key)
 fun pretty_key_value ctxt = Show.zip pretty_key (pretty_value ctxt)
-fun pretty_table ctxt = Table.dest #> Show.list (pretty_key_value ctxt)
 
 type table = value Table.table
 
@@ -72,10 +72,14 @@ structure Data = Generic_Data(
 
 val get_table = Data.get
 val map_table = Data.map
-fun pretty_Data ctxt = Context.Proof ctxt |> get_table |> pretty_table ctxt
+fun pretty_Data ctxt = get_table (Context.Proof ctxt) |> Table.dest
+  |> map (apsnd (morph_value (Morphism.transfer_morphism' ctxt)))
+  |> Show.list (pretty_key_value ctxt)
 
 fun insert (key, value) context = map_table (fn table =>
-  let val ctxt = Context.proof_of context
+  let
+    val value = morph_value Morphism.trim_context_morphism value
+    val ctxt = Context.proof_of context
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
       Pretty.str "Inserting with key ", pretty_key key, Pretty.str "."

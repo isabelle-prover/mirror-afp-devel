@@ -10,6 +10,7 @@ session Zippy = HOL +
     SpecCheck
   directories
     "Antiquotations"
+    "Context_Parsers"
     "Gen_Lists"
     "Gen_Lists/Lists_1"
     "Gen_Zippers/"
@@ -25,7 +26,6 @@ session Zippy = HOL +
     "Gen_Zippers/Zippers5/Zippers"
     "Gen_Zippers/Zippers5/Zippers/Instances"
     "Gen_Zippers/Zippers5/Zippers/Utils"
-    "Generic_Data"
     "ML_Typeclasses/Antiquotations"
     "ML_Typeclasses/Gen_Coroutines"
     "ML_Typeclasses/Gen_Coroutines/Coroutines_1"

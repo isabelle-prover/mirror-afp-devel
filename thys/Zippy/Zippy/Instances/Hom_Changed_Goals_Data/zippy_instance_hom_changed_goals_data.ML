@@ -131,9 +131,6 @@ sig
       @{AllT_args} Result_Action.mk_copy_update_data,
       @{AllT_args} PResults.presultsq) Zippy_Instance_Hom_Changed_Goals_Data_Args.PD.entries
 
-    val map_data_thms : (thm -> thm) -> data -> data
-    val transfer_data : theory -> data -> data
-
     structure Data : GENERIC_TERM_INDEX_DATA
     where type value = data
 
@@ -303,12 +300,16 @@ type data = (thm,
   @{AllT_args} Result_Action.mk_copy_update_data,
   @{AllT_args} PResults.presultsq) PD.entries
 
+fun morph_data phi =
+  (*TODO: is this safe (i.e. could it be that "ngoals (phi thm) <> |updates|"?*)
+  let fun morph (PD.thm thm) = PD.thm (Morphism.thm phi thm)
+        | morph entry = entry
+  in PD.key_entry_entries_from_entries #> map (snd #> morph) #> PD.entries_from_entry_list end
+
 fun eq_data data = Thm.eq_thm (apply2 PD.get_thm data)
 fun pretty_data ctxt data = SShow.record [
     ("thm", Thm.pretty_thm ctxt (PD.get_thm data))
   ]
-fun map_data_thms f = PD.map_thm f
-fun transfer_data thy = map_data_thms (Thm.transfer thy)
 
 \<^functor_instance>\<open>struct_name: Data
   functor_name: Generic_Term_Index_Data
@@ -318,6 +319,7 @@ fun transfer_data thy = map_data_thms (Thm.transfer thy)
     val parent_logger = Log.logger
     structure TI = TI
     type value = data
+    val morph_value = morph_data
     val eq_value = eq_data
     val pretty_value = pretty_data\<close>\<close>
 
@@ -364,7 +366,6 @@ type add_args = (thm,
 
 fun insert data context =
   let
-    val data = map_data_thms Thm.trim_context data
     val thm = PD.get_thm data
     val num_new_goals = num_new_goals thm
     val nupdates = length (PD.get_updates data)
