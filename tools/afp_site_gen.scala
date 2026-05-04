@@ -148,6 +148,7 @@ object AFP_Site_Gen {
         "date" -> entry.date.toString,
         "topics" -> entry.topics.map(topic_id),
         "abstract" -> entry.`abstract`,
+        "creation_note" -> entry.creation_note,
         "license" -> entry.license.name,
         "dependencies" -> deps,
         "used_by" -> used_by,

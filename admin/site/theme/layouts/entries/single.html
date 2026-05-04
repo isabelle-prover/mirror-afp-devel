@@ -22,7 +22,15 @@
       {{- end }}
     </div>
 
+    {{- with or .Params.note .Params.creation_note }}
+      <h3>Note</h3>
+    {{- end }}
+
     {{- with .Params.note }}
+      <p><em>{{ . | safeHTML }}</em></p>
+    {{- end }}
+
+    {{- with .Params.creation_note }}
       <p><em>{{ . | safeHTML }}</em></p>
     {{- end }}
 
