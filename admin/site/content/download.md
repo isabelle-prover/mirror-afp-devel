@@ -9,7 +9,7 @@ weight = 3
 
 ### **Current stable version** (for most recent Isabelle release):
 
-Download all sessions: {{< download href="https://www.isa-afp.org/release/afp-current.tar.gz" label="afp-current.tar.gz (~70 MB)" >}}
+Download all sessions: {{< download href="https://isa-afp.org/release/afp-current.tar.gz" label="afp-current.tar.gz (~70 MB)" >}}
 
 ### Older stable versions:
 

@@ -14,7 +14,7 @@ release_dir = "release"
 html_dir = "browser_info/current"
 submission_url = "https://afp-submit.proof.cit.tum.de"
 devel_url = "https://devel.isa-afp.org"
-url = "https://www.isa-afp.org" # NB: .Site.BaseURL changes url (trailing slash)
+url = "https://isa-afp.org" # NB: .Site.BaseURL changes url (trailing slash)
 
 [outputs]
 home = [ "html", "rss" ]
