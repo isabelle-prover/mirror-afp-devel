@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Search application.
+ */
 
 const NUM_MAX_SIDE_RESULTS = 4
 const NUM_MAX_MAIN_RESULTS = 15
@@ -123,7 +126,7 @@ function render_results_shortlist(parent, data, query) {
 
 /* setup */
 
-const init_search = async () => {
+async function init_search() {
   const input = document.getElementById(ID_SEARCH_INPUT)
   const button = document.getElementById(ID_SEARCH_BUTTON)
   const entries_res = document.getElementById(ID_RESULTS_ENTRIES)
@@ -142,7 +145,7 @@ const init_search = async () => {
   const index_json = await Promise.all(index_data.map(r => r.json()))
   const indexes = build_indexes(...index_json)
 
-  const run_local_search = (query) => {
+  function run_local_search(query) {
     let res = {}
     if (query && query.length > 1) {
       add_suggestions(indexes['suggest'], query)
@@ -153,7 +156,7 @@ const init_search = async () => {
     render_entries_results(entries_res, res.entries, query)
   }
 
-  const handle_submit = (query) => {
+  function handle_submit(query) {
     if (typeof history.pushState !== 'undefined') {
       history.pushState({}, 'Search the Archive - ' + query, '?s=' + query)
     }

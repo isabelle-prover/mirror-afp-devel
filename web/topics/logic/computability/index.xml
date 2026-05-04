@@ -4,6 +4,14 @@
     <title>Logic/Computability</title>
     <link>https://isa-afp.org/topics/logic/computability/</link>
     <description>AFP entries in Computability</description><item>
+  <title>SAT is Not Solvable in Constant Time</title>
+  <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
+  <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+  <description>SAT is Not Solvable in Constant Time in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/Computability</category>
+</item>
+<item>
   <title>The Halting Problem is Soluble in Malament-Hogarth Spacetimes</title>
   <link>https://isa-afp.org/entries/MHComputation.html</link>
   <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>

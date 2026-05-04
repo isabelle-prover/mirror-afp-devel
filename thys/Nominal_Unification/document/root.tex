@@ -1,0 +1,117 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Nominal Unification}
+\author{Guilherme Borges Brand\~ao$^1$ \and Thomas Ammer$^2$ \and Daniele Nantes Sobrinho$^1$ \and Mauricio Ayala-Rinci\'on$^1$ \and  Christian Urban$^2$ \and Maribel Fern\'andez$^2$ \and Mohammad Abdulaziz$^2$\\[2mm]
+\mbox{}$^1$ Universidade de Bras\'ilia, Bras\'ilia D.F., Brazil \\[1mm]
+\mbox{}$^2$King's College London, London, U.K.
+ }
+
+\maketitle
+
+\begin{abstract}
+  \noindent
+  This is an improved and updated formalisation of the nominal
+  unification algorithm.  Nominal unification is a generalisation of
+  the classic first-order unification to the practically important
+  case of equations between terms involving binding operations. A
+  simple, possibly capturing substitution of terms for variables
+  solves such equations if it makes the equated terms
+  alpha-equivalent, i.e.~equal up to renaming bound names. While
+  nominal unification can be seen as equivalent to Miller's
+  higher-order pattern unification (unification problems can be inter-coded),
+  nominal unification has the advantage of involving only first-order
+  syntax. This means in the presented formalisation we only need to
+  reason about standard inductive datatypes and first-order
+  operations. The main improvement of this development is a much
+  simpler proof for establishing the equivalence relation properties
+  for an inductive definition characterising when two terms are
+  alpha-equivalent. In the original literature, this involved a clunky
+  mutual induction over the size of terms involving three properties. Here 
+  we can separate the proofs and use just structural inductions. This
+  results in a much smoother formalisation of the nominal
+  unification algorithm.
+
+\end{abstract}
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+
+\section{Introduction}
+
+This is an improved and updated formalisation of the nominal
+unification algorithm given in
+\cite{DBLP:journals/corr/abs-1012-4890,DBLP:journals/tcs/UrbanPG04}.
+The formalisation presented here is improved according to the Rocha
+Oliveira et al.~approach formalised in PVS
+\cite{DBLP:journals/entcs/Ayala-RinconFO16,ACRochaOliveira2016}, where
+the properties of symmetry, transitivity, and equivariance of the
+$\alpha$-equivalence relation are proved separately. This makes the
+proof and formalisation more convenient. The same approach was taken
+by de Carvalho et al. in the Coq formalisation of nominal
+$\alpha$-unification and nominal C-unification
+\cite{DBLP:journals/tcs/Ayala-RinconSFN19,WLRdeCarvalho2019}. In the
+PVS formalisation, nominal unification is presented as a functional
+recursive algorithm, proved sound and complete, from which executable
+code in Lisp can be extracted. In the Coq formalisation,
+non-deterministic rule-based nominal unification procedures were
+presented, following the paper by Urban et al, which were proved sound
+and complete; further, recursive definitions were presented, which
+were proved equivalent to the inductive procedures, and from which
+executable code was extracted.
+
+
+\input{session}
+
+% optional bibliography
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+
+
+%
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

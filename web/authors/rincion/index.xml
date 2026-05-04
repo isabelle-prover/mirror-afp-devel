@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mauricio Ayala-Rinción</title>
+    <link>https://isa-afp.org/authors/rincion/</link>
+    <description>AFP entries of Mauricio Ayala-Rinción</description><item>
+  <title>Nominal Unification</title>
+  <link>https://isa-afp.org/entries/Nominal_Unification.html</link>
+  <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  <description>Nominal Unification in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+
+  </channel>
+</rss>

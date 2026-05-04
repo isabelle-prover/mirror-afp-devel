@@ -1,0 +1,28 @@
+chapter AFP
+
+session "Isabelle-Solidity" = HOL +
+  options [timeout = 7200]
+  sessions
+    "HOL-Library" 
+    "HOL-Eisbach"
+    "Finite-Map-Extras"
+  theories
+    Utils
+    State_Monad
+    Memory
+    Stores
+    State
+    Solidity
+    Contract
+    WP
+    Solidity_Main
+    Unit_Tests
+    Bank
+    Token
+    Casino
+    Voting
+    SimpleAuction
+  document_files
+    "root.tex"
+	"root.bib"
+    "orcidlink.sty"

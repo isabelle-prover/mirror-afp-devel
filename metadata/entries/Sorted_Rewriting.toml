@@ -1,0 +1,34 @@
+title = "Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting"
+date = 2026-03-11
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+This entry provides various materials for sorted term rewrite systems (sorted TRSs),
+(sorted) conditional TRSs (CTRSs),
+and
+logically constrained TRSs (LCTRSs).
+For (C)TRSs we formalize
+the fundamental result that the rewrite steps induced by a (C)TRS is the least rewrite relation that models the (C)TRS.
+For LCTRSs we simply formulate logics as sorted algebras with the bool sort and logical symbols which are interpreted as expected.
+This allows us to define rewrite steps of LCTRSs as rewrite steps of an (infinite) TRS."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.yamada]
+email = "yamada_email4"
+
+[contributors]
+
+[notify]
+yamada = "yamada_email4"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

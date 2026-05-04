@@ -4,6 +4,93 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>The Algebra of Iterative Constructions</title>
+  <link>https://isa-afp.org/entries/Iteration_Algebra.html</link>
+  <pubDate>Wed, 29 Apr 2026 00:00:00 +0000</pubDate>
+  <description>The Algebra of Iterative Constructions in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Nominal Unification</title>
+  <link>https://isa-afp.org/entries/Nominal_Unification.html</link>
+  <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+  <description>Nominal Unification in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
+  <title>Nagata Factoriality</title>
+  <link>https://isa-afp.org/entries/Nagata-Factoriality.html</link>
+  <pubDate>Mon, 20 Apr 2026 00:00:00 +0000</pubDate>
+  <description>Nagata Factoriality in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Archimedes&#39; Cattle Problem</title>
+  <link>https://isa-afp.org/entries/Archimedes_Cattle.html</link>
+  <pubDate>Wed, 01 Apr 2026 00:00:00 +0000</pubDate>
+  <description>Archimedes&#39; Cattle Problem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>SAT is Not Solvable in Constant Time</title>
+  <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
+  <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+  <description>SAT is Not Solvable in Constant Time in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/Computability</category>
+</item>
+<item>
+  <title>Abstract Consistency Properties</title>
+  <link>https://isa-afp.org/entries/Abstract_Consistency_Property.html</link>
+  <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Abstract Consistency Properties in the AFP</description>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/General logic/Modal logic</category>
+    <category>Logic/Proof theory</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL</title>
+  <link>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</link>
+  <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
+  <title>Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting</title>
+  <link>https://isa-afp.org/entries/Sorted_Rewriting.html</link>
+  <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Lebesgue-Stieltjes Integral</title>
+  <link>https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html</link>
+  <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>
+  <description>Lebesgue-Stieltjes Integral in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Isabelle-Solidity.html</link>
+  <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages</category>
+    <category>Tools</category>
+</item>
+<item>
+  <title>Workflow Net Fitness Measures</title>
+  <link>https://isa-afp.org/entries/Workflow_Net_Fitness_Measures.html</link>
+  <pubDate>Sat, 07 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Workflow Net Fitness Measures in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>A Bridge between CSP Processes and Functional Automata</title>
   <link>https://isa-afp.org/entries/HOL-CSP_Proc-Omata.html</link>
   <pubDate>Mon, 02 Feb 2026 00:00:00 +0000</pubDate>

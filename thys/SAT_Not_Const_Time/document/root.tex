@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+
+% This handles the setup for standard Isabelle fonts and spacing
+\isabellestyle{it}
+
+\begin{document}
+
+\title{SAT is Not Solvable in Constant Time}
+\author{Daniel Shea}
+\maketitle
+
+\begin{abstract}
+This entry establishes that the Boolean Satisfiability Problem (SAT) cannot be 
+decided by a deterministic Turing machine in constant time ($O(1)$). 
+
+The core of the argument rests on an indistinguishability invariant: a Turing 
+machine bounded by constant time $C$ can only ever read the first $C+1$ cells 
+of its input tape. Consequently, any language decided in constant time must be a 
+prefix language. We then show that SAT is not uniquely determined by any finite 
+prefix, yielding the impossibility result.
+\end{abstract}
+
+\tableofcontents
+
+% Include generated text of all theories
+\input{session}
+
+% Bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

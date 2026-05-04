@@ -11,6 +11,7 @@ Abs_Int_ITP2012
 Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
+Abstract_Consistency_Property
 Abstract_Soundness
 Abstract_Substitution
 Ackermanns_not_PR
@@ -30,6 +31,7 @@ Applicative_Lifting
 Approximate_Model_Counting
 Approximation_Algorithms
 Arbitrage_Probability_Correspondence
+Archimedes_Cattle
 Architectural_Design_Patterns
 Aristotles_Assertoric_Syllogistic
 Arith_Prog_Rel_Primes
@@ -42,6 +44,7 @@ AutoFocus-Stream
 Automated_Stateful_Protocol_Verification
 Automatic_Refinement
 AxiomaticCategoryTheory
+Axiom_Free_Ontological_Trinity
 BDD
 BD_Security_Compositional
 BNF_CC
@@ -428,9 +431,11 @@ IsaGeoCoq
 IsaNet
 Isabelle_C
 Isabelle_DOF
+Isabelle_hoops
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
-Isabelle_hoops
+Isabelle-Solidity
+Iteration_Algebra
 Jacobson_Basic_Algebra
 Jinja
 JinjaDCI
@@ -487,6 +492,7 @@ Launchbury
 Laws_of_Large_Numbers
 Lazy-Lists-II
 Lazy_Case
+Lebesgue_Stieltjes_Integral
 Lehmer
 Levy_Prokhorov_Metric
 Lie_Groups
@@ -571,6 +577,7 @@ Munta_Certificate_Checker
 Munta_Model_Checker
 Myhill-Nerode
 NREST
+Nagata-Factoriality
 Name_Carrying_Type_Inference
 Nano_JSON
 Nash_Williams
@@ -586,6 +593,7 @@ No_FTL_observers_Gen_Rel
 No_Free_Lunch_ML
 Nominal2
 Nominal_Myhill_Nerode
+Nominal_Unification
 Noninterference_CSP
 Noninterference_Concurrent_Composition
 Noninterference_Generic_Unwinding
@@ -764,6 +772,7 @@ Roth_Arithmetic_Progressions
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification
+SAT_Not_Const_Time
 SCC_Bloemen_Sequential
 SCL_Simulates_Ground_Resolution
 SC_DOM_Components
@@ -820,6 +829,7 @@ Solidity
 Sophie_Germain
 Sophomores_Dream
 Sort_Encodings
+Sorted_Rewriting
 Sorted_Terms
 Source_Coding_Theorem
 SpecCheck
@@ -944,6 +954,7 @@ Wlog
 Wooley_Elementary_Discrete_Inequality
 Word_Lib
 WorkerWrapper
+Workflow_Net_Fitness_Measures
 Worklist_Algorithms
 X86_Semantics
 XML

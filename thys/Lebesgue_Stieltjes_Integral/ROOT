@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Lebesgue_Stieltjes_Integral" = "HOL-Analysis" +
+  options [timeout = 600]
+  sessions
+    Wlog
+  theories
+    Preliminaries_LSI
+    Lebesgue_Stieltjes_Integral
+  document_files
+    "root.tex"

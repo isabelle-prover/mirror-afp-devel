@@ -73,7 +73,8 @@ object AFP_Submit {
       `abstract`: Val[String] = Val.ok(""),
       related: List[Reference] = Nil,
       related_kind: Option[Related.Value] = None,
-      related_input: Val[String] = Val.ok("")
+      related_input: Val[String] = Val.ok(""),
+      creation_note: String = ""
     ) {
       def used_affils: Set[Affiliation] = (affils.v ++ notifies.v).toSet
       def used_authors: Set[Author.ID] = used_affils.map(_.author)
@@ -131,7 +132,7 @@ object AFP_Submit {
       def entry: Entry =
         Entry(name = name.v, title = title.v, authors = affils.v, date = LocalDate.now(),
           topics = topics.v, `abstract` = `abstract`.v.trim, notifies = notifies.v,
-          license = license, note = "", related = related)
+          license = license, note = "", related = related, creation_note = creation_note)
     }
 
     object Create {
@@ -546,7 +547,7 @@ object AFP_Submit {
 
     /* Handler for local edits */
 
-    class Edit(afp: AFP_Structure) extends Handler {
+    object Edit extends Handler {
       def save(
         state: State,
         metadata: Model.Metadata,
@@ -561,10 +562,10 @@ object AFP_Submit {
             `abstract` = entry.`abstract`, notifies = entry.notifies, license = entry.license,
             related = entry.related)
 
-        afp.save_entry(updated)
-        afp.save_authors(metadata.authors.values.toList)
+        Metadata.files.save_entry(updated)
+        Metadata.files.save_authors(metadata.authors.values.toList)
 
-        (entry.name, State.load(afp))
+        (entry.name, State.load())
       }
 
       def list(state: State): Model.Submission_List =
@@ -588,7 +589,7 @@ object AFP_Submit {
 
     /* Adapter to existing submission system */
 
-    class Adapter(submission_dir: Path, afp: AFP_Structure) extends Handler {
+    class Adapter(submission_dir: Path) extends Handler {
       private val up: Path = submission_dir + Path.basic("up")
       private def up(id: ID): Path = up + Path.basic(id)
       private def down(id: ID): Path = submission_dir + Path.basic("down") + Path.basic(id)
@@ -635,21 +636,23 @@ object AFP_Submit {
         file_extension: String
       ): (ID, State) = {
         val id = ID(Date.now())
-        val dir = up(id)
-        dir.file.mkdirs()
+        val base_dir = up(id)
+        base_dir.file.mkdirs()
 
-        val structure = AFP_Structure(base_dir = dir)
-        structure.save_authors(metadata.authors.values.toList.sortBy(_.id))
-        metadata.entries.foreach(structure.save_entry)
+        val metadata_files = Metadata.Files(base_dir = base_dir)
+        metadata_files.save_authors(metadata.authors.values.toList.sortBy(_.id))
+        metadata.entries.foreach(metadata_files.save_entry)
 
-        val archive_file = dir + Path.basic(archive_name + file_extension)
+        val archive_file = base_dir + Path.basic(archive_name + file_extension)
         Bytes.write(archive_file, archive)
 
+        val files =
+          metadata_files.authors_toml :: metadata.entries.map(_.name).map(metadata_files.entry_toml)
         val patches =
           for {
-            file <- structure.authors_file :: metadata.entries.map(_.name).map(structure.entry_file)
-            relative = File.the_relative_path(structure.base_dir, file)
-          } yield Isabelle_System.make_patch(afp.base_dir, relative, file)
+            file <- files
+            relative = File.the_relative_path(base_dir, file)
+          } yield Isabelle_System.make_patch(base_dir, relative, file)
         File.write(patch_file(id), cat_lines(patches))
 
         val info =
@@ -669,15 +672,15 @@ object AFP_Submit {
             val id = ID(date)
             val day = date.rep.toLocalDate
             read_status(id).map(
-              Model.Overview(id, day, AFP_Structure(base_dir = up(id)).entries_unchecked.head, _))
+              Model.Overview(id, day, Metadata.Files(base_dir = up(id)).entries.head, _))
           })
 
       def get(id: ID, state: State): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
-          val structure = AFP_Structure(base_dir = up(id))
-          val authors = structure.load_authors
-          val entries = structure.entries_unchecked.map(
-            structure.load_entry(_, authors, state.topics, state.licenses, state.releases))
+          val metadata_files = Metadata.Files(base_dir = up(id))
+          val authors = metadata_files.load_authors()
+          val entries = metadata_files.entries.map(
+            metadata_files.load_entry(_, authors, state.topics, state.licenses, state.releases))
 
           val log_file = down(id) + Path.basic("isabelle.log")
           val log = if (log_file.file.exists) Some(File.read(log_file)) else None
@@ -777,6 +780,7 @@ object AFP_Submit {
     private val NOTIFY = Params.key("notify")
     private val ORCID = Params.key("orcid")
     private val RELATED = Params.key("related")
+    private val CREATION = Params.key("creation")
     private val STATUS = Params.key("status")
     private val TITLE = Params.key("title")
     private val TOPIC = Params.key("topic")
@@ -887,7 +891,10 @@ object AFP_Submit {
           par(List(fieldlabel(key + NOTIFY, "Contact"),
             list(Params.indexed(key + NOTIFY, entry.notifies, render_affil)))),
           par(List(fieldlabel(key + RELATED, "Related Publications"),
-            list(Params.indexed(key + RELATED, entry.related, render_related))))))
+            list(Params.indexed(key + RELATED, entry.related, render_related)))),
+          par(fieldlabel(key + CREATION, "Generative AI use") ::
+            hidden(key + CREATION, entry.creation_note) ::
+            text(entry.creation_note))))
 
       def render_new_author(key: Params.Key, author: Author): XML.Elem =
         par(List(
@@ -989,6 +996,14 @@ object AFP_Submit {
             explanation(key + ABSTRACT,
               "Note: You can use HTML or MathJax (not LaTeX!) to format your abstract.") ::
             render_error(key + ABSTRACT, entry.`abstract`)) ::
+          par(List(
+            fieldlabel(key + CREATION, "Use of generative AI"),
+            placeholder(
+              "Describe how generative AI was used in creating this formalization. " +
+              "Leave empty if generative AI played no significant role.")(
+              textarea(key + CREATION, entry.creation_note) +
+                ("rows" -> "2") +
+                ("cols" -> "70")))) ::
           fieldset(legend("Authors") ::
             Params.indexed(key + AUTHOR, entry.affils.v, render_affil) :::
             selection(key + AUTHOR,
@@ -1308,7 +1323,8 @@ object AFP_Submit {
           notifies = Val.ok(notifies),
           related = related,
           related_kind = Model.Related.from_string(params(key + RELATED + KIND)),
-          related_input = Val.ok(params(key + RELATED + INPUT)))
+          related_input = Val.ok(params(key + RELATED + INPUT)),
+          creation_note = params(key + CREATION))
 
       for {
         (new_author_ids, all_authors) <-
@@ -1398,14 +1414,9 @@ object AFP_Submit {
   /* server */
 
   object State {
-    def load(afp: AFP_Structure): State = {
-      val authors = afp.load_authors
-      val topics = afp.load_topics
-      val licenses = afp.load_licenses
-      val releases = afp.load_releases
-      val entries = afp.load_entries(authors, topics, licenses, releases)
-
-      State(authors, topics, licenses, releases, entries)
+    def load(): State = {
+      val afp = AFP_Structure.load()
+      State(afp.authors, afp.topics, afp.licenses, afp.releases, afp.entries)
     }
   }
 
@@ -1423,16 +1434,15 @@ object AFP_Submit {
   class Server(
     paths: Web_App.Paths,
     handler: Handler,
-    afp: AFP_Structure = AFP_Structure(),
     mode: Mode.Value = Mode.SUBMISSION,
     devel: Boolean = false,
     verbose: Boolean = false,
     progress: Progress = new Progress,
     port: Int = 0
   ) extends Web_App.Server[Model.T](paths, port, verbose, progress) {
-    private var _state: State = State.load(afp)
+    private var _state: State = State.load()
 
-    val repo = Mercurial.the_repository(afp.base_dir)
+    val repo = Mercurial.repository(AFP.BASE)
 
     val view = new View(paths, mode)
 
@@ -1606,7 +1616,7 @@ object AFP_Submit {
           val updated = entry.update_repo(repo)
           if (updated) {
             progress.echo_if(verbose, "Updating server data...")
-            _state = State.load(afp)
+            _state = State.load()
             progress.echo("Updated repo to " + repo.id())
           }
         }
@@ -1627,7 +1637,7 @@ object AFP_Submit {
         archive <- handler.get_archive(id)
       } yield archive
 
-    def style_sheet: Option[Path] = Some(afp.base_dir + Path.make(List("tools", "main.css")))
+    def style_sheet: Option[Path] = Some(AFP.BASE + Path.make(List("tools", "main.css")))
 
     val error_model = Model.Invalid
 
@@ -1701,16 +1711,14 @@ Usage: isabelle afp_submit [OPTIONS] DIR
           case _ => getopts.usage()
         }
 
-      val afp = AFP_Structure()
-
       val progress = new Console_Progress(verbose = verbose)
 
-      val handler = Handler.Adapter(dir, afp)
+      val handler = Handler.Adapter(dir)
 
       val paths = Web_App.Paths(Url(frontend + ":" + port), backend_path, serve_frontend = devel,
         landing = Page.SUBMIT)
-      val server = new Server(paths, handler, afp = afp, mode = Mode.SUBMISSION, devel = devel,
-        verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths, handler, mode = Mode.SUBMISSION, devel = devel, verbose =
+        verbose, progress = progress, port = port)
 
       server.run()
     })
@@ -1735,16 +1743,12 @@ Usage: isabelle afp_edit_metadata [OPTIONS]
 
       if (getopts(args).nonEmpty) getopts.usage()
 
-      val afp = AFP_Structure()
-
       val progress = new Console_Progress(verbose = verbose)
-
-      val handler = Handler.Edit(afp)
 
       val paths = Web_App.Paths(Url("http://localhost:" + port), Path.current,
         serve_frontend = true, landing = Page.SUBMISSIONS)
-      val server = new Server(paths, handler, afp = afp, mode = Mode.EDIT, devel = true,
-        verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths, Handler.Edit, mode = Mode.EDIT, devel = true, verbose = verbose,
+        progress = progress, port = port)
 
       server.run()
     })

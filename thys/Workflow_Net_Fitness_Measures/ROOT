@@ -1,0 +1,19 @@
+chapter AFP
+session "Workflow_Net_Fitness_Measures" = "HOL-Library" +
+    description \<open>Workflow_Net_Fitness_Measures: Attributes of trace fitness and causal footprint fitness\<close>
+  options [timeout = 300]
+  theories
+    WorkflowNets
+
+    MeasuresProperties
+
+    TraceFitness
+
+    Counterexample
+    CausalFootprintFitness
+
+    DefinitionCorrectness
+
+  document_files
+    "root.tex"
+    "root.bib"

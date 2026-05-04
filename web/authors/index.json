@@ -208,6 +208,14 @@
   "name": "Arno Wilhelm-Weidner"
  },
  {
+  "link": "../authors/ramos/",
+  "name": "Arthur Freitas Ramos"
+ },
+ {
+  "link": "../authors/ahmeda/",
+  "name": "Asad Ahmed"
+ },
+ {
   "link": "../authors/from/",
   "name": "Asta Halkjær From"
  },
@@ -262,6 +270,10 @@
  {
   "link": "../authors/bisping/",
   "name": "Benjamin Bisping"
+ },
+ {
+  "link": "../authors/kaminski/",
+  "name": "Benjamin Lucien Kaminski"
  },
  {
   "link": "../authors/porter/",
@@ -484,6 +496,10 @@
   "name": "Daniel Schoepe"
  },
  {
+  "link": "../authors/shea/",
+  "name": "Daniel Shea"
+ },
+ {
   "link": "../authors/somogyi/",
   "name": "Dániel Somogyi"
  },
@@ -504,6 +520,10 @@
   "name": "Daniela Kaufmann"
  },
  {
+  "link": "../authors/sobrinho/",
+  "name": "Daniele Nantes Sobrinho"
+ },
+ {
   "link": "../authors/petrovic/",
   "name": "Danijela Petrovic"
  },
@@ -514,6 +534,10 @@
  {
   "link": "../authors/aspinall/",
   "name": "David Aspinall"
+ },
+ {
+  "link": "../authors/hulak/",
+  "name": "David Barros Hulak"
  },
  {
   "link": "../authors/butler/",
@@ -812,6 +836,10 @@
   "name": "Gudmund Grov"
  },
  {
+  "link": "../authors/brandao/",
+  "name": "Guilherme Borges Brandão"
+ },
+ {
   "link": "../authors/murao/",
   "name": "H. Murao"
  },
@@ -858,6 +886,10 @@
  {
   "link": "../authors/sudbrock/",
   "name": "Henning Sudbrock"
+ },
+ {
+  "link": "../authors/urbat/",
+  "name": "Henning Urbat"
  },
  {
   "link": "../authors/debrat/",
@@ -1184,12 +1216,20 @@
   "name": "Katherine Kosaian"
  },
  {
+  "link": "../authors/batz/",
+  "name": "Kevin Batz"
+ },
+ {
   "link": "../authors/kappelmann/",
   "name": "Kevin Kappelmann"
  },
  {
   "link": "../authors/leek/",
   "name": "Kevin Lee"
+ },
+ {
+  "link": "../authors/dock/",
+  "name": "Kim, Yong-Dock"
  },
  {
   "link": "../authors/peters/",
@@ -1280,6 +1320,10 @@
   "name": "Louis Cheung"
  },
  {
+  "link": "../authors/kehrer/",
+  "name": "Lucas Kehrer"
+ },
+ {
   "link": "../authors/henrio/",
   "name": "Ludovic Henrio"
  },
@@ -1346,6 +1390,10 @@
  {
   "link": "../authors/spichkova/",
   "name": "Maria Spichkova"
+ },
+ {
+  "link": "../authors/fernandezm/",
+  "name": "Maribel Fernández"
  },
  {
   "link": "../authors/cousin/",
@@ -1460,6 +1508,10 @@
   "name": "Matthias Loibl"
  },
  {
+  "link": "../authors/rincion/",
+  "name": "Mauricio Ayala-Rinción"
+ },
+ {
   "link": "../authors/rincon/",
   "name": "Mauricio Ayala-Rincón"
  },
@@ -1558,6 +1610,10 @@
  {
   "link": "../authors/abdulaziz/",
   "name": "Mohammad Abdulaziz"
+ },
+ {
+  "link": "../authors/manke/",
+  "name": "Moritz Manke"
  },
  {
   "link": "../authors/roos/",
@@ -1826,6 +1882,10 @@
  {
   "link": "../authors/overbeek/",
   "name": "Roy Overbeek"
+ },
+ {
+  "link": "../authors/queiroz/",
+  "name": "Ruy Jose Guerra Barretto de Queiroz"
  },
  {
   "link": "../authors/sefidgar/",
@@ -2126,6 +2186,10 @@
  {
   "link": "../authors/murray/",
   "name": "Toby Murray"
+ },
+ {
+  "link": "../authors/schmid/",
+  "name": "Todd Schmid"
  },
  {
   "link": "../authors/demeulemeester/",

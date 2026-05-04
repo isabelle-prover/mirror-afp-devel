@@ -1,6 +1,6 @@
 /* Author: Fabian Huch, TU Muenchen
 
-AFP Metadata file structure with save and load operations.
+General AFP structure.
  */
 package afp
 
@@ -9,109 +9,42 @@ import scala.language.unsafeNulls
 import isabelle.*
 
 
-class AFP_Structure private(options: Options, val base_dir: Path) {
-  /* files */
+object AFP_Structure {
+  val thys_dir = AFP.main_dir()
+  val site_dir = AFP.BASE + Path.explode("admin/site")
 
-  val metadata_dir = base_dir + Path.basic("metadata")
-  val thys_dir = AFP.main_dir(base_dir)
+  def entry_dir(name: String): Path = thys_dir + Path.basic(name)
+  def entry_sessions(name: String): List[Sessions.Session_Entry] =
+    Sessions.parse_root_entries(entry_dir(name) + Sessions.ROOT)
 
-  def entry_thy_dir(name: Metadata.Entry.Name): Path = thys_dir + Path.basic(name)
+  class Entry private[AFP_Structure](
+    val name: String,
+    val metadata: Metadata.Entry,
+    val sessions: List[Sessions.Info],
+  ) {
+    override def toString: String = name
 
-  val authors_file = metadata_dir + Path.basic("authors.toml")
-  val releases_file = metadata_dir + Path.basic("releases.toml")
-  val licenses_file = metadata_dir + Path.basic("licenses.toml")
-  val topics_file = metadata_dir + Path.basic("topics.toml")
+    def entry_dir: Path = AFP_Structure.entry_dir(name)
+    def is_proper: Boolean = !metadata.statistics_ignore
 
-  val entries_dir = metadata_dir + Path.basic("entries")
-
-  def entry_file(name: Metadata.Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
-
-  val site_dir = base_dir + Path.explode("admin/site")
-
-
-  /* load */
-
-  private def load[A](file: Path, parser: isabelle.TOML.Table => A): A = {
-    val content = File.read(file)
-    val toml =
-      try { TOML.parse(content) }
-      catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
-    parser(toml)
+    override def hashCode(): Int = name.hashCode
+    override def equals(that: Any): Boolean =
+      that match {
+        case other: Entry => other.name == name
+        case _ => false
+      }
   }
 
-  def load_authors: Metadata.Authors =
-    Metadata.Authors(load(authors_file, Metadata.TOML.to_authors))
+  def roots_entries: List[String] = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
 
-  def load_releases: Metadata.Releases =
-    Metadata.Releases(load(releases_file, Metadata.TOML.to_releases))
+  def sessions(options: Options = Options.init()): Sessions.Structure =
+    Sessions.load_structure(options, select_dirs = List(thys_dir))
 
-  def load_licenses: Metadata.Licenses =
-    Metadata.Licenses(load(licenses_file, Metadata.TOML.to_licenses))
-
-  def load_topics: Metadata.Topics =
-    Metadata.Topics(load(topics_file, Metadata.TOML.to_topics))
-
-  def load_entry(
-    name: Metadata.Entry.Name,
-    authors: Metadata.Authors,
-    topics: Metadata.Topics,
-    licenses: Metadata.Licenses,
-    releases: Metadata.Releases
-  ): Metadata.Entry = {
-    val entry_releases = releases.getOrElse(name, Nil)
-    load(entry_file(name), toml =>
-      Metadata.TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
-  }
-
-  def load_entries(
-    authors: Metadata.Authors = load_authors,
-    topics: Metadata.Topics = load_topics,
-    licenses: Metadata.Licenses = load_licenses,
-    releases: Metadata.Releases = load_releases
-  ): Metadata.Entries =
-    Metadata.Entries(entries.map(name => load_entry(name, authors, topics, licenses, releases)))
-
-
-  /* save */
-
-  private def save(file: Path, content: isabelle.TOML.Table): Unit = {
-    file.dir.file.mkdirs()
-    File.write(file, TOML.Format(content))
-  }
-
-  def save_authors(authors: List[Metadata.Author]): Unit =
-    save(authors_file, Metadata.TOML.from_authors(authors))
-
-  def save_releases(releases: List[Metadata.Release]): Unit =
-    save(releases_file, Metadata.TOML.from_releases(releases))
-
-  def save_topics(root_topics: List[Metadata.Topic]): Unit =
-    save(topics_file, Metadata.TOML.from_topics(root_topics))
-
-  def save_licenses(licenses: List[Metadata.License]): Unit =
-    save(licenses_file, Metadata.TOML.from_licenses(licenses))
-
-  def save_entry(entry: Metadata.Entry): Unit =
-    save(entry_file(entry.name), Metadata.TOML.from_entry(entry))
-
-
-  /* sessions */
-
-  def example_entry: Metadata.Entry.Name = "Example-Submission"
-
-  def entries_unchecked: List[Metadata.Entry.Name] = {
-    val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
-    File.read_dir(entries_dir).map {
-      case Entry(name) => name
-      case f => error("Unrecognized file in metadata: " + f)
-    }
-  }
-
-  def entries: List[Metadata.Entry.Name] = {
-    val session_entries = Sessions.parse_roots(thys_dir + Sessions.ROOTS)
+  def entry_names: List[String] = {
+    val session_entries = roots_entries
 
     val session_set = session_entries.toSet
-    val metadata_set = entries_unchecked.toSet
+    val metadata_set = Metadata.files.entries.toSet
 
     if (session_set != metadata_set) {
       val inter = session_set.intersect(metadata_set)
@@ -125,18 +58,64 @@ class AFP_Structure private(options: Options, val base_dir: Path) {
     } else session_entries
   }
 
-  def sessions_structure: Sessions.Structure =
-    Sessions.load_structure(options, select_dirs = List(thys_dir))
 
-  def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
-    Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
+  /* cumulative information */
 
-  def hg_id: String =
-    if (Mercurial.Hg_Sync.ok(base_dir)) File.read(base_dir + Mercurial.Hg_Sync.PATH_ID)
-    else Mercurial.repository(base_dir).id()
-}
+  def load(): AFP = {
+    val authors = Metadata.files.load_authors()
+    val topics = Metadata.files.load_topics()
+    val licenses = Metadata.files.load_licenses()
+    val releases = Metadata.files.load_releases()
+    val entries =
+      Metadata.Entries(entry_names.map(name =>
+        Metadata.files.load_entry(name, authors, topics, licenses, releases)))
 
-object AFP_Structure {
-  def apply(options: Options = Options.defaults, base_dir: Path = AFP.BASE): AFP_Structure =
-    new AFP_Structure(options, base_dir.absolute)
+    val sessions_structure = sessions()
+
+    def load_entry(name: String): Entry = {
+      val sessions = for (session <- entry_sessions(name)) yield sessions_structure(session.name)
+      Entry(name, entries(name), sessions)
+    }
+
+    val entry_list = entry_names.map(load_entry)
+
+    val session_entry = entry_list.flatMap(entry => entry.sessions.map(_.name -> entry)).toMap
+    def entry_deps(entry: Entry): List[Entry] =
+      (for {
+        session <- entry.sessions
+        dep <- session.deps
+        dep_entry <- session_entry.get(dep)
+        if dep_entry != entry
+      } yield dep_entry).distinct
+
+    val uses_graph =
+      Graph.make(
+        entry_list.map(entry => ((entry.name, entry), entry_deps(entry).map(_.name))),
+        converse = true)
+
+    new AFP(authors, topics, licenses, releases, entries, entry_list, uses_graph,
+      sessions_structure)
+  }
+
+  class AFP private[AFP_Structure](
+    val authors: Metadata.Authors,
+    val topics: Metadata.Topics,
+    val licenses: Metadata.Licenses,
+    val releases: Metadata.Releases,
+    val entries: Metadata.Entries,
+    val entry_list: List[Entry],
+    val uses_graph: Graph[String, Entry],
+    val sessions_structure: Sessions.Structure
+  ) {
+    override def toString: String = "AFP(" + AFP.BASE.absolute + ")"
+
+    def root_topics: List[Metadata.Topic] = Metadata.Topics.root_topics(topics)
+
+    def the_entry(name: String): Entry =
+      entry_list.find(_.name == name) getOrElse error("No such entry: " + name)
+
+    def sessions: List[Sessions.Info] = entry_list.flatMap(_.sessions)
+    def perhaps_session_entry(session: String): Option[Entry] =
+      entry_list.find(_.sessions.exists(_.name == session))
+  }
 }

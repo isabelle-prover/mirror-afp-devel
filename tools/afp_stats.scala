@@ -31,10 +31,10 @@ object AFP_Stats {
 
   val theorem_commands = List("theorem", "lemma", "corollary", "proposition", "schematic_goal")
 
-  def entry_stats(deps: Sessions.Deps, afp: AFP_Structure, entry: Metadata.Entry): Entry = {
+  def entry_stats(deps: Sessions.Deps, entry: Metadata.Entry): Entry = {
     val (loc, thms) =
       (for {
-        session <- afp.entry_sessions(entry.name)
+        session <- AFP_Structure.entry_sessions(entry.name)
         node <- deps(session.name).proper_session_theories
         lines = split_lines(File.read(node.path)).map(_.trim)
       } yield {
@@ -46,7 +46,6 @@ object AFP_Stats {
 
   def statistics(
     deps: Sessions.Deps,
-    afp: AFP_Structure,
     entries: List[Metadata.Entry]
   ): Statistics = {
     val first_year = entries.flatMap(_.releases).map(_.date.getYear).min
@@ -62,7 +61,7 @@ object AFP_Stats {
     val all_years =
       for (year <- years(entries.map(_.date.getYear).max)) yield {
         val entries =
-          for (entry <- by_year(year).sortBy(_.date)) yield entry_stats(deps, afp, entry)
+          for (entry <- by_year(year).sortBy(_.date)) yield entry_stats(deps, entry)
         Year(year, new_authors(year), entries)
       }
 

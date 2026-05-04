@@ -43,16 +43,8 @@ object AFP_Build_CI {
     options: Options,
     val store: Store,
     val mail_system: Option[Build_CI.Mail_System],
-    val afp: AFP_Structure,
   ) {
-    lazy val entries = afp.load_entries()
-    lazy val entry_sessions: Map[Metadata.Entry.Name, List[String]] =
-      entries.values.map(entry => entry.name -> afp.entry_sessions(entry.name).map(_.name)).toMap
-
-    def session_entry(session_name: String): Option[Metadata.Entry.Name] = {
-      val entry = entry_sessions.find { case (_, sessions) => sessions.contains(session_name) }
-      entry.map { case (name, _) => name }
-    }
+    lazy val afp = AFP_Structure.load()
 
     val isabelle_path = Path.explode("$ISABELLE_HOME")
     val isabelle_id =
@@ -69,8 +61,8 @@ object AFP_Build_CI {
   }
 
   object Context {
-    def apply(options: Options, afp: AFP_Structure = AFP_Structure()): Context =
-      new Context(options, Store(options), Build_CI.Mail_System.try_open(options), afp)
+    def apply(options: Options): Context =
+      new Context(options, Store(options), Build_CI.Mail_System.try_open(options))
   }
 
 
@@ -93,7 +85,7 @@ object AFP_Build_CI {
         session <- results.sessions
         result = results(session)
         if relevant_failure(session, result)
-        entry <- context.session_entry(session)
+        entry <- context.afp.perhaps_session_entry(session)
       } {
         val subject = "Build of AFP entry " + entry + " failed"
         val content = """
@@ -105,7 +97,7 @@ The following information might help you with resolving the problem.
 
 """ + if_proper(url, "Build log: " + url.get + "\n") + """
 Isabelle ID:  """ + context.isabelle_id + """
-AFP ID:       """ + context.afp.hg_id + """
+AFP ID:       """ + AFP_System.hg_id + """
 Timeout?      """ + result.timeout + """
 Exit code:    """ + result.rc + """
 
@@ -117,7 +109,7 @@ Last 50 lines from stderr (if available):
 
 """ + result.err_lines.takeRight(50).mkString("\n") + "\n"
 
-        val recipients = context.entries.get(entry).map(_.notifies).getOrElse(Nil)
+        val recipients = entry.metadata.notifies
         if (recipients.isEmpty) progress.echo("Entry " + entry + ": no maintainers specified")
         else {
           val to = recipients.map(mail => Mail.address(mail.address))
@@ -134,7 +126,7 @@ Last 50 lines from stderr (if available):
   ): Unit = {
     val entry_status =
       for {
-        (entry, sessions) <- results.sessions.groupBy(context.session_entry).toList
+        (entry, sessions) <- results.sessions.groupBy(context.afp.perhaps_session_entry).toList
         entry <- entry
         session_status = sessions.map(Status.from_results(results, _))
       } yield JSON.Object("entry" -> entry, "status" -> Status.merge(session_status.toList).str)
@@ -144,7 +136,7 @@ Last 50 lines from stderr (if available):
         "entries" -> entry_status,
         "build_data" -> (JSON.Object(
           "isabelle_id" -> context.isabelle_id,
-          "afp_id" -> context.afp.hg_id,
+          "afp_id" -> AFP_System.hg_id,
           "time" -> Date.Format.default(progress.start)) ++
           url.map(url => "url" -> url.toString)))
 
@@ -156,17 +148,16 @@ Last 50 lines from stderr (if available):
 
       val output_dir = dir + Path.basic("output")
 
-      AFP_Site_Gen.afp_site_gen(output_dir, afp = context.afp, status_file = Some(status_file),
-        progress = progress)
+      AFP_Site_Gen.afp_site_gen(output_dir, status_file = Some(status_file), progress = progress)
 
       val release_dir = dir + Path.basic("release")
       Isabelle_System.make_directory(release_dir)
 
       progress.echo("Packing tars...")
-      for ((name, _) <- context.entries) {
-        val archive = release_dir + Path.basic("afp-" + name + "-current.tar.gz")
-        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(name),
-          dir = context.afp.thys_dir).check
+      for (entry <- context.afp.entry_list) {
+        val archive = release_dir + Path.basic("afp-" + entry.name + "-current.tar.gz")
+        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(entry.name),
+          dir = AFP_Structure.thys_dir).check
       }
 
       using(context.open_ssh()) { ssh =>
@@ -265,8 +256,7 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val dirs = AFP.main_dirs(Some(AFP.BASE))
-          val afp = AFP_Structure(options)
-          val database = "afp-" + afp.hg_id
+          val database = "afp-" + AFP_System.hg_id
           val find_facts_options =
             List(
               Options.Spec.eq("find_facts_database_name", database),

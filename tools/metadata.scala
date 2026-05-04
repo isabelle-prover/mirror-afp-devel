@@ -15,6 +15,8 @@ import scala.collection.immutable.ListMap
 
 
 object Metadata {
+  /** content **/
+
   /* affiliations */
 
   sealed trait Affiliation { def author: Author.ID }
@@ -185,6 +187,7 @@ object Metadata {
     note: String,
     contributors: List[Affiliation] = Nil,
     change_history: Change_History = Map.empty,
+    creation_note: String,
     extra: Extra = Map.empty,
     releases: List[Release] = Nil,
     statistics_ignore: Boolean = false,
@@ -199,7 +202,7 @@ object Metadata {
   }
 
 
-  /* toml */
+  /** TOML encoding **/
 
   private def by_id[A](elems: Map[String, A], id: String): A =
     elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
@@ -412,6 +415,7 @@ object Metadata {
         "license" -> String(entry.license.id),
         "note" -> String(entry.note),
         "history" -> from_change_history(entry.change_history),
+        "creation_note" -> String(entry.creation_note),
         "extra" -> Table(entry.extra.view.mapValues(String(_)).toList),
         "related" -> from_related(entry.related)) ++
         (if (entry.statistics_ignore) Table("statistics_ignore" -> Boolean(true)) else Table())
@@ -437,14 +441,99 @@ object Metadata {
         note = entry.string("note").rep,
         contributors = to_affiliations(entry.table("contributors"), authors),
         change_history = to_change_history(entry.table("history")),
+        creation_note = 
+          if_proper(entry.domain.contains("creation_note"), entry.string("creation_note").rep),
         extra = entry.table("extra").string.values.map((k, v) => (k, v.rep)).toMap,
         releases = releases,
-        statistics_ignore = entry.boolean.get("statistics_ignore").map(_.rep).getOrElse(false),
+        statistics_ignore = entry.boolean.get("statistics_ignore").exists(_.rep),
         related = to_related(entry.table("related")))
   }
 
 
-  /* RDF export */
+  /** files **/
+
+  val files: Files = Files()
+
+  case class Files(base_dir: Path = AFP.BASE) {
+    val metadata_dir = base_dir + Path.basic("metadata")
+
+    val authors_toml = metadata_dir + Path.basic("authors.toml")
+    val releases_toml = metadata_dir + Path.basic("releases.toml")
+    val licenses_toml = metadata_dir + Path.basic("licenses.toml")
+    val topics_toml = metadata_dir + Path.basic("topics.toml")
+
+    val entries_dir = metadata_dir + Path.basic("entries")
+
+    def entry_toml(name: Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
+
+
+    /* load */
+
+    private def load[A](file: Path, parser: isabelle.TOML.Table => A): A = {
+      val content = File.read(file)
+      val toml =
+        try { isabelle.TOML.parse(content) }
+        catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
+      parser(toml)
+    }
+
+    def load_authors(): Authors =
+      Authors(load(authors_toml, TOML.to_authors))
+
+    def load_releases(): Releases =
+      Releases(load(releases_toml, TOML.to_releases))
+
+    def load_licenses(): Licenses =
+      Licenses(load(licenses_toml, TOML.to_licenses))
+
+    def load_topics(): Topics =
+      Topics(load(topics_toml, TOML.to_topics))
+
+    def load_entry(
+      name: Entry.Name,
+      authors: Authors,
+      topics: Topics,
+      licenses: Licenses,
+      releases: Releases
+    ): Entry = {
+      val entry_releases = releases.getOrElse(name, Nil)
+      load(entry_toml(name), toml =>
+        TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
+    }
+
+    def entries: List[Entry.Name] = {
+      val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
+      File.read_dir(entries_dir).map {
+        case Entry(name) => name
+        case f => error("Unrecognized file in metadata: " + f)
+      }
+    }
+
+    /* save */
+
+    private def save(file: Path, content: isabelle.TOML.Table): Unit = {
+      file.dir.file.mkdirs()
+      File.write(file, isabelle.TOML.Format(content))
+    }
+
+    def save_authors(authors: List[Author]): Unit =
+      save(authors_toml, TOML.from_authors(authors))
+
+    def save_releases(releases: List[Release]): Unit =
+      save(releases_toml, TOML.from_releases(releases))
+
+    def save_topics(root_topics: List[Topic]): Unit =
+      save(topics_toml, TOML.from_topics(root_topics))
+
+    def save_licenses(licenses: List[License]): Unit =
+      save(licenses_toml, TOML.from_licenses(licenses))
+
+    def save_entry(entry: Entry): Unit =
+      save(entry_toml(entry.name), TOML.from_entry(entry))
+  }
+
+
+  /** RDF export **/
 
   object RDF {
     def from_entry(entry: Entry, authors: Authors): Properties.T = {

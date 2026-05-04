@@ -11,6 +11,7 @@ sources = \
   tools/afp_stats.scala \
   tools/afp_submit.scala \
   tools/afp_structure.scala \
+  tools/afp_system.scala \
   tools/afp_tool.scala \
   tools/hugo.scala \
   tools/metadata.scala \
