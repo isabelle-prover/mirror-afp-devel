@@ -186,6 +186,7 @@ object Metadata {
     note: String,
     contributors: List[Affiliation] = Nil,
     change_history: Change_History = Map.empty,
+    creation_note: String,
     extra: Extra = Map.empty,
     releases: List[Release] = Nil,
     statistics_ignore: Boolean = false,
@@ -413,6 +414,7 @@ object Metadata {
         "license" -> String(entry.license.id),
         "note" -> String(entry.note),
         "history" -> from_change_history(entry.change_history),
+        "creation_note" -> String(entry.creation_note),
         "extra" -> Table(entry.extra.view.mapValues(String(_)).toList),
         "related" -> from_related(entry.related)) ++
         (if (entry.statistics_ignore) Table("statistics_ignore" -> Boolean(true)) else Table())
@@ -438,6 +440,8 @@ object Metadata {
         note = entry.string("note").rep,
         contributors = to_affiliations(entry.table("contributors"), authors),
         change_history = to_change_history(entry.table("history")),
+        creation_note = 
+          if_proper(entry.domain.contains("creation_note"), entry.string("creation_note").rep),
         extra = entry.table("extra").string.values.map((k, v) => (k, v.rep)).toMap,
         releases = releases,
         statistics_ignore = entry.boolean.get("statistics_ignore").exists(_.rep),

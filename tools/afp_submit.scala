@@ -72,7 +72,8 @@ object AFP_Submit {
       `abstract`: Val[String] = Val.ok(""),
       related: List[Reference] = Nil,
       related_kind: Option[Related.Value] = None,
-      related_input: Val[String] = Val.ok("")
+      related_input: Val[String] = Val.ok(""),
+      creation_note: String = ""
     ) {
       def used_affils: Set[Affiliation] = (affils.v ++ notifies.v).toSet
       def used_authors: Set[Author.ID] = used_affils.map(_.author)
@@ -130,7 +131,7 @@ object AFP_Submit {
       def entry: Entry =
         Entry(name = name.v, title = title.v, authors = affils.v, date = LocalDate.now(),
           topics = topics.v, `abstract` = `abstract`.v.trim, notifies = notifies.v,
-          license = license, note = "", related = related)
+          license = license, note = "", related = related, creation_note = creation_note)
     }
 
     object Create {
@@ -781,6 +782,7 @@ object AFP_Submit {
     private val NOTIFY = Params.key("notify")
     private val ORCID = Params.key("orcid")
     private val RELATED = Params.key("related")
+    private val CREATION = Params.key("creation")
     private val STATUS = Params.key("status")
     private val TITLE = Params.key("title")
     private val TOPIC = Params.key("topic")
@@ -891,7 +893,10 @@ object AFP_Submit {
           par(List(fieldlabel(key + NOTIFY, "Contact"),
             list(Params.indexed(key + NOTIFY, entry.notifies, render_affil)))),
           par(List(fieldlabel(key + RELATED, "Related Publications"),
-            list(Params.indexed(key + RELATED, entry.related, render_related))))))
+            list(Params.indexed(key + RELATED, entry.related, render_related)))),
+          par(fieldlabel(key + CREATION, "Generative AI use") ::
+            hidden(key + CREATION, entry.creation_note) ::
+            text(entry.creation_note))))
 
       def render_new_author(key: Params.Key, author: Author): XML.Elem =
         par(List(
@@ -993,6 +998,14 @@ object AFP_Submit {
             explanation(key + ABSTRACT,
               "Note: You can use HTML or MathJax (not LaTeX!) to format your abstract.") ::
             render_error(key + ABSTRACT, entry.`abstract`)) ::
+          par(List(
+            fieldlabel(key + CREATION, "Use of generative AI"),
+            placeholder(
+              "Describe how generative AI was used in creating this formalization. " +
+              "Leave empty if generative AI played no significant role.")(
+              textarea(key + CREATION, entry.creation_note) +
+                ("rows" -> "2") +
+                ("cols" -> "70")))) ::
           fieldset(legend("Authors") ::
             Params.indexed(key + AUTHOR, entry.affils.v, render_affil) :::
             selection(key + AUTHOR,
@@ -1312,7 +1325,8 @@ object AFP_Submit {
           notifies = Val.ok(notifies),
           related = related,
           related_kind = Model.Related.from_string(params(key + RELATED + KIND)),
-          related_input = Val.ok(params(key + RELATED + INPUT)))
+          related_input = Val.ok(params(key + RELATED + INPUT)),
+          creation_note = params(key + CREATION))
 
       for {
         (new_author_ids, all_authors) <-
