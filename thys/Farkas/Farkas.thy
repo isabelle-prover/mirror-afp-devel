@@ -205,8 +205,8 @@ text \<open>We first prove that if the check-function detects a conflict, then
   conflict is detected.\<close>
 
 definition bound_atoms :: "('i, 'a) state \<Rightarrow> 'a atom set" (\<open>\<B>\<^sub>A\<close>) where
-  "bound_atoms s = (\<lambda>(v,x). Geq v x) ` (set_of_map (\<B>\<^sub>l s)) \<union> 
-                   (\<lambda>(v,x). Leq v x) ` (set_of_map (\<B>\<^sub>u s))"
+  "bound_atoms s = (\<lambda>(v,x). Geq v x) ` (Map.graph (\<B>\<^sub>l s)) \<union> 
+                   (\<lambda>(v,x). Leq v x) ` (Map.graph (\<B>\<^sub>u s))"
 
 context PivotUpdateMinVars
 begin
@@ -338,7 +338,7 @@ proof -
       from that have l: "l = ?Geq x\<^sub>i (the (?\<B>\<^sub>l s x\<^sub>i))" by simp
       from 3(8) obtain c where bl': "?\<B>\<^sub>l s x\<^sub>i = Some c" 
         by (cases "?\<B>\<^sub>l s x\<^sub>i", auto simp: bound_compare_defs)
-      hence bl: "(x\<^sub>i, c) \<in> set_of_map (?\<B>\<^sub>l s)" unfolding set_of_map_def by auto
+      hence bl: "(x\<^sub>i, c) \<in> Map.graph (?\<B>\<^sub>l s)" unfolding Map.graph_def by auto
       show "l \<in> \<B>\<^sub>A s" unfolding l bound_atoms_def using bl bl' dir by auto
     qed
 
@@ -366,7 +366,7 @@ proof -
 
       show "set C \<subseteq> \<B>\<^sub>A s"
         unfolding C_def set_append set_map set_filter list.simps using 0 l_Ba dir
-        by (intro Un_least subsetI) (force simp: bound_atoms_def set_of_map_def)+
+        by (intro Un_least subsetI) (force simp: bound_atoms_def Map.graph_def)+
 
       show is_leq: "\<forall>a\<in>set C. is_leq_ns (f (atom_var a) *R nsc_of_atom a) \<and> f (atom_var a) \<noteq> 0"
         using dirn xi_Xj 0 unfolding C_def f_def 
@@ -457,7 +457,7 @@ proof -
   let ?C = "map (\<lambda> a. (f (atom_var a), a)) C"
   have "set C \<subseteq> \<B>\<^sub>A s" using Qs by blast
   also have "\<dots> \<subseteq> snd ` as" using index 
-    unfolding bound_atoms_def index_valid_def set_of_map_def boundsl_def boundsu_def o_def by force
+    unfolding bound_atoms_def index_valid_def Map.graph_def boundsl_def boundsu_def o_def by force
   finally have sub: "snd ` set ?C \<subseteq> snd ` as" by force
   show ?thesis unfolding farkas_coefficients_atoms_tableau_def
     apply (intro exI[of _ p] exI[of _ c] exI[of _ ?C] conjI)

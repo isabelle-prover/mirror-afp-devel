@@ -312,13 +312,13 @@ lemma adjmap_inv_insert[intro]: "graph_inv G \<Longrightarrow> graph_inv (add_ed
   by (auto simp: add_edge_def graph_inv_def split: option.splits)
 
 lemma digraph_abs_insert[simp]: "graph_inv G \<Longrightarrow> digraph_abs (add_edge G u v) = Set.insert (u,v) (digraph_abs G)"
-  by (fastforce simp add: digraph_abs_def set_of_map_def neighb_def add_edge_def split: option.splits if_splits)
+  by (fastforce simp add: digraph_abs_def Map.graph_def neighb_def add_edge_def split: option.splits if_splits)
 
 lemma adjmap_inv_delete[intro]: "graph_inv G \<Longrightarrow> graph_inv (delete_edge G u v)"
   by (auto simp: delete_edge_def graph_inv_def split: option.splits)
 
 lemma digraph_abs_delete[simp]:  "graph_inv G \<Longrightarrow> digraph_abs (delete_edge G u v) = (digraph_abs G) - {(u,v)}"
-  by (fastforce simp add: digraph_abs_def set_of_map_def neighb_def delete_edge_def split: option.splits if_splits)
+  by (fastforce simp add: digraph_abs_def Map.graph_def neighb_def delete_edge_def split: option.splits if_splits)
 
 
 end \<comment> \<open>Properties context\<close>  
