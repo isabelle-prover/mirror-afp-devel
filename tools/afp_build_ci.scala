@@ -95,7 +95,7 @@ The following information might help you with resolving the problem.
 
 """ + if_proper(url, "Build log: " + url.get + "\n") + """
 Isabelle ID:  """ + context.isabelle_id + """
-AFP ID:       """ + AFP_System.hg_id + """
+AFP ID:       """ + AFP.hg_id() + """
 Timeout?      """ + result.timeout + """
 Exit code:    """ + result.rc + """
 
@@ -135,7 +135,7 @@ Last 50 lines from stderr (if available):
         "entries" -> entry_status,
         "build_data" -> (JSON.Object(
           "isabelle_id" -> context.isabelle_id,
-          "afp_id" -> AFP_System.hg_id,
+          "afp_id" -> AFP.hg_id(),
           "time" -> Date.Format.default(progress.start)) ++
           url.map(url => "url" -> url.toString)))
 
@@ -255,7 +255,7 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val dirs = AFP.main_dirs(Some(AFP.BASE))
-          val database = "afp-" + AFP_System.hg_id
+          val database = "afp-" + AFP.hg_id()
           val find_facts_options =
             List(
               Options.Spec.eq("find_facts_database_name", database),
