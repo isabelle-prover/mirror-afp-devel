@@ -46,10 +46,8 @@ object AFP_Build_CI {
   ) {
     lazy val afp = AFP_Structure.load()
 
-    val isabelle_path = Path.explode("$ISABELLE_HOME")
     val isabelle_id =
-      if (Mercurial.Hg_Sync.ok(isabelle_path)) File.read(isabelle_path + Mercurial.Hg_Sync.PATH_ID)
-      else Mercurial.self_repository().id()
+      Mercurial.Hg_Sync.id_directory(Path.ISABELLE_HOME) getOrElse Mercurial.self_repository().id()
 
     def website_dir: Path = Path.explode(options.string("afp_ci_website_dir"))
 
