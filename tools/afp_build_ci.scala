@@ -124,7 +124,8 @@ Last 50 lines from stderr (if available):
         (entry, sessions) <- results.sessions.groupBy(context.afp.perhaps_session_entry).toList
         entry <- entry
         session_status = sessions.map(Status.from_results(results, _))
-      } yield JSON.Object("entry" -> entry, "status" -> Status.merge(session_status.toList).str)
+      } yield
+        JSON.Object("entry" -> entry.name, "status" -> Status.merge(session_status.toList).str)
 
     val status_json =
       JSON.Object(
