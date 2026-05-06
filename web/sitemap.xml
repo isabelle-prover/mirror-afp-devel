@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-04-29T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Aho_Corasick.html</loc>
+    <lastmod>2026-05-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-04-29T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Iteration_Algebra.html</loc>
     <lastmod>2026-04-29T00:00:00+00:00</lastmod>
@@ -3157,6 +3160,8 @@
     <loc>https://isa-afp.org/thys/Aggregation_Algebras/Matrix_Aggregation_Algebras.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Aggregation_Algebras/Semigroups_Big.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Aho_Corasick/Aho_Corasick.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/AI_Planning_Languages_Semantics/Error_Monad_Add.html</loc>
   </url><url>

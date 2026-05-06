@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "This development formalizes the Aho-Corasick multi-pattern string matching algorithm over lists.  The verified executable reference automaton uses the canonical Aho-Corasick state: after reading a text prefix, the state is the longest suffix of that prefix that is also a pattern prefix.  The development also proves a state-only transition theorem, a fold-based scan invariant, and a recursive failure-link transition refining the canonical transition, together with equivalent state-carrying and failure-link search procedures.  The main theorem shows that the search procedure reports exactly the pattern occurrences ending at each text position.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "link": "../entries/Aho_Corasick.html",
+  "shortname": "Aho_Corasick",
+  "title": "Aho-Corasick String Matching",
+  "topic_links": [
+   "../topics/computer-science/algorithms/"
+  ],
+  "topics": [
+   "Computer science/Algorithms"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": " Fixed points are a recurring theme in computer science and are often constructed as limits of suitably seeded fixed point iterations. This entry formalises an instance of the algebra of iterative constructions (AIC) from the paper The Algebra of Iterative Constructions. AIC is a purely algebraic approach to reasoning about fixed point iterations of continuous endomaps on complete lattices. AIC allows derivations of constructive fixed point theorems via equational logic and avoids explicit computations with indices. We demonstrate the applicability of AIC by providing algebraic proofs of several well- and less-well-known fixed point theorems: Among others, we prove the Tarski-Kantorovich principle \u0026mdash; a generalization of the Kleene fixed point theorem \u0026mdash; as well as a fixed point-theoretic generalization of k-induction. We moreover improve upon a recent generalization of the Tarski-Kantorovich principle due to Olszewski for obtaining pre- and postfixed points from lattice-theoretic limit inferiors and limit superiors trough iterating an endomap on an arbitrary seed element: We identify sufficient continuity conditions on the endomaps so that these limits become \\proper fixed points. ",
   "authors": [
    "Kevin Batz",
