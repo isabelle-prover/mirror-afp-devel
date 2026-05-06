@@ -33,9 +33,10 @@ yamada = "yamada_email2"
 
 [history]
 2025-11-05 = "added improved algorithm for pattern completeness and complexity results (revision e2b0c94f7898)"
+2026-05-06 = "added second doi that points to extended journal article on this formalization"
 
 [extra]
 
 [related]
-dois = ["10.4230/LIPIcs.FSCD.2024.27"]
+dois = ["10.4230/LIPIcs.FSCD.2024.27", "10.1016/j.jlamp.2026.101129"]
 pubs = []
