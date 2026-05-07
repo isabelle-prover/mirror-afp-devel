@@ -1,0 +1,26 @@
+chapter AFP
+
+session "Banach_Tarski" (AFP) = "HOL-Analysis" +
+  description \<open>
+    The Banach-Tarski paradox: the closed unit ball in three-dimensional
+    Euclidean space admits a finite paradoxical decomposition under
+    isometries. This is the main submission session; it is checked with
+    complete proof terms and the AFP mandatory lint bundle.
+  \<close>
+  options [timeout = 600]
+  sessions
+    "Free-Groups"
+  theories
+    BT_Prelim
+    Paradoxical_Decomposition
+    Free_Action_Paradox
+    Free_Group_F2
+    F2_Paradox
+    Free_Rotations_SO3
+    Hausdorff_Paradox
+    Sphere_Decomposition
+    Ball_Decomposition
+    Banach_Tarski_Theorem
+  document_files
+    "root.tex"
+    "root.bib"
