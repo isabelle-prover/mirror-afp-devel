@@ -5,8 +5,8 @@ topics = [
 ]
 abstract = """
 We formalise in Isabelle/HOL the classical Banach–Tarski paradox
-for the closed unit ball in three-dimensional Euclidean space. The de
-velopment proves the free-group paradox, the free subgroup of SO(3),
+for the closed unit ball in three-dimensional Euclidean space. The 
+development proves the free-group paradox, the free subgroup of SO(3),
 the Hausdorff paradox away from a countable bad set, the absorption
 arguments for the sphere and the origin, and the final finite-partition
 theorem for the ball.
