@@ -3,12 +3,15 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-05-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Aho_Corasick.html</loc>
-    <lastmod>2026-05-04T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
+    <lastmod>2026-05-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Banach_Tarski.html</loc>
+    <lastmod>2026-05-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Aho_Corasick.html</loc>
     <lastmod>2026-05-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Iteration_Algebra.html</loc>
@@ -4836,6 +4839,26 @@
     <loc>https://isa-afp.org/thys/Banach_Steinhaus/Banach_Steinhaus.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Banach_Steinhaus/Banach_Steinhaus_Missing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Ball_Decomposition.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Banach_Tarski_Theorem.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/BT_Prelim.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/F2_Paradox.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Free_Action_Paradox.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Free_Group_F2.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Free_Rotations_SO3.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Hausdorff_Paradox.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Paradoxical_Decomposition.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Banach_Tarski/Sphere_Decomposition.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/kastermans/</loc>
   </url><url>

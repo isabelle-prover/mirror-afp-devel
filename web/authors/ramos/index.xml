@@ -4,6 +4,13 @@
     <title>Arthur Freitas Ramos</title>
     <link>https://isa-afp.org/authors/ramos/</link>
     <description>AFP entries of Arthur Freitas Ramos</description><item>
+  <title>The Banach–Tarski Paradox in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Banach_Tarski.html</link>
+  <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+  <description>The Banach–Tarski Paradox in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>Aho-Corasick String Matching</title>
   <link>https://isa-afp.org/entries/Aho_Corasick.html</link>
   <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>

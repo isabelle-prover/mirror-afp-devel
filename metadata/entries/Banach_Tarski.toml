@@ -1,0 +1,49 @@
+title = "The Banach–Tarski Paradox in Isabelle/HOL"
+date = 2026-05-07
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+We formalise in Isabelle/HOL the classical Banach–Tarski paradox
+for the closed unit ball in three-dimensional Euclidean space. The de
+velopment proves the free-group paradox, the free subgroup of SO(3),
+the Hausdorff paradox away from a countable bad set, the absorption
+arguments for the sphere and the origin, and the final finite-partition
+theorem for the ball.
+The proof follows the standard route: the paradoxical decompo
+sition of the free group on two generators F2, the existence of a free
+subgroup F2 ≤ SO(3) via the AFP Free-Groups entry, the Hausdorff
+paradox for S2 \\ D where D is a countable set of fixed points, and
+absorption arguments extending the partition to S2, then radially to
+B3\\{0}, and finally to B3 itself. The argument crucially relies on the
+axiom of choice."""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with gpt 5.5 on xhigh was used to help with the proof engineering.
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
