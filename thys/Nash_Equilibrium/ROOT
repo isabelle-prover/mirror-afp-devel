@@ -1,0 +1,11 @@
+chapter AFP
+
+session Nash_Equilibrium = "HOL-Analysis" +
+  options [document = pdf, timeout = 600]
+  theories
+    Nash_Equilibrium
+    Mixed_Nash_Equilibrium
+    Nash_Equilibrium_Examples
+  document_files
+    "root.tex"
+    "root.bib"
