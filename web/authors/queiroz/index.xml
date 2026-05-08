@@ -4,6 +4,13 @@
     <title>Ruy Jose Guerra Barretto de Queiroz</title>
     <link>https://isa-afp.org/authors/queiroz/</link>
     <description>AFP entries of Ruy Jose Guerra Barretto de Queiroz</description><item>
+  <title>Nash Equilibria for Finite Games in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Nash_Equilibrium.html</link>
+  <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+  <description>Nash Equilibria for Finite Games in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
   <title>The Banach–Tarski Paradox in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Banach_Tarski.html</link>
   <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>

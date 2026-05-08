@@ -1,0 +1,53 @@
+title = "Nash Equilibria for Finite Games in Isabelle/HOL"
+date = 2026-05-07
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+This development formalizes Nash equilibria for finite strategic
+form games, following Nash’s equilibrium concept [5, 4]. It gives reusable
+definitions of profiles, unilateral deviations, best responses, dominant
+strategies, and pure Nash equilibria; proves existence for finite ordinal
+potential games [3] and games with dominant strategies; and verifies
+matching pennies as a finite game with no pure Nash equilibrium. It
+also formalizes mixed-strategy profiles for finite games, support lem
+mas for equilibrium strategies, Dirac embeddings of pure profiles, and
+the existence of a mixed Nash equilibrium using Brouwer’s fixed point
+theorem. Worked examples cover the Prisoner’s Dilemma, a coordina
+tion game, matching pennies, and rock-paper-scissors. AI assistance
+was used for proof engineering. The final definitions, statements, and
+proofs are checked by Isabelle."""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with gpt 5.5 on xhigh reasoning was used to help with proof engineering.
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

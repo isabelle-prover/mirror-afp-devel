@@ -8,6 +8,9 @@
     <loc>https://isa-afp.org/</loc>
     <lastmod>2026-05-07T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Nash_Equilibrium.html</loc>
+    <lastmod>2026-05-07T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Banach_Tarski.html</loc>
     <lastmod>2026-05-07T00:00:00+00:00</lastmod>
   </url><url>
@@ -18437,6 +18440,12 @@
     <loc>https://isa-afp.org/thys/Nano_JSON/Nano_JSON_Manual.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Nano_JSON/Nano_JSON_Query.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nash_Equilibrium/Mixed_Nash_Equilibrium.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nash_Equilibrium/Nash_Equilibrium.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Nash_Equilibrium/Nash_Equilibrium_Examples.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Nash_Williams/Nash_Extras.html</loc>
   </url><url>

@@ -4,6 +4,13 @@
     <title>Mathematics/Games and economics</title>
     <link>https://isa-afp.org/topics/mathematics/games-and-economics/</link>
     <description>AFP entries in Games and economics</description><item>
+  <title>Nash Equilibria for Finite Games in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Nash_Equilibrium.html</link>
+  <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+  <description>Nash Equilibria for Finite Games in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
   <title>The Impossibility of Strategyproof Rank Aggregation</title>
   <link>https://isa-afp.org/entries/SWF_Impossibility.html</link>
   <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
