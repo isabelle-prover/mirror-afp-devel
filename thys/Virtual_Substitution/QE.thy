@@ -246,7 +246,7 @@ proof -
     then have "\<forall>n \<in> {x. x > r \<and> poly [:c, b, a:] x = 0}. (nth_default 0 ?l 0) \<le> n"
       using fin set_sorted_list_of_set sorted_sorted_list_of_set
       using  in_set_conv_nth leI not_less0 sorted_nth_mono
-      by (smt not_less_iff_gr_or_eq nth_default_def)
+      by (smt (z3) not_less_iff_gr_or_eq nth_default_def)
     then have no_zer: "\<not>(\<exists>x>r. (x < (nth_default 0 ?l 0) \<and> poly [:c, b, a:] x = 0))"
       using sorted_sorted_list_of_set by auto
     then have fa: "\<And>y. y > r \<and> y < (nth_default 0 ?l 0) \<Longrightarrow> poly [:c, b, a:] y < 0 " 
@@ -1655,7 +1655,7 @@ proof -
               using nozero  by (metis changes_sign_var) 
             then show "a * y\<^sup>2 + b * y + c < 0"
               unfolding sign_num_def using x_prop inset 
-              by (smt split_conv) 
+              by (smt (z3) split_conv) 
           qed
           then show "\<exists>x. \<forall>y<x. a * y\<^sup>2 + b * y + c < 0"
             by auto
@@ -1799,10 +1799,10 @@ proof -
                   by auto
                 have "r > ?elt" using r_prop by auto
                 then  have igt: " i > n" using i_prop sorted_sorted_list_of_set
-                  by (smt add_lessD1 leI n_prop nth_default_def sorted_nth_mono sorted_root_list_set_def)
+                  by (smt (z3) add_lessD1 leI n_prop nth_default_def sorted_nth_mono sorted_root_list_set_def)
                 have "r < ?elt2" using r_prop by auto
                 then have ilt: " i < n + 1" using i_prop sorted_sorted_list_of_set
-                  by (smt leI n_prop nth_default_def sorted_nth_mono sorted_root_list_set_def) 
+                  by (smt (z3) leI n_prop nth_default_def sorted_nth_mono sorted_root_list_set_def) 
                 then show "False"  using igt ilt
                   by auto
               qed
@@ -1831,7 +1831,7 @@ proof -
           assume "length xa = 0"
           have xis: "x > w \<or> x < w"
             using notmem Cons.hyps
-            by (smt list.set_intros(1) same_set xnotin) 
+            by (smt (z3) list.set_intros(1) same_set xnotin) 
           have xgt: "x > w \<Longrightarrow> False"
           proof - 
             assume xgt: "x > w"
@@ -2908,7 +2908,7 @@ proof -
         then have "\<not>(\<exists>x>r. x < y' \<and> d * x\<^sup>2 + e * x + f = 0)"
           using y_prop by force 
         then show "False" using k_prop def_prop y_prop poly_IVT_neg[of "r" "k" "[:f, e, d:]"] poly_IVT_pos[of "-c'/b'" "k" "[:f, e, d:]"]
-          by (smt quadratic_poly_eval)
+          by (smt (z3) quadratic_poly_eval)
       qed
       have c2: "\<exists> (d, e, f) \<in> set b.  d * r\<^sup>2 + e * r + f = 0 \<Longrightarrow> False" 
       proof - 
@@ -3294,7 +3294,7 @@ proof -
         then have "\<not>(\<exists>x>(-c'/b'). x < y' \<and> d * x\<^sup>2 + e * x + f = 0)"
           using y_prop by force 
         then show "False" using k_prop def_prop y_prop poly_IVT_neg[of "-c'/b'" "k" "[:f, e, d:]"] poly_IVT_pos[of "-c'/b'" "k" "[:f, e, d:]"]
-          by (smt quadratic_poly_eval)
+          by (smt (z3) quadratic_poly_eval)
       qed
       have c2: "\<exists> (d, e, f) \<in> set b.  d * (- c' / b')\<^sup>2 + e * (- c' / b') + f = 0 \<Longrightarrow> False" 
       proof - 
@@ -5163,7 +5163,7 @@ proof -
             using alleqsetvar by auto 
           have " ?bgrt \<in> set ?srl" 
             using set_sorted_list_of_set nonzero_root_set_finite k_prop asm
-            by (smt diff_Suc_less le_eq_less_or_eq less_le_trans nth_mem one_add_one plus_1_eq_Suc zero_less_one)
+            by (smt (z3) diff_Suc_less le_eq_less_or_eq less_le_trans nth_mem one_add_one plus_1_eq_Suc zero_less_one)
           then have "?bgrt \<in> nonzero_root_set (set b \<union> set c \<union> set d )"
             unfolding sorted_nonzero_root_list_set_def
             using  set_sorted_list_of_set nonzero_root_set_finite 
@@ -5211,7 +5211,7 @@ proof -
             assume x1lt: "x1 \<le> y1"
             have x1inbtw: "x1 > ?srl ! k \<and> x1 < ?srl ! (k+1)"
               using x1gt x1lt y1inbtw
-              by (smt One_nat_def cases_gt k_prop) 
+              by (smt (z3) One_nat_def cases_gt k_prop) 
             have xsn: "sign_num (t1 * x^2 + u1 * x + v1 ) = -1" using ins x_prop unfolding sign_num_def
               by auto
             have "sign_num (t1 * x1\<^sup>2 + u1 * x1 + v1 ) = sign_num (t1 * x^2 + u1 * x + v1 ) " 
@@ -5242,7 +5242,7 @@ proof -
             assume x1lt: "x1 \<le> y1"
             have x1inbtw: "x1 > ?srl ! k \<and> x1 < ?srl ! (k+1)"
               using x1gt x1lt y1inbtw
-              by (smt One_nat_def cases_gt k_prop) 
+              by (smt (z3) One_nat_def cases_gt k_prop) 
             have xsn: "sign_num (t1 * x^2 + u1 * x + v1 ) = -1 \<or> sign_num (t1 * x^2 + u1 * x + v1 ) = 0" using ins x_prop unfolding sign_num_def
               by auto
             have "sign_num (t1 * x1\<^sup>2 + u1 * x1 + v1 ) = sign_num (t1 * x^2 + u1 * x + v1 ) " 
@@ -5274,7 +5274,7 @@ proof -
             assume x1lt: "x1 \<le> y1"
             have x1inbtw: "x1 > ?srl ! k \<and> x1 < ?srl ! (k+1)"
               using x1gt x1lt y1inbtw
-              by (smt One_nat_def cases_gt k_prop) 
+              by (smt (z3) One_nat_def cases_gt k_prop) 
             have xsn: "sign_num (t1 * x^2 + u1 * x + v1 ) = -1 \<or> sign_num (t1 * x^2 + u1 * x + v1 ) = 1" using ins x_prop unfolding sign_num_def
               by auto
             have "sign_num (t1 * x1\<^sup>2 + u1 * x1 + v1 ) = sign_num (t1 * x^2 + u1 * x + v1 ) " 
@@ -6574,7 +6574,7 @@ proof -
       then have "a'*x^2 + b'*x + c' = 0" using x_prop by auto
       then have "b'*x + c' = 0" using abc_prop by auto
       then have xis: "x = - c' / b'" using abc_prop
-        by (smt divide_non_zero)
+        by (smt (z3) divide_non_zero)
       then have "(\<forall>(d, e, f)\<in>set a. d * (- c' / b')\<^sup>2 + e * (- c' / b') + f = 0) \<and>
            (\<forall>(d, e, f)\<in>set b. d * (- c' / b')\<^sup>2 + e * (- c' / b') + f < 0) \<and>
            (\<forall>(d, e, f)\<in>set c. d * (- c' / b')\<^sup>2 + e * (- c' / b') + f \<le> 0) \<and>
@@ -6661,7 +6661,7 @@ lemma quadratic_linear :
 proof-
   have h:  "-(c/b) = (sqrt (aa\<^sup>2 - 4 * a * ba) - aa) / (2 * a)"
     using assms
-    by (smt divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
+    by (smt (z3) divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
   have h1 : "\<forall>x\<in>set eq. case x of (d, e, f) \<Rightarrow> d * (c / b)\<^sup>2 + e * - (c / b) + f = 0"
     using assms(5) unfolding h[symmetric] Fields.division_ring_class.times_divide_eq_right[symmetric]
       Power.ring_1_class.power2_minus .
@@ -6687,7 +6687,7 @@ lemma quadratic_linear1:
 proof-
   have h:  "-(c/b) = (sqrt (aa\<^sup>2 - 4 * a * ba) - aa) / (2 * a)"
     using assms
-    by (smt divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
+    by (smt (z3) divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
   have h1 : "\<forall>x\<in>set les. case x of (d, e, f) \<Rightarrow> d * (c / b)\<^sup>2 + e * - (c / b) + f < 0"
     using assms(5) unfolding h[symmetric] Fields.division_ring_class.times_divide_eq_right[symmetric]
       Power.ring_1_class.power2_minus .
@@ -6712,7 +6712,7 @@ lemma quadratic_linear2 :
 proof-
   have h:  "-((c::real)/(b::real)) = (- (aa::real) -sqrt (aa\<^sup>2 - 4 * (a::real) * (ba::real))) / (2 * a)"
     using assms
-    by (smt divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
+    by (smt (z3) divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
   have h1 : "\<forall>x\<in>set eq. case x of (d, e, f) \<Rightarrow> d * (c / b)\<^sup>2 + e * - (c / b) + f = 0"
     using assms(5) unfolding h[symmetric] Fields.division_ring_class.times_divide_eq_right[symmetric]
       Power.ring_1_class.power2_minus .
@@ -6737,7 +6737,7 @@ lemma quadratic_linear3:
 proof-
   have h:  "-((c::real)/(b::real)) = (- (aa::real) -sqrt (aa\<^sup>2 - 4 * (a::real) * (ba::real))) / (2 * a)"
     using assms
-    by (smt divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
+    by (smt (z3) divide_minus_left nonzero_mult_div_cancel_left times_divide_eq_right)
   have h1 : "\<forall>x\<in>set les. case x of (d, e, f) \<Rightarrow> d * (c / b)\<^sup>2 + e * - (c / b) + f < 0"
     using assms(5) unfolding h[symmetric] Fields.division_ring_class.times_divide_eq_right[symmetric]
       Power.ring_1_class.power2_minus .
@@ -8166,7 +8166,7 @@ proof -
   then have h13: "?f13 \<longrightarrow> ?e1" by auto
   show ?thesis using bigor h1 h2 h3 h4 h5 h6 h7 h8 h9 h10 h11 h12 h13
     using assms
-    by (smt \<open>\<exists>(a', b', c')\<in>set a. a' \<noteq> 0 \<and> - b'\<^sup>2 + 4 * a' * c' \<le> 0 \<and> (\<forall>(d, e, f)\<in>set a. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f = 0) \<and> (\<forall>(d, e, f)\<in>set b. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f < 0) \<and> (\<forall>(d, e, f)\<in>set c. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f \<le> 0) \<and> (\<forall>(d, e, f)\<in>set d. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f \<noteq> 0) \<Longrightarrow> \<exists>x. (\<forall>(a, b, c)\<in>set a. a * x\<^sup>2 + b * x + c = 0) \<and> (\<forall>(a, b, c)\<in>set b. a * x\<^sup>2 + b * x + c < 0) \<and> (\<forall>(a, b, c)\<in>set c. a * x\<^sup>2 + b * x + c \<le> 0) \<and> (\<forall>(a, b, c)\<in>set d. a * x\<^sup>2 + b * x + c \<noteq> 0)\<close>) 
+    by (smt (z3) \<open>\<exists>(a', b', c')\<in>set a. a' \<noteq> 0 \<and> - b'\<^sup>2 + 4 * a' * c' \<le> 0 \<and> (\<forall>(d, e, f)\<in>set a. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f = 0) \<and> (\<forall>(d, e, f)\<in>set b. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f < 0) \<and> (\<forall>(d, e, f)\<in>set c. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f \<le> 0) \<and> (\<forall>(d, e, f)\<in>set d. d * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a'))\<^sup>2 + e * ((- b' + - 1 * sqrt (b'\<^sup>2 - 4 * a' * c')) / (2 * a')) + f \<noteq> 0) \<Longrightarrow> \<exists>x. (\<forall>(a, b, c)\<in>set a. a * x\<^sup>2 + b * x + c = 0) \<and> (\<forall>(a, b, c)\<in>set b. a * x\<^sup>2 + b * x + c < 0) \<and> (\<forall>(a, b, c)\<in>set c. a * x\<^sup>2 + b * x + c \<le> 0) \<and> (\<forall>(a, b, c)\<in>set d. a * x\<^sup>2 + b * x + c \<noteq> 0)\<close>) 
       (* by force *)
 qed
 

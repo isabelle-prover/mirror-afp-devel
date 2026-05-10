@@ -14,7 +14,7 @@ lemma epair_eqD: "epair e = Some (x,y) \<Longrightarrow> (x\<noteq>y \<and> e={x
   unfolding epair_def
   apply simp_all
   apply (clarsimp simp: card_Suc_eq eval_nat_numeral doubleton_eq_iff)
-  by (smt case_prodD case_prodI someI)
+  by (smt (z3) case_prodD case_prodI someI)
 
 lemma epair_not_sng[simp]: "epair e \<noteq> Some (x,x)"  
   by (auto dest: epair_eqD)
@@ -132,7 +132,7 @@ lemma adj_correct_aux:
       apply (clarsimp dest!: epair_eqD simp: doubleton_eq_iff)
       unfolding invar_def \<alpha>edges_aux_def
       apply clarsimp
-      by (smt case_prod_conv map_of_is_SomeI the_default.simps(2))
+      by (smt (z3) case_prod_conv map_of_is_SomeI the_default.simps(2))
     done      
   done      
     

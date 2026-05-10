@@ -322,7 +322,7 @@ proof-
     by simp_all
   then obtain cr where *: "cross_ratio u i1 v i2 = of_complex cr" "cr \<noteq> 0" "is_real cr" "Re cr > 0"
     using inf_or_of_complex[of "cross_ratio u i1 v i2"]
-    by (smt to_complex_of_complex zero_complex.simps(1))
+    by (smt (z3) to_complex_of_complex zero_complex.simps(1))
   thus ?thesis
     using *
     using assms cross_ratio_commute_13[of v i1 u i2]
@@ -567,7 +567,7 @@ proof (rule wlog_x_axis)
     proof-
       let ?x = "1 + 2 * (cmod x)\<^sup>2 / (1 - (cmod x)\<^sup>2)"
       have "0 \<le> 2 * (cmod x)\<^sup>2 / (1 - (cmod x)\<^sup>2)"
-        by (smt \<open>cmod x < 1\<close> divide_nonneg_nonneg norm_ge_zero power_le_one zero_le_power2)
+        by (smt (z3) \<open>cmod x < 1\<close> divide_nonneg_nonneg norm_ge_zero power_le_one zero_le_power2)
       hence arcosh_real_gt: "1 \<le> ?x"
         by auto
       have "?rhs = arcosh ?x"
@@ -576,7 +576,7 @@ proof (rule wlog_x_axis)
       proof-
         have "1 - (cmod x)\<^sup>2 > 0"
           using \<open>cmod x < 1\<close>
-          by (smt norm_not_less_zero one_power2 power2_eq_imp_eq power_mono)
+          by (smt (z3) norm_not_less_zero one_power2 power2_eq_imp_eq power_mono)
         hence 1: "?x = (1 + (cmod x)\<^sup>2) / (1 - (cmod x)\<^sup>2)"
           by (simp add: field_simps)
         have 2: "?x\<^sup>2 - 1 = (4 * (cmod x)\<^sup>2) / (1 - (cmod x)\<^sup>2)\<^sup>2"
@@ -620,7 +620,7 @@ proof (rule wlog_x_axis)
         moreover
         have "(1 + Re x) / (1 - Re x) = Re ((1 + x) / (1 - x))"
           using \<open>is_real x\<close> \<open>Re x < 1\<close>
-          by (smt Re_divide_real eq_iff_diff_eq_0 minus_complex.simps one_complex.simps plus_complex.simps)
+          by (smt (z3) Re_divide_real eq_iff_diff_eq_0 minus_complex.simps one_complex.simps plus_complex.simps)
         ultimately
         show ?thesis
           by simp
@@ -736,7 +736,7 @@ proof-
 
   have "?z > -1"
     using exp_gt_zero[of d]
-    by (smt divide_less_eq_1_neg nonzero_minus_divide_right)
+    by (smt (z3) divide_less_eq_1_neg nonzero_minus_divide_right)
 
   moreover
 
@@ -862,7 +862,7 @@ proof-
               using hh by auto
             hence "Re ((1 - x)/(1 + x)) \<ge> 1"
               using \<open>Re (1 + x) > 0\<close> \<open>is_real ((1 - x)/(1 + x))\<close>
-              by (smt Re_divide_real arg_0_iff hh(1) le_divide_eq_1_pos one_complex.simps(2) plus_complex.simps(2))            
+              by (smt (z3) Re_divide_real arg_0_iff hh(1) le_divide_eq_1_pos one_complex.simps(2) plus_complex.simps(2))            
 
             have "Re (1 + y) > 0"
               using \<open>- 1 < Re y\<close> by auto
@@ -876,7 +876,7 @@ proof-
               using hh by auto
             hence "Re ((1 - y)/(1 + y)) \<ge> 1"
               using \<open>Re (1 + y) > 0\<close> \<open>is_real ((1 - y)/(1 + y))\<close>
-              by (smt Re_divide_real arg_0_iff hh le_divide_eq_1_pos one_complex.simps(2) plus_complex.simps(2))
+              by (smt (z3) Re_divide_real arg_0_iff hh le_divide_eq_1_pos one_complex.simps(2) plus_complex.simps(2))
 
             have "ln (Re ((1 - x) / (1 + x))) = ln (Re ((1 - y) / (1 + y)))"
               using \<open>Re ((1 - y)/(1 + y)) \<ge> 1\<close> \<open>Re ((1 - x)/(1 + x)) \<ge> 1\<close> hh
@@ -1111,12 +1111,12 @@ proof-
             using \<open>-1 < a \<and> a < 1\<close>
             by (metis cancel_comm_monoid_add_class.diff_cancel diff_eq_diff_less less_numeral_extra(4) power2_eq_1_iff right_minus_eq)
           hence "?lhs \<longleftrightarrow> (a - Re x)\<^sup>2 / (1 - (Re x)\<^sup>2) = a\<^sup>2"
-            by (smt divide_cancel_right divide_divide_eq_left mult.commute)
+            by (smt (z3) divide_cancel_right divide_divide_eq_left mult.commute)
           also have "... \<longleftrightarrow> (a - Re x)\<^sup>2 = a\<^sup>2 * (1 - (Re x)\<^sup>2)"
           proof-
             have "1 - (Re x)\<^sup>2 \<noteq> 0"
               using x
-              by (smt power2_eq_1_iff)
+              by (smt (z3) power2_eq_1_iff)
             thus ?thesis
               by (simp add: divide_eq_eq)
           qed
@@ -1152,7 +1152,7 @@ proof-
         moreover
         have "1 - (Re x)\<^sup>2 > 0"
           using x
-          by (smt power2_eq_1_iff square_le_1)
+          by (smt (z3) power2_eq_1_iff square_le_1)
         have "\<bar>?a\<bar> < 1"
         proof (cases "Re x > 0")
           case True
@@ -1503,7 +1503,7 @@ proof-
       proof (subst arcosh_mono)
         show "?r1 \<ge> 1"
           using disc
-          by (smt "*" le_divide_eq_1_pos mult_pos_pos zero_le_power2)
+          by (smt (z3) "*" le_divide_eq_1_pos mult_pos_pos zero_le_power2)
       next
         show "?r2 \<ge> 1"
           using disc

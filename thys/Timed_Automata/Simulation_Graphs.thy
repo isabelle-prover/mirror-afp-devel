@@ -1216,7 +1216,7 @@ next
   then obtain c where "A2 a c" "c \<inter> {x. \<phi> x} = b" unfolding A2_\<phi>_def by auto
   with \<open>y \<in> _\<close> have "y \<in> closure c" by (auto dest: closure_intD)
   moreover have "y \<subseteq> {x. \<phi> x}"
-    by (smt "2"(1) \<phi>_A1_compatible \<open>A2 a c\<close> \<open>c \<inter> {x. \<phi> x} = b\<close> \<open>y \<in> closure c\<close> closure_def
+    by (smt (z3) "2"(1) \<phi>_A1_compatible \<open>A2 a c\<close> \<open>c \<inter> {x. \<phi> x} = b\<close> \<open>y \<in> closure c\<close> closure_def
         closure_poststable inf_assoc inf_bot_right inf_commute mem_Collect_eq)
   ultimately show ?case using \<open>A2 a c\<close> unfolding A1_\<phi>_def A2_\<phi>_def
     by (auto dest: closure_poststable)
@@ -2114,7 +2114,7 @@ next
   case (3 x y)
   then show ?case
     unfolding P1'_def using P1_distinct
-    by (smt disjoint_iff_not_equal eq_fst_iff from_R_R_of from_R_val)
+    by (smt (z3) disjoint_iff_not_equal eq_fst_iff from_R_R_of from_R_val)
 next
   case 4
   have "{x. \<exists>l. (\<forall>x\<in>x. fst x = l) \<and> P1 (l, R_of x)} \<subseteq> (\<lambda> (l, x). from_R l x) ` {(l, x). P1 (l, x)}"

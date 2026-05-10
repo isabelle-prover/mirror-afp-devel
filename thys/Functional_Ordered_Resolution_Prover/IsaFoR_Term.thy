@@ -135,7 +135,7 @@ qed
 lemma same_on_vars_clause:
   assumes "\<forall>v \<in> vars_clause S. \<sigma> v = \<tau> v"
   shows "subst_cls S \<sigma> = subst_cls S \<tau>"
-  by (smt assms image_eqI image_mset_cong2 mem_simps(9) same_on_vars_lit set_image_mset
+  by (smt (z3) assms image_eqI image_mset_cong2 mem_simps(9) same_on_vars_lit set_image_mset
       subst_cls_def vars_clause_def)
 
 interpretation substitution "(\<cdot>)" "Var :: _ \<Rightarrow> ('f, nat) term" "(\<circ>\<^sub>s)"
@@ -563,7 +563,7 @@ proof (rule; rule)
       using assms asm' unfolding unifies_all_pairs_iff
       using compare_linorder.sorted_list_of_set by blast
     then show "card (AA \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma>) \<le> Suc 0"
-      by (smt imageE card.empty card_Suc_eq card_mono finite.intros(1) finite_insert le_SucI
+      by (smt (z3) imageE card.empty card_Suc_eq card_mono finite.intros(1) finite_insert le_SucI
            singletonI subsetI)
   qed
   then show "\<sigma> \<in> {\<sigma>. is_unifiers \<sigma> AAA}"

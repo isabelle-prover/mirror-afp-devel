@@ -451,7 +451,7 @@ proof(cases p')
       finally have h2 : "(c' * B\<^sup>2 - b' * C * B + a' * C\<^sup>2 = 0) = (a' * (C / B)\<^sup>2 - b' * C / B + c' = 0)"
         .
       have h3 : "((b' * B - 2 * a' * C) * B < 0) = (b' < 2 * a' * C / B)"
-        by (smt assms(4) less_divide_eq zero_le_mult_iff)
+        by (smt (z3) assms(4) less_divide_eq zero_le_mult_iff)
       have h4 : "(b' * B = 2 * a' * C) = (b' = 2 * a' * C / B)"
         by (simp add: assms(4) nonzero_eq_divide_eq)
       show ?thesis unfolding fields substInfinitesimalLinearUni.simps
@@ -470,7 +470,7 @@ proof(cases p')
         unfolding insertion_mult insertion_sub assms otherblob apply simp
         unfolding otherblob h1 h2 h3 h4 unfolding lift00 insertion_neg assms insertion_isovarspars_free insertion_sum insertion_mult insertion_sub degree0isovarspar degree_isovarspar mult_one_right insertion_sum_var insertion_pow insertion_neg sum
         unfolding assms b'_insertion c'_insertion a'_insertion insertion_neg insertion_mult insertion_add insertion_pow apply simp
-        by (smt assms(2) assms(3) b'_insertion h1 h2 h3 h4 insertion_mult insertion_sub mult_one_right simp_insertion_blob)
+        by (smt (z3) assms(2) assms(3) b'_insertion h1 h2 h3 h4 insertion_mult insertion_sub mult_one_right simp_insertion_blob)
     qed
   qed
 qed

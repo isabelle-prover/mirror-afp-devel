@@ -547,7 +547,7 @@ proof-
   thus "hmin \<le> y\<^sub>0 - c\<^sub>o \<cdot> \<tau>"
     by (auto simp: mult.commute)
   show "y\<^sub>0 - c\<^sub>o \<cdot> \<tau> \<le> hmax" 
-    using b assms(1,2) by (smt mult_nonneg_nonneg) 
+    using b assms(1,2) by (smt (z3) mult_nonneg_nonneg) 
 qed
 
 lemma tank_inv:

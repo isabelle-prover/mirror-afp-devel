@@ -43,7 +43,7 @@ proof -
     by (rule soundness_diagonalize[OF b PDQ_diag[symmetric]])
   obtain P' Q' where PSQ_D: "(P',S,Q') = diagonal_to_Smith_PQ D bezout"
     using PSQ PDQ_diag unfolding Smith_normal_form_of_def
-    unfolding Let_def by (smt Pair_inject case_prod_beta' surjective_pairing)    
+    unfolding Let_def by (smt (z3) Pair_inject case_prod_beta' surjective_pairing)    
   have 2: "invertible P' \<and> invertible Q' \<and> Smith_normal_form S \<and> S = P'**D**Q'"
     using diagonal_to_Smith_PQ' 1 b PSQ_D by blast
   have P: "P = P'**P''"

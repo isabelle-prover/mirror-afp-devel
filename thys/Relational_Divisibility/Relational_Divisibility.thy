@@ -143,7 +143,7 @@ lemma div_below_div_converse:
   assumes "D2_antisymmetric _"
       and "x \<le> D"
     shows "D \<sqinter> x\<^sup>T \<le> x"
-  by (smt assms conv_dist_inf conv_involutive coreflexive_symmetric inf.cobounded2 inf.orderE inf_left_commute)
+  by (smt (z3) assms conv_dist_inf conv_involutive coreflexive_symmetric inf.cobounded2 inf.orderE inf_left_commute)
 
 subsection \<open>Bounds\<close>
 

@@ -1074,7 +1074,7 @@ proof -
     fix a
     assume *: "rcis sr a \<in> M" 
     have id: "cis (Arg (rcis sr a)) = cis a"
-      by (smt * M mem_Collect_eq nonzero_mult_div_cancel_left of_real_eq_0_iff 
+      by (smt (z3) * M mem_Collect_eq nonzero_mult_div_cancel_left of_real_eq_0_iff 
          rcis_cmod_Arg rcis_def sr_pos) 
     from *[unfolded assms] have "eigen_value cA (rcis sr a)" "cmod (rcis sr a) = sr" by auto
     from maximal_eigen_value_rotation[OF this, unfolded id]

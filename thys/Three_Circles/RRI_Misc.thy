@@ -512,7 +512,7 @@ proof (auto simp add: reciprocal_poly_def)
         length (replicate (p - degree P) (0::'a) @ rev (coeffs P))"
     by (metis degree_Poly reciprocal_poly_def rev_append rev_replicate)
   thus "degree (Poly (replicate (p - degree P) 0 @ rev (coeffs P))) \<le> p" 
-    by (smt Suc_le_mono add_Suc_right coeffs_Poly degree_0 hP le_SucE le_SucI 
+    by (smt (z3) Suc_le_mono add_Suc_right coeffs_Poly degree_0 hP le_SucE le_SucI 
         le_add_diff_inverse2 le_zero_eq length_append length_coeffs_degree
         length_replicate length_rev length_strip_while_le reciprocal_0
         reciprocal_poly_def rev_append rev_replicate)

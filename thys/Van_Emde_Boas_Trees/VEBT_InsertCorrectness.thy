@@ -41,7 +41,7 @@ next
   let  ?t = "Node None deg treeList summary"
   let ?tnew = "vebt_insert ?t x"
   have 6:"?tnew =  (Node (Some (x,x)) deg  treeList summary)" using vebt_insert.simps(4)[of "deg-2" treeList summary x] 
-    by (smt "3" "3.hyps"(3) "6" Nat.add_diff_assoc One_nat_def Suc_le_mono add_diff_inverse_nat add_gr_0 add_numeral_left diff_is_0_eq' not_less not_less_iff_gr_or_eq numeral_2_eq_2 numerals(1) plus_1_eq_Suc semiring_norm(2))
+    by (smt (z3) "3" "3.hyps"(3) "6" Nat.add_diff_assoc One_nat_def Suc_le_mono add_diff_inverse_nat add_gr_0 add_numeral_left diff_is_0_eq' not_less not_less_iff_gr_or_eq numeral_2_eq_2 numerals(1) plus_1_eq_Suc semiring_norm(2))
   have 7:"(x = x \<longrightarrow> (\<forall> t \<in> set treeList. \<nexists> x. both_member_options t x))"
     using \<open>\<forall>t\<in>set treeList. \<nexists>x. both_member_options t x\<close> by blast
   have 8:"x \<le> x" by simp
@@ -65,7 +65,7 @@ next
     case True
     then show ?thesis using insert_simp_mima[of x mi ma deg treeList summary] 
         invar_vebt.intros(4)[of treeList n summary m deg mi ma] 
-      by (smt "0" "1" "2" "3" "4" "4.hyps"(3) "4.hyps"(7) "4.hyps"(8) "5" "7" "9" deg_not_0 div_greater_zero_iff)     
+      by (smt (z3) "0" "1" "2" "3" "4" "4.hyps"(3) "4.hyps"(7) "4.hyps"(8) "5" "7" "9" deg_not_0 div_greater_zero_iff)     
   next
     case False
     hence mimaxrel: "x \<noteq> mi \<and> x \<noteq> ma" by simp
@@ -545,7 +545,7 @@ next
     case True
     then show ?thesis using insert_simp_mima[of x mi ma deg treeList summary] 
         invar_vebt.intros(5)[of treeList n summary m deg mi ma] 
-      by (smt "0" "1" "2" "3" "4" "5" "5.hyps"(3) "5.hyps"(7) "5.hyps"(8) "7" "9" div_less not_less not_one_le_zero set_n_deg_not_0)    
+      by (smt (z3) "0" "1" "2" "3" "4" "5" "5.hyps"(3) "5.hyps"(7) "5.hyps"(8) "7" "9" div_less not_less not_one_le_zero set_n_deg_not_0)    
   next
     case False
     hence mimaxrel: "x \<noteq> mi \<and> x \<noteq> ma" by simp
@@ -560,7 +560,7 @@ next
                  Node (Some (mi, max x ma)) deg  (treeList[?h :=vebt_insert (treeList ! ?h) ?l])
                                (if minNull (treeList ! ?h) then  vebt_insert summary ?h else summary) " 
         using "2" "3" False True \<open>high x n < 2 ^ m \<and> low x n < 2  ^ n\<close> insert_simp_norm 
-        by (smt "5.IH"(1) "9" div_greater_zero_iff div_if less_Suc_eq_0_disj not_one_le_zero set_n_deg_not_0)
+        by (smt (z3) "5.IH"(1) "9" div_greater_zero_iff div_if less_Suc_eq_0_disj not_one_le_zero set_n_deg_not_0)
       let ?maxnew = "max x ma" and ?nextTreeList = "(treeList[ ?h :=vebt_insert (treeList ! ?h) ?l])" and
         ?nextSummary = "(if minNull (treeList ! ?h) then  vebt_insert summary ?h else summary)"
       have 11: "( \<forall> t \<in> set ?nextTreeList. invar_vebt t n)" 
@@ -619,7 +619,7 @@ next
                 have "i \<noteq> high x n" 
                   by (simp add: False)
                 hence "both_member_options summary i"
-                  by (smt "1" "12" \<open>both_member_options (if minNull (treeList ! high x n) then vebt_insert summary (high x n) else summary) i\<close> \<open>i < 2 ^ m\<close> both_member_options_equiv_member highlowprop post_member_pre_member)
+                  by (smt (z3) "1" "12" \<open>both_member_options (if minNull (treeList ! high x n) then vebt_insert summary (high x n) else summary) i\<close> \<open>i < 2 ^ m\<close> both_member_options_equiv_member highlowprop post_member_pre_member)
                 hence "\<exists> y. both_member_options (treeList ! i) y"
                   by (simp add: "4" \<open>i < 2 ^ m\<close>)
                 then show ?thesis 

@@ -348,7 +348,7 @@ proof -
   thus ?thesis
     unfolding encode_initial_state_def SAT_Plan_Base.encode_initial_state_def Let_def initial_of_def
     using is_cnf_BigAnd[of ?l]
-      by (smt is_cnf_BigAnd)
+      by (smt (z3) is_cnf_BigAnd)
 qed
 
 lemma encode_goal_state_is_cnf:
@@ -781,7 +781,7 @@ proof -
     hence "is_cnf f"
       using is_cnf_encode_negative_transition_frame_axiom
         is_cnf_encode_positive_transition_frame_axiom
-      by (smt mem_Collect_eq)
+      by (smt (z3) mem_Collect_eq)
   }
   thus ?thesis
     unfolding encode_all_frame_axioms_def
@@ -917,7 +917,7 @@ proof -
   }
   thus ?thesis
     using cnf_of_encode_initial_state_set_i
-    by (smt Collect_cong)
+    by (smt (z3) Collect_cong)
 qed
 
 (* TODO \<open>\<exists>!\<close> is superfluous now? rm? + Above lemma basically covers this one. *)

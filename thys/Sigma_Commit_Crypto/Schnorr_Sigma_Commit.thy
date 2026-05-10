@@ -201,7 +201,7 @@ proof-
   proof-
     have "[(x * c + order \<G> - r) mod order \<G> + order \<G> * x * c - x * c  
               = x * c + order \<G> - r + order \<G> * x * c - x * c] (mod order \<G>)"  
-      by (smt cong_def One_nat_def add_diff_inverse_nat cong_diff_nat less_imp_le_nat linorder_not_less mod_add_left_eq mult.assoc n_less_m_mult_n prime_gt_1_nat prime_order trans_less_add2 zero_less_diff)
+      by (smt (z3) cong_def One_nat_def add_diff_inverse_nat cong_diff_nat less_imp_le_nat linorder_not_less mod_add_left_eq mult.assoc n_less_m_mult_n prime_gt_1_nat prime_order trans_less_add2 zero_less_diff)
     hence "[(x * c + order \<G> - r) mod order \<G> + order \<G> * x * c - x * c  
               =  order \<G> - r + order \<G> * x * c] (mod order \<G>)"
       using assms by auto
@@ -289,7 +289,7 @@ proof-
   hence "[int z + int t * int e' = int z' +  int t * int e] (mod  order \<G>)"
     using cong_int_iff by force
   hence "[int z - int z' = int t * int e - int t * int e'] (mod  order \<G>)"
-    by (smt cong_iff_lin)
+    by (smt (z3) cong_iff_lin)
   hence "[int z - int z' = int t * (int e - int e')] (mod  order \<G>)"
     by (simp add: \<open>[int z - int z' = int t * int e - int t * int e'] (mod int (order \<G>))\<close> right_diff_distrib)
   hence "[int z - int z' = int t * (int e - int e')] (mod  order \<G>)"
@@ -303,7 +303,7 @@ proof-
   hence **: "[(int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)) 
               = int t * (nat (int e - int e')
                   * fst (bezw ((nat (int e - int e'))) (order \<G>)))] (mod  order \<G>)"
-    by (smt \<open>[int z - int z' = int t * (int e - int e')] (mod int (order \<G>))\<close> assms(1) assms(2)
+    by (smt (z3) \<open>[int z - int z' = int t * (int e - int e')] (mod int (order \<G>))\<close> assms(1) assms(2)
           cong_scalar_right int_nat_eq less_imp_of_nat_less mod_less more_arith_simps(11) nat_less_iff of_nat_0_le_iff)
   hence "[(int z - int z') * fst (bezw ((nat (int e - int e'))) (order \<G>)) = int t * 1] (mod  order \<G>)"
     by (metis (no_types, opaque_lifting) gcd inverse assms(2) cong_scalar_left cong_trans less_imp_diff_less mod_less mult.comm_neutral nat_minus_as_int)

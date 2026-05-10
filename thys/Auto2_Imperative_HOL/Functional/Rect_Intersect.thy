@@ -60,11 +60,11 @@ definition less_eq: "(a \<le> b) = (if pos a \<noteq> pos b then pos a < pos b e
 instance proof
   fix x y z :: "'a operation"
   show a: "(x < y) = (x \<le> y \<and> \<not> y \<le> x)"
-    by (smt Rect_Intersect.less Rect_Intersect.less_eq leD le_cases3 not_less_iff_gr_or_eq)
+    by (smt (z3) Rect_Intersect.less Rect_Intersect.less_eq leD le_cases3 not_less_iff_gr_or_eq)
   show b: "x \<le> x"
     by (simp add: local.less_eq)
   show c: "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z"
-    by (smt Rect_Intersect.less Rect_Intersect.less_eq a dual_order.trans less_trans)
+    by (smt (z3) Rect_Intersect.less Rect_Intersect.less_eq a dual_order.trans less_trans)
   show d: "x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
     by (metis Rect_Intersect.less Rect_Intersect.less_eq a le_imp_less_or_eq operation.expand)
   show e: "x \<le> y \<or> y \<le> x"

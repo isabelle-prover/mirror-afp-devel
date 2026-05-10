@@ -787,7 +787,7 @@ proof -
     xs_distinct: "distinct xs" and
     y_not_in_xs: "y \<notin> set xs"
     using p_not_distinct not_distinct_decomp    
-    by (smt append.assoc append.simps(2) in_set_conv_decomp_first not_distinct_conv_prefix)
+    by (smt (z3) append.assoc append.simps(2) in_set_conv_decomp_first not_distinct_conv_prefix)
   from p_vwalk this(1)
   obtain q r s where
     "p = q @ tl r @ tl s"

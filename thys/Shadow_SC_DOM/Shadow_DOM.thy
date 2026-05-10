@@ -1536,7 +1536,7 @@ lemmas get_shadow_root_safe_locs_def = get_shadow_root_safe_locs_impl[unfolded g
 
 lemma get_shadow_root_safe_pure [simp]: "pure (get_shadow_root_safe element_ptr) h"
   apply(auto simp add: get_shadow_root_safe_def)[1]
-  by (smt bind_returns_heap_E is_OK_returns_heap_E local.get_mode_pure local.get_shadow_root_pure
+  by (smt (z3) bind_returns_heap_E is_OK_returns_heap_E local.get_mode_pure local.get_shadow_root_pure
       option.case_eq_if pure_def pure_returns_heap_eq return_pure)
 end
 
@@ -2993,7 +2993,7 @@ lemma remove_shadow_root_writes:
   using  writes_union_left_I[OF set_shadow_root_writes]
    apply (metis inf_sup_aci(5) insert_is_Un)
   using writes_union_right_I[OF writes_singleton[of delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M]]
-  by (smt insert_is_Un writes_singleton2 writes_union_left_I)
+  by (smt (z3) insert_is_Un writes_singleton2 writes_union_left_I)
 end
 
 interpretation i_remove_shadow_root?: l_remove_shadow_root\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_child_nodes get_child_nodes_locs
@@ -3574,14 +3574,14 @@ lemma adopt_node_types_preserved:
   using CD.adopt_node_locs_impl CD.adopt_node_types_preserved local.adopt_node_locs_def by blast
 lemma adopt_node_child_in_heap:
   "h \<turnstile> ok (adopt_node document_ptr child) \<Longrightarrow> child |\<in>| node_ptr_kinds h"
-  by (smt CD.adopt_node_child_in_heap CD.adopt_node_impl bind_is_OK_E error_returns_heap
+  by (smt (z3) CD.adopt_node_child_in_heap CD.adopt_node_impl bind_is_OK_E error_returns_heap
       is_OK_returns_heap_E l_adopt_node\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M.adopt_node_def l_adopt_node\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms
       local.get_ancestors_di_pure pure_returns_heap_eq)
 lemma adopt_node_children_subset:
   "h \<turnstile> adopt_node owner_document node \<rightarrow>\<^sub>h h' \<Longrightarrow> h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
      \<Longrightarrow> h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children'
      \<Longrightarrow> known_ptrs h \<Longrightarrow> type_wf h \<Longrightarrow> set children' \<subseteq> set children"
-  by (smt CD.adopt_node_children_subset CD.adopt_node_impl bind_returns_heap_E error_returns_heap
+  by (smt (z3) CD.adopt_node_children_subset CD.adopt_node_impl bind_returns_heap_E error_returns_heap
       local.adopt_node_def local.get_ancestors_di_pure pure_returns_heap_eq)
 end
 
@@ -4442,7 +4442,7 @@ proof -
   then have "host = host'"
     by (meson assms(1) assms(2) assms(3) shadow_root_host_dual shadow_root_same_host)
   then show ?thesis
-    by (smt \<open>\<And>thesis. (\<And>host'. \<lbrakk>host' |\<in>| element_ptr_kinds h; |h \<turnstile> get_tag_name host'|\<^sub>r \<in>
+    by (smt (z3) \<open>\<And>thesis. (\<And>host'. \<lbrakk>host' |\<in>| element_ptr_kinds h; |h \<turnstile> get_tag_name host'|\<^sub>r \<in>
 safe_shadow_root_element_types; h \<turnstile> get_shadow_root host' \<rightarrow>\<^sub>r Some shadow_root_ptr\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow>
 thesis\<close> \<open>h \<turnstile> get_shadow_root host' \<rightarrow>\<^sub>r Some shadow_root_ptr\<close> assms(1) assms(2) assms(4)
         select_result_I2 shadow_root_same_host)
@@ -5047,7 +5047,7 @@ h2 \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
       by (simp add: a_ptr_disconnected_node_rel_def disconnected_nodes_eq2_h document_ptr_kinds_eq_h)
     ultimately show ?thesis
       using \<open>parent_child_rel h = parent_child_rel h2\<close>
-      by (smt \<open>acyclic (parent_child_rel h \<union> local.a_host_shadow_root_rel h \<union>
+      by (smt (z3) \<open>acyclic (parent_child_rel h \<union> local.a_host_shadow_root_rel h \<union>
 local.a_ptr_disconnected_node_rel h)\<close> acyclic_subset subset_refl sup_mono)
   qed
   then
@@ -5239,7 +5239,7 @@ lemma a_ptr_disconnected_node_rel_disconnected_node:
   "h \<turnstile> get_disconnected_nodes document \<rightarrow>\<^sub>r disc_nodes \<Longrightarrow> node_ptr \<in> set disc_nodes \<longleftrightarrow>
 (cast document, cast node_ptr) \<in> a_ptr_disconnected_node_rel h"
   apply(auto simp add: a_ptr_disconnected_node_rel_def)[1]
-  by (smt CD.get_disconnected_nodes_ptr_in_heap case_prodI is_OK_returns_result_I mem_Collect_eq
+  by (smt (z3) CD.get_disconnected_nodes_ptr_in_heap case_prodI is_OK_returns_result_I mem_Collect_eq
       pair_imageI select_result_I2)
 
 lemma a_ptr_disconnected_node_rel_document:
@@ -5697,7 +5697,7 @@ proof (insert assms(1) assms(2) assms(3), induct ptr arbitrary: ancestors
         using step(2) Some host step(5) tl_ancestors
         using assms(4) dual_order.trans eq_iff returns_result_eq set_ConsD set_subset_Cons
           shadow_root_ptr_casts_commute document_ptr_casts_commute step.prems(1)
-        by (smt case_optionE local.shadow_root_host_dual option.case_distrib option.distinct(1))
+        by (smt (z3) case_optionE local.shadow_root_host_dual option.case_distrib option.distinct(1))
     qed
   next
     case (Some child_node)
@@ -6117,7 +6117,7 @@ proof -
              (sorted_list_of_set (fset (document_ptr_kinds h)))"
   have "h \<turnstile> ok (?filter_M)"
     using CD.get_disconnected_nodes_ok
-    by (smt CD.get_disconnected_nodes_pure DocumentMonad.ptr_kinds_M_ptr_kinds
+    by (smt (z3) CD.get_disconnected_nodes_pure DocumentMonad.ptr_kinds_M_ptr_kinds
         DocumentMonad.ptr_kinds_ptr_kinds_M assms(2) bind_is_OK_pure_I bind_pure_I document_ptr_kinds_M_def
         filter_M_is_OK_I l_ptr_kinds_M.ptr_kinds_M_ok return_ok return_pure returns_result_select_result)
   then
@@ -6301,7 +6301,7 @@ proof (insert assms(1) assms(2) assms(3), induct ptr arbitrary: ancestors
         using step(2) Some host step(5) tl_ancestors
         using assms(4) dual_order.trans eq_iff returns_result_eq set_ConsD set_subset_Cons
           shadow_root_ptr_casts_commute document_ptr_casts_commute step.prems(1)
-        by (smt case_optionE local.shadow_root_host_dual option.case_distrib option.distinct(1))
+        by (smt (z3) case_optionE local.shadow_root_host_dual option.case_distrib option.distinct(1))
     qed
   next
     case (Some child_node)
@@ -6448,7 +6448,7 @@ h \<turnstile> Heap_Error_Monad.bind (get_disconnected_nodes x)
              (sorted_list_of_set (fset (document_ptr_kinds h)))"
   have "h \<turnstile> ok (?filter_M)"
     using CD.get_disconnected_nodes_ok
-    by (smt CD.get_disconnected_nodes_pure DocumentMonad.ptr_kinds_M_ptr_kinds
+    by (smt (z3) CD.get_disconnected_nodes_pure DocumentMonad.ptr_kinds_M_ptr_kinds
         DocumentMonad.ptr_kinds_ptr_kinds_M assms(2) bind_is_OK_pure_I bind_pure_I document_ptr_kinds_M_def
         filter_M_is_OK_I l_ptr_kinds_M.ptr_kinds_M_ok return_ok return_pure returns_result_select_result)
   then
@@ -6728,7 +6728,7 @@ proof
           moreover have "h \<turnstile> get_parent disc_node \<rightarrow>\<^sub>r None"
             using \<open>(ptr, ptr_child) \<notin> parent_child_rel h\<close>
             apply(auto simp add: parent_child_rel_def ptr_child_disc_node)[1]
-            by (smt assms(1) assms(2) assms(3) assms(4) calculation disc_node disc_nodes
+            by (smt (z3) assms(1) assms(2) assms(3) assms(4) calculation disc_node disc_nodes
                 get_ancestors_di_ptrs_in_heap is_OK_returns_result_E local.CD.a_heap_is_wellformed_def
                 local.CD.distinct_lists_no_parent local.CD.heap_is_wellformed_impl local.get_parent_child_dual
                 local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_def
@@ -6860,7 +6860,7 @@ node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)
   ultimately have 0: "\<exists>!document_ptr\<in>set |h \<turnstile> document_ptr_kinds_M|\<^sub>r.
 node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r"
     using concat_map_distinct assms(1)  known_ptrs_implies
-    by (smt CD.heap_is_wellformed_one_disc_parent DocumentMonad.ptr_kinds_ptr_kinds_M
+    by (smt (z3) CD.heap_is_wellformed_one_disc_parent DocumentMonad.ptr_kinds_ptr_kinds_M
         disjoint_iff_not_equal local.get_disconnected_nodes_ok local.heap_is_wellformed_def
         returns_result_select_result type_wf)
 
@@ -7573,7 +7573,7 @@ proof -
                 split: option.splits)
           have "root = cast owner_document"
             using \<open>is_document_ptr_kind root\<close>
-            by (smt \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
+            by (smt (z3) \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
                 document_ptr_casts_commute3 get_root_node_document returns_result_eq)
           then show ?thesis
             apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def
@@ -7604,7 +7604,7 @@ proof -
                 CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
           have "root = cast owner_document"
             using True
-            by (smt \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
+            by (smt (z3) \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
                 document_ptr_casts_commute3 get_root_node_document returns_result_eq)
           then show ?thesis
             apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def
@@ -7941,7 +7941,7 @@ h \<turnstile> get_disconnected_nodes ptr' \<rightarrow>\<^sub>r disc_nodes = h2
     by (metis (no_types, lifting) in_rtrancl_UnI inf_sup_aci(5) inf_sup_aci(7))
   ultimately
   have "acyclic (parent_child_rel h' \<union> a_host_shadow_root_rel h' \<union> a_ptr_disconnected_node_rel h')"
-    by (smt Un_assoc Un_insert_left Un_insert_right acyclic_insert insert_Diff_single
+    by (smt (z3) Un_assoc Un_insert_left Un_insert_right acyclic_insert insert_Diff_single
         insert_absorb2 mk_disjoint_insert prod.inject rtrancl_Un_separator_converseE rtrancl_trans
         singletonD sup_bot.comm_neutral)
 
@@ -8039,7 +8039,7 @@ lemma adopt_node_removes_first_child: "heap_is_wellformed h \<Longrightarrow> ty
                          \<Longrightarrow> h \<turnstile> adopt_node owner_document node \<rightarrow>\<^sub>h h'
                          \<Longrightarrow> h \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r node # children
                          \<Longrightarrow> h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
-  by (smt CD.adopt_node_removes_first_child bind_returns_heap_E error_returns_heap
+  by (smt (z3) CD.adopt_node_removes_first_child bind_returns_heap_E error_returns_heap
       l_adopt_node\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M.adopt_node_def local.CD.adopt_node_impl local.get_ancestors_di_pure
       local.l_adopt_node\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms pure_returns_heap_eq)
 lemma adopt_node_document_in_heap: "heap_is_wellformed h \<Longrightarrow> known_ptrs h \<Longrightarrow> type_wf h
@@ -8358,7 +8358,7 @@ h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes 
           disconnected_nodes_eq2_h2 document_ptr_kinds_eq3_h2 select_result_I2 set_remove1_subset
           subsetD)
     then have "CD.a_all_ptrs_in_heap h'"
-      by (smt \<open>child \<in> set disc_nodes_old_document_h2\<close> children_eq2_h3 disc_nodes_document_ptr_h'
+      by (smt (z3) \<open>child \<in> set disc_nodes_old_document_h2\<close> children_eq2_h3 disc_nodes_document_ptr_h'
           disc_nodes_document_ptr_h2 disc_nodes_old_document_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq3_h3
           local.CD.a_all_ptrs_in_heap_def local.heap_is_wellformed_disc_nodes_in_heap
           node_ptr_kinds_eq3_h2 node_ptr_kinds_eq3_h3 object_ptr_kinds_h3_eq3 select_result_I2 set_ConsD
@@ -9739,7 +9739,7 @@ a_ptr_disconnected_node_rel h \<union> {(cast old_document, cast node)}\<close>
     apply(simp add: \<open>a_host_shadow_root_rel h = a_host_shadow_root_rel h2\<close> \<open>a_host_shadow_root_rel h2 = a_host_shadow_root_rel h3\<close>)
     apply(simp add: \<open>parent_child_rel h2 = parent_child_rel h3\<close>[symmetric])
     using \<open>parent_child_rel h2 \<subseteq> parent_child_rel h\<close> \<open>a_ptr_disconnected_node_rel h3 \<subseteq> a_ptr_disconnected_node_rel h\<close>
-    by (smt Un_assoc in_rtrancl_UnI sup.orderE sup_left_commute)
+    by (smt (z3) Un_assoc in_rtrancl_UnI sup.orderE sup_left_commute)
 
   have "CD.a_acyclic_heap h'"
   proof -
@@ -9972,7 +9972,7 @@ local.a_ptr_disconnected_node_rel h3)\<^sup>*\<close> in_rtrancl_UnI mem_Collect
         object_ptr_kinds_M_eq2_h2[simplified] object_ptr_kinds_M_eq2_h3[simplified] node_ptr_kinds_eq2_h2[simplified]
         node_ptr_kinds_eq2_h3[simplified])[1]
     apply(auto simp add: disconnected_nodes_eq2_h3[symmetric])[1]
-    by (smt Core_DOM_Functions.i_insert_before.insert_before_list_in_set children_eq2_h3 children_h'
+    by (smt (z3) Core_DOM_Functions.i_insert_before.insert_before_list_in_set children_eq2_h3 children_h'
         children_h3 disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3 in_set_remove1
         object_ptr_kinds_eq_h3 ptr_in_heap select_result_I2)
 
@@ -11116,7 +11116,7 @@ local.a_ptr_disconnected_node_rel h3\<close> \<open>parent_child_rel h3 = parent
   moreover
   have "cast new_element_ptr \<notin> {x. (x, cast document_ptr) \<in>
 (parent_child_rel h3 \<union> a_host_shadow_root_rel h3 \<union> a_ptr_disconnected_node_rel h3)\<^sup>*}"
-    by (smt Un_iff \<open>\<And>b a. (a, b) \<in> local.a_host_shadow_root_rel h3 \<Longrightarrow>
+    by (smt (z3) Un_iff \<open>\<And>b a. (a, b) \<in> local.a_host_shadow_root_rel h3 \<Longrightarrow>
 a \<noteq> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr\<close> \<open>\<And>b a. (a, b) \<in> local.a_ptr_disconnected_node_rel h3 \<Longrightarrow>
 a \<noteq> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr\<close> \<open>\<And>b a. (a, b) \<in> parent_child_rel h3 \<Longrightarrow>
 a \<noteq> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr\<close> cast_document_ptr_not_node_ptr(1) converse_rtranclE mem_Collect_eq)
@@ -11809,7 +11809,7 @@ local.a_ptr_disconnected_node_rel h3\<close> \<open>parent_child_rel h3 = parent
   moreover
   have "cast new_character_data_ptr \<notin> {x. (x, cast document_ptr) \<in>
 (parent_child_rel h3 \<union> a_host_shadow_root_rel h3 \<union> a_ptr_disconnected_node_rel h3)\<^sup>*}"
-    by (smt Un_iff calculation(1) calculation(2) calculation(3) cast_document_ptr_not_node_ptr(2)
+    by (smt (z3) Un_iff calculation(1) calculation(2) calculation(3) cast_document_ptr_not_node_ptr(2)
         converse_rtranclE mem_Collect_eq)
   moreover
   have "acyclic (parent_child_rel h3 \<union> a_host_shadow_root_rel h3 \<union> a_ptr_disconnected_node_rel h3)"
@@ -12713,7 +12713,7 @@ h2 \<turnstile> get_shadow_root character_data_ptr \<rightarrow>\<^sub>r shadow_
   then have "a_distinct_lists h'"
     apply(auto simp add: a_distinct_lists_def element_ptr_kinds_eq_h3 select_result_eq[OF shadow_root_eq_h3])[1]
     apply(auto simp add: distinct_insort intro!: distinct_concat_map_I split: option.splits)[1]
-    by (smt \<open>type_wf h3\<close> assms(1) assms(2) h' h2 local.get_shadow_root_ok
+    by (smt (z3) \<open>type_wf h3\<close> assms(1) assms(2) h' h2 local.get_shadow_root_ok
         local.get_shadow_root_shadow_root_ptr_in_heap local.set_shadow_root_get_shadow_root local.shadow_root_same_host
         new\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M_ptr_not_in_heap new_shadow_root_ptr returns_result_select_result select_result_I2 shadow_root_eq_h
         shadow_root_eq_h2 shadow_root_eq_h3)
@@ -12738,7 +12738,7 @@ h2 \<turnstile> get_shadow_root character_data_ptr \<rightarrow>\<^sub>r shadow_
         by (simp add: \<open>element_ptr |\<in>| element_ptr_kinds h\<close> element_ptr_kinds_eq_h element_ptr_kinds_eq_h2
             element_ptr_kinds_eq_h3)
       moreover have "|h' \<turnstile> get_tag_name element_ptr|\<^sub>r \<in> safe_shadow_root_element_types"
-        by (smt \<open>\<And>thesis. (\<And>h2 h3 new_shadow_root_ptr element_tag_name. \<lbrakk>h \<turnstile> get_tag_name element_ptr \<rightarrow>\<^sub>r element_tag_name;
+        by (smt (z3) \<open>\<And>thesis. (\<And>h2 h3 new_shadow_root_ptr element_tag_name. \<lbrakk>h \<turnstile> get_tag_name element_ptr \<rightarrow>\<^sub>r element_tag_name;
 element_tag_name \<in> safe_shadow_root_element_types; h \<turnstile> get_shadow_root element_ptr \<rightarrow>\<^sub>r None; h \<turnstile> new\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M \<rightarrow>\<^sub>h h2;
 h \<turnstile> new\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M \<rightarrow>\<^sub>r new_shadow_root_ptr; h2 \<turnstile> set_mode new_shadow_root_ptr new_mode \<rightarrow>\<^sub>h h3;
 h3 \<turnstile> set_shadow_root element_ptr (Some new_shadow_root_ptr) \<rightarrow>\<^sub>h h'\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
@@ -12844,7 +12844,7 @@ parent_child_rel h3 \<union> a_host_shadow_root_rel h3 \<union> a_ptr_disconnect
   moreover
   have "cast new_shadow_root_ptr \<notin> {x. (x, cast element_ptr) \<in>
 (parent_child_rel h3 \<union> a_host_shadow_root_rel h3 \<union> a_ptr_disconnected_node_rel h3)\<^sup>*}"
-    by (smt Un_iff calculation(1) calculation(2) calculation(3) cast_document_ptr_not_node_ptr(2) converse_rtranclE mem_Collect_eq)
+    by (smt (z3) Un_iff calculation(1) calculation(2) calculation(3) cast_document_ptr_not_node_ptr(2) converse_rtranclE mem_Collect_eq)
   moreover
   have "acyclic (parent_child_rel h3 \<union> a_host_shadow_root_rel h3 \<union> a_ptr_disconnected_node_rel h3)"
     using \<open>acyclic (parent_child_rel h \<union> local.a_host_shadow_root_rel h \<union> local.a_ptr_disconnected_node_rel h)\<close>

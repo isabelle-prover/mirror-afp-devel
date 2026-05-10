@@ -27,7 +27,7 @@ proof -
   have "x[y\<longmapsto>x[[x[[y]]]]] = (y \<sqinter> y\<^sup>T * x * x) \<squnion> (-y \<sqinter> x)"
     by (simp add: conv_dist_comp)
   also have "... \<le> (y \<sqinter> y\<^sup>T) * x * x \<squnion> x"
-    by (smt assms inf.eq_refl inf.sup_monoid.add_commute inf_le1 sup_mono vector_inf_comp)
+    by (smt (z3) assms inf.eq_refl inf.sup_monoid.add_commute inf_le1 sup_mono vector_inf_comp)
   also have "... \<le> x * x \<squnion> x"
     by (smt (verit) assms comp_associative conv_dist_comp coreflexive_comp_top_inf inf.cobounded2 sup_left_isotone symmetric_top_closed)
   finally show ?thesis
@@ -108,7 +108,7 @@ proof -
   finally have 2: "(z \<sqinter> y\<^sup>T * x) * (-z \<sqinter> y \<sqinter> z\<^sup>T * x)\<^sup>T \<le> 1"
     .
   have "(z \<sqinter> y\<^sup>T * x) * (-z \<sqinter> -y \<sqinter> x)\<^sup>T \<le> y\<^sup>T * x * (-y\<^sup>T \<sqinter> x\<^sup>T)"
-    by (smt comp_isotone conv_complement conv_dist_inf inf.cobounded2 inf.sup_monoid.add_assoc)
+    by (smt (z3) comp_isotone conv_complement conv_dist_inf inf.cobounded2 inf.sup_monoid.add_assoc)
   also have "... = y\<^sup>T * x * x\<^sup>T \<sqinter> -y\<^sup>T"
     by (simp add: inf.commute assms(2) covector_comp_inf vector_conv_compl)
   also have "... \<le> y\<^sup>T \<sqinter> -y\<^sup>T"
@@ -590,7 +590,7 @@ proof unfold_locales
   hence "point ?q"
     using choose_point_point vector_top_closed mult_assoc by auto
   hence 6: "arc ?y"
-    using 3 by (smt bijective_conv_mapping inf.sup_monoid.add_commute mapping_inf_point_arc)
+    using 3 by (smt (z3) bijective_conv_mapping inf.sup_monoid.add_commute mapping_inf_point_arc)
   have "?q \<le> --((?p \<sqinter> x)\<^sup>T * top)"
     by (simp add: choose_point_decreasing)
   hence "?y \<le> ?p \<sqinter> --((?p \<sqinter> x)\<^sup>T * top)\<^sup>T"
@@ -1155,9 +1155,9 @@ proof -
     have "(p0 * p0)\<^sup>T * y = y"
       using 2 mult_assoc conv_dist_comp by auto
     hence "y \<sqinter> p0 * p0 = y \<sqinter> p0"
-      using 1 2 by (smt path_halving_invariant_def update_postcondition)
+      using 1 2 by (smt (z3) path_halving_invariant_def update_postcondition)
     hence 4: "y \<sqinter> p = y \<sqinter> p0 * p0"
-      using 1 2 by (smt path_halving_invariant_def update_postcondition)
+      using 1 2 by (smt (z3) path_halving_invariant_def update_postcondition)
     have "p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = (p0[(p0 * p0)\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T])[(p0 * p0)\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
       using 1 bijective_regular path_halving_invariant_def update_split by blast
     also have "... = p[(p0 * p0)\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
@@ -1326,7 +1326,7 @@ proof -
   also have "... = ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q4 * ?q2\<^sup>\<star>"
     using 10 by simp
   also have "... = ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q2 * p0 * ?q2\<^sup>\<star>"
-    using 2 by (smt vector_complement_closed vector_inf_comp mult_assoc)
+    using 2 by (smt (z3) vector_complement_closed vector_inf_comp mult_assoc)
   also have "... = ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q2 * (?q2 \<squnion> ?q1) * ?q2\<^sup>\<star>"
     using 1 by (smt (verit) comp_associative comp_inf.mult_right_dist_sup comp_inf.star_slide inf_top.right_neutral regular_complement_top)
   also have "... = ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q2 * ?q2 * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q2 * ?q1 * ?q2\<^sup>\<star>"
@@ -1336,7 +1336,7 @@ proof -
   also have "... = ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q2 * ?q2 * ?q2\<^sup>\<star>"
     using 11 by simp
   also have "... \<le> ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<squnion> ?q1 * ?q2\<^sup>\<star>"
-    by (smt comp_associative comp_isotone mult_right_isotone star.circ_increasing star.circ_transitive_equal star.left_plus_below_circ sup_right_isotone)
+    by (smt (z3) comp_associative comp_isotone mult_right_isotone star.circ_increasing star.circ_transitive_equal star.left_plus_below_circ sup_right_isotone)
   also have "... = ?q1 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star>"
     by (smt (verit, best) comp_associative semiring.distrib_left star.circ_loop_fixpoint star.circ_transitive_equal star_involutive)
   finally have 13: "?q3 * p0 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star> \<le> p0 * ?q3\<^sup>\<star> * ?q2\<^sup>\<star>"
@@ -1506,7 +1506,7 @@ proof -
   also have "... = p0\<^sup>\<star> * ?r0 * ?r0\<^sup>T * p0\<^sup>T\<^sup>\<star>"
     using 29 by (smt (verit) vector_covector vector_inf_comp vector_mult_closed)
   also have "... = ?p\<^sup>\<star> * ?r0 * ?r0\<^sup>T * ?p\<^sup>T\<^sup>\<star>"
-    using 21 by (smt comp_associative conv_dist_comp conv_star_commute)
+    using 21 by (smt (z3) comp_associative conv_dist_comp conv_star_commute)
   also have "... = ?p\<^sup>\<star> * ?rp * ?rp\<^sup>T * ?p\<^sup>T\<^sup>\<star>"
     using 26 by auto
   also have "... \<le> ?p\<^sup>\<star> * 1 * ?p\<^sup>T\<^sup>\<star>"
@@ -1704,7 +1704,7 @@ proof -
         hence 10: "regular (?px \<sqinter> -?ptpy \<sqinter> y)"
           by auto
         have "p0[?px \<sqinter> -(p0\<^sup>T\<^sup>\<star> * (p[[y]]))\<longmapsto>?p2t] = p0[?px \<sqinter> -?ptpy\<longmapsto>?p2t]"
-          using 1 by (smt comp_associative path_splitting_invariant_aux(1) star_plus)
+          using 1 by (smt (z3) comp_associative path_splitting_invariant_aux(1) star_plus)
         also have "... = p0[?pxy \<squnion> (?px \<sqinter> -?ptpy \<sqinter> y)\<longmapsto>?p2t]"
           using 8 by (metis comp_inf.semiring.distrib_left inf.sup_monoid.add_assoc)
         also have "... = ?p[?px \<sqinter> -?ptpy \<sqinter> y\<longmapsto>?p2t]"
@@ -1790,9 +1790,9 @@ proof -
     have "(p0 * p0)\<^sup>T * y = y"
       using 5 mult_assoc conv_dist_comp by auto
     hence "y \<sqinter> p0 * p0 = y \<sqinter> p0"
-      using 1 5 by (smt path_splitting_invariant_def update_postcondition)
+      using 1 5 by (smt (z3) path_splitting_invariant_def update_postcondition)
     hence 7: "y \<sqinter> p = y \<sqinter> p0 * p0"
-      using 1 5 by (smt path_splitting_invariant_def update_postcondition)
+      using 1 5 by (smt (z3) path_splitting_invariant_def update_postcondition)
     have "p0[p0\<^sup>T\<^sup>\<star> * x\<longmapsto>(p0 * p0)\<^sup>T] = (p0[p0\<^sup>T\<^sup>\<star> * x - y\<longmapsto>(p0 * p0)\<^sup>T])[p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
       using 1 bijective_regular path_splitting_invariant_def update_split by blast
     also have "... = p[p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<longmapsto>(p0 * p0)\<^sup>T]"
@@ -2263,9 +2263,9 @@ lemma union_sets_1_swap:
 proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
   let ?p = "p2[s\<longmapsto>r]"
   have 1: "disjoint_set_forest p1 \<and> point r \<and> r = root p1 x \<and> p1 \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p1 = fc p0"
-    by (smt assms(1,2) union_sets_precondition_def path_compression_postcondition_def root_point)
+    by (smt (z3) assms(1,2) union_sets_precondition_def path_compression_postcondition_def root_point)
   have 2: "disjoint_set_forest p2 \<and> point s \<and> s = root p2 y \<and> p2 \<sqinter> 1 = p1 \<sqinter> 1 \<and> fc p2 = fc p1"
-    by (smt assms(1,3) union_sets_precondition_def path_compression_postcondition_def root_point)
+    by (smt (z3) assms(1,3) union_sets_precondition_def path_compression_postcondition_def root_point)
   hence 3: "fc p2 = fc p0"
     using 1 by simp
   show 4: "univalent ?p"
@@ -2282,7 +2282,7 @@ proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro co
     hence "bot = s \<sqinter> r"
       using 1 2 distinct_points inf_commute by blast
     also have "... = s \<sqinter> p1\<^sup>T\<^sup>\<star> * r"
-      using 1 by (smt root_transitive_successor_loop)
+      using 1 by (smt (z3) root_transitive_successor_loop)
     also have "... = s \<sqinter> p2\<^sup>T\<^sup>\<star> * r"
       using 1 2 by (smt (verit) inf_assoc inf_commute same_root)
     finally have "r \<sqinter> p2\<^sup>\<star> * s = bot"
@@ -2439,7 +2439,7 @@ lemma union_sets_1_skip:
   shows "union_sets_postcondition p2 x y p0"
 proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
   have 1: "point r \<and> r = root p1 x \<and> fc p1 = fc p0 \<and> disjoint_set_forest p2 \<and> r = root p2 y \<and> fc p2 = fc p1"
-    by (smt assms(1-3) union_sets_precondition_def path_compression_postcondition_def root_point)
+    by (smt (z3) assms(1-3) union_sets_precondition_def path_compression_postcondition_def root_point)
   thus "univalent p2" "total p2" "acyclic (p2 - 1)"
     by auto
   have "r \<le> p1\<^sup>T\<^sup>\<star> * x"
@@ -2480,7 +2480,7 @@ lemma path_compression_preserves_rank_property:
 proof (unfold rank_property_def, intro conjI)
   let ?px = "p0\<^sup>T\<^sup>\<star> * x"
   have 1: "point y"
-    by (smt assms(1,2) path_compression_postcondition_def root_point)
+    by (smt (z3) assms(1,2) path_compression_postcondition_def root_point)
   have 2: "vector ?px"
     using assms(1,2) comp_associative path_compression_postcondition_def by auto
   have "root p0 x = root p x"
@@ -2566,7 +2566,7 @@ proof vcg_tc_simp
   hence 4: "rank_property ?p2 rank"
     using 1 2 3 by (meson path_compression_preserves_rank_property path_compression_postcondition_def union_sets_precondition_def)
   have 5: "point ?r" "point ?s"
-    using 1 2 3 by (smt path_compression_postcondition_def union_sets_precondition_def root_point)+
+    using 1 2 3 by (smt (z3) path_compression_postcondition_def union_sets_precondition_def root_point)+
   hence 6: "point ?rr" "point ?rs"
     using 1 comp_associative read_injective read_surjective rank_property_def by auto
   have "top \<le> S'\<^sup>\<star> \<squnion> S'\<^sup>+\<^sup>T"
@@ -2603,7 +2603,7 @@ proof vcg_tc_simp
               hence "?r \<sqinter> ?s\<^sup>T \<sqinter> 1 = bot"
                 by (metis (full_types) bot_least inf.left_commute inf.sup_monoid.add_commute one_inf_conv pseudo_complement)
               hence "?p3 \<sqinter> 1 \<le> ?p2"
-                by (smt half_shunting inf.cobounded2 pseudo_complement regular_one_closed semiring.add_mono sup_commute)
+                by (smt (z3) half_shunting inf.cobounded2 pseudo_complement regular_one_closed semiring.add_mono sup_commute)
               hence "roots ?p3 \<le> roots ?p2"
                 by (simp add: mult_left_isotone)
               thus "card_less_eq (roots ?p3) (-(S'\<^sup>+ * rank\<^sup>T * top))"
@@ -2735,9 +2735,9 @@ proof vcg_tc_simp
                       also have "... \<le> S'\<^sup>T * ?rs \<squnion> rank\<^sup>T * top"
                         using 5 6 by (metis inf.eq_refl mult_assoc)
                       finally have "S'\<^sup>+ * ?rank\<^sup>T * top \<le> S'\<^sup>+ * S'\<^sup>T * ?rs \<squnion> S'\<^sup>+ * rank\<^sup>T * top"
-                        by (smt comp_associative mult_left_dist_sup mult_right_isotone)
+                        by (smt (z3) comp_associative mult_left_dist_sup mult_right_isotone)
                       also have "... = S'\<^sup>\<star> * (S' * S'\<^sup>T) * ?rs \<squnion> S'\<^sup>+ * rank\<^sup>T * top"
-                        by (smt star_plus mult_assoc)
+                        by (smt (z3) star_plus mult_assoc)
                       also have "... \<le> S'\<^sup>\<star> * ?rs \<squnion> S'\<^sup>+ * rank\<^sup>T * top"
                         by (metis S'_injective comp_right_one mult_left_isotone mult_right_isotone sup_left_isotone)
                       also have "... = ?rs \<squnion> S'\<^sup>+ * ?rs \<squnion> S'\<^sup>+ * rank\<^sup>T * top"
@@ -2804,7 +2804,7 @@ proof vcg_tc_simp
                       also have "... \<le> i * S'\<^sup>+\<^sup>T * i\<^sup>T * i * -(S'\<^sup>+ * rank\<^sup>T * top)"
                         using 5 by (metis point_antisymmetric mult_left_isotone mult_left_one)
                       also have "... \<le> i * S'\<^sup>+\<^sup>T * -(S'\<^sup>+ * rank\<^sup>T * top)"
-                        using 12 by (smt mult_left_isotone mult_right_isotone mult_assoc comp_right_one)
+                        using 12 by (smt (z3) mult_left_isotone mult_right_isotone mult_assoc comp_right_one)
                       also have "... \<le> i * -(S'\<^sup>\<star> * rank\<^sup>T * top)"
                       proof -
                         have "S'\<^sup>+ * S'\<^sup>\<star> * rank\<^sup>T * top \<le> S'\<^sup>+ * rank\<^sup>T * top"
@@ -2919,9 +2919,9 @@ proof vcg_tc_simp
                   also have "... = S' * top"
                     using 5 8 distinct_points by auto
                   finally have "top \<le> ?rr\<^sup>T * S' * top"
-                    using 6 by (smt conv_involutive shunt_mapping bijective_conv_mapping mult_assoc)
+                    using 6 by (smt (z3) conv_involutive shunt_mapping bijective_conv_mapping mult_assoc)
                   hence "surjective (S'\<^sup>T * ?rs)"
-                    using 6 11 by (smt conv_dist_comp conv_involutive point_conv_comp top_le)
+                    using 6 11 by (smt (z3) conv_dist_comp conv_involutive point_conv_comp top_le)
                   thus "total ?rank"
                     using 4 5 bijective_regular update_total rank_property_def by blast
                   show "(?p4 - 1) * ?rank \<le> ?rank * S'\<^sup>+"
@@ -2955,7 +2955,7 @@ proof vcg_tc_simp
                         also have "... \<le> (?p2 \<sqinter> 1) * ?p2"
                           by (metis coreflexive_comp_top_inf inf.cobounded2 mult_left_isotone)
                         also have "... \<le> ?p2 \<sqinter> 1"
-                          by (smt 23 comp_inf.mult_semi_associative conv_dist_comp conv_dist_inf conv_order equivalence_one_closed inf.absorb1 inf.sup_monoid.add_assoc injective_codomain)
+                          by (smt (z3) 23 comp_inf.mult_semi_associative conv_dist_comp conv_dist_inf conv_order equivalence_one_closed inf.absorb1 inf.sup_monoid.add_assoc injective_codomain)
                         also have "... \<le> 1"
                           by simp
                         finally have "?r \<sqinter> ?p2 \<le> 1"
@@ -3041,7 +3041,7 @@ proof vcg_tc_simp
                   hence "?s \<sqinter> ?r\<^sup>T \<sqinter> 1 = bot"
                     by (metis (full_types) bot_least inf.left_commute inf.sup_monoid.add_commute one_inf_conv pseudo_complement)
                   hence "?p4 \<sqinter> 1 \<le> ?p2"
-                    by (smt half_shunting inf.cobounded2 pseudo_complement regular_one_closed semiring.add_mono sup_commute)
+                    by (smt (z3) half_shunting inf.cobounded2 pseudo_complement regular_one_closed semiring.add_mono sup_commute)
                   hence "roots ?p4 \<le> roots ?p2"
                     by (simp add: mult_left_isotone)
                   thus "card_less_eq (roots ?p4) (-(S'\<^sup>+ * rank\<^sup>T * top))"

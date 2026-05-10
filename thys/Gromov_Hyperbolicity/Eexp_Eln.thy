@@ -162,7 +162,7 @@ using assms by (auto simp add: ennreal_mult'' exp_add ennreal_top_eq_mult_iff)
 lemma eln_mult_add:
   assumes "\<not>((a = \<infinity> \<and> b = 0) \<or> (a = 0 \<and> b = \<infinity>))"
   shows "eln(a * b) = eln a + eln b"
-by (smt assms ennexp.simps(2) ennexp.simps(3) ennexp_add_mult ennexp_eln eln_ennexp)
+by (smt (z3) assms ennexp.simps(2) ennexp.simps(3) ennexp_add_mult ennexp_eln eln_ennexp)
 
 text \<open>We can also define the square root on ennreal using the above exponential.\<close>
 

@@ -179,7 +179,7 @@ lemma Fix_lsu_iff [simp]: "(x \<in> Fix \<nu>\<^sup>\<natural>) = (\<nu>\<^sup>\
   by (simp add: Fix_def)
 
 lemma lsl_lsu_prop_eq [simp]: "(\<nu>::'a::unital_quantale \<Rightarrow> 'a) \<circ> \<nu>\<^sup>\<natural> = \<nu>\<^sup>\<natural>"
-  by (smt antisym clop_extensive_var clop_lsu_lsl comp_apply le_fun_def lsided_eq_var1 lsl_lsu_prop lsu_def lsu_lsl_prop)
+  by (smt (z3) antisym clop_extensive_var clop_lsu_lsl comp_apply le_fun_def lsided_eq_var1 lsl_lsu_prop lsu_def lsu_lsl_prop)
 
 lemma lsu_lsl_prop_eq [simp]: "\<nu>\<^sup>\<natural> \<circ> \<nu> = (\<nu>::'a::unital_quantale \<Rightarrow> 'a)"
   by (metis adj_cancel_eq1 ls_galois lsl_lsu_prop_eq)
@@ -282,7 +282,7 @@ lemma lsu_Sup_closed_var [simp]: "\<nu>\<^sup>\<natural> (\<Squnion>x \<in> X. \
   by (metis SUP_image lsided_def3 lsl_Sup_closed_var lsl_lsu_prop_eq)
 
 lemma lsl_inf_closed_var [simp]: "\<nu> (\<nu> x \<sqinter> \<nu> y) = \<nu> (x::'a::unital_quantale) \<sqinter> \<nu> y"
-  by (smt antisym clop_extensive_var dang1 inf_sup_aci(1) le_inf_iff lsl_clop)
+  by (smt (z3) antisym clop_extensive_var dang1 inf_sup_aci(1) le_inf_iff lsl_clop)
 
 lemma lsl_sup_closed_var [simp]: "\<nu> (\<nu> x \<squnion> \<nu> y) = \<nu> (x::'a::unital_quantale) \<squnion> \<nu> y"
   by (meson Sup_sup_closed lsl_Sup_closed range_eqI range_lsl_iff sup_closed_set_def)
@@ -385,7 +385,7 @@ lemma rpc_expl_aux: "\<Squnion>{z. x \<sqinter> \<nu> z \<le> y} = \<Squnion>{z.
 proof (rule antisym)
   show "\<Squnion>{z. x \<sqinter> \<nu> z \<le> y} \<le> \<Squnion>{z. x \<sqinter> z \<le> y \<and> \<nu> z = z}"
     apply (rule Sup_mono, safe)
-    by (smt lsided_eq lsided_prop lsl_def lsl_lsu_prop_eq lsl_rpc_galois mem_Collect_eq o_apply rpc_def slsd_def)
+    by (smt (z3) lsided_eq lsided_prop lsl_def lsl_lsu_prop_eq lsl_rpc_galois mem_Collect_eq o_apply rpc_def slsd_def)
   show " \<Squnion>{z. x \<sqinter> z \<le> y \<and> \<nu> z = z} \<le> \<Squnion>{z. x \<sqinter> \<nu> z \<le> y}"
      by (simp add: Collect_mono_iff Sup_subset_mono)
  qed

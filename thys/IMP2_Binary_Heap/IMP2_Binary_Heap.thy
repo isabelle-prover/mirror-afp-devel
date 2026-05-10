@@ -630,7 +630,7 @@ procedure_spec sift_down(heap, l, r, x) returns heap
   subgoal
     apply(intro conjI)
     subgoal unfolding is_partial_heap_except_down_def
-      by (smt parent_two_children swap_swaps swap_only_swaps
+      by (smt (z3) parent_two_children swap_swaps swap_only_swaps
           swap_commute parent_upper_bound_alt)
     subgoal using r_child_lower_bound_alt by fastforce
     subgoal using swap_child_mset order_trans by blast
@@ -641,7 +641,7 @@ procedure_spec sift_down(heap, l, r, x) returns heap
   subgoal
     apply(intro conjI)
     subgoal unfolding is_partial_heap_except_down_def
-      by (smt parent_two_children swap_swaps swap_only_swaps
+      by (smt (z3) parent_two_children swap_swaps swap_only_swaps
           swap_commute parent_upper_bound_alt)
     subgoal using l_child_lower_bound_alt by fastforce
     subgoal using swap_child_mset order_trans by blast

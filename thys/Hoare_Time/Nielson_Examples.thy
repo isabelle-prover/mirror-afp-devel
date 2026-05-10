@@ -186,7 +186,7 @@ proof( goal_cases)
       also
       have "\<dots> = (4 + 3 * nat (s ''b'')) * (nat (s ''a'') - nat (s ''z''))"
         using z
-        by (smt \<open>4 + ((4 + 3 * nat (s ''b'')) * (nat (s ''a'') - nat (s ''z'' + 1)) + 3 * nat (s ''b'')) = 4 + ((4 + 3 * nat (s ''b'')) * (nat (s ''a'') - nat (s ''z'')) - (4 + 3 * nat (s ''b'')) + 3 * nat (s ''b''))\<close> add.left_commute diff_add distrib_left mult.right_neutral p)  
+        by (smt (z3) \<open>4 + ((4 + 3 * nat (s ''b'')) * (nat (s ''a'') - nat (s ''z'' + 1)) + 3 * nat (s ''b'')) = 4 + ((4 + 3 * nat (s ''b'')) * (nat (s ''a'') - nat (s ''z'')) - (4 + 3 * nat (s ''b'')) + 3 * nat (s ''b''))\<close> add.left_commute diff_add distrib_left mult.right_neutral p)  
       
       finally show ?case by simp
     qed

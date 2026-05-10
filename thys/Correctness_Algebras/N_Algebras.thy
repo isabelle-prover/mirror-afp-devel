@@ -327,7 +327,7 @@ lemma n_top_meet_L_split_L:
   "x * top * y \<sqinter> L \<le> x * bot \<squnion> L * y"
 proof -
   have "x * top * y \<sqinter> L \<le> x * bot \<squnion> n(x * L) * L * y"
-    by (smt n_top_meet_L_below_L mult_assoc n_L_L_L n_L_split_n_L_L mult_right_dist_sup mult_left_zero)
+    by (smt (z3) n_top_meet_L_below_L mult_assoc n_L_L_L n_L_split_n_L_L mult_right_dist_sup mult_left_zero)
   also have "... \<le> x * bot \<squnion> x * L * y"
     using mult_left_isotone n_L_decreasing sup_right_isotone by force
   also have "... \<le> x * bot \<squnion> (x * bot \<squnion> L) * y"
@@ -468,7 +468,7 @@ proof -
   also have "... \<le> n(x) * (top * y \<sqinter> L) \<squnion> n(x) * n(L * bot) * top"
     by (metis sup_right_isotone mult_assoc mult_left_dist_sup mult_right_isotone top_greatest)
   also have "... \<le> (n(x) * top * y \<sqinter> L) \<squnion> n(n(x) * L * bot) * top"
-    by (smt sup_left_isotone order.trans inf_greatest mult_assoc mult_left_sub_dist_inf_left mult_left_sub_dist_inf_right n_export n_galois n_sub_nL)
+    by (smt (z3) sup_left_isotone order.trans inf_greatest mult_assoc mult_left_sub_dist_inf_left mult_left_sub_dist_inf_right n_export n_galois n_sub_nL)
   also have "... \<le> x * y \<squnion> n(n(x) * L * bot) * top"
     using 1 sup_left_isotone by blast
   also have "... \<le> x * y \<squnion> n(x * bot) * top"

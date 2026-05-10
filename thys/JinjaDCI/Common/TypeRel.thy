@@ -679,7 +679,7 @@ proof -
     then show ?case using map by(fastforce intro: has_fields_Object)
   qed
   then show ?thesis using FDTs
-    by (smt map_eq_conv old.prod.case prod_cases3 sees_field_def split_cong)
+    by (smt (z3) map_eq_conv old.prod.case prod_cases3 sees_field_def split_cong)
 qed
 (*>*)
 

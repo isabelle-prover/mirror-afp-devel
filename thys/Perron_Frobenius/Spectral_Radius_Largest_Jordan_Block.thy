@@ -104,7 +104,7 @@ proof (rule ccontr)
         from arg_cong[OF id, of "\<lambda> x. x mod d i"] * have a: "a1 = a2" by auto
         note a c
       }
-      thus ?thesis by (smt SigmaE inj_onI)
+      thus ?thesis by (smt (z3) SigmaE inj_onI)
     qed
     have "sum (\<lambda> k. x i ^ k) {..< D} = sum (\<lambda> (a,c). x i ^ (a + d i * c)) ?B" 
       unfolding D by (subst sum.reindex, rule inj, auto intro!: sum.cong) 
@@ -762,7 +762,7 @@ proof -
         from diff[OF this] have norm: "norm (M k - E) < E / 2" .
         have "M k \<ge> 0" unfolding M_def by auto
         with E norm have "M k \<ge> E / 2"
-          by (smt real_norm_def field_sum_of_halves)
+          by (smt (z3) real_norm_def field_sum_of_halves)
         with ge[of k] E have "G k \<ge> E / 2" by auto
         also have "E / 2 = B" unfolding E_def B_def j norm_mult norm_power 
           cmod_lambda[OF jR] by auto
@@ -776,7 +776,7 @@ proof -
     from Bound obtain kk' where kk': "\<And> k. k \<ge> kk' \<Longrightarrow> B \<le> G k" by auto
     define k where "k = max kk kk'" 
     with kk kk' have 1: "norm (G k - Re F) < B / 2" "B \<le> G k" by auto
-    with B have "Re F > 0" by (smt real_norm_def field_sum_of_halves)
+    with B have "Re F > 0" by (smt (z3) real_norm_def field_sum_of_halves)
   }
   thus ?thesis by blast
 qed
@@ -878,7 +878,7 @@ proof -
     from False have isr0: "isr \<noteq> 0" unfolding isr_def by auto
     hence cisr0: "?c isr \<noteq> 0" by auto
     from False assms(4) have isr_pos: "isr > 0" unfolding isr_def
-      by (smt norm_ge_zero positive_imp_inverse_positive)    
+      by (smt (z3) norm_ge_zero positive_imp_inverse_positive)    
     define C where "C = isr \<cdot>\<^sub>m B"
     have C: "C \<in> carrier_mat n n" using B unfolding C_def by auto
     have BC: "B = ?sr \<cdot>\<^sub>m C" using isr0 unfolding C_def isr_def by auto
@@ -888,7 +888,7 @@ proof -
     have jnf: "jordan_nf (map_mat ?c C) ?nas" unfolding C_def by (auto simp: of_real_hom.hom_smult_mat)
     from assms(3) have mem: "(m, ?c isr * lam) \<in> set ?nas" by auto
     have 1: "cmod (?c isr * lam) = 1" using False isr_pos unfolding isr_def norm_mult assms(4)
-      by (smt mult.commute norm_of_real right_inverse)        
+      by (smt (z3) mult.commute norm_of_real right_inverse)        
     {
       fix x
       have B': "map_mat ?c B \<in> carrier_mat n n" using B by auto

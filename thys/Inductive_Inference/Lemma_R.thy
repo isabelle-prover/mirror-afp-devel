@@ -1037,7 +1037,7 @@ next
     then have "s (e_snoc ((adverse z' i j) \<triangleright> (Suc n)) 0) = s ((adverse z' i j) \<triangleright> (Suc n))"
       using init_zz' by simp
     then have "adverse z' i j (Suc (Suc n)) \<down>= 1"
-      using init_zz' Suc.prems adverse_Suc by (smt le_refl zero_less_Suc)
+      using init_zz' Suc.prems adverse_Suc by (smt (z3) le_refl zero_less_Suc)
     moreover have "adverse z i j (Suc (Suc n)) \<down>= 1"
       using False Suc.prems adverse_Suc by auto
     ultimately show ?thesis by simp
@@ -1256,13 +1256,13 @@ lemma parallel_0:
   assumes "parallel i j x \<down>= prod_encode (0, v)"
   shows "\<phi> i x \<down>= v"
   using parallel assms
-  by (smt option.collapse option.sel option.simps(3) prod.inject prod_encode_eq zero_neq_one)
+  by (smt (z3) option.collapse option.sel option.simps(3) prod.inject prod_encode_eq zero_neq_one)
 
 lemma parallel_1:
   assumes "parallel i j x \<down>= prod_encode (1, v)"
   shows "\<phi> j x \<down>= v"
   using parallel assms
-  by (smt option.collapse option.sel option.simps(3) prod.inject prod_encode_eq zero_neq_one)
+  by (smt (z3) option.collapse option.sel option.simps(3) prod.inject prod_encode_eq zero_neq_one)
 
 lemma parallel_converg_V01:
   assumes "f \<in> V\<^sub>0\<^sub>1"
@@ -1411,7 +1411,7 @@ proof (cases "\<exists>x<e_length e. \<phi> i x \<down>\<noteq> e_nth e x")
   case True
   then show ?thesis
     using inconsist_converg[OF assms]
-    by (smt Least_le dual_order.strict_implies_order dual_order.strict_trans2 option.sel)
+    by (smt (z3) Least_le dual_order.strict_implies_order dual_order.strict_trans2 option.sel)
 next
   case False
   then show ?thesis using inconsist_converg[OF assms] by auto
@@ -1660,7 +1660,7 @@ proof -
           case False
           then have not_ex: "\<not> (\<exists>x<j. \<phi> i x \<down>\<noteq> e_nth e x)"
             using Least_le[of "\<lambda>x. x < j \<and> \<phi> i x \<down>\<noteq> e_nth e x"] j_le
-            by (smt leD le_less_linear le_trans)
+            by (smt (z3) leD le_less_linear le_trans)
           then have "?v = e_length e" by argo
           with False have lhs: "?lhs = (if \<phi> i j \<down>= e_nth e j then e_length e else j)"
             by simp

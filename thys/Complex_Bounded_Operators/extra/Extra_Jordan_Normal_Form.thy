@@ -310,7 +310,7 @@ proof -
       using \<open>T ! length (rev U) = a\<close> that(1)
         \<open>length (rev U) < length T\<close> dual_order.strict_trans by blast
     moreover have "T ! j = (rev U) ! j" if "j < length (rev U)" for j
-      by (smt T_def \<open>length (rev U) < length T\<close> dual_order.strict_trans list_update_append1
+      by (smt (z3) T_def \<open>length (rev U) < length T\<close> dual_order.strict_trans list_update_append1
           list_update_id nth_list_update_eq that)
     ultimately have "a \<bullet>c u = 0" if "u \<in> set (rev U)" for u
       by (metis in_set_conv_nth that)

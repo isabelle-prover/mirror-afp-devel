@@ -103,13 +103,13 @@ proof
     hence "(norm (1::'a))^2 = 1"
       by (simp add: cnorm_eq_1 power2_eq_1_iff)
     hence "norm (1::'a) = 1"
-      by (smt abs_norm_cancel power2_eq_1_iff)
+      by (smt (z3) abs_norm_cancel power2_eq_1_iff)
     hence "cmod (((1::'a) \<bullet>\<^sub>C x) * ((1::'a) \<bullet>\<^sub>C y)) * norm (1::'a) = cmod (((1::'a) \<bullet>\<^sub>C x) * ((1::'a) \<bullet>\<^sub>C y))"
       by simp
     also have "\<dots> = cmod (((1::'a) \<bullet>\<^sub>C x)) * cmod (((1::'a) \<bullet>\<^sub>C y))"
       by (simp add: norm_mult)
     also have "\<dots> \<le> norm (1::'a) * norm x * norm (1::'a) * norm y"
-      by (smt \<open>norm 1 = 1\<close> mult.commute mult_cancel_right1 norm_scaleC one_cinner_a_scaleC_one)
+      by (smt (z3) \<open>norm 1 = 1\<close> mult.commute mult_cancel_right1 norm_scaleC one_cinner_a_scaleC_one)
     also have "\<dots> = norm x * norm y"
       by (simp add: \<open>norm 1 = 1\<close>)
     finally show ?thesis

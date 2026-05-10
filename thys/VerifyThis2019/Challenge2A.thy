@@ -159,7 +159,7 @@ text \<open>Using this lemma, we can show that the stack popping procedure prese
 lemma pop_aux: "\<lbrakk> k<i\<^sub>0; i\<^sub>0<length xs; left_spec i\<^sub>0 \<le> Some k \<rbrakk> \<Longrightarrow> pop (k # der_stack k) (xs!i\<^sub>0) = der_stack i\<^sub>0"
   apply (induction k rule: nat_less_induct)
   apply (clarsimp)
-  by (smt der_stack.simps left_alt pop_def the_leftI dropWhile.simps(1) find_left_rl leD less_option_None_Some option.inject pop_cons)
+  by (smt (z3) der_stack.simps left_alt pop_def the_leftI dropWhile.simps(1) find_left_rl leD less_option_None_Some option.inject pop_cons)
   
   
 subsubsection \<open>Main Algorithm\<close>  

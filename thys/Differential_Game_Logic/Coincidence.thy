@@ -62,7 +62,7 @@ proof
     by (auto simp add: restrictto_def Vagree_def)
 next
   show "restrictto X (V\<inter>W) \<subseteq> restrictto (restrictto X V) W" 
-  (*by (smt Vagree_ror mem_Collect_eq restrictto_def subsetI)*)
+  (*by (smt (z3) Vagree_ror mem_Collect_eq restrictto_def subsetI)*)
   proof - (* sledgehammer *)
   obtain rr :: "(variable \<Rightarrow> real) set \<Rightarrow> (variable \<Rightarrow> real) set \<Rightarrow> variable \<Rightarrow> real" where
   "\<forall>x0 x1. (\<exists>v2. v2 \<in> x1 \<and> v2 \<notin> x0) = (rr x0 x1 \<in> x1 \<and> rr x0 x1 \<notin> x0)"
@@ -438,7 +438,7 @@ lemma Bignorabimus_single [simp]: "game_sem I \<alpha> (selectlike X \<omega> M)
   by (meson monotone selectlike_shrinks subsetCE)
 
 lemma Bignorabimus_equiv [simp]: "Bignorabimus \<alpha> = {M. \<forall>I.\<forall>\<omega>.\<forall>X. (\<omega>\<in>game_sem I \<alpha> X \<longrightarrow> \<omega>\<in>game_sem I \<alpha> (selectlike X \<omega> M))}"
-  (*by (smt Bignorabimus_def Bignorabimus_single Collect_cong subsetCE)*)
+  (*by (smt (z3) Bignorabimus_def Bignorabimus_single Collect_cong subsetCE)*)
 proof - (*sledgehammer transformed*)
   obtain VV :: "(variable set \<Rightarrow> bool) \<Rightarrow> (variable set \<Rightarrow> bool) \<Rightarrow> variable set" where
     f1: "\<forall>p pa. (\<not> p (VV pa p)) = pa (VV pa p) \<or> Collect p = Collect pa"
@@ -532,7 +532,7 @@ proof-
   have base: "{x}\<in>Bignorabimus \<alpha>" if a3: "x\<notin>BVG \<alpha>" for x using a3 and Bignorabimus_init by simp
   have h: "-BVG \<alpha> = \<Union>{xx. \<exists>x. xx={x} \<and> x\<notin>BVG \<alpha>}" by blast (* finite *)
   have "(-BVG \<alpha>)\<in>Bignorabimus \<alpha>" using base h
-  (*by (smt Bignorabimus_step mem_Collect_eq)*)
+  (*by (smt (z3) Bignorabimus_step mem_Collect_eq)*)
   proof - (*sledgehammer*)
     obtain VV :: "game \<Rightarrow> variable set set \<Rightarrow> variable set" where
       f1: "\<forall>x0 x1. (\<exists>v2. v2 \<in> x1 \<and> v2 \<notin> Bignorabimus x0) = (VV x0 x1 \<in> x1 \<and> VV x0 x1 \<notin> Bignorabimus x0)"
@@ -734,7 +734,7 @@ proof
         case (step A B)
         then have IH: "selectlike A \<omega> {x} = selectlike B \<omega> {x}" by simp
         then show ?case
-        (* using selectlike_union n\<alpha> select_nonBV IH by (smt insert_absorb2 insert_def selectlike_compose singleton_conv smt_solver=cvc4)  *)
+        (* using selectlike_union n\<alpha> select_nonBV IH by (smt (z3) insert_absorb2 insert_def selectlike_compose singleton_conv smt_solver=cvc4)  *)
         proof-
           have "selectlike (X \<union> game_sem I \<alpha> A) \<omega> {x} = selectlike X \<omega> {x} \<union> selectlike (game_sem I \<alpha> A) \<omega> {x}" using selectlike_union by simp
           also have "... = selectlike X \<omega> {x} \<union> selectlike (game_sem I \<alpha> (selectlike A \<omega> {x})) \<omega> {x}" using n\<alpha> select_nonBV by blast 

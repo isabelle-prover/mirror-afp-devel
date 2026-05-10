@@ -73,7 +73,7 @@ lemma n_sup_right_absorb_mult:
 
 lemma n_mult_commutative:
   "n(x) * n(y) = n(y) * n(x)"
-  by (smt sup_commute mult_left_dist_sup mult_right_dist_sup n_sup_left_absorb_mult n_sup_right_absorb_mult n_export n_mult_idempotent)
+  by (smt (z3) sup_commute mult_left_dist_sup mult_right_dist_sup n_sup_left_absorb_mult n_sup_right_absorb_mult n_export n_mult_idempotent)
 
 lemma n_sup_left_dist_mult:
   "n(x) \<squnion> n(y) * n(z) = (n(x) \<squnion> n(y)) * (n(x) \<squnion> n(z))"
@@ -503,17 +503,17 @@ lemma mult_L_sup_omega:
 
 lemma mult_L_sup_circ:
   "(x * L \<squnion> y)\<^sup>\<Omega> = n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> \<squnion> y\<^sup>\<star> * x * L"
-  by (smt sup_assoc sup_commute Omega_def le_iff_sup mult_L_sup_omega mult_L_sup_star mult_right_dist_sup n_L_decreasing n_dist_sup)
+  by (smt (z3) sup_assoc sup_commute Omega_def le_iff_sup mult_L_sup_omega mult_L_sup_star mult_right_dist_sup n_L_decreasing n_dist_sup)
 
 lemma circ_sup_n:
   "(x\<^sup>\<Omega> * y)\<^sup>\<Omega> * x\<^sup>\<Omega> = n((x\<^sup>\<star> * y)\<^sup>\<omega>) * L \<squnion> ((x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * n(x\<^sup>\<omega>) * L)"
-  by (smt L_left_zero sup_assoc sup_commute Omega_def mult_L_sup_circ mult_assoc mult_left_dist_sup mult_right_dist_sup)
+  by (smt (z3) L_left_zero sup_assoc sup_commute Omega_def mult_L_sup_circ mult_assoc mult_left_dist_sup mult_right_dist_sup)
 
 text \<open>Theorem 20.6\<close>
 
 lemma n_omega_induct:
   "n(y) \<le> n(x * y \<squnion> z) \<Longrightarrow> n(y) \<le> n(x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z)"
-  by (smt sup_commute mult_assoc n_dist_sup n_galois n_mult omega_induct)
+  by (smt (z3) sup_commute mult_assoc n_dist_sup n_galois n_mult omega_induct)
 
 lemma n_Omega_left_unfold:
   "1 \<squnion> x * x\<^sup>\<Omega> = x\<^sup>\<Omega>"
@@ -538,7 +538,7 @@ proof -
   also have "... = n((x\<^sup>\<star> * y)\<^sup>\<omega>) * L \<squnion> n((x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>) * L \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * bot \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star>"
     using n_L_split sup.left_commute sup_commute by auto
   also have "... = n((x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>) * L \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star>"
-    by (smt sup_assoc sup_bot_left mult_left_dist_sup mult_right_dist_sup n_dist_sup)
+    by (smt (z3) sup_assoc sup_bot_left mult_left_dist_sup mult_right_dist_sup n_dist_sup)
   also have "... = (x \<squnion> y)\<^sup>\<Omega>"
     by (simp add: Omega_def omega_decompose star.circ_sup_9)
   finally show ?thesis
@@ -556,17 +556,17 @@ proof -
   finally have 1: "z * x \<le> n(y\<^sup>\<omega>) * L \<squnion> y * y\<^sup>\<star> * z \<squnion> w"
     by (metis sup_assoc sup_commute sup_bot_left mult_assoc mult_left_dist_sup n_L_split omega_unfold)
   hence "(n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>) * x \<le> n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * (n(y\<^sup>\<omega>) * L \<squnion> y * y\<^sup>\<star> * z \<squnion> w) \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
-    by (smt L_left_zero sup_assoc sup_ge1 sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup star.circ_back_loop_fixpoint)
+    by (smt (z3) L_left_zero sup_assoc sup_ge1 sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup star.circ_back_loop_fixpoint)
   also have "... = n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * y * y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
     using semiring.distrib_left sup_assoc mult_assoc by auto
   also have "... = n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * y * y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
     by (smt (verit, ccfv_SIG) le_supI1 order.refl semiring.add_mono star.circ_back_loop_prefixpoint sup.bounded_iff sup.coboundedI1 sup.mono sup_left_divisibility sup_right_divisibility sup_same_context)
   also have "... = n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * y * y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
-    by (smt sup_assoc sup_commute sup_idem mult_assoc mult_left_dist_sup n_L_split star_mult_omega)
+    by (smt (z3) sup_assoc sup_commute sup_idem mult_assoc mult_left_dist_sup n_L_split star_mult_omega)
   also have "... \<le> n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
     by (meson mult_left_isotone order_refl semiring.add_left_mono star.circ_mult_upper_bound star.right_plus_below_circ sup_left_isotone)
   finally have 2: "z * x\<^sup>\<star> \<le> n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
-    by (smt le_supI1 le_sup_iff sup_ge1 star.circ_loop_fixpoint star_right_induct)
+    by (smt (z3) le_supI1 le_sup_iff sup_ge1 star.circ_loop_fixpoint star_right_induct)
   have "z * x * x\<^sup>\<omega> \<le> n(y\<^sup>\<omega>) * L \<squnion> y * y\<^sup>\<star> * z * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<omega>"
     using 1 by (smt (verit, del_insts) L_left_zero mult_assoc mult_left_isotone mult_right_dist_sup)
   hence "n(z * x * x\<^sup>\<omega>) \<le> n(y * y\<^sup>\<star> * z * x\<^sup>\<omega> \<squnion> n(y\<^sup>\<omega>) * L \<squnion> w * x\<^sup>\<omega>)"
@@ -582,7 +582,7 @@ proof -
   finally have "z * n(x\<^sup>\<omega>) * L \<le> n(y\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * n(x\<^sup>\<omega>) * L \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
     using le_supI1 by blast
   thus ?thesis
-    using 2 by (smt L_left_zero Omega_def sup_assoc le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup)
+    using 2 by (smt (z3) L_left_zero Omega_def sup_assoc le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup)
 qed
 
 lemma n_Omega_circ_simulate_left_sup:
@@ -590,15 +590,15 @@ lemma n_Omega_circ_simulate_left_sup:
     shows "x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>"
 proof -
   have "x * (z * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>) = x * z * n(y\<^sup>\<omega>) * L \<squnion> x * z * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x * x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x * x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt sup_assoc sup_commute mult_assoc mult_left_dist_sup n_L_split omega_unfold)
+    by (smt (z3) sup_assoc sup_commute mult_assoc mult_left_dist_sup n_L_split omega_unfold)
   also have "... \<le> (z * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> w) * n(y\<^sup>\<omega>) * L \<squnion> (z * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> w) * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt assms Omega_def sup_assoc sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup star.circ_loop_fixpoint)
+    by (smt (z3) assms Omega_def sup_assoc sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup star.circ_loop_fixpoint)
   also have "... = z * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> * n(y\<^sup>\<omega>) * L \<squnion> w * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> w * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt L_left_zero sup_assoc sup_commute sup_idem mult_assoc mult_right_dist_sup star.circ_transitive_equal)
+    by (smt (z3) L_left_zero sup_assoc sup_commute sup_idem mult_assoc mult_right_dist_sup star.circ_transitive_equal)
   also have "... = z * n(y\<^sup>\<omega>) * L \<squnion> w * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> w * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt sup_assoc sup_commute sup_idem le_iff_sup mult_assoc n_L_split star_mult_omega zero_right_mult_decreasing)
+    by (smt (z3) sup_assoc sup_commute sup_idem le_iff_sup mult_assoc n_L_split star_mult_omega zero_right_mult_decreasing)
   finally have "x * (z * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>) \<le> z * n(y\<^sup>\<omega>) * L \<squnion> z * y\<^sup>\<star> \<squnion> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * n(y\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt sup_assoc sup_commute sup_idem mult_assoc star.circ_loop_fixpoint)
+    by (smt (z3) sup_assoc sup_commute sup_idem mult_assoc star.circ_loop_fixpoint)
   thus "x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>"
     by (smt (verit, del_insts) L_left_zero Omega_def sup_assoc le_supI1 le_sup_iff sup_ge1 mult_assoc mult_left_dist_sup mult_right_dist_sup star.circ_back_loop_fixpoint star_left_induct)
 qed
@@ -616,7 +616,7 @@ sublocale n_omega_algebra_2 < nL_omega: itering where circ = Omega
 
 sublocale n_omega_algebra_2 < nL_omega: n_omega_itering where circ = Omega
   apply unfold_locales
-  by (smt Omega_def sup_assoc sup_commute le_iff_sup mult_L_sup_star mult_left_one n_L_split n_top ni_below_L ni_def star_involutive star_mult_omega star_omega_top zero_right_mult_decreasing)
+  by (smt (z3) Omega_def sup_assoc sup_commute le_iff_sup mult_L_sup_star mult_left_one n_L_split n_top ni_below_L ni_def star_involutive star_mult_omega star_omega_top zero_right_mult_decreasing)
 
 sublocale n_omega_algebra_2 < nL_omega: left_zero_kleene_conway_semiring where circ = Omega ..
 
@@ -741,7 +741,7 @@ lemma n_star_import:
     shows "n(y) * x\<^sup>\<star> = n(y) * (n(y) * x)\<^sup>\<star>"
 proof (rule order.antisym)
   have "n(y) * (n(y) * x)\<^sup>\<star> * x \<le> n(y) * (n(y) * x)\<^sup>\<star>"
-    by (smt assms mult_assoc mult_right_dist_sup mult_right_sub_dist_sup_left n_mult_idempotent n_preserves_equation star.circ_back_loop_fixpoint)
+    by (smt (z3) assms mult_assoc mult_right_dist_sup mult_right_sub_dist_sup_left n_mult_idempotent n_preserves_equation star.circ_back_loop_fixpoint)
   thus "n(y) * x\<^sup>\<star> \<le> n(y) * (n(y) * x)\<^sup>\<star>"
     using assms eq_refl n_mult_idempotent n_sub_one star.circ_import by auto
 next

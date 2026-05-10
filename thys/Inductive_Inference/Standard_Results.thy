@@ -79,7 +79,7 @@ proof (rule exteqI)
     have "length xs = 2"
       using that by simp
     then obtain i x where ix: "[i, x] = xs"
-      by (smt Suc_length_conv length_0_conv numeral_2_eq_2)
+      by (smt (z3) Suc_length_conv length_0_conv numeral_2_eq_2)
     have "eval r_univ [i, x] = eval r_normal_form [i, x]"
     proof (cases "\<forall>t. eval r_result [t, i, x] \<down>= 0")
       case True

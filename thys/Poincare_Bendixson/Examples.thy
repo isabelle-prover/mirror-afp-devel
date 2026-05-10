@@ -110,7 +110,7 @@ lemma origin_not_trapC:
 lemma regular_trapC:
   shows "0 \<notin> (\<lambda>(x, y). (cx x y, cy x y)) ` trapC"
   using origin_fixpoint origin_not_trapC
-  by (smt UNIV_I UNIV_I UNIV_def case_prodE2 imageE c.flow_initial_time_if
+  by (smt (z3) UNIV_I UNIV_I UNIV_def case_prodE2 imageE c.flow_initial_time_if
       c.rev.flow_initial_time_if mem_Collect_eq zero_prod_def)
 
 lemma positively_invariant_outer:
@@ -174,7 +174,7 @@ proof -
     have "norm x > 2" if "x \<in> E" for x
       using that
       apply (auto simp: norm_prod_def less_eq_prod_def E_def)
-      by (smt power2_less_eq_zero_iff real_less_rsqrt zero_compare_simps(9))
+      by (smt (z3) power2_less_eq_zero_iff real_less_rsqrt zero_compare_simps(9))
     moreover have "norm x \<le> 2" if "x \<in> trapC" for x
       using that
       by (auto simp: trapC_def dist_prod_def norm_prod_def)

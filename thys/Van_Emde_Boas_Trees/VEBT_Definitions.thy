@@ -435,7 +435,7 @@ proof-
       using "2.hyps"(4) "2.hyps"(9) \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> zero_le_one by fastforce
     moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                    \<Longrightarrow> naive_member (Node info deg treeList summary) x"
-      by (smt "2.hyps"(4) Suc_diff_Suc \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> diff_zero le_less_trans naive_member.simps(3) zero_le_one)
+      by (smt (z3) "2.hyps"(4) Suc_diff_Suc \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> diff_zero le_less_trans naive_member.simps(3) zero_le_one)
     ultimately show ?case
       using both_member_options_def by blast
   next
@@ -446,13 +446,13 @@ proof-
     moreover  hence "deg > 1"
       by (metis "3.hyps"(1) "3.hyps"(2) "3.hyps"(4) "3.hyps"(5) "3.hyps"(6) One_nat_def Suc_lessI add_Suc add_gr_0 add_self_div_2 deg_not_0 le_imp_less_Suc plus_1_eq_Suc set_n_deg_not_0)
     moreover have "high x (deg div 2)<2^m"
-      by (smt "3.hyps"(5) "3.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) diff_Suc_1 div_exp_eq div_mult_self1_is_m even_Suc high_def odd_add odd_two_times_div_two_nat one_add_one plus_1_eq_Suc power_not_zero zero_less_Suc)
+      by (smt (z3) "3.hyps"(5) "3.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) diff_Suc_1 div_exp_eq div_mult_self1_is_m even_Suc high_def odd_add odd_two_times_div_two_nat one_add_one plus_1_eq_Suc power_not_zero zero_less_Suc)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                    \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
       using "3.hyps"(4) "3.hyps"(9) \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> zero_le_one by fastforce
     moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                    \<Longrightarrow> naive_member (Node info deg treeList summary) x"
-      by (smt "3.hyps"(4) Suc_diff_Suc \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> diff_zero le_less_trans naive_member.simps(3) zero_le_one)
+      by (smt (z3) "3.hyps"(4) Suc_diff_Suc \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> diff_zero le_less_trans naive_member.simps(3) zero_le_one)
     ultimately show ?case
       using both_member_options_def by blast
   next
@@ -466,7 +466,7 @@ proof-
       by (metis "4.hyps"(5) "4.hyps"(6) div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                    \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
-      by (smt "4.hyps"(12) "4.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one) 
+      by (smt (z3) "4.hyps"(12) "4.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one) 
     moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                     \<Longrightarrow> naive_member (Node info deg treeList summary) x"
       by (metis "4.hyps"(4) calculation(2) calculation(3) gr_implies_not0 naive_member.simps(3) old.nat.exhaust)  ultimately show ?case
@@ -482,7 +482,7 @@ proof-
       by (metis "5.hyps"(5) "5.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) div_exp_eq even_Suc_div_two even_add high_def nat.simps(3) power_not_zero)
     moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                     \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
-      by (smt "5.hyps"(12) "5.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one)  
+      by (smt (z3) "5.hyps"(12) "5.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one)  
     moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
                      \<Longrightarrow> naive_member (Node info deg treeList summary) x"
       using "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) calculation(3) by auto

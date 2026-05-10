@@ -80,7 +80,7 @@ lemma Liminf_llist_subset:
     "\<forall>i < llength Xs. lnth Xs i \<subseteq> lnth Ys i"
   shows "Liminf_llist Xs \<subseteq> Liminf_llist Ys"
   unfolding Liminf_llist_def using assms
-  by (smt INT_iff SUP_mono mem_Collect_eq subsetD subsetI)
+  by (smt (z3) INT_iff SUP_mono mem_Collect_eq subsetD subsetI)
 
 lemma countable_imp_lset:
   assumes count: "countable A"

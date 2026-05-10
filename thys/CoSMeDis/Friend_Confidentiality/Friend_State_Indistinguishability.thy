@@ -223,7 +223,7 @@ using assms unfolding eqButUID_def IDsOK_def[abs_def] by auto
 lemma eqButUID_eqButUID2:
 "eqButUID s s1 \<Longrightarrow> eqButUIDl UID2 (friendIDs s UID1) (friendIDs s1 UID1)"
 unfolding eqButUID_def using eqButUIDf_eqButUIDl
-by (smt eqButUIDf_eqButUIDl eqButUIDl.simps)
+by (smt (z3) eqButUIDf_eqButUIDl eqButUIDl.simps)
 
 lemma eqButUID_not_UID:
 "eqButUID s s1 \<Longrightarrow> uid \<noteq> UID \<Longrightarrow> post s uid = post s1 uid"

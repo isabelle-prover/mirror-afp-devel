@@ -119,12 +119,12 @@ proof -
     hence "t n \<le> Sup {t i |i. i < Suc n}"
       using 5 by (simp add: sup_upper)
     hence "pSum t n \<squnion> t n \<le> Sup {t i |i. i <Suc n}"
-      using Suc 4 6 7 by (smt assms tests_dual.greatest_lower_bound test_seq_def pSum_test tests_dual.sba_dual.transitive sup_test)
+      using Suc 4 6 7 by (smt (z3) assms tests_dual.greatest_lower_bound test_seq_def pSum_test tests_dual.sba_dual.transitive sup_test)
     thus ?case
       by simp
   qed
   thus ?thesis
-    using 1 2 by (smt assms tests_dual.antisymmetric sup_test pSum_test)
+    using 1 2 by (smt (z3) assms tests_dual.antisymmetric sup_test pSum_test)
 qed
 
 definition Prod :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a"

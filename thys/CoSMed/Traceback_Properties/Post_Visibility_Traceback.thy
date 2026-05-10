@@ -168,7 +168,7 @@ proof-
     PID_tr3n: "PID \<in>\<in> postIDs (srcOf tr3n)" using SNVU_postIDs SNVU SNVUtr3n by auto
     have vvv: "valid (trnn # tr3a @ [tr3n])"
     using vtr unfolding tr tr3
-    by (smt Nil_is_append_conv append_self_conv2 hd_append2 list.distinct(1) list.sel(1)
+    by (smt (z3) Nil_is_append_conv append_self_conv2 hd_append2 list.distinct(1) list.sel(1)
         valid_Cons_iff valid_append)
     hence PID_tr3n': "PID \<in>\<in> postIDs (tgtOf tr3n)" using tr3n SNVUtr3n
     by (simp add: IDs_mono(2) PID_tr3n validTrans)
@@ -394,7 +394,7 @@ next
   by (metis valid_Cons_iff append_self_conv2 list.distinct(1) valid_append)
   have vv: "valid (tr2 @ [trnn])"
   using v unfolding tr trr
-  by (smt Nil_is_append_conv append_self_conv2 hd_append2 list.distinct(1) list.sel(1)
+  by (smt (z3) Nil_is_append_conv append_self_conv2 hd_append2 list.distinct(1) list.sel(1)
         valid_Cons_iff valid_append)
   have "uid = owner (tgtOf trn) PID" using SNC trn SNC_owner by auto
   also have "... = owner (tgtOf trnn) PID"

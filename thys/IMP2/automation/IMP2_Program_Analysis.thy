@@ -329,11 +329,11 @@ lemma redundant_var_assignment:
   using assms[THEN aval_indep_non_fv]
    apply auto
   subgoal
-    by (smt Assign' aval.simps(1) aval.simps(2) fun_upd_apply fun_upd_idem_iff)
+    by (smt (z3) Assign' aval.simps(1) aval.simps(2) fun_upd_apply fun_upd_idem_iff)
   subgoal
     by (simp add: Assign' fun_upd_twist)
   subgoal
-    by (smt Seq aval.simps(2) big_step.intros(2) fun_upd_def fun_upd_triv)
+    by (smt (z3) Seq aval.simps(2) big_step.intros(2) fun_upd_def fun_upd_triv)
   done
 
     

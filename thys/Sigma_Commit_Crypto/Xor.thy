@@ -129,12 +129,12 @@ lemma compl_top_eq [simp]: "\<^bold>- \<top> = \<bottom>"
 lemma compl_inf [simp]: "\<^bold>- (x \<sqinter> y) = \<^bold>- x \<squnion> \<^bold>- y" if [simp]: "x \<in> carrier L" "y \<in> carrier L"
 proof (rule compl_unique)
   have "(x \<sqinter> y) \<sqinter> (\<^bold>- x \<squnion> \<^bold>- y) = (y \<sqinter> (x \<sqinter> \<^bold>- x)) \<squnion> (x \<sqinter> (y \<sqinter> \<^bold>- y))"
-    by (smt compl_closed meet_assoc meet_closed meet_comm meet_join_distrib1 that)
+    by (smt (z3) compl_closed meet_assoc meet_closed meet_comm meet_join_distrib1 that)
   then show "(x \<sqinter> y) \<sqinter> (\<^bold>- x \<squnion> \<^bold>- y) = \<bottom>"
     by (metis bottom_closed bottom_lower le_iff_join le_iff_meet meet_comm meet_compl2_bot that)
 next
   have "(x \<sqinter> y) \<squnion> (\<^bold>- x \<squnion> \<^bold>- y) = (\<^bold>- y \<squnion> (x \<squnion> \<^bold>- x)) \<sqinter> (\<^bold>- x \<squnion> (y \<squnion> \<^bold>- y))"
-    by (smt compl_closed join_meet_distrib2 join_assoc join_comm local.boolean_algebra_axioms that join_closed)
+    by (smt (z3) compl_closed join_meet_distrib2 join_assoc join_comm local.boolean_algebra_axioms that join_closed)
   then show "(x \<sqinter> y) \<squnion> (\<^bold>- x \<squnion> \<^bold>- y) = \<top>"
     by (metis compl_closed join_compl2_top join_right le_iff_join le_iff_meet that top_closed)
 qed simp_all

@@ -115,7 +115,7 @@ lemma eval_of_id_cross_id_sharp1:
 lemma eval_of_id_cross_id_sharp2:
   assumes "a : Z \<rightarrow> A" "x : Z \<rightarrow> X"
   shows "((eval_func (A \<times>\<^sub>c X) A) \<circ>\<^sub>c (id(A) \<times>\<^sub>f (id(A \<times>\<^sub>c X))\<^sup>\<sharp>)) \<circ>\<^sub>c \<langle>a,x\<rangle> = \<langle>a,x\<rangle>"
-  by (smt assms cfunc_cross_prod_comp_cfunc_prod eval_of_id_cross_id_sharp1 id_cross_prod id_left_unit2 id_type)
+  by (smt (z3) assms cfunc_cross_prod_comp_cfunc_prod eval_of_id_cross_id_sharp1 id_cross_prod id_left_unit2 id_type)
 
 lemma transpose_factors: 
   assumes "f: X \<rightarrow> Y"
@@ -340,7 +340,7 @@ proof(clarify)
    then have idg_is_idh: "(id(A) \<times>\<^sub>f g) = (id(A) \<times>\<^sub>f h)"
     using assms fIdg_is_fIdh idg_type idh_type monomorphism_def3 by blast
    then have "g \<circ>\<^sub>c (right_cart_proj A U) = h \<circ>\<^sub>c (right_cart_proj A U)"
-    by (smt g_type2 h_type2 id_type right_cart_proj_cfunc_cross_prod)
+    by (smt (z3) g_type2 h_type2 id_type right_cart_proj_cfunc_cross_prod)
    then show "g = h"
     using epic epimorphism_def2 g_type2 h_type2 right_cart_proj_type by blast
 qed
@@ -779,7 +779,7 @@ proof -
   obtain i_inv where i_iso: "i_inv: \<one>\<rightarrow>  \<one> \<times>\<^sub>c \<one> \<and> 
                              i \<circ>\<^sub>c i_inv = id(\<one>) \<and>  
                              i_inv \<circ>\<^sub>c i = id(\<one> \<times>\<^sub>c \<one>)"
-    by (smt cfunc_cross_prod_comp_cfunc_prod cfunc_cross_prod_comp_diagonal cfunc_cross_prod_def cfunc_prod_type cfunc_type_def diagonal_def i_type id_cross_prod id_left_unit id_type left_cart_proj_type right_cart_proj_cfunc_prod right_cart_proj_type terminal_func_unique)
+    by (smt (z3) cfunc_cross_prod_comp_cfunc_prod cfunc_cross_prod_comp_diagonal cfunc_cross_prod_def cfunc_prod_type cfunc_type_def diagonal_def i_type id_cross_prod id_left_unit id_type left_cart_proj_type right_cart_proj_cfunc_prod right_cart_proj_type terminal_func_unique)
   then have i_inv_type: "i_inv: \<one>\<rightarrow>  \<one> \<times>\<^sub>c \<one>"
     by auto
 
@@ -1222,9 +1222,9 @@ proof -
     also have "... = eval_func Y X \<circ>\<^sub>c (\<psi> \<times>\<^sub>f id(Y\<^bsup>X\<^esup>)) \<circ>\<^sub>c (id\<^sub>c A \<times>\<^sub>f g\<^sup>\<sharp>)"
       using \<psi>_def cfunc_type_def comp_associative f_def f_type gsharp_type transpose_func_def by (typecheck_cfuncs, smt)
     also have "... = eval_func Y X \<circ>\<^sub>c (\<psi> \<times>\<^sub>f g\<^sup>\<sharp>)"
-      by (smt \<psi>_def cfunc_cross_prod_comp_cfunc_cross_prod gsharp_type id_left_unit2 id_right_unit2 id_type)
+      by (smt (z3) \<psi>_def cfunc_cross_prod_comp_cfunc_cross_prod gsharp_type id_left_unit2 id_right_unit2 id_type)
     also have "... = eval_func Y X \<circ>\<^sub>c (id X \<times>\<^sub>f g\<^sup>\<sharp>) \<circ>\<^sub>c (\<psi> \<times>\<^sub>f id(Y\<^bsup>A\<^esup>))"
-      by (smt \<psi>_def cfunc_cross_prod_comp_cfunc_cross_prod gsharp_type id_left_unit2 id_right_unit2 id_type)
+      by (smt (z3) \<psi>_def cfunc_cross_prod_comp_cfunc_cross_prod gsharp_type id_left_unit2 id_right_unit2 id_type)
     also have "... = eval_func Y A \<circ>\<^sub>c (\<phi> \<times>\<^sub>f id(Y\<^bsup>A\<^esup>)) \<circ>\<^sub>c (\<psi> \<times>\<^sub>f id(Y\<^bsup>A\<^esup>))"
       by (typecheck_cfuncs, smt \<phi>_def \<psi>_def comp_associative2 flat_cancels_sharp g_def g_type inv_transpose_func_def3)
     also have "... = eval_func Y A \<circ>\<^sub>c ((\<phi> \<circ>\<^sub>c \<psi>) \<times>\<^sub>f (id(Y\<^bsup>A\<^esup>) \<circ>\<^sub>c id(Y\<^bsup>A\<^esup>)))"
@@ -1241,9 +1241,9 @@ proof -
     also have "... = eval_func Y A \<circ>\<^sub>c (\<phi> \<times>\<^sub>f id\<^sub>c (Y\<^bsup>A\<^esup>)) \<circ>\<^sub>c (id\<^sub>c X \<times>\<^sub>f f\<^sup>\<sharp>)"
       using \<phi>_def cfunc_type_def comp_associative fsharp_type g_def g_type transpose_func_def by (typecheck_cfuncs, smt)
     also have "... = eval_func Y A \<circ>\<^sub>c (\<phi> \<times>\<^sub>f f\<^sup>\<sharp>)"
-      by (smt \<phi>_def cfunc_cross_prod_comp_cfunc_cross_prod fsharp_type id_left_unit2 id_right_unit2 id_type)
+      by (smt (z3) \<phi>_def cfunc_cross_prod_comp_cfunc_cross_prod fsharp_type id_left_unit2 id_right_unit2 id_type)
     also have "... = eval_func Y A \<circ>\<^sub>c (id(A) \<times>\<^sub>f f\<^sup>\<sharp>) \<circ>\<^sub>c (\<phi> \<times>\<^sub>f id\<^sub>c (Y\<^bsup>X\<^esup>))"
-      by (smt \<phi>_def cfunc_cross_prod_comp_cfunc_cross_prod fsharp_type id_left_unit2 id_right_unit2 id_type)
+      by (smt (z3) \<phi>_def cfunc_cross_prod_comp_cfunc_cross_prod fsharp_type id_left_unit2 id_right_unit2 id_type)
     also have "... = eval_func Y X \<circ>\<^sub>c (\<psi> \<times>\<^sub>f id\<^sub>c (Y\<^bsup>X\<^esup>)) \<circ>\<^sub>c (\<phi> \<times>\<^sub>f id\<^sub>c (Y\<^bsup>X\<^esup>))"
       by (typecheck_cfuncs, smt \<phi>_def \<psi>_def comp_associative2 f_def f_type flat_cancels_sharp inv_transpose_func_def3)
     also have "... = eval_func Y X \<circ>\<^sub>c ((\<psi> \<circ>\<^sub>c \<phi>) \<times>\<^sub>f (id(Y\<^bsup>X\<^esup>) \<circ>\<^sub>c id(Y\<^bsup>X\<^esup>)))"

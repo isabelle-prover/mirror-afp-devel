@@ -207,7 +207,7 @@ proof (rule allI)+
             using \<open>Suc m = 1\<close> asm finiteX thm2_ind1 chX
             using Suc_eq_plus1 add_diff_inverse_nat diff_Suc_less
                   gr_implies_not_zero less_one plus_1_eq_Suc
-            by (smt local_long_ch_by_ord_def ordering_ord_ijk_loc)
+            by (smt (z3) local_long_ch_by_ord_def ordering_ord_ijk_loc)
         qed
       next
         assume "Suc m > 1"
@@ -1401,7 +1401,7 @@ next
     { fix c
       assume "c \<in> X" "x \<noteq> c" "a \<noteq> c"
       then have "[x;c;a]"
-        by (smt IH.prems(2) X_eq Y_ends \<open>[x;b;a]\<close> ab_Y(1) abc_abc_neq abc_bcd_abd abc_only_cba(3) abc_sym \<open>Q \<in> \<P>\<close> betw_b_in_path insert_iff some_betw subsetD)
+        by (smt (z3) IH.prems(2) X_eq Y_ends \<open>[x;b;a]\<close> ab_Y(1) abc_abc_neq abc_bcd_abd abc_only_cba(3) abc_sym \<open>Q \<in> \<P>\<close> betw_b_in_path insert_iff some_betw subsetD)
     }
     thus ?thesis
       using X_eq \<open>[x;b;a]\<close> ab_Y(1) abc_abc_neq insert_iff by force
@@ -1410,7 +1410,7 @@ next
     { fix c
       assume "c \<in> X" "b \<noteq> c" "x \<noteq> c"
       then have "[b;c;x]"
-        by (smt IH.prems(2) X_eq Y_ends \<open>[b;a;x]\<close> ab_Y(1) abc_abc_neq abc_bcd_acd abc_only_cba(1)
+        by (smt (z3) IH.prems(2) X_eq Y_ends \<open>[b;a;x]\<close> ab_Y(1) abc_abc_neq abc_bcd_acd abc_only_cba(1)
             abc_sym \<open>Q \<in> \<P>\<close> betw_a_in_path insert_iff some_betw subsetD)
     }
     thus ?thesis
@@ -1671,7 +1671,7 @@ proof -
       thus False using b_inQ path_Q tri_abc triangle_diff_paths by blast
     qed
     then have tri_a'bc': "\<triangle> a' b c'"
-        by (smt bc'a ca'b a'b'c' paths_tri abc_ex_path_unique)
+        by (smt (z3) bc'a ca'b a'b'c' paths_tri abc_ex_path_unique)
     obtain ab' where path_ab': "path ab' a b'" using ab'c abc_a'b'c'_neq abc_ex_path by blast
     obtain a'b where path_a'b: "path a'b a' b" using tri_a'bc' triangle_paths(1) by blast
     then have "\<exists>x\<in>a'b. [a'; x; b] \<and> [a; b'; x]"
@@ -1696,7 +1696,7 @@ proof -
   proof (rule notI)
     assume path_a'b'c': "\<exists>Q\<in>\<P>. a' \<in> Q \<and> b' \<in> Q \<and> c' \<in> Q"
     consider "[a'; b'; c']" | "[b'; c'; a']" | "[c'; a'; b']" using some_betw
-        by (smt abc_a'b'c'_neq path_a'b'c' bc'a ca'b ab'c tri_abc
+        by (smt (z3) abc_a'b'c'_neq path_a'b'c' bc'a ca'b ab'c tri_abc
                 abc_ex_path cross_once_notin triangle_diff_paths)
     thus False
       apply (cases)
@@ -2081,7 +2081,7 @@ proof -
     (* Now we follow Schutz, who follows Veblen. *)
     obtain ae where path_ae: "path ae a e" using a_inS e_inS e_neq_a path_S by blast
     have tri_aec: "\<triangle> a e c'"
-        by (smt cross_once_notin S_neq_ab a_inS abc abc_abc_neq abc_ex_path
+        by (smt (z3) cross_once_notin S_neq_ab a_inS abc abc_abc_neq abc_ex_path
                 e_inS e_neq_a path_S path_ab c'd'_def paths_tri)
     (* The second collinearity theorem doesn't explicitly capture the fact that it meets at
        ae, so Schutz misspoke, but maybe that's an issue with the statement of the theorem. *)
@@ -2098,7 +2098,7 @@ proof -
                     and f'bg: "[f'; b; g]"
         using collinearity2 [where a = d' and b = e and c = c' and d = f' and e = b and de = f'b]
               f'_def c'd'_def betw_c_in_path by blast
-    have "\<triangle> e a d'" by (smt betw_c_in_path paths_tri2 S_neq_ab a_inS abc_ac_neq
+    have "\<triangle> e a d'" by (smt (z3) betw_c_in_path paths_tri2 S_neq_ab a_inS abc_ac_neq
                            abd e_inS e_neq_a c'd'_def path_S path_ab)
     thus False
       using tri_betw_no_path [where a = e and b = a and c = d' and b' = g and a' = b and c' = h]
@@ -2106,7 +2106,7 @@ proof -
       by blast
   qed
   thus ?thesis
-    by (smt abc abc_abc_neq abc_ex_path abc_sym abd c_neq_d cross_once_notin some_betw)
+    by (smt (z3) abc abc_abc_neq abc_ex_path abc_sym abd c_neq_d cross_once_notin some_betw)
 qed
 
 
@@ -3072,7 +3072,7 @@ proof -
               fin_ch_betw2 i_le_j_events_neq less_numeral_extra(1) numeral_3_eq_3)
           hence "[a\<^sub>1; b; f 1] \<or> [a\<^sub>1; f 1; b] \<or> [b; a\<^sub>1; f 1]"
             using abc_ex_path_unique some_betw abc_sym
-            by (smt Y_def Yb \<open>f 1 \<in> Y\<close> abc_abc_neq cross_once_notin)
+            by (smt (z3) Y_def Yb \<open>f 1 \<in> Y\<close> abc_abc_neq cross_once_notin)
           thus "[a\<^sub>1; b; f 1]"
           proof -
             have "\<forall>n. \<not> ([a\<^sub>1; f n; b] \<and> n < card Y)"
@@ -3131,7 +3131,7 @@ proof -
             hence "[a\<^sub>1; b; f ?k] \<or> [a\<^sub>1; f ?k; b] \<or> [b; a\<^sub>1; f ?k]"
               using abc_ex_path_unique some_betw abc_sym \<open>[a\<^sub>1; f ?k; a\<^sub>n]\<close>
                 \<open>f ?k \<in> Y\<close> Yb abc_abc_neq assms(3) cross_once_notin
-              by (smt Y_def)
+              by (smt (z3) Y_def)
             moreover have "\<not> [a\<^sub>1; f ?k; b]"
             proof
               assume "[a\<^sub>1; f ?k; b]"
@@ -3223,7 +3223,7 @@ proof -
             by (metis card_1_singleton_iff card_Suc_eq card_gt_0_iff diff_Suc_less diff_self_eq_0 insert_iff numeral_2_eq_2)
           hence "[a\<^sub>n; b; f ?n] \<or> [a\<^sub>n; f ?n; b] \<or> [b; a\<^sub>n; f ?n]"
             using abc_ex_path_unique some_betw abc_sym \<open>[a\<^sub>1; f ?n; a\<^sub>n]\<close>
-            by (smt Y_def Yb \<open>f ?n \<in> Y\<close> abc_abc_neq cross_once_notin)
+            by (smt (z3) Y_def Yb \<open>f ?n \<in> Y\<close> abc_abc_neq cross_once_notin)
           thus "[f ?n; b; a\<^sub>n]"
           proof -
             have "\<forall>n. \<not> ([a\<^sub>n; f n; b] \<and> n < card Y)"
@@ -3271,7 +3271,7 @@ proof -
             hence "[a\<^sub>n; b; f ?k] \<or> [a\<^sub>n; f ?k; b] \<or> [b; a\<^sub>n; f ?k]"
               using abc_ex_path_unique some_betw abc_sym \<open>[a\<^sub>1; f ?k; a\<^sub>n]\<close>
                 \<open>f ?k \<in> Y\<close> Yb abc_abc_neq assms(3) cross_once_notin
-              by (smt Y_def)
+              by (smt (z3) Y_def)
             moreover have "\<not> [a\<^sub>n; f ?k; b]"
             proof
               assume "[a\<^sub>n; f ?k; b]"
@@ -3464,7 +3464,7 @@ proof -
          Our notation and Theorem 9 are too weak to say that just now.\<close>
       have ch_with_b: "ch {a\<^sub>1, (f (k-1)), b, (f k)}" using chain4
         using k_def(1) abc_ex_path_unique between_chain cross_once_notin
-        by (smt \<open>[a\<^sub>1; f (k-1); f k]\<close> abc_abc_neq insert_absorb2)
+        by (smt (z3) \<open>[a\<^sub>1; f (k-1); f k]\<close> abc_abc_neq insert_absorb2)
       have "f (k-1) \<noteq> b \<and> (f k) \<noteq> (f (k-1)) \<and> b \<noteq> (f k)"
         using abc_abc_neq f_def k_def(2) Y_def
         by (metis local_ordering_def \<open>[a\<^sub>1; f (k-1); f k]\<close> less_imp_diff_less local_long_ch_by_ord_def)
@@ -3812,7 +3812,7 @@ proof -
     by (metis)
   hence "Q={a,b}"
     using assms(3,5)
-    by (smt card_2_iff insert_absorb insert_commute insert_iff singleton_insert_inj_eq)
+    by (smt (z3) card_2_iff insert_absorb insert_commute insert_iff singleton_insert_inj_eq)
   have "a\<in>P \<and> b\<in>P"
     using \<open>Q={a,b}\<close> assms(4) by auto
   have "a\<noteq>b" using \<open>Q={a,b}\<close>
@@ -4766,14 +4766,14 @@ lemma some_betw4a:
   assumes "P\<in>\<P>" "a\<in>P" "b\<in>P" "c\<in>P" "d\<in>P" "a\<noteq>b \<and> a\<noteq>c \<and> a\<noteq>d \<and> b\<noteq>c \<and> b\<noteq>d \<and> c\<noteq>d"
       and "\<not>([a;b;c;d] \<or> [a;b;d;c] \<or> [a;c;b;d] \<or> [a;c;d;b] \<or> [a;d;b;c] \<or> [a;d;c;b])"
     shows "[b;a;c;d] \<or> [b;a;d;c] \<or> [b;c;a;d] \<or> [b;d;a;c] \<or> [c;a;b;d] \<or> [c;b;a;d]"
-  by (smt abc_bcd_acd abc_sym abd_bcd_abc assms some_betw_xor)
+  by (smt (z3) abc_bcd_acd abc_sym abd_bcd_abc assms some_betw_xor)
 
 lemma some_betw4b:
   fixes a::'a and b::'a and c::'a and d::'a and P
   assumes "P\<in>\<P>" "a\<in>P" "b\<in>P" "c\<in>P" "d\<in>P" "a\<noteq>b \<and> a\<noteq>c \<and> a\<noteq>d \<and> b\<noteq>c \<and> b\<noteq>d \<and> c\<noteq>d"
       and "\<not>([b;a;c;d] \<or> [b;a;d;c] \<or> [b;c;a;d] \<or> [b;d;a;c] \<or> [c;a;b;d] \<or> [c;b;a;d])"
     shows "[a;b;c;d] \<or> [a;b;d;c] \<or> [a;c;b;d] \<or> [a;c;d;b] \<or> [a;d;b;c] \<or> [a;d;c;b]"
-  by (smt abc_bcd_acd abc_sym abd_bcd_abc assms some_betw_xor)
+  by (smt (z3) abc_bcd_acd abc_sym abd_bcd_abc assms some_betw_xor)
 
 
 lemma abd_acd_abcdacbd:
@@ -4833,7 +4833,7 @@ lemma wlog_two_sets_element:
       and case_split: "\<And>a b c d x I J. \<lbrakk>Q I a b; Q J c d\<rbrakk> \<Longrightarrow>
               (x=a \<or> x=c \<longrightarrow> P x I J) \<and> (\<not>(x=a \<or> x=b \<or> x=c \<or> x=d) \<longrightarrow> P x I J)"
     shows "\<And>x I J. \<lbrakk>\<exists>a b. Q I a b; \<exists>a b. Q J a b\<rbrakk> \<Longrightarrow> P x I J"
-  by (smt case_split symmetric_Q)
+  by (smt (z3) case_split symmetric_Q)
 
 text \<open>
   Now we start on the actual result of interest. First we assume the events are all distinct,
@@ -4931,7 +4931,7 @@ proof -
   thus ?thesis
     using wlog_endpoints_distinct4
       [where P=P and Q=Q and A=A and I=I and J=J and a=a and b=b and c=c and d=d]
-    by (smt assms(1-3,5-))
+    by (smt (z3) assms(1-3,5-))
 qed
 
 lemma (in MinkowskiSpacetime) wlog_endpoints_distinct:
@@ -5602,7 +5602,7 @@ proof -
       \<and> (([x;a;y] \<and> [a;y;z]) \<or> ([x;a;z] \<and> [a;z;y]))"
     if "x\<in>?L" "w\<in>?L" "y\<in>?R" "z\<in>?R" "w\<noteq>x" "y\<noteq>z" for x w y z
     using path_finsubset_chain order_finite_chain (* Schutz says: implied by thm 10 & 2 *)
-    by (smt abc_abd_bcdbdc abc_bcd_abd abc_sym abd_bcd_abc mem_Collect_eq that) (* impressive, sledgehammer! *)
+    by (smt (z3) abc_abd_bcdbdc abc_bcd_abd abc_sym abd_bcd_abc mem_Collect_eq that) (* impressive, sledgehammer! *)
 
   obtain x y where "x\<in>?L" "y\<in>?R"
     by (metis (mono_tags) \<open>b \<in> Q\<close> \<open>b \<noteq> a\<close> abc_sym event_a mem_Collect_eq path_Q prolong_betw2)
@@ -5742,7 +5742,7 @@ proof -
     show "(\<forall>r\<in>?R. \<forall>l\<in>?L. [l;a;r])"
       using abd_bcd_abc by blast
     show "\<forall>x\<in>?R. \<forall>y\<in>?R. \<not> [x;a;y]"
-      by (smt abc_ac_neq abc_bcd_abd abd_bcd_abc mem_Collect_eq)
+      by (smt (z3) abc_ac_neq abc_bcd_abd abd_bcd_abc mem_Collect_eq)
     show "\<forall>x\<in>?L. \<forall>y\<in>?L. \<not> [x;a;y]"
       using abc_abc_neq abc_abd_bcdbdc abc_only_cba by blast
     show "Q-{a} \<subseteq> ?R \<union> ?L"
@@ -6010,7 +6010,7 @@ proof -
       proof -
         obtain i' where i'_def: "i' < N-1" "s = segment (f i') (f (i' + 1))"
           using \<open>Q\<^sub>y\<in>s\<close> \<open>s\<in>?S\<close> \<open>N=card X\<close>
-          by (smt \<open>2 \<le> N\<close> \<open>N \<noteq> 2\<close> le_antisym mem_Collect_eq not_less)
+          by (smt (z3) \<open>2 \<le> N\<close> \<open>N \<noteq> 2\<close> le_antisym mem_Collect_eq not_less)
         show ?thesis
         proof (rule exI, rule conjI)
           show "(i'+1) \<in> {1..card X - 1}"
@@ -6389,7 +6389,7 @@ proof -
                "([c;y;d\<rbrakk> \<and> \<lbrakk>z;c;d])" | "([c;y;d\<rbrakk> \<and> [c;z;d\<rbrakk>)"
         using \<open>(\<lbrakk>y;c;d] \<or> [c;y;d\<rbrakk>) \<and> (\<lbrakk>z;c;d] \<or> [c;z;d\<rbrakk>)\<close> by linarith
       ultimately show False
-        by (smt \<open>[c;d;e]\<close> abc_ac_neq betw4_strong betw4_weak)
+        by (smt (z3) \<open>[c;d;e]\<close> abc_ac_neq betw4_strong betw4_weak)
     qed
     have "e\<in>Q"
       using \<open>[c;d;e]\<close> betw_c_in_path events(3-5) path_Q by blast
@@ -6580,7 +6580,7 @@ proof -
             by (metis \<open>f i \<in> P \<and> f j \<in> P \<and> f (i + 1) \<in> P\<close> abc_abc_neq path_P)
           hence "[e; f j; (f(j+1))]"
             using \<open>[(f(i+1)); f i; f j]\<close>
-            by (smt abc_acd_abd abc_acd_bcd abc_only_cba abc_sym asm(3) seg_betw)
+            by (smt (z3) abc_acd_abd abc_acd_bcd abc_only_cba abc_sym asm(3) seg_betw)
           moreover have "e\<in>?g j"
             using \<open>e \<in> ?g i\<close> asm(3) by blast
           ultimately show False

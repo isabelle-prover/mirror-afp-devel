@@ -12,7 +12,7 @@ next
   case (2 v n)
   then show ?case
     apply (auto simp add: mult.commute)
-    by (smt One_nat_def add_cancel_left_right even_succ_div_two masks.elims(3) mod_Suc_le_divisor
+    by (smt (z3) One_nat_def add_cancel_left_right even_succ_div_two masks.elims(3) mod_Suc_le_divisor
           mod_by_Suc_0 mod_mod_trivial mod_mult_self4 mult_numeral_1_right mult_zero_right
           nonzero_mult_div_cancel_left not_mod2_eq_Suc_0_eq_0 numeral_2_eq_2 numeral_One
           odd_two_times_div_two_succ zero_neq_numeral)

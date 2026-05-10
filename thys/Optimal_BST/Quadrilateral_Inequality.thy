@@ -109,7 +109,7 @@ proof(induction l arbitrary: i i' j j' rule:less_induct)
           have "?k \<in> {i+1..j'}" 
             unfolding K_def
             using mins_subset Max_in[OF finite_mins mins_nonempty] less.prems \<open>\<not> i' \<le> i\<close>
-            by (smt subsetCE)
+            by (smt (z3) subsetCE)
           show ?thesis
           (*---------------------case 1.1: i' = j \<and> k \<le> j ----------------------------------------*)
           proof cases
@@ -180,7 +180,7 @@ proof(induction l arbitrary: i i' j j' rule:less_induct)
             unfolding K_def by (metis le_less subsetCE)
           have "?z \<in> {i+1..j'}"
             using mins_subset less.prems \<open>i' \<noteq> j\<close> Max_in[OF finite_mins mins_nonempty]
-            unfolding K_def by (smt subsetCE)
+            unfolding K_def by (smt (z3) subsetCE)
           have w_mon: "w i' j' + w i j \<le> w i' j + w i j'"
             using less.prems QI_w \<open>i' \<noteq> j\<close> by force
 

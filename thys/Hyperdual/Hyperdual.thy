@@ -1059,7 +1059,7 @@ proof -
   moreover have "norm (Hyperdual (1 :: 'a) 2 2 4) > 4"
     by (simp add: norm_hyperdual_def inner_hyperdual_def dot_square_norm)
   ultimately have "\<exists>x y :: 'a hyperdual . norm (x * y) > norm x * norm y"
-    by (smt power2_eq_square real_sqrt_four real_sqrt_pow2)
+    by (smt (z3) power2_eq_square real_sqrt_four real_sqrt_pow2)
   then show ?thesis
     by (simp add: not_le)
 qed
@@ -1119,7 +1119,7 @@ lemma hyperdual_eq_parts_cancel [simp]:
   fixes a b c d :: "'a :: ring_1"
   shows "(a *\<^sub>H ba + b *\<^sub>H e1 + c *\<^sub>H e2 + d *\<^sub>H e12 = a' *\<^sub>H ba + b' *\<^sub>H e1 + c' *\<^sub>H e2 + d' *\<^sub>H e12) \<equiv>
          (a = a' \<and> b = b' \<and> c = c' \<and> d = d')"
-  by (smt Hyperdual_eq hyperdual.inject)
+  by (smt (z3) Hyperdual_eq hyperdual.inject)
 
 lemma scaleH_cancel [simp]:
   fixes a b :: "'a :: ring_1"

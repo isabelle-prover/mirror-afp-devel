@@ -216,7 +216,7 @@ next
 next
   case (5 Ts f u)
   then show ?case
-    by (smt bind.bind_lunit eta_cases(2) typ_of1.simps(5) typ_of1_split_App_obtains)
+    by (smt (z3) bind.bind_lunit eta_cases(2) typ_of1.simps(5) typ_of1_split_App_obtains)
 qed
 
 lemma eta_preserves_typ_of: "t \<rightarrow>\<^sub>\<eta> t' \<Longrightarrow> typ_of t = Some \<tau> \<Longrightarrow> typ_of t' = Some \<tau>"

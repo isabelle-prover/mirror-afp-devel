@@ -233,7 +233,7 @@ proof -
       using \<open>length p = length s\<close> assms apply simp
       using nth_map[of _ z "\<lambda>x. push_param x (Suc (length indices))"]
       using modifies_yields_valid_register \<open>length z = n\<close>
-      by (smt assms le_imp_less_Suc nth_map push_push_simp that)
+      by (smt (z3) assms le_imp_less_Suc nth_map push_push_simp that)
 
     have indices_unfold: "(\<forall>k < length indices. P (indices!k)) \<longleftrightarrow> (\<forall>l>0. l<n \<longrightarrow> P l)" for P
       unfolding indices_def apply auto

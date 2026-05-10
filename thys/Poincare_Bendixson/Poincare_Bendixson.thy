@@ -219,7 +219,7 @@ proof -
   show ?thesis
     unfolding x y
     apply (auto simp: inner_add_left )
-    by (smt add_diff_cancel_left' in_segment_inner_rot inner_diff_left minus_diff_eq nrm_reverse that(1) that(2) x(1) y(1))
+    by (smt (z3) add_diff_cancel_left' in_segment_inner_rot inner_diff_left minus_diff_eq nrm_reverse that(1) that(2) x(1) y(1))
 qed
 
 lemma closed_segment_surface:
@@ -653,7 +653,7 @@ proof -
   then have rc:"\<forall>z \<in> l`{-r..r}. 0 < f z \<bullet> f x" using real_norm_def by auto 
   define dr where "dr = min r d"
   have t1:"l (-dr) \<noteq> l dr" unfolding l_def dr_def
-    by (smt \<open>0 < d\<close> \<open>0 < norm (f x)\<close> \<open>0 < r\<close> add_left_imp_eq divide_cancel_right norm_rot norm_zero scale_cancel_right)
+    by (smt (z3) \<open>0 < d\<close> \<open>0 < norm (f x)\<close> \<open>0 < r\<close> add_left_imp_eq divide_cancel_right norm_rot norm_zero scale_cancel_right)
   have "x = midpoint (l (-dr)) (l dr)" unfolding midpoint_def l_def by auto
   then have xin:"x \<in> {l (-dr)<--<(l dr)}" using t1 by auto
       (* TODO: actually this should be equality, but l is affine ...
@@ -670,14 +670,14 @@ proof -
     also have "... = x - (1 - 2 * u) *\<^sub>R (dr/norm(f x)) *\<^sub>R rot (f x)"
       by (auto simp add: algebra_simps divide_simps simp flip: scaleR_add_left)
     also have "... =  x + (((2 * u - 1) * dr)/norm(f x)) *\<^sub>R rot (f x)"
-      by (smt add_uminus_conv_diff scaleR_scaleR scale_minus_left times_divide_eq_right)
+      by (smt (z3) add_uminus_conv_diff scaleR_scaleR scale_minus_left times_divide_eq_right)
     finally have zeq: "z = l ((2*u-1)*dr)" unfolding l_def .
     have ub: " 2* u - 1 \<le> 1 \<and> -1 \<le>  2* u - 1 " using u by linarith
     thus "z \<in> l ` {- dr..dr}" using zeq
-      by (smt atLeastAtMost_iff d(1) dr_def image_eqI mult.commute mult_left_le mult_minus_left r(1)) 
+      by (smt (z3) atLeastAtMost_iff d(1) dr_def image_eqI mult.commute mult_left_le mult_minus_left r(1)) 
   qed
   have t2: "{l (- dr)--l dr} \<subseteq> X" using lsub
-    by (smt atLeastAtMost_iff d(2) dist_commute distl dr_def image_subset_iff mem_cball order_trans)
+    by (smt (z3) atLeastAtMost_iff d(2) dist_commute distl dr_def image_subset_iff mem_cball order_trans)
   have "l (- dr) - l dr = -2 *\<^sub>R (dr/norm(f x)) *\<^sub>R rot (f x)" unfolding l_def
     by (simp add: algebra_simps flip: scaleR_add_left)
   then have req: "rot (l (- dr) - l dr) = (2 * dr/norm(f x)) *\<^sub>R f x"
@@ -689,7 +689,7 @@ proof -
   moreover have "(dr / norm (f x)) > 0"
     using \<open>0 < norm (f x)\<close> d(1) dr_def r(1) by auto 
   ultimately have t3: "\<forall>z \<in> {l (- dr)--l dr}. f z \<bullet> rot (l (- dr)- l dr) > 0" unfolding req
-    by (smt divide_divide_eq_right inner_scaleR_right mult_2 norm_not_less_zero scaleR_2 times_divide_eq_left times_divide_eq_right zero_less_divide_iff)
+    by (smt (z3) divide_divide_eq_right inner_scaleR_right mult_2 norm_not_less_zero scaleR_2 times_divide_eq_left times_divide_eq_right zero_less_divide_iff)
   have "transversal_segment (l (-dr)) (l dr)" using t1 t2 t3 unfolding transversal_segment_def by auto
   thus ?thesis using xin
     using that by auto 
@@ -982,11 +982,11 @@ qed
 
 lemma inner_rot_pos_move_base: "(x - a) \<bullet> rot (a - b) > 0"
   if "(x - y) \<bullet> rot (a - b) > 0" "y \<in> {a -- b}"
-  by (smt in_segment_inner_rot inner_diff_left inner_minus_right minus_diff_eq rot_rot that)
+  by (smt (z3) in_segment_inner_rot inner_diff_left inner_minus_right minus_diff_eq rot_rot that)
 
 lemma inner_rot_neg_move_base: "(x - a) \<bullet> rot (a - b) < 0"
   if "(x - y) \<bullet> rot (a - b) < 0" "y \<in> {a -- b}"
-  by (smt in_segment_inner_rot inner_diff_left inner_minus_right minus_diff_eq rot_rot that)
+  by (smt (z3) in_segment_inner_rot inner_diff_left inner_minus_right minus_diff_eq rot_rot that)
 
 lemma inner_pos_move_base: "(x - a) \<bullet> n > 0"
   if "(a - b) \<bullet> n = 0" "(x - y) \<bullet> n > 0" "y \<in> {a -- b}"
@@ -1020,7 +1020,7 @@ lemma rot_same_dir:
   shows "(y \<bullet> rot (a-b) > 0) = (y \<bullet> rot(x1-x2) > 0)"  "(y \<bullet> rot (a-b) < 0) = (y \<bullet> rot(x1-x2) < 0)"
   using oriented_subsegment_scale[OF assms]
    apply (smt inner_scaleR_right nrm_reverse rot_scaleR zero_less_mult_iff)
-  by (smt \<open>\<And>thesis. (\<And>e. \<lbrakk>0 < e; b - a = e *\<^sub>R (x2 - x1)\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> inner_minus_right inner_scaleR_right rot_diff_commute rot_scaleR zero_less_mult_iff)
+  by (smt (z3) \<open>\<And>thesis. (\<And>e. \<lbrakk>0 < e; b - a = e *\<^sub>R (x2 - x1)\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> inner_minus_right inner_scaleR_right rot_diff_commute rot_scaleR zero_less_mult_iff)
 
 
 subsection \<open>Monotone Step Lemma\<close>
@@ -1061,7 +1061,7 @@ proof -
   then have subl: "{flow0 x t1<--<flow0 x t2} \<subseteq> {a <--< flow0 x t2}" using x1 x2
     by (simp add: open_closed_segment subset_open_segment x2)
   then have subl2: "{flow0 x t1--<flow0 x t2} \<subseteq> {a <--< flow0 x t2}" using x1 x2
-    by (smt DiffE DiffI \<open>flow0 x t1 \<in> {a<--<flow0 x t2}\<close> half_open_segment_def insert_iff open_segment_def subset_eq)
+    by (smt (z3) DiffE DiffI \<open>flow0 x t1 \<in> {a<--<flow0 x t2}\<close> half_open_segment_def insert_iff open_segment_def subset_eq)
 
   have sub1b: "{flow0 x t1--b} \<subseteq> {a--b}"
     by (simp add: open_closed_segment subset_closed_segment x1)
@@ -1107,7 +1107,7 @@ proof -
   then have piD: "path_image J = path_image J1 \<union> {flow0 x t1 <--<flow0 x t2}"
     unfolding piJ J1_def J2_def path_image_flow_to_path[OF \<open>t1 \<le> t2\<close>]
       path_image_linepath open_segment_def
-    by (smt Diff_idemp Diff_insert2 Un_Diff_cancel closed_segment_commute mk_disjoint_insert)
+    by (smt (z3) Diff_idemp Diff_insert2 Un_Diff_cancel closed_segment_commute mk_disjoint_insert)
   have "\<forall>s\<in>{t1<..<t2}. flow0 x s \<noteq> flow0 x t1"
     using x1 t1t2 by fastforce
   from flow_to_path_arc[OF \<open>t1 \<le> t2\<close> exist this x1neqx2]
@@ -1202,14 +1202,14 @@ proof -
         then have *:"flow0 x (s-sc) \<in> path_image J1" unfolding J1_def path_image_flow_to_path[OF \<open>t1 \<le> t2\<close>]
           by blast
         have "flow0 x (s-sc) = flow0 (flow0 x s) (-sc)"
-          by (smt exist atLeastAtMost_iff existence_ivl_trans' flow_trans s(1) s(2) scd subsetD)
+          by (smt (z3) exist atLeastAtMost_iff existence_ivl_trans' flow_trans s(1) s(2) scd subsetD)
         then have **:"flow0 (flow0 y (u*t)) (-sc)  \<in> path_image J1"
           using s(3) * by auto
         have b:"u*t - sc \<in> {0..<u*t}" unfolding sc_def by (simp add: st1 c1 s(1))
         then have "u*t - sc \<in> existence_ivl0 y"
           using c2 ex by auto 
         then have "flow0 y (u*t - sc) \<in> path_image J1" using **
-          by (smt atLeastAtMost_iff diff_existence_ivl_trans ex flow_trans mult_left_le_one_le mult_nonneg_nonneg subset_eq u(1) u(2) yt(2))
+          by (smt (z3) atLeastAtMost_iff diff_existence_ivl_trans ex flow_trans mult_left_le_one_le mult_nonneg_nonneg subset_eq u(1) u(2) yt(2))
         thus False using b c3 iemp piJ by blast
       qed
       thus "flow0 y (u * t) = flow0 x t1" using s by simp
@@ -1320,7 +1320,7 @@ proof -
         by auto
       have xxtte: "flow0 xx (tt - e) = flow0 x t1"
         apply (simp add: e_def)
-        by (smt \<open>0 \<le> tt - e\<close> \<open>{- d..d} \<subseteq> existence_ivl0 xx\<close> atLeastAtMost_iff e_def eq
+        by (smt (z3) \<open>0 \<le> tt - e\<close> \<open>{- d..d} \<subseteq> existence_ivl0 xx\<close> atLeastAtMost_iff e_def eq
             local.existence_ivl_reverse local.existence_ivl_trans local.flow_trans ss(1) ss_ex subset_iff tt(2))
       show False
       proof (cases "tt = e")
@@ -1337,7 +1337,7 @@ proof -
         have "flow0 xx (tt - e) \<notin> {a -- b}"
           apply (simp add: in_closed_segment_iff_rot[OF \<open>a \<noteq> b\<close>]
               not_le )
-          by (smt \<open>xx \<in> {a--b}\<close> inner_minus_right inner_rot_neg_move_base inner_rot_pos_move_base n rot_diff_commute)
+          by (smt (z3) \<open>xx \<in> {a--b}\<close> inner_minus_right inner_rot_neg_move_base inner_rot_pos_move_base n rot_diff_commute)
         with xxtte show ?thesis
           using \<open>flow0 x t1 \<in> {a<--<flow0 x t2}\<close> suba2o by auto
       qed
@@ -1436,7 +1436,7 @@ proof -
         by auto
       have xxtte: "flow0 xx (tt + e) = flow0 x t2"
         apply (simp add: e_def)
-        by (smt atLeastAtMost_iff calculation eq exist local.existence_ivl_trans' local.flow_trans neg_tt_ex ss_ex subset_iff \<open>t1 \<le> t2\<close>)
+        by (smt (z3) atLeastAtMost_iff calculation eq exist local.existence_ivl_trans' local.flow_trans neg_tt_ex ss_ex subset_iff \<open>t1 \<le> t2\<close>)
       show False
       proof (cases "tt=-e")
         case True
@@ -1452,7 +1452,7 @@ proof -
         have "flow0 xx (tt + e) \<notin> {a -- b}"
           apply (simp add: in_closed_segment_iff_rot[OF \<open>a \<noteq> b\<close>]
               not_le )
-          by (smt \<open>xx \<in> {a--b}\<close> inner_minus_right inner_rot_neg_move_base inner_rot_pos_move_base n rot_diff_commute)
+          by (smt (z3) \<open>xx \<in> {a--b}\<close> inner_minus_right inner_rot_neg_move_base inner_rot_pos_move_base n rot_diff_commute)
         with xxtte show ?thesis
           using \<open>flow0 x t2 \<in> {a--b}\<close> by simp
       qed
@@ -1496,17 +1496,17 @@ proof -
     using rpi
     by (auto simp: open_segment_commute J1_def)
   have "{y. 0 < (y - flow0 x t2) \<bullet> rot (flow0 x t2 - flow0 x t1)} = {y. 0 < (y - rp) \<bullet> rot (flow0 x t2 - flow0 x t1)}"
-    by (smt Collect_cong in_open_segment_rotD inner_diff_left nrm_dot rpi)
+    by (smt (z3) Collect_cong in_open_segment_rotD inner_diff_left nrm_dot rpi)
   also have "... =  {y. 0 > (y - rp) \<bullet> rot (flow0 x t1 - flow0 x t2)}"
-    by (smt Collect_cong inner_minus_left nrm_reverse)
+    by (smt (z3) Collect_cong inner_minus_left nrm_reverse)
   also have " ... = {y. 0 > (y - rp) \<bullet> rot (a - b) }"
     by (metis rot_same_dir(2) x1 x2)
   finally have side1: "{y. 0 < (y - flow0 x t2) \<bullet> rot (flow0 x t2 - flow0 x t1)} = {y. 0 > (y - rp) \<bullet> rot (a - b) }"
     (is "_ = ?lower1") .
   have "{y. (y - flow0 x t2) \<bullet> rot (flow0 x t2 - flow0 x t1) < 0} = {y. (y - rp) \<bullet> rot (flow0 x t2 - flow0 x t1) < 0}"
-    by (smt Collect_cong in_open_segment_rotD inner_diff_left nrm_dot rpi)
+    by (smt (z3) Collect_cong in_open_segment_rotD inner_diff_left nrm_dot rpi)
   also have "... =  {y. (y - rp) \<bullet> rot (flow0 x t1 - flow0 x t2) > 0}"
-    by (smt Collect_cong inner_minus_left nrm_reverse)
+    by (smt (z3) Collect_cong inner_minus_left nrm_reverse)
   also have " ... = {y. 0 < (y - rp) \<bullet> rot (a - b) }"
     by (metis rot_same_dir(1) x1 x2)
   finally have side2: "{y. (y - flow0 x t2) \<bullet> rot (flow0 x t2 - flow0 x t1) < 0} = {y. 0 < (y - rp) \<bullet> rot (a - b) }"
@@ -1594,7 +1594,7 @@ proof -
     have "(\<lambda>(x, y). flow0 x y)`({flow0 x t2} \<times> {0<..<d}) \<subseteq> r1" unfolding r1_def
       by (auto intro!:image_mono simp add: x2)
     then have *:"\<And>t. 0 < t \<Longrightarrow> t < d \<Longrightarrow> flow0 (flow0 x t2) t \<in> outer"
-      by (smt \<open>r1 \<subseteq> outer\<close> greaterThanLessThan_iff mem_Sigma_iff pair_imageI r1_def subset_eq x2)
+      by (smt (z3) \<open>r1 \<subseteq> outer\<close> greaterThanLessThan_iff mem_Sigma_iff pair_imageI r1_def subset_eq x2)
 
     then have t2o: "\<And>t. 0 < t \<Longrightarrow> t < d \<Longrightarrow> flow0 x (t2 + t) \<in> outer"
       using r1a3[OF x2] exist flow_trans
@@ -1678,9 +1678,9 @@ proof -
          apply (rule existence_ivl_trans')
         by (auto simp: t)
       have T_ex2: "dr + T \<in> existence_ivl0 (flow0 x t2)"
-        by (smt T_ex ends_in_segment(2) exist local.existence_ivl_trans local.existence_ivl_trans' real_Icc_closed_segment subset_eq t2d2_ex \<open>t1 \<le> t2\<close>)
+        by (smt (z3) T_ex ends_in_segment(2) exist local.existence_ivl_trans local.existence_ivl_trans' real_Icc_closed_segment subset_eq t2d2_ex \<open>t1 \<le> t2\<close>)
       thus False using T \<open>t1 \<le> t2\<close> exist
-        by (smt T_ex diff_existence_ivl_trans disjoint_iff_not_equal inner io(9) local.flow_trans local.flow_undefined0 outer y_def)
+        by (smt (z3) T_ex diff_existence_ivl_trans disjoint_iff_not_equal inner io(9) local.flow_trans local.flow_undefined0 outer y_def)
     qed
     have "closure inner \<inter> outer = {}"
       by (simp add: inf_sup_aci(1) io(5) io(9) open_Int_closure_eq_empty) 
@@ -1701,7 +1701,7 @@ proof -
       by (auto intro!:image_mono simp add: x2)
     then have
       *:"\<And>t. 0 < t \<Longrightarrow> t < d \<Longrightarrow> flow0 (flow0 x t2) t \<in> inner"
-      by (smt \<open>r1 \<subseteq> inner\<close> greaterThanLessThan_iff mem_Sigma_iff pair_imageI r1_def subset_eq x2)
+      by (smt (z3) \<open>r1 \<subseteq> inner\<close> greaterThanLessThan_iff mem_Sigma_iff pair_imageI r1_def subset_eq x2)
 
     then have t2o: "\<And>t. 0 < t \<Longrightarrow> t < d \<Longrightarrow> flow0 x (t2 + t) \<in> inner"
       using r1a3[OF x2] exist flow_trans
@@ -1786,9 +1786,9 @@ proof -
          apply (rule existence_ivl_trans')
         by (auto simp: t)
       have T_ex2: "dr + T \<in> existence_ivl0 (flow0 x t2)"
-        by (smt T_ex ends_in_segment(2) exist local.existence_ivl_trans local.existence_ivl_trans' real_Icc_closed_segment subset_eq t2d2_ex \<open>t1 \<le> t2\<close>)
+        by (smt (z3) T_ex ends_in_segment(2) exist local.existence_ivl_trans local.existence_ivl_trans' real_Icc_closed_segment subset_eq t2d2_ex \<open>t1 \<le> t2\<close>)
       thus False using T \<open>t1 \<le> t2\<close> exist
-        by (smt T_ex diff_existence_ivl_trans disjoint_iff_not_equal inner io(9) local.flow_trans local.flow_undefined0 outer y_def)
+        by (smt (z3) T_ex diff_existence_ivl_trans disjoint_iff_not_equal inner io(9) local.flow_trans local.flow_undefined0 outer y_def)
     qed
     have "closure outer \<inter> inner = {}"
       by (metis inf_sup_aci(1) io(2) io2(1) open_Int_closure_eq_empty)
@@ -1974,7 +1974,7 @@ proof -
     then have False
       using x1 x2 2 i1 i2
       apply (auto simp: line_in_subsegment line_in_subsegment2)
-      by (smt greaterThanLessThan_iff in_open_segment_iff_line line_in_subsegment2 tm_in)
+      by (smt (z3) greaterThanLessThan_iff in_open_segment_iff_line line_in_subsegment2 tm_in)
     then show ?thesis by simp
   next
     case 3
@@ -1989,7 +1989,7 @@ proof -
     also have "\<dots> = flow0 x ` (insert t2 {tm<..<t2})"
       using \<open>tm \<le> t2\<close> 3
       apply auto
-      by (smt greaterThanLessThan_iff image_eqI)
+      by (smt (z3) greaterThanLessThan_iff image_eqI)
     finally have "flow0 x t1 \<in> flow0 x ` (insert t2 {tm<..<t2})"
       by auto
     then have "flow0 x t1 \<in> flow0 x ` {tm<..<t2}" using x1neqx2
@@ -2031,7 +2031,7 @@ proof -
   have nz: "?Ds x (f x) \<noteq> 0"
     using assms  apply auto
     unfolding transversal_segment_def
-    by (smt inner_minus_left nrm_reverse open_closed_segment)
+    by (smt (z3) inner_minus_left nrm_reverse open_closed_segment)
 
   from flow_implicit_function_at[OF \<open>x \<in> X\<close>, of s, OF \<open>s x = 0\<close> Ds Dsc nz \<open>e > 0\<close>]
   obtain t d1 where "0 < d1"
@@ -2218,9 +2218,9 @@ lemma open_segment_separate_left:
   shows "x \<in> {a <--< v}"
 proof -
   have "v \<noteq> x"
-    by (smt dist_commute x(1)) 
+    by (smt (z3) dist_commute x(1)) 
   moreover have "x \<notin> {v<--<b}"
-    by (smt dist_commute dist_in_open_segment open_segment_subsegment v x(1))
+    by (smt (z3) dist_commute dist_in_open_segment open_segment_subsegment v x(1))
   moreover have "v \<in> {a<--<b}" using v
     by (metis ends_in_segment(1) segment_open_subset_closed subset_eq subset_segment(4) u)
   ultimately show ?thesis using open_segment_trichotomy[OF _ x(2)]
@@ -2235,9 +2235,9 @@ lemma open_segment_separate_right:
   shows "x \<in> {v <--< b}"
 proof -
   have "v \<noteq> x"
-    by (smt dist_commute x(1))
+    by (smt (z3) dist_commute x(1))
   moreover have "x \<notin> {a<--<v}"
-    by (smt dist_commute dist_in_open_segment open_segment_commute open_segment_subsegment v x(1))
+    by (smt (z3) dist_commute dist_in_open_segment open_segment_commute open_segment_subsegment v x(1))
   moreover have "v \<in> {a<--<b}" using v
     by (metis ends_in_segment(1) segment_open_subset_closed subset_eq subset_segment(4) u)
   ultimately show ?thesis using open_segment_trichotomy[OF _ x(2)]
@@ -2279,21 +2279,21 @@ proof -
 
 (* by construction *)
   have d1: "dist (flow0 x su1) v \<ge> (dist u v)/2" using su1(4) duv unfolding duv_def
-    by (smt dist_triangle_half_r)
+    by (smt (z3) dist_triangle_half_r)
   have "dist (flow0 x su1) u < dist u v" using su1(4) duv unfolding duv_def by linarith
   from open_segment_separate_left[OF u(2) uv this su1(2)]
   have su1l:"flow0 x su1 \<in> {a<--<v}" .
   have "dist (flow0 x su2) v < dist v (flow0 x su1)" using d1
-    by (smt dist_commute duv_def su2(4))
+    by (smt (z3) dist_commute duv_def su2(4))
   from open_segment_separate_right[OF v(2) su1l this su2(2)]
   have su2l:"flow0 x su2 \<in> {flow0 x su1<--<b}" .
   then have su2ll:"flow0 x su2 \<in> {u<--<b}"
-    by (smt dist_commute dist_pos_lt duv_def open_segment_subsegment pos_half_less open_segment_separate_right su2(2) su2(4) u(2) uv v(2) unotv)
+    by (smt (z3) dist_commute dist_pos_lt duv_def open_segment_subsegment pos_half_less open_segment_separate_right su2(2) su2(4) u(2) uv v(2) unotv)
 
   have "dist (flow0 x su2) u \<ge> (dist u v)/2" using su2(4) duv unfolding duv_def
-    by (smt dist_triangle_half_r)
+    by (smt (z3) dist_triangle_half_r)
   then have "dist (flow0 x su3) u < dist u (flow0 x su2)"
-    by (smt dist_commute duv_def su3(4)) 
+    by (smt (z3) dist_commute duv_def su3(4)) 
   from open_segment_separate_left[OF u(2) su2ll this su3(2)]
   have su3l:"flow0 x su3 \<in> {a<--<flow0 x su2}" .
 
@@ -2320,7 +2320,7 @@ proof (rule ccontr)
   have u:"\<omega>_limit_point x u" "u \<in> {a<--<b}" using assms unfolding \<omega>_limit_set_def
     by auto
   show False using no_two_\<omega>_limit_points[OF \<open>transversal_segment a b\<close>]
-    by (smt dist_commute dist_in_open_segment open_segment_trichotomy u uv v assms)
+    by (smt (z3) dist_commute dist_in_open_segment open_segment_trichotomy u uv v assms)
 qed
 
 text \<open>Adapted from Perko Section 3.7 Lemma 4 (+ Chicone )\<close>
@@ -2419,7 +2419,7 @@ proof (rule ccontr)
     using closed_orbit_global_existence periodic_orbit_def y(1) by auto
       (* TODO: factor out as periodic_orbitE *)
   have l2:"f l \<noteq> 0"
-    by (smt \<open>l \<in> X\<close> \<open>l \<in> range (flow0 y)\<close> closed_orbit_global_existence fixed_point_imp_closed_orbit_period_zero(2) fixpoint_sol(2) image_iff local.flows_reverse periodic_orbit_def y(1))
+    by (smt (z3) \<open>l \<in> X\<close> \<open>l \<in> range (flow0 y)\<close> closed_orbit_global_existence fixed_point_imp_closed_orbit_period_zero(2) fixpoint_sol(2) image_iff local.flows_reverse periodic_orbit_def y(1))
   from transversal_segment_exists[OF l1 l2]
   obtain a b where ab: "transversal_segment a b" "l \<in> {a<--<b}" by blast
   then have "l \<in> \<omega>_limit_set x \<inter> {a<--<b}" using lr by auto
@@ -2438,12 +2438,12 @@ proof (rule ccontr)
     using s by auto
   moreover have "flow0 ((s \<circ> r) n) (t ((s \<circ> r) n )) \<in> \<omega>_limit_set x"
     using \<open>invariant (\<omega>_limit_set x)\<close> calculation unfolding invariant_def trapped_def
-    by (smt \<omega>_limit_set_in_compact_subset \<open>invariant (\<omega>_limit_set x)\<close> assms(1-4) invariant_def order_trans range_eqI subsetD trapped_iff_on_existence_ivl0 trapped_sol)
+    by (smt (z3) \<omega>_limit_set_in_compact_subset \<open>invariant (\<omega>_limit_set x)\<close> assms(1-4) invariant_def order_trans range_eqI subsetD trapped_iff_on_existence_ivl0 trapped_sol)
   ultimately have "flow0 ((s \<circ> r) n) (t ((s \<circ> r) n )) \<in> \<omega>_limit_set x \<inter> {a<--<b}" by auto
   from unique_transversal_segment_intersection[OF ab(1) ex_pos this]
   have "flow0 ((s \<circ> r) n) (t ((s \<circ> r) n )) = l" using luniq by auto
   then have "((s \<circ> r) n) = flow0 l (-(t ((s \<circ> r) n ))) "
-    by (smt UNIV_I \<open>(s \<circ> r) n \<in> \<omega>_limit_set x\<close> flows_reverse \<omega>_limit_set_in_compact_existence assms(1-4)) 
+    by (smt (z3) UNIV_I \<open>(s \<circ> r) n \<in> \<omega>_limit_set x\<close> flows_reverse \<omega>_limit_set_in_compact_existence assms(1-4)) 
   thus False using sr(2) lu
       \<open>flow0 ((s \<circ> r) n) (t ((s \<circ> r) n)) = l\<close> \<open>flow0 ((s \<circ> r) n) (t ((s \<circ> r) n)) \<in> \<omega>_limit_set x\<close>
       closed_orbit_global_existence image_iff local.flow_trans periodic_orbit_def \<omega>_limit_set_in_compact_existence range_eqI assms y(1)
@@ -2610,7 +2610,7 @@ proof -
     by (metis subset_iff zpx)
   from \<omega>_limit_set_in_compact_subset[OF assms(1-4)]
   have "?weq \<subseteq> ?S"
-    by (smt Collect_mono_iff Int_iff inf.absorb_iff1)
+    by (smt (z3) Collect_mono_iff Int_iff inf.absorb_iff1)
   then have "finite ?weq" using \<open>finite ?S\<close>
     by (blast intro: rev_finite_subset) 
 
@@ -2697,13 +2697,13 @@ proof -
   let ?wreg = "{y \<in> \<omega>_limit_set x. f y \<noteq> 0}"
   let ?weq = "{y \<in> \<omega>_limit_set x. f y = 0}"
   have wreqweq: "?wreg \<union> ?weq = \<omega>_limit_set x"
-    by (smt Collect_cong Collect_disj_eq mem_Collect_eq \<omega>_limit_set_def)
+    by (smt (z3) Collect_cong Collect_disj_eq mem_Collect_eq \<omega>_limit_set_def)
 
   from trapped_sol_right[OF assms(1-4)] have ex_pos: "{0..} \<subseteq> existence_ivl0 x" by blast
   from \<omega>_limit_set_in_compact_subset[OF assms(1-4)]
   have wxK: "\<omega>_limit_set x \<subseteq> K" .
   then have "?weq \<subseteq> S" using S
-    by (smt Collect_mono_iff Int_iff inf.absorb_iff1)
+    by (smt (z3) Collect_mono_iff Int_iff inf.absorb_iff1)
   then have "finite ?weq" using \<open>finite S\<close>
     by (metis rev_finite_subset) 
   from \<omega>_limit_set_invariant
@@ -2728,7 +2728,7 @@ proof -
     (* If w has no fixed points, then the Poincare Bendixson theorem applies *)
     assume "?weq = {}"
     then have " 0 \<notin> f ` \<omega>_limit_set x"
-      by (smt empty_Collect_eq imageE)
+      by (smt (z3) empty_Collect_eq imageE)
     from poincare_bendixson[OF assms(1-4) this]
     have "(\<exists>y. periodic_orbit y \<and> flow0 y ` UNIV = \<omega>_limit_set x)"
       by metis

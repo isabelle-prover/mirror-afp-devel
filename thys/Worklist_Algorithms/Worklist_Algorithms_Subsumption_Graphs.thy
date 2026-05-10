@@ -300,7 +300,7 @@ next
 next
   case 4
   have "{a. Graph_Start_Defs.reachable (close RE) (closure s\<^sub>0) a} \<subseteq> closure ` UNIV"
-    by (smt Graph_Start_Defs.reachable_induct close_def full_SetCompr_eq mem_Collect_eq subsetI)
+    by (smt (z3) Graph_Start_Defs.reachable_induct close_def full_SetCompr_eq mem_Collect_eq subsetI)
   also have "finite \<dots>"
     by (rule finite_closure)
   finally show ?case .

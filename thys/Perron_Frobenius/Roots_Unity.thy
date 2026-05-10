@@ -19,7 +19,7 @@ lemma cis_plus_2pi[simp]: "cis (x + 2 * pi) = cis x" by (auto simp: complex_eq_i
 lemma cis_plus_2pi_neq_1: assumes x: "0 < x" "x < 2 * pi"
   shows "cis x \<noteq> 1"
 proof -
-  from x have "cos x \<noteq> 1" by (smt cos_2pi_minus cos_monotone_0_pi cos_zero)
+  from x have "cos x \<noteq> 1" by (smt (z3) cos_2pi_minus cos_monotone_0_pi cos_zero)
   thus ?thesis by (auto simp: complex_eq_iff)
 qed
 

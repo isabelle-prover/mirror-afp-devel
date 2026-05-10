@@ -185,7 +185,7 @@ subsubsection \<open>Starting the proof\<close>
 text \<open>Key lemma to show that forbidding values of $p^l$ or larger suffices to find correct factors.\<close>
 
 lemma (in poly_mod_prime) Mp_smult_p_removal: "poly_mod.Mp (p * p ^ k) (smult p f) = 0 \<Longrightarrow> poly_mod.Mp (p^k) f = 0"
-  by (smt add.left_neutral m1 poly_mod.Dp_Mp_eq poly_mod.Mp_smult_m_0 sdiv_poly_smult smult_smult)
+  by (smt (z3) add.left_neutral m1 poly_mod.Dp_Mp_eq poly_mod.Mp_smult_m_0 sdiv_poly_smult smult_smult)
 
 lemma (in poly_mod_prime) eq_m_smult_p_removal: "poly_mod.eq_m (p * p ^ k) (smult p f) (smult p g) 
   \<Longrightarrow> poly_mod.eq_m (p^k) f g" using Mp_smult_p_removal[of k "f - g"]
@@ -196,7 +196,7 @@ proof (cases "f = 0")
   case False
   from content_dvd_coeff[of f "degree f"] have "abs (Polynomial.content f) dvd abs (lead_coeff f)" by auto
   moreover have "abs (lead_coeff f) \<noteq> 0" using False by auto
-  ultimately show ?thesis by (smt dvd_imp_le_int)
+  ultimately show ?thesis by (smt (z3) dvd_imp_le_int)
 qed auto
 
 lemma poly_mod_dvd_drop_smult: assumes u: "monic u" and p: "prime p" and c: "c \<noteq> 0" "\<bar>c\<bar> < p^l"
@@ -1404,7 +1404,7 @@ proof -
   define N where "N = sqrt_int_ceiling K" 
   have K0: "K \<ge> 0" unfolding K_def by auto
   have N0: "N \<ge> 0" unfolding N_def sqrt_int_ceiling using K0 
-    by (smt of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
+    by (smt (z3) of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
   define n where "n = find_exponent p N" 
   note res = res[folded n_def[unfolded N_def K_def]]
   note n = find_exponent[OF m1, of N, folded n_def]

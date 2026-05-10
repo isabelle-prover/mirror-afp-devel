@@ -28,7 +28,7 @@ proof -
   fix s :: state and  k :: nat 
   assume F: " 1 + s ''x'' = 2 ^ k " 
   then have i: "nat (1 + s ''x'') =  2 ^ k" and nn: "s ''x''\<ge> 0"  apply (auto simp: nat_power_eq)
-    by (smt one_le_power)          
+    by (smt (z3) one_le_power)          
   have F: "1 + nat (s ''x'') = 2 ^k" unfolding i[symmetric] using nn by auto
   show "5 * k \<le> 96 + 100 * floor_log (nat (s ''x''))"
   proof (cases "s ''x'' \<ge> 1")

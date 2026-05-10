@@ -396,7 +396,7 @@ qed simp
 lemma lhs_subst_trivial: 
   shows "match (to_pterm (lhs \<alpha>) \<cdot> \<langle>As\<rangle>\<^sub>\<alpha>) (to_pterm (lhs \<alpha>)) = Some \<langle>As\<rangle>\<^sub>\<alpha>"
   using match_trivial
-  by (smt comp_def mem_Collect_eq mk_subst_not_mem set_remdups set_rev set_vars_term_list subsetI subst_domain_def vars_to_pterm)
+  by (smt (z3) comp_def mem_Collect_eq mk_subst_not_mem set_remdups set_rev set_vars_term_list subsetI subst_domain_def vars_to_pterm)
 
 lemma to_pterm_ctxt_apply_term:
   "to_pterm C\<langle>t\<rangle> = (to_pterm_ctxt C) \<langle>to_pterm t\<rangle>"
@@ -432,7 +432,7 @@ proof-
       "\<forall>i < length (var_rule \<alpha>). Bs!i = \<sigma> ((var_rule \<alpha>)!i)"
     using length_map nth_map by blast
   then have 2:"(\<forall>x \<in> set (var_rule \<alpha>). \<sigma> x = (\<langle>Bs\<rangle>\<^sub>\<alpha>) x)"
-    by (smt apply_lhs_subst_var_rule in_set_idx nth_map)
+    by (smt (z3) apply_lhs_subst_var_rule in_set_idx nth_map)
   have v:"vars_term (to_pterm (lhs \<alpha>)) = set (var_rule \<alpha>)"
     by (metis comp_apply set_remdups set_rev set_vars_term_list vars_to_pterm) 
   from assms have "B = (to_pterm (lhs \<alpha>)) \<cdot> \<sigma>"
@@ -478,14 +478,14 @@ proof-
  from assms have "map (\<langle>As\<rangle>\<^sub>\<alpha>) (var_rule \<alpha>) = As"
     using apply_lhs_subst_var_rule by blast 
   with assms show ?thesis
-    by (smt comp_apply in_set_idx map_nth_eq_conv nth_mem set_remdups set_rev set_vars_term_list subst_well_def vars_to_pterm) 
+    by (smt (z3) comp_apply in_set_idx map_nth_eq_conv nth_mem set_remdups set_rev set_vars_term_list subst_well_def vars_to_pterm) 
 qed
  
 lemma match_well_def:
   assumes "B \<in> wf_pterm R" "match B A = Some \<sigma>"
   shows "\<forall>i < length (vars_distinct A). \<sigma> ((vars_distinct A) ! i) \<in> wf_pterm R"
   using assms subst_well_def match_matches
-  by (smt comp_apply nth_mem set_remdups set_rev set_vars_term_list)
+  by (smt (z3) comp_apply nth_mem set_remdups set_rev set_vars_term_list)
 
 lemma subst_imp_well_def:
   assumes "A \<cdot> \<sigma> \<in> wf_pterm R"
@@ -525,7 +525,7 @@ lemma lhs_subst_not_var_i:
   using assms proof(rule contrapos_np)
   {assume "(\<langle>As\<rangle>\<^sub>\<alpha>) x \<noteq> Var x"
     then obtain i where "i < length (zip (var_rule \<alpha>) As)" and "(var_rule \<alpha>)!i = x" 
-      unfolding mk_subst_def by (smt assms imageE in_set_zip map_of_eq_None_iff option.case_eq_if) 
+      unfolding mk_subst_def by (smt (z3) assms imageE in_set_zip map_of_eq_None_iff option.case_eq_if) 
     then show "\<exists>i<length As. i < length (var_rule \<alpha>) \<and> x = var_rule \<alpha> ! i"
       by auto 
   }
@@ -1315,7 +1315,7 @@ lemma apply_f_ctxt:
          from 3 i have r:"(ss1 @ (C\<langle>to_pterm (source B)\<rangle> # ss2))!i = ss2!(i-(length ss1 + 1))"
            by (metis add.commute less_SucI not_less_eq nth_append_Cons plus_1_eq_Suc) 
          from l r 3 show ?thesis using f2
-           by (smt One_nat_def add.right_neutral add_Suc add_Suc_right add_diff_inverse_nat add_less_cancel_left append_Cons_nth_right i length_append length_map length_zip list.size(4) min_less_iff_conj not_less_eq nth_map nth_zip)
+           by (smt (z3) One_nat_def add.right_neutral add_Suc add_Suc_right add_diff_inverse_nat add_less_cancel_left append_Cons_nth_right i length_append length_map length_zip list.size(4) min_less_iff_conj not_less_eq nth_map nth_zip)
        qed
      qed
    }
@@ -1365,7 +1365,7 @@ lemma apply_f_ctxt:
          from 3 i have r:"(ss1 @ (C\<langle>to_pterm (source B)\<rangle> # ss2))!i = ss2!(i-(length ss1 + 1))"
            by (metis add.commute less_SucI not_less_eq nth_append_Cons plus_1_eq_Suc) 
          from l r 3 show ?thesis using f2
-           by (smt One_nat_def add.right_neutral add_Suc add_Suc_right add_diff_inverse_nat add_less_cancel_left append_Cons_nth_right i length_append length_map length_zip list.size(4) min_less_iff_conj not_less_eq nth_map nth_zip)
+           by (smt (z3) One_nat_def add.right_neutral add_Suc add_Suc_right add_diff_inverse_nat add_less_cancel_left append_Cons_nth_right i length_append length_map length_zip list.size(4) min_less_iff_conj not_less_eq nth_map nth_zip)
        qed
      qed
    }

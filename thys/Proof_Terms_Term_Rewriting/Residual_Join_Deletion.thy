@@ -226,7 +226,7 @@ proof -
       "match t (to_pterm (lhs \<alpha>)) = Some \<sigma>" 
       "(\<forall>x\<in> set (var_rule \<alpha>). (\<langle>?ts\<rangle>\<^sub>\<alpha>) x = \<sigma> x)"
       using lhs_subst_trivial by blast 
-    from \<sigma>(2) l have ts:"map \<sigma> (var_rule \<alpha>) = ?ts" by (smt apply_lhs_subst_var_rule map_eq_conv) 
+    from \<sigma>(2) l have ts:"map \<sigma> (var_rule \<alpha>) = ?ts" by (smt (z3) apply_lhs_subst_var_rule map_eq_conv) 
     from Prule(1) have "those (map2 residual ?ts As) = Some (map (to_pterm \<circ> target) As)" using well by (simp add:those_some) 
     with ts have args:"those (map2 residual (map \<sigma> (var_rule \<alpha>)) As) = Some (map (to_pterm \<circ> target) As)" by simp
     show ?case proof (cases t rule:source.cases)
@@ -348,11 +348,11 @@ next
     using "4_1"(4) by (metis match_well_def vars_to_pterm)  
   from l have "length (zip As (map \<sigma> (var_rule \<alpha>))) = length As" by simp   
   with "4_1"(1,3) well * l as have IH:"\<forall>i < length As. source (Cs!i) = target (map (\<langle>Bs\<rangle>\<^sub>\<alpha>) (var_rule \<alpha>) !i)" 
-    using Bs by (smt length_map nth_map nth_mem nth_zip)
+    using Bs by (smt (z3) length_map nth_map nth_mem nth_zip)
   from * have "source C = (lhs \<alpha>) \<cdot> \<langle>map source Cs\<rangle>\<^sub>\<alpha>" 
      by (simp add: source_apply_subst)
   also have "... = (lhs \<alpha>) \<cdot> \<langle>map (target \<circ> (\<langle>Bs\<rangle>\<^sub>\<alpha>)) (var_rule \<alpha>)\<rangle>\<^sub>\<alpha>" 
-    using * l IH by (smt map_eq_conv' map_map)
+    using * l IH by (smt (z3) map_eq_conv' map_map)
   also have "... = (lhs \<alpha>) \<cdot> (target \<circ> (\<langle>Bs\<rangle>\<^sub>\<alpha>))" 
     using Bs by (metis (no_types, lifting) apply_lhs_subst_var_rule fun_mk_subst map_map target.simps(1)) 
   also have "... = target (to_pterm (lhs \<alpha>) \<cdot> \<langle>Bs\<rangle>\<^sub>\<alpha>)"
@@ -376,11 +376,11 @@ next
     using "4_2"(4) by (metis match_well_def vars_to_pterm)  
   from l have "length (zip As (map \<sigma> (var_rule \<alpha>))) = length As" by simp   
   with "4_2"(1,3) well * l as have IH:"\<forall>i < length As. source (Cs!i) = target (map (\<langle>Bs'\<rangle>\<^sub>\<alpha>) (var_rule \<alpha>) !i)" 
-    using Bs' by (smt length_map nth_map nth_mem nth_zip)
+    using Bs' by (smt (z3) length_map nth_map nth_mem nth_zip)
   from * have "source C = (lhs \<alpha>) \<cdot> \<langle>map source Cs\<rangle>\<^sub>\<alpha>" 
      by (simp add: source_apply_subst)
   also have "... = (lhs \<alpha>) \<cdot> \<langle>map (target \<circ> (\<langle>Bs'\<rangle>\<^sub>\<alpha>)) (var_rule \<alpha>)\<rangle>\<^sub>\<alpha>" 
-    using * l IH by (smt map_eq_conv' map_map)
+    using * l IH by (smt (z3) map_eq_conv' map_map)
   also have "... = (lhs \<alpha>) \<cdot> (target \<circ> (\<langle>Bs'\<rangle>\<^sub>\<alpha>))" 
     using Bs' by (metis (no_types, lifting) apply_lhs_subst_var_rule fun_mk_subst map_map target.simps(1)) 
   also have "... = target (to_pterm (lhs \<alpha>) \<cdot> \<langle>Bs'\<rangle>\<^sub>\<alpha>)"
@@ -400,7 +400,7 @@ next
     using "5_1"(3) by (metis match_well_def vars_to_pterm)  
   from l have "length (zip (map \<sigma> (var_rule \<alpha>)) As) = length As" by simp   
   with "5_1"(1,4) well * l as have IH:"\<forall>i < length As. source (Cs!i) = target (As!i)" 
-    by (smt length_map nth_map nth_mem nth_zip)
+    by (smt (z3) length_map nth_map nth_mem nth_zip)
   from * have "source C = (rhs \<alpha>) \<cdot> \<langle>map source Cs\<rangle>\<^sub>\<alpha>" 
      by (simp add: source_apply_subst)
   also have "... = (rhs \<alpha>) \<cdot> \<langle>map target As\<rangle>\<^sub>\<alpha>" 
@@ -419,7 +419,7 @@ next
     using "5_2"(3) by (metis match_well_def vars_to_pterm)  
   from l have "length (zip (map \<sigma> (var_rule \<alpha>)) As) = length As" by simp   
   with "5_2"(1,4) well * l as have IH:"\<forall>i < length As. source (Cs!i) = target (As!i)" 
-    by (smt length_map nth_map nth_mem nth_zip)
+    by (smt (z3) length_map nth_map nth_mem nth_zip)
   from * have "source C = (rhs \<alpha>) \<cdot> \<langle>map source Cs\<rangle>\<^sub>\<alpha>" 
      by (simp add: source_apply_subst)
   also have "... = (rhs \<alpha>) \<cdot> \<langle>map target As\<rangle>\<^sub>\<alpha>" 
@@ -458,7 +458,7 @@ proof-
   from l have "length As = length (zip As (map \<sigma> (var_rule \<alpha>)))"
     by simp 
   with assms(1,4) \<sigma> l Cs(2) Ds(2) well_def have IH:"\<forall>i < length As. target (Cs!i) = target (Ds!i)" 
-    using as by (smt length_map nth_map nth_mem nth_zip)
+    using as by (smt (z3) length_map nth_map nth_mem nth_zip)
   from Cs have "target C = (rhs \<alpha>) \<cdot> \<langle>map target Cs\<rangle>\<^sub>\<alpha>" by simp
   moreover from Ds(1) have "target D = (rhs \<alpha>) \<cdot> \<langle>map target Ds\<rangle>\<^sub>\<alpha>" 
     using target_empty_apply_subst to_pterm_empty by (metis fun_mk_subst target.simps(1) target_to_pterm)
@@ -495,7 +495,7 @@ proof-
   from l have "length As = length (zip As (map \<sigma> (var_rule \<alpha>)))"
     by simp 
   with assms(1,4,5) \<sigma> l Cs(2) Ds(2) well_def have IH:"\<forall>i < length As. target (Cs!i) = target (Ds!i)" 
-    using as by (smt length_map nth_map nth_mem nth_zip)
+    using as by (smt (z3) length_map nth_map nth_mem nth_zip)
   from Cs have "target C = (rhs \<alpha>) \<cdot> \<langle>map target Cs\<rangle>\<^sub>\<alpha>" by simp
   moreover from Ds(1) have "target D = (rhs \<alpha>) \<cdot> \<langle>map target Ds\<rangle>\<^sub>\<alpha>" 
     using target_empty_apply_subst to_pterm_empty by (metis fun_mk_subst target.simps(1) target_to_pterm)
@@ -658,7 +658,7 @@ next
   from l * have "\<forall>i < length As. \<sigma> (var_rule \<alpha> ! i) \<in> wf_pterm S" 
     using "4_2"(3) by (metis match_well_def vars_to_pterm)  
   with "4_2"(1) * wellA l2 have "\<forall>i < length As. Cs!i \<in> wf_pterm R"
-    by (smt l length_map nth_map nth_mem nth_zip)
+    by (smt (z3) l length_map nth_map nth_mem nth_zip)
   with "4_2"(2) * show ?case
     by (smt (verit, ccfv_threshold) Inr_not_Inl in_set_conv_nth term.distinct(1) term.inject(2) wf_pterm.cases wf_pterm.intros(3))
 next
@@ -677,7 +677,7 @@ next
   from l * have "\<forall>i < length As. \<sigma> (var_rule \<alpha> ! i) \<in> wf_pterm R" 
     using "5_1"(2) by (metis match_well_def vars_to_pterm)  
   with "5_1"(1) * wellA l2 have "\<forall>i < length As. Cs!i \<in> wf_pterm R"
-    by (smt l length_map nth_map nth_mem nth_zip)
+    by (smt (z3) l length_map nth_map nth_mem nth_zip)
   with * show ?case
     by (metis lhs_subst_well_def to_pterm_wf_pterm) 
 next
@@ -696,7 +696,7 @@ next
   from l * have "\<forall>i < length As. \<sigma> (var_rule \<alpha> ! i) \<in> wf_pterm R" 
     using "5_2"(2) by (metis match_well_def vars_to_pterm)  
   with "5_2"(1) * wellA l2 have "\<forall>i < length As. Cs!i \<in> wf_pterm R"
-    by (smt l length_map nth_map nth_mem nth_zip)
+    by (smt (z3) l length_map nth_map nth_mem nth_zip)
   with * show ?case
     by (metis lhs_subst_well_def to_pterm_wf_pterm) 
 qed simp_all
@@ -744,7 +744,7 @@ proof(induct rule:join.induct)
     with 2 have "\<forall>(a,b) \<in> set (zip As Bs). a \<squnion> b = b \<squnion> a"
       by auto
     with True have "(map2 (\<squnion>) As Bs) = (map2 (\<squnion>) Bs As)"
-      by (smt case_prod_unfold map_eq_conv' map_fst_zip map_snd_zip nth_mem)
+      by (smt (z3) case_prod_unfold map_eq_conv' map_fst_zip map_snd_zip nth_mem)
     then show ?thesis using 2 unfolding join.simps
       by auto
   qed auto
@@ -757,7 +757,7 @@ next
     have "length (map2 (\<squnion>) As Bs) = length (map2 (\<squnion>) Bs As)"
       by auto
     with * have "(map2 (\<squnion>) As Bs) = (map2 (\<squnion>) Bs As)"
-      by (smt fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
+      by (smt (z3) fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
     then show ?thesis using 3 unfolding join.simps
       by auto
   qed auto
@@ -772,7 +772,7 @@ next
     have "length (map2 (\<squnion>) As (map \<sigma> (var_rule \<alpha>))) = length (map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) As)"
       by auto
     with * have "(map2 (\<squnion>) As (map \<sigma> (var_rule \<alpha>))) = (map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) As)"
-      by (smt fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
+      by (smt (z3) fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
     then show ?thesis unfolding join.simps sigma
       by simp
   qed simp
@@ -787,7 +787,7 @@ next
     have "length (map2 (\<squnion>) As (map \<sigma> (var_rule \<alpha>))) = length (map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) As)"
       by auto
     with * have "(map2 (\<squnion>) As (map \<sigma> (var_rule \<alpha>))) = (map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) As)"
-      by (smt fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
+      by (smt (z3) fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
     then show ?thesis unfolding join.simps sigma
       by simp
   qed simp
@@ -802,7 +802,7 @@ next
     have "length (map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) Bs) = length (map2 (\<squnion>) Bs (map \<sigma> (var_rule \<alpha>)))"
       by auto
     with * have "(map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) Bs) = (map2 (\<squnion>) Bs (map \<sigma> (var_rule \<alpha>)))"
-      by (smt fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
+      by (smt (z3) fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
     then show ?thesis unfolding join.simps sigma
       by simp
   qed simp
@@ -817,7 +817,7 @@ next
     have "length (map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) Bs) = length (map2 (\<squnion>) Bs (map \<sigma> (var_rule \<alpha>)))"
       by auto
     with * have "(map2 (\<squnion>) (map \<sigma> (var_rule \<alpha>)) Bs) = (map2 (\<squnion>) Bs (map \<sigma> (var_rule \<alpha>)))"
-      by (smt fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
+      by (smt (z3) fst_conv length_map length_zip map_eq_conv' min_less_iff_conj nth_mem nth_zip prod.case_eq_if snd_conv)
     then show ?thesis unfolding join.simps sigma
       by simp
   qed simp
@@ -1066,7 +1066,7 @@ next
   from l * have "\<forall>i < length As. \<sigma> (var_rule \<alpha> ! i) \<in> wf_pterm R"
     using "4_2"(4) by (metis match_well_def vars_to_pterm)
   with "4_2"(1) * wellA l2 have "\<forall>i < length As. Cs!i \<in> wf_pterm R"
-    by (smt l length_map nth_map nth_mem nth_zip)
+    by (smt (z3) l length_map nth_map nth_mem nth_zip)
   with "4_2"(3) * show ?case
     by (smt (verit, ccfv_threshold) Inr_not_Inl in_set_conv_nth term.distinct(1) term.inject(2) wf_pterm.cases wf_pterm.intros(3))
 next
@@ -1104,7 +1104,7 @@ next
   from l * have "\<forall>i < length As. \<sigma> (var_rule \<alpha> ! i) \<in> wf_pterm R"
     using "5_2"(3) by (metis match_well_def vars_to_pterm)
   with "5_2"(1) * wellA l2 have "\<forall>i < length As. Cs!i \<in> wf_pterm R"
-    by (smt l length_map nth_map nth_mem nth_zip)
+    by (smt (z3) l length_map nth_map nth_mem nth_zip)
   with * show ?case
     by (metis "5_2.prems"(3) Inl_inject Inr_not_Inl in_set_idx l term.distinct(1) term.sel(2) wf_pterm.cases wf_pterm.intros(3))
 qed auto
@@ -1174,7 +1174,7 @@ next
   from l * have "\<forall>i < length As. \<sigma> (var_rule \<alpha> ! i) \<in> wf_pterm R"
     using "4_2"(4) by (metis match_well_def vars_to_pterm)
   with "4_2"(1) * wellA l2 have "\<forall>i < length As. co_initial (As!i) (Cs!i)"
-    by (smt l length_map nth_map nth_mem nth_zip)
+    by (smt (z3) l length_map nth_map nth_mem nth_zip)
   with "4_2"(3) * show ?case
     by (metis nth_map_conv source.simps(3))
 next

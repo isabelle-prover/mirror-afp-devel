@@ -270,7 +270,7 @@ lemma length_those:
 next
   case (Cons a xs)
   from Cons(2) obtain ys' where ys':"those xs = Some ys'"
-    by (smt not_None_eq option.case_eq_if option.simps(8) those.simps(2)) 
+    by (smt (z3) not_None_eq option.case_eq_if option.simps(8) those.simps(2)) 
   from Cons(2) obtain y where y:"Some y = a"
     by (metis option.case_eq_if option.exhaust_sel option.simps(3) those.simps(2)) 
   from y ys' have "those (Cons a xs) = Some (Cons y ys')"

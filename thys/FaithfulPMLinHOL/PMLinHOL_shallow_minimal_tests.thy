@@ -25,14 +25,14 @@ lemma HCderived3: "\<Turnstile>\<^sup>m (\<not>\<^sup>m\<phi>\<supset>\<^sup>m \
 lemma HCderived4: "\<Turnstile>\<^sup>m (\<phi> \<supset>\<^sup>m \<psi>) \<supset>\<^sup>m (\<not>\<^sup>m\<psi> \<supset>\<^sup>m \<not>\<^sup>m\<phi>) " by auto
 
 \<comment>\<open>Modal logic: the schematic necessitation rule and distribution axiom are implied\<close>
-lemma Nec: "\<Turnstile>\<^sup>m \<phi> \<Longrightarrow> \<Turnstile>\<^sup>m \<box>\<^sup>m\<phi>" by (smt DefM)
+lemma Nec: "\<Turnstile>\<^sup>m \<phi> \<Longrightarrow> \<Turnstile>\<^sup>m \<box>\<^sup>m\<phi>" by (smt (z3) DefM)
 lemma Dist:"\<Turnstile>\<^sup>m \<box>\<^sup>m(\<phi> \<supset>\<^sup>m \<psi>) \<supset>\<^sup>m (\<box>\<^sup>m\<phi> \<supset>\<^sup>m \<box>\<^sup>m\<psi>) " by auto
 
 \<comment>\<open>Correspondence theory: correct statements\<close> 
 lemma cM:"reflexive R \<longleftrightarrow> (\<forall>\<phi>. \<Turnstile>\<^sup>m \<box>\<^sup>m\<phi> \<supset>\<^sup>m \<phi>)" by auto
 lemma cBa: "symmetric R \<longrightarrow> (\<forall>\<phi>. \<Turnstile>\<^sup>m \<phi> \<supset>\<^sup>m \<box>\<^sup>m\<diamond>\<^sup>m\<phi>)" by auto 
 lemma cBb: "symmetric R \<longleftarrow> (\<forall>\<phi>. \<Turnstile>\<^sup>m \<phi> \<supset>\<^sup>m \<box>\<^sup>m\<diamond>\<^sup>m\<phi>)" by (metis DefM)
-lemma c4a: "transitive R \<longrightarrow> (\<forall>\<phi>. \<Turnstile>\<^sup>m \<box>\<^sup>m\<phi> \<supset>\<^sup>m \<box>\<^sup>m(\<box>\<^sup>m\<phi>))" by (smt DefM)
+lemma c4a: "transitive R \<longrightarrow> (\<forall>\<phi>. \<Turnstile>\<^sup>m \<box>\<^sup>m\<phi> \<supset>\<^sup>m \<box>\<^sup>m(\<box>\<^sup>m\<phi>))" by (smt (z3) DefM)
 lemma c4b: "transitive R \<longleftarrow> (\<forall>\<phi>. \<Turnstile>\<^sup>m \<box>\<^sup>m\<phi> \<supset>\<^sup>m \<box>\<^sup>m(\<box>\<^sup>m\<phi>))" by auto
 
 \<comment>\<open>Correspondence theory: incorrect statements\<close> 
@@ -45,7 +45,7 @@ lemma "\<Turnstile>\<^sup>m (\<diamond>\<^sup>m(\<box>\<^sup>m \<phi>)) \<supset
 
 \<comment>\<open>Implied axiom schemata in S5\<close>
 lemma KB: "symmetric R \<longrightarrow> (\<forall>\<phi> \<psi>.\<Turnstile>\<^sup>m (\<diamond>\<^sup>m(\<box>\<^sup>m\<phi>)) \<supset>\<^sup>m\<box>\<^sup>m(\<diamond>\<^sup>m\<phi>))" by auto
-lemma K4B: "symmetric R \<and> transitive R \<longrightarrow> (\<forall>\<phi> \<psi>. \<Turnstile>\<^sup>m \<box>\<^sup>m( \<box>\<^sup>m\<phi> \<supset>\<^sup>m\<box>\<^sup>m\<psi>) \<or>\<^sup>m \<box>\<^sup>m( \<box>\<^sup>m\<psi> \<supset>\<^sup>m\<box>\<^sup>m\<phi>))" by (smt DefM)
+lemma K4B: "symmetric R \<and> transitive R \<longrightarrow> (\<forall>\<phi> \<psi>. \<Turnstile>\<^sup>m \<box>\<^sup>m( \<box>\<^sup>m\<phi> \<supset>\<^sup>m\<box>\<^sup>m\<psi>) \<or>\<^sup>m \<box>\<^sup>m( \<box>\<^sup>m\<psi> \<supset>\<^sup>m\<box>\<^sup>m\<phi>))" by (smt (z3) DefM)
 end
 
 

@@ -5518,7 +5518,7 @@ proof -
     with major have "\<exists>stp. is_final (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp) \<and>
                            (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp = (0, [Bk, Bk], <nl> @ [Bk]))"
       unfolding Hoare_halt_def
-      by (smt Hoare_halt_def Pair_inject  holds_for.elims(2) is_final.elims(2))
+      by (smt (z3) Hoare_halt_def Pair_inject  holds_for.elims(2) is_final.elims(2))
     then obtain stp where
       w_stp: "is_final (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp) \<and>
                (steps0 (1, [],<nl::nat list>@ [Bk]) tm_erase_right_then_dblBk_left stp = (0, [Bk, Bk], <nl> @ [Bk]))" by blast

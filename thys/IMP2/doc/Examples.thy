@@ -206,7 +206,7 @@ lemma "\<And>h l n\<^sub>0 :: int.
        \<lbrakk>\<paragraph>''invar-final''; 0 \<le> n\<^sub>0; \<not> 1 + l < h; 0 \<le> l; l < h; l * l \<le> n\<^sub>0;
         n\<^sub>0 < h * h\<rbrakk>
        \<Longrightarrow> n\<^sub>0 < 1 + (l * l + l * 2)"  
-  by (smt mult.commute semiring_normalization_rules(3))
+  by (smt (z3) mult.commute semiring_normalization_rules(3))
 
 program_spec sqr_bisect
   assumes "0\<le>n" ensures "r\<^sup>2\<le>n\<^sub>0 \<and> n\<^sub>0<(r+1)\<^sup>2"
@@ -225,7 +225,7 @@ program_spec sqr_bisect
   text \<open>We use quick-and-dirty apply style proof to discharge the VCs\<close>
         apply (auto simp: power2_eq_square algebra_simps add_pos_pos)
    apply (smt not_sum_squares_lt_zero)
-  by (smt mult.commute semiring_normalization_rules(3))
+  by (smt (z3) mult.commute semiring_normalization_rules(3))
 
   
   
@@ -617,7 +617,7 @@ program_spec find_least_idx
       l=l+1
   \<close>
   apply vcg_cs
-  by (smt atLeastLessThan_iff imageI)
+  by (smt (z3) atLeastLessThan_iff imageI)
   
 
 
@@ -644,7 +644,7 @@ program_spec check_sorted
   \<close>
   apply vcg_cs
    apply (auto simp: ran_sorted_def) 
-  by (smt atLeastLessThan_iff) 
+  by (smt (z3) atLeastLessThan_iff) 
 
   
 subsubsection \<open>Find Equilibrium Index\<close>  
@@ -735,7 +735,7 @@ program_spec binsearch
        apply (auto simp: algebra_simps bin_search_pre_def bin_search_post_def)
   txt \<open>Driving sledgehammer to its limits ...\<close>
    apply (smt div_add_self1 even_succ_div_two odd_two_times_div_two_succ ran_sorted_alt)
-  by (smt div_add_self1 even_succ_div_two odd_two_times_div_two_succ ran_sorted_alt)
+  by (smt (z3) div_add_self1 even_succ_div_two odd_two_times_div_two_succ ran_sorted_alt)
 
 text \<open>Next, we show that our postcondition (which was easy to prove)
   implies the expected properties of the algorithm.
@@ -874,7 +874,7 @@ lemma lran_eq_append_iff:
       subgoal
         by simp
       subgoal
-        by (smt append_Cons list.inject lran.simps lran_append1)
+        by (smt (z3) append_Cons list.inject lran.simps lran_append1)
       subgoal
         using add1_zle_eq by fastforce
       done
@@ -884,7 +884,7 @@ lemma lran_eq_append_iff:
     with \<open>a l = x\<close> show ?case
       apply (intro exI[where x = i])
       apply auto
-      by (smt IH(3) lran_prepend1)
+      by (smt (z3) IH(3) lran_prepend1)
   qed
   apply (subst lran_split; simp)
   done
@@ -978,7 +978,7 @@ program_spec insort_insert
   unfolding insort_insert_post_def Let_def
   apply vcg
       apply auto
-  by (smt atLeastAtMost_iff)
+  by (smt (z3) atLeastAtMost_iff)
   
 text \<open>Next, we show that our specification that was easy to prove implies the 
   specification that the outer loop expects:\<close>
@@ -992,7 +992,7 @@ lemma insort_insert_sorted:
   using assms unfolding insort_insert_post_def Let_def
   apply auto
   subgoal
-    by (smt atLeastAtMost_iff ran_sorted_alt)
+    by (smt (z3) atLeastAtMost_iff ran_sorted_alt)
   subgoal 
     unfolding ran_sorted_alt Ball_def
     apply auto
@@ -1203,7 +1203,7 @@ recursive_spec quicksort(a,l,h) returns a
   apply (vcg_cs; (intro conjI)?)
   subgoal using quicksort_sorted_aux by metis
   subgoal using quicksort_mset_aux by metis
-  subgoal by (smt ComplD ComplI atLeastLessThan_iff eq_on_def)
+  subgoal by (smt (z3) ComplD ComplI atLeastLessThan_iff eq_on_def)
   subgoal by (auto simp: ran_sorted_def)
   done
   

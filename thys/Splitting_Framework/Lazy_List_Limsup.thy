@@ -230,7 +230,7 @@ definition Limsup_upto_llist :: \<open>'a set llist \<Rightarrow> enat \<Rightar
 lemma Limsup_upto_llist_eq_Limsup_llist_ltake:
   \<open>Limsup_upto_llist Xs j = Limsup_llist (ltake (eSuc j) Xs)\<close>
   unfolding Limsup_upto_llist_def Limsup_llist_def
-  by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
+  by (smt (z3) Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
 
 lemma Limsup_upto_llist_enat[simp]:
   \<open>Limsup_upto_llist Xs (enat k) =

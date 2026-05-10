@@ -349,7 +349,7 @@ proof (rule subsetI)
   then have "k * 2 ^ (m - n) \<in> {0 .. \<lfloor>2^m * T\<rfloor>}"
   proof -
     have "k / 2 ^ n \<le> \<lfloor>2^m * T\<rfloor> / 2 ^ m"
-      by (smt floor_pow2_mono[THEN monoD, OF \<open>n \<le> m\<close>] k(2) divide_right_mono of_int_le_iff zero_le_power)
+      by (smt (z3) floor_pow2_mono[THEN monoD, OF \<open>n \<le> m\<close>] k(2) divide_right_mono of_int_le_iff zero_le_power)
     then have "k / 2 ^ n * 2 ^ m \<le> \<lfloor>2^m * T\<rfloor>"
       by (simp add: field_simps)
     moreover have "k / 2 ^ n * 2 ^ m = k * 2 ^ (m - n)"

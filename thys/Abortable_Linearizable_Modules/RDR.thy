@@ -130,7 +130,7 @@ next
   fix s1 s2
   show "s1 \<sqinter> s2 = (s2 \<sqinter> s1)"
     using inf_glb 
-    by (smt antisym is_glb_def pre_RDR.is_lb_def)
+    by (smt (z3) antisym is_glb_def pre_RDR.is_lb_def)
 next
   fix s1 s2 s3
   show "(s1 \<sqinter> s2) \<sqinter> s3 = (s1 \<sqinter> (s2 \<sqinter> s3))"

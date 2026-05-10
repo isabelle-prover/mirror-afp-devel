@@ -83,7 +83,7 @@ theorem "\<^bold>d\<^bold>f\<^bold>s\<^bold>s\<^bold>s\<^bold>s\<^bold>e\<^bold>
    sledgehammer [verit] (A1 A2 A3 A4 A5 p'\_def)  (* No proof found *)
    sledgehammer [spass] (A1 A2 A3 A4 A5 p'\_def)  (* No proof found *)
    sledgehammer [remote\_leo3] (A1 A2 A3 A4 A5 p'\_def)  (* No proof found *)\<close> *)
-  by (smt A1 A2 A3 A4 A5 p'_def)  \<comment>\<open>smt proof reconstruction succeeds\<close>
+  by (smt (z3) A1 A2 A3 A4 A5 p'_def)  \<comment>\<open>smt proof reconstruction succeeds\<close>
 
 text \<open>In experiments (using the same environment as above) several provers reported
 proofs, including @{term "Z3"} and @{term "E"}.\<close>

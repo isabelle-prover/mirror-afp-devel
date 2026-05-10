@@ -22,7 +22,7 @@ text \<open>Theorem 42.1\<close>
 
 lemma post_pre_left_antitone:
   "x \<le> y \<Longrightarrow> y\<guillemotleft>-q \<le> x\<guillemotleft>-q"
-  by (smt order_refl order_trans pre_closed pre_post_galois)
+  by (smt (z3) order_refl order_trans pre_closed pre_post_galois)
 
 lemma pre_left_sub_dist:
   "x\<squnion>y\<guillemotleft>-q \<le> x\<guillemotleft>-q"
@@ -173,7 +173,7 @@ proof (rule order.antisym)
   have "--p*(-p\<stileturn>-q) \<le> (1\<stileturn>-q) \<squnion> --p*top"
     by (simp add: pre_post_import_complement)
   thus "-p\<stileturn>-q \<le> (1\<stileturn>-q) \<squnion> --p*top"
-    using 1 by (smt case_split_left eq_refl tests_dual.inf_complement)
+    using 1 by (smt (z3) case_split_left eq_refl tests_dual.inf_complement)
 next
   show "(1\<stileturn>-q) \<squnion> --p*top \<le> -p\<stileturn>-q"
     by (metis le_sup_iff tests_dual.double_negation tests_dual.sub_bot_least pre_neg_mult pre_post_galois pre_post_pre_one)
@@ -208,7 +208,7 @@ proof -
   have "--p*x \<le> -p*-q\<stileturn>-r"
     by (metis tests_dual.double_negation order_trans pre_neg_mult pre_post_galois pre_post_left_sup_dist)
   hence 1: "-p*x \<le> -q\<stileturn>-r \<longrightarrow> x \<le> -p*-q\<stileturn>-r"
-    by (smt case_split_left eq_refl order_trans tests_dual.inf_complement pre_post_left_sup_dist sub_comm)
+    by (smt (z3) case_split_left eq_refl order_trans tests_dual.inf_complement pre_post_left_sup_dist sub_comm)
   have "-p*(-p*-q\<stileturn>-r) \<le> -q\<stileturn>-r"
     by (metis mult_left_isotone mult_left_one tests_dual.sub_bot_least pre_post_left_import_mult)
   thus ?thesis
@@ -292,7 +292,7 @@ qed
 
 lemma post_pre_left_isotone:
   "x \<le> y \<Longrightarrow> x\<guillemotleft>-q \<le> y\<guillemotleft>-q"
-  by (smt order_refl order_trans pre_closed pre_post_galois)
+  by (smt (z3) order_refl order_trans pre_closed pre_post_galois)
 
 lemma pre_left_sub_dist:
   "x\<guillemotleft>-q \<le> x\<squnion>y\<guillemotleft>-q"

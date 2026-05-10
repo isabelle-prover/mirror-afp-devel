@@ -385,7 +385,7 @@ proof -
   from b_def have "b>1" using B_def apply auto
     by (metis One_nat_def one_less_numeral_iff power_gt1_lemma semiring_norm(76))
   hence b: "b > 2" using c b_def B_def 
-    by (smt One_nat_def Suc_le_lessD less_Suc_eq_le less_trans_Suc linorder_neqE_nat
+    by (smt (z3) One_nat_def Suc_le_lessD less_Suc_eq_le less_trans_Suc linorder_neqE_nat
             numeral_2_eq_2 power_Suc0_right power_inject_exp)
   from \<open>k<m\<close> have "\<not> ishalt (p!k)" using is_val
     by (simp add: is_valid_def is_valid_initial_def is_val m_def)

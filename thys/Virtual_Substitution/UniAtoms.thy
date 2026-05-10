@@ -316,11 +316,11 @@ next
 next
   case (And F1 F2)
   then show ?case
-    by (smt convert_fm.simps(4) grab_atoms.simps(7) isSome.elims(2) isSome.elims(3) option.distinct(1) option.simps(5) option.split_sel_asm prod.simps(2)) 
+    by (smt (z3) convert_fm.simps(4) grab_atoms.simps(7) isSome.elims(2) isSome.elims(3) option.distinct(1) option.simps(5) option.split_sel_asm prod.simps(2)) 
 next
   case (Or F1 F2)
   then show ?case
-    by (smt convert_fm.simps(5) grab_atoms.simps(8) isSome.elims(2) isSome.elims(3) option.distinct(1) option.simps(5) option.split_sel_asm prod.simps(2))
+    by (smt (z3) convert_fm.simps(5) grab_atoms.simps(8) isSome.elims(2) isSome.elims(3) option.distinct(1) option.simps(5) option.split_sel_asm prod.simps(2))
 next
   case (Neg F)
   then show ?case by auto
@@ -367,7 +367,7 @@ next
   case (Atom p)
   then show ?case
     using convert_aNeg[of _ p]
-    by (smt aNeg_aEval convert_fm.simps(1) evalUni.simps(1) eval.simps(1) eval.simps(6) map_option_eq_Some negUni.simps(1)) 
+    by (smt (z3) aNeg_aEval convert_fm.simps(1) evalUni.simps(1) eval.simps(1) eval.simps(6) map_option_eq_Some negUni.simps(1)) 
 next
   case (And F1 F2)
   then show ?case apply auto

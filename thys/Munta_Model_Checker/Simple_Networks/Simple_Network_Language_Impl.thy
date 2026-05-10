@@ -52,12 +52,12 @@ next
   case (Suc x)
   from Suc.prems obtain a b L1 L1' where *:
     "length L1 = x" "length L1' = x" "L = a # L1" "L' = b # L1'"
-    by (smt Suc.hyps(2) length_Suc_conv)
+    by (smt (z3) Suc.hyps(2) length_Suc_conv)
   show ?case
     unfolding \<open>L = _\<close> \<open>L' = _\<close>
     apply (clarsimp, rule conjI)
     subgoal
-      by (smt *(3,4) Suc.hyps(2) Suc.prems Suc_less_eq add_Suc_shift less_add_Suc2 list.set_intros(1) list_tail_coinc map_index'.simps(2) set_mp)
+      by (smt (z3) *(3,4) Suc.hyps(2) Suc.prems Suc_less_eq add_Suc_shift less_add_Suc2 list.set_intros(1) list_tail_coinc map_index'.simps(2) set_mp)
     subgoal
       apply (rule Suc.hyps)
       using Suc.prems * by auto

@@ -514,7 +514,7 @@ proof -
       apply(rule conseq)      
       apply(rule w)           
     subgoal using sF I_def
-      by (smt Pair_inject R case_prodE case_prodI2)      
+      by (smt (z3) Pair_inject R case_prodE case_prodI2)      
     subgoal unfolding I_def by auto
     done
 qed

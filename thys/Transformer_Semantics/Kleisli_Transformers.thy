@@ -124,7 +124,7 @@ lemma "inf_pres bd\<^sub>\<F>" (*nitpick*)
 text \<open>Dual preservation statements hold for ifbd ... and even Inf-preservation.\<close>
 
 lemma ifbd_comp_pres: "Sup_pres \<phi> \<Longrightarrow> bd\<^sup>-\<^sub>\<F> (\<phi> \<circ> \<psi>) = bd\<^sup>-\<^sub>\<F> \<psi> \<circ>\<^sub>K bd\<^sup>-\<^sub>\<F> \<phi>"
-  by (smt fbd_ifbd_galois fun.map_comp kcomp_def klift_def)
+  by (smt (z3) fbd_ifbd_galois fun.map_comp kcomp_def klift_def)
 
 lemma ifbd_Sup_pres: "Sup_pres bd\<^sup>-\<^sub>\<F>"   
   by (simp add: fun_eq_iff)
@@ -207,7 +207,7 @@ lemma irbd_surj: "surj bd\<^sup>-\<^sub>\<R>"
   by (metis UNIV_I fun.set_map imageE rbd_irbd_inv1 surj_def surj_id)
 
 lemma rbd_irbd_galois: "Sup_pres \<phi> \<Longrightarrow> (\<phi> = bd\<^sub>\<R> R) = (R = bd\<^sup>-\<^sub>\<R> \<phi>)"
-  by (smt comp_apply fbd_ifbd_galois irbd_def r2f_f2r_galois rbd_def)
+  by (smt (z3) comp_apply fbd_ifbd_galois irbd_def r2f_f2r_galois rbd_def)
 
 lemma rbd_comp_pres: "bd\<^sub>\<R> (R ; S) = bd\<^sub>\<R> S \<circ> bd\<^sub>\<R> R"
   by (simp add: rbd_def r2f_comp_pres fbd_comp_pres)
@@ -608,7 +608,7 @@ proof-
   have "Inf_pres (\<Sqinter>\<Phi>)"
     using Inf_pres_Inf assms by blast
   hence  "(fb\<^sub>\<R> \<circ> fb\<^sup>-\<^sub>\<R>) (\<Sqinter>\<Phi>) = \<Sqinter>(\<P> (fb\<^sub>\<R> \<circ> fb\<^sup>-\<^sub>\<R>) \<Phi>)"
-    by (smt INF_identity_eq Sup.SUP_cong assms irfb_inv2)
+    by (smt (z3) INF_identity_eq Sup.SUP_cong assms irfb_inv2)
   also have "... = \<Sqinter>(\<P> fb\<^sub>\<R> (\<P> fb\<^sup>-\<^sub>\<R> \<Phi>))"
     by (simp add: image_comp)
   also have "... = fb\<^sub>\<R> (\<Squnion>(\<P> fb\<^sup>-\<^sub>\<R> \<Phi>))"
@@ -716,7 +716,7 @@ lemma ffd_ffb_demorgan: "\<partial> \<circ> fd\<^sub>\<F> f = fb\<^sub>\<F> f \<
   by (simp add: comp_assoc ffb_prop ffd_def)
 
 lemma iffd_iffb_demorgan: "Sup_pres \<phi> \<Longrightarrow> fd\<^sup>-\<^sub>\<F> \<phi> = (fb\<^sup>-\<^sub>\<F> \<circ> \<partial>\<^sub>F) \<phi>"
-  by (smt Sup_pres_Inf_pres comp_apply iffb_ifbd_dual iffd_def map_dual_dual)
+  by (smt (z3) Sup_pres_Inf_pres comp_apply iffb_ifbd_dual iffd_def map_dual_dual)
 
 lemma ffb_ffd_demorgan: "\<partial> \<circ> fb\<^sub>\<F> f = fd\<^sub>\<F> f \<circ> \<partial>"
   by (simp add: ffb_prop ffd_def rewriteL_comp_comp)

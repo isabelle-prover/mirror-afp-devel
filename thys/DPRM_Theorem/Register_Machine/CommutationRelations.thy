@@ -351,7 +351,7 @@ proof(cases "t=0")
 next
   case False
   show ?thesis using yltx_digits apply(induct t, auto) using yltx_digits
-    by (smt add.commute add_left_cancel add_mono_thms_linordered_semiring(1) mod_mult2_eq 
+    by (smt (z3) add.commute add_left_cancel add_mono_thms_linordered_semiring(1) mod_mult2_eq 
         mult_le_cancel2 nth_digit_def semiring_normalization_rules(7))
 qed
 

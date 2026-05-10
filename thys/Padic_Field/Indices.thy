@@ -39,7 +39,7 @@ lemma insert_at_index_eq''[simp]:
   assumes "k \<le> n"
   shows "(insert_at_index as a k)!(Suc n) = as ! n"  
   using assms insert_at_index.simps[of as a k] 
-  by (smt Suc_diff_Suc append_take_drop_id diff_Suc_Suc dual_order.order_iff_strict 
+  by (smt (z3) Suc_diff_Suc append_take_drop_id diff_Suc_Suc dual_order.order_iff_strict 
       le_imp_less_Suc length_take less_trans min.absorb2 not_le nth_Cons_Suc nth_append)
 
 text\<open>Correctness of project\_at\_indices\<close>
@@ -257,7 +257,7 @@ proof-
         have T3: "\<And>i.  i < card {j. Suc j \<in> S} \<Longrightarrow> nth_elem {j. j > 0 \<and> j\<in> S} i = nth_elem S (Suc i)"
         proof-
           have 0: " 0 < card {j. Suc j \<in> S}" 
-            by (smt Cons.prems Diff_iff Diff_subset False T0 T1 True add_diff_cancel_left' 
+            by (smt (z3) Cons.prems Diff_iff Diff_subset False T0 T1 True add_diff_cancel_left' 
                 card.insert card_0_eq card.infinite finite_subset gr_zeroI insert_Diff 
                 length_Cons n_not_Suc_n plus_1_eq_Suc proj_at_index_list_length singletonI)
           have 1: "(insert 0 {j. 0 < j \<and> j \<in> S}) = S"
@@ -313,7 +313,7 @@ proof-
       have F1: "Suc `{j. Suc j \<in> S} = S"
       proof show "Suc ` {j. Suc j \<in> S} \<subseteq> S" by auto 
             show "S \<subseteq> Suc ` {j. Suc j \<in> S}"  using False Suc_pred  
-                by (smt image_iff mem_Collect_eq neq0_conv subsetI)
+                by (smt (z3) image_iff mem_Collect_eq neq0_conv subsetI)
       qed
       have F2: "{j. Suc j \<in> S} \<subseteq> indices_of as \<and> i < card {j. Suc j \<in> S}"
         using F1 

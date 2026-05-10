@@ -563,9 +563,9 @@ proof vcg_tc_simp
       show "?tet * t \<le> ?t"
         using 1 mult_right_isotone sup.coboundedI2 mult_assoc by auto
       have "?e * t * t * ?e \<le> ?e"
-        using 2 by (smt arc_top_arc mult_assoc mult_right_isotone mult_left_isotone top_greatest)
+        using 2 by (smt (z3) arc_top_arc mult_assoc mult_right_isotone mult_left_isotone top_greatest)
       hence "transitive ?tet"
-        by (smt mult_assoc mult_right_isotone mult_left_isotone)
+        by (smt (z3) mult_assoc mult_right_isotone mult_left_isotone)
       thus "?tet * ?tet \<le> ?t"
         using le_supI2 by auto
     qed
@@ -592,9 +592,9 @@ proof vcg_tc_simp
       thus "t \<sqinter> ?tet\<^sup>T \<le> 1"
         by simp
       thus "?tet \<sqinter> t\<^sup>T \<le> 1"
-        by (smt conv_isotone inf_commute conv_one conv_dist_inf conv_involutive)
+        by (smt (z3) conv_isotone inf_commute conv_one conv_dist_inf conv_involutive)
       have "?e * t * ?e \<le> ?e"
-        using 2 by (smt arc_top_arc mult_assoc mult_right_isotone mult_left_isotone top_greatest)
+        using 2 by (smt (z3) arc_top_arc mult_assoc mult_right_isotone mult_left_isotone top_greatest)
       also have "... \<le> -t\<^sup>T"
         using 3 by simp
       finally have "?tet \<le> -?e\<^sup>T"

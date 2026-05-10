@@ -358,7 +358,7 @@ lemma adjust_scope:
   shows "HT \<pi> (\<lambda>s. P (<<>|s>)) (SCOPE c) (\<lambda>s\<^sub>0 s. \<exists>l. Q (<<>|s\<^sub>0>) (<l|s>))"
   unfolding HT_def
   apply (clarsimp simp: wp_eq)  
-  by (smt HT_def assms combine_collapse combine_nest(1) wp_conseq)
+  by (smt (z3) HT_def assms combine_collapse combine_nest(1) wp_conseq)
 
   
 (* Forward assignment rule + renaming of assigned variable *)  
@@ -384,7 +384,7 @@ lemma adjust_scope_partial:
   shows "HT_partial \<pi> (\<lambda>s. P (<<>|s>)) (SCOPE c) (\<lambda>s\<^sub>0 s. \<exists>l. Q (<<>|s\<^sub>0>) (<l|s>))"
   unfolding HT_partial_def
   apply (clarsimp simp: wlp_eq)  
-  by (smt HT_partial_def assms combine_collapse combine_nest(1) wlp_conseq)
+  by (smt (z3) HT_partial_def assms combine_collapse combine_nest(1) wlp_conseq)
     
 
 definition "ADJUST_PRE_SCOPE P \<equiv> (\<lambda>s. P <<>|s>)"

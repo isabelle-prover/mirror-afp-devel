@@ -283,7 +283,7 @@ proof(induct t)
     then have "labelposs (Fun fl ts) = (\<Union>i<length ts. {i # p |p. p \<in> labelposs (ts ! i)})"
       by simp
     also have "... \<subseteq> (\<Union>i<length ts. {i # p |p. p \<in> fun_poss (ts ! i)})" using Fun
-      by (smt SUP_mono basic_trans_rules(31) lessThan_iff mem_Collect_eq nth_mem subsetI)
+      by (smt (z3) SUP_mono basic_trans_rules(31) lessThan_iff mem_Collect_eq nth_mem subsetI)
     finally show ?thesis
       by auto
   next
@@ -293,7 +293,7 @@ proof(induct t)
     then have "labelposs (Fun fl ts) = {[]} \<union> (\<Union>i<length ts. {i # p |p. p \<in> labelposs (ts ! i)})"
       by simp
     also have "... \<subseteq> {[]} \<union> (\<Union>i<length ts. {i # p |p. p \<in> fun_poss (ts ! i)})" using Fun
-      by (smt SUP_mono basic_trans_rules(31) lessThan_iff mem_Collect_eq nth_mem subsetI sup_mono)
+      by (smt (z3) SUP_mono basic_trans_rules(31) lessThan_iff mem_Collect_eq nth_mem subsetI sup_mono)
     finally show ?thesis
       by auto
   qed
@@ -308,7 +308,7 @@ lemma get_label_imp_labelposs:
   using assms proof(induct p arbitrary:t)
   case Nil
   then show ?case unfolding subt_at.simps
-    by (smt UnCI get_label.elims insert_iff labelposs.elims prod.sel(2) term.distinct(1) term.inject(2))
+    by (smt (z3) UnCI get_label.elims insert_iff labelposs.elims prod.sel(2) term.distinct(1) term.inject(2))
 next
   case (Cons i p)
   then obtain f ts where t:"t = Fun f ts" and "p \<in> poss (ts ! i)" and i:"i < length ts"
@@ -324,7 +324,7 @@ next
   next
     case (Some a)
     with p show ?thesis unfolding t using labelposs.simps(3)
-      by (smt UN_iff Un_iff mem_Collect_eq prod.collapse)
+      by (smt (z3) UN_iff Un_iff mem_Collect_eq prod.collapse)
   qed
 qed
 

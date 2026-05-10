@@ -214,7 +214,7 @@ proof (induction T U subs arbitrary: subs' rule: raw_match'.induct)
     
     ultimately show ?case using Cons.prems in_mono
       apply (clarsimp split: option.splits if_splits prod.splits simp add: bind_eq_Some_conv domIff)
-      by (smt UN_iff Un_iff domIff in_mono option.distinct(1))
+      by (smt (z3) UN_iff Un_iff domIff in_mono option.distinct(1))
       (*by fastforce, but too slow, check later *)
   qed
 qed (auto split: option.splits if_splits prod.splits simp add: bind_eq_Some_conv) 
@@ -371,7 +371,7 @@ using assms proof (induction T U subs arbitrary: restriction subs' rule: raw_mat
   case (1 v S T subs)
   then show ?case
     apply simp
-    by (smt fun_upd_restrict_conv option.case_eq_if option.discI option.sel restrict_fun_upd)
+    by (smt (z3) fun_upd_restrict_conv option.case_eq_if option.discI option.sel restrict_fun_upd)
 next
   case (2 a Ts b Us subs)
   hence l: "length Ts = length Us" "a=b" by (simp_all split: if_splits)
@@ -532,7 +532,7 @@ next
     using 5 f by simp
   moreover have "fsubs \<subseteq>\<^sub>m subs'" using raw_match_term_map_le u by blast
   ultimately have 2: "dom subs' \<subseteq> tvs f \<union> tvs u \<union> dom subs"
-    by (smt "1" Un_commute inf_sup_aci(6) subset_Un_eq)
+    by (smt (z3) "1" Un_commute inf_sup_aci(6) subset_Un_eq)
   then show ?case using 1 by simp
 qed (use raw_match'_dom_res_subset_tvsT in \<open>auto split: option.splits if_splits prod.splits\<close>) 
 
@@ -892,7 +892,7 @@ next
       show ?case 
         using 1 2 first rest
         apply (simp split: if_splits option.splits prod.splits)
-        by (smt Cons.IH Cons.prems(2) assoc_match.simps(2) list.set_intros(2) map_option_eq_Some 
+        by (smt (z3) Cons.IH Cons.prems(2) assoc_match.simps(2) list.set_intros(2) map_option_eq_Some 
             rest zip_Cons_Cons)
     qed
   qed
@@ -916,7 +916,7 @@ proof-
   finally have "dom (map_of l) = dom subs" .
   moreover have "map_of l x = subs x" if "x\<in>dom subs" for x 
     using that
-    by (smt l domIff fst_conv map_of_SomeD mem_Collect_eq option.collapse prod.sel(2) weak_map_of_SomeI)
+    by (smt (z3) l domIff fst_conv map_of_SomeD mem_Collect_eq option.collapse prod.sel(2) weak_map_of_SomeI)
   ultimately have "map_of l = subs" 
     by (simp add: dom_eq_and_eq_on_dom_imp_eq)
   thus ?thesis ..
@@ -924,7 +924,7 @@ qed
 
 corollary tinstT_iff_assoc_match[code]: "tinstT T1 T2 \<longleftrightarrow> assoc_match T2 T1 [] ~= None" 
   using tinstT_iff_ex_raw_match' list_of_map raw_match'_assoc_match
-  by (smt map_of_eq_empty_iff map_option_is_None option.collapse option.distinct(1))
+  by (smt (z3) map_of_eq_empty_iff map_option_is_None option.collapse option.distinct(1))
 
 function (sequential) assoc_match_term 
   :: "term \<Rightarrow> term \<Rightarrow> ((variable \<times> sort) \<times> typ) list \<Rightarrow> ((variable \<times> sort) \<times> typ) list option"
@@ -962,7 +962,7 @@ next
   from "5.hyps"(1) "5.hyps"(2) have "Option.bind (map_option map_of (assoc_match_term f f' subs))
      (raw_match_term u u') =
     map_option map_of (Option.bind (assoc_match_term f f' subs) (assoc_match_term u u'))"
-    by (smt None_eq_map_option_iff bind.bind_lunit bind_eq_None_conv option.collapse option.map_sel)
+    by (smt (z3) None_eq_map_option_iff bind.bind_lunit bind_eq_None_conv option.collapse option.map_sel)
   with 5 show ?case 
     using raw_match'_assoc_match 5 
     by (auto split: option.splits prod.splits simp add: lookup_present_eq_key bind_eq_Some_conv bind_eq_None_conv)

@@ -2604,7 +2604,7 @@ next
           have "x!!0 = c" using \<open>x \<in> {w \<in> range (pseudo_proj_True (Suc n)). w !! 0 = c}\<close> by simp
           moreover have "y!!0 = c" using \<open>y \<in> {w \<in> range (pseudo_proj_True (Suc n)). w !! 0 = c}\<close> by simp
           ultimately show "x = y" using \<open>stl x=  stl y\<close>
-            by (smt snth.simps(1) stream_eq_Stream_iff)
+            by (smt (z3) snth.simps(1) stream_eq_Stream_iff)
             (*by (metis (full_types, opaque_lifting)  pmf_bernoulli_True snth.simps(1) stream_eq_Stream_iff) *)
         qed
         show "range (pseudo_proj_True n) = stl ` {w \<in> range (pseudo_proj_True (Suc n)). w !! 0 = c}"

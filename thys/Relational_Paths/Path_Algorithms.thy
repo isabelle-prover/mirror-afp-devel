@@ -224,7 +224,7 @@ proof (intro conjI)
           by (metis comp_assoc conv_contrav conv_one is_vector_def point_def sur_def_var1)
         also have "... \<le> -(?W\<^sup>T*1) \<cdot> ?W\<^sup>T*1"
           using assms path_inv_choose_point_decrease
-          by (smt a conv_contrav conv_iso conv_one inf_mono less_eq_def subdistl_eq)
+          by (smt (z3) a conv_contrav conv_iso conv_one inf_mono less_eq_def subdistl_eq)
         also have "... \<le> 0"
           using compl_inf_bot eq_refl by blast
         finally show ?thesis
@@ -238,13 +238,13 @@ proof (intro conjI)
     apply (rule iffI)
     apply (metis assms conv_zero dist_alt edge_start inf_compl_bot_right modular_1_aux' modular_2_aux'
               point_is_point sup.left_idem sup_bot_left point_nq)
-    by (smt assms end_points(1) conv_contrav conv_invol cycle_no_points(1) end_point_iff2 has_start_end_points_iff path_aux1b path_edge_equals_cycle point_is_point start_point_iff2 sup_bot_left top_greatest pathW)
+    by (smt (z3) assms end_points(1) conv_contrav conv_invol cycle_no_points(1) end_point_iff2 has_start_end_points_iff path_aux1b path_edge_equals_cycle point_is_point start_point_iff2 sup_bot_left top_greatest pathW)
   show "?W\<noteq>0 \<longleftrightarrow> ?q = start_points ?W \<and> y = end_points ?W"
     apply (rule iffI)
     using assms end_points apply blast
     using assms by force
   show "terminating ?W"
-    by (smt assms end_points end_point_iff2 has_start_end_points_iff point_is_point start_point_iff2
+    by (smt (z3) assms end_points end_point_iff2 has_start_end_points_iff point_is_point start_point_iff2
             terminating_iff1 pathW point_nq)
 qed
 
@@ -305,7 +305,7 @@ proof -
       by (metis assms galois_aux inf_compl_bot_right maddux_142 mult_isor order_trans top_greatest)
     show "\<not> (?q * q\<^sup>T \<le> -?W)"
       using assms end_points(1)
-      by (smt acyclic_imp_one_step_different_points(2) choose_point_decreasing compl_sup inf.absorb1
+      by (smt (z3) acyclic_imp_one_step_different_points(2) choose_point_decreasing compl_sup inf.absorb1
               inf_compl_bot_right sup.commute sup_bot.left_neutral conv_zero end_points(2))
   qed
 qed

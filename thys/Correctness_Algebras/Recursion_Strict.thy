@@ -31,7 +31,7 @@ proof -
   have "n(y) * L \<le> n(x) * L"
     by (simp add: apx_n_order_reverse assms(1) mult_left_isotone)
   hence 1: "x \<le> z \<squnion> n(x) * L"
-    by (smt assms sup_assoc sup_right_divisibility apx_def le_iff_sup)
+    by (smt (z3) assms sup_assoc sup_right_divisibility apx_def le_iff_sup)
   have "z \<le> x \<squnion> n(x) * top \<squnion> n(x \<squnion> n(x) * top) * top"
     by (smt (verit) assms sup_left_isotone order_refl sup_assoc sup_mono apx_def mult_left_isotone n_isotone order_trans)
   also have "... = x \<squnion> n(x) * top"
@@ -85,11 +85,11 @@ proof -
   have "x \<le> y \<squnion> n(x) * L"
     using assms apx_def by auto
   hence 1: "z * x \<le> z * y \<squnion> n(z * x) * L"
-    by (smt sup_assoc sup_ge1 sup_bot_right mult_assoc mult_left_dist_sup mult_right_isotone n_L_split)
+    by (smt (z3) sup_assoc sup_ge1 sup_bot_right mult_assoc mult_left_dist_sup mult_right_isotone n_L_split)
   have "y \<le> x \<squnion> n(x) * top"
     using assms apx_def by auto
   hence "z * y \<le> z * x \<squnion> z * n(x) * top"
-    by (smt mult_assoc mult_left_dist_sup mult_right_isotone)
+    by (smt (z3) mult_assoc mult_left_dist_sup mult_right_isotone)
   also have "... \<le> z * x \<squnion> n(z * x) * top"
     by (smt (verit) sup_assoc le_supI le_sup_iff sup_ge1 sup_bot_right mult_left_dist_sup n_L_split n_top_split order_trans)
   finally show ?thesis
@@ -298,7 +298,7 @@ proof -
   hence "y\<^sup>\<circ> \<le> x\<^sup>\<circ> \<squnion> x\<^sup>\<circ> * n(x) * top"
     by (metis circ_isotone circ_left_top circ_unfold_sum mult_assoc)
   also have "... \<le> x\<^sup>\<circ> \<squnion> n(x\<^sup>\<circ> * x) * top"
-    by (smt le_sup_iff n_isotone n_top_split order_refl order_trans right_plus_below_circ zero_right_mult_decreasing)
+    by (smt (z3) le_sup_iff n_isotone n_top_split order_refl order_trans right_plus_below_circ zero_right_mult_decreasing)
   also have "... \<le> x\<^sup>\<circ> \<squnion> n(x\<^sup>\<circ>) * top"
     by (simp add: circ_plus_same n_circ_left_unfold)
   finally have 2: "y\<^sup>\<circ> \<le> x\<^sup>\<circ> \<squnion> n(x\<^sup>\<circ>) * top"
@@ -335,7 +335,7 @@ proof -
   have 1: "x \<le> y \<squnion> n(x) * L \<and> y \<le> x \<squnion> n(x) * top"
     using assms apx_def by auto
   hence "y\<^sup>\<omega> \<le> x\<^sup>\<star> * n(x) * top * (x\<^sup>\<star> * n(x) * top)\<^sup>\<omega> \<squnion> x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * n(x) * top * (x\<^sup>\<star> * n(x) * top)\<^sup>\<star> * x\<^sup>\<omega>"
-    by (smt sup_assoc mult_assoc mult_left_one mult_right_dist_sup omega_decompose omega_isotone omega_unfold star_left_unfold_equal)
+    by (smt (z3) sup_assoc mult_assoc mult_left_one mult_right_dist_sup omega_decompose omega_isotone omega_unfold star_left_unfold_equal)
   also have "... \<le> x\<^sup>\<star> * n(x) * top \<squnion> x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * n(x) * top * (x\<^sup>\<star> * n(x) * top)\<^sup>\<star> * x\<^sup>\<omega>"
     using mult_top_omega omega_unfold sup_left_isotone by auto
   also have "... = x\<^sup>\<star> * n(x) * top \<squnion> x\<^sup>\<omega>"
@@ -349,7 +349,7 @@ proof -
   have "x\<^sup>\<omega> \<le> (y \<squnion> n(x) * L)\<^sup>\<omega>"
     using 1 by (simp add: omega_isotone)
   also have "... = y\<^sup>\<star> * n(x) * L * (y\<^sup>\<star> * n(x) * L)\<^sup>\<omega> \<squnion> y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * n(x) * L * (y\<^sup>\<star> * n(x) * L)\<^sup>\<star> * y\<^sup>\<omega>"
-    by (smt sup_assoc mult_assoc mult_left_one mult_right_dist_sup omega_decompose omega_isotone omega_unfold star_left_unfold_equal)
+    by (smt (z3) sup_assoc mult_assoc mult_left_one mult_right_dist_sup omega_decompose omega_isotone omega_unfold star_left_unfold_equal)
   also have "... = y\<^sup>\<star> * n(x) * L \<squnion> y\<^sup>\<omega>"
     using L_left_zero sup_assoc sup_monoid.add_commute mult_assoc by force
   also have "... \<le> y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * bot \<squnion> n(y\<^sup>\<star> * x) * L"
@@ -387,7 +387,7 @@ lemma n_split_nu_mu:
   "y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z \<le> y\<^sup>\<star> * z \<squnion> n(y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) * top"
 proof -
   have "y\<^sup>\<omega> \<le> y\<^sup>\<star> * bot \<squnion> n(y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) * top"
-    by (smt sup_ge1 sup_right_isotone mult_left_isotone n_isotone n_split_omega order_trans)
+    by (smt (z3) sup_ge1 sup_right_isotone mult_left_isotone n_isotone n_split_omega order_trans)
   also have "... \<le> y\<^sup>\<star> * z \<squnion> n(y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) * top"
     using nL_star.star_zero_below_circ_mult sup_left_isotone by auto
   finally show ?thesis
@@ -426,7 +426,7 @@ proof -
   have "\<kappa> (\<lambda>x . y * x \<squnion> z) = y\<^sup>\<star> * z \<squnion> n(y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) * L"
     by (metis loop_semantics omega_loop_nu star_loop_mu)
   thus ?thesis
-    by (smt sup_assoc sup_commute le_iff_sup mult_right_dist_sup n_L_decreasing n_dist_sup)
+    by (smt (z3) sup_assoc sup_commute le_iff_sup mult_right_dist_sup n_L_decreasing n_dist_sup)
 qed
 
 end

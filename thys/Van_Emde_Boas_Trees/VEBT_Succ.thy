@@ -95,7 +95,7 @@ lemma succ_greatereq_min: assumes "deg \<ge> 2" and "(x::nat) \<ge> mi" shows
                              else Some (2^(deg div 2)) *\<^sub>o sc +\<^sub>o vebt_mint (treeList ! the sc) )
 
                      else None)"
-  by (smt add_numeral_left arith_simps(1) assms(1) assms(2) le_add_diff_inverse not_less numerals(1) plus_1_eq_Suc vebt_succ.simps(6))
+  by (smt (z3) add_numeral_left arith_simps(1) assms(1) assms(2) le_add_diff_inverse not_less numerals(1) plus_1_eq_Suc vebt_succ.simps(6))
 
 lemma succ_list_to_short: assumes "deg \<ge> 2" and "x \<ge> mi" and " high x (deg div 2) \<ge> length treeList" shows
   "vebt_succ (Node (Some (mi, ma)) deg treeList summary) x = None"
@@ -180,7 +180,7 @@ next
                                                     Some (2^(deg div 2)) *\<^sub>o Some ?h +\<^sub>o vebt_succ (treeList ! ?h) ?l
                              else if ?sc = None then None
                              else Some (2^(deg div 2)) *\<^sub>o ?sc +\<^sub>o vebt_mint (treeList ! the ?sc))"
-        by (smt True \<open>2 \<le> deg\<close> \<open>mi \<le> x\<close> succ_less_length_list)
+        by (smt (z3) True \<open>2 \<le> deg\<close> \<open>mi \<le> x\<close> succ_less_length_list)
       then show ?thesis 
       proof(cases "?maxlow \<noteq> None \<and> (Some ?l <\<^sub>o  ?maxlow)")
         case True
@@ -224,7 +224,7 @@ next
         hence 14:"both_member_options (Node (Some (mi, ma)) deg treeList summary) ?y" 
           using "09" "11" both_member_options_def by blast
         have 15: "vebt_member (Node (Some (mi, ma)) deg treeList summary) ?y" 
-          by (smt "07" "08" "10" "12" "4.hyps"(4) "4.hyps"(5) VEBT_Member.vebt_member.simps(5) One_nat_def Suc_1 Suc_le_eq Suc_pred \<open>2 \<le> deg\<close> \<open>deg div 2 = n\<close> add_gr_0 div_greater_zero_iff not_less zero_less_numeral)
+          by (smt (z3) "07" "08" "10" "12" "4.hyps"(4) "4.hyps"(5) VEBT_Member.vebt_member.simps(5) One_nat_def Suc_1 Suc_le_eq Suc_pred \<open>2 \<le> deg\<close> \<open>deg div 2 = n\<close> add_gr_0 div_greater_zero_iff not_less zero_less_numeral)
         have 16: "Some ?y = vebt_succ (Node (Some (mi, ma)) deg treeList summary) x" 
           by (simp add: \<open>vebt_succ (Node (Some (mi, ma)) deg treeList summary) x = Some (2 ^ (deg div 2) * high x (deg div 2) + succy)\<close>)
         have 17: "x = ?h * 2^(deg div 2) + ?l"
@@ -248,7 +248,7 @@ next
             hence "succy \<le> low z (deg div 2)" using 04 unfolding is_succ_in_set_def 
               by (metis True \<open>x < z\<close> add_diff_cancel_left' bit_concat_def bit_split_inv diff_diff_left mem_Collect_eq set_vebt'_def zero_less_diff)
             hence "?y \<le> z"
-              by (smt True bit_concat_def bit_split_inv diff_add_inverse diff_diff_add diff_is_0_eq mult.commute)
+              by (smt (z3) True bit_concat_def bit_split_inv diff_add_inverse diff_diff_add diff_is_0_eq mult.commute)
             then show ?thesis by blast
           next
             case False
@@ -531,7 +531,7 @@ next
                                                     Some (2^(deg div 2)) *\<^sub>o Some ?h +\<^sub>o vebt_succ (treeList ! ?h) ?l
                              else if ?sc = None then None
                              else Some (2^(deg div 2)) *\<^sub>o ?sc +\<^sub>o vebt_mint (treeList ! the ?sc))"
-        by (smt True \<open>2 \<le> deg\<close> \<open>mi \<le> x\<close> succ_less_length_list)
+        by (smt (z3) True \<open>2 \<le> deg\<close> \<open>mi \<le> x\<close> succ_less_length_list)
       then show ?thesis 
       proof(cases "?maxlow \<noteq> None \<and> (Some ?l <\<^sub>o  ?maxlow)")
         case True
@@ -575,7 +575,7 @@ next
         hence 14:"both_member_options (Node (Some (mi, ma)) deg treeList summary) ?y" 
           using "09" "11" both_member_options_def by blast
         have 15: "vebt_member (Node (Some (mi, ma)) deg treeList summary) ?y" 
-          by (smt "07" "08" "10" "12" "5.hyps"(4) "5.hyps"(5) VEBT_Member.vebt_member.simps(5) One_nat_def Suc_1 Suc_le_eq Suc_pred \<open>2 \<le> deg\<close> \<open>deg div 2 = n\<close> add_gr_0 div_greater_zero_iff not_less zero_less_numeral)
+          by (smt (z3) "07" "08" "10" "12" "5.hyps"(4) "5.hyps"(5) VEBT_Member.vebt_member.simps(5) One_nat_def Suc_1 Suc_le_eq Suc_pred \<open>2 \<le> deg\<close> \<open>deg div 2 = n\<close> add_gr_0 div_greater_zero_iff not_less zero_less_numeral)
         have 16: "Some ?y = vebt_succ (Node (Some (mi, ma)) deg treeList summary) x" 
           by (simp add: \<open>vebt_succ (Node (Some (mi, ma)) deg treeList summary) x = Some (2 ^ (deg div 2) * high x (deg div 2) + succy)\<close>)
         have 17: "x = ?h * 2^(deg div 2) + ?l"
@@ -600,7 +600,7 @@ next
             hence "succy \<le> low z (deg div 2)" using 04 unfolding is_succ_in_set_def 
               by (metis True \<open>x < z\<close> add_diff_cancel_left' bit_concat_def bit_split_inv diff_diff_left mem_Collect_eq set_vebt'_def zero_less_diff)
             hence "?y \<le> z"
-              by (smt True bit_concat_def bit_split_inv diff_add_inverse diff_diff_add diff_is_0_eq mult.commute)
+              by (smt (z3) True bit_concat_def bit_split_inv diff_add_inverse diff_diff_add diff_is_0_eq mult.commute)
             then show ?thesis by blast
           next
             case False

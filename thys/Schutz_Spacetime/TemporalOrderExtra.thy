@@ -58,7 +58,7 @@ next
     by simp
 next
   show "\<And>x y. \<lbrakk>x \<sqsubseteq>\<^bsub>?o\<^esub> y; y \<sqsubseteq>\<^bsub>?o\<^esub> x; x \<in> carrier ?o; y \<in> carrier ?o\<rbrakk> \<Longrightarrow> x .=\<^bsub>?o\<^esub> y"
-    by (smt abc_abc_neq abcd_dcba_only(18) betw4_sym betw4_weak eq_object.select_convs(1)
+    by (smt (z3) abc_abc_neq abcd_dcba_only(18) betw4_sym betw4_weak eq_object.select_convs(1)
       gorder.select_convs(1))
 next
   show "\<And>x y z.

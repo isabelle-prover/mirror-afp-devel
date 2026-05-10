@@ -119,7 +119,7 @@ proof (clarsimp simp: partn_lst_def)
     using assms by (auto simp: partn_lst_def smaller_than_small)
   then have bij: "bij_betw (ordermap H r) H (elts (\<alpha>!i))"
     using ordermap_bij [of r H] r
-    by (smt \<open>small B\<close> in_mono smaller_than_small total_on_def)
+    by (smt (z3) \<open>small B\<close> in_mono smaller_than_small total_on_def)
   define H' where "H' = inv_into H (ordermap H r) ` (elts (\<alpha>'!i))"
   have "H' \<subseteq> H"
     using bij \<open>i < length \<alpha>\<close> bij_betw_imp_surj_on le

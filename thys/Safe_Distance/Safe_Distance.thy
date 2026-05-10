@@ -868,7 +868,7 @@ proof -
     show "v\<^sub>o < v\<^sub>e"
       using \<open>a\<^sub>e < a\<^sub>o\<close> \<open>movement.p (a\<^sub>o - a\<^sub>e) (v\<^sub>o - v\<^sub>e) (s\<^sub>o - s\<^sub>e) t = 0\<close> in_front  t(2)
       apply (auto simp: movement.p_def divide_less_0_iff algebra_simps power2_eq_square)
-      by (smt divide_less_0_iff mult_le_cancel_right mult_mono mult_nonneg_nonneg nonneg_vel_ego)
+      by (smt (z3) divide_less_0_iff mult_le_cancel_right mult_mono mult_nonneg_nonneg nonneg_vel_ego)
     from disj have "x2 < ?min"
     proof rule
       assume "t = (- (v\<^sub>o - v\<^sub>e) - sqrt D2) / (a\<^sub>o - a\<^sub>e)"
@@ -921,7 +921,7 @@ proof -
   have "0 \<le> (other.t_stop - ego.t_stop)\<^sup>2" by auto
   hence "- ego.t_stop\<^sup>2 \<le> other.t_stop\<^sup>2 - 2 * other.t_stop * ego.t_stop" by (simp add:power_def algebra_simps) 
   with hyps(3) have "- ego.t_stop\<^sup>2 * (a\<^sub>e / 2) \<ge> (other.t_stop\<^sup>2 - 2 * other.t_stop * ego.t_stop) * (a\<^sub>e / 2)"
-    by (smt half_gt_zero_iff mult_le_cancel_right)
+    by (smt (z3) half_gt_zero_iff mult_le_cancel_right)
   with ego.t_stop_def other.t_stop_def hyps 
   have "- v\<^sub>e\<^sup>2 / (2 * a\<^sub>e) \<ge> a\<^sub>e * v\<^sub>o\<^sup>2 / (2 * a\<^sub>o\<^sup>2) - v\<^sub>o * v\<^sub>e / a\<^sub>o" by (simp add:power_def algebra_simps)
   with fst_safe_distance_def distance_leq_d2_def
@@ -956,7 +956,7 @@ proof -
       by (auto simp add: power_def field_split_simps)
     with 1 show ?thesis by auto
   qed
-  finally show ?thesis  by (smt assms(2) real_le_lsqrt real_sqrt_le_0_iff)
+  finally show ?thesis  by (smt (z3) assms(2) real_le_lsqrt real_sqrt_le_0_iff)
 qed
 
 lemma cond2_imp_pos_vo:
@@ -1160,7 +1160,7 @@ definition suff_cond_safe_dist2 :: "real \<Rightarrow> real \<Rightarrow> real \
   )"
 
 lemma less_sqrt_iff: "y \<ge> 0 \<Longrightarrow> x < sqrt y \<longleftrightarrow> (x \<ge> 0 \<longrightarrow> x\<^sup>2 < y)"
-  by (smt real_le_lsqrt real_less_rsqrt real_sqrt_ge_zero)
+  by (smt (z3) real_le_lsqrt real_less_rsqrt real_sqrt_ge_zero)
 
 lemma suff_cond_safe_dist2_code[code]:
   "suff_cond_safe_dist2 s\<^sub>e v\<^sub>e a\<^sub>e s\<^sub>o v\<^sub>o a\<^sub>o =

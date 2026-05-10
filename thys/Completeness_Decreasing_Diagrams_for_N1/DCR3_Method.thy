@@ -1636,7 +1636,7 @@ proof -
       and d6: "h \<gamma> = jnN (t (\<alpha>,i) \<gamma>) (t (\<beta>,j) \<gamma>)" using d2 d3 c3 by blast
     then have "\<gamma> \<in> \<O> \<inter> S \<and> \<alpha> <o \<gamma> \<and> \<beta> <o \<gamma>" 
       using d4 c1 c2 a5 lem_Oeq unfolding oord_def 
-        by (smt ordLeq_iff_ordLess_or_ordIso subsetCE Int_iff)
+        by (smt (z3) ordLeq_iff_ordLess_or_ordIso subsetCE Int_iff)
     moreover have "h \<gamma> = jnN (t (\<alpha>,i) \<gamma>) (t (\<beta>,j) \<gamma>)" using d2 d3 d6 by blast
     ultimately show "\<exists> \<gamma> \<in> S. \<alpha> <o \<gamma> \<and> \<beta> <o \<gamma> \<and> h \<gamma> = jnN (t (\<alpha>,i) \<gamma>) (t (\<beta>,j) \<gamma>)" by blast
   qed
@@ -4665,7 +4665,7 @@ proof -
     have "\<exists> p . (m = (g (fst p)) + (snd p)) \<and> ((snd p) < (f (fst p)))" 
       using b1 b3 lem_sum_ind_ex by force
     then obtain n' k' where "m = (g n') + k' \<and> k' < (f n') \<and> yi m = (yin n') k'" 
-      using b4 by (smt someI_ex)
+      using b4 by (smt (z3) someI_ex)
     moreover then have "n' = n \<and> k' = k" using c0 b1 b3 lem_sum_ind_un[of g f m n' k' n k] by blast
     ultimately show "yi m = yin n k" by blast
   qed
@@ -4675,11 +4675,11 @@ proof -
     have "\<exists> p . (m = (g (fst p)) + (snd p)) \<and> ((snd p) < (f (fst p)))" 
       using b1 b3 lem_sum_ind_ex by force
     then obtain n k where c1: "m = (g n) + k \<and> k < (f n) \<and> yi m = (yin n) k" 
-      using b4 by (smt someI_ex)
+      using b4 by (smt (z3) someI_ex)
     have "\<exists> p . ((Suc m) = (g (fst p)) + (snd p)) \<and> ((snd p) < (f (fst p)))" 
       using b1 b3 lem_sum_ind_ex by force
     then obtain n' k' where c2: "(Suc m) = (g n') + k' \<and> k' < (f n') \<and> yi (Suc m) = (yin n') k'" 
-      using b4 by (smt someI_ex)
+      using b4 by (smt (z3) someI_ex)
     show "(yi m, yi (Suc m)) \<in> r"
     proof(cases "Suc k < f n")
       assume "Suc k < f n"
@@ -4735,7 +4735,7 @@ proof -
     obtain p where "p = (i, 0::nat)" by blast
     then have "((g i) = (g (fst p)) + (snd p)) \<and> ((snd p) < (f (fst p)))" using b1 by force
     then obtain n k where c1: "(g i) = (g n) + k \<and> k < (f n) \<and> yi (g i) = (yin n) k" 
-      using b4 by (smt someI_ex)
+      using b4 by (smt (z3) someI_ex)
     then have "g n \<le> g i" by simp
     moreover have "g n < g i \<longrightarrow> False"
     proof
@@ -5671,7 +5671,7 @@ qed
 lemma lem_rcc_emp: "\<parallel>{}\<parallel> = {}"
   unfolding RCC_def RCC_rel_def \<UU>_def apply simp 
   unfolding CCR_def apply simp
-  using lem_card_emprel by (smt iso_ozero_empty ordIso_symmetric ozero_def someI_ex)
+  using lem_card_emprel by (smt (z3) iso_ozero_empty ordIso_symmetric ozero_def someI_ex)
 
 lemma lem_rcc_rccrel:
 fixes r::"'U rel"
@@ -5965,7 +5965,7 @@ qed
 
 lemma lem_scf_emp: "scf {} = {}"
   unfolding scf_def scf_rel_def SCF_def apply simp
-  using lem_card_emprel by (smt card_of_empty_ordIso iso_ozero_empty ordIso_symmetric ozero_def someI_ex)
+  using lem_card_emprel by (smt (z3) card_of_empty_ordIso iso_ozero_empty ordIso_symmetric ozero_def someI_ex)
 
 lemma lem_scf_scfrel:
 fixes r::"'U rel"
@@ -9288,7 +9288,7 @@ proof(cases "\<exists> \<alpha>::'U rel. \<omega>_ord \<le>o \<alpha>")
     fix \<alpha>'::"'U rel"
     assume "\<omega>_ord \<le>o \<alpha>'"
     then have "I \<alpha>m \<subseteq> I \<alpha>'"
-      using a1 b1 by (smt mem_Collect_eq not_ordLess_ordIso ordIso_symmetric 
+      using a1 b1 by (smt (z3) mem_Collect_eq not_ordLess_ordIso ordIso_symmetric 
           ordLeq_iff_ordLess_or_ordIso ordLeq_ordLess_trans ordLeq_transitive subsetI)
     moreover have "f`UNIV \<subseteq> I \<alpha>m" using b1 a1
       using b6 natLeq_on_ordLess_natLeq ordIso_ordLess_trans ordLess_ordIso_trans by fastforce
@@ -9297,7 +9297,7 @@ proof(cases "\<exists> \<alpha>::'U rel. \<omega>_ord \<le>o \<alpha>")
     moreover have "\<omega>_ord \<le>o |h`(f`UNIV)|"
     proof -
       have "\<forall> n. h (f n) = yi n" using b7 b9 ordIso_iff_ordLeq by blast
-      then have "yi`UNIV \<subseteq> h`(f`UNIV)" by (smt imageE image_eqI subset_eq)
+      then have "yi`UNIV \<subseteq> h`(f`UNIV)" by (smt (z3) imageE image_eqI subset_eq)
       then have "|yi`UNIV| \<le>o |h`(f`UNIV)|" by simp
       moreover have "\<omega>_ord \<le>o |yi`UNIV|"
       proof (cases "finite (g`(f`UNIV))")

@@ -29,7 +29,7 @@ begin
 
 lemma pre_post_while:
   "x \<le> -p*-q\<stileturn>-q \<longrightarrow> -p\<star>x \<le> aL*-q\<stileturn>-q"
-  by (smt aL_test pre_post_galois sub_mult_closed while_soundness)
+  by (smt (z3) aL_test pre_post_galois sub_mult_closed while_soundness)
 
 text \<open>Theorem 43.1\<close>
 
@@ -41,7 +41,7 @@ text \<open>Theorem 43.2\<close>
 
 lemma while_soundness_4:
   "test_seq t \<Longrightarrow> -r \<le> Sum t \<Longrightarrow> (\<forall>n . x \<le> t n*-p\<stileturn>pSum t n) \<Longrightarrow> -p\<star>x \<le> -r\<stileturn>1"
-  by (smt one_def pSum_test pre_post_galois sub_mult_closed test_seq_def while_soundness_2)
+  by (smt (z3) one_def pSum_test pre_post_galois sub_mult_closed test_seq_def while_soundness_2)
 
 end
 
@@ -75,7 +75,7 @@ begin
 subclass idempotent_left_semiring_H
   apply unfold_locales
   apply (rule H_zero_2)
-  by (smt H_split_2 tests_dual.complement_bot mult_assoc mult_left_zero mult_1_right one_def)
+  by (smt (z3) H_split_2 tests_dual.complement_bot mult_assoc mult_left_zero mult_1_right one_def)
 
 lemma pre_post_def_iff:
   "-p * x * --q \<le> Z \<longleftrightarrow> x \<le> Z \<squnion> --p * top \<squnion> H * -q"
@@ -116,7 +116,7 @@ proof -
   hence "(-p * x)\<^sup>\<star> * bot \<le> L"
     by (metis L_split le_iff_sup star_left_induct sup_bot_left)
   hence "(-p * x)\<^sup>\<circ> * bot \<le> L"
-    by (smt L_left_zero L_split sup_commute circ_below_L_add_star le_iff_sup mult_right_dist_sup)
+    by (smt (z3) L_left_zero L_split sup_commute circ_below_L_add_star le_iff_sup mult_right_dist_sup)
   thus ?thesis
     by (metis assms(1) a_restrict mult_isotone pre_pc_Z pre_post_compose_2 pre_post_one_one tests_dual.sba_dual.one_def while_def tests_dual.sup_right_zero)
 qed

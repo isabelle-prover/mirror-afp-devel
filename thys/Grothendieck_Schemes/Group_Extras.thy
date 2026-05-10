@@ -243,9 +243,9 @@ proof-
   moreover have "(\<theta> \<circ> \<eta> \<down> A) (multA x y) = multC ((\<theta> \<circ> \<eta> \<down> A) x) ((\<theta> \<circ> \<eta> \<down> A) y)"
       if "x \<in> A" "y \<in> A" for x y
     using that assms monoid_homomorphism.commutes_with_composition
-    by (smt compose_eq map.map_closed monoid.composition_closed monoid_homomorphism.axioms)
+    by (smt (z3) compose_eq map.map_closed monoid.composition_closed monoid_homomorphism.axioms)
   ultimately show ?thesis
-    using monoid_homomorphism_def assms comp_maps by (smt monoid_homomorphism_axioms.intro)
+    using monoid_homomorphism_def assms comp_maps by (smt (z3) monoid_homomorphism_axioms.intro)
 qed
 
 text \<open>Commutative Monoids\<close>

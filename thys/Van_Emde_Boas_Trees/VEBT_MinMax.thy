@@ -91,7 +91,7 @@ qed
 
 
 lemma maxt_corr_help: "invar_vebt t n \<Longrightarrow> vebt_maxt t = Some maxi \<Longrightarrow> vebt_member t x \<Longrightarrow> maxi \<ge> x " 
-  by (smt VEBT_Member.vebt_member.simps(1) le_less vebt_maxt.elims member_inv mi_ma_2_deg option.simps(1) option.simps(3) zero_le_one)
+  by (smt (z3) VEBT_Member.vebt_member.simps(1) le_less vebt_maxt.elims member_inv mi_ma_2_deg option.simps(1) option.simps(3) zero_le_one)
 
 lemma maxt_corr_help_empty: "invar_vebt t n \<Longrightarrow> vebt_maxt t = None \<Longrightarrow> set_vebt' t = {}" 
   by (metis (full_types) VEBT_Member.vebt_member.simps(1) empty_Collect_eq vebt_maxt.elims minNull.simps(4) min_Null_member option.distinct(1) set_vebt'_def)
@@ -138,7 +138,7 @@ qed
 
 
 lemma mint_corr_help: "invar_vebt t n \<Longrightarrow> vebt_mint t = Some mini \<Longrightarrow> vebt_member t x \<Longrightarrow> mini \<le> x " 
-  by (smt VEBT_Member.vebt_member.simps(1) eq_iff option.inject less_imp_le_nat member_inv mi_ma_2_deg vebt_mint.elims of_nat_0 of_nat_0_le_iff of_nat_le_iff option.simps(3))
+  by (smt (z3) VEBT_Member.vebt_member.simps(1) eq_iff option.inject less_imp_le_nat member_inv mi_ma_2_deg vebt_mint.elims of_nat_0 of_nat_0_le_iff of_nat_le_iff option.simps(3))
 
 lemma mint_corr_help_empty: "invar_vebt t n \<Longrightarrow> vebt_mint t = None \<Longrightarrow> set_vebt' t = {}"
   by (metis VEBT_internal.maxt_corr_help_empty option.distinct(1) vebt_maxt.simps(1) vebt_maxt.simps(2) vebt_mint.elims)

@@ -376,7 +376,7 @@ next
   moreover have "fresh_fin (frees t |\<union>| fset_of_list \<Gamma>) (next s1)"
        "fresh_fin (frees t |\<union>| fset_of_list \<Gamma>2) (next s2)"
     using * abs
-    by (smt dual_order.trans fBall_pred_weaken frees_term.simps(3) less_imp_le)+
+    by (smt (z3) dual_order.trans fBall_pred_weaken frees_term.simps(3) less_imp_le)+
   moreover have "fdisjnt (finsert (next s1) (fset_of_list \<Gamma>)) (frees t)"
        "fdisjnt (finsert (next s2) (fset_of_list \<Gamma>2)) (frees t)"
     unfolding fdisjnt_alt_def using abs frees_term.simps

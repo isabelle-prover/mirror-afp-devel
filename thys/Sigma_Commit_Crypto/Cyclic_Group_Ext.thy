@@ -235,7 +235,7 @@ proof(cases "a > b")
   have "\<^bold>g [^] a \<otimes> inv (\<^bold>g [^] b) = \<one>"
     using assms by simp
   hence "\<^bold>g [^] (a - b) = \<one>" 
-    by (smt True add_Suc_right assms diff_add_inverse generator_closed group.l_cancel_one' group_l_invI l_inv_ex less_imp_Suc_add nat_pow_closed nat_pow_mult)
+    by (smt (z3) True add_Suc_right assms diff_add_inverse generator_closed group.l_cancel_one' group_l_invI l_inv_ex less_imp_Suc_add nat_pow_closed nat_pow_mult)
   hence "\<^bold>g [^] ((a - b) mod (order G)) = \<one>" using pow_generator_mod by auto
   thus ?thesis using gen_power_0 
     using assms(1) assms(2) order_gt_0_iff_finite pow_generator_eq_iff_cong by blast

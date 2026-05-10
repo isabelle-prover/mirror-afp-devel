@@ -115,7 +115,7 @@ proof -
         then have "\<exists>i<j. e_nth e i \<ge> 2"
           using ex leI less_Suc_eq by blast
         with * have "eval ?h [Suc j, e] \<down>= e_nth e (GREATEST i. i < j \<and> e_nth e i \<ge> 2)"
-          using False by (smt leD)
+          using False by (smt (z3) leD)
         moreover have "(GREATEST i. i < Suc j \<and> e_nth e i \<ge> 2) =
             (GREATEST i. i < j \<and> e_nth e i \<ge> 2)"
           using False ex by (metis less_SucI less_Suc_eq less_antisym numeral_2_eq_2)

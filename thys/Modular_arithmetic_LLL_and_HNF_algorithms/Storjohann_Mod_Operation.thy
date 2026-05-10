@@ -502,7 +502,7 @@ proof -
             hence gssumspan: "gssum \<in> gs.span(gsi.gso ` {0 ..<k})"
               using atLeastLessThan_iff gso0kcarr imageE set_map set_upt 
                 vec_space.sumlist_in_span 
-              unfolding gssum_def by (smt subsetD)
+              unfolding gssum_def by (smt (z3) subsetD)
             hence gssumcarr: "gssum \<in> carrier_vec n" 
               using gsospancarr gssum_def by blast
             have sumid: "gs'sum = gssum"
@@ -548,7 +548,7 @@ proof -
                   using i by auto
                 also have "\<dots> = (\<Sum>j = 0..<m. B $$ (k, j) * ?Mfs $$ (j,i))" 
                   using A(3) unfolding B_def[symmetric] 
-                  by (smt 1(2) Mfs R.finsum_cong' i atLeastLessThan_iff carrier_matD
+                  by (smt (z3) 1(2) Mfs R.finsum_cong' i atLeastLessThan_iff carrier_matD
                       dim_col index_col index_row(1) scalar_prod_def)
                 also have "\<dots> = (\<Sum>j = 0..<m. B $$ (k, j) * (fs ! j $ i))"
                   by (metis (no_types, lifting) R.finsum_cong' atLeastLessThan_iff i
@@ -708,23 +708,23 @@ proof -
             (\<Sum>j2=0..<n. (vec n 
             (\<lambda>l. (\<Sum>j1=0..<m. rB $$ (i', j1) * rfs $$ (j1, l)))) $ j2 * (gsi.gso j') $ j2)"
           using gsi.gso_carrier len j' scalar_prod_def 
-          by (smt gs.R.finsum_cong' gsi.gso_dim length_map)
+          by (smt (z3) gs.R.finsum_cong' gsi.gso_dim length_map)
         also have "\<dots> = (\<Sum>j2=0..<n.
             (\<Sum>j1=0..<m. rB $$ (i', j1) * rfs $$ (j1, j2)) * (gsi.gso j') $ j2)"
           using gsi.gso_carrier len j' by simp
         also have "\<dots> = (\<Sum>j2=0..<n. (\<Sum>j1=0..<m.
             rB $$ (i', j1) * rfs $$ (j1, j2) * (gsi.gso j') $ j2))" 
-          by (smt gs.R.finsum_cong' sum_distrib_right)
+          by (smt (z3) gs.R.finsum_cong' sum_distrib_right)
         also have "\<dots> = (\<Sum>j1=0..<m. (\<Sum>j2=0..<n.
             rB $$ (i', j1) * rfs $$ (j1, j2) * (gsi.gso j') $ j2))"
           using sum.swap by auto
         also have "\<dots> = (\<Sum>j1=0..<m. rB $$ (i', j1) * (\<Sum>j2=0..<n. 
             rfs $$ (j1, j2) * (gsi.gso j') $ j2))"
-          using gs.R.finsum_cong' sum_distrib_left by (smt gs.m_assoc)
+          using gs.R.finsum_cong' sum_distrib_left by (smt (z3) gs.m_assoc)
         also have "\<dots> = row rB i' \<bullet> (vec m (\<lambda> j1. (\<Sum>j2=0..<n.
             rfs $$ (j1, j2) * (gsi.gso j') $ j2)))" 
           using rBcarr rfscarr i' scalar_prod_def
-          by (smt atLeastLessThan_iff carrier_matD(1) carrier_matD(2) dim_vec 
+          by (smt (z3) atLeastLessThan_iff carrier_matD(1) carrier_matD(2) dim_vec 
               gs.R.finsum_cong' index_row(1) index_vec)
         also have "(vec m (\<lambda> j1. (\<Sum>j2=0..<n. rfs $$ (j1, j2) * (gsi.gso j') $ j2)))
             =  (vec m (\<lambda> j1. row rfs j1 \<bullet> gsi.gso j'))"
@@ -732,7 +732,7 @@ proof -
         also have "row rB i' \<bullet> \<dots> / \<parallel>gsi.gso j'\<parallel>\<^sup>2 =
           row rB i' \<bullet> vec m (\<lambda> j1. row rfs j1 \<bullet> gsi.gso j' / \<parallel>gsi.gso j'\<parallel>\<^sup>2)"
           using prep4 scalar_prod_smult_right rBcarr carrier_matD(2) dim_vec row_def 
-          by (smt gs.l_one times_divide_eq_left)
+          by (smt (z3) gs.l_one times_divide_eq_left)
         also have "\<dots> = (rB * (gsi.M m)) $$ (i', j')" 
           using rBcarr i' j' prep3 gsi.M_def by (simp add: col_def)
         finally have 

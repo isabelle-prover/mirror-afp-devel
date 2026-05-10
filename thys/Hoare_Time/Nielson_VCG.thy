@@ -239,7 +239,7 @@ lemma pff: "\<And>n. support (\<lambda>l. I (l(x := n))) \<subseteq> support I -
   
 lemma pff: "\<And>n. support (\<lambda>l. I (l(x := n))) \<subseteq> support I"
   unfolding support_def apply(auto)  using fun_upd_apply apply smt
-  by (smt fun_upd_apply)  
+  by (smt (z3) fun_upd_apply)  
 
 
 lemma supportAB: "support (\<lambda>l s. A l s \<and> B s) \<subseteq> support A"    

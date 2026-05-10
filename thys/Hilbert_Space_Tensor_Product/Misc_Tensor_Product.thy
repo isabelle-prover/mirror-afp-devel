@@ -1376,7 +1376,7 @@ proof (rule nonneg_bdd_above_summable_on)
 
     have "norm (x i * y i) \<le> norm (x i * x i) + norm (y i * y i)" for i
       unfolding norm_mult
-      by (smt mult_left_mono mult_nonneg_nonneg mult_right_mono norm_ge_zero)
+      by (smt (z3) mult_left_mono mult_nonneg_nonneg mult_right_mono norm_ge_zero)
     hence "(\<Sum>i\<in>F. norm (x i * y i)) \<le> (\<Sum>i\<in>F. norm ((x i)\<^sup>2) + norm ((y i)\<^sup>2))"
       using [[simp_trace]]
       by (simp add: power2_eq_square sum_mono)

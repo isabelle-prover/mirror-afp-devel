@@ -1312,7 +1312,7 @@ proof (rule sigma_finite_subalgebra.real_cond_exp_charact)
       using Bochner_Integration.integral_cong \<open>point_measurable M (space N) Y\<close> assms(1) assms(2) by blast
   qed
   thus "\<And>A. A \<in> sets (fct_gen_subalgebra M N Y) \<Longrightarrow> set_lebesgue_integral M A X = set_lebesgue_integral M A (expl_cond_expect M Y X)"
-    by (smt Bochner_Integration.integral_cong Groups.mult_ac(2) real_scaleR_def set_lebesgue_integral_def)
+    by (smt (z3) Bochner_Integration.integral_cong Groups.mult_ac(2) real_scaleR_def set_lebesgue_integral_def)
 qed
 
 

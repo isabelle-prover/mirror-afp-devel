@@ -323,7 +323,7 @@ next
   also have "... = (b ^(Suc q) * (1 - Z ic p l (Suc q)) + ((\<Sum>t = 0..q. b^t) - ZLe ic p b q l))
                    && (b ^ (Suc q) * S ic p k (Suc q) + SKe ic p b q k)"
     using bitAND_linear ske zle2 B_def b
-    by (smt add_ac(2) mult_ac(2) bitAND_linear power.simps(2) power_mult power_mult_distrib)
+    by (smt (z3) add_ac(2) mult_ac(2) bitAND_linear power.simps(2) power_mult power_mult_distrib)
   also have "... = (e - ZLe ic p b (Suc q) l && SKe ic p b (Suc q) k)"
     using SKe_def aux_add_sub by (auto simp: add.commute)
 

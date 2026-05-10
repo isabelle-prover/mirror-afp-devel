@@ -21,7 +21,7 @@ lemma apx_transitive:
     shows "x \<sqsubseteq> z"
 proof -
   have 1: "x \<le> z \<squnion> L"
-    by (smt assms sup_assoc sup_commute apx_def le_iff_sup)
+    by (smt (z3) assms sup_assoc sup_commute apx_def le_iff_sup)
   have "d(d(L) * y * bot) * top \<le> d((x \<squnion> d(x * bot) * top) * bot) * top"
     by (metis assms(1) apx_def d_isotone mult_left_isotone)
   also have "... \<le> d(x * bot) * top"
@@ -57,7 +57,7 @@ lemma sup_apx_left_isotone:
     shows "x \<squnion> z \<sqsubseteq> y \<squnion> z"
 proof -
   have 1: "x \<squnion> z \<le> y \<squnion> z \<squnion> L"
-    by (smt assms sup_assoc sup_commute sup_left_isotone apx_def)
+    by (smt (z3) assms sup_assoc sup_commute sup_left_isotone apx_def)
   have "d(L) * (y \<squnion> z) = d(L) * y \<squnion> d(L) * z"
     by (simp add: mult_left_dist_sup)
   also have "... \<le> d(L) * y \<squnion> z"
@@ -225,7 +225,7 @@ proof -
     using assms mu_nu_apx_nu_def apply blast
     by (metis apx_meet_L le_supI2 sup.order_iff sup_apx_left_isotone sup_inf_absorb)
   thus ?thesis
-    by (smt apx_meet_char mu_nu_apx_meet_def)
+    by (smt (z3) apx_meet_char mu_nu_apx_meet_def)
 qed
 
 lemma mu_nu_apx_meet_apx_meet_below_nu:
@@ -535,7 +535,7 @@ proof -
   have "d(L) * y\<^sup>\<omega> \<le> (y\<^sup>\<omega> \<sqinter> L) \<squnion> d(y\<^sup>\<omega> * bot) * top"
     using l31 l91 omega_vector sup_right_isotone by auto
   hence "d(L) * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) \<le> y\<^sup>\<star> * z \<squnion> (y\<^sup>\<omega> \<sqinter> L) \<squnion> d(y\<^sup>\<omega> * bot) * top"
-    by (smt sup_assoc sup_commute sup_mono d_mult_below mult_left_dist_sup)
+    by (smt (z3) sup_assoc sup_commute sup_mono d_mult_below mult_left_dist_sup)
   also have "... \<le> y\<^sup>\<star> * z \<squnion> ((y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) \<sqinter> L) \<squnion> d(y\<^sup>\<omega> * bot) * top"
     by (simp add: le_supI1 le_supI2)
   also have "... \<le> y\<^sup>\<star> * z \<squnion> ((y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) \<sqinter> L) \<squnion> d((y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) * bot) * top"

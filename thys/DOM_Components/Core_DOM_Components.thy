@@ -497,7 +497,7 @@ next
       local.get_component_parent_inside local.get_component_subset
     by blast
   then show "cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child \<in> set c"
-    by (smt \<open>h \<turnstile> get_root_node (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child) \<rightarrow>\<^sub>r root_ptr\<close> assms(1) assms(2) assms(3)
+    by (smt (z3) \<open>h \<turnstile> get_root_node (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child) \<rightarrow>\<^sub>r root_ptr\<close> assms(1) assms(2) assms(3)
         assms(5) assms(6) disjoint_iff_not_equal is_OK_returns_result_E is_OK_returns_result_I
         l_get_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_dom_component_no_overlap local.child_parent_dual local.get_component_ok
         local.get_component_parent_inside local.get_dom_component_ptr local.get_root_node_ptr_in_heap
@@ -526,7 +526,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (smt IntI get_dom_component_get_child_nodes is_OK_returns_result_E
+    by (smt (z3) IntI get_dom_component_get_child_nodes is_OK_returns_result_E
         is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_component_impl
         local.get_component_ok local.get_dom_component_ptr select_result_I2)
 qed
@@ -617,7 +617,7 @@ proof
         local.to_tree_order_ptr_in_result local.to_tree_order_same_root select_result_I2)
   ultimately have "h \<turnstile> get_component ptr' \<rightarrow>\<^sub>r c"
     apply(auto simp add: get_component_def)[1]
-    by (smt "1" assms(1) assms(2) assms(3) assms(4) bind_pure_returns_result_I bind_returns_result_E3
+    by (smt (z3) "1" assms(1) assms(2) assms(3) assms(4) bind_pure_returns_result_I bind_returns_result_E3
         local.get_component_def local.get_component_subset local.get_root_node_pure)
   then show "ptr' \<in> set c"
     using assms(1) assms(2) assms(3) get_dom_component_ptr by blast

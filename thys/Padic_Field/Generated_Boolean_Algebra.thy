@@ -408,7 +408,7 @@ lemma rec_disjointify_is_disjoint:
   assumes "A \<noteq> B"
   shows "A \<inter> B = {}"
   using  rec_disjointify_as_enum_rec_disjointify_image enum_rec_disjointify_disjoint' assms
-  by (smt image_iff)
+  by (smt (z3) image_iff)
 
 definition enumerates where
 "enumerates A f \<equiv> finite A \<and> A = f ` {..< (card A)} \<and> inj_on f {..< (card A)}"
@@ -490,7 +490,7 @@ lemma disjointify_subset:
   shows "\<exists>B \<in> As. A \<subseteq> B"
   using assms enum_rec_disjointify_subset enumerate_enumerates enumeratesE
   unfolding disjointify_def 
-  by (smt image_iff rec_disjointify_as_enum_rec_disjointify_image)
+  by (smt (z3) image_iff rec_disjointify_as_enum_rec_disjointify_image)
 
 
 (**************************************************************************************************)
@@ -798,7 +798,7 @@ proof
     then have "point_to_atom Xs x \<in> atoms_of Xs"
       using assms by (meson gen_boolean_algebra_subset point_to_atom_closed subsetD)
     then show "x \<in> \<Union> {a \<in> atoms_of Xs. a \<subseteq> X}"
-      by (smt A IntI Union_iff assms(1) assms(2) assms(3) empty_iff finite_algebra_atoms_are_minimal gen_boolean_algebra.universe gen_boolean_algebra_subset mem_Collect_eq point_in_atom_of_type point_to_atom_def subsetD)
+      by (smt (z3) A IntI Union_iff assms(1) assms(2) assms(3) empty_iff finite_algebra_atoms_are_minimal gen_boolean_algebra.universe gen_boolean_algebra_subset mem_Collect_eq point_in_atom_of_type point_to_atom_def subsetD)
   qed
   show "\<Union> {a \<in> atoms_of Xs. a \<subseteq> X} \<subseteq> X"
     by blast 
@@ -820,7 +820,7 @@ proof
           finite_subset[of _ "atoms_of Xs"] assms 
           finite_set_imp_finite_atoms[of Xs] 
           gen_boolean_algebra_finite_union[of _ S Xs] 
-    by (smt Pow_iff Union_upper gen_boolean_algebra.intros(2) image_iff inf.absorb1 subsetD subsetI)
+    by (smt (z3) Pow_iff Union_upper gen_boolean_algebra.intros(2) image_iff inf.absorb1 subsetD subsetI)
 qed
 
 text\<open>Finitely generated boolean algebras are finite\<close>
@@ -973,7 +973,7 @@ proof-
   have 3: "B \<in> point_to_type Cs y - point_to_type Cs y \<Longrightarrow> b \<subseteq> B"
     using y_def by blast
   show ?thesis using B_def 2 3 
-    by (smt Diff_iff disjoint_iff_not_equal point_to_atom_def subset_eq subset_to_atom_memE(1) subset_to_atom_memE(2) x_def y_def)
+    by (smt (z3) Diff_iff disjoint_iff_not_equal point_to_atom_def subset_eq subset_to_atom_memE(1) subset_to_atom_memE(2) x_def y_def)
 qed
 
 

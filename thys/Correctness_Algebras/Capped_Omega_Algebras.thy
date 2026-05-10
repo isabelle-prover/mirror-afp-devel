@@ -90,7 +90,7 @@ lemma capped_fixpoint:
 
 lemma capped_greatest_fixpoint:
   "y \<le> u \<Longrightarrow> z \<le> v \<Longrightarrow> u * v \<le> v \<Longrightarrow> is_greatest_fixpoint (\<lambda>x . (y * x \<squnion> z) \<sqinter> v) (y\<^sup>\<omega>\<^sub>v \<squnion> y\<^sup>\<star> * z)"
-  by (smt capped_fix order_refl capped_omega_induct is_greatest_fixpoint_def)
+  by (smt (z3) capped_fix order_refl capped_omega_induct is_greatest_fixpoint_def)
 
 lemma capped_postfixpoint:
   "y \<le> u \<Longrightarrow> z \<le> v \<Longrightarrow> u * v \<le> v \<Longrightarrow> is_postfixpoint (\<lambda>x . (y * x \<squnion> z) \<sqinter> v) (y\<^sup>\<omega>\<^sub>v \<squnion> y\<^sup>\<star> * z)"
@@ -98,7 +98,7 @@ lemma capped_postfixpoint:
 
 lemma capped_greatest_postfixpoint:
   "y \<le> u \<Longrightarrow> z \<le> v \<Longrightarrow> u * v \<le> v \<Longrightarrow> is_greatest_postfixpoint (\<lambda>x . (y * x \<squnion> z) \<sqinter> v) (y\<^sup>\<omega>\<^sub>v \<squnion> y\<^sup>\<star> * z)"
-  by (smt capped_fix order_refl capped_omega_induct is_greatest_postfixpoint_def)
+  by (smt (z3) capped_fix order_refl capped_omega_induct is_greatest_postfixpoint_def)
 
 text \<open>AACP Theorem 6.6\<close>
 
@@ -172,7 +172,7 @@ lemma capped_meet_nu:
     shows "\<nu>(\<lambda>x . y * x \<sqinter> v) = y\<^sup>\<omega>\<^sub>v"
 proof -
   have "y\<^sup>\<omega>\<^sub>v \<squnion> y\<^sup>\<star> * bot = y\<^sup>\<omega>\<^sub>v"
-    by (smt assms star_zero_below_capped_omega le_iff_sup sup_commute)
+    by (smt (z3) assms star_zero_below_capped_omega le_iff_sup sup_commute)
   hence "\<nu>(\<lambda>x . (y * x \<squnion> bot) \<sqinter> v) = y\<^sup>\<omega>\<^sub>v"
     by (metis assms capped_nu bot_least)
   thus ?thesis
@@ -185,7 +185,7 @@ lemma capped_meet_pnu:
     shows "p\<nu>(\<lambda>x . y * x \<sqinter> v) = y\<^sup>\<omega>\<^sub>v"
 proof -
   have "y\<^sup>\<omega>\<^sub>v \<squnion> y\<^sup>\<star> * bot = y\<^sup>\<omega>\<^sub>v"
-    by (smt assms star_zero_below_capped_omega le_iff_sup sup_commute)
+    by (smt (z3) assms star_zero_below_capped_omega le_iff_sup sup_commute)
   hence "p\<nu>(\<lambda>x . (y * x \<squnion> bot) \<sqinter> v) = y\<^sup>\<omega>\<^sub>v"
     by (metis assms capped_pnu bot_least)
   thus ?thesis
@@ -279,7 +279,7 @@ proof -
   hence "y * y\<^sup>\<star> * (y * y\<^sup>\<star>)\<^sup>\<omega>\<^sub>v = (y * y\<^sup>\<star>)\<^sup>\<omega>\<^sub>v"
     using 1 assms(3) unfold_capped_omega by blast
   hence "(y * y\<^sup>\<star>)\<^sup>\<omega>\<^sub>v \<le> y\<^sup>\<omega>\<^sub>v"
-    using 1 by (smt assms(1,3) capped_omega_simulation mult_assoc mult_semi_associative star.circ_transitive_equal star_simulation_right_equal)
+    using 1 by (smt (z3) assms(1,3) capped_omega_simulation mult_assoc mult_semi_associative star.circ_transitive_equal star_simulation_right_equal)
   thus ?thesis
     using 1 by (meson assms(3) capped_omega_isotone order.antisym star.circ_mult_increasing)
 qed

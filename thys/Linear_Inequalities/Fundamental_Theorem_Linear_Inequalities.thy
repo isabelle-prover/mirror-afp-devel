@@ -67,7 +67,7 @@ private definition "goal = ((\<exists> I. I \<subseteq> {0 ..< m} \<and> card (a
       \<and> lin_indpt (a ` I) \<and> (\<forall> i < m. c \<bullet> a i \<ge> 0) \<and> c \<bullet> b < 0))"
 
 private lemma card_a_I[simp]: "I \<subseteq> {0 ..< m} \<Longrightarrow> card (a ` I) = card I"
-  by (smt inj_a card_image inj_on_image_eq_iff subset_image_inj subset_refl subset_trans)
+  by (smt (z3) inj_a card_image inj_on_image_eq_iff subset_image_inj subset_refl subset_trans)
 
 private lemma in_a_I[simp]: "I \<subseteq> {0 ..< m} \<Longrightarrow> i < m \<Longrightarrow> (a i \<in> a ` I) = (i \<in> I)"
   using inj_a
@@ -351,7 +351,7 @@ proof (rule ccontr)
   } note bla = this
   have blin: "b = lincomb (ls p) (a ` (Is p))" using cond_def p cond by blast
   have carrDp: "(a ` (Is p)) \<subseteq> carrier_vec n " using Is_valid valid_I_def a p
-    by (smt image_subset_iff less_imp_le_nat mem_Collect_eq subsetD)
+    by (smt (z3) image_subset_iff less_imp_le_nat mem_Collect_eq subsetD)
   have carrcq: "cs q \<in> carrier_vec n" using cond cond_def q_len by simp
   have ineq1: "(cs q) \<bullet> b < 0" using cond_def q_len cond by blast
   let ?Isp_lt_r = "{x \<in> Is p . x < r}"

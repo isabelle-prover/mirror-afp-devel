@@ -866,7 +866,7 @@ next
     case Cn
     then show ?thesis
       using * Cn.IH Cn.prems list_decode_encode
-      by (smt encode.simps(4) fst_conv list.inj_map_strong prod_encode_eq snd_conv)
+      by (smt (z3) encode.simps(4) fst_conv list.inj_map_strong prod_encode_eq snd_conv)
   next
     case Pr
     then show ?thesis using * by (simp add: prod_encode_eq)
@@ -1649,7 +1649,7 @@ next
     using iterate_step_valid by simp
   have "eval r_leap [Suc t, i, x] =
       eval (Cn 4 r_step [Id 4 1]) [t, the (eval r_leap [t, i, x]), i, x]"
-    by (smt One_nat_def Suc_eq_plus1 eq_numeral_Suc eval_Pr_converg_Suc list.size(3) list.size(4) nat_1_add_1 pred_numeral_simps(3) r_leap_def r_leap_prim r_leap_total)
+    by (smt (z3) One_nat_def Suc_eq_plus1 eq_numeral_Suc eval_Pr_converg_Suc list.size(3) list.size(4) nat_1_add_1 pred_numeral_simps(3) r_leap_def r_leap_prim r_leap_total)
   then have "eval r_leap [Suc t, i, x] = eval (Cn 4 r_step [Id 4 1]) [t, encode_config ?tc, i, x]"
     using Suc by simp
   then have "eval r_leap [Suc t, i, x] = eval r_step [encode_config ?tc]"

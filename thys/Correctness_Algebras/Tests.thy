@@ -71,19 +71,19 @@ definition test_set :: "'a set \<Rightarrow> bool"
 
 lemma mult_left_dist_test_set:
   "test_set A \<Longrightarrow> test_set { -p * x | x . x \<in> A }"
-  by (smt mem_Collect_eq sub_mult_closed test_set_def)
+  by (smt (z3) mem_Collect_eq sub_mult_closed test_set_def)
 
 lemma mult_right_dist_test_set:
   "test_set A \<Longrightarrow> test_set { x * -p | x . x \<in> A }"
-  by (smt mem_Collect_eq sub_mult_closed test_set_def)
+  by (smt (z3) mem_Collect_eq sub_mult_closed test_set_def)
 
 lemma sup_left_dist_test_set:
   "test_set A \<Longrightarrow> test_set { -p \<squnion> x | x . x \<in> A }"
-  by (smt mem_Collect_eq tests_dual.sba_dual.sub_sup_closed test_set_def)
+  by (smt (z3) mem_Collect_eq tests_dual.sba_dual.sub_sup_closed test_set_def)
 
 lemma sup_right_dist_test_set:
   "test_set A \<Longrightarrow> test_set { x \<squnion> -p | x . x \<in> A }"
-  by (smt mem_Collect_eq tests_dual.sba_dual.sub_sup_closed test_set_def)
+  by (smt (z3) mem_Collect_eq tests_dual.sba_dual.sub_sup_closed test_set_def)
 
 lemma test_set_closed:
   "A \<subseteq> B \<Longrightarrow> test_set B \<Longrightarrow> test_set A"
@@ -111,7 +111,7 @@ lemma pSum_test:
   "test_seq t \<Longrightarrow> pSum t m = --(pSum t m)"
   apply (induct m)
   apply simp
-  by (smt pSum.simps(2) tests_dual.sba_dual.sub_sup_closed test_seq_def)
+  by (smt (z3) pSum.simps(2) tests_dual.sba_dual.sub_sup_closed test_seq_def)
 
 lemma pSum_test_nat:
   "nat_test t s \<Longrightarrow> pSum t m = --(pSum t m)"
@@ -121,7 +121,7 @@ lemma pSum_upper:
   "test_seq t \<Longrightarrow> i<m \<Longrightarrow> t i \<le> pSum t m"
 proof (induct m)
   show "test_seq t \<Longrightarrow> i<0 \<Longrightarrow> t i \<le> pSum t 0"
-    by (smt less_zeroE)
+    by (smt (z3) less_zeroE)
 next
   fix n
   assume "test_seq t \<Longrightarrow> i<n \<Longrightarrow> t i \<le> pSum t n"
@@ -151,7 +151,7 @@ lemma ascending_chain_sup_left:
 
 lemma ascending_chain_sup_right:
   "ascending_chain t \<Longrightarrow> test_seq t \<Longrightarrow> ascending_chain (\<lambda>n . t n \<squnion> -p) \<and> test_seq (\<lambda>n . t n \<squnion> -p)"
-  by (smt ascending_chain_def tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.sub_sup_left_isotone test_seq_def)
+  by (smt (z3) ascending_chain_def tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.sub_sup_left_isotone test_seq_def)
 
 lemma ascending_chain_mult_left:
   "ascending_chain t \<Longrightarrow> test_seq t \<Longrightarrow> ascending_chain (\<lambda>n . -p * t n) \<and> test_seq (\<lambda>n . -p * t n)"
@@ -163,11 +163,11 @@ lemma ascending_chain_mult_right:
 
 lemma descending_chain_sup_left:
   "descending_chain t \<Longrightarrow> test_seq t \<Longrightarrow> descending_chain (\<lambda>n . -p \<squnion> t n) \<and> test_seq (\<lambda>n . -p \<squnion> t n)"
-  by (smt descending_chain_def tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.sub_sup_right_isotone test_seq_def)
+  by (smt (z3) descending_chain_def tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.sub_sup_right_isotone test_seq_def)
 
 lemma descending_chain_sup_right:
   "descending_chain t \<Longrightarrow> test_seq t \<Longrightarrow> descending_chain (\<lambda>n . t n \<squnion> -p) \<and> test_seq (\<lambda>n . t n \<squnion> -p)"
-  by (smt descending_chain_def tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.sub_sup_left_isotone test_seq_def)
+  by (smt (z3) descending_chain_def tests_dual.sba_dual.sub_sup_closed tests_dual.sba_dual.sub_sup_left_isotone test_seq_def)
 
 lemma descending_chain_mult_left:
   "descending_chain t \<Longrightarrow> test_seq t \<Longrightarrow> descending_chain (\<lambda>n . -p * t n) \<and> test_seq (\<lambda>n . -p * t n)"

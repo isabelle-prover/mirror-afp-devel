@@ -315,7 +315,7 @@ proof(rule ccontr)
   obtain h where h_def: "h = \<f> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>" and h_type[type_rule]:"h: Y \<rightarrow> \<Omega>"
     by (typecheck_cfuncs, simp)
   have hpx_eqs_f: "\<forall>x. x \<in>\<^sub>c X \<longrightarrow> h \<circ>\<^sub>c p \<circ>\<^sub>c x = \<f>"
-    by (smt assms(1) cfunc_type_def codomain_comp comp_associative false_func_type h_def id_right_unit2 id_type terminal_func_comp terminal_func_type terminal_func_unique)
+    by (smt (z3) assms(1) cfunc_type_def codomain_comp comp_associative false_func_type h_def id_right_unit2 id_type terminal_func_comp terminal_func_type terminal_func_unique)
   have gp_eqs_hp: "g \<circ>\<^sub>c p = h \<circ>\<^sub>c p"
   proof(rule one_separator[where X=X,where Y=\<Omega>])
     show "g \<circ>\<^sub>c p : X \<rightarrow> \<Omega>"
@@ -851,7 +851,7 @@ proof -
   have "\<And>h F. h : F \<rightarrow> X \<and> characteristic_func m \<circ>\<^sub>c h = (\<f> \<circ>\<^sub>c \<beta>\<^bsub>X\<^esub>) \<circ>\<^sub>c h \<longrightarrow>
                   (\<exists>!k. k : F \<rightarrow> X \<setminus> (B, m) \<and> m\<^sup>c \<circ>\<^sub>c k = h)"
     using assms complement_morphism_equalizer unfolding equalizer_def
-    by (smt cfunc_type_def characteristic_func_type) 
+    by (smt (z3) cfunc_type_def characteristic_func_type) 
   then obtain x' where x'_type: "x' \<in>\<^sub>c X \<setminus> (B, m)" and x'_def: "m\<^sup>c \<circ>\<^sub>c x' = x"
     by (metis assms(3) cfunc_type_def comp_associative false_func_type terminal_func_type x_equalizes)
   then show "x \<in>\<^bsub>X\<^esub> (X \<setminus> (B, m),m\<^sup>c)"
@@ -889,7 +889,7 @@ proof
   then have "\<t> \<circ>\<^sub>c \<beta>\<^bsub>X\<^esub> \<circ>\<^sub>c x = \<f> \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub> \<circ>\<^sub>c m\<^sup>c \<circ>\<^sub>c x'"
     using assms comp_associative2 by (typecheck_cfuncs, smt terminal_func_comp terminal_func_type)
   then have "\<t> \<circ>\<^sub>c id \<one> = \<f> \<circ>\<^sub>c id \<one>"
-    using assms by (smt cfunc_type_def comp_associative complement_morphism_type id_type one_unique_element terminal_func_comp terminal_func_type)
+    using assms by (smt (z3) cfunc_type_def comp_associative complement_morphism_type id_type one_unique_element terminal_func_comp terminal_func_type)
   then have "\<t> = \<f>"
     using false_func_type id_right_unit2 true_func_type by auto
   then show False

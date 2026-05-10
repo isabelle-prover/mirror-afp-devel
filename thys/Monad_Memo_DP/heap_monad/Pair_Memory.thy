@@ -275,9 +275,9 @@ next
   {
     let ?m = "snd (State_Monad.run_state (lookup2 (key2 k)) m)"
     have "map_of1 ?m \<subseteq>\<^sub>m map_of1 m"
-      by (smt 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of1_def surjective_pairing)
+      by (smt (z3) 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of1_def surjective_pairing)
     moreover have "map_of2 ?m \<subseteq>\<^sub>m map_of2 m"
-      by (smt 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of2_def surjective_pairing)
+      by (smt (z3) 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of2_def surjective_pairing)
     moreover have "dom (map_of1 ?m) \<inter> dom (map_of2 m) = {}"
       using 3 \<open>map_of1 ?m \<subseteq>\<^sub>m map_of1 m\<close> inv_pair_domD map_le_implies_dom_le by fastforce
     moreover have "inv_pair ?m"
@@ -292,9 +292,9 @@ next
   {
     let ?m = "snd (State_Monad.run_state (lookup1 (key2 k)) m)"
     have "map_of1 ?m \<subseteq>\<^sub>m map_of1 m"
-      by (smt 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of1_def surjective_pairing)
+      by (smt (z3) 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of1_def surjective_pairing)
     moreover have "map_of2 ?m \<subseteq>\<^sub>m map_of2 m"
-      by (smt 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of2_def surjective_pairing)
+      by (smt (z3) 3 domIff inv_pair_P_D local.lookup_keys lookup_correct map_le_def map_of2_def surjective_pairing)
     moreover have "dom (map_of1 ?m) \<inter> dom (map_of2 m) = {}"
       using 3 \<open>map_of1 ?m \<subseteq>\<^sub>m map_of1 m\<close> inv_pair_domD map_le_implies_dom_le by fastforce
     moreover have "inv_pair ?m"
@@ -327,13 +327,13 @@ next
     then have "m' = m"
       by (rule get_state)
     from 1 prems have "map_of1 ?m1 \<subseteq>\<^sub>m (map_of1 m)(k \<mapsto> v)"
-      by (smt inv_pair_P_D map_le_def map_of1_def surjective_pairing domIff
+      by (smt (z3) inv_pair_P_D map_le_def map_of1_def surjective_pairing domIff
           fst_conv fun_upd_apply injective update_correct update_keys
           )
     moreover from prems have "map_of2 ?m1 \<subseteq>\<^sub>m map_of2 m"
-      by (smt domIff inv_pair_P_D update_correct update_keys map_le_def map_of2_def surjective_pairing)
+      by (smt (z3) domIff inv_pair_P_D update_correct update_keys map_le_def map_of2_def surjective_pairing)
     moreover from prems have "dom (map_of1 ?m1) \<inter> dom (map_of2 m) = {}"
-      by (smt inv_pair_P_D[OF \<open>inv_pair m\<close>] domIff Int_emptyI eq_snd_iff inv_pair_neq 
+      by (smt (z3) inv_pair_P_D[OF \<open>inv_pair m\<close>] domIff Int_emptyI eq_snd_iff inv_pair_neq 
           map_of1_def map_of2_def update_keys(1)
           )
     moreover from 1 prems have "k \<notin> dom (map_of2 m)"
@@ -353,14 +353,14 @@ next
       by (auto dest: get_state)
     from 2 prems have "map_of2 ?m2 \<subseteq>\<^sub>m (map_of2 m)(k \<mapsto> v)"
       unfolding \<open>m' = m\<close> \<open>m'' = m\<close>
-      by (smt inv_pair_P_D map_le_def map_of2_def surjective_pairing domIff
+      by (smt (z3) inv_pair_P_D map_le_def map_of2_def surjective_pairing domIff
           fst_conv fun_upd_apply injective update_correct update_keys
           )
     moreover from prems have "map_of1 ?m2 \<subseteq>\<^sub>m map_of1 m"
-      by (smt domIff inv_pair_P_D update_correct update_keys map_le_def map_of1_def surjective_pairing)
+      by (smt (z3) domIff inv_pair_P_D update_correct update_keys map_le_def map_of1_def surjective_pairing)
     moreover from 2 have "dom (map_of1 ?m2) \<inter> dom ((map_of2 m)(k \<mapsto> v)) = {}"
       unfolding \<open>m' = m\<close>
-      by (smt domIff \<open>map_of1 ?m2 \<subseteq>\<^sub>m map_of1 m\<close> disjoint_iff_not_equal fst_conv fun_upd_apply
+      by (smt (z3) domIff \<open>map_of1 ?m2 \<subseteq>\<^sub>m map_of1 m\<close> disjoint_iff_not_equal fst_conv fun_upd_apply
           map_le_def map_of1_def map_of2_def
           )
     moreover from 2 prems have "inv_pair ?m2"
@@ -380,7 +380,7 @@ next
     let ?m3 = "snd (State_Monad.run_state (update1 (key2 k) v) m3)"
     from 3 prems have "map_of1 ?m3 \<subseteq>\<^sub>m (map_of2 m)(k \<mapsto> v)"
       unfolding \<open>m2 = m\<close>
-      by (smt inv_pair_P_D map_le_def map_of1_def surjective_pairing domIff
+      by (smt (z3) inv_pair_P_D map_le_def map_of1_def surjective_pairing domIff
           fst_conv fun_upd_apply injective
           inv_pair_move12 move12_correct move12_keys update_correct update_keys
           )
@@ -402,7 +402,7 @@ next
     qed
     moreover from prems 3 have "dom (map_of1 ?m3) \<inter> dom (map_of1 m) = {}"
       unfolding \<open>m1 = m\<close> \<open>m2 = m\<close>
-      by (smt inv_pair_P_D disjoint_iff_not_equal map_of1_def surjective_pairing domIff
+      by (smt (z3) inv_pair_P_D disjoint_iff_not_equal map_of1_def surjective_pairing domIff
           fst_conv inv_pair_move12 move12_keys update_keys
           )
     moreover from 3 have "k \<notin> dom (map_of1 m)"

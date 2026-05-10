@@ -80,7 +80,7 @@ proof-
       by (simp add: field_simps)
     hence "sqrt(R*(R+1)) < (2*R+1) / 2"
       using \<open>R > 0\<close>
-      by (smt arith_geo_mean_sqrt power_divide real_sqrt_four real_sqrt_pow2 zero_le_mult_iff)
+      by (smt (z3) arith_geo_mean_sqrt power_divide real_sqrt_four real_sqrt_pow2 zero_le_mult_iff)
     hence "sqrt(R*(R+1)) - R < 1/2"
       by (simp add: field_simps)
     hence "(1 + (cmod z')) * (sqrt(R*(R+1)) - R) < (1 + (cmod z')) *  (1 / 2)"
@@ -138,7 +138,7 @@ proof-
   have "\<forall> x \<in> circle ze re. cmod x \<le> cmod ze + re"
     using norm_triangle_ineq2[of _ ze]
     unfolding circle_def
-    by (smt mem_Collect_eq)
+    by (smt (z3) mem_Collect_eq)
 
   ultimately
 
@@ -180,7 +180,7 @@ proof-
       using assms z' k *[of z']
       by auto
     hence **: "cor k \<noteq> 0"
-      by (smt of_real_eq_0_iff)
+      by (smt (z3) of_real_eq_0_iff)
 
 
     have "of_complex x \<in> poincare_circle z r \<longleftrightarrow> cmod x < 1 \<and> poincare_distance z (of_complex x) = r"
@@ -378,7 +378,7 @@ proof-
 
   hence "- 2 * Re x1' * Ze1 + Ze1 * Ze1 - cor (Re1 * Re1) = - 2 * Re x1' * Ze2 + Ze2 * Ze2 - cor (Re2 * Re2)"
         "- 2 * Re x2' * Ze1 + Ze1 * Ze1 - cor (Re1 * Re1) = - 2 * Re x2' * Ze2 + Ze2 * Ze2 - cor (Re2 * Re2)"
-    by (smt add_diff_cancel_right' add_diff_eq eq_iff_diff_eq_0 minus_diff_eq mult_minus_left of_real_minus)+
+    by (smt (z3) add_diff_cancel_right' add_diff_eq eq_iff_diff_eq_0 minus_diff_eq mult_minus_left of_real_minus)+
   hence "2 * Re x1' * (Ze2 - Ze1) =  (Ze2 * Ze2 - cor (Re2 * Re2)) - (Ze1 * Ze1 - cor (Re1 * Re1))"
         "2 * Re x2' * (Ze2 - Ze1) =  (Ze2 * Ze2 - cor (Re2 * Re2)) - (Ze1 * Ze1 - cor (Re1 * Re1))"
     by simp_all (simp add: field_simps)+

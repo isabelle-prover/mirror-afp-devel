@@ -340,7 +340,7 @@ next
   next
     case (Cons a x1a)
     then show ?case
-      by (smt DiffI att_orD1 att_orD2 att_or_snd_att attack.simps(3) insert_iff list.set(2) prod.sel(1) snd_conv subset_iff) 
+      by (smt (z3) DiffI att_orD1 att_orD2 att_or_snd_att attack.simps(3) insert_iff list.set(2) prod.sel(1) snd_conv subset_iff) 
   qed
 qed
 
@@ -934,7 +934,7 @@ next
            apply (metis (no_types, lifting) app_tl_hd_list length_greater_0_conv list.sel(1) list.sel(3) list.simps(3) list.simps(8) list.size(3) map_fst nth_Cons_0 self_append_conv2 upt_0 zero_less_Suc)
           apply (metis (no_types, lifting) app_tl_hd_list attack.simps(1) fst_conv length_greater_0_conv list.sel(1) list.sel(3) list.simps(3) list.simps(8) list.size(3) map_fst nth_Cons_0 self_append_conv2 upt_0)
          apply (metis (mono_tags, lifting) app_tl_hd_list attack.simps(1) fst_conv length_greater_0_conv list.sel(1) list.sel(3) list.simps(3) list.simps(8) list.size(3) map_fst nth_Cons_0 self_append_conv2 upt_0)
-        by (smt * One_nat_def app_tl_hd_list attack.simps(1) length_greater_0_conv list.sel(1) list.sel(3) list.simps(3) list.simps(8) list.size(3) map_fst nth_Cons_0 nth_Cons_pos self_append_conv2 snd_conv tl_app_in tl_append2 upt_0)
+        by (smt (z3) * One_nat_def app_tl_hd_list attack.simps(1) length_greater_0_conv list.sel(1) list.sel(3) list.simps(3) list.simps(8) list.size(3) map_fst nth_Cons_0 nth_Cons_pos self_append_conv2 snd_conv tl_app_in tl_append2 upt_0)
     qed
   qed
 qed

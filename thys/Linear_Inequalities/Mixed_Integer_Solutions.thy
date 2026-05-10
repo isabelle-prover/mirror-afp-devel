@@ -191,7 +191,7 @@ proof -
             have le2: "lhs \<le> a c * mult" using le unfolding generic(3)[OF A2icarr] lhs_def mult_def by auto
             have lt2: "lhs < 0 * mult" using lt unfolding generic(3)[OF A2icarr] lhs_def by auto
             from le2 lt2 have "lhs < p * mult" using p_lt_ac p1 True
-              by (smt dual_order.strict_trans linorder_neqE_linordered_idom
+              by (smt (z3) dual_order.strict_trans linorder_neqE_linordered_idom
                   mult_less_cancel_right not_less zero_less_one_class.zero_less_one)
             then show ?thesis unfolding generic(3)[OF A2icarr] lhs_def mult_def by auto
           qed

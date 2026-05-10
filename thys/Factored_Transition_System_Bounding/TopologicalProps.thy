@@ -943,7 +943,7 @@ lemma  PLS_works:
     )"
   using assms
   unfolding PLS_def
-  by (smt imageE mem_Collect_eq)
+  by (smt (z3) imageE mem_Collect_eq)
 
 
 \<comment> \<open>NOTE type of `s` had to be fixed (type mismatch in goal).\<close>
@@ -2024,7 +2024,7 @@ proof -
   {
     have "length p - 1 \<le> Max {length p - 1 |p. valid_path Pi p \<and> distinct p}" 
       using assms(3, 4) 1(1)
-      by (smt Max.coboundedI bdd_aboveI bdd_above_nat)
+      by (smt (z3) Max.coboundedI bdd_aboveI bdd_above_nat)
     moreover 
     have "Min (PLS s as) \<le> length p - 1"
       using 3

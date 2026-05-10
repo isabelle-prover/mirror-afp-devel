@@ -227,7 +227,7 @@ lemma is_shadow_root_kind_doctype [simp]:
   apply(auto simp add: is_shadow_root_kind_def cast\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t\<^sub>2\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def RDocument.extend_def
       RDocument.truncate_def split: option.splits)[1]
    apply (metis RDocument.ext_inject RDocument.select_convs(3) RDocument.surjective RObject.ext_inject)
-  by (smt RDocument.select_convs(2) RDocument.select_convs(3) RDocument.select_convs(4)
+  by (smt (z3) RDocument.select_convs(2) RDocument.select_convs(3) RDocument.select_convs(4)
       RDocument.select_convs(5) RDocument.surjective RDocument.update_convs(2) old.unit.exhaust)
 
 lemma is_shadow_root_kind_document_element [simp]:

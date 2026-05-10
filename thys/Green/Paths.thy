@@ -209,7 +209,7 @@ proof (simp add: line_integral_def)
   proof -
     have "continuous_on {0..1} (\<lambda>x. vector_derivative (\<lambda>x. \<gamma> x) (at x within {0..1}))"
       using gamma_smooth C1_differentiable_on_eq
-      by (smt C1_differentiable_on_def atLeastAtMost_iff continuous_on_eq vector_derivative_at_within_ivl)
+      by (smt (z3) C1_differentiable_on_def atLeastAtMost_iff continuous_on_eq vector_derivative_at_within_ivl)
     then have deriv_comp_cont:
       "continuous_on {0..1} (\<lambda>x. vector_derivative (\<lambda>x. \<gamma> x) (at x within {0..1}) \<bullet> i)"
       by (simp add: continuous_intros)
@@ -274,7 +274,7 @@ proof (simp add: line_integral_def)
     then have 0: "(vector_derivative \<gamma> (at x)) \<bullet> i
                          = (vector_derivative \<gamma> (at x within {0..1})) \<bullet> i"
       using has_vector_derivative_at_within and x_bounds and vector_derivative_at_within_ivl
-      by (smt atLeastAtMost_iff gamma_differentiable inner_commute vector_derivative_works)
+      by (smt (z3) atLeastAtMost_iff gamma_differentiable inner_commute vector_derivative_works)
     have 1: "vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x) = vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x within {0..1})"
       using path_vector_deriv_line_integrals and vector_derivative_at_within_ivl and
         x_bounds
@@ -840,7 +840,7 @@ next
     qed
   qed
   have "\<forall>ps. valid_chain_list ps \<or> (\<exists>i f p psa. ps = (i, f) # p # psa \<and> ((i = 1 \<and> pathfinish f \<noteq> pathstart (rec_join (p # psa)) \<or> i \<noteq> 1 \<and> pathfinish (reversepath f) \<noteq> pathstart (rec_join (p # psa))) \<or> \<not> valid_chain_list (p # psa)))"
-    by (smt coeff_cube_to_path.elims valid_chain_list.elims(3)) 
+    by (smt (z3) coeff_cube_to_path.elims valid_chain_list.elims(3)) 
   moreover have "boundary_chain (set l)"
     by (meson Cons.prems(1) boundary_chain_def set_subset_Cons subset_eq)
   ultimately show ?case
@@ -3481,7 +3481,7 @@ lemma chain_reparam_chain'_pathimg_subset':
   apply(auto simp add: chain_reparam_chain'_def set_eq_iff)
   using  path_image_reversepath case_prodE case_prodD old.prod.exhaust
   apply (simp add: list.distinct(1) list.inject rec_join.elims)
-  by (smt case_prodD coeff_cube_to_path.simps rec_join.simps(2) reversepath_simps(2) surj_pair)
+  by (smt (z3) case_prodD coeff_cube_to_path.simps rec_join.simps(2) reversepath_simps(2) surj_pair)
 
  definition common_reparam_exists:: "(int \<times> (real \<Rightarrow> real \<times> real)) set \<Rightarrow> (int \<times> (real \<Rightarrow> real \<times> real)) set \<Rightarrow> bool" where
     "common_reparam_exists one_chain1 one_chain2 \<equiv>

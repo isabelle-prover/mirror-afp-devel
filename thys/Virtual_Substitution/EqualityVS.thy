@@ -40,7 +40,7 @@ next
         assume h : "find_eq var L = (A', L')"
         have "A=A'"
           using Eq Cons h False
-          by (smt One_nat_def case_prod_conv find_eq.simps(3) less_2_cases less_SucE numeral_2_eq_2 numeral_3_eq_3 prod.sel(1))
+          by (smt (z3) One_nat_def case_prod_conv find_eq.simps(3) less_2_cases less_SucE numeral_2_eq_2 numeral_3_eq_3 prod.sel(1))
         then have "\<forall>p\<in>set A. MPoly_Type.degree p var = 1 \<or> MPoly_Type.degree p var = 2"
           using Cons h by auto
       }
@@ -109,10 +109,10 @@ next
         assume h : "find_eq var L = (A', L'')"
         have A : "A=A'"
           using Eq Cons h False
-          by (smt case_prod_conv degree_find_eq find_eq.simps(3) list.set_intros(1) prod.sel(1))
+          by (smt (z3) case_prod_conv degree_find_eq find_eq.simps(3) list.set_intros(1) prod.sel(1))
         have L : "L'=Eq p # L''"
           using Eq Cons h
-          by (smt A case_prod_conv find_eq.simps(3) not_Cons_self2 prod.sel(1) prod.sel(2)) 
+          by (smt (z3) A case_prod_conv find_eq.simps(3) not_Cons_self2 prod.sel(1) prod.sel(2)) 
         have "set (map Eq A @ L') = set (a # L)"
           apply(simp add: A L Eq) using Cons(1)[OF h] by auto
       }

@@ -96,7 +96,7 @@ proof (simp only: atomize_imp,
         by (simp add: var_mset_subst_db_subseteq vars_s)
       term gt_hd
       have "head (?\<rho> t) >\<^sub>h\<^sub>d head (?\<rho> s)"
-        by (smt Set.set_insert gt_hd_def hd_t_gt_hd_s head_subst_db insert_subset wary_raw_db_subst
+        by (smt (z3) Set.set_insert gt_hd_def hd_t_gt_hd_s head_subst_db insert_subset wary_raw_db_subst
             wary_subst_ground_heads)
       thus ?thesis
         by (rule gt_diff[OF vars_\<rho>s wt_\<rho>t_eq_\<rho>s])

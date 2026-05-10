@@ -80,7 +80,7 @@ definition "\<delta> u v \<equiv> LEAST w::enat. w\<in>sum_list`paths u v"
 lemma obtain_shortest_path: 
   obtains p where "path s p u" "\<delta> s u = sum_list p"
   unfolding \<delta>_def using paths_ne
-  by (smt Collect_empty_eq LeastI_ex WGraph.paths_def imageI image_iff 
+  by (smt (z3) Collect_empty_eq LeastI_ex WGraph.paths_def imageI image_iff 
           mem_Collect_eq paths_def)
 
 lemma shortest_path_least:  

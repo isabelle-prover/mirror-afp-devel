@@ -42,7 +42,7 @@ lemma neg_assume_assert:
 
 lemma assert_iff_assume:
   "x \<in> assertion \<longleftrightarrow> x ^ o \<in> assumption"
-  by (smt assertion_def assumption_def dual_bot dual_comp dual_dual dual_inf dual_le dual_one mem_Collect_eq)
+  by (smt (z3) assertion_def assumption_def dual_bot dual_comp dual_dual dual_inf dual_le dual_one mem_Collect_eq)
 
 lemma assertion_iff_assumption_subseteq:
   "X \<subseteq> assertion \<longleftrightarrow> dual ` X \<subseteq> assumption"
@@ -54,7 +54,7 @@ lemma assumption_iff_assertion_subseteq:
 
 lemma assumption_prop:
   "x \<in> assumption \<Longrightarrow> (x * bot) \<squnion> 1 = x"
-  by (smt assert_iff_assume assertion_prop dual_comp dual_dual dual_neg_top dual_one dual_sup dual_top)
+  by (smt (z3) assert_iff_assume assertion_prop dual_comp dual_dual dual_neg_top dual_one dual_sup dual_top)
 
 lemma neg_assumption:
   "neg_assume x \<in> assumption"
@@ -62,19 +62,19 @@ lemma neg_assumption:
 
 lemma assumption_neg_assume:
   "x \<in> assumption \<longleftrightarrow> x = neg_assume (neg_assume x)"
-  by (smt assert_iff_assume assertion_neg_assert dual_dual neg_assume_assert)
+  by (smt (z3) assert_iff_assume assertion_neg_assert dual_dual neg_assume_assert)
 
 lemma assumption_sup_comp_eq:
   "x \<in> assumption \<Longrightarrow> y \<in> assumption \<Longrightarrow> x \<squnion> y = x * y"
-  by (smt assert_iff_assume assertion_inf_comp_eq dual_comp dual_dual dual_sup)
+  by (smt (z3) assert_iff_assume assertion_inf_comp_eq dual_comp dual_dual dual_sup)
 
 lemma sup_uminus_assume[simp]:
   "x \<in> assumption \<Longrightarrow> x \<sqinter> neg_assume x = 1"
-  by (smt assert_iff_assume dual_dual dual_one dual_sup neg_assume_assert sup_uminus)
+  by (smt (z3) assert_iff_assume dual_dual dual_one dual_sup neg_assume_assert sup_uminus)
 
 lemma inf_uminus_assume[simp]:
   "x \<in> assumption \<Longrightarrow> x \<squnion> neg_assume x = top"
-  by (smt assert_iff_assume dual_dual dual_sup dual_top inf_uminus neg_assume_assert sup_bot_right)
+  by (smt (z3) assert_iff_assume dual_dual dual_sup dual_top inf_uminus neg_assume_assert sup_bot_right)
 
 lemma uminus_assumption[simp]:
   "x \<in> assumption \<Longrightarrow> neg_assume x \<in> assumption"
@@ -86,7 +86,7 @@ lemma uminus_uminus_assume[simp]:
 
 lemma sup_assumption[simp]:
   "x \<in> assumption \<Longrightarrow> y \<in> assumption \<Longrightarrow> x \<squnion> y \<in> assumption"
-  by (smt assert_iff_assume dual_dual dual_sup inf_assertion)
+  by (smt (z3) assert_iff_assume dual_dual dual_sup inf_assertion)
 
 lemma comp_assumption[simp]:
   "x \<in> assumption \<Longrightarrow> y \<in> assumption \<Longrightarrow> x * y \<in> assumption"
@@ -94,7 +94,7 @@ lemma comp_assumption[simp]:
 
 lemma inf_assumption[simp]:
   "x \<in> assumption \<Longrightarrow> y \<in> assumption \<Longrightarrow> x \<sqinter> y \<in> assumption"
-  by (smt assert_iff_assume dual_dual dual_inf sup_assertion)
+  by (smt (z3) assert_iff_assume dual_dual dual_inf sup_assertion)
 
 lemma assumption_comp_idempotent[simp]:
   "x \<in> assumption \<Longrightarrow> x * x = x"
@@ -114,11 +114,11 @@ lemma one_assumption[simp]:
 
 lemma assert_top:
   "neg_assert (neg_assert p) ^ o * bot = neg_assert p * top"
-  by (smt bot_comp dual_comp dual_dual dual_top inf_comp inf_top_right mult.assoc mult.left_neutral neg_assert_def)
+  by (smt (z3) bot_comp dual_comp dual_dual dual_top inf_comp inf_top_right mult.assoc mult.left_neutral neg_assert_def)
 
 lemma assume_bot:
   "neg_assume (neg_assume p) ^ o * top = neg_assume p * bot"
-  by (smt assert_top dual_bot dual_comp dual_dual neg_assume_assert)
+  by (smt (z3) assert_top dual_bot dual_comp dual_dual neg_assume_assert)
 
 definition "wpb x \<equiv> (x * bot) \<squnion> 1"
 
@@ -132,7 +132,7 @@ lemma wpb_is_assumption[simp]:
 
 lemma wpb_comp:
   "(wpb x) * x = x"
-  by (smt dual_comp dual_dual dual_neg_top dual_sup wpt_comp wpt_iff_wpb)
+  by (smt (z3) dual_comp dual_dual dual_neg_top dual_sup wpt_comp wpt_iff_wpb)
 
 lemma wpb_comp_2:
   "wpb (x * y) = wpb (x * (wpb y))"
@@ -148,7 +148,7 @@ lemma wpb_choice:
 
 lemma wpb_dual_assumption:
   "x \<in> assumption \<Longrightarrow> wpb (x ^ o) = 1"
-  by (smt assert_iff_assume dual_dual dual_one wpt_dual_assertion wpt_iff_wpb)
+  by (smt (z3) assert_iff_assume dual_dual dual_one wpt_dual_assertion wpt_iff_wpb)
 
 lemma wpb_mono:
   "x \<le> y \<Longrightarrow> wpb x \<le> wpb y"
@@ -156,11 +156,11 @@ lemma wpb_mono:
 
 lemma assumption_disjunctive:
   "x \<in> assumption \<Longrightarrow> x \<in> disjunctive"
-  by (smt assert_iff_assume assertion_conjunctive dual_comp dual_conjunctive dual_dual)
+  by (smt (z3) assert_iff_assume assertion_conjunctive dual_comp dual_conjunctive dual_dual)
 
 lemma assumption_conjunctive:
   "x \<in> assumption \<Longrightarrow> x \<in> conjunctive"
-  by (smt assert_iff_assume assertion_disjunctive dual_comp dual_disjunctive dual_dual)
+  by (smt (z3) assert_iff_assume assertion_disjunctive dual_comp dual_disjunctive dual_dual)
 
 lemma wpb_le_assumption:
   "x \<in> assumption \<Longrightarrow> x * y = y \<Longrightarrow> x \<le> wpb y"
@@ -171,7 +171,7 @@ definition dual_omega :: "'a \<Rightarrow> 'a" (\<open>(_ ^ \<mho>)\<close> [81]
 
 lemma dual_omega_fix:
   "x^\<mho> = (x * (x^\<mho>)) \<squnion> 1"
-  by (smt dual_comp dual_dual dual_omega_def dual_one dual_sup omega_fix)
+  by (smt (z3) dual_comp dual_dual dual_omega_def dual_one dual_sup omega_fix)
 
 lemma dual_omega_comp_fix:
   "x^\<mho> * y = (x * (x^\<mho>) * y) \<squnion> y"
@@ -179,7 +179,7 @@ lemma dual_omega_comp_fix:
 
 lemma dual_omega_greatest:
   "z \<le> (x * z) \<squnion> y \<Longrightarrow> z \<le> (x^\<mho>) * y"
-  by (smt dual_comp dual_dual dual_le dual_neg_top dual_omega_def dual_sup omega_least)
+  by (smt (z3) dual_comp dual_dual dual_le dual_neg_top dual_omega_def dual_sup omega_least)
 
 end
 
@@ -210,7 +210,7 @@ lemma post_assumption_below_dual:
 
 lemma assumption_assertion_absorb:
   "q \<in> assumption \<Longrightarrow> q * (q ^ o) = q"
-  by (smt CollectE assumption_def assumption_prop bot_comp mult.left_neutral mult_assoc sup_comp)
+  by (smt (z3) CollectE assumption_def assumption_prop bot_comp mult.left_neutral mult_assoc sup_comp)
 
 lemma post_dual_below_post_one:
   assumes "q \<in> assumption"
@@ -275,11 +275,11 @@ proof -
     fix Y
     assume "directed Y" (* assumption not used *)
     have "x * (SUP y\<in>Y . y) = (x * top) \<sqinter> (SUP y\<in>Y . y)"
-      using 1 by (smt inf_comp mult.assoc mult.left_neutral top_comp)
+      using 1 by (smt (z3) inf_comp mult.assoc mult.left_neutral top_comp)
     also have "... = (SUP y\<in>Y . (x * top) \<sqinter> y)"
       by (simp add: inf_Sup)
     finally show "x * (SUP y\<in>Y . y) = (SUP y\<in>Y . x * y)"
-      using 1 by (smt inf_comp mult.left_neutral mult.assoc top_comp SUP_cong)
+      using 1 by (smt (z3) inf_comp mult.left_neutral mult.assoc top_comp SUP_cong)
   qed
   thus ?thesis
     by (simp add: continuous_def Continuous_def)
@@ -298,7 +298,7 @@ proof -
     fix Y
     assume 2: "directed Y"
     have "x * (SUP y\<in>Y . y) = (x * bot) \<squnion> (SUP y\<in>Y . y)"
-      using 1 by (smt sup_comp mult.assoc mult.left_neutral bot_comp)
+      using 1 by (smt (z3) sup_comp mult.assoc mult.left_neutral bot_comp)
     also have "... = (SUP y\<in>Y . (x * bot) \<squnion> y)"
       using 2 by (smt (verit, ccfv_threshold) sup_SUP SUP_cong directed_def)
     finally show "x * (SUP y\<in>Y . y) = (SUP y\<in>Y . x * y)"
@@ -332,7 +332,7 @@ text \<open>Theorem 53.1\<close>
 
 lemma sup_continuous:
   "x \<in> Continuous \<Longrightarrow> y \<in> Continuous \<Longrightarrow> x \<squnion> y \<in> Continuous"
-  by (smt SUP_cong SUP_sup_distrib continuous_Continuous continuous_def sup_comp)
+  by (smt (z3) SUP_cong SUP_sup_distrib continuous_Continuous continuous_def sup_comp)
 
 text \<open>Theorem 53.1\<close>
 
@@ -507,52 +507,52 @@ lemma co_continuous_dist_descending_chain:
     shows "x * (INF n::nat . f n) = (INF n::nat . x * f n)"
 proof -
   have "x ^ o * (SUP n::nat . (dual o f) n) = (SUP n::nat . x ^ o * (dual o f) n)"
-    by (smt assms Continuous_dual SUP_cong ascending_chain_dual continuous_dist_ascending_chain descending_chain_def dual_dual o_def)
+    by (smt (z3) assms Continuous_dual SUP_cong ascending_chain_dual continuous_dist_ascending_chain descending_chain_def dual_dual o_def)
   thus ?thesis
-    by (smt INF_cong dual_SUP dual_comp dual_dual o_def)
+    by (smt (z3) INF_cong dual_SUP dual_comp dual_dual o_def)
 qed
 
 text \<open>Theorem 53.2\<close>
 
 lemma assertion_co_continuous:
   "x \<in> assertion \<Longrightarrow> x \<in> Co_continuous"
-  by (smt Continuous_dual assert_iff_assume assumption_continuous dual_dual)
+  by (smt (z3) Continuous_dual assert_iff_assume assumption_continuous dual_dual)
 
 text \<open>Theorem 53.2\<close>
 
 lemma assumption_co_continuous:
   "x \<in> assumption \<Longrightarrow> x \<in> Co_continuous"
-  by (smt Continuous_dual assert_iff_assume assertion_continuous dual_dual)
+  by (smt (z3) Continuous_dual assert_iff_assume assertion_continuous dual_dual)
 
 text \<open>Theorem 53.2\<close>
 
 lemma mult_co_continuous:
   "x \<in> Co_continuous \<Longrightarrow> y \<in> Co_continuous \<Longrightarrow> x * y \<in> Co_continuous"
-  by (smt Continuous_dual dual_comp dual_dual mult_continuous)
+  by (smt (z3) Continuous_dual dual_comp dual_dual mult_continuous)
 
 text \<open>Theorem 53.2\<close>
 
 lemma sup_co_continuous:
   "x \<in> Co_continuous \<Longrightarrow> y \<in> Co_continuous \<Longrightarrow> x \<squnion> y \<in> Co_continuous"
-  by (smt Continuous_dual dual_sup dual_dual inf_continuous)
+  by (smt (z3) Continuous_dual dual_sup dual_dual inf_continuous)
 
 text \<open>Theorem 53.2\<close>
 
 lemma inf_co_continuous:
   "x \<in> Co_continuous \<Longrightarrow> y \<in> Co_continuous \<Longrightarrow> x \<sqinter> y \<in> Co_continuous"
-  by (smt Continuous_dual dual_inf dual_dual sup_continuous)
+  by (smt (z3) Continuous_dual dual_inf dual_dual sup_continuous)
 
 text \<open>Theorem 53.2\<close>
 
 lemma dual_omega_co_continuous:
   "x \<in> Co_continuous \<Longrightarrow> x ^ \<mho> \<in> Co_continuous"
-  by (smt Continuous_dual dual_omega_def dual_dual omega_continuous)
+  by (smt (z3) Continuous_dual dual_omega_def dual_dual omega_continuous)
 
 text \<open>Theorem 53.2\<close>
 
 lemma star_co_continuous:
   "x \<in> Co_continuous \<Longrightarrow> x ^ * \<in> Co_continuous"
-  by (smt Continuous_dual dual_star_def dual_dual dual_star_continuous)
+  by (smt (z3) Continuous_dual dual_star_def dual_dual dual_star_continuous)
 
 lemma dual_omega_iterate:
   assumes "y \<in> Co_continuous"
@@ -564,7 +564,7 @@ proof (rule order.antisym)
     show "y ^ \<mho> * z \<le> ((\<lambda>x. y * x \<squnion> z) ^ n) top"
       apply (induct n)
       apply (metis power_zero_id id_def top_greatest)
-      by (smt dual_omega_comp_fix le_comp mult_assoc order_refl sup_mono power_succ_unfold_ext)
+      by (smt (z3) dual_omega_comp_fix le_comp mult_assoc order_refl sup_mono power_succ_unfold_ext)
   qed
 next
   have 1: "descending_chain (\<lambda>n . ((\<lambda>x. y * x \<squnion> z) ^ n) top)"
@@ -573,14 +573,14 @@ next
     show "((\<lambda>x. y * x \<squnion> z) ^ Suc n) top \<le> ((\<lambda>x. y * x \<squnion> z) ^ n) top"
       apply (induct n)
       apply (metis power_zero_id id_def top_greatest)
-      by (smt power_succ_unfold_ext sup_mono order_refl le_comp)
+      by (smt (z3) power_succ_unfold_ext sup_mono order_refl le_comp)
   qed
   have "(INF n. ((\<lambda>x. y * x \<squnion> z) ^ n) top) \<le> (INF n. ((\<lambda>x. y * x \<squnion> z) ^ Suc n) top)"
     apply (rule INF_greatest)
     apply (unfold power_succ_unfold_ext)
-    by (smt power_succ_unfold_ext INF_lower UNIV_I)
+    by (smt (z3) power_succ_unfold_ext INF_lower UNIV_I)
   thus "(INF n. ((\<lambda>x. y * x \<squnion> z) ^ n) top) \<le> y ^ \<mho> * z"
-    using 1 by (smt assms INF_cong co_continuous_dist_descending_chain power_succ_unfold_ext sup_INF sup_commute dual_omega_greatest)
+    using 1 by (smt (z3) assms INF_cong co_continuous_dist_descending_chain power_succ_unfold_ext sup_INF sup_commute dual_omega_greatest)
 qed
 
 lemma dual_omega_iterate_one:

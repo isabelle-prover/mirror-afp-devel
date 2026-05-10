@@ -523,7 +523,7 @@ lemma apply_if_pair_in:
   assumes "f \<in>: funspace s t"
   shows "f \<cdot> a1 = a2"
   using assms
-  by (smt abstract_def apply_abstract mem_product pair_inj set_theory.in_funspace_abstract 
+  by (smt (z3) abstract_def apply_abstract mem_product pair_inj set_theory.in_funspace_abstract 
       set_theory.mem_sub set_theory_axioms)
 
 lemma funspace_app_unique:

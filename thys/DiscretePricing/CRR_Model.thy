@@ -1980,7 +1980,7 @@ shows "(rn_price N cash_flow matur n) \<in> borel_measurable (G n)"
 proof -
   show "(rn_price N cash_flow matur n) \<in> borel_measurable (G n)"
     using assms rn_rev_price_rev_borel_adapt[of cash_flow matur N q "matur - n"] rn_price_eq rn_price_ind_def
-    by (smt add.right_neutral cancel_comm_monoid_add_class.diff_cancel diff_commute diff_le_self
+    by (smt (z3) add.right_neutral cancel_comm_monoid_add_class.diff_cancel diff_commute diff_le_self
         increasing_measurable_info measurable_cong nat_le_linear ordered_cancel_comm_monoid_diff_class.add_diff_inverse)
 qed
 
@@ -3069,7 +3069,7 @@ proof (intro conjI)
   show "self_financing Mkt ?X" using delta_hedging_self_financing .
   show "stock_portfolio Mkt (delta_hedging N der matur)" unfolding delta_hedging_def self_fin_delta_pf_def
     stock_portfolio_def portfolio_def using stocks delta_pf_support
-    by (smt Un_insert_right delta_pf_portfolio insert_commute portfolio_def self_finance_def
+    by (smt (z3) Un_insert_right delta_pf_portfolio insert_commute portfolio_def self_finance_def
         self_finance_portfolio single_comp_support subset_insertI2 subset_singleton_iff
         sum_support_set sup_bot.right_neutral)
   show "AEeq M (cls_val_process Mkt (delta_hedging N der matur) matur) der"

@@ -93,9 +93,9 @@ proof -
       ((f \<squnion> f) \<sqinter> (f \<squnion> - e\<^sup>T) \<sqinter> (f \<squnion> p) \<sqinter> (f \<squnion> - p) \<sqinter> (- e\<^sup>T \<squnion> f) \<sqinter> (- e\<^sup>T \<squnion> - e\<^sup>T) \<sqinter> (- e\<^sup>T \<squnion> p) \<sqinter> (- e\<^sup>T \<squnion> - p) \<sqinter> (- p \<squnion> p))
     \<squnion> ((f\<^sup>T \<squnion> f\<^sup>T) \<sqinter> (f\<^sup>T \<squnion> - e) \<sqinter> (f\<^sup>T \<squnion> - p\<^sup>T) \<sqinter> (- e \<squnion> f\<^sup>T) \<sqinter> (f\<^sup>T \<squnion> p\<^sup>T) \<sqinter> (- e \<squnion> - e) \<sqinter> (- e \<squnion> - p\<^sup>T) \<sqinter> (- e \<squnion> p\<^sup>T) \<sqinter> (p\<^sup>T \<squnion> - p\<^sup>T))
     \<squnion> e\<^sup>T \<squnion> e"
-    by (smt abel_semigroup.commute inf.abel_semigroup_axioms inf.left_commute sup.abel_semigroup_axioms)
+    by (smt (z3) abel_semigroup.commute inf.abel_semigroup_axioms inf.left_commute sup.abel_semigroup_axioms)
   also have "... = (f \<sqinter> - e\<^sup>T \<sqinter> (- p \<squnion> p)) \<squnion> (f\<^sup>T \<sqinter> - e \<sqinter> (p\<^sup>T \<squnion> - p\<^sup>T)) \<squnion> e\<^sup>T \<squnion> e"
-    by (smt inf.sup_monoid.add_assoc inf.sup_monoid.add_commute inf_sup_absorb sup.idem)
+    by (smt (z3) inf.sup_monoid.add_assoc inf.sup_monoid.add_commute inf_sup_absorb sup.idem)
   also have "... = (f \<sqinter> - e\<^sup>T) \<squnion> (f\<^sup>T \<sqinter> - e) \<squnion> e\<^sup>T \<squnion> e"
     by (metis assms(1) conv_complement inf_top_right stone)
   also have "... = (f \<squnion> e\<^sup>T) \<sqinter> (- e\<^sup>T \<squnion> e\<^sup>T) \<squnion> (f\<^sup>T \<squnion> e) \<sqinter> (- e \<squnion> e)"
@@ -158,7 +158,7 @@ proof -
   have 1: "?d\<^sup>\<star> * ?a \<le> ?x\<^sup>\<star> * ?a"
   proof -
     have "?x\<^sup>\<star> *?y * ?x\<^sup>\<star> * ?a \<le> ?x\<^sup>\<star> * ?a * ?a"
-      by (smt mult_left_isotone star.circ_right_top top_right_mult_increasing mult_assoc)
+      by (smt (z3) mult_left_isotone star.circ_right_top top_right_mult_increasing mult_assoc)
     also have "... = ?x\<^sup>\<star> * ?a * a * top"
       by (metis ex231e mult_assoc)
     also have "... = ?x\<^sup>\<star> * ?a"
@@ -179,7 +179,7 @@ proof -
     also have "... = (?x \<squnion> ?y)\<^sup>\<star> * ?a"
       by (simp add: sup_commute mult_assoc)
     also have "... = ?x\<^sup>\<star> * ?a \<squnion> (?x\<^sup>\<star> * ?y * (?x\<^sup>\<star> * ?y)\<^sup>\<star> * ?x\<^sup>\<star>) * ?a"
-      by (smt mult_right_dist_sup star.circ_sup_9 star.circ_unfold_sum mult_assoc)
+      by (smt (z3) mult_right_dist_sup star.circ_sup_9 star.circ_unfold_sum mult_assoc)
     also have "... \<le> ?x\<^sup>\<star> * ?a \<squnion> (?x\<^sup>\<star> * ?y * (top * ?y)\<^sup>\<star> * ?x\<^sup>\<star>) * ?a"
     proof -
       have "(?x\<^sup>\<star> * ?y)\<^sup>\<star> \<le> (top * ?y)\<^sup>\<star>"
@@ -556,7 +556,7 @@ proof -
     have "(d \<sqinter> - a)\<^sup>T * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top) = (d \<sqinter> - a)\<^sup>T * (1 \<squnion> H * (d \<sqinter> - a) * (H * (d \<sqinter> - a))\<^sup>\<star>) * (H * a * top)"
       by (simp add: star_left_unfold_equal)
     also have "... = (d \<sqinter> - a)\<^sup>T * H * a * top \<squnion> (d \<sqinter> - a)\<^sup>T * H * (d \<sqinter> - a) * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top)"
-      by (smt mult_left_dist_sup star.circ_loop_fixpoint star.circ_mult_1 star_slide sup_commute mult_assoc)
+      by (smt (z3) mult_left_dist_sup star.circ_loop_fixpoint star.circ_mult_1 star_slide sup_commute mult_assoc)
     also have "... = bot \<squnion> (d \<sqinter> - a)\<^sup>T * H * (d \<sqinter> - a) * (H * (d \<sqinter> - a))\<^sup>\<star> * (H * a * top)"
       by (metis assms(1, 2, 3) forest_modulo_equivalence_path_bot mult_assoc le_bot)
     thus ?thesis
@@ -1195,7 +1195,7 @@ proof -
     also have "... = H * (d\<^sup>T \<sqinter> H * e * top) * ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       using mult_assoc by auto
     also have "... = H * (d\<^sup>T \<sqinter> H * e * top \<sqinter> ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T) * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
-      by (smt comp_inf_vector covector_comp_inf vector_conv_covector vector_top_closed mult_assoc)
+      by (smt (z3) comp_inf_vector covector_comp_inf vector_conv_covector vector_top_closed mult_assoc)
     also have "... = H * (d\<^sup>T \<sqinter> (top * e\<^sup>T * H)\<^sup>T \<sqinter> ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T) * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
       using assms(1) forest_modulo_equivalence_def conv_dist_comp mult_assoc by auto
     also have "... = H * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top"
@@ -1222,7 +1222,7 @@ proof -
       hence "(d * H)\<^sup>\<star> * d \<le> - H"
         using star_slide by auto
       hence "H * (d\<^sup>T * H)\<^sup>\<star> \<le> - d"
-        by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp conv_star_commute schroeder_4_p star_slide)
+        by (smt (z3) assms(1) forest_modulo_equivalence_def conv_dist_comp conv_star_commute schroeder_4_p star_slide)
       hence "H * (d * H)\<^sup>\<star> \<le> - d\<^sup>T"
         using 511 by (metis assms(1) forest_modulo_equivalence_def schroeder_5_p star_slide)
       hence "H * (d * H)\<^sup>\<star> \<le> - (H * d\<^sup>T)"
@@ -1238,7 +1238,7 @@ proof -
         have "d * H * d\<^sup>T \<le> H * d * H * d\<^sup>T"
           by (metis assms(1) forest_modulo_equivalence_def conv_dist_comp conv_involutive mult_1_right mult_left_isotone)
         thus ?thesis
-          using 512 by (smt dual_order.trans p_antitone p_shunting_swap regular_one_closed)
+          using 512 by (smt (z3) dual_order.trans p_antitone p_shunting_swap regular_one_closed)
       qed
       have "d\<^sup>T * H * d \<le> 1 \<squnion> - H"
         using assms(1) forest_modulo_equivalence_def dTransHd_le_1 le_supI1 by blast
@@ -1279,11 +1279,11 @@ proof -
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> d * ((top * e\<^sup>T * H)\<^sup>T \<sqinter> top) * top * (d\<^sup>T \<sqinter> H * e * top \<sqinter> top * a * H * (d * H)\<^sup>\<star>)"
       by (simp add: covector_comp_inf_1 covector_mult_closed)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> d * ((top * e\<^sup>T * H)\<^sup>T \<sqinter> (H * e * top)\<^sup>T) * d\<^sup>T \<sqinter> top * a * H * (d * H)\<^sup>\<star>"
-      by (smt comp_associative comp_inf.star_star_absorb comp_inf_vector conv_star_commute covector_comp_inf covector_conv_vector fc_top star.circ_top total_conv_surjective vector_conv_covector vector_inf_comp)
+      by (smt (z3) comp_associative comp_inf.star_star_absorb comp_inf_vector conv_star_commute covector_comp_inf covector_conv_vector fc_top star.circ_top total_conv_surjective vector_conv_covector vector_inf_comp)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top \<sqinter> top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * ((top * e\<^sup>T * H)\<^sup>T \<sqinter> (H * e * top)\<^sup>T) * d\<^sup>T"
       using inf.sup_monoid.add_assoc inf.sup_monoid.add_commute by auto
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * ((top * e\<^sup>T * H)\<^sup>T \<sqinter> (H * e * top)\<^sup>T) * d\<^sup>T"
-      by (smt comp_inf.star.circ_decompose_9 comp_inf.star_star_absorb comp_inf_covector fc_top star.circ_decompose_11 star.circ_top vector_export_comp)
+      by (smt (z3) comp_inf.star.circ_decompose_9 comp_inf.star_star_absorb comp_inf_covector fc_top star.circ_decompose_11 star.circ_top vector_export_comp)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * (H * e * top \<sqinter> top * e\<^sup>T * H) * d\<^sup>T"
       using assms(1) forest_modulo_equivalence_def conv_dist_comp mult_assoc by auto
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> \<sqinter> d * H * e * top * e\<^sup>T * H * d\<^sup>T"
@@ -1315,11 +1315,11 @@ proof -
     also have "... = (H * (d\<^sup>T * H)\<^sup>\<star> * H \<squnion> H * (H * d)\<^sup>\<star> * H) \<sqinter> d * H * d\<^sup>T"
       by (simp add: mult_left_dist_sup mult_right_dist_sup)
     also have "... = (H * d\<^sup>T)\<^sup>\<star> * H \<sqinter> d * H * d\<^sup>T \<squnion> H * (d * H)\<^sup>\<star> \<sqinter> d * H * d\<^sup>T"
-      by (smt assms(1) forest_modulo_equivalence_def inf_sup_distrib2 mult.semigroup_axioms preorder_idempotent star_slide semigroup.assoc)
+      by (smt (z3) assms(1) forest_modulo_equivalence_def inf_sup_distrib2 mult.semigroup_axioms preorder_idempotent star_slide semigroup.assoc)
     also have "... \<le> (H * d\<^sup>T)\<^sup>\<star> * H \<sqinter> d * H * d\<^sup>T \<squnion> 1"
       using 51 comp_inf.semiring.add_left_mono by blast
     finally have "?x * top * ?x\<^sup>T \<le> 1"
-      using 51 by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp conv_dist_inf conv_dist_sup conv_involutive conv_star_commute equivalence_one_closed mult.semigroup_axioms sup.absorb2 semigroup.assoc conv_isotone conv_order)
+      using 51 by (smt (z3) assms(1) forest_modulo_equivalence_def conv_dist_comp conv_dist_inf conv_dist_sup conv_involutive conv_star_commute equivalence_one_closed mult.semigroup_axioms sup.absorb2 semigroup.assoc conv_isotone conv_order)
     thus ?thesis
       by simp
   qed
@@ -1330,21 +1330,21 @@ proof -
     also have "... = (d\<^sup>T \<sqinter> H * e * top \<sqinter> top * a * H * (d * H)\<^sup>\<star>) * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       using assms(1) forest_modulo_equivalence_def by auto
     also have "... = H * e * top \<sqinter> (d\<^sup>T \<sqinter> top * a * H * (d * H)\<^sup>\<star>) * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
-      by (smt comp_associative inf.sup_monoid.add_assoc inf.sup_monoid.add_commute star.circ_left_top star.circ_top vector_inf_comp)
+      by (smt (z3) comp_associative inf.sup_monoid.add_assoc inf.sup_monoid.add_commute star.circ_left_top star.circ_top vector_inf_comp)
     also have "... = H * e * top \<sqinter> d\<^sup>T * ((top * a * H * (d * H)\<^sup>\<star>)\<^sup>T \<sqinter> top) * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       by (simp add: covector_comp_inf_1 covector_mult_closed)
     also have "... = H * e * top \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * top * (d \<sqinter> top * e\<^sup>T * H \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)"
       using assms(1) forest_modulo_equivalence_def comp_associative conv_dist_comp by auto
     also have "... = H * e * top \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * top * (d \<sqinter> (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top) \<sqinter> top * e\<^sup>T * H"
-      by (smt comp_associative comp_inf_covector inf.sup_monoid.add_assoc inf.sup_monoid.add_commute)
+      by (smt (z3) comp_associative comp_inf_covector inf.sup_monoid.add_assoc inf.sup_monoid.add_commute)
     also have "... = H * e * top \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * (top \<sqinter> ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T) * d \<sqinter> top * e\<^sup>T * H"
       by (metis comp_associative comp_inf_vector vector_conv_covector vector_top_closed)
     also have "... = H * e * top \<sqinter> (H * e * top)\<^sup>T \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T * d"
-      by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp inf.left_commute inf.sup_monoid.add_commute symmetric_top_closed mult_assoc inf_top.left_neutral)
+      by (smt (z3) assms(1) forest_modulo_equivalence_def conv_dist_comp inf.left_commute inf.sup_monoid.add_commute symmetric_top_closed mult_assoc inf_top.left_neutral)
     also have "... = H * e * top * (H * e * top)\<^sup>T \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * ((H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top)\<^sup>T * d"
       using vector_covector vector_mult_closed by auto
     also have "... = H * e * top * top\<^sup>T * e\<^sup>T * H\<^sup>T \<sqinter> d\<^sup>T * (d * H)\<^sup>\<star>\<^sup>T * H * a\<^sup>T * top\<^sup>T * a\<^sup>T\<^sup>T * H\<^sup>T * (H * d\<^sup>T)\<^sup>\<star>\<^sup>T * d"
-      by (smt conv_dist_comp mult.semigroup_axioms symmetric_top_closed semigroup.assoc)
+      by (smt (z3) conv_dist_comp mult.semigroup_axioms symmetric_top_closed semigroup.assoc)
     also have "... = H * e * top * top * e\<^sup>T * H \<sqinter> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> * d"
       using assms(1) forest_modulo_equivalence_def conv_dist_comp conv_star_commute by auto
     also have "... = H * e * top * e\<^sup>T * H \<sqinter> d\<^sup>T * (H * d\<^sup>T)\<^sup>\<star> * H * a\<^sup>T * top * a * H * (d * H)\<^sup>\<star> * d"
@@ -1371,7 +1371,7 @@ proof -
     also have "... \<le> H \<sqinter> (d\<^sup>T * H)\<^sup>\<star> * (H * d)\<^sup>\<star>"
     proof -
       have "(d\<^sup>T * H)\<^sup>\<star> * d\<^sup>T * H * d * (H * d)\<^sup>\<star> \<le> (d\<^sup>T * H)\<^sup>\<star> * 1 * (H * d)\<^sup>\<star>"
-        by (smt assms(1) forest_modulo_equivalence_def conv_dist_comp mult_left_isotone mult_right_isotone preorder_idempotent mult_assoc)
+        by (smt (z3) assms(1) forest_modulo_equivalence_def conv_dist_comp mult_left_isotone mult_right_isotone preorder_idempotent mult_assoc)
       also have "... = (d\<^sup>T * H)\<^sup>\<star> * (H * d)\<^sup>\<star>"
         by simp
       finally show ?thesis
@@ -1434,13 +1434,13 @@ proof -
     have "?i\<^sup>T * top * ?i = (v\<^sup>T \<sqinter> top * e\<^sup>T * -F \<sqinter> F * e * top) * top * (v \<sqinter> -F * e * top \<sqinter> top * e\<^sup>T * F)"
       using assms(1) conv_complement conv_dist_comp conv_dist_inf mult.semigroup_axioms semigroup.assoc by fastforce
     also have "... = F * e * top \<sqinter> (v\<^sup>T \<sqinter> top * e\<^sup>T * -F) * top * (v \<sqinter> -F * e * top) \<sqinter> top * e\<^sup>T * F"
-      by (smt covector_comp_inf covector_mult_closed inf_vector_comp vector_export_comp vector_top_closed)
+      by (smt (z3) covector_comp_inf covector_mult_closed inf_vector_comp vector_export_comp vector_top_closed)
     also have "... = F * e * top \<sqinter> (v\<^sup>T \<sqinter> top * e\<^sup>T * -F) * top * top * (v \<sqinter> -F * e * top) \<sqinter> top * e\<^sup>T * F"
       by (simp add: comp_associative)
     also have "... = F * e * top \<sqinter> v\<^sup>T * (top \<sqinter> (top * e\<^sup>T * -F)\<^sup>T) * top * (v \<sqinter> -F * e * top) \<sqinter> top * e\<^sup>T * F"
       using comp_associative comp_inf_vector_1 by auto
     also have "... = F * e * top \<sqinter> v\<^sup>T * (top \<sqinter> (top * e\<^sup>T * -F)\<^sup>T) * (top \<sqinter> (-F * e * top)\<^sup>T) * v \<sqinter> top * e\<^sup>T * F"
-      by (smt comp_inf_vector conv_dist_comp mult.semigroup_axioms symmetric_top_closed semigroup.assoc)
+      by (smt (z3) comp_inf_vector conv_dist_comp mult.semigroup_axioms symmetric_top_closed semigroup.assoc)
     also have "... = F * e * top \<sqinter> v\<^sup>T * (top * e\<^sup>T * -F)\<^sup>T * (-F * e * top)\<^sup>T * v \<sqinter> top * e\<^sup>T * F"
       by simp
     also have "... = F * e * top \<sqinter> v\<^sup>T * -F\<^sup>T * e\<^sup>T\<^sup>T * top\<^sup>T * top\<^sup>T * e\<^sup>T * -F\<^sup>T * v \<sqinter> top * e\<^sup>T * F"
@@ -1458,7 +1458,7 @@ proof -
     also have "... = (F \<sqinter> v\<^sup>T * -F) * e * top * e\<^sup>T * (F \<sqinter> -F * v)"
       by (simp add: comp_associative)
     also have "... \<le> (F \<sqinter> v\<^sup>T * -F) * (F \<sqinter> -F * v)"
-      by (smt assms(3) conv_dist_comp mult_left_isotone shunt_bijective symmetric_top_closed top_right_mult_increasing mult_assoc)
+      by (smt (z3) assms(3) conv_dist_comp mult_left_isotone shunt_bijective symmetric_top_closed top_right_mult_increasing mult_assoc)
     also have "... \<le> (F \<sqinter> v\<^sup>T * -F) * (F \<sqinter> -F * v) \<sqinter> F"
       by (metis assms(1) inf.absorb1 inf.cobounded1 mult_isotone preorder_idempotent)
     also have "... \<le> (F \<sqinter> v\<^sup>T * -F) * (F \<sqinter> -F * v) \<sqinter> (F \<sqinter> v)\<^sup>T\<^sup>\<star> * (F \<sqinter> v)\<^sup>\<star>"
@@ -1515,15 +1515,15 @@ proof -
     also have "... = (v \<sqinter> -F * e * top \<sqinter> top * e\<^sup>T * F) * top * (v\<^sup>T \<sqinter> top * e\<^sup>T * -F \<sqinter> F * e * top)"
       by (simp add: assms(1))
     also have "... = -F * e * top \<sqinter> (v \<sqinter> top * e\<^sup>T * F) * top * (v\<^sup>T \<sqinter> top * e\<^sup>T * -F \<sqinter> F * e * top)"
-      by (smt inf.left_commute inf.sup_monoid.add_assoc vector_export_comp)
+      by (smt (z3) inf.left_commute inf.sup_monoid.add_assoc vector_export_comp)
     also have "... = -F * e * top \<sqinter> (v \<sqinter> top * e\<^sup>T * F) * top * (v\<^sup>T \<sqinter> F * e * top) \<sqinter> top * e\<^sup>T * -F"
-      by (smt comp_inf_covector inf.sup_monoid.add_assoc inf.sup_monoid.add_commute mult_assoc)
+      by (smt (z3) comp_inf_covector inf.sup_monoid.add_assoc inf.sup_monoid.add_commute mult_assoc)
     also have "... = -F * e * top \<sqinter> (v \<sqinter> top * e\<^sup>T * F) * top * top * (v\<^sup>T \<sqinter> F * e * top) \<sqinter> top * e\<^sup>T * -F"
       by (simp add: mult_assoc)
     also have "... = -F * e * top \<sqinter> v * ((top * e\<^sup>T * F)\<^sup>T \<sqinter> top) * top * (v\<^sup>T \<sqinter> F * e * top) \<sqinter> top * e\<^sup>T * -F"
       by (simp add: comp_inf_vector_1 mult.semigroup_axioms semigroup.assoc)
     also have "... = -F * e * top \<sqinter> v * ((top * e\<^sup>T * F)\<^sup>T \<sqinter> top) * (top \<sqinter> (F * e * top)\<^sup>T) * v\<^sup>T \<sqinter> top * e\<^sup>T * -F"
-      by (smt comp_inf_vector covector_comp_inf vector_conv_covector vector_mult_closed vector_top_closed)
+      by (smt (z3) comp_inf_vector covector_comp_inf vector_conv_covector vector_mult_closed vector_top_closed)
     also have "... = -F * e * top \<sqinter> v * (top * e\<^sup>T * F)\<^sup>T * (F * e * top)\<^sup>T * v\<^sup>T \<sqinter> top * e\<^sup>T * -F"
       by simp
     also have "... = -F * e * top \<sqinter> v * F\<^sup>T * e\<^sup>T\<^sup>T * top\<^sup>T * top\<^sup>T * e\<^sup>T * F\<^sup>T * v\<^sup>T \<sqinter> top * e\<^sup>T * -F"
@@ -1531,7 +1531,7 @@ proof -
     also have "... = -F * e * top \<sqinter> v * F * e * top * top * e\<^sup>T * F * v\<^sup>T \<sqinter> top * e\<^sup>T * -F"
       using assms(1) by auto
     also have "... = -F * e * top \<sqinter> v * F * e * top \<sqinter> top * e\<^sup>T * F * v\<^sup>T \<sqinter> top * e\<^sup>T * -F"
-      by (smt comp_associative comp_inf_covector inf.sup_monoid.add_assoc inf_top.left_neutral vector_top_closed)
+      by (smt (z3) comp_associative comp_inf_covector inf.sup_monoid.add_assoc inf_top.left_neutral vector_top_closed)
     also have "... = (-F \<sqinter> v * F) * e * top \<sqinter> top * e\<^sup>T * F * v\<^sup>T \<sqinter> top * e\<^sup>T * -F"
       using injective_comp_right_dist_inf assms(3) mult.semigroup_axioms semigroup.assoc by fastforce
     also have "... = (-F \<sqinter> v * F) * e * top \<sqinter> top * e\<^sup>T * (F * v\<^sup>T \<sqinter> -F)"
@@ -1541,7 +1541,7 @@ proof -
     also have "... = (-F \<sqinter> v * F) * e * top * e\<^sup>T * (F * v\<^sup>T \<sqinter> -F)"
       by (simp add: comp_associative)
     also have "... \<le> (-F \<sqinter> v * F) * (F * v\<^sup>T \<sqinter> -F)"
-      by (smt assms(3) conv_dist_comp mult.semigroup_axioms mult_left_isotone shunt_bijective symmetric_top_closed top_right_mult_increasing semigroup.assoc)
+      by (smt (z3) assms(3) conv_dist_comp mult.semigroup_axioms mult_left_isotone shunt_bijective symmetric_top_closed top_right_mult_increasing semigroup.assoc)
     also have "... = (-F \<sqinter> v * F) * ((v * F)\<^sup>T \<sqinter> -F)"
       by (simp add: assms(1) conv_dist_comp)
     also have "... = (-F \<sqinter> v * F) * (-F \<sqinter> v * F)\<^sup>T"
@@ -1623,7 +1623,7 @@ proof -
       also have "... \<le> (-F \<sqinter> v) * (F \<sqinter> v)\<^sup>T * top \<squnion> (-F \<sqinter> v) * ((F \<sqinter> v)\<^sup>\<star> \<sqinter> v\<^sup>T\<^sup>\<star>)"
         by (simp add: comp_associative comp_isotone inf.coboundedI2 inf.sup_monoid.add_commute le_supI1)
       also have "... \<le> (-F \<sqinter> v) * (F \<sqinter> v)\<^sup>T * top \<squnion> (-F \<sqinter> v) * (v\<^sup>\<star> \<sqinter> v\<^sup>T\<^sup>\<star>)"
-        by (smt comp_inf.mult_right_isotone comp_inf.semiring.add_mono order.eq_iff inf.cobounded2 inf.sup_monoid.add_commute mult_right_isotone star_isotone)
+        by (smt (z3) comp_inf.mult_right_isotone comp_inf.semiring.add_mono order.eq_iff inf.cobounded2 inf.sup_monoid.add_commute mult_right_isotone star_isotone)
       also have "... \<le> bot \<squnion> (-F \<sqinter> v) * (v\<^sup>\<star> \<sqinter> v\<^sup>T\<^sup>\<star>)"
         by (metis assms(1, 2) forests_bot_1 comp_associative comp_inf.semiring.add_right_mono mult_semi_associative vector_bot_closed)
       also have "... \<le> -F \<sqinter> v"
@@ -1996,7 +1996,7 @@ proof -
           have "regular a"
             using 611 forest_modulo_equivalence_path_def arc_regular by fastforce
           thus ?thesis
-            using 616 by (smt forest_modulo_equivalence_path_split_disj assms(4, 8, 10, 12) forest_modulo_equivalence_path_def fch_equivalence minarc_regular regular_closed_star regular_conv_closed regular_mult_closed)
+            using 616 by (smt (z3) forest_modulo_equivalence_path_split_disj assms(4, 8, 10, 12) forest_modulo_equivalence_path_def fch_equivalence minarc_regular regular_closed_star regular_conv_closed regular_mult_closed)
         qed
       next
         show "(?H * d)\<^sup>+ \<le> - ?H"
@@ -2026,7 +2026,7 @@ proof -
       hence "?x * top \<le> (?H * d\<^sup>T)\<^sup>\<star> * ?H * a\<^sup>T * top"
         using mult_left_isotone inf_vector_comp by auto
       hence "a\<^sup>T * top \<le> ((?H * d\<^sup>T)\<^sup>\<star> * ?H)\<^sup>T * ?x * top"
-        using 62 63 64 by (smt bijective_reverse mult_assoc)
+        using 62 63 64 by (smt (z3) bijective_reverse mult_assoc)
       also have "... = ?H * (d * ?H)\<^sup>\<star> * ?x * top"
         using conv_dist_comp conv_star_commute by auto
       also have "... = (?H * d)\<^sup>\<star> * ?H * ?x * top"
@@ -2344,7 +2344,7 @@ proof -
   have 11: "sum (?v \<sqinter> g) = sum (w \<sqinter> g)"
   proof -
     have "sum (?v \<sqinter> g) = sum (w \<sqinter> -(top * ?e * w\<^sup>T\<^sup>\<star>) \<sqinter> g) + sum (?q\<^sup>T \<sqinter> g)"
-      using 2 by (smt conv_complement conv_top epm_8 inf_import_p inf_top_right regular_closed_top vector_top_closed minimum_spanning_forest_def spanning_forest_def sum_disjoint)
+      using 2 by (smt (z3) conv_complement conv_top epm_8 inf_import_p inf_top_right regular_closed_top vector_top_closed minimum_spanning_forest_def spanning_forest_def sum_disjoint)
     also have "... = sum (w \<sqinter> -(top * ?e * w\<^sup>T\<^sup>\<star>) \<sqinter> g) + sum (?q \<sqinter> g)"
       by (simp add: assms(1) sum_symmetric)
     also have "... = sum (((w \<sqinter> -(top * ?e * w\<^sup>T\<^sup>\<star>)) \<squnion> ?q) \<sqinter> g)"
@@ -2415,7 +2415,7 @@ proof -
   have 17: "?i \<le> top * ?e\<^sup>T * (?F \<sqinter> ?v \<sqinter> -?i)\<^sup>T\<^sup>\<star>"
   proof -
     have "?i \<le> ?v \<sqinter> - ?F * ?e * top \<sqinter> top * ?e\<^sup>T * (?F \<sqinter> ?v)\<^sup>T\<^sup>\<star> * (?F \<sqinter> ?v)\<^sup>\<star>"
-      using 2 8 12 by (smt inf.sup_right_isotone kruskal_forest_components_inf mult_right_isotone mult_assoc)
+      using 2 8 12 by (smt (z3) inf.sup_right_isotone kruskal_forest_components_inf mult_right_isotone mult_assoc)
     also have "... = ?v \<sqinter> - ?F * ?e * top \<sqinter> top * ?e\<^sup>T * (?F \<sqinter> ?v)\<^sup>T\<^sup>\<star> * (1 \<squnion> (?F \<sqinter> ?v)\<^sup>\<star> * (?F \<sqinter> ?v))"
       using star_left_unfold_equal star.circ_right_unfold_1 by auto
     also have "... = ?v \<sqinter> - ?F * ?e * top \<sqinter> (top * ?e\<^sup>T * (?F \<sqinter> ?v)\<^sup>T\<^sup>\<star> \<squnion> top * ?e\<^sup>T * (?F \<sqinter> ?v)\<^sup>T\<^sup>\<star> * (?F \<sqinter> ?v)\<^sup>\<star> * (?F \<sqinter> ?v))"
@@ -2448,7 +2448,7 @@ proof -
       hence "?F * ?e * top * ?e\<^sup>T \<le> ?F * 1"
         by (metis comp_associative comp_isotone mult_semi_associative star.circ_transitive_equal)
       hence "?v * ?v\<^sup>T * ?F * ?e * top * ?e\<^sup>T \<le> 1 * ?F * 1"
-        using 8 by (smt comp_isotone mult_assoc)
+        using 8 by (smt (z3) comp_isotone mult_assoc)
       hence 171: "?v * ?v\<^sup>T * ?F * ?e * top * ?e\<^sup>T \<le> ?F"
         by simp
       hence "?v * (?F \<sqinter> ?v)\<^sup>T * ?F * ?e * top * ?e\<^sup>T \<le> ?F"
@@ -2459,7 +2459,7 @@ proof -
           using 171 order_trans by blast
       qed
       hence 172: "-?F * ((?F \<sqinter> ?v)\<^sup>T * ?F * ?e * top * ?e\<^sup>T)\<^sup>T \<le> -?v"
-        by (smt schroeder_4_p comp_associative order_lesseq_imp pp_increasing)
+        by (smt (z3) schroeder_4_p comp_associative order_lesseq_imp pp_increasing)
       have "-?F * ((?F \<sqinter> ?v)\<^sup>T * ?F * ?e * top * ?e\<^sup>T)\<^sup>T = -?F * ?e\<^sup>T\<^sup>T * top\<^sup>T * ?e\<^sup>T * ?F\<^sup>T * (?F \<sqinter> ?v)\<^sup>T\<^sup>T"
         by (simp add: comp_associative conv_dist_comp)
       also have "... = -?F * ?e * top * ?e\<^sup>T * ?F * (?F \<sqinter> ?v)"
@@ -2467,18 +2467,18 @@ proof -
       also have "... = -?F * ?e * top * top * ?e\<^sup>T * ?F * (?F \<sqinter> ?v)"
         using comp_associative by auto
       also have "... = -?F * ?e * top \<sqinter> top * ?e\<^sup>T * ?F * (?F \<sqinter> ?v)"
-        by (smt comp_associative comp_inf.star.circ_decompose_9 comp_inf.star_star_absorb comp_inf_covector inf_vector_comp vector_top_closed)
+        by (smt (z3) comp_associative comp_inf.star.circ_decompose_9 comp_inf.star_star_absorb comp_inf_covector inf_vector_comp vector_top_closed)
       finally have "-?F * ((?F \<sqinter> ?v)\<^sup>T * ?F * ?e * top * ?e\<^sup>T)\<^sup>T = -?F * ?e * top \<sqinter> top * ?e\<^sup>T * ?F * (?F \<sqinter> ?v)"
         by simp
       hence "-?F * ?e * top \<sqinter> top * ?e\<^sup>T * ?F * (?F \<sqinter> ?v) \<le> -?v"
         using 172 by auto
       hence "?v \<sqinter> -?F * ?e * top \<sqinter> top * ?e\<^sup>T * ?F * (?F \<sqinter> ?v) \<le> bot"
-        by (smt bot_unique inf.sup_monoid.add_commute p_shunting_swap pseudo_complement)
+        by (smt (z3) bot_unique inf.sup_monoid.add_commute p_shunting_swap pseudo_complement)
       thus ?thesis
         using le_bot sup_monoid.add_0_right by blast
     qed
     also have "... = top * ?e\<^sup>T * (?F \<sqinter> ?v \<sqinter> -?i)\<^sup>T\<^sup>\<star>"
-      using 16 by (smt comp_inf.coreflexive_comp_inf_complement inf_top_right p_bot pseudo_complement top.extremum)
+      using 16 by (smt (z3) comp_inf.coreflexive_comp_inf_complement inf_top_right p_bot pseudo_complement top.extremum)
     finally show ?thesis
       by blast
   qed
@@ -2606,7 +2606,7 @@ proof -
             using 212 by simp
         next
           show "bijective (?e * top)"
-            using 14 212 by (smt assms(4) comp_inf.idempotent_bot_closed conv_complement minarc_arc minarc_bot_iff p_bot regular_closed_bot semiring.mult_not_zero symmetric_top_closed)
+            using 14 212 by (smt (z3) assms(4) comp_inf.idempotent_bot_closed conv_complement minarc_arc minarc_bot_iff p_bot regular_closed_bot semiring.mult_not_zero symmetric_top_closed)
         next
           show "?i \<le> top * ?e\<^sup>T *?v\<^sup>T\<^sup>\<star>"
             using 19 by simp
@@ -2639,7 +2639,7 @@ proof -
             using 10 spanning_forest_def by blast
         next
           show "?v\<^sup>\<star> * ?e\<^sup>T = ?e\<^sup>T"
-            using 13 by (smt conv_complement conv_dist_comp conv_involutive conv_star_commute dense_pp fc_top regular_closed_top star_absorb)
+            using 13 by (smt (z3) conv_complement conv_dist_comp conv_involutive conv_star_commute dense_pp fc_top regular_closed_top star_absorb)
         next
           show "?i \<le> ?v \<sqinter> top * ?e\<^sup>T * ?w\<^sup>T\<^sup>\<star>"
             using 18 inf.sup_monoid.add_assoc by auto
@@ -2768,19 +2768,19 @@ proof -
           hence "?H * d\<^sup>T * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?H * (?H * d)\<^sup>\<star> * ?H * ?e"
             by (simp add: mult_right_isotone mult_assoc)
           hence "?H * d\<^sup>T * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?H * ?H * (d * ?H)\<^sup>\<star> * ?e"
-            by (smt star_slide mult_assoc)
+            by (smt (z3) star_slide mult_assoc)
           hence "?H * d\<^sup>T * (?H * d)\<^sup>\<star> * ?H * ?e \<le> ?H * (d * ?H)\<^sup>\<star> * ?e"
             by (metis assms(8) forest_components_star star.circ_decompose_9)
           hence "?H * d\<^sup>T * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
             using star_slide by auto
           hence "?H * d * (?H * d)\<^sup>\<star> * ?H * ?e \<squnion> ?H * d\<^sup>T * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
-            by (smt le_supI star.circ_loop_fixpoint sup.cobounded2 sup_commute mult_assoc)
+            by (smt (z3) le_supI star.circ_loop_fixpoint sup.cobounded2 sup_commute mult_assoc)
           hence "(?H * (d \<squnion> d\<^sup>T)) * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
             by (simp add: semiring.distrib_left semiring.distrib_right)
           hence "(?H * (d \<squnion> d\<^sup>T))\<^sup>\<star> * (?H * d)\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
             by (simp add: star_left_induct_mult mult_assoc)
           hence 252: "(?H * (d \<squnion> d\<^sup>T))\<^sup>\<star> * ?H * ?e \<le> (?H * d)\<^sup>\<star> * ?H * ?e"
-            by (smt mult_left_dist_sup star.circ_transitive_equal star_slide star_sup_1 mult_assoc)
+            by (smt (z3) mult_left_dist_sup star.circ_transitive_equal star_slide star_sup_1 mult_assoc)
           have "?i \<le> top * ?e\<^sup>T * ?F"
             by auto
           hence "?i\<^sup>T \<le> ?F\<^sup>T * ?e\<^sup>T\<^sup>T * top\<^sup>T"
@@ -2841,7 +2841,7 @@ proof -
     qed
   next
     have "?f \<le> f \<squnion> f\<^sup>T \<squnion> ?e"
-      by (smt conv_dist_inf inf_le1 sup_left_isotone sup_mono inf.order_lesseq_imp)
+      by (smt (z3) conv_dist_inf inf_le1 sup_left_isotone sup_mono inf.order_lesseq_imp)
     also have "... \<le> (?v \<sqinter> -?i \<sqinter> -?i\<^sup>T) \<squnion> (?v\<^sup>T \<sqinter> -?i \<sqinter> -?i\<^sup>T) \<squnion> ?e"
       using 20 sup_left_isotone by simp
     also have "... \<le> (?v \<sqinter> -?i) \<squnion> (?v\<^sup>T \<sqinter> -?i \<sqinter> -?i\<^sup>T) \<squnion> ?e"
@@ -2954,11 +2954,11 @@ proof -
         also have "... \<le> top * (f\<^sup>T \<sqinter> (top * ?e * f\<^sup>T\<^sup>\<star>)\<^sup>T) * f\<^sup>\<star> * ?e"
           using top_left_mult_increasing mult_assoc by auto
         also have "... = (top \<sqinter> top * ?e * f\<^sup>T\<^sup>\<star>) * f\<^sup>T * f\<^sup>\<star> * ?e"
-          by (smt covector_comp_inf_1 covector_mult_closed order.eq_iff inf.sup_monoid.add_commute vector_top_closed)
+          by (smt (z3) covector_comp_inf_1 covector_mult_closed order.eq_iff inf.sup_monoid.add_commute vector_top_closed)
         also have "... = top * ?e * f\<^sup>T\<^sup>\<star> * f\<^sup>T * f\<^sup>\<star> * ?e"
           by simp
         also have "... \<le> top * ?e * f\<^sup>T\<^sup>\<star> * f\<^sup>\<star> * ?e"
-          by (smt conv_dist_comp conv_isotone conv_star_commute mult_left_isotone mult_right_isotone star.left_plus_below_circ mult_assoc)
+          by (smt (z3) conv_dist_comp conv_isotone conv_star_commute mult_left_isotone mult_right_isotone star.left_plus_below_circ mult_assoc)
         also have "... \<le> bot"
           using 1 covector_bot_closed le_bot mult_assoc by fastforce
         finally show ?thesis
@@ -2974,10 +2974,10 @@ proof -
         have 3: "equivalence ?F"
           using 2 forest_components_equivalence by simp
         hence 4: "?e\<^sup>T = ?e\<^sup>T * top * ?e\<^sup>T"
-          by (smt arc_conv_closed arc_top_arc covector_complement_closed covector_conv_vector ex231e minarc_arc minarc_bot_iff pp_surjective regular_closed_top vector_mult_closed vector_top_closed)
+          by (smt (z3) arc_conv_closed arc_top_arc covector_complement_closed covector_conv_vector ex231e minarc_arc minarc_bot_iff pp_surjective regular_closed_top vector_mult_closed vector_top_closed)
         also have "... \<le> - ?F" using 1 3 conv_isotone conv_complement calculation by fastforce
         finally have 5: "?e * ?F * ?e = bot"
-          using 4 by (smt triple_schroeder_p le_bot pp_total regular_closed_top vector_top_closed)
+          using 4 by (smt (z3) triple_schroeder_p le_bot pp_total regular_closed_top vector_top_closed)
         have "(f \<sqinter> - ?e\<^sup>T)\<^sup>\<star> \<le> f\<^sup>\<star>"
           by (simp add: star_isotone)
         hence "?e * (f \<sqinter> - ?e\<^sup>T)\<^sup>\<star> * ?e \<le> ?e * f\<^sup>\<star> * ?e"
@@ -3185,7 +3185,7 @@ proof -
       also have "... = h \<squnion> h\<^sup>T \<squnion> d \<squnion> d\<^sup>T \<squnion> ?e \<squnion> ?e\<^sup>T"
         using assms(1) boruvka_inner_invariant_def by auto
       finally show ?thesis
-        by (smt conv_dist_sup sup.left_commute sup_commute)
+        by (smt (z3) conv_dist_sup sup.left_commute sup_commute)
     qed
   next
     show "\<forall> a b . forest_modulo_equivalence_path a b ?H ?d' \<and> a \<le> - ?H \<sqinter> -- g \<and> b \<le> ?d' \<longrightarrow> sum (b \<sqinter> g) \<le> sum (a \<sqinter> g)"

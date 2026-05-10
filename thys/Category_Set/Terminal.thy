@@ -109,7 +109,7 @@ lemma iso_to1_is_term:
 proof 
   fix Y
   obtain x where x_type[type_rule]: "x : \<one> \<rightarrow> X" and x_unique: "\<forall> y. y : \<one> \<rightarrow> X \<longrightarrow> x = y"
-    by (smt assms is_isomorphic_def iso_imp_epi_and_monic isomorphic_is_symmetric monomorphism_def2 terminal_func_comp terminal_func_unique)
+    by (smt (z3) assms is_isomorphic_def iso_imp_epi_and_monic isomorphic_is_symmetric monomorphism_def2 terminal_func_comp terminal_func_unique)
   show  "\<exists>!f. f : Y \<rightarrow> X"
   proof (rule ex1I[where a="x \<circ>\<^sub>c \<beta>\<^bsub>Y\<^esub>"], typecheck_cfuncs)
     fix xa

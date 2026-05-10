@@ -248,7 +248,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k * (P - 1) + P) = (1 + (k + 1) * (P - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
         have "[x * x ^ (k * (P - 1)) = x] (mod P)" using asm by simp
         hence "[x ^ (k * (P - 1)) * x ^ P = x] (mod P)" using flt_xP
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -269,7 +269,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k * (P - 1) + P) = (1 + (k + 1) * (P - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
         have "[y * y ^ (k * (P - 1)) = y] (mod P)" using asm by simp
         hence "[y ^ (k * (P - 1)) * y ^ P = y] (mod P)" using flt_yP
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -298,7 +298,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k' * (Q - 1) + Q) = (1 + (k' + 1) * (Q - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
         have "[x * x ^ (k' * (Q - 1)) = x] (mod Q)" using asm by simp
         hence "[x ^ (k' * (Q - 1)) * x ^ Q = x] (mod Q)" using flt_xQ
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -319,7 +319,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k' * (Q - 1) + Q) = (1 + (k' + 1) * (Q - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
         have "[y * y ^ (k' * (Q - 1)) = y] (mod Q)" using asm by simp
         hence "[y ^ (k' * (Q - 1)) * y ^ Q = y] (mod Q)" using flt_yQ
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -386,7 +386,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k * (P - 1) + P) = (1 + (k + 1) * (P - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
         have "[x * x ^ (k * (P - 1)) = x] (mod P)" using asm by simp
         hence "[x ^ (k * (P - 1)) * x ^ P = x] (mod P)" using flt_xP
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -407,7 +407,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k * (P - 1) + P) = (1 + (k + 1) * (P - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_P prime_gt_1_nat semiring_normalization_rules(3))
         have "[y * y ^ (k * (P - 1)) = y] (mod P)" using asm by simp
         hence "[y ^ (k * (P - 1)) * y ^ P = y] (mod P)" using flt_yP
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -450,7 +450,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k' * (Q - 1) + Q) = (1 + (k' + 1) * (Q - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
         have "[x * x ^ (k' * (Q - 1)) = x] (mod Q)" using asm by simp
         hence "[x ^ (k' * (Q - 1)) * x ^ Q = x] (mod Q)" using flt_xQ
           by (metis cong_scalar_right cong_trans mult.commute)
@@ -471,7 +471,7 @@ proof-
       then show ?case
       proof-
         have exp_rewrite: "(k' * (Q - 1) + Q) = (1 + (k' + 1) * (Q - 1))" 
-          by (smt add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
+          by (smt (z3) add.assoc add.commute le_add_diff_inverse nat_le_linear not_add_less1 prime_Q prime_gt_1_nat semiring_normalization_rules(3))
         have "[y * y ^ (k' * (Q - 1)) = y] (mod Q)" using asm by simp
         hence "[y ^ (k' * (Q - 1)) * y ^ Q = y] (mod Q)" using flt_yQ
           by (metis cong_scalar_right cong_trans mult.commute)

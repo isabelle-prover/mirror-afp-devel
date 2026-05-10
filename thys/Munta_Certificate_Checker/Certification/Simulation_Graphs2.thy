@@ -180,7 +180,7 @@ proof -
   proof -
     from simulation_steps[OF that(2) \<open>x \<preceq> y\<close>] \<open>P x\<close> \<open>P y\<close> obtain ws y' where
       "A.steps (y # ws @ [y'])" "list_all2 ?R xs ws" "y \<preceq> y'"
-      by (smt list_all2_Cons1 list_all2_Nil list_all2_append1)
+      by (smt (z3) list_all2_Cons1 list_all2_Nil list_all2_append1)
     then show ?thesis
       using \<open>nxt _ = _\<close> unfolding nxt_def by (auto dest!: verit_sko_ex_indirect[OF sym])
   qed
@@ -202,7 +202,7 @@ proof -
     apply (cases "smap (\<lambda>(xs, y). xs @ [y]) (siterate nxt (xs, y))")
     apply (simp only:)
     apply clarsimp
-    by (smt A.run.cases A.run.intros A.steps.cases shift_simps(1) stream.sel(1)
+    by (smt (z3) A.run.cases A.run.intros A.steps.cases shift_simps(1) stream.sel(1)
           append_Nil append_is_Nil_conv hd_append2 list.distinct(1) list.sel)
   obtain x' xs' where eqs: "xs = xs'" "x = x'"
     by auto
@@ -292,7 +292,7 @@ proof -
   from pre_cycle_infinite_cycle[OF \<open>A.steps (a # ys @ [b])\<close> \<open>a \<preceq> b\<close> this] obtain w where
     "A.run (a ## w)" "stream_all2 (\<preceq>) (cycle (a # ys)) (a ## w)" .
   from this(2) have "infs ((\<preceq>) a) (a ## w)"
-    by (smt alw_ev_lockstep infs_cycle list.distinct(1) list.set_intros(1) sim_reflI sim_transD)
+    by (smt (z3) alw_ev_lockstep infs_cycle list.distinct(1) list.set_intros(1) sim_reflI sim_transD)
   then have "infs \<phi> (as' @- a ## w)"
     using assms(5) \<open>a \<in> set as\<close> unfolding \<open>xs = as' @ _\<close> apply simp
     using assms(6) by (elim infs_mono[rotated]) blast
@@ -420,7 +420,7 @@ next
   then have "G.reaches a\<^sub>0 a" "G.reaches1 a\<^sub>0 a"
     apply -
     subgoal A
-      by (smt G.steps_reaches append_Cons last_appendR last_snoc list.sel(1))
+      by (smt (z3) G.steps_reaches append_Cons last_appendR last_snoc list.sel(1))
     subgoal
       by (metis A G.steps_ConsD G.steps_appendD2 G.steps_reaches1
             append_is_Nil_conv list.distinct(1) rtranclpD)

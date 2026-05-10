@@ -28,10 +28,10 @@ theorem Theorem0: "\<lfloor>\<^bold>\<forall>\<phi> \<psi>.((\<^bold>\<forall>Q.
 theorem Theorem1: "\<lfloor>\<P> \<G>\<rfloor>"  unfolding G_def  using Axiom2 axM by blast
 theorem Theorem2: "\<lfloor>\<^bold>\<forall>x. ((\<G> x)\<^bold>\<rightarrow>(\<^bold>\<exists>y. \<G> y))\<rfloor>" by blast  \<comment>\<open>not needed\<close>
 theorem Theorem3a: "\<lfloor>\<P> (\<lambda>x. (\<^bold>\<exists>y. \<G> y))\<rfloor>"  by (metis (no_types, lifting) Axiom1 Theorem1) 
-theorem Theorem3b: "\<lfloor>\<^bold>\<box>(\<P> (\<lambda>x.(\<^bold>\<box>(\<^bold>\<exists>y. \<G> y))))\<rfloor>" by (smt Axiom1 G_def Theorem3a  Axiom3 Theorem1 axB') 
+theorem Theorem3b: "\<lfloor>\<^bold>\<box>(\<P> (\<lambda>x.(\<^bold>\<box>(\<^bold>\<exists>y. \<G> y))))\<rfloor>" by (smt (z3) Axiom1 G_def Theorem3a  Axiom3 Theorem1 axB') 
 theorem Theorem4: "\<lfloor>\<^bold>\<forall>x. \<^bold>\<box>((\<G> x) \<^bold>\<rightarrow> ((\<P> (\<lambda>x.(\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))) \<^bold>\<rightarrow>  (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y))))\<rfloor>" using G_def by fastforce \<comment>\<open>not needed\<close>
 theorem Theorem5: "\<lfloor>\<^bold>\<forall>x. \<^bold>\<box>((\<G> x) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" by (smt (verit) G_def Theorem3a Theorem3b)  \<comment>\<open>not needed\<close>
-theorem Theorem6: "\<lfloor>\<^bold>\<box>((\<^bold>\<exists>y. \<G> y) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" by (smt G_def Theorem3a Theorem3b) 
+theorem Theorem6: "\<lfloor>\<^bold>\<box>((\<^bold>\<exists>y. \<G> y) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" by (smt (z3) G_def Theorem3a Theorem3b) 
 theorem Theorem7: "\<lfloor>\<^bold>\<box>((\<^bold>\<diamond>(\<^bold>\<exists>y. \<G> y)) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" using Theorem6 axB' by blast
 theorem Theorem8: "\<lfloor>\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)\<rfloor>" by (metis Axiom1 Axiom4 Theorem1 Theorem7 axB')
 theorem Theorem9: "\<lfloor>\<^bold>\<forall>\<phi>. ((\<P> \<phi>) \<^bold>\<rightarrow> \<^bold>\<diamond>(\<^bold>\<exists>x. \<phi> x))\<rfloor>" using Axiom1 Axiom4 axM' by metis
@@ -42,7 +42,7 @@ proof -
   have L1: "\<lfloor>(\<^bold>\<exists>X.((\<P> X)\<^bold>\<and>\<^bold>\<not>(\<^bold>\<exists>X)))\<^bold>\<rightarrow>(\<P>(\<lambda>x.(x\<^bold>\<noteq>x)))\<rfloor>"  using Axiom1 Axiom3 axB' by blast  \<comment>\<open>Use metis here if \<open>\<^bold>\<box>\<close> is omitted in Axiom1 and Axiom 2\<close>  
   have L2:  "\<lfloor>\<^bold>\<not>(\<P>(\<lambda>x.(x\<^bold>\<noteq>x)))\<rfloor>" using Axiom1 Axiom4 by metis
   have L3: "\<lfloor>\<^bold>\<not>(\<^bold>\<exists>X.((\<P> X) \<^bold>\<and> \<^bold>\<not>(\<^bold>\<exists> X)))\<rfloor>" using L1 L2 by blast 
-  have T2: "\<lfloor>\<P> \<G>\<rfloor>" by (smt Axiom1 Axiom2 G_def axM')
+  have T2: "\<lfloor>\<P> \<G>\<rfloor>" by (smt (z3) Axiom1 Axiom2 G_def axM')
   have T3: "\<lfloor>\<^bold>\<exists>y. \<G> y\<rfloor>" using L3 T2 by blast
   have T6: "\<lfloor>\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)\<rfloor>" by (simp add: T3)
   thus ?thesis by blast qed
@@ -52,7 +52,7 @@ proof -
   have L1: "\<lfloor>(\<^bold>\<exists>X.((\<P> X)\<^bold>\<and>\<^bold>\<not>(\<^bold>\<exists>X)))\<^bold>\<rightarrow>(\<P>(\<lambda>x.(x\<^bold>\<noteq>x)))\<rfloor>"  using Axiom1 Axiom3 axB' by blast  \<comment>\<open>Use metis here if \<open>\<^bold>\<box>\<close> is omitted in Axiom1 and Axiom 2\<close>  
   have L2:  "\<lfloor>\<^bold>\<not>(\<P>(\<lambda>x.(x\<^bold>\<noteq>x)))\<rfloor>" using Axiom1 Axiom4 by metis
   have L3: "\<lfloor>\<^bold>\<not>(\<^bold>\<exists>X.((\<P> X) \<^bold>\<and> \<^bold>\<not>(\<^bold>\<exists> X)))\<rfloor>" using L1 L2 by blast 
-  have T2: "\<lfloor>\<P> \<G>\<rfloor>" by (smt Axiom1 Axiom2 G_def axM')
+  have T2: "\<lfloor>\<P> \<G>\<rfloor>" by (smt (z3) Axiom1 Axiom2 G_def axM')
   have T3: "\<lfloor>\<^bold>\<exists>y. \<G> y\<rfloor>" using L3 T2 by blast
   have T6: "\<lfloor>\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)\<rfloor>" by (simp add: T3)
   thus ?thesis by blast qed
@@ -62,10 +62,10 @@ theorem "\<lfloor>\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)\<rfloor>"  \<commen
 proof -
   have T1: "\<lfloor>\<P> \<G>\<rfloor>"  unfolding G_def  using Axiom2 axM by blast
   have T3a: "\<lfloor>\<P> (\<lambda>x. (\<^bold>\<exists>y. \<G> y))\<rfloor>" by (metis (no_types, lifting) Axiom1 T1)
-  have T3b: "\<lfloor>\<^bold>\<box>(\<P> (\<lambda>x.(\<^bold>\<box>(\<^bold>\<exists>y. \<G> y))))\<rfloor>" by (smt Axiom1 G_def T3a  Axiom3 T1 axB') 
-  have T6: "\<lfloor>\<^bold>\<box>((\<^bold>\<exists>y. \<G> y) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" by (smt G_def T3a T3b) 
+  have T3b: "\<lfloor>\<^bold>\<box>(\<P> (\<lambda>x.(\<^bold>\<box>(\<^bold>\<exists>y. \<G> y))))\<rfloor>" by (smt (z3) Axiom1 G_def T3a  Axiom3 T1 axB') 
+  have T6: "\<lfloor>\<^bold>\<box>((\<^bold>\<exists>y. \<G> y) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" by (smt (z3) G_def T3a T3b) 
   have T7: "\<lfloor>\<^bold>\<box>((\<^bold>\<diamond>(\<^bold>\<exists>y. \<G> y)) \<^bold>\<rightarrow> (\<^bold>\<box>(\<^bold>\<exists>y. \<G> y)))\<rfloor>" using T6 axB' by blast
-  thus ?thesis  by (smt Axiom1 Axiom4 T3b axB') qed
+  thus ?thesis  by (smt (z3) Axiom1 Axiom4 T3b axB') qed
 
 text\<open>Are the axioms of the simplified versions implied?\<close>
 text\<open>Actualist version of the axioms.\<close>

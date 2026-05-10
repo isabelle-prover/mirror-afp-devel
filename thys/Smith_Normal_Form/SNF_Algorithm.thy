@@ -1581,7 +1581,7 @@ proof (induct A arbitrary: n rule: Smith_2xn.induct)
                 by (metis (mono_tags, lifting) "1"(2) H2' H_10 H_P2_P1_A_Q1'_Q2' Q2' arithmetic_simps(49) 
                     carrier_matD i i1 index_mat_addcol(1) index_mult_mat semiring_norm(64) H2_H_Q_div_k)
               also have "... = (P2*E)$$ (1,j-2)" unfolding H_def
-                by (smt A C_D_E C_P1_A_Q1' D H2' H2_H_Q_div_k H_P2_P1_A_Q1'_Q2' P1 Q1' Q2 append_cols_def 
+                by (smt (z3) A C_D_E C_P1_A_Q1' D H2' H2_H_Q_div_k H_P2_P1_A_Q1'_Q2' P1 Q1' Q2 append_cols_def 
                     basic_trans_rules(19) carrier_matD index_mat_four_block index_mult_mat(2) 
                     index_mult_mat(3) j less_one nat_neq_iff not_less_less_Suc_eq numerals(2) j1)
               also have "... =  Matrix.mat (dim_row P2) (dim_col E) ?f $$ (1, j - 2)"
@@ -2362,7 +2362,7 @@ proof (induct A arbitrary: m n rule: Smith_mxn.induct)
     have S_as_four_block_mat: "S = four_block_mat H2_UL (0\<^sub>m 1 (n - 1)) (0\<^sub>m (m - 1) 1) S'"
       unfolding S_def by (rule cong_four_block_mat, insert A S'_P3H2_DRQ3 H2_UL00_H00 H2_UL, auto)    
     show "S = P3' * P_H2 * P2' * P1' * A * (Q1 * Q2 * Q3')" using P3'_H2_Q3'_S unfolding H2_eq
-      by (smt P1 P1'_def P2' P2'_def P3 P3'_def P_H2 Q1 Q2 Q3' Q3'_def S Q_final_carrier P_final_carrier
+      by (smt (z3) P1 P1'_def P2' P2'_def P3 P3'_def P_H2 Q1 Q2 Q3' Q3'_def S Q_final_carrier P_final_carrier
           assoc_mult_mat carrier_matD carrier_mat_triv index_mat_four_block(2,3) index_mult_mat(2,3))
     have H00_dvd_all_H2: "H $$ (0, 0) dvd H2 $$ (i, j)" if i: "i<m" and j: "j<n" for i j
       using  dvd_elements_mult_matrix_left[OF H P_H2] H00_dvd_all i j P_H2_H_H2 by blast

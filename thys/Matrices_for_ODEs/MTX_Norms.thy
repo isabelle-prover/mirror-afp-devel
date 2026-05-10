@@ -267,7 +267,7 @@ qed
 lemma op_max_norms_eq_at_diag: "\<parallel>diag_mat f\<parallel>\<^sub>o\<^sub>p = \<parallel>diag_mat f\<parallel>\<^sub>m\<^sub>a\<^sub>x"
 proof(rule antisym)
   have "{\<bar>f i\<bar> |i. i \<in> UNIV} \<subseteq> {\<bar>diag_mat f $ i $ j\<bar> |i j. i \<in> UNIV \<and> j \<in> UNIV}"
-    by (smt Collect_mono diag_mat_vec_nth_simps(1))
+    by (smt (z3) Collect_mono diag_mat_vec_nth_simps(1))
   thus "\<parallel>diag_mat f\<parallel>\<^sub>o\<^sub>p \<le> \<parallel>diag_mat f\<parallel>\<^sub>m\<^sub>a\<^sub>x"
     unfolding op_norm_diag_mat_eq max_norm_def
     by (rule Max.subset_imp) (blast, simp only: finite_image_of_finite2)

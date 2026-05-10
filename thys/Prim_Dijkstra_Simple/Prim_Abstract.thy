@@ -120,7 +120,7 @@ proof -
       have "weight w ?T' = weight w T - w {x,y} + w{u,v}"
         using \<open>(u, v) \<notin> edges T\<close> \<open>(x, y) \<in> edges T\<close> 
         using \<open>edges T1 \<union> edges T2 = edges T - {(x, y), (y, x)}\<close> \<open>u \<noteq> v\<close>
-        by (smt Diff_eq Diff_subset add.commute contra_subsetD edges_join 
+        by (smt (z3) Diff_eq Diff_subset add.commute contra_subsetD edges_join 
               edges_restrict_edges minus_inv_sym_aux sup.idem weight_cong 
               weight_del_edge weight_ins_edge)
       also have "\<dots> \<le> weight w T" 
@@ -187,7 +187,7 @@ lemma A_edges: "A \<subseteq> edges g"
 
 lemma S_reachable: "S A \<subseteq> nodes rg"  
   unfolding S_alt_def
-  by (smt DomainE Un_insert_left fst_eq_Domain insert_subset is_MST_def 
+  by (smt (z3) DomainE Un_insert_left fst_eq_Domain insert_subset is_MST_def 
         is_spanning_tree_def is_subset_MST_def nodesI(1) nodes_of_component 
         reachable_nodes_refl rg_def subset_MST subset_iff sup_bot.left_neutral)
   
@@ -293,7 +293,7 @@ proof -
       from find_crossing_edge_rtrancl[where P="\<lambda>u. u\<in>S A", OF 1 \<open>u\<notin>S A\<close> \<open>r\<in>S A\<close>] 
         FIN reachable_edges_subset 
       show False
-        by (smt ComplI IntI contra_subsetD edges_sym' emptyE mem_Sigma_iff)
+        by (smt (z3) ComplI IntI contra_subsetD edges_sym' emptyE mem_Sigma_iff)
         
     qed
   qed
@@ -309,7 +309,7 @@ proof -
     by (auto simp: graph_accs S_def)
   
   hence "edges t' \<subseteq> edges t"
-    by (smt UnE \<open>A \<subseteq> edges t\<close> converseD edges_sym' subrelI subset_eq)
+    by (smt (z3) UnE \<open>A \<subseteq> edges t\<close> converseD edges_sym' subrelI subset_eq)
   
   have "is_spanning_tree rg t'"
   proof -
@@ -679,7 +679,7 @@ proof -
         subgoal by (simp add: fst_eq_Domain)
         subgoal 
           apply clarsimp
-          by (smt Domain.intros Q_defined \<pi>_def_on_edges_to_S case_prod_conv 
+          by (smt (z3) Domain.intros Q_defined \<pi>_def_on_edges_to_S case_prod_conv 
                 edges enat.exhaust frontier fst_eq_Domain mem_Collect_eq 
                 option.exhaust) 
         subgoal by (simp add: fst_eq_Domain) 
@@ -697,7 +697,7 @@ proof -
           \<open>S (A (Q' Q \<pi> u) (\<pi>' Q \<pi> u)) = insert u (S (A Q \<pi>))\<close> \<pi>'_def edges 
           edges_sym' insertI1 option.inject)
     subgoal
-      by (smt Q'_def \<pi>'_def Q_\<pi>_consistent Qinter_def fun_upd_apply 
+      by (smt (z3) Q'_def \<pi>'_def Q_\<pi>_consistent Qinter_def fun_upd_apply 
             insert_absorb not_enat_eq option.inject the_enat.simps)
     subgoal for v' d'
       apply clarsimp

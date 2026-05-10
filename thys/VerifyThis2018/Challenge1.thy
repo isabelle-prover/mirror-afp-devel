@@ -250,7 +250,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
       split: prod.splits)
     subgoal by (simp add: butlast_take list_update_beyond)
     subgoal
-      by (smt Cons_nth_drop_Suc One_nat_def Suc_pred diff_Suc_less 
+      by (smt (z3) Cons_nth_drop_Suc One_nat_def Suc_pred diff_Suc_less 
         drop_update_cancel last_take_nth_conv le_trans length_list_update 
         less_le_trans neq0_conv nth_list_update_eq)
     done

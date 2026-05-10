@@ -24,7 +24,7 @@ next
 
   have "r1 * r2 < 1"
     using assms
-    by (smt mult_le_cancel_left1)
+    by (smt (z3) mult_le_cancel_left1)
   hence "1 / (r1 * r2) > 1"
     using assms
     by simp
@@ -86,12 +86,12 @@ proof-
         uz_polar: "u' = cor ru * cis \<phi>" "z' = cor rz * cis \<phi>" "0 < ru" "ru \<le> rz" "0 < rz" and
                   "\<phi> = Arg u'" "\<phi> = Arg z'"
         using * \<open>u' \<noteq> 0\<close> \<open>z' \<noteq> 0\<close>
-        by (smt cmod_cis norm_le_zero_iff)
+        by (smt (z3) cmod_cis norm_le_zero_iff)
 
       obtain \<theta> ry where
         y_polar: "y' = cor ry * cis \<theta>" "ry > 0" and "\<theta> = Arg y'"
         using \<open>y' \<noteq> 0\<close>
-        by (smt cmod_cis norm_le_zero_iff)
+        by (smt (z3) cmod_cis norm_le_zero_iff)
 
       from in_disc * \<open>u' = cor ru * cis \<phi>\<close> \<open>z' = cor rz * cis \<phi>\<close> \<open>y' = cor ry * cis \<theta>\<close>
       have "ru < 1" "rz < 1" "ry < 1"
@@ -229,12 +229,12 @@ proof-
       have phi_sin: "\<phi> > 0 \<longleftrightarrow> sin \<phi> > 0" "\<phi> < 0 \<longleftrightarrow> sin \<phi> < 0"
         using \<open>\<phi> = Arg z'\<close> \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> \<noteq> pi\<close>
         using Arg_bounded[of z']
-        by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
+        by (smt (z3) sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
 
       have theta_sin: "\<theta> > 0 \<longleftrightarrow> sin \<theta> > 0" "\<theta> < 0 \<longleftrightarrow> sin \<theta> < 0"
         using \<open>\<theta> = Arg y'\<close> \<open>\<theta> \<noteq> 0\<close> \<open>\<theta> \<noteq> pi\<close>
         using Arg_bounded[of y']
-        by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
+        by (smt (z3) sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
 
       have "sin \<phi> * sin \<theta> < 0"
         using \<open>\<phi> * \<theta> < 0\<close> phi_sin theta_sin
@@ -250,7 +250,7 @@ proof-
           by auto
         hence "\<phi> - \<theta> = -pi \<or> \<phi> - \<theta> = 0 \<or> \<phi> - \<theta> = pi"
           using \<open>sin (\<phi> - \<theta>) = 0\<close>
-          by (smt sin_0_iff_canon sin_periodic_pi2)
+          by (smt (z3) sin_0_iff_canon sin_periodic_pi2)
         moreover
         {
           assume "\<phi> - \<theta> = - pi"
@@ -411,29 +411,29 @@ proof-
         case True
         hence "sin \<theta> < 0"
           using \<open>sin \<phi> * sin \<theta> < 0\<close>
-          by (smt mult_nonneg_nonneg)
+          by (smt (z3) mult_nonneg_nonneg)
 
         have "?ReByz < 0"
         proof-
           have "ry * (1 + rz\<^sup>2) * sin \<theta> < 0"
             using \<open>ry > 0\<close> \<open>rz > 0\<close>
             using \<open>sin \<theta> < 0\<close>
-            by (smt mult_pos_neg mult_pos_pos zero_less_power)
+            by (smt (z3) mult_pos_neg mult_pos_pos zero_less_power)
           moreover
           have "rz * (1 + ry\<^sup>2) * sin \<phi> > 0"
             using \<open>ry > 0\<close> \<open>rz > 0\<close>
             using \<open>sin \<phi> > 0\<close>
-            by (smt mult_pos_neg mult_pos_pos zero_less_power)
+            by (smt (z3) mult_pos_neg mult_pos_pos zero_less_power)
           ultimately
           show ?thesis
             by simp
         qed
         have "?Ayz > 0"
           using \<open>Re ?Byz / ?Ayz < -1\<close> \<open>Re ?Byz = ?ReByz\<close> \<open>?ReByz < 0\<close>
-          by (smt divide_less_0_iff)
+          by (smt (z3) divide_less_0_iff)
         hence "sin (\<phi> - \<theta>) > 0"
           using \<open>ry > 0\<close> \<open>rz > 0\<close>
-          by (smt mult_pos_pos zero_less_mult_pos)
+          by (smt (z3) mult_pos_pos zero_less_mult_pos)
 
         have "1 / ru + ru \<ge> 1 / rz + rz"
           using Pasch_fun_mono[of ru rz] \<open>0 < ru\<close> \<open>ru \<le> rz\<close> \<open>rz < 1\<close>
@@ -452,28 +452,28 @@ proof-
           by (cases "sin \<phi> = 0", simp_all)
         hence "sin \<theta> > 0"
           using \<open>sin \<phi> * sin \<theta> < 0\<close>
-          by (smt mult_nonpos_nonpos)
+          by (smt (z3) mult_nonpos_nonpos)
         have "?ReByz > 0"
         proof-
           have "ry * (1 + rz\<^sup>2) * sin \<theta> > 0"
             using \<open>ry > 0\<close> \<open>rz > 0\<close>
             using \<open>sin \<theta> > 0\<close>
-            by (smt mult_pos_neg mult_pos_pos zero_less_power)
+            by (smt (z3) mult_pos_neg mult_pos_pos zero_less_power)
           moreover
           have "rz * (1 + ry\<^sup>2) * sin \<phi> < 0"
             using \<open>ry > 0\<close> \<open>rz > 0\<close>
             using \<open>sin \<phi> < 0\<close>
-            by (smt mult_pos_neg mult_pos_pos zero_less_power)
+            by (smt (z3) mult_pos_neg mult_pos_pos zero_less_power)
           ultimately
           show ?thesis
             by simp
         qed
         have "?Ayz < 0"
           using \<open>Re ?Byz / ?Ayz < -1\<close> \<open>?Ayz \<noteq> 0\<close> \<open>Re ?Byz = ?ReByz\<close> \<open>?ReByz > 0\<close>
-          by (smt divide_less_0_iff)
+          by (smt (z3) divide_less_0_iff)
         hence "sin (\<phi> - \<theta>) < 0"
           using \<open>ry > 0\<close> \<open>rz > 0\<close>
-          by (smt mult_nonneg_nonneg)
+          by (smt (z3) mult_nonneg_nonneg)
 
         have "1 / ru + ru \<ge> 1 / rz + rz"
           using Pasch_fun_mono[of ru rz] \<open>0 < ru\<close> \<open>ru \<le> rz\<close> \<open>rz < 1\<close>
@@ -638,7 +638,7 @@ proof(cases "poincare_collinear {x, y, z}")
         by (meson poincare_between_rev poincare_between_transitivity)
       hence "poincare_between x u v"
         using assms poincare_between_transitivity poincare_between_rev
-        by (smt poincare_between_sum_distances)
+        by (smt (z3) poincare_between_sum_distances)
       thus ?thesis
         using assms
         by (rule_tac x="u" in exI, simp)
@@ -1359,7 +1359,7 @@ proof-
     have "y \<in> positive_y_axis"
     proof-
       have " \<And>x. \<lbrakk>x \<noteq> 0; poincare_between 0\<^sub>h (of_complex (\<i> / 2)) (of_complex x); is_imag x; - 1 < Im x\<rbrakk> \<Longrightarrow> 0 < Im x"
-        by (smt add.left_neutral complex.expand divide_complex_def complex_eq divide_less_0_1_iff divide_less_eq_1_pos imaginary_unit.simps(1) mult.left_neutral of_real_1 of_real_add of_real_divide of_real_eq_0_iff one_add_one poincare_between_y_axis_0uv zero_complex.simps(1) zero_complex.simps(2) zero_less_divide_1_iff)
+        by (smt (z3) add.left_neutral complex.expand divide_complex_def complex_eq divide_less_0_1_iff divide_less_eq_1_pos imaginary_unit.simps(1) mult.left_neutral of_real_1 of_real_add of_real_divide of_real_eq_0_iff one_add_one poincare_between_y_axis_0uv zero_complex.simps(1) zero_complex.simps(2) zero_less_divide_1_iff)
       thus ?thesis
         using \<open>y \<in> circline_set y_axis\<close> \<open>y \<noteq> 0\<^sub>h\<close> \<open>y \<in> unit_disc\<close>
         using acy
@@ -1911,7 +1911,7 @@ next
               apply (rule_tac x="(of_complex (cor (Sup ?Phi)))" in bexI, simp)
               using \<open>\<exists>y\<in>unit_disc. \<psi> y\<close> \<open>\<phi> ?X\<close> \<open>?X \<in> unit_disc\<close>
               using \<open>\<forall>y\<in>unit_disc. \<psi> y \<longrightarrow> is_real (to_complex y) \<and> 0 < Re (to_complex y)\<close>
-              by (smt complex_of_real_Re inf_notin_unit_disc norm_of_real of_complex_to_complex to_complex_of_complex unit_disc_iff_cmod_lt_1 xx(2))
+              by (smt (z3) complex_of_real_Re inf_notin_unit_disc norm_of_real of_complex_to_complex to_complex_of_complex unit_disc_iff_cmod_lt_1 xx(2))
           qed
 
           then obtain B where "B \<in> unit_disc" "is_real (to_complex B)"
@@ -1966,7 +1966,7 @@ next
               show "poincare_between x B y"
                 using \<open>is_real (to_complex B)\<close> \<open>x \<in> unit_disc\<close> \<open>y \<in> unit_disc\<close> \<open>B \<in> unit_disc\<close>
                 using poincare_between_x_axis_uvw[of "Re (to_complex x)" "Re (to_complex B)" "Re (to_complex y)"]
-                by (smt Re_complex_of_real arg_0_iff poincare_between_nonstrict(1) rcis_cmod_Arg rcis_zero_arg unit_disc_iff_cmod_lt_1)
+                by (smt (z3) Re_complex_of_real arg_0_iff poincare_between_nonstrict(1) rcis_cmod_Arg rcis_zero_arg unit_disc_iff_cmod_lt_1)
             qed
           qed            
         qed
@@ -2622,7 +2622,7 @@ proof-
                       fix x1 x2 :: real
                       assume "sgn x1 = sgn x2" "x1 < -1" "x2\<^sup>2 > 1"
                       hence "x2 < -1"
-                        by (smt one_power2 real_sqrt_abs real_sqrt_less_iff sgn_neg sgn_pos)
+                        by (smt (z3) one_power2 real_sqrt_abs real_sqrt_less_iff sgn_neg sgn_pos)
                     }
 
                     ultimately
@@ -2675,7 +2675,7 @@ proof-
                         using circline_set_positive_x_axis_I[of "Re xa'"]
                         using xa xa' complex_of_real_Re
                         unfolding poincare_on_ray_def
-                        by (smt of_real_0, linarith, blast)
+                        by (smt (z3) of_real_0, linarith, blast)
 
                       moreover
 
@@ -2689,7 +2689,7 @@ proof-
 
                       show "poincare_between 0\<^sub>h x a' \<or> poincare_between 0\<^sub>h a' x"
                         using \<open>a' = of_complex xa'\<close>
-                        by (smt \<open>a' \<in> unit_disc\<close> arg_0_iff poincare_between_0uv poincare_between_def to_complex_of_complex x(1))
+                        by (smt (z3) \<open>a' \<in> unit_disc\<close> arg_0_iff poincare_between_0uv poincare_between_def to_complex_of_complex x(1))
                     qed
 
                   qed
@@ -2787,7 +2787,7 @@ proof-
 
           have "poincare_collinear {0\<^sub>h, i1, i2}"
             using \<open>?a1 \<in> unit_disc\<close> \<open>?a1 \<noteq> 0\<^sub>h\<close> \<open>poincare_collinear {0\<^sub>h, ?a1, i1}\<close>
-            by (smt insert_subset poincare_collinear_def unique_poincare_line zero_in_unit_disc)
+            by (smt (z3) insert_subset poincare_collinear_def unique_poincare_line zero_in_unit_disc)
           hence "0\<^sub>h \<in> circline_set (poincare_line i1 i2)"
             using poincare_collinear3_poincare_line_general[of "0\<^sub>h" i1 i2]
             using \<open>i1 \<noteq> i2\<close> \<open>i2 \<in> unit_circle_set\<close> unit_circle_set_def

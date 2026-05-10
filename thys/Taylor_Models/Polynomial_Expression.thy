@@ -1614,7 +1614,7 @@ next
         polymul_degreen[OF norm(5,3), where m="0"] nn' nz degree_eq_degreen0
       norm(5,6) degree_npolyhCN[OF norm(6)]
     have dth: "degree (CN c 0 p *\<^sub>p c') < degree (CN 0\<^sub>p 0 (CN c 0 p *\<^sub>p p'))"
-      by (smt "4.prems"(4) One_nat_def add_Suc add_less_imp_less_left comm_monoid_add_class.add_0 degree.simps(1) eq_imp_le gr_implies_not0 head.simps(1) head_nz min_0L norm(3) not_less_eq)
+      by (smt (z3) "4.prems"(4) One_nat_def add_Suc add_less_imp_less_left comm_monoid_add_class.add_0 degree.simps(1) eq_imp_le gr_implies_not0 head.simps(1) head_nz min_0L norm(3) not_less_eq)
     then have dth': "degree (CN c 0 p *\<^sub>p c') \<noteq> degree (CN 0\<^sub>p 0 (CN c 0 p *\<^sub>p p'))"
       by simp
     from polyadd_head[OF ncnpc'[simplified nz] ncnpp0'[simplified nz] dth'] dth

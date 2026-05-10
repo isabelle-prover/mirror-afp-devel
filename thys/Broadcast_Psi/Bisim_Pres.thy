@@ -111,7 +111,7 @@ proof -
     from \<open>x \<sharp> \<Psi>\<close> have "[x] \<sharp>* \<Psi>"
       by auto
     with \<open>\<Psi> \<rhd> P \<sim> Q\<close> show ?thesis
-      by (smt mem_Collect_eq resChain.base resChain.step)
+      by (smt (z3) mem_Collect_eq resChain.base resChain.step)
   qed
   then show ?thesis
   proof(coinduct rule: bisimCoinduct)

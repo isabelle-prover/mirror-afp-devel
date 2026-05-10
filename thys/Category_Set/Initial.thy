@@ -177,10 +177,10 @@ proof -
         have "\<t> \<circ>\<^sub>c \<beta>\<^bsub>X\<^esub> = \<f> \<circ>\<^sub>c m"
           using \<chi>_false \<chi>_pullback is_pullback_def by auto
         then have "\<t> \<circ>\<^sub>c (\<beta>\<^bsub>X\<^esub> \<circ>\<^sub>c x) = \<f> \<circ>\<^sub>c (m \<circ>\<^sub>c x)"
-          by (smt X_m_subobject comp_associative2 false_func_type subobject_of_def2
+          by (smt (z3) X_m_subobject comp_associative2 false_func_type subobject_of_def2
               terminal_func_type true_func_type x_in_X)
         then have "\<t> = \<f>"
-          by (smt X_m_subobject cfunc_type_def comp_type false_func_type id_right_unit id_type
+          by (smt (z3) X_m_subobject cfunc_type_def comp_type false_func_type id_right_unit id_type
               subobject_of_def2 terminal_func_unique true_func_type x_in_X)
         then show False
           using true_false_distinct by auto

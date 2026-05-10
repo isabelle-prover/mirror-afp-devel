@@ -1483,7 +1483,7 @@ lemma total_eq:
 
 lemma domain_pointwise:
   "x \<in> R * 1\<^sub>\<union>\<^sub>\<union> \<longleftrightarrow> (\<exists>a B . (a,B) \<in> R \<and> x = (a,{}))"
-  by (smt mem_Collect_eq p_id_st)
+  by (smt (z3) mem_Collect_eq p_id_st)
 
 text \<open>\<open>card\<close> only works for finite sets\<close>
 
@@ -2425,7 +2425,7 @@ lemma convex_iu_convex:
 
 lemma convex_iu_assoc:
   "(R \<union>\<union>\<updown> S) \<union>\<union>\<updown> T = R \<union>\<union>\<updown> (S \<union>\<union>\<updown> T)"
-  by (smt convex_iu_convex_left convex_iu_convex_right p_prod_assoc)
+  by (smt (z3) convex_iu_convex_left convex_iu_convex_right p_prod_assoc)
 
 lemma convex_iu_comm:
   "R \<union>\<union>\<updown> S = S \<union>\<union>\<updown> R"
@@ -2460,7 +2460,7 @@ lemma convex_ii_convex:
 
 lemma convex_ii_assoc:
   "(R \<inter>\<inter>\<updown> S) \<inter>\<inter>\<updown> T = R \<inter>\<inter>\<updown> (S \<inter>\<inter>\<updown> T)"
-  by (smt convex_ii_convex_left convex_ii_convex_right ii_assoc)
+  by (smt (z3) convex_ii_convex_left convex_ii_convex_right ii_assoc)
 
 lemma convex_ii_comm:
   "R \<inter>\<inter>\<updown> S = S \<inter>\<inter>\<updown> R"
@@ -2576,7 +2576,7 @@ proof
   fix x :: "'a \<times> 'b set"
   assume 1: "x \<in> A\<^sub>\<union>\<^sub>\<union>"
   from this obtain a b where 2: "x = (a,{b})"
-    by (smt CollectD atoms_def)
+    by (smt (z3) CollectD atoms_def)
   have 3: "x \<in> R\<up>"
     using 1 assms atoms_solution upper_reflexive by fastforce
   have "(a,{}) \<notin> R\<up>"
@@ -3120,7 +3120,7 @@ proof
   fix x
   assume "x \<in> fis (R * S)"
   from this obtain a b B where 1: "x = (a,{b}) \<and> (a,B) \<in> R * S \<and> b \<in> B"
-    by (smt CollectD fission_set)
+    by (smt (z3) CollectD fission_set)
   from this obtain C f where 2: "(a,C) \<in> R \<and> (\<forall>c \<in> C . (c,f c) \<in> S) \<and> B = \<Union>{ f c | c . c \<in> C }"
     by (simp add: mr_simp) blast
   from this obtain c where 3: "b \<in> f c \<and> c \<in> C"
@@ -3411,7 +3411,7 @@ proof (clarsimp simp: mr_simp)
       hence "B \<subseteq> ?D"
         by simp
       hence "\<Inter>{ D . (\<exists>E . (\<exists>F . D = E \<union> F) \<and> (a,E) \<in> R) \<and> (\<exists>b . D = UNIV - {b}) } \<subseteq> ?D"
-        using 1 by (smt CollectI Compl_eq_Diff_UNIV Inf_lower subset_Un_eq)
+        using 1 by (smt (z3) CollectI Compl_eq_Diff_UNIV Inf_lower subset_Un_eq)
       thus False
         using 2 by auto
     qed
@@ -3544,15 +3544,15 @@ lemma sp_test:
   "test p \<Longrightarrow> R * p = R \<inter> (U * p)"
   apply (rule antisym)
    apply (metis (no_types, lifting) U_par_idem inf.absorb_iff2 inf.idem le_inf_iff s_prod_idr sp_oi_subdist top_upper_least)
-  using test_fix by (smt IntE s_prod_test_aux1 s_prod_test_aux2 subrelI)
+  using test_fix by (smt (z3) IntE s_prod_test_aux1 s_prod_test_aux2 subrelI)
 
 lemma sp_test_dist_oi:
   "test p \<Longrightarrow> (R \<inter> S) * p = (R * p) \<inter> (S * p)"
-  by (smt Int_left_commute semilattice_inf_class.inf.assoc semilattice_inf_class.inf.right_idem sp_test)
+  by (smt (z3) Int_left_commute semilattice_inf_class.inf.assoc semilattice_inf_class.inf.right_idem sp_test)
 
 lemma sp_test_dist_oi_left:
   "test p \<Longrightarrow> (R \<inter> S) * p = (R * p) \<inter> S"
-  by (smt Int_commute semilattice_inf_class.inf.left_commute sp_test)
+  by (smt (z3) Int_commute semilattice_inf_class.inf.left_commute sp_test)
 
 lemma sp_test_dist_oi_right:
   "test p \<Longrightarrow> (R \<inter> S) * p = R \<inter> (S * p)"
@@ -3568,7 +3568,7 @@ lemma sp_test_sp_oi_right:
 
 lemma test_sp_ne:
   "test p \<Longrightarrow> p * ne R = ne (p * R)"
-  by (smt lattice_class.inf_sup_aci(1) lattice_class.inf_sup_aci(3) test_sp)
+  by (smt (z3) lattice_class.inf_sup_aci(1) lattice_class.inf_sup_aci(3) test_sp)
 
 lemma ne_sp_test:
   "test p \<Longrightarrow> ne R * p = ne (R * p)"
@@ -3701,7 +3701,7 @@ lemma ne_test_up:
 
 lemma ne_sp_test_up:
   "test p \<Longrightarrow> (ne (R * p))\<up> = ne R * p\<up>"
-  using test_fix by (smt ne_up sp_test_dist_oi_left test_assoc1 test_ne)
+  using test_fix by (smt (z3) ne_up sp_test_dist_oi_left test_assoc1 test_ne)
 
 lemma ne_down_sp_test_up:
   "test p \<Longrightarrow> ne (R\<down> * p\<up>) = ne (R\<down>) * p\<up>"
@@ -3717,7 +3717,7 @@ lemma top_test_oi_top_complement:
 
 lemma sp_test_oi_complement:
   "test p \<Longrightarrow> (R * p) \<inter> (R * \<wrong> p) = R \<inter> 1\<^sub>\<union>\<^sub>\<union>"
-  by (smt semilattice_inf_class.inf_idem sp_test sp_test_dist_oi_left sp_test_dist_oi_right test_complement_closed top_test_oi_top_complement)
+  by (smt (z3) semilattice_inf_class.inf_idem sp_test sp_test_dist_oi_left sp_test_dist_oi_right test_complement_closed top_test_oi_top_complement)
 
 lemma ne_top_sp_test_complement:
   assumes "test p"
@@ -4042,7 +4042,7 @@ proof (rule antisym)
       hence "(a,B) \<in> A\<^sub>\<union>\<^sub>\<union>"
         using 1 assms by blast
       from this obtain b where 2: "B = {b}"
-        by (smt atoms_def Pair_inject mem_Collect_eq)
+        by (smt (z3) atoms_def Pair_inject mem_Collect_eq)
       hence "D = f b \<and> (b,f b) \<in> R * S"
         using 1 by auto
       from this obtain C g where 3: "(b,C) \<in> R \<and> (\<forall>c\<in>C . (c,g c) \<in> S) \<and> D = \<Union>{ g c | c . c\<in>C }"
@@ -4565,7 +4565,7 @@ lemma top_test_sp_lres_total_expl_2:
   shows "(U * p) \<oslash> T = U * aDom (T \<inter> -(U * p))"
 proof -
   have "\<forall>S . S \<subseteq> (U * p) \<oslash> T \<longleftrightarrow> S \<subseteq> U * aDom (T \<inter> -(U * p))"
-    by (smt assms lower_reflexive sp_lres_down_closed_2 subset_trans top_sp_test_down_closed top_test_sp_lres_total_expl_1)
+    by (smt (z3) assms lower_reflexive sp_lres_down_closed_2 subset_trans top_sp_test_down_closed top_test_sp_lres_total_expl_1)
   thus ?thesis
     by blast
 qed
@@ -4659,7 +4659,7 @@ qed
 
 lemma split_sp_test_3:
   "test p \<Longrightarrow> R \<subseteq> R * p \<union> R\<down> * (\<wrong> p)\<up>"
-  by (smt IntE UnCI UnE ne_dist_down_sp ne_sp_test_up ne_test_up split_sp_test subsetI)
+  by (smt (z3) IntE UnCI UnE ne_dist_down_sp ne_sp_test_up ne_test_up split_sp_test subsetI)
 
 lemma split_sp_test_4:
   assumes "test p"
@@ -4753,7 +4753,7 @@ proof -
   hence "ne (Dom R * S\<down>) \<subseteq> ne ((R \<union>\<union> S)\<down>)"
     by blast
   thus ?thesis
-    by (smt d_test test_sp_ne)
+    by (smt (z3) d_test test_sp_ne)
 qed
 
 lemma top_test:
@@ -4849,7 +4849,7 @@ proof
     fix x
     assume "x \<in> |R\<rangle>p"
     from this obtain a B where 1: "x = (a,{a}) \<and> (a,B) \<in> R \<and> (\<forall>b\<in>B . (b,{b}) \<in> p)"
-      by (smt adia_def surj_pair mem_Collect_eq)
+      by (smt (z3) adia_def surj_pair mem_Collect_eq)
     have "(a,B) \<in> R * p"
       apply (clarsimp simp: s_prod_def)
       apply (rule exI[where ?x="B"])
@@ -4866,7 +4866,7 @@ next
     fix x
     assume "x \<in> Dom (R * p)"
     from this obtain a A where 2: "x = (a,{a}) \<and> (a,A) \<in> R * p"
-      by (smt Dom_def surj_pair mem_Collect_eq)
+      by (smt (z3) Dom_def surj_pair mem_Collect_eq)
     from this obtain B f where 3: "(a,B) \<in> R \<and> (\<forall>b\<in>B . (b,f b) \<in> p) \<and> A = \<Union>{ f b | b . b \<in> B }"
       by (simp add: mr_simp) blast
     hence "\<forall>b\<in>B . (b,{b}) \<in> p"
@@ -4885,7 +4885,7 @@ proof
     fix x
     assume "x \<in> |R]p"
     from this obtain a where 1: "x = (a,{a}) \<and> (\<forall>B . (a,B) \<in> R \<longrightarrow> (\<forall>b\<in>B . (b,{b}) \<in> p))"
-      by (smt abox_def surj_pair mem_Collect_eq)
+      by (smt (z3) abox_def surj_pair mem_Collect_eq)
     have "\<not>(\<exists>B . (a,B) \<in> R \<inter> -(U * p))"
     proof
       assume "\<exists>B . (a,B) \<in> R \<inter> -(U * p)"
@@ -4903,7 +4903,7 @@ next
     fix x
     assume "x \<in> aDom (R \<inter> -(U * p))"
     from this obtain a where 2: "x = (a,{a}) \<and> \<not>(\<exists>B . (a,B) \<in> R \<inter> -(U * p))"
-      by (smt aDom surj_pair mem_Collect_eq)
+      by (smt (z3) aDom surj_pair mem_Collect_eq)
     hence "\<forall>B . (a,B) \<in> R \<longrightarrow> (\<forall>b\<in>B . (b,{b}) \<in> p)"
       using assms by (metis (no_types, lifting) IntI oc_top_sp_test)
     thus "x \<in> |R]p"
@@ -4925,7 +4925,7 @@ proof
     fix x
     assume "x \<in> |R\<rangle>\<rangle>p"
     from this obtain a b B where 1: "x = (a,{a}) \<and> (a,B) \<in> R \<and> b \<in> B \<and> (b,{b}) \<in> p"
-      by (smt edia_def surj_pair mem_Collect_eq)
+      by (smt (z3) edia_def surj_pair mem_Collect_eq)
     hence "(a,B) \<in> -(U * \<wrong> p)"
       by (metis (no_types, lifting) lattice_class.inf_sup_ord(2) oc_top_sp_test test_complement)
     thus "x \<in> Dom (R \<inter> -(U * \<wrong> p))"
@@ -4937,7 +4937,7 @@ next
     fix x
     assume "x \<in> Dom (R \<inter> -(U * \<wrong> p))"
     from this obtain a B where 2: "x = (a,{a}) \<and> (a,B) \<in> R \<and> (a,B) \<in> -(U * \<wrong> p)"
-      by (smt Dom_def surj_pair mem_Collect_eq IntE)
+      by (smt (z3) Dom_def surj_pair mem_Collect_eq IntE)
     hence "\<exists>b\<in>B . (b,{b}) \<in> p"
       by (meson oc_top_sp_test test_complement test_complement_closed)
     thus "x \<in> |R\<rangle>\<rangle>p"
@@ -4959,7 +4959,7 @@ proof
     fix x
     assume "x \<in> |R]]p"
     from this obtain a where 1: "x = (a,{a}) \<and> (\<forall>B . (a,B) \<in> R \<longrightarrow> (\<exists>b\<in>B . (b,{b}) \<in> p))"
-      by (smt ebox_def surj_pair mem_Collect_eq)
+      by (smt (z3) ebox_def surj_pair mem_Collect_eq)
     hence "\<not>(\<exists>B . (a,B) \<in> R * \<wrong> p)"
       by (metis (no_types, lifting) s_prod_test test_complement)
     thus "x \<in> aDom (R * \<wrong> p)"
@@ -4971,7 +4971,7 @@ next
     fix x
     assume "x \<in> aDom (R * \<wrong> p)"
     from this obtain a where 2: "x = (a,{a}) \<and> \<not>(\<exists>B . (a,B) \<in> R * \<wrong> p)"
-      by (smt aDom surj_pair mem_Collect_eq)
+      by (smt (z3) aDom surj_pair mem_Collect_eq)
     have "\<forall>B . (a,B) \<in> R \<longrightarrow> (\<exists>b\<in>B . (b,{b}) \<in> p)"
     proof (rule allI, rule impI)
       fix B
@@ -5270,7 +5270,7 @@ next
     fix x
     assume "x \<in> |R\<rangle>p"
     from this obtain a B where 2: "x = (a,{a}) \<and> (a,B) \<in> R \<and> (\<forall>b\<in>B . (b,{b}) \<in> p)"
-      by (smt adia_def mem_Collect_eq)
+      by (smt (z3) adia_def mem_Collect_eq)
     have "\<forall>C . (a,C) \<in> R \<longrightarrow> (\<forall>b\<in>C . (b,{b}) \<in> p)"
     proof (rule allI, rule impI)
       fix C
@@ -5336,7 +5336,7 @@ lemma test_abox_ebox:
 
 lemma test_abox:
   "test p \<Longrightarrow> test q \<Longrightarrow> |q]p = q \<rightarrow> p"
-  by (smt Int_commute Int_lower2 abox cl9_var compl_sup d_complement_ad d_ne_down_dp_complement_test lattice_class.inf_sup_aci(2) sp_unit_abox test_ou_closed)
+  by (smt (z3) Int_commute Int_lower2 abox cl9_var compl_sup d_complement_ad d_ne_down_dp_complement_test lattice_class.inf_sup_aci(2) sp_unit_abox test_ou_closed)
 
 lemma abox_ou_adia_sp_unit:
   assumes "test p"
@@ -5426,7 +5426,7 @@ proof -
   have "|R](p * q) = aDom (ne (R\<down>) * (\<wrong> p \<union> \<wrong> q))"
     by (metis (no_types, lifting) abox_1 ad_test_sp assms cl9_var d_ne_down_dp_complement_test sp_test test_double_complement test_oi_closed)
   also have "... = aDom (ne (R\<down>) * \<wrong> p) * aDom (ne (R\<down>) * \<wrong> q)"
-    by (smt ad_test_sp cl9_var d_complement_ad d_dist_ou d_test_sp semilattice_inf_class.inf_le2 split_sp_test_7)
+    by (smt (z3) ad_test_sp cl9_var d_complement_ad d_dist_ou d_test_sp semilattice_inf_class.inf_le2 split_sp_test_7)
   also have "... = |R]p * |R]q"
     by (simp add: abox assms)
   finally show ?thesis
@@ -5442,7 +5442,7 @@ lemma abox_adia_mp:
   assumes "test p"
     and "test q"
   shows "|R\<rangle>(p \<rightarrow> q) * |R]p \<subseteq> |R\<rangle>q"
-  by (smt adia_ou_below_ne_down test_shunting abox adia assms d_complement_ad sup_commute test_complement_closed test_implication_closed)
+  by (smt (z3) adia_ou_below_ne_down test_shunting abox adia assms d_complement_ad sup_commute test_complement_closed test_implication_closed)
 
 lemma adia_abox_mp:
   assumes "test p"
@@ -5454,7 +5454,7 @@ proof -
   hence "|R\<rangle>p \<subseteq> |R\<rangle>((p \<rightarrow> q) \<rightarrow> q)"
     by (simp add: adia_right_isotone assms)
   thus ?thesis
-    by (smt abox_adia_mp abox_test adia_test assms(2) semilattice_inf_class.inf.orderE semilattice_inf_class.le_infI2 test_implication_closed test_shunting)
+    by (smt (z3) abox_adia_mp abox_test adia_test assms(2) semilattice_inf_class.inf.orderE semilattice_inf_class.le_infI2 test_implication_closed test_shunting)
 qed
 
 lemma abox_implication_adia:
@@ -5587,9 +5587,9 @@ proof -
     from this obtain a where 1: "x = (a,{a}) \<and> x \<in> |R]|S\<rangle>1 \<and> x \<in> |R * S]p"
       by (metis Int_iff abox_test adia_test order_refl subid_aux2 subsetD surj_pair)
     hence 2: "\<forall>B . (a,B) \<in> R \<longrightarrow> (\<forall>b\<in>B . \<exists>D . (b,D) \<in> S)"
-      by (smt abox_adia_sp_one_set mem_Collect_eq old.prod.inject)
+      by (smt (z3) abox_adia_sp_one_set mem_Collect_eq old.prod.inject)
     have 3: "\<forall>B . (a,B) \<in> R \<longrightarrow> (\<forall>C . (\<exists>f . (\<forall>b\<in>B . (b,f b) \<in> S) \<and> C = \<Union>{ f b | b . b \<in> B }) \<longrightarrow> (\<forall>c\<in>C . (c,{c}) \<in> p))"
-      using 1 by (smt sp_abox_set mem_Collect_eq old.prod.inject)
+      using 1 by (smt (z3) sp_abox_set mem_Collect_eq old.prod.inject)
     have "\<forall>B . (a,B) \<in> R \<longrightarrow> (\<forall>C . (\<exists>b\<in>B . (b,C) \<in> S) \<longrightarrow> (\<forall>c\<in>C . (c,{c}) \<in> p))"
     proof (rule allI, rule impI)
       fix B
@@ -5674,7 +5674,7 @@ qed
 lemma abox_sp_6:
   assumes "test p"
   shows "|R]|S\<rangle>1 \<rightarrow> |R * S]p = |R]|S\<rangle>1 \<rightarrow> |R]|S]p"
-  by (smt Int_commute abox_sp_3 abox_sp_4 assms inf_sup_distrib2 lattice_class.inf_sup_absorb semilattice_inf_class.inf.absorb_iff2 sup_commute)
+  by (smt (z3) Int_commute abox_sp_3 abox_sp_4 assms inf_sup_distrib2 lattice_class.inf_sup_absorb semilattice_inf_class.inf.absorb_iff2 sup_commute)
 
 lemma abox_sp_7:
   assumes "test p"
@@ -5860,7 +5860,7 @@ proof
       by blast
   qed
   thus "ne ((R\<down>)\<^sup>*) \<subseteq> (ne (R\<down>))\<^sup>*"
-    by (smt Compl_disjoint2 Int_commute Int_left_commute ne_dist_ou semilattice_inf_class.le_iff_inf sup_bot.right_neutral)
+    by (smt (z3) Compl_disjoint2 Int_commute Int_left_commute ne_dist_ou semilattice_inf_class.le_iff_inf sup_bot.right_neutral)
 next
   show "(ne (R\<down>))\<^sup>* \<subseteq> ne ((R\<down>)\<^sup>*)"
   proof (rule star_induct_1)
@@ -6009,7 +6009,7 @@ proof -
       by (metis le_sup_iff order_refl)
   qed
   thus ?thesis
-    by (smt abox_test adia_test assms sup_commute test_galois_1 test_implication_closed test_shunting)
+    by (smt (z3) abox_test adia_test assms sup_commute test_galois_1 test_implication_closed test_shunting)
 qed
 
 lemma s_p_id_sp:

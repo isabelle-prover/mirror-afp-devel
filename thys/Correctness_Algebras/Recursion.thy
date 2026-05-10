@@ -31,7 +31,7 @@ proof -
   also have "... \<le> x \<squnion> n(x) * top"
     by (metis assms(1) sup_assoc sup_idem sup_right_isotone apx_def mult_left_isotone n_add_n_top n_isotone)
   finally show ?thesis
-    by (smt assms sup_assoc sup_commute apx_def le_iff_sup)
+    by (smt (z3) assms sup_assoc sup_commute apx_def le_iff_sup)
 qed
 
 lemma apx_meet_L:
@@ -63,7 +63,7 @@ lemma sup_apx_left_isotone_2:
     shows "x \<squnion> z \<sqsubseteq> y \<squnion> z"
 proof -
   have 1: "x \<squnion> z \<le> y \<squnion> z \<squnion> L"
-    by (smt assms sup_assoc sup_commute sup_left_isotone apx_def)
+    by (smt (z3) assms sup_assoc sup_commute sup_left_isotone apx_def)
   have "C (y \<squnion> z) \<le> x \<squnion> n(x) * top \<squnion> C z"
     using assms apx_def inf_sup_distrib1 sup_left_isotone by auto
   also have "... \<le> x \<squnion> z \<squnion> n(x) * top"
@@ -553,7 +553,7 @@ proof -
   also have "... \<le> x \<squnion> n(x) * top"
     by (metis assms(1) sup_assoc sup_idem sup_right_isotone apx_def mult_left_isotone n_add_n_top n_isotone)
   finally show ?thesis
-    by (smt assms sup_assoc sup_commute apx_def le_iff_sup)
+    by (smt (z3) assms sup_assoc sup_commute apx_def le_iff_sup)
 qed
 
 lemma apx_meet_L:
@@ -581,7 +581,7 @@ lemma sup_apx_left_isotone_2:
     shows "x \<squnion> z \<sqsubseteq> y \<squnion> z"
 proof -
   have 1: "x \<squnion> z \<le> y \<squnion> z \<squnion> L"
-    by (smt assms sup_assoc sup_commute sup_left_isotone apx_def)
+    by (smt (z3) assms sup_assoc sup_commute sup_left_isotone apx_def)
   have "y \<squnion> z \<le> x \<squnion> n(x) * top \<squnion> z"
     using assms apx_def sup_left_isotone by blast
   also have "... \<le> x \<squnion> z \<squnion> n(x \<squnion> z) * top"

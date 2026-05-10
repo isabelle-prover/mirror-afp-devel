@@ -436,7 +436,7 @@ proof -
   hence LU_INCR: "l u \<le> Min { l v | v. (u,v)\<in>cf.E }" 
     by (auto simp: less_Suc_eq_le)
   with valid have "\<forall>u'. (u',u)\<in>cf.E \<longrightarrow> l u' \<le> Min { l v | v. (u,v)\<in>cf.E } + 1"    
-    by (smt ab_semigroup_add_class.add.commute add_le_cancel_left le_trans)
+    by (smt (z3) ab_semigroup_add_class.add.commute add_le_cancel_left le_trans)
   moreover have "\<forall>v. (u,v)\<in>cf.E \<longrightarrow> Min { l v | v. (u,v)\<in>cf.E } + 1 \<le> l v + 1"
     using Min_le by auto
   ultimately show ?G1 ?G2

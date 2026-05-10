@@ -254,7 +254,7 @@ proof (induct xs arbitrary: n d i rule: max_list_rats_with_index.induct)
   have "(n1 * d2 \<le> n2 * d1) = (?r n1 * ?r d2 \<le> ?r n2 * ?r d1)" 
     unfolding of_int_mult[symmetric] by presburger
   also have "\<dots> = (?r n1 / ?r d1 \<le> ?r n2 / ?r d2)" using d 
-    by (smt divide_strict_right_mono leD le_less_linear mult.commute nonzero_mult_div_cancel_left 
+    by (smt (z3) divide_strict_right_mono leD le_less_linear mult.commute nonzero_mult_div_cancel_left 
         not_less_iff_gr_or_eq times_divide_eq_right)
   finally have id: "(n1 * d2 \<le> n2 * d1) = (?r n1 / ?r d1 \<le> ?r n2 / ?r d2)" .
   obtain n' d' i' where new: "(if n1 * d2 \<le> n2 * d1 then (n2, d2, i2) else (n1, d1, i1)) = (n',d',i')" 
@@ -703,9 +703,9 @@ proof -
         using d\<mu>_def i'j' j by auto
       then have "rat_of_int (d fs'' (Suc j')) * \<mu> fs'' i' j' = 
         rat_of_int (d fs' (Suc j')) * \<mu> fs' i' j'" 
-        by (smt "08" "091" "13" "14" d_def dual_order.strict_trans fs_int.d_def 
+        by (smt (z3) "08" "091" "13" "14" d_def dual_order.strict_trans fs_int.d_def 
             fs_int_indpt.fs_int_mu_d_Z fs_int_indpt.intro i i'j'(1) i'j'(2) int_of_rat(2))
-      then have "\<mu> fs'' i' j' = \<mu> fs' i' j'" by (smt "16" 
+      then have "\<mu> fs'' i' j' = \<mu> fs' i' j'" by (smt (z3) "16" 
             LLL_d_pos[OF Linvw'] Suc_leI int_of_rat(1)
             dual_order.strict_trans fs'_def i i'j' j 
             le_neq_implies_less nonzero_mult_div_cancel_left of_int_hom.hom_zero)
@@ -835,7 +835,7 @@ proof -
             have pge1: "p \<ge> 1" using pgtz by simp
             have lh: "\<bar>\<mu>''\<bar> \<le> 1 / 2" using 23 True i'i \<mu>''_def by simp
             moreover have eq: "d\<mu> fs'' i' j' = \<mu>'' * d''" using d\<mu>_def i' j' \<mu>''_def d''_def 
-              by (smt "14" "36" LLL.d_def Suc_lessD fs_int.d_def fs_int_indpt.d\<mu> fs_int_indpt.intro 
+              by (smt (z3) "14" "36" LLL.d_def Suc_lessD fs_int.d_def fs_int_indpt.d\<mu> fs_int_indpt.intro 
                   int_of_rat(1) less_trans_Suc mult_of_int_commute of_rat_mult of_rat_of_int_eq)
             moreover have Sj': "Suc j' \<le> m" "j' \<le> m" using True j' i i' by auto
             moreover then have gtz: "0 < d''" using LLL_d_pos[OF Linvw''] d''_def by simp
@@ -848,9 +848,9 @@ proof -
             ultimately have "rat_of_int \<bar>d\<mu> fs'' i' j'\<bar> < rat_of_int d''" by simp
             then have "\<bar>d\<mu> fs'' i' j'\<bar> <  d fs'' (Suc j')" using d''_def by simp
             then have "\<bar>d\<mu> fs'' i' j'\<bar> < p * d fs'' (Suc j')" using pge1
-              by (smt mult_less_cancel_right2)
+              by (smt (z3) mult_less_cancel_right2)
             then show ?thesis using pge1 LLL_d_pos[OF Linvw'' Sj'(2)] gtz unfolding d''_def
-              by (smt mult_less_cancel_left2 mult_right_less_imp_less)
+              by (smt (z3) mult_less_cancel_left2 mult_right_less_imp_less)
           next
             case False
             have "j' < m" using i' j' by simp
@@ -901,7 +901,7 @@ proof -
       define dj' \<mu>i \<mu>j where "dj' = d fs (Suc j')" and "\<mu>i = \<mu> fs i j'" and "\<mu>j = \<mu> fs j j'"
       have "?oi (d\<mu> fs' i j') = ?oi (d fs (Suc j')) * (\<mu> fs i j' - ?oi c * \<mu> fs j j')"
         using j' 04 d\<mu>_def 
-        by (smt "05" "08" "091" Suc_leI d_def diff_diff_cancel fs_int.d_def 
+        by (smt (z3) "05" "08" "091" Suc_leI d_def diff_diff_cancel fs_int.d_def 
             fs_int_indpt.fs_int_mu_d_Z i int_of_rat(2) j less_imp_diff_less less_imp_le_nat)
       also have "\<dots> = (?oi dj') * (\<mu>i - of_int c * \<mu>j)" 
         using dj'_def \<mu>i_def \<mu>j_def by (simp add: of_rat_mult)
@@ -977,7 +977,7 @@ proof -
     note Linvww = LLL_invw'_imp_w[OF Linvw]
     have 00: "LLL_invariant_weak' i fs'" using Linvw basis_reduction_add_row_weak[OF Linvw i j fs'_def] by auto
     have 37: "weakly_reduced fs'' i" using 15 LLL_invD_weak(8)[OF 00] gram_schmidt_fs.weakly_reduced_def 
-      by (smt Suc_lessD i less_trans_Suc) (* invariant req. *)
+      by (smt (z3) Suc_lessD i less_trans_Suc) (* invariant req. *)
     have 38: "LLL_invariant_weak' i fs''"
       using 00 11 14 36 37 i 31 12  LLL_invariant_weak'_def by blast
     have "LLL_invariant_mod fs'' mfs' dmu' p first b i"
@@ -1496,7 +1496,7 @@ next
           using 07 06 unfolding I_def by simp
         then have "\<bar>d\<mu> fs' i' j'\<bar> < p'' * d fs' j' * d fs' (Suc j')" 
           using sym_mod_abs p'' LLL_d_pos[OF weak] mult_pos_pos
-          by (smt "06" i'j' less_imp_le_nat less_trans_Suc nat_SN.gt_trans)
+          by (smt (z3) "06" i'j' less_imp_le_nat less_trans_Suc nat_SN.gt_trans)
       }
       then show ?thesis by simp
     qed
@@ -1878,11 +1878,11 @@ proof -
                   have "d fs 0 = 1" "d fs'' 0 = 1" using d_def by auto
                   moreover have sqid: "sq_norm (gso fs'' k) = rat_of_int (d fs'' (Suc k)) / rat_of_int (d fs'' k)"
                     using LLL_d_Suc[OF invw''] LLL_d_pos[OF invw''] k
-                    by (smt One_nat_def Suc_less_eq Suc_pred le_imp_less_Suc mult_eq_0_iff less_imp_le_nat
+                    by (smt (z3) One_nat_def Suc_less_eq Suc_pred le_imp_less_Suc mult_eq_0_iff less_imp_le_nat
                         nonzero_mult_div_cancel_right of_int_0_less_iff of_int_hom.hom_zero)
                   moreover have "sq_norm (gso fs k) = rat_of_int (d fs (Suc k)) / rat_of_int (d fs k)"
                     using LLL_d_Suc[OF invw] LLL_d_pos[OF invw] k
-                    by (smt One_nat_def Suc_less_eq Suc_pred le_imp_less_Suc mult_eq_0_iff less_imp_le_nat
+                    by (smt (z3) One_nat_def Suc_less_eq Suc_pred le_imp_less_Suc mult_eq_0_iff less_imp_le_nat
                         nonzero_mult_div_cancel_right of_int_0_less_iff of_int_hom.hom_zero)
                   ultimately have "sq_norm (gso fs k) = sq_norm (gso fs'' k)" using k deq 
                       LLL_d_pos[OF invw] LLL_d_pos[OF invw'']
@@ -1922,7 +1922,7 @@ next
   then obtain fs'' where fs'': "LLL_invariant_mod fs'' mfs'' dmu'' p first b m" 
     and 00: "(\<forall>j. j \<le> i \<longrightarrow> \<mu>_small fs'' j)" using Suc by fastforce
   have "(mfs', dmu') = basis_reduction_mod_add_rows_loop p mfs'' dmu'' (Suc i) (Suc i)"
-    using Suc(3,4) mfs''dmu'' by (smt basis_reduction_mod_add_rows_outer_loop.simps(2) case_prod_conv)
+    using Suc(3,4) mfs''dmu'' by (smt (z3) basis_reduction_mod_add_rows_outer_loop.simps(2) case_prod_conv)
   then obtain fs' where 01: "LLL_invariant_mod fs' mfs' dmu' p first b m" 
     and 02: "\<forall>i' j'. i' < (Suc i) \<longrightarrow> j' \<le> i' \<longrightarrow> \<mu> fs'' i' j' = \<mu> fs' i' j'" and 03: "\<mu>_small fs' (Suc i)"
     using fs'' basis_reduction_mod_add_rows_loop_inv' Suc by metis
@@ -2010,7 +2010,7 @@ proof -
     proof -
       have "rat_of_nat (m+3) / 4 * b \<le> (rat_of_nat (m +3) / 4) * (rat_of_int (p - 1))\<^sup>2 / (rat_of_nat m+3)"
         using bp b0 i times_left_mono SN_Orders.of_nat_ge_zero gs.m_comm times_divide_eq_right 
-        by (smt gs.l_null le_divide_eq_numeral1(1))
+        by (smt (z3) gs.l_null le_divide_eq_numeral1(1))
       also have "\<dots> = (rat_of_int (p - 1))\<^sup>2 / 4 * (rat_of_nat (m + 3) / rat_of_nat (m + 3))"
         by (metis (no_types, lifting) gs.m_comm of_nat_add of_nat_numeral times_divide_eq_left)
       finally have "rat_of_nat (m+3) / 4 * b \<le> (rat_of_int (p - 1))\<^sup>2 / 4" by simp
@@ -2077,7 +2077,7 @@ proof -
     also have "\<dots> = rat_of_int ((p - 1)\<^sup>2)" by simp
     finally have "(2 * \<bar>fs ! 0 $ j\<bar>)^2 \<le> (p - 1)\<^sup>2" by linarith
     hence "2 * \<bar>fs ! 0 $ j\<bar> \<le> p - 1" using p1 
-      by (smt power_mono_iff zero_less_numeral)
+      by (smt (z3) power_mono_iff zero_less_numeral)
     hence pbnd: "2 * \<bar>fs ! 0 $ j\<bar> < p" by simp
     interpret pm: poly_mod_2 p
       by (unfold_locales, rule p1)

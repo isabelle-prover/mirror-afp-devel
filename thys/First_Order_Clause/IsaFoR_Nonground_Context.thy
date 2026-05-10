@@ -111,7 +111,7 @@ next
         ts: "ts = ts\<^sub>1 @ t # ts\<^sub>2" and
         ts\<^sub>1_\<gamma>: "map (\<lambda>t. t \<cdot> \<sigma>) ts\<^sub>1 = ts\<^sub>G\<^sub>1" and
         ts\<^sub>2_\<gamma>: "map (\<lambda>t. t \<cdot> \<sigma>) ts\<^sub>2 = ts\<^sub>G\<^sub>2"
-        by (smt append_eq_map_conv map_eq_Cons_D)
+        by (smt (z3) append_eq_map_conv map_eq_Cons_D)
 
       ultimately have t_\<gamma>: "t \<cdot> \<sigma> = c\<^sub>G'\<langle>t\<^sub>G\<rangle>"
         by simp

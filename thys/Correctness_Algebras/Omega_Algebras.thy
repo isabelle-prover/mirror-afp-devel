@@ -196,15 +196,15 @@ proof (rule order.antisym)
   also have 3: "... \<le> (x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1)"
     by (metis mult_isotone mult_left_one star.circ_reflexive sup_commute sup_ge2)
   finally have 4: "(x\<^sup>\<star> * y)\<^sup>\<omega> * bot \<le> x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1)"
-    by (smt mult_assoc mult_right_isotone omega_slide)
+    by (smt (z3) mult_assoc mult_right_isotone omega_slide)
   have "y * (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega> * bot \<le> y * (x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> y))\<^sup>\<star> * x\<^sup>\<star> * x\<^sup>\<omega> * bot * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot"
     using mult_isotone mult_left_sub_dist_sup_left mult_left_zero order.refl star_isotone sup_commute mult_assoc star_mult_omega by auto
   also have "... \<le> y * (x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> y))\<^sup>\<star> * (x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * y)\<^sup>\<omega> * bot"
-    by (smt mult_assoc mult_left_isotone mult_left_sub_dist_sup_left omega_slide)
+    by (smt (z3) mult_assoc mult_left_isotone mult_left_sub_dist_sup_left omega_slide)
   also have "... = y * (x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * y)\<^sup>\<omega> * bot"
     using mult_left_one mult_left_zero mult_right_dist_sup mult_assoc star_mult_omega by auto
   finally have "x\<^sup>\<star> * y * (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega> * bot \<le> x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1)"
-    using 3 by (smt mult_assoc mult_right_isotone omega_slide order_trans)
+    using 3 by (smt (z3) mult_assoc mult_right_isotone omega_slide order_trans)
   hence "(x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega> * bot \<le> x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1)"
     by (smt (verit, ccfv_threshold) sup_assoc sup_commute le_iff_sup mult_assoc mult_isotone mult_left_one mult_1_right mult_right_sub_dist_sup_left order_trans star.circ_loop_fixpoint star.circ_reflexive star.mult_zero_circ)
   hence "(x \<squnion> y)\<^sup>\<omega> * bot \<le> x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1)"
@@ -219,11 +219,11 @@ next
   have 7: "(y * x\<^sup>\<star>)\<^sup>\<star> \<le> (x \<squnion> y)\<^sup>\<star>"
     by (metis mult_left_one mult_right_sub_dist_sup_left star.circ_sup_1 star.circ_plus_one)
   hence "(y * x\<^sup>\<star>)\<^sup>\<star> * x\<^sup>\<omega> * bot \<le> (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
-    by (smt sup_assoc le_iff_sup mult_assoc mult_isotone mult_right_dist_sup omega_sub_dist)
+    by (smt (z3) sup_assoc le_iff_sup mult_assoc mult_isotone mult_right_dist_sup omega_sub_dist)
   hence "(x\<^sup>\<omega> * bot \<squnion> y * x\<^sup>\<star>)\<^sup>\<omega> * bot \<le> (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
-    using 6 by (smt sup_commute sup.bounded_iff mult_assoc mult_right_dist_sup mult_bot_add_omega omega_unfold omega_bot)
+    using 6 by (smt (z3) sup_commute sup.bounded_iff mult_assoc mult_right_dist_sup mult_bot_add_omega omega_unfold omega_bot)
   hence "(y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<le> y * x\<^sup>\<star> * (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
-    by (smt mult_assoc mult_left_one mult_left_zero mult_right_dist_sup mult_right_isotone omega_slide)
+    by (smt (z3) mult_assoc mult_left_one mult_left_zero mult_right_dist_sup mult_right_isotone omega_slide)
   also have "... \<le> (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
     using 7 by (metis mult_left_isotone order_refl star.circ_mult_upper_bound star_left_induct_mult_iff)
   finally have "(y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1) \<le> (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
@@ -231,7 +231,7 @@ next
   hence "(x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1) \<le> (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
     using 5 by (metis sup_commute mult_assoc star.circ_isotone star.circ_mult_upper_bound star.mult_zero_sup_circ star.mult_zero_circ star_involutive)
   thus "x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1) * (y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<star> * ((y * x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))\<^sup>\<omega> * bot \<squnion> 1) \<le> (x \<squnion> y)\<^sup>\<star> * ((x \<squnion> y)\<^sup>\<omega> * bot \<squnion> 1)"
-    by (smt sup_assoc sup_commute mult_assoc star.circ_mult_upper_bound star.circ_sub_dist star.mult_zero_sup_circ star.mult_zero_circ)
+    by (smt (z3) sup_assoc sup_commute mult_assoc star.circ_mult_upper_bound star.circ_sub_dist star.mult_zero_sup_circ star.mult_zero_circ)
 qed
 
 lemma star_omega_greatest:
@@ -299,21 +299,21 @@ proof -
   have 1: "z * x \<le> y\<^sup>\<omega> * bot \<squnion> y * y\<^sup>\<star> * z \<squnion> w"
     by (metis assms mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup omega_unfold)
   hence "(y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>) * x \<le> y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * (y\<^sup>\<omega> * bot \<squnion> y * y\<^sup>\<star> * z \<squnion> w) \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
-    by (smt sup_assoc sup_ge1 sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup star.circ_back_loop_fixpoint)
+    by (smt (z3) sup_assoc sup_ge1 sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup star.circ_back_loop_fixpoint)
   also have "... = y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * y * y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
-    by (smt sup_assoc sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup star.circ_back_loop_fixpoint star_mult_omega)
+    by (smt (z3) sup_assoc sup_ge2 le_iff_sup mult_assoc mult_left_dist_sup star.circ_back_loop_fixpoint star_mult_omega)
   also have "... \<le> y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
-    by (smt sup_commute sup_left_isotone mult_left_isotone star.circ_increasing star.circ_plus_same star.circ_transitive_equal)
+    by (smt (z3) sup_commute sup_left_isotone mult_left_isotone star.circ_increasing star.circ_plus_same star.circ_transitive_equal)
   finally have "z \<squnion> (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>) * x \<le> y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
     by (metis (no_types, lifting) le_supE le_supI star.circ_loop_fixpoint sup.cobounded1)
   hence 2: "z * x\<^sup>\<star> \<le> y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * z \<squnion> y\<^sup>\<star> * w * x\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star> * w * x\<^sup>\<star>"
     by (simp add: star_right_induct)
   have "z * x\<^sup>\<omega> * bot \<le> (y\<^sup>\<omega> * bot \<squnion> y * y\<^sup>\<star> * z \<squnion> w) * x\<^sup>\<omega> * bot"
-    using 1 by (smt sup_left_divisibility mult_assoc mult_right_sub_dist_sup_left omega_unfold)
+    using 1 by (smt (z3) sup_left_divisibility mult_assoc mult_right_sub_dist_sup_left omega_unfold)
   hence "z * x\<^sup>\<omega> * bot \<le> y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * (y\<^sup>\<omega> * bot \<squnion> w * x\<^sup>\<omega> * bot)"
-    by (smt sup_assoc sup_commute left_plus_omega mult_assoc mult_left_zero mult_right_dist_sup omega_induct star.left_plus_circ)
+    by (smt (z3) sup_assoc sup_commute left_plus_omega mult_assoc mult_left_zero mult_right_dist_sup omega_induct star.left_plus_circ)
   thus "z * (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) \<le> (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>) * (z \<squnion> w * (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>))"
-    using 2 by (smt sup_assoc sup_commute le_iff_sup mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup omega_unfold omega_bot star_mult_omega zero_right_mult_decreasing)
+    using 2 by (smt (z3) sup_assoc sup_commute le_iff_sup mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup omega_unfold omega_bot star_mult_omega zero_right_mult_decreasing)
 qed
 
 lemma omega_circ_simulate_left_plus:
@@ -321,13 +321,13 @@ lemma omega_circ_simulate_left_plus:
     shows "(x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * z \<le> (z \<squnion> (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * w) * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>)"
 proof -
   have "x * (z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>) = x * z * y\<^sup>\<omega> * bot \<squnion> x * z * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x * x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x * x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt mult_assoc mult_left_dist_sup omega_unfold)
+    by (smt (z3) mult_assoc mult_left_dist_sup omega_unfold)
   also have "... \<le> x * z * y\<^sup>\<omega> * bot \<squnion> x * z * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
     by (metis sup_mono sup_right_isotone mult_left_isotone star.left_plus_below_circ)
   also have "... \<le> (z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> \<squnion> w) * y\<^sup>\<omega> * bot \<squnion> (z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> \<squnion> w) * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
     by (metis assms sup_left_isotone mult_assoc mult_left_dist_sup mult_left_isotone)
   also have "... = z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> * y\<^sup>\<omega> * bot \<squnion> w * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> * y\<^sup>\<star> \<squnion> w * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
-    by (smt sup_assoc mult_assoc mult_left_zero mult_right_dist_sup)
+    by (smt (z3) sup_assoc mult_assoc mult_left_zero mult_right_dist_sup)
   also have "... = z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
     by (smt (verit, ccfv_threshold) sup_assoc sup_commute sup_idem mult_assoc mult_right_dist_sup star.circ_loop_fixpoint star.circ_transitive_equal star_mult_omega)
   finally have "x\<^sup>\<star> * z \<le> z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
@@ -335,7 +335,7 @@ proof -
   hence "(x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * z \<le> z * y\<^sup>\<omega> * bot \<squnion> z * y\<^sup>\<star> \<squnion> x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star> * w * y\<^sup>\<star>"
     by (smt (z3) sup.left_commute sup_commute sup_least sup_ge1 mult_assoc mult_left_zero mult_right_dist_sup)
   thus "(x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * z \<le> (z \<squnion> (x\<^sup>\<omega> * bot \<squnion> x\<^sup>\<star>) * w) * (y\<^sup>\<omega> * bot \<squnion> y\<^sup>\<star>)"
-    by (smt sup_assoc mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup)
+    by (smt (z3) sup_assoc mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup)
 qed
 
 lemma omega_translate:
@@ -356,7 +356,7 @@ end
 
 sublocale left_zero_omega_algebra < comb1: left_conway_semiring_1 where circ = "(\<lambda>x . x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))"
   apply unfold_locales
-  by (smt order.eq_iff mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup mult_1_right omega_slide star_slide)
+  by (smt (z3) order.eq_iff mult_assoc mult_left_dist_sup mult_left_zero mult_right_dist_sup mult_1_right omega_slide star_slide)
 
 sublocale left_zero_omega_algebra < comb0: itering where circ = "(\<lambda>x . x\<^sup>\<star> * (x\<^sup>\<omega> * bot \<squnion> 1))"
   apply unfold_locales

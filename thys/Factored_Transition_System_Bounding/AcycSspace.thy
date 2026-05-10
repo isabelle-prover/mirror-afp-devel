@@ -715,7 +715,7 @@ next
           by fastforce
         then have "length ?as' \<le> S vs lss PROB (fmrestrict_set vs s)"
           using b(1) A B C D drest_succ_proj_eq_drest_succ
-          by (smt Suc_eq_plus1 add_Suc dual_order.trans)
+          by (smt (z3) Suc_eq_plus1 add_Suc dual_order.trans)
       }
     }
     ultimately have ?case

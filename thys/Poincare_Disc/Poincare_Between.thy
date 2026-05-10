@@ -274,7 +274,7 @@ proof-
       by fastforce
     thus "rx * ry < 0" 
       using \<open>k < 0\<close> \<open>rx \<noteq> 0\<close> \<open>ry \<noteq> 0\<close>
-      by (smt divisors_zero mult_nonneg_nonpos mult_nonpos_nonpos zero_less_mult_pos2)
+      by (smt (z3) divisors_zero mult_nonneg_nonpos mult_nonpos_nonpos zero_less_mult_pos2)
   next
     assume "rx * ry < 0"
     hence "rx = (rx/ry)*ry" "rx / ry < 0"
@@ -332,11 +332,11 @@ next
   }
   hence "x\<^sup>2 * (x*y - 1) < 0"
     using assms
-    by (smt minus_mult_minus mult_le_cancel_left1)
+    by (smt (z3) minus_mult_minus mult_le_cancel_left1)
   moreover
   have "x * (y - x) > 0 \<longleftrightarrow> ?rhs"
     using \<open>x \<noteq> 0\<close> \<open>y \<noteq> 0\<close> \<open>x \<noteq> y\<close>
-    by (smt mult_le_0_iff)
+    by (smt (z3) mult_le_0_iff)
   ultimately
   have *: "Re (to_complex ?cr) < 0 \<longleftrightarrow> ?rhs"
     by (simp add: divide_less_0_iff)
@@ -426,7 +426,7 @@ next
         using arg_pi_iff[of x] arg_pi_iff[of v']
         using arg_0_iff[of x] arg_0_iff[of v']
         using * **
-        by (smt cmod_Re_le_iff to_complex_of_complex)+
+        by (smt (z3) cmod_Re_le_iff to_complex_of_complex)+
       have "-1 < Re v'" "Re v' < 1" "Re v' \<noteq> 0" "is_real v'"
         using \<open>v \<in> unit_disc\<close> ** \<open>is_real v'\<close>
         by (auto simp add: cmod_eq_Re complex_eq_if_Re_eq)
@@ -500,7 +500,7 @@ proof (cases "x = 0 \<or> y = 0 \<or> z = 0")
       case True
       thus ?thesis
         using poincare_between_x_axis_0uv assms poincare_between_rev
-        by (smt norm_of_real of_complex_zero of_real_0 poincare_between_nonstrict(2) unit_disc_iff_cmod_lt_1)
+        by (smt (z3) norm_of_real of_complex_zero of_real_0 poincare_between_nonstrict(2) unit_disc_iff_cmod_lt_1)
     next
       case False
       have "y = 0"
@@ -513,7 +513,7 @@ proof (cases "x = 0 \<or> y = 0 \<or> z = 0")
       moreover
       have "x * z < 0 \<longleftrightarrow> ?rhs"
         using True \<open>x \<noteq> 0\<close> \<open>z \<noteq> 0\<close>
-        by (smt zero_le_mult_iff)
+        by (smt (z3) zero_le_mult_iff)
       ultimately
       show ?thesis
         using \<open>y = 0\<close>
@@ -547,7 +547,7 @@ next
 
     have "cor y * cor x \<noteq> 1"
       using assms
-      by (smt minus_mult_minus mult_less_cancel_left2 mult_less_cancel_right2 of_real_1 of_real_eq_iff of_real_mult)
+      by (smt (z3) minus_mult_minus mult_less_cancel_left2 mult_less_cancel_right2 of_real_1 of_real_eq_iff of_real_mult)
   
     let ?cr = "cross_ratio ?x ?y ?z (inversion ?y)"
     have "Re (to_complex ?cr) = (x - y) * (z*y - 1)/ ((x*y - 1)*(z - y))"
@@ -567,18 +567,18 @@ next
     moreover
     have "(x*y - 1) < 0"
       using assms
-      by (smt minus_mult_minus mult_less_cancel_right2 zero_less_mult_iff)
+      by (smt (z3) minus_mult_minus mult_less_cancel_right2 zero_less_mult_iff)
     moreover
     have "(z*y - 1) < 0"
       using assms
-      by (smt minus_mult_minus mult_less_cancel_right2 zero_less_mult_iff)
+      by (smt (z3) minus_mult_minus mult_less_cancel_right2 zero_less_mult_iff)
     moreover
     have "(x - y) / (z - y) < 0 \<longleftrightarrow> ?rhs"
       using \<open>y \<noteq> x\<close> \<open>z \<noteq> x\<close> False \<open>\<not> (x = 0 \<or> y = 0 \<or> z = 0)\<close>
-      by (smt divide_less_cancel divide_nonneg_nonpos divide_nonneg_pos divide_nonpos_nonneg divide_nonpos_nonpos)
+      by (smt (z3) divide_less_cancel divide_nonneg_nonpos divide_nonneg_pos divide_nonpos_nonneg divide_nonpos_nonpos)
     ultimately
     have *: "Re (to_complex ?cr) < 0 \<longleftrightarrow> ?rhs"
-      by (smt algebra_split_simps(24) minus_divide_left zero_less_divide_iff zero_less_mult_iff)
+      by (smt (z3) algebra_split_simps(24) minus_divide_left zero_less_divide_iff zero_less_mult_iff)
     show ?thesis
     proof
       assume ?lhs
@@ -835,7 +835,7 @@ next
           using poincare_between_x_axis_uvw[of "Re m'" "Re x" "Re n'"]
           using \<open>is_real n'\<close> \<open>is_real m'\<close> \<open>n \<in> unit_disc\<close> \<open>n = of_complex n'\<close>
           using xx \<open>m = of_complex m'\<close> \<open>m \<in> unit_disc\<close>
-          by (smt complex_of_real_Re norm_of_real poincare_between_def unit_disc_iff_cmod_lt_1)
+          by (smt (z3) complex_of_real_Re norm_of_real poincare_between_def unit_disc_iff_cmod_lt_1)
 
         thus ?thesis
           using \<open>n = of_complex n'\<close> \<open>m = of_complex m'\<close>
@@ -912,9 +912,9 @@ proof-
       by (simp add: field_simps) (simp add: power2_eq_square field_simps)
     hence "sqrt ((Im v')\<^sup>2 + (Re v')\<^sup>2) = \<bar>Re v'\<bar>"
       using \<open>Re u' \<noteq> 0\<close> \<open>v' \<noteq> 0\<close>
-      by (smt complex_neq_0 mult.commute mult_cancel_right mult_minus_left real_sqrt_gt_0_iff)
+      by (smt (z3) complex_neq_0 mult.commute mult_cancel_right mult_minus_left real_sqrt_gt_0_iff)
     hence "Im v' = 0"
-      by (smt Im_eq_0 norm_complex_def)
+      by (smt (z3) Im_eq_0 norm_complex_def)
     moreover
     hence "Re u' * Re v' = - \<bar>Re u'\<bar> * \<bar>Re v'\<bar>"
       using *
@@ -934,7 +934,7 @@ proof-
       case True
       hence "Re v' < 0"
         using \<open>Re u' * Re v' < 0\<close>
-        by (smt zero_le_mult_iff)
+        by (smt (z3) zero_le_mult_iff)
       show ?thesis
         using disc \<open>is_real u'\<close> \<open>is_real v'\<close>
         using \<open>Re u' > 0\<close> \<open>Re v' < 0\<close>
@@ -947,7 +947,7 @@ proof-
         by simp
       hence "Re v' > 0"
         using \<open>Re u' * Re v' < 0\<close>
-        by (smt zero_le_mult_iff)
+        by (smt (z3) zero_le_mult_iff)
       show ?thesis
         using disc \<open>is_real u'\<close> \<open>is_real v'\<close>
         using \<open>Re u' < 0\<close> \<open>Re v' > 0\<close>
@@ -1003,7 +1003,7 @@ proof-
         case True
         hence "Re v' < 0"
           using *
-          by (smt mult_nonneg_nonneg)
+          by (smt (z3) mult_nonneg_nonneg)
         show ?thesis
           using 1 2 3 \<open>Re u' > 0\<close> \<open>Re v' < 0\<close>
           using \<open>Re u' < 1\<close> \<open>Re u' > -1\<close> \<open>is_real u'\<close>
@@ -1015,7 +1015,7 @@ proof-
         case False
         hence "Re v' > 0" "Re u' < 0"
           using *
-          by (smt zero_le_mult_iff)+
+          by (smt (z3) zero_le_mult_iff)+
         show ?thesis
           using 1 2 3 \<open>Re u' < 0\<close> \<open>Re v' > 0\<close>
           using \<open>Re u' < 1\<close> \<open>Re u' > -1\<close> \<open>is_real u'\<close>
@@ -1050,7 +1050,7 @@ proof-
       ultimately
       show "Re u' * Re v' < 0"
         using \<open>Re u' \<noteq> 0\<close> \<open>Re v' \<noteq> 0\<close>
-        by (smt divisors_zero mult_le_0_iff)
+        by (smt (z3) divisors_zero mult_le_0_iff)
     qed
   qed
   thus ?thesis

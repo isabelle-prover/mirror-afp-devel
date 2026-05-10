@@ -163,7 +163,7 @@ lemma Inf_int_in:
   fixes S :: "int set"
   assumes "S \<noteq> {}" "bdd_below S"
   shows "Inf S \<in> S"
-  using assms unfolding Inf_int_def by (smt Sup_int_in bdd_above_uminus image_iff image_is_empty)
+  using assms unfolding Inf_int_def by (smt (z3) Sup_int_in bdd_above_uminus image_iff image_is_empty)
 
 
 lemma finite_setcompr_eq_image: "finite {f x |x. P x} \<longleftrightarrow> finite (f ` {x. P x})"
@@ -221,7 +221,7 @@ lemma sum_list_not_infI:
   using that
   apply (induction xs)
    apply (simp add: zero_extended_def)+
-  by (smt less_extended_simps(2) plus_extended.elims)
+  by (smt (z3) less_extended_simps(2) plus_extended.elims)
 
 lemma sum_list_not_minfI:
   "sum_list xs > -\<infinity>" if "\<forall> x \<in> set xs. x > -\<infinity>" for xs :: "int extended list"

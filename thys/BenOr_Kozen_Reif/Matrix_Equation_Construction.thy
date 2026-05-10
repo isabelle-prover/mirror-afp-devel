@@ -261,7 +261,7 @@ lemma row_mat_of_rows_list:
   assumes "list_all (\<lambda>r. length r = nc) rs"
   assumes "i < length rs"
   shows "row (mat_of_rows_list nc rs) i = vec_of_list (nth rs i)"
-  by (smt assms(1) assms(2) dim_col_mat(1) dim_vec_of_list eq_vecI index_row(2) index_vec list_all_length mat_of_rows_list_def row_mat split_conv vec_of_list_index)
+  by (smt (z3) assms(1) assms(2) dim_col_mat(1) dim_vec_of_list eq_vecI index_row(2) index_vec list_all_length mat_of_rows_list_def row_mat split_conv vec_of_list_index)
 
 
 lemma mult_mat_vec_of_list:
@@ -272,7 +272,7 @@ lemma mult_mat_vec_of_list:
   unfolding mult_mat_vec_def
   using row_mat_of_rows_list assms 
   apply auto
-  by (smt dim_row_mat(1) dim_vec dim_vec_of_list eq_vecI index_map_vec(1) index_map_vec(2) index_vec list_all_length mat_of_rows_list_def row_mat_of_rows_list vec_of_list_index)
+  by (smt (z3) dim_row_mat(1) dim_vec dim_vec_of_list eq_vecI index_map_vec(1) index_map_vec(2) index_vec list_all_length mat_of_rows_list_def row_mat_of_rows_list vec_of_list_index)
 
 lemma mtx_row_length:
   "list_all (\<lambda>r. length r = length signs) (map (mtx_row signs) ls)"
@@ -840,7 +840,7 @@ lemma consistent_signs_at_roots_eq:
   using assms poly_roots_finite apply blast
   unfolding sgn_vec_def sgn_def signs_at_def squash_def o_def
   using roots_def apply auto[1]
-  by (smt Collect_cong assms image_iff poly_roots_finite roots_def sorted_list_of_set(1))
+  by (smt (z3) Collect_cong assms image_iff poly_roots_finite roots_def sorted_list_of_set(1))
 
 abbreviation w_vec:: "real poly \<Rightarrow> real poly list \<Rightarrow> rat list list  \<Rightarrow> rat vec"
   where "w_vec \<equiv> construct_lhs_vector"

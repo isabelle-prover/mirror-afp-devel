@@ -46,7 +46,7 @@ lemma "\<Turnstile>\<^sup>d (\<diamond>\<^sup>d(\<box>\<^sup>d \<phi>)) \<supset
 
 \<comment>\<open>Implied axiom schemata in S5\<close>
 lemma KB: "symmetric R \<longrightarrow> (\<forall>\<phi> \<psi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d (\<diamond>\<^sup>d(\<box>\<^sup>d\<phi>)) \<supset>\<^sup>d  \<box>\<^sup>d(\<diamond>\<^sup>d\<phi>))" by auto
-lemma K4B: "symmetric R \<and> transitive R \<longrightarrow> (\<forall>\<phi> \<psi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<box>\<^sup>d( \<box>\<^sup>d\<phi> \<supset>\<^sup>d  \<box>\<^sup>d\<psi>) \<or>\<^sup>d \<box>\<^sup>d( \<box>\<^sup>d\<psi> \<supset>\<^sup>d  \<box>\<^sup>d\<phi>))" by (smt OrD_def RelativeTruthD.simps)
+lemma K4B: "symmetric R \<and> transitive R \<longrightarrow> (\<forall>\<phi> \<psi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>d \<box>\<^sup>d( \<box>\<^sup>d\<phi> \<supset>\<^sup>d  \<box>\<^sup>d\<psi>) \<or>\<^sup>d \<box>\<^sup>d( \<box>\<^sup>d\<psi> \<supset>\<^sup>d  \<box>\<^sup>d\<phi>))" by (smt (z3) OrD_def RelativeTruthD.simps)
 end
 
 

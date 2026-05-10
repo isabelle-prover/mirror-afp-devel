@@ -135,11 +135,11 @@ proof-
       then have "[?h = q*q + x * y + q - (x * y + x * (q - b) + (q - r)) mod q] (mod q)"  
       proof-
         have "[x * y + q - (x * y + x * (q - b) + (q - r)) mod q = q*q + x * y + q - (x * y + x * (q - b) + (q - r)) mod q] (mod q)"
-          by (smt qq_cong  add.assoc cong_diff_nat cong_def le_add2 le_trans mod_le_divisor q_gt_0)
+          by (smt (z3) qq_cong  add.assoc cong_diff_nat cong_def le_add2 le_trans mod_le_divisor q_gt_0)
         then show ?thesis using cong_trans no_qq by blast
       qed
       then have mod: "[?h = q + q*q + x * y + q - (x * y + x * (q - b) + (q - r)) mod q] (mod q)"  
-        by (smt Nat.add_diff_assoc cong_def add.assoc add.commute le_add2 le_trans mod_add_self2 mod_le_divisor q_gt_0)
+        by (smt (z3) Nat.add_diff_assoc cong_def add.assoc add.commute le_add2 le_trans mod_add_self2 mod_le_divisor q_gt_0)
       then have "[?h = q + q*q + x * y + q - (x * y + x * (q - b) + (q - r))] (mod q)"
       proof-
         have 1: "q \<ge> q - b" using assms by simp 
@@ -188,7 +188,7 @@ proof-
             by linarith
           then have 2: "q + q*q + q +  x*b - (q - r) > 0" by simp
           then show ?thesis 
-            by (smt 1 2 Nat.add_diff_assoc2 \<open>x * q < q * q\<close> add_cancel_left_left add_diff_inverse_nat 
+            by (smt (z3) 1 2 Nat.add_diff_assoc2 \<open>x * q < q * q\<close> add_cancel_left_left add_diff_inverse_nat 
                 le_add1 le_add2 le_trans less_imp_add_positive less_numeral_extra(3) minus_mod 
                 minus_q_mult_cancel mod_if mult.commute q_gt_0)
         qed
@@ -210,11 +210,11 @@ proof-
       have "[?h =  (x + a) mod q * b + q - (a * b + (q - r)) mod q] (mod q)" 
         by (simp add: q_gt_0  assms(1) cong_def)
       then have "[?h = (x + a) * b + q - (a * b + (q - r)) mod q] (mod q)" 
-        by (smt Nat.add_diff_assoc cong_def mod_add_cong mod_le_divisor mod_mult_left_eq q_gt_0 assms)
+        by (smt (z3) Nat.add_diff_assoc cong_def mod_add_cong mod_le_divisor mod_mult_left_eq q_gt_0 assms)
       then have "[?h = x*b + a*b + q - (a * b + (q - r)) mod q] (mod q)" 
         by(metis distrib_right) 
       then have mod: "[?h = q + x*b + a*b + q - (a * b + (q - r)) mod q] (mod q)" 
-        by (smt Nat.add_diff_assoc cong_def add.assoc add.commute le_add2 le_trans mod_add_self2 mod_le_divisor q_gt_0)
+        by (smt (z3) Nat.add_diff_assoc cong_def add.assoc add.commute le_add2 le_trans mod_add_self2 mod_le_divisor q_gt_0)
       then have "[?h =  q + x*b + a*b + q - (a * b + (q - r))] (mod q)" using  q_cong assms(1) 
       proof-
         have ge: "q + x*b + a*b + q  > (a * b + (q - r))" using assms by simp
@@ -321,7 +321,7 @@ proof-
       using b by (simp add: algebra_simps)
         (metis add_diff_inverse_nat diff_diff_left diff_mult_distrib2 less_imp_add_positive mult.commute not_add_less1 zero_less_diff)
     then have s1_xb: "[s1 + x*b = q + x*y + x*q + (q - r)] (mod q)" 
-      by (smt mod_add_cong mod_add_self1 cong_def)
+      by (smt (z3) mod_add_cong mod_add_self1 cong_def)
     then have "[x*b = q + x*y + x*q + (q - r) - s1] (mod q)"
     proof-
       have "q + x*y + x*q + (q - r) - s1 > 0" using s1_le_q by simp
@@ -331,7 +331,7 @@ proof-
     then have "[x*b = x*y + x*q + (q - r) + q - s1] (mod q)" 
       by (metis add.assoc add.commute)
     then have "[x*b = x*y + (q - r) + q - s1] (mod q)" 
-      by (smt Nat.add_diff_assoc cong_def less_imp_le_nat mod_mult_self1 s1_le_q semiring_normalization_rules(23))
+      by (smt (z3) Nat.add_diff_assoc cong_def less_imp_le_nat mod_mult_self1 s1_le_q semiring_normalization_rules(23))
     then have "(x*b) mod q = (x*y  + (q - r) + q - s1) mod q" 
       by(simp add: cong_def) 
     then have "(x*b) mod q = (x*y  + (q - r) + (q - s1)) mod q" 
@@ -351,7 +351,7 @@ proof-
   then have b:"[d2 = q + q + e2*b + q*b - x*b + (q - r)] (mod q)" 
   proof-
     have "[e2*b + q*b - x*b + (q - r) = q + q + e2*b + q*b - x*b + (q - r)] (mod q)"
-      by (smt assms Nat.add_diff_assoc add.commute cong_def less_imp_le_nat mod_add_self2 
+      by (smt (z3) assms Nat.add_diff_assoc add.commute cong_def less_imp_le_nat mod_add_self2 
           mult.commute nat_mult_le_cancel_disj semiring_normalization_rules(23))
     then show ?thesis using cong_trans a by blast
   qed
@@ -395,11 +395,11 @@ proof-
     then show ?thesis using d cong_trans by simp
   qed
   then have "[d2 = q + q + e2*b - s2] (mod q)" 
-    by (smt Nat.add_diff_assoc2 cong_def less_imp_le_nat mod_mult_self1 mult.commute s2_le_q semiring_normalization_rules(23) trans_less_add2)
+    by (smt (z3) Nat.add_diff_assoc2 cong_def less_imp_le_nat mod_mult_self1 mult.commute s2_le_q semiring_normalization_rules(23) trans_less_add2)
   then have "[d2 = q + e2*b + q - s2] (mod q)" 
     by(simp add: add.commute add.assoc) 
   then have "[d2 = e2*b + q - s2] (mod q)" 
-    by (smt Nat.add_diff_assoc2 add.commute cong_def less_imp_le_nat mod_add_self2 s2_le_q trans_less_add2)
+    by (smt (z3) Nat.add_diff_assoc2 add.commute cong_def less_imp_le_nat mod_add_self2 s2_le_q trans_less_add2)
   then have "[d2 = e2*b + (q - s2)] (mod q)"
     by (simp add: less_imp_le_nat s2_le_q) 
   then show ?thesis by(simp add: cong_def d2)
@@ -631,7 +631,7 @@ proof-
       have b: "(q*q + q*q + q - (x*y + x*(q - b) + (q - r))) > 0" 
         using 1 qb' by simp
       then show ?thesis using a b mod_minus[of "x*y + x*q" "x*b" "q*q + q*q + q" "x*y + x*(q - b) + (q - r)"]
-        by (smt add.left_neutral cong_def gr0I minus_mod zero_less_diff)
+        by (smt (z3) add.left_neutral cong_def gr0I minus_mod zero_less_diff)
     qed
     then show ?thesis using b by simp
   qed
@@ -653,7 +653,7 @@ proof-
       by (simp add: mult_strict_mono q_gt_0 x y)
     have b: "q*q + q*q + q  - x*y - x*(q - b) - (q - r) > 0" using 1 qb' by simp
     then show ?thesis using b d 
-      by (smt Nat.add_diff_assoc add.assoc diff_diff_left less_imp_le_nat zero_less_diff)
+      by (smt (z3) Nat.add_diff_assoc add.assoc diff_diff_left less_imp_le_nat zero_less_diff)
   qed
   then have "?rhs = (x*q - x*b + q*q + q*q + q - x*(q - b) - (q - r)) mod q" 
   proof-

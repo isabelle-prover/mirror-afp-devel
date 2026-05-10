@@ -261,7 +261,7 @@ proof (rule cauchy_filter_metricI)
   have "eventually P' (filtermap f F)"
     unfolding eventually_filtermap P'_def 
     using evP
-    by (smt eventually_mono) 
+    by (smt (z3) eventually_mono) 
   moreover have "P' x \<and> P' y \<longrightarrow> dist x y < e" for x y
     unfolding P'_def using dist by metis
   ultimately show "\<exists>P. eventually P (filtermap f F) \<and> (\<forall>x y. P x \<and> P y \<longrightarrow> dist x y < e)"

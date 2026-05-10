@@ -168,7 +168,7 @@ lemma distinct_fresh_rename_idns: "finite G \<Longrightarrow> distinct (fresh_re
 lemma fresh_fresh_rename_idns: "finite G \<Longrightarrow> \<forall>nm \<in> set (fresh_rename_idns n B insts G) . 
   nm \<notin> (fst ` (fv B \<union> (\<Union>t \<in> snd ` set insts . (fv t)) \<union> (fst ` set insts)) \<union> G)"
   using distinct_fresh_rename_ns map_Pair_zip_replicate_conv map_Pair_zip_replicate_conv
-  by (smt fresh_fresh_rename_ns fst_conv imageE image_eqI list.set_map)
+  by (smt (z3) fresh_fresh_rename_ns fst_conv imageE image_eqI list.set_map)
 
 lemma length_fresh_rename_idns: "finite G \<Longrightarrow>  length (fresh_rename_idns n B insts G) = n"
   by (metis length_fresh_rename_ns)

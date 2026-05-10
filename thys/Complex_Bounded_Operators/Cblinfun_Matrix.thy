@@ -391,7 +391,7 @@ proof-
             basis_enum_of_vec_unit_vec canonical_basis_length_ell2 index_unit_vec(3) j_bound
             list_of_vec_index list_vec nth_map r1 vec_of_basis_enum_def)
       hence "vec_of_basis_enum ((canonical_basis::'a ell2 list) ! (enum_idx i)) $ j = 0"
-        unfolding vec_of_basis_enum_def by (smt j_bound nth_map vec_of_list_index)
+        unfolding vec_of_basis_enum_def by (smt (z3) j_bound nth_map vec_of_list_index)
       hence "vec_of_basis_enum ((canonical_basis::'a ell2 list) ! (enum_idx i)) $ j = 0"
         by auto
       hence "vec_of_basis_enum (ket i) $ j = 0"
@@ -835,7 +835,7 @@ proof-
     by simp
   thus ?thesis
     using M1 M2
-    by (smt add_uminus_minus_mat assoc_add_mat comm_add_mat left_add_zero_mat minus_r_inv_mat
+    by (smt (z3) add_uminus_minus_mat assoc_add_mat comm_add_mat left_add_zero_mat minus_r_inv_mat
         uminus_carrier_mat)
 qed
 
@@ -849,7 +849,7 @@ lemma cblinfun_of_mat_uminus:
     and "nB \<equiv> length (canonical_basis :: 'b::{basis_enum,complex_normed_vector} list)"
   assumes "M \<in> carrier_mat nB nA"
   shows "(cblinfun_of_mat (-M) :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) = - cblinfun_of_mat M"
-  by (smt assms add.group_axioms add.right_neutral add_minus_cancel add_uminus_minus_mat
+  by (smt (z3) assms add.group_axioms add.right_neutral add_minus_cancel add_uminus_minus_mat
       cblinfun_of_mat_plus group.inverse_inverse mat_of_cblinfun_inverse mat_of_cblinfun_zero
       minus_r_inv_mat uminus_carrier_mat)
 
@@ -1554,10 +1554,10 @@ proof-
       and "gs = gram_schmidt0 d (map vec_of_basis_enum S)"
   interpret complex_vec_space d.
   have gs_dim: "x \<in> set gs \<Longrightarrow> dim_vec x = d" for x
-    by (smt carrier_vecD carrier_vec_dim_vec d_def dim_vec_of_basis_enum' ex_map_conv gram_schmidt0_result(1) gs_def subset_code(1))
+    by (smt (z3) carrier_vecD carrier_vec_dim_vec d_def dim_vec_of_basis_enum' ex_map_conv gram_schmidt0_result(1) gs_def subset_code(1))
   have ortho_gs: "is_ortho_set (set (map basis_enum_of_vec gs :: 'a list))"
     apply (subst corthogonal_vec_of_basis_enum[THEN iffD1], auto)
-    by (smt carrier_dim_vec cof_vec_space.gram_schmidt0_result(1) d_def dim_vec_of_basis_enum' gram_schmidt0_result(3) gs_def imageE map_idI map_map o_apply set_map subset_code(1) basis_enum_of_vec_inverse)
+    by (smt (z3) carrier_dim_vec cof_vec_space.gram_schmidt0_result(1) d_def dim_vec_of_basis_enum' gram_schmidt0_result(3) gs_def imageE map_idI map_map o_apply set_map subset_code(1) basis_enum_of_vec_inverse)
   have distinct_gs: "distinct (map basis_enum_of_vec gs :: 'a list)"
     by (metis (mono_tags, opaque_lifting) carrier_vec_dim_vec cof_vec_space.gram_schmidt0_result(2) d_def dim_vec_of_basis_enum' distinct_map gs_def gs_dim image_iff inj_on_inverseI set_map subsetI basis_enum_of_vec_inverse)
 

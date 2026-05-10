@@ -35,7 +35,7 @@ proof -
 
   thus ?thesis using S_unique add_if
     apply (auto simp add: sum_radd.simps add_if S_def cs_def)
-    by (smt S_def sum.cong)
+    by (smt (z3) S_def sum.cong)
 qed
 
 lemma single_step_sub:

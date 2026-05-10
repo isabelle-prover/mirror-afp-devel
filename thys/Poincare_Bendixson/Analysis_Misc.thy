@@ -31,7 +31,7 @@ proof -
     using t u v
     apply auto
      apply (metis (full_types) diff_0_right diff_left_mono linear mult_left_le_one_le mult_nonneg_nonpos order.trans)
-    by (smt mult_left_le_one_le mult_nonneg_nonneg vector_space_over_itself.scale_right_diff_distrib)
+    by (smt (z3) mult_left_le_one_le mult_nonneg_nonneg vector_space_over_itself.scale_right_diff_distrib)
   finally show ?thesis .
 qed
 
@@ -510,7 +510,7 @@ proof (induction n)
 next
   case (Suc n)
   then show ?case
-    by (smt frac_less2 of_nat_0_less_iff of_nat_less_two_power zero_less_Suc)
+    by (smt (z3) frac_less2 of_nat_0_less_iff of_nat_less_two_power zero_less_Suc)
 qed
 
 lemma INF_bounded_imp_convergent_seq:
@@ -694,7 +694,7 @@ proof (rule metric_LIMSEQ_I)
   then have "norm (s n) < e" if "n \<ge> N" for n
   proof -
     have "k / b^n \<le> k / b^N"
-      by (smt assms(1) assms(2) frac_le leD power_less_imp_less_exp that zero_less_power)
+      by (smt (z3) assms(1) assms(2) frac_le leD power_less_imp_less_exp that zero_less_power)
     also have " ... < e" using N
       by (metis \<open>0 < e\<close> assms(2) less_trans mult.commute pos_divide_less_eq zero_less_one zero_less_power)
     finally show ?thesis
@@ -712,7 +712,7 @@ lemma filterlim_apply_filtermap:
 lemma eventually_at_right_field_le:
   "eventually P (at_right x) \<longleftrightarrow> (\<exists>b>x. \<forall>y>x. y \<le> b \<longrightarrow> P y)"
   for x :: "'a::{linordered_field, linorder_topology}"
-  by (smt dense eventually_at_right_field le_less_trans less_le_not_le order.strict_trans1)
+  by (smt (z3) dense eventually_at_right_field le_less_trans less_le_not_le order.strict_trans1)
 
 subsection \<open>indexing euclidean space with natural numbers\<close>
 
@@ -1118,12 +1118,12 @@ proof -
     by (metis add.commute add_diff_cancel_right diff_minus_eq_add scaleR_collapse scaleR_left.minus)
   also have "... = (-v) *\<^sub>R ((1 - u) *\<^sub>R a + u *\<^sub>R b)  + v *\<^sub>R b" using u by auto
   also have "... = v *\<^sub>R ((1-u)*\<^sub>R b - (1-u)*\<^sub>R a )"
-    by (smt add_diff_cancel diff_diff_add diff_minus_eq_add minus_diff_eq scaleR_collapse scale_minus_left scale_right_diff_distrib)
+    by (smt (z3) add_diff_cancel diff_diff_add diff_minus_eq_add minus_diff_eq scaleR_collapse scale_minus_left scale_right_diff_distrib)
   finally have x2x1:"x2-x1 = (v *(1-u)) *\<^sub>R (b - a)"
     by (metis scaleR_scaleR scale_right_diff_distrib)
   have "v * (1-u) > 0"  using u(2) v(1) by simp
   then have "(x2-x1)/\<^sub>R (v * (1-u)) = (b-a)" unfolding x2x1
-    by (smt field_class.field_inverse scaleR_one scaleR_scaleR) 
+    by (smt (z3) field_class.field_inverse scaleR_one scaleR_scaleR) 
   thus ?thesis
     using \<open>0 < v * (1 - u)\<close> positive_imp_inverse_positive that by fastforce
 qed

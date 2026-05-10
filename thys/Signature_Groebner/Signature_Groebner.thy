@@ -3902,7 +3902,7 @@ proof -
         finally have "?Q \<subseteq> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
         moreover from \<open>?Q \<subseteq> range seq\<close> \<open>0 \<notin> range seq\<close> have "0 \<notin> ?Q" by blast
         ultimately have Q_sub: "pp_of_term ` lt ` ?Q \<subseteq> dgrad_set d (dgrad_max d)"
-          unfolding image_image by (smt CollectI dgrad_p_setD_lp dgrad_set_def image_subset_iff subsetCE)
+          unfolding image_image by (smt (z3) CollectI dgrad_p_setD_lp dgrad_set_def image_subset_iff subsetCE)
         have *: "\<exists>g\<in>seq ` {0..<k}. is_sig_red (=) (=) {g} (seq k)" if "k \<notin> min_set" for k
           proof -
           from that obtain j where "j < k" and a: "lt (seq j) adds\<^sub>t lt (seq k)"

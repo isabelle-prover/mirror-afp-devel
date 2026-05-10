@@ -163,7 +163,7 @@ lemma diamond_demodalisation_3:
   "|x>y \<le> d(z) \<longleftrightarrow> x * d(y) \<le> d(z) * x \<squnion> Z"
   apply (rule iffI)
   apply (smt (verit) sup_commute sup_right_isotone d_below_one d_restrict diamond_def diamond_x_und mult_left_isotone mult_right_isotone mult_1_right order_trans)
-  by (smt sup_commute sup_bot_left d_Z d_commutative d_dist_sup d_idempotent d_mult_sub d_plus_left_upper_bound diamond_d_y diamond_def diamond_x_und le_iff_sup order_trans)
+  by (smt (z3) sup_commute sup_bot_left d_Z d_commutative d_dist_sup d_idempotent d_mult_sub d_plus_left_upper_bound diamond_d_y diamond_def diamond_x_und le_iff_sup order_trans)
 
 text \<open>Theorem 46.6\<close>
 
@@ -351,7 +351,7 @@ text \<open>Theorem 47.7\<close>
 
 lemma box_right_submult_d_d:
   "|x](d(y) * d(z)) \<le> |x]d(y) * |x]d(z)"
-  by (smt a_antitone a_dist_sup a_export_d box_diamond d_a_closed diamond_def mult_left_sub_dist_sup)
+  by (smt (z3) a_antitone a_dist_sup a_export_d box_diamond d_a_closed diamond_def mult_left_sub_dist_sup)
 
 lemma box_right_submult_a_d:
   "|x](a(y) * d(z)) \<le> |x]a(y) * |x]d(z)"
@@ -511,7 +511,7 @@ lemma diamond_split:
 
 lemma box_import_shunting:
   "-p * -q \<le> |x](-r) \<longleftrightarrow> -q \<le> |-p * x](-r)"
-  by (smt box_demodalisation_2 mult_assoc sub_comm sub_mult_closed)
+  by (smt (z3) box_demodalisation_2 mult_assoc sub_comm sub_mult_closed)
 
 proposition box_dist_mult: "|x](d(y) * d(z)) = |x](d(y)) * |x](d(z))" nitpick [expect=genuine,card=6] oops
 proposition box_demodalisation_3: "d(x) \<le> |y]d(z) \<longrightarrow> d(x) * y \<le> y * d(z) \<squnion> Z" nitpick [expect=genuine,card=6] oops

@@ -71,7 +71,7 @@ proof (simp, transfer, transfer)
   hence "(Re A = Re D \<and> cmod A * cmod A < cmod B * cmod B) =
          (Re A * Re D < Re B * Re B + Im B * Im B \<and> (Re D = Re A \<or> Re A * Re D = Re B * Re B + Im B * Im B))"
     using *
-    by (smt cmod_power2 power2_eq_square zero_power2)+
+    by (smt (z3) cmod_power2 power2_eq_square zero_power2)+
   thus "is_poincare_line_cmat H \<longleftrightarrow>
          circline_type_cmat H = - 1 \<and> cos_angle_cmat (of_circline_cmat H) unit_circle_cmat = 0"
     using * **

@@ -2530,7 +2530,7 @@ proof -
     at most $3/2\cdot C/\lambda$.\<close>
     case 4
     then have C: "C > 0" "lambda \<ge> 1" using quasi_isometry_onD[OF assms(1)] by auto
-    have "a < b" using 4 C by (smt divide_pos_pos)
+    have "a < b" using 4 C by (smt (z3) divide_pos_pos)
 
     have [mono_intros]: "1/lambda \<le> lambda" using C by (simp add: divide_simps mult_ge1_powers(1))
     define N where "N = floor((b-a)/(C/lambda)) - 2"

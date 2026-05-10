@@ -337,7 +337,7 @@ lemma whileT_rule''':
             subgoal 
               by (metis diff_is_0_eq' leI less_option_Some option.simps(3) zero_enat_def) 
             subgoal 
-              by (smt Nat.add_diff_assoc enat_ile enat_ord_code(1) idiff_enat_enat leI le_add_diff_inverse2 nat_le_iff_add option.simps(3)) 
+              by (smt (z3) Nat.add_diff_assoc enat_ile enat_ord_code(1) idiff_enat_enat leI le_add_diff_inverse2 nat_le_iff_add option.simps(3)) 
             subgoal 
               using dual_order.trans by blast 
           done

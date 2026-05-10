@@ -2576,9 +2576,9 @@ lemma mk_upds_mk_updsi_transfer[transfer_rule]:
      apply (rule mk_upds_mk_updsi)
        apply assumption
     subgoal
-      by (smt case_prodI2 case_prod_conv eq_onp_def list_all2_same valid_upd_def)
+      by (smt (z3) case_prodI2 case_prod_conv eq_onp_def list_all2_same valid_upd_def)
     subgoal
-      by (smt case_prodE case_prod_conv eq_onp_def list_all2_same valid_upd_def)
+      by (smt (z3) case_prodE case_prod_conv eq_onp_def list_all2_same valid_upd_def)
     subgoal
       by (metis eq_onp_to_eq list.rel_eq_onp)
     done
@@ -2974,11 +2974,11 @@ proof -
       ===> list_all2 (list_all2 (eq_onp (\<lambda>x. x < n_ps) \<times>\<^sub>R R)) ===> (=)) (=) (=)"
     apply (simp_all add: eq_onp_def)
     subgoal
-      by (smt assms list.rel_eq list_all2_mono rel_funI)
+      by (smt (z3) assms list.rel_eq list_all2_mono rel_funI)
     subgoal
-      by (smt assms fun.rel_eq list_all2_eq list_all2_mono rel_fun_mono rel_prod.cases)
+      by (smt (z3) assms fun.rel_eq list_all2_eq list_all2_mono rel_fun_mono rel_prod.cases)
     subgoal
-      by (smt assms fun.rel_eq list_all2_eq list_all2_mono rel_fun_mono rel_prod.cases)
+      by (smt (z3) assms fun.rel_eq list_all2_eq list_all2_mono rel_fun_mono rel_prod.cases)
     done
   show ?thesis
     supply [transfer_rule] = upt_0_transfer transfer_consts

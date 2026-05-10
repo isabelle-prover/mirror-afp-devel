@@ -56,7 +56,7 @@ proof -
   have P_A_P1_H1: "P * A = P1 * H1" using P1_H1 P2_H2 unfolding is_sound_HNF_def Let_def
     by (metis (mono_tags, lifting) case_prod_conv)
   hence "A = inv_P * (P1 * H1)"
-    by (smt A P inv_P_P inv_P assoc_mult_mat carrier_matD(1) inverts_mat_def left_mult_one_mat)
+    by (smt (z3) A P inv_P_P inv_P assoc_mult_mat carrier_matD(1) inverts_mat_def left_mult_one_mat)
   hence A_inv_P_P1_H1: "A = (inv_P * P1) * H1" using P P1_H1 assoc_mult_mat inv_P H1 P1 by auto
   have invertible_inv_P_P1: "invertible_mat (inv_P * P1)"
     by (rule invertible_mult_JNF[OF inv_P P1 invertible_inv_P inv_P1])   
@@ -80,13 +80,13 @@ corollary HNF_A_eq_HNF_PA':
   shows "H1 = H2" 
 proof -
   have H1: "H1 \<in> carrier_mat n n"
-    by (smt P1_H1 A P carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P1_H1 A P carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have H2: "H2 \<in> carrier_mat n n"
-    by (smt P2_H2 A carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P2_H2 A carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have HNF_H1: "Hermite_JNF associates res H1" 
-    by (smt P1_H1 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P1_H1 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have HNF_H2: "Hermite_JNF associates res H2"
-    by (smt P2_H2 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P2_H2 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have sound_HNF1: "\<exists>P1. P1 \<in> carrier_mat n n \<and> invertible_mat P1 \<and> (P * A) = P1 * H1"
     using sound_HNF P1_H1 unfolding is_sound_HNF_def Let_def
     by (metis (mono_tags, lifting) P carrier_matD(1) index_mult_mat(2) old.prod.simps(2))

@@ -179,17 +179,17 @@ lemma otimes'_k_tanh:
   shows "otimes'_k r z = tanh (r * artanh (cmod z))"
 proof-
   have "0 < 1 + cmod z"
-    by (smt norm_not_less_zero)
+    by (smt (z3) norm_not_less_zero)
   hence "(1 + cmod z) powr r \<noteq> 0"
     by auto
 
   have "1 - (1 - cmod z) powr r / (1 + cmod z) powr r = 
         ((1 + cmod z) powr r - (1 - cmod z) powr r) / (1 + cmod z) powr r"
-    by (smt \<open>(1 + cmod z) powr r \<noteq> 0\<close> add_divide_distrib divide_self)
+    by (smt (z3) \<open>(1 + cmod z) powr r \<noteq> 0\<close> add_divide_distrib divide_self)
   moreover
   have "1 + (1 - cmod z) powr r / (1 + cmod z) powr r =
        ((1 + cmod z) powr r + (1 - cmod z) powr r) / (1 + cmod z) powr r"
-    by (smt add_divide_distrib calculation)
+    by (smt (z3) add_divide_distrib calculation)
   moreover
   have "exp (- (r * ln ((1 + cmod z) / (1 - cmod z)))) =
          ((1 + cmod z) / (1 - cmod z)) powr (-r)" 
@@ -206,7 +206,7 @@ qed
 lemma cmod_otimes'_k: 
   assumes "cmod z < 1"
   shows "cmod (otimes'_k r z) < 1"
-  by (smt assms divide_less_eq_1_pos divide_minus_left otimes'_k_def norm_of_real powr_gt_zero zero_less_norm_iff)
+  by (smt (z3) assms divide_less_eq_1_pos divide_minus_left otimes'_k_def norm_of_real powr_gt_zero zero_less_norm_iff)
 
 definition otimes' :: "real \<Rightarrow> complex \<Rightarrow> complex" where
   "otimes' r z = (if z = 0 then 0 else cor (otimes'_k r z) * (z / cmod z))"
@@ -295,12 +295,12 @@ proof transfer
     moreover
     have "cor (otimes'_k r1 a) * cnj a * (cor (otimes'_k r2 a) * a) / (cor (cmod a) * cor (cmod a)) = 
           cor (otimes'_k r1 a) * cor (otimes'_k r2 a)"
-      by (smt False complex_mod_cnj complex_mod_mult_cnj complex_norm_square mult.commute nonzero_mult_div_cancel_left norm_mult of_real_mult times_divide_times_eq zero_less_norm_iff)
+      by (smt (z3) False complex_mod_cnj complex_mod_mult_cnj complex_norm_square mult.commute nonzero_mult_div_cancel_left norm_mult of_real_mult times_divide_times_eq zero_less_norm_iff)
     ultimately
      show ?thesis
       using False
       unfolding otimes'_def oplus_m'_def
-      by (smt complex_cnj_complex_of_real complex_cnj_divide complex_cnj_mult distrib_right times_divide_eq_left times_divide_eq_right times_divide_times_eq)
+      by (smt (z3) complex_cnj_complex_of_real complex_cnj_divide complex_cnj_mult distrib_right times_divide_eq_left times_divide_eq_right times_divide_times_eq)
   qed      
 qed
 
@@ -345,7 +345,7 @@ proof transfer
         by simp
       have "sgn ?k2 = sgn r2"
         using otimes'_k_tanh[OF `cmod a < 1`, of r2]
-        by (smt \<open>0 < artanh (cmod a)\<close> \<open>cmod ?a2 = \<bar>?k2\<bar>\<close> \<open>?a2 \<noteq> 0\<close> mult_nonneg_nonneg mult_nonpos_nonneg sgn_neg sgn_pos tanh_0 tanh_real_neg_iff zero_less_norm_iff)
+        by (smt (z3) \<open>0 < artanh (cmod a)\<close> \<open>cmod ?a2 = \<bar>?k2\<bar>\<close> \<open>?a2 \<noteq> 0\<close> mult_nonneg_nonneg mult_nonpos_nonneg sgn_neg sgn_pos tanh_0 tanh_real_neg_iff zero_less_norm_iff)
       have "otimes' r1 (otimes' r2 a) = 
              cor (otimes'_k r1 (cor ?k2 * a / cor (cmod a))) *
              (cor ?k2 * a) / (cor (cmod a) * abs ?k2)"
@@ -363,7 +363,7 @@ proof transfer
       also have "... = cor (tanh (r1 * \<bar>r2\<bar> * artanh (cmod a))) *  
                  (cor ?k2 * a) / (cor (cmod a) * abs ?k2)"
         using `artanh (cmod a) > 0`
-        by (smt ab_semigroup_mult_class.mult_ac(1) mult_minus_left mult_nonneg_nonneg)
+        by (smt (z3) ab_semigroup_mult_class.mult_ac(1) mult_minus_left mult_nonneg_nonneg)
       also have "... = cor (tanh (r1 * \<bar>r2\<bar> * artanh (cmod a))) * sgn ?k2 * (a / cor (cmod a))"
         by (simp add: mult.commute real_sgn_eq)
       also have "... = cor (tanh (r1 * \<bar>r2\<bar> * artanh (cmod a))) * sgn r2 * (a / cor (cmod a))"

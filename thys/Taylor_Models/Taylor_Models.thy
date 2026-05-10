@@ -732,7 +732,7 @@ proof -
       using a
       apply (auto simp: cr_def ci_def intro!: minus_in_intervalI
           tmf_c_correct[OF _ z_ord])
-      by (smt "4"(1) "4"(2) "4"(3) "4"(4) a all_in_def in_real_intervalI length_greater_0_conv nth_list_update s xs_ne)
+      by (smt (z3) "4"(1) "4"(2) "4"(3) "4"(4) a all_in_def in_real_intervalI length_greater_0_conv nth_list_update s xs_ne)
     note enclosure[OF this]
     also have "Ipoly (List.map2 (-) [x] (map real_of_float [xs ! 0])) (map_poly real_of_float (fst (tmf_polys z))) =
         insertion e (map_poly real_of_float (fst (tmf_polys z)))"
@@ -1761,7 +1761,7 @@ next
   obtain t1 where t1_def: "approx_tm prec ord I a l env = Some t1"
     by (metis (no_types, lifting) Add(3) approx_tm.simps(3) option.case_eq_if option.collapse prod.case)
   obtain t2 where t2_def: "approx_tm prec ord I a r env = Some t2"
-    by (smt Add(3) approx_tm.simps(3) option.case_eq_if option.collapse prod.case)
+    by (smt (z3) Add(3) approx_tm.simps(3) option.case_eq_if option.collapse prod.case)
   have t_def: "t = tm_add t1 t2"
     using Add(3) t1_def t2_def
     by (metis approx_tm.simps(3) option.case(2) option.inject prod.case)
@@ -1788,7 +1788,7 @@ next
   obtain t1 where t1_def: "approx_tm prec ord I a l env = Some t1"
     by (metis (no_types, lifting) Mult(3) approx_tm.simps(5) option.case_eq_if option.collapse prod.case)
   obtain t2 where t2_def: "approx_tm prec ord I a r env = Some t2"
-    by (smt Mult(3) approx_tm.simps(5) option.case_eq_if option.collapse prod.case)
+    by (smt (z3) Mult(3) approx_tm.simps(5) option.case_eq_if option.collapse prod.case)
   have t_def: "t = tm_mul prec ord I a t1 t2"
     using Mult(3) t1_def t2_def
     by (metis approx_tm.simps(5) option.case(2) option.inject prod.case)
@@ -1922,7 +1922,7 @@ next
   obtain t1 t2 where t_decomp: "t = tm_min prec I a t1 t2"
     and t1_def: "Some t1 = approx_tm prec ord I a l env"
     and t2_def: "approx_tm prec ord I a r env = Some t2"
-    by (smt approx_tm.simps(15) option.case_eq_if option.collapse option.distinct(2) option.inject split_conv)
+    by (smt (z3) approx_tm.simps(15) option.case_eq_if option.collapse option.distinct(2) option.inject split_conv)
   from this(2,3) hyps(1-3)
   have t1_range: "(interpret_floatarith l xs) \<in>\<^sub>i range_tm e t1"
     and  t2_range: "(interpret_floatarith r xs) \<in>\<^sub>i range_tm e t2"
@@ -1949,7 +1949,7 @@ next
   obtain t1 t2 where t_decomp: "t = tm_max prec I a t1 t2"
     and t1_def: "Some t1 = approx_tm prec ord I a l env"
     and t2_def: "approx_tm prec ord I a r env = Some t2"
-    by (smt approx_tm.simps(16) option.case_eq_if option.collapse option.distinct(2) option.inject split_conv)
+    by (smt (z3) approx_tm.simps(16) option.case_eq_if option.collapse option.distinct(2) option.inject split_conv)
   from this(2,3) hyps(1-3)
   have t1_range: "(interpret_floatarith l xs) \<in>\<^sub>i range_tm e t1"
     and  t2_range: "(interpret_floatarith r xs) \<in>\<^sub>i range_tm e t2"

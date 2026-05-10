@@ -23,7 +23,7 @@ proof -
   have T2: "\<lfloor>\<P> \<G>\<rfloor>" by (metis A3 G_def)
   have T3: "\<lfloor>\<^bold>\<diamond>(\<^bold>\<exists>\<^sup>E \<G>)\<rfloor>" using T1 T2 by simp
   have T4: "\<lfloor>\<^bold>\<forall>\<^sup>Ex.((\<G> x)\<^bold>\<rightarrow>(\<E> \<G> x))\<rfloor>" unfolding G_def E_def using A1 A4 by metis
-  have T5: "\<lfloor>(\<^bold>\<diamond>(\<^bold>\<exists>\<^sup>E\<G>))\<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<exists>\<^sup>E\<G>)\<rfloor>" by (smt A5 G_def B' NE_def T4)
+  have T5: "\<lfloor>(\<^bold>\<diamond>(\<^bold>\<exists>\<^sup>E\<G>))\<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<exists>\<^sup>E\<G>)\<rfloor>" by (smt (z3) A5 G_def B' NE_def T4)
   thus ?thesis using T3 by blast qed
 
 text\<open>Existence of a Godlike entity.\<close>
@@ -47,20 +47,20 @@ text\<open>Analysis of positive properties using ultrafilters.\<close>
 theorem U1: "\<lfloor>UFilter \<P>\<rfloor>"  \<comment>\<open>Proof found by sledgehammer\<close>
 proof - 
   have 1: "\<lfloor>(\<^bold>U\<^bold>\<in>\<P>) \<^bold>\<and> \<^bold>\<not>(\<^bold>\<emptyset>\<^bold>\<in>\<P>)\<rfloor>"  using A1 A2 by blast
-  have 2: "\<lfloor>\<^bold>\<forall>\<phi> \<psi>.(((\<phi>\<^bold>\<in>\<P>)\<^bold>\<and>(\<phi>\<^bold>\<subseteq>\<psi>))\<^bold>\<rightarrow>(\<psi>\<^bold>\<in>\<P>))\<rfloor>"  by (smt A2 B' MC)
+  have 2: "\<lfloor>\<^bold>\<forall>\<phi> \<psi>.(((\<phi>\<^bold>\<in>\<P>)\<^bold>\<and>(\<phi>\<^bold>\<subseteq>\<psi>))\<^bold>\<rightarrow>(\<psi>\<^bold>\<in>\<P>))\<rfloor>"  by (smt (z3) A2 B' MC)
   have 3: "\<lfloor>\<^bold>\<forall>\<phi> \<psi>.(((\<phi>\<^bold>\<in>\<P>)\<^bold>\<and>(\<psi>\<^bold>\<in>\<P>))\<^bold>\<rightarrow>((\<phi>\<^bold>\<sqinter>\<psi>)\<^bold>\<in>\<P>))\<rfloor>" by (metis A1 A2 G_def B' T6)
   have 4: "\<lfloor>\<^bold>\<forall>\<phi>.((\<phi>\<^bold>\<in>\<P>) \<^bold>\<or> ((\<inverse>\<phi>)\<^bold>\<in>\<P>))\<rfloor>"  using A1 by blast
   thus ?thesis using 1 2 3 4 by simp qed
 
 lemma L1: "\<lfloor>\<^bold>\<forall>X Y.((X\<Rrightarrow>Y) \<^bold>\<rightarrow> (X\<^bold>\<sqsubseteq>Y))\<rfloor>" by (metis A1 A2 MC)
-lemma L2: "\<lfloor>\<^bold>\<forall>X Y.(((\<P> X) \<^bold>\<and> (X\<^bold>\<sqsubseteq>Y)) \<^bold>\<rightarrow> (\<P> Y))\<rfloor>" by (smt A2 B' MC)
+lemma L2: "\<lfloor>\<^bold>\<forall>X Y.(((\<P> X) \<^bold>\<and> (X\<^bold>\<sqsubseteq>Y)) \<^bold>\<rightarrow> (\<P> Y))\<rfloor>" by (smt (z3) A2 B' MC)
 
 text\<open>Set of supersets of X, we call this HF X.\<close>
 abbreviation HF where "HF X \<equiv> \<lambda>Y.(X\<^bold>\<sqsubseteq>Y)"
 
 text\<open>\<open>HF \<G>\<close> is a filter; hence, \<open>HF \<G>\<close> is Hauptfilter of \<open>\<G>\<close>.\<close> 
 lemma F1: "\<lfloor>Filter (HF \<G>)\<rfloor>" by (metis A2 B' T6 U1)
-lemma F2: "\<lfloor>UFilter (HF \<G>)\<rfloor>" by (smt A1 F1 G_def)
+lemma F2: "\<lfloor>UFilter (HF \<G>)\<rfloor>" by (smt (z3) A1 F1 G_def)
 
 text\<open>T6 follows directly from F1.\<close> 
 theorem T6again: "\<lfloor>\<^bold>\<box>(\<^bold>\<exists>\<^sup>E \<G>)\<rfloor>" using F1 by simp 

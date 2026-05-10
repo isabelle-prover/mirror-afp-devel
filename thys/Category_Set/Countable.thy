@@ -38,7 +38,7 @@ lemma iso_to_N_is_countably_infinite:
 lemma smaller_than_countable_is_countable:
   assumes "X \<le>\<^sub>c Y" "countable Y"
   shows "countable X"
-  by (smt assms cfunc_type_def comp_type composition_of_monic_pair_is_monic countable_def is_smaller_than_def)
+  by (smt (z3) assms cfunc_type_def comp_type composition_of_monic_pair_is_monic countable_def is_smaller_than_def)
 
 lemma iso_pres_countable:
   assumes "X \<cong> Y" "countable Y"

@@ -98,7 +98,7 @@ lemma cotrace_prepend: "trace c t c' \<Longrightarrow> cotrace c' u \<Longrighta
   by (induct c t c' rule: trace.induct) (auto intro: cotrace.intros)
 
 lemma s_Cons: "\<exists>c''. trace c' xs c'' \<Longrightarrow> c \<turnstile> ev \<mapsto> c' \<Longrightarrow> s c (ev # xs) (Suc i) = s c' xs i"
-  by (smt exists_trace_for_any_i take_Suc_Cons tr_step trace_and_start_determines_end)
+  by (smt (z3) exists_trace_for_any_i take_Suc_Cons tr_step trace_and_start_determines_end)
 
 lemma cotrace_ldrop: "cotrace c t \<Longrightarrow> i \<le> llength t \<Longrightarrow> cotrace (cos c t i) (ldrop i t)"
 proof (induct i arbitrary: c t)

@@ -527,7 +527,7 @@ hence they need to be pushed into the set of all atoms.\<close>
 lemma atom_map_Inf_pres: "atom_map (\<Sqinter>X) = Collect atom \<inter> (\<Inter>x \<in> X. atom_map x)"
 proof-
   have "atom_map (\<Sqinter>X) = atom_map (-(\<Squnion>x \<in> X. -x))"
-    by (smt Collect_cong SUP_le_iff atom_map_def compl_le_compl_iff compl_le_swap1 le_Inf_iff)
+    by (smt (z3) Collect_cong SUP_le_iff atom_map_def compl_le_compl_iff compl_le_swap1 le_Inf_iff)
   also have "... = Collect atom - atom_map (\<Squnion>x \<in> X. -x)"
     using atom_map_compl_pres by blast
   also have "... = Collect atom - (\<Union>x \<in> X. atom_map (-x))"  
@@ -570,7 +570,7 @@ lemma surj_at_map: "surj (at_map::'a::complete_boolean_algebra_alt \<Rightarrow>
   unfolding surj_def at_map_def comp_def by (metis Rep_atoms Rep_atoms_inverse image_iff)
 
 lemma at_map_Sup_pres: "at_map \<circ> Sup = Sup \<circ> (`) (at_map::'a::complete_boolean_algebra_alt \<Rightarrow> 'a atoms)"
-  unfolding fun_eq_iff at_map_def comp_def atom_map_Sup_pres by (smt Abs_atoms_inverse Sup.SUP_cong Sup_atoms.transfer UN_extend_simps(10) rangeI)
+  unfolding fun_eq_iff at_map_def comp_def atom_map_Sup_pres by (smt (z3) Abs_atoms_inverse Sup.SUP_cong Sup_atoms.transfer UN_extend_simps(10) rangeI)
 
 lemma at_map_Sup_pres_var: "at_map (\<Squnion>X) = (\<Squnion>(x::'a::complete_boolean_algebra_alt) \<in> X. (at_map x))"
   using at_map_Sup_pres comp_eq_elim by blast

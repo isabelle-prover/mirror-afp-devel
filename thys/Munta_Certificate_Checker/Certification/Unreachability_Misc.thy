@@ -1091,7 +1091,7 @@ theorem copy_list_refine:
     apply standard
     apply sep_auto
       (* Frame *)
-    by (smt assn_times_comm ent_refl ent_star_mono hn_ctxt_def invalidate_clone star_aci(3))
+    by (smt (z3) assn_times_comm ent_refl ent_star_mono hn_ctxt_def invalidate_clone star_aci(3))
 
      apply (sep_auto; fail)
     apply (sep_auto simp: pure_def; fail)

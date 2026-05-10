@@ -48,7 +48,7 @@ proof -
     by (metis (no_types, lifting) PDQ_diag PSQ PSQ_D Smith_normal_form_of_JNF_def snd_conv prod.simps(2))
   have "S = P'*(P''*A*Q'')*Q'" using 1 2 by auto
   also have "... = (P'*P'')*A*(Q''*Q')" 
-    by (smt "1" "2" A assoc_mult_mat carrier_matD carrier_mat_triv index_mult_mat)
+    by (smt (z3) "1" "2" A assoc_mult_mat carrier_matD carrier_mat_triv index_mult_mat)
   finally have "S = (P' * P'') * A * (Q'' * Q')" .
   moreover have "invertible_mat P" unfolding P by (rule invertible_mult_JNF, insert 1 2, auto)
   moreover have "invertible_mat Q" unfolding Q by (rule invertible_mult_JNF, insert 1 2, auto)

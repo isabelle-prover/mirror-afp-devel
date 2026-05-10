@@ -422,7 +422,7 @@ proof
   assume "gyroaut f"
   thus "cogyroaut f"
     unfolding gyroaut_def cogyroaut_def
-    by (smt cogyroplus_def gyr_def gyro_left_cancel gyro_right_id gyro_rigth_inv)
+    by (smt (z3) cogyroplus_def gyr_def gyro_left_cancel gyro_right_id gyro_rigth_inv)
 next
   assume "cogyroaut f"
   thus "gyroaut f"
@@ -632,7 +632,7 @@ proof-
     using  *[rule_format, of "?a'" "?b'" "?c'"]
     by simp
   then show ?thesis
-    by (smt bij_is_inj gyroaut_def gyr_gyroaut inv_gyr_sym gyr_even gyro_inv_idem o_inv_distrib o_inv_o_cancel)
+    by (smt (z3) bij_is_inj gyroaut_def gyr_gyroaut inv_gyr_sym gyr_even gyro_inv_idem o_inv_distrib o_inv_o_cancel)
 qed
 
 

@@ -370,13 +370,13 @@ proof (induction Ts t arbitrary: T \<tau> rule: typ_of1.induct)
 next
   case (5 Ts f u)
   then show ?case apply (simp add: bind_eq_Some_conv split: if_splits option.splits)
-    by (smt no_loose_bvar1_subst_bv2_decr subst_bv_def substn_subst_0' typ_of1.simps(3) typ_of1_subst_bv_gen')
+    by (smt (z3) no_loose_bvar1_subst_bv2_decr subst_bv_def substn_subst_0' typ_of1.simps(3) typ_of1_subst_bv_gen')
 qed (auto simp add: bind_eq_Some_conv split: if_splits option.splits)
   
 lemma typ_of1_eta_red_step_pre: "\<not> loose_bvar1 t 0 \<Longrightarrow> 
   typ_of1 Ts (Abs \<tau> (t $ Bv 0)) = Some (\<tau> \<rightarrow> \<tau>') \<Longrightarrow> typ_of1 Ts (decr 0 t) = Some (\<tau> \<rightarrow> \<tau>')"
   using typ_of1_decr'
-  by (smt length_Cons nth_Cons_0 typ_of1.simps(2) typ_of1_arg_typ typ_of_Abs_body_typ' zero_less_Suc)
+  by (smt (z3) length_Cons nth_Cons_0 typ_of1.simps(2) typ_of1_arg_typ typ_of_Abs_body_typ' zero_less_Suc)
 
 lemma typ_of1_eta_red_step: "\<not> is_dependent t \<Longrightarrow> 
   typ_of (Abs \<tau> (t $ Bv 0)) = Some (\<tau> \<rightarrow> \<tau>') \<Longrightarrow> typ_of (decr 0 t) = Some (\<tau> \<rightarrow> \<tau>')"
@@ -498,9 +498,9 @@ next
         = Some ((Tv (Var (STR '''a'', 0)) full_sort) \<rightarrow> ((Tv (Var (STR '''a'', 0)) full_sort) \<rightarrow> propT))" 
         using \<beta>_conversion.hyps(1) by (cases \<Theta>) fastforce
       moreover obtain t' where "typ_of (Abs T t $ x) = Some t'"
-        by (smt "1" typ_of1_split_App typ_of_def) 
+        by (smt (z3) "1" typ_of1_split_App typ_of_def) 
       moreover hence "typ_of (subst_bv x t) = Some t'" 
-        by (smt list.simps(1) subst_bv_def typ.simps(1) typ_of1_split_App typ_of1_subst_bv_gen' typ_of_Abs_body_typ' typ_of_def)
+        by (smt (z3) list.simps(1) subst_bv_def typ.simps(1) typ_of1_split_App typ_of1_subst_bv_gen' typ_of_Abs_body_typ' typ_of_def)
       moreover have "typ_ok_sig (sig \<Theta>) t'"
         using \<beta>_conversion.hyps(1) calculation(2) calculation(5) wt_term_def term_ok_imp_typ_ok typ_ok_def by auto
       moreover hence "typ_ok_sig (sig \<Theta>) (t' \<rightarrow> propT) "
@@ -696,7 +696,7 @@ lemma strip_all_body_unchanged_iff_strip_all_single_body_unchanged:
 lemma strip_all_body_unchanged_imp_strip_all_vars_no: 
   assumes "strip_all_body B = B"
   shows "strip_all_vars B = []"
-  by (smt assms not_Cons_self2 strip_all_body_single_simp' strip_all_single_body.simps(1) strip_all_vars.elims)
+  by (smt (z3) assms not_Cons_self2 strip_all_body_single_simp' strip_all_single_body.simps(1) strip_all_vars.elims)
 
 lemma strip_all_body_unchanged_imp_strip_all_single_body_unchanged: 
   "strip_all_body B = B \<Longrightarrow> strip_all_single_body B = B"
@@ -1044,7 +1044,7 @@ next
       subst_term_preserves_typ_of term_ok_ren by auto
   hence "\<Theta>, \<Gamma> \<turnstile> subst_term [((y, \<tau>), Fv x \<tau>)] 
     (subst_term [((x, \<tau>), Fv y \<tau>)] A \<longmapsto> mk_all x \<tau> B)" 
-    by (smt Un_iff \<open>y \<notin> fst ` (fv A \<union> fv B \<union> FV \<Gamma>)\<close> forall_intro.hyps(1) 
+    by (smt (z3) Un_iff \<open>y \<notin> fst ` (fv A \<union> fv B \<union> FV \<Gamma>)\<close> forall_intro.hyps(1) 
         fst_conv image_eqI rename_free)
   hence "\<Theta>, \<Gamma> \<turnstile> A \<longmapsto> mk_all x \<tau> B"
     using forall_intro proves.forall_intro implies_intro'_pre by auto

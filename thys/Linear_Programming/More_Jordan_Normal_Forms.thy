@@ -357,7 +357,7 @@ lemma mat_append_col_access_in_mat:
     mat_of_cols_carrier(3) mat_of_rows_row
     nth_append nth_rows row_carrier trans_less_add1 transpose_mat_of_cols
     mat_of_cols_index
-  by (smt cols_nth index_row(1))
+  by (smt (z3) cols_nth index_row(1))
 
 
 lemma constructing_append_col_row: 

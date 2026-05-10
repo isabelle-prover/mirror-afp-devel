@@ -222,7 +222,7 @@ next
   also have "... = (\<exists>(A,A',d1)\<in>set (dnf_modified \<phi>1).
         \<exists>x\<in>set (dnf_modified \<phi>2).
            f (g A A' d1 x))"
-    by (smt case_prodE f_def imageE image_eqI prod.simps(2))
+    by (smt (z3) case_prodE f_def imageE image_eqI prod.simps(2))
   also have "... = (\<exists>(A,A',d1)\<in>set (dnf_modified \<phi>1).
         \<exists>x\<in>set (dnf_modified \<phi>2).
            f (case x of (B,B',d2) \<Rightarrow> (map (liftAtom d1 d2) A @ map (liftAtom 0 d1) B,
@@ -374,7 +374,7 @@ next
              case (case a of (A, A', d) \<Rightarrow> (A, A',d+1)) of
              (al, fl, n) \<Rightarrow>
                \<exists>L. length L = n \<and> (\<forall>a\<in>set al. aEval a (L @ xs)) \<and> (\<forall>f\<in>set fl. eval f (L @ xs)))"
-    by (smt case_prodE case_prodI2) (* takes a second *)
+    by (smt (z3) case_prodE case_prodI2) (* takes a second *)
   show ?case using ExQ h1 h2 h3 by simp
 next
   case (ExN x1 \<phi>)

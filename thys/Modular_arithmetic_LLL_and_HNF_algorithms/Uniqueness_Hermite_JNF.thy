@@ -245,7 +245,7 @@ proof (intro rel_funI, goal_cases)
       let ?least_n1 = "Mod_Type.from_nat l1::'n"
       let ?least_n2 = "Mod_Type.from_nat l2::'n"
       have l1_dim_col: "l1 < dim_col A"
-        by (smt is_zero_row_JNF_def j l1_def leI le_less_trans least_ij less_trans not_less_Least)
+        by (smt (z3) is_zero_row_JNF_def j l1_def leI le_less_trans least_ij less_trans not_less_Least)
       have l2_dim_col: "l2 < dim_col A"
         by (metis (mono_tags, lifting) Least_le is_zero_row_JNF_def j l2_def le_less_trans)
       have [transfer_rule]: "Mod_Type_Connect.HMA_I l1 ?least_n1" unfolding Mod_Type_Connect.HMA_I_def
@@ -552,7 +552,7 @@ corollary Hermite_unique_JNF_with_nontriv_mod_ring:
   assumes "A = P * H"
     and "A = Q * K" and "invertible_mat A" and "invertible_mat P" 
     and "invertible_mat Q" and "Hermite_JNF associates res H" and "Hermite_JNF associates res K"
-shows "H = K" using Hermite_unique_JNF' assms by (smt CARD_mod_ring)
+shows "H = K" using Hermite_unique_JNF' assms by (smt (z3) CARD_mod_ring)
 
 text \<open>Now, we assume in a context that there exists a type text @{text "'b"} of cardinality $n$
 and we prove inside this context the lemma.\<close>
@@ -711,7 +711,7 @@ corollary Hermite_unique_generalized_JNF_with_nontriv_mod_ring:
   assumes "A = P * H"
     and "A = Q * K" and "invertible_mat (map_mat rat_of_int A)" and "invertible_mat P" 
     and "invertible_mat Q" and "Hermite_JNF associates res H" and "Hermite_JNF associates res K"
-shows "H = K" using Hermite_unique_generalized_JNF' assms by (smt CARD_mod_ring)
+shows "H = K" using Hermite_unique_generalized_JNF' assms by (smt (z3) CARD_mod_ring)
 
 
 

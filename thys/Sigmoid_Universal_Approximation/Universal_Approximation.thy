@@ -758,7 +758,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
                   have "(\<Sum>k\<in>{i+2..N+1}. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>) = 
                         (\<Sum>k\<in>ZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>)
                      + (\<Sum>k\<in>NonZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>)"
-                    by (smt disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)
+                    by (smt (z3) disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)
                   then show ?thesis
                     using zero_terms_eq_zero by linarith
                 qed
@@ -806,7 +806,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
                 also have "... \<le> (\<Sum>k\<in>NonZeroTerms. \<eta> * (1 /  N)) +  (\<Sum>k\<in>ZeroTerms. \<eta> * (1 / N))"
                   using \<eta>_pos by force
                 also have "... = (\<Sum>k\<in>{i+2..N+1}. \<eta> * (1 /  N))"
-                  by (smt disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)               
+                  by (smt (z3) disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)               
                 finally show ?thesis.
               qed
               then show ?thesis
@@ -854,7 +854,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
               have "(\<Sum>k\<in>{2..i - 1}. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k)) -1\<bar>) = 
                     (\<Sum>k\<in>BotZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k)) -1\<bar>)
                  + (\<Sum>k\<in>BotNonZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k)) -1\<bar>)"
-                by (smt bot_disjoint finite_Un finite_atLeastAtMost bot_union sum.union_disjoint)
+                by (smt (z3) bot_disjoint finite_Un finite_atLeastAtMost bot_union sum.union_disjoint)
               then show ?thesis
                 using bot_zero_terms_eq_zero by linarith
             qed
@@ -942,7 +942,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
                   have "(\<Sum>k\<in>{i+2..N+1}. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>) = 
                         (\<Sum>k\<in>TopZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>)
                      + (\<Sum>k\<in>TopNonZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>)"
-                    by (smt disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)
+                    by (smt (z3) disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)
                   then show ?thesis
                     using zero_terms_eq_zero by linarith
                 qed
@@ -986,7 +986,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
                 also have "... \<le> (\<Sum>k\<in>TopNonZeroTerms. \<eta> * (1 / N)) +  (\<Sum>k\<in>TopZeroTerms. \<eta> * (1 / N))"
                   using \<eta>_pos by force
                 also have "... = (\<Sum>k\<in>{i+2..N+1}. \<eta> * (1 / N))"
-                  by (smt disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)               
+                  by (smt (z3) disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)               
                 finally show ?thesis.
               qed
               then show ?thesis
@@ -1044,7 +1044,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
                   have "(\<Sum>k\<in>{i+2..N+1}. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>) = 
                         (\<Sum>k\<in>ZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>)
                      + (\<Sum>k\<in>NonZeroTerms. \<bar>f (xs N ! k) - f (xs N ! (k - 1))\<bar> * \<bar>\<sigma> (w * (x - xs N ! k))\<bar>)"
-                    by (smt disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)
+                    by (smt (z3) disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)
                   then show ?thesis
                     using zero_terms_eq_zero by linarith
                 qed
@@ -1091,7 +1091,7 @@ i.e.  Show that x -   xs N!k   \<ge> h for k \<in> { 0,...,i-1} *)
                 also have "... \<le> (\<Sum>k\<in>NonZeroTerms. \<eta> * (1 /  N)) +  (\<Sum>k\<in>ZeroTerms. \<eta> * (1 / N))"
                   using \<eta>_pos by force
                 also have "... = (\<Sum>k\<in>{i+2..N+1}. \<eta> * (1 / N))"
-                  by (smt disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)               
+                  by (smt (z3) disjoint finite_Un finite_atLeastAtMost union sum.union_disjoint)               
                 finally show ?thesis.
               qed
               then show ?thesis.                

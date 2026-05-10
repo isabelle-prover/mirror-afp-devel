@@ -168,7 +168,7 @@ proof
             using A2 assms(1) assms(3) assms(5) ac_units[of b n]
             by (metis One_nat_def Suc_le_eq assms(2) zero_not_in_residue_units)                            
           then show ?thesis 
-            by (smt A0 Qp.domain_axioms ac_def assms(4) cring.cring_simprules(4) domain.axioms(1)
+            by (smt (z3) A0 Qp.domain_axioms ac_def assms(4) cring.cring_simprules(4) domain.axioms(1)
               mem_Collect_eq not_nonzero_Qp q_ball_def)
         qed
         have A4: "(d \<ominus> c) \<in> nonzero Q\<^sub>p"
@@ -184,7 +184,7 @@ proof
           using ac_ord_prop[of "(x \<ominus> c)" "(d \<ominus> c)" m n ] A1 A2 assms A3 
           by simp          
         then show ?thesis 
-          by (smt A0 Qp_diff_diff assms(4) assms(5) q_ballE)
+          by (smt (z3) A0 Qp_diff_diff assms(4) assms(5) q_ballE)
       qed
       then show ?thesis 
         by (metis (no_types, lifting) A0 c_ball_def mem_Collect_eq q_ball_def)
@@ -212,7 +212,7 @@ proof
       have A4: "val (d \<ominus> c) =m"
         by (simp add: A1 A3 val_def)
       have A5: "val (x \<ominus> d) > val (d \<ominus> c)"
-        by (smt A0 A4 assms(2) eint_ord_code(4) eint_ord_simps(1) eint_ord_simps(2) of_nat_0_less_iff val_def)        
+        by (smt (z3) A0 A4 assms(2) eint_ord_code(4) eint_ord_simps(1) eint_ord_simps(2) of_nat_0_less_iff val_def)        
       have A6: "val ((x \<ominus> d) \<oplus> (d \<ominus> c)) = m"
         using A4 A0 A5  
         by (metis (mono_tags, opaque_lifting) A Qp.minus_closed assms(4) assms(5) 
@@ -402,7 +402,7 @@ proof-
       using d_m_def by blast 
     then have "(\<exists>c \<in> carrier Q\<^sub>p . B = B\<^bsub>rad B\<^esub>[c])"
       using radius_def[of B] 
-      by (smt someI_ex)
+      by (smt (z3) someI_ex)
     then show ?thesis 
       using radius_def ball_rad[of B m ]
       by (metis (mono_tags, lifting) \<open>B = B\<^bsub>m\<^esub>[c]\<close> assms(1) assms(2) c_ballE(1) c_ball_centers)
@@ -462,7 +462,7 @@ proof-
       have 1: "B' = B\<^bsub>rad B'\<^esub>[b]"
         using assms(2) b_def radius_of_ball by auto
       show "B' \<subseteq> B" using 0 1 A nested_balls 
-        by (smt IntD2 Q\<^sub>p_def Zp_def assms(1) assms(2) b_def
+        by (smt (z3) IntD2 Q\<^sub>p_def Zp_def assms(1) assms(2) b_def
             c_ballE(1) padic_integers_axioms)
     qed
     then show ?thesis by blast 
@@ -539,7 +539,7 @@ proof(rule ccontr)
     by (meson B'_def assms(3) c_ball_center_in is_ball_def radius_of_ball subset_iff)
   then show False 
     using assms 
-    by (smt B'_def Q\<^sub>p_def Zp_def ball_rad_0 padic_integers_axioms)
+    by (smt (z3) B'_def Q\<^sub>p_def Zp_def ball_rad_0 padic_integers_axioms)
 qed
 
 lemma int_prop:
@@ -637,7 +637,7 @@ proof-
           obtain n where n_def: " P n \<and> (\<forall>n'. P n'\<longrightarrow> n' \<ge>n)"
             using A2 by blast 
           have " B\<^bsub>n\<^esub>[c] \<subseteq> U"
-            by (smt B_def P_def c_ball_def is_ball_def mem_Collect_eq n_def nested_balls order_trans)
+            by (smt (z3) B_def P_def c_ball_def is_ball_def mem_Collect_eq n_def nested_balls order_trans)
           obtain m where m_def: "m < n \<and>B\<^bsub>m\<^esub>[c] \<subseteq> U"
             using P_def n_def by blast
           have "m = n-1"
@@ -1265,7 +1265,7 @@ next
           qed
           then show "\<exists>c>\<alpha> + eint (int (Suc k)). c \<in> A"
             using False c'_def 
-            by (smt c_def eSuc_eint iadd_Suc_right ileI1 le_less of_nat_Suc)            
+            by (smt (z3) c_def eSuc_eint iadd_Suc_right ileI1 le_less of_nat_Suc)            
         qed
       qed
       obtain k::nat where "a = \<alpha> + eint (int k)"

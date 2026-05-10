@@ -90,7 +90,7 @@ lemma alpha_strictly_increasing_general:
   shows "\<alpha> b m > \<alpha> b n"
 proof -
   from alpha_strictly_increasing assms have S2: "\<alpha> b n < \<alpha> b m"
-    by (smt less_imp_of_nat_less lift_Suc_mono_less of_nat_0_less_iff pos2)
+    by (smt (z3) less_imp_of_nat_less lift_Suc_mono_less of_nat_0_less_iff pos2)
   show ?thesis using S2 by simp
 qed
 
@@ -98,7 +98,7 @@ qed
 text \<open>Equation 3.4\<close>
 lemma alpha_superlinear: "b > 2 \<Longrightarrow> int n \<le> \<alpha> b n"
   apply (induction n, auto) 
-  by (smt Suc_1 alpha_strictly_increasing less_imp_of_nat_less of_nat_1 of_nat_Suc)
+  by (smt (z3) Suc_1 alpha_strictly_increasing less_imp_of_nat_less of_nat_1 of_nat_Suc)
 
 text \<open>A simple consequence that's often useful; could also be generalized to alpha using 
       alpha linear\<close>
@@ -135,7 +135,7 @@ next
   hence r2: "((int b)^(Suc n)) \<le> (int (b+1))*(\<alpha> (b+1) (n+1)) - (\<alpha> (b+1) (n+1))" 
     by (simp add: algebra_simps)
   have "(int b+1) *(\<alpha> (b+1) (n+1)) - (\<alpha> (b+1) (n+1)) \<le> (int b+1)*(\<alpha> (b+1) (n+1)) - \<alpha> (b+1) n" 
-    using alpha_strictly_increasing Suc by (smt Suc_eq_plus1 of_nat_0_less_iff of_nat_Suc)
+    using alpha_strictly_increasing Suc by (smt (z3) Suc_eq_plus1 of_nat_0_less_iff of_nat_Suc)
   thus ?case using r2 by auto
 qed
 
@@ -147,7 +147,7 @@ next
   case (Suc n)
   hence s1: "\<alpha> b (n+2) \<le> (int b)^(n+1) - \<alpha> b n" by simp
   have "(int b)^(n+1) - (\<alpha> b n) \<le> (int b)^(n+1)" 
-    using alpha_strictly_increasing Suc by (smt \<alpha>.simps(1) alpha_superlinear of_nat_1 of_nat_add 
+    using alpha_strictly_increasing Suc by (smt (z3) \<alpha>.simps(1) alpha_superlinear of_nat_1 of_nat_add 
                                             of_nat_le_0_iff of_nat_less_iff one_add_one)
   thus ?case using s1 by simp
 qed
@@ -172,7 +172,7 @@ lemma A_rec: "b>2 \<Longrightarrow> A b (Suc n) = mat_mul (A b n) (B b)"
 text \<open>Equation 3.10\<close>
 lemma A_pow: "b>2 \<Longrightarrow> A b n = mat_pow n (B b)"
   apply (induction n, auto simp: A.simps B.simps)
-    subgoal by (smt A.elims Suc_eq_plus1 \<alpha>.simps \<alpha>.simps(2) mat2.sel)
+    subgoal by (smt (z3) A.elims Suc_eq_plus1 \<alpha>.simps \<alpha>.simps(2) mat2.sel)
     subgoal for n apply (cases "n=0", auto) 
       using A.simps(2)[of b "n-1"] gr0_conv_Suc mult.commute by auto
     subgoal by (metis A.simps(2) Suc_eq_plus1 \<alpha>.simps(2) mat2.sel(1) mat_pow.elims)
@@ -208,7 +208,7 @@ text \<open>Equation 3.12\<close>
 lemma alpha_det2:
   assumes "b>2" "n>0"
   shows "(\<alpha> b (n-1))^2 - (int b) * (\<alpha> b (n-1) * (\<alpha> b n)) + (\<alpha> b n)^2 = 1"
-  using alpha_det1 assms by (smt One_nat_def Suc_diff_Suc diff_zero mult.commute mult.left_commute)
+  using alpha_det1 assms by (smt (z3) One_nat_def Suc_diff_Suc diff_zero mult.commute mult.left_commute)
 
 text \<open>Equations 3.14 to 3.17\<close>
 lemma alpha_char_eq:
@@ -435,7 +435,7 @@ proof(rule ccontr)
   define n where "n = gcd (\<alpha> b k) (\<alpha> b (k+1))"
   from n_def have S1: "n > 1"
     using alpha_det1 as assms(1) coprime_iff_gcd_eq_1 gcd_pos_int right_diff_distrib' 
-    by (smt add.commute plus_1_eq_Suc)
+    by (smt (z3) add.commute plus_1_eq_Suc)
   have S2: "(\<alpha> b (Suc k))^2 - (int b) * \<alpha> b (Suc k) * (\<alpha> b k) + (\<alpha> b k)^2 = 1" 
     using alpha_det1 assms by auto
   from n_def have D1: " n dvd (\<alpha> b (k+1))^2" by (simp add: numeral_2_eq_2)
@@ -485,9 +485,9 @@ next
     using divisibility_lemma2 assms(1) assms(2) n_def P by simp
   from n_def assms(2) have m: "n < k" using mod_less_divisor by blast
   from alpha_strictly_increasing m assms(1) have S2: "\<alpha> b n < \<alpha> b k"
-    by (smt less_imp_of_nat_less lift_Suc_mono_less of_nat_0_less_iff pos2)
+    by (smt (z3) less_imp_of_nat_less lift_Suc_mono_less of_nat_0_less_iff pos2)
   from S1 S2 have S3: "n=0"
-    by (smt alpha_superlinear assms(1) mod_pos_pos_trivial neq0_conv of_nat_0_less_iff)
+    by (smt (z3) alpha_superlinear assms(1) mod_pos_pos_trivial neq0_conv of_nat_0_less_iff)
   from S3 n_def show "?Q" by auto
 qed
 
@@ -505,7 +505,7 @@ lemma divisibility_equations:
     apply (auto simp: A.simps \<open>m>0\<close> ID_def B.simps) 
     using A.simps(2) alpha_n One_nat_def Suc_eq_plus1 Suc_pred assms \<open>m>0\<close> assms
         mult.commute nat_0_less_mult_iff
-    by (smt mat_exp_law_mult)
+    by (smt (z3) mat_exp_law_mult)
 
 lemma divisibility_cong:
   fixes e f :: int
@@ -583,9 +583,9 @@ next
   from S19 S20 have S21: "(g*a1 + h*c1) mod e^2 = (- f*(-1)^(l-1)*l*e*f^(l-1)*c + (-1)^l *f^l*e*c) mod e^2" using mod_add_cong by blast
   from assms(2) c_def have S22: "(- f*(-1)^(l-1)*l*e*f^(l-1)*c + (-1)^l *f^l*e*c) mod e^2=(- f*(-1)^(l-1)*l*e*f^(l-1) + (-1)^l *f^l*e) mod e^2" by simp
   have S23: "(- f*(-1)^(l-1)*l*e*f^(l-1) + (-1)^l *f^l*e) mod e^2 = (f*(-1)^(l)*l*e*f^(l-1) + (-1)^l *f^l*e) mod e^2"
-    by (smt One_nat_def Suc_pred mult.commute mult_cancel_left2 mult_minus_left neq0_conv of_nat_eq_0_iff power.simps(2))
+    by (smt (z3) One_nat_def Suc_pred mult.commute mult_cancel_left2 mult_minus_left neq0_conv of_nat_eq_0_iff power.simps(2))
   have S24: "(f*(-1)^(l)*l*e*f^(l-1) + (-1)^l *f^l*e) mod e^2 = ((-1)^(l)*l*e*f^l + (-1)^l *f^l*e) mod e^2"
-    by (smt One_nat_def Suc_pred mult.assoc mult.commute mult_eq_0_iff neq0_conv of_nat_eq_0_iff power.simps(2))
+    by (smt (z3) One_nat_def Suc_pred mult.assoc mult.commute mult_eq_0_iff neq0_conv of_nat_eq_0_iff power.simps(2))
   have S25: "((-1)^(l)*l*e*f^l + (-1)^l *f^l*e) mod e^2 = ((-1)^(l)*(l+1)*e*f^l) mod e^2"
   proof -
     have f1: "\<forall>i ia. (ia::int) * i = i * ia"
@@ -723,12 +723,12 @@ proof (induct n rule:nat_less_induct)
   from hyps have s2: "n>1\<Longrightarrow>\<alpha> b1 (n-2) mod q = \<alpha> b2 (n-2) mod q" by auto
   have s3: "n>1 \<Longrightarrow> \<alpha> b1 (Suc (Suc n)) = (int b1) * (\<alpha> b1 (Suc n)) - (\<alpha> b1 n)" by simp
   from s3 have s4: "n>1 \<Longrightarrow> (\<alpha> b1 n = (int b1*(\<alpha> b1 (n-1)) - \<alpha> b1 (n-2)))" 
-    by (smt Suc_1 Suc_diff_Suc diff_Suc_1 alpha_n lessE)
+    by (smt (z3) Suc_1 Suc_diff_Suc diff_Suc_1 alpha_n lessE)
   have sw: "n>1 \<Longrightarrow> \<alpha> b2 (Suc (Suc n)) = (int b2) * (\<alpha> b2 (Suc n)) - (\<alpha> b2 n)" by simp
   from sw have sx: "n>1 \<Longrightarrow> (\<alpha> b2 n = (int b2*(\<alpha> b2 (n-1)) - \<alpha> b2 (n-2)))" 
-    by (smt Suc_1 Suc_diff_Suc diff_Suc_1 alpha_n lessE)
+    by (smt (z3) Suc_1 Suc_diff_Suc diff_Suc_1 alpha_n lessE)
   from n0 n1 s1 s2 s3 s4 assms(1) mod_mult_cong have s5: "n>1 
-        \<Longrightarrow> b1*(\<alpha> b1 (n-1)) mod q =  b2*(\<alpha> b2 (n-1)) mod q " by (smt mod_mult_eq of_nat_mod)
+        \<Longrightarrow> b1*(\<alpha> b1 (n-1)) mod q =  b2*(\<alpha> b2 (n-1)) mod q " by (smt (z3) mod_mult_eq of_nat_mod)
    from hyps have sq: "n>1 \<Longrightarrow> \<alpha> b1 (n-2) mod q = \<alpha> b2 (n-2) mod q " by simp
    from s5 sq have sd: "n>1 \<Longrightarrow>-( (\<alpha> b1 (n-2))) mod q = -((\<alpha> b2 (n-2))) mod q " 
      by (metis mod_minus_eq)
@@ -948,7 +948,7 @@ next
       have S5: "h mod v = (-(\<alpha> b m)*(\<alpha> b m) + (\<alpha> b (m - 1))*(\<alpha> b (m + 1))) mod v" by metis
       from One_nat_def add.right_neutral add_Suc_right \<alpha>.elims diff_Suc_1 g0 le_imp_less_Suc le_simps(1) neq0_conv Suc_diff_1 alpha_n
     have S6: "\<alpha> b (m + 1) = b* (\<alpha> b m)- \<alpha> b (m-1)"
-      by (smt Suc_eq_plus1 Suc_pred' \<alpha>.elims alpha_superlinear assms(1) g0 nat.inject of_nat_0_less_iff of_nat_1 of_nat_add)
+      by (smt (z3) Suc_eq_plus1 Suc_pred' \<alpha>.elims alpha_superlinear assms(1) g0 nat.inject of_nat_0_less_iff of_nat_1 of_nat_add)
     from S6 have S7: "(\<alpha> b (m - 1))*(\<alpha> b (m + 1)) = (int b) * (\<alpha> b (m-1) * (\<alpha> b m)) - (\<alpha> b (m-1))^2"
     proof -
       have f1: "\<forall>i ia. - ((ia::int) * i) = ia * - i" by simp
@@ -1175,7 +1175,7 @@ proof -
       apply auto
       subgoal using zdvd_not_zless by blast
       subgoal
-        by (smt \<open>2 < b\<close> alpha_superlinear dvd_add_triv_left_iff negative_zle zdvd_not_zless)
+        by (smt (z3) \<open>2 < b\<close> alpha_superlinear dvd_add_triv_left_iff negative_zle zdvd_not_zless)
       done
     next
       case False
@@ -1366,7 +1366,7 @@ proof -
                   add_gr_0 less_Suc_eq mult.assoc numeral_3_eq_3)
       have c12: "int k>2*a" by (simp add: k_def j_def)
       from alpha_superlinear c12 have c13: "2*a<u"
-        by (smt add_lessD1 assms(1) numeral_Bit1 numeral_One one_add_one u_def)
+        by (smt (z3) add_lessD1 assms(1) numeral_Bit1 numeral_One one_add_one u_def)
       from c11 c13 k_def u_def t_def abc bcd stp show ?thesis by auto
     next
       case c2
@@ -1381,7 +1381,7 @@ proof -
                     add_gr_0 less_Suc_eq mult.assoc numeral_3_eq_3)
       have c22: "int k>2*a" by (simp add: k_def j_def)
       from alpha_superlinear c22 have c23: "2*a<u"
-        by (smt add_lessD1 assms(1) numeral_Bit1 numeral_One one_add_one u_def)
+        by (smt (z3) add_lessD1 assms(1) numeral_Bit1 numeral_One one_add_one u_def)
       from c21 c23 abc bcd k_def u_def t_def show ?thesis by auto
     qed
   qed
@@ -1396,24 +1396,24 @@ proof -
   from a354 udef have 354: "2* int c<u" by simp
   from alpha_superlinear s211 m_def udef have rd: "\<alpha> b k \<ge> int k" by simp
   from alpha_strictly_increasing s211 s1 m_def s_def udef r_def have s212: "\<alpha> b (m-1) < \<alpha> b m"
-    by (smt One_nat_def Suc_pred nat_0_less_mult_iff zero_less_nat_eq)
+    by (smt (z3) One_nat_def Suc_pred nat_0_less_mult_iff zero_less_nat_eq)
   from s212 r_def s_def have 344: "r<s" by simp
-  from alpha_det2 assms s_def r_def m_def have s22: "r^2-int b*r*s+s^2=1" by (smt One_nat_def Suc_eq_plus1 udef add_lessD1
+  from alpha_det2 assms s_def r_def m_def have s22: "r^2-int b*r*s+s^2=1" by (smt (z3) One_nat_def Suc_eq_plus1 udef add_lessD1
          alpha_superlinear mult.assoc nat_0_less_mult_iff numeral_3_eq_3 of_nat_0 of_nat_less_iff one_add_one zero_less_nat_eq)
   from s22 have 343: "s^2-int b*s*r+r^2=1" by algebra
   from m_def udef have xyz: "(int k)*(\<alpha> b k) dvd (int m) \<and> k dvd m" by simp
-  from xyz divisibility_alpha2 have wxyz: "(\<alpha> b k)*(\<alpha> b k) dvd (\<alpha> b m)" by (smt assms dvd_mult_div_cancel int_nat_eq less_imp_le_nat m_def mult_pos_pos neq0_conv not_less not_less_eq numeral_2_eq_2 numeral_3_eq_3 of_nat_0_less_iff power2_eq_square udef)
+  from xyz divisibility_alpha2 have wxyz: "(\<alpha> b k)*(\<alpha> b k) dvd (\<alpha> b m)" by (smt (z3) assms dvd_mult_div_cancel int_nat_eq less_imp_le_nat m_def mult_pos_pos neq0_conv not_less not_less_eq numeral_2_eq_2 numeral_3_eq_3 of_nat_0_less_iff power2_eq_square udef)
   from wxyz udef s_def have 345: "u^2 dvd s" by (simp add: power2_eq_square)
   define v where "v = b*s-2*r"
   from v_def s_def r_def alpha_n have 370: "v = \<alpha> b (m+1) - \<alpha> b (m-1)"
-    by (smt Suc_eq_plus1 add_diff_inverse_nat diff_Suc_1 neq0_conv not_less_eq s212 zero_less_diff)
+    by (smt (z3) Suc_eq_plus1 add_diff_inverse_nat diff_Suc_1 neq0_conv not_less_eq s212 zero_less_diff)
   have 371: "v = b*\<alpha> b m - 2*\<alpha> b (m-1)" using v_def s_def r_def by simp
   from alpha_strictly_increasing assms m_def udef have asd: "\<alpha> b m > 0"
-    by (smt Suc_pred nat_0_less_mult_iff s211 zero_less_nat_eq)
+    by (smt (z3) Suc_pred nat_0_less_mult_iff s211 zero_less_nat_eq)
   from assms asd 371 have 372: "v\<ge>4*\<alpha> b m -2*\<alpha> b (m-1)" by simp
   from 372 assms have 373: "v>2*\<alpha> b m \<and> 4*\<alpha> b m -2*\<alpha> b (m-1) > 2*\<alpha> b m" using s212 by linarith
   from 373 assms alpha_superlinear have 374: "2*\<alpha> b m \<ge> 2*m \<and> v>2*m"
-    by (smt One_nat_def Suc_eq_plus1 add_lessD1 distrib_right mult.left_neutral numeral_3_eq_3 of_nat_add one_add_one)
+    by (smt (z3) One_nat_def Suc_eq_plus1 add_lessD1 distrib_right mult.left_neutral numeral_3_eq_3 of_nat_add one_add_one)
   from udef have pre1: "k\<ge>1 \<and> u\<ge>1" using rd by linarith
   from pre1 374 m_def have pre2: "m\<ge>u" by simp
   from pre2 374 have 375: "2*m\<ge>2*u \<and> v>2*u" by simp
@@ -1465,7 +1465,7 @@ proof -
   define y where "y = \<alpha> w (c+1)"
   from alpha_det1 wd x_def y_def have 350: "x^2-int w*x*y+y^2 =1" by (metis add_gr_0 alpha_det2 diff_add_inverse2 less_one mult.assoc)
   from x_def wd congruence have 353: "a mod v = x mod v"
-    by (smt "374" assms int_nat_eq nat_int nat_mod_distrib)
+    by (smt (z3) "374" assms int_nat_eq nat_int nat_mod_distrib)
   from congruence2 wd x_def have 379: "x mod int (w-2) = int c mod (int w-2)"
     using int_ops(6) zmod_int by auto
   from wd have wc: "u dvd (int w-2)" using mod_diff_cong mod_eq_0_iff_dvd by fastforce
@@ -1493,12 +1493,12 @@ proof -
          2*a<u \<and> 2*a<v \<and> a mod v = x mod v \<and> 2*c<u \<and> c mod u = x mod u" by fastforce
   from alpha_strictly_increasing have s_pos: "s\<ge>0" using asd s_def by linarith
   define S where "S=nat s"
-  from alpha_strictly_increasing have r_pos: "r\<ge>0" using asd r_def by (smt One_nat_def Suc_1 alpha_superlinear assms(1) lessI less_trans numeral_3_eq_3 of_nat_0_le_iff)
+  from alpha_strictly_increasing have r_pos: "r\<ge>0" using asd r_def by (smt (z3) One_nat_def Suc_1 alpha_superlinear assms(1) lessI less_trans numeral_3_eq_3 of_nat_0_le_iff)
   define R where "R=nat r"
   from udef alpha_strictly_increasing have ut_pos:"u\<ge>0 \<and> t\<ge>0" using pre1 by linarith
   from assms have a_pos: "a\<ge>0" using a354 by linarith
   from a_pos have v_pos: "v\<ge>0" using "376" by linarith
-  from x_def y_def have xy_pos: "x\<ge>0 \<and> y\<ge>0" by (smt alpha_superlinear of_nat_0_le_iff wd)
+  from x_def y_def have xy_pos: "x\<ge>0 \<and> y\<ge>0" by (smt (z3) alpha_superlinear of_nat_0_le_iff wd)
   define U where "U=nat u"
   define T where "T=nat t"
   define V where "V=nat v"
@@ -1669,12 +1669,12 @@ proof(cases "q>0")
           using  Q True b_def apply (simp add: add.commute) by (metis mod_less of_nat_eq_iff) 
         define m where "m = int b * int q - int q * int q - 1"
         have "int q ^ r < int b * int q - int q * int q - 1" using "Exp_Matrices.89"[of q r] b_def True 
-          by (smt Exp_Matrices.alpha_strictly_increasing One_nat_def Suc_eq_plus1 int_nat_eq nat_2 
+          by (smt (z3) Exp_Matrices.alpha_strictly_increasing One_nat_def Suc_eq_plus1 int_nat_eq nat_2 
               numeral_Bit0 of_nat_0_less_iff of_nat_add of_nat_mult one_add_one)
-        moreover have "int p < m" by (smt gr_implies_not0 int_ops(6) int_ops(7) less_imp_of_nat_less 
+        moreover have "int p < m" by (smt (z3) gr_implies_not0 int_ops(6) int_ops(7) less_imp_of_nat_less 
                m_def of_nat_Suc of_nat_eq_0_iff prems3)
         moreover have "(int q * Exp_Matrices.\<alpha> b r - (int b * Exp_Matrices.\<alpha> b r - Exp_Matrices.\<alpha> b (Suc r))) mod m = int p mod m" 
-          using prems4 by (smt calculation(2) int_ops(6) m_def mod_pos_pos_trivial of_nat_0_le_iff 
+          using prems4 by (smt (z3) calculation(2) int_ops(6) m_def mod_pos_pos_trivial of_nat_0_le_iff 
               of_nat_1 of_nat_add of_nat_mult plus_1_eq_Suc b_def)
         ultimately show ?thesis using True "Exp_Matrices.88"[of q "r" b p] m_def  by simp
       qed

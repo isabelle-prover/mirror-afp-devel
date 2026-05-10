@@ -525,7 +525,7 @@ proof -
   have "subst t (\<Gamma> ++\<^sub>f \<Gamma>') = subst t (fmrestrict_fset (frees t) (\<Gamma> ++\<^sub>f \<Gamma>'))"
     by (metis subst_restrict')
   also have "\<dots> = subst t (fmrestrict_fset (frees t) \<Gamma> ++\<^sub>f \<Gamma>')"
-    by (smt fmlookup_add fmlookup_restrict_fset subst_cong)
+    by (smt (z3) fmlookup_add fmlookup_restrict_fset subst_cong)
   also have "\<dots> = subst t (fmrestrict_fset (frees t |-| fmdom \<Gamma>') \<Gamma> ++\<^sub>f \<Gamma>')"
     by (rule subst_cong) (simp add: fmfilter_alt_defs(5))
   also have "\<dots> = subst (subst t \<Gamma>') (fmrestrict_fset (frees t |-| fmdom \<Gamma>') \<Gamma>)"
@@ -651,7 +651,7 @@ lemma match_subst_closed:
   assumes "match pat t = Some env" "closed_except rhs (frees pat)" "closed t"
   shows "closed (subst rhs env)"
 using assms
-by (smt fminusE fmpred_iff fset_mp fsubsetI closed_except_def match_vars match_dom subst_frees)
+by (smt (z3) fminusE fmpred_iff fset_mp fsubsetI closed_except_def match_vars match_dom subst_frees)
 
 fun rewrite_step :: "(term \<times> 'a) \<Rightarrow> 'a \<Rightarrow> 'a option" where
 "rewrite_step (t\<^sub>1, t\<^sub>2) u = map_option (subst t\<^sub>2) (match t\<^sub>1 u)"
@@ -862,7 +862,7 @@ unfolding ids_def frees_list_comb consts_list_comb freess_def
 apply auto
 apply (smt fbind_iff finsert_absorb finsert_fsubset funion_image_bind_eq inf_sup_ord(3))
 apply (metis fbind_iff funionCI funion_image_bind_eq)
-by (smt fbind_iff funionE funion_image_bind_eq)
+by (smt (z3) fbind_iff funionE funion_image_bind_eq)
 
 lemma frees_strip_comb: "frees t = frees (fst (strip_comb t)) |\<union>| freess (snd (strip_comb t))"
 by (metis list_strip_comb frees_list_comb)
@@ -1170,7 +1170,7 @@ lemma unconst_rel: "P t u \<Longrightarrow> unconst t = unconst u"
 by (metis P_const_t P_t_const const_name_simps(2) is_const_def unconst_const)
 
 lemma unapp_rel: "P t u \<Longrightarrow> rel_option (rel_prod P P) (unapp t) (unapp u)"
-by (smt P_app_t P_t_app is_app_def left_right_simps(3) option.rel_sel option.sel option.simps(3) rel_prod_inject unapp_app)
+by (smt (z3) P_app_t P_t_app is_app_def left_right_simps(3) option.rel_sel option.sel option.simps(3) rel_prod_inject unapp_app)
 
 lemma match_rel:
   assumes "P t u"

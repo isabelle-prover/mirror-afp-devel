@@ -650,7 +650,7 @@ proof-
    apply (rule subst_typ_stepwise)
    using assms apply (simp add: distinct_zipI1)
    using assms
-   by (smt UnCI imageE image_eqI length_map map_snd_zip prod.collapse set_map set_zip_leftD)
+   by (smt (z3) UnCI imageE image_eqI length_map map_snd_zip prod.collapse set_map set_zip_leftD)
   ultimately have unfold: "subst_typ (zip (zip fresh_idns (map snd (map fst insts))) (map snd insts)) 
     (subst_typ (zip (map fst insts) (map2 Tv fresh_idns (map snd (map fst insts)))) \<tau>)
    = fold (\<lambda>single acc . subst_typ [single] acc) (zip (zip fresh_idns (map snd (map fst insts))) (map snd insts)) 
@@ -825,7 +825,7 @@ proof-
    apply (rule subst_term_stepwise)
    using assms apply (simp add: distinct_zipI1)
    using assms
-   by (smt UnCI imageE image_eqI length_map map_snd_zip prod.collapse set_map set_zip_leftD)
+   by (smt (z3) UnCI imageE image_eqI length_map map_snd_zip prod.collapse set_map set_zip_leftD)
   ultimately have unfold: "subst_term (zip (zip fresh_idns (map snd (map fst insts))) (map snd insts)) 
     (subst_term (zip (map fst insts) (map2 Fv fresh_idns (map snd (map fst insts)))) t)
    = fold (\<lambda>single acc . subst_term [single] acc) (zip (zip fresh_idns (map snd (map fst insts))) (map snd insts)) 

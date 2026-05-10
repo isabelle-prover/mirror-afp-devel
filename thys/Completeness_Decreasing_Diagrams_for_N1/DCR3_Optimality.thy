@@ -1356,7 +1356,7 @@ proof -
   obtain A where b1: "A = (UNIV::'U set)" by blast
   obtain S where b2: "S \<subseteq> A \<and> |S| =o cardSuc |UNIV::nat set|"
     using b1 assms
-      by (smt Card_order_ordIso2 Field_card_of cardSuc_Card_order card_of_Field_ordIso 
+      by (smt (z3) Card_order_ordIso2 Field_card_of cardSuc_Card_order card_of_Field_ordIso 
           card_of_card_order_on internalize_ordLeq ordIso_symmetric ordIso_transitive)
   then have "\<not> ( |S| \<le>o |UNIV::nat set| )" by (simp add: cardSuc_ordLess_ordLeq ordIso_iff_ordLeq)
   moreover then have "\<not> finite S" by (meson card_of_Well_order infinite_iff_card_of_nat ordLeq_total)

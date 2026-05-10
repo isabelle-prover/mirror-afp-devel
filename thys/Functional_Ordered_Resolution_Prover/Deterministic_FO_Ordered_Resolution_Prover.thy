@@ -953,7 +953,7 @@ proof (intro order_antisym subsetI)
   have tl_\<rho>s: "tl ?\<rho>s = [\<rho>]"
     unfolding \<rho>_def
     using renamings_apart_length Nitpick.size_list_simp(2) Suc_length_conv last.simps
-    by (smt length_greater_0_conv list.sel(3))
+    by (smt (z3) length_greater_0_conv list.sel(3))
 
   {
     fix E
@@ -1169,7 +1169,7 @@ proof -
         apply (subst remdups_clss.simps(2))
         by (auto simp: Let_def case_prod_beta p_cons[symmetric] ci[symmetric])
       then have len_p: "length (remdups_clss P) = length (remdups_clss ?P') + 1"
-        by (smt Suc_eq_plus1_left add.assoc add_right_cancel length_Cons length_append
+        by (smt (z3) Suc_eq_plus1_left add.assoc add_right_cancel length_Cons length_append
             mset_eq_length)
 
       have "wstate_of_dstate (N, P, Q, n) \<leadsto>\<^sub>w\<^sup>* wstate_of_dstate ([], P, Q, n)"

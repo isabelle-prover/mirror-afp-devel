@@ -115,7 +115,7 @@ proof -
   obtain z where "\<forall>a . atom a \<longrightarrow> (if a \<le> x then mval a z = bot else mval a z = mval a y)"
     using assms by blast
   thus ?thesis
-    by (smt mtrunc_def someI)
+    by (smt (z3) mtrunc_def someI)
 qed
 
 lemma mtrunc_char_1:

@@ -672,7 +672,7 @@ subsection \<open>Invariants for While-Loops\<close>
     using WF INIT 
     apply (induction rule: wf_induct_rule[where a=s\<^sub>0])
     apply (subst wp_while_unfold)
-    by (smt STEP wp_conseq)
+    by (smt (z3) STEP wp_conseq)
     
     
   subsubsection \<open>Standard Forms of While Rules\<close>  
