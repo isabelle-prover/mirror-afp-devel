@@ -1,0 +1,60 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{url}
+
+\urlstyle{rm}
+\isabellestyle{it}
+\setlength{\emergencystretch}{3em}
+
+\begin{document}
+
+\title{Alon's Combinatorial Nullstellensatz}
+\author{Arthur F. Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This entry formalizes Alon's Combinatorial Nullstellensatz for sparse
+multivariate polynomials over fields. The proof derives the coefficient formula
+from univariate Lagrange interpolation and uses it to obtain the standard
+nonvanishing conclusion over finite grids. AI assistance was used for proof
+engineering. The final definitions, statements, and proofs are checked by
+Isabelle.
+\end{abstract}
+
+\section{Overview}
+
+Alon's Combinatorial Nullstellensatz is a polynomial-method theorem about a
+distinguished coefficient of a multivariate polynomial. In the form formalized
+here, if all monomials have total degree bounded by $d_1+\cdots+d_n$ and the
+coefficient of $X_1^{d_1}\cdots X_n^{d_n}$ is nonzero, then the polynomial has a
+nonzero value on every product grid whose $i$-th side has more than $d_i$
+elements.
+
+The Isabelle/HOL development represents multivariate polynomials sparsely, as
+finite-support coefficient functions from exponent lists to field elements. It
+first proves the necessary univariate Lagrange interpolation identities, then
+sums polynomial evaluations over a finite grid with the corresponding Lagrange
+weights. All monomials except the distinguished exponent vector cancel, yielding
+the coefficient formula and the nonvanishing theorem.
+
+\section{Sources}
+
+The entry follows Alon's original paper~\cite{Alon1999}. The formal proof uses
+only Isabelle/HOL's standard computational algebra library as its mathematical
+base.
+
+\tableofcontents
+
+\sloppy
+\input{session}
+\fussy
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
