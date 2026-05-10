@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-05-07T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Combinatorial_Nullstellensatz.html</loc>
+    <lastmod>2026-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-05-07T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Nash_Equilibrium.html</loc>
     <lastmod>2026-05-07T00:00:00+00:00</lastmod>
@@ -6560,6 +6563,8 @@
     <loc>https://isa-afp.org/thys/Combinatorial_Enumeration_Algorithms/Trees.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Combinatorial_Enumeration_Algorithms/Weak_Integer_Compositions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Combinatorial_Nullstellensatz/Combinatorial_Nullstellensatz.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Combinatorial_Q_Analogues/Euler_Function.html</loc>
   </url><url>

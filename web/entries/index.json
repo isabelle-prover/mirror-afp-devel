@@ -1,5 +1,23 @@
 [
  {
+  "abstract": "This entry formalizes Alon’s Combinatorial Nullstellensatz for sparse multivariate polynomials over fields. The proof derives the coefficient formula from univariate Lagrange interpolation and uses it to obtain the standard nonvanishing conclusion over finite grids. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "Ruy Jose Guerra Barretto de Queiroz",
+   "David Barros Hulak"
+  ],
+  "link": "../entries/Combinatorial_Nullstellensatz.html",
+  "shortname": "Combinatorial_Nullstellensatz",
+  "title": "Alon’s Combinatorial Nullstellensatz",
+  "topic_links": [
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This development formalizes Nash equilibria for finite strategic form games, following Nash’s equilibrium concept [5, 4]. It gives reusable definitions of profiles, unilateral deviations, best responses, dominant strategies, and pure Nash equilibria; proves existence for finite ordinal potential games [3] and games with dominant strategies; and verifies matching pennies as a finite game with no pure Nash equilibrium. It also formalizes mixed-strategy profiles for finite games, support lem mas for equilibrium strategies, Dirac embeddings of pure profiles, and the existence of a mixed Nash equilibrium using Brouwer’s fixed point theorem. Worked examples cover the Prisoner’s Dilemma, a coordina tion game, matching pennies, and rock-paper-scissors. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
