@@ -11,11 +11,8 @@ theorem uniquetree: "invar_vebt t n \<Longrightarrow> invar_vebt s n \<Longright
 proof(induction t n arbitrary: s rule: invar_vebt.induct)
   case (1 a b)
   then show ?case
-    apply(cases "vebt_member t 0")
-     apply(cases "vebt_member t 1")
-      apply(cases "vebt_member t 1") 
-       apply (smt (z3) "1.prems"(1) "1.prems"(2) VEBT_Member.vebt_member.simps(1) One_nat_def deg_1_Leafy deg_not_0 less_not_refl mem_Collect_eq set_vebt'_def) +
-    done
+    by (metis One_nat_def VEBT.inject(2) deg1Leaf member_correct n_not_Suc_n
+        set_vebt_set_vebt'_valid vebt_member.simps(1))
 next
   case (2 treeList n summary m deg)
   from 2(9) obtain treeList' summary' where sprop:"s = Node None deg treeList' summary' \<and> deg = n+m 
@@ -52,12 +49,12 @@ next
           using membermima.simps(5)[of "deg-1" treeList' summary' "(2^m*i+x)"] sprop ac 
           apply auto
           apply (metis One_nat_def Suc_diff_1 \<open>membermima (Node None (Suc (deg - 1)) treeList' summary') (2 ^ m * i + x) = (let pos = high (2 ^ m * i + x) (Suc (deg - 1) div 2) in if pos < length treeList' then membermima (treeList' ! pos) (low (2 ^ m * i + x) (Suc (deg - 1) div 2)) else False)\<close> add.commute deg_not_0 neq0_conv not_add_less1)
-          by (smt (z3) "2.hyps"(3) Nat.add_0_right Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_gr_0 add_self_div_2 deg_not_0 div_less div_mult_self4 high_def low_inv member_bound mult.commute nth_mem power_not_zero zero_neq_numeral)
+          by (smt (verit) "2.hyps"(3) Nat.add_0_right Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_gr_0 add_self_div_2 deg_not_0 div_less div_mult_self4 high_def low_inv member_bound mult.commute nth_mem power_not_zero zero_neq_numeral)
         moreover have "naive_member (treeList' ! i) x \<Longrightarrow> naive_member s (2^m*i+x)" 
           using naive_member.simps(3)[of None "deg-1" treeList' summary' "(2^m*i+x)" ] sprop ac
           apply auto 
           apply (metis One_nat_def Suc_pred' \<open>naive_member (Node None (Suc (deg - 1)) treeList' summary') (2 ^ m * i + x) = (let pos = high (2 ^ m * i + x) (Suc (deg - 1) div 2) in if pos < length treeList' then naive_member (treeList' ! pos) (low (2 ^ m * i + x) (Suc (deg - 1) div 2)) else False)\<close> add_gr_0 deg_not_0)
-          by (smt (z3) "2.hyps"(3) Nat.add_0_right Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_gr_0 add_self_div_2 deg_not_0 div_less div_mult_self4 high_def low_inv member_bound mult.commute nth_mem power_not_zero zero_neq_numeral)
+          by (smt (verit) "2.hyps"(3) Nat.add_0_right Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_gr_0 add_self_div_2 deg_not_0 div_less div_mult_self4 high_def low_inv member_bound mult.commute nth_mem power_not_zero zero_neq_numeral)
         ultimately have "both_member_options s (2^m*i +x)" unfolding both_member_options_def by auto
         hence False 
           using "2.prems"(1) VEBT_Member.vebt_member.simps(2) sprop valid_member_both_member_options by blast
@@ -115,10 +112,10 @@ next
           unfolding both_member_options_def by auto
         moreover have "membermima (treeList' ! i) x \<Longrightarrow> membermima s (2^n*i+x)" 
           using membermima.simps(5)[of "deg-1" treeList' summary' "(2^n*i+x)"] sprop ac
-          by (smt (z3) "3.hyps"(3) "3.prems"(1) Nat.add_diff_assoc Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_diff_cancel_left' add_self_div_2 deg_not_0 even_Suc high_inv le_add1 low_inv member_bound mult.commute mult_2 nth_mem odd_two_times_div_two_nat plus_1_eq_Suc)
+          by (smt (verit) "3.hyps"(3) "3.prems"(1) Nat.add_diff_assoc Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_diff_cancel_left' add_self_div_2 deg_not_0 even_Suc high_inv le_add1 low_inv member_bound mult.commute mult_2 nth_mem odd_two_times_div_two_nat plus_1_eq_Suc)
         moreover have "naive_member (treeList' ! i) x \<Longrightarrow> naive_member s (2^n*i+x)" 
           using naive_member.simps(3)[of None "deg-1" treeList' summary' "(2^n*i+x)" ] sprop ac 
-          by (smt (z3) "3.hyps"(3) "3.prems"(1) Nat.add_0_right Nat.add_diff_assoc Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_self_div_2 deg_not_0 div_less div_mult_self4 even_Suc_div_two high_def le_add1 low_inv member_bound mult.commute nth_mem odd_add plus_1_eq_Suc power_not_zero zero_neq_numeral)
+          by (smt (verit) "3.hyps"(3) "3.prems"(1) Nat.add_0_right Nat.add_diff_assoc Suc_pred \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> add_self_div_2 deg_not_0 div_less div_mult_self4 even_Suc_div_two high_def le_add1 low_inv member_bound mult.commute nth_mem odd_add plus_1_eq_Suc power_not_zero zero_neq_numeral)
         ultimately have "both_member_options s (2^n*i +x)" unfolding both_member_options_def 
           by auto
         hence False 
@@ -290,13 +287,16 @@ next
         hence "vebt_member (Node (Some (mi, ma)) deg treeList summary) (2^n*i+x)" 
           using both_member_options_from_chilf_to_complete_tree
             [of " (2^n*i+x)" deg treeList mi ma summary] aaa high_inv[of x n i] 
-          by (smt (z3) VEBT_Member.vebt_member.simps(5) Suc_diff_Suc Suc_leD \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList ! i) x\<close> a0 add_self_div_2 case4(11) case4(4) case4(5) case4(8) le_add_diff_inverse le_less_Suc_eq le_neq_implies_less low_inv mult.commute nat_1_add_1 not_less_iff_gr_or_eq nth_mem plus_1_eq_Suc sprop1)
+          by (smt (verit) \<open>i < 2 ^ m\<close> a0 add_leD1 add_self_div_2 both_member_options_equiv_member
+              case4(1,10,11,3,4,5,7,8,9) invar_vebt.intros(4) low_inv mult.commute one_add_one sprop1)
         have "mi <  (2^n*i+x) \<and>  (2^n*i+x) \<le> ma" using vebt_mint.simps(3)[of mi ma deg treeList summary] 
           by (metis \<open>i < 2 ^ m\<close> \<open>x < 2 ^ n\<close> aaa case4(11) case4(4) case4(8) high_inv low_inv mult.commute nth_mem)
         moreover have "both_member_options s (2^m*i +x)" 
           using \<open>vebt_member (Node (Some (mi, ma)) deg treeList summary) (2 ^ n * i + x)\<close> both_member_options_equiv_member case4(12) case4(13) case4(5) set_vebt'_def by auto
         hence "both_member_options (treeList' ! i) x"  
-          by (smt (z3) \<open>i < 2 ^ m\<close>  acd \<open>x < 2 ^ n\<close> a0 add_leD1 add_self_div_2 both_member_options_from_complete_tree_to_child calculation case4(5) high_inv infsplit low_inv mult.commute nat_neq_iff numeral_2_eq_2 plus_1_eq_Suc sprop1)
+          by (metis Groups.mult_ac(2) Suc_1 VEBT_internal.deg_not_0 \<open>x < 2 ^ n\<close> a0 acd add_leD1 add_self_div_2
+              both_member_options_from_complete_tree_to_child calculation case4(10,5) exp_split_high_low(1)
+              high_inv infsplit low_inv nat_less_le plus_1_eq_Suc sprop1)
         then show ?thesis 
           by (metis \<open>i < 2 ^ m\<close> nth_mem sprop1 valid_member_both_member_options)
       qed
@@ -305,7 +305,7 @@ next
         assume "vebt_member (treeList' ! i) x"
         hence "vebt_member s (2^n*i +x)" using sprop1 both_member_options_from_chilf_to_complete_tree
             [of "(2^n*i +x)" deg treeList' mi ma summary'] 
-          by (smt (z3) Nat.add_0_right \<open>i < 2 ^ m\<close> a0 add_leD1 add_self_div_2 both_member_options_equiv_member case4(12) case4(5) div_less div_mult_self4 high_def infsplit low_inv member_bound mult.commute nat_1_add_1 nth_mem power_not_zero zero_neq_numeral)
+          by (smt (verit) Nat.add_0_right \<open>i < 2 ^ m\<close> a0 add_leD1 add_self_div_2 both_member_options_equiv_member case4(12) case4(5) div_less div_mult_self4 high_def infsplit low_inv member_bound mult.commute nat_1_add_1 nth_mem power_not_zero zero_neq_numeral)
         hence "mi < (2^n*i +x) \<and> (2^n*i +x) \<le> ma " 
           using vebt_mint.simps(3)[of mi ma deg treeList' summary'] vebt_maxt.simps(3)[of mi ma deg treeList' summary'] 
           by (metis \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> acd both_member_options_equiv_member case4(12) high_inv infsplit low_inv member_bound mi_eq_ma_no_ch mult.commute nth_mem sprop1)
@@ -313,7 +313,7 @@ next
           by (metis \<open>vebt_member s (2 ^ n * i + x)\<close> add_leD1 both_member_options_equiv_member both_member_options_from_chilf_to_complete_tree calculation case4(1) case4(13) case4(5) maxbmo vebt_maxt.simps(3) mem_Collect_eq member_inv nat_neq_iff nth_mem one_add_one set_vebt'_def) 
         hence "both_member_options (treeList ! i) x"
           using both_member_options_from_complete_tree_to_child[of deg mi ma treeList summary "(2^n*i +x)"]
-          by (smt (z3) Nat.add_0_right Suc_leD \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> a0 add_self_div_2 calculation case4(11) case4(5) div_less div_mult_self4 high_def low_inv member_bound mult.commute nat_1_add_1 nat_neq_iff nth_mem plus_1_eq_Suc power_not_zero sprop1 zero_neq_numeral)
+          by (smt (verit) Nat.add_0_right Suc_leD \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> a0 add_self_div_2 calculation case4(11) case4(5) div_less div_mult_self4 high_def low_inv member_bound mult.commute nat_1_add_1 nat_neq_iff nth_mem plus_1_eq_Suc power_not_zero sprop1 zero_neq_numeral)
         then show ?thesis 
           by (metis \<open>i < 2 ^ m\<close> aca case4(1) nth_mem sprop1 valid_member_both_member_options)
       qed
@@ -343,8 +343,9 @@ next
     using vebt_member.simps(5)[of mi ma "deg -2" treeList summary ma]
     apply (metis add_2_eq_Suc' le_add_diff_inverse2 mem_Collect_eq set_vebt'_def)
     done
-  from 5(12) obtain treeList' summary' info where sprop1:"s = Node info deg treeList' summary' \<and> deg = n+m 
-                  \<and> length treeList' =2^m \<and> invar_vebt summary' m \<and> (\<forall> t \<in> set treeList'. invar_vebt t n) " 
+  from 5(12) obtain treeList' summary' info where
+    sprop1:"s = Node info deg treeList' summary'" "deg = n+m" "length treeList' =2^m"
+      "invar_vebt summary' m" "\<forall> t \<in> set treeList'. invar_vebt t n"
     apply cases 
     using a0 apply linarith 
     apply (metis case4(5) case4(6) even_Suc odd_add add_self_div_2)
@@ -446,12 +447,30 @@ next
     (\<forall>i<2 ^ m.
         (high ma n = i \<longrightarrow> both_member_options (treeList' ! i) (low ma n)) \<and>
         (\<forall>x. high x n = i \<and> both_member_options (treeList' ! i) (low x n) \<longrightarrow> mi < x \<and> x \<le> ma))"
-    apply cases using sprop1 apply simp
-    using sprop1 infsplit apply simp
-    using sprop1 infsplit apply simp 
-    apply (metis case4(5) even_Suc odd_add sprop1)
-    apply (smt (z3) Suc_inject VEBT.inject(1) add_Suc_right add_self_div_2 case4(5) infsplit option.inject prod.inject sprop1)
-    done
+    unfolding sprop1
+  proof (cases rule: invar_vebt.cases)
+    case (2 n m)
+    then show ?thesis
+      using infsplit by simp
+  next
+    case (3 n m)
+    then show ?thesis
+      using infsplit by simp
+  next
+    case (4 n m mi ma)
+    then show ?thesis
+      using infsplit
+      by (metis case4(5) even_Suc odd_add)
+  next
+    case (5 n' m' mi' ma')
+    then have *: "mi' = mi" "ma' = ma"
+      using infsplit by simp_all
+    show ?thesis
+      using 5 sprop1
+      unfolding *
+      unfolding case4(5)
+      by (metis Suc_1 lessI nat.inject power_inject_exp)
+  qed
   hence "length treeList' = 2^m"
     using sprop1 by fastforce
   hence aca:"length treeList' =length treeList" using "5.hyps"(2) 
@@ -492,17 +511,40 @@ next
           using acd calculation case4(10) high_bound_aux sprop1 verit_comp_simplify1(3) by blast
         hence "both_member_options (treeList' ! i) x"
           using both_member_options_from_complete_tree_to_child[of deg mi ma treeList' summary' "2^n*i+x"]
-            low_inv[of x n i] high_inv[of x n i] 
-          by (smt (z3) Nat.add_0_right \<open>vebt_member (Node (Some (mi, ma)) deg treeList summary) (2 ^ n * i + x)\<close> \<open>x < 2 ^ n\<close> a0 add_Suc_right add_leD1 both_member_options_equiv_member calculation case4(12) case4(13) case4(5) diff_Suc_1 div_less div_mult_self4 infsplit le_add_diff_inverse2 mem_Collect_eq mult.commute mult_2 nat_1_add_1 nat_neq_iff one_less_numeral_iff semiring_norm(76) sprop1 set_vebt'_def zero_neq_numeral)
+            low_inv[of x n i] high_inv[of x n i]
+          by (smt (verit, ccfv_threshold) Suc_1 \<open>both_member_options s (2 ^ n * i + x)\<close> \<open>x < 2 ^ n\<close>
+              add.right_neutral add_Suc_right add_leD1 calculation case4(5,6) div_mult_self2 infsplit
+              le_imp_less_Suc mult.commute mult_2 nat_less_le not_le numeral_One one_div_two_eq_zero plus_1_eq_Suc
+              sprop1(1))
         then show "vebt_member (treeList' ! i) x" 
           by (metis \<open>i < 2 ^ m\<close> nth_mem sprop1 valid_member_both_member_options)
       qed
       show "vebt_member (treeList' ! i) x \<Longrightarrow> vebt_member (treeList ! i) x" 
       proof-
-        assume "vebt_member (treeList' ! i) x"
-        hence "vebt_member s (2^n*i +x)" using sprop1 both_member_options_from_chilf_to_complete_tree
-            [of "(2^n*i +x)" deg treeList' mi ma summary'] 
-          by (smt (z3) Nat.add_0_right Suc_leD \<open>i < 2 ^ m\<close> a0 add_Suc_right both_member_options_equiv_member case4(12) case4(5) diff_Suc_1 div_less div_mult_self4 even_Suc high_def infsplit low_inv member_bound mult.commute mult_2_right nat_1_add_1 nth_mem odd_add odd_two_times_div_two_nat plus_1_eq_Suc power_not_zero zero_neq_numeral)
+        assume assm: "vebt_member (treeList' ! i) x"
+
+        have "both_member_options (Node (Some (mi, ma)) deg treeList' summary') (2 ^ n * i + x)"
+        proof (rule both_member_options_from_chilf_to_complete_tree)
+          show "1 \<le> deg"
+            using a0 by presburger
+
+          have "x < 2 ^ n"
+            using assm by (simp add: \<open>i < 2 ^ m\<close> member_bound sprop1(3,5))
+          then have "high (2 ^ n * i + x) n = i"
+            by (simp add: high_inv mult.commute)
+          moreover have "deg div 2 = n"
+            by (simp add: case4(5) sprop1(2))
+          ultimately show "high (2 ^ n * i + x) (deg div 2) < length treeList'"
+            by (metis sprop1(3) \<open>i < 2 ^ m\<close>)
+
+          then show "both_member_options (treeList' ! high (2 ^ n * i + x) (deg div 2))
+          (low (2 ^ n * i + x) (deg div 2))"
+            by (metis \<open>deg div 2 = n\<close> \<open>high (2 ^ n * i + x) n = i\<close> \<open>vebt_member (treeList' ! i) x\<close> \<open>x < 2 ^ n\<close>
+                both_member_options_equiv_member low_inv mult.commute nth_mem sprop1(5))
+        qed
+
+        then have "vebt_member s (2^n*i +x)"
+          by (metis sprop1(1) valid_member_both_member_options case4(12) infsplit)
         hence "mi < (2^n*i +x) \<and> (2^n*i +x) \<le> ma " 
           using vebt_mint.simps(3)[of mi ma deg treeList' summary'] vebt_maxt.simps(3)[of mi ma deg treeList' summary'] 
           by (metis \<open>i < 2 ^ m\<close> \<open>vebt_member (treeList' ! i) x\<close> acd both_member_options_equiv_member case4(12) high_inv infsplit low_inv member_bound mi_eq_ma_no_ch mult.commute nth_mem sprop1)
@@ -512,10 +554,14 @@ next
           by (simp add: \<open>i < 2 ^ m\<close> sprop1)
         hence "x < 2^n" 
           using \<open>vebt_member (treeList' ! i) x\<close> member_bound by auto
+        then have "low (2 ^ n * i + x) (deg div 2) = x" "high (2 ^ n * i + x) (deg div 2) = i"
+          using low_inv[of x n i] high_inv[of x n i]
+          by (simp_all add: case4(5) mult.commute sprop1(2))
         hence "both_member_options (treeList ! i) x"
           using both_member_options_from_complete_tree_to_child[of deg mi ma treeList summary "(2^n*i +x)"]
-            low_inv[of x n i] high_inv[of x n i] 
-          by (smt (z3) Nat.add_0_right Suc_leD \<open>both_member_options (Node (Some (mi, ma)) deg treeList summary) (2 ^ n * i + x)\<close> \<open>i < 2 ^ m\<close> a0 add_Suc_right calculation case4(11) case4(5) div_less div_mult_self4 mult.commute mult_2 nat_1_add_1 nat_neq_iff one_less_numeral_iff plus_1_eq_Suc semiring_norm(76) sprop1 zero_neq_numeral)
+          by (metis \<open>both_member_options (Node (Some (mi, ma)) deg treeList summary) (2 ^ n * i + x)\<close>
+              \<open>i < 2 ^ m\<close> \<open>x < 2 ^ n\<close> a0 add_leD1 calculation case4(11) high_inv low_inv mult.commute nat_less_le
+              one_add_one)
         then show ?thesis 
           by (metis \<open>i < 2 ^ m\<close> aca case4(1) nth_mem sprop1 valid_member_both_member_options)
       qed

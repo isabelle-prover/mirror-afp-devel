@@ -90,8 +90,24 @@ next
 qed
 
 
-lemma maxt_corr_help: "invar_vebt t n \<Longrightarrow> vebt_maxt t = Some maxi \<Longrightarrow> vebt_member t x \<Longrightarrow> maxi \<ge> x " 
-  by (smt (z3) VEBT_Member.vebt_member.simps(1) le_less vebt_maxt.elims member_inv mi_ma_2_deg option.simps(1) option.simps(3) zero_le_one)
+lemma maxt_corr_help:
+  assumes "invar_vebt t n" "vebt_maxt t = Some maxi" "vebt_member t x"
+  shows "maxi \<ge> x "
+  using assms(2,1,3)
+proof (cases t "Some maxi" rule: vebt_maxt.elims)
+  case (1 a b)
+  then show ?thesis
+    by (metis assms(3) le0 le_numeral_extra(4) option.inject vebt_member.simps(1))
+next
+  case (2 uu uv uw)
+  then have False
+    by simp
+  then show ?thesis ..
+next
+  case (3 mi ma ux uy uz)
+  then show ?thesis
+    by (metis member_inv assms(1,3) le_eq_less_or_eq mi_ma_2_deg option.inject)
+qed
 
 lemma maxt_corr_help_empty: "invar_vebt t n \<Longrightarrow> vebt_maxt t = None \<Longrightarrow> set_vebt' t = {}" 
   by (metis (full_types) VEBT_Member.vebt_member.simps(1) empty_Collect_eq vebt_maxt.elims minNull.simps(4) min_Null_member option.distinct(1) set_vebt'_def)
@@ -137,8 +153,24 @@ next
 qed
 
 
-lemma mint_corr_help: "invar_vebt t n \<Longrightarrow> vebt_mint t = Some mini \<Longrightarrow> vebt_member t x \<Longrightarrow> mini \<le> x " 
-  by (smt (z3) VEBT_Member.vebt_member.simps(1) eq_iff option.inject less_imp_le_nat member_inv mi_ma_2_deg vebt_mint.elims of_nat_0 of_nat_0_le_iff of_nat_le_iff option.simps(3))
+lemma mint_corr_help:
+  assumes "invar_vebt t n" "vebt_mint t = Some mini" "vebt_member t x"
+  shows "mini \<le> x"
+  using assms(2,1,3)
+proof (cases t "Some mini" rule: vebt_mint.elims)
+  case (1 a b)
+  then show ?thesis
+    by (metis assms(3) le_numeral_extra(3,4) option.inject vebt_member.simps(1) zero_le_one)
+next
+  case (2 uu uv uw)
+  then have False
+    by simp
+  then show ?thesis ..
+next
+  case (3 mi ma ux uy uz)
+  then show ?thesis
+    by (metis antisym_conv1 assms(1,3) member_inv mi_ma_2_deg nless_le option.inject)
+qed
 
 lemma mint_corr_help_empty: "invar_vebt t n \<Longrightarrow> vebt_mint t = None \<Longrightarrow> set_vebt' t = {}"
   by (metis VEBT_internal.maxt_corr_help_empty option.distinct(1) vebt_maxt.simps(1) vebt_maxt.simps(2) vebt_mint.elims)
@@ -223,8 +255,17 @@ next
       let ?X =  "2^n*maxs + x"
       have "high ?X n = maxs" 
         by (simp add: \<open>x < 2 ^ n\<close> high_inv mult.commute)
-      hence "both_member_options (Node (Some (mi, ma)) deg treeList summary) (2^n*maxs + x)" 
-        by (smt (z3) "5"(3) "5"(4) "5"(5) \<open>both_member_options (treeList ! maxs) x\<close> \<open>maxs < 2 ^ m\<close> \<open>x < 2 ^ n\<close> add_Suc_right add_self_div_2 both_member_options_from_chilf_to_complete_tree even_Suc_div_two le_add1 low_inv mult.commute odd_add plus_1_eq_Suc)
+      have "both_member_options (Node (Some (mi, ma)) deg treeList summary) (2^n*maxs + x)"
+      proof (rule both_member_options_from_chilf_to_complete_tree)
+        show "high ?X (deg div 2) < length treeList"
+          using "5"(3,4,5) \<open>high ?X n = maxs\<close> \<open>maxs < 2 ^ m\<close> by auto
+        show "1 \<le> deg"
+          by (simp add: "5"(4,5))
+        show "both_member_options (treeList ! high ?X (deg div 2)) (low ?X (deg div 2))"
+          by (metis "5"(4,5) \<open>both_member_options (treeList ! maxs) x\<close> \<open>high ?X n = maxs\<close>
+              \<open>x < 2 ^ n\<close> add_Suc_right add_self_div_2 even_Suc_div_two even_add low_inv
+              mult.commute)
+      qed
     hence "vebt_member (Node (Some (mi, ma)) deg treeList summary) ?X"
         using assms(1) both_member_options_equiv_member by auto
       have "high ?X n> high ma n"

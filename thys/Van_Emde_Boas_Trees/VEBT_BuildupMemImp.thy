@@ -86,14 +86,16 @@ lemma ext:" y < length treeList \<Longrightarrow>x13 \<mapsto>\<^sub>a tree_is *
 lemma txe:"y < length treeList \<Longrightarrow> vebt_assn_raw (treeList ! y) (tree_is ! y) * x13 \<mapsto>\<^sub>a tree_is * vebt_assn_raw summary x14 *
        listI_assn ({0..<length treeList} - {y}) vebt_assn_raw treeList tree_is \<Longrightarrow>\<^sub>A
        vebt_assn_raw summary x14 * x13 \<mapsto>\<^sub>a tree_is * list_assn vebt_assn_raw treeList tree_is" 
-  by (smt (z3) assn_aci(9) assn_times_comm assnle atLeastLessThan_iff less_nat_zero_code listI_assn_extract list_assn_conv_idx not_less)
+  by (smt (verit, ccfv_SIG) assn_aci(9) assn_times_comm assnle atLeastLessThan_iff less_nat_zero_code
+      listI_assn_extract list_assn_conv_idx not_less)
 
 lemma recomp: " i < length treeList \<Longrightarrow> vebt_assn_raw (treeList ! i) (tree_is ! i) *
        listI_assn ({0..<length treeList} - {i}) vebt_assn_raw treeList tree_is *
        x13 \<mapsto>\<^sub>a tree_is *
        vebt_assn_raw summary x14 \<Longrightarrow>\<^sub>A
        vebt_assn_raw summary x14 * x13 \<mapsto>\<^sub>a tree_is  * list_assn vebt_assn_raw treeList tree_is" 
-  by (smt (z3) ab_semigroup_mult_class.mult.commute ab_semigroup_mult_class.mult.left_commute atLeastLessThan_iff ent_refl listI_assn_extract list_assn_conv_idx zero_le)
+  by (smt (verit, ccfv_SIG) ab_semigroup_mult_class.mult.commute ab_semigroup_mult_class.mult.left_commute
+      atLeastLessThan_iff ent_refl listI_assn_extract list_assn_conv_idx zero_le)
 
 lemma repack: "i < length treeList \<Longrightarrow>
 vebt_assn_raw (treeList ! i) (tree_is ! i) *
@@ -101,8 +103,8 @@ vebt_assn_raw (treeList ! i) (tree_is ! i) *
           (x13 \<mapsto>\<^sub>a tree_is * vebt_assn_raw summary x14 *
           listI_assn ({0..<length treeList} - {i}) vebt_assn_raw treeList tree_is)
       \<Longrightarrow>\<^sub>A  Rest* vebt_assn_raw summary x14 *  x13 \<mapsto>\<^sub>a tree_is *  list_assn vebt_assn_raw treeList tree_is" 
-  apply-
-  by (smt (z3) assn_times_assoc atLeastLessThan_iff entails_def leI less_nat_zero_code listI_assn_extract list_assn_conv_idx mod_pure_star_dist star_aci(2))
+  by (smt (verit, del_insts) assn_times_assoc atLeastLessThan_iff entails_def leI less_nat_zero_code
+      listI_assn_extract list_assn_conv_idx star_aci(2))
 
 lemma big_assn_simp: "h < length treeList \<Longrightarrow>
  vebt_assn_raw (vebt_delete(treeList ! h) l) x *
@@ -112,12 +114,15 @@ lemma big_assn_simp: "h < length treeList \<Longrightarrow>
          listI_assn ({0..<length treeList} - {h}) vebt_assn_raw treeList tree_is) \<Longrightarrow>\<^sub>A
  x13 \<mapsto>\<^sub>a tree_is[h:=x]  *  vebt_assn_raw summary x14 *  \<up> (xaa =  vebt_mint (vebt_delete(treeList ! h) l)) *
 list_assn vebt_assn_raw  (treeList[h:= (vebt_delete(treeList ! h) l)]) (tree_is[h:= x]) "
-  by (smt (z3) Diff_iff ab_semigroup_mult_class.mult.left_commute assn_aci(10) atLeastLessThan_iff ent_refl insertCI insert_Diff_single insert_absorb leI length_list_update less_nat_zero_code listI_assn_subst list_assn_conv_idx mult.right_neutral)
+  by (smt (verit) Diff_iff ab_semigroup_mult_class.mult.left_commute assn_aci(10) atLeastLessThan_iff ent_refl
+      insertCI insert_Diff_single insert_absorb leI length_list_update less_nat_zero_code listI_assn_subst
+      list_assn_conv_idx)
 
 lemma tcd: "i < length treeList \<Longrightarrow> length treeList = length treeList' \<Longrightarrow>
   vebt_assn_raw y x * x13 \<mapsto>\<^sub>a tree_is[i:= x] *  vebt_assn_raw summary x14 * listI_assn ({0..<length treeList} - {i}) vebt_assn_raw (treeList[i :=y]) (tree_is[i := x])
-\<Longrightarrow>\<^sub>A x13 \<mapsto>\<^sub>a tree_is[i:= x] *  vebt_assn_raw summary x14 * list_assn vebt_assn_raw (treeList[i :=y]) (tree_is[i := x])" 
-  by (smt (z3) ab_semigroup_mult_class.mult.commute assn_aci(10) atLeastLessThan_iff ent_pure_pre_iff entails_def leI length_list_update less_nat_zero_code listI_assn_def listI_assn_extract list_assn_conv_idx nth_list_update_eq)
+\<Longrightarrow>\<^sub>A x13 \<mapsto>\<^sub>a tree_is[i:= x] *  vebt_assn_raw summary x14 * list_assn vebt_assn_raw (treeList[i :=y]) (tree_is[i := x])"
+  by (smt (verit, ccfv_threshold) Diff_iff ab_semigroup_mult_class.mult.commute insert_iff
+      length_list_update listI_assn_insert listI_assn_subst mult.assoc recomp subst_not_in)
 
 lemma big_assn_simp': "h < length treeList ==> xaa = vebt_delete (treeList ! h)l \<Longrightarrow>
        vebt_assn_raw xaa x * \<up> (xb = vebt_mint xaa) *
@@ -125,7 +130,7 @@ lemma big_assn_simp': "h < length treeList ==> xaa = vebt_delete (treeList ! h)l
         listI_assn ({0..<length treeList} - {h}) vebt_assn_raw treeList tree_is) \<Longrightarrow>\<^sub>A
        (x13 \<mapsto>\<^sub>a tree_is[h:= x] * vebt_assn_raw summary x14 *  \<up> (xb = vebt_mint xaa) * 
       list_assn vebt_assn_raw (treeList[h:= xaa])  (tree_is[h:= x]))" 
-  by (smt (verit, best) Diff_iff assn_aci(9) ent_refl insertCI length_list_update listI_assn_weak_cong mult.right_neutral nth_list_update_neq pure_false pure_true star_false_left star_false_right tcd)
+  by (metis big_assn_simp)
 
 
 lemma refines_case_VEBTi[refines_rule]: assumes "ti = ti'" "\<And> a b. refines (f1 a b) (f1' a b)"
@@ -268,9 +273,12 @@ lemma repli_cons_repl: "<Q> x <\<lambda> r. Q*  A y r > \<Longrightarrow> <Q> re
 proof(induction n arbitrary: Q)
   case (Suc n)
   then show ?case 
-    apply (sep_auto heap: "Suc.IH"(1)) 
-    apply (smt (z3) assn_aci(10) cons_post_rule ent_refl fi_rule)
-    apply sep_auto
+    apply (sep_auto heap: "Suc.IH"(1))
+    subgoal
+      using frame_rule_left[of Q x "\<lambda>r. Q * A y r" "A y _", unfolded mult.left_assoc]
+      by (metis mult.commute)
+    subgoal
+      by sep_auto
    done
 qed sep_auto
 
@@ -337,10 +345,11 @@ proof(induction n rule: vebt_buildup.induct)
          apply(rule entailsI)
          proof-
            fix h
-           assume " h \<Turnstile>xa \<mapsto>\<^sub>a x * list_assn vebt_assn_raw (replicate (4 * 2 ^ (n div 2)) (vebt_buildup (Suc (n div 2)))) x *
+           assume a: " h \<Turnstile>xa \<mapsto>\<^sub>a x * list_assn vebt_assn_raw (replicate (4 * 2 ^ (n div 2)) (vebt_buildup (Suc (n div 2)))) x *
              vebt_assn_raw (vebt_buildup (Suc (Suc (Suc n) div 2))) xb * \<up> (xc = Nodei None (Suc (Suc n)) xa xb)"
-           then show "   h \<Turnstile> vebt_assn_raw (vebt_buildup (Suc (Suc n))) xc" 
-           using heaphelp by (smt (z3) False SLN_def SLN_right ab_semigroup_mult_class.mult.commute ab_semigroup_mult_class.mult.left_commute vebt_buildup.simps(3) div2_Suc_Suc even_numeral even_two_times_div_two numeral_Bit0_div_2 power_Suc power_commutes pure_true)
+           then show "   h \<Turnstile> vebt_assn_raw (vebt_buildup (Suc (Suc n))) xc"
+             using heaphelp[of xa x "replicate _ _" _ xb "Suc (Suc n)" xc h, simplified]
+             using False by auto
       qed
     qed
     then show ?thesis using calculation
@@ -529,16 +538,19 @@ proof(induction n rule: vebt_buildup.induct)
         using True "3.IH"(1)[of "Suc (Suc n) div 2"] by simp
       have 2:" Tb' (Suc (n div 2)) \<le> 5 * cnt' (vebt_buildup (Suc (Suc n) div 2))"
         using True "3.IH"(1)[of "Suc (Suc n) div 2"] by simp
-      show "5 + Tb' (Suc (n div 2)) + Tb' (Suc (n div 2)) * 2 ^ Suc (n div 2)
+      have "5 + Tb' (Suc (n div 2)) + Tb' (Suc (n div 2)) * 2 ^ Suc (n div 2) \<le>
+        5 * (1 + cnt' (vebt_buildup (Suc (Suc n) div 2)) +
+          2 ^ (Suc (Suc n) div 2) * cnt' (vebt_buildup (Suc (Suc n) div 2)))"
+        by (metis "1" "2" add_le_mono distrib_left_numeral mult_Suc_right nat_add_left_cancel_le
+            plus_1_eq_Suc)
+      also have "\<dots> = 5 * (1 + cnt' (vebt_buildup (Suc (Suc n) div 2)) +
+        foldr (+) (map cnt' (replicate (2 ^ (Suc (Suc n) div 2)) (vebt_buildup (Suc (Suc n) div 2)))) 0)"
+        by (metis "0")
+      finally show "5 + Tb' (Suc (n div 2)) + Tb' (Suc (n div 2)) * 2 ^ Suc (n div 2)
            \<le> 5 * (1 + cnt' (vebt_buildup (Suc (Suc n) div 2)) +
             foldr (+)
              (map cnt' (replicate (2 ^ (Suc (Suc n) div 2)) (vebt_buildup (Suc (Suc n) div 2)))) 0)"
-        apply(rule ord_le_eq_trans[where b = "5 * (1 + cnt' (vebt_buildup (Suc (Suc n) div 2))  
-                                     + (2 ^ (Suc (Suc n) div 2)) * cnt' (vebt_buildup (Suc (Suc n) div 2)))"])
-         defer
-        using 0 apply simp
-        using 1  2 "order.trans" trans_le_add1 algebra_simps 
-        by (smt (z3) add_le_cancel_left add_mono_thms_linordered_semiring(1) mult_Suc_right plus_1_eq_Suc)
+        .
     qed
     show ?thesis
       apply (subst vebt_buildup.simps)
@@ -565,17 +577,23 @@ proof(induction n rule: vebt_buildup.induct)
         using False "3.IH"(3)[of " (Suc (Suc n) div 2)"] by simp
       have 2:" Tb' (Suc (Suc (n div 2))) \<le> 5 * cnt' (vebt_buildup (Suc (Suc (Suc n) div 2)))"
         using False "3.IH"(4)[of "(Suc n) div 2"] by simp 
-      show " 5 + Tb' (Suc (Suc (n div 2))) + Tb' (Suc (n div 2)) * 2 ^ Suc (Suc (n div 2))
+      have "5 + Tb' (Suc (Suc (n div 2))) + Tb' (Suc (n div 2)) * 2 ^ Suc (Suc (n div 2)) \<le>
+        5 * (1 + cnt' (vebt_buildup (Suc (Suc (Suc n) div 2)))+
+          (2 ^ Suc (Suc (Suc n) div 2)) * cnt' (vebt_buildup (Suc (Suc n) div 2)))"
+        using 1 2
+        by (smt (verit, ccfv_threshold) "3.IH"(3) False Suc_1 Suc_n_div_2_gt_zero
+            ab_semigroup_mult_class.mult.commute ab_semigroup_mult_class.mult.left_commute
+            add_mono_thms_linordered_semiring(1) diff_Suc_1 diff_Suc_Suc distrib_left_numeral
+            div_greater_zero_iff even_Suc le_div_geq mult_le_cancel1 mult_numeral_1_right numerals(1)
+            zero_less_Suc)
+      also have "\<dots> = 5 * (1 + cnt' (vebt_buildup (Suc (Suc (Suc n) div 2))) +
+        foldr (+) (map cnt' (replicate (2 ^ Suc (Suc (Suc n) div 2)) (vebt_buildup (Suc (Suc n) div 2)))) 0)"
+        by (metis "0")
+      finally show " 5 + Tb' (Suc (Suc (n div 2))) + Tb' (Suc (n div 2)) * 2 ^ Suc (Suc (n div 2))
              \<le> 5 * (1 + cnt' (vebt_buildup (Suc (Suc (Suc n) div 2))) +
               foldr (+)
              (map cnt' (replicate (2 ^ Suc (Suc (Suc n) div 2)) (vebt_buildup (Suc (Suc n) div 2)))) 0)"
-
-        apply(rule ord_le_eq_trans[where b = "5 * (1 + cnt' (vebt_buildup (Suc (Suc (Suc n) div 2)))
-                                     + (2 ^ Suc (Suc (Suc n) div 2)) * cnt' (vebt_buildup (Suc (Suc n) div 2)))"])
-         defer
-        using 0 apply simp
-        using 1  2 "order.trans" trans_le_add1 algebra_simps
-        by (smt (z3) "3.IH"(3) False add_le_cancel_left add_mono_thms_linordered_semiring(1) diff_diff_cancel diff_le_self div2_Suc_Suc even_Suc mult_Suc_right plus_1_eq_Suc)
+        .
     qed 
     show ?thesis
       apply (subst vebt_buildup.simps)

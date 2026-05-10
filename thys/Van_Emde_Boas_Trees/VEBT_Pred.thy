@@ -106,7 +106,18 @@ lemma pred_lesseq_max:
                              else Some (2^(deg div 2)) *\<^sub>o pr +\<^sub>o vebt_maxt (treeList ! the pr) )
 
                      else None)"
-  by (smt (z3) VEBT_Pred.vebt_pred.simps(7) add_numeral_left assms(1) assms(2) leD le_add_diff_inverse numerals(1) plus_1_eq_Suc semiring_norm(2))
+proof -
+  obtain deg' where "deg = Suc (Suc deg')"
+    using assms(1) add_2_eq_Suc le_Suc_ex by blast
+
+  have "\<not> ma < x"
+    using assms(2)
+    by presburger
+
+  show ?thesis
+    unfolding \<open>deg = Suc (Suc deg')\<close> vebt_pred.simps if_not_P[OF \<open>\<not> ma < x\<close>]
+    by metis
+qed
 
 lemma pred_list_to_short: 
   assumes "deg \<ge> 2" and "ord_class.less_eq x ma" and " high x (deg div 2) \<ge> length treeList" 
@@ -229,7 +240,7 @@ next
                              else let pr = vebt_pred summary ?h in
                              if pr = None then (if x > mi then Some mi else None)
                              else Some (2^(deg div 2)) *\<^sub>o pr +\<^sub>o vebt_maxt (treeList ! the pr) )"
-        by (smt (z3) True \<open>2 \<le> deg\<close> \<open>x \<le> ma\<close> pred_less_length_list)     
+        by (smt (verit) True \<open>2 \<le> deg\<close> \<open>x \<le> ma\<close> pred_less_length_list)
       then show ?thesis 
       proof(cases "?minlow \<noteq> None \<and> (Some ?l >\<^sub>o  ?minlow)")
         case True
@@ -296,7 +307,7 @@ next
               hence "predy \<ge> low z (deg div 2)" using 04 ad unfolding is_pred_in_set_def
                 by (simp add: set_vebt'_def)
               hence "?y \<ge> z" 
-                by (smt (z3) True bit_concat_def bit_split_inv diff_add_inverse diff_diff_add diff_is_0_eq mult.commute)
+                by (metis True bit_concat_def bit_split_inv mult.commute nat_add_left_cancel_le)
               then show ?thesis by blast
             qed
           next
@@ -560,7 +571,7 @@ next
                              else let pr = vebt_pred summary ?h in
                              if pr = None then (if x > mi then Some mi else None)
                              else Some (2^(deg div 2)) *\<^sub>o pr +\<^sub>o vebt_maxt (treeList ! the pr) )"
-        by (smt (z3) True \<open>2 \<le> deg\<close> \<open>x \<le> ma\<close> pred_less_length_list)     
+        by (smt (verit) True \<open>2 \<le> deg\<close> \<open>x \<le> ma\<close> pred_less_length_list)
       then show ?thesis 
       proof(cases "?minlow \<noteq> None \<and> (Some ?l >\<^sub>o  ?minlow)")
         case True
@@ -628,7 +639,7 @@ next
               hence "predy \<ge> low z (deg div 2)" using 04 ad unfolding is_pred_in_set_def
                 by (simp add: set_vebt'_def)
               hence "?y \<ge> z" 
-                by (smt (z3) True bit_concat_def bit_split_inv diff_add_inverse diff_diff_add diff_is_0_eq mult.commute)
+                by (metis True bit_concat_def bit_split_inv mult.commute nat_add_left_cancel_le)
               then show ?thesis by blast
             qed
           next

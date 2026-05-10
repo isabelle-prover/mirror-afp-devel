@@ -43,7 +43,7 @@ proof-
               (if minNull (treeList ! h) then  vebt_insert summary h else summary)
            else  (Node (Some (mi, ma)) deg treeList summary)))"
     using assms(3) vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-    by (smt (z3) add_numeral_left le_add_diff_inverse numerals(1) plus_1_eq_Suc semiring_norm(2))
+    by (smt (verit) add_2_eq_Suc diff_add_inverse le_Suc_ex)
    have 14:"vebt_insert (Node (Some (mi,ma)) deg  treeList summary) x =
                  Node (Some (mi, max x ma)) deg (treeList[(high x (deg div 2)) := vebt_insert (treeList ! (high x (deg div 2))) (low x (deg div 2))])
                                (if minNull (treeList ! (high x (deg div 2))) then  vebt_insert summary (high x (deg div 2)) else summary)"
@@ -69,7 +69,7 @@ proof-
                                (if minNull (treeList ! h) then  vebt_insert summary h else summary)
            else  (Node (Some (mi, ma)) deg treeList summary)))"
     using assms(3) vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-    by (smt (z3) add_numeral_left le_add_diff_inverse numerals(1) plus_1_eq_Suc semiring_norm(2))
+    by (smt (verit) add_2_eq_Suc diff_add_inverse le_Suc_ex)
   have 14:"vebt_insert (Node (Some (mi,ma)) deg  treeList summary) x =
                  Node (Some (x, max mi ma)) deg ( treeList[ (high mi (deg div 2)) := vebt_insert (treeList ! (high mi (deg div 2))) (low mi (deg div 2))])
                                (if minNull (treeList ! (high mi (deg div 2))) then  vebt_insert summary (high mi (deg div 2)) else summary)"
@@ -92,7 +92,7 @@ proof -
                  Node (Some (minn, max xn ma)) deg (treeList[h:= vebt_insert (treeList ! h) l])
                                (if minNull (treeList ! h) then  vebt_insert summary h else summary)
     else  (Node (Some (mi, ma)) deg treeList summary)))" using assms vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-    by (smt (z3) add_numeral_left le_add_diff_inverse numerals(1) plus_1_eq_Suc semiring_norm(2))
+    by (smt (verit) add_2_eq_Suc diff_add_inverse le_Suc_ex)
   then show ?thesis
     using assms(1) by auto   
 qed 
@@ -109,8 +109,7 @@ next
     using valid_tree_deg_neq_0 
     by (metis One_nat_def Suc_lessI add_gr_0 add_self_div_2 neq0_conv one_div_two_eq_zero)
   then show ?case using vebt_insert.simps(4)[of "deg-2" treeList summary x ] 
-    by (smt (z3) Suc_1 Suc_leI add_numeral_left both_member_options_def le_add_diff_inverse membermima.simps(4) 
-        numerals(1) plus_1_eq_Suc semiring_norm(2))
+    by (metis Suc_1 Suc_leI membermima.simps(4) add_2_eq_Suc both_member_options_def le_add_diff_inverse)
 next
   case (3 treeList n summary m deg)
   hence "\<forall>t\<in>set treeList. invar_vebt t n" by blast
@@ -119,8 +118,7 @@ next
   hence "deg \<ge> 2"
     by (simp add: "3.hyps"(3) "3.hyps"(4) Suc_leI)
   then show ?case using vebt_insert.simps(4)[of "deg-2" treeList summary x ] 
-    by (smt (z3) Suc_1 Suc_leI add_numeral_left both_member_options_def le_add_diff_inverse membermima.simps(4) 
-        numerals(1) plus_1_eq_Suc semiring_norm(2))
+    by (metis membermima.simps(4) add_2_eq_Suc both_member_options_def le_add_diff_inverse)
 next
   case (4 treeList n summary m deg mi ma)
   hence "length treeList =2^n" by blast
@@ -132,7 +130,8 @@ next
   proof(cases "x = mi \<or> x = ma")
     case True
     then show ?thesis using vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-      by (smt (z3) "4.hyps"(1) "4.hyps"(3) "4.hyps"(4) add_diff_inverse_nat add_numeral_left add_self_div_2 both_member_options_def div_if membermima.simps(4) numerals(1) plus_1_eq_Suc semiring_norm(2) valid_tree_deg_neq_0)
+      by (smt (verit, ccfv_threshold) "4.hyps"(1,3,4) VEBT_internal.membermima.simps(4) add_2_eq_Suc
+          add_self_div_2 both_member_options_def deg_not_0 div_greater_zero_iff le_add_diff_inverse)
   next
     case False
     hence "\<not> (x = mi \<or> x = ma)" by simp
@@ -146,7 +145,8 @@ next
                       (if minNull (treeList ! high mi n) then  vebt_insert summary (high mi n) else summary)" 
         by (metis "4.hyps"(1) "4.hyps"(3) "4.hyps"(4) False True add_self_div_2 div_if insert_simp_excp not_less valid_tree_deg_neq_0)
       then show ?thesis
-        by (smt (z3) "4.hyps"(1) "4.hyps"(4) Suc_pred add_diff_inverse_nat both_member_options_def membermima.simps(4) valid_tree_deg_neq_0 zero_eq_add_iff_both_eq_0)
+        by (smt (verit, ccfv_threshold) "4.hyps"(1,3,4) VEBT_internal.membermima.simps(4) add_2_eq_Suc
+            add_self_div_2 both_member_options_def deg_not_0 div_greater_zero_iff le_add_diff_inverse)
     next
       case False
       hence "vebt_insert ( Node (Some (mi, ma)) deg treeList summary) x = 
@@ -180,7 +180,9 @@ next
   proof(cases "x = mi \<or> x = ma")
     case True
     then show ?thesis using vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-      by (smt (z3) "5.hyps"(3) "5.hyps"(4) Suc_leI add_Suc_right add_diff_inverse_nat add_numeral_left both_member_options_def diff_is_0_eq' vebt_insert.simps(3) membermima.simps(4) not_add_less1 numerals(1) plus_1_eq_Suc semiring_norm(2))
+      by (smt (verit, best) "5.IH"(1) "5.hyps"(2,3,4) One_nat_def VEBT_internal.membermima.simps(4)
+          add_2_eq_Suc add_diff_inverse_nat both_member_options_def le_add2 le_add_same_cancel2 le_antisym
+          less_Suc_eq less_add_same_cancel1 nat_less_le set_n_deg_not_0)
   next
     case False
     hence "\<not> (x = mi \<or> x = ma)" by simp
@@ -195,7 +197,7 @@ next
         using  insert_simp_excp[of mi deg treeList x ma summary] 
            "5"(1) "5.hyps"(3) "5.hyps"(4) False True add_Suc_right add_self_div_2
            append_Cons div_less even_Suc_div_two in_set_conv_decomp not_less odd_add valid_tree_deg_neq_0
-        by (smt (z3) nth_mem)
+        by (smt (verit) nth_mem)
       then show ?thesis
         by (simp add: "5.hyps"(3) "5.hyps"(4) both_member_options_def)
     next
@@ -203,7 +205,7 @@ next
       hence "vebt_insert ( Node (Some (mi, ma)) deg treeList summary) x = 
       Node (Some (mi, max x ma)) deg (treeList[(high x n):= vebt_insert (treeList ! (high x n)) (low x n)])
                                (if minNull (treeList ! high x n) then  vebt_insert summary (high x n) else summary)" 
-        by (smt (z3) "5.IH"(1) "5.hyps"(3) "5.hyps"(4) \<open>\<not> (x = mi \<or> x = ma)\<close> \<open>high x n < length treeList\<close> add_Suc_right add_self_div_2 deg_not_0 div_greater_zero_iff even_Suc_div_two insert_simp_norm linorder_neqE_nat nth_mem odd_add)
+        by (smt (verit) "5.IH"(1) "5.hyps"(3) "5.hyps"(4) \<open>\<not> (x = mi \<or> x = ma)\<close> \<open>high x n < length treeList\<close> add_Suc_right add_self_div_2 deg_not_0 div_greater_zero_iff even_Suc_div_two insert_simp_norm linorder_neqE_nat nth_mem odd_add)
       have "low x n < 2^n \<and> high x n < 2^m" 
         using "5.hyps"(2) "5.hyps"(3) \<open>high x n < length treeList\<close> low_def by auto
       have "invar_vebt (treeList ! (high x n)) n"
@@ -243,7 +245,8 @@ next
   have "low x n <2^n \<and> low y n< 2^n" 
     by (simp add: low_def)
   hence "x = mi \<or> x = ma \<or> both_member_options (treeList ! (high x n)) (low x n)"
-    by (smt (z3) "00" "4.prems"(3) add_Suc_right add_self_div_2 both_member_options_def le_add_diff_inverse membermima.simps(4) naive_member.simps(3) plus_1_eq_Suc)
+    by (metis "00" "4.prems"(3) add_self_div_2 both_member_options_from_complete_tree_to_child
+        trans_le_add1)
   have 001:"invar_vebt (Node (Some (mi, ma)) deg treeList summary) deg" using invar_vebt.intros(4)[of treeList n summary m deg mi ma] "4" by simp
   then show ?case
   proof(cases "x = y")
@@ -335,7 +338,7 @@ next
                  Node (Some (y, max mi ma)) deg (treeList[ (high mi n):=vebt_insert (treeList ! (high mi n)) (low mi n)])
                                (if minNull (treeList ! (high mi n)) then  vebt_insert summary (high mi n) else summary)"
             using insert_simp_excp[of mi deg treeList y ma summary]
-            by (smt (z3) "0" "00" "4.hyps"(7) "4.hyps"(8) False add_self_div_2 antisym_conv3 high_def le_less_trans less_mult_imp_div_less mult_2 power2_eq_square power_even_eq)
+            using "0" "00" "4.hyps"(7,8) False high_bound_aux by auto
           have mimaprop: "high mi n < 2^n \<and> low mi n < 2^n"  
             by (metis "00" "4.hyps"(7) "4.hyps"(8) div_eq_0_iff div_exp_eq high_def le_less_trans low_def mod_less_divisor zero_less_numeral zero_less_power)
           have "invar_vebt (treeList ! (high x n)) n"
@@ -367,7 +370,7 @@ next
   have "low x n <2^n \<and> low y n< 2^n" 
     by (simp add: low_def)
   hence "x = mi \<or> x = ma \<or> both_member_options (treeList ! (high x n)) (low x n)"
-    by (smt (z3) "00" "5.prems"(3) add_Suc_right add_self_div_2 both_member_options_def le_add_diff_inverse membermima.simps(4) naive_member.simps(3) plus_1_eq_Suc)
+    by (metis "00" "5.prems"(3) add_leD1 both_member_options_from_complete_tree_to_child one_add_one)
   have 001:"invar_vebt (Node (Some (mi, ma)) deg treeList summary) deg" 
     using invar_vebt.intros(5)[of treeList n summary m deg mi ma] "5" by simp
   then show ?case 
@@ -566,7 +569,7 @@ next
           hence 005:"both_member_options (Node (Some (mi , ma)) deg treeList summary) y \<or> x = y"
             by (metis "00" "001" "002" Suc_le_D True add_self_div_2 bit_split_inv both_member_options_def member_valid_both_member_options membermima.simps(4) mimaxyprop one_add_one plus_1_eq_Suc)
           then show ?thesis 
-            by (smt (z3) "00" "001" "002" "003" "4"(11) "4"(8) vebt_member.simps(5) True add_numeral_left add_self_div_2 bit_split_inv le_add_diff_inverse mimaxyprop not_less not_less_iff_gr_or_eq numerals(1) plus_1_eq_Suc semiring_norm(2))
+            by (smt (verit) "00" "001" "002" "003" "4"(11) "4"(8) vebt_member.simps(5) True add_numeral_left add_self_div_2 bit_split_inv le_add_diff_inverse mimaxyprop not_less not_less_iff_gr_or_eq numerals(1) plus_1_eq_Suc semiring_norm(2))
         next
           case False
           hence 000:"vebt_member (treeList ! (high y n)) (low y n)"
@@ -638,7 +641,7 @@ next
           hence 005:"both_member_options (Node (Some (mi , ma)) deg treeList summary) y \<or> x = y" 
             by (metis "00" "001" "002" Suc_le_D True add_self_div_2 bit_split_inv both_member_options_def member_valid_both_member_options membermima.simps(4) mimaxyprop one_add_one plus_1_eq_Suc)
           then show ?thesis
-            by (smt (z3) "00" "001" "002" "003" "4.hyps"(6) "4.hyps"(9) vebt_member.simps(5) True add_numeral_left add_self_div_2 bit_split_inv le_add_diff_inverse mimaxyprop not_less not_less_iff_gr_or_eq numerals(1) plus_1_eq_Suc semiring_norm(2))
+            by (smt (verit) "00" "001" "002" "003" "4.hyps"(6) "4.hyps"(9) vebt_member.simps(5) True add_numeral_left add_self_div_2 bit_split_inv le_add_diff_inverse mimaxyprop not_less not_less_iff_gr_or_eq numerals(1) plus_1_eq_Suc semiring_norm(2))
         next
           case False
           hence 000:"vebt_member (treeList ! (high y n)) (low y n)" 
@@ -673,7 +676,7 @@ next
     case False
     hence mimaxyprop: "\<not> (x = mi \<or> x = ma) \<and> high x n < 2^m \<and> high mi n < 2^m \<and> low x n <2^n \<and> low mi n < 2^n \<and> length treeList = 2^m" 
       using "00" "5"  \<open>low x n < 2 ^ n \<and> low y n < 2 ^ n\<close> deg_not_0 exp_split_high_low(1) exp_split_high_low(2) le_less_trans xyprop 
-      by (smt (z3) less_le_trans less_numeral_extra(1))
+      by (smt (verit, best) dual_order.strict_trans1 less_numeral_extra(1))
     then show ?thesis 
     proof(cases "mi < x")
       case True
@@ -681,7 +684,8 @@ next
                  Node (Some (mi, max x ma)) deg (treeList[ (high x n):=vebt_insert (treeList ! (high x n)) (low x n)])
                                (if minNull (treeList ! (high x n)) then  vebt_insert summary (high x n) else summary)" 
         using insert_simp_norm[of x deg treeList mi ma summary] 
-        by (smt (z3) "00" False add_Suc_right add_self_div_2 even_Suc_div_two odd_add xyprop)
+        by (smt (verit, del_insts) "00" Suc_mult_cancel1 add_Suc_right diff_Suc_1 even_Suc even_add mimaxyprop
+            mult_2 odd_two_times_div_two_nat one_add_one plus_1_eq_Suc)
       then show ?thesis 
       proof(cases "y = mi \<or> y = max x ma")
         case True
@@ -724,7 +728,9 @@ next
               naive_member (Node (Some (mi , ma)) deg treeList summary) y" 
             using "00" True xyprop by auto
           hence 005:"both_member_options (Node (Some (mi , ma)) deg treeList summary) y \<or> x = y"
-            by (smt (z3) "00" "001" "002" True add_Suc_right add_self_div_2 bit_split_inv both_member_options_def even_Suc_div_two member_valid_both_member_options membermima.simps(4) odd_add xyprop)
+            by (metis "00" "003" True add_Suc_right add_leD1 add_self_div_2 bit_split_inv
+                both_member_options_from_chilf_to_complete_tree even_Suc_div_two even_add one_add_one
+                xyprop)
           then show ?thesis 
             using both_member_options_equiv_member[of "(Node (Some (mi, ma)) deg treeList summary)" deg y]
               invar_vebt.intros(5)[of treeList n summary m deg mi ma] "5" by blast      
@@ -753,7 +759,7 @@ next
                  Node (Some (x, max mi ma)) deg (treeList[ (high mi n):=vebt_insert (treeList ! (high mi n)) (low mi n)])
                                (if minNull (treeList ! (high mi n)) then  vebt_insert summary (high mi n) else summary)" 
         using insert_simp_excp[of mi n treeList x ma summary] mimaxyprop "00" add_self_div_2 insert_simp_excp
-        by (smt (z3) add_Suc_right even_Suc_div_two odd_add)
+        by (smt (verit) add_Suc_right even_Suc_div_two odd_add)
       then show ?thesis 
       proof(cases "y = x \<or> y = max mi ma")
         case True
@@ -797,11 +803,11 @@ next
               naive_member (Node (Some (mi , ma)) deg treeList summary) y" using naive_member.simps(3)[of "Some (mi, ma)" "deg-1" treeList summary y] 
             using "00" True mimaxyprop by fastforce
           hence 005:"both_member_options (Node (Some (mi , ma)) deg treeList summary) y \<or> x = y" 
-            by (smt (z3) "00" "001" "002" True add_Suc_right add_self_div_2 bit_split_inv both_member_options_def even_Suc_div_two member_valid_both_member_options membermima.simps(4) odd_add xyprop)
+            by (smt (verit) "00" "001" "002" True add_Suc_right add_self_div_2 bit_split_inv both_member_options_def even_Suc_div_two member_valid_both_member_options membermima.simps(4) odd_add xyprop)
           then show ?thesis using  "00" "001" "002" "003" "5"(14) "5.hyps"(6) "5.hyps"(7) "5.hyps"(9) vebt_member.simps(5) True 
               add_Suc_right add_self_div_2 bit_split_inv even_Suc_div_two le_add_diff_inverse max.absorb2 
               mimaxyprop not_less_iff_gr_or_eq odd_add plus_1_eq_Suc 
-            by (smt (z3) \<open>vebt_insert (Node (Some (mi, ma)) deg treeList summary) x = Node (Some (x, max mi ma)) deg (treeList[high mi n := vebt_insert (treeList ! high mi n) (low mi n)]) (if minNull (treeList ! high mi n) then vebt_insert summary (high mi n) else summary)\<close>)
+            by (smt (verit) \<open>vebt_insert (Node (Some (mi, ma)) deg treeList summary) x = Node (Some (x, max mi ma)) deg (treeList[high mi n := vebt_insert (treeList ! high mi n) (low mi n)]) (if minNull (treeList ! high mi n) then vebt_insert summary (high mi n) else summary)\<close>)
         next
           case False
           hence 000:"vebt_member (treeList ! (high y n)) (low y n)" 

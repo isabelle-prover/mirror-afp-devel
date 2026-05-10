@@ -220,8 +220,8 @@ lemma TBOUND_refines: "TBOUND c t \<Longrightarrow> refines c d \<Longrightarrow
       show "execute d h = Some (a, aa, b) \<Longrightarrow> b \<le> t "
       proof-
         assume "execute d h = Some (a, aa, b)"
-        hence  "execute c h = Some (a, aa, b)" using 2
-          by (smt (z3) old.prod.case option.simps(5))
+        hence  "execute c h = Some (a, aa, b)"
+          using 2[rule_format, of h] by simp
         thus "b \<le> t" using 1
           by (metis old.prod.case option.simps(5))
       qed

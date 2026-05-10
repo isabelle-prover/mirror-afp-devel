@@ -247,11 +247,23 @@ proof(induction n rule: T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>
   then show ?case
   proof(cases "even (Suc (Suc va))")
     case True
-    then show ?thesis 
-      apply(subst T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>p.simps)
-      apply(subst T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d.simps) 
-      using True apply simp
-      by (smt (z3) "3.IH"(1) Suc_1 True add_mono_thms_linordered_semiring(1) distrib_left div2_Suc_Suc less_mult_imp_div_less linorder_not_le mult.commute mult_numeral_1_right nat_0_less_mult_iff nat_less_le nat_zero_less_power_iff nonzero_mult_div_cancel_left not_less_eq numerals(1) plus_1_eq_Suc zero_le_one)
+
+    have "T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>p (Suc (Suc va)) = 10 + T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>p (Suc (Suc va) div 2) +
+      2 ^ (Suc (Suc va) div 2) * (T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>p (Suc (Suc va) div 2) + 1)"
+      unfolding T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>p.simps T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d.simps if_P[OF True] Let_def
+      by presburger
+
+    also have "\<dots> < 11 + T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d (Suc (Suc va) div 2) +
+      2 ^ (Suc (Suc va) div 2) * T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d (Suc (Suc va) div 2)"
+      using "3.IH" True
+      by (metis Suc_eq_plus1 Suc_leI add_less_le_mono add_less_mono less_add_one nat_mult_le_cancel_disj
+          numeral_plus_one semiring_norm(5))
+
+    also have "\<dots> = T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d (Suc (Suc va))"
+      unfolding T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d\<^sub>u\<^sub>p.simps T\<^sub>b\<^sub>u\<^sub>i\<^sub>l\<^sub>d.simps if_P[OF True] Let_def
+      by presburger
+
+    finally show ?thesis .
   next
     case False
     hence *: "(let half = Suc (Suc va) div 2

@@ -420,74 +420,51 @@ qed
 
 lemma both_member_options_ding: assumes"invar_vebt (Node info deg treeList summary) n "and "x<2^deg"and"
  both_member_options (treeList ! (high x (deg div 2))) (low x (deg div 2))"shows "both_member_options  (Node info deg treeList summary) x"
-proof-
-  from assms(1) show ?thesis proof(induction "(Node info deg treeList summary)" n rule: invar_vebt.induct)
-    case (2 n m)
-    hence "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) \<or> 
-           naive_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
-      using assms(3) both_member_options_def by auto
-    moreover  hence "deg > 1" 
-      using "2.hyps"(2) "2.hyps"(5) "2.hyps"(6) deg_not_0 by force
-    moreover have "high x (deg div 2)<2^m"
-      by (metis "2.hyps"(5) "2.hyps"(6) div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero)
-    moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                    \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
-      using "2.hyps"(4) "2.hyps"(9) \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> zero_le_one by fastforce
-    moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                   \<Longrightarrow> naive_member (Node info deg treeList summary) x"
-      by (smt (z3) "2.hyps"(4) Suc_diff_Suc \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> diff_zero le_less_trans naive_member.simps(3) zero_le_one)
-    ultimately show ?case
-      using both_member_options_def by blast
+proof -
+  obtain m n :: nat where
+    "deg = n + m" and "m = n \<or> m = Suc n" and "length treeList = 2 ^ m"
+    using assms(1)
+    by (induction "(Node info deg treeList summary)" n rule: invar_vebt.induct; metis)
+
+  have "deg > 1"
+    using set_n_deg_not_0 assms(1) valid_eq valid'.simps(2) by fastforce
+
+  have "high x (deg div 2) < 2^m"
+    using assms(2) \<open>deg = n + m\<close> \<open>m = n \<or> m = Suc n\<close> high_bound_aux by force
+
+  consider
+    (mima) "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2))" |
+    (naive) "naive_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
+    using assms(3) both_member_options_def by auto
+
+  then show ?thesis
+  proof cases
+    case mima
+    then have "membermima (Node info deg treeList summary) x"
+    proof (cases info)
+      case None
+      then show ?thesis
+        using mima \<open>length treeList = 2 ^ m\<close> \<open>deg > 1\<close> \<open>high x (deg div 2) < 2^m\<close>
+        using membermima.simps(5)[of "deg-1" treeList summary x]
+        by fastforce
+    next
+      case (Some p)
+      then obtain a b where "p = (a, b)"
+        by (cases p)
+      then show ?thesis
+        using Some mima \<open>length treeList = 2 ^ m\<close> \<open>deg > 1\<close> \<open>high x (deg div 2) < 2^m\<close>
+        using membermima.simps(5)[of "deg-1" treeList summary x]
+        by (metis One_nat_def Suc_diff_1 Suc_lessD VEBT_internal.membermima.simps(4)) 
+    qed
+    then show ?thesis
+      unfolding both_member_options_def ..
   next
-    case (3 n m)
-    hence "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) \<or> 
-           naive_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
-      using assms(3) both_member_options_def by auto
-    moreover  hence "deg > 1"
-      by (metis "3.hyps"(1) "3.hyps"(2) "3.hyps"(4) "3.hyps"(5) "3.hyps"(6) One_nat_def Suc_lessI add_Suc add_gr_0 add_self_div_2 deg_not_0 le_imp_less_Suc plus_1_eq_Suc set_n_deg_not_0)
-    moreover have "high x (deg div 2)<2^m"
-      by (smt (z3) "3.hyps"(5) "3.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) diff_Suc_1 div_exp_eq div_mult_self1_is_m even_Suc high_def odd_add odd_two_times_div_two_nat one_add_one plus_1_eq_Suc power_not_zero zero_less_Suc)
-    moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                   \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
-      using "3.hyps"(4) "3.hyps"(9) \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> zero_le_one by fastforce
-    moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                   \<Longrightarrow> naive_member (Node info deg treeList summary) x"
-      by (smt (z3) "3.hyps"(4) Suc_diff_Suc \<open>1 < deg\<close> \<open>high x (deg div 2) < 2 ^ m\<close> diff_zero le_less_trans naive_member.simps(3) zero_le_one)
-    ultimately show ?case
-      using both_member_options_def by blast
-  next
-    case (4 n m mi ma)
-    hence "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) \<or> 
-           naive_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
-      using assms(3) both_member_options_def by auto
-    moreover  hence "deg > 1" 
-      using "4.hyps"(2) "4.hyps"(5) "4.hyps"(6) deg_not_0 by force
-    moreover have "high x (deg div 2)<2^m"
-      by (metis "4.hyps"(5) "4.hyps"(6) div_eq_0_iff add_self_div_2 assms(2) div_exp_eq high_def power_not_zero)
-    moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                   \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
-      by (smt (z3) "4.hyps"(12) "4.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one) 
-    moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                    \<Longrightarrow> naive_member (Node info deg treeList summary) x"
-      by (metis "4.hyps"(4) calculation(2) calculation(3) gr_implies_not0 naive_member.simps(3) old.nat.exhaust)  ultimately show ?case
-      using both_member_options_def by blast
-  next
-    case (5 n m mi ma)
-    hence "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) \<or> 
-           naive_member (treeList ! (high x (deg div 2))) (low x (deg div 2))"
-      using assms(3) both_member_options_def by auto
-    moreover  hence "deg > 1"
-      by (metis "5.hyps"(1) "5.hyps"(2) "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) One_nat_def Suc_lessI add_Suc add_gr_0 add_self_div_2 deg_not_0 le_imp_less_Suc plus_1_eq_Suc set_n_deg_not_0)
-    moreover have "high x (deg div 2)<2^m" 
-      by (metis "5.hyps"(5) "5.hyps"(6) div_eq_0_iff add_Suc_right add_self_div_2 assms(2) div_exp_eq even_Suc_div_two even_add high_def nat.simps(3) power_not_zero)
-    moreover have "membermima  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                    \<Longrightarrow> membermima (Node info deg treeList summary) x" using membermima.simps(5)[of "deg-1" treeList summary x]
-      by (smt (z3) "5.hyps"(12) "5.hyps"(4) Suc_diff_Suc calculation(2) calculation(3) diff_zero le_less_trans membermima.simps(4) zero_le_one)  
-    moreover have "naive_member  (treeList ! (high x (deg div 2))) (low x (deg div 2)) 
-                     \<Longrightarrow> naive_member (Node info deg treeList summary) x"
-      using "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) calculation(3) by auto
-    ultimately show ?case
-      using both_member_options_def by blast
+    case naive
+    then have "naive_member (Node info deg treeList summary) x"
+      using \<open>length treeList = 2 ^ m\<close> \<open>deg > 1\<close> \<open>high x (deg div 2) < 2^m\<close>
+      using less_natE by fastforce
+    then show ?thesis
+      unfolding both_member_options_def ..
   qed
 qed
 
@@ -533,7 +510,8 @@ proof-
     by (metis assms(1) le_add_diff_inverse plus_1_eq_Suc)
   moreover have " membermima (Node (Some (mi, ma)) deg treeList summary) x
                   \<Longrightarrow> membermima (treeList ! ( high x (deg div 2))) (low x (deg div 2))\<or> x = mi \<or> x = ma" 
-    by (smt (z3) assms(1) le_add_diff_inverse membermima.simps(4) plus_1_eq_Suc)
+    by (metis VEBT_internal.membermima.simps(4)[of mi ma "deg - 1" treeList summary x] assms(1)
+        le_add_diff_inverse[of "1" deg] plus_1_eq_Suc)
   ultimately show ?thesis 
     using both_member_options_def by presburger
 qed
@@ -647,108 +625,56 @@ next
     using \<open>deg div 2 = n\<close> by metis
 qed
 
-lemma elimcomplete: "invar_vebt (Node info deg treeList summary) n \<Longrightarrow> 
-      elim_dead (Node info deg treeList summary) \<infinity> = (Node info deg treeList summary)"
-proof(induction rule: invar_vebt.induct)
-  case (1 a b)
-  then show ?case
-    by simp
-next
-  case (2 treeList n summary m deg)
-  have a:"i < 2^m \<longrightarrow> (elim_dead (treeList ! i) (enat( 2^n)) = treeList ! i)" for i
-  proof
-    assume  "i < 2^m"
-    hence "treeList ! i \<in> set treeList" 
-      by (simp add: "2.hyps"(2))
-    thus "elim_dead (treeList ! i) (enat (2 ^ n)) = treeList ! i" 
-      apply(cases "(treeList ! i)")
-       apply (smt (z3) "2.IH"(1) \<open>treeList ! i \<in> set treeList\<close> elim_dead.simps(1) elimnum invar_vebt.cases)+
-      done
+lemma elimcomplete:
+  assumes "invar_vebt (Node info deg treeList summary) n"
+  shows "elim_dead (Node info deg treeList summary) \<infinity> = (Node info deg treeList summary)"
+proof -
+  have "elim_dead (Node info deg treeList summary) \<infinity> = Node info deg treeList summary"
+    if "deg = n + m" and
+      "m = n \<or> m = Suc n" and
+      "length treeList = 2 ^ m" and
+      ball_invar_vebt: "\<forall>t\<in>set treeList. invar_vebt t n" and
+      "elim_dead summary \<infinity> = summary"
+    for m n :: nat and info and deg and treeList and summary
+  proof -
+    have "elim_dead x (enat (2^n)) = x"
+      if "invar_vebt x n" for x n
+    proof (cases x rule: VEBT.exhaust)
+      case (Node x11 x12 x13 x14)
+      then show ?thesis
+        using elimnum
+        by (metis \<open>invar_vebt x n\<close>)
+    next
+      case (Leaf x21 x22)
+      then show ?thesis
+        by simp
+    qed
+
+    then have b: "map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList = treeList"
+      using ball_invar_vebt
+      by (simp add: list.map_ident_strong)
+
+    have "deg div 2 = n"
+      using \<open>deg = n + m\<close> \<open>m = n \<or> m = Suc n\<close> by fastforce
+
+    hence "2 ^ m = ((2^deg) div (2^(deg div 2))::nat)"
+      by (simp add: \<open>deg = n + m\<close> pow_sum)
+
+    hence "take (2^deg div (2^(deg div 2)))(map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList) = treeList"
+      by (simp add: \<open>length treeList = 2 ^ m\<close> b)
+
+    then show ?thesis
+      using \<open>deg div 2 = n\<close> b that(5)
+      using elim_dead.simps(2)[of None  deg treeList summary]
+      by simp
   qed
-  hence b:"map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList = treeList"
-    by (metis "2.hyps"(2) in_set_conv_nth map_idI)
-  have "deg div 2 = n" 
-    by (simp add: "2.hyps"(3) "2.hyps"(4))
-  hence "(2^m ::nat) = ( (2^deg) div (2^(deg div 2))::nat) " 
-    using "2.hyps"(4) pow_sum by metis 
-  hence "take (2^deg div (2^(deg div 2)))(map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList) = treeList"
-    using b "2"(4) by simp
-  moreover hence " ( elim_dead summary \<infinity>) = summary" using "2.IH"(2) 
-    by (metis \<open>2 ^ m = 2 ^ deg div 2 ^ (deg div 2)\<close>)
-  ultimately show ?case using  elim_dead.simps(2)[of None  deg treeList summary]
-    using \<open>deg div 2 = n\<close> b by presburger
-next
-  case (3 treeList n summary m deg)
-  have a:"i < 2^m \<longrightarrow> (elim_dead (treeList ! i) (enat( 2^n)) = treeList ! i)" for i
-  proof
-    assume  "i < 2^m"
-    hence "treeList ! i \<in> set treeList" 
-      by (simp add: "3.hyps"(2))
-    thus "elim_dead (treeList ! i) (enat (2 ^ n)) = treeList ! i" 
-      apply(cases "(treeList ! i)")
-       apply (smt (z3) "3.IH"(1) \<open>treeList ! i \<in> set treeList\<close> elim_dead.simps(1) elimnum invar_vebt.cases)+
-      done
-  qed
-  hence b:"map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList = treeList"
-    by (metis "3.hyps"(2) in_set_conv_nth map_idI)
-  have "deg div 2 = n" 
-    by (simp add: "3.hyps"(3) "3.hyps"(4))
-  hence "(2^m ::nat) = ( (2^deg) div (2^(deg div 2))::nat) " 
-    using "3.hyps"(4) pow_sum by metis 
-  hence "take (2^deg div (2^(deg div 2)))(map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList) = treeList"
-    using b "3"(4) by simp
-  moreover hence " ( elim_dead summary \<infinity>) = summary" using "3.IH"(2) 
-    by (metis \<open>2 ^ m = 2 ^ deg div 2 ^ (deg div 2)\<close>)
-  ultimately show ?case using  elim_dead.simps(2)[of None  deg treeList summary]
-    using \<open>deg div 2 = n\<close> b by presburger
-next
-  case (4 treeList n summary m deg mi ma)
-  have a:"i < 2^m \<longrightarrow> (elim_dead (treeList ! i) (enat( 2^n)) = treeList ! i)" for i
-  proof
-    assume  "i < 2^m"
-    hence "treeList ! i \<in> set treeList" 
-      by (simp add: "4.hyps"(2))
-    thus "elim_dead (treeList ! i) (enat (2 ^ n)) = treeList ! i" 
-      apply(cases "(treeList ! i)")
-       apply (smt (z3) "4.IH"(1) \<open>treeList ! i \<in> set treeList\<close> elim_dead.simps(1) elimnum invar_vebt.cases)+
-      done
-  qed
-  hence b:"map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList = treeList"
-    by (metis "4.hyps"(2) in_set_conv_nth map_idI)
-  have "deg div 2 = n" 
-    by (simp add: "4.hyps"(3) "4.hyps"(4))
-  hence "(2^m ::nat) = ( (2^deg) div (2^(deg div 2))::nat) " 
-    using "4.hyps"(4) pow_sum by metis 
-  hence "take (2^deg div (2^(deg div 2)))(map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList) = treeList"
-    using b "4"(4) by simp
-  moreover hence " ( elim_dead summary \<infinity>) = summary" using "4.IH"(2) 
-    by (metis \<open>2 ^ m = 2 ^ deg div 2 ^ (deg div 2)\<close>)
-  ultimately show ?case using  elim_dead.simps(2)[of "Some (mi, ma)"  deg treeList summary]
-    using \<open>deg div 2 = n\<close> b by presburger
-next
-  case (5 treeList n summary m deg mi ma)
-  have a:"i < 2^m \<longrightarrow> (elim_dead (treeList ! i) (enat( 2^n)) = treeList ! i)" for i
-  proof
-    assume  "i < 2^m"
-    hence "treeList ! i \<in> set treeList" 
-      by (simp add: "5.hyps"(2))
-    thus "elim_dead (treeList ! i) (enat (2 ^ n)) = treeList ! i" 
-      apply(cases "(treeList ! i)")
-       apply (smt (z3) "5.IH"(1) \<open>treeList ! i \<in> set treeList\<close> elim_dead.simps(1) elimnum invar_vebt.cases)+
-      done
-  qed
-  hence b:"map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList = treeList"
-    by (metis "5.hyps"(2) in_set_conv_nth map_idI)
-  have "deg div 2 = n" 
-    by (simp add: "5.hyps"(3) "5.hyps"(4))
-  hence "(2^m ::nat) = ( (2^deg) div (2^(deg div 2))::nat) " 
-    using "5.hyps"(4) pow_sum by metis 
-  hence "take (2^deg div (2^(deg div 2)))(map (\<lambda> t. elim_dead t (enat (2 ^ n))) treeList) = treeList"
-    using b "5"(4) by simp
-  moreover hence " ( elim_dead summary \<infinity>) = summary" using "5.IH"(2) 
-    by (metis \<open>2 ^ m = 2 ^ deg div 2 ^ (deg div 2)\<close>)
-  ultimately show ?case using  elim_dead.simps(2)[of "Some (mi, ma)"  deg treeList summary]
-    using \<open>deg div 2 = n\<close> b by presburger
+
+  with assms show ?thesis
+  proof(induction rule: invar_vebt.induct)
+    case (1 a b)
+    then show ?case
+      by simp
+  qed metis+
 qed
 
 end

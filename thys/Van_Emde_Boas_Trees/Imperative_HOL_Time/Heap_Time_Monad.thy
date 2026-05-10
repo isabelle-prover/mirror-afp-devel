@@ -326,9 +326,7 @@ lemma effect_bindI [effect_intros]:
 lemma effect_bindE [effect_elims]:
   assumes "effect (f \<bind> g) h h'' r' n"
   obtains h' r n1 n2 where "effect f h h' r n1" "effect (g r) h' h'' r' n2" "n = n1 + n2"
-  using assms   apply (auto simp add: effect_def bind_def split: option.split_asm)
-  (* To cleanup *)
-  by (smt (z3) Pair_inject option.distinct(1) option.inject timeFrame.elims)
+  using assms by (auto simp add: effect_def bind_def split: option.split_asm elim: timeFrame.elims)
 
 lemma execute_bind_eq_SomeI:
   assumes "execute f h = Some (x, h',n)"
