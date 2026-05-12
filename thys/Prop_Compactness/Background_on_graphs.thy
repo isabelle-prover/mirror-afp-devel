@@ -7,7 +7,7 @@
    It includes a minimum minimorum on graphs to avoid calling big
    Isabelle theories on graphs. 
 
-   Last modified: 26 Jan, 2026
+   Last modified: 29 Sep, 2025
 *)
 
 theory Background_on_graphs
@@ -27,6 +27,15 @@ record ('a,'b) pre_digraph =
   arcs :: "'b set"
   tail :: "'b \<Rightarrow> 'a"
   head :: "'b \<Rightarrow> 'a"
+
+definition inverse_digraph:: "('a,'b) pre_digraph \<Rightarrow> ('a,'b) pre_digraph"
+  where 
+  "inverse_digraph G  \<equiv>
+   (| verts = verts G,
+    arcs = arcs  G,
+    tail =  head G,
+    head =  tail G
+    |)"
   
 definition tails:: "('a,'b) pre_digraph \<Rightarrow> 'a set" where
    "tails G \<equiv>  {tail G e |e. e \<in> arcs G }"
@@ -43,8 +52,8 @@ definition heads_set:: "('a,'b) pre_digraph \<Rightarrow> 'b set \<Rightarrow> '
 (* Incident vertexes *)
 definition neighbour::  "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
    "neighbour G v u  \<equiv>
-   \<exists>e. e\<in> (arcs G) \<and> (( head G e = v \<and> tail G e = u) \<or>
-   (head G e  = u \<and> tail G e = v))"
+   \<exists>e. e\<in> (arcs G) \<and> ( (head G e = v \<and> tail G e = u) \<or>
+                        (head G e  = u \<and> tail G e = v) )"
 
 (* Vertex neighbourhood *)
 definition neighbourhood:: "('a,'b) pre_digraph \<Rightarrow> 'a  \<Rightarrow> 'a set" where
@@ -53,7 +62,12 @@ definition neighbourhood:: "('a,'b) pre_digraph \<Rightarrow> 'a  \<Rightarrow> 
 definition bipartite_digraph:: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" where
    "bipartite_digraph G X Y  \<equiv> 
        (X \<union> Y = (verts G)) \<and>  X \<inter> Y = {} \<and>
-       (\<forall>e \<in> (arcs G).(tail G e) \<in> X \<longleftrightarrow> (head G e) \<in> Y)"
+       (\<forall>e \<in> (arcs G). (tail G e) \<in> X \<longleftrightarrow> (head G e) \<in> Y)"
+
+lemma  inverse_bipartite_digraph:
+  assumes "bipartite_digraph G X Y"
+  shows "bipartite_digraph (inverse_digraph G) Y X"
+  by (smt (verit) assms bipartite_digraph_def inf_commute inverse_digraph_def select_convs(1,2,3,4) sup_commute)
 
 (* Left to right directed bipartite digraph *)
 definition dir_bipartite_digraph:: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" 
@@ -87,6 +101,12 @@ lemma tail_head1:
   shows "(tail G e) \<in> X \<and> (head G e) \<in> Y"
   using assms tail_head[of G X Y e] by(unfold dirBD_matching_def, auto) 
 
+lemma inv_dirBD_is_dirBD:
+  assumes "dir_bipartite_digraph G X Y"
+  shows  "dir_bipartite_digraph (inverse_digraph G) Y X"
+  by (smt (verit, del_insts) assms dir_bipartite_digraph_def inverse_bipartite_digraph inverse_digraph_def mem_Collect_eq simps(2,3,4) subsetI tail_head
+      tails_def)
+
 lemma dirBD_matching_tail_edge_unicity:
    "dirBD_matching G X Y E \<longrightarrow>  
     (\<forall>e1 \<in> E. (\<forall> e2\<in> E. (tail G e1 = tail G e2) \<longrightarrow> e1 = e2))"
@@ -114,6 +134,32 @@ definition dirBD_perfect_matching::
   "dirBD_perfect_matching G X Y E \<equiv> 
    dirBD_matching G X Y E \<and> (tails_set G E = X)"
 
+
+fun f_perfect_matching :: "('a,'b) pre_digraph \<Rightarrow> ('b  \<Rightarrow> 'a)"
+  where 
+  "f_perfect_matching G = (\<lambda>e. THE v. tail G e = v)"
+
+lemma function_f_perfect_matching:
+  assumes "v\<in>X" and  "(tail G e) = v" 
+  shows "f_perfect_matching G e = v"
+proof-
+  have *: "f_perfect_matching G e = (THE v. tail G e = v )" by auto
+  have "(THE x. tail G e = x ) = v"
+  proof(rule the_equality)
+    show "tail G e = v " using assms(2) by auto 
+  next
+    show "\<And>x. (tail G e = x) \<Longrightarrow> x = v" 
+    proof-
+      fix x
+      assume hyp1: "tail G e = x"
+      show  "x = v"
+        using assms(2) hyp1 by auto  
+    qed
+  qed
+  thus ?thesis by auto
+qed
+
+
 lemma Tail_covering_edge_in_Pef_matching: 
       "\<forall>x\<in>X. dirBD_perfect_matching G X Y E \<longrightarrow> (\<exists>e \<in> E. tail G e = x)"
 proof
@@ -127,6 +173,24 @@ proof
     thus "\<exists>e\<in>E. tail G e = x " by (unfold tails_set_def, auto)
   qed
 qed
+
+lemma bijective_f_perfect_matching:
+  assumes "dirBD_perfect_matching G X Y E"
+  shows "X = f_perfect_matching G ` E"
+proof-
+  have 1: "\<forall>x \<in> X. \<exists> e \<in> E. tail G e = x" using assms
+    by (simp add: Tail_covering_edge_in_Pef_matching)  
+  hence  "X \<subseteq> f_perfect_matching G ` E" using assms by auto
+  have 2: "\<forall>e \<in> E. \<exists> x \<in> X. tail G e = x"
+    by (meson assms dirBD_perfect_matching_def tail_head1)
+  show ?thesis using 1  2 by auto
+qed
+
+lemma card_perfect_match_in_finitedirBD:
+  assumes "dirBD_perfect_matching G X Y E" and "finite E"
+  shows "card X = card E" using  bijective_f_perfect_matching assms
+  by (smt (verit, del_insts) card_image dirBD_matching_tail_edge_unicity dirBD_perfect_matching_def
+      function_f_perfect_matching inj_on_def tail_head1)
 
 lemma Edge_unicity_in_dirBD_P_matching: 
    "\<forall>x\<in>X. dirBD_perfect_matching G X Y E \<longrightarrow> (\<exists>!e \<in> E. tail G e = x)"
