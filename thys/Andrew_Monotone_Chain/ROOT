@@ -1,0 +1,10 @@
+chapter AFP
+
+session Andrew_Monotone_Chain = "HOL-Analysis" +
+  options [document = pdf, timeout = 600]
+  theories
+    Andrew_Monotone_Chain
+    Andrew_Monotone_Chain_Examples
+  document_files
+    "root.tex"
+    "root.bib"
