@@ -18,6 +18,24 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry formalizes the Mostowski collapse theorem in Isabelle/ZF [3, 4]. For a set equipped with a well-founded extensional relation, the development defines the collapsing map by well-founded recursion, proves that its range is transitive, and shows that the map is an order isomorphism between the original relation and membership on the transitive range. The construction is also proved unique among maps satisfying the same recursive equation. The result is a standard bridge from abstract well-founded extensional structures to transitive membership structures, and complements the existing Isabelle/ZF and AFP developments on ordinals, cardinals, forcing, and transitive models [2, 1]. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "link": "../entries/Mostowski_Collapse.html",
+  "shortname": "Mostowski_Collapse",
+  "title": "The Mostowski Collapse Theorem",
+  "topic_links": [
+   "../topics/logic/set-theory/"
+  ],
+  "topics": [
+   "Logic/Set theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalizes Alon’s Combinatorial Nullstellensatz for sparse multivariate polynomials over fields. The proof derives the coefficient formula from univariate Lagrange interpolation and uses it to obtain the standard nonvanishing conclusion over finite grids. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
