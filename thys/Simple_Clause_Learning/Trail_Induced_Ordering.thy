@@ -841,10 +841,21 @@ lemma totalp_on_trail_less_ex:
     uminus_uminus_id: "\<And>x :: 'a. - (- x) = x" and
     totalp_on_lt: "totalp_on A lt"
   shows "totalp_on (A \<union> set Ls \<union> uminus ` set Ls) (trail_less_ex lt Ls)"
-  using totalp_on_trail_less[of Ls]
-  using totalp_on_lt
-  unfolding trail_less_ex_def
-  by (smt (verit, best) Un_iff defined_conv totalp_on_def uminus_uminus_id)
+proof (rule totalp_onI)
+  fix x y
+  assume "x \<in> A \<union> set Ls \<union> uminus ` set Ls" and "y \<in> A \<union> set Ls \<union> uminus ` set Ls"
+  then have "x \<in> A \<or> x \<in> set Ls \<or> - x \<in> set Ls" and "y \<in> A \<or> y \<in> set Ls \<or> - y \<in> set Ls"
+    unfolding atomize_conj
+    by (metis uminus_uminus_id defined_conv Un_iff)
+
+  moreover assume "x \<noteq> y"
+
+  ultimately show "trail_less_ex lt Ls x y \<or> trail_less_ex lt Ls y x"
+    using totalp_on_trail_less[of Ls]
+    using totalp_on_lt
+    by (metis (no_types, opaque_lifting) Un_iff defined_conv totalp_onD trail_less_ex_def
+        uminus_uminus_id)
+qed
 
 
 subsubsection \<open>Well-Founded\<close>
