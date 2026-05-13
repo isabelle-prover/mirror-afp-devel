@@ -43,6 +43,30 @@ lemma wfp_on_lex_prodp: "wfp_on A R\<^sub>A \<Longrightarrow> wfp_on B R\<^sub>B
 corollary wfp_lex_prodp: "wfp R\<^sub>A \<Longrightarrow> wfp R\<^sub>B \<Longrightarrow> wfp (lex_prodp R\<^sub>A R\<^sub>B)"
   using wfp_on_lex_prodp[of UNIV _ UNIV, simplified] .
 
+lemma wf_on_sup_if_convertible_to_wf:
+  includes lattice_syntax
+  assumes
+    wf_S: "wf_on A S" and
+    wf_Q: "wf_on (f ` A) Q" and
+    convertible_R: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x, y) \<in> R \<Longrightarrow> (f x, f y) \<in> Q" and
+    convertible_S: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x, y) \<in> S \<Longrightarrow> (f x, f y) \<in> Q \<or> f x = f y"
+  shows "wf_on A (R \<squnion> S)"
+proof (rule wf_on_if_convertible_to_wf_on)
+  show "wf_on ((\<lambda>x. (f x, x)) ` A) (lex_prod Q S)"
+  proof (rule wf_on_subset)
+    show "wf_on (f ` A \<times> A) (lex_prod Q S)"
+      by (rule wf_on_lex_prod[OF wf_Q wf_S])
+  next
+    show "(\<lambda>x. (f x, x)) ` A \<subseteq> f ` A \<times> A"
+      by auto
+  qed
+next
+  fix x y
+  show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x, y) \<in> (R \<squnion> S) \<Longrightarrow> ((f x, x), (f y, y)) \<in> lex_prod Q S"
+    using convertible_R convertible_S
+    by (auto simp add: lex_prodp_def)
+qed
+
 lemma wfp_on_sup_if_convertible_to_wfp:
   includes lattice_syntax
   assumes
@@ -51,21 +75,7 @@ lemma wfp_on_sup_if_convertible_to_wfp:
     convertible_R: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> R x y \<Longrightarrow> Q (f x) (f y)" and
     convertible_S: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> S x y \<Longrightarrow> Q (f x) (f y) \<or> f x = f y"
   shows "wfp_on A (R \<squnion> S)"
-proof (rule wfp_on_if_convertible_to_wfp_on)
-  show "wfp_on ((\<lambda>x. (f x, x)) ` A) (lex_prodp Q S)"
-  proof (rule wfp_on_subset)
-    show "wfp_on (f ` A \<times> A) (lex_prodp Q S)"
-      by (rule wfp_on_lex_prodp[OF wf_Q wf_S])
-  next
-    show "(\<lambda>x. (f x, x)) ` A \<subseteq> f ` A \<times> A"
-      by auto
-  qed
-next
-  fix x y
-  show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (R \<squnion> S) x y \<Longrightarrow> lex_prodp Q S (f x, x) (f y, y)"
-    using convertible_R convertible_S
-    by (auto simp add: lex_prodp_def)
-qed
+  using wf_on_sup_if_convertible_to_wf[to_pred, OF assms] .
 
 lemma chain_lnth_rtranclp:
   assumes
