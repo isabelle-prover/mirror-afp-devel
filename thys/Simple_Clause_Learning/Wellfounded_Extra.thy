@@ -26,19 +26,6 @@ lemma wf_on_if_minimal:
 definition inv_imagep_on :: "'a set \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "inv_imagep_on A R f = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> R (f x) (f y))"
 
-lemma wfp_on_inv_imagep:
-  assumes wf: "wfp_on (f ` A) R"
-  shows "wfp_on A (inv_imagep R f)"
-  unfolding wfp_on_iff_ex_minimal
-proof (intro allI impI)
-  fix B assume "B \<subseteq> A" and "B \<noteq> {}"
-  hence "\<exists>z\<in>f ` B. \<forall>y. R y z \<longrightarrow> y \<notin> f ` B"
-    using wf[unfolded wfp_on_iff_ex_minimal, rule_format, of "f ` B"] by blast
-  thus "\<exists>z\<in>B. \<forall>y. inv_imagep R f y z \<longrightarrow> y \<notin> B"
-    unfolding inv_imagep_def
-    by (metis image_iff)
-qed
-
 definition lex_prodp where
   "lex_prodp R\<^sub>A R\<^sub>B x y \<longleftrightarrow> R\<^sub>A (fst x) (fst y) \<or> fst x = fst y \<and> R\<^sub>B (snd x) (snd y)"
 
