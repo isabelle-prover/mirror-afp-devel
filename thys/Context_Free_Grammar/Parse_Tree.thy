@@ -32,6 +32,13 @@ fun parse_tree :: "('n,'t)Prods \<Rightarrow> ('n,'t) ptree \<Rightarrow> bool" 
 "parse_tree P (Sym s) = True" |
 "parse_tree P (Prod A ts) = ((\<forall>t \<in> set ts. parse_tree P t) \<and> (A,map root ts) \<in> P)"
 
+definition valid_parse_tree :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> ('n, 't) syms \<Rightarrow> ('n,'t) ptree \<Rightarrow> bool" where
+"valid_parse_tree P A \<alpha> t = (parse_tree P t \<and> root t = Nt A \<and> fringe t = \<alpha>)"
+
+definition unambiguous :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> bool" where
+"unambiguous P S = (\<forall>w \<in> Lang P S.
+   \<forall>t1 t2. (valid_parse_tree P S (map Tm w) t1 \<and> valid_parse_tree P S (map Tm w) t2) \<longrightarrow> t1 = t2)"
+
 lemma fringe_deriven_if_parse_tree: "parse_tree P t \<Longrightarrow> P \<turnstile> [root t] \<Rightarrow>(size_pt t) fringe t"
 proof(induction t)
   case (Sym s)
