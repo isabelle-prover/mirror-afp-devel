@@ -15,7 +15,7 @@ text \<open>
 lemma
   fixes f :: "real \<Rightarrow> 'a :: {real_normed_field, banach}"
     and g g' :: "real \<Rightarrow> real"
-  assumes fin:     "finite Y"
+  assumes fin:     "countable Y"
   assumes cont_f:  "continuous_on {a..} f"
   assumes cont_g:  "continuous_on {a..} g"
   assumes cont_g': "continuous_on {a..} g'"
