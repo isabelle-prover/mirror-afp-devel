@@ -1394,8 +1394,8 @@ proof
     have cont: "continuous_on (UNIV - \<Lambda>) f"
       by (auto simp: f_def intro!: continuous_intros)
 
-    have *: "connected (UNIV - \<Lambda>)" "open (UNIV - \<Lambda>)" "finite ({} :: complex set)"
-      by (auto simp: closed_lattice countable_lattice intro!: connected_open_diff_countable)
+    have *: "connected (UNIV - \<Lambda>)" "open (UNIV - \<Lambda>)" "countable ({} :: complex set)"
+      by (auto simp: closed_lattice intro!: connected_open_diff_countable)
 
     obtain c where c: "\<And>z. z \<in> UNIV - \<Lambda> \<Longrightarrow> f z = c"
       using DERIV_zero_connected_constant[OF * cont deriv] by blast
