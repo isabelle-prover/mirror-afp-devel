@@ -6,28 +6,6 @@ begin
 (* TODO Move. Or rather, fix whatever causes these problems. *)
 lemmas [simp del] = div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4
 
-(* TODO Move *)
-lemma analytic_at_continuation:
-  assumes "eventually (\<lambda>z. f z = g z) (at z)" "f analytic_on {z}" "g analytic_on {z}"
-  shows   "f z = g z"
-proof -
-  have "isCont (\<lambda>z. f z - g z) z"
-    by (intro analytic_at_imp_isCont analytic_intros assms)
-  hence "(\<lambda>z. f z - g z) \<midarrow>z\<rightarrow> (f z - g z)"
-    by (rule isContD)
-  also have "?this \<longleftrightarrow> (\<lambda>z. 0) \<midarrow>z\<rightarrow> (f z - g z)"
-    by (intro filterlim_cong eventually_mono[OF assms(1)]) auto
-  finally show "f z = g z"
-    by (simp add: tendsto_const_iff)
-qed
-
-(* TODO Move *)
-lemma analytic_on_continuation:
-  assumes "eventually (\<lambda>z. f z = g z) (cosparse B)" "f analytic_on A" "g analytic_on A" "z \<in> A \<inter> B"
-  shows   "f z = g z"
-  using analytic_at_continuation[of f g z] assms analytic_on_subset
-  by (auto dest: eventually_cosparse_imp_eventually_at)
-
 unbundle jacobi_theta_nw_notation
 
 
