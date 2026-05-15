@@ -718,7 +718,7 @@ lemma fundamental_theorem_of_calculus_interior_stronger':
     and "a \<le> b" "\<And>x. x \<in> {a <..< b} - S \<Longrightarrow> (f has_vector_derivative f'(x)) (at x within {a..b} - S)"
     and "continuous_on {a .. b} f"
   shows "(f' has_integral (f b - f a)) {a .. b}"
-  using assms fundamental_theorem_of_calculus_interior_strong at_within_cbox_finite
+  using assms fundamental_theorem_of_calculus_interior_strong at_within_cbox_finite countable_finite
   by (metis DiffD1 DiffD2 interior_atLeastAtMost_real interior_cbox interval_cbox)
 
 lemma has_integral_substitution_general_:
