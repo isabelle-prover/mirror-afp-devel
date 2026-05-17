@@ -692,7 +692,7 @@ context
   fixes a b :: int and I S :: 'a
   fixes Y :: "real set"
   assumes "a \<le> b"
-  assumes fin: "finite Y"
+  assumes cntbl: "countable Y"
   assumes cont: "continuous_on {real_of_int a..real_of_int b} f"
   assumes deriv [derivative_intros]: 
             "\<And>x::real. x \<in> {a..b} - Y \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
@@ -736,7 +736,7 @@ next
       using that i at_within_interior[of x "{of_int i..of_int (i + 1)}"] *[of x] by simp
     hence "(h has_integral g (of_int (i + 1)) - g (of_int i)) {of_int i..of_int (i+1)}"
       unfolding g_def h_def using that 
-      by (intro fundamental_theorem_of_calculus_interior_strong[OF fin])
+      by (intro fundamental_theorem_of_calculus_interior_strong[OF cntbl])
          (auto intro!: derivative_eq_intros continuous_intros indefinite_integral_continuous_1
              integrable_continuous_real)
     also have "g (of_int (i + 1)) - g (of_int i) = d i"
@@ -793,7 +793,7 @@ text \<open>
 context
   fixes f f' :: "real \<Rightarrow> 'a :: banach" and a b :: int and n :: nat and A :: "real set"
   assumes ab: "a \<le> b" and n: "n > 0"
-  assumes fin:   "finite A"
+  assumes cntbl:   "countable A"
   assumes cont:  "continuous_on {of_int a..of_int b} f"
   assumes cont': "continuous_on {of_int a..of_int b} f'"
   assumes deriv: "\<And>x. x \<in> {of_int a<..<of_int b} - A \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
@@ -812,7 +812,7 @@ proof -
     
   have "((\<lambda>t. pbernpoly n t *\<^sub>R f t) has_integral (-T + (?h b - ?h a))) {a..b}"
   proof (rule integration_by_parts_interior_strong[OF bounded_bilinear_scaleR])
-    from fin show "finite ?A" by simp
+    from cntbl show "countable ?A" by simp
     from \<open>n > 0\<close> show "continuous_on {of_int a..of_int b} (\<lambda>t. pbernpoly (Suc n) t / real (Suc n))"
       by (intro continuous_intros) auto
     show "continuous_on {of_int a..of_int b} f" by fact
@@ -854,7 +854,7 @@ end
 context
   fixes f f' :: "real \<Rightarrow> 'a :: banach" and a :: int and n :: nat and A :: "real set" and C
   assumes n: "n > 0"
-  assumes fin:   "finite A"
+  assumes cntbl:   "countable A"
   assumes cont:  "continuous_on {of_int a..} f"
   assumes cont': "continuous_on {of_int a..} f'"
   assumes lim:   "(f \<longlongrightarrow> C) at_top"
@@ -879,7 +879,7 @@ proof (rule iffI)
   proof eventually_elim
     case (elim b)
     thus ?case
-    using EM_remainder'_conv_Suc[OF elim n fin continuous_on_subset[OF cont] 
+    using EM_remainder'_conv_Suc[OF elim n cntbl continuous_on_subset[OF cont] 
             continuous_on_subset[OF cont'] deriv] by (auto simp: g_def)
   qed
   
@@ -934,7 +934,7 @@ context
   fixes fs :: "nat \<Rightarrow> real \<Rightarrow> 'a"
   fixes a b :: int assumes ab: "a \<le> b"
   fixes N :: nat assumes N: "N > 0"
-  fixes Y :: "real set" assumes fin: "finite Y"
+  fixes Y :: "real set" assumes cntbl: "countable Y"
   assumes fs_0 [simp]: "fs 0 = f"
   assumes fs_cont [continuous_intros]:  
     "\<And>k. k \<le> N \<Longrightarrow> continuous_on {real_of_int a..real_of_int b} (fs k)"
@@ -954,7 +954,7 @@ proof -
   using that
   proof (induction m rule: dec_induct)
     case base
-    with ab fin fs_cont[of 0] show ?case using fs_deriv[of 0] N unfolding One_nat_def
+    with ab cntbl fs_cont[of 0] show ?case using fs_deriv[of 0] N unfolding One_nat_def
       by (subst EM_remainder'_Suc_0[of _ _ Y f]) (simp_all add: algebra_simps S_def I_def c_def)
   next
     case (step n)
@@ -965,7 +965,7 @@ proof -
       (is "_ = _ + ?c") by (simp add: EM_remainder'_Suc_0 c_def)
     also have "\<dots> + EM_remainder' n (fs n) a b = (\<Sum>k<Suc n. c k) + (?c + EM_remainder' n (fs n) a b)"
       by (simp add: add.assoc)
-    also from step.prems step.hyps ab fin
+    also from step.prems step.hyps ab cntbl
       have "?c + EM_remainder' n (fs n) a b = EM_remainder' (Suc n) (fs (Suc n)) a b"
       by (subst EM_remainder'_conv_Suc [where A = Y]) 
          (auto intro!: fs_deriv fs_cont)
@@ -986,7 +986,7 @@ qed
 end
 
 theorem euler_maclaurin_strong_raw_nat:
-  assumes "a \<le> b" "0 < N" "finite Y" "fs 0 = f"
+  assumes "a \<le> b" "0 < N" "countable Y" "fs 0 = f"
     "(\<And>k. k \<le> N \<Longrightarrow> continuous_on {real a..real b} (fs k))"
     "(\<And>k x. k < N \<Longrightarrow> x \<in> {real a..real b} - Y \<Longrightarrow>
        (fs k has_vector_derivative fs (Suc k) x) (at x))"
@@ -1025,7 +1025,7 @@ locale euler_maclaurin_int =
   fixes a :: int
   fixes N :: nat assumes N: "N > 0"
   fixes C :: 'a
-  fixes Y :: "real set" assumes fin: "finite Y"
+  fixes Y :: "real set" assumes cntbl: "countable Y"
   assumes fs_0 [simp]: "fs 0 = f"
   assumes fs_cont [continuous_intros]:  
     "\<And>k. k \<le> N \<Longrightarrow> continuous_on {real_of_int a..} (fs k)"
@@ -1059,11 +1059,11 @@ next
   have "(\<Sum>i\<in>{a<..b}. f (of_int i)) - integral {of_int a..of_int b} f =
           (\<Sum>k<N. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (fs k (of_int b) - fs k (of_int a))) +
           EM_remainder' N (fs N) (of_int a) (of_int b)" using ab
-    by (intro euler_maclaurin_raw_strong_int [where Y = Y] N fin fs_0
+    by (intro euler_maclaurin_raw_strong_int [where Y = Y] N cntbl fs_0
               continuous_on_subset[OF fs_cont] fs_deriv) auto
   also have "(f has_integral (F b - F a)) {of_int a..of_int b}" using ab
-    by (intro fundamental_theorem_of_calculus_strong[OF fin])
-       (auto intro!: continuous_on_subset[OF F_cont] derivative_intros)
+    by (intro fundamental_theorem_of_calculus_strong[OF cntbl])
+       (auto simp: intro!: continuous_on_subset[OF F_cont] has_vector_derivative_at_within derivative_intros)
   hence "integral {of_int a..of_int b} f = F (of_int b) - F (of_int a)"
     by (simp add: has_integral_iff)
   also have "(\<Sum>k<N. (bernoulli' (Suc k) / fact (Suc k)) *\<^sub>R (fs k (of_int b) - fs k (of_int a))) =
@@ -1143,7 +1143,7 @@ locale euler_maclaurin_int' =
   fixes a :: int
   fixes N :: nat
   fixes C :: 'a
-  fixes Y :: "real set" assumes fin: "finite Y"
+  fixes Y :: "real set" assumes cntbl: "countable Y"
   assumes fs_0 [simp]: "fs 0 = f"
   assumes fs_cont [continuous_intros]:  
     "\<And>k. k \<le> 2*N+1 \<Longrightarrow> continuous_on {real_of_int a..} (fs k)"
@@ -1158,7 +1158,7 @@ locale euler_maclaurin_int' =
 begin
 
 sublocale euler_maclaurin_int F f fs a "2*N+1" C Y
-  by standard (insert fin fs_0 fs_cont fs_deriv F_cont F_deriv limit, simp_all)
+  by standard (insert cntbl fs_0 fs_cont fs_deriv F_cont F_deriv limit, simp_all)
 
 theorem euler_maclaurin_strong_int':
   assumes "a \<le> b"
@@ -1217,7 +1217,7 @@ locale euler_maclaurin_nat =
   fixes a :: nat
   fixes N :: nat assumes N: "N > 0"
   fixes C :: 'a
-  fixes Y :: "real set" assumes fin: "finite Y"
+  fixes Y :: "real set" assumes cntbl: "countable Y"
   assumes fs_0 [simp]: "fs 0 = f"
   assumes fs_cont [continuous_intros]:  
     "\<And>k. k \<le> N \<Longrightarrow> continuous_on {real a..} (fs k)"
@@ -1232,7 +1232,7 @@ locale euler_maclaurin_nat =
 begin
 
 sublocale euler_maclaurin_int F f fs "int a" N C Y
-  by standard (insert N fin fs_cont fs_deriv F_cont F_deriv 
+  by standard (insert N cntbl fs_cont fs_deriv F_cont F_deriv 
                  euler_maclaurin_nat_int_transfer[OF limit], simp_all)
 
 theorem euler_maclaurin_strong_nat:
@@ -1251,7 +1251,7 @@ locale euler_maclaurin_nat' =
   fixes a :: nat
   fixes N :: nat
   fixes C :: 'a
-  fixes Y :: "real set" assumes fin: "finite Y"
+  fixes Y :: "real set" assumes cntbl: "countable Y"
   assumes fs_0 [simp]: "fs 0 = f"
   assumes fs_cont [continuous_intros]:  
     "\<And>k. k \<le> 2*N+1 \<Longrightarrow> continuous_on {real a..} (fs k)"
@@ -1266,7 +1266,7 @@ locale euler_maclaurin_nat' =
 begin
 
 sublocale euler_maclaurin_int' F f fs "int a" N C Y
-  by standard (insert fin fs_cont fs_deriv F_cont F_deriv 
+  by standard (insert cntbl fs_cont fs_deriv F_cont F_deriv 
                  euler_maclaurin_nat_int_transfer[OF limit], simp_all)
 
 theorem euler_maclaurin_strong_nat':
@@ -1293,7 +1293,7 @@ text \<open>
 lemma
   fixes f :: "real \<Rightarrow> 'a :: {real_normed_field, banach}"
     and g g' :: "real \<Rightarrow> real"
-  assumes fin:     "finite Y"
+  assumes cntbl:     "countable Y"
   assumes pbernpoly_bound: "\<forall>x. \<bar>pbernpoly n x\<bar> \<le> D"
   assumes cont_f:  "continuous_on {a..} f"
   assumes cont_g:  "continuous_on {a..} g"
@@ -1314,6 +1314,10 @@ proof -
   have bound: "norm (EM_remainder' n f x y) \<le> D' * (g y - g x)"
     if xy: "x \<ge> a" "x \<le> y" for x y :: real
   proof -
+    have *: "\<And>u. u \<in> {x..y} - Y \<Longrightarrow> (g has_vector_derivative g' u) (at u within {x..y})"
+      using that
+      by (metis Icc_subset_Ici_iff in_mono deriv
+          has_real_derivative_iff_has_vector_derivative has_vector_derivative_at_within Diff_iff)
     have "norm (EM_remainder' n f x y) = norm (integral {x..y} (\<lambda>t. pbernpoly n t *\<^sub>R f t)) / fact n"
       by (simp add: EM_remainder'_def)
     also have "(\<lambda>t. D * g' t) integrable_on {x..y}" using xy
@@ -1324,9 +1328,9 @@ proof -
       by (intro integral_norm_bound_integral integrable_EM_remainder' 
                continuous_on_subset[OF cont_f]) (auto intro!: mult_mono f_bound)
     also have "\<dots> = D * integral {x..y} g'" by simp
-    also have "(g' has_integral (g y - g x)) {x..y}" using xy
-      by (intro fundamental_theorem_of_calculus_strong[OF fin] continuous_on_subset[OF cont_g])
-         (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric] intro!: deriv)
+    also have "(g' has_integral (g y - g x)) {x..y}" 
+      using * xy
+      by (intro fundamental_theorem_of_calculus_strong[OF cntbl] continuous_on_subset[OF cont_g]) auto
     hence "integral {x..y} g' = g y - g x" by (simp add: has_integral_iff)
     finally show ?thesis by (simp add: D'_def divide_simps)
   qed
@@ -1388,7 +1392,7 @@ qed
 lemma
   fixes f :: "real \<Rightarrow> 'a :: {real_normed_field, banach}"
     and g g' :: "real \<Rightarrow> real"
-  assumes fin:     "finite Y"
+  assumes cntbl:     "countable Y"
   assumes pbernpoly_bound: "\<forall>x. \<bar>pbernpoly n x\<bar> \<le> D"
   assumes cont_f:  "continuous_on {a..} f"
   assumes cont_g:  "continuous_on {a..} g"
@@ -1402,12 +1406,12 @@ lemma
             "\<forall>x. real x \<ge> a \<longrightarrow> norm (EM_remainder n f (int x)) \<le> D / fact n * g x"
 proof -
   have "\<forall>x. of_int x \<ge> a \<longrightarrow> norm (EM_remainder n f x) \<le> D / fact n * (0 - (-g x))" using assms
-    by (intro norm_EM_remainder_le_strong_int[OF fin pbernpoly_bound _ _ cont_g'])
+    by (intro norm_EM_remainder_le_strong_int[OF cntbl pbernpoly_bound _ _ cont_g'])
        (auto intro!: continuous_intros tendsto_eq_intros derivative_eq_intros)
   thus "\<forall>x. of_int x \<ge> a \<longrightarrow> norm (EM_remainder n f x) \<le> D / fact n * g x" by auto
 next
   have "\<forall>x. real x \<ge> a \<longrightarrow> norm (EM_remainder n f (int x)) \<le> D / fact n * (0 - (-g x))" using assms
-    by (intro norm_EM_remainder_le_strong_nat[OF fin pbernpoly_bound _ _ cont_g'])
+    by (intro norm_EM_remainder_le_strong_nat[OF cntbl pbernpoly_bound _ _ cont_g'])
        (auto intro!: continuous_intros tendsto_eq_intros derivative_eq_intros)
   thus "\<forall>x. real x \<ge> a \<longrightarrow> norm (EM_remainder n f (int x)) \<le> D / fact n * g x" by auto
 qed

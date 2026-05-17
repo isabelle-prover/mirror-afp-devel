@@ -2319,13 +2319,13 @@ proof -
   let ?f = "\<lambda>t::real. -cos (m * t) * cos (n * t)"
   let ?I = "integral {0..pi} (\<lambda>t. cos (real m * t) * cos (real n * t))"
 
-  have "finite {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos ` {-1..1} \<subseteq> {0..pi}"
+  have "countable {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos ` {-1..1} \<subseteq> {0..pi}"
        "continuous_on {0..pi} ?f" "continuous_on {-1..1} arccos"
        "(\<And>x. x \<in> {- 1..1} - {- 1, 1} \<Longrightarrow>
         (arccos has_real_derivative -inverse (sqrt (1 - x ^ 2))) (at x within {- 1..1}))"
     by (auto intro!: arccos_lbound arccos_ubound continuous_intros derivative_eq_intros)
 
-  from has_integral_substitution_general[OF this]
+  with has_integral_substitution_general[OF this]
     have "((\<lambda>x. cos (m * arccos x) * cos (n * arccos x) / sqrt (1 - x\<^sup>2)) has_integral ?I) {-1..1}"
     by (simp add: divide_simps)
   also have "?this \<longleftrightarrow> ((\<lambda>x. cheb_poly m x * cheb_poly n x / sqrt (1 - x\<^sup>2)) has_integral ?I) {-1..1}"
@@ -2446,7 +2446,7 @@ proof -
   define g where "g = (\<lambda>t. sin (real (m+1) * t) * sin (real (n+1) * t))"
   let ?I = "integral {0..pi} g"
 
-  have "finite {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos ` {-1..1} \<subseteq> {0..pi}"
+  have "countable {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos ` {-1..1} \<subseteq> {0..pi}"
        "continuous_on {0..pi} f" "continuous_on {-1..1} arccos"
        "(\<And>x. x \<in> {- 1..1} - {- 1, 1} \<Longrightarrow>
         (arccos has_real_derivative -inverse (sqrt (1 - x ^ 2))) (at x within {- 1..1}))"

@@ -25,7 +25,7 @@ context
   fixes X :: "real set"
   fixes x y :: real
   defines "A \<equiv> sum_upto a"
-  assumes fin: "finite X"
+  assumes fin: "countable X"
   assumes xy: "0 \<le> y" "y < x"
   assumes deriv: "\<And>z. z \<in> {y..x} - X \<Longrightarrow> (f has_vector_derivative f' z) (at z)"
   assumes cont_f: "continuous_on {y..x} f"
@@ -42,9 +42,9 @@ proof -
   proof (intro has_integral_sum ballI finite_Nats_le_real, goal_cases)
     case (1 n)
     have "(f' has_integral (f x - f (max n y))) {max n y..x}"
-      using xy 1
+      using xy 1 deriv
       by (intro fundamental_theorem_of_calculus_strong[OF fin])
-         (auto intro!: continuous_on_subset[OF cont_f] deriv)
+         (auto intro!: continuous_on_subset[OF cont_f] simp: has_vector_derivative_at_within)
     also have "?this \<longleftrightarrow> ((\<lambda>t. (if t \<in> {max n y..x} then 1 else 0) *\<^sub>R f' t) 
                   has_integral (f x - f (max n y))) {max n y..x}"
       by (intro has_integral_cong) (simp_all add: chi_def)
@@ -93,7 +93,7 @@ context
   fixes X :: "real set"
   fixes x :: real
   defines "A \<equiv> sum_upto a"
-  assumes fin: "finite X"
+  assumes fin: "countable X"
   assumes x: "x > 0"
   assumes deriv: "\<And>z. z \<in> {0..x} - X \<Longrightarrow> (f has_vector_derivative f' z) (at z)"
   assumes cont_f: "continuous_on {0..x} f"
