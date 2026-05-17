@@ -46,12 +46,17 @@ end
 
 context VEBT_internal begin                       
                        
-lemma tdeletemimi:"deg \<ge> 2 \<Longrightarrow> T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, mi)) deg treeList summary) x \<le> 9"
-  using T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi mi "deg-2" treeList summary x]
-  apply(cases "x \<noteq> mi") 
-  apply (smt (verit) One_nat_def Suc_1 add_Suc_shift div_le_dividend le_add_diff_inverse not_less_iff_gr_or_eq numeral_3_eq_3 numeral_Bit0 numeral_Bit1_div_2 plus_1_eq_Suc)
-  apply (smt (verit) Suc3_eq_add_3 Suc_eq_plus1 Suc_nat_number_of_add add_2_eq_Suc dual_order.eq_iff le_add_diff_inverse nat_less_le numeral_Bit1 semiring_norm(2) semiring_norm(8))
-  done
+lemma tdeletemimi:
+  assumes "deg \<ge> 2"
+  shows "T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, mi)) deg treeList summary) x \<le> 9"
+proof -
+  obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc assms le_Suc_ex by blast
+
+  then show ?thesis
+    by simp
+qed
+
 
 lemma minNull_delete_time_bound: "invar_vebt t n \<Longrightarrow> minNull (vebt_delete t x) \<Longrightarrow>  T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e t x \<le> 9" 
 proof(induction  t n rule: invar_vebt.induct)
@@ -202,7 +207,7 @@ next
       using "5.prems" \<open>2 \<le> deg\<close> delt_out_of_range by force
   next
     case False
-    hence "x \<le> ma \<and> x \<ge> mi" by simp
+    hence "mi \<le> x" and "x \<le> ma" by simp_all
     then show ?thesis
     proof(cases "(x = mi \<and> x = ma)")
       case True
@@ -273,17 +278,18 @@ next
         qed
       next
         case False
-        hence "x > mi" 
-          using \<open>x \<le> ma \<and> mi \<le> x\<close> nat_less_le by blast
         let  ?l = "low x (deg div 2)"
         let  ?h = "high x (deg div 2)" 
         let ?newnode = "vebt_delete (treeList ! ?h) ?l"
         let ?newlist = "treeList[?h:= ?newnode]" 
-        have "x <2^deg"
-          using "5.hyps"(8) \<open>x \<le> ma \<and> mi \<le> x\<close> dual_order.strict_trans2 by blast
-        hence "?h < 2^m" using  "5.prems" \<open>2 \<le> deg\<close> \<open>mi < x\<close> \<open>x \<le> ma \<and> mi \<le> x\<close>
-            del_in_range minNull.simps(5) verit_comp_simplify1(3) apply simp
-          by (smt (verit) minNull.simps(5))
+
+        have "?h < 2^m"
+        proof (rule high_bound_aux)
+          show "x < 2 ^ (deg div 2 + m)"
+            using \<open>x \<le> ma\<close> \<open>ma < 2 ^ deg\<close>
+            by (simp add: \<open>deg = n + m\<close> \<open>m = Suc n\<close>)
+        qed
+
         hence  0:"vebt_delete (Node (Some (mi, ma)) deg treeList summary) x = (
                   if minNull ?newnode 
                              then(   
@@ -302,7 +308,7 @@ next
                                                     ?h * 2^(deg div 2) + the( vebt_maxt (?newlist ! ?h))
                                                             else ma)))
                                  deg ?newlist summary ))" using del_x_not_mi[of mi x ma deg ?h ?l ?newnode ?newlist treeList summary]
-          by (metis "5.hyps"(2) \<open>2 \<le> deg\<close> \<open>mi < x\<close> \<open>x \<le> ma \<and> mi \<le> x\<close> del_x_not_mi leD)
+          using "5.hyps"(2) False \<open>2 \<le> deg\<close> \<open>mi \<le> x\<close> \<open>x \<le> ma\<close> del_x_not_mi nat_less_le by simp
         then show ?thesis
         proof(cases " minNull ?newnode ")
           case True
@@ -338,12 +344,13 @@ next
   case (4 treeList n summary m deg mi ma)
   hence deggy: "deg \<ge> 2" 
     by (metis add_self_div_2 deg_not_0 div_greater_zero_iff)
+  then obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   then show ?case
   proof(cases " (x < mi \<or> x > ma)")
     case True
-    hence " T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x = 4" using
-        T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi ma "deg-2" treeList summary x] 
-      by (smt (verit) Suc3_eq_add_3 Suc_1 \<open>2 \<le> deg\<close> add_2_eq_Suc' le_add_diff_inverse2 numeral_code(2))
+    hence " T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x = 4"
+      by (simp add: \<open>deg = Suc (Suc deg')\<close>)
     then show ?thesis using  T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi ma "deg-2" treeList summary x] by auto
   next
     case False
@@ -372,8 +379,8 @@ next
                                                               else 1)        
                              ))else 
                               2 + (if xn = ma then 6+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (newlist ! h)   else  1)        
-                       )))else  1  ))" using T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi ma "deg-2" treeList summary x] deggy 
-      by (smt (z3) False add.commute add_2_eq_Suc' add_numeral_left le_add_diff_inverse numeral_plus_numeral)    
+                       )))else  1  ))"
+      by (simp add: \<open>deg = Suc (Suc deg')\<close>)    
     then show ?thesis 
     proof(cases " (x = mi \<and> x = ma)")
       case True
@@ -429,7 +436,9 @@ next
                                                                        ) ) else 1)  ))else 
                               2 + (if ?xn = ma then 6+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (newlist ! h)   else  1)        
                        )))else  1  )" 
-          using 1 by (smt (verit) True add.assoc)
+          using 1
+          unfolding True Let_def
+          by simp
         let ?l = "low ?xn (deg div 2)"
         let ?h = "high ?xn (deg div 2)"
         have 3: "T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x = 3+3 +13+ T\<^sub>m\<^sub>i\<^sub>n\<^sub>t summary + 
@@ -485,8 +494,8 @@ next
                                                                          else 8+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! the maxs)
                                                                        ) ) else 1)  ))else 
                               2 + (if ?xn = ma then 6+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! ?h)   else  1)        
-                       ))"  
-            by (smt (z3) Suc_eq_plus1 add.commute add_Suc numeral_plus_one semiring_norm(5) semiring_norm(8))        
+                       ))"
+            unfolding Let_def by linarith
           then show ?thesis 
           proof(cases "minNull ?newnode ")
             case True
@@ -720,7 +729,7 @@ next
                                                                          then 1
                                                                          else 8+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! the maxs)
                                                                       ))" 
-                using 10  by (smt (verit) add.assoc trans_le_add1)
+                using 10 by presburger
               hence 11:  "T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x \<le> 45 +  T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e summary ?h +
                                             (let maxs = vebt_maxt ?sn in 
                                                                       1 + (if maxs = None 
@@ -799,12 +808,13 @@ next
   case (5 treeList n summary m deg mi ma)
   hence deggy: "deg \<ge> 2" 
     by (metis Suc_1 add_mono_thms_linordered_semiring(1) le_add1 plus_1_eq_Suc set_n_deg_not_0)
+  then obtain deg' where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   then show ?case
   proof(cases " (x < mi \<or> x > ma)")
     case True
-    hence " T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x = 4" using
-        T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi ma "deg-2" treeList summary x] 
-      by (smt (verit) Suc3_eq_add_3 Suc_1 \<open>2 \<le> deg\<close> add_2_eq_Suc' le_add_diff_inverse2 numeral_code(2))
+    hence " T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x = 4"
+      by (simp add: \<open>deg = Suc (Suc deg')\<close>)
     then show ?thesis using  T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi ma "deg-2" treeList summary x] by auto
   next
     case False
@@ -833,8 +843,8 @@ next
                                                               else 1)        
                              ))else 
                               2 + (if xn = ma then 6+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (newlist ! h)   else  1)        
-                       )))else  1  ))" using T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e.simps(7)[of mi ma "deg-2" treeList summary x] deggy 
-      by (smt (z3) False add.commute add_2_eq_Suc' add_numeral_left le_add_diff_inverse numeral_plus_numeral)    
+                       )))else  1  ))"
+      by (simp add: \<open>deg = Suc (Suc deg')\<close>)    
     then show ?thesis 
     proof(cases " (x = mi \<and> x = ma)")
       case True
@@ -890,7 +900,9 @@ next
                                                                        ) ) else 1)  ))else 
                               2 + (if ?xn = ma then 6+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (newlist ! h)   else  1)        
                        )))else  1  )" 
-          using 1 by (smt (verit) True add.assoc)
+          using 1
+          unfolding True Let_def
+          by force
         let ?l = "low ?xn (deg div 2)"
         let ?h = "high ?xn (deg div 2)"
         have 3: "T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x = 3+3 +13+ T\<^sub>m\<^sub>i\<^sub>n\<^sub>t summary + 
@@ -946,8 +958,9 @@ next
                                                                          else 8+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! the maxs)
                                                                        ) ) else 1)  ))else 
                               2 + (if ?xn = ma then 6+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! ?h)   else  1)        
-                       ))"  
-            by (smt (z3) Suc_eq_plus1 add.commute add_Suc numeral_plus_one semiring_norm(5) semiring_norm(8))        
+                       ))"
+            unfolding Let_def
+            by linarith
           then show ?thesis 
           proof(cases "minNull ?newnode ")
             case True
@@ -994,7 +1007,7 @@ next
                                                                          then 1
                                                                          else 8+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! the maxs)
                                                                       ))" 
-                using 10  by (smt (verit) add.assoc trans_le_add1)
+                using 10 by presburger
               hence 11:  "T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x \<le> 55 +  T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e summary ?h +
                                             (let maxs = vebt_maxt ?sn in 
                                                                       1 + (if maxs = None 
@@ -1182,7 +1195,7 @@ next
                                                                          then 1
                                                                          else 8+  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (?newlist ! the maxs)
                                                                       ))"
-                using 10 by (smt (verit) add.assoc trans_le_add1)
+                using 10 by presburger
               hence 11:  "T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e (Node (Some (mi, ma)) deg treeList summary) x \<le> 45 +  T\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e summary ?h +
                                             (let maxs = vebt_maxt ?sn in 
                                                                       1 + (if maxs = None 
@@ -1432,7 +1445,7 @@ next
       using "5.prems" \<open>2 \<le> deg\<close> delt_out_of_range by force
   next
     case False
-    hence "x \<le> ma \<and> x \<ge> mi" by simp
+    hence "mi \<le> x" and"x \<le> ma" by simp_all
     then show ?thesis
     proof(cases "(x = mi \<and> x = ma)")
       case True
@@ -1501,17 +1514,20 @@ next
         qed
       next
         case False
-        hence "x > mi" 
-          using \<open>x \<le> ma \<and> mi \<le> x\<close> nat_less_le by blast
+(*         hence "x > mi" 
+          using \<open>x \<le> ma \<and> mi \<le> x\<close> nat_less_le by blast *)
         let  ?l = "low x (deg div 2)"
         let  ?h = "high x (deg div 2)" 
         let ?newnode = "vebt_delete (treeList ! ?h) ?l"
         let ?newlist = "treeList[?h:= ?newnode]" 
-        have "x <2^deg"
-          using "5.hyps"(8) \<open>x \<le> ma \<and> mi \<le> x\<close> dual_order.strict_trans2 by blast
-        hence "?h < 2^m" using  "5.prems" \<open>2 \<le> deg\<close> \<open>mi < x\<close> \<open>x \<le> ma \<and> mi \<le> x\<close>
-            del_in_range minNull.simps(5) verit_comp_simplify1(3) apply simp
-          by (smt (verit) minNull.simps(5))
+
+        have "?h < 2^m"
+        proof (rule high_bound_aux)
+          show "x < 2 ^ (deg div 2 + m)"
+            using \<open>x \<le> ma\<close> \<open>ma < 2 ^ deg\<close>
+            by (simp add: \<open>deg = n + m\<close> \<open>m = Suc n\<close>)
+        qed
+
         hence  0:"vebt_delete (Node (Some (mi, ma)) deg treeList summary) x = (
                   if minNull ?newnode 
                              then(   
@@ -1529,8 +1545,8 @@ next
                                (Node (Some (mi, (if x = ma then
                                                     ?h * 2^(deg div 2) + the( vebt_maxt (?newlist ! ?h))
                                                             else ma)))
-                                 deg ?newlist summary ))" using del_x_not_mi[of mi x ma deg ?h ?l ?newnode ?newlist treeList summary]
-          by (metis "5.hyps"(2) \<open>2 \<le> deg\<close> \<open>mi < x\<close> \<open>x \<le> ma \<and> mi \<le> x\<close> del_x_not_mi leD)
+                                 deg ?newlist summary ))"
+          using "5.hyps"(2) False \<open>2 \<le> deg\<close> \<open>mi \<le> x\<close> \<open>x \<le> ma\<close> del_x_not_mi nat_less_le by simp
         then show ?thesis
         proof(cases " minNull ?newnode ")
           case True

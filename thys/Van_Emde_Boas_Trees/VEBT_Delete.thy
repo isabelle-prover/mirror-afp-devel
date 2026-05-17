@@ -347,7 +347,9 @@ next
     by  (auto simp add: "4.hyps"(3) "4.hyps"(4))
   hence dp:"deg \<ge> 2"
     using "4.hyps"(1) "4.hyps"(3) deg_not_0 div_greater_zero_iff by blast
-  then show ?case proof(cases "x <mi \<or> x > ma")
+  then obtain deg' :: nat where "deg = Suc (Suc deg')"
+    by (metis Suc_1 add_Suc_shift le_Suc_ex plus_1_eq_Suc)
+  show ?case proof(cases "x <mi \<or> x > ma")
     case True
     hence "vebt_delete (Node (Some (mi, ma)) deg treeList summary) x = (Node (Some (mi, ma)) deg treeList summary)" 
       using delt_out_of_range[of x mi ma deg treeList summary]  \<open>2 \<le> deg\<close> by blast
@@ -405,11 +407,12 @@ next
             by (metis True \<open>2 \<le> deg\<close> \<open>deg div 2 = n\<close> \<open>high x n < length treeList\<close> \<open>mi < ma\<close> \<open>mi \<le> x \<and> x \<le> ma\<close> \<open>x \<noteq> mi\<close> less_not_refl3 order.not_eq_order_implies_strict)
           moreover have "both_member_options (?delsimp) y \<Longrightarrow> (x \<noteq> y \<and> both_member_options (Node (Some (mi, ma)) deg treeList summary) y)"
           proof-
-            assume "both_member_options (?delsimp) y"
-            hence "y = mi \<or> y = ?newma \<or> 
+            assume assm: "both_member_options (?delsimp) y"
+            then have "y = mi \<or> y = ?newma \<or> 
                 (both_member_options (?newlist ! (high  y (deg div 2))) (low y (deg div 2)) \<and> (high y (deg div 2)) < length ?newlist)" 
-              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y] dp 
-              by (smt (z3) Suc_1 Suc_le_D both_member_options_def membermima.simps(4) naive_member.simps(3))
+              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y]
+              using \<open>deg = Suc (Suc deg')\<close>
+              by (smt (verit, best) membermima.simps(4) naive_member.simps(3) both_member_options_def)
             moreover have "y = mi \<Longrightarrow> ?thesis"
               by (meson \<open>x \<noteq> mi\<close> both_member_options_equiv_member vebt_mint.simps(3) mint_member tvalid)
             moreover have "y = ?newma \<Longrightarrow> ?thesis"
@@ -562,7 +565,7 @@ next
           proof-
             assume ssms: "both_member_options ?delsimp y "
             hence aaaa: "y = mi \<or> y = ?newma \<or> (both_member_options (?newlist ! (high y n)) (low y n) \<and> high y n < length ?newlist)"
-              by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> both_member_options_def dp membermima.simps(4) naive_member.simps(3))
+              by (smt (verit, ccfv_SIG) membermima.simps(4) naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> \<open>deg div 2 = n\<close> both_member_options_def)
             show " x \<noteq> y \<and> both_member_options (Node (Some (mi, ma)) deg treeList summary) y"
             proof-
               have "y = mi \<Longrightarrow>?thesis"
@@ -745,8 +748,8 @@ next
             assume "both_member_options (?delsimp) y"
             hence "y = ?xn \<or> y = ?newma \<or> 
                 (both_member_options (?newlist ! (high  y (deg div 2))) (low y (deg div 2)) \<and> (high y (deg div 2)) < length ?newlist)" 
-              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y] dp 
-              by (smt (z3) Suc_1 Suc_le_D both_member_options_def membermima.simps(4) naive_member.simps(3))
+              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y]
+              by (smt (verit, best) membermima.simps(4) naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> both_member_options_def)
             moreover have "y = ?xn \<Longrightarrow> ?thesis" 
               by (metis "4.hyps"(9) False \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close> \<open>invar_vebt (treeList ! summin) n\<close> both_member_options_equiv_member high_inv less_not_refl low_inv member_bound mimapr xnin)
             moreover have "y = ?newma \<Longrightarrow> ?thesis"
@@ -924,7 +927,7 @@ next
           proof-
             assume ssms: "both_member_options ?delsimp y "
             hence aaaa: "y = ?xn \<or> y = ?newma \<or> (both_member_options (?newlist ! (high y n)) (low y n) \<and> high y n < length ?newlist)"
-              by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> both_member_options_def dp membermima.simps(4) naive_member.simps(3))
+              by (smt (verit, ccfv_threshold) membermima.simps(4) naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> \<open>deg div 2 = n\<close> both_member_options_def)
             show " x \<noteq> y \<and> both_member_options (Node (Some (mi, ma)) deg treeList summary) y"
             proof-
               have "y = ?xn \<Longrightarrow>?thesis"
@@ -1070,6 +1073,8 @@ next
     by  (auto simp add: "5.hyps"(3) "5.hyps"(4))
   hence dp:"deg \<ge> 2" 
     by (meson vebt_maxt.simps(3) maxt_member member_inv tvalid)
+  then obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   hence nmpr:"n\<ge> 1 \<and> m = Suc n" 
     using "5.hyps"(3) \<open>deg div 2 = n\<close> by linarith
   then show ?case proof(cases "x <mi \<or> x > ma")
@@ -1135,8 +1140,8 @@ next
             assume "both_member_options (?delsimp) y"
             hence "y = mi \<or> y = ?newma \<or> 
                 (both_member_options (?newlist ! (high  y (deg div 2))) (low y (deg div 2)) \<and> (high y (deg div 2)) < length ?newlist)" 
-              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y] dp 
-              by (smt (z3) Suc_1 Suc_le_D both_member_options_def membermima.simps(4) naive_member.simps(3))
+              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y]
+              by (smt (verit, best) VEBT_internal.membermima.simps(4) VEBT_internal.naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> both_member_options_def)
             moreover have "y = mi \<Longrightarrow> ?thesis"
               by (meson \<open>x \<noteq> mi\<close> both_member_options_equiv_member vebt_mint.simps(3) mint_member tvalid)
             moreover have "y = ?newma \<Longrightarrow> ?thesis"
@@ -1289,7 +1294,7 @@ next
           proof-
             assume ssms: "both_member_options ?delsimp y "
             hence aaaa: "y = mi \<or> y = ?newma \<or> (both_member_options (?newlist ! (high y n)) (low y n) \<and> high y n < length ?newlist)"
-              by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> both_member_options_def dp membermima.simps(4) naive_member.simps(3))
+              by (smt (verit, best) membermima.simps(4) naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> \<open>deg div 2 = n\<close> both_member_options_def)
             show " x \<noteq> y \<and> both_member_options (Node (Some (mi, ma)) deg treeList summary) y"
             proof-
               have "y = mi \<Longrightarrow>?thesis"
@@ -1475,8 +1480,8 @@ next
             assume "both_member_options (?delsimp) y"
             hence "y = ?xn \<or> y = ?newma \<or> 
                 (both_member_options (?newlist ! (high  y (deg div 2))) (low y (deg div 2)) \<and> (high y (deg div 2)) < length ?newlist)" 
-              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y] dp 
-              by (smt (z3) Suc_1 Suc_le_D both_member_options_def membermima.simps(4) naive_member.simps(3))
+              using both_member_options_from_complete_tree_to_child[of deg mi ?newma ?newlist ?sn y]
+              by (smt (verit, best) VEBT_internal.membermima.simps(4) VEBT_internal.naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> both_member_options_def)
             moreover have "y = ?xn \<Longrightarrow> ?thesis" 
               by (metis "5.hyps"(9) False \<open>vebt_member (treeList ! summin) lx\<close> \<open>summin < 2 ^ m\<close> \<open>invar_vebt (treeList ! summin) n\<close> both_member_options_equiv_member high_inv less_not_refl low_inv member_bound mimapr xnin)
             moreover have "y = ?newma \<Longrightarrow> ?thesis"
@@ -1652,7 +1657,7 @@ next
           proof-
             assume ssms: "both_member_options ?delsimp y "
             hence aaaa: "y = ?xn \<or> y = ?newma \<or> (both_member_options (?newlist ! (high y n)) (low y n) \<and> high y n < length ?newlist)"
-              by (smt (z3) Suc_1 Suc_le_D \<open>deg div 2 = n\<close> both_member_options_def dp membermima.simps(4) naive_member.simps(3))
+              by (smt (verit, best) membermima.simps(4) naive_member.simps(3) \<open>deg = Suc (Suc deg')\<close> \<open>deg div 2 = n\<close> both_member_options_def)
             show " x \<noteq> y \<and> both_member_options (Node (Some (mi, ma)) deg treeList summary) y"
             proof-
               have "y = ?xn \<Longrightarrow>?thesis"
