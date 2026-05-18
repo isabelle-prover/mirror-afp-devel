@@ -88,8 +88,7 @@ next
                  (if h < length treeList 
                   then 1 + T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r (treeList ! h) l 
                   else 1)))))" 
-      using  T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r.simps(5)[of mi ma "deg -2" treeList summary x]
-      by (smt (verit) One_nat_def Suc_1 \<open>2 \<le> deg\<close> add_Suc_shift le_add_diff_inverse numeral_3_eq_3 plus_1_eq_Suc)
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis 
     proof(cases "x = ma")
       case True
@@ -1150,9 +1149,9 @@ next
                                                    4 +  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (treeList ! ?h) ?l
                              else let sc = vebt_succ summary ?h in 1+  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c summary ?h + 1 + (
                              if sc = None then 1
-                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the sc) ))))" using 
-        T\<^sub>s\<^sub>u\<^sub>c\<^sub>c.simps(6)[of mi ma "deg-2" treeList summary x] False True 
-        by (smt (verit) \<open>2 \<le> deg\<close> add.commute add.left_commute add_2_eq_Suc' le_add_diff_inverse numeral_plus_one semiring_norm(5) semiring_norm(8))
+                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the sc) ))))"
+        using False
+        by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
       let ?maxlow= "vebt_maxt (treeList ! ?h)"
       let ?sc="vebt_succ summary ?h"
       have 1:"T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (Node (Some (mi, ma)) deg treeList summary) x =15 + T\<^sub>m\<^sub>a\<^sub>x\<^sub>t  (treeList ! ?h) + 
@@ -1227,12 +1226,13 @@ next
   case (5 treeList n summary m deg mi ma)
   hence "deg \<ge> 2"
     by (metis Suc_1 add_mono_thms_linordered_semiring(1) le_add1 plus_1_eq_Suc set_n_deg_not_0)
+  then obtain deg' where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   then show ?case
   proof(cases "x < mi")
     case True
     then show ?thesis 
-      using  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c.simps(6)[of mi ma "deg-2" treeList summary x]
-      by (smt (verit) Suc_leI \<open>2 \<le> deg\<close> add_2_eq_Suc distrib_right le_add_diff_inverse linorder_not_less mult.left_neutral numeral_le_one_iff plus_1_eq_Suc semiring_norm(70) trans_le_add1)
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
   next
     case False
     let ?l = "low x (deg div 2)"
@@ -1247,9 +1247,9 @@ next
                                                    4 +  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (treeList ! ?h) ?l
                              else let sc = vebt_succ summary ?h in 1+  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c summary ?h + 1 + (
                              if sc = None then 1
-                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the sc) ))))" using 
-        T\<^sub>s\<^sub>u\<^sub>c\<^sub>c.simps(6)[of mi ma "deg-2" treeList summary x] False True 
-        by (smt (verit) \<open>2 \<le> deg\<close> add.commute add.left_commute add_2_eq_Suc' le_add_diff_inverse numeral_plus_one semiring_norm(5) semiring_norm(8))
+                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the sc) ))))"
+        using False
+        by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
       let ?maxlow= "vebt_maxt (treeList ! ?h)"
       let ?sc="vebt_succ summary ?h"
       have 1:"T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (Node (Some (mi, ma)) deg treeList summary) x =15 + T\<^sub>m\<^sub>a\<^sub>x\<^sub>t  (treeList ! ?h) + 
@@ -1473,11 +1473,13 @@ next
   case (4 treeList n summary m deg mi ma)
   hence "deg \<ge> 2" 
     by (metis add_self_div_2 deg_not_0 div_greater_zero_iff)
+  then obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   then show ?case
   proof(cases "x > ma")
     case True
-    hence " T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x =2" using  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(7)[of mi ma "deg-2" treeList summary x ]
-      by (smt (verit) Suc_1 \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse plus_1_eq_Suc)
+    hence " T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x =2"
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis by simp
   next
     case False
@@ -1492,9 +1494,8 @@ next
                              else let pr = vebt_pred summary ?h in  1 + T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h+ 1 + (
                              if pr = None then 1 + (if x > mi then 1 else 1)
                              else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the pr) ))
-                     else 1)" 
-      using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(7)[of mi ma "deg-2" treeList summary x] False \<open>2 \<le> deg\<close>  
-      by (smt (verit) Suc_1 Suc_eq_plus1 add.assoc add.commute le_add_diff_inverse)
+                     else 1)"
+      using False by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
     then show ?thesis
     proof(cases " ?h < length treeList")
       case True
@@ -1562,11 +1563,13 @@ next
   case (5 treeList n summary m deg mi ma)
   hence "deg \<ge> 2"
     by (metis Suc_1 add_mono_thms_linordered_semiring(1) le_add1 plus_1_eq_Suc set_n_deg_not_0)
+  then obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   then show ?case
   proof(cases "x > ma")
     case True
-    hence " T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x =2" using  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(7)[of mi ma "deg-2" treeList summary x ]
-      by (smt (verit) Suc_1 \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse plus_1_eq_Suc)
+    hence " T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x =2"
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis by simp
   next
     case False
@@ -1582,8 +1585,7 @@ next
                              if pr = None then 1 + (if x > mi then 1 else 1)
                              else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the pr) ))
                      else 1)"
-      using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(7)[of mi ma "deg-2" treeList summary x] False \<open>2 \<le> deg\<close>  
-      by (smt (verit) Suc_1 Suc_eq_plus1 add.assoc add.commute le_add_diff_inverse)
+      using False by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
     then show ?thesis
     proof(cases " ?h < length treeList")
       case True
@@ -1686,11 +1688,13 @@ next
   case (4 treeList n summary m deg mi ma)
   hence degprop:"deg \<ge> 2" 
     by (metis add_self_div_2 deg_not_0 div_greater_zero_iff)
-  then show ?case 
+  then obtain deg' where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
+  show ?case 
   proof(cases "x > ma")
     case True
-    then show ?thesis using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop
-      by (metis add_2_eq_Suc le_add_diff_inverse le_numeral_extra(4) trans_le_add1)
+    then show ?thesis
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
   next
     case False
     hence "x \<le> ma" by simp
@@ -1705,8 +1709,7 @@ next
       proof(cases "?minlow \<noteq> None \<and> (Some ?l >\<^sub>o  ?minlow)")
         case True
         hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x =  1+  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (treeList ! ?h) ?l"
-          using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop hprop
-          by (smt (verit) False add_2_eq_Suc le_add_diff_inverse)
+          using \<open>deg = Suc (Suc _)\<close> False hprop by simp
         moreover have "treeList  ! ?h \<in> set treeList" using hprop by simp
         moreover hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (treeList ! ?h) ?l \<le> 1 + height (treeList ! ?h)" using 4(1) by simp
         ultimately have "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x \<le>  1+  1+ height (treeList ! ?h)" by simp
@@ -1715,27 +1718,28 @@ next
       next
         case False
         hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x =  1+  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' summary ?h" 
-          using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop hprop 
-          by (cases "vebt_pred summary ?h") 
-            (smt (verit) Suc_eq_plus1 \<open>x \<le> ma\<close> add_2_eq_Suc le_add_diff_inverse linorder_not_less plus_1_eq_Suc)+
+          using hprop \<open>x \<le> ma\<close>
+          by (cases "vebt_pred summary ?h") (auto simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
         hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x \<le> 1 + 1 +height summary" using 4(2)[of ?h] by simp
         then show ?thesis by(simp add: le_trans)
       qed
     next
       case False
-      then show ?thesis   using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop 
-        by (metis "4.hyps"(2) "4.hyps"(3) "4.hyps"(4) "4.hyps"(8) \<open>x \<le> ma\<close> add_self_div_2 high_bound_aux le_less_trans)
+      then show ?thesis
+        by (simp add: \<open>deg = Suc (Suc _)\<close>)
     qed
   qed
 next
   case (5 treeList n summary m deg mi ma)
   hence degprop:"deg \<ge> 2" 
     by (metis Suc_1 leD less_numeral_extra(1) not_add_less1 not_less_eq_eq not_less_iff_gr_or_eq plus_1_eq_Suc set_n_deg_not_0)
+  then obtain deg' where "deg = Suc (Suc deg')"
+    using add_2_eq_Suc le_Suc_ex by blast
   then show ?case 
   proof(cases "x > ma")
     case True
-    then show ?thesis using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop
-      by (metis add_2_eq_Suc le_add_diff_inverse le_numeral_extra(4) trans_le_add1)
+    then show ?thesis
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
   next
     case False
     hence "x \<le> ma" by simp
@@ -1750,8 +1754,8 @@ next
       proof(cases "?minlow \<noteq> None \<and> (Some ?l >\<^sub>o  ?minlow)")
         case True
         hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x =  1+  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (treeList ! ?h) ?l"
-          using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop hprop
-          by (smt (verit) False add_2_eq_Suc le_add_diff_inverse)
+          using hprop False
+          by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
         moreover have "treeList  ! ?h \<in> set treeList" using hprop by simp
         moreover hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (treeList ! ?h) ?l \<le> 1 + height (treeList ! ?h)" using 5(1) by simp
         ultimately have "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x \<le>  1+  1+ height (treeList ! ?h)" by simp
@@ -1760,16 +1764,16 @@ next
       next
         case False
         hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x =  1+  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' summary ?h" 
-          using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop hprop 
+          using hprop \<open>x \<le> ma\<close>
           by (cases "vebt_pred summary ?h") 
-            (smt (verit) Suc_eq_plus1 \<open>x \<le> ma\<close> add_2_eq_Suc le_add_diff_inverse linorder_not_less plus_1_eq_Suc)+
+            (auto simp add: \<open>deg = Suc (Suc _)\<close>)
         hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' (Node (Some (mi, ma)) deg treeList summary) x \<le> 1 + 1 +height summary" using 5(2)[of ?h] by simp
         then show ?thesis by(simp add: le_trans)
       qed
     next
       case False
-      then show ?thesis   using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(7)[of mi ma "deg -2" treeList summary x ] degprop 
-        by (smt (verit) add_2_eq_Suc leI le_add_diff_inverse not_add_less1) 
+      then show ?thesis
+        by (simp add: \<open>deg = Suc (Suc _)\<close>)
     qed
   qed
 qed simp+
