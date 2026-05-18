@@ -34,6 +34,8 @@ lemma insert_simp_norm:
                  Node (Some (mi, max x ma)) deg (treeList [(high x (deg div 2)):= vebt_insert (treeList ! (high x (deg div 2))) (low x (deg div 2))])
                        (if minNull (treeList ! (high x  (deg div 2))) then  vebt_insert summary (high x  (deg div 2)) else summary) " 
 proof-
+  obtain deg' where "deg = Suc (Suc deg')"
+    using \<open>2 \<le> deg\<close> add_2_eq_Suc le_Suc_ex by blast
   have 11:"vebt_insert (Node (Some (mi,ma)) deg treeList summary) x = 
     (let xn = (if x < mi then mi else x); minn = (if x< mi then x else mi);
                   l= low xn (deg div 2); h = high xn (deg div 2)
@@ -42,16 +44,12 @@ proof-
                  Node (Some (minn, max xn ma)) deg (treeList [h:= vebt_insert (treeList ! h) l])
               (if minNull (treeList ! h) then  vebt_insert summary h else summary)
            else  (Node (Some (mi, ma)) deg treeList summary)))"
-    using assms(3) vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-    by (smt (verit) add_2_eq_Suc diff_add_inverse le_Suc_ex)
-   have 14:"vebt_insert (Node (Some (mi,ma)) deg  treeList summary) x =
-                 Node (Some (mi, max x ma)) deg (treeList[(high x (deg div 2)) := vebt_insert (treeList ! (high x (deg div 2))) (low x (deg div 2))])
+    unfolding \<open>deg = _\<close>
+    by simp
+  also have "\<dots> = Node (Some (mi, max x ma)) deg (treeList[(high x (deg div 2)) := vebt_insert (treeList ! (high x (deg div 2))) (low x (deg div 2))])
                                (if minNull (treeList ! (high x (deg div 2))) then  vebt_insert summary (high x (deg div 2)) else summary)"
-    using 11 apply (simp add: Let_def) 
-    apply (auto simp add: If_def)
-    using assms not_less_iff_gr_or_eq apply blast+
-    done
-  then show ?thesis by blast
+     by (smt (verit, best) assms(1,2,4) linorder_not_less nat_less_le)
+   finally show ?thesis .
 qed
 
 lemma insert_simp_excp: 
@@ -60,6 +58,8 @@ lemma insert_simp_excp:
                  Node (Some (x, max mi ma)) deg (treeList[(high mi  (deg div 2)) := vebt_insert (treeList ! (high mi  (deg div 2))) (low mi  (deg div 2))])
                  (if minNull (treeList ! (high mi  (deg div 2))) then  vebt_insert summary (high mi  (deg div 2)) else summary) " 
 proof-
+  obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using \<open>2 \<le> deg\<close> add_2_eq_Suc le_Suc_ex by blast
   have 11:"vebt_insert (Node (Some (mi,ma)) deg treeList summary) x = 
            ( let xn = (if x < mi then mi else x); minn = (if x< mi then x else mi);
                   l= low xn (deg div 2); h = high xn (deg div 2)
@@ -68,16 +68,13 @@ proof-
                  Node (Some (minn, max xn ma)) deg (treeList[h:=vebt_insert (treeList ! h) l])
                                (if minNull (treeList ! h) then  vebt_insert summary h else summary)
            else  (Node (Some (mi, ma)) deg treeList summary)))"
-    using assms(3) vebt_insert.simps(5)[of mi ma "deg-2" treeList summary x]
-    by (smt (verit) add_2_eq_Suc diff_add_inverse le_Suc_ex)
-  have 14:"vebt_insert (Node (Some (mi,ma)) deg  treeList summary) x =
-                 Node (Some (x, max mi ma)) deg ( treeList[ (high mi (deg div 2)) := vebt_insert (treeList ! (high mi (deg div 2))) (low mi (deg div 2))])
+    unfolding \<open>deg = _\<close>
+    by simp
+  also have "\<dots> = Node (Some (x, max mi ma)) deg ( treeList[ (high mi (deg div 2)) := vebt_insert (treeList ! (high mi (deg div 2))) (low mi (deg div 2))])
                                (if minNull (treeList ! (high mi (deg div 2))) then  vebt_insert summary (high mi (deg div 2)) else summary)"
-   using 11 apply (simp add: Let_def) 
-    apply (auto simp add: If_def)
-    using assms not_less_iff_gr_or_eq apply blast+
-    done
-  then show ?thesis by blast
+    using assms(1,2,4)
+    by (simp add: Let_def)
+  finally show ?thesis .
 qed
 
 

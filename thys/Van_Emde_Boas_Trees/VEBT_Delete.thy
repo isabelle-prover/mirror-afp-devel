@@ -99,8 +99,12 @@ lemma del_in_range:
                                  deg newlist summary )
                        )else 
                         (Node (Some (mi, ma)) deg treeList summary))"
-  using vebt_delete.simps(7)[of mi ma "deg-2" treeList summary x] add_2_eq_Suc
-  by (smt (verit) add_2_eq_Suc assms(1) assms(2) assms(3) leD le_add_diff_inverse)
+proof -
+  obtain deg' :: nat where "deg = Suc (Suc deg')"
+    using \<open>2 \<le> deg\<close> add_2_eq_Suc le_Suc_ex by blast
+  then show ?thesis
+    using assms(1,2) by force
+qed
 
 lemma del_x_not_mia:
   assumes "x > mi \<and> x \<le> ma" and "mi \<noteq> ma"  and "deg \<ge> 2"  and "high x (deg div 2) = h" and
