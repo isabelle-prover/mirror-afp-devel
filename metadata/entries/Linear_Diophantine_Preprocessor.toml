@@ -27,10 +27,14 @@ homepage = "thiemann_homepage"
 
 [contributors]
 
+[contributors.eberl]
+homepage = "eberl_homepage"
+
 [notify]
 thiemann = "thiemann_email"
 
 [history]
+2026-05-19 = "Simpler and tighter termination measure for the elimination of a single equation due to Manuel Eberl"
 
 [extra]
 
