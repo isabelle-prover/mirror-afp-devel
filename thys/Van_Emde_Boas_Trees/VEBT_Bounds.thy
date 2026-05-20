@@ -269,16 +269,21 @@ qed
 theorem member_bound_height': "invar_vebt t n \<Longrightarrow> T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' t x \<le> (1+height t)" 
 proof(induction t n arbitrary: x rule: invar_vebt.induct)
   case (4 treeList n summary m deg mi ma)
-  hence "n \<ge> 1 \<and> m \<ge> 1"
-    by (metis Nat.add_0_right Suc_leI deg_not_0 plus_1_eq_Suc)
-  hence "deg \<ge> 2" 
-    by (simp add: "4.hyps"(4))
-  then show ?case
+  then obtain n' :: nat where "n = Suc n'"
+    by (metis deg_not_0 less_imp_Suc_add)
+  then have "deg = Suc (Suc (n' + n'))"
+    using 4 by linarith
+  then have "deg \<ge> 2"
+    by linarith
+
+  have "n \<ge> 1 \<and> m \<ge> 1"
+    using 4 \<open>n = Suc n'\<close> by linarith
+
+  show ?case
   proof(cases "x = mi")
     case True
-    hence "T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' (Node (Some (mi, ma)) deg treeList summary) x = 1"  
-      using T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r'.simps(5)[of mi ma "deg -2" treeList summary x] 
-      by (smt (verit) One_nat_def \<open>2 \<le> deg\<close> add_2_eq_Suc ordered_cancel_comm_monoid_diff_class.add_diff_inverse plus_1_eq_Suc)
+    hence "T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' (Node (Some (mi, ma)) deg treeList summary) x = 1"
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis by simp
   next
     case False
@@ -291,8 +296,7 @@ proof(induction t n arbitrary: x rule: invar_vebt.induct)
                (if h < length treeList 
                   then T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' (treeList ! h) l 
                   else 0)))))" 
-      using  T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r'.simps(5)[of mi ma "deg -2" treeList summary x] 
-      by (smt (verit) \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse linorder_not_less nat_less_le)
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis 
     proof(cases "x = ma")
       case True
@@ -368,16 +372,21 @@ proof(induction t n arbitrary: x rule: invar_vebt.induct)
   qed
 next
   case (5 treeList n summary m deg mi ma)
-  hence "n \<ge> 1 \<and> m \<ge> 1" 
-    by (metis le_add1 plus_1_eq_Suc set_n_deg_not_0)
-  hence "deg \<ge> 2" 
-    by (simp add: "5.hyps"(4))
-  then show ?case
+  then obtain n' :: nat where "n = Suc n'"
+    by (metis nat_le_iff_add plus_1_eq_Suc set_n_deg_not_0)
+  then have "deg = Suc (Suc (Suc (n' + n')))"
+    using 5 by linarith
+  then have "deg \<ge> 2"
+    by linarith
+
+  have "n \<ge> 1 \<and> m \<ge> 1"
+    using 5 \<open>n = Suc n'\<close> by linarith
+
+  show ?case
   proof(cases "x = mi")
     case True
-    hence "T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' (Node (Some (mi, ma)) deg treeList summary) x = 1"  
-      using T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r'.simps(5)[of mi ma "deg -2" treeList summary x] 
-      by (smt (verit) One_nat_def \<open>2 \<le> deg\<close> add_2_eq_Suc ordered_cancel_comm_monoid_diff_class.add_diff_inverse plus_1_eq_Suc)
+    hence "T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' (Node (Some (mi, ma)) deg treeList summary) x = 1"
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis by simp
   next
     case False
@@ -390,8 +399,7 @@ next
                (if h < length treeList 
                 then T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r' (treeList ! h) l 
                  else 0)))))" 
-      using  T\<^sub>m\<^sub>e\<^sub>m\<^sub>b\<^sub>e\<^sub>r'.simps(5)[of mi ma "deg -2" treeList summary x] 
-      by (smt (verit) \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse linorder_not_less nat_less_le)
+      by (simp add: \<open>deg = Suc (Suc _)\<close>)
     then show ?thesis 
     proof(cases "x = ma")
       case True
@@ -566,20 +574,35 @@ lemma insertsimp: "invar_vebt t n \<Longrightarrow>  minNull t \<Longrightarrow>
   using insersimp min_Null_member valid_member_both_member_options by blast
 
 lemma insersimp':assumes "invar_vebt t n" and  "\<nexists> x. both_member_options t x " shows "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' t y \<le> 1"
-  using assms(1) 
-  apply cases
-  apply simp 
-  apply(metis add_self_div_2 deg_not_0 div_greater_zero_iff  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(4) add_2_eq_Suc dual_order.refl less_eqE)
-  apply(cases "n\<ge> 2") 
-  apply(smt (verit)   T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(4)[of "n-2"] T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.elims le_Suc_eq  add_2_eq_Suc le_refl ordered_cancel_comm_monoid_diff_class.add_diff_inverse)  
-  apply (metis Suc_1 add_mono_thms_linordered_semiring(1) le_add1 plus_1_eq_Suc set_n_deg_not_0)
-  apply(cases "n\<ge> 2")  
-  apply(metis Suc_pred assms(1) assms(2) both_member_options_def deg_not_0 membermima.simps(4))
-  apply(metis add_self_div_2 deg_not_0 div_greater_zero_iff  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(4) add_2_eq_Suc dual_order.refl less_eqE)
-  apply(cases "n\<ge> 2")  
-  apply(metis Suc_pred assms(1) assms(2) both_member_options_def deg_not_0 membermima.simps(4))
-  apply (metis Suc_1 add_mono_thms_linordered_semiring(1) le_add1 plus_1_eq_Suc set_n_deg_not_0)
- done
+  using assms(1)
+proof (cases rule: invar_vebt.cases)
+  case (1 a b)
+  then show ?thesis by simp
+next
+  case (2 treeList k summary m)
+  then obtain k' :: nat where "k = Suc k'"
+    by (metis Suc_lessE Suc_lessI deg_not_0)
+  then show ?thesis
+    using 2 by simp
+next
+  case (3 treeList k summary m)
+  then obtain k' :: nat where "k = Suc k'"
+    by (metis Suc_1 lessI list_decode.cases nth_mem power_Suc0_right valid_tree_deg_neq_0)
+  then show ?thesis
+    using 3 by simp
+next
+  case (4 treeList k summary m mi ma)
+  then obtain k' :: nat where "k = Suc k'"
+    by (metis list_decode.cases valid_tree_deg_neq_0)
+  then show ?thesis
+    using 4 assms(2) not_min_Null_member by simp
+next
+  case (5 treeList k summary m mi ma)
+  then obtain k' :: nat where "k = Suc k'"
+    by (metis add.right_neutral add_Suc_right nth_mem old.nat.exhaust valid_0_not)
+  then show ?thesis
+    using 5 assms(2) not_min_Null_member by simp
+qed
 
 lemma insertsimp': "invar_vebt t n \<Longrightarrow>  minNull t \<Longrightarrow>  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' t  l \<le> 1" 
   using insersimp' min_Null_member valid_member_both_member_options by blast
@@ -637,7 +660,8 @@ next
       proof(cases " minNull (treeList ! ?h)")
         case True 
         hence " T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l \<le> 3"
-          by (smt (verit) "0" "1" "4.IH"(1) insertsimp le_add1 nat_add_left_cancel_le nth_mem numeral_3_eq_3 order_trans plus_1_eq_Suc)
+          using "4.IH"(1) \<open>?h <  length treeList \<and> _\<close>
+          by (simp add: insertsimp[of _ n])
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 22 +
                T\<^sub>m\<^sub>i\<^sub>n\<^sub>N\<^sub>u\<^sub>l\<^sub>l  (treeList ! ?h)+
                                (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)" 
@@ -651,8 +675,7 @@ next
         also have "\<dots> = ((1+ height summary)+1 )*23"
           by presburger
         also have "\<dots> \<le> (1 + height (Node (Some (mi, ma)) deg treeList summary)) * 23"
-          using height_compose_summary[of summary "Some (mi, ma)" deg treeList]
-          by presburger
+          using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by simp
         finally show ?thesis .
       next
         case False
@@ -693,7 +716,8 @@ next
       proof(cases " minNull (treeList ! ?h)")
         case True 
         hence " T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l \<le> 3"
-          by (smt (verit) "0" "1" "4.IH"(1) insertsimp le_add1 nat_add_left_cancel_le nth_mem numeral_3_eq_3 order_trans plus_1_eq_Suc)
+          using "4.IH"(1) \<open>?h <  length treeList \<and> _\<close>
+          by (simp add: insertsimp[of _ n])
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 22 +
                T\<^sub>m\<^sub>i\<^sub>n\<^sub>N\<^sub>u\<^sub>l\<^sub>l  (treeList ! ?h)+
                                (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)" 
@@ -761,33 +785,36 @@ next
       proof(cases " minNull (treeList ! ?h)")
         case True 
         hence " T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l \<le> 3"
-          by (smt (verit) "0" "1" "5.IH"(1) insertsimp le_add1 nat_add_left_cancel_le nth_mem numeral_3_eq_3 order_trans plus_1_eq_Suc)
+          using "5.IH"(1) \<open>?h < length treeList \<and> _\<close>
+          by (simp add: insertsimp[of _ n])
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 22 +
                   T\<^sub>m\<^sub>i\<^sub>n\<^sub>N\<^sub>u\<^sub>l\<^sub>l  (treeList ! ?h)+(if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)" 
           using 1 by linarith
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 
-               23 + (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)"
-          by (smt (verit, ccfv_SIG) add.commute minNull_bound nat_add_left_cancel_le numeral_Bit0 numeral_Bit1 order_trans)
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h" using True by simp
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23 + (height summary +1)*23" using "5.IH"(2)
-          by (smt (verit) add.commute add_le_cancel_left add_le_mono add_mono_thms_linordered_semiring(1) nat_add_left_cancel_le)
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> ((1+ height summary)+1 )*23" by simp
-        then show ?thesis
-          using height_compose_summary[of summary "Some (mi, ma)" deg treeList]
-          by presburger
+        also have "\<dots> \<le> 23 + (if minNull (treeList ! ?h) then T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)"
+          using minNull_bound[of "treeList ! ?h"] by linarith
+        also have "\<dots> \<le> 23 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h"
+          using True by simp
+        also have "\<dots> \<le> 23 + (height summary + 1) * 23"
+          using "5.IH"(2) by simp
+        also have "\<dots> \<le> ((1 + height summary) + 1) *23"
+          by simp
+        also have "\<dots> \<le> (1 + height (Node (Some (mi, ma)) deg treeList summary)) * 23"
+          using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by simp
+        finally show ?thesis .
       next
         case False
         hence 2:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x = 20+
                 T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l + T\<^sub>m\<^sub>i\<^sub>n\<^sub>N\<^sub>u\<^sub>l\<^sub>l  (treeList ! ?h)" using 1 by simp
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23+ T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l "
-          using minNull_bound[of "treeList ! ?h"] algebra_simps by linarith
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23+ (1+ height (treeList ! ?h))*23"
-          by (meson "5.IH"(1) True nat_add_left_cancel_le nth_mem order_trans)
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x  \<le> ((1+ height (treeList!?h))+1)*23" by simp
-        moreover have " (treeList!?h) \<in> set treeList" 
-          using True nth_mem by blast
-        ultimately show ?thesis using height_compose_child[of "treeList!?h" treeList "Some (mi, ma)" deg summary] algebra_simps
-          by (smt (verit, ccfv_SIG) Suc_leI add.right_neutral le_add1 le_imp_less_Suc mult_le_mono order_trans plus_1_eq_Suc) 
+        also have "\<dots> \<le> 23 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l"
+          using minNull_bound[of "treeList ! ?h"] by linarith
+        also have "\<dots> \<le> 23 + (1 + height (treeList ! ?h)) * 23"
+          using "5.IH"(1) True by simp
+        also have "\<dots> \<le> ((1 + height (treeList!?h)) + 1) * 23"
+          by simp
+        also have "\<dots> \<le> (1 + height (Node (Some (mi, ma)) deg treeList summary)) * 23"
+          using height_compose_child[of "treeList!?h" treeList "Some (mi, ma)" deg summary]
+          by (metis Suc_eq_plus1 True mult_le_mono1 nat_add_left_cancel_le nth_mem plus_1_eq_Suc)
+        finally show ?thesis .
       qed
     next
       case False
@@ -812,32 +839,34 @@ next
       proof(cases " minNull (treeList ! ?h)")
         case True 
         hence " T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l \<le> 3"
-          by (smt (verit) "0" "1" "5.IH"(1) insertsimp le_add1 nat_add_left_cancel_le nth_mem 
-              numeral_3_eq_3 order_trans plus_1_eq_Suc)
+          using "5.IH"(1) \<open>?h <  length treeList \<and> _\<close>
+          by (simp add: insertsimp[of _ n])
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 22 +
                T\<^sub>m\<^sub>i\<^sub>n\<^sub>N\<^sub>u\<^sub>l\<^sub>l  (treeList ! ?h)+(if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)" 
-          using 1 algebra_simps by simp
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23 +
-                               (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)"
-          by (smt (verit, ccfv_SIG) add.commute minNull_bound nat_add_left_cancel_le numeral_Bit0 numeral_Bit1 order_trans)
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h" using True by simp
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23 + (height summary +1)*23" using "5.IH"(2)
-          by (smt (verit) add.commute add_le_cancel_left add_le_mono add_mono_thms_linordered_semiring(1) nat_add_left_cancel_le)
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> ((1+ height summary)+1 )*23" by simp
-        then show ?thesis
-          using height_compose_summary[of summary "Some (mi, ma)" deg treeList]
-          by presburger
+          using 1 by linarith
+        also have "\<dots> \<le> 23 + (if minNull (treeList ! ?h) then T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h else 1)"
+          using minNull_bound[of "treeList ! ?h"] by linarith
+        also have "\<dots> \<le> 23 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t summary ?h"
+          using True by simp
+        also have "\<dots> \<le> 23 + (height summary + 1) * 23"
+          using "5.IH"(2) by simp
+        also have "\<dots> \<le> ((1 + height summary) + 1) * 23"
+          by simp
+        also have "\<dots> \<le> (1 + height (Node (Some (mi, ma)) deg treeList summary)) * 23"
+          using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by simp
+        finally show ?thesis .
       next
         case False
         hence 2:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x = 20+
               T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l + T\<^sub>m\<^sub>i\<^sub>n\<^sub>N\<^sub>u\<^sub>l\<^sub>l  (treeList ! ?h)" using 1 by simp
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23+ T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l "
-          using minNull_bound[of "treeList ! ?h"] algebra_simps by linarith
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x \<le> 23+ (1+ height (treeList ! ?h))*23"
-          by (meson "5.IH"(1) True nat_add_left_cancel_le nth_mem order_trans)
-        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (Node (Some (mi,ma)) deg treeList summary) x  \<le> ((1+ height (treeList!?h))+1)*23" by simp
+        also have "\<dots> \<le> 23 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t (treeList ! ?h) ?l"
+          using minNull_bound[of "treeList ! ?h"] by linarith
+        also have "\<dots> \<le> 23 + (1 + height (treeList ! ?h)) * 23"
+          using "5.IH"(1) True by simp
+        also have "\<dots> \<le> ((1 + height (treeList!?h)) + 1) * 23"
+          by simp
         also have "\<dots> \<le> (1 + height (Node (Some (mi, ma)) deg treeList summary)) * 23"
-          by (simp add: True)
+          using True by simp
         finally show ?thesis .
       qed
     next
@@ -883,8 +912,12 @@ next
   qed
 next
   case (4 treeList n summary m deg mi ma)
-  hence "deg \<ge> 2"
-    by (metis add_self_div_2 deg_not_0 div_greater_zero_iff)
+  then obtain n' :: nat where "n = Suc n'"
+    by (metis deg_not_0 less_natE)
+  then have "deg = Suc (Suc (n' + n'))"
+    using 4 by linarith
+  then have "deg \<ge> 2"
+    by linarith
   let ?xn = "(if x < mi then mi else x)"
   let ?minn = "(if x< mi then x else mi)"
   let ?l= "low ?xn (deg div 2)" 
@@ -895,8 +928,7 @@ next
     hence 0:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x = 
               ( if ?h < length treeList \<and> \<not> (x = mi \<or> x = ma)then
                 T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l + (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1) else 1)" 
-      using T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(5)[of mi ma "deg -2 " treeList summary x]
-      by (smt (verit) \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse)
+      by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
     then show ?thesis 
     proof(cases " ?h <  length treeList \<and> \<not> (x = mi \<or> x = ma)")
       case True
@@ -910,7 +942,7 @@ next
           by (metis "0" "1" "4.IH"(1) insertsimp' nat_le_iff_add nth_mem)
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+
                                (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1)" 
-          using 1 algebra_simps by simp
+          using 1 by linarith
         also have "\<dots> \<le> 1 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h"
           using True by simp
         also have "\<dots> \<le> 1 + (height summary +1)"
@@ -937,8 +969,7 @@ next
     hence 0:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x =
               ( if ?h < length treeList \<and> \<not> (x = mi \<or> x = ma)then
                 T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l + (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1) else 1)" 
-      using T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(5)[of mi ma "deg -2 " treeList summary x]
-      by (smt (verit) \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse)
+      by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
     then show ?thesis 
     proof(cases " ?h < length treeList \<and> \<not> (x = mi \<or> x = ma)")
       case True
@@ -949,11 +980,11 @@ next
       then show ?thesis 
       proof(cases " minNull (treeList ! ?h)")
         case True 
-        hence " T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l \<le> 1"
-          by (smt (verit) "0" "1" "4.IH"(1) insertsimp' le_add1 nat_add_left_cancel_le nth_mem numeral_3_eq_3 order_trans plus_1_eq_Suc)
+        hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l \<le> 1"
+          using "4.IH"(1) \<open>?h < length treeList \<and> _\<close> insertsimp'[of _ n] by simp
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+
                                (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1)" 
-          using 1 algebra_simps by simp
+          using 1 by linarith
         hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h" using True by simp
         then show ?thesis using height_compose_summary[of summary "Some (mi, ma)" deg treeList] algebra_simps
           by (smt (verit) "1" "4.IH"(2) True \<open>T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! high (if x < mi then mi else x) (deg div 2)) (low (if x < mi then mi else x) (deg div 2)) \<le> 1\<close> add_mono order_trans)
@@ -962,7 +993,7 @@ next
         hence 2:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x = 1+
                 T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l" using 1 by simp
         hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+ T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l "
-          using minNull_bound[of "treeList ! ?h"] algebra_simps by linarith
+          using minNull_bound[of "treeList ! ?h"] by linarith
         hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+ (1+ height (treeList ! ?h))"
           by (meson "4.IH"(1) True nat_add_left_cancel_le nth_mem order_trans)
         moreover have " (treeList!?h) \<in> set treeList" 
@@ -978,8 +1009,12 @@ next
   qed
 next
   case (5 treeList n summary m deg mi ma)
-  hence "deg \<ge> 2" 
-    by (metis Suc_1 add_mono le_add1 plus_1_eq_Suc set_n_deg_not_0)
+  then obtain n' :: nat where "n = Suc n'"
+    by (metis add.right_neutral add_Suc_right nth_mem old.nat.exhaust valid_0_not)
+  then have "deg = Suc (Suc (Suc (n' + n')))"
+    using 5 by linarith
+  then have "deg \<ge> 2"
+    by linarith
   let ?xn = "(if x < mi then mi else x)"
   let ?minn = "(if x< mi then x else mi)"
   let ?l= "low ?xn (deg div 2)" 
@@ -991,8 +1026,8 @@ next
               ( if ?h < length treeList \<and> \<not> (x = mi \<or> x = ma)then
                 T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l + 
                                (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1)
- else 1)" using T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(5)[of mi ma "deg -2 " treeList summary x]
-      by (smt (verit) \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse)
+ else 1)"
+      by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
     then show ?thesis 
     proof(cases " ?h <  length treeList \<and> \<not> (x = mi \<or> x = ma)")
       case True
@@ -1033,8 +1068,7 @@ next
     hence 0:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x =
               ( if ?h < length treeList \<and> \<not> (x = mi \<or> x = ma)then
                 T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l + (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1) else 1)" 
-      using T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t'.simps(5)[of mi ma "deg -2 " treeList summary x]
-      by (smt (verit) \<open>2 \<le> deg\<close> add_2_eq_Suc le_add_diff_inverse)
+      by (simp add: \<open>deg = Suc (Suc _)\<close> Let_def)
     then show ?thesis 
     proof(cases " ?h < length treeList \<and> \<not> (x = mi \<or> x = ma)")
       case True
@@ -1048,7 +1082,7 @@ next
           by (smt (verit) "0" "1" "5.IH"(1) insertsimp' le_add1 nat_add_left_cancel_le nth_mem numeral_3_eq_3 order_trans plus_1_eq_Suc)
         hence 2: "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+
                           (if minNull (treeList ! ?h) then  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h else 1)" 
-          using 1 algebra_simps by simp
+          using 1 by linarith
         hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1 + T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' summary ?h" 
           using True by simp
         then show ?thesis 
@@ -1059,7 +1093,7 @@ next
         hence 2:"T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x = 1+
                  T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l" using 1 by simp
         hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+ T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (treeList ! ?h) ?l "
-          using minNull_bound[of "treeList ! ?h"] algebra_simps by linarith
+          using minNull_bound[of "treeList ! ?h"] by linarith
         hence "T\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t' (Node (Some (mi,ma)) deg treeList summary) x \<le> 1+ (1+ height (treeList ! ?h))"
           by (meson "5.IH"(1) True nat_add_left_cancel_le nth_mem order_trans)
         moreover have " (treeList!?h) \<in> set treeList" 
@@ -1187,11 +1221,11 @@ next
           by (smt (verit) Suc_leI add.commute dual_order.strict_trans2 le_imp_less_Suc linorder_not_less mult.commute mult_le_mono2 plus_1_eq_Suc) 
       next
         case False
-        have 2:"T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (Node (Some (mi, ma)) deg treeList summary) x =17 + T\<^sub>m\<^sub>a\<^sub>x\<^sub>t  (treeList ! ?h) + 
+        then have 2:"T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (Node (Some (mi, ma)) deg treeList summary) x =17 + T\<^sub>m\<^sub>a\<^sub>x\<^sub>t  (treeList ! ?h) + 
                              T\<^sub>s\<^sub>u\<^sub>c\<^sub>c summary ?h +  (
                              if ?sc = None then 1
-                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the ?sc)))" using 1
-          by (smt (verit) False Suc_eq_plus1 add.assoc add.commute add_2_eq_Suc' eval_nat_numeral(3) numeral_plus_one semiring_norm(2) semiring_norm(8))       
+                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the ?sc)))"
+          using 1 by auto
         then show ?thesis 
         proof(cases " ?sc = None")
           case True
@@ -1268,7 +1302,8 @@ next
                                                    4 +  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (treeList ! ?h) ?l
                              else 2+  T\<^sub>s\<^sub>u\<^sub>c\<^sub>c summary ?h +  (
                              if ?sc = None then 1
-                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the ?sc))))" using 0 by auto
+                             else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the ?sc))))"
+        by (simp add: 0 Let_def)
       then show ?thesis
       proof(cases " ?maxlow \<noteq> None \<and> (Some ?l <\<^sub>o  ?maxlow)")
         case True
@@ -1287,12 +1322,11 @@ next
           by (smt (verit) Suc_leI add.commute dual_order.strict_trans2 le_imp_less_Suc linorder_not_less mult.commute mult_le_mono2 plus_1_eq_Suc) 
       next
         case False
-        have 2:"T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (Node (Some (mi, ma)) deg treeList summary) x =17 + T\<^sub>m\<^sub>a\<^sub>x\<^sub>t  (treeList ! ?h) + 
+        then have 2:"T\<^sub>s\<^sub>u\<^sub>c\<^sub>c (Node (Some (mi, ma)) deg treeList summary) x =17 + T\<^sub>m\<^sub>a\<^sub>x\<^sub>t  (treeList ! ?h) + 
                              T\<^sub>s\<^sub>u\<^sub>c\<^sub>c summary ?h +  (
                              if ?sc = None then 1
                              else (4 + T\<^sub>m\<^sub>i\<^sub>n\<^sub>t (treeList ! the ?sc)))"
-          using 1
-          by (smt (verit) False Suc_eq_plus1 add.assoc add.commute add_2_eq_Suc' eval_nat_numeral(3) numeral_plus_one semiring_norm(2) semiring_norm(8))       
+          using 1 by auto
         then show ?thesis 
         proof(cases " ?sc = None")
           case True
@@ -1478,13 +1512,10 @@ fun T\<^sub>p\<^sub>r\<^sub>e\<^sub>d::"VEBT \<Rightarrow> nat \<Rightarrow> nat
 theorem pred_bound_height: "invar_vebt t n \<Longrightarrow> T\<^sub>p\<^sub>r\<^sub>e\<^sub>d t x \<le> (1+height t)*29"
 proof(induction t n arbitrary: x rule: invar_vebt.induct)
   case (1 a b)
-  then show ?case apply(cases x) 
-    using  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(1)[of a b] apply simp   
-    apply(cases "x > 1")
-    using  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(3)[of a b] 
-    apply (smt (verit) One_nat_def Suc_eq_numeral height.simps(1) less_Suc_eq_le less_antisym less_imp_Suc_add mult.left_neutral not_less numeral_One numeral_eq_iff numeral_le_one_iff plus_1_eq_Suc pred_numeral_simps(3) semiring_norm(70) semiring_norm(85))
-    using T\<^sub>p\<^sub>r\<^sub>e\<^sub>d.simps(2)[of a b] apply simp
-    done
+  consider "x = 0" | "x = Suc 0" | x' where "x = Suc (Suc x')"
+    by (metis nat.exhaust)
+  then show ?case
+    by cases simp_all
 next
   case (2 treeList n summary m deg)
   then show ?case by simp
@@ -1550,31 +1581,19 @@ next
                              T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h+ (
                              if ?pr = None then 1 + (if x > mi then 1 else 1)
                              else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the ?pr))" using False 1 by auto
-        hence 3:"T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>22  +
+        also have "\<dots> \<le>22  +
                              T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h+ (
                              if ?pr = None then 1 + (if x > mi then 1 else 1)
-                             else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the ?pr))" using mint_bound[of "treeList ! ?h"] by simp
-        then show ?thesis
-        proof(cases " ?pr = None")
-          case True
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>24  +  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h" using 3 by simp
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>24  +  (1+ height summary) *  29" 
-            by (meson "4.IH"(2) add_le_mono dual_order.trans le_refl)
-          hence  "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>
-               24  +  (height  (Node (Some (mi, ma)) deg treeList summary) ) *  29" 
-            using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by presburger
-          then show ?thesis by simp
-        next
-          case False 
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>29  +
-                             T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h " using maxt_bound[of "treeList ! the ?pr"] 3 by auto
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>29  +  (1+ height summary) *  29" 
-            using "4.IH"(2)[of ?h] by simp
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>
-               29  +  (height (Node (Some (mi, ma)) deg treeList summary)) *  29" 
-            using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by presburger      
-          then show ?thesis by simp
-        qed
+                             else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the ?pr))"
+          using mint_bound by simp
+        also have "\<dots> \<le> 29 + T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h"
+          using maxt_bound by (cases " ?pr = None") auto
+        also have "\<dots> \<le> 29 + (1 + height summary) * 29" 
+          using "4.IH"(2)[of ?h] by simp
+        also have "\<dots> \<le> 29  +  (height (Node (Some (mi, ma)) deg treeList summary)) * 29"
+          using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by simp      
+        finally show ?thesis
+          by presburger
       qed
     next
       case False
@@ -1643,31 +1662,19 @@ next
                              if ?pr = None then 1 + (if x > mi then 1 else 1)
                              else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the ?pr))" 
           using False 1 by auto
-        hence 3:"T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>22  +
+        also have "\<dots> \<le> 22  +
                              T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h+ (
                              if ?pr = None then 1 + (if x > mi then 1 else 1)
-                             else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the ?pr))" using mint_bound[of "treeList ! ?h"] by simp
-        then show ?thesis
-        proof(cases " ?pr = None")
-          case True
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>24  +  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h" using 3 by simp
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>24  +  (1+ height summary) *  29" 
-            by (meson "5.IH"(2) add_le_mono dual_order.trans le_refl)
-          hence  "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>
-               24  +  (height  (Node (Some (mi, ma)) deg treeList summary) ) *  29" 
-            using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by presburger
-          then show ?thesis by simp
-        next
-          case False 
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>29  +  T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h " 
-            using maxt_bound[of "treeList ! the ?pr"] 3 by auto
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>29  +  (1+ height summary) *  29" 
-            using "5.IH"(2)[of ?h] by simp
-          hence "T\<^sub>p\<^sub>r\<^sub>e\<^sub>d (Node (Some (mi, ma)) deg treeList summary) x  \<le>
-               29  +  (height (Node (Some (mi, ma)) deg treeList summary)) *  29" 
-            using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by presburger      
-          then show ?thesis by simp
-        qed
+                             else 4 +  T\<^sub>m\<^sub>a\<^sub>x\<^sub>t (treeList ! the ?pr))"
+          using mint_bound[of "treeList ! ?h"] by simp
+        also have "\<dots> \<le> 29 + T\<^sub>p\<^sub>r\<^sub>e\<^sub>d summary ?h"
+          using maxt_bound by (cases " ?pr = None") auto
+        also have "\<dots> \<le> 29 + (1 + height summary) * 29"
+          using "5.IH"(2)[of ?h] by simp
+        also have "\<dots> \<le> 29 + (height (Node (Some (mi, ma)) deg treeList summary)) * 29" 
+          using height_compose_summary[of summary "Some (mi, ma)" deg treeList] by simp      
+        finally show ?thesis
+          by presburger
       qed
     next
       case False
@@ -1704,8 +1711,10 @@ fun T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'::"VEBT \<Rightarrow> nat \<Rightarrow> na
 theorem pred_bound_height': "invar_vebt t n\<Longrightarrow> T\<^sub>p\<^sub>r\<^sub>e\<^sub>d' t x \<le> (1 + height t)"
 proof(induction t n arbitrary: x rule: invar_vebt.induct)
   case (1 a b)
+  consider "x = 0" | "x = Suc 0" | x' where "x = Suc (Suc x')"
+    by (metis nat.exhaust)
   then show ?case
-    by (metis One_nat_def Suc_eq_plus1_left T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(1) T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(2) T\<^sub>p\<^sub>r\<^sub>e\<^sub>d'.simps(3) vebt_buildup.cases height.simps(1) le_refl)
+    by cases simp_all
 next
   case (4 treeList n summary m deg mi ma)
   hence degprop:"deg \<ge> 2" 
@@ -1753,10 +1762,12 @@ next
   qed
 next
   case (5 treeList n summary m deg mi ma)
-  hence degprop:"deg \<ge> 2" 
-    by (metis Suc_1 leD less_numeral_extra(1) not_add_less1 not_less_eq_eq not_less_iff_gr_or_eq plus_1_eq_Suc set_n_deg_not_0)
-  then obtain deg' where "deg = Suc (Suc deg')"
-    using add_2_eq_Suc le_Suc_ex by blast
+  then obtain n' :: nat where "n = Suc n'"
+    by (metis add.right_neutral add_Suc_right nth_mem old.nat.exhaust valid_0_not)
+  then have "deg = Suc (Suc (Suc (n' + n')))"
+    using 5 by linarith
+  then have degprop:"deg \<ge> 2" 
+    by linarith
   then show ?case 
   proof(cases "x > ma")
     case True
