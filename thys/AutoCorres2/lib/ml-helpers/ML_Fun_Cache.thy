@@ -68,15 +68,15 @@ fun apply_access f w =
      SOME (res, x) => SOME (res, mk_weak x)
    | NONE => NONE
  
-fun timed_access (Weak_Var x) time_limit f = 
-  Synchronized.timed_access x (map_val time_limit) (apply_access f)
+fun timed_access (Weak_Var x) until body = 
+  Synchronized.timed_access x (map_val until) (apply_access body)
 
-fun guarded_access var f = the (timed_access var (fn _ => NONE) f);
+fun guarded_access var body = the (timed_access var (fn _ => NONE) body);
 
 (* unconditional change *)
 
-fun change_result var f = guarded_access var (SOME o f);
-fun change var f = change_result var (fn x => ((), f x));
+fun change_result var body = guarded_access var (SOME o body);
+fun change var body = change_result var (fn x => ((), body x));
 end
 end
 \<close>
