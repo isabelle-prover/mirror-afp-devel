@@ -163,8 +163,8 @@ proof -
     where as: "v1 \<sqsubset>val p v2" "v2 \<sqsubset>val p' v3" unfolding PosOrd_ex_def by blast
   then have pos: "p \<in> Pos v1" "p' \<in> Pos v2" unfolding PosOrd_def pflat_len_def
     by (metis (full_types) not_int_zless_negative[of "length (flat (at v2 p))"] zero_less_one
-        verit_comp_simplify1(1)[of "- 1"] pos_int_cases[of "1"])
-       (metis PosOrd_def as(2) int_ops(2) not_int_zless_negative pflat_len_def verit_comp_simplify1(1))
+        alethe_comp_simplify1(1)[of "- 1"] pos_int_cases[of "1"])
+       (metis PosOrd_def as(2) int_ops(2) not_int_zless_negative pflat_len_def alethe_comp_simplify1(1))
   have "p = p' \<or> p \<sqsubset>lex p' \<or> p' \<sqsubset>lex p"
     by (rule lex_trichotomous)
   moreover

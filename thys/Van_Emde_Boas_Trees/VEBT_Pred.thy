@@ -432,7 +432,7 @@ next
           have "high res (deg div 2) = pr" 
             by (metis \<open>deg div 2 = n\<close> \<open>res = 2 ^ (deg div 2) * pr + maxy\<close> \<open>invar_vebt (treeList ! the ?pr) n\<close> high_inv member_bound mult.commute scmem)
           hence "res < x" 
-            by (metis \<open>is_pred_in_set (set_vebt' summary) (high x (deg div 2)) pr\<close> div_le_mono high_def pred_member verit_comp_simplify1(3))
+            by (metis \<open>is_pred_in_set (set_vebt' summary) (high x (deg div 2)) pr\<close> div_le_mono high_def pred_member alethe_comp_simplify1(3))
           have "both_member_options (treeList ! (high res (deg div 2))) (low res (deg div 2))"
             by (metis \<open>deg div 2 = n\<close> \<open>high res (deg div 2) = pr\<close> \<open>vebt_pred summary (high x (deg div 2)) = Some pr\<close> \<open>res = 2 ^ (deg div 2) * pr + maxy\<close> \<open>invar_vebt (treeList ! the (vebt_pred summary (high x (deg div 2)))) n\<close> both_member_options_equiv_member option.sel low_inv member_bound mult.commute scmem)
           have "both_member_options (Node (Some (mi, ma)) deg treeList summary) res" 
@@ -764,7 +764,7 @@ next
           have "high res (deg div 2) = pr" 
             by (metis \<open>deg div 2 = n\<close> \<open>res = 2 ^ (deg div 2) * pr + maxy\<close> \<open>invar_vebt (treeList ! the ?pr) n\<close> high_inv member_bound mult.commute scmem)
           hence "res < x" 
-            by (metis \<open>is_pred_in_set (set_vebt' summary) (high x (deg div 2)) pr\<close> div_le_mono high_def pred_member verit_comp_simplify1(3))
+            by (metis \<open>is_pred_in_set (set_vebt' summary) (high x (deg div 2)) pr\<close> div_le_mono high_def pred_member alethe_comp_simplify1(3))
           have "both_member_options (treeList ! (high res (deg div 2))) (low res (deg div 2))"
             by (metis \<open>deg div 2 = n\<close> \<open>high res (deg div 2) = pr\<close> \<open>vebt_pred summary (high x (deg div 2)) = Some pr\<close> \<open>res = 2 ^ (deg div 2) * pr + maxy\<close> \<open>invar_vebt (treeList ! the (vebt_pred summary (high x (deg div 2)))) n\<close> both_member_options_equiv_member option.sel low_inv member_bound mult.commute scmem)
           have "both_member_options (Node (Some (mi, ma)) deg treeList summary) res" 
@@ -854,7 +854,7 @@ next
     next
       case False
       then show ?thesis
-        by (metis "5.hyps"(10) "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) \<open>1 \<le> n\<close> \<open>deg div 2 = n\<close> \<open>x \<le> ma\<close> exp_split_high_low(1) le_0_eq le_less_trans verit_comp_simplify1(3) zero_less_Suc zero_neq_one)
+        by (metis "5.hyps"(10) "5.hyps"(4) "5.hyps"(5) "5.hyps"(6) \<open>1 \<le> n\<close> \<open>deg div 2 = n\<close> \<open>x \<le> ma\<close> exp_split_high_low(1) le_0_eq le_less_trans alethe_comp_simplify1(3) zero_less_Suc zero_neq_one)
     qed
   qed
 qed

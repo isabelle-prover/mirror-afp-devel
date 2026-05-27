@@ -756,7 +756,7 @@ proof
       then have "turing_command k (length ?M) G (?C4 ! (i - length (?C1 @ ?C2 @ ?C3)))"
         using turing_command_mono by blast
       then show ?thesis
-        using parts 4 by (metis (no_types, lifting) append.assoc nth_append verit_comp_simplify1(3))
+        using parts 4 by (metis (no_types, lifting) append.assoc nth_append alethe_comp_simplify1(3))
     qed
   qed
 qed

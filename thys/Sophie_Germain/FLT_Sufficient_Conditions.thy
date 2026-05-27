@@ -144,7 +144,7 @@ proof -
     with \<open>2 < n\<close> have \<open>1 < k\<close> by (metis nat_power_less_imp_less pos2 power_one_right)
     with \<open>n = 2 ^ k\<close> have \<open>4 dvd n\<close>
       by (metis Suc_leI dvd_power_iff_le numeral_Bit0_eq_double
-          power.simps(2) power_one_right verit_comp_simplify1(2))
+          power.simps(2) power_one_right alethe_comp_simplify1(2))
     with hyp2 show thesis by blast
   qed
 qed

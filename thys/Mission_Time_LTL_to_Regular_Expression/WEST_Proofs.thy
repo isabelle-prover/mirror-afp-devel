@@ -714,7 +714,7 @@ proof-
   have t_one: "\<forall>x<length t. (t!x) = One \<longrightarrow> x + 1 \<in> state" using assms by auto
   have "\<forall>x<(length t)+1. (x \<noteq> 0 \<and> (a#t)!x = One) \<longrightarrow> x \<in> state"
     using t_one assms(2)
-    by (metis (no_types, lifting) Suc_diff_1 Suc_less_eq add_Suc_right cancel_comm_monoid_add_class.diff_cancel gr_zeroI less_numeral_extra(1) linordered_semidom_class.add_diff_inverse nth_Cons' verit_comp_simplify1(1))
+    by (metis (no_types, lifting) Suc_diff_1 Suc_less_eq add_Suc_right cancel_comm_monoid_add_class.diff_cancel gr_zeroI less_numeral_extra(1) linordered_semidom_class.add_diff_inverse nth_Cons' alethe_comp_simplify1(1))
   then have at_one: "\<forall>x<length (a#t). ((a#t) ! x = One \<longrightarrow> x \<in> state)"
     using a_one t_one by (simp add: nth_Cons')
   have "(a = Zero \<longrightarrow> 0 \<notin> state)" using assms by auto

@@ -60,7 +60,7 @@ next
           le_antisym le_degree not_less_eq_eq)
     subgoal using that 
       by (smt (z3) One_nat_def degree_pCons_eq_if le_degree less_one
-          not_le one_neq_zero pCons_one verit_la_disequality)
+          not_le one_neq_zero pCons_one alethe_la_disequality)
     done
   ultimately show "normal_poly [:-x, 1:]"
     unfolding normal_poly_def by auto

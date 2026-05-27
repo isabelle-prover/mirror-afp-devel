@@ -450,7 +450,7 @@ proof -
         obtain j where j: "j = (SOME j. j<dim_col basis \<and> col basis i = col basis j)" by blast
         then have "j<dim_col basis" "col basis i = col basis j" 
         by (smt (verit, best) \<open>i = ia\<close> someI_ex that(3))
-           (metis (mono_tags, lifting) j that(1) verit_sko_ex')
+           (metis (mono_tags, lifting) j that(1) alethe_sko_ex')
         then have "i = j" using that
         by (metis cols_length cols_nth distinct_conv_nth)
         then show ?thesis unfolding j(1) 

@@ -270,7 +270,7 @@ proof -
   hence "\<psi>_int A s^2 dvd \<psi> (abs A) n" using s_def \<psi>_A_n_eq_4E by auto
   hence "\<psi> (abs A) (nat (abs s))^2 dvd \<psi> (abs A) n" using eq_\<psi>_int[of A s] A_B2
     by (metis abs_of_nat int_one_le_iff_zero_less int_ops(1) not_numeral_le_zero power2_abs
-        verit_comp_simplify1(3) verit_la_disequality verit_la_generic zero_less_abs_iff)
+        alethe_comp_simplify1(3) alethe_la_disequality alethe_la_generic zero_less_abs_iff)
   hence "\<psi> (abs A) (nat (abs s)) dvd n" using sun_lemma7[of "abs A" "nat (abs s)" n] A_pos sB1
     by auto
   hence "\<psi>_int A s dvd n" using eq_\<psi>_int[of A s] A_B2 by (smt (verit) nat_abs_dvd_iff)

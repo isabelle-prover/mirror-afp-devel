@@ -144,7 +144,7 @@ proof -
           also have "... = 3 * (\<epsilon> / 3)"
             by (metis \<delta>_def \<epsilon>_pos div_self less_le more_arith_simps(5)
                       mult_eq_0_iff pos_le_divide_eq powr_numeral powr_one_gt_zero_iff
-                      powr_powr times_divide_eq_left verit_comp_simplify(19) zero_neq_numeral)
+                      powr_powr times_divide_eq_left alethe_comp_simplify(19) zero_neq_numeral)
           also have "... = \<epsilon>"
             by simp
           finally show "\<bar>(f (0 + h) - f 0) / h - 0\<bar> < \<epsilon>".
@@ -1031,7 +1031,7 @@ proof -
                     have i1: "64 / pi^2 < 8"
                     proof -
                       have "pi*pi > 3*3"
-                        by (meson pi_gt3 mult_strict_mono pi_gt_zero verit_comp_simplify(7))
+                        by (meson pi_gt3 mult_strict_mono pi_gt_zero alethe_comp_simplify(7))
                       then have "pi^2 > 9"
                         by (simp add: power2_eq_square)       
                       then have "64/pi^2 < 64/8"
@@ -1044,7 +1044,7 @@ proof -
                     have i2: "96/pi < 32"                    
                     proof - 
                       have "96/pi < 96/3"
-                        by (meson frac_less2 order.refl pi_gt3 verit_comp_simplify(19))
+                        by (meson frac_less2 order.refl pi_gt3 alethe_comp_simplify(19))
                       also have "... = 32"
                         by eval
                       finally show ?thesis.
@@ -1220,7 +1220,7 @@ proof -
       define x_seq where
         "x_seq n = (SOME y. y \<in> {left_seq (n+1)..right_seq (n+1)} \<and> local_minimizer f y)" for n
       have x_seq_prop: "\<forall>n. x_seq n \<in> {left_seq (n+1)..right_seq (n+1)} \<and> local_minimizer f (x_seq n)"
-        by (metis (mono_tags, lifting) seq_of_local_minizers_exists someI_ex verit_eq_simplify(7) x_seq_def zero_eq_add_iff_both_eq_0)
+        by (metis (mono_tags, lifting) seq_of_local_minizers_exists someI_ex alethe_eq_simplify(7) x_seq_def zero_eq_add_iff_both_eq_0)
       
       from x_seq_prop have bounds: "\<forall>n. left_seq (n+1) \<le> x_seq n \<and> x_seq n \<le> right_seq (n+1)"
         by auto

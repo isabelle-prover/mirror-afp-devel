@@ -691,7 +691,7 @@ proof -
     using hhh 
     by (metis (no_types, opaque_lifting) canon_ang(1) canon_ang_uminus less_eq_real_def 
         linorder_not_le minus_add_distrib minus_divide_left mult_le_0_iff  
-        nonzero_mult_div_cancel_left not_numeral_le_zero pi_gt_zero times_divide_eq_right verit_minus_simplify(4) zero_canonical)
+        nonzero_mult_div_cancel_left not_numeral_le_zero pi_gt_zero times_divide_eq_right alethe_minus_simplify(4) zero_canonical)
   then show ?thesis using Morley_pos[of C B A P Q R] 
     by (smt (verit, best) Morley_pos angle_c_commute assms(1) assms(2) assms(3) assms(4) assms(5)
         assms(6) assms(7) cdist_commute collinear_sin_neq_0 collinear_sym1 collinear_sym2 sin_pi)

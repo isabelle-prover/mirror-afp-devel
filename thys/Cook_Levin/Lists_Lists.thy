@@ -77,7 +77,7 @@ qed
 lemma symbols_lt_numlist: "symbols_lt 5 (numlist ns)"
   using numlist_234
   by (metis empty_iff insert_iff nth_mem numeral_less_iff semiring_norm(68) semiring_norm(76) semiring_norm(79)
-    semiring_norm(80) subset_code(1) verit_comp_simplify1(2))
+    semiring_norm(80) subset_code(1) alethe_comp_simplify1(2))
 
 lemma bit_symbols_prefix_eq:
   assumes "(x @ [\<bar>]) @ xs = (y @ [\<bar>]) @ ys" and "bit_symbols x" and "bit_symbols y"

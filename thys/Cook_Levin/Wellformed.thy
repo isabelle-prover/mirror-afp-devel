@@ -704,7 +704,7 @@ next
       case True
       then show ?thesis
         using \<open>last (numlist ns) = \<bar>\<close> \<open>ns \<noteq> []\<close> Cons.prems(2) * ** numlist_Nil numlist_inj
-        by (metis last_conv_nth num.simps(8) numeral_eq_iff semiring_norm(83) verit_eq_simplify(8))
+        by (metis last_conv_nth num.simps(8) numeral_eq_iff semiring_norm(83) alethe_eq_simplify(8))
     next
       case False
       then have "i < length (numlist ns) - 1"

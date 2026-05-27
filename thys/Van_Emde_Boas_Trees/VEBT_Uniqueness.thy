@@ -508,7 +508,7 @@ next
         moreover have "both_member_options s (2^n*i +x)" 
           using \<open>vebt_member (Node (Some (mi, ma)) deg treeList summary) (2 ^ n * i + x)\<close> both_member_options_equiv_member case4(12) case4(13) case4(5) set_vebt'_def by auto
         have acffs:"both_member_options (treeList' ! (high ma n)) (low ma n)" 
-          using acd calculation case4(10) high_bound_aux sprop1 verit_comp_simplify1(3) by blast
+          using acd calculation case4(10) high_bound_aux sprop1 alethe_comp_simplify1(3) by blast
         hence "both_member_options (treeList' ! i) x"
           using both_member_options_from_complete_tree_to_child[of deg mi ma treeList' summary' "2^n*i+x"]
             low_inv[of x n i] high_inv[of x n i]

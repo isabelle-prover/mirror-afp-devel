@@ -246,7 +246,7 @@ next
               then obtain maxi where "Some maxi = vebt_maxt (?newlist ! maxs)"
                 by (metis \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close> empty_Collect_eq maxt_corr_help_empty option_shift.elims set_vebt'_def valid_member_both_member_options)
               then show ?thesis 
-                by (smt (verit, best) "6" "9" \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> bb option.sel high_inv less_le_trans low_inv maxbmo maxt_member member_bound mult.commute not_less_iff_gr_or_eq nothlist verit_comp_simplify1(3) yhelper)
+                by (smt (verit, best) "6" "9" \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> bb option.sel high_inv less_le_trans low_inv maxbmo maxt_member member_bound mult.commute not_less_iff_gr_or_eq nothlist alethe_comp_simplify1(3) yhelper)
             qed
           next
             case False
@@ -843,7 +843,7 @@ next
                             \<open>both_member_options summary maxs\<close> \<open>vebt_member (treeList ! summin) lx\<close> \<open>mi \<noteq> ma \<and> x < 2 ^ deg\<close> 
                             \<open>invar_vebt (treeList ! summin) n\<close> bb equals0D  high_inv maxt_corr_help maxt_corr_help_empty
                             mem_Collect_eq member_bound mint_corr_help nat_less_le summaxma set_vebt'_def
-                            valid_member_both_member_options verit_comp_simplify1(3)
+                            valid_member_both_member_options alethe_comp_simplify1(3)
                           by (metis option.collapse)
                       qed
                     next
@@ -1341,7 +1341,7 @@ next
                     maxt_corr_help_empty member_correct minNullmin min_Null_member mint_corr_help_empty ninNullc nnvalid
                     option.exhaust set_vebt_set_vebt'_valid valid_member_both_member_options)
               then show ?thesis 
-                by (smt (verit, best) "6" "9" \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> bb option.sel high_inv less_le_trans low_inv maxbmo maxt_member member_bound mult.commute not_less_iff_gr_or_eq nothlist verit_comp_simplify1(3) yhelper)
+                by (smt (verit, best) "6" "9" \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> bb option.sel high_inv less_le_trans low_inv maxbmo maxt_member member_bound mult.commute not_less_iff_gr_or_eq nothlist alethe_comp_simplify1(3) yhelper)
             qed
           next
             case False
@@ -1868,7 +1868,7 @@ next
                 hence "high ?xn n < maxs" 
                   by (simp add: \<open>high (summin * 2 ^ n + lx) n \<le> maxs\<close> order.not_eq_order_implies_strict)
                 hence "?newma < 2^deg" 
-                  by (smt (verit) "5.hyps"(8) "9" \<open>Some maxi = vebt_maxt (?newlist ! maxs)\<close> \<open>Some maxs = vebt_maxt (vebt_delete summary (high (summin * 2 ^ n + lx) n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> abd bb both_member_options_equiv_member option.sel high_inv less_le_trans low_inv maxt_member mult.commute nothprolist verit_comp_simplify1(3) yhelper)
+                  by (smt (verit) "5.hyps"(8) "9" \<open>Some maxi = vebt_maxt (?newlist ! maxs)\<close> \<open>Some maxs = vebt_maxt (vebt_delete summary (high (summin * 2 ^ n + lx) n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> abd bb both_member_options_equiv_member option.sel high_inv less_le_trans low_inv maxt_member mult.commute nothprolist alethe_comp_simplify1(3) yhelper)
                 moreover have "high ?xn n < high ?newma n" 
                   by (smt (verit) "9" True \<open>Some maxi = vebt_maxt (?newlist ! maxs)\<close> \<open>Some maxs = vebt_maxt (vebt_delete summary (high (summin * 2 ^ n + lx) n))\<close> \<open>high (summin * 2 ^ n + lx) n < maxs\<close> abd option.sel high_inv mult.commute option.discI)
                 ultimately show ?thesis

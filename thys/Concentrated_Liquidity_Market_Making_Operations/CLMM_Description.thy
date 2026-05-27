@@ -552,7 +552,7 @@ proof -
     hence "j < idx_min (lq P)" using lower_tick_lt'
       by (metis \<open>j \<le> idx_min (lq P)\<close> assms(1) assms(4) assms(3) 
           idx_min_img_def j_def leI lower_tick_lbound grd_min_def 
-          verit_la_disequality)
+          alethe_la_disequality)
     hence "L j = 0" unfolding idx_min_def nz_support_def
       by (metis \<open>j < idx_min (lq P)\<close> assms(2) fin_nz_sup idx_min_def 
           idx_min_finite_le leD) 
@@ -1702,7 +1702,7 @@ shows "quote_gross P sqp \<le> quote_gross P (grd_max P)"
 proof (cases "sqp \<le> grd_max P")
   case True
   then show ?thesis
-    using assms(1) quote_gross_imp_sqp_lt verit_comp_simplify1(3) by blast 
+    using assms(1) quote_gross_imp_sqp_lt alethe_comp_simplify1(3) by blast 
 next
   case False
   then show ?thesis using assms quote_gross_grd_max_ge by simp
@@ -2831,7 +2831,7 @@ proof (cases "quote_gross P sqp = 0")
   proof (rule quote_gross_equiv_base_net)
     show "sqp \<le> sqp'" using \<open>sqp' = grd_min P\<close> True
       by (metis assms(1) assms(2) linorder_not_less quote_gross_gt_grd_min 
-          verit_comp_simplify1(1))
+          alethe_comp_simplify1(1))
     show "clmm_dsc P" using assms by simp
     show "0 < sqp" using assms by simp
     show "quote_gross P sqp = quote_gross P sqp'" using True
@@ -4006,7 +4006,7 @@ proof -
     have "sqp \<le> grd_max P"
       by (metis \<open>y = quote_gross P sqp\<close> assms(1,3) quote_gross_grd_max_ge 
           grd_max_quote_reach order_less_irrefl sqp_def 
-          verit_comp_simplify1(3)) 
+          alethe_comp_simplify1(3)) 
     moreover have "lower_tick P (grd_max P) = idx_max (lq P) + 1"
       by (simp add: assms(1) lower_tick_grd_max) 
     ultimately have "k \<le> idx_max (lq P) +1" using k_def

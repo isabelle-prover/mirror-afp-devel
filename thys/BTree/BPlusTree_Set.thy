@@ -553,7 +553,7 @@ lemma node\<^sub>i_order:
   shows "order_up\<^sub>i k (node\<^sub>i k ts t)"
   apply(cases "node\<^sub>i k ts t")
   using node\<^sub>i_root_order node\<^sub>i_order_helper assms apply fastforce
-  by (metis (full_types) assms le_0_eq nat_le_linear node\<^sub>i.elims node\<^sub>i_root_order order_up\<^sub>i.simps(2) root_order_up\<^sub>i.simps(2) up\<^sub>i.simps(4) verit_comp_simplify1(3))
+  by (metis (full_types) assms le_0_eq nat_le_linear node\<^sub>i.elims node\<^sub>i_root_order order_up\<^sub>i.simps(2) root_order_up\<^sub>i.simps(2) up\<^sub>i.simps(4) alethe_comp_simplify1(3))
 
 
 lemma Lnode\<^sub>i_root_order:
@@ -617,7 +617,7 @@ lemma Lnode\<^sub>i_order:
   shows "order_up\<^sub>i k (Lnode\<^sub>i k ts)"
   apply(cases "Lnode\<^sub>i k ts")
   apply (metis Lnode\<^sub>i_order_helper One_nat_def add.right_neutral add_Suc_right assms(1) assms(2) le_imp_less_Suc less_le order_up\<^sub>i.simps(1) up\<^sub>i.simps(5))
-  by (metis Lnode\<^sub>i.elims Lnode\<^sub>i_root_order assms(1) assms(2) diff_is_0_eq' le_0_eq le_add_diff_inverse mult_2 order_up\<^sub>i.simps(2) root_order_up\<^sub>i.simps(2) up\<^sub>i.simps(3) verit_comp_simplify1(3))
+  by (metis Lnode\<^sub>i.elims Lnode\<^sub>i_root_order assms(1) assms(2) diff_is_0_eq' le_0_eq le_add_diff_inverse mult_2 order_up\<^sub>i.simps(2) root_order_up\<^sub>i.simps(2) up\<^sub>i.simps(3) alethe_comp_simplify1(3))
 
 (* explicit proof *)
 lemma ins_order: 

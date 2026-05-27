@@ -2022,7 +2022,7 @@ proof-
   hence H_2: "(SOME w. (v, w) \<in> \<equiv>\<^sub>M\<^sub>N) \<in> [v]\<^sub>M\<^sub>N"
     apply (clarsimp simp add: rel_MN_def)
     apply (rule conjI)
-     apply (smt (verit, ccfv_SIG) A_0 in_listsD verit_sko_ex_indirect)
+     apply (smt (verit, ccfv_SIG) A_0 in_listsD alethe_sko_ex_indirect)
     by (smt (verit, del_insts) A_0 in_listsI tfl_some)
   hence H_3: " ((SOME w. (v, w) \<in> \<equiv>\<^sub>M\<^sub>N) @ [a]) \<in> [v @ [a]]\<^sub>M\<^sub>N"
     using H_1

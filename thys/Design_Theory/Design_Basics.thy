@@ -207,7 +207,7 @@ proof -
 qed
 
 lemma point_rep_num_inv_non_empty: "(\<B> rep x) < \<b> \<Longrightarrow> \<B> \<noteq> {#} \<Longrightarrow> {# b \<in># \<B> . x \<notin> b #} \<noteq> {#}"
-  by (metis diff_zero point_replication_number_def size_empty size_filter_neg verit_comp_simplify1(1))
+  by (metis diff_zero point_replication_number_def size_empty size_filter_neg alethe_comp_simplify1(1))
 
 end
 

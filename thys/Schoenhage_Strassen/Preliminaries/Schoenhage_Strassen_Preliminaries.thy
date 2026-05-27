@@ -227,7 +227,7 @@ proof -
   also have "... = (int a - int (b mod m)) mod int m"
     using zmod_int by presburger
   also have "... = (int (a - (b mod m))) mod int m"
-    by (metis calculation diff_diff_cancel diff_is_0_eq' less_imp_diff_less less_le_not_le mod_less_eq_dividend of_nat_diff verit_comp_simplify1(3) zmod_int)
+    by (metis calculation diff_diff_cancel diff_is_0_eq' less_imp_diff_less less_le_not_le mod_less_eq_dividend of_nat_diff alethe_comp_simplify1(3) zmod_int)
   also have "... = int ((a - (b mod m)) mod m)"
     using zmod_int by presburger
   finally show ?thesis by simp

@@ -1903,7 +1903,7 @@ proof -
   then have "f n \<le> b" if "n \<le> m" for n
     using that by auto
   then have "f n \<le> b + c * n ^ Suc d" for n
-    using * by (meson trans_le_add1 trans_le_add2 verit_comp_simplify1(3))
+    using * by (meson trans_le_add1 trans_le_add2 alethe_comp_simplify1(3))
   then show ?thesis
     using * dcm(1) by blast
 qed

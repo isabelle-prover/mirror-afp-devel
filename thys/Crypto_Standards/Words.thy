@@ -1075,7 +1075,7 @@ next
   show ?case
     by (metis 1(2,3) 3 diff_Suc_Suc diff_diff_cancel diff_le_self length_Cons linorder_not_less 
               nat_bnd_word_len nat_lowbnd_word_len neq0_conv nth_Cons_0 words_to_nat_cons_zero 
-              words_to_nat_to_words verit_comp_simplify1(1)) 
+              words_to_nat_to_words alethe_comp_simplify1(1)) 
 qed
 
 lemma trunc_words_to_nat: 

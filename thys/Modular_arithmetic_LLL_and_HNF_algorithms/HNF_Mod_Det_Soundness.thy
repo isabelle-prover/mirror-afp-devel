@@ -5919,7 +5919,7 @@ next
   proof -
     have "A $$ (m, 0) = (D \<cdot>\<^sub>m (1\<^sub>m n)) $$ (m-m,0)"
       unfolding "2"(5)
-      by (meson "2"(2) "2"(4) D1 append_rows_nth3 less_add_same_cancel1 verit_comp_simplify(2))
+      by (meson "2"(2) "2"(4) D1 append_rows_nth3 less_add_same_cancel1 alethe_comp_simplify(2))
     also have "... = D" by (simp add: n0)
     finally show ?thesis .
   qed

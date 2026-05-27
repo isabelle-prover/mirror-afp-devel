@@ -347,7 +347,7 @@ lemma dom_map_inv [simp]:
 lemma ran_map_inv [simp]:
   "inj_on f (dom f) \<Longrightarrow> ran (map_inv f) = dom f"
   apply (simp add:map_inv_def ran_def, safe)
-   apply (metis (mono_tags, lifting) verit_sko_ex')
+   apply (metis (mono_tags, lifting) alethe_sko_ex')
   apply (metis (mono_tags, lifting) domI domIff map_inv_def map_inv_f_f option.inject)
   done
 

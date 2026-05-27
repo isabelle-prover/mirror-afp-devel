@@ -1047,7 +1047,7 @@ the false statement a > 31, we have corrected these mistakes.  This does not aff
         thus ?thesis
         proof (cases)
           case N'_min_b_cube_leq40000
-          have "N' - (nat b)^3 \<ge> 10000"
+          have "N' - (nat b)^3 \<ge> 10000" supply [[smt_trace]]
             using \<open>10000 \<le> N' - b^3\<close> int_nat_eq \<open>b \<ge> 31\<close>
             by (smt (verit) int_ops(6) numeral_Bit0 numeral_Bit1 numeral_One of_nat_1 of_nat_le_iff 
                 of_nat_numeral of_nat_power) 

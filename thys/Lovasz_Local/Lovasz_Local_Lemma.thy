@@ -453,7 +453,7 @@ proof (cases "d = 0")
   proof -
     have "exp (1) * p \<le> 1" using assms(7) True by simp
     then show ?thesis using exp_gt_one  less_1_mult linorder_neqE_linordered_idom rel_simps(68) 
-      verit_prod_simplify(2) by (smt (verit) mult_le_cancel_left1)
+      alethe_prod_simplify(2) by (smt (verit) mult_le_cancel_left1)
   qed
   ultimately show ?thesis 
     using complete_indep_bound3[of A F] assms(2) assms(1) assms(3) assms(6) by force
@@ -563,7 +563,7 @@ next
     have plt: "1/(4*d) \<ge> p" using assms(7) assms(8)
       by (metis (mono_tags, opaque_lifting) Num.of_nat_simps(5) bot_nat_0.not_eq_extremum le_numeral_extra(2) 
           more_arith_simps(11) mult_of_nat_commute nat_0_less_mult_iff of_nat_0_less_iff of_nat_numeral 
-          pos_divide_less_eq rel_simps(51) verit_comp_simplify(3)) 
+          pos_divide_less_eq rel_simps(51) alethe_comp_simplify(3)) 
     then have gtp: "(1 /(d + 1))* (1 - (1 /(d + 1)))^d \<ge> p"
     proof (cases "d = 1")
       case False

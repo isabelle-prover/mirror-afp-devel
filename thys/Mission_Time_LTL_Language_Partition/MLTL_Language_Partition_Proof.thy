@@ -559,7 +559,7 @@ proof-
   {
     assume length_L: "length L = 0"
     then have ?thesis using assms
-      by (metis first last less_add_one verit_comp_simplify1(3)) 
+      by (metis first last less_add_one alethe_comp_simplify1(3)) 
   } moreover {
     assume length_L: "length L \<ge> 1"
     have ?thesis using assms first last length_s length_L
@@ -706,7 +706,7 @@ proof-
     qed
   }
   ultimately show ?thesis
-    by (meson less_one verit_comp_simplify1(3)) 
+    by (meson less_one alethe_comp_simplify1(3)) 
 qed
 
 
@@ -1959,7 +1959,7 @@ next
         using i_in by simp
       have "(interval_times a L ! (i + 1) - 1) \<le> b" using slast 
         using interval_times_diff_ge_general[OF a_leq_b composition_L, of "length L" "i+1" ?s] i_in
-        by (metis Suc_eq_plus1 atLeastLessThan_iff le_Suc_eq le_diff_conv linorder_not_less order_less_imp_le verit_comp_simplify1(2)) 
+        by (metis Suc_eq_plus1 atLeastLessThan_iff le_Suc_eq le_diff_conv linorder_not_less order_less_imp_le alethe_comp_simplify1(2)) 
       then have ?thesis 
         unfolding \<psi>_is Future_mltl_ext to_mltl.simps wpd_mltl.simps
         using ih bound by linarith
@@ -2814,7 +2814,7 @@ next
            semantics: "semantics_mltl (drop i \<pi>) (to_mltl \<alpha>)" by blast
       have length_s: "length ?s \<ge> 2"
         using i_bounds
-        by (metis a_leq_b add_less_same_cancel2 antisym_conv3 interval_times_first interval_times_length less_eq_iff_succ_less less_iff_succ_less_eq less_nat_zero_code one_add_one slast verit_comp_simplify1(1)) 
+        by (metis a_leq_b add_less_same_cancel2 antisym_conv3 interval_times_first interval_times_length less_eq_iff_succ_less less_iff_succ_less_eq less_nat_zero_code one_add_one slast alethe_comp_simplify1(1)) 
       have dropi_length: "wpd_mltl (to_mltl \<alpha>) \<le> length (drop i \<pi>)"
       proof-
         have "1 \<le> length L"

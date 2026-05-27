@@ -1102,7 +1102,7 @@ proof safe
     proof(rule ccontr)
       assume "\<nexists>N. \<forall>n\<ge>N. y < f (xn n)"
       then have hc:"\<And>N. \<exists>n\<ge>N. y \<ge> f (xn n)"
-        by (meson verit_comp_simplify1(3))
+        by (meson alethe_comp_simplify1(3))
       define a :: "nat \<Rightarrow> nat" where "a \<equiv> rec_nat (SOME n. f (xn n) \<le> y) (\<lambda>n an. SOME m. m > an \<and> f (xn m) \<le> y)"
       have "strict_mono a"
       proof(rule strict_monoI_Suc)

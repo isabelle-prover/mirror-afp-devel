@@ -2892,7 +2892,7 @@ proof-
 
       have l2l5: "path_image ?l2 \<inter> path_image ?l5 = {}"
         using linepath_int_columns[of ?b ?c ?e ?f]
-        by (smt (verit, ccfv_threshold) Int_commute UnCI a_x b_x linepath_int_columns p0 p0_def pathstart_in_path_image pathstart_join vector_2(1) verit_comp_simplify1(3))
+        by (smt (verit, ccfv_threshold) Int_commute UnCI a_x b_x linepath_int_columns p0 p0_def pathstart_in_path_image pathstart_join vector_2(1) alethe_comp_simplify1(3))
       have l1l4: "path_image ?l1 \<inter> path_image ?l4 = {}"
         using linepath_int_columns[of ?a ?b ?d ?e]
         by (smt (verit) UnCI a_x assms(9) b_x disjoint_iff p1_def path_image_linepath pathfinish_in_path_image segment_horizontal segment_vertical vector_2(1) vector_2(2))
@@ -3601,7 +3601,7 @@ proof-
       let ?d = "0::(real^2)"
 
       have arcs: "arc ?l1 \<and> arc ?l2 \<and> arc ?l3"
-        by (metis arc_linepath assms(8) assms(9) vector_2(1) vector_2(2) verit_comp_simplify1(1) zero_index zero_neq_neg_one)
+        by (metis arc_linepath assms(8) assms(9) vector_2(1) vector_2(2) alethe_comp_simplify1(1) zero_index zero_neq_neg_one)
 
       have l2l3: "path_image ?l2 \<inter> path_image ?l3 = {pathfinish ?l2}"
         using linepath_int_corner[of ?b ?c ?d]
@@ -4049,7 +4049,7 @@ proof-
     have 9: "\<exists>x \<in> p'`{0<..<1}. x$2 \<ge> 0"
     proof-
       have "\<exists>x \<in> p`{0<..<1}. x$2 < 0"
-        by (metis that all_not_in_conv bot.extremum greaterThanLessThan_subseteq_greaterThanLessThan image_is_empty verit_comp_simplify1(3) zero_less_one)
+        by (metis that all_not_in_conv bot.extremum greaterThanLessThan_subseteq_greaterThanLessThan image_is_empty alethe_comp_simplify1(3) zero_less_one)
       then obtain x where "x \<in> p`{0<..<1} \<and> x$2 < 0" by presburger
       moreover then have "(?g x)$2 > 0" by fastforce
       ultimately show ?thesis by (smt (verit, ccfv_threshold) f_eq_g image_iff o_apply p'_def)
@@ -5095,7 +5095,7 @@ proof-
 
   (* filled_vts is missing at least one vertex from vts *)
   have "card (set vts) = card (set (butlast vts))"
-    by (smt (verit,del_insts) Cons_nth_drop_Suc List.finite_set One_nat_def Suc_1 Suc_le_lessD two_vts_on_frontier distinct_vts hd_last_vts frontier_vts_subset butlast.simps(1) butlast_conv_take card_insert_if card_length card_mono distinct_card drop0 drop_eq_Nil dual_order.trans last_in_set last_tl length_butlast length_greater_0_conv length_tl list.collapse list.sel(3) list.simps(15) set_take_subset verit_la_disequality)
+    by (smt (verit,del_insts) Cons_nth_drop_Suc List.finite_set One_nat_def Suc_1 Suc_le_lessD two_vts_on_frontier distinct_vts hd_last_vts frontier_vts_subset butlast.simps(1) butlast_conv_take card_insert_if card_length card_mono distinct_card drop0 drop_eq_Nil dual_order.trans last_in_set last_tl length_butlast length_greater_0_conv length_tl list.collapse list.sel(3) list.simps(15) set_take_subset alethe_la_disequality)
   moreover have "length good_pocket_path_vts \<ge> 1"
     unfolding good_pocket_path_vts_def pocket_path_vts_def construct_pocket_0_def
     using convex_hull_of_nonconvex_polygon_strict_subset[OF _ assms(4), of vts]

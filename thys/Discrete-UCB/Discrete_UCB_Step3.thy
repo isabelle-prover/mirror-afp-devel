@@ -378,7 +378,7 @@ proof -
 
   then have "expectation (\<lambda>\<omega>. R_n n \<omega>) \<le> (\<Sum>a\<in>A. \<Delta> a * ((2 * \<epsilon> * ln (real n)) / 
 ((\<Delta> a)^2)+ (\<Sum> t = k..<n. 2 / (real t powr \<epsilon>))))" 
-    using assms intermed_step_2 by (metis a_star_in_A less_irrefl verit_minus_simplify(1)) 
+    using assms intermed_step_2 by (metis a_star_in_A less_irrefl alethe_minus_simplify(1)) 
 
   then show ?thesis by simp
 

@@ -935,7 +935,8 @@ proof-
       using n_geq_1 by auto
     moreover have "2 powr log 2 n \<le> 2 powr (ceiling (log 2 n))" by fastforce
     ultimately have "2 / (2 powr (ceiling (log 2 n) ) ) \<le> 2 / n"
-      by (metis frac_le ge_refl powr_nonneg_iff verit_comp_simplify(7) verit_comp_simplify1(3) verit_eq_simplify(5))
+      by (metis (mono_tags, opaque_lifting) arithmetic_simps(62) frac_le less_eq_real_def mult_1s(1) 
+        n_geq_1 not_less numeral_code(1) of_nat_0_le_iff of_nat_numeral one_of_nat_le_iff)
     moreover have "( (2 * 3 * sqrt n / n) / (2 powr ?crn) ) =   3 * sqrt n * (2 / n / 2 powr ?crn)" by argo
     moreover have "0 \<le> 3 * sqrt n" using sn by linarith
     ultimately have *: " 3 * sqrt n * (2 / (2 powr (ceiling (log 2 n))) / 2 powr ?crn) \<le> (2 * 3 * sqrt n / n) / (2 powr ?crn)"
@@ -3945,7 +3946,7 @@ proof safe
     let ?S = "{t. (real t - 1) * (real p / 2 ^ k) \<le> real x}"
     define t where "t = Max ?S"
     have "?S \<noteq> {}"
-      by (metis Multiseries_Expansion.intyness_1 arith_simps(62) empty_iff mem_Collect_eq of_nat_0_le_iff verit_minus_simplify(1))
+      by (metis Multiseries_Expansion.intyness_1 arith_simps(62) empty_iff mem_Collect_eq of_nat_0_le_iff alethe_minus_simplify(1))
     moreover have "finite ?S"
     proof-
       obtain M where "?S \<subseteq> {0..<M}" 

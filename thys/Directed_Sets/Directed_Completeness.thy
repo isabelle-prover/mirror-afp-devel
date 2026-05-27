@@ -415,7 +415,7 @@ proof-
   from aA seq_bij_betw seq_n_in_Seq_n
   have a: "a \<in> Seq (Suc (inv seq a))" by (simp add: bij_betw_inv_into_right)
   from ab have "inv seq a < inv seq b"
-    by (metis (mono_tags, lifting) aA well_order_of.asympartp_iff_weak_neq bA range_seq inv_seq_mono inv_into_injective not_le_imp_less ord.mono_onD verit_la_disequality)
+    by (metis (mono_tags, lifting) aA well_order_of.asympartp_iff_weak_neq bA range_seq inv_seq_mono inv_into_injective not_le_imp_less ord.mono_onD alethe_la_disequality)
   then have "Suc (inv seq a) \<le> inv seq b" by auto
   from a monoD[OF Seq_mono this] have "a \<in> Seq (inv seq b)" by auto
   then show ?thesis by auto

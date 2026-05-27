@@ -234,7 +234,7 @@ next
     unfolding eval_neg[symmetric, of "(QE_dnf opt step \<phi>)"]
     unfolding opt[symmetric, of "neg(QE_dnf opt step \<phi>)"]
     unfolding HOL.Not_eq_iff[symmetric, of "(\<forall>f\<in>set (dnf_modified (opt (neg (QE_dnf opt step \<phi>)))). \<not> eval (case f of (al, fl, n) \<Rightarrow> ExN (Suc n) (step (Suc 0) n al fl)) xs)"]
-    unfolding SMT.verit_connective_def(3)[symmetric]
+    unfolding not_all not_not
     unfolding boundedFlipNegQuantifier
     unfolding dnf_modified_eval[symmetric, of "opt(neg(QE_dnf opt step \<phi>))"]
     unfolding h
@@ -329,7 +329,7 @@ next
       unfolding dnf_modified_eval[symmetric, of "(opt (neg(QE_dnf opt step \<phi>)))"]
       unfolding HOL.Not_eq_iff[symmetric, of "(\<forall>f\<in>set (dnf_modified (opt (neg (QE_dnf opt step \<phi>)))).
         \<not> eval (case f of (al, fl, n) \<Rightarrow> ExN (Suc (n + nat)) (step (Suc nat) (n + nat) al fl)) xs)"]
-      unfolding SMT.verit_connective_def(3)[symmetric]
+      unfolding not_all not_not
       unfolding boundedFlipNegQuantifier
       unfolding h
       apply(rule bex_cong)

@@ -336,7 +336,7 @@ proof
     by (intro add_nonneg_nonneg cinner_ge_zero)
   show "cinner x x = 0 \<longleftrightarrow> x = 0"
     unfolding cinner_prod_def prod_eq_iff
-    by (metis antisym cinner_eq_zero_iff cinner_ge_zero fst_zero le_add_same_cancel2 snd_zero verit_sum_simplify)
+    by (metis antisym cinner_eq_zero_iff cinner_ge_zero fst_zero le_add_same_cancel2 snd_zero alethe_sum_simplify)
   show "norm x = sqrt (cmod (cinner x x))"
     unfolding norm_prod_def cinner_prod_def
     apply (simp add: norm_prod_def cinner_prod_def)

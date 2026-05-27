@@ -1808,7 +1808,7 @@ proof-
     using s_dim[of n] sq_norm_from_Mt[of ?s] by fast
   have "I+1\<in>\<nat>" using I_geq
     using Nats_0 Nats_1 Nats_add R.add.l_inv_ex R.add.r_inv_ex add_diff_cancel_right' 
-      cring_simprules(21) rangeI range_abs_Nats verit_la_disequality verit_minus_simplify(3) 
+      cring_simprules(21) rangeI range_abs_Nats alethe_la_disequality alethe_minus_simplify(3) 
       zabs_def zle_add1_eq_le by auto
   then obtain Inat where Inat_def:"int Inat = I+1"
     using Nats_cases by metis

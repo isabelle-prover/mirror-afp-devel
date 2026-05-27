@@ -160,7 +160,7 @@ proof -
       using "1" cinner_pos_if_pos by blast
     also have \<open>\<dots> \<le> (- S *\<^sub>V f) \<bullet>\<^sub>C (- S *\<^sub>V f) * (f \<bullet>\<^sub>C f)\<close>
       apply (rule mult_right_mono)
-      apply (metis \<open>- id_cblinfun \<le> S\<close> id_cblinfun_apply less_eq_cblinfun_def neg_le_iff_le verit_minus_simplify(4))
+      apply (metis \<open>- id_cblinfun \<le> S\<close> id_cblinfun_apply less_eq_cblinfun_def neg_le_iff_le alethe_minus_simplify(4))
       by simp
     also have \<open>\<dots> = (norm (-S *\<^sub>V f))\<^sup>2 * (norm f)\<^sup>2\<close>
       by (simp add: cdot_square_norm)
@@ -195,7 +195,7 @@ proof -
     also have \<open>\<dots> \<le> (\<Sum>n\<in>F. abs ((1 / 2 gchoose n)))\<close>
       apply (auto intro!: sum_mono)
       using norm_Sn
-      by (metis norm_cmul_rule_thm norm_scaleR verit_prod_simplify(2))
+      by (metis norm_cmul_rule_thm norm_scaleR alethe_prod_simplify(2))
     also have \<open>\<dots> \<le> (\<Sum>n\<le>d. abs (1/2 gchoose n))\<close>
       using \<open>F \<subseteq> {..d}\<close> by (auto intro!: mult_right_mono sum_mono2)
     also have \<open>\<dots> = (2 - (- 1) ^ d * (- (1 / 2) gchoose d))\<close>

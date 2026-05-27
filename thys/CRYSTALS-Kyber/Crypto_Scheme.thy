@@ -269,7 +269,7 @@ proof -
     ultimately have "poly.coeff (of_qr m - of_qr m') i \<in>  {of_int_mod_ring (- 1), 0, 1}" for i
       by (metis (no_types, lifting) coeff_diff diff_zero 
         eq_iff_diff_eq_0 insert_iff of_int_hom.hom_one of_int_minus 
-        of_int_of_int_mod_ring singleton_iff verit_minus_simplify(3))
+        of_int_of_int_mod_ring singleton_iff alethe_minus_simplify(3))
     then have "set (coeffs (of_qr m - of_qr m')) \<subseteq>  {of_int_mod_ring (- 1), 0, 1}" 
       by (simp add: coeffs_in_coeff)
     then show ?thesis using m01 of_qr_diff[of m m'] by simp

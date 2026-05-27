@@ -1030,10 +1030,11 @@ proof(rule ring.noetherian_ringI)
     have \<open>\<forall>x\<in> S' k. \<exists>y\<in>B k. x = fps_nth y k\<close> for k
       using f5  unfolding B_def f_def sublead_coeff_set_def subdeg_poly_set 
       apply(safe)
-      by (smt (verit, ccfv_threshold) "*" mem_Collect_eq someI_ex)
+      by (smt (cvc5) "*" mem_Collect_eq someI_ex)
     have f30:\<open>\<forall>x\<in> B k. \<exists>y\<in>S' k. y = fps_nth x k\<close> for k
       using f5  unfolding B_def f_def sublead_coeff_set_def subdeg_poly_set 
       apply(safe)
+      supply [[smt_trace]]
       by (smt (verit, ccfv_threshold) "*" mem_Collect_eq someI_ex)
     have \<open>\<forall>i<card (B k). \<exists>!n. n<card (B k) \<and> fps_nth (from_nat_into (B k) n) k = from_nat_into (S' k) i\<close>
       for k

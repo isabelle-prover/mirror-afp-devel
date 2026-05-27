@@ -112,13 +112,13 @@ proof -
     apply clarsimp
     apply (drule exuniq)
     apply (drule exuniq)
-    by (smt (verit) assms(2) inj_on_def is_matching_def prod.sel(2) prod.simps(1) verit_sko_ex)
+    by (smt (verit) assms(2) inj_on_def is_matching_def prod.sel(2) prod.simps(1) alethe_sko_ex)
   
   have 2: "f \<in> {0..<V} \<rightarrow> {0..<V}"
     unfolding f_def
     apply clarsimp
     apply (drule exuniq)
-    by (smt (verit, ccfv_threshold) verit_sko_ex)
+    by (smt (verit, ccfv_threshold) alethe_sko_ex)
 
   have 1: "f permutes {0..<V}"
     by (intro inj_on_nat_permutes[OF 1 2]) (auto simp: f_def)
@@ -127,7 +127,7 @@ proof -
     apply clarsimp
     apply (drule exuniq)
     using assms(2) unfolding is_matching_def subset_iff
-    by (smt (verit, ccfv_threshold) verit_sko_ex)
+    by (smt (verit, ccfv_threshold) alethe_sko_ex)
   
   show ?thesis using that 1 2 by auto
 qed

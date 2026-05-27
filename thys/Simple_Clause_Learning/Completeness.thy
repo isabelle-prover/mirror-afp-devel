@@ -115,7 +115,7 @@ proof -
 
     from L_min C_min have "\<forall>D\<in>gnd_N'. \<forall>K\<in>#D. atm_of K \<le> atm_of L"
       by (meson dual_order.trans ex_gt_imp_less_multiset leq_imp_less_eq_atm_of
-          verit_comp_simplify1(3))
+          alethe_comp_simplify1(3))
     hence "gnd_N' \<subseteq> {D \<in> gnd_N. \<forall>K \<in># D. (atm_of K) \<le> (atm_of L)}"
       using \<open>gnd_N' \<subseteq> gnd_N\<close> subset_Collect_iff by auto
     hence "\<not> satisfiable {D \<in> gnd_N. \<forall>K \<in># D. (atm_of K) \<le> (atm_of L)}"

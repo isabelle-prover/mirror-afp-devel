@@ -241,7 +241,7 @@ lemma kyber_correct_alt:
 using kyber_correct[OF assms(1-5) _ m01]
 using assms(5)
 by (metis (mono_tags, opaque_lifting) add_diff_add arith_simps(50) arith_simps(57) assms(6) 
-  verit_la_generic zle_add1_eq_le zless_add1_eq)
+  alethe_la_generic zle_add1_eq_le zless_add1_eq)
 
 text \<open>Then we show the correctness in the probabilistic program for a fixed key pair and message.
 The bound we use is \<open>delta'\<close>.\<close>

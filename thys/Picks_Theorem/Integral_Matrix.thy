@@ -219,7 +219,7 @@ proof-
   moreover have "det Tinv = 1 / det T"
   proof-
     have id: "Tinv ** T = mat 1" using Tinv unfolding matrix_inv_def invertible_def
-      by (simp add: verit_sko_ex')      
+      by (simp add: alethe_sko_ex')      
     have "det Tinv * det T = det (Tinv ** T)" by (simp add: det_mul)
     also have "... = det ((mat 1)::real^2^2)" using id by auto
     also have "... = (1::real)" by auto

@@ -33,7 +33,7 @@ proof -
   also have "... = int ((N-1) * ((S+T+1) * N + T + 1))"
     using HS HT int_ops
     by (metis (mono_tags, opaque_lifting) One_nat_def R_def Suc_leI diff_is_0_eq not_gr_zero 
-       of_nat_diff verit_comp_simplify1(3) zero_diff)
+       of_nat_diff alethe_comp_simplify1(3) zero_diff)
    finally show ?thesis using R_def by (metis nat_int_comparison(1) power2_eq_square)
 qed
 

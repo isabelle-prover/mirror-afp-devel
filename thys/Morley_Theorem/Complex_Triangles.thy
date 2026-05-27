@@ -279,7 +279,7 @@ proof -
     using angle_sum_triangle_c[of p q r] f0 by auto
   have \<open>\<forall>x\<in>{-pi..0}. 3*x \<noteq> pi\<close> 
     by (metis atLeastAtMost_iff dual_order.trans mult_eq_0_iff mult_less_cancel_right2 numeral_le_one_iff
-        pi_ge_zero pi_neq_zero semiring_norm(70) verit_comp_simplify1(3) verit_la_disequality)
+        pi_ge_zero pi_neq_zero semiring_norm(70) alethe_comp_simplify1(3) alethe_la_disequality)
   also have the_x:\<open>\<exists>!x\<in>{-pi<..pi}. 3*x = pi\<close>
     by(auto intro:exI[where x=\<open>pi/3\<close>])
   moreover have \<open>(angle_c x y z)  \<in>{-pi<..pi}\<close> for x y z
@@ -310,7 +310,7 @@ proof -
       have "k + k \<le> - 4"
         using a1 by force
       then show ?thesis
-        using f2 by (metis (no_types) diff_left_mono h mult.commute mult_2_right of_int_le_iff ordered_comm_semiring_class.comm_mult_left_mono pi_ge_zero verit_comp_simplify1(3))
+        using f2 by (metis (no_types) diff_left_mono h mult.commute mult_2_right of_int_le_iff ordered_comm_semiring_class.comm_mult_left_mono pi_ge_zero alethe_comp_simplify1(3))
     qed
     ultimately have f4:\<open>k \<le> -2 \<Longrightarrow> x-2* k*pi > pi\<close>
       apply(cases \<open>k=-2\<close>) using h  

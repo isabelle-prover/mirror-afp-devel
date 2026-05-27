@@ -174,7 +174,7 @@ the decomposition of @{term A}. Once the local context is closed, this interpret
 longer accessible, so these names do not pollute the @{const cmplx_herm_mat} namespace."
 
 lemma len_eigenvalues: "length es = n"
-  by (metis \<Lambda>_carrier es carrier_matD(1) diag_mat_def length_map length_upt verit_minus_simplify(2))
+  by (metis \<Lambda>_carrier es carrier_matD(1) diag_mat_def length_map length_upt alethe_minus_simplify(2))
 
 lemma unit_vec_rayleigh_formula:
   assumes unit_v: "vec_norm v = 1"

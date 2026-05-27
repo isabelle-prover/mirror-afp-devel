@@ -25,7 +25,7 @@ fun is_conj (Const (\<^const_name>\<open>conj\<close>, _) $ _ $ _) = true
 
 fun mk_intro ctxt thm =
   let 
-    val thm' = thm RS @{thm verit_Pure_trans}
+    val thm' = thm RS @{thm SMT.alethe_Pure_trans}
     val n = Thm.nprems_of thm'
   in 
     thm'

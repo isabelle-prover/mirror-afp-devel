@@ -336,7 +336,7 @@ lemma compact_op_scaleR[simp]: \<open>compact_op (c *\<^sub>R a)\<close> if \<op
   by (simp add: scaleR_scaleC that)
 
 lemma compact_op_uminus[simp]: \<open>compact_op (-a) = compact_op a\<close>
-  by (metis compact_op_scaleC scaleC_minus1_left verit_minus_simplify(4))
+  by (metis compact_op_scaleC scaleC_minus1_left alethe_minus_simplify(4))
 
 lemma compact_op_plus[simp]: \<open>compact_op (a + b)\<close> if \<open>compact_op a\<close> and \<open>compact_op b\<close>
 proof -

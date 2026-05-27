@@ -1371,7 +1371,7 @@ proof -
     using orthonormal_subspace_basis_exists[where S=\<open>{}\<close> and V=X]
     by auto
   then have \<open>?P (some_onb_of X)\<close>
-    by (simp add: some_onb_of_def verit_sko_ex)
+    by (simp add: some_onb_of_def alethe_sko_ex)
   then show is_ortho_set_some_onb_of: \<open>is_ortho_set (some_onb_of X)\<close>
     and \<open>b \<in> some_onb_of X \<Longrightarrow> norm b = 1\<close>
     and \<open>ccspan (some_onb_of X) = X\<close>

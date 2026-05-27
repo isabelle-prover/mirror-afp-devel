@@ -157,7 +157,7 @@ proof -
       by (simp add: pos_le_divide_eq power2_eq_square power3_eq_cube)
     from asm1 have "l > 0" by auto
     from assms(1) asm1 \<open>m > 0\<close> \<open>l > 0\<close> have "l*m \<ge> 2*(3::real)"
-      by (metis mult_less_cancel_right mult_mono verit_comp_simplify1(1) verit_comp_simplify1(3) zero_le_numeral)
+      by (metis mult_less_cancel_right mult_mono alethe_comp_simplify1(1) alethe_comp_simplify1(3) zero_le_numeral)
     hence "-2*7*l*m/6 + 7*(1/6)*(1/6) + 5 < (0::real)" by simp
     hence "7*l^2*m^2 > 7*l_0^2 + (5::real)" unfolding l_0_def
       apply (auto simp add: power2_eq_square)
@@ -247,7 +247,7 @@ sqrt (4*(1-2/m)^2 + 8*(N - r)/m)*(2*(1-2/m) + sqrt (4*(1-2/m)^2 + 8*(N - r)/m))"
     also have "1/2 - 3/m > -1" using assms(1)
       by (smt (verit) divide_le_0_1_iff less_divide_eq_1_pos)
     hence "(1/2 - 3/m)^2 < 1" 
-      by (metis (no_types, opaque_lifting) calculation less_eq_real_def power2_eq_1_iff square_le_1 verit_comp_simplify1(3))
+      by (metis (no_types, opaque_lifting) calculation less_eq_real_def power2_eq_1_iff square_le_1 alethe_comp_simplify1(3))
     hence 6: "sqrt (6*N/m - 3) > sqrt ((1/2 - 3/m)^2 + 6*N/m - 4)" using assms(1) by simp
     from asm1 5 6 have "b > (1/2 - 3/m) + sqrt ((1/2 - 3/m)^2 + 6*N/m - 4)" by linarith
     hence 7: "b > (1/2 - 3/m) + sqrt ((1/2 - 3/m)^2 + 6*(N - r)/m - 4)"

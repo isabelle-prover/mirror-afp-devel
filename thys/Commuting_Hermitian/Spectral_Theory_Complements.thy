@@ -341,7 +341,7 @@ proof
   proof -
     assume "map (\<lambda>i. A $$ (i, i)) [0..<dim_row A] = map (\<lambda>i. B $$ (i, i)) [0..<dim_row B]"
     then show ?thesis
-      by (metis (lifting) length_map length_upt verit_minus_simplify(2))
+      by (metis (lifting) length_map length_upt alethe_minus_simplify(2))
   qed
   fix i j
   assume "i < dim_row B" and "j < dim_col B"

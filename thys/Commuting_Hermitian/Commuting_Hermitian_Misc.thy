@@ -149,7 +149,7 @@ next
       show "i \<le> length (tl l)" using Suc by simp
       show "\<forall>j<length (tl l). 0 \<le> tl l ! j" using Suc
         by (metis Nitpick.size_list_simp(2) le_simps(3) nth_tl 
-            verit_comp_simplify1(3) zero_less_Suc) 
+            alethe_comp_simplify1(3) zero_less_Suc) 
     qed
     thus ?thesis by simp
   qed

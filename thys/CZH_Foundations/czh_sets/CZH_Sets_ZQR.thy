@@ -86,7 +86,7 @@ definition vreal_of_real_impl :: "real \<Rightarrow> V"
 
 lemma inj_vreal_of_real_impl: "inj vreal_of_real_impl" 
   unfolding vreal_of_real_impl_def 
-  by (metis embeddable_class.ex_inj verit_sko_ex')
+  by (metis embeddable_class.ex_inj alethe_sko_ex')
 
 lemma inj_on_inv_vreal_of_real_impl: 
   "inj_on (inv vreal_of_real_impl) (range vreal_of_real_impl)"
@@ -153,7 +153,7 @@ proof-
     and "vreal_impl \<in>\<^sub>\<circ> Vset (\<omega> + \<omega>)"
     using vdisjnt_z\<omega> 
     unfolding vreal_impl_def
-    by (metis (mono_tags, lifting) verit_sko_ex')+
+    by (metis (mono_tags, lifting) alethe_sko_ex')+
 qed
 
 definition vreal_of_real_impl' :: "V \<Rightarrow> V"
@@ -166,7 +166,7 @@ proof-
   from eqpoll_def obtain f where f: 
     "bij_betw f (range vreal_of_real_impl) (elts vreal_impl)"
     by (auto intro: vreal_impl_eqpoll)
-  then show ?thesis unfolding vreal_of_real_impl'_def by (metis verit_sko_ex')
+  then show ?thesis unfolding vreal_of_real_impl'_def by (metis alethe_sko_ex')
 qed
 
 definition vreal_of_real_impl'' :: "real \<Rightarrow> V"

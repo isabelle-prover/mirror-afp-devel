@@ -74,7 +74,7 @@ lemma no_zeros_on_diagonal_helper:
   assumes "X > 0"
   shows "((form_basis_helper p M X (degree p - 1))!i)$i = M*X^i"
   using ith_row_form_basis_helper assms g_i_vec_ith_element 
-  by (metis Suc_eq_plus1 less_diff_conv2 not_less_eq verit_comp_simplify(3))
+  by (metis Suc_eq_plus1 less_diff_conv2 not_less_eq alethe_comp_simplify(3))
 
 subsection \<open> Casting lemmas \<close>
 

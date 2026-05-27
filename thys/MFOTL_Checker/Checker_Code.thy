@@ -633,7 +633,7 @@ lemma ETP_f_ge_iff: "j \<le> max i (ETP \<sigma> (\<tau> \<sigma> i + n)) \<long
 proof (cases n)
   case 0
   then show ?thesis
-    by (auto simp: max_def) (metis i_ge_etpi verit_la_disequality)
+    by (auto simp: max_def) (metis i_ge_etpi alethe_la_disequality)
 next
   case (Suc n')
   have max: "max i (ETP \<sigma> (\<tau> \<sigma> i + n)) = ETP \<sigma> (\<tau> \<sigma> i + n)"

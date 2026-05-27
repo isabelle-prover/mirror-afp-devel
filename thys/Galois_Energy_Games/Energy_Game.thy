@@ -283,7 +283,7 @@ proof-
   show ?thesis using assms A proof(induct i)
     case 0
     then show ?case using energy_level.simps
-      by (metis LNil_eq_lappend_iff llength_lnull llist.disc(1) the_enat_0 verit_comp_simplify1(1)) 
+      by (metis LNil_eq_lappend_iff llength_lnull llist.disc(1) the_enat_0 alethe_comp_simplify1(1))
   next
     case (Suc i)
     hence "energy_level e p i = energy_level e (lappend p p') i"
@@ -2218,7 +2218,7 @@ next
               Some (SOME z. weight (last (x # y # xs)) z \<noteq> None)"
                 using \<open>last list \<in> attacker \<and> \<not> deadend (last list)\<close> \<open>list = x # y # xs\<close> by auto 
               then show ?thesis
-                by (smt (verit, del_insts) \<open>last list \<in> attacker \<and> \<not> deadend (last list)\<close> \<open>list = x # y # xs\<close> option.sel verit_sko_ex_indirect)
+                by (smt (verit, del_insts) \<open>last list \<in> attacker \<and> \<not> deadend (last list)\<close> \<open>list = x # y # xs\<close> option.sel alethe_sko_ex_indirect)
             qed
           qed
         qed
@@ -2273,7 +2273,7 @@ next
         proof-
           have "\<exists>s. (nonpos_attacker_winning_strategy s (the (apply_w g (lhd p) e)) (lhd p))" using \<open>weight g (lhd p) \<noteq> None\<close> all by simp
           hence a_win: "nonpos_attacker_winning_strategy (SOME s. nonpos_attacker_winning_strategy s (the (apply_w g (lhd p) e)) (lhd p)) (the (apply_w g (lhd p) e)) (lhd p)"
-            by (smt (verit, del_insts) list.simps(9) nat.case_distrib nat.disc_eq_case(1) neq_Nil_conv take_Suc take_eq_Nil2 tfl_some verit_sko_forall')
+            by (smt (verit, del_insts) list.simps(9) nat.case_distrib nat.disc_eq_case(1) neq_Nil_conv take_Suc take_eq_Nil2 tfl_some alethe_sko_forall')
   
           define strat where Strat: "strat \<equiv> (SOME s. nonpos_attacker_winning_strategy s (the (apply_w g (lhd p) e)) (lhd p))"
           define strategy where Strategy: "strategy \<equiv> (\<lambda>list. (case list of

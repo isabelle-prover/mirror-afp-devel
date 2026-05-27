@@ -196,7 +196,7 @@ lemma GL_group_mult_right_div:
   shows "group_on_with (domain chart_GL) (**) (mat 1) (\<lambda>m\<^sub>1 m\<^sub>2. m\<^sub>1 ** matrix_inv m\<^sub>2) matrix_inv"
   apply unfold_locales
   apply (simp_all add: matrix_mul_assoc invertible_mult invertible_mat_1 invertible_matrix_inv)
-  by (simp add: matrix_inv_def invertible_right_inverse matrix_left_right_inverse verit_sko_ex_indirect)
+  by (simp add: matrix_inv_def invertible_right_inverse matrix_left_right_inverse alethe_sko_ex_indirect)
 
 
 lemma smooth_on_proj: "smooth_on prod_GL_carrier fst" "smooth_on prod_GL_carrier snd"

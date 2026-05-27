@@ -416,13 +416,13 @@ proof -
   define g' where \<open>g' c = g (SOME x. x\<in>c)\<close> for c :: \<open>'a set\<close>
   have g_g': \<open>c \<in> X//eq \<Longrightarrow> x \<in> c \<Longrightarrow> g x = g' c\<close> for x c
     apply (simp add: g'_def quotient_def eq_def)
-    by (metis (mono_tags, lifting) mem_Collect_eq verit_sko_ex)
+    by (metis (mono_tags, lifting) mem_Collect_eq alethe_sko_ex)
   have g'_inj: \<open>c \<in> X//eq \<Longrightarrow> d \<in> X//eq \<Longrightarrow> g' c = g' d \<Longrightarrow> c = d\<close> (is \<open>PROP ?goal\<close>) for c d
   proof -
     have aux1: \<open>\<And>x xa xb.
        g (SOME x. g xb = g x \<and> x \<in> X) = g (SOME x. g xa = g x \<and> x \<in> X) \<Longrightarrow>
        xa \<in> X \<Longrightarrow> xb \<in> X \<Longrightarrow> g xa = g xb\<close>
-      by (metis (mono_tags, lifting) verit_sko_ex)
+      by (metis (mono_tags, lifting) alethe_sko_ex)
     have aux2: \<open>\<And>x xa xb.
        g (SOME xa. g x = g xa \<and> xa \<in> X) = g (SOME x. g xb = g x \<and> x \<in> X) \<Longrightarrow>
        x \<in> X \<Longrightarrow> xb \<in> X \<Longrightarrow> g x = g xb\<close>

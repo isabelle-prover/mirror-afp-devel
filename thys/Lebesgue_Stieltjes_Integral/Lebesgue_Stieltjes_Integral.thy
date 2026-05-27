@@ -740,7 +740,7 @@ corollary nn_integral_interval_measure_deriv:
   shows "(\<integral>\<^sup>+x. g x \<partial>(interval_measure F)) = (\<integral>\<^sup>+x. g x * deriv F x \<partial>lborel)"
   using set_nn_integral_interval_measure_deriv einterval_eq_UNIV indicator_UNIV assms
   by (metis (mono_tags, lifting) mult.right_neutral nn_integral_cong
-      space_in_borel verit_eq_simplify(6))
+      space_in_borel alethe_eq_simplify(6))
 
 corollary Ioi_nn_integral_interval_measure_deriv:
   fixes F :: "real \<Rightarrow> real" and g :: "real \<Rightarrow> ennreal" and r::real

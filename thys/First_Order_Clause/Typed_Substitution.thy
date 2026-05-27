@@ -151,7 +151,7 @@ proof (cases base.exists_nonground)
     show "base.type_preserving_on (vars expr \<union> vars expr') \<V> \<gamma>'"
       unfolding \<gamma>'_def
       using \<gamma>_type_preserving_on types_witnessed
-      by (simp add: exists_nonground finite_vars verit_sko_ex_indirect)
+      by (simp add: exists_nonground finite_vars alethe_sko_ex_indirect)
 
     show "\<forall>x\<in>vars expr. x \<cdot>v \<gamma> = x \<cdot>v \<gamma>'"
       unfolding \<gamma>'_def

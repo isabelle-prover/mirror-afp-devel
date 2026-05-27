@@ -147,7 +147,7 @@ proof -
   have "suffix s (Suc (sa s ! i)) < suffix s (Suc (sa s ! j))"
     by (metis Cons_less_Cons Cons_nth_drop_Suc Suc_lessD order_less_imp_not_less)
   then show ?thesis
-    by (metis Cons_less_Cons assms(4,5) dual_order.asym suffix_cons_Suc verit_comp_simplify1(3))
+    by (metis Cons_less_Cons assms(4,5) dual_order.asym suffix_cons_Suc alethe_comp_simplify1(3))
 qed
 
 lemma sa_nth_suc_le_ex:

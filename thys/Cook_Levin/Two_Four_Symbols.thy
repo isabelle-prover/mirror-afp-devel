@@ -320,7 +320,7 @@ proof (rule nth_equalityI)
       have "ys ! i = 2 \<or> ys ! i = 3 \<or> ys ! i = 4 \<or> ys ! i = 5"
         using assms len
         by (smt (verit) Suc_1 add_Suc_shift add_cancel_right_left eval_nat_numeral(3)
-          less_Suc_eq numeral_3_eq_3 numeral_Bit0 verit_comp_simplify1(3))
+          less_Suc_eq numeral_3_eq_3 numeral_Bit0 alethe_comp_simplify1(3))
       then show ?thesis
         by auto
     qed

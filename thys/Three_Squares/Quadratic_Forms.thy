@@ -361,7 +361,7 @@ proof -
   finally have "a\<^sub>1\<^sub>1 \<le> a\<^sub>1\<^sub>1 div ?h\<^sup>2" .
   also have "... \<le> a\<^sub>1\<^sub>1" using 1 2
     by (metis * ** assms(2) div_le_dividend int_eq_iff nat_div_distrib order_refl
-        qf2_positive_definite_positive verit_la_disequality)
+        qf2_positive_definite_positive alethe_la_disequality)
   finally have "?h = 1" using 1 2
     by (smt (verit) int_div_less_self of_nat_0_less_iff power2_eq_square
                     zero_less_power zmult_eq_1_iff)

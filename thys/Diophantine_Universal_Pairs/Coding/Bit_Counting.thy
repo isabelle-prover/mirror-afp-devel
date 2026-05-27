@@ -90,7 +90,7 @@ proof -
   thus ?thesis
     unfolding carry_set_def
     by (metis (mono_tags, lifting) atMost_iff mem_Collect_eq subsetI 
-        verit_comp_simplify1(3) zero_neq_one)  
+        alethe_comp_simplify1(3) zero_neq_one)  
 qed
 
 corollary carry_set_finite: "finite (carry_set a b)"
@@ -818,12 +818,12 @@ proof (cases "i \<le> q")
   case False
   have "?X < b^(Suc q)"
     using aux_digit_sum_bound[OF assms(1)] assms(2)
-    by (metis (full_types) Suc_leI atLeast0AtMost lessThan_Suc_atMost verit_comp_simplify1(3))
+    by (metis (full_types) Suc_leI atLeast0AtMost lessThan_Suc_atMost alethe_comp_simplify1(3))
   thus ?thesis 
     using False unfolding nth_digit_def
     by (metis (no_types, lifting) assms(1) div_less dual_order.strict_trans2 
         zero_le_one mod_less not_less_eq_eq power_increasing_iff 
-        verit_comp_simplify1(3))
+        alethe_comp_simplify1(3))
 next
   case True
 

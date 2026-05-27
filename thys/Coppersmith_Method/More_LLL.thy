@@ -414,7 +414,7 @@ proof -
 
   also have "... =  \<alpha>^(k * (k-1) div 2) * rat_of_int (gs.Gramian_determinant reduce_basis k)"
     unfolding power_sum[symmetric]
-    by (metis Sum_Ico_nat atLeast0LessThan mult_eq_0_iff verit_minus_simplify(2))
+    by (metis Sum_Ico_nat atLeast0LessThan mult_eq_0_iff alethe_minus_simplify(2))
 
   finally show ?thesis .
 qed

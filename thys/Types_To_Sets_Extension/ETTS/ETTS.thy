@@ -99,7 +99,7 @@ proof(unfold type_definition_def, intro exI conjI; intro allI)
   define Rep :: "'b \<Rightarrow> 'a" where Rep: "Rep = (\<lambda>b'. (SOME b. A b b'))"
   define Abs :: "'a \<Rightarrow> 'b" where Abs: "Abs = (\<lambda>b. (SOME b'. A b b'))"
   have Rep_b: "A (Rep b') b'" for b'
-    unfolding Rep by (metis assms(1) right_totalE verit_sko_ex')
+    unfolding Rep by (metis assms(1) right_totalE alethe_sko_ex')
   have Abs_a: "b \<in> Collect (Domainp A) \<Longrightarrow> A b (Abs b)" for b
     unfolding Abs by (simp add: assms(1) Domainp_iff someI_ex)
   show "Rep x \<in> Collect (Domainp A)" for x by (auto intro: Rep_b)

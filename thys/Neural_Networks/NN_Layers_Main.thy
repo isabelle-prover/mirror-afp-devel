@@ -790,7 +790,7 @@ next
       apply(simp) 
       using aux1  
       by (smt (verit) F NN_Layers_List_Main.valid_activation_preserves_length layers_list_to_matrix length_map length_upt list.map_comp
-          neural_network_seq_layers.simps(1) option.simps(5,9) verit_minus_simplify(2))
+          neural_network_seq_layers.simps(1) option.simps(5,9) alethe_minus_simplify(2))
   next
     case (Activation x4)
     then show ?thesis 

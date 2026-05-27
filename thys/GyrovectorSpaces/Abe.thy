@@ -189,7 +189,7 @@ qed
           have ff7: "\<forall>r R Ra. (r::real) \<notin> R \<or> r \<in> Ra \<or> \<not> R \<subseteq> Ra"
             by blast
           have ff8: "\<forall>r. - (- (r::real)) = r"
-            using verit_minus_simplify(4) by blast
+            using alethe_minus_simplify(4) by blast
           have ff9: "- (0::real) = 0"
             by (smt (z3))
           have "\<forall>r ra. r \<notin> norms_all \<or> (if r = 0 then 0 else if r \<in> norms then f r else if r \<in> norms_neg then - f (- r) else undefined) \<noteq> (if ra = 0 then 0 else if ra \<in> norms then f ra else if ra \<in> norms_neg then - f (- ra) else undefined) \<or> ra \<notin> norms_all \<or> r = ra"
