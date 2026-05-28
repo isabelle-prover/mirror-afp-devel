@@ -17,6 +17,9 @@
     <loc>https://isa-afp.org/entries/Combinatorial_Nullstellensatz.html</loc>
     <lastmod>2026-05-10T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Seifert-Van-Kampen.html</loc>
+    <lastmod>2026-05-09T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Nash_Equilibrium.html</loc>
     <lastmod>2026-05-07T00:00:00+00:00</lastmod>
   </url><url>
@@ -22184,6 +22187,38 @@
     <loc>https://isa-afp.org/thys/Security_Protocol_Refinement/Runs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Security_Protocol_Refinement/s0g_secrecy.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Amalgamated_Free_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Binary_Sum_Topology.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Carrier_Amalgamated_Free_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Carrier_Amalgamated_Free_Product_Eval.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Carrier_Group_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Classical_Seifert_Van_Kampen.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Equivalence_Quotients.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Explicit_Fundamental_Group_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Explicit_Path_Homotopy_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Free_Product_Words.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Fundamental_Group_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Pushout_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Seifert_Van_Kampen.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Seifert_Van_Kampen_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Topological_Pushout_Scaffold.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Seifert-Van-Kampen/Topological_Seifert_Van_Kampen.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Selection_Heap_Sort/Heap.html</loc>
   </url><url>

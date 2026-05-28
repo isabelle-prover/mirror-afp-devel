@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Seifert-Van-Kampen" = "HOL-Analysis" +
+  options [timeout = 300]
+  theories
+    Seifert_Van_Kampen
+  document_files
+    "root.bib"
+    "root.tex"

@@ -54,6 +54,24 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry formalizes a quotient-oriented proof of the classical Seifert–van Kampen theorem in Isabelle/HOL. For open subsets U and V of a topological space with x0 ∈ U ∩ V and path-connected intersection, it proves that the fundamental group of U ∪ V at x0 is in bijection with the carrier-based amalgamated free product of the fundamental groups of U and V over the fundamental group of U ∩ V. The development also provides reusable infrastructure for explicit path homotopies, pushout-style quotients, free-product words, carrier-based amalgamated free products, and the abstract encode/decode interface used to organize the final argument. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "link": "../entries/Seifert-Van-Kampen.html",
+  "shortname": "Seifert-Van-Kampen",
+  "title": "The Classical Seifert–van Kampen Theorem",
+  "topic_links": [
+   "../topics/mathematics/topology/"
+  ],
+  "topics": [
+   "Mathematics/Topology"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This development formalizes Nash equilibria for finite strategic form games, following Nash’s equilibrium concept [5, 4]. It gives reusable definitions of profiles, unilateral deviations, best responses, dominant strategies, and pure Nash equilibria; proves existence for finite ordinal potential games [3] and games with dominant strategies; and verifies matching pennies as a finite game with no pure Nash equilibrium. It also formalizes mixed-strategy profiles for finite games, support lem mas for equilibrium strategies, Dirac embeddings of pure profiles, and the existence of a mixed Nash equilibrium using Brouwer’s fixed point theorem. Worked examples cover the Prisoner’s Dilemma, a coordina tion game, matching pennies, and rock-paper-scissors. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
