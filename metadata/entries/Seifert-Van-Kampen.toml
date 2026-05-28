@@ -1,0 +1,43 @@
+title = "The Classical Seifert–van Kampen Theorem"
+date = 2026-05-09
+topics = [
+  "Mathematics/Topology",
+]
+abstract = """
+This entry formalizes a quotient-oriented proof of the classical
+Seifert–van Kampen theorem in Isabelle/HOL. For open subsets U
+and V of a topological space with x0 ∈ U ∩ V and path-connected
+intersection, it proves that the fundamental group of U ∪ V at x0
+is in bijection with the carrier-based amalgamated free product of
+the fundamental groups of U and V over the fundamental group
+of U ∩ V. The development also provides reusable infrastructure
+for explicit path homotopies, pushout-style quotients, free-product
+words, carrier-based amalgamated free products, and the abstract
+encode/decode interface used to organize the final argument. AI
+assistance was used for proof engineering. The final definitions,
+statements, and proofs are checked by Isabelle"""
+license = "bsd"
+note = ""
+creation_note = "Codex with gpt 5.5 on xhigh was used to help with proof engineering."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+
+[authors.queiroz]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
