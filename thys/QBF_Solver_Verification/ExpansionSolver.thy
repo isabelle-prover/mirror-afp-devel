@@ -19,7 +19,7 @@ datatype QBF = Var nat
 
 subsubsection \<open>Formalisation of Semantics and Termination of Semantics\<close>
 
-text \<open>Substitute True or False for a variable:\<close>
+text \<open>Substitute @{term \<open>Conj []\<close>} or @{term \<open>Disj []\<close>} for a variable:\<close>
 fun substitute_var :: "nat \<Rightarrow> bool \<Rightarrow> QBF \<Rightarrow> QBF" where
   "substitute_var z True (Var z') = (if z = z' then Conj [] else Var z')"
 | "substitute_var z False (Var z') = (if z = z' then Disj [] else Var z')"
@@ -29,8 +29,9 @@ fun substitute_var :: "nat \<Rightarrow> bool \<Rightarrow> QBF \<Rightarrow> QB
 | "substitute_var z b (Ex x qbf) = Ex x (if x = z then qbf else substitute_var z b qbf)"
 | "substitute_var z b (All y qbf) = All y (if z = y then qbf else substitute_var z b qbf)"
 
-text \<open>Measures the number of QBF constructors in argument, required to show termination of semantics.\<close>
-  (* Could we use the size function instead? *)
+text \<open>Measures the number of QBF constructors in the argument; required to show termination of the
+  semantics. (We can't use @{const size} to show termination because substitution may increase the
+  size of a formula.)\<close>
 fun qbf_measure :: "QBF \<Rightarrow> nat" where
   "qbf_measure (Var _) = 1"
 | "qbf_measure (Neg qbf) = 1 + qbf_measure qbf"
