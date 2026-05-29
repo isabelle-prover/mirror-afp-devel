@@ -67,6 +67,7 @@ where
 
 cfunction auctionEnded external payable
 where
+(* sum pending returns + highest bid < balance*)
   "do {
   assert_monad ((not_monad (less_monad  (block_timestamp_monad) (storeLookup (STR ''auctionEndTime'') []))));
   assert_monad (equals_monad (storeLookup (STR ''ended'') []) (false_monad));
@@ -227,12 +228,6 @@ proof-
   then show ?thesis using sum_addr[of _ xc] by simp
 qed
 
-
-abbreviation (in Solidity) post_const where
-"post_const (bidding_time::256 word) beneficiary start_state return_value end_state \<equiv>
-  state.Storage end_state this STR ''Beneficiary'' = storage_data.Value (Address beneficiary) \<and>
-  state.Storage end_state this STR ''auctionEndTime'' = storage_data.Value (Uint (timestamp + bidding_time))"
-
 abbreviation (in Solidity) post_bid where
 "post_bid start_state return_value end_state \<equiv>
   state.Storage end_state this STR ''highestBidder'' = storage_data.Value (Address msg_sender) \<and>
@@ -258,72 +253,98 @@ declare(in simpleauction) pr_less_BalanceI[wprules del]
 
 verification pr_less_Balance:
   pr_less_Balance
-  "K (K (K True))" "post_const"
-  "bid" "K True" "post_bid" and
-  "withdraw" "K True" "K (K (K True))" and
-  "auctionEnded" "K True" "K (K (K True))"
+  bid (\<open>K (True)\<close>, post_bid) and
+  withdraw and
+  auctionEnded
   for "simpleauction"
-
 proof -
-  show "\<And>call. effect (constructor call si ad) s r \<Longrightarrow>
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow> post s r pr_less_Balance (K True) (post_const si ad)"
+  show
+    "\<And>call.
+      effect (constructor call si ad) s r
+      \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> post s r (K (K (inv_state pr_less_Balance))) (K True)"
     unfolding constructor_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
-  apply (wp wprules: pr_less_BalanceI | auto simp add:wpsimps dest:sym)+
-  done
+    apply (wp wprules: pr_less_BalanceI | auto simp add:wpsimps dest:sym)+
+    done
 
-  show " \<And>call.
-       effect (bid call) s r \<Longrightarrow>
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow>
-       inv_state pr_less_Balance s \<Longrightarrow>
-       post s r pr_less_Balance (K True) post_bid"
+  show
+    "\<And>call.
+      effect (bid call) s r
+      \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> inv_state pr_less_Balance s
+      \<Longrightarrow> post s r (K (K (inv_state pr_less_Balance))) (K True)"
     unfolding bid_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
-   apply (vcg wprules: pr_less_BalanceI|auto simp add:wpsimps)+
-   apply (rule_tac[!] x="mp" and a="Address ada" in kdplussafe_sint, assumption)
-   apply (vcg wprules: pr_less_BalanceI|auto simp add: wpsimps sum_def_spec highestbid_update dest:sym dest!: rvalue_equal_kdequals_true kdnot2 kdequals_rvalue_false_larg_inf kdequals_true_arg_rvalue_true kdless_true_arg_true)+
+    apply (vcg wprules: pr_less_BalanceI|auto simp add:wpsimps)+
+          apply (rule_tac[!] x="mp" and a="Address ada" in kdplussafe_sint, assumption)
+                apply (vcg wprules: pr_less_BalanceI|auto simp add: wpsimps sum_def_spec highestbid_update dest:sym dest!: rvalue_equal_kdequals_true kdnot2 kdequals_rvalue_false_larg_inf kdequals_true_arg_rvalue_true kdless_true_arg_true)+
     done
 
-  show "\<And>call. effect (withdraw call) s r \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow> inv_state pr_less_Balance s \<Longrightarrow> post s r pr_less_Balance (K True) (K (K (K True)))"
+  show
+    "\<And>call.
+      effect (bid call) s r
+      \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> inv_state pr_less_Balance s
+      \<Longrightarrow> K True s
+      \<Longrightarrow> post s r post_bid (K True)"
+    unfolding bid_def
+    apply (erule post_exc_true, erule_tac post_wp)
+    unfolding  inv_state_def
+    apply (vcg wprules: pr_less_BalanceI|auto simp add:wpsimps)+
+          apply (rule_tac[!] x="mp" and a="Address ada" in kdplussafe_sint, assumption)
+                apply (vcg wprules: pr_less_BalanceI|auto simp add: wpsimps sum_def_spec highestbid_update dest:sym dest!: rvalue_equal_kdequals_true kdnot2 kdequals_rvalue_false_larg_inf kdequals_true_arg_rvalue_true kdless_true_arg_true)+
+    done
+
+  show
+    "\<And>call.
+      effect (withdraw call) s r
+      \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> inv_state pr_less_Balance s
+      \<Longrightarrow> post s r (K (K (inv_state pr_less_Balance))) (K True)"
     unfolding withdraw_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
-  apply (wp | auto | simp add:wpsimps)+
-  apply (vcg | auto simp add:wpsimps)+
-  apply (frule_tac x = "Address msg_sender" in spec)
-  apply (erule_tac exE)
-  apply (wp | auto simp add:wpsimps)+
-  apply (case_tac "msg_sender = this")
-  apply (auto simp add:wpsimps add_right_lessineq sub_right_lessineq)
-  apply (rule_tac pr_less_BalanceI)
-  apply (auto simp add:wpsimps add_right_lessineq selfcall_balance_ineq)
-  apply (rule_tac pr_less_BalanceI)
-  apply (auto simp add:wpsimps sub_right_lessineq notselfcall_balance_ineq)
-  apply vcg
-  apply (rule_tac pr_less_BalanceI)
-  apply (auto simp add:wpsimps)
-  apply vcg
-  apply (rule_tac pr_less_BalanceI)
-  apply (auto simp add:wpsimps)
-  apply vcg
-  done
+    apply (wp | auto | simp add:wpsimps)+
+           apply (vcg | auto simp add:wpsimps)+
+       apply (frule_tac x = "Address msg_sender" in spec)
+       apply (erule_tac exE)
+       apply (wp | auto simp add:wpsimps)+
+         apply (case_tac "msg_sender = this")
+          apply (auto simp add:wpsimps add_right_lessineq sub_right_lessineq)
+          apply (rule_tac pr_less_BalanceI)
+                apply (auto simp add:wpsimps add_right_lessineq selfcall_balance_ineq)
+         apply (rule_tac pr_less_BalanceI)
+               apply (auto simp add:wpsimps sub_right_lessineq notselfcall_balance_ineq)
+        apply vcg
+        apply (rule_tac pr_less_BalanceI)
+              apply (auto simp add:wpsimps)
+       apply vcg
+      apply (rule_tac pr_less_BalanceI)
+            apply (auto simp add:wpsimps)
+     apply vcg
+    done
 
-  show " \<And>call.
-       effect (auctionEnded call) s r \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow> inv_state pr_less_Balance s \<Longrightarrow> post s r pr_less_Balance (K True) (K (K (K True)))"
+  show
+    "\<And>call.
+      effect (auctionEnded call) s r
+      \<Longrightarrow> (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> inv_state pr_less_Balance s
+      \<Longrightarrow> post s r (K (K (inv_state pr_less_Balance))) (K True)"
     unfolding auctionEnded_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
     apply (vcg)
-    apply (rule_tac pr_less_BalanceI)
-    apply (auto simp add:wpsimps split:if_split_asm dest:sym)
-    apply (case_tac "ad=this")
-    apply (auto simp add:wpsimps dest: kdequals_true_arg_rvalue_true kdequals_true_arg_rvalue_false)
-    apply(vcg)
-    apply (rule_tac pr_less_BalanceI)
-    apply (auto simp add:wpsimps split:if_split_asm dest:sym)
-    apply(vcg)
+                       apply (rule_tac pr_less_BalanceI)
+                        apply (auto simp add:wpsimps split:if_split_asm dest:sym)
+             apply (case_tac "ad=this")
+              apply (auto simp add:wpsimps dest: kdequals_true_arg_rvalue_true kdequals_true_arg_rvalue_false)
+        apply(vcg)
+        apply (rule_tac pr_less_BalanceI)
+              apply (auto simp add:wpsimps split:if_split_asm dest:sym)
+       apply(vcg)
     done
 qed
 

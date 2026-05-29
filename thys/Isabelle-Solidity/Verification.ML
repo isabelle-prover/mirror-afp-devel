@@ -13,35 +13,57 @@ open Solidity_Util
 open Solidity_Data
 
 val _ = let
-    fun mk_vcond data ct conpre conpost prepost invs lthy =
+    fun mk_vcond data ct prepost invs lthy =
       let
+        (*Constructor*)
         val cdata = #constructor data;
-        val frees = map Free (#parlist cdata @ #memlist cdata);
-        val post_f = list_comb (conpost, frees);
-        val pre_f = list_comb (conpre, frees);
-        val err_cond = mk_True;
-        val constr = HOLogic.mk_imp (pre_f $ s, post_t $ s $ r $ invs $ err_cond $ post_f)
-                     |> fold_rev lambda frees
-        fun mkcase (name, mdata) =
-          let
-            val (pre, post) = lookup_safe prepost name;
-            val frees = map Free (#parlist mdata @ #memlist mdata @ #cdlist mdata);
-            val post_f = list_comb (post, frees);
-            val pre_f = list_comb (pre, frees);
-            val inv_cond = if #external mdata then invs else mk_True;
-            val err_cond = if #external mdata then invs else mk_True;
-            val post_cond = post_t $ s $ r $ inv_cond $ err_cond $ post_f;
-          in
-            (if #external mdata then
-              HOLogic.mk_imp (HOLogic.mk_conj ((mk_inv_state invs $ s), pre_f $ s), post_cond)
-            else
-              HOLogic.mk_imp (pre_f $ s, post_cond))
-            |> fold_rev lambda frees
-          end
-        val cases = map mkcase (#methods data);
+        val frees = map (fst #> Free) (#parlist cdata @ #memlist cdata);
+        val lthy = fold Variable.declare_names frees lthy;
+        val (trms,lthy) = mk_type_assms_store Memory (#memlist cdata) lthy;
+        val constr = list_implies (trms, post_t $ s $ r $ fst (mk_K (mk_inv_state invs) [stateT,rvalueT]) $ mk_True2)
+          |> fold_rev lambda frees;
+        (*Constructor*)
 
+        (*Methods*)
+        fun mkcase (name, mdata) ctxt =
+          let
+            val (mtrms, ctxt) = mk_type_assms_store Memory (#memlist mdata) ctxt;
+            val (ctrms, ctxt) = mk_type_assms_store Calldata (#cdlist mdata) ctxt;
+            val frees = map (fst #> Free) (#parlist mdata @ #memlist mdata @ #cdlist mdata);
+            val prepost = lookup_safe prepost name
+            fun go (pre, post) =
+              let
+                val pre_f = list_comb (pre, frees);
+                val pre_cond =
+                  if #external mdata then
+                    [mk_inv_state invs $ s, pre_f $ s] @ mtrms @ ctrms
+                  else
+                    pre_f $ s :: mtrms @ ctrms;
+                val post_f = list_comb (post, frees);
+                val post_cond = post_t $ s $ r $ post_f $ mk_True2
+              in
+                list_implies (pre_cond, post_cond)
+              end;
+            val prepost = map go prepost
+            val prepost' =
+              if #external mdata then
+                let
+                  val post_cond = post_t $ s $ r $ fst (mk_K (mk_inv_state invs) [stateT,rvalueT]) $ mk_inv_state invs;
+                in
+                  list_implies (mk_inv_state invs $ s :: mtrms @ ctrms, post_cond)
+                end
+              else
+                \<^Const>\<open>True\<close>
+          in
+            fold (curry HOLogic.mk_conj) (prepost) prepost'
+            |> fold_rev lambda frees
+            |> rpair ctxt
+          end;
+        val (cases, lthy) = fold_map mkcase (#methods data) lthy;
         val case_t = instantiate_3 (#dt_cases data)
         val x = Free ("x", ct)
+        (*Methods*)
+
         val rhs = list_comb (case_t, constr::cases) $ x
         val lhs = Free ("vcond", ct --> stateT --> rT --> @{typ bool}) $ x $ s $ r
         val eq = Logic.mk_equals (lhs, rhs);
@@ -56,42 +78,83 @@ val _ = let
       in
         tap (K (writeln "Generating verification condition ..."))
         Local_Theory.begin_nested lthy |> snd
-        |> Specification.definition {verbose = false} NONE [] [] (Binding.empty_atts, eq)
+        |> Specification.definition NONE [] [] (Binding.empty_atts, eq)
         ||> `Local_Theory.end_nested
         |> export
       end
 
-    fun mk_vcond_lemmas data vcond vcond_def conpre conpost prepost invs lthy =
+    fun mk_vcond_lemmas data vcond vcond_def prepost invs lthy =
       let
+        (*Constructor*)
         val cdata = #constructor data;
         val constr = instantiate_b_a2 (#dt_const cdata);
-        val frees = map Free (#parlist cdata @ #memlist cdata);
+        val frees = map (fst #> Free) (#parlist cdata @ #memlist cdata);
         val names = map (dest_Free #> fst) frees;
-        val post_f = list_comb (conpost, frees);
-        val pre_f = list_comb (conpre, frees);
-        val err_cond = mk_True;
-        val lem = HOLogic.mk_Trueprop (HOLogic.mk_eq (vcond $ list_comb (constr, frees) $ s $ r, HOLogic.mk_imp (pre_f $ s, post_t $ s $ r $ invs $ err_cond $ post_f)));
-        val thm = Goal.prove lthy ("s"::"r"::names) [] lem (fn {context, ...} => (rewrite_goal_tac context [vcond_def] THEN' Goal.conjunction_tac) 1 THEN auto_tac context);
+        val lthy = fold Variable.declare_names frees lthy;
+        val (trms,lthy) = mk_type_assms_store Memory (#memlist cdata) lthy;
+        val post_cond = list_implies (trms, post_t $ s $ r $ fst (mk_K (mk_inv_state invs) [stateT,rvalueT]) $ mk_True2)
+        val lem =
+          HOLogic.mk_Trueprop
+            (HOLogic.mk_eq
+              (vcond $ list_comb (constr, frees) $ s $ r
+              , post_cond));
+        val thm =
+          Goal.prove lthy ("s"::"r"::names) [] lem
+            (fn {context, ...} =>
+              (rewrite_goal_tac context [vcond_def] THEN' Goal.conjunction_tac) 1
+              THEN auto_tac context);
+        (*Constructor*)
 
-        fun mkcase (name, mdata) sum =
+        (*Methods*)
+        fun mkcase (name, mdata) (sum, ctxt) =
           let
             val constr = instantiate_b_a2 (#dt_const mdata);
-            val frees = map Free (#parlist mdata @ #memlist mdata @ #cdlist mdata);
+            val frees = map (fst #> Free) (#parlist mdata @ #memlist mdata @ #cdlist mdata);
             val names = map (dest_Free #> fst) frees;
-            val (pre, post) = lookup_safe prepost name;
-            val post_f = list_comb (post, frees);
-            val pre_f = list_comb (pre, frees);
-            val inv_cond = if #external mdata then invs else mk_True;
-            val err_cond = if #external mdata then invs else mk_True;
-            val post_cond = post_t $ s $ r $ inv_cond $ err_cond $ post_f;
-            val rhs = if #external mdata then HOLogic.mk_imp (HOLogic.mk_conj (mk_inv_state invs $ s, pre_f $ s), post_cond) else HOLogic.mk_imp (pre_f $ s, post_cond);
+            val (mtrms,ctxt) = mk_type_assms_store Memory (#memlist mdata) ctxt;
+            val (ctrms,ctxt) = mk_type_assms_store Calldata (#cdlist mdata) ctxt;
+            val rhs =
+              let
+                val prepost = lookup_safe prepost name
+                fun go (pre, post) =
+                  let
+                    val pre_f = list_comb (pre, frees);
+                    val pre_cond =
+                      if #external mdata then
+                        [mk_inv_state invs $ s, pre_f $ s] @ mtrms @ ctrms
+                      else
+                        pre_f $ s :: mtrms @ ctrms
+                    val post_f = list_comb (post, frees);
+                    val post_cond = post_t $ s $ r $ post_f $ mk_True2
+                  in
+                    list_implies (pre_cond, post_cond)
+                  end;
+                val prepost = map go prepost
+                val prepost' =
+                  if #external mdata then
+                    let
+                      val post_cond = post_t $ s $ r $ fst (mk_K (mk_inv_state invs) [stateT,rvalueT]) $ mk_inv_state invs;
+                    in
+                      list_implies (mk_inv_state invs $ s :: mtrms @ ctrms, post_cond)
+                    end
+                  else
+                    \<^Const>\<open>True\<close>
+              in
+                fold (curry HOLogic.mk_conj) prepost prepost'
+              end;
           in
-            (HOLogic.mk_Trueprop (HOLogic.mk_eq (vcond $ list_comb (constr, frees) $ s $ r, rhs)), sum @ names)
+            (HOLogic.mk_Trueprop (HOLogic.mk_eq (vcond $ list_comb (constr, frees) $ s $ r, rhs))
+            , (sum @ names, ctxt))
           end;
-        val (lems, frees) = fold_map mkcase (#methods data) [];
-
+        val (lems, (frees, lthy)) = fold_map mkcase (#methods data) ([], lthy);
         val frees = rmdup frees;
-        val thms = Goal.prove_common lthy NONE ("s"::"r"::frees) [] lems (fn {context, ...} => (rewrite_goal_tac context [vcond_def] THEN' Goal.conjunction_tac) 1 THEN auto_tac context);
+        val thms =
+          Goal.prove_common lthy NONE ("s"::"r"::frees) [] lems
+            (fn {context, ...} =>
+              (rewrite_goal_tac context [vcond_def] THEN' Goal.conjunction_tac) 1
+              THEN auto_tac context);
+        (*Methods*)
+
         fun export ((name, thms), (lthy_new, lthy_old)) =
           let
             val pi = Proof_Context.export_morphism lthy_old lthy_new;
@@ -110,29 +173,29 @@ val _ = let
     fun verify pi call mdata name_ct inv_name vcond vcond_thm induct rules ctxt =
       let
         val defs = map (snd #> #def #> Morphism.thm pi) mdata
-        val (crule,mrules) = flat rules |> hd_tl
-
         fun select_tac context (t,i) =
           let
             val concl = t |> Logic.strip_assums_concl |> HOLogic.dest_Trueprop
-            val _ = Pretty.writeln (pretty_terms ctxt [t]);
           in
             case concl of
-              (*strict*)
-              Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _ $ _ $ (Const (\<^const_name>\<open>Utils.K\<close>, _) $ Const (\<^const_name>\<open>False\<close>, _)) $ _  => (eresolve_tac context (flat rules) THEN_ALL_NEW force_tac (ctxt |> Simplifier.add_simps defs)) i
               (*internal*)
-            | Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _ $ (Const (\<^const_name>\<open>Utils.K\<close>, _) $ Const (\<^const_name>\<open>True\<close>, _)) $ (Const (\<^const_name>\<open>Utils.K\<close>, _) $ Const (\<^const_name>\<open>True\<close>, _)) $ _  => (eresolve_tac context (flat rules) THEN_ALL_NEW force_tac (ctxt |> Simplifier.add_simps defs)) i
-              (*constructor*)
-            | Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _ $ _ $ (Const (\<^const_name>\<open>Utils.K\<close>, _) $ Const (\<^const_name>\<open>True\<close>, _)) $ _  => (eresolve_tac context [crule] THEN_ALL_NEW force_tac (ctxt |> Simplifier.add_simps defs)) i
+              Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _
+                $ (Const (\<^const_name>\<open>Utils.K\<close>, _) $ Const (\<^const_name>\<open>True\<close>, _))
+                => (eresolve_tac context (flat rules) THEN_ALL_NEW force_tac (ctxt addsimps defs)) i
               (*external*)
-            | Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _ $ _ $ _ $ _  => (resolve_tac context [@{thm Contract.post_true}] THEN' force_tac (ctxt |> Simplifier.add_simps defs) THEN' force_tac (ctxt |> Simplifier.add_simps defs) THEN' eresolve_tac context mrules THEN_ALL_NEW force_tac (ctxt |> Simplifier.add_simps defs)) i
+            | Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _ $ _
+                => (resolve_tac context [@{thm Contract.post_true}]
+                    THEN' force_tac (ctxt addsimps defs)
+                    THEN' force_tac ctxt
+                    THEN' eresolve_tac context (flat rules)
+                    THEN_ALL_NEW force_tac (ctxt addsimps defs)) i
             | _ => (K no_tac) i
           end;
 
         fun call_tac ctxt asm =
           resolve_tac ctxt [induct]
           THEN' Induct_Tacs.case_tac ctxt "x" [] NONE
-          THEN' (fn _ => auto_tac (ctxt |> Simplifier.del_simps @{thms K.simps} |> Simplifier.add_simps vcond_thm))
+          THEN' (fn _ => auto_tac (ctxt delsimps @{thms K.simps} addsimps vcond_thm))
           THEN' REPEAT o (SUBGOAL (select_tac ctxt))
           THEN' cut_facts_tac asm
           THEN' assume_tac ctxt
@@ -179,67 +242,102 @@ val _ = let
         Expression.add_locale binding Binding.empty [] ([(#locale data,(("",true), (Expression.Positional [],[])))],[]) [Element.Assumes [((@{binding "external_inv"}, []), [(assumption, [])])]] thy
       end
 
-    fun mk_proof data lname inv_name vcond vcond_thms name_ct ct conpre conpost prepost invs lthy =
+    fun mk_proof data lname inv_name vcond vcond_thms name_ct ct prepost invs lthy =
       let
-        val cdata = #constructor data;
-
         val pi = Proof_Context.theory_of lthy |> get_morphism (#locale data) lname;
         val vcond_thms' = map (Morphism.thm pi) vcond_thms;
         val induct = Morphism.thm pi (#pinduct data)
 
-        val frees = map Free (#parlist cdata @ #memlist cdata);
-        val post_f = list_comb (conpost, frees);
-        val pre_f = list_comb (conpre, frees);
-        val err_cond = mk_True;
-
+        (*Constructor*)
+        val cdata = #constructor data;
+        val frees = map (fst #> Free) (#parlist cdata @ #memlist cdata);
         val x = Free ("x", ct);
         val h = Free ("h", stateT);
-        val vcond' = Logic.all x (Logic.all h (Logic.all r (Logic.mk_implies (HOLogic.mk_Trueprop (effect $ ((call name_ct) $ x) $ h $ r),  HOLogic.mk_Trueprop (vcond $ x $ h $ r)))));
-        
+        val vcond' =
+          Logic.all x
+            (Logic.all h
+              (Logic.all r
+                (Logic.mk_implies
+                  (HOLogic.mk_Trueprop (effect $ ((call name_ct) $ x) $ h $ r)
+                  , HOLogic.mk_Trueprop (vcond $ x $ h $ r)))));
+
+        val lthy = fold Variable.declare_names frees lthy;
+        val (trms,lthy) = mk_type_assms_store Memory (#memlist cdata) lthy;
+        val post_cond = Logic.list_implies (map HOLogic.mk_Trueprop trms, HOLogic.mk_Trueprop (post_t $ s $ r $ fst (mk_K (mk_inv_state invs) [stateT,rvalueT]) $ mk_True2))
         val lem =
           [(Logic.all (call name_ct)
             (Logic.mk_implies
               (HOLogic.mk_Trueprop (effect $ list_comb (#term cdata $ (call name_ct), frees) $ s $ r)
               ,Logic.mk_implies
                 (vcond'
-                ,Logic.mk_implies
-                  (HOLogic.mk_Trueprop (pre_f $ s)
-                  ,HOLogic.mk_Trueprop (post_t $ s $ r $ invs $ err_cond $ post_f))))),[])]
+                ,post_cond))),[])]
+        (*Constructor*)
 
-        fun mkcase (name, mdata) =
+        (*Methods*)
+        fun mkcase (name, mdata) ctxt =
           let
-            val frees = map Free (#parlist mdata @ #memlist mdata @ #cdlist mdata);
-            val (pre, post) = lookup_safe prepost name;
-            val post_f = list_comb (post, frees);
-            val pre_f = list_comb (pre, frees);
-            val inv_cond = if #external mdata then invs else mk_True;
-            val err_cond = mk_True;
-
+            val frees = map (fst #> Free) (#parlist mdata @ #memlist mdata @ #cdlist mdata);
             val x = Free ("x", ct);
             val h = Free ("h", stateT);
             val callx = (call name_ct) $ x;
-            val vcond' = Logic.all x (Logic.all h (Logic.all r (Logic.mk_implies (HOLogic.mk_Trueprop (effect $ callx $ h $ r),  HOLogic.mk_Trueprop (vcond $ x $ h $ r)))));
-            val post_cond = HOLogic.mk_Trueprop (post_t $ s $ r $ inv_cond $ err_cond $ post_f);
-            val rhs =
+            val vcond' =
+              Logic.all x
+                (Logic.all h
+                  (Logic.all r
+                    (Logic.mk_implies
+                      (HOLogic.mk_Trueprop (effect $ callx $ h $ r)
+                      , HOLogic.mk_Trueprop (vcond $ x $ h $ r)))));
+
+            val prepost = lookup_safe prepost name
+            val (mtrms, ctxt) =
+                mk_type_assms_store Memory (#memlist mdata) ctxt
+                |>> map HOLogic.mk_Trueprop;
+            val (ctrms, ctxt) =
+                mk_type_assms_store Calldata (#cdlist mdata) ctxt
+                |>> map HOLogic.mk_Trueprop;
+
+            fun go (pre, post) =
+              let
+                val pre_f = list_comb (pre, frees);
+                val pre_cond =
+                  if #external mdata then
+                    [HOLogic.mk_Trueprop (mk_inv_state invs $ s), HOLogic.mk_Trueprop (pre_f $ s)]
+                  else
+                    [HOLogic.mk_Trueprop (pre_f $ s)]
+                val post_f = list_comb (post, frees);
+                val post_cond = HOLogic.mk_Trueprop (post_t $ s $ r $ post_f $ mk_True2)
+              in
+                Logic.list_implies (pre_cond @ mtrms @ ctrms, post_cond)
+              end;
+            val prepost = map go prepost
+
+            val prepost =
               if #external mdata then
-                Logic.mk_implies (HOLogic.mk_Trueprop ((mk_inv_state invs) $ s), post_cond)
+                Logic.list_implies
+                  (HOLogic.mk_Trueprop (mk_inv_state invs $ s)::mtrms @ ctrms
+                  , HOLogic.mk_Trueprop (post_t $ s $ r $ fst (mk_K (mk_inv_state invs) [stateT,rvalueT]) $ mk_True2))
+                :: prepost
               else
-                post_cond;
+                prepost
+          (*Methods*)
           in
-            [(Logic.all (call name_ct)
-              (fold Logic.all frees
-                (Logic.mk_implies
-                  (HOLogic.mk_Trueprop (effect $ list_comb (#term mdata $ (call name_ct), frees) $ s $ r)
-                  ,Logic.mk_implies
-                    (vcond'
-                    ,Logic.mk_implies
-                      (HOLogic.mk_Trueprop (pre_f $ s)
-                      ,rhs))))),[])]
+            (fold
+              (fn t => fn ts =>
+                [(Logic.all (call name_ct)
+                  (fold Logic.all frees
+                    (Logic.mk_implies
+                      (HOLogic.mk_Trueprop (effect $ list_comb (#term mdata $ (call name_ct), frees) $ s $ r)
+                      ,Logic.mk_implies
+                        (vcond'
+                        ,t)))),[])]::ts)
+                prepost
+                []
+              , ctxt)
           end;
-        val lems = map mkcase (#methods data);
+        val (lems, lthy) = fold_map mkcase (#methods data) lthy;
       in
         tap (K (writeln "Proving theorem"))
-        Proof.theorem NONE (verify pi (#pfun_name data) (#methods data) name_ct inv_name vcond vcond_thms' induct) (lem::lems) lthy
+        Proof.theorem NONE (verify pi (#pfun_name data) (#methods data) name_ct inv_name vcond vcond_thms' induct) (lem::flat lems) lthy
       end;
 
     fun mk_wp_rule vcond name_ct ct invs lthy =
@@ -256,7 +354,7 @@ val _ = let
                         @(tl prems)
           in
             cut_facts_tac [external_inv] 1
-            THEN auto_tac (Splitter.add_split @{thm result.split} (context |> Simplifier.add_simps simps))
+            THEN auto_tac (Splitter.add_split @{thm result.split} (context addsimps simps))
           end
 
         val call = call name_ct
@@ -302,47 +400,45 @@ val _ = let
         Local_Theory.note ((@{binding wp_external}, @{attributes [wprules]}), [thm]) lthy
       end
 
-    fun verify_invariant (inv_name, (((invariant, (conpre, conpost)), prepost), contract_name)) thy =
+    fun verify_invariant (inv_name, ((invariant, prepost:((string * (string * string) list) list)), contract_name)) thy =
       let
         val name_lc = decapitalizeFirst contract_name;
         val lthy = Named_Target.init [] (Context.theory_base_name thy ^ "." ^ name_lc) thy
         val data = the (mlookupN (Proof_Context.theory_of lthy) name_lc);
-
         val tp = HOLogic.mk_prodT (\<^typ>\<open>String.literal\<close> --> \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>, \<^typ>\<open>nat\<close>) --> \<^typ>\<open>bool\<close>
         val invariant = readAs lthy tp invariant;
-
-        val m = #constructor data;
-        val parlist = map snd (#parlist m @ #memlist m);
-        val tp = parlist ---> stateT --> \<^typ>\<open>bool\<close>;
-        val conpre = readAs lthy tp conpre;
-        val tp = parlist ---> stateT --> rvalueT --> stateT --> \<^typ>\<open>bool\<close>;
-        val conpost = readAs lthy tp conpost;
-
-        fun go (name, (pre, post)) =
+        fun go (name, prepost) =
           let
             val m = lookup_safe (#methods data) name;
-            val parlist = map snd (#parlist m @ #memlist m @ #cdlist m);
-            val tp = parlist ---> stateT --> \<^typ>\<open>bool\<close>;
-            val pre = readAs lthy tp pre;
-            val tp = parlist ---> stateT --> rvalueT --> stateT --> \<^typ>\<open>bool\<close>;
-            val post = readAs lthy tp post;
+            val parlist = map (fst #> snd) (#parlist m @ #memlist m @ #cdlist m);
+            val tp_pre = parlist ---> stateT --> \<^typ>\<open>bool\<close>;
+            val tp_post = parlist ---> stateT --> rvalueT --> stateT --> \<^typ>\<open>bool\<close>;
+            val prepost = map (fn (pre, post) => (readAs lthy tp_pre pre, readAs lthy tp_post post)) prepost;
           in
-            cons (name, (pre, post))
+            cons (name, prepost)
           end
         val prepost = fold go prepost [];
         val ct = mk_contract_typ lthy name_lc;
         val name_ct = mk_contract_typ lthy name_lc;
       in
-        lthy |> mk_vcond data ct conpre conpost prepost invariant
-             |> (fn ((vcond, vcond_name, vcond_def), lthy') => mk_vcond_lemmas data vcond vcond_def conpre conpost prepost invariant lthy'
+        lthy |> mk_vcond data ct prepost invariant
+             |> (fn ((vcond, vcond_name, vcond_def), lthy')
+               => mk_vcond_lemmas data vcond vcond_def prepost invariant lthy'
              ||> Local_Theory.exit_global
              |> (fn ((name, thms), lthy'') => mk_locale data name_lc vcond invariant name_ct ct lthy''
              |> (fn (lname, lthy''') => mk_wp_rule vcond name_ct ct invariant lthy'''
-             |> (fn ((wp_name, wp_thm), lthy'''') => mk_proof data lname inv_name vcond thms name_ct ct conpre conpost prepost invariant lthy''''))))
+             |> (fn ((wp_name, wp_thm), lthy'''')
+               => mk_proof data lname inv_name vcond thms name_ct ct prepost invariant lthy''''))))
       end
     in
       solidity_command Toplevel.theory_to_proof @{command_keyword "verification"}
       "initiates verification of invariant"
-      (Parse.binding -- (Parse.$$$ ":" |-- ((Parse.term -- (Parse.term -- Parse.term) -- (Parse.and_list (Parse.name -- (Parse.term -- Parse.term)))) -- (Parse.$$$ "for" |-- Parse.string))) >> verify_invariant)
+      (Parse.binding -- (Parse.$$$ ":"
+        |-- ((Parse.term
+          -- (Parse.and_list
+              (Parse.name
+                -- (Parse.list ((Parse.$$$ "(") |-- Parse.term --| (Parse.$$$ ",") -- Parse.term --| (Parse.$$$ ")"))))))
+          -- (Parse.$$$ "for" |-- Parse.string)))
+        >> verify_invariant)
     end
 end

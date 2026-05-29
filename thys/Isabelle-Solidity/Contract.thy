@@ -9,7 +9,6 @@ theory Contract
        and "calldata"
        and "payable"
        and "verification" :: thy_goal
-       and "strong"
        and "invariant"::thy_decl
 
 begin
