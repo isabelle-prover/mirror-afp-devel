@@ -54,6 +54,24 @@
   "year": "2026"
  },
  {
+  "abstract": "We formalize the Erdős–Ginzburg–Ziv theorem for integer multisets: every multiset of at least 2n−1 integers contains a submultiset of cardinality n whose sum is divisible by n. The proof is split into a prime-modulus argument over residue multisets and a strong-induction argument for the general case, following the classical theorem of Erdős, Ginzburg, and Ziv [1]. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "link": "../entries/Erdos_Ginzburg_Ziv.html",
+  "shortname": "Erdos_Ginzburg_Ziv",
+  "title": "Erdos-Ginzburg-Ziv",
+  "topic_links": [
+   "../topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalizes a quotient-oriented proof of the classical Seifert–van Kampen theorem in Isabelle/HOL. For open subsets U and V of a topological space with x0 ∈ U ∩ V and path-connected intersection, it proves that the fundamental group of U ∪ V at x0 is in bijection with the carrier-based amalgamated free product of the fundamental groups of U and V over the fundamental group of U ∩ V. The development also provides reusable infrastructure for explicit path homotopies, pushout-style quotients, free-product words, carrier-based amalgamated free products, and the abstract encode/decode interface used to organize the final argument. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle",
   "authors": [
    "Arthur Freitas Ramos",

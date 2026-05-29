@@ -1,0 +1,31 @@
+title = "Erdos-Ginzburg-Ziv"
+date = 2026-05-09
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = "We formalize the Erdős–Ginzburg–Ziv theorem for integer multisets: every multiset of at least 2n−1 integers contains a submultiset of cardinality n whose sum is divisible by n. The proof is split into a prime-modulus argument over residue multisets and a strong-induction argument for the general case, following the classical theorem of Erdős, Ginzburg, and Ziv [1]. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+license = "bsd"
+note = ""
+creation_note = "Codex with gpt 5.5 on xhigh reasoning was used for proof engineering"
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+
+[authors.queiroz]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

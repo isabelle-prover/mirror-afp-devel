@@ -2,11 +2,11 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Wieferich–Kempner Theorem - Archive of Formal Proofs</title>
-    <meta name="description" content="Wieferich–Kempner Theorem in the Archive of Formal Proofs">
-    <meta property="og:description" content="Wieferich–Kempner Theorem in the Archive of Formal Proofs">
-    <meta property="og:title" content="Wieferich–Kempner Theorem">
-    <meta property="og:url" content="https://isa-afp.org/entries/Wieferich_Kempner.html">
+    <title>Erdos-Ginzburg-Ziv - Archive of Formal Proofs</title>
+    <meta name="description" content="Erdos-Ginzburg-Ziv in the Archive of Formal Proofs">
+    <meta property="og:description" content="Erdos-Ginzburg-Ziv in the Archive of Formal Proofs">
+    <meta property="og:title" content="Erdos-Ginzburg-Ziv">
+    <meta property="og:url" content="https://isa-afp.org/entries/Erdos_Ginzburg_Ziv.html">
     <meta property="og:image" content="https://isa-afp.org/images/afp.png">
     <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -87,45 +87,39 @@
       </div>
     </form>
   <h1>
-    <span class='first'>W</span>ieferich–<span class='first'>K</span>empner <span class='first'>T</span>heorem
+    <span class='first'>E</span>rdos-<span class='first'>G</span>inzburg-<span class='first'>Z</span>iv
   </h1>
   <div>
-      <p><a href="../authors/chenj/">Jamie Chen</a> <a href="https://gitlab.com/Jamie-Chen">🌐</a>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a>
       </p>
-      <p class="date">March 6, 2024</p>
+      <p class="date">May 9, 2026</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">This document presents a formalised proof of the Wieferich–Kempner Theorem, stating that all nonnegative integers can be expressed as the sum of nine nonnegative cubes.  The source of the proof is the book "Additive Number Theory: The Classical Bases" by Melvyn B. Nathanson.</div>
+    <div class="abstract mathjax_process">We formalize the Erdős–Ginzburg–Ziv theorem for integer multisets: every multiset of at least 2n−1 integers contains a submultiset of cardinality n whose sum is divisible by n. The proof is split into a prime-modulus argument over residue multisets and a strong-induction argument for the general case, following the classical theorem of Erdős, Ginzburg, and Ziv [1]. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.</div>
 
     <h3>License</h3>
     <div>
-        <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
     </div>
+      <h3>Note</h3>
+      <p><em>Codex with gpt 5.5 on xhigh reasoning was used for proof engineering</em></p>
       <h3>Topics</h3>
       <ul>
           <li><a href="../topics/mathematics/number-theory/">Mathematics/Number theory</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Erdos_Ginzburg_Ziv</h3>
       <ul>
-        <li>Nathanson, M. B. (1996). Additive Number Theory. In Graduate Texts in Mathematics. Springer New York. <a href="https://doi.org/10.1007/978-1-4757-3845-2">https://doi.org/10.1007/978-1-4757-3845-2</a>
-</li>
-      </ul>
-      <h3>Session Wieferich_Kempner</h3>
-      <ul>
-          <li><a href="../thys/Wieferich_Kempner/Wieferich_Kempner.html">Wieferich_Kempner</a></li>
+          <li><a href="../thys/Erdos_Ginzburg_Ziv/EGZ_Basics.html">EGZ_Basics</a></li>
+          <li><a href="../thys/Erdos_Ginzburg_Ziv/EGZ_Prime.html">EGZ_Prime</a></li>
+          <li><a href="../thys/Erdos_Ginzburg_Ziv/Erdos_Ginzburg_Ziv.html">Erdos_Ginzburg_Ziv</a></li>
+          <li><a href="../thys/Erdos_Ginzburg_Ziv/Erdos_Ginzburg_Ziv_Outline.html">Erdos_Ginzburg_Ziv_Outline</a></li>
       </ul>
 
     <div class="flex-wrap">
-        <div>
-          <h3>Depends on</h3>
-          <ul class="horizontal-list">
-              <li><a href="../entries/Three_Squares.html">Three Squares Theorem</a></li>
-          </ul>
-        </div>
     </div>
   </main>
 
@@ -133,9 +127,9 @@
     <a class="popup-button" href="#cite-popup">Cite</a>
     <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Wieferich_Kempner/outline.pdf">Proof outline</a>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Wieferich_Kempner/document.pdf">Proof document</a>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Wieferich_Kempner/session_graph.pdf">Dependencies</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Erdos_Ginzburg_Ziv/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Erdos_Ginzburg_Ziv/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Erdos_Ginzburg_Ziv/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -144,14 +138,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Wieferich_Kempner-AFP</p>
-        <pre id="copy-text">@article{Wieferich_Kempner-AFP,
-  author  = {Jamie Chen},
-  title   = {Wieferich–Kempner Theorem},
+        <p style="display:none;" id="bibtex-filename">Erdos_Ginzburg_Ziv-AFP</p>
+        <pre id="copy-text">@article{Erdos_Ginzburg_Ziv-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {Erdos-Ginzburg-Ziv},
   journal = {Archive of Formal Proofs},
-  month   = {March},
-  year    = {2024},
-  note    = {\url{https://isa-afp.org/entries/Wieferich_Kempner.html},
+  month   = {May},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Erdos_Ginzburg_Ziv.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -165,41 +159,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://isa-afp.org/release/afp-Wieferich_Kempner-current.tar.gz" download>
+      <a href="https://isa-afp.org/release/afp-Erdos_Ginzburg_Ziv-current.tar.gz" download>
         Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Wieferich_Kempner-2026-02-06.tar.gz">
-                Feb 6, 2026
-              </a>
-              : Isabelle2025-2
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Wieferich_Kempner-2025-12-19.tar.gz">
-                Dec 19, 2025
-              </a>
-              : Isabelle2025-1
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Wieferich_Kempner-2025-03-17.tar.gz">
-                Mar 17, 2025
-              </a>
-              : Isabelle2025
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Wieferich_Kempner-2024-05-26.tar.gz">
-                May 26, 2024
-              </a>
-              : Isabelle2024
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Wieferich_Kempner-2024-03-08.tar.gz">
-                Mar 8, 2024
-              </a>
-              : Isabelle2023
-            </li>
-        </ul>
     </div>
   </div>
       </div>
