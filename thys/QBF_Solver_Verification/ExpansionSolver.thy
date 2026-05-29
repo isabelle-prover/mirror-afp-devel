@@ -337,7 +337,7 @@ termination
     (auto simp add: qbf_measure_lt_sum_list)
 
 text \<open>Property 1: no quantifiers after expansion.\<close>
-lemma no_quants_after_expand_quants: "qbf_quantifier_depth (expand_quantifiers qbf) = 0"
+lemma no_quantifiers_after_expand: "qbf_quantifier_depth (expand_quantifiers qbf) = 0"
 proof (induction qbf)
   case (Conj x)
   thus ?case by (induction x) auto
@@ -418,7 +418,7 @@ next
   qed auto
 qed auto
 
-lemma free_vars_inv_under_expand_quants:
+lemma free_vars_inv_under_expand:
   "set (free_variables (expand_quantifiers qbf)) = set (free_variables qbf)"
 proof (induction qbf)
   case (Ex x1a qbf)
@@ -449,12 +449,12 @@ lemma sat_iff_expand_qbf_sat: "satisfiable (expand_qbf qbf) \<longleftrightarrow
 lemma expand_qbf_no_free: "set (free_variables (expand_qbf qbf)) = {}"
 proof -
   have "set (free_variables (expand_qbf qbf)) = set (free_variables (existential_closure qbf))"
-    using free_vars_inv_under_expand_quants by simp
+    using free_vars_inv_under_expand by simp
   thus ?thesis using ex_closure_no_free by metis
 qed
 
 lemma expand_qbf_no_quants: "qbf_quantifier_depth (expand_qbf qbf) = 0"
-  using no_quants_after_expand_quants by simp
+  using no_quantifiers_after_expand by simp
 
 subsubsection \<open>Evaluating Expanded Formulas\<close>
 
