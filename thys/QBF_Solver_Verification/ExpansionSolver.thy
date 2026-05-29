@@ -322,7 +322,7 @@ proof (induction qbf_list)
     by (cases "x = z") auto
 qed auto
 
-function expand_quantifiers :: "QBF \<Rightarrow> QBF" where
+fun expand_quantifiers :: "QBF \<Rightarrow> QBF" where
   "expand_quantifiers (Var x) = (Var x)"
 | "expand_quantifiers (Neg qbf) = Neg (expand_quantifiers qbf)"
 | "expand_quantifiers (Conj list) = Conj (map expand_quantifiers list)"
@@ -331,11 +331,6 @@ function expand_quantifiers :: "QBF \<Rightarrow> QBF" where
                                           substitute_var x False (expand_quantifiers qbf)])"
 | "expand_quantifiers (All x qbf) = (Conj [substitute_var x True (expand_quantifiers qbf),
                                            substitute_var x False (expand_quantifiers qbf)])"
-  by pat_completeness auto
-termination
-  apply (relation "measures [qbf_quantifier_depth, qbf_measure]")
-  by (auto simp add: qbf_quantifier_depth_substitute qbf_quantifier_depth_eq_max)
-    (auto simp add: qbf_measure_lt_sum_list)
 
 text \<open>Property 1: no quantifiers after expansion.\<close>
 lemma no_quantifiers_after_expand: "qbf_quantifier_depth (expand_quantifiers qbf) = 0"
