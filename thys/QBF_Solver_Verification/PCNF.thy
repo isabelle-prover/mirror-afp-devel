@@ -288,7 +288,7 @@ function pcnf_semantics :: "(nat \<Rightarrow> bool) \<Rightarrow> pcnf \<Righta
 termination
   by (relation "measure (\<lambda>(I,p). measure_prefix_length p)") auto
 
-theorem qbf_semantics_eq_pcnf_semantics:
+theorem pcnf_semantics_eq_qbf_semantics:
   "pcnf_semantics I pcnf = qbf_semantics I (convert pcnf)"
 proof (induction pcnf arbitrary: I rule: convert.induct)
   case (1 matrix)
@@ -331,6 +331,6 @@ lemma convert_inv_inv:
 theorem qbf_semantics_eq_pcnf_semantics':
   assumes "pcnf_p qbf"
   shows "qbf_semantics I qbf = pcnf_semantics I (the (convert_inv qbf))"
-  using qbf_semantics_eq_pcnf_semantics assms convert_inv_inv by simp
+  using pcnf_semantics_eq_qbf_semantics assms convert_inv_inv by simp
 
 end
