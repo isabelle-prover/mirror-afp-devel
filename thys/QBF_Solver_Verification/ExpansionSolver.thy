@@ -1,6 +1,6 @@
-section \<open>Naive Solver Implementation and Verification\<close>
+section \<open>Expansion-Based Solver Implementation and Verification\<close>
 
-theory NaiveSolver
+theory ExpansionSolver
   imports Main
 begin
 
@@ -282,7 +282,7 @@ proof -
   ultimately show "sequence (map Some xs) = Some xs" by simp
 qed
 
-subsection \<open>Naive Solver\<close>
+subsection \<open>Expansion Solver\<close>
 
 subsubsection \<open>Expanding Quantifiers\<close>
 
@@ -517,17 +517,17 @@ next
   qed
 qed auto
 
-subsubsection \<open>Naive Solver\<close>
+subsubsection \<open>Expansion Solver\<close>
 
-fun naive_solver :: "QBF \<Rightarrow> bool" where
-  "naive_solver qbf = the (eval_qbf (expand_qbf qbf))"
+fun expansion_solver :: "QBF \<Rightarrow> bool" where
+  "expansion_solver qbf = the (eval_qbf (expand_qbf qbf))"
 
-theorem naive_solver_correct: "naive_solver qbf \<longleftrightarrow> satisfiable qbf"
+theorem expansion_solver_correct: "expansion_solver qbf \<longleftrightarrow> satisfiable qbf"
 proof -
-  have "\<forall>I. naive_solver qbf = the (Some (qbf_semantics I (expand_qbf qbf)))"
+  have "\<forall>I. expansion_solver qbf = the (Some (qbf_semantics I (expand_qbf qbf)))"
     using expand_qbf_no_free expand_qbf_no_quants eval_qbf_implements_semantics by simp
-  hence "naive_solver qbf = satisfiable (expand_qbf qbf)" unfolding satisfiable_def by simp
-  thus "naive_solver qbf = satisfiable qbf" using sat_iff_expand_qbf_sat by simp
+  hence "expansion_solver qbf = satisfiable (expand_qbf qbf)" unfolding satisfiable_def by simp
+  thus "expansion_solver qbf = satisfiable qbf" using sat_iff_expand_qbf_sat by simp
 qed
 
 text \<open>Simple tests.\<close>
@@ -535,6 +535,6 @@ text \<open>Simple tests.\<close>
 value test_qbf
 value "existential_closure test_qbf"
 value "expand_qbf test_qbf"
-value "naive_solver test_qbf"
+value "expansion_solver test_qbf"
 
 end

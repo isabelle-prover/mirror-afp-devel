@@ -1,7 +1,7 @@
 section \<open>Prenex Conjunctive Normal Form Datatype\<close>
 
 theory PCNF
-  imports NaiveSolver
+  imports ExpansionSolver
 begin
 
 subsection \<open>Prenex Conjunctive Normal Form Datatype\<close>
