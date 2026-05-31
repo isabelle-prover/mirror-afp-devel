@@ -75,7 +75,7 @@ val _ = let
                     |> curry (op $) mono_sm
                     |> HOLogic.mk_Trueprop;
                   val plist_names = map fst (parlist @ memlist);
-                  val mono_tac = asm_full_simp_tac (ctxt addsimps (f_def :: (Proof_Context.get_thms ctxt ("mono"))))
+                  val mono_tac = asm_full_simp_tac (ctxt |> Simplifier.add_simps (f_def :: (Proof_Context.get_thms ctxt ("mono"))))
                   val thm = Goal.prove ctxt plist_names [] goal (K (mono_tac 1))
                   val mono_name = mono_binding constr_name;
                 in
@@ -147,7 +147,7 @@ val _ = let
                         |> curry (op $) mono_sm
                         |> HOLogic.mk_Trueprop;
                       val plist_names = map fst (parlist_f @ memlist_f @ cdlist_f);
-                      val mono_tac = asm_full_simp_tac (ctxt addsimps (f_def :: (Proof_Context.get_thms ctxt ("mono"))))
+                      val mono_tac = asm_full_simp_tac (ctxt |> Simplifier.add_simps (f_def :: (Proof_Context.get_thms ctxt ("mono"))))
                       val thm = Goal.prove ctxt plist_names [] goal (K (mono_tac 1))
                       val mono_name = mono_binding def_name;
                     in

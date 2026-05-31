@@ -78,7 +78,7 @@ val _ = let
       in
         tap (K (writeln "Generating verification condition ..."))
         Local_Theory.begin_nested lthy |> snd
-        |> Specification.definition NONE [] [] (Binding.empty_atts, eq)
+        |> Specification.definition {verbose = false} NONE [] [] (Binding.empty_atts, eq)
         ||> `Local_Theory.end_nested
         |> export
       end
@@ -181,21 +181,21 @@ val _ = let
               (*internal*)
               Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _
                 $ (Const (\<^const_name>\<open>Utils.K\<close>, _) $ Const (\<^const_name>\<open>True\<close>, _))
-                => (eresolve_tac context (flat rules) THEN_ALL_NEW force_tac (ctxt addsimps defs)) i
+                => (eresolve_tac context (flat rules) THEN_ALL_NEW force_tac (ctxt |> Simplifier.add_simps defs)) i
               (*external*)
             | Const (\<^const_name>\<open>Solidity.Contract.post\<close>, _) $ _ $ _ $ _ $ _
                 => (resolve_tac context [@{thm Contract.post_true}]
-                    THEN' force_tac (ctxt addsimps defs)
+                    THEN' force_tac (ctxt |> Simplifier.add_simps defs)
                     THEN' force_tac ctxt
                     THEN' eresolve_tac context (flat rules)
-                    THEN_ALL_NEW force_tac (ctxt addsimps defs)) i
+                    THEN_ALL_NEW force_tac (ctxt |> Simplifier.add_simps defs)) i
             | _ => (K no_tac) i
           end;
 
         fun call_tac ctxt asm =
           resolve_tac ctxt [induct]
           THEN' Induct_Tacs.case_tac ctxt "x" [] NONE
-          THEN' (fn _ => auto_tac (ctxt delsimps @{thms K.simps} addsimps vcond_thm))
+          THEN' (fn _ => auto_tac (ctxt |> Simplifier.del_simps @{thms K.simps} |> Simplifier.add_simps vcond_thm))
           THEN' REPEAT o (SUBGOAL (select_tac ctxt))
           THEN' cut_facts_tac asm
           THEN' assume_tac ctxt
@@ -354,7 +354,7 @@ val _ = let
                         @(tl prems)
           in
             cut_facts_tac [external_inv] 1
-            THEN auto_tac (Splitter.add_split @{thm result.split} (context addsimps simps))
+            THEN auto_tac (Splitter.add_split @{thm result.split} (context |> Simplifier.add_simps simps))
           end
 
         val call = call name_ct
