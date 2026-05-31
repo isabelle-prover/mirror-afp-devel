@@ -83,11 +83,11 @@ val _ = let
         in
           tap (K (writeln "Generating introduction rule ..."))
           Goal.prove lthy varsI premsI (HOLogic.mk_Trueprop (tm $ var)) (fn x => mytac x thm 1)
-           |> (fn thm => Local_Theory.note ((Binding.map_name (fn x => x ^ "I") name, @{attributes [wprules]}), [thm]) lthy)
+           |> (fn thm => Local_Theory.note ((Binding.map_name (suffix "I") name, @{attributes [wprules]}), [thm]) lthy)
            |> snd
            |> tap (K (writeln "Generating elimination rule ..."))
            |> (fn lthy => Goal.prove lthy varsE [] elim (fn x => mytac x thm 1)
-            |> (fn thm => Local_Theory.note ((Binding.map_name (fn x => x ^ "E") name, @{attributes [wperules]}), [Object_Logic.rulify lthy thm]) lthy))
+            |> (fn thm => Local_Theory.note ((Binding.map_name (suffix "E") name, @{attributes [wperules]}), [Object_Logic.rulify lthy thm]) lthy))
            |> snd
            |> Local_Theory.exit_global
         end;
