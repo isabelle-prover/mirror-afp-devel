@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% amsthm environment definitions
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\begin{document}
+
+\title{The Gelfand-Naimark-Segal Construction}
+\author{Richard Schmoetten and Jacques D. Fleuriot}
+\maketitle
+
+\begin{abstract}
+This entry formalises complete normed algebras equipped with an involution, so-called $C^*$-algebras.
+We provide both a class definition, and a locale for $C^*$-algebras on carrier sets in the spirit of existing developments of linear algebra and smooth manifolds.
+Bounded operators on a complex Hilbert space, with the operator norm and adjoints, form such an algebra.
+The main theorem of this entry is a result in the converse direction: the Gelfand-Naimark-Segal (GNS) construction, which starts with a single suitable functional on a $C^*$-algebra in order to obtain both a Hilbert space and a representation of the algebra in terms of bounded operators on that space.
+This is implemented as a type construction in Isabelle/HOL, taking advantage of existing mechanisms for quotient types, and integrating with existing type classes for Hilbert spaces and Cauchy completions.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
