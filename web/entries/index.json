@@ -318,6 +318,27 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry formalises complete normed algebras equipped with an involution, so-called C*-algebras. We provide both a class definition, and a locale for C*-algebras on carrier sets in the spirit of existing developments of linear algebra and smooth manifolds. Bounded operators on a complex Hilbert space, with the operator norm and adjoints, form such an algebra. The main theorem of this entry is a result in the converse direction: the Gelfand–Naimark–Segal (GNS) construction, which starts with a single suitable functional on a C*-algebra in order to obtain both a Hilbert space and a representation of the algebra in terms of bounded operators on that space. This is implemented as a type construction in Isabelle/HOL, taking advantage of existing mechanisms for quotient types, and integrating with existing type classes for Hilbert spaces and Cauchy completions.",
+  "authors": [
+   "Richard Schmoetten",
+   "Jacques D. Fleuriot"
+  ],
+  "link": "../entries/Gelfand_Naimark_Segal.html",
+  "shortname": "Gelfand_Naimark_Segal",
+  "title": "The Gelfand–Naimark–Segal Construction",
+  "topic_links": [
+   "../topics/mathematics/algebra/",
+   "../topics/mathematics/analysis/",
+   "../topics/mathematics/physics/"
+  ],
+  "topics": [
+   "Mathematics/Algebra",
+   "Mathematics/Analysis",
+   "Mathematics/Physics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalizes some basic facts and lemmas relating to the integration with respect to the Lebesgue-Stieltjes measure (interval measure). It includes the well-known formula to calculate the Lebesgue-Stieltjes integral: \\[     \\int g(x) \\, dF(x) = \\int g(x) F'(x) \\, dx. \\]",
   "authors": [
    "Yosuke Ito"

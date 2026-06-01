@@ -1,4 +1,4 @@
-section \<open>The Gelfand-Naimark-Segal Construction\<close>
+section \<open>The Gelfand--Naimark--Segal Construction\<close>
 
 theory Gelfand_Naimark_Segal
 imports

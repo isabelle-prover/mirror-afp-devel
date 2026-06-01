@@ -7065,6 +7065,17 @@ host = [
   "uk",
 ]
 
+[schmoetten.emails.schmoetten_email1]
+user = [
+  "richard",
+  "schmoetten",
+]
+host = [
+  "ed",
+  "ac",
+  "uk",
+]
+
 [schmoetten.homepages]
 
 [schneider]

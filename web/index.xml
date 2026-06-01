@@ -130,6 +130,15 @@
     <category>Logic/Rewriting</category>
 </item>
 <item>
+  <title>The Gelfand–Naimark–Segal Construction</title>
+  <link>https://isa-afp.org/entries/Gelfand_Naimark_Segal.html</link>
+  <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
+  <description>The Gelfand–Naimark–Segal Construction in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
   <title>Lebesgue-Stieltjes Integral</title>
   <link>https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html</link>
   <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>
