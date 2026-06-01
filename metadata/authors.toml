@@ -7272,6 +7272,15 @@ host = [
   "de",
 ]
 
+[sickert.emails.sickert_email1]
+user = [
+  "s_sickertzehnter",
+]
+host = [
+  "apple",
+  "com",
+]
+
 [sickert.homepages]
 sickert_homepage = "https://www7.in.tum.de/~sickert"
 
