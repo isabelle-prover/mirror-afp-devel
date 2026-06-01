@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>The Busy Beaver Function</title>
+  <link>https://isa-afp.org/entries/Busy_Beaver.html</link>
+  <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+  <description>The Busy Beaver Function in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
+<item>
   <title>The Mostowski Collapse Theorem</title>
   <link>https://isa-afp.org/entries/Mostowski_Collapse.html</link>
   <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>

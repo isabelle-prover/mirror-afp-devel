@@ -3,12 +3,15 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-05-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Andrew_Monotone_Chain.html</loc>
-    <lastmod>2026-05-11T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
+    <lastmod>2026-06-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Busy_Beaver.html</loc>
+    <lastmod>2026-06-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Andrew_Monotone_Chain.html</loc>
     <lastmod>2026-05-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Mostowski_Collapse.html</loc>
@@ -5391,6 +5394,12 @@
     <loc>https://isa-afp.org/thys/BurrowsWheeler/SA_Util.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/BurrowsWheeler/Select_Util.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Busy_Beaver/Busy_Beaver.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Busy_Beaver/Busy_Beaver_Base.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Busy_Beaver/Turing_Busy_Beaver.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/BytecodeLogicJmlTypes/AssocLists.html</loc>
   </url><url>

@@ -4,6 +4,13 @@
     <title>Logic/Computability</title>
     <link>https://isa-afp.org/topics/logic/computability/</link>
     <description>AFP entries in Computability</description><item>
+  <title>The Busy Beaver Function</title>
+  <link>https://isa-afp.org/entries/Busy_Beaver.html</link>
+  <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+  <description>The Busy Beaver Function in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
+<item>
   <title>SAT is Not Solvable in Constant Time</title>
   <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
   <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
