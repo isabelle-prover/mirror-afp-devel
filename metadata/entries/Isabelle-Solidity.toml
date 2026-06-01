@@ -12,7 +12,7 @@ note = ""
 [authors]
 
 [authors.marmsoler]
-email = "marmsoler_email"
+email = "marmsoler_email1"
 
 [authors.ahmeda]
 email = "ahmeda_email"
@@ -23,7 +23,7 @@ email = "brucker_email2"
 [contributors]
 
 [notify]
-marmsoler = "marmsoler_email"
+marmsoler = "marmsoler_email1"
 
 [history]
 2026-05-29 = """
