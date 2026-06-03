@@ -10,7 +10,9 @@ sig
   val pretty : id -> Pretty.T
   val quoted_string : id -> string
   val prefix_name : Position.T option -> string -> id -> id
+  val prefix_name_sep : string -> Position.T option -> string -> id -> id
   val suffix_name : Position.T option -> string -> id -> id
+  val suffix_sep_name : string -> Position.T option -> string -> id -> id
 end
 
 structure Identifier : IDENTIFIER  =
@@ -26,7 +28,9 @@ val quoted_string = Binding.print
 
 fun prefix_name opt_pos s = Binding.prefix_name s
   #> (Option.map Binding.new_pos opt_pos |> the_default I)
+fun prefix_name_sep sep opt_pos s = s <> "" ? prefix_name opt_pos (s ^ sep)
 fun suffix_name opt_pos s = Binding.suffix_name s
   #> (Option.map Binding.new_pos opt_pos |> the_default I)
+fun suffix_sep_name sep opt_pos s = s <> "" ? suffix_name opt_pos (sep ^ s)
 
 end

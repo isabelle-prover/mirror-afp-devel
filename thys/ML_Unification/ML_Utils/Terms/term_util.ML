@@ -43,7 +43,8 @@ sig
   val no_dummy_pattern : term -> bool
   val has_dummy_pattern : term -> bool
 
-  val are_term_variants : term * term -> bool
+  val are_variants : term * term -> bool
+  val are_beta_eta_variants : term * term -> bool
 end
 
 structure Term_Util : TERM_UTIL =
@@ -130,10 +131,13 @@ val unprotect = Thm.dest_arg
 val no_dummy_pattern = can Term.no_dummy_patterns
 val has_dummy_pattern = not o no_dummy_pattern
 
-fun are_term_variants tp =
+fun are_variants tp =
   let
     val thy = Context.the_global_context ()
     fun match tp = Pattern.first_order_match thy tp (Vartab.empty, Vartab.empty)
   in can match tp andalso can match (swap tp) end
+
+val are_beta_eta_variants = apply2 (Same.commit Term_Normalisation.beta_eta_short)
+  #> are_variants
 
 end

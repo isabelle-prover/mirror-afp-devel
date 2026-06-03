@@ -29,6 +29,9 @@ sig
   val CONCAT : ('a -> 'b Seq.seq) list -> 'a -> 'b Seq.seq
   val CONCAT' : ('a -> 'b -> 'c Seq.seq) list -> 'a -> 'b -> 'c Seq.seq
 
+  (* like RANGE but applies tactics in increasing subgoal order *)
+  val RANGE_UP : (int -> tactic) list -> int -> tactic
+
   (*filters duplicate results*)
   val unique_thmsq : (thm * thm -> bool) -> thm Seq.seq -> thm Seq.seq
   val UNIQUE : (thm * thm -> bool) -> tactic -> tactic
@@ -124,6 +127,11 @@ fun (tac1 APPEND' tac2) x = tac1 x APPEND tac2 x
 
 fun CONCAT tacs = fold_rev (curry (op APPEND)) tacs (K Seq.empty)
 fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K (K Seq.empty))
+
+fun RANGE_UP [] _ = Seq.succeed
+  | RANGE_UP [tac] i = tac i
+  | RANGE_UP (tac :: tacs) i = fn st => (tac i
+      THEN (fn st' => RANGE_UP tacs (i + Thm.nprems_of st' - Thm.nprems_of st + 1) st')) st
 
 local structure TI = Net
 in

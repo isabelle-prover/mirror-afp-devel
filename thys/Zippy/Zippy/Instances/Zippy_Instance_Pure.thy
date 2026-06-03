@@ -450,8 +450,7 @@ struct
 end
 end
 
-val are_thm_variants = apply2 (Thm.prop_of #> Same.commit Term_Normalisation.beta_eta_short)
-  #> Term_Util.are_term_variants
+val are_thm_variants = apply2 Thm.prop_of #> Term_Util.are_beta_eta_variants
 fun changed_uniquesq st = Seq.filter (fn st' => not (are_thm_variants (st, st')))
   #> Tactic_Util.unique_thmsq are_thm_variants
 end
