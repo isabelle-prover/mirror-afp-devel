@@ -1,6 +1,6 @@
-section \<open>Naive Solver Implementation and Verification\<close>
+section \<open>Expansion-Based Solver Implementation and Verification\<close>
 
-theory NaiveSolver
+theory ExpansionSolver
   imports Main
 begin
 
@@ -19,7 +19,7 @@ datatype QBF = Var nat
 
 subsubsection \<open>Formalisation of Semantics and Termination of Semantics\<close>
 
-text \<open>Substitute True or False for a variable:\<close>
+text \<open>Substitute @{term \<open>Conj []\<close>} or @{term \<open>Disj []\<close>} for a variable:\<close>
 fun substitute_var :: "nat \<Rightarrow> bool \<Rightarrow> QBF \<Rightarrow> QBF" where
   "substitute_var z True (Var z') = (if z = z' then Conj [] else Var z')"
 | "substitute_var z False (Var z') = (if z = z' then Disj [] else Var z')"
@@ -29,8 +29,9 @@ fun substitute_var :: "nat \<Rightarrow> bool \<Rightarrow> QBF \<Rightarrow> QB
 | "substitute_var z b (Ex x qbf) = Ex x (if x = z then qbf else substitute_var z b qbf)"
 | "substitute_var z b (All y qbf) = All y (if z = y then qbf else substitute_var z b qbf)"
 
-text \<open>Measures the number of QBF constructors in argument, required to show termination of semantics.\<close>
-  (* Could we use the size function instead? *)
+text \<open>Measures the number of QBF constructors in the argument; required to show termination of the
+  semantics. (We can't use @{const size} to show termination because substitution may increase the
+  size of a formula.)\<close>
 fun qbf_measure :: "QBF \<Rightarrow> nat" where
   "qbf_measure (Var _) = 1"
 | "qbf_measure (Neg qbf) = 1 + qbf_measure qbf"
@@ -282,7 +283,7 @@ proof -
   ultimately show "sequence (map Some xs) = Some xs" by simp
 qed
 
-subsection \<open>Naive Solver\<close>
+subsection \<open>Expansion Solver\<close>
 
 subsubsection \<open>Expanding Quantifiers\<close>
 
@@ -321,7 +322,7 @@ proof (induction qbf_list)
     by (cases "x = z") auto
 qed auto
 
-function expand_quantifiers :: "QBF \<Rightarrow> QBF" where
+fun expand_quantifiers :: "QBF \<Rightarrow> QBF" where
   "expand_quantifiers (Var x) = (Var x)"
 | "expand_quantifiers (Neg qbf) = Neg (expand_quantifiers qbf)"
 | "expand_quantifiers (Conj list) = Conj (map expand_quantifiers list)"
@@ -330,14 +331,9 @@ function expand_quantifiers :: "QBF \<Rightarrow> QBF" where
                                           substitute_var x False (expand_quantifiers qbf)])"
 | "expand_quantifiers (All x qbf) = (Conj [substitute_var x True (expand_quantifiers qbf),
                                            substitute_var x False (expand_quantifiers qbf)])"
-  by pat_completeness auto
-termination
-  apply (relation "measures [qbf_quantifier_depth, qbf_measure]")
-  by (auto simp add: qbf_quantifier_depth_substitute qbf_quantifier_depth_eq_max)
-    (auto simp add: qbf_measure_lt_sum_list)
 
 text \<open>Property 1: no quantifiers after expansion.\<close>
-lemma no_quants_after_expand_quants: "qbf_quantifier_depth (expand_quantifiers qbf) = 0"
+lemma no_quantifiers_after_expand: "qbf_quantifier_depth (expand_quantifiers qbf) = 0"
 proof (induction qbf)
   case (Conj x)
   thus ?case by (induction x) auto
@@ -418,7 +414,7 @@ next
   qed auto
 qed auto
 
-lemma free_vars_inv_under_expand_quants:
+lemma free_vars_inv_under_expand:
   "set (free_variables (expand_quantifiers qbf)) = set (free_variables qbf)"
 proof (induction qbf)
   case (Ex x1a qbf)
@@ -449,12 +445,12 @@ lemma sat_iff_expand_qbf_sat: "satisfiable (expand_qbf qbf) \<longleftrightarrow
 lemma expand_qbf_no_free: "set (free_variables (expand_qbf qbf)) = {}"
 proof -
   have "set (free_variables (expand_qbf qbf)) = set (free_variables (existential_closure qbf))"
-    using free_vars_inv_under_expand_quants by simp
+    using free_vars_inv_under_expand by simp
   thus ?thesis using ex_closure_no_free by metis
 qed
 
 lemma expand_qbf_no_quants: "qbf_quantifier_depth (expand_qbf qbf) = 0"
-  using no_quants_after_expand_quants by simp
+  using no_quantifiers_after_expand by simp
 
 subsubsection \<open>Evaluating Expanded Formulas\<close>
 
@@ -517,17 +513,17 @@ next
   qed
 qed auto
 
-subsubsection \<open>Naive Solver\<close>
+subsubsection \<open>Expansion Solver\<close>
 
-fun naive_solver :: "QBF \<Rightarrow> bool" where
-  "naive_solver qbf = the (eval_qbf (expand_qbf qbf))"
+fun expansion_solver :: "QBF \<Rightarrow> bool" where
+  "expansion_solver qbf = the (eval_qbf (expand_qbf qbf))"
 
-theorem naive_solver_correct: "naive_solver qbf \<longleftrightarrow> satisfiable qbf"
+theorem expansion_solver_correct: "expansion_solver qbf \<longleftrightarrow> satisfiable qbf"
 proof -
-  have "\<forall>I. naive_solver qbf = the (Some (qbf_semantics I (expand_qbf qbf)))"
+  have "\<forall>I. expansion_solver qbf = the (Some (qbf_semantics I (expand_qbf qbf)))"
     using expand_qbf_no_free expand_qbf_no_quants eval_qbf_implements_semantics by simp
-  hence "naive_solver qbf = satisfiable (expand_qbf qbf)" unfolding satisfiable_def by simp
-  thus "naive_solver qbf = satisfiable qbf" using sat_iff_expand_qbf_sat by simp
+  hence "expansion_solver qbf = satisfiable (expand_qbf qbf)" unfolding satisfiable_def by simp
+  thus "expansion_solver qbf = satisfiable qbf" using sat_iff_expand_qbf_sat by simp
 qed
 
 text \<open>Simple tests.\<close>
@@ -535,6 +531,6 @@ text \<open>Simple tests.\<close>
 value test_qbf
 value "existential_closure test_qbf"
 value "expand_qbf test_qbf"
-value "naive_solver test_qbf"
+value "expansion_solver test_qbf"
 
 end

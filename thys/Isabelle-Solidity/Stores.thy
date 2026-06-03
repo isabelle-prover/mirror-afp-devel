@@ -193,7 +193,7 @@ datatype 'v storage_data =
 | is_Array: Array (ar: "'v storage_data list")
 | is_Map: Map (mp: "'v \<Rightarrow> 'v storage_data")
 
-abbreviation storage_disjoint where "storage_disjoint sd vf af mf \<equiv> case_storage_data vf af mf sd"
+abbreviation storage_check where "storage_check sd vf af mf \<equiv> case_storage_data vf af mf sd"
 
 section \<open>Storage Lookup\<close>
 
@@ -218,16 +218,16 @@ fun updateStore :: "('v::vtype) list \<Rightarrow> ('v storage_data \<Rightarrow
 
 subsection \<open>Copy from Calldata to Memory\<close>
 
-fun read_calldata_memory :: "'v call_data \<Rightarrow> location \<Rightarrow> 'v memory \<Rightarrow> (location \<times> 'v mdata \<times> 'v memory)" where
-  "read_calldata_memory (call_data.Value x) p m = (p, mdata.Value x, m)"
-| "read_calldata_memory (call_data.Array ds) p m =
+fun copy_calldata_memory :: "'v call_data \<Rightarrow> location \<Rightarrow> 'v memory \<Rightarrow> (location \<times> 'v mdata \<times> 'v memory)" where
+  "copy_calldata_memory (call_data.Value x) p m = (p, mdata.Value x, m)"
+| "copy_calldata_memory (call_data.Array ds) p m =
       (let (ns, m') = fold_map write ds m in (p, mdata.Array ns, m'))"
 
 subsection \<open>Copy from Calldata to Storage\<close>
 
-fun read_calldata_storage :: "'v call_data \<Rightarrow> 'v storage_data" where
-  "read_calldata_storage (call_data.Value v) = storage_data.Value v"
-| "read_calldata_storage (call_data.Array xs) = storage_data.Array (map read_calldata_storage xs)"
+fun copy_calldata_storage :: "'v call_data \<Rightarrow> 'v storage_data" where
+  "copy_calldata_storage (call_data.Value v) = storage_data.Value v"
+| "copy_calldata_storage (call_data.Array xs) = storage_data.Array (map copy_calldata_storage xs)"
 
 subsection \<open>Copy from Storage to Memory\<close>
 
@@ -246,16 +246,16 @@ fun convert :: "'v storage_data \<Rightarrow> 'v call_data option" where
 | "convert (storage_data.Array ds) = those (map convert ds) \<bind> Some \<circ> call_data.Array"
 | "convert _ = None"
 
-definition read_storage_memory :: "'v storage_data \<Rightarrow> location \<Rightarrow> 'v memory \<Rightarrow> (location \<times> 'v mdata \<times> 'v memory) option" where
-  "read_storage_memory sd p m =
+definition copy_storage_memory :: "'v storage_data \<Rightarrow> location \<Rightarrow> 'v memory \<Rightarrow> (location \<times> 'v mdata \<times> 'v memory) option" where
+  "copy_storage_memory sd p m =
     do {
       cd \<leftarrow> convert sd;
-      Some (read_calldata_memory cd p m)
+      Some (copy_calldata_memory cd p m)
     }"
 
 global_interpretation storage_data: data storage_data.Value storage_data.Array
-  defines read_storage_safe = storage_data.read_safe
-      and read_storage = storage_data.read
+  defines copy_memory_storage_safe = storage_data.read_safe
+      and copy_memory_storage = storage_data.read
       and range_storage_safe = storage_data.range_safe
       and range_storage = storage_data.range
   .

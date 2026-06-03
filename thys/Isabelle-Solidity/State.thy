@@ -11,7 +11,7 @@ datatype ('a::address) valtype =
   Bool (bool: bool)
 | Uint (uint: "256 word")
 | Address (ad: 'a)
-| Bytes bytes \<comment>\<open>bytes1, ..., bytes32\<close>
+| Bytes (bytes: bytes) \<comment>\<open>bytes1, ..., bytes32\<close>
 
 instantiation valtype :: (address) vtype
 begin
@@ -161,8 +161,6 @@ record ('a::address) state =
   Storage:: "('a::address, 'a::address valtype) storage"
   Stack:: "('a::address valtype) stack"
   Balances::"('a::address) balances"
-
-definition sameState where "sameState s s' \<equiv> state.Stack s' = state.Stack s \<and> state.Memory s' = state.Memory s \<and> state.Calldata s' = state.Calldata s"
 
 subsection \<open>Update Function\<close>
 

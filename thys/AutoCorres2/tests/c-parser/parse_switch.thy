@@ -25,8 +25,7 @@ ML \<open>
 \<close>
 
 ML \<open>
-  member (op =) (map #1 cs) "CProof.strictc_errortype.C_Guard" orelse
-  OS.Process.exit OS.Process.failure
+  \<^assert> (member (op =) (map #1 cs) "CProof.strictc_errortype.C_Guard")
 \<close>
 
 end

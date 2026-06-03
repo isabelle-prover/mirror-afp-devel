@@ -230,14 +230,14 @@ lemma execute_modify [execute_simps]:
   "execute (modify f) s = Normal ((), f s)"
   unfolding modify_def by (auto simp add:execute_simps)
 
-primrec mfold :: "('a,'e,'s) state_monad \<Rightarrow> nat \<Rightarrow> ('a list,'e,'s) state_monad"
+primrec mfold :: "('a,'e,'s) state_monad list \<Rightarrow> ('a list,'e,'s) state_monad"
   where
-    "mfold m 0 = return []"
-  | "mfold m (Suc n) =
+    "mfold [] = return []"
+  | "mfold (m # ms) =
       do {
-        l \<leftarrow> m;
-        ls \<leftarrow> mfold m n;
-        return (l # ls)
+        x \<leftarrow> m;
+        xs \<leftarrow> mfold ms;
+        return (x # xs)
       }"
 
 subsection \<open>Some basic examples\<close>

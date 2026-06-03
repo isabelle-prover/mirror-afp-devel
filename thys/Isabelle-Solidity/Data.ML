@@ -4,7 +4,12 @@
 
 signature SOLIDITY_DATA =
 sig
+  type store
+  val Memory: store
+  val Storage: store
+  val Calldata: store
   type data
+  type mdata
   val mlookupN: theory -> Symtab.key -> data option
   val mupdateN: Symtab.key -> data -> theory -> theory
   val a_to_b: typ -> typ
@@ -14,6 +19,7 @@ sig
   val s: term
   val s': term
   val r: term
+  val b: typ
   val effect: term
   val finit_map_T: typ
   val call: typ -> term
@@ -40,10 +46,12 @@ sig
   val mk_exc: term -> term
   val constructor_binding: Position.T -> binding
   val mono_binding: binding -> binding
+  val mk_valtype: bool option -> term -> typ
   val mk_fallback_t: typ -> typ
   val mk_local_name: Proof.context -> string -> string -> string
   val mk_True: term
-  val mk_False: term
+  val mk_K: term -> typ list -> term * typ
+  val mk_True2: term
   val mk_contract_typ: Proof.context -> string -> typ
   val post_t: term
   val rvalueT: typ
@@ -63,6 +71,9 @@ sig
         string ->
           (Token.T list -> 'a * Token.T list) -> unit
   val mk_valtype_term: bool option -> term * term -> Name.context -> ((string * typ) * (term * term)) * Name.context
+  val mk_inv_term': store -> ('a * term) list -> Proof.context -> ('a * ((term * (string * typ)) * term option)) list * Proof.context
+  val mk_type_assms: (term * ((term * (string * typ)) * term option)) list -> term list
+  val mk_type_assms_store: store -> ((string * typ) * term) list -> Proof.context -> term list * Proof.context
 end
 
 structure Solidity_Data: SOLIDITY_DATA =
@@ -74,31 +85,31 @@ datatype ptype = Par | Mem | CD
 
 (* Data for constructor *)
 type cdata =
-  {term: term,                   (* Method constant *)
-   name: string,                 (* Method name *)
-   binding: binding,             (* Method binding *)
-   def: thm,                     (* Definitional theorem *)
-   payable: bool,                (* Is the method payable *)
-   parlist: (string * typ) list, (* List of value parameters *)
-   memlist: (string * typ) list, (* List of memory parameters *)
-   mono_name: string,            (* Name of monotonicity property *)
-   mono: thm,                    (* Name of monotonicity theorem *)
-   dt_const: term}               (* Constructor term for contract datatype *)
+  {term: term,                            (* Constructor constant *)
+   name: string,                          (* Constructor name *)
+   binding: binding,                      (* Constructor binding *)
+   def: thm,                              (* Definition theorem *)
+   payable: bool,                         (* Is the constructor payable *)
+   parlist: ((string * typ) * term) list, (* List of value parameters *)
+   memlist: ((string * typ) * term) list, (* List of memory parameters *)
+   mono_name: string,                     (* Name of monotonicity property *)
+   mono: thm,                             (* Monotonicity theorem *)
+   dt_const: term}                        (* Constructor term for contract datatype *)
 
 (* Data for contract methods *)
 type mdata =
-  {term: term,                   (* Method constant *)
-   name: string,                 (* Method name *)
-   binding: binding,             (* Method binding *)
-   def: thm,                     (* Definitional theorem *)
-   payable: bool,                (* Is the method payable *)
-   external: bool,               (* Is the method external *)
-   parlist: (string * typ) list, (* List of value parameters *)
-   memlist: (string * typ) list, (* List of memory parameters *)
-   cdlist: (string * typ) list,  (* List of calldata parameters *)
-   mono_name: string,            (* Name of monotonicity property *)
-   mono: thm,                    (* Name of monotonicity theorem *)
-   dt_const: term}               (* Constructor term for contract datatype *)
+  {term: term,                            (* Method constant *)
+   name: string,                          (* Method name *)
+   binding: binding,                      (* Method binding *)
+   def: thm,                              (* Definition theorem *)
+   payable: bool,                         (* Is the method payable *)
+   external: bool,                        (* Is the method external *)
+   parlist: ((string * typ) * term) list, (* List of value parameters *)
+   memlist: ((string * typ) * term) list, (* List of memory parameters *)
+   cdlist: ((string * typ) * term) list,  (* List of calldata parameters *)
+   mono_name: string,                     (* Name of monotonicity property *)
+   mono: thm,                             (* Monotonicity theorem *)
+   dt_const: term}                        (* Constructor term for contract datatype *)
 
 (* Data for contract *)
 type data =
@@ -109,7 +120,7 @@ type data =
    constructor: cdata,              (* Constructor data *)
    methods: (string * mdata) list,  (* Method data indexed by name of the binding *)
    pfun_name: term,                 (* Contract constant *)
-   pfun: thm,                       (* Definitional theorem *)
+   pfun: thm,                       (* Definition theorem *)
    pinduct: thm}                    (* Induction theorem *)
 
 structure MethodsN = Theory_Data
@@ -137,7 +148,23 @@ val stringT = \<^typ>\<open>String.literal\<close>
 val address = \<^sort>\<open>address\<close>
 val typeT = \<^sort>\<open>type\<close>
 val a = TFree("'a", address)
+val b = TFree("'b", address)
 val c = TFree("'c", [])
+
+fun mk_valtype _ \<^term>\<open>SType.TValue TBool\<close> = \<^typ>\<open>bool\<close>
+  | mk_valtype _ \<^term>\<open>SType.TValue TSint\<close> = \<^typ>\<open>256 word\<close>
+  | mk_valtype _ \<^term>\<open>SType.TValue TAddress\<close> = b
+  | mk_valtype _ (Const (\<^const_name>\<open>SType.TValue\<close>, _) $ (Const (\<^const_name>\<open>VType.TBytes\<close>, _) $ _))
+    = \<^typ>\<open>string\<close>
+  | mk_valtype NONE (Const (\<^const_name>\<open>SType.TArray\<close>, _) $ _ $ _)
+    = error "arrays not allowed as parameters"
+  | mk_valtype NONE (Const (\<^const_name>\<open>SType.DArray\<close>, _) $ _ $ _)
+    = error "arrays not allowed as parameters"
+  | mk_valtype (SOME mem) (Const (\<^const_name>\<open>SType.TArray\<close>, _) $ _ $ _)
+    = if mem then \<^Type>\<open>adata \<^Type>\<open>valtype b\<close>\<close> else  \<^Type>\<open>call_data \<^Type>\<open>valtype b\<close>\<close>
+  | mk_valtype (SOME mem) (Const (\<^const_name>\<open>SType.DArray\<close>, _) $ _)
+    = if mem then \<^Type>\<open>adata \<^Type>\<open>valtype b\<close>\<close> else  \<^Type>\<open>call_data \<^Type>\<open>valtype b\<close>\<close>
+  | mk_valtype _ _ = error "unsupported type"
 
 fun instantiate_b_a t =
   let
@@ -258,24 +285,30 @@ fun mk_global_name ctxt x =
 fun mk_local_name ctxt x y =
   (mk_global_name ctxt x) ^ "." ^ y;
 
-val mk_True =
-  let
-    val tp = HOLogic.mk_prodT (\<^typ>\<open>String.literal\<close> --> \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>, \<^typ>\<open>nat\<close>)
-  in
-    \<^Const>\<open>K \<^typ>\<open>bool\<close> tp for \<^Const>\<open>True\<close>\<close>
-  end
+fun mk_K t [] = (t, fastype_of t)
+  | mk_K t (T::Ts) =
+      let
+        val (t,T') = mk_K t Ts
+      in
+        (\<^Const>\<open>K T' T for t\<close>, T --> T')
+      end
 
-val mk_False =
-  let
-    val tp = HOLogic.mk_prodT (\<^typ>\<open>String.literal\<close> --> \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>, \<^typ>\<open>nat\<close>)
-  in
-    \<^Const>\<open>K \<^typ>\<open>bool\<close> tp for \<^Const>\<open>False\<close>\<close>
-  end
+val mk_True =
+  fst
+    (mk_K
+      \<^Const>\<open>True\<close>
+      [HOLogic.mk_prodT (\<^typ>\<open>String.literal\<close> --> \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>, \<^typ>\<open>nat\<close>)])
+
+val mk_True2 =
+  fst
+    (mk_K
+      \<^Const>\<open>True\<close>
+      [stateT])
 
 fun mk_contract_typ ctxt name_lc =
   Type (mk_global_name ctxt name_lc, [a]);  
 
-val post_t = \<^Const>\<open>Contract.post a for this\<close>
+val post_t = \<^Const>\<open>Contract.post a\<close>
 
 fun mk_valtype_term _ (name, \<^term>\<open>SType.TValue TBool\<close>) ctxt =
     Name.variant "bl" ctxt |>> (fn x => (x, \<^typ>\<open>bool\<close>))
@@ -298,5 +331,179 @@ fun mk_valtype_term _ (name, \<^term>\<open>SType.TValue TBool\<close>) ctxt =
     Name.variant "ar" ctxt |>> (fn x => (x, if memory then \<^Type>\<open>adata \<^Type>\<open>valtype a\<close>\<close> else \<^Type>\<open>call_data \<^Type>\<open>valtype a\<close>\<close>))
     |>> ``(fn x => (name, Free x))
   | mk_valtype_term _ _ _ = error "unsupported type"
+
+datatype store = Memory | Storage | Calldata
+
+fun mk_inv_term ctxt store \<^term>\<open>SType.TValue TBool\<close> =
+    let
+      val bl = (singleton (Name.variants (Variable.names_of ctxt)) "bl", \<^typ>\<open>bool\<close>);
+      val t =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Bool a for \<open>Free bl\<close>\<close>\<close>\<close>
+        | Calldata => \<^Const>\<open>call_data.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Bool a for \<open>Free bl\<close>\<close>\<close>\<close>
+        | Memory => \<^Const>\<open>adata.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Bool a for \<open>Free bl\<close>\<close>\<close>\<close>;
+      val ctxt' = Variable.declare_names (Free bl) ctxt;
+    in
+      (((t, bl), NONE), ctxt')
+    end
+  | mk_inv_term ctxt store \<^term>\<open>SType.TValue TSint\<close> =
+    let
+      val si = (singleton (Name.variants (Variable.names_of ctxt)) "si", \<^typ>\<open>256 word\<close>);
+      val t =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Uint a for \<open>Free si\<close>\<close>\<close>\<close>
+        | Calldata => \<^Const>\<open>call_data.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Uint a for \<open>Free si\<close>\<close>\<close>\<close>
+        | Memory => \<^Const>\<open>adata.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Uint a for \<open>Free si\<close>\<close>\<close>\<close>;
+      val ctxt' = Variable.declare_names (Free si) ctxt;
+    in
+      (((t, si), NONE), ctxt')
+    end
+  | mk_inv_term ctxt store \<^term>\<open>SType.TValue TAddress\<close> =
+    let
+      val ad = (singleton (Name.variants (Variable.names_of ctxt)) "ad", a);
+      val t =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Address a for \<open>Free ad\<close>\<close>\<close>\<close>
+        | Calldata => \<^Const>\<open>call_data.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Address a for \<open>Free ad\<close>\<close>\<close>\<close>
+        | Memory => \<^Const>\<open>adata.Value \<^Type>\<open>valtype a\<close> for \<open>\<^Const>\<open>Address a for \<open>Free ad\<close>\<close>\<close>\<close>;
+      val ctxt' = Variable.declare_names (Free ad) ctxt;
+      (*Why does declare term here lead to a problem?*)
+    in
+      (((t, ad), NONE), ctxt')
+    end
+  | mk_inv_term ctxt store (Const (\<^const_name>\<open>SType.TValue\<close>, _) $ (Const (\<^const_name>\<open>VType.TBytes\<close>, _) $ _)) =
+    let
+      val bt = (singleton (Name.variants (Variable.names_of ctxt)) "bt", \<^typ>\<open>bytes\<close>);
+      val t =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Value \<^Type>\<open>valtype a\<close>\<close> $ (\<^Const>\<open>Bytes a\<close> $ Free bt)
+        | Calldata => \<^Const>\<open>call_data.Value \<^Type>\<open>valtype a\<close>\<close> $ (\<^Const>\<open>Bytes a\<close> $ Free bt)
+        | Memory => \<^Const>\<open>adata.Value \<^Type>\<open>valtype a\<close>\<close> $ (\<^Const>\<open>Bytes a\<close> $ Free bt);
+      val ctxt' = Variable.declare_names (Free bt) ctxt;
+    in
+      (((t, bt), NONE), ctxt')
+    end
+  | mk_inv_term ctxt Storage (Const (\<^const_name>\<open>SType.TMap\<close>, _) $ _ $ dtype) = 
+    let
+      val mp = (singleton (Name.variants (Variable.names_of ctxt)) "mp", \<^Type>\<open>State.valtype a\<close> --> \<^Type>\<open>Stores.storage_data \<^Type>\<open>valtype a\<close>\<close>);
+      val ctxt' = Variable.declare_names (Free mp) ctxt;
+      val y = (singleton (Name.variants (Variable.names_of ctxt')) "y", \<^Type>\<open>State.valtype a\<close>);
+      val ctxt'' = Variable.declare_names (Free y) ctxt';
+      val (((t, (fname, ftyp)), cnj), ctxt''') = mk_inv_term ctxt'' Storage dtype;
+      val t' = \<^Const>\<open>storage_data.Map \<^Type>\<open>valtype a\<close> for \<open>Free mp\<close>\<close>
+      val cnj' =
+        (HOLogic.mk_all (fst y, snd y,
+          HOLogic.mk_exists (fname, ftyp,
+           mk_conj cnj (HOLogic.mk_eq (Free mp $ Free y ,t)))))
+    in
+      (((t', mp), SOME cnj'), ctxt''')
+    end
+  | mk_inv_term ctxt store (Const (\<^const_name>\<open>SType.TEnum\<close>, _) $ dtypes) = 
+    let
+      val tp =
+        case store of
+          Storage => \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>
+        | Calldata => \<^Type>\<open>call_data \<^Type>\<open>valtype a\<close>\<close>
+        | Memory => \<^Type>\<open>adata \<^Type>\<open>valtype a\<close>\<close>
+      val em = (singleton (Name.variants (Variable.names_of ctxt)) "em", HOLogic.listT tp);
+
+      val ctxt' = Variable.declare_names (Free em) ctxt;    
+      val (((ts,vs),cnjs),ctxt'') = fold_map (fn x => fn ctxt => mk_inv_term ctxt store x) (HOLogic.dest_list dtypes) ctxt'
+                                |>> ListPair.unzip
+                                |>> apfst ListPair.unzip
+      val t =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Array \<^Type>\<open>valtype a\<close> for \<open>Free em\<close>\<close>
+        | Calldata => \<^Const>\<open>call_data.Array \<^Type>\<open>valtype a\<close> for \<open>Free em\<close>\<close>
+        | Memory => \<^Const>\<open>adata.Array \<^Type>\<open>valtype a\<close> for \<open>Free em\<close>\<close>
+
+      val cnj' = HOLogic.mk_list tp ts
+            |> curry HOLogic.mk_eq (Free em);
+
+      val cnj = fold mk_conj cnjs cnj'
+              |> list_ex vs;
+    in
+      (((t, em), SOME cnj), ctxt'')
+    end
+  | mk_inv_term ctxt store (Const (\<^const_name>\<open>SType.TArray\<close>, _) $ l $ dtype) = 
+    let
+      val tp =
+        case store of
+          Storage => \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>
+        | Calldata => \<^Type>\<open>call_data \<^Type>\<open>valtype a\<close>\<close>
+        | Memory => \<^Type>\<open>adata \<^Type>\<open>valtype a\<close>\<close>
+      val ar = (singleton (Name.variants (Variable.names_of ctxt)) "ar", HOLogic.listT tp);
+      val ctxt' = Variable.declare_names (Free ar) ctxt;
+      val y0' = List.tabulate (HOLogic.dest_number l |> snd, K (dtype));
+      val (((ts,vs),cnjs),ctxt'') = fold_map (fn x => fn ctxt => mk_inv_term ctxt store x) y0' ctxt'
+                                  |>> ListPair.unzip
+                                  |>> apfst ListPair.unzip
+
+      val t =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Array \<^Type>\<open>valtype a\<close> for \<open>Free ar\<close>\<close>
+        | Calldata => \<^Const>\<open>call_data.Array \<^Type>\<open>valtype a\<close> for \<open>Free ar\<close>\<close>
+        | Memory => \<^Const>\<open>adata.Array \<^Type>\<open>valtype a\<close> for \<open>Free ar\<close>\<close>
+
+      val cnj' = HOLogic.mk_list tp ts
+               |> curry HOLogic.mk_eq (Free ar);
+
+      val cnj = fold mk_conj cnjs cnj'
+              |> list_ex vs;
+    in
+      (((t, ar), SOME cnj), ctxt'')
+    end
+  | mk_inv_term ctxt store (Const (\<^const_name>\<open>SType.DArray\<close>, _) $ dtype) = 
+    let
+      val tp =
+        case store of
+          Storage => \<^Type>\<open>storage_data \<^Type>\<open>valtype a\<close>\<close>
+        | Calldata => \<^Type>\<open>call_data \<^Type>\<open>valtype a\<close>\<close>
+        | Memory => \<^Type>\<open>adata \<^Type>\<open>valtype a\<close>\<close>
+      val da = (singleton (Name.variants (Variable.names_of ctxt)) "da", HOLogic.listT tp);
+      val ctxt' = Variable.declare_names (Free da) ctxt;
+      val (((t, (fname, ftyp)), cnj), ctxt'') = mk_inv_term ctxt' store dtype;
+      val t' =
+        case store of
+          Storage => \<^Const>\<open>storage_data.Array \<^Type>\<open>valtype a\<close> for \<open>Free da\<close>\<close>
+        | Calldata => \<^Const>\<open>call_data.Array \<^Type>\<open>valtype a\<close> for \<open>Free da\<close>\<close>
+        | Memory => \<^Const>\<open>adata.Array \<^Type>\<open>valtype a\<close> for \<open>Free da\<close>\<close>
+
+      val y = (singleton (Name.variants (Variable.names_of ctxt'')) "y", \<^typ>\<open>nat\<close>);
+      val t'' =
+        (HOLogic.mk_exists (fname, ftyp,
+         mk_conj cnj (HOLogic.mk_eq (\<^Const>\<open>List.nth tp for \<open>Free da\<close> \<open>Free y\<close>\<close>, t))))
+      val cnj' =
+        HOLogic.mk_all (fst y, snd y,
+          (HOLogic.mk_imp
+            (\<^Const>\<open>Orderings.ord_class.less \<^typ>\<open>nat\<close> for \<open>Free y\<close> \<^Const>\<open>size \<open>HOLogic.listT tp\<close> for \<open>Free da\<close>\<close>\<close>,
+            t'')));
+    in
+      (((t', da), SOME cnj'), ctxt'')
+    end
+  | mk_inv_term _ _ t = error ("unsupported type" ^ @{make_string} t)
+
+fun mk_inv_term' store members ctxt =
+  let
+    fun go mname (((trm, (fname, ftyp)), cnj), ctxt) = ((mname, ((trm, (fname, ftyp)), cnj)), ctxt);
+  in
+    fold_map (fn(x,y) => (fn ctxt => go x (mk_inv_term ctxt store y))) members ctxt
+  end;
+
+fun mk_type_assms trms =
+  let
+    fun go (x, ((trm, (fname, ftyp)), cnj)) =
+      (HOLogic.mk_exists (fname, ftyp,
+        (mk_conj cnj
+          (HOLogic.mk_eq (x, trm)))))
+  in
+    map go trms
+  end;
+
+fun mk_type_assms_store store trms ctxt =
+  map (apfst Free) trms
+  |> rpair ctxt
+  |-> mk_inv_term' store
+  |>> mk_type_assms
 
 end

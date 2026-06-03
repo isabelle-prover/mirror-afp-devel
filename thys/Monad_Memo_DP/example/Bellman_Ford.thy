@@ -46,126 +46,6 @@ qed
 
 instance extended :: (heap) heap ..
 
-instantiation "extended" :: (conditionally_complete_lattice) complete_lattice
-begin
-
-definition
-  "Inf A = (
-    if A = {} \<or> A = {\<infinity>} then \<infinity>
-    else if -\<infinity> \<in> A \<or> \<not> bdd_below (Fin -` A) then -\<infinity>
-    else Fin (Inf (Fin -` A)))"
-
-definition
-  "Sup A = (
-    if A = {} \<or> A = {-\<infinity>} then -\<infinity>
-    else if \<infinity> \<in> A \<or> \<not> bdd_above (Fin -` A) then \<infinity>
-    else Fin (Sup (Fin -` A)))"
-
-instance
-proof standard
-  have [dest]: "Inf (Fin -` A) \<le> x" if "Fin x \<in> A" "bdd_below (Fin -` A)" for A and x :: 'a
-    using that by (intro cInf_lower) auto
-  have *: False if "\<not> z \<le> Inf (Fin -` A)" "\<And>x. x \<in> A \<Longrightarrow> Fin z \<le> x" "Fin x \<in> A" for A and x z :: 'a
-    using cInf_greatest[of "Fin -` A" z] that vimage_eq by force
-  show "Inf A \<le> x" if "x \<in> A" for x :: "'a extended" and A
-    using that unfolding Inf_extended_def by (cases x) auto
-  show "z \<le> Inf A" if "\<And>x. x \<in> A \<Longrightarrow> z \<le> x" for z :: "'a extended" and A
-    using that
-    unfolding Inf_extended_def
-    apply (clarsimp; safe)
-         apply force
-        apply force
-    subgoal
-      by (cases z; force simp: bdd_below_def)
-    subgoal
-      by (cases z; force simp: bdd_below_def)
-    subgoal for x y
-      by (cases z; cases y) (auto elim: *)
-    subgoal for x y
-      by (cases z; cases y; simp; metis * less_eq_extended.elims(2))
-    done
-  have [dest]: "x \<le> Sup (Fin -` A)" if "Fin x \<in> A" "bdd_above (Fin -` A)" for A and x :: 'a
-    using that by (intro cSup_upper) auto
-  have *: False if "\<not> Sup (Fin -` A) \<le> z" "\<And>x. x \<in> A \<Longrightarrow> x \<le> Fin z" "Fin x \<in> A" for A and x z :: 'a
-    using cSup_least[of "Fin -` A" z] that vimage_eq by force
-  show "x \<le> Sup A" if "x \<in> A" for x :: "'a extended" and A
-    using that unfolding Sup_extended_def by (cases x) auto
-  show "Sup A \<le> z" if "\<And>x. x \<in> A \<Longrightarrow> x \<le> z" for z :: "'a extended" and A
-    using that
-    unfolding Sup_extended_def
-    apply (clarsimp; safe)
-         apply force
-        apply force
-    subgoal
-      by (cases z; force)
-    subgoal
-      by (cases z; force)
-    subgoal for x y
-      by (cases z; cases y) (auto elim: *)
-    subgoal for x y
-      by (cases z; cases y; simp; metis * extended.exhaust)
-    done
-  show "Inf {} = (top::'a extended)"
-    unfolding Inf_extended_def top_extended_def by simp
-  show "Sup {} = (bot::'a extended)"
-    unfolding Sup_extended_def bot_extended_def by simp
-qed
-
-end
-
-instance "extended" :: ("{conditionally_complete_lattice,linorder}") complete_linorder ..
-
-
-lemma Minf_eq_zero[simp]: "-\<infinity> = 0 \<longleftrightarrow> False" and Pinf_eq_zero[simp]: "\<infinity> = 0 \<longleftrightarrow> False"
-  unfolding zero_extended_def by auto
-
-lemma Sup_int:
-  fixes x :: int and X :: "int set"
-  assumes "X \<noteq> {}" "bdd_above X"
-  shows "Sup X \<in> X \<and> (\<forall>y\<in>X. y \<le> Sup X)"
-proof -
-  from assms obtain x y where "X \<subseteq> {..y}" "x \<in> X"
-    by (auto simp: bdd_above_def)
-  then have *: "finite (X \<inter> {x..y})" "X \<inter> {x..y} \<noteq> {}" and "x \<le> y"
-    by (auto simp: subset_eq)
-  have "\<exists>!x\<in>X. (\<forall>y\<in>X. y \<le> x)"
-  proof
-    { fix z assume "z \<in> X"
-      have "z \<le> Max (X \<inter> {x..y})"
-      proof cases
-        assume "x \<le> z" with \<open>z \<in> X\<close> \<open>X \<subseteq> {..y}\<close> *(1) show ?thesis
-          by (auto intro!: Max_ge)
-      next
-        assume "\<not> x \<le> z"
-        then have "z < x" by simp
-        also have "x \<le> Max (X \<inter> {x..y})"
-          using \<open>x \<in> X\<close> *(1) \<open>x \<le> y\<close> by (intro Max_ge) auto
-        finally show ?thesis by simp
-      qed }
-    note le = this
-    with Max_in[OF *] show ex: "Max (X \<inter> {x..y}) \<in> X \<and> (\<forall>z\<in>X. z \<le> Max (X \<inter> {x..y}))" by auto
-
-    fix z assume *: "z \<in> X \<and> (\<forall>y\<in>X. y \<le> z)"
-    with le have "z \<le> Max (X \<inter> {x..y})"
-      by auto
-    moreover have "Max (X \<inter> {x..y}) \<le> z"
-      using * ex by auto
-    ultimately show "z = Max (X \<inter> {x..y})"
-      by auto
-  qed
-  then show "Sup X \<in> X \<and> (\<forall>y\<in>X. y \<le> Sup X)"
-    unfolding Sup_int_def by (rule theI')
-qed
-
-lemmas Sup_int_in = Sup_int[THEN conjunct1]
-
-lemma Inf_int_in:
-  fixes S :: "int set"
-  assumes "S \<noteq> {}" "bdd_below S"
-  shows "Inf S \<in> S"
-  using assms unfolding Inf_int_def by (smt (z3) Sup_int_in bdd_above_uminus image_iff image_is_empty)
-
-
 lemma finite_setcompr_eq_image: "finite {f x |x. P x} \<longleftrightarrow> finite (f ` {x. P x})"
   by (simp add: setcompr_eq_image)
 
@@ -781,7 +661,7 @@ proof -
       unfolding shortest_def Inf_extended_def by (auto split: if_split_asm)
     from this(1-3) have "x \<in> Fin -` ?S"
       unfolding \<open>x = _\<close>
-      by (intro Inf_int_in, auto simp: zero_extended_def)
+      by (intro Inf_int_in_if, auto simp: zero_extended_def)
         (smt empty_iff extended.exhaust insertI2 mem_Collect_eq vimage_eq)
     with \<open>shortest v = _\<close> show ?thesis
       unfolding vimage_eq by (auto split: if_split_asm intro: that)

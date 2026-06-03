@@ -12,7 +12,7 @@ note = ""
 [authors]
 
 [authors.marmsoler]
-email = "marmsoler_email"
+email = "marmsoler_email1"
 
 [authors.ahmeda]
 email = "ahmeda_email"
@@ -23,9 +23,16 @@ email = "brucker_email2"
 [contributors]
 
 [notify]
-marmsoler = "marmsoler_email"
+marmsoler = "marmsoler_email1"
 
 [history]
+2026-05-29 = """
+The semantics was updated to be compliant with a more recent version of Solidity (v0.8.25).
+In addition to external functions it now also supports internal functions.
+In addition to the verification of invariants, it now also supports the verification of (multiple) pre/post-conditions for functions.
+Type consistency is added as pre-condition for functions.
+(revision a4778d4a4355)<br>
+"""
 
 [extra]
 

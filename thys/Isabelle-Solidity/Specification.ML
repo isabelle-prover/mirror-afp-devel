@@ -45,8 +45,8 @@ val _ = let
                 Variable.names_of ctxt
                 |> fold_map (mk_valtype_term NONE) constr_params
                 ||>> fold_map (mk_valtype_term (SOME true)) constr_memory;
-              val (parlist,constr_params) = split_list pl;
-              val (memlist,constr_memory) = split_list ml;
+              val (parlist,constr_params') = split_list pl;
+              val (memlist,constr_memory') = split_list ml;
               val parlist_free = map Free parlist;
               val memlist_free = map Free memlist;
               val constr_name = constructor_binding (Binding.pos_of name);
@@ -56,8 +56,8 @@ val _ = let
                                 |> change_externals name_ct (call name_ct)
                                 |> Syntax.check_term ctxt
                                 |> change_types
-                                |> mk_inits mk_write constr_memory
-                                |> mk_inits mk_init constr_params
+                                |> mk_inits mk_write constr_memory'
+                                |> mk_inits mk_init constr_params'
                                 |> mk_Bind mk_newMemory
                                 |> mk_Bind mk_newStack
                                 |> mk_init_storages
@@ -88,6 +88,8 @@ val _ = let
                   val f_new = Morphism.term pi f;
                   val f_def_new = Morphism.thm pi f_def;
                   val thm_new = Morphism.thm pi thm;
+                  val parlist = ListPair.zip (parlist, map snd constr_params);
+                  val memlist = ListPair.zip (memlist, map snd constr_memory);
                 in
                   (((f_new, parlist, memlist, f_name, f_def_new), (thm_name, thm_new)), lthy_new)
                 end;
@@ -105,14 +107,15 @@ val _ = let
             let
               fun mk_method (((((name, (external, payable)), parlist), memlist), cdlist), body) ctxt =
                 let
+                  val _ = Pretty.writeln (pretty_terms ctxt (map snd parlist))
                   val (((pl, ml), cl), _) =
                     Variable.names_of ctxt
                     |> fold_map (mk_valtype_term NONE) parlist
                     ||>> fold_map (mk_valtype_term (SOME true)) memlist
                     ||>> fold_map (mk_valtype_term (SOME false)) cdlist;
-                  val (parlist_f,parlist) = split_list pl;
-                  val (memlist_f,memlist) = split_list ml;
-                  val (cdlist_f,cdlist) = split_list cl;
+                  val (parlist_f,parlist') = split_list pl;
+                  val (memlist_f,memlist') = split_list ml;
+                  val (cdlist_f,cdlist') = split_list cl;
                   val parlist_free = map Free parlist_f;
                   val memlist_free = map Free memlist_f;
                   val cdlist_free = map Free cdlist_f;
@@ -123,9 +126,9 @@ val _ = let
                                 |> change_internals name_ct internals cterms
                                 |> Syntax.check_term ctxt
                                 |> change_types
-                                |> (if external then mk_inits mk_cinit cdlist else I)
-                                |> (if external then mk_inits mk_write memlist else I)
-                                |> mk_inits mk_init parlist
+                                |> (if external then mk_inits mk_cinit cdlist' else I)
+                                |> (if external then mk_inits mk_write memlist' else I)
+                                |> mk_inits mk_init parlist'
                                 |> (if external then mk_Bind mk_newCalldata else I)
                                 |> (if external then mk_Bind mk_newMemory else I)
                                 |> mk_Bind mk_newStack
@@ -157,6 +160,9 @@ val _ = let
                     val f_new = Morphism.term pi f;
                     val f_def_new = Morphism.thm pi f_def;
                     val thm_new = Morphism.thm pi thm;
+                    val parlist_f = ListPair.zip (parlist_f, map snd parlist);
+                    val memlist_f = ListPair.zip (memlist_f, map snd memlist);
+                    val cdlist_f = ListPair.zip (cdlist_f, map snd cdlist);
                   in
                     (((f_new, name, external, payable, parlist_f, memlist_f, cdlist_f, f_name, f_def_new), (thm_name, thm_new)), lthy_new)
                   end;
@@ -178,7 +184,7 @@ val _ = let
             let
               fun mkcase ((t, _, _, _, plist, mlist, clist, _, _), _) =
                 let
-                  val parlist = map snd (plist @ mlist @ clist)
+                  val parlist = map (fst #> snd) (plist @ mlist @ clist)
                 in
                   (t $ (call name_ct), parlist ---> smonadT)
                 end
@@ -205,7 +211,7 @@ val _ = let
             in
               ctxt
               |> tap (K (writeln "Generating partial function ..."))
-              |> Local_Theory.begin_nested |> snd
+              |> Local_Theory.begin_nested |> snd (*Needed?*)
               |> Partial_Function.add_partial_function "sm" vars (Binding.empty_atts,mprop)
               ||> `Local_Theory.end_nested
               |> export
@@ -243,22 +249,11 @@ val _ = let
             end;
 
           val name_lc = decapitalizeFirst (Binding.name_of name);
-          val ctxt = Proof_Context.init_global thy;
+          val ctxt = Proof_Context.init_global thy; (*TODO: disjoined if needed*)
           val variables = map (apply2 (Syntax.read_term ctxt)) variables;
           val constr_params = map (apply2 (Syntax.read_term ctxt)) constr_params;
           val constr_memory = map (apply2 (Syntax.read_term ctxt)) constr_memory;
           val methods = map (change_types3 ctxt) methods;
-
-          val b = TFree("'b", address)
-          fun mk_valtype _ \<^term>\<open>SType.TValue TBool\<close> = \<^typ>\<open>bool\<close>
-            | mk_valtype _ \<^term>\<open>SType.TValue TSint\<close> = \<^typ>\<open>256 word\<close>
-            | mk_valtype _ \<^term>\<open>SType.TValue TAddress\<close> = b
-            | mk_valtype _ (Const (\<^const_name>\<open>SType.TValue\<close>, _) $ (Const (\<^const_name>\<open>VType.TBytes\<close>, _) $ _)) = \<^typ>\<open>string\<close>
-            | mk_valtype NONE (Const (\<^const_name>\<open>SType.TArray\<close>, _) $ _ $ _) = error "arrays not allowed as parameters"
-            | mk_valtype NONE (Const (\<^const_name>\<open>SType.DArray\<close>, _) $ _ $ _) = error "arrays not allowed as parameters"
-            | mk_valtype (SOME mem) (Const (\<^const_name>\<open>SType.TArray\<close>, _) $ _ $ _) = if mem then \<^Type>\<open>adata \<^Type>\<open>valtype b\<close>\<close> else  \<^Type>\<open>call_data \<^Type>\<open>valtype b\<close>\<close>
-            | mk_valtype (SOME mem) (Const (\<^const_name>\<open>SType.DArray\<close>, _) $ _) = if mem then \<^Type>\<open>adata \<^Type>\<open>valtype b\<close>\<close> else  \<^Type>\<open>call_data \<^Type>\<open>valtype b\<close>\<close>
-            | mk_valtype _ _ = error "unsupported type"
 
           val mk_contract_datatype =
             let
@@ -294,7 +289,7 @@ val _ = let
 
               fun go (((t, binding, external, payable, plist, mlist, clist, name, def), (mono_name, mono)), con) =
                 (Binding.name_of binding, {term = t, external = external, payable = payable, binding = binding, name = name, def=def, parlist = plist, memlist = mlist, cdlist = clist, mono_name=mono_name, mono=mono, dt_const = con});
-              val met_data = map go (ListPair.zip (ms, tl ct));
+              val met_data = map go (ListPair.zip (ms, tl ct)); (*Add some checks for zip*)
             in
               mupdateN name {dt_type = c, dt_cases = casex, locale = lname, members = variables, constructor = con_data, methods = met_data, pfun_name = pt, pfun = pthm, pinduct = pinduct} thy
             end

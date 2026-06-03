@@ -49,7 +49,7 @@
 \subtitle{A shallow Embedding of Solidity in Isabelle/HOL}
 \author{Diego Marmsoler\textsuperscript{\orcidlink{0000-0003-2859-7673}}
         and Asad Ahmed
-		and Achim D. Brucker\textsuperscript{\orcidlink{0000-0002-6355-1200}}}%
+        and Achim D. Brucker\textsuperscript{\orcidlink{0000-0002-6355-1200}}}%
 \publishers{
 Department of Computer Science, University of Exeter, Exeter, UK\texorpdfstring{\\}{, }
 \texttt{\{d.marmsoler, a.brucker, a.ahmed6\}@exeter.ac.uk}
@@ -59,19 +59,13 @@ Department of Computer Science, University of Exeter, Exeter, UK\texorpdfstring{
 \maketitle
 \begin{abstract}
   \begin{quote}
-    Smart contracts, typically written in high-level languages such as Solidity, are
-    programs deployed on the blockchain to automate financial transactions. Due to
-    the high-stakes nature of these applications, bugs can result in severe financial
-    consequences. In this paper, we present a verification framework for Solidity smart
-    contracts built within the Isabelle/HOL proof assistant. Our approach introduces
-    a novel formalization of Solidity’s storage model, a shallow embedding of its
-    expressions and statements, and custom Isabelle commands to facilitate contract
-    specification and verification. To aid in the verification process, we also provide
-    a verification condition generator. We validate the semantics through a suite
-    of unit tests and evaluate the framework using four case studies. The results
-    demonstrate that our framework enables the verification of complex contracts
-    with manageable effort. Furthermore, the use of shallow embedding significantly
-    reduces verification complexity compared to a deep embedding approach.
+	Smart contracts are programs stored on the blockchain, often developed in a high-level programming language, the most popular of which is Solidity.
+	Smart contracts are used to automate financial transactions and thus bugs can lead to large financial losses.
+	With this paper, we address this problem by describing a verification environment for Solidity in Isabelle/HOL.
+	The framework consists of a novel formalization of the Solidity storage model, a shallow embedding of Solidity expressions and statements, an implementation of Isabelle commands to support a user in specifying Solidity smart contracts, and a verification condition generator to support a user in the verification.
+	Compliance of the semantics is tested by a set of unit tests and the approach is evaluated by means of three case studies.
+	Our results show that the framework can be used to verify even complex contracts with reasonable effort.
+	Moreover, they show that the shallow embedding significantly reduces the verification effort compared to an alternative approach based on a deep embedding.
 	\bigskip
 	\noindent\textbf{Keywords:} {Program Verification, Smart Contracts, Isabelle, Solidity} 
   \end{quote}
