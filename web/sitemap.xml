@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Busy_Beaver.html</loc>
     <lastmod>2026-06-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</loc>
+    <lastmod>2026-05-12T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Andrew_Monotone_Chain.html</loc>
     <lastmod>2026-05-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -20239,6 +20242,14 @@
     <loc>https://isa-afp.org/thys/Prime_Number_Theorem/Prime_Number_Theorem.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Prime_Number_Theorem/Prime_Number_Theorem_Library.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Printing_Parsing_Roundtrip/Set_System.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Printing_Parsing_Roundtrip/Smolka.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Printing_Parsing_Roundtrip/Smolka_AI.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Printing_Parsing_Roundtrip/Smolka_AI_Independence_System.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Priority_Queue_Braun/Priority_Queue_Braun.html</loc>
   </url><url>

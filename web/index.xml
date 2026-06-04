@@ -11,6 +11,14 @@
     <category>Logic/Computability</category>
 </item>
 <item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>The Mostowski Collapse Theorem</title>
   <link>https://isa-afp.org/entries/Mostowski_Collapse.html</link>
   <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>

@@ -4,6 +4,14 @@
     <title>Dmitriy Traytel</title>
     <link>https://isa-afp.org/authors/traytel/</link>
     <description>AFP entries of Dmitriy Traytel</description><item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>Formalization of (Conflict-)Serializability and Strict Two-Phase Locking</title>
   <link>https://isa-afp.org/entries/Serializable.html</link>
   <pubDate>Sat, 01 Feb 2025 00:00:00 +0000</pubDate>

@@ -18,6 +18,29 @@
   "year": "2026"
  },
  {
+  "abstract": "Type annotations are essential when printing terms in a way that preserves their meaning under reparsing and type inference. We study the problem of complete and minimal type annotations for rank-one polymorphic $\\lambda$-calculus terms, as used in Isabelle. Building on prior work by Smolka, Blanchette et al., we show that a reverse-greedy approach leads to a locally minimal and complete set of annotations. Our development is a series of experiments featuring human-driven and AI-driven formalization workflows: a human and an AI agent independently produce pen-and-paper proofs, and the agent autoformalizes them in Isabelle. We refined the resulting AI proof developments for this AFP submission, the original version and our experimental setup can be found in the related Zenodo entry. We give a metatheoretical account of the problem, with a full formal specification and proofs in our paper \"Just Type It in Isabelle! AI Agents Drafting, Mechanizing, and Generalizing from Human Hints\".",
+  "authors": [
+   "Kevin Kappelmann",
+   "Maximilian Schäffeler",
+   "Lukas Stevens",
+   "Mohammad Abdulaziz",
+   "Andrei Popescu",
+   "Dmitriy Traytel"
+  ],
+  "link": "../entries/Printing_Parsing_Roundtrip.html",
+  "shortname": "Printing_Parsing_Roundtrip",
+  "title": "Type Annotations with Roundtrip Property",
+  "topic_links": [
+   "../topics/computer-science/algorithms/optimization/",
+   "../topics/computer-science/programming-languages/type-systems/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Optimization",
+   "Computer science/Programming languages/Type systems"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This development formalizes the executable core of Andrew’s mono tone chain convex hull algorithm [1]. The algorithm sorts planar points lexicographically, removes duplicates, computes lower and upper hull chains by a stack scan that removes non-left turns, and concatenates the two chains with their repeated endpoints removed. The formal ization proves the stack-scan turn invariant, subset and distinctness properties for the computed chains, ordered-chain facts for the lower and upper scans, a distinctness criterion for the final concatenation, length bounds, support-function invariants for the lower and upper scans, and the real-coordinate theorem that the computed output has the same convex hull as the input. The final correctness theorem states the specification explicitly: the returned vertices are input points, ev ery input point lies in the convex hull of the returned vertices, and the returned vertices have exactly the same convex hull as the in put. It also proves irredundancy of the returned vertex set: deleting any returned point changes the convex hull of the returned set. The executable algorithm is polymorphic over ordered integral domains be cause the scan only uses lexicographic ordering and signs of orientation determinants; the geometric theorem is stated for real coordinates be cause the convexity and separating-hyperplane libraries use real vector spaces. Thus the integer examples exercise the executable code, while the real examples instantiate the geometric correctness theorem. The support-function argument shows that points removed by a scan are dominated in the relevant support directions; a separating hyperplane theorem then yields convex-hull coverage, and strict supporting direc tions expose each returned vertex for the irredundancy result. The development proves functional correctness, but does not formalize the asymptotic running time. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
@@ -90,7 +113,7 @@
   "year": "2026"
  },
  {
-  "abstract": "This entry formalizes a quotient-oriented proof of the classical Seifert–van Kampen theorem in Isabelle/HOL. For open subsets U and V of a topological space with x0 ∈ U ∩ V and path-connected intersection, it proves that the fundamental group of U ∪ V at x0 is in bijection with the carrier-based amalgamated free product of the fundamental groups of U and V over the fundamental group of U ∩ V. The development also provides reusable infrastructure for explicit path homotopies, pushout-style quotients, free-product words, carrier-based amalgamated free products, and the abstract encode/decode interface used to organize the final argument. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle",
+  "abstract": "This entry formalizes a quotient-oriented proof of the classical Seifert–van Kampen theorem in Isabelle/HOL. For open subsets U and V of a topological space with x0 ∈ U ∩ V and path-connected intersection, it proves that the fundamental group of U ∪ V at x0 is in bijection with the carrier-based amalgamated free product of the fundamental groups of U and V over the fundamental group of U ∩ V. The development also provides reusable infrastructure for explicit path homotopies, pushout-style quotients, free-product words, carrier-based amalgamated free products, and the abstract encode/decode interface used to organize the final argument. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
    "David Barros Hulak",

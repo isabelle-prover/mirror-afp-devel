@@ -4,6 +4,14 @@
     <title>Maximilian Schäffeler</title>
     <link>https://isa-afp.org/authors/schaeffeler/</link>
     <description>AFP entries of Maximilian Schäffeler</description><item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>Markov Decision Processes with Rewards</title>
   <link>https://isa-afp.org/entries/MDP-Rewards.html</link>
   <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>

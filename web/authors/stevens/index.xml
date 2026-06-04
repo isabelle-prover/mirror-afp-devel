@@ -4,6 +4,14 @@
     <title>Lukas Stevens</title>
     <link>https://isa-afp.org/authors/stevens/</link>
     <description>AFP entries of Lukas Stevens</description><item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>A Verified Reduction Algorithm from MLSSmf to MLSS</title>
   <link>https://isa-afp.org/entries/MLSSmf_to_MLSS.html</link>
   <pubDate>Mon, 05 May 2025 00:00:00 +0000</pubDate>
