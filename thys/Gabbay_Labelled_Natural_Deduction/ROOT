@@ -1,0 +1,32 @@
+chapter AFP
+
+session Gabbay_Labelled_Natural_Deduction (AFP) = HOL +
+  description \<open>
+    A reusable Isabelle/HOL framework for propositional labelled natural
+    deduction. The development presents labelled deduction as a
+    conservative refinement of ordinary intuitionistic ND: it proves
+    erasure soundness, a controlled lifting theorem, and a label-algebra
+    locale with a framework-adequacy meta-theorem reducing labelled
+    derivability up to a label to ordinary derivability after erasure.
+    Three concrete label disciplines are instantiated --- unit labels
+    (conservativity), provenance labels (sound assumption-dependency
+    tracking with a completeness theorem), and a possible-world modal
+    example deriving the K axiom schema and necessitation, connected to
+    Kripke validity.
+  \<close>
+  options [timeout = 300]
+  theories
+    Labelled_Formulas
+    Natural_Deduction
+    Labelled_Natural_Deduction
+    Erasure
+    Lifting
+    Label_Algebra
+    Unit_Labels
+    Provenance_Labels
+    Modal_Labels_Example
+    Modal_K_Schema
+    Examples
+  document_files
+    "root.tex"
+    "root.bib"
