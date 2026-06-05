@@ -18,6 +18,26 @@
   "year": "2026"
  },
  {
+  "abstract": "This formalization develops a mechanized metasemantics for modal necessity in Isabelle/HOL. Its core construction factorizes Kripke-style valuation as V = I o delta, where delta maps object-language formulas to syntactic distinctions and I maps such distinctions to possible-worlds truth-conditions. Thus modal evaluation is carried out over interpreted distinctions rather than over valuation alone.  The development provides three witnesses. First, a concrete satisfiability witness shows that the abstract interpretive-structure locale is jointly satisfiable. Second, a nontrivial truth-condition witness shows that I0(delta0(Atom 0)) separates the two worlds of the concrete model. Third, a no-collapse witness proves that Dia (Atom 0) w holds while Box (Atom 0) w fails. The development introduces no additional global axioms; its locale assumptions are discharged by an explicit concrete model. Hence the framework is non-vacuous, nontrivial, and non-collapsing. This shows that, in the present framework, modal force is not a feature of bare syntax alone, but is grounded in syntactic distinctions only insofar as they are interpreted as possible-worlds truth-conditions.",
+  "authors": [
+   "Kim, Yong-Dock"
+  ],
+  "link": "../entries/Mechanized_Metasemantics.html",
+  "shortname": "Mechanized_Metasemantics",
+  "title": "Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse",
+  "topic_links": [
+   "../topics/logic/philosophical-aspects/",
+   "../topics/logic/general-logic/mechanization-of-proofs/",
+   "../topics/logic/general-logic/modal-logic/"
+  ],
+  "topics": [
+   "Logic/Philosophical aspects",
+   "Logic/General logic/Mechanization of proofs",
+   "Logic/General logic/Modal logic"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Type annotations are essential when printing terms in a way that preserves their meaning under reparsing and type inference. We study the problem of complete and minimal type annotations for rank-one polymorphic $\\lambda$-calculus terms, as used in Isabelle. Building on prior work by Smolka, Blanchette et al., we show that a reverse-greedy approach leads to a locally minimal and complete set of annotations. Our development is a series of experiments featuring human-driven and AI-driven formalization workflows: a human and an AI agent independently produce pen-and-paper proofs, and the agent autoformalizes them in Isabelle. We refined the resulting AI proof developments for this AFP submission, the original version and our experimental setup can be found in the related Zenodo entry. We give a metatheoretical account of the problem, with a full formal specification and proofs in our paper \"Just Type It in Isabelle! AI Agents Drafting, Mechanizing, and Generalizing from Human Hints\".",
   "authors": [
    "Kevin Kappelmann",

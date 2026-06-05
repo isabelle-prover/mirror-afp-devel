@@ -4,6 +4,15 @@
     <title>Logic/Philosophical aspects</title>
     <link>https://isa-afp.org/topics/logic/philosophical-aspects/</link>
     <description>AFP entries in Philosophical aspects</description><item>
+  <title>Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse</title>
+  <link>https://isa-afp.org/entries/Mechanized_Metasemantics.html</link>
+  <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
+  <description>Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse in the AFP</description>
+    <category>Logic/Philosophical aspects</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+<item>
   <title>Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL</title>
   <link>https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</link>
   <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>

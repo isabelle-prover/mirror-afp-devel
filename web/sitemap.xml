@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Busy_Beaver.html</loc>
     <lastmod>2026-06-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Mechanized_Metasemantics.html</loc>
+    <lastmod>2026-05-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</loc>
     <lastmod>2026-05-12T00:00:00+00:00</lastmod>
   </url><url>
@@ -17542,6 +17545,8 @@
     <loc>https://isa-afp.org/thys/MDP-Rewards/MDP_reward.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/MDP-Rewards/MDP_reward_Util.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Mechanized_Metasemantics/Mechanized_Metasemantics.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Median_Method/Median.html</loc>
   </url><url>

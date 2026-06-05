@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse - Archive of Formal Proofs</title>
+    <meta name="description" content="Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse in the Archive of Formal Proofs">
+    <meta property="og:description" content="Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse in the Archive of Formal Proofs">
+    <meta property="og:title" content="Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse">
+    <meta property="og:url" content="https://isa-afp.org/entries/Mechanized_Metasemantics.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>M</span>echanized <span class='first'>M</span>etasemantics of <span class='first'>M</span>odal <span class='first'>N</span>ecessity: <span class='first'>V</span>aluation <span class='first'>F</span>actorization and <span class='first'>M</span>odal <span class='first'>N</span>on-<span class='first'>C</span>ollapse
+  </h1>
+  <div>
+      <p><a href="../authors/dock/">Kim, Yong-Dock</a> <a class="obfuscated" data="eyJ1c2VyIjpbIjAxeWVzdGVyZGF5Il0sImhvc3QiOlsibmF2ZXIiLCJjb20iXX0=">📧</a>
+      </p>
+      <p class="date">May 27, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This formalization develops a mechanized metasemantics for modal necessity in Isabelle/HOL. Its core construction factorizes Kripke-style valuation as V = I o delta, where delta maps object-language formulas to syntactic distinctions and I maps such distinctions to possible-worlds truth-conditions. Thus modal evaluation is carried out over interpreted distinctions rather than over valuation alone.
+
+The development provides three witnesses. First, a concrete satisfiability witness shows that the abstract interpretive-structure locale is jointly satisfiable. Second, a nontrivial truth-condition witness shows that I0(delta0(Atom 0)) separates the two worlds of the concrete model. Third, a no-collapse witness proves that Dia (Atom 0) w holds while Box (Atom 0) w fails. The development introduces no additional global axioms; its locale assumptions are discharged by an explicit concrete model. Hence the framework is non-vacuous, nontrivial, and non-collapsing. This shows that, in the present framework, modal force is not a feature of bare syntax alone, but is grounded in syntactic distinctions only insofar as they are interpreted as possible-worlds truth-conditions.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Generative AI models were used only as technical tools to assist with Isabelle/HOL syntax debugging and English prose polishing. All core conceptual designs, logical definitions, theorem statements, proof ideas, and final verified proofs are the original work of the author.
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/philosophical-aspects/">Logic/Philosophical aspects</a></li>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs/">Logic/General logic/Mechanization of proofs</a></li>
+          <li><a href="../topics/logic/general-logic/modal-logic/">Logic/General logic/Modal logic</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Yong-Dock Kim. Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL. https://isa-afp.org/entries/Axiom_Free_Ontological_Trinity.html</li>
+      </ul>
+      <h3>Session Mechanized_Metasemantics</h3>
+      <ul>
+          <li><a href="../thys/Mechanized_Metasemantics/Mechanized_Metasemantics.html">Mechanized_Metasemantics</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Mechanized_Metasemantics/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Mechanized_Metasemantics/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Mechanized_Metasemantics/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Mechanized_Metasemantics-AFP</p>
+        <pre id="copy-text">@article{Mechanized_Metasemantics-AFP,
+  author  = {Kim, Yong-Dock},
+  title   = {Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Mechanized_Metasemantics.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Mechanized_Metasemantics-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>
