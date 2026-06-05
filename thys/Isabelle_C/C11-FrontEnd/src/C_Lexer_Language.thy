@@ -130,7 +130,7 @@ fun this_string s =
         (Symbol.explode s)
    o pair [])
   >> rev
-val one_not_eof = Scan.one (Symbol.not_eof o #1)
+fun one_not_eof r = Scan.one (Symbol.not_eof o #1) r
 fun unless_eof scan = Scan.unless scan one_not_eof >> single
 val repeats_one_not_eof = Scan.repeats o unless_eof
 val newline =   $$$ "\n"
