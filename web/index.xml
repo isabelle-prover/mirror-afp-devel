@@ -20,6 +20,13 @@
     <category>Logic/General logic/Modal logic</category>
 </item>
 <item>
+  <title>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction</title>
+  <link>https://isa-afp.org/entries/Gabbay_Labelled_Natural_Deduction.html</link>
+  <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
+  <description>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
   <title>Type Annotations with Roundtrip Property</title>
   <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
   <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>

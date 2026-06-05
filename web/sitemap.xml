@@ -11,6 +11,9 @@
     <loc>https://isa-afp.org/entries/Busy_Beaver.html</loc>
     <lastmod>2026-06-01T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Gabbay_Labelled_Natural_Deduction.html</loc>
+    <lastmod>2026-05-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Mechanized_Metasemantics.html</loc>
     <lastmod>2026-05-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -10751,6 +10754,28 @@
     <loc>https://isa-afp.org/thys/FunWithTilings/Tilings.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Furstenberg_Topology/Furstenberg_Topology.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Erasure.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Examples.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Label_Algebra.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Labelled_Formulas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Labelled_Natural_Deduction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Lifting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Modal_K_Schema.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Modal_Labels_Example.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Natural_Deduction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Provenance_Labels.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Gabbay_Labelled_Natural_Deduction/Unit_Labels.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Gabow_SCC/All_Of_Gabow_SCC.html</loc>
   </url><url>
