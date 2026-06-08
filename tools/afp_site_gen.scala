@@ -69,6 +69,7 @@ object AFP_Site_Gen {
 
     def author(author: Author, author_entries: List[Entry]): JSON.Object.T =
       JSON.Object(
+        "id" -> author.id,
         "name" -> author.name,
         "entries" -> entries(author_entries),
         "emails" -> author.emails.map(email),
@@ -126,12 +127,15 @@ object AFP_Site_Gen {
         "date" -> release.date.toString,
         "isabelle" -> release.isabelle)
 
-    def related(related: Reference): JSON.T =
+    def related(related: Reference): JSON.Object.T =
       related match {
         case d: DOI =>
           val href = d.url.toString
-          cache.resolve_doi(d).replace(href, "<a href=" + quote(href) + ">" + href + "</a>")
-        case Formatted(text) => text
+          JSON.Object(
+            "doi" -> d.identifier,
+            "html" ->
+              cache.resolve_doi(d).replace(href, "<a href=" + quote(href) + ">" + href + "</a>"))
+        case Formatted(text) => JSON.Object("html" -> text)
       }
 
     def entry(

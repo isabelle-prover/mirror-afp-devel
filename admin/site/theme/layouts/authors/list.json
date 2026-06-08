@@ -1,9 +1,20 @@
 {{- $index := slice -}}
 {{- range .Pages -}}
+  {{- $emails := slice -}}
+  {{- range .Params.emails -}}
+    {{- $emails = $emails | append .base64 -}}
+  {{- end -}}
+
   {{- $author := dict
+    "id" .Params.id
     "name" .Params.name
+    "emails" $emails
+    "homepages" .Params.homepages
     "link" (printf "..%s" .RelPermalink)
   -}}
+  {{- with .Params.orcid -}}
+    {{- $author = $author | merge (dict "orcid" .id) -}}
+  {{- end -}}
 
   {{- $index = $index | append $author -}}
 {{- end -}}
