@@ -1,8 +1,10 @@
 {{- $index := slice -}}
 {{- range .Pages -}}
-  {{- $index = $index | append (dict
+  {{- $topic := dict
     "name" .Title
-    "link" (printf "..%s" .RelPermalink))
+    "link" (printf "..%s" .RelPermalink)
   -}}
+
+  {{- $index = $index | append $topic -}}
 {{- end -}}
 {{- $index | jsonify (dict "indent" " ") -}}

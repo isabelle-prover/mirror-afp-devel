@@ -1,8 +1,10 @@
 {{- $index := slice -}}
 {{- range .Pages -}}
-  {{- $index = $index | append (dict
+  {{- $author := dict
     "name" .Params.name
-    "link" (printf "..%s" .RelPermalink))
+    "link" (printf "..%s" .RelPermalink)
   -}}
+
+  {{- $index = $index | append $author -}}
 {{- end -}}
 {{- $index | jsonify (dict "indent" " ") -}}
