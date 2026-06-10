@@ -46,10 +46,9 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
       handle Unification_Base.UNIF => Seq.empty (*types do not match*)
     (*standard first-order matcher that calls match_theory on failure;
     generated theorem is already normalised wrt. the resulting environment*)
-    fun match binders ctxt (pt as (p, t)) (env as Envir.Envir {tenv, tyenv,...}) =
+    fun match binders ctxt (pt as (p, t)) (env as Envir.Envir {tenv,...}) =
       (case pt of
-        (Var (x, Tx), _) =>
-          (case Envir.lookup1 tenv (x, Same.commit (Norm.norm_type_match tyenv) Tx) of
+        (Var (x, Tx), _) => (case Envir.lookup1 tenv (x, Tx) of
             NONE =>
               if Term.is_open t then
                 (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
@@ -62,7 +61,7 @@ fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
                 in
                   ((match_types ctxt (Tx, Tt) env, Unification_Base.reflexive_term ctxt t)
                   (*insert new substitution x \<mapsto> t*)
-                  |>> Envir.update ((x, Tt), t)
+                  |>> Envir.update ((x, Tx), t)
                   |> Seq.single)
                   handle Unification_Base.UNIF => Seq.empty (*types do not match*)
                 end

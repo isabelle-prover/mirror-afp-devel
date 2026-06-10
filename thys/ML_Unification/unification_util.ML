@@ -69,11 +69,20 @@ sig
     term Binders.binders -> Proof.context -> (term * term) ->
     (term list * term list) -> Envir.env -> (Envir.env * thm) Seq.seq
 
+  (*unifies ?X t1 ... tn \<equiv>\<^sup>? s by syntactically abstracting t1,...,tn in s, resulting in
+  \<lambda>x1 ... xn. s', and setting ?X to \<lambda>x1 ... xn. s' provided that s' contains no loose bvars*)
+  val abstract_var_args : typ list -> term * term -> ((indexname * typ) * term) option
+  val norms_abstract_var_args : Unification_Base.normalisers
+
+  (*given target terms [t1,...,tn], lowers applications "?f_i s1 ... sm" to "?f_i' t1 ... tn"
+  using abstract_var_args*)
+  val lower_var_args : typ list -> term list -> term list -> Envir.env -> Envir.env option
+  val norms_lower_var_args : Unification_Base.normalisers
+
   (* logging *)
   val log_unif_result : Proof.context -> term * term -> Envir.env * thm -> unit
   val log_unif_results : Proof.context -> term * term -> Unification_Base.closed_unifier -> unit
   val log_unif_results' : int -> Proof.context  -> term * term -> Unification_Base.closed_unifier -> unit
-
 end
 
 structure Unification_Util : UNIFICATION_UTIL =
@@ -169,7 +178,7 @@ val beta_norms_match = {
   conv = Conversion_Util.beta_conv
 }
 val eta_short_norms_match = {
-  (*Precondition: the matcher must already instantiate its theorem!*)
+  (*Precondition: the matcher must already normalise the types in its theorem!*)
   inst_unif_thm = #inst_unif_thm beta_norms_match,
   inst_term = #inst_term beta_norms_match,
   inst_thm = #inst_thm beta_norms_match,
@@ -310,6 +319,27 @@ fun strip_comb_strip_comb norm_thm_types unify binders ctxt (sh, th) (ss, ts) en
   unify binders ctxt (sh, th) env
   |> args_args norm_thm_types (unify binders) ctxt (ss, ts)
   |> Seq.pull)
+
+fun abstract_var_args binderTs = try (fn (p, t) =>
+  let
+    val (p_head, p_args) = strip_comb p
+    val abs_t' = fold_rev (Term_Util.lambda binderTs) p_args t
+    val _ = @{assert} (abs_t' |> strip_abs |> snd |> loose_bnos |> null)
+  in (dest_Var p_head, abs_t') end)
+val norms_abstract_var_args = beta_norms_match
+
+fun lower_var_args binderTs target_ts varp_apps = try (fn env =>
+  let
+    val type_of = curry fastype_of1 binderTs
+    val Ts = map type_of target_ts
+    fun lower t env =
+      let
+        val n = head_of t |> dest_Var |> fst |> fst
+        val (env, v) = Envir.genvar n (env, Ts ---> type_of t)
+        val upd = abstract_var_args binderTs (t, list_comb (v, target_ts)) |> the
+      in Envir.update upd env end
+  in fold lower varp_apps env end)
+val norms_lower_var_args = norms_abstract_var_args
 
 (* logging *)
 

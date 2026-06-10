@@ -144,14 +144,12 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
         | (Const _, Const d) => rigid_rigid ctxt p' d env
         | _ => case strip_comb p' of
             (Var (x, T), ps) =>
-              let
-                val is = ints_of ps
-                val T' = Same.commit (Norm.norm_type_match tyenv) T
+              let val is = ints_of ps
               in
-                case Envir.lookup1 tenv (x, T') of
+                case Envir.lookup1 tenv (x, T) of
                   NONE =>
                     ((let
-                      val tenv' = match_bind (tenv, binders, x, T', is, t')
+                      val tenv' = match_bind (tenv, binders, x, T, is, t')
                       val env' = Envir.Envir {maxidx=maxidx, tenv=tenv', tyenv=tyenv}
                       val t'' = Binders.replace_binders binders t'
                     in Seq.single (env', Unification_Base.reflexive_term ctxt t'') end)

@@ -82,8 +82,8 @@ fun norm_comb_same beta_norm norm f t = (case norm f of
 fun norm_term_match1 beta_norm tenv : term Same.operation =
   let
     fun norm (Var v) = (case Envir.lookup1 tenv v of
-          SOME u => u
-        | NONE => raise Same.SAME)
+            SOME u => u
+          | NONE => raise Same.SAME)
       | norm (Abs (a, T, body)) = Abs (a, T, norm body)
       | norm (Abs abs_args $ t) = norm_abs_comb_same beta_norm norm abs_args t
       | norm (f $ t) = norm_comb_same beta_norm norm f t
@@ -92,18 +92,12 @@ fun norm_term_match1 beta_norm tenv : term Same.operation =
 
 fun norm_term_match2 beta_norm (Envir.Envir {tenv, tyenv, ...}) : term Same.operation =
   let
-    val normT = Envir.subst_type_same tyenv
+    val normT = norm_type_match tyenv
     fun norm (Const (a, T)) = Const (a, normT T)
       | norm (Free (a, T)) = Free (a, normT T)
-      | norm (v as Var (xi, T)) =
-          let
-            fun lookup v = (case Envir.lookup1 tenv (dest_Var v) of
-                SOME u => u
-              | NONE => raise Same.SAME)
-          in
-            (normT T |> (fn T => Same.commit lookup (Var (xi, T))))
-            handle Same.SAME => lookup v
-          end
+      | norm (Var (xi, T)) = (case Envir.lookup1 tenv (xi, T) of
+            SOME u => u
+          | NONE => Var (xi, normT T))
       | norm (Abs args) = norm_abs_same2 normT norm args
       | norm (Abs abs_args $ t) = norm_abs_comb_same beta_norm norm abs_args t
       | norm (f $ t) = norm_comb_same beta_norm norm f t
