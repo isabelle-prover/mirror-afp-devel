@@ -2319,7 +2319,7 @@ proof -
   let ?f = "\<lambda>t::real. -cos (m * t) * cos (n * t)"
   let ?I = "integral {0..pi} (\<lambda>t. cos (real m * t) * cos (real n * t))"
 
-  have "countable {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos ` {-1..1} \<subseteq> {0..pi}"
+  have "countable {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos \<in> {-1..1} \<rightarrow> {0..pi}"
        "continuous_on {0..pi} ?f" "continuous_on {-1..1} arccos"
        "(\<And>x. x \<in> {- 1..1} - {- 1, 1} \<Longrightarrow>
         (arccos has_real_derivative -inverse (sqrt (1 - x ^ 2))) (at x within {- 1..1}))"
@@ -2446,7 +2446,7 @@ proof -
   define g where "g = (\<lambda>t. sin (real (m+1) * t) * sin (real (n+1) * t))"
   let ?I = "integral {0..pi} g"
 
-  have "countable {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos ` {-1..1} \<subseteq> {0..pi}"
+  have "countable {-1, 1 :: real}" "-1 \<le> (1::real)" "arccos \<in> {-1..1} \<rightarrow> {0..pi}"
        "continuous_on {0..pi} f" "continuous_on {-1..1} arccos"
        "(\<And>x. x \<in> {- 1..1} - {- 1, 1} \<Longrightarrow>
         (arccos has_real_derivative -inverse (sqrt (1 - x ^ 2))) (at x within {- 1..1}))"
