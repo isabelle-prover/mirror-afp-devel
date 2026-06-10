@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Euler&#39;s Exponential Series as an Infinite Polynomial - Archive of Formal Proofs</title>
+    <meta name="description" content="Euler&#39;s Exponential Series as an Infinite Polynomial in the Archive of Formal Proofs">
+    <meta property="og:description" content="Euler&#39;s Exponential Series as an Infinite Polynomial in the Archive of Formal Proofs">
+    <meta property="og:title" content="Euler&#39;s Exponential Series as an Infinite Polynomial">
+    <meta property="og:url" content="https://isa-afp.org/entries/Euler_Exponential.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>E</span>uler's <span class='first'>E</span>xponential <span class='first'>S</span>eries as an <span class='first'>I</span>nfinite <span class='first'>P</span>olynomial
+  </h1>
+  <div>
+      <p><a href="../authors/fleuriot/">Jacques D. Fleuriot</a> <a class="obfuscated" data="eyJ1c2VyIjpbIkphY3F1ZXMiLCJGbGV1cmlvdCJdLCJob3N0IjpbImVkIiwiYWMiLCJ1ayJdfQ==">📧</a>
+      </p>
+      <p class="date">June 8, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">In this formalisation, we reconstruct Euler's derivation of the power series for the exponential function as expounded in his famous Introductio in analysin infinitorum, first published in 1748. Using nonstandard analysis, we mechanize his mixture of infinitesimal and infinite `algebraic' reasoning in the proof assistant Isabelle. In so doing, we demonstrate that the gist of his arguments can be reconstructed formally, with Isabelle and nonstandard analysis shoring up crucial aspects of his reasoning that some historians have qualified as being ``more a matter of faith than science''.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
+      </ul>
+      <h3>Session Euler_Exponential</h3>
+      <ul>
+          <li><a href="../thys/Euler_Exponential/FallFactorial.html">FallFactorial</a></li>
+          <li><a href="../thys/Euler_Exponential/AuxiliaryNSA.html">AuxiliaryNSA</a></li>
+          <li><a href="../thys/Euler_Exponential/HyperInt.html">HyperInt</a></li>
+          <li><a href="../thys/Euler_Exponential/Internal.html">Internal</a></li>
+          <li><a href="../thys/Euler_Exponential/Hyperfinite_Set.html">Hyperfinite_Set</a></li>
+          <li><a href="../thys/Euler_Exponential/HyperSum.html">HyperSum</a></li>
+          <li><a href="../thys/Euler_Exponential/HyperArchimedean.html">HyperArchimedean</a></li>
+          <li><a href="../thys/Euler_Exponential/HyperBinomial.html">HyperBinomial</a></li>
+          <li><a href="../thys/Euler_Exponential/HyperrealPower.html">HyperrealPower</a></li>
+          <li><a href="../thys/Euler_Exponential/HyperLog.html">HyperLog</a></li>
+          <li><a href="../thys/Euler_Exponential/EulerExponential.html">EulerExponential</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Real_Power.html">Real Exponents as the Limits of Sequences of Rational Exponents</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Euler_Exponential/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Euler_Exponential/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Euler_Exponential/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Euler_Exponential-AFP</p>
+        <pre id="copy-text">@article{Euler_Exponential-AFP,
+  author  = {Jacques D. Fleuriot},
+  title   = {Euler's Exponential Series as an Infinite Polynomial},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Euler_Exponential.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Euler_Exponential-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

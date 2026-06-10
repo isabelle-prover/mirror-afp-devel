@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-06-01T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Euler_Exponential.html</loc>
+    <lastmod>2026-06-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Busy_Beaver.html</loc>
     <lastmod>2026-06-01T00:00:00+00:00</lastmod>
@@ -9442,6 +9445,28 @@
     <loc>https://isa-afp.org/thys/Eudoxus_Reals/Slope.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/stark/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/AuxiliaryNSA.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/EulerExponential.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/FallFactorial.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/HyperArchimedean.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/HyperBinomial.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/Hyperfinite_Set.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/HyperInt.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/HyperLog.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/HyperrealPower.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/HyperSum.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Euler_Exponential/Internal.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Euler_MacLaurin/Euler_MacLaurin.html</loc>
   </url><url>
