@@ -77,6 +77,13 @@
     <category>Mathematics/Number theory</category>
 </item>
 <item>
+  <title>Feuerbach&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Feuerbach.html</link>
+  <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+  <description>Feuerbach&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>Nash Equilibria for Finite Games in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Nash_Equilibrium.html</link>
   <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>

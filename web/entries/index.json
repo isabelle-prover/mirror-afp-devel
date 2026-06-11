@@ -229,6 +229,25 @@
   "year": "2026"
  },
  {
+  "abstract": "Feuerbach’s theorem is a classical result in Euclidean geometry about certain circles associated with a triangle. It states that the nine-point circle is tangent internally to the triangle’s incircle and tangent externally to each of the three excircles, where the incircle is the circle tangent to all three sides of the triangle; the excircles are circles tangent to one side and the extensions of the other two; the nine-point circle is the circle passing through nine special points of the triangle. This development is an experiment in automatic translation from one proof assistant to another using AI. The file feuerbach.ml was given, one proof at a time, to Claude 4.6 using the Isabelle Assistant plug-in. Despite coaxing and hints, the auto formalisation process transformed a 214-line HOL Light file to nearly 1500 lines of Isabelle/HOL, though one that could be processed in five seconds. Part of the excess length comes from spelling out two transformations (translation of a point to zero, followed by rotation of a side to the vector $(1,0)$) that in HOL Light is done silently by WLOG tactics. The current proof has been heavily simplified, in part using Claude but mostly manually, and is now under 750 lines. It is notable that Claude often relied on the algebra proof method, despite its relative obscurity.",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-05-08",
+  "link": "../entries/Feuerbach.html",
+  "permalink": "https://isa-afp.org/entries/Feuerbach.html",
+  "related": [],
+  "shortname": "Feuerbach",
+  "title": "Feuerbach's Theorem",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This development formalizes Nash equilibria for finite strategic form games, following Nash’s equilibrium concept [5, 4]. It gives reusable definitions of profiles, unilateral deviations, best responses, dominant strategies, and pure Nash equilibria; proves existence for finite ordinal potential games [3] and games with dominant strategies; and verifies matching pennies as a finite game with no pure Nash equilibrium. It also formalizes mixed-strategy profiles for finite games, support lem mas for equilibrium strategies, Dirac embeddings of pure profiles, and the existence of a mixed Nash equilibrium using Brouwer’s fixed point theorem. Worked examples cover the Prisoner’s Dilemma, a coordina tion game, matching pennies, and rock-paper-scissors. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
