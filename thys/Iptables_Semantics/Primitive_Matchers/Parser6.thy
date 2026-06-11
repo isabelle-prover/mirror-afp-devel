@@ -63,7 +63,7 @@ local
                            writeln "WARNING: windows \\r\\n line ending detected"
                          else
                            ()
-      val _ = map warn lines
+      val () = app warn lines
     in
       lines
     end;
