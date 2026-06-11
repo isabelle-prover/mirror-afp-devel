@@ -37,11 +37,11 @@ check_isabelle()
 default_isabelle_tool()
 {
   if [ ! -x "$ISABELLE_TOOL" ]; then
-    if [[ "$VERSION" == devel ]]; then
+    if [[ "$AFP_VERSION" == devel ]]; then
       ISABELLE_TOOL="$(which isabelle || echo '')"
     else
       [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
-      ISABELLE_NAME="Isabelle$VERSION"
+      ISABELLE_NAME="Isabelle$AFP_VERSION"
       ISABELLE_TOOL="$ISABELLE_RELEASES/$ISABELLE_NAME/bin/isabelle"
       if [[ "$OSTYPE" == darwin* && ! -x "$ISABELLE_TOOL" ]]; then
         ISABELLE_TOOL="$ISABELLE_RELEASES/${ISABELLE_NAME}.app/bin/isabelle"

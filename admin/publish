@@ -11,8 +11,8 @@
 
 source "$(dirname "$0")/common"
 
-AFP_NAME=afp-$VERSION
-ISABELLE_NAME="Isabelle${VERSION}"
+AFP_NAME=afp-$AFP_VERSION
+ISABELLE_NAME="Isabelle${AFP_VERSION}"
 
 DEST=afpweb@isa-afp.org:/srv/afp
 FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_NAME/
@@ -72,7 +72,7 @@ do
         JOBS="-j $OPTARG"
         ;;
       r)
-        VERSION="$OPTARG"
+        AFP_VERSION="$OPTARG"
         ;;
       f)
         INTERACTIVE="no"
