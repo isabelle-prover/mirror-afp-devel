@@ -5,6 +5,19 @@ AFP="$AFP_BASE/thys"
 
 source "$AFP_BASE/etc/version"
 
+if [ -z "$AFP_VERSION" ]; then
+  echo 1>&2 "*** Failed to determine AFP version!"
+  exit 2
+fi
+
+if [ ! "$ISABELLE_NAME" = "Isabelle$AFP_VERSION" ]; then
+  if [ "$ISABELLE_NAME" = "Isabelle" ]; then
+    [ ! "$AFP_VERSION" = "devel" ] && echo >&2 "### Version mismatch: Isabelle repository clone with afp-$AFP_VERSION"
+  else
+    echo >&2 "### Version mismatch: $ISABELLE_NAME with afp-$AFP_VERSION"
+  fi
+fi
+
 isabelle_directory '$AFP_BASE'
 isabelle_directory '$AFP'
 
