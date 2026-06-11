@@ -17,6 +17,16 @@ begin
 
 subsection \<open>Using The Simplifier For Unification.\<close>
 
+text \<open>Unsolvable unification disagreement pairs are normalised by the simplifier
+(cf. @{ML_structure Simplifier_Unification}) and then again passed to the unifier:\<close>
+
+lemma
+  assumes "P (map f [])"
+  shows "P []"
+  (*uncomment to see the trace*)
+  (* supply [[ML_map_context \<open>Logger.set_log_levels Logger.root Logger.TRACE\<close>]] *)
+  by (urule assms)
+
 inductive_set even :: "nat set" where
 zero: "0 \<in> even" |
 step: "n \<in> even \<Longrightarrow> Suc (Suc n) \<in> even"
@@ -155,13 +165,27 @@ lemma
 subsection \<open>Better Control Over Meta Variable Instantiations\<close>
 
 text \<open>Consider the following type-inference problem.\<close>
+
 schematic_goal
   assumes app_typeI: "\<And>f x. (\<And>x. ArgT x \<Longrightarrow> DomT x (f x)) \<Longrightarrow> ArgT x \<Longrightarrow> DomT x (f x)"
   and f_type: "\<And>x. ArgT x \<Longrightarrow> DomT x (f x)"
   and x_type: "ArgT x"
-  shows "?T (f x)"
-  apply (urule app_typeI) \<comment>\<open>compare with the following application, creating an (unintuitive) higher-order instantiation\<close>
+  shows "?T (f x)" \<comment> \<open>we want to infer type \<open>?T\<close>\<close>
+  apply (urule app_typeI)
+  \<comment>\<open>compare with the following application, creating an (unintuitive) higher-order instantiation\<close>
   (* apply (rule app_typeI) *)
+  oops
+
+text \<open>For synthesis problems, it is sometimes useful to match terms but unify types:\<close>
+
+schematic_goal foo:
+  assumes "\<And>T fx. P T x \<Longrightarrow> T (fx :: 'b)"
+  shows "T (f x :: ?'b)"
+  apply (urule assms unifier: "Mixed_Unification.gen_fo_hop_e_match
+      Mixed_Unification.gen_fo_hop_match_args_unif Unification_Combinator.fail_match"
+    normalisers: "Unification_Util.beta_eta_short_norms_match_type_unif")
+  \<comment>\<open>Note that the we cannot obtain this result by standard matching:\<close>
+  (* apply (tactic \<open>match_tac @{context} @{thms assms} 1\<close>) *)
   oops
 
 end

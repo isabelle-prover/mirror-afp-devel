@@ -39,6 +39,9 @@ sig
   val beta_norms_match : Unification_Base.normalisers
   val eta_short_norms_match : Unification_Base.normalisers
   val beta_eta_short_norms_match : Unification_Base.normalisers
+  val beta_norms_match_type_unif : Unification_Base.normalisers
+  val eta_short_norms_match_type_unif : Unification_Base.normalisers
+  val beta_eta_short_norms_match_type_unif : Unification_Base.normalisers
   val beta_norms_unif : Unification_Base.normalisers
   val eta_short_norms_unif : Unification_Base.normalisers
   val beta_eta_short_norms_unif : Unification_Base.normalisers
@@ -52,13 +55,22 @@ sig
     Envir_Normalisation.thm_normaliser
 
   (* shared standard cases for unifiers *)
+  val arg_type : term Binders.binders -> term -> typ
   val smash_tpairs_if_occurs : Proof.context -> term -> Envir.env * thm -> (Envir.env * thm) Seq.seq
-  val abstract_abstract : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
+  val gen_abstract : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
     term Binders.binders -> Proof.context -> string -> typ ->
     (term * term) -> Envir.env -> (Envir.env * thm) Seq.seq
-  (*raises UNIF if types do not unify*)
-  val rigid_rigid : Envir_Normalisation.term_type_normaliser -> Unification_Base.type_unifier ->
-    Proof.context -> term -> (string * typ) -> Envir.env -> (Envir.env * thm) Seq.seq
+  val abstract_abstract : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
+    term Binders.binders -> Proof.context -> string * typ * term -> string * typ * term ->
+    Envir.env -> (Envir.env * thm) Seq.seq
+  val abstract_left : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
+    term Binders.binders -> Proof.context -> string * typ * term -> term ->
+    Envir.env -> (Envir.env * thm) Seq.seq
+  val abstract_right : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
+    term Binders.binders -> Proof.context -> term -> string * typ * term ->
+    Envir.env -> (Envir.env * thm) Seq.seq
+  val rigid_rigid : Unification_Base.type_unifier -> Proof.context -> (string * typ) -> term ->
+    Envir.env -> (Envir.env * thm) Seq.seq
   val bound_bound : term Binders.binders -> Proof.context -> (int * int) ->
     thm Seq.seq
   val comb_comb : Envir_Normalisation.thm_type_normaliser -> Unification_Base.closed_unifier ->
@@ -170,7 +182,7 @@ fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
 
 (* normalisers *)
 val beta_norms_match = {
-  (*Precondition: the matcher must already normalise the types in its theorem!*)
+  (*precondition: the matcher must produce a normalised theorem*)
   inst_unif_thm = K o K I,
   inst_term = Norm.norm_term_match,
   inst_thm = Norm.norm_thm_match,
@@ -178,7 +190,7 @@ val beta_norms_match = {
   conv = Conversion_Util.beta_conv
 }
 val eta_short_norms_match = {
-  (*Precondition: the matcher must already normalise the types in its theorem!*)
+  (*precondition: the matcher must produce a normalised theorem*)
   inst_unif_thm = #inst_unif_thm beta_norms_match,
   inst_term = #inst_term beta_norms_match,
   inst_thm = #inst_thm beta_norms_match,
@@ -186,14 +198,36 @@ val eta_short_norms_match = {
   conv = Conversion_Util.eta_short_conv
 }
 val beta_eta_short_norms_match = {
-  (*Precondition: the matcher must already normalise the types in its theorem!*)
+  (*precondition: the matcher must produce a normalised theorem*)
   inst_unif_thm = #inst_unif_thm beta_norms_match,
   inst_term = #inst_term beta_norms_match,
   inst_thm = #inst_thm beta_norms_match,
   norm_term = Term_Normalisation.beta_eta_short,
   conv = Conversion_Util.beta_eta_short_conv
 }
-
+val beta_norms_match_type_unif =
+  let val inst_term = Norm.gen_norm_term_match Norm.norm_type_unif
+  in {
+    inst_unif_thm = Norm.norm_thm_types_unif,
+    inst_term = inst_term,
+    inst_thm = Norm.norm_thm Norm.norm_type_unif inst_term,
+    norm_term = #norm_term beta_norms_match,
+    conv = #conv beta_norms_match}
+  end
+val eta_short_norms_match_type_unif = {
+  inst_unif_thm = #inst_unif_thm beta_norms_match_type_unif,
+  inst_term = #inst_term beta_norms_match_type_unif,
+  inst_thm = #inst_thm beta_norms_match_type_unif,
+  norm_term = #norm_term eta_short_norms_match,
+  conv = #conv eta_short_norms_match
+}
+val beta_eta_short_norms_match_type_unif = {
+  inst_unif_thm = #inst_unif_thm beta_norms_match_type_unif,
+  inst_term = #inst_term beta_norms_match_type_unif,
+  inst_thm = #inst_thm beta_norms_match_type_unif,
+  norm_term = #norm_term beta_eta_short_norms_match,
+  conv = #conv beta_eta_short_norms_match
+}
 val beta_norms_unif = {
   inst_unif_thm = Norm.norm_thm_unif,
   inst_term = Norm.norm_term_unif,
@@ -222,6 +256,7 @@ fun inst_norm_thm inst_thm conv = Conversion_Util.apply_thm_conv conv ooo inst_t
 fun inst_norm_subgoal inst_thm conv i = Conversion_Util.apply_subgoal_conv conv i ooo inst_thm
 
 (* shared standard cases for unifiers *)
+fun arg_type binders t = fastype_of1 (Binders.binder_types binders, t) |> Term.dest_funT |> fst
 fun smash_tpairs_if_occurs ctxt t (env, thm) = Seq.make (fn _ =>
   let
     val tpairs = Thm.tpairs_of thm
@@ -256,11 +291,11 @@ fun smash_tpairs_if_occurs ctxt t (env, thm) = Seq.make (fn _ =>
     |> Seq.pull
   end)
 
-fun abstract_abstract norm_term_type unify binders ctxt name T tbp env = Seq.make (fn _ =>
+fun gen_abstract norm_term_types unify binders ctxt name T tbp env = Seq.make (fn _ =>
   let
     val (binder as (_, bvar), ctxt') = Binders.fix_binder (name, T) ctxt
     fun norm_abstract (env, thm) =
-      let fun norm_bvar env = Same.commit (norm_term_type (Envir.type_env env)) bvar
+      let fun norm_bvar env = Same.commit (norm_term_types (Envir.type_env env)) bvar
       in
         smash_tpairs_if_occurs ctxt' (norm_bvar env) (env, thm)
         |> Seq.map_filter (fn (env, thm) =>
@@ -269,16 +304,25 @@ fun abstract_abstract norm_term_type unify binders ctxt name T tbp env = Seq.mak
       end
   in unify (binder :: binders) ctxt' tbp env |> Seq.maps norm_abstract |> Seq.pull end)
 
-fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env = Seq.make (fn _ =>
-  let val (ns, Ts) = (if is_Const s then dest_Const else dest_Free) s
+(*Note: we universally take the type of the right argument in the following
+so that it also works for matching*)
+fun abstract_abstract norm_term_types unify binders ctxt (np, _, tp) (nt, Tt, tt) =
+  let val name = if nt = "" then np else nt
+  in gen_abstract norm_term_types unify binders ctxt name Tt (tp, tt) end
+
+fun abstract_left norm_term_types unify binders ctxt (np, _, tp) t =
+  let val Ttarg = arg_type binders t
+  in gen_abstract norm_term_types unify binders ctxt np Ttarg (tp, incr_boundvars 1 t $ Bound 0) end
+
+fun abstract_right norm_term_types unify binders ctxt p (nt, Tt, tt) =
+  gen_abstract norm_term_types unify binders ctxt nt Tt (incr_boundvars 1 p $ Bound 0, tt)
+
+fun rigid_rigid unify_types ctxt (ns, Ts) t env = Seq.make (fn _ =>
+  let val (nt, Tt) = (if is_Const t then dest_Const else dest_Free) t
   in
     if ns = nt then
-      let val (env' as Envir.Envir {tyenv,...}) = unify_types ctxt (Ts, Tt) env
-      in
-        (env', UBase.reflexive_term ctxt (Same.commit (norm_term_type tyenv) s))
-        |> Seq.single
-        |> Seq.pull
-      end
+      let val env' = unify_types ctxt (Ts, Tt) env
+      in (env', UBase.reflexive_term ctxt t) |> Seq.single |> Seq.pull end
     else NONE
   end)
 

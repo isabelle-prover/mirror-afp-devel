@@ -43,6 +43,7 @@ email = "kappelmann_email"
 kappelmann = "kappelmann_email"
 
 [history]
+2026-06-11 = "Clarified and unified several invariants across unifiers. Add support for term matching with type unification. Breaking changes: some unifiers now require pre-unified/matched types."
 
 [extra]
 

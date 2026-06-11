@@ -399,7 +399,7 @@ fun pretty_data ctxt data = SShow.record [
     val ord_data = data_ord
     val pretty_data = pretty_data
     type id = data
-    val ord_id = ord_data
+    val eq_id = eq_data
     val pretty_id = pretty_data
     val get_id = I\<close>\<close>
 

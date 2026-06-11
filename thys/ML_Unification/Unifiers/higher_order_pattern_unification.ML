@@ -5,7 +5,7 @@
 Higher-Order Patterns due to Tobias Nipkow.
 Proof-producing E-Unification due to Kevin Kappelmann.
 Further changes by Kevin Kappelmann:
-  - use weak head normal form instead of head normal form.
+  - use weak head normal form in matching
   - beta-reduce terms in match
 
 See also:
@@ -20,15 +20,17 @@ sig
 
   (* E-matching *)
   (*precondition: types of terms are matched*)
-  val e_match : Unification_Base.type_matcher -> Unification_Base.matcher ->
-    Unification_Base.e_matcher
+  val gen_e_match : Unification_Base.type_matcher * Envir_Normalisation.type_normaliser ->
+    Unification_Base.matcher -> Unification_Base.e_matcher
+  val gen_match_args_match : Unification_Base.type_matcher * Envir_Normalisation.type_normaliser
+  val gen_match_args_unif : Unification_Base.type_matcher * Envir_Normalisation.type_normaliser
+  val e_match : Unification_Base.matcher -> Unification_Base.e_matcher
   val match : Unification_Base.matcher
   val norms_match : Unification_Base.normalisers
 
   (* E-unification *)
   (*precondition: types of terms are unified*)
-  val e_unify : Unification_Base.type_unifier -> Unification_Base.unifier ->
-    Unification_Base.e_unifier
+  val e_unify : Unification_Base.unifier -> Unification_Base.e_unifier
   val unify : Unification_Base.unifier
   val norms_unify : Unification_Base.normalisers
 end
@@ -36,7 +38,8 @@ end
 structure Higher_Order_Pattern_Unification : HIGHER_ORDER_PATTERN_UNIFICATION =
 struct
 
-val logger = Logger.setup_new_logger Unification_Base.logger "Higher_Order_Pattern_Unification"
+structure UBase = Unification_Base
+val logger = Logger.setup_new_logger UBase.logger "Higher_Order_Pattern_Unification"
 
 (* shared utils *)
 structure Util = Unification_Util
@@ -66,8 +69,8 @@ fun idx [] _ = raise IDX
 fun ints_of bs =
   (*collects arguments and checks if they are all distinct, bound variables*)
   let fun dest_check (Bound i) acc =
-          if member (op =) acc i then raise Unification_Base.PATTERN else i :: acc
-        | dest_check _ _ = raise Unification_Base.PATTERN
+          if member (op =) acc i then raise UBase.PATTERN else i :: acc
+        | dest_check _ _ = raise UBase.PATTERN
   in fold_rev dest_check bs [] end
 
 fun app (s, []) = s
@@ -102,12 +105,13 @@ fun match_bind (tenv, binders, ixn, T, is, t) =
 
 
 (** higher-order pattern E-unification **)
-fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt env = Seq.make (fn _ =>
+fun gen_e_match (match_types, norm_type) match_theory_pattern match_theory_fail binders ctxt pt env =
+  Seq.make (fn _ =>
   let
-    val norm_pt = apfst o Same.commit o Norm.norm_term_match
-    fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
-      Util.rigid_rigid Norm.norm_term_types_match match_types ctxt p n env |> seq_try
-      handle Unification_Base.UNIF => Seq.empty (*types do not match*)
+    val norm_term_types = Norm.norm_term_types norm_type
+    val norm_thm_types = Norm.norm_thm_types norm_type
+    val norm_pt = apfst o Same.commit o Norm.gen_norm_term_match norm_type
+    fun rigid_rigid ctxt p n env = Util.rigid_rigid (K o K I) ctxt p n env |> seq_try
     (*generated theorem is already normalised wrt. the resulting environment*)
     fun match binders ctxt pt (env as Envir.Envir {maxidx, tenv, tyenv}) =
       let
@@ -121,62 +125,49 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
           match_theory binders ctxt pt' env)
       in
         (case pt' of
-          (Abs (np, _, tp), Abs (nt, Tt, tt)) =>
-            let val name = if np = "" then nt else np
-            in
-              Util.abstract_abstract (K I) match binders ctxt name Tt (tp, tt) env
-              |> seq_try
-            end
+          (Abs absp, Abs abst) =>
+            Util.abstract_abstract norm_term_types match binders ctxt absp abst env |> seq_try
         (*eta-expand on the fly*)
-        | (Abs (np, Tp, tp), _) =>
-            let val Tp' = Envir.subst_type tyenv Tp
-            in
-              Util.abstract_abstract (K I) match binders ctxt np Tp'
-                (tp, incr_boundvars 1 t' $ Bound 0) env
-              |> seq_try
-            end
-        | (_, Abs (nt, Tt, tt)) =>
-            Util.abstract_abstract (K I) match binders ctxt nt Tt
-              (incr_boundvars 1 p' $ Bound 0, tt) env
-            |> seq_try
+        | (Abs absp, _) =>
+            Util.abstract_left norm_term_types match binders ctxt absp t' env |> seq_try
+        | (_, Abs abst) =>
+            Util.abstract_right norm_term_types match binders ctxt p' abst env |> seq_try
         | (Bound i, Bound j) => Util.bound_bound binders ctxt (i, j) |> Seq.map (pair env)
-        | (Free _, Free g) => rigid_rigid ctxt p' g env
-        | (Const _, Const d) => rigid_rigid ctxt p' d env
+        | (Free f, Free _) => rigid_rigid ctxt f t' env
+        | (Const c, Const _) => rigid_rigid ctxt c t' env
         | _ => case strip_comb p' of
             (Var (x, T), ps) =>
-              let val is = ints_of ps
-              in
-                case Envir.lookup1 tenv (x, T) of
-                  NONE =>
-                    ((let
-                      val tenv' = match_bind (tenv, binders, x, T, is, t')
-                      val env' = Envir.Envir {maxidx=maxidx, tenv=tenv', tyenv=tyenv}
-                      val t'' = Binders.replace_binders binders t'
-                    in Seq.single (env', Unification_Base.reflexive_term ctxt t'') end)
-                    handle OPEN_TERM => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-                          Pretty.str "Failed to match (open term) ",
-                          Util.pretty_unif_problem binders ctxt (norm_pt env pt)
-                        ] |> Pretty.string_of);
-                      raise FALLBACK))
-                | SOME ph' =>
-                    if Envir.aeconv (red ph' is [], t') then
-                      Seq.single (env, Unification_Base.reflexive_term ctxt
-                        (Binders.replace_binders binders t'))
-                    else raise FALLBACK
-              end
+              let
+                val is = ints_of ps
+                val env = case Envir.lookup1 tenv (x, T) of
+                    NONE =>
+                      ((let
+                        val tenv' = match_bind (tenv, binders, x, T, is, t')
+                        val env' = Envir.Envir {maxidx=maxidx, tenv=tenv', tyenv=tyenv}
+                      in env' end)
+                      handle OPEN_TERM => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
+                            Pretty.str "Failed to match (open term) ",
+                            Util.pretty_unif_problem binders ctxt (norm_pt env pt')
+                          ] |> Pretty.string_of);
+                        raise FALLBACK))
+                  | SOME ph' => if Envir.aeconv (red ph' is [], t') then env else raise FALLBACK
+                val thm = Binders.replace_binders binders t' |> Same.commit (norm_term_types tyenv)
+                  |> UBase.reflexive_term ctxt
+              in Seq.single (env, thm) end
           | (ph, ps) =>
               let val (th, ts) = strip_comb t'
-              in case (ph, th) of
-                  (Abs _, _) => raise Unification_Base.PATTERN
-                | (_, Abs _) => raise Unification_Base.PATTERN
-                | _ => if null ps orelse null ts then raise FALLBACK
-                    else (*Note: types of theorems are already normalised
-                      ==> we pass the identity type normaliser*)
-                      Util.strip_comb_strip_comb (K o K I) match binders ctxt (ph, th) (ps, ts) env
-                      |> seq_try
+              in
+                if null ps orelse null ts then raise FALLBACK
+                else ((env
+                  |> match_types ctxt (apply2 (curry Term.fastype_of1 (Binders.binder_types binders))
+                    (ph, th))
+                  (*Note: types of args are matched due to matching of heads*)
+                  |> Util.strip_comb_strip_comb norm_thm_types match binders ctxt (ph, th) (ps, ts)
+                  |> seq_try)
+                  handle UBase.UNIF => raise FALLBACK (*types do not match*))
               end)
         handle FALLBACK => handle_failure match_theory_fail "Higher-order pattern matching failed."
-        | Unification_Base.PATTERN => handle_failure match_theory_pattern
+        | UBase.PATTERN => handle_failure match_theory_pattern
             "Terms not in pattern fragment."
       end
   in
@@ -184,13 +175,14 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
         Pretty.str "Higher-order pattern E-matching ",
         Util.pretty_unif_problem binders ctxt (norm_pt env pt)
       ] |> Pretty.string_of);
-    match binders ctxt pt env)
-    |> Seq.pull
-    handle Unification_Base.UNIF => NONE (*types do not match*)
+    match binders ctxt pt env) |> Seq.pull
   end)
 
 (*standard higher-order pattern matching*)
-val match = e_match Util.match_types Comb.fail_match Comb.fail_match
+val gen_match_args_match = (Util.match_types, K I)
+val gen_match_args_unif = (Util.unify_types, Norm.norm_type_unif)
+val e_match = gen_e_match gen_match_args_match
+val match = e_match Comb.fail_match Comb.fail_match
 val norms_match = Util.beta_eta_short_norms_match
 
 (*unification*)
@@ -225,13 +217,6 @@ fun proj_fail_unif ctxt (params as (_, binders, _, _, is, t)) =
       in "Term contains additional bound variable(s) " ^ ys end
   in proj_fail ctxt params reason end
 
-fun proj_fail_type_app ctxt (params as (env, binders, _, _, _, _)) var_app =
-  let
-    fun reason () =
-      let val var_app = string_of_term ctxt env binders var_app
-      in "Projection " ^ var_app ^ " is not well-typed." end
-  in proj_fail ctxt params reason end
-
 fun ocheck_fail ctxt (F, t, binders, env) =
   @{log Logger.DEBUG} ctxt (fn _ => cat_lines [
       "Variable " ^ Term.string_of_vname F ^ " occurs in term",
@@ -248,7 +233,7 @@ fun occurs (F, t, env) =
         | occ _ = false
   in occ t end
 
-fun ints_of' env ts = ints_of (map (Norm.beta_head_unif env) ts)
+fun ints_of' env ts = ints_of (map (Same.commit (Norm.beta_head_unif env)) ts)
 
 (*split_type ([T1,....,Tn]---> T) n = ([Tn,...,T1], T)*)
 fun split_type t n =
@@ -276,7 +261,7 @@ fun mk_proj_list is =
 fun proj ctxt (s, env, binders, is) =
   let
     fun trans d i = if i < d then i else idx is (i - d) + d
-    fun pr (s, env, d, binders) = (case Norm.beta_head_unif env s of
+    fun pr (s, env, d, binders) = (case Same.commit (Norm.beta_head_unif env) s of
         Abs (a, T, t) =>
           let
             val (binder, _) = Binders.fix_binder (a, T) ctxt
@@ -304,7 +289,7 @@ fun proj ctxt (s, env, binders, is) =
               val (env', H) = Envir.genvar a (env, Hty)
               val env'' = Envir.update ((F, Fty), mk_hnf (binders, js, H, ks)) env'
             in (app (H, ls), env'') end
-        | _  => raise Unification_Base.PATTERN))
+        | _  => raise UBase.PATTERN))
     and prs (s :: ss, env, d, binders) =
           let
             val (s', env1) = pr (s, env, d, binders)
@@ -325,77 +310,68 @@ fun mk_ff_list (is,js) =
           | mk _ = raise Fail "mk_ff_list"
     in mk (is, js, length is - 1) end;
 
-fun app_free (Envir.Envir {tyenv,...}) binders n T is =
-  let val norm_type = Same.commit (Norm.norm_type_unif tyenv)
-  in list_comb (Var (n, norm_type T), map (map_types norm_type o Binders.nth_binder_data binders) is) end
+fun app_free_normedT (Envir.Envir {tyenv,...}) binders n T is =
+  list_comb (Var (n, T), map (Binders.nth_binder_data binders) is)
+  |> Same.commit (Norm.norm_term_types_unif tyenv)
 
 fun flexflex1 unify_types ctxt (env, binders, F, Fty, Fty', is, js) =
-  let
-    val env' = unify_types ctxt (Fty, Fty') env
-    val thm = app_free env binders F Fty is |> Unification_Base.reflexive_term ctxt
+  let val thm = app_free_normedT env binders F Fty' js |> UBase.reflexive_term ctxt
   in
-    if is = js then (env', thm)
+    if is = js then (env, thm)
     else
       let
+        val env' = unify_types ctxt (Fty, Fty') env
         val ks = mk_ff_list (is, js)
         val env'' = mk_new_hnf (env', binders, is, F, Fty, ks)
       in (env'', thm) end
   end
 
-fun flexflex2 unify_types ctxt (env, binders, F, Fty, is, G, Gty, js) =
+fun flexflex2 ctxt (env, binders, F, Fty, is, G, Gty, js) =
   let
-    val var_app = app_free env binders F Fty is
-    val binder_types = Binders.binder_types binders
-    val env' = unify_types ctxt
-      (apply2 (Envir.fastype env binder_types) (var_app, app (Var (G, Gty), js))) env
-    val thm = Unification_Base.reflexive_term ctxt var_app
+    val thm = app_free_normedT env binders G Gty js |> UBase.reflexive_term ctxt
     fun ff (F, Fty, is, G as (a, _), Gty, js) =
       if subset (op =) (js, is) then
         let
           val t = mkabs (binders, is, app (Var (G, Gty), map (idx is) js))
-          val env'' = Envir.update ((F, Fty), t) env'
-        in (env'', thm) end
+          val env' = Envir.update ((F, Fty), t) env
+        in (env', thm) end
       else
         let
           val ks = inter (op =) js is
-          val Hty = type_of_G env' (Fty, length is, map (idx is) ks)
-          val (env'', H) = Envir.genvar a (env', Hty)
+          val Hty = type_of_G env (Fty, length is, map (idx is) ks)
+          val (env', H) = Envir.genvar a (env, Hty)
           fun lam is = mkabs (binders, is, app (H, map (idx is) ks))
-          val env''' =
-            Envir.update ((F, Fty), lam is) env''
+          val env'' = Envir.update ((F, Fty), lam is) env'
             |> Envir.update ((G, Gty), lam js)
-        in (env''', thm) end
+        in (env'', thm) end
   in
     if is_less (Term_Ord.indexname_ord (G, F)) then ff (F, Fty, is, G, Gty, js)
     else ff (G, Gty, js, F, Fty, is)
   end
 
-fun flexrigid unify_types ctxt (params as (env, binders, F, Fty, is, t)) =
+fun flexrigid norm_term_types ctxt (params as (env, binders, F, Fty, is, t)) =
   if occurs (F, t, env) then (ocheck_fail ctxt (F, t, binders, env); raise FALLBACK)
   else
-    let val var_app = app_free env binders F Fty is
-    in
-      let
-        val binder_types = Binders.binder_types binders
-        val env' = unify_types ctxt
-          (apply2 (Envir.fastype env binder_types) (var_app, t)) env
-        val (u, env'') = proj ctxt (t, env', binders, is)
-        val env''' = Envir.update ((F, Fty), mkabs (binders, is, u)) env''
-        val thm = Unification_Base.reflexive_term ctxt var_app
-      in (env''', thm) end
-      handle IDX => (proj_fail_unif ctxt params; raise OPEN_TERM)
-      | TYPE _ => (proj_fail_type_app ctxt params var_app; raise Unification_Base.UNIF)
-    end
+    let
+      val (u, env') = proj ctxt (t, env, binders, is)
+      val env'' = Envir.update ((F, Fty), mkabs (binders, is, u)) env'
+      val thm = Binders.replace_binders binders t
+        |> Same.commit (norm_term_types (Envir.type_env env''))
+        |> UBase.reflexive_term ctxt
+    in (env'', thm) end
+    handle IDX => (proj_fail_unif ctxt params; raise OPEN_TERM)
 
 (** higher-order pattern E-unification **)
-fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st env = Seq.make (fn _ =>
+fun gen_e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st env = Seq.make (fn _ =>
   let
+    val norm_type = Norm.norm_type_unif
+    val norm_term_types = Norm.norm_term_types norm_type
+    val norm_thm_types = Norm.norm_thm_types norm_type
+    val norm_st = apply2 o Same.commit o Norm.norm_term_unif
     fun unif binders ctxt st env =
       let
-        val (st' as (s', t')) = apply2 (Norm.beta_head_unif env) st
-        fun rigid_rigid ctxt t n env = (*we do not normalise types in base cases*)
-          Util.rigid_rigid (K I) unify_types ctxt t n env |> seq_try
-          handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
+        val (st' as (s', t')) = apply2 (Same.commit (Norm.beta_head_unif env)) st
+        fun rigid_rigid ctxt t n env = Util.rigid_rigid (K o K I) ctxt t n env |> seq_try
         (*call unify_theory on failure*)
         fun handle_failure unify_theory failure_msg = (@{log Logger.DEBUG} ctxt (fn _ =>
             Pretty.breaks [
@@ -406,67 +382,55 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
           unify_theory binders ctxt st' env)
       in
         (case st' of
-          (Abs (ns, Ts, ts), Abs (nt, Tt, tt)) =>
-            ((let val name = if ns = "" then nt else ns
-            in
-              unify_types ctxt (Ts, Tt) env
-              |> Util.abstract_abstract Norm.norm_term_types_unif unif binders ctxt name Ts (ts, tt)
-              |> seq_try
-            end)
-            handle Unification_Base.UNIF => Seq.empty) (*types do not unify*)
+          (Abs abss, Abs abst) =>
+            Util.abstract_abstract norm_term_types unif binders ctxt abss abst env |> seq_try
         (*eta-expand on the fly*)
-        | (Abs (ns, Ts, ts), _) =>
-            ((let val st = apply2 (Envir.fastype env (Binders.binder_types binders)) st'
-            in
-              unify_types ctxt st env
-              |> Util.abstract_abstract Norm.norm_term_types_unif unif binders ctxt ns Ts
-                (ts, incr_boundvars 1 t' $ Bound 0)
-              |> seq_try
-            end)
-            handle Unification_Base.UNIF => Seq.empty) (*types do not unify*)
-        | (_, Abs _) => Comb.flip_unifier unif binders ctxt st' env
+        | (Abs abss, _) =>
+            Util.abstract_left norm_term_types unif binders ctxt abss t' env |> seq_try
+        | (_, Abs abst) =>
+            Util.abstract_right norm_term_types unif binders ctxt s' abst env |> seq_try
         | (Bound i, Bound j) => Util.bound_bound binders ctxt (i, j) |> Seq.map (pair env)
-        | (Free _, Free g) => rigid_rigid ctxt s' g env
-        | (Const _, Const d) => rigid_rigid ctxt s' d env
+        | (Free f, Free _) => rigid_rigid ctxt f t' env
+        | (Const c, Const _) => rigid_rigid ctxt c t' env
         (*case distinctions on head term*)
         | _ => case apply2 strip_comb st' of
             ((Var (F, Fty), ss), (Var (G, Gty), ts)) =>
               (((if F = G then
                 flexflex1 unify_types ctxt (env, binders, F, Fty, Gty, ints_of' env ss, ints_of' env ts)
               else
-                flexflex2 unify_types ctxt (env, binders, F, Fty, ints_of' env ss, G, Gty, ints_of' env ts))
+                flexflex2 ctxt (env, binders, F, Fty, ints_of' env ss, G, Gty, ints_of' env ts))
               |> Seq.single)
-              handle Unification_Base.UNIF => Seq.empty) (*types do not unify*)
+              handle UBase.UNIF => Seq.empty) (*types do not unify*)
           | ((Var (F, Fty), ss), _) =>
-              (flexrigid unify_types ctxt (env, binders, F, Fty, ints_of' env ss, t')|> Seq.single
-              handle OPEN_TERM => raise FALLBACK
-              | Unification_Base.UNIF => Seq.empty) (*types do not unify*)
+              (flexrigid norm_term_types ctxt (env, binders, F, Fty, ints_of' env ss, t')|> Seq.single
+              handle OPEN_TERM => raise FALLBACK)
           | (_, (Var (F, Fty), ts)) =>
-              (flexrigid unify_types ctxt (env, binders, F, Fty, ints_of' env ts, s') |> Seq.single
-              handle OPEN_TERM => raise FALLBACK
-              | Unification_Base.UNIF => Seq.empty) (*types do not unify*)
+              (flexrigid norm_term_types ctxt (env, binders, F, Fty, ints_of' env ts, s') |> Seq.single
+              handle OPEN_TERM => raise FALLBACK)
           | ((sh, ss), (th, ts)) => if null ss orelse null ts then raise FALLBACK
-              else (*but we have to normalise in comb cases*)
-                Util.strip_comb_strip_comb Norm.norm_thm_types_unif unif binders ctxt
-                  (sh, th) (ss, ts) env
+              else ((env
+                |> unify_types ctxt (apply2 (curry Term.fastype_of1 (Binders.binder_types binders))
+                  (sh, th))
+                (*Note: types of args are matched due to matching of heads*)
+                |> Util.strip_comb_strip_comb norm_thm_types unif binders ctxt (sh, th) (ss, ts)
                 |> seq_try)
+                handle UBase.UNIF => raise FALLBACK (*types do not unify*)))
         handle FALLBACK => handle_failure unify_theory_fail
             "Higher-order pattern unification failed."
-        | Unification_Base.PATTERN => handle_failure unify_theory_pattern
+        | UBase.PATTERN => handle_failure unify_theory_pattern
             "Terms not in pattern fragment."
       end
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Higher-order pattern E-unifying ",
-        Util.pretty_unif_problem binders ctxt (apply2 (Same.commit (Norm.norm_term_unif env)) st)
+        Util.pretty_unif_problem binders ctxt (norm_st env st)
       ] |> Pretty.string_of);
-    unif binders ctxt st env)
-    |> Seq.pull
-    handle Unification_Base.UNIF => NONE (*types do not unify*)
+    unif binders ctxt st env) |> Seq.pull
   end)
 
 (*standard higher-order pattern unification*)
-val unify = e_unify Util.unify_types Comb.fail_unify Comb.fail_unify
+val e_unify = gen_e_unify Util.unify_types
+val unify = e_unify Comb.fail_unify Comb.fail_unify
 val norms_unify = Util.beta_eta_short_norms_unif
 
 end

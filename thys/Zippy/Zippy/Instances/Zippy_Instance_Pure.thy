@@ -286,7 +286,7 @@ struct
   local
     type prio = {depth : int, prio : PAction.prio}
     fun prio_ord depth_ord ({depth = depth1, prio = prio1}, {depth = depth2, prio = prio2}) =
-    prod_ord depth_ord Cost.ord ((depth1, prio1), (depth2, prio2))
+      prod_ord depth_ord Cost.ord ((depth1, prio1), (depth2, prio2))
   in
   structure Depth_First =
   struct

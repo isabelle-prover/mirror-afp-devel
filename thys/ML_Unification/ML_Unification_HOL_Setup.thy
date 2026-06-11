@@ -25,10 +25,10 @@ declare [[ucombine \<open>
     (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)
     val eq_beta_eta_dummy_vars = apply2 (Same.commit beta_eta_short #> dummy_vars) #> (op aconv)
     fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
+      (Unification_Util.inst_norm_term' Mixed_Comb_Unification.norms_fo_hop_comb_unify)
       (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI}
         Mixed_Comb_Unification.norms_fo_hop_comb_unify)
-      (Unification_Util.inst_norm_term' Mixed_Comb_Unification.norms_fo_hop_comb_unify)
-      (Mixed_Comb_Unification.fo_hop_comb_e_unify Unification_Util.unify_types unify_theory)
+      (Mixed_Comb_Unification.fo_hop_comb_e_unify unify_theory)
   in
     Unification_Combine.eunif_data
       (Unification_Combine.metadata (\<^binding>\<open>SIMPS_TO_UNIF_unify\<close>, Prio.HIGH), simp_unif)

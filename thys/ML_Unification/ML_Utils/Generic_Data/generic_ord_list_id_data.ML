@@ -49,7 +49,7 @@ sig
   val setup_attribute : (string, string) Either.either -> local_theory -> local_theory
 end
 
-(*Precondition: equality on ord_data implies equality on (apply2 get_id #> ord_id)*)
+(*precondition: equality on ord_data implies equality on (apply2 get_id #> eq_id)*)
 functor Generic_Ord_List_Id_Data_Functor(
     structure FI : FUNCTOR_INSTANCE_BASE
     val parent_logger : Logger.logger_binding
@@ -58,7 +58,7 @@ functor Generic_Ord_List_Id_Data_Functor(
     val ord_data : data ord
     val pretty_data : Proof.context -> data -> Pretty.T
     type id
-    val ord_id : id ord
+    val eq_id : id * id -> bool
     val pretty_id : Proof.context -> id -> Pretty.T
     val get_id : data -> id
   ) : GENERIC_ORD_LIST_ID_DATA =
@@ -78,11 +78,11 @@ val morph_data = morph_data
 
 type datas = data Ord_List.T
 
-val ord_data_id = apply2 get_id #> ord_id
+val eq_data_id = apply2 get_id #> eq_id
 structure Data = Generic_Data(
   type T = datas
   val empty = []
-  fun merge (xs, ys) = Ord_List.subtract ord_data_id xs ys |> curry (Ord_List.merge ord_data) xs)
+  fun merge (xs, ys) = subtract eq_data_id xs ys |> curry (Ord_List.merge ord_data) xs)
 
 fun get_datas context = Data.get context
   |> map (morph_data (Morphism.transfer_morphism'' context))
@@ -92,11 +92,11 @@ fun insert_data data context =
   let val data = morph_data Morphism.trim_context_morphism data
   in
     Data.map (fn datas =>
-      if Ord_List.member ord_data_id datas data
+      if member eq_data_id datas data
       then let val ctxt = Context.proof_of context
         in
           (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
-              Pretty.str "Data ", pretty_data ctxt data, Pretty.str " already added."
+              Pretty.str "Identifier ", pretty_id ctxt (get_id data), Pretty.str " already added."
             ] |> Pretty.string_of);
           datas)
         end
@@ -104,13 +104,11 @@ fun insert_data data context =
   end
 
 fun delete_id id context =
-  let val id_data_ord = apsnd get_id #> ord_id
+  let val eq_id = apsnd get_id #> eq_id
   in
-    Data.map (fn datas =>
-      if Ord_List.member id_data_ord datas id
-      then Ord_List.remove id_data_ord id datas
-      else
-        let val ctxt = Context.proof_of context
+    Data.map (fn datas => if member eq_id datas id
+      then remove eq_id id datas
+      else let val ctxt = Context.proof_of context
         in
           (@{log Logger.WARN} ctxt (fn _ => Pretty.block [
               Pretty.str "Identifier ", pretty_id ctxt id, Pretty.str " not found."
@@ -168,5 +166,5 @@ functor Generic_Ord_List_Id_Data(A :
     val get_id : data -> Identifier.id
   end) = Generic_Ord_List_Id_Data_Functor(open A
   type id = Identifier.id
-  val ord_id = Identifier.ord
+  val eq_id = Identifier.eq
   val pretty_id = K Identifier.pretty)

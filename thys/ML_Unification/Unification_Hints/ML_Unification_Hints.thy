@@ -26,7 +26,7 @@ ML\<open>
     structure TI = Discrimination_Tree
     structure Args = Term_Index_Unification_Hints_Args
     val init_args = {
-      concl_unifier = SOME Mixed_Comb_Unification.fo_hop_comb_unify,
+      concl_unifier = SOME (Type_Unification.e_unify Mixed_Comb_Unification.fo_hop_comb_unify),
       prems_unifier = SOME (Mixed_Comb_Unification.fo_hop_comb_unify
         |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
       normalisers = SOME Mixed_Comb_Unification.norms_fo_hop_comb_unify,
@@ -72,7 +72,7 @@ declare [[uhint config concl_unifier: \<open>fn binders =>
   (*TODO: should we also remove the recursive hint unifier here? time will tell...*)
   (* #> Unification_Combine.Data.delete_id Unification_Hints_Rec.binding *)
   |> Context.proof_map
-  #> Mixed_Comb_Unification.fo_hop_comb_unify binders\<close>]]
+  #> Type_Unification.e_unify Mixed_Comb_Unification.fo_hop_comb_unify binders\<close>]]
 
 text\<open>Standard non-recursive unification hints using @{ML Mixed_Comb_Unification.fo_hop_comb_unify}
 when looking for hints are accessible via @{attribute uhint}.

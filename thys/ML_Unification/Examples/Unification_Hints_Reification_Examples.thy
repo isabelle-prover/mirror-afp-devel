@@ -36,9 +36,7 @@ ML\<open>
         (Context.the_generic_context ()))}\<close>\<close>
 
 val reify_unify = Unification_Combinator.add_fallback_unifier
-  (fn unif_theory =>
-    Higher_Order_Pattern_Unification.e_unify Unification_Util.unify_types unif_theory unif_theory
-    |> Type_Unification.e_unify Unification_Util.unify_types)
+  (fn unif_theory => Higher_Order_Pattern_Unification.e_unify unif_theory unif_theory)
   (Reification_Unification_Hints.try_hints
     |> Unification_Combinator.norm_unifier
       (Unification_Util.inst_norm_term' Higher_Order_Pattern_Unification.norms_unify))
@@ -89,7 +87,7 @@ declare interp.simps[reify_uhint]
 
 text \<open>We have to allow the hint unifier to recursively look for hints during unification of
 the hint's conclusion.\<close>
-declare [[reify_uhint config concl_unifier: reify_unify]]
+declare [[reify_uhint config concl_unifier: \<open>Type_Unification.e_unify reify_unify\<close>]]
 
 (*uncomment the following to see the hint unification process*)
 (* declare [[ML_map_context \<open>Logger.set_log_levels Unification_Base.logger Logger.DEBUG\<close>]] *)
@@ -110,8 +108,8 @@ paragraph \<open>Reification with matching without recursion for conclusion\<clo
 
 text \<open>We disallow the hint unifier to recursively look for hints while unifying the conclusion;
 instead, we only allow the hint unifier to match the hint's conclusion against the disagreement terms.\<close>
-declare [[reify_uhint config concl_unifier:
-  \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>
+declare [[reify_uhint
+  config concl_unifier: \<open>Type_Unification.e_match Higher_Order_Pattern_Unification.match\<close>
   retrieval: \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
     (K Reification_Unification_Hints.TI.generalisations |> Term_Index_Unification_Hints_Args.retrieve_left)
     Reification_Unification_Hints.TI.norm_term\<close>]]
