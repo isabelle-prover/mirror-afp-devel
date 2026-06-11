@@ -337,15 +337,9 @@ end;
 \<close>
 
 
-(*TODO: is there a library function for this?*)
 ML\<open>
-local
-  fun concat [] = []
-   | concat (x :: xs) = x @ concat xs;
-in
 fun Scan_cons_repeat (parser: ('a -> 'b list * 'a)) (s: 'a) : ('b list * 'a) =
-    let val (x, rest) = Scan.repeat parser s in (concat x, rest) end;
-end
+    let val (x, rest) = Scan.repeat parser s in (flat x, rest) end;
 \<close>
 
 ML_val\<open>(Scan_cons_repeat option_parser) (ipt_explode "-i lup -j net-fw")\<close>
