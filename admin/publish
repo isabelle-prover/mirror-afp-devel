@@ -11,12 +11,12 @@
 
 source "$(dirname "$0")/common"
 
-AFP_VERSION=afp-$VERSION
-ISABELLE_VERSION="Isabelle${VERSION}"
+AFP_NAME=afp-$VERSION
+ISABELLE_NAME="Isabelle${VERSION}"
 
 DEST=afpweb@isa-afp.org:/srv/afp
-FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION/
-SRC=ssh://hg@foss.heptapod.net/isa-afp/$AFP_VERSION
+FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_NAME/
+SRC=ssh://hg@foss.heptapod.net/isa-afp/$AFP_NAME
 
 if [ -n "$SF_LOGIN" ]; then
     LN=$SF_LOGIN
@@ -79,7 +79,7 @@ do
         ;;
       t)
         ISABELLE_TOOL="$OPTARG"
-        ISABELLE_VERSION="$1"
+        ISABELLE_NAME="$1"
         shift
         ;;
     esac
@@ -115,10 +115,10 @@ if [ "$1" != "-" ]; then
     BROWSER_INFO=`$ISABELLE_TOOL getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
     [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
-    HTML_THYS=web/browser_info/$ISABELLE_VERSION
+    HTML_THYS=web/browser_info/$ISABELLE_NAME
     TARS=web/release
     mkdir -p $HTML_THYS
-    ln -s $ISABELLE_VERSION web/browser_info/current
+    ln -s $ISABELLE_NAME web/browser_info/current
     ln -s ../front.css web/entries/front.css
     mkdir -p $TARS
 
