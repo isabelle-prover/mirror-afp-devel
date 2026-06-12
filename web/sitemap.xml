@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-08T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-06-08T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</loc>
+    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Euler_Exponential.html</loc>
     <lastmod>2026-06-08T00:00:00+00:00</lastmod>
@@ -5900,6 +5903,18 @@
     <loc>https://isa-afp.org/thys/Catoids/Groupoid_Lifting.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Catoids/Multimonoid.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Cauchy_Davenport_Vosper/Cauchy_Davenport_Entry.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Cauchy_Davenport_Vosper/Cauchy_Davenport_Prime_Field.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Cauchy_Davenport_Vosper/Modular_Sumsets.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Cauchy_Davenport_Vosper/Sumset_Basics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Cauchy_Davenport_Vosper/Vosper_Prime_Field.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Cauchy_Davenport_Vosper/Vosper_Support.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Cauchy/CauchySchwarz.html</loc>
   </url><url>

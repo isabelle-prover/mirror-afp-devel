@@ -1,5 +1,28 @@
 [
  {
+  "abstract": "This entry formalizes the Cauchy--Davenport lower bound and Vosper's theorem for sumsets over finite fields of prime cardinality. It combines a polynomial-method proof of Cauchy--Davenport with a Davenport-transform proof of Vosper's classification of the nontrivial equality case, and it provides modular-representative lemmas connecting the abstract prime-field results to normalized representatives of $\\mathbb{Z}/p\\mathbb{Z}$. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-11",
+  "link": "../entries/Cauchy_Davenport_Vosper.html",
+  "permalink": "https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html",
+  "related": [],
+  "shortname": "Cauchy_Davenport_Vosper",
+  "title": "Vosper's Theorem and the Cauchy--Davenport Theorem via the Polynomial Method",
+  "topic_links": [
+   "../topics/mathematics/number-theory/",
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Number theory",
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "In this formalisation, we reconstruct Euler's derivation of the power series for the exponential function as expounded in his famous Introductio in analysin infinitorum, first published in 1748. Using nonstandard analysis, we mechanize his mixture of infinitesimal and infinite `algebraic' reasoning in the proof assistant Isabelle. In so doing, we demonstrate that the gist of his arguments can be reconstructed formally, with Isabelle and nonstandard analysis shoring up crucial aspects of his reasoning that some historians have qualified as being ``more a matter of faith than science''.",
   "authors": [
    "Jacques D. Fleuriot"
