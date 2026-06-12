@@ -1,6 +1,6 @@
 [
  {
-  "abstract": "This entry formalizes the Cauchy--Davenport lower bound and Vosper's theorem for sumsets over finite fields of prime cardinality. It combines a polynomial-method proof of Cauchy--Davenport with a Davenport-transform proof of Vosper's classification of the nontrivial equality case, and it provides modular-representative lemmas connecting the abstract prime-field results to normalized representatives of $\\mathbb{Z}/p\\mathbb{Z}$. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "abstract": "This entry formalizes the Cauchy–Davenport lower bound and Vosper's theorem for sumsets over finite fields of prime cardinality. It combines a polynomial-method proof of Cauchy–Davenport with a Davenport-transform proof of Vosper's classification of the nontrivial equality case, and it provides modular-representative lemmas connecting the abstract prime-field results to normalized representatives of $\\mathbb{Z}/p\\mathbb{Z}$. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
    "David Barros Hulak",
@@ -11,7 +11,7 @@
   "permalink": "https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html",
   "related": [],
   "shortname": "Cauchy_Davenport_Vosper",
-  "title": "Vosper's Theorem and the Cauchy--Davenport Theorem via the Polynomial Method",
+  "title": "Vosper's Theorem and the Cauchy–Davenport Theorem via the Polynomial Method",
   "topic_links": [
    "../topics/mathematics/number-theory/",
    "../topics/mathematics/combinatorics/"
