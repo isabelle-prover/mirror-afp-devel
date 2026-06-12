@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Fair_Games_Theorem.html</loc>
+    <lastmod>2026-06-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</loc>
     <lastmod>2026-06-11T00:00:00+00:00</lastmod>
@@ -9691,6 +9694,12 @@
     <loc>https://isa-afp.org/authors/ghourabi/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/ausaf/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Fair_Games_Theorem/Optional_Stopping.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Fair_Games_Theorem/Piecewise_Stopping_Time.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Fair_Games_Theorem/Stopped_Value_Integration.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/FaithfulPMLinHOL/PMLinHOL_deep.html</loc>
   </url><url>

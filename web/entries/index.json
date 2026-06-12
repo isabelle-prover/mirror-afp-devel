@@ -1,5 +1,24 @@
 [
  {
+  "abstract": "This is the optional stopping theorem (or fair games theorem) for real-valued discrete-time stochastic processes on a $\\sigma$-finite filtered measure space. A theory of piecewise-constant stopping times – the function taking $i$ on an $\\mathcal F_i$-measurable set $S$ and $j$ on its complement – is developed, together with the corresponding decomposition of integrals over the two pieces. The central results then prove both directions of the theorem: if $X$ is a submartingale, then for any bounded stopping times $\\tau \\le \\pi$ the expected stopped values satisfy $\\mathbb E[X_\\tau] \\le \\mathbb E[X_\\pi]$ (via the telescoping identity and the submartingale set-integral inequality); conversely, monotonicity of expected stopped values over all bounded stopping times characterises submartingales. It is further shown that the stopped process $X^\\tau$ of a submartingale is again a submartingale. Throughout, the theorems are cross-referenced to their counterparts in Mathlib's OptionalStopping, from which it was translated by Claude. It was polished manually afterwards. The fair games theorem is #62 on the Top 100 Mathematical Theorems.",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-06-12",
+  "link": "../entries/Fair_Games_Theorem.html",
+  "permalink": "https://isa-afp.org/entries/Fair_Games_Theorem.html",
+  "related": [],
+  "shortname": "Fair_Games_Theorem",
+  "title": "Fair Games Theorem",
+  "topic_links": [
+   "../topics/mathematics/probability-theory/"
+  ],
+  "topics": [
+   "Mathematics/Probability theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalizes the Cauchy–Davenport lower bound and Vosper's theorem for sumsets over finite fields of prime cardinality. It combines a polynomial-method proof of Cauchy–Davenport with a Davenport-transform proof of Vosper's classification of the nontrivial equality case, and it provides modular-representative lemmas connecting the abstract prime-field results to normalized representatives of $\\mathbb{Z}/p\\mathbb{Z}$. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
   "authors": [
    "Arthur Freitas Ramos",
