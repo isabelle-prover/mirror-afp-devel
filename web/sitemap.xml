@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-12T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-06-12T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Countable_Multiset.html</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Fair_Games_Theorem.html</loc>
     <lastmod>2026-06-12T00:00:00+00:00</lastmod>
@@ -7902,6 +7905,12 @@
     <loc>https://isa-afp.org/thys/Count_Complex_Roots/Count_Rectangle.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Count_Complex_Roots/Extended_Sturm.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Countable_Multiset/Countable_Multiset.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Countable_Multiset/Countably_Infinite_Multiset.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Countable_Multiset/Infinite_Sums_Enat.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Countable_Sums_and_Discrete_Distributions/Discrete_Subdistributions_and_Distributions.html</loc>
   </url><url>
