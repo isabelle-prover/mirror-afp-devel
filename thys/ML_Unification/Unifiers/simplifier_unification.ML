@@ -14,9 +14,11 @@ sig
   val SIMPS_TO_UNIF_unify : thm -> Unification_Base.normalisers -> Unification_Base.unifier ->
     Unification_Base.unifier
   (*solves "s \<equiv>\<^sup>? t" via simplification followed by unification*)
+  (*precondition: term types are unified and normalised*)
   val simp_unify : Unification_Base.normalisers -> Unification_Base.unifier ->
     Unification_Base.unifier
   (*updates passed simplification unifier such that it aborts if no progress was made*)
+  (*precondition: terms are normalised*)
   val simp_unify_progress : (term * term -> bool) -> Envir_Normalisation.term_normaliser ->
     (Unification_Base.unifier -> Unification_Base.unifier) ->
     Unification_Base.unifier -> Unification_Base.unifier
@@ -89,22 +91,19 @@ fun simp_unify norms2 unif2 binders ctxt =
       i state)
   in Tactic_Unification.unify (#inst_term norms_hop) eq_tac binders ctxt end
 
-fun simp_unify_progress teq norm_term simp_unify unif binders ctxt tp env = Seq.make (fn _ =>
-  let
-    val norm_tp = apply2 o Same.commit o norm_term
-    val tp as (lhs, rhs) = norm_tp env tp
-    fun unify binders ctxt tp' env =
-      let val (tp' as (lhs', rhs')) = norm_tp env tp'
-      in
-        if teq (lhs, lhs') andalso teq (rhs, rhs')
-        then (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
-              Pretty.str "Simplification of ",
-              UUtil.pretty_unif_problem binders ctxt tp,
-              Pretty.str " failed (no progress)"
-            ] |> Pretty.string_of);
-          K Seq.empty) env
-        else unif binders ctxt tp' env
-      end
+fun simp_unify_progress teq norm_term simp_unify unif binders ctxt (tp as (s, t)) env = Seq.make (fn _ =>
+  let fun unify binders ctxt tp' env =
+    let val (tp' as (s', t')) = apply2 (Same.commit (norm_term env)) tp'
+    in
+      if teq (s, s') andalso teq (t, t')
+      then (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
+            Pretty.str "Simplification of ",
+            UUtil.pretty_unif_problem binders ctxt tp,
+            Pretty.str " failed (no progress)"
+          ] |> Pretty.string_of);
+        K Seq.empty) env
+      else unif binders ctxt tp' env
+    end
   in simp_unify unify binders ctxt tp env |> Seq.pull end)
 
 end

@@ -36,7 +36,7 @@ sig
   (*replace outer parameters by fresh meta variables*)
   val forall_elim_vars : term -> int -> term * int
 
-  val mk_equals : 'a Binders.binders -> term * term -> term
+  val mk_equals : typ list -> term * term -> term
 
   val protect : cterm -> cterm
   val unprotect : cterm -> cterm
@@ -124,9 +124,7 @@ fun forall_elim_vars t i =
       |>> Term.subst_bounds o rpair tbody
   end
 
-fun mk_equals binders (lhs, rhs) =
-  let val T = fastype_of1 (Binders.binder_types binders, lhs)
-  in \<^Const>\<open>Pure.eq T for lhs rhs\<close> end
+fun mk_equals Ts (lhs, rhs) = \<^Const>\<open>Pure.eq \<open>fastype_of1 (Ts, lhs)\<close> for lhs rhs\<close>
 
 val protect = Drule.protect
 val unprotect = Thm.dest_arg

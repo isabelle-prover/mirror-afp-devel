@@ -27,13 +27,16 @@ sig
   (*returns empty environment with maxidx set to maximum of given terms*)
   val empty_envir : term * term -> Envir.env
   val update_maxidx_envir : int -> Envir.env -> Envir.env
+  (*returns type and flag indicating whether the type is already normalised*)
+  val fastype_match_lhs : Envir.env -> typ list -> term -> typ * bool
+  val fastype_match_rhs : typ list -> term -> typ
+  val fastype_unif : Envir.env -> typ list -> term -> typ
 
   (* type unification *)
-
-  (*raises Unification_Base.UNIF on failure*)
-  val unify_types : Unification_Base.type_unifier
-  (*raises Unification_Base.UNIF on failure*)
   val match_types : Unification_Base.type_matcher
+  val unify_types : Unification_Base.type_unifier
+  val match_term_types : Unification_Base.term_type_matcher
+  val unify_term_types : Unification_Base.term_type_unifier
 
   (* normalisers *)
   val beta_norms_match : Unification_Base.normalisers
@@ -55,7 +58,6 @@ sig
     Envir_Normalisation.thm_normaliser
 
   (* shared standard cases for unifiers *)
-  val arg_type : term Binders.binders -> term -> typ
   val smash_tpairs_if_occurs : Proof.context -> term -> Envir.env * thm -> (Envir.env * thm) Seq.seq
   val gen_abstract : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
     term Binders.binders -> Proof.context -> string -> typ ->
@@ -88,6 +90,7 @@ sig
 
   (*given target terms [t1,...,tn], lowers applications "?f_i s1 ... sm" to "?f_i' t1 ... tn"
   using abstract_var_args*)
+  (*precondition: types of terms are normalised*)
   val lower_var_args : typ list -> term list -> term list -> Envir.env -> Envir.env option
   val norms_lower_var_args : Unification_Base.normalisers
 
@@ -151,8 +154,29 @@ fun empty_envir (t1, t2) = Envir.empty (maxidx_of_terms [t1, t2])
 fun update_maxidx_envir maxidx' (Envir.Envir {maxidx, tenv = tenv, tyenv = tyenv}) =
   Envir.Envir {maxidx = Integer.max maxidx maxidx', tenv = tenv, tyenv = tyenv}
 
-(* type unification *)
+(*adapted from envir.ML*)
+fun fastype_match_lhs (Envir.Envir {tyenv, ...}) =
+  let
+    val pure = rpair false
+    val normed = rpair true
+    fun err_app f u = raise TERM ("fastype_match_lhs: expected function type", [f $ u])
+    fun fast Ts (f $ u) = (case fast Ts f |> apfst (`(try range_type)) of
+          ((NONE, T), false) => (case try (Norm.norm_type_match tyenv #> range_type) T of
+              SOME T' => normed T'
+            | NONE => err_app f u)
+        | ((NONE, _), true) => err_app f u
+        | ((SOME T, _), normed) => (T, normed))
+      | fast _ (Const (_, T)) = pure T
+      | fast _ (Free (_, T)) = pure T
+      | fast Ts (Bound i) = (normed (nth Ts i) (*precondition: bound type variables are normalised*)
+          handle General.Subscript => raise TERM ("fastype_match_lhs: Bound", [Bound i]))
+      | fast _ (Var (_, T)) = pure T
+      | fast Ts (Abs (_, T, u)) = fast (T :: Ts) u |> apfst (fn T' => T --> T')
+  in fast end
+val fastype_match_rhs = curry fastype_of1
+val fastype_unif = Envir.fastype
 
+(* type unification *)
 fun match_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
   (if pointer_eq (T, U) then env
   else
@@ -179,6 +203,16 @@ fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
           pretty_types ctxt (map (Same.commit (Envir_Normalisation.norm_type_unif tyenv)) [T, U])
         ] |> Pretty.string_of);
     raise UBase.UNIF)
+
+fun match_term_types Ts ctxt (p, t) env =
+  let
+    val (pT, normed) = fastype_match_lhs env Ts p
+    val tT = fastype_match_rhs Ts t
+  in
+    if normed then if pT = tT then env else raise UBase.UNIF
+    else match_types ctxt (pT, tT) env
+  end
+fun unify_term_types Ts ctxt st env = unify_types ctxt (apply2 (fastype_unif env Ts) st) env
 
 (* normalisers *)
 val beta_norms_match = {
@@ -256,7 +290,6 @@ fun inst_norm_thm inst_thm conv = Conversion_Util.apply_thm_conv conv ooo inst_t
 fun inst_norm_subgoal inst_thm conv i = Conversion_Util.apply_subgoal_conv conv i ooo inst_thm
 
 (* shared standard cases for unifiers *)
-fun arg_type binders t = fastype_of1 (Binders.binder_types binders, t) |> Term.dest_funT |> fst
 fun smash_tpairs_if_occurs ctxt t (env, thm) = Seq.make (fn _ =>
   let
     val tpairs = Thm.tpairs_of thm
@@ -304,30 +337,33 @@ fun gen_abstract norm_term_types unify binders ctxt name T tbp env = Seq.make (f
       end
   in unify (binder :: binders) ctxt' tbp env |> Seq.maps norm_abstract |> Seq.pull end)
 
-(*Note: we universally take the type of the right argument in the following
+(*Note: in the following abs cases, we prefer to take the type of the right argument if available
 so that it also works for matching*)
 fun abstract_abstract norm_term_types unify binders ctxt (np, _, tp) (nt, Tt, tt) =
   let val name = if nt = "" then np else nt
   in gen_abstract norm_term_types unify binders ctxt name Tt (tp, tt) end
 
-fun abstract_left norm_term_types unify binders ctxt (np, _, tp) t =
-  let val Ttarg = arg_type binders t
-  in gen_abstract norm_term_types unify binders ctxt np Ttarg (tp, incr_boundvars 1 t $ Bound 0) end
+local fun eta_expand t = incr_boundvars 1 t $ Bound 0
+in
+fun abstract_left norm_term_types unify binders ctxt (np, Tp, tp) t env = env |>
+  let val T = try (fastype_match_rhs (Binders.binder_types binders) #> domain_type) t
+    (*returns NONE if type unification is used and a type in t got assigned to a function type*)
+    |> the_default Tp
+  in gen_abstract norm_term_types unify binders ctxt np T (tp, eta_expand t) end
 
 fun abstract_right norm_term_types unify binders ctxt p (nt, Tt, tt) =
-  gen_abstract norm_term_types unify binders ctxt nt Tt (incr_boundvars 1 p $ Bound 0, tt)
+  gen_abstract norm_term_types unify binders ctxt nt Tt (eta_expand p, tt)
+end
 
 fun rigid_rigid unify_types ctxt (ns, Ts) t env = Seq.make (fn _ =>
   let val (nt, Tt) = (if is_Const t then dest_Const else dest_Free) t
   in
-    if ns = nt then
-      let val env' = unify_types ctxt (Ts, Tt) env
-      in (env', UBase.reflexive_term ctxt t) |> Seq.single |> Seq.pull end
+    if ns = nt then (unify_types ctxt (Ts, Tt) env, UBase.reflexive_term ctxt t)
+      |> Seq.single |> Seq.pull
     else NONE
   end)
 
-fun bound_bound binders ctxt (i, j) = Seq.make (fn _ =>
-  if i = j
+fun bound_bound binders ctxt (i, j) = Seq.make (fn _ => if i = j
   then Binders.nth_binder_data binders i |> UBase.reflexive_term ctxt |> Seq.single |> Seq.pull
   else NONE)
 

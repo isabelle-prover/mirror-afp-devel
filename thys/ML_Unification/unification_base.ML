@@ -21,6 +21,10 @@ sig
 
   type type_unifier = Proof.context -> typ * typ -> Envir.env -> Envir.env
   type type_matcher = type_unifier
+  type closed_term_type_unifier = Proof.context -> term * term -> Envir.env -> Envir.env
+  type term_type_unifier = typ list -> closed_term_type_unifier
+  type closed_term_type_matcher = closed_term_type_unifier
+  type term_type_matcher = term_type_unifier
 
   (* proof-producing unifiers and matchers *)
   type closed_unifier = Proof.context -> term * term -> Envir.env -> (Envir.env * thm) Seq.seq
@@ -29,6 +33,7 @@ sig
   type e_unifier = unifier -> unifier
 
   type closed_matcher = closed_unifier
+  (*precondition: binders are stored with the normalised, matched type*)
   type matcher = unifier
   type e_matcher = matcher -> matcher
 
@@ -69,6 +74,10 @@ exception PATTERN = Pattern.Pattern
 exception UNIF = Pattern.Unif
 type type_unifier = Proof.context -> typ * typ -> Envir.env -> Envir.env
 type type_matcher = type_unifier
+type closed_term_type_unifier = Proof.context -> term * term -> Envir.env -> Envir.env
+type term_type_unifier = typ list -> closed_term_type_unifier
+type closed_term_type_matcher = closed_term_type_unifier
+type term_type_matcher = term_type_unifier
 type closed_unifier = Proof.context -> term * term -> Envir.env ->
   (Envir.env * thm) Seq.seq
 type unifier = term Binders.binders -> closed_unifier

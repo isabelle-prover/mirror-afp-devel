@@ -9,10 +9,10 @@ sig
 
   (*first-order, then higher-order pattern, then fallback*)
   (*precondition: types of terms are matched*)
-  val gen_fo_hop_e_match : Unification_Base.type_matcher * Envir_Normalisation.type_normaliser ->
+  val gen_fo_hop_e_match : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser ->
     Unification_Base.e_matcher
-  val gen_fo_hop_match_args_match : Unification_Base.type_matcher * Envir_Normalisation.type_normaliser
-  val gen_fo_hop_match_args_unif : Unification_Base.type_matcher * Envir_Normalisation.type_normaliser
+  val gen_fo_hop_match_args_match : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
+  val gen_fo_hop_match_args_unif : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
   val fo_hop_e_match : Unification_Base.e_matcher
   val fo_hop_match : Unification_Base.matcher
   val norms_fo_hop_match : Unification_Base.normalisers

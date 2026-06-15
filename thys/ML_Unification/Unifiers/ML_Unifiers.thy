@@ -86,6 +86,7 @@ declare [[ucombine \<open>
     fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
       (Unification_Util.inst_norm_term' norms) (Simplifier_Unification.simp_unify norms)
       (e_unif unify_theory)
+      |> Unification_Combinator.norm_unifier (#inst_term norms)
     val metadata = Unification_Combine.metadata (\<^binding>\<open>simp_unify\<close>, Prio.MEDIUM)
   in Unification_Combine.eunif_data (metadata, simp_unif) end\<close>]]
 
