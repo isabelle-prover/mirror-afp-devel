@@ -6,6 +6,7 @@ theory Functional_Spaces
   imports
     "HOL-Analysis.Analysis"
     "HOL-Library.Function_Algebras"
+    "HOL-Library.Function_Real_Vectors"
     Ergodic_Theory.SG_Library_Complement
 begin
 
@@ -17,8 +18,8 @@ text \<open>Many functional spaces are spaces of functions. To be able to use th
 framework, spaces of functions thus need to be endowed with a vector space
 structure, coming from pointwise addition and multiplication.
 
-Some instantiations for \verb+fun+ are already given in \verb+Function_Algebras.thy+ and
-\verb+Lattices.thy+, we add several.\<close>
+Some instantiations for \verb+fun+ are already given in \verb+Function_Algebras.thy+,
+\verb+Function_Real_Vectors.thy+, and \verb+Lattices.thy+, we add several.\<close>
 
 text \<open>\verb+minus_fun+ is already defined, in \verb+Lattices.thy+, but under the strange name
 \verb+fun_Compl_def+. We restate the definition so that \verb+unfolding minus_fun_def+ works.
@@ -32,18 +33,6 @@ lemma fun_sum_apply:
   fixes u::"'i \<Rightarrow> 'a \<Rightarrow> ('b::comm_monoid_add)"
   shows "(sum u I) x = sum (\<lambda>i. u i x) I"
 by (induction I rule: infinite_finite_induct, auto)
-
-instantiation "fun" :: (type, real_vector) real_vector
-begin
-
-definition scaleR_fun::"real \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b"
-  where "scaleR_fun = (\<lambda>c f. (\<lambda>x. c *\<^sub>R f x))"
-
-lemma scaleR_apply [simp, code]: "(c *\<^sub>R f) x = c *\<^sub>R (f x)"
-  by (simp add: scaleR_fun_def)
-
-instance by (standard, auto simp add: scaleR_add_right scaleR_add_left)
-end
 
 lemmas divideR_apply = scaleR_apply
 
