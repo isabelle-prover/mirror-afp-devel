@@ -27,6 +27,7 @@ sig
     thm option
 
   val protect : thm -> thm
+  val make_elim : Proof.context -> thm -> thm
 end
 
 structure Thm_Util : THM_UTIL =
@@ -79,5 +80,11 @@ fun subgoal_thm_from_concl_thm cbinders cprems ctxt concl_thm =
 
 fun protect thm = Thm.instantiate' [] [SOME (Thm.cprop_of thm)] Drule.protectI
   |> Thm.elim_implies thm
+
+(*Tactic.make_elim allows no context passing but Thm.biresolution fails to certificate certain
+theorems without a context*)
+fun make_elim ctxt thm =
+  let val resolve = Thm.biresolution (SOME ctxt) false [(false, thm)] |> HEADGOAL #> Seq.hd
+  in zero_var_indexes (resolve revcut_rl) end
 
 end
