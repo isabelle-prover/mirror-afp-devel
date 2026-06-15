@@ -179,8 +179,8 @@ schematic_goal
 text \<open>For synthesis problems, it is sometimes useful to match terms but unify types:\<close>
 
 schematic_goal foo:
-  assumes "\<And>T fx. P T x \<Longrightarrow> T (fx :: 'b)"
-  shows "T (f x :: ?'b)"
+  assumes "\<And>T x. P T x \<Longrightarrow> T (x :: 'b)"
+  shows "T (x :: ?'b)"
   apply (urule assms unifier: "Mixed_Unification.gen_fo_hop_e_match
       Mixed_Unification.gen_fo_hop_match_args_unif Unification_Combinator.fail_match"
     normalisers: "Unification_Util.beta_eta_short_norms_match_type_unif")
