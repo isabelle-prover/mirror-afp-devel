@@ -1,0 +1,47 @@
+title = "The Dottie Number"
+date = 2026-06-13
+topics = [
+  "Mathematics/Misc",
+]
+abstract = """
+<p>The Dottie number is the unique fixed point $d$ of the cosine function:
+  $\\cos d = d$. It is approximately 0.739085133215 and has no known closed
+  form.</p>
+  <p>This theory establishes the Dottie number's key properties: the
+  fixed point exists (by the intermediate value theorem) and is unique
+  (because $\\cos x - x$ has a strictly negative derivative). Next, the
+  value of $d$ to 12 decimal places is shown using the <tt>approximation</tt> proof
+  method. Two more properties of $d$ are also shown: first, that it is
+  <em>transcendental</em> (via the Hermite–Lindemann–Weierstrass theorem); second,
+  that it is a <em>universal attractor</em>, in the sense that iterating the cosine
+  function from any real starting point converges to it.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+The formalisation was created with the help of Claude 4.6, but heavily rewritten and generalised manually.
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

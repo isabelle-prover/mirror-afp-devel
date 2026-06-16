@@ -20,6 +20,25 @@
   "year": "2026"
  },
  {
+  "abstract": "The Dottie number is the unique fixed point $d$ of the cosine function: $\\cos d = d$. It is approximately 0.739085133215 and has no known closed form.\nThis theory establishes the Dottie number's key properties: the fixed point exists (by the intermediate value theorem) and is unique (because $\\cos x - x$ has a strictly negative derivative). Next, the value of $d$ to 12 decimal places is shown using the approximation proof method. Two more properties of $d$ are also shown: first, that it is transcendental (via the Hermite–Lindemann–Weierstrass theorem); second, that it is a universal attractor, in the sense that iterating the cosine function from any real starting point converges to it.\n",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-06-13",
+  "link": "../entries/Dottie_Number.html",
+  "permalink": "https://isa-afp.org/entries/Dottie_Number.html",
+  "related": [],
+  "shortname": "Dottie_Number",
+  "title": "The Dottie Number",
+  "topic_links": [
+   "../topics/mathematics/misc/"
+  ],
+  "topics": [
+   "Mathematics/Misc"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This is the optional stopping theorem (or fair games theorem) for real-valued discrete-time stochastic processes on a $\\sigma$-finite filtered measure space. A theory of piecewise-constant stopping times – the function taking $i$ on an $\\mathcal F_i$-measurable set $S$ and $j$ on its complement – is developed, together with the corresponding decomposition of integrals over the two pieces. The central results then prove both directions of the theorem: if $X$ is a submartingale, then for any bounded stopping times $\\tau \\le \\pi$ the expected stopped values satisfy $\\mathbb E[X_\\tau] \\le \\mathbb E[X_\\pi]$ (via the telescoping identity and the submartingale set-integral inequality); conversely, monotonicity of expected stopped values over all bounded stopping times characterises submartingales. It is further shown that the stopped process $X^\\tau$ of a submartingale is again a submartingale. Throughout, the theorems are cross-referenced to their counterparts in Mathlib's OptionalStopping, from which it was translated by Claude. It was polished manually afterwards. The fair games theorem is #62 on the Top 100 Mathematical Theorems.",
   "authors": [
    "Lawrence C. Paulson"
