@@ -42,9 +42,9 @@ sig
   val beta_norms_match : Unification_Base.normalisers
   val eta_short_norms_match : Unification_Base.normalisers
   val beta_eta_short_norms_match : Unification_Base.normalisers
-  val beta_norms_match_type_unif : Unification_Base.normalisers
-  val eta_short_norms_match_type_unif : Unification_Base.normalisers
-  val beta_eta_short_norms_match_type_unif : Unification_Base.normalisers
+  val beta_norms_match_type_unify : Unification_Base.normalisers
+  val eta_short_norms_match_type_unify : Unification_Base.normalisers
+  val beta_eta_short_norms_match_type_unify : Unification_Base.normalisers
   val beta_norms_unif : Unification_Base.normalisers
   val eta_short_norms_unif : Unification_Base.normalisers
   val beta_eta_short_norms_unif : Unification_Base.normalisers
@@ -239,7 +239,7 @@ val beta_eta_short_norms_match = {
   norm_term = Term_Normalisation.beta_eta_short,
   conv = Conversion_Util.beta_eta_short_conv
 }
-val beta_norms_match_type_unif =
+val beta_norms_match_type_unify =
   let val inst_term = Norm.gen_norm_term_match Norm.norm_type_unif
   in {
     inst_unif_thm = Norm.norm_thm_types_unif,
@@ -248,17 +248,17 @@ val beta_norms_match_type_unif =
     norm_term = #norm_term beta_norms_match,
     conv = #conv beta_norms_match}
   end
-val eta_short_norms_match_type_unif = {
-  inst_unif_thm = #inst_unif_thm beta_norms_match_type_unif,
-  inst_term = #inst_term beta_norms_match_type_unif,
-  inst_thm = #inst_thm beta_norms_match_type_unif,
+val eta_short_norms_match_type_unify = {
+  inst_unif_thm = #inst_unif_thm beta_norms_match_type_unify,
+  inst_term = #inst_term beta_norms_match_type_unify,
+  inst_thm = #inst_thm beta_norms_match_type_unify,
   norm_term = #norm_term eta_short_norms_match,
   conv = #conv eta_short_norms_match
 }
-val beta_eta_short_norms_match_type_unif = {
-  inst_unif_thm = #inst_unif_thm beta_norms_match_type_unif,
-  inst_term = #inst_term beta_norms_match_type_unif,
-  inst_thm = #inst_thm beta_norms_match_type_unif,
+val beta_eta_short_norms_match_type_unify = {
+  inst_unif_thm = #inst_unif_thm beta_norms_match_type_unify,
+  inst_term = #inst_term beta_norms_match_type_unify,
+  inst_thm = #inst_thm beta_norms_match_type_unify,
   norm_term = #norm_term beta_eta_short_norms_match,
   conv = #conv beta_eta_short_norms_match
 }

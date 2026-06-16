@@ -16,6 +16,9 @@ sig
   val fo_hop_e_match : Unification_Base.e_matcher
   val fo_hop_match : Unification_Base.matcher
   val norms_fo_hop_match : Unification_Base.normalisers
+  val fo_hop_e_match_type_unify : Unification_Base.e_matcher
+  val fo_hop_match_type_unify : Unification_Base.matcher
+  val norms_fo_hop_match_type_unify : Unification_Base.normalisers
 
   (*precondition: types of terms are unified*)
   val fo_hop_e_unify : Unification_Base.e_unifier
@@ -60,10 +63,13 @@ fun gen_fo_hop_e_match args match_theory binders ctxt tp env = Seq.make (fn _ =>
     |> Seq.pull
   end)
 val gen_fo_hop_match_args_match = First_Order_Unification.gen_match_args_match
-val gen_fo_hop_match_args_unif = First_Order_Unification.gen_match_args_unif
+val gen_fo_hop_match_args_unif = First_Order_Unification.gen_match_args_unify
 val fo_hop_e_match = gen_fo_hop_e_match gen_fo_hop_match_args_match
 val fo_hop_match = fo_hop_e_match UCO.fail_match
 val norms_fo_hop_match = UUtil.beta_eta_short_norms_match
+val fo_hop_e_match_type_unify = gen_fo_hop_e_match gen_fo_hop_match_args_unif
+val fo_hop_match_type_unify = fo_hop_e_match_type_unify UCO.fail_match
+val norms_fo_hop_match_type_unify = UUtil.beta_eta_short_norms_match_type_unify
 
 fun fo_hop_e_unify unif_theory binders ctxt tp env = Seq.make (fn _ =>
   let

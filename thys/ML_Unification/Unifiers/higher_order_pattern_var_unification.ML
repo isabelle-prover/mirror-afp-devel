@@ -53,8 +53,7 @@ in
 
 fun e_unify unif_theory binders ctxt (tp as (t, p)) env = Seq.make (fn _ =>
   let
-    val hop_match_type_unif = Higher_Order_Pattern_Unification.gen_e_match
-      Higher_Order_Pattern_Unification.gen_match_args_unif Comb.fail_match Comb.fail_match
+    val hop_match_type_unif = Higher_Order_Pattern_Unification.match_type_unify
     val hop_match_type_unif_tp = hop_match_type_unif binders ctxt tp
     val hop_match_type_unif_pt = Comb.flip_unifier hop_match_type_unif binders ctxt tp
     val seq_try = seq_try "Higher-order pattern matching failed."

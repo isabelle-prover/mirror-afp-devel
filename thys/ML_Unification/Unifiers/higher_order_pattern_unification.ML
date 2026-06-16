@@ -24,10 +24,13 @@ sig
   val gen_e_match : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser ->
     Unification_Base.matcher -> Unification_Base.e_matcher
   val gen_match_args_match : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
-  val gen_match_args_unif : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
+  val gen_match_args_unify : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
   val e_match : Unification_Base.matcher -> Unification_Base.e_matcher
   val match : Unification_Base.matcher
   val norms_match : Unification_Base.normalisers
+  val e_match_type_unify : Unification_Base.matcher -> Unification_Base.e_matcher
+  val match_type_unify : Unification_Base.matcher
+  val norms_match_type_unify : Unification_Base.normalisers
 
   (* E-unification *)
   (*precondition: types of terms are unified*)
@@ -176,13 +179,15 @@ fun gen_e_match (match_term_types, norm_type_rec) match_theory_pattern match_the
 
 (*standard higher-order pattern matching*)
 val gen_match_args_match = (Util.match_term_types, K I)
-val gen_match_args_unif = (Util.unify_term_types, Norm.norm_type_unif)
+val gen_match_args_unify = (Util.unify_term_types, Norm.norm_type_unif)
 val e_match = gen_e_match gen_match_args_match
 val match = e_match Comb.fail_match Comb.fail_match
 val norms_match = Util.beta_eta_short_norms_match
+val e_match_type_unify = gen_e_match gen_match_args_unify
+val match_type_unify = e_match_type_unify Comb.fail_match Comb.fail_match
+val norms_match_type_unify = Util.beta_eta_short_norms_match_type_unify
 
 (*unification*)
-
 fun string_of_term ctxt env binders t =
   (map (Free o fst) binders, t)
   |> subst_bounds
