@@ -181,9 +181,8 @@ text \<open>For synthesis problems, it is sometimes useful to match terms but un
 schematic_goal foo:
   assumes "\<And>T x. P T x \<Longrightarrow> T (x :: 'b)"
   shows "T (x :: ?'b)"
-  apply (urule assms unifier: "Mixed_Unification.gen_fo_hop_e_match
-      Mixed_Unification.gen_fo_hop_match_args_unif Unification_Combinator.fail_match"
-    normalisers: "Unification_Util.beta_eta_short_norms_match_type_unif")
+  apply (urule assms unifier: Mixed_Unification.fo_hop_match_type_unify
+    normalisers: Unification_Util.beta_eta_short_norms_match_type_unify)
   \<comment>\<open>Note that the we cannot obtain this result by standard matching:\<close>
   (* apply (tactic \<open>match_tac @{context} @{thms assms} 1\<close>) *)
   oops
