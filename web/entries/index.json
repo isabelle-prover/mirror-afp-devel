@@ -1,5 +1,33 @@
 [
  {
+  "abstract": "A well-known result about propositional logic is that transforming a formula into disjunctive or conjunctive normal form can lead to an exponential blowup of the formula size. We formalize this result in the form of two theorems and discuss the challenges we encountered.",
+  "authors": [
+   "Leon Raffael Schulz",
+   "Martin Desharnais-Schäfer",
+   "Jan Johannsen"
+  ],
+  "date": "2026-06-15",
+  "link": "../entries/CNF_DNF_Exp_Blowup.html",
+  "permalink": "https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html",
+  "related": [
+   {
+    "doi": "10.5282/ubm/epub.135623"
+   },
+   {
+    "html": "https://www.ifi.lmu.de/institut/personen/jjohannsen/jj_unpublished/skript.pdf"
+   }
+  ],
+  "shortname": "CNF_DNF_Exp_Blowup",
+  "title": "A Formalization of the Exponential Blowup in the Transformations between CNF and DNF",
+  "topic_links": [
+   "../topics/logic/general-logic/classical-propositional-logic/"
+  ],
+  "topics": [
+   "Logic/General logic/Classical propositional logic"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "We define countable multisets as a generalization of finite multisets. Countable multisets are equivalently represented as functions from elements to extended natural numbers ($\\mathbb{N} \\cup \\{\\infty\\}$) returning non-zero values for countably many elements, or as quotients of lazy lists modulo infinitary permutations. We register countable multisets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes. We further define the subtype of countably infinite multisets and register it as a BNF, too.",
   "authors": [
    "Mathias Schack Rabing",

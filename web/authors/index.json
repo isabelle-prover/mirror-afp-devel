@@ -2201,6 +2201,16 @@
   "name": "Jamie Wright"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbImphbiIsImpvaGFubnNlbiJdLCJob3N0IjpbImlmaSIsImxtdSIsImRlIl19"
+  ],
+  "homepages": [],
+  "id": "johannsen",
+  "link": "../authors/johannsen/",
+  "name": "Jan Johannsen",
+  "orcid": "0009-0004-2072-4679"
+ },
+ {
   "emails": [],
   "homepages": [
    "http://www.irit.fr/~Jan-Georg.Smaus"
@@ -2899,6 +2909,16 @@
   "id": "oldenburg",
   "link": "../authors/oldenburg/",
   "name": "Lennart Oldenburg"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbIkxlIiwiU2NodWx6Il0sImhvc3QiOlsiY2FtcHVzIiwibG11IiwiZGUiXX0="
+  ],
+  "homepages": [],
+  "id": "schulzl",
+  "link": "../authors/schulzl/",
+  "name": "Leon Raffael Schulz",
+  "orcid": "0009-0007-7666-2034"
  },
  {
   "emails": [],

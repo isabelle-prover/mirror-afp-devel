@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</loc>
+    <lastmod>2026-06-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Countable_Multiset.html</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
@@ -6226,6 +6229,8 @@
     <loc>https://isa-afp.org/thys/Closest_Pair_Points/Closest_Pair_Alternative.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Closest_Pair_Points/Common.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/CNF_DNF_Exp_Blowup/CNF_DNF_Exp_Blowup.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/CoCon/All_BD_Security_Instances_for_CoCon.html</loc>
   </url><url>
@@ -15287,6 +15292,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/wright/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/johannsen/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/smaus/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lim/</loc>
@@ -16746,6 +16753,8 @@
     <loc>https://isa-afp.org/authors/beringer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/oldenburg/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/schulzl/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/huebner/</loc>
   </url><url>
