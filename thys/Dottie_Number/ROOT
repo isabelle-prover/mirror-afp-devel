@@ -1,0 +1,11 @@
+chapter AFP
+
+session Dottie_Number (AFP) = "HOL-Analysis" +
+  options [timeout = 300, document_build = pdflatex]
+  sessions
+    "HOL-Decision_Procs"
+    "Hermite_Lindemann"
+  theories
+    Dottie
+  document_files
+    "root.tex"
