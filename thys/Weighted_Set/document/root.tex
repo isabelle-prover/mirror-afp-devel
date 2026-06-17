@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\title{Formalization of Weighted Sets}
+\author{Mathias Schack Rabing \and Dmitriy Traytel}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  We define \emph{weighted sets} as a generalization of finite multisets where
+  multiplicities are replaced by weights from a \emph{refinable}~\cite{DBLP:journals/entcs/GummS01} \emph{abelian semi\-group}.
+  Weighted sets are equivalently represented as functions from elements to optional
+  weights returning \texttt{None} for all but finitely many elements, or as quotients
+  of element-weight lists modulo permutation and regrouping.
+  We register weighted sets as a bounded natural functor (BNF), enabling nested (co)recursion through them
+  in (co)datatypes.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

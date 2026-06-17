@@ -48,6 +48,26 @@
   "year": "2026"
  },
  {
+  "abstract": "We define weighted sets as a generalization of finite multisets where multiplicities are replaced by weights from a refinable abelian semigroup. Weighted sets are equivalently represented as functions from elements to optional weights returning None for all but finitely many elements, or as quotients of element-weight lists modulo permutation and regrouping. We register weighted sets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes.",
+  "authors": [
+   "Mathias Schack Rabing",
+   "Dmitriy Traytel"
+  ],
+  "date": "2026-06-13",
+  "link": "../entries/Weighted_Set.html",
+  "permalink": "https://isa-afp.org/entries/Weighted_Set.html",
+  "related": [],
+  "shortname": "Weighted_Set",
+  "title": "Formalization of Weighted Sets",
+  "topic_links": [
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "The Dottie number is the unique fixed point $d$ of the cosine function: $\\cos d = d$. It is approximately 0.739085133215 and has no known closed form.\nThis theory establishes the Dottie number's key properties: the fixed point exists (by the intermediate value theorem) and is unique (because $\\cos x - x$ has a strictly negative derivative). Next, the value of $d$ to 12 decimal places is shown using the approximation proof method. Two more properties of $d$ are also shown: first, that it is transcendental (via the Hermite–Lindemann–Weierstrass theorem); second, that it is a universal attractor, in the sense that iterating the cosine function from any real starting point converges to it.\n",
   "authors": [
    "Lawrence C. Paulson"

@@ -14,6 +14,9 @@
     <loc>https://isa-afp.org/entries/Countable_Multiset.html</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Weighted_Set.html</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Dottie_Number.html</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -25690,6 +25693,8 @@
     <loc>https://isa-afp.org/thys/Weighted_Path_Order/Status.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Weighted_Path_Order/WPO.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Weighted_Set/Weighted_Set.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Well_Quasi_Orders/Almost_Full.html</loc>
   </url><url>

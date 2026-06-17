@@ -4,6 +4,13 @@
     <title>Dmitriy Traytel</title>
     <link>https://isa-afp.org/authors/traytel/</link>
     <description>AFP entries of Dmitriy Traytel</description><item>
+  <title>Formalization of Weighted Sets</title>
+  <link>https://isa-afp.org/entries/Weighted_Set.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Weighted Sets in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Formalization of Countable Multisets</title>
   <link>https://isa-afp.org/entries/Countable_Multiset.html</link>
   <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
