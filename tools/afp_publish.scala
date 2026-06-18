@@ -83,6 +83,7 @@ object AFP_Publish {
     skip_checks: Boolean = false,
     progress: Progress = new Progress
   ): Unit = {
+    val sessions = entries.flatMap(AFP_Structure.entry_sessions).map(_.name)
     val context = Context(options)
 
     def relative_args(args: List[String]): String =
@@ -113,51 +114,47 @@ object AFP_Publish {
       Isabelle_System.copy_dir(tmp_dir + Path.basic("web"), files.web_dir, direct = true)
       File.write(files.release_date, files.date)
 
-      Isabelle_System.make_directory(files.afp_archive_dir)
-      for (dir <- List("thys", "etc", "tools")) {
-        Isabelle_System.copy_dir(tmp_dir + Path.basic(dir), files.afp_archive_dir)
-      }
-
 
       /* release */
 
       if (entries.nonEmpty) {
-        val sessions = entries.flatMap(AFP_Structure.entry_sessions).map(_.name)
+        Isabelle_System.make_directory(files.release_dir)
 
         progress.echo("Cleaning up browser_info directory")
         Isabelle_System.rm_tree(context.presentation_dir)
-
-        Isabelle_System.make_directory(files.browser_info())
-        Isabelle_System.symlink(files.browser_info(), files.browser_info(current = true))
-        Isabelle_System.make_directory(files.release_dir)
-
-        progress.echo("Tarring [" + files.afp_archive_name() + "]")
-
-        val archive_file =
-          tar_gz(files.afp_archive(), files.afp_archive_dir.dir, files.afp_archive_dir.file_name)
-        Isabelle_System.symlink(archive_file, files.afp_archive(current = true).tar.gz)
 
         progress.echo("Generating HTML for [" + sessions.mkString(" ") + "]")
         Build.build(context.options, selection = Sessions.Selection(sessions = sessions), progress =
           progress, clean_build = true, afp_root = Some(AFP.BASE), max_jobs = max_jobs).check
 
-        for (entry_name <- entries) {
-          progress.echo("Tarring [" + entry_name + "]")
-
-          val archive_file =
-            tar_gz(files.entry_archive(entry_name), tmp_dir + Path.basic("thys"), entry_name)
-          Isabelle_System.symlink(archive_file,
-            files.entry_archive(entry_name, current = true).tar.gz)
-
-          progress.echo("Finished [" + entry_name + "]")
-        }
-
         progress.echo("Copying generated HTML")
+        Isabelle_System.make_directory(files.browser_info())
         for {
           name <- File.read_dir(context.presentation_dir)
           dir = context.presentation_dir + Path.basic(name)
           if dir.is_dir
         } Isabelle_System.copy_dir(dir, files.browser_info())
+        Isabelle_System.symlink(files.browser_info(), files.browser_info(current = true))
+
+        progress.echo("Tarring [" + files.afp_archive_name() + "]")
+        Isabelle_System.make_directory(files.afp_archive_dir)
+        for (dir <- List("thys", "etc", "tools")) {
+          Isabelle_System.copy_dir(tmp_dir + Path.basic(dir), files.afp_archive_dir)
+        }
+        val archive_file =
+          tar_gz(files.afp_archive(), files.afp_archive_dir.dir, files.afp_archive_dir.file_name)
+        Isabelle_System.symlink(archive_file, files.afp_archive(current = true).tar.gz)
+      }
+
+      for (entry_name <- entries) {
+        progress.echo("Tarring [" + entry_name + "]")
+
+        val archive_file =
+          tar_gz(files.entry_archive(entry_name), tmp_dir + Path.basic("thys"), entry_name)
+        Isabelle_System.symlink(archive_file,
+          files.entry_archive(entry_name, current = true).tar.gz)
+
+        progress.echo("Finished [" + entry_name + "]")
       }
     }
 
