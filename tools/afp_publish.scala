@@ -48,8 +48,18 @@ object AFP_Publish {
   ): Unit = {
     val context = Context(options)
 
+    def relative_args(args: List[String]): String =
+      Bash.strings(List("--cwd", File.standard_path(context.repository.root)) ::: args)
+
+    val include = List("thys", "web", "etc", "tools/lib/afp_build")
+    val exclude = List("etc/build.props")
+
     if (!skip_checks) {
       progress.echo("Checking sync with " + AFP_System.afp_name)
+
+      val changed = context.repository.status(relative_args(include))
+      if (changed.nonEmpty) error("Commit changes first.")
+
       val outgoing = context.repository.command("outgoing", args = "-q").check.out_lines
       if (outgoing.nonEmpty) error("Push changes to Heptapod first.")
     }
@@ -62,13 +72,8 @@ object AFP_Publish {
     val export_dir = AFP.BASE + Path.basic("afp-export-" + date)
     Isabelle_System.rm_tree(export_dir)
 
-    val include = List("thys", "web", "etc", "tools/lib/afp_build")
-    val exclude = List("etc/build.props")
-    val archive_args =
-      List("--cwd", File.standard_path(context.repository.root)) :::
-        include.map("-I" + _) :::
-        exclude.map("-X" + _)
-    context.repository.archive(File.standard_path(export_dir), options = Bash.strings(archive_args))
+    context.repository.archive(File.standard_path(export_dir), options =
+      relative_args(include.map("-I" + _) ::: exclude.map("-X" + _)))
 
     val export_web = export_dir + Path.basic("web")
     File.write(export_web + Path.basic("release-date.txt"), date)
