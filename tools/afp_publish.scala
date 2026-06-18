@@ -55,9 +55,11 @@ object AFP_Publish {
   }
 
   class Context private(val options: Options, store: Store, val repository: Mercurial.Repository) {
+    def afp_website_ssh_host: String = options.string("afp_website_ssh_host")
+
     def open_ssh(): SSH.Session =
       SSH.open_session(options,
-        options.string("afp_website_ssh_host"),
+        afp_website_ssh_host,
         options.int("afp_website_ssh_port"),
         options.string("afp_website_ssh_user"))
 
@@ -179,9 +181,9 @@ object AFP_Publish {
       }
 
     if (do_publish) {
-      using(context.open_ssh()) { ssh =>
-        progress.echo("Publishing to [" + ssh.host + "]")
+      progress.echo("Publishing to [" + context.afp_website_ssh_host + "]")
 
+      using(context.open_ssh()) { ssh =>
         val rsync_context = Rsync.Context(progress, ssh, chmod = "Dg=rx,Do=rx,Fg=r,Fo=r")
         val web_source = File.standard_path(files.web_dir)
         Rsync.exec(rsync_context, args = List("-rplz", "--", Url.direct_path(web_source),
