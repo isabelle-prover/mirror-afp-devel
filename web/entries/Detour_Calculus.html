@@ -2,11 +2,11 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chomsky-Schützenberger Representation Theorem - Archive of Formal Proofs</title>
-    <meta name="description" content="Chomsky-Schützenberger Representation Theorem in the Archive of Formal Proofs">
-    <meta property="og:description" content="Chomsky-Schützenberger Representation Theorem in the Archive of Formal Proofs">
-    <meta property="og:title" content="Chomsky-Schützenberger Representation Theorem">
-    <meta property="og:url" content="https://isa-afp.org/entries/Chomsky_Schuetzenberger.html">
+    <title>The Detour Calculus: Rigorous Local Deformation of Integration Contours - Archive of Formal Proofs</title>
+    <meta name="description" content="The Detour Calculus: Rigorous Local Deformation of Integration Contours in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Detour Calculus: Rigorous Local Deformation of Integration Contours in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Detour Calculus: Rigorous Local Deformation of Integration Contours">
+    <meta property="og:url" content="https://isa-afp.org/entries/Detour_Calculus.html">
     <meta property="og:image" content="https://isa-afp.org/images/afp.png">
     <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -87,49 +87,58 @@
       </div>
     </form>
   <h1>
-    <span class='first'>C</span>homsky-<span class='first'>S</span>chützenberger <span class='first'>R</span>epresentation <span class='first'>T</span>heorem
+    <span class='first'>T</span>he <span class='first'>D</span>etour <span class='first'>C</span>alculus: <span class='first'>R</span>igorous <span class='first'>L</span>ocal <span class='first'>D</span>eformation of <span class='first'>I</span>ntegration <span class='first'>C</span>ontours
   </h1>
   <div>
-      <p><a href="../authors/roos/">Moritz Roos</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1vcml0eiIsInJvb3MiXSwiaG9zdCI6WyJ0dW0iLCJkZSJdfQ==">📧</a>
+      <p><a href="../authors/eberl/">Manuel Eberl</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnVlbCJdLCJob3N0IjpbInBydXZpc3RvIiwib3JnIl19">📧</a>
       </p>
-      <p class="date">June 2, 2025</p>
+      <p class="date">June 11, 2026</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">The Chomksy-Schützenberger Representation Theorem says that any
-context-free language is the homomorphic image of the intersection of
-a regular language and a Dyck language.</div>
+    <div class="abstract mathjax_process"><p>This entry provides the <em>detour calculus</em>, a relational framework to construct deformed versions of integration contours by adding small indentations around problematic points (typically poles). It consists of:</p>
+<ul>
+<li>the definition of a relation that relates the original contour $\gamma$ to a family of deformed contours $(\gamma_\epsilon)_{\epsilon > 0}$</li>
+<li>theorems that allow transferring geometric properties from $\gamma$ to $\gamma_\epsilon$ for sufficiently small $\epsilon$</li>
+<li>a library of “basic avoidance patterns” to add indentations to lines, circular arcs, or the corners between them, and prove that they are in relation with the original contour</li>
+<li>a calculus of inference rules which, in particular, allows dealing with composite contours by proving the relation for its individual parts separately</li>
+</ul>
+<p>
+The motivating example for this calculus was the proof of the valence formula for modular forms (not included here), which requires such a complicated set of indentations that I deemed it beyond the reach of formalisation without a systematic approach such as the present one.</p></div>
 
     <h3>License</h3>
     <div>
         <a href="https://isa-afp.org/LICENSE">BSD License</a>
     </div>
+      <h3>Note</h3>
+      <p><em>No use of generative AI whatsoever.
+
+
+
+
+
+
+</em></p>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/computer-science/automata-and-formal-languages/">Computer science/Automata and formal languages</a></li>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Detour_Calculus</h3>
       <ul>
-        <li> (Ed.). (1959). The Algebraic Theory of Context-Free Languages. Computer Programming and Formal Systems, 118–161. https://doi.org/10.1016/s0049-237x(09)70104-1
-</li>
-        <li>https://en.wikipedia.org/wiki/Chomsky%E2%80%93Sch%C3%BCtzenberger_representation_theorem</li>
-      </ul>
-      <h3>Session Chomsky_Schuetzenberger</h3>
-      <ul>
-          <li><a href="../thys/Chomsky_Schuetzenberger/Dyck_Language_Syms.html">Dyck_Language_Syms</a></li>
-          <li><a href="../thys/Chomsky_Schuetzenberger/Chomsky_Schuetzenberger.html">Chomsky_Schuetzenberger</a></li>
+          <li><a href="../thys/Detour_Calculus/Path_Nhds.html">Path_Nhds</a></li>
+          <li><a href="../thys/Detour_Calculus/Detour_Prerequisites.html">Detour_Prerequisites</a></li>
+          <li><a href="../thys/Detour_Calculus/Detour_Calculus.html">Detour_Calculus</a></li>
       </ul>
 
     <div class="flex-wrap">
         <div>
           <h3>Depends on</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Context_Free_Grammar.html">Context-Free Grammars and Languages</a></li>
-              <li><a href="../entries/Dyck_Language.html">Dyck Language</a></li>
-              <li><a href="../entries/Finite_Automata_HF.html">Finite Automata in Hereditarily Finite Set Theory</a></li>
+              <li><a href="../entries/Path_Automation.html">Path Equivalence and Automation for Integration Contours</a></li>
+              <li><a href="../entries/Winding_Number_Eval.html">Evaluate Winding Numbers through Cauchy Indices</a></li>
           </ul>
         </div>
     </div>
@@ -139,9 +148,9 @@ a regular language and a Dyck language.</div>
     <a class="popup-button" href="#cite-popup">Cite</a>
     <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Chomsky_Schuetzenberger/outline.pdf">Proof outline</a>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Chomsky_Schuetzenberger/document.pdf">Proof document</a>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Chomsky_Schuetzenberger/session_graph.pdf">Dependencies</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Detour_Calculus/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Detour_Calculus/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Detour_Calculus/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -150,14 +159,14 @@ a regular language and a Dyck language.</div>
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Chomsky_Schuetzenberger-AFP</p>
-        <pre id="copy-text">@article{Chomsky_Schuetzenberger-AFP,
-  author  = {Moritz Roos},
-  title   = {Chomsky-Schützenberger Representation Theorem},
+        <p style="display:none;" id="bibtex-filename">Detour_Calculus-AFP</p>
+        <pre id="copy-text">@article{Detour_Calculus-AFP,
+  author  = {Manuel Eberl},
+  title   = {The Detour Calculus: Rigorous Local Deformation of Integration Contours},
   journal = {Archive of Formal Proofs},
   month   = {June},
-  year    = {2025},
-  note    = {\url{https://isa-afp.org/entries/Chomsky_Schuetzenberger.html},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Detour_Calculus.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -171,29 +180,8 @@ a regular language and a Dyck language.</div>
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://isa-afp.org/release/afp-Chomsky_Schuetzenberger-current.tar.gz" download>
+      <a href="https://isa-afp.org/release/afp-Detour_Calculus-current.tar.gz" download>
         Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Chomsky_Schuetzenberger-2026-02-06.tar.gz">
-                Feb 6, 2026
-              </a>
-              : Isabelle2025-2
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Chomsky_Schuetzenberger-2025-12-19.tar.gz">
-                Dec 19, 2025
-              </a>
-              : Isabelle2025-1
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Chomsky_Schuetzenberger-2025-06-19.tar.gz">
-                Jun 19, 2025
-              </a>
-              : Isabelle2025
-            </li>
-        </ul>
     </div>
   </div>
       </div>

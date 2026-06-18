@@ -23,6 +23,9 @@
     <loc>https://isa-afp.org/entries/Fair_Games_Theorem.html</loc>
     <lastmod>2026-06-12T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Detour_Calculus.html</loc>
+    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</loc>
     <lastmod>2026-06-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -8666,6 +8669,12 @@
     <loc>https://isa-afp.org/thys/Design_Theory/Resolvable_Designs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Design_Theory/Sub_Designs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Detour_Calculus/Detour_Calculus.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Detour_Calculus/Detour_Prerequisites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Detour_Calculus/Path_Nhds.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/DFS_Framework/Cyc_Check.html</loc>
   </url><url>
