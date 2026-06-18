@@ -394,7 +394,6 @@ fun instantiate_skeleton_tac ctxt =
 
 fun transport_whitebox_tac ctxt =
   instantiate_skeleton_tac ctxt
-  THEN' (fn _ => fn st => (@{print} st; Seq.single st))
   THEN' transport_related_tac ctxt
   THEN_ALL_NEW (
     TRY o REPEAT1 o transport_relator_rewrite_tac ctxt
