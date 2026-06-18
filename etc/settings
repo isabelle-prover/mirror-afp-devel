@@ -21,7 +21,7 @@ fi
 isabelle_directory '$AFP_BASE'
 isabelle_directory '$AFP'
 
-AFP_BUILD_OPTIONS='-v -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML"'
+AFP_BUILD_OPTIONS="browser_info document=pdf document_variants=document:outline=/proof,/ML"
 
 ISABELLE_TOOLS="$ISABELLE_TOOLS:$AFP_BASE/tools/lib"
 
