@@ -12,6 +12,43 @@ import java.io.{InputStreamReader, BufferedReader}
 object AFP_Publish {
   val date_format = Date.Format("uuuu-MM-dd")
 
+
+  /* export file structure */
+
+  object Export_Files {
+    def init(): Export_Files = {
+      val afp_export = Export_Files(Date.now().format(date_format), AFP.BASE)
+      Isabelle_System.rm_tree(afp_export.dir)
+      afp_export
+    }
+  }
+
+  class Export_Files private(val date: String, base_dir: Path) {
+    val name = "afp-export-" + date
+    val dir = base_dir + Path.basic(name)
+
+    def web_dir: Path = dir + Path.basic("web")
+    def release_dir: Path = web_dir + Path.basic("release")
+    def release_date: Path = web_dir + Path.basic("release-date.txt")
+    def browser_info_dir: Path = web_dir + Path.basic("browser_info")
+    def browser_info(current: Boolean = false): Path =
+      browser_info_dir + Path.basic(if (current) "current" else Isabelle_System.isabelle_name())
+
+    def afp_archive_name(current: Boolean = false): String =
+      "afp-" + (if (current) "current" else date)
+    def afp_archive_dir: Path = dir + Path.basic(afp_archive_name())
+    def afp_archive(current: Boolean = false): Path =
+      release_dir + Path.basic(afp_archive_name(current))
+
+    def entry_name(session: String, current: Boolean = false): String =
+      "afp-" + session + "-" + (if (current) "current" else date)
+    def entry_archive(session: String, current: Boolean = false): Path =
+      release_dir + Path.basic(entry_name(session, current = current))
+  }
+
+
+  /* publish */
+
   object Context {
     def apply(options: Options): Context =
       new Context(options, Store(options), AFP_System.repository())
@@ -64,69 +101,64 @@ object AFP_Publish {
       if (outgoing.nonEmpty) error("Push changes to Heptapod first.")
     }
 
+    val files = Export_Files.init()
 
-    /* export */
+    Isabelle_System.with_tmp_dir("afp_export") { tmp_dir =>
+      /* export */
 
-    progress.echo("Exporting from working copy " + context.repository.root.implode)
-    val date = Date.now().format(date_format)
-    val export_dir = AFP.BASE + Path.basic("afp-export-" + date)
-    Isabelle_System.rm_tree(export_dir)
+      progress.echo("Exporting from working copy " + context.repository.root.implode)
+      context.repository.archive(File.standard_path(tmp_dir), options =
+        relative_args(include.map("-I" + _) ::: exclude.map("-X" + _)))
 
-    context.repository.archive(File.standard_path(export_dir), options =
-      relative_args(include.map("-I" + _) ::: exclude.map("-X" + _)))
+      Isabelle_System.copy_dir(tmp_dir + Path.basic("web"), files.web_dir, direct = true)
+      File.write(files.release_date, files.date)
 
-    val export_web = export_dir + Path.basic("web")
-    File.write(export_web + Path.basic("release-date.txt"), date)
-
-    val export_name = "afp-" + date
-    val export_afp = Isabelle_System.make_directory(export_dir + Path.basic(export_name))
-    for (dir <- List("thys", "etc", "tools")) {
-      Isabelle_System.move_file(export_dir + Path.basic(dir), export_afp)
-    }
-
-
-    /* release */
-
-    if (entries.nonEmpty) {
-      val sessions = entries.flatMap(AFP_Structure.entry_sessions).map(_.name)
-
-      progress.echo("Cleaning up browser_info directory")
-      Isabelle_System.rm_tree(context.presentation_dir)
-
-      val browser_info = export_web + Path.basic("browser_info")
-      val html_thys =
-        Isabelle_System.make_directory(browser_info + Path.basic(Isabelle_System.isabelle_name()))
-
-      Isabelle_System.symlink(html_thys, browser_info + Path.basic("current"))
-      val tars = Isabelle_System.make_directory(export_web + Path.basic("release"))
-
-      progress.echo("Tarring [" + export_name + "]")
-
-      val archive_file = tar_gz(tars + Path.basic(export_name), export_dir, export_name)
-      Isabelle_System.symlink(archive_file, tars + Path.basic("afp-current").tar.gz)
-
-      progress.echo("Generating HTML for [" + sessions.mkString(" ") + "]")
-      Build.build(context.options, selection = Sessions.Selection(sessions = sessions), progress =
-        progress, clean_build = true, afp_root = Some(AFP.BASE), max_jobs = max_jobs).check
-
-      for (entry_name <- entries) {
-        progress.echo("Tarring [" + entry_name + "]")
-
-        val export_name = "afp-" + entry_name + "-" + date
-        val archive_file =
-          tar_gz(tars + Path.basic(export_name), export_afp + Path.basic("thys"), entry_name)
-        Isabelle_System.symlink(archive_file,
-          tars + Path.basic("afp-" + entry_name + "-current").tar.gz)
-
-        progress.echo("Finished [" + entry_name + "]")
+      Isabelle_System.make_directory(files.afp_archive_dir)
+      for (dir <- List("thys", "etc", "tools")) {
+        Isabelle_System.copy_dir(tmp_dir + Path.basic(dir), files.afp_archive_dir)
       }
 
-      progress.echo("Copying generated HTML")
-      for {
-        name <- File.read_dir(context.presentation_dir)
-        dir = context.presentation_dir + Path.basic(name)
-        if dir.is_dir
-      } Isabelle_System.copy_dir(dir, html_thys)
+
+      /* release */
+
+      if (entries.nonEmpty) {
+        val sessions = entries.flatMap(AFP_Structure.entry_sessions).map(_.name)
+
+        progress.echo("Cleaning up browser_info directory")
+        Isabelle_System.rm_tree(context.presentation_dir)
+
+        Isabelle_System.make_directory(files.browser_info())
+        Isabelle_System.symlink(files.browser_info(), files.browser_info(current = true))
+        Isabelle_System.make_directory(files.release_dir)
+
+        progress.echo("Tarring [" + files.afp_archive_name() + "]")
+
+        val archive_file =
+          tar_gz(files.afp_archive(), files.afp_archive_dir.dir, files.afp_archive_dir.file_name)
+        Isabelle_System.symlink(archive_file, files.afp_archive(current = true).tar.gz)
+
+        progress.echo("Generating HTML for [" + sessions.mkString(" ") + "]")
+        Build.build(context.options, selection = Sessions.Selection(sessions = sessions), progress =
+          progress, clean_build = true, afp_root = Some(AFP.BASE), max_jobs = max_jobs).check
+
+        for (entry_name <- entries) {
+          progress.echo("Tarring [" + entry_name + "]")
+
+          val archive_file =
+            tar_gz(files.entry_archive(entry_name), tmp_dir + Path.basic("thys"), entry_name)
+          Isabelle_System.symlink(archive_file,
+            files.entry_archive(entry_name, current = true).tar.gz)
+
+          progress.echo("Finished [" + entry_name + "]")
+        }
+
+        progress.echo("Copying generated HTML")
+        for {
+          name <- File.read_dir(context.presentation_dir)
+          dir = context.presentation_dir + Path.basic(name)
+          if dir.is_dir
+        } Isabelle_System.copy_dir(dir, files.browser_info())
+      }
     }
 
 
@@ -139,7 +171,7 @@ object AFP_Publish {
           cat_lines(
             List(
               "Web pages are prepared for publication under",
-              "[" + export_web.absolute.implode + "]",
+              "[" + files.web_dir.absolute.implode + "]",
               "Please check content.")))
         val console_reader = new BufferedReader(new InputStreamReader(System.in))
         progress.echo("Type y if you want to publish. Any other key quits.")
@@ -154,7 +186,7 @@ object AFP_Publish {
         progress.echo("Publishing to [" + ssh.host + "]")
 
         val rsync_context = Rsync.Context(progress, ssh, chmod = "Dg=rx,Do=rx,Fg=r,Fo=r")
-        val web_source = File.standard_path(export_web)
+        val web_source = File.standard_path(files.web_dir)
         Rsync.exec(rsync_context, args = List("-rplz", "--", Url.direct_path(web_source),
           rsync_context.target(context.website_dir))).check
 
