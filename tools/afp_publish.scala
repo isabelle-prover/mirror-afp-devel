@@ -87,67 +87,67 @@ object AFP_Publish {
 
     /* release */
 
-    val do_publish = 
-      if (entries.nonEmpty) {
-        val sessions = entries.flatMap(AFP_Structure.entry_sessions).map(_.name)
+    if (entries.nonEmpty) {
+      val sessions = entries.flatMap(AFP_Structure.entry_sessions).map(_.name)
 
-        progress.echo("Cleaning up browser_info directory")
-        Isabelle_System.rm_tree(context.presentation_dir)
+      progress.echo("Cleaning up browser_info directory")
+      Isabelle_System.rm_tree(context.presentation_dir)
 
-        val browser_info = export_web + Path.basic("browser_info")
-        val html_thys =
-          Isabelle_System.make_directory(browser_info + Path.basic(Isabelle_System.isabelle_name()))
+      val browser_info = export_web + Path.basic("browser_info")
+      val html_thys =
+        Isabelle_System.make_directory(browser_info + Path.basic(Isabelle_System.isabelle_name()))
 
-        Isabelle_System.symlink(html_thys, browser_info + Path.basic("current"))
-        val tars = Isabelle_System.make_directory(export_web + Path.basic("release"))
+      Isabelle_System.symlink(html_thys, browser_info + Path.basic("current"))
+      val tars = Isabelle_System.make_directory(export_web + Path.basic("release"))
 
-        progress.echo("Tarring [" + export_name + "]")
+      progress.echo("Tarring [" + export_name + "]")
 
-        val archive_file = tar_gz(tars + Path.basic(export_name), export_dir, export_name)
-        Isabelle_System.symlink(archive_file, tars + Path.basic("afp-current").tar.gz)
+      val archive_file = tar_gz(tars + Path.basic(export_name), export_dir, export_name)
+      Isabelle_System.symlink(archive_file, tars + Path.basic("afp-current").tar.gz)
 
-        progress.echo("Generating HTML for [" + sessions.mkString(" ") + "]")
-        Build.build(context.options, selection = Sessions.Selection(sessions = sessions), progress =
-          progress, clean_build = true, afp_root = Some(AFP.BASE), max_jobs = max_jobs).check
+      progress.echo("Generating HTML for [" + sessions.mkString(" ") + "]")
+      Build.build(context.options, selection = Sessions.Selection(sessions = sessions), progress =
+        progress, clean_build = true, afp_root = Some(AFP.BASE), max_jobs = max_jobs).check
 
-        for (entry_name <- entries) {
-          progress.echo("Tarring [" + entry_name + "]")
+      for (entry_name <- entries) {
+        progress.echo("Tarring [" + entry_name + "]")
 
-          val export_name = "afp-" + entry_name + "-" + date
-          val archive_file =
-            tar_gz(tars + Path.basic(export_name), export_afp + Path.basic("thys"), entry_name)
-          Isabelle_System.symlink(archive_file,
-            tars + Path.basic("afp-" + entry_name + "-current").tar.gz)
+        val export_name = "afp-" + entry_name + "-" + date
+        val archive_file =
+          tar_gz(tars + Path.basic(export_name), export_afp + Path.basic("thys"), entry_name)
+        Isabelle_System.symlink(archive_file,
+          tars + Path.basic("afp-" + entry_name + "-current").tar.gz)
 
-          progress.echo("Finished [" + entry_name + "]")
-        }
+        progress.echo("Finished [" + entry_name + "]")
+      }
 
-        progress.echo("Copying generated HTML")
-        for {
-          name <- File.read_dir(context.presentation_dir)
-          dir = context.presentation_dir + Path.basic(name)
-          if dir.is_dir
-        } Isabelle_System.copy_dir(dir, html_thys)
-
-        if (interactive) {
-          progress.echo(
-            cat_lines(
-              List(
-                "Web pages are prepared for publication under",
-                "[" + export_web.absolute.implode + "]",
-                "Please check content.")))
-          val console_reader = new BufferedReader(new InputStreamReader(System.in))
-          progress.echo("Type y if you want to publish. Any other key quits.")
-          console_reader.readLine() match {
-            case "y" => true
-            case _ => false
-          }
-        }
-        else true
-      } else true
+      progress.echo("Copying generated HTML")
+      for {
+        name <- File.read_dir(context.presentation_dir)
+        dir = context.presentation_dir + Path.basic(name)
+        if dir.is_dir
+      } Isabelle_System.copy_dir(dir, html_thys)
+    }
 
 
     /* sync */
+
+    val do_publish =
+      if (entries.isEmpty || !interactive) true
+      else {
+        progress.echo(
+          cat_lines(
+            List(
+              "Web pages are prepared for publication under",
+              "[" + export_web.absolute.implode + "]",
+              "Please check content.")))
+        val console_reader = new BufferedReader(new InputStreamReader(System.in))
+        progress.echo("Type y if you want to publish. Any other key quits.")
+        console_reader.readLine() match {
+          case "y" => true
+          case _ => false
+        }
+      }
 
     if (do_publish) {
       using(context.open_ssh()) { ssh =>
