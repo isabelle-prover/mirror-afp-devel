@@ -43,13 +43,16 @@ object AFP_Publish {
     entries: List[String] = Nil,
     max_jobs: Option[Int] = None,
     interactive: Boolean = true,
+    skip_checks: Boolean = false,
     progress: Progress = new Progress
   ): Unit = {
     val context = Context(options)
 
-    progress.echo("Checking sync with " + AFP_System.afp_name)
-    val outgoing = context.repository.command("outgoing", args = "-q").check.out_lines
-    if (outgoing.nonEmpty) error("Push changes to Heptapod first.")
+    if (!skip_checks) {
+      progress.echo("Checking sync with " + AFP_System.afp_name)
+      val outgoing = context.repository.command("outgoing", args = "-q").check.out_lines
+      if (outgoing.nonEmpty) error("Push changes to Heptapod first.")
+    }
 
 
     /* export */
@@ -168,6 +171,7 @@ object AFP_Publish {
       var force = false
       var max_jobs: Option[Int] = None
       var options = Options.init(specs = AFP_System.AFP_BUILD_OPTIONS)
+      var skip_checks = false
 
       val getopts = Getopts("""
   Usage: isabelle afp_publish [OPTIONS] [ENTRIES ...]
@@ -176,12 +180,14 @@ object AFP_Publish {
       -j NUM       number of parallel build jobs (default: 1)
       -f           do not ask before publishing
       -o OPTION    override Isabelle system OPTION (via NAME=VAL or NAME)
+      -s           skip checks
 
     Publishes archive for the given entries (if any) and AFP web page.
   """,
         "f" -> (_ => force = true),
         "j:" -> (arg => max_jobs = Some(Value.Int.parse(arg))),
-        "o:" -> (arg => options = options + arg)
+        "o:" -> (arg => options = options + arg),
+        "s" -> (_ => skip_checks = true)
         )
 
       val entries = getopts(args)
@@ -189,6 +195,6 @@ object AFP_Publish {
       val progress = new Console_Progress(verbose = true)
 
       publish(options, entries = entries, max_jobs = max_jobs, interactive = !force,
-        progress = progress)
+        skip_checks = skip_checks, progress = progress)
     })
 }
