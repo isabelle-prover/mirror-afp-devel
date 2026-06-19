@@ -1,10 +1,11 @@
-(*<*)
-theory Expansion
-  imports Context_Free_Grammar.Context_Free_Grammar
-begin
-(*>*)
-
 section \<open>Expansion of Grammars\<close>
+
+theory Expansion
+  imports Context_Free_Grammar
+begin
+
+text \<open>This theory provides operations for expanding productions, that is,
+given \<open>A \<rightarrow> \<alpha>\<close>, replace \<open>A\<close> by \<open>\<alpha>\<close> on the rhs of another production.\<close>
 
 lemma conc_eq_empty_iff: "X @@ Y = {} \<longleftrightarrow> X = {} \<or> Y = {}"
   by auto
@@ -15,8 +16,7 @@ lemma Nts_syms_conc: "\<Union>(Nts_syms ` (X @@ Y)) =
 
 text \<open>We consider the set of admissible expansions of grammars.
 
-For a symbol,
-one option is not to expand it,
+For a symbol, one option is not to expand it,
 and the other option for (expandable) nonterminals is to expand to the all rhss.\<close>
 
 definition Expand_sym_ops :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) sym \<Rightarrow> ('n,'t) syms set set" where
@@ -80,7 +80,7 @@ next
 qed
 
 definition Expand :: "(('n,'t) syms \<Rightarrow> ('n,'t) syms set) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
-"Expand f P = {(A,\<alpha>') |A \<alpha>'. \<exists>\<alpha>. (A,\<alpha>) \<in> P \<and> \<alpha>' \<in> f \<alpha>}"
+"Expand f P = (\<Union>(A,\<alpha>) \<in> P. \<Union>\<alpha>' \<in> f \<alpha>. {(A,\<alpha>')})"
 
 lemma Expand_eq_UN[code]:
   "Expand f P = (\<Union>(A,\<alpha>) \<in> P. Pair A ` f \<alpha>)"
@@ -218,6 +218,7 @@ corollary Lang_Expand_Un:
   shows "Lang (Expand f Q \<union> P) = Lang (Q \<union> P)"
   using Lang_Un_Expand[OF assms] by (simp add: ac_simps)
 
+
 subsection \<open>Instances\<close>
 
 text \<open>For symbols, we just provide a function to expand it.\<close>
@@ -227,6 +228,10 @@ definition Expand_sym :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'
 
 lemma Expand_sym_ops: "Expand_sym P L x \<in> Expand_sym_ops P L x"
   by (auto simp: Expand_sym_def Expand_sym_ops_simps split: sym.splits)
+
+lemma finite_Expand_sym: "finite Q \<Longrightarrow> finite (Expand_sym Q X x)"
+  by (auto simp: Expand_sym_def finite_Rhss split: sym.splits)
+
 
 subsubsection \<open>Expanding all nonterminals\<close>
 
@@ -247,6 +252,9 @@ lemma Expand_all_syms_ops: "Expand_all_syms P X \<alpha> \<in> Expand_syms_ops P
 
 lemma Expand_all_ops: "Expand_all_syms P X \<in> Expand_ops P X"
   by (auto simp: Expand_ops_def Expand_all_syms_ops)
+
+lemma finite_Expand_all_syms: "finite Q \<Longrightarrow> finite (Expand_all_syms Q X \<alpha>)"
+  by (induction \<alpha>) (auto simp: finite_Expand_sym intro: finite_conc_if)
 
 abbreviation Expand_all :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
   "Expand_all P X Q \<equiv> Expand (Expand_all_syms P X) Q"
@@ -318,8 +326,7 @@ proof-
   finally show ?thesis.
 qed
 
-text \<open>One can remove a non-recursive part of grammar by expanding others
-with respect to it.\<close>
+text \<open>One can remove a non-recursive part of grammar by expanding others with respect to it.\<close>
 
 lemma Lang_Expand_all_idem:
   assumes PP: "Rhs_Nts P \<inter> Lhss P = {}"

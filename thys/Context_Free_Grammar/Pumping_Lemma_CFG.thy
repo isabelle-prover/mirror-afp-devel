@@ -6,7 +6,6 @@ section "Pumping Lemma for Context Free Grammars"
 
 theory Pumping_Lemma_CFG
 imports
-  "List_Power.List_Power"
   Chomsky_Normal_Form
 begin
 

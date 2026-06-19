@@ -8,6 +8,7 @@ theory Context_Free_Grammar
 imports
   "Fresh_Identifiers.Fresh_Nat"
   "Regular-Sets.Regular_Set"
+  "List_Power.List_Power"
 begin
 
 lemma append_Cons_eq_append_Cons:
