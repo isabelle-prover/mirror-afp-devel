@@ -484,7 +484,7 @@ qed simp_all
 
 subsection \<open>The combinatorial core: extracting a pumpable nonterminal\<close>
 
-text \<open>\<^bold>\<open>The heart of Ogden's lemma\<close> (Hopcroft \& Ullman, Ch.\ 6). Given a CNF grammar and a
+text \<open>\<^bold>\<open>The heart of Ogden's lemma\<close> (\cite[Ch.\ 6]{HopcroftU79}). Given a CNF grammar and a
   marking with at least \<open>2 ^ (card (Nts P) + 1)\<close> distinguished positions, we extract a
   nonterminal \<open>A\<close> and a decomposition \<open>z = u v w x y\<close> together with the three derivations that
   drive the pumping, plus the two marking conditions.
@@ -549,41 +549,6 @@ proof -
 qed
 
 
-subsection \<open>Derivation-level pumping\<close>
-
-text \<open>Once the nonterminal \<open>A\<close> and its contexts have been extracted, the actual pumping is a
-  pure derivation argument with no further reference to parse trees, exactly as in the
-  inherent-ambiguity development.\<close>
-
-lemma pump_derives:
-  assumes S: "P \<turnstile> [Nt S] \<Rightarrow>* map Tm u @ [Nt A] @ map Tm y"
-    and V: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm v @ [Nt A] @ map Tm x"
-    and W: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm w"
-  shows "u @ v ^^ i @ w @ x ^^ i @ y \<in> Lang P S"
-proof -
-  have inner: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm (v ^^ i) @ [Nt A] @ map Tm (x ^^ i)" for i
-  proof (induction i)
-    case 0 show ?case by simp
-  next
-    case (Suc i)
-    have "P \<turnstile> [Nt A] \<Rightarrow>* map Tm (v ^^ i) @ (map Tm v @ [Nt A] @ map Tm x) @ map Tm (x ^^ i)"
-      using Suc.IH derives_embed[OF V, of "map Tm (v ^^ i)" "map Tm (x ^^ i)"]
-      by (meson rtranclp_trans)
-    thus ?case
-      by (metis append.assoc map_append pow_list_Suc pow_list_Suc2)
-  qed
-  have mid: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm (v ^^ i) @ map Tm w @ map Tm (x ^^ i)"
-    using inner derives_embed[OF W, of "map Tm (v ^^ i)" "map Tm (x ^^ i)"]
-    by (meson rtranclp_trans)
-  have "P \<turnstile> [Nt S] \<Rightarrow>* map Tm u @ (map Tm (v ^^ i) @ map Tm w @ map Tm (x ^^ i)) @ map Tm y"
-    using S derives_embed[OF mid, of "map Tm u" "map Tm y"]
-    by (meson rtranclp_trans)
-  hence "P \<turnstile> [Nt S] \<Rightarrow>* map Tm (u @ v ^^ i @ w @ x ^^ i @ y)"
-    by simp
-  thus ?thesis by (simp add: Lang_def)
-qed
-
-
 subsection \<open>Assembling Ogden's lemma\<close>
 
 text \<open>The ``inner'' Ogden lemma for a CNF grammar: \<open>2 ^ (card (Nts P) + 1)\<close> distinguished
@@ -610,7 +575,7 @@ proof -
         "1 \<le> dcount (dv @ dx)" "dcount (dv @ dw @ dx) \<le> 2 ^ (card (Nts P) + 1)"
     by blast
   have "\<forall>i. u @ v ^^ i @ w @ x ^^ i @ y \<in> Lang P S"
-    using pump_derives[OF sp(8) sp(9) sp(10)] by blast
+    using pump_derives_Lang[OF sp(8) sp(9) sp(10)] by blast
   with sp show ?thesis by blast
 qed
 

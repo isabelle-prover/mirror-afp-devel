@@ -1648,6 +1648,33 @@ proof-
   then show ?thesis by blast
 qed
 
+subsection \<open>Pumping\<close>
+
+lemma pump_derives:
+  assumes "P \<turnstile> [Nt A] \<Rightarrow>* \<alpha> @ [Nt A] @ \<beta>"
+    and W: "P \<turnstile> [Nt A] \<Rightarrow>* \<gamma>"
+  shows "P \<turnstile>  [Nt A] \<Rightarrow>* \<alpha> ^^ i @ \<gamma> @ \<beta> ^^ i"
+proof -
+  have "P \<turnstile> [Nt A] \<Rightarrow>* \<alpha> ^^ i @ [Nt A] @ \<beta> ^^ i" for i
+  proof (induction i)
+    case 0 show ?case by simp
+  next
+    case (Suc i) thus ?case
+      by (smt (verit, ccfv_SIG) assms(1) append.assoc derives_embed pow_list.simps(2) pow_list_Suc2
+          rtranclp_trans)
+  qed
+  thus ?thesis by (meson assms(2) derives_embed rtranclp_trans)
+qed
+
+lemma pump_derives_Lang:
+  assumes S: "P \<turnstile> [Nt S] \<Rightarrow>* map Tm u @ [Nt A] @ map Tm y"
+    and V: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm v @ [Nt A] @ map Tm x"
+    and W: "P \<turnstile> [Nt A] \<Rightarrow>* map Tm w"
+  shows "u @ v ^^ i @ w @ x ^^ i @ y \<in> Lang P S"
+  using derives_embed[OF pump_derives[OF V W]] S unfolding Lang_def
+  by simp (meson rtranclp_trans)
+
+
 subsection \<open>Redundant Productions\<close>
 
 text \<open>Productions of the form \<open>A \<rightarrow> A\<close> are redundant.\<close>
