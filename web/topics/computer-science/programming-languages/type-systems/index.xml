@@ -4,6 +4,14 @@
     <title>Computer science/Programming languages/Type systems</title>
     <link>https://isa-afp.org/topics/computer-science/programming-languages/type-systems/</link>
     <description>AFP entries in Type systems</description><item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
   <link>https://isa-afp.org/entries/IMP_Noninterference_Extension.html</link>
   <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>

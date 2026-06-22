@@ -63,7 +63,7 @@
       <h3>Related publications</h3>
       <ul>
       {{- range . }}
-        <li>{{ . | safeHTML }}</li>
+        <li>{{ .html | safeHTML }}</li>
       {{- end }}
       </ul>
     {{- end }}

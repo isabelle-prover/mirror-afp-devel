@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{babel}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\title{Formalization of Countable Multisets}
+\author{Mathias Schack Rabing \and Dmitriy Traytel}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  We define \emph{countable multisets} as a generalization of finite multisets.
+  Countable multisets are equivalently represented as functions from elements to extended natural numbers
+  ($\mathbb{N} \cup \{\infty\}$) returning non-zero values for countably many elements,
+  or as quotients of lazy lists modulo infinitary permutations.
+  We register countable multisets as a bounded natural functor (BNF), enabling nested (co)recursion through them
+  in (co)datatypes. We further define the subtype of
+  \emph{countably infinite multisets} and register it as a BNF, too.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\end{document}

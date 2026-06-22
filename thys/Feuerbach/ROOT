@@ -1,0 +1,8 @@
+chapter AFP
+
+session Feuerbach = "HOL-Analysis" +
+  options [timeout=300]
+  theories
+    Feuerbach
+  document_files
+    "root.tex"

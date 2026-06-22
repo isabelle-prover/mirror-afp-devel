@@ -1,0 +1,14 @@
+chapter AFP
+
+session Busy_Beaver = HOL +
+  options [document = pdf, timeout = 300]
+  sessions
+    "HOL-Library"
+    Universal_Turing_Machine
+  theories
+    Busy_Beaver_Base
+    Turing_Busy_Beaver
+    Busy_Beaver
+  document_files
+    "root.tex"
+    "root.bib"

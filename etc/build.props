@@ -6,12 +6,14 @@ sources = \
   tools/afp_build_ci.scala \
   tools/afp_check_metadata.scala \
   tools/afp_check_roots.scala \
+  tools/afp_publish.scala \
   tools/afp_release.scala \
   tools/afp_site_gen.scala \
   tools/afp_stats.scala \
-  tools/afp_submit.scala \
   tools/afp_structure.scala \
-  tools/afp_tool.scala \
+  tools/afp_submit.scala \
+  tools/afp_system.scala \
+  tools/afp_tools.scala \
   tools/hugo.scala \
   tools/metadata.scala \
   tools/rake.scala \
@@ -19,5 +21,5 @@ sources = \
 resources = \
   tools/SmartStoplist.txt:SmartStoplist.txt
 services = \
-  afp.Tools \
+  afp.AFP_Tools \
   afp.CI_Jobs

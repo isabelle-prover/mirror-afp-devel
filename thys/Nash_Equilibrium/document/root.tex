@@ -1,0 +1,72 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Nash Equilibria for Finite Games in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This development formalizes Nash equilibria for finite strategic-form games,
+following Nash's equilibrium concept~\cite{Nash1950,Nash1951}.  It gives
+reusable definitions of profiles, unilateral deviations, best responses,
+dominant strategies, and pure Nash equilibria; proves existence for finite
+ordinal potential games~\cite{MondererShapley1996} and games with dominant
+strategies; and verifies matching pennies as a finite game with no pure Nash
+equilibrium.  It also formalizes mixed-strategy profiles for finite games,
+support lemmas for equilibrium strategies, Dirac embeddings of pure profiles,
+and the existence of a mixed Nash equilibrium using Brouwer's fixed point
+theorem.  Worked examples cover the Prisoner's Dilemma, a coordination game,
+matching pennies, and rock-paper-scissors.  AI assistance was used for proof
+engineering.  The final definitions, statements, and proofs are checked by
+Isabelle.
+\end{abstract}
+
+\section*{Contributions and Scope}
+
+This entry gives a reusable Isabelle/HOL formalization of pure and mixed Nash
+equilibria for finite strategic-form games.  The pure-game locale supports a
+finite player set with player-indexed finite strategy sets and is used to
+formalize unilateral deviations, best responses, dominant strategies, and
+ordinal potential games.  The mixed-game development proves Nash's finite-game
+existence theorem by defining an excess-payoff map on a compact convex product
+of simplices and applying Brouwer's fixed point theorem from HOL-Analysis.
+
+The mixed-game locale is intentionally less general than the pure-game locale:
+players and pure strategies are represented by finite HOL types, so every
+player uses the same finite pure-strategy type.  This choice makes mixed
+profiles Cartesian vectors indexed by player/strategy pairs, which gives direct
+access to the compactness, convexity, continuity, and fixed-point infrastructure
+needed for the Brouwer proof.  The entry also includes support lemmas for mixed
+equilibria, Dirac embeddings of pure profiles, and checked examples of the
+Prisoner's Dilemma, a coordination game, matching pennies, and
+rock-paper-scissors.
+
+\section*{Related Work}
+
+Le Roux, Martin-Dorel, and Smaus formalized a Nash-equilibrium existence theorem
+in both Coq and Isabelle for finite-outcome games derived from win/lose
+games~\cite{LeRouxMartinDorelSmaus2017}.  Bagnall, Merten, and Stewart
+developed an Ssreflect/Coq library for algorithmic game theory, including pure
+and mixed Nash equilibria, potential games, smooth games, approximate
+equilibria, and applications to routing and congestion games~\cite{BagnallMertenStewart2017}.
+The present entry is narrower in mathematical scope but focuses on an
+AFP-style Isabelle/HOL development for finite strategic-form games, with a
+Brouwer-based mixed-equilibrium existence proof and small canonical examples.
+
+\tableofcontents
+\newpage
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

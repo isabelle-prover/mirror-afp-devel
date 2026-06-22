@@ -652,7 +652,7 @@ object AFP_Submit {
           for {
             file <- files
             relative = File.the_relative_path(base_dir, file)
-          } yield Isabelle_System.make_patch(base_dir, relative, file)
+          } yield Isabelle_System.make_patch(AFP.BASE, relative, file)
         File.write(patch_file(id), cat_lines(patches))
 
         val info =
