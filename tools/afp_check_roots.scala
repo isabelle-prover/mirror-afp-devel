@@ -4,8 +4,6 @@ Tools to check AFP session roots.
  */
 package afp
 
-import scala.language.unsafeNulls
-
 import isabelle.*
 
 import java.io.File as JFile

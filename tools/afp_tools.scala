@@ -1,7 +1,5 @@
 package afp
 
-import scala.language.unsafeNulls
-
 import isabelle._
 
 
