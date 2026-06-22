@@ -3625,6 +3625,25 @@ orcid = "0000-0002-2946-7347"
 [jiangz.homepages]
 jiangz_homepage = "https://www.zilin.one/"
 
+[johannsen]
+name = "Jan Johannsen"
+orcid = "0009-0004-2072-4679"
+
+[johannsen.emails]
+
+[johannsen.emails.johannsen_email]
+user = [
+  "jan",
+  "johannsen",
+]
+host = [
+  "ifi",
+  "lmu",
+  "de",
+]
+
+[johannsen.homepages]
+
 [joosten]
 name = "Sebastiaan J. C. Joosten"
 
@@ -7164,6 +7183,25 @@ host = [
 ]
 
 [schulz.homepages]
+
+[schulzl]
+name = "Leon Raffael Schulz"
+orcid = "0009-0007-7666-2034"
+
+[schulzl.emails]
+
+[schulzl.emails.schulzl_email]
+user = [
+  "Le",
+  "Schulz",
+]
+host = [
+  "campus",
+  "lmu",
+  "de",
+]
+
+[schulzl.homepages]
 
 [scott]
 name = "Dana Scott"

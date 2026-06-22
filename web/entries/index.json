@@ -1,5 +1,153 @@
 [
  {
+  "abstract": "A well-known result about propositional logic is that transforming a formula into disjunctive or conjunctive normal form can lead to an exponential blowup of the formula size. We formalize this result in the form of two theorems and discuss the challenges we encountered.",
+  "authors": [
+   "Leon Raffael Schulz",
+   "Martin Desharnais-Schäfer",
+   "Jan Johannsen"
+  ],
+  "date": "2026-06-15",
+  "link": "../entries/CNF_DNF_Exp_Blowup.html",
+  "permalink": "https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html",
+  "related": [
+   {
+    "doi": "10.5282/ubm/epub.135623"
+   },
+   {
+    "html": "https://www.ifi.lmu.de/institut/personen/jjohannsen/jj_unpublished/skript.pdf"
+   }
+  ],
+  "shortname": "CNF_DNF_Exp_Blowup",
+  "title": "A Formalization of the Exponential Blowup in the Transformations between CNF and DNF",
+  "topic_links": [
+   "../topics/logic/general-logic/classical-propositional-logic/"
+  ],
+  "topics": [
+   "Logic/General logic/Classical propositional logic"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We define countable multisets as a generalization of finite multisets. Countable multisets are equivalently represented as functions from elements to extended natural numbers ($\\mathbb{N} \\cup \\{\\infty\\}$) returning non-zero values for countably many elements, or as quotients of lazy lists modulo infinitary permutations. We register countable multisets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes. We further define the subtype of countably infinite multisets and register it as a BNF, too.",
+  "authors": [
+   "Mathias Schack Rabing",
+   "Dmitriy Traytel"
+  ],
+  "date": "2026-06-13",
+  "link": "../entries/Countable_Multiset.html",
+  "permalink": "https://isa-afp.org/entries/Countable_Multiset.html",
+  "related": [],
+  "shortname": "Countable_Multiset",
+  "title": "Formalization of Countable Multisets",
+  "topic_links": [
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We define weighted sets as a generalization of finite multisets where multiplicities are replaced by weights from a refinable abelian semigroup. Weighted sets are equivalently represented as functions from elements to optional weights returning None for all but finitely many elements, or as quotients of element-weight lists modulo permutation and regrouping. We register weighted sets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes.",
+  "authors": [
+   "Mathias Schack Rabing",
+   "Dmitriy Traytel"
+  ],
+  "date": "2026-06-13",
+  "link": "../entries/Weighted_Set.html",
+  "permalink": "https://isa-afp.org/entries/Weighted_Set.html",
+  "related": [],
+  "shortname": "Weighted_Set",
+  "title": "Formalization of Weighted Sets",
+  "topic_links": [
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "The Dottie number is the unique fixed point $d$ of the cosine function: $\\cos d = d$. It is approximately 0.739085133215.\nThis theory establishes the Dottie number's key properties: the fixed point exists (by the intermediate value theorem) and is unique (because $\\cos x - x$ has a strictly negative derivative). Next, the value of $d$ to 12 decimal places is shown using the approximation proof method. Two more properties of $d$ are also shown: first, that it is transcendental (via the Hermite–Lindemann–Weierstrass theorem); second, that it is a universal attractor, in the sense that iterating the cosine function from any real starting point converges to it.\n",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-06-13",
+  "link": "../entries/Dottie_Number.html",
+  "permalink": "https://isa-afp.org/entries/Dottie_Number.html",
+  "related": [],
+  "shortname": "Dottie_Number",
+  "title": "The Dottie Number",
+  "topic_links": [
+   "../topics/mathematics/misc/"
+  ],
+  "topics": [
+   "Mathematics/Misc"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This is the optional stopping theorem (or fair games theorem) for real-valued discrete-time stochastic processes on a $\\sigma$-finite filtered measure space. A theory of piecewise-constant stopping times – the function taking $i$ on an $\\mathcal F_i$-measurable set $S$ and $j$ on its complement – is developed, together with the corresponding decomposition of integrals over the two pieces. The central results then prove both directions of the theorem: if $X$ is a submartingale, then for any bounded stopping times $\\tau \\le \\pi$ the expected stopped values satisfy $\\mathbb E[X_\\tau] \\le \\mathbb E[X_\\pi]$ (via the telescoping identity and the submartingale set-integral inequality); conversely, monotonicity of expected stopped values over all bounded stopping times characterises submartingales. It is further shown that the stopped process $X^\\tau$ of a submartingale is again a submartingale. Throughout, the theorems are cross-referenced to their counterparts in Mathlib's OptionalStopping, from which it was translated by Claude. It was polished manually afterwards. The fair games theorem is #62 on the Top 100 Mathematical Theorems.",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-06-12",
+  "link": "../entries/Fair_Games_Theorem.html",
+  "permalink": "https://isa-afp.org/entries/Fair_Games_Theorem.html",
+  "related": [],
+  "shortname": "Fair_Games_Theorem",
+  "title": "Fair Games Theorem",
+  "topic_links": [
+   "../topics/mathematics/probability-theory/"
+  ],
+  "topics": [
+   "Mathematics/Probability theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides the detour calculus, a relational framework to construct deformed versions of integration contours by adding small indentations around problematic points (typically poles). It consists of:\nthe definition of a relation that relates the original contour $\\gamma$ to a family of deformed contours $(\\gamma_\\epsilon)_{\\epsilon \u003e 0}$ theorems that allow transferring geometric properties from $\\gamma$ to $\\gamma_\\epsilon$ for sufficiently small $\\epsilon$ a library of “basic avoidance patterns” to add indentations to lines, circular arcs, or the corners between them, and prove that they are in relation with the original contour a calculus of inference rules which, in particular, allows dealing with composite contours by proving the relation for its individual parts separately The motivating example for this calculus was the proof of the valence formula for modular forms (not included here), which requires such a complicated set of indentations that I deemed it beyond the reach of formalisation without a systematic approach such as the present one.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-06-11",
+  "link": "../entries/Detour_Calculus.html",
+  "permalink": "https://isa-afp.org/entries/Detour_Calculus.html",
+  "related": [],
+  "shortname": "Detour_Calculus",
+  "title": "The Detour Calculus: Rigorous Local Deformation of Integration Contours",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes the Cauchy–Davenport lower bound and Vosper's theorem for sumsets over finite fields of prime cardinality. It combines a polynomial-method proof of Cauchy–Davenport with a Davenport-transform proof of Vosper's classification of the nontrivial equality case, and it provides modular-representative lemmas connecting the abstract prime-field results to normalized representatives of $\\mathbb{Z}/p\\mathbb{Z}$. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-11",
+  "link": "../entries/Cauchy_Davenport_Vosper.html",
+  "permalink": "https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html",
+  "related": [],
+  "shortname": "Cauchy_Davenport_Vosper",
+  "title": "Vosper's Theorem and the Cauchy–Davenport Theorem via the Polynomial Method",
+  "topic_links": [
+   "../topics/mathematics/number-theory/",
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Number theory",
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "In this formalisation, we reconstruct Euler's derivation of the power series for the exponential function as expounded in his famous Introductio in analysin infinitorum, first published in 1748. Using nonstandard analysis, we mechanize his mixture of infinitesimal and infinite `algebraic' reasoning in the proof assistant Isabelle. In so doing, we demonstrate that the gist of his arguments can be reconstructed formally, with Isabelle and nonstandard analysis shoring up crucial aspects of his reasoning that some historians have qualified as being ``more a matter of faith than science''.",
   "authors": [
    "Jacques D. Fleuriot"
@@ -225,6 +373,25 @@
   ],
   "topics": [
    "Mathematics/Topology"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Feuerbach’s theorem is a classical result in Euclidean geometry about certain circles associated with a triangle. It states that the nine-point circle is tangent internally to the triangle’s incircle and tangent externally to each of the three excircles, where the incircle is the circle tangent to all three sides of the triangle; the excircles are circles tangent to one side and the extensions of the other two; the nine-point circle is the circle passing through nine special points of the triangle. This development is an experiment in automatic translation from one proof assistant to another using AI. The file feuerbach.ml was given, one proof at a time, to Claude 4.6 using the Isabelle Assistant plug-in. Despite coaxing and hints, the auto formalisation process transformed a 214-line HOL Light file to nearly 1500 lines of Isabelle/HOL, though one that could be processed in five seconds. Part of the excess length comes from spelling out two transformations (translation of a point to zero, followed by rotation of a side to the vector $(1,0)$) that in HOL Light is done silently by WLOG tactics. The current proof has been heavily simplified, in part using Claude but mostly manually, and is now under 750 lines. It is notable that Claude often relied on the algebra proof method, despite its relative obscurity.",
+  "authors": [
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-05-08",
+  "link": "../entries/Feuerbach.html",
+  "permalink": "https://isa-afp.org/entries/Feuerbach.html",
+  "related": [],
+  "shortname": "Feuerbach",
+  "title": "Feuerbach's Theorem",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
   ],
   "year": "2026"
  },

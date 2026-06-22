@@ -1,0 +1,38 @@
+title = "A Formalization of the Exponential Blowup in the Transformations between CNF and DNF"
+date = 2026-06-15
+topics = [
+  "Logic/General logic/Classical propositional logic",
+]
+abstract = "A well-known result about propositional logic is that transforming a formula into disjunctive or conjunctive normal form can lead to an exponential blowup of the formula size. We formalize this result in the form of two theorems and discuss the challenges we encountered."
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.schulzl]
+email = "schulzl_email"
+
+[authors.desharnais]
+email = "desharnais_email"
+
+[authors.johannsen]
+email = "johannsen_email"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email"
+johannsen = "johannsen_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.5282/ubm/epub.135623",
+]
+pubs = [
+  "https://www.ifi.lmu.de/institut/personen/jjohannsen/jj_unpublished/skript.pdf",
+]

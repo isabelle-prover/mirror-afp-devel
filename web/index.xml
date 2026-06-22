@@ -4,6 +4,56 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF</title>
+  <link>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</link>
+  <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+  <description>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF in the AFP</description>
+    <category>Logic/General logic/Classical propositional logic</category>
+</item>
+<item>
+  <title>Formalization of Weighted Sets</title>
+  <link>https://isa-afp.org/entries/Weighted_Set.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Weighted Sets in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>The Dottie Number</title>
+  <link>https://isa-afp.org/entries/Dottie_Number.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>The Dottie Number in the AFP</description>
+    <category>Mathematics/Misc</category>
+</item>
+<item>
+  <title>Formalization of Countable Multisets</title>
+  <link>https://isa-afp.org/entries/Countable_Multiset.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Countable Multisets in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Fair Games Theorem</title>
+  <link>https://isa-afp.org/entries/Fair_Games_Theorem.html</link>
+  <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Fair Games Theorem in the AFP</description>
+    <category>Mathematics/Probability theory</category>
+</item>
+<item>
+  <title>The Detour Calculus: Rigorous Local Deformation of Integration Contours</title>
+  <link>https://isa-afp.org/entries/Detour_Calculus.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>The Detour Calculus: Rigorous Local Deformation of Integration Contours in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method</title>
+  <link>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
   <title>Euler&#39;s Exponential Series as an Infinite Polynomial</title>
   <link>https://isa-afp.org/entries/Euler_Exponential.html</link>
   <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
@@ -75,6 +125,13 @@
   <pubDate>Sat, 09 May 2026 00:00:00 +0000</pubDate>
   <description>Erdos-Ginzburg-Ziv in the AFP</description>
     <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Feuerbach&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Feuerbach.html</link>
+  <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+  <description>Feuerbach&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
 </item>
 <item>
   <title>Nash Equilibria for Finite Games in Isabelle/HOL</title>

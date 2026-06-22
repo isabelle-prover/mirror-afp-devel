@@ -92,6 +92,7 @@ CAVA_LTL_Modelchecker
 CCS
 CHERI-C_Memory_Model
 CISC-Kernel
+CNF_DNF_Exp_Blowup
 CRDT
 CRYSTALS-Kyber
 CRYSTALS-Kyber_Security
@@ -119,6 +120,7 @@ Category3
 Category_Set
 Catoids
 Cauchy
+Cauchy_Davenport_Vosper
 Cayley_Hamilton
 Certification_Monads
 Ceva
@@ -185,6 +187,7 @@ Core_SC_DOM
 Correctness_Algebras
 Cotangent_PFD_Formula
 Count_Complex_Roots
+Countable_Multiset
 Countable_Sums_and_Discrete_Distributions
 Coupledsim_Contrasim
 CryptHOL
@@ -217,6 +220,7 @@ Derangements
 Deriving
 Descartes_Sign_Rule
 Design_Theory
+Detour_Calculus
 Diagonal_Ramsey
 Dict_Construction
 Difference_Bound_Matrices
@@ -240,6 +244,7 @@ DiskPaxos
 Distributed_Distinct_Elements
 Dominance_CHK
 Doob_Convergence
+Dottie_Number
 Dyck_Language
 DynamicArchitectures
 Dynamic_Pushdown_Networks
@@ -273,6 +278,7 @@ Executable_Randomized_Algorithms
 Expander_Graphs
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
+Fair_Games_Theorem
 FFT
 FLP
 FOL-Fitting
@@ -293,6 +299,7 @@ Farkas
 FeatherweightJava
 Featherweight_OCL
 Fermat3_4
+Feuerbach
 FileRefinement
 FinFun
 Finger-Trees
@@ -959,6 +966,7 @@ WebAssembly
 Weight_Balanced_Trees
 Weighted_Arithmetic_Geometric_Mean
 Weighted_Path_Order
+Weighted_Set
 Well_Quasi_Orders
 Wetzels_Problem
 Wieferich_Kempner

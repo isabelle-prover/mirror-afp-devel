@@ -4,6 +4,13 @@
     <title>Mathematics/Geometry</title>
     <link>https://isa-afp.org/topics/mathematics/geometry/</link>
     <description>AFP entries in Geometry</description><item>
+  <title>Feuerbach&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Feuerbach.html</link>
+  <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+  <description>Feuerbach&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>The Banach–Tarski Paradox in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Banach_Tarski.html</link>
   <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>

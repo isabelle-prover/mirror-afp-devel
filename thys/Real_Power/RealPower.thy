@@ -364,8 +364,7 @@ definition
 text \<open>real exponents.\<close>
 definition
     powreal  :: "[real,real] \<Rightarrow> real"     (infixr \<open>pow\<^sub>\<real>\<close> 80) where
-    "a pow\<^sub>\<real> x = (if 0 < a \<and> a < 1 then (inverse a) powa (-x) 
-                 else if a \<ge> 1 then a powa x else 0)"
+    "a pow\<^sub>\<real> x = a powa x"
 
 lemma powreal_eq_powa:
     "a \<ge> 1 \<Longrightarrow> a pow\<^sub>\<real> x = a powa x"
@@ -766,8 +765,8 @@ lemma real_inverse_bet_one_one_lemma:
 
 lemma powreal_add: 
    "a pow\<^sub>\<real> (x + y) = a pow\<^sub>\<real> x * a pow\<^sub>\<real> y"
-  by (metis minus_add_distrib mult_zero_right powa_add 
-       powreal_def real_inverse_ge_one_lemma)
+  unfolding powreal_def
+  apply (auto simp: powa_add)
 
 lemma powa_one_eq_one [simp]: "1 powa a = 1"
 proof -
