@@ -968,7 +968,7 @@ proof -
   qed (auto simp: h_def k_def)
 qed
 
-theorem conv'_num_denom':
+lemma conv'_num_denom':
   assumes "z > 0" and "n \<ge> 2"
   shows   "conv' c n z = (z * h (n - 1) + h (n - 2)) / (z * k (n - 1) + k (n - 2))"
   using assms conv'_num_denom[of z "n - 2"]
@@ -1010,7 +1010,7 @@ proof -
   finally show ?thesis .
 qed
 
-corollary conv_num_denom_prod_diff:
+lemma conv_num_denom_prod_diff:
   "k n * h (Suc n) - k (Suc n) * h n = (-1) ^ n"
   by (induction c n rule: conv_num.induct)
      (auto simp: k_def h_def algebra_simps)
@@ -1242,10 +1242,6 @@ proof -
   finally show ?thesis .
 qed
 
-text \<open>
-  It follows that for an infinite continued fraction, the infinite sequence of convergents does
-  inf act converge.
-\<close>
 lemma LIMSEQ_cfrac_lim: "cfrac_length c = \<infinity> \<Longrightarrow> conv c \<longlonglongrightarrow> cfrac_lim c"
   using convergent_conv by (auto simp: convergent_LIMSEQ_iff cfrac_lim_def)
 
@@ -1361,11 +1357,7 @@ next
   ultimately show ?thesis by simp
 qed
 
-text \<open>
-  The following summarises the upper and lower bounds for the convergence of the convergents to
-  their limit.
-\<close>
-theorem cfrac_lim_minus_conv_bounds:
+lemma cfrac_lim_minus_conv_bounds:
   assumes "m < cfrac_length c"
   shows   "\<bar>cfrac_lim c - conv c m\<bar> \<in> {1 / (k m * (k m + k (Suc m)))..1 / (k m * k (Suc m))}"
   using cfrac_lim_minus_conv_lower_bound[of m] cfrac_lim_minus_conv_upper_bound[of m] assms
@@ -1418,11 +1410,6 @@ proof -
        "odd n \<Longrightarrow> conv' c n z1 \<ge> conv' c n z2" by auto
 qed
 
-text \<open>
-  The sequence of convergents is alternatingly monotonic in the sense that any even-index
-  convergent is a lower bound for all following convergents and and odd-index convergent is an
-  upper bound for all following convergents.
-\<close>
 lemma
   shows   conv_even_mono: "even n \<Longrightarrow> n \<le> m \<Longrightarrow> conv c n \<le> conv c m"
     and   conv_odd_mono:  "odd n  \<Longrightarrow> n \<le> m \<Longrightarrow> conv c n \<ge> conv c m"
@@ -1506,11 +1493,7 @@ next
   qed
 qed
 
-text \<open>
-  As a consequence of this, the convergence is alternating, in the sense that the convergents 
-  alternate between being bigger and smaller than the limit.
-\<close>
-theorem
+lemma
   assumes "m \<le> cfrac_length c"
   shows   conv_le_cfrac_lim: "even m \<Longrightarrow> conv c m \<le> cfrac_lim c"
     and   conv_ge_cfrac_lim: "odd m \<Longrightarrow> conv c m \<ge> cfrac_lim c"
@@ -1781,47 +1764,51 @@ qed
 lemma cfrac_remainder_0 [simp]: "cfrac_remainder c 0 = cfrac_lim c"
   by (simp add: cfrac_remainder_def)
 
-lemma cfrac_remainder_nonneg: "cfrac_nth c n \<ge> 0 \<Longrightarrow> cfrac_remainder c n \<ge> 0"
-  unfolding cfrac_remainder_def by (rule cfrac_lim_nonneg) auto
-
-lemma cfrac_remainder_pos: "cfrac_nth c n > 0 \<Longrightarrow> cfrac_remainder c n > 0"
-  unfolding cfrac_remainder_def by (rule cfrac_lim_pos) auto
-
 context
   fixes c h k x
   defines "h \<equiv> conv_num c" and "k \<equiv> conv_denom c" and "x \<equiv> cfrac_remainder c"
 begin
 
-lemma conv'_cfrac_remainder:
-  assumes "n \<le> cfrac_length c"
-  shows   "conv' c n (x n) = cfrac_lim c"
-  using assms unfolding x_def
-proof (induction n arbitrary: c)
-  case (Suc n c)
-  have "conv' c (Suc n) (cfrac_remainder c (Suc n)) =
-          cfrac_nth c 0 + 1 / conv' (cfrac_tl c) n (cfrac_remainder c (Suc n))"
-    using Suc.prems by (subst conv'_Suc_left) (auto intro!: cfrac_remainder_pos)
-  also have "cfrac_remainder c (Suc n) = cfrac_remainder (cfrac_tl c) n"
-    by (simp add: cfrac_remainder_def cfrac_drop_Suc_right)
-  also have "conv' (cfrac_tl c) n \<dots> = cfrac_lim (cfrac_tl c)"
-    using Suc.prems by (subst Suc.IH) (auto simp: cfrac_remainder_def enat_less_iff Suc_ile_eq)
-  also have "cfrac_nth c 0 + 1 / \<dots> = cfrac_lim c" using Suc.prems
-    by (intro cfrac_lim_reduce [symmetric]) (auto simp: cfrac_is_int_def simp flip: eSuc_enat)
-  finally show ?case by (simp add: cfrac_remainder_def cfrac_drop_Suc_right)
-qed auto
-
 lemma cfrac_lim_eq_num_denom_remainder_aux:  
   assumes "Suc (Suc n) \<le> cfrac_length c"
   shows   "cfrac_lim c * (k (Suc n) * x (Suc (Suc n)) + k n) = h (Suc n) * x (Suc (Suc n)) + h n"
-proof -
-  have "cfrac_lim c * (k (Suc n) * x (Suc (Suc n)) + k n) = 
-          conv' c (Suc (Suc n)) (x (n+2)) * (k (Suc n) * x (Suc (Suc n)) + k n)"
-    using conv'_cfrac_remainder[of "n+2"] assms by simp
-  also have "\<dots> = h (Suc n) * x (Suc (Suc n)) + h n"
-    using conv'_num_denom_aux[of "x (n+2)" c n] cfrac_remainder_pos[of c "n+2"]
-    by (simp add: h_def k_def x_def algebra_simps)
-  finally show ?thesis .
+  using assms
+proof (induction n)
+  case 0
+  have "cfrac_lim c \<noteq> cfrac_nth c 0"
+    using conv_neq_cfrac_lim[of 0 c] 0 by (auto simp: enat_le_iff)
+  moreover have "cfrac_nth c 1 * (cfrac_lim c - cfrac_nth c 0) \<noteq> 1"
+    using conv_neq_cfrac_lim[of 1 c] 0
+    by (auto simp: enat_le_iff conv_Suc field_simps)
+  ultimately show ?case using assms
+    by (auto simp: cfrac_remainder_Suc divide_simps x_def h_def k_def enat_le_iff)
+       (auto simp: field_simps)
+next
+  case (Suc n)
+  have less: "enat (Suc (Suc n)) < cfrac_length c"
+    using Suc.prems by (cases "cfrac_length c") auto
+  have *: "x (Suc (Suc n)) \<noteq> real_of_int (cfrac_nth c (Suc (Suc n)))"
+    using conv_neq_cfrac_lim[of 0 "cfrac_drop (n+2) c"] Suc.prems
+    by (cases "cfrac_length c") (auto simp: x_def cfrac_remainder_def)
+  hence "cfrac_lim c * (k (Suc (Suc n)) * x (Suc (Suc (Suc n))) + k (Suc n)) =
+           (cfrac_lim c * (k (Suc n) * x (Suc (Suc n)) + k n)) / (x (Suc (Suc n)) - cfrac_nth c (Suc (Suc n)))"
+    unfolding x_def k_def h_def using less
+    by (subst cfrac_remainder_Suc) (auto simp: field_simps)
+  also have "cfrac_lim c * (k (Suc n) * x (Suc (Suc n)) + k n) =
+               h (Suc n) * x (Suc (Suc n)) + h n" using less
+    by (intro Suc.IH) auto
+  also have "(h (Suc n) * x (Suc (Suc n)) + h n) / (x (Suc (Suc n)) - cfrac_nth c (Suc (Suc n))) = 
+               h (Suc (Suc n)) * x (Suc (Suc (Suc n))) + h (Suc n)" using *
+    unfolding x_def k_def h_def using less
+    by (subst (3) cfrac_remainder_Suc) (auto simp: field_simps)
+  finally show ?case .
 qed
+
+lemma cfrac_remainder_nonneg: "cfrac_nth c n \<ge> 0 \<Longrightarrow> cfrac_remainder c n \<ge> 0"
+  unfolding cfrac_remainder_def by (rule cfrac_lim_nonneg) auto
+
+lemma cfrac_remainder_pos: "cfrac_nth c n > 0 \<Longrightarrow> cfrac_remainder c n > 0"
+  unfolding cfrac_remainder_def by (rule cfrac_lim_pos) auto
 
 lemma cfrac_lim_eq_num_denom_remainder:
   assumes "Suc (Suc n) < cfrac_length c"
@@ -1857,6 +1844,25 @@ proof -
 qed
 
 end
+
+lemma conv'_cfrac_remainder:
+  assumes "n < cfrac_length c"
+  shows   "conv' c n (cfrac_remainder c n) = cfrac_lim c"
+  using assms
+proof (induction n arbitrary: c)
+  case (Suc n c)
+  have "conv' c (Suc n) (cfrac_remainder c (Suc n)) =
+          cfrac_nth c 0 + 1 / conv' (cfrac_tl c) n (cfrac_remainder c (Suc n))"
+    using Suc.prems
+    by (subst conv'_Suc_left) (auto intro!: cfrac_remainder_pos)
+  also have "cfrac_remainder c (Suc n) = cfrac_remainder (cfrac_tl c) n"
+    by (simp add: cfrac_remainder_def cfrac_drop_Suc_right)
+  also have "conv' (cfrac_tl c) n \<dots> = cfrac_lim (cfrac_tl c)"
+    using Suc.prems by (subst Suc.IH) (auto simp: cfrac_remainder_def enat_less_iff)
+  also have "cfrac_nth c 0 + 1 / \<dots> = cfrac_lim c"
+    using Suc.prems by (intro cfrac_lim_reduce [symmetric]) (auto simp: cfrac_is_int_def)
+  finally show ?case by (simp add: cfrac_remainder_def cfrac_drop_Suc_right)
+qed auto
 
 lemma cfrac_lim_rational [intro]:
   assumes "cfrac_length c < \<infinity>"
@@ -1928,7 +1934,7 @@ proof (induction n arbitrary: x)
   qed
 qed auto
 
-theorem cfrac_lim_of_real [simp]: "cfrac_lim (cfrac_of_real x) = x"
+lemma cfrac_lim_of_real [simp]: "cfrac_lim (cfrac_of_real x) = x"
 proof (cases "cfrac_length (cfrac_of_real x)")
   case (enat l)
   hence "conv (cfrac_of_real x) l = x"
@@ -1971,6 +1977,12 @@ next
   ultimately show ?thesis by (rule antisym)
 qed
 
+lemma Ints_add_left_cancel: "x \<in> \<int> \<Longrightarrow> x + y \<in> \<int> \<longleftrightarrow> y \<in> \<int>"
+  using Ints_diff[of "x + y" x] by auto
+
+lemma Ints_add_right_cancel: "y \<in> \<int> \<Longrightarrow> x + y \<in> \<int> \<longleftrightarrow> x \<in> \<int>"
+  using Ints_diff[of "x + y" y] by auto
+
 lemma cfrac_of_real_conv':
   fixes m n :: nat
   assumes "x > 1" "m < n"
@@ -1999,7 +2011,7 @@ proof (induction n arbitrary: c m)
       thus False by auto
     qed
     hence not_int: "real_of_int (cfrac_nth c 0) + 1 / conv' (cfrac_tl c) n x \<notin> \<int>"
-      by (subst add_in_Ints_iff_left) (auto simp: field_simps elim!: Ints_cases)
+      by (subst Ints_add_left_cancel) (auto simp: field_simps elim!: Ints_cases)
     have "cfrac_nth (cfrac_of_real (conv' c (Suc n) x)) m =
           cfrac_nth (cfrac_of_real (of_int (cfrac_nth c 0) + 1 / conv' (cfrac_tl c) n x)) (Suc m')"
       using \<open>x > 1\<close> by (subst conv'_Suc_left) (auto simp: Suc)
@@ -2059,7 +2071,7 @@ proof
   finally show False by simp
 qed
 
-theorem cfrac_infinite_iff: "cfrac_length c = \<infinity> \<longleftrightarrow> cfrac_lim c \<notin> \<rat>"
+lemma cfrac_infinite_iff: "cfrac_length c = \<infinity> \<longleftrightarrow> cfrac_lim c \<notin> \<rat>"
   using cfrac_lim_irrational[of c] cfrac_lim_rational[of c] by auto
 
 lemma cfrac_lim_rational_iff: "cfrac_lim c \<in> \<rat> \<longleftrightarrow> cfrac_length c \<noteq> \<infinity>"
@@ -2720,11 +2732,7 @@ proof -
   qed
 qed
 
-text \<open>
-  The following explicitly shows the uniqueness of continued fraction expansions: every continued
-  fraction either corresponds to the canonical expansion of its limit or the non-canonical one.
-\<close>
-theorem cfrac_cases:
+lemma cfrac_cases:
   "c \<in> {cfrac_of_real (cfrac_lim c), cfrac_of_real_alt (cfrac_lim c)}"
 proof (cases "cfrac_length c")
   case infinity
@@ -2787,10 +2795,6 @@ next
   qed
 qed
 
-text \<open>
-  For continued fractions of infinite length (i.e.\ irrational numbers), the canonical and the 
-  non-canonical expansions coincide, so the expansion is fully unique.
-\<close>
 lemma cfrac_lim_eq_iff:
   assumes "cfrac_length c = \<infinity> \<or> cfrac_length c' = \<infinity>"
   shows   "cfrac_lim c = cfrac_lim c' \<longleftrightarrow> c = c'"
@@ -2815,7 +2819,7 @@ subsection \<open>Approximation properties\<close>
 
 text \<open>
   In this section, we will show that convergents of the continued fraction expansion of a 
-  number \<open>x\<close> are good approximations of \<open>x\<close>, and in a certain sense, the converse holds as well.
+  number \<open>x\<close> are good approximations of \<open>x\<close>, and in a certain sense, the reverse holds as well.
 \<close>
 
 lemma sgn_of_int:
@@ -3358,7 +3362,7 @@ text \<open>
   Any convergent of the continued fraction expansion of \<open>x\<close> is a best approximation of \<open>x\<close>,
   i.e. there is no other number with a smaller denominator that approximates it better.
 \<close>
-theorem conv_best_approximation:
+lemma conv_best_approximation:
   fixes a b :: int and x :: real
   assumes "n \<le> cfrac_length c"
   assumes "0 < b" and "b < k n" and "coprime a b"
@@ -3419,7 +3423,7 @@ text \<open>
   A fraction that approximates a real number \<open>x\<close> sufficiently well (in a certain sense)
   is a convergent of its continued fraction expansion.
 \<close>
-theorem frac_is_convergentI:
+lemma frac_is_convergentI:
   fixes a b :: int and x :: real
   defines "x \<equiv> cfrac_lim c"
   assumes "b > 0" and "coprime a b" and "\<bar>x - a / b\<bar> < 1 / (2 * b\<^sup>2)"
@@ -3633,11 +3637,6 @@ end
 
 subsection \<open>Efficient code for convergents\<close>
 
-text \<open>
-  We define a recurrence that generalises the recurrences satisfied by $h_n$ and $k_n$ in order
-  to unify the two concepts and then provide efficient memoisation-based code for them, rather
-  than the na\"ive recursive code equations produced by the definition.
-\<close>
 
 function conv_gen :: "(nat \<Rightarrow> int) \<Rightarrow> int \<times> int \<times> nat \<Rightarrow> nat \<Rightarrow> int" where
   "conv_gen c (a, b, n) N =
@@ -3711,10 +3710,7 @@ qed
 
 subsection \<open>Computing the continued fraction expansion of a rational number\<close>
 
-text \<open>
-  This function computes the finite continued fraction expansion of a rational number (given as
-  a pair of integers) explicitly as a list of integers.
-\<close>
+
 function cfrac_list_of_rat :: "int \<times> int \<Rightarrow> int list" where
   "cfrac_list_of_rat (a, b) =
      (if b = 0 then [0]

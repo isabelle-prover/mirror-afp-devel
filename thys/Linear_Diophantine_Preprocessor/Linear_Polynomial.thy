@@ -41,9 +41,6 @@ lift_definition constant_l :: "('a :: zero, 'v) lpoly \<Rightarrow> 'a" is "\<la
 lift_definition coeff_l :: "('a :: zero, 'v) lpoly \<Rightarrow> 'v \<Rightarrow> 'a" is "\<lambda> c x. c (Some x)" . 
 lift_definition vars_l :: "('a :: zero, 'v) lpoly \<Rightarrow> 'v set" is "\<lambda> c. { x. c (Some x) \<noteq> 0}" .
 
-lemma vars_l_conv_coeff_l: "vars_l p = {x. coeff_l p x \<noteq> 0}"
-  by transfer auto
-
 lemma finite_vars_l[simp,intro]: "finite (vars_l p)" 
 proof (transfer, goal_cases)
   case (1 p)

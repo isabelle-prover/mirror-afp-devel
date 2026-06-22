@@ -77,16 +77,8 @@ the theorem will be simply shown by transitivity.\<close>
   with assms have "x>1/2"  
     by (smt (verit, best) real_sqrt_divide real_sqrt_four real_sqrt_less_iff real_sqrt_one)
 
-  define r_u where "r_u = nat (round x)"
-  have r_u: "r_u > x - 1/2" "r_u \<le> x + 1/2"
-    using \<open>x > 1 / 2\<close> unfolding r_u_def round_def by linarith+
-
-  obtain r_u::nat where r_u: "r_u > x - 1/2" "r_u \<le> x + 1/2" 
+  obtain r_u::nat where "r_u >x -1/2" and "r_u \<le> x+1/2" 
     using obtains_nat_in_interval_half \<open>x>1/2\<close> by (metis less_eq_real_def)
-  have "r_u = nat (round x)"
-    using r_u \<open>r_u > x - 1/2\<close> \<open>r_u \<le> x + 1/2\<close> unfolding round_def by linarith
-
-
   have "r_u \<in> R" using assms \<open>1 / 2 < x\<close> \<open>x - 1 / 2 < real r_u\<close> by auto
   have ru_gt: "r_u > sqrt(l+1/4)-1/2" using \<open>r_u >x -1/2\<close> \<open>x =sqrt(l+1/4)\<close> by blast
   have ru_le: "r_u \<le> sqrt(l+1/4)+1/2" using \<open>r_u \<le> x +1/2\<close> \<open>x =sqrt(l+1/4)\<close> by blast
