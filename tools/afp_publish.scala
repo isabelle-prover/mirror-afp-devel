@@ -204,6 +204,7 @@ object AFP_Publish {
   val isabelle_tool = Isabelle_Tool("afp_publish", "publish afp archives and web pages",
     Scala_Project.here,
     { args =>
+      var publish_all = false
       var force = false
       var max_jobs: Option[Int] = None
       var options = Options.init(specs = AFP_System.AFP_BUILD_OPTIONS)
@@ -213,6 +214,7 @@ object AFP_Publish {
   Usage: isabelle afp_publish [OPTIONS] [ENTRIES ...]
 
     Options are:
+      -a           publish all entries
       -j NUM       number of parallel build jobs (default: 1)
       -f           do not ask before publishing
       -o OPTION    override Isabelle system OPTION (via NAME=VAL or NAME)
@@ -220,13 +222,19 @@ object AFP_Publish {
 
     Publishes archive for the given entries (if any) and AFP web page.
   """,
+        "a" -> (_ => publish_all = true),
         "f" -> (_ => force = true),
         "j:" -> (arg => max_jobs = Some(Value.Int.parse(arg))),
         "o:" -> (arg => options = options + arg),
         "s" -> (_ => skip_checks = true)
         )
 
-      val entries = getopts(args)
+      val entries =
+        getopts(args) match {
+          case Nil if publish_all => AFP_Structure.entry_names
+          case xs if !publish_all => xs
+          case _ => getopts.usage()
+        }
 
       val progress = new Console_Progress(verbose = true)
 
