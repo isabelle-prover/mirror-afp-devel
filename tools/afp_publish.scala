@@ -4,9 +4,9 @@ Publishes archive entry + main web pages on AFP web server.
  */
 package afp
 
+import java.io.{InputStreamReader, BufferedReader}
 
 import isabelle._
-import java.io.{InputStreamReader, BufferedReader}
 
 
 object AFP_Publish {

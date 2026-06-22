@@ -4,9 +4,9 @@ Tools to check AFP session roots.
  */
 package afp
 
-import isabelle.*
-
 import java.io.File as JFile
+
+import isabelle._
 
 
 object AFP_Check_Roots {

@@ -4,8 +4,7 @@ Miscellaneous AFP system operations.
 */
 package afp
 
-
-import isabelle.*
+import isabelle._
 
 
 object AFP_System {

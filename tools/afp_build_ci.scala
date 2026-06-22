@@ -4,7 +4,7 @@ CI jobs for AFP build.
  */
 package afp
 
-import isabelle.*
+import isabelle._
 import isabelle.find_facts.Find_Facts
 
 

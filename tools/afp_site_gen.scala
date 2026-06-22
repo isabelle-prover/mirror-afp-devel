@@ -4,7 +4,7 @@ Generation and compilation of SSG project for the AFP website.
  */
 package afp
 
-import isabelle.*
+import isabelle._
 
 import afp.Metadata.{Affiliation, Author, ACM, AMS, Classification, DOI, Email, Entry, Formatted, Homepage, Reference, Release, Topic, Unaffiliated}
 

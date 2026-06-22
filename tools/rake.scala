@@ -8,11 +8,12 @@ package afp
 
 import scala.language.unsafeNulls
 
-import isabelle.*
 
 import java.io.{BufferedReader, InputStreamReader}
 
 import scala.util.matching.Regex
+
+import isabelle._
 
 
 object Rake {

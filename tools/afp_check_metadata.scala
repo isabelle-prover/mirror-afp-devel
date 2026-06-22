@@ -4,10 +4,10 @@ Tool to check metadata consistency.
  */
 package afp
 
-import isabelle.*
+import isabelle._
+import isabelle.TOML.{parse, Format, Key, Table}
 
 import afp.Metadata.TOML
-import isabelle.TOML.{parse, Format, Key, Table}
 
 
 object AFP_Check_Metadata {

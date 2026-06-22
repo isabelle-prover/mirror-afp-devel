@@ -4,7 +4,7 @@ General AFP structure.
  */
 package afp
 
-import isabelle.*
+import isabelle._
 
 
 object AFP_Structure {
