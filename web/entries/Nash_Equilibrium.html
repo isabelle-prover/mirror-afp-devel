@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nash Equilibria for Finite Games in Isabelle/HOL - Archive of Formal Proofs</title>
+    <meta name="description" content="Nash Equilibria for Finite Games in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:description" content="Nash Equilibria for Finite Games in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:title" content="Nash Equilibria for Finite Games in Isabelle/HOL">
+    <meta property="og:url" content="https://isa-afp.org/entries/Nash_Equilibrium.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>N</span>ash <span class='first'>E</span>quilibria for <span class='first'>F</span>inite <span class='first'>G</span>ames in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRiaHVsYWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJ1eSJdLCJob3N0IjpbImNpbiIsInVmcGUiLCJiciJdfQ==">📧</a>
+      </p>
+      <p class="date">May 7, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This development formalizes Nash equilibria for finite strategic
+form games, following Nash’s equilibrium concept [5, 4]. It gives reusable
+definitions of profiles, unilateral deviations, best responses, dominant
+strategies, and pure Nash equilibria; proves existence for finite ordinal
+potential games [3] and games with dominant strategies; and verifies
+matching pennies as a finite game with no pure Nash equilibrium. It
+also formalizes mixed-strategy profiles for finite games, support lem
+mas for equilibrium strategies, Dirac embeddings of pure profiles, and
+the existence of a mixed Nash equilibrium using Brouwer’s fixed point
+theorem. Worked examples cover the Prisoner’s Dilemma, a coordina
+tion game, matching pennies, and rock-paper-scissors. AI assistance
+was used for proof engineering. The final definitions, statements, and
+proofs are checked by Isabelle.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Codex with gpt 5.5 on xhigh reasoning was used to help with proof engineering.
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/games-and-economics/">Mathematics/Games and economics</a></li>
+      </ul>
+      <h3>Session Nash_Equilibrium</h3>
+      <ul>
+          <li><a href="../thys/Nash_Equilibrium/Nash_Equilibrium.html">Nash_Equilibrium</a></li>
+          <li><a href="../thys/Nash_Equilibrium/Mixed_Nash_Equilibrium.html">Mixed_Nash_Equilibrium</a></li>
+          <li><a href="../thys/Nash_Equilibrium/Nash_Equilibrium_Examples.html">Nash_Equilibrium_Examples</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Nash_Equilibrium/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Nash_Equilibrium/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Nash_Equilibrium/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Nash_Equilibrium-AFP</p>
+        <pre id="copy-text">@article{Nash_Equilibrium-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {Nash Equilibria for Finite Games in Isabelle/HOL},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Nash_Equilibrium.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Nash_Equilibrium-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

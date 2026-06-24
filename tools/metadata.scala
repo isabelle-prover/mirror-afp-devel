@@ -6,12 +6,12 @@ package afp
 
 import scala.language.unsafeNulls
 
-import isabelle.*
-
 import java.time.LocalDate
 import java.net.URI
 
 import scala.collection.immutable.ListMap
+
+import isabelle._
 
 
 object Metadata {

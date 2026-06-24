@@ -1,0 +1,71 @@
+title = "Andrew's Monotone Chain Convex Hull Algorithm"
+date = 2026-05-11
+topics = [
+  "Computer science/Algorithms/Geometry",
+]
+abstract = """
+This development formalizes the executable core of Andrew’s mono
+tone chain convex hull algorithm [1]. The algorithm sorts planar points
+lexicographically, removes duplicates, computes lower and upper hull
+chains by a stack scan that removes non-left turns, and concatenates
+the two chains with their repeated endpoints removed. The formal
+ization proves the stack-scan turn invariant, subset and distinctness
+properties for the computed chains, ordered-chain facts for the lower
+and upper scans, a distinctness criterion for the final concatenation,
+length bounds, support-function invariants for the lower and upper
+scans, and the real-coordinate theorem that the computed output has
+the same convex hull as the input. The final correctness theorem states
+the specification explicitly: the returned vertices are input points, ev
+ery input point lies in the convex hull of the returned vertices, and
+the returned vertices have exactly the same convex hull as the in
+put. It also proves irredundancy of the returned vertex set: deleting
+any returned point changes the convex hull of the returned set. The
+executable algorithm is polymorphic over ordered integral domains be
+cause the scan only uses lexicographic ordering and signs of orientation
+determinants; the geometric theorem is stated for real coordinates be
+cause the convexity and separating-hyperplane libraries use real vector
+spaces. Thus the integer examples exercise the executable code, while
+the real examples instantiate the geometric correctness theorem. The
+support-function argument shows that points removed by a scan are
+dominated in the relevant support directions; a separating hyperplane
+theorem then yields convex-hull coverage, and strict supporting direc
+tions expose each returned vertex for the irredundancy result. The
+development proves functional correctness, but does not formalize the
+asymptotic running time. AI assistance was used for proof engineering.
+The final definitions, statements, and proofs are checked by Isabelle."""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with Gpt 5.5 on xhigh reasoning was used for help with proof engineering and polishing
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

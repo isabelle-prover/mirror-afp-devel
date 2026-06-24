@@ -1,0 +1,40 @@
+title = "Vosper's Theorem and the Cauchy–Davenport Theorem via the Polynomial Method"
+date = 2026-06-11
+topics = [
+  "Mathematics/Number theory",
+  "Mathematics/Combinatorics",
+]
+abstract = """
+This entry formalizes the Cauchy–Davenport lower bound and Vosper's theorem
+for sumsets over finite fields of prime cardinality. It combines a
+polynomial-method proof of Cauchy–Davenport with a Davenport-transform proof of
+Vosper's classification of the nontrivial equality case, and it provides
+modular-representative lemmas connecting the abstract prime-field results to
+normalized representatives of $\\mathbb{Z}/p\\mathbb{Z}$. AI assistance was used
+for proof engineering. The final definitions, statements, and proofs are checked by
+Isabelle."""
+license = "bsd"
+note = ""
+creation_note = "Copilot with Opus 4.8 and Gpt 5.5 was used to help with proof engineering"
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+
+[authors.queiroz]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -552,8 +552,21 @@ proof -
   finally show ?thesis by (rule analytic_on_subset) (insert assms, auto)
 qed
 
-corollary analytic_zeta: "1 \<notin> A \<Longrightarrow> zeta analytic_on A"
-  unfolding zeta_def by (rule analytic_hurwitz_zeta) auto
+lemma analytic_on_hurwitz_zeta [analytic_intros]:
+  assumes "f analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> f z \<noteq> 1" "a > 0"
+  shows   "(\<lambda>z. hurwitz_zeta a (f z)) analytic_on A"
+proof -
+  from assms(2) have "1 \<notin> f ` A"
+    by auto
+  thus ?thesis
+    using analytic_on_compose[OF assms(1) analytic_hurwitz_zeta[of a]] assms(3)
+    by (simp add: o_def)
+qed
+
+lemma analytic_on_zeta [analytic_intros]:
+  assumes "f analytic_on A" "\<And>z. z \<in> A \<Longrightarrow> f z \<noteq> 1"
+  shows   "(\<lambda>z. zeta (f z)) analytic_on A"
+  unfolding zeta_def by (intro analytic_intros assms) auto
 
 corollary continuous_on_hurwitz_zeta:
   "a > 0 \<Longrightarrow> 1 \<notin> A \<Longrightarrow> continuous_on A (hurwitz_zeta a)"
@@ -632,7 +645,27 @@ qed
 corollary is_pole_zeta: "is_pole zeta 1"
   by (simp add: is_pole_hurwitz_zeta zeta_def)
 
-theorem zorder_hurwitz_zeta: 
+lemma meromorphic_on_hurwitz_zeta [meromorphic_intros]:
+  assumes "a > 0"
+  shows   "hurwitz_zeta a meromorphic_on A"
+proof (rule meromorphic_on_subset, rule meromorphic_onI_weak)
+  from assms show "hurwitz_zeta a analytic_on (UNIV - {1})"
+    by (auto intro!: analytic_intros)
+  show "not_essential (hurwitz_zeta a) z" if "z \<in> {1}" for z
+    using that is_pole_hurwitz_zeta[of a] assms by (auto simp: not_essential_def)
+qed auto
+
+lemma meromorphic_on_hurwitz_zeta' [meromorphic_intros]:
+  assumes "f analytic_on A" "a > 0"
+  shows   "(\<lambda>z. hurwitz_zeta a (f z)) meromorphic_on A"
+  using meromorphic_on_compose[OF meromorphic_on_hurwitz_zeta[OF assms(2)] assms(1) order.refl] .
+
+lemma meromorphic_on_zeta [meromorphic_intros]:
+  assumes "f analytic_on A"
+  shows   "(\<lambda>z. zeta (f z)) meromorphic_on A"
+  unfolding zeta_def by (intro meromorphic_intros assms) auto
+
+theorem zorder_hurwitz_zeta_1:
   assumes "a > 0"
   shows   "zorder (hurwitz_zeta a) 1 = -1"
 proof (rule zorder_eqI[of UNIV])
@@ -641,8 +674,8 @@ proof (rule zorder_eqI[of UNIV])
     by (auto simp add: hurwitz_zeta_def field_simps)
 qed (use assms in \<open>auto intro!: holomorphic_intros\<close>)
 
-corollary zorder_zeta: "zorder zeta 1 = - 1"
-  unfolding zeta_def by (rule zorder_hurwitz_zeta) auto
+corollary zorder_zeta_1: "zorder zeta 1 = -1"
+  unfolding zeta_def by (rule zorder_hurwitz_zeta_1) auto
 
 theorem residue_hurwitz_zeta: 
   assumes "a > 0"
@@ -848,6 +881,28 @@ qed
 
 theorem zeta_Re_gt_1_nonzero: "Re s > 1 \<Longrightarrow> zeta s \<noteq> 0"
   using eval_fds_zeta_nonzero[of s] by (simp add: eval_fds_zeta)
+
+lemma has_zorder_zeta: "has_zorder zeta s (zorder zeta s)"
+proof (rule has_zorderI)
+  have "(\<forall>\<^sub>\<approx>z. zeta z = 0) \<or> (\<forall>\<^sub>\<approx>z. zeta z \<noteq> 0)"
+    by (rule meromorphic_imp_constant_or_avoid) (auto intro!: meromorphic_intros)
+  moreover have "\<not>(\<forall>\<^sub>\<approx>z. zeta z = 0)"
+  proof
+    assume "(\<forall>\<^sub>\<approx>z. zeta z = 0)"
+    hence "eventually (\<lambda>z. zeta z = 0) (at 2)"
+      by (auto simp: eventually_cosparse_open_eq)
+    moreover have "eventually (\<lambda>z. z \<in> {z. Re z > 1} - {2}) (at 2)"
+      by (intro eventually_at_in_open) (auto simp: open_halfspace_Re_gt)
+    hence "eventually (\<lambda>z. zeta z \<noteq> 0) (at 2)"
+      by eventually_elim (auto simp: zeta_Re_gt_1_nonzero)
+    ultimately have "eventually (\<lambda>z. False) (at (2::complex))"
+      by eventually_elim auto
+    thus False
+      by simp
+  qed
+  ultimately show "eventually (\<lambda>z. zeta z \<noteq> 0) (at s)"
+    by (auto simp: eventually_cosparse_open_eq)
+qed (auto intro!: meromorphic_intros)
 
 theorem tendsto_zeta_Re_going_to_at_top: "(zeta \<longlongrightarrow> 1) (Re going_to at_top)"
 proof (rule Lim_transform_eventually)
@@ -3537,6 +3592,79 @@ corollary zeta_zero_reflect_iff:
   assumes "Re s \<in> {0<..<1}"
   shows   "zeta (1 - s) = 0 \<longleftrightarrow> zeta s = 0"
   using zeta_zero_reflect[of s] zeta_zero_reflect[of "1 - s"] assms by auto
+
+text \<open>
+  The trivial zeros of the zeta function are all simple.
+\<close>
+lemma has_zorder_zeta_trivial_zero:
+  assumes "even n" "n > 0"
+  shows   "has_zorder zeta (-of_nat n) 1"
+proof -
+  define s where "s = -complex_of_nat n"
+
+  have 1: "has_zorder (\<lambda>z. zeta (1 - z)) s 0"
+    by (rule analytic_imp_has_zorder_0)
+       (use assms in \<open>auto intro!: analytic_intros simp: s_def zeta_Re_gt_1_nonzero\<close>)
+  have 2: "has_zorder (\<lambda>z. complex_of_real (2 * pi) powr - z) s 0"
+    by (rule analytic_imp_has_zorder_0)
+       (use assms pi_gt_zero 
+         in \<open>auto intro!: analytic_intros simp: s_def nonpos_Reals_def complex_eq_iff simp del: pi_gt_zero\<close>)
+  have 3: "2 \<noteq> (0 :: complex)"
+    by auto
+  have 4: "has_zorder (\<lambda>z. cos (of_real pi * z / 2)) s 0"
+    by (rule analytic_imp_has_zorder_0)
+       (use assms in \<open>auto intro!: analytic_intros simp: s_def mult_ac elim!: evenE\<close>)
+
+  define f where "f = (\<lambda>s. rGamma s * zeta (1 - s) / (2 * of_real (2 * pi) powr -s * cos (of_real pi * s / 2)))"
+
+  have "has_zorder f s 1"
+    unfolding f_def by (rule zorder_intros refl 1 2 3 4)+ (auto simp: s_def)
+  also have "?this \<longleftrightarrow> has_zorder zeta s 1"
+  proof (rule has_zorder_cong_ev)
+    have "\<int> sparse_in (UNIV :: complex set)"
+      by (rule sparse_subset_Ints) auto
+    hence "eventually (\<lambda>w. w \<notin> \<int>) (at s)"
+      by (auto simp: sparse_in_eventually_iff)
+    moreover have "eventually (\<lambda>w. w \<in> {w. Re w < 0} - {s}) (at s)"
+      by (rule eventually_at_in_open) (auto simp: open_halfspace_Re_lt s_def \<open>n > 0\<close>)
+    ultimately show "eventually (\<lambda>w. f w = zeta w) (at s)"
+    proof eventually_elim
+      case (elim w)
+      have "cos (w * complex_of_real pi / 2) \<noteq> 0"
+      proof
+        assume "cos (w * complex_of_real pi / 2) = 0"
+        then obtain m where "w * complex_of_real pi / 2 = of_real (real_of_int m * pi) + of_real pi / 2"
+          by (auto simp: cos_eq_0)
+        also have "\<dots> = of_real (pi / 2) * (of_int (2 * m + 1))"
+          by (simp add: algebra_simps)
+        also have "w * complex_of_real pi / 2 = of_real (pi / 2) * w"
+          by simp
+        finally have "w = of_int (2 * m + 1)"
+          by (subst (asm) mult_cancel_left) auto
+        thus False
+          using elim by auto
+      qed
+      moreover from elim have "w \<noteq> 0" "w \<noteq> 1" "w \<notin> \<int>\<^sub>\<le>\<^sub>0" "Re w < 0"
+        by auto
+      ultimately show ?case
+        using zeta_reflect[of w] by (auto simp: f_def field_simps zeta_Re_gt_1_nonzero)
+    qed
+  qed auto
+  finally show ?thesis
+    by (simp add: s_def)
+qed
+
+lemma zorder_zeta_trivial_zero:
+  assumes "s / 2 \<in> \<int>\<^sub>\<le>\<^sub>0" "s \<noteq> 0"
+  shows   "zorder zeta s = 1"
+proof -
+  from assms obtain n where s_eq: "s = -of_nat (2 * n)"
+    by (auto elim!: nonpos_Ints_cases')
+  moreover have "n > 0"
+    by (intro Nat.gr0I) (use assms in \<open>auto simp: s_eq\<close>)
+  ultimately show "zorder zeta s = 1"
+    using has_zorder_zeta_trivial_zero[of "2*n"] by (auto dest: has_zorder_imp_zorder_eq)
+qed
 
 
 subsection \<open>More functional equations\<close>

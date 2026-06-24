@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage[english]{babel}
+\usepackage{wasysym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{The Detour Calculus}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides the \emph{detour calculus}, a relational framework to construct deformed versions of integration contours
+by adding small indentations around problematic points (typically poles). It consists of:
+\begin{itemize}
+\item the definition of a relation that relates the original contour $\gamma$ to a family of deformed contours $(\gamma_\epsilon)_{\epsilon > 0}$
+\item theorems that allow transferring geometric properties from $\gamma$ to $\gamma_\epsilon$ for sufficiently small $\epsilon$
+\item a library of ``basic avoidance patterns'' to add indentations to lines, circular arcs, or the corners between them, and prove that they are in relation with the original contour
+\item a calculus of inference rules which, in particular, allows dealing with composite contours by proving the relation for its individual parts separately
+\end{itemize}
+The motivating example for this calculus was the proof of the valence formula for modular forms (not included here), which requires such a complicated set of indentations that I deemed it beyond the reach of formalisation without a systematic approach such as the present one.
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\section{Auxiliary material}
+
+\input{session}
+
+\raggedright
+
+\end{document}
+

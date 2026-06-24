@@ -4,9 +4,7 @@ Generation and compilation of SSG project for the AFP website.
  */
 package afp
 
-import scala.language.unsafeNulls
-
-import isabelle.*
+import isabelle._
 
 import afp.Metadata.{Affiliation, Author, ACM, AMS, Classification, DOI, Email, Entry, Formatted, Homepage, Reference, Release, Topic, Unaffiliated}
 
@@ -70,6 +68,7 @@ object AFP_Site_Gen {
 
     def author(author: Author, author_entries: List[Entry]): JSON.Object.T =
       JSON.Object(
+        "id" -> author.id,
         "name" -> author.name,
         "entries" -> entries(author_entries),
         "emails" -> author.emails.map(email),
@@ -94,8 +93,8 @@ object AFP_Site_Gen {
         "name" -> topic.name,
         "count" -> topic_entries.length,
         "entries" -> entries(topic_entries),
-        "subtopics" -> topic.sub_topics.map(topic_id).sorted) ++
-      JSON.optional("classification", proper_list(topic.classification.map(classification)))
+        "subtopics" -> topic.sub_topics.map(topic_id).sorted,
+        "classification" -> topic.classification.map(classification))
 
     def affiliations(affiliations: List[Affiliation]): List[JSON.T] = {
       def sep(obj: JSON.Object.T, sep: String): JSON.Object.T = obj ++ JSON.Object("sep" -> sep)
@@ -127,12 +126,16 @@ object AFP_Site_Gen {
         "date" -> release.date.toString,
         "isabelle" -> release.isabelle)
 
-    def related(related: Reference): JSON.T =
+    def related(related: Reference): JSON.Object.T =
       related match {
         case d: DOI =>
           val href = d.url.toString
-          cache.resolve_doi(d).replacing(href -> ("<a href=" + quote(href) + ">" + href + "</a>"))
-        case Formatted(text) => text
+          JSON.Object(
+            "doi" -> d.identifier,
+            "html" ->
+              cache.resolve_doi(d).replacing(
+                href -> ("<a href=" + quote(href) + ">" + href + "</a>")))
+        case Formatted(text) => JSON.Object("html" -> text)
       }
 
     def entry(
@@ -156,15 +159,13 @@ object AFP_Site_Gen {
         "similar" -> similar,
         "sessions" -> sessions.map((name, thys) => JSON.Object(
           "name" -> name,
-          "theories" -> thys))) ++
-        JSON.optional("contributors", proper_list(affiliations(entry.contributors))) ++
-        JSON.optional("releases",
-          proper_list(entry.releases.sortBy(_.isabelle).reverse.map(release))) ++
-        JSON.optional("note", proper_string(entry.note)) ++
-        JSON.optional("history",
-          proper_list(entry.change_history.toList.sortBy(_._1).reverse.map(change_history))) ++
-        JSON.optional("extra", if (entry.extra.isEmpty) None else Some(entry.extra)) ++
-        JSON.optional("related", proper_list(entry.related.map(related)))
+          "theories" -> thys)),
+        "contributors" -> affiliations(entry.contributors),
+        "releases" -> entry.releases.sortBy(_.isabelle).reverse.map(release),
+        "history" -> entry.change_history.toList.sortBy(_._1).reverse.map(change_history),
+        "extra" -> entry.extra,
+        "related" -> entry.related.map(related)) ++
+        JSON.optional("note", proper_string(entry.note))
     }
 
     def entries(entries: List[Entry]): JSON.T =

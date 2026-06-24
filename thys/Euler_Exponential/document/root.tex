@@ -1,0 +1,38 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\begin{document}
+
+\title{Euler's Exponential Series as an Infinite Polynomial}
+\author{Jacques D. Fleuriot\\
+        University of Edinburgh}
+%\affil[1]{University of Edinburgh}
+\maketitle
+
+\begin{abstract}
+In this formalisation, we reconstruct Euler's derivation of the power series for the exponential function as expounded in his famous~\emph{Introductio in analysin infinitorum}, first published in 1748.~Using nonstandard analysis, we mechanize his mixture of infinitesimal and infinite `algebraic' reasoning in the proof assistant Isabelle. In so doing, we demonstrate that the gist of his arguments can be reconstructed formally, with Isabelle and nonstandard analysis shoring up crucial aspects of his reasoning that some historians have qualified as being ``more a matter of faith than science''.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+%generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

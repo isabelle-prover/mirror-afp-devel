@@ -18,7 +18,16 @@
     {{- $topic_links = $topic_links | append (printf "..%s" $topic.RelPermalink) -}}
   {{- end -}}
 
-  {{- $index = $index | append (dict
+  {{ $related := slice }}
+  {{- range .Params.related -}}
+    {{- if .doi -}}
+      {{- $related = $related | append (dict "doi" .doi) -}}
+    {{- else -}}
+      {{- $related = $related | append (dict "html" .html) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $entry := dict
     "shortname" .Params.name
     "title" .Title
     "abstract" (.Params.abstract | replaceRE "\n" " " | plainify)
@@ -26,7 +35,12 @@
     "authors" $authors
     "topics" $topics
     "topic_links" $topic_links
-    "link" (printf "..%s" .RelPermalink))
+    "link" (printf "..%s" .RelPermalink)
+    "date" (.Date.Format "2006-01-02")
+    "related" $related
+    "permalink" .Permalink
   -}}
+
+  {{- $index = $index | append $entry -}}
 {{- end -}}
 {{- $index | jsonify (dict "indent" " ") -}}

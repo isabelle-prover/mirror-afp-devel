@@ -4,9 +4,7 @@ CI jobs for AFP build.
  */
 package afp
 
-import scala.language.unsafeNulls
-
-import isabelle.*
+import isabelle._
 import isabelle.find_facts.Find_Facts
 
 
@@ -45,9 +43,6 @@ object AFP_Build_CI {
     val mail_system: Option[Build_CI.Mail_System],
   ) {
     lazy val afp = AFP_Structure.load()
-
-    val isabelle_id =
-      Mercurial.Hg_Sync.id_directory(Path.ISABELLE_HOME) getOrElse Mercurial.self_repository().id()
 
     def website_dir: Path = Path.explode(options.string("afp_ci_website_dir"))
 
@@ -94,7 +89,7 @@ You are receiving this mail because you are the maintainer of that AFP entry.
 The following information might help you with resolving the problem.
 
 """ + if_proper(url, "Build log: " + url.get + "\n") + """
-Isabelle ID:  """ + context.isabelle_id + """
+Isabelle ID:  """ + Isabelle_System.isabelle_id() + """
 AFP ID:       """ + AFP.hg_id() + """
 Timeout?      """ + result.timeout + """
 Exit code:    """ + result.rc + """
@@ -134,7 +129,7 @@ Last 50 lines from stderr (if available):
       JSON.Object(
         "entries" -> entry_status,
         "build_data" -> (JSON.Object(
-          "isabelle_id" -> context.isabelle_id,
+          "isabelle_id" -> Isabelle_System.isabelle_id(),
           "afp_id" -> AFP.hg_id(),
           "time" -> Date.Format.default(progress.start)) ++
           url.map(url => "url" -> url.toString)))

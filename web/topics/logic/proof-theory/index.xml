@@ -4,6 +4,13 @@
     <title>Logic/Proof theory</title>
     <link>https://isa-afp.org/topics/logic/proof-theory/</link>
     <description>AFP entries in Proof theory</description><item>
+  <title>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction</title>
+  <link>https://isa-afp.org/entries/Gabbay_Labelled_Natural_Deduction.html</link>
+  <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
+  <description>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
   <title>Abstract Consistency Properties</title>
   <link>https://isa-afp.org/entries/Abstract_Consistency_Property.html</link>
   <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>

@@ -4,6 +4,29 @@
     <title>Mathematics/Analysis</title>
     <link>https://isa-afp.org/topics/mathematics/analysis/</link>
     <description>AFP entries in Analysis</description><item>
+  <title>The Detour Calculus: Rigorous Local Deformation of Integration Contours</title>
+  <link>https://isa-afp.org/entries/Detour_Calculus.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>The Detour Calculus: Rigorous Local Deformation of Integration Contours in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Euler&#39;s Exponential Series as an Infinite Polynomial</title>
+  <link>https://isa-afp.org/entries/Euler_Exponential.html</link>
+  <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Euler&#39;s Exponential Series as an Infinite Polynomial in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Gelfand–Naimark–Segal Construction</title>
+  <link>https://isa-afp.org/entries/Gelfand_Naimark_Segal.html</link>
+  <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
+  <description>The Gelfand–Naimark–Segal Construction in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
   <title>Lebesgue-Stieltjes Integral</title>
   <link>https://isa-afp.org/entries/Lebesgue_Stieltjes_Integral.html</link>
   <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>

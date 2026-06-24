@@ -1,0 +1,49 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+%%Euro-style date: 20 September 1955
+\def\today{\number\day\space\ifcase\month\or
+January\or February\or March\or April\or May\or June\or
+July\or August\or September\or October\or November\or December\fi
+\space\number\year}
+
+\begin{document}
+
+\title{The Dottie Number}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+The Dottie number is the unique fixed point $d$ of the cosine function:
+$\cos d = d$. It is approximately 0.739085133215.
+
+This theory establishes the Dottie number's key properties: the
+fixed point exists (by the intermediate value theorem) and is unique
+(because $\cos x - x$ has a strictly negative derivative). Next, the
+value of $d$ to 12 decimal places is shown using the \texttt{approximation} proof
+method. Two more properties of $d$ are also shown: first, that it is
+\emph{transcendental} (via the Hermite--Lindemann--Weierstrass theorem); second,
+that it is a \emph{universal attractor}, in the sense that iterating the cosine
+function from any real starting point converges to it.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
