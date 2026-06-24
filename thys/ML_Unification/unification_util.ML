@@ -83,16 +83,16 @@ sig
     term Binders.binders -> Proof.context -> (term * term) ->
     (term list * term list) -> Envir.env -> (Envir.env * thm) Seq.seq
 
-  (*unifies ?X t1 ... tn \<equiv>\<^sup>? s by syntactically abstracting t1,...,tn in s, resulting in
-  \<lambda>x1 ... xn. s', and setting ?X to \<lambda>x1 ... xn. s' provided that s' contains no loose bvars*)
-  val abstract_var_args : typ list -> term * term -> ((indexname * typ) * term) option
-  val norms_abstract_var_args : Unification_Base.normalisers
-
-  (*given target terms [t1,...,tn], lowers applications "?f_i s1 ... sm" to "?f_i' t1 ... tn"
-  using abstract_var_args*)
-  (*precondition: types of terms are normalised*)
-  val lower_var_args : typ list -> term list -> term list -> Envir.env -> Envir.env option
-  val norms_lower_var_args : Unification_Base.normalisers
+  (*matches application "?f s1 ... sn" with t by abstracting s1,...,sn in t, resulting
+  in \<lambda>x1 ... xn. t', and assigning ?f to it provided that it contains no loose bound variables*)
+  (*precondition: types are matched and types paired with si normalised*)
+  val match_var_args : (term * term -> bool) -> (indexname * typ) * (term * typ) list -> term ->
+    Envir.env -> Envir.env option
+  (*given target terms [t1,...,tn], lowers applications "?fi s1 ... s{mi}" to "?fi' t1 ... tn"
+  using match_var_args*)
+  (*precondition: types paired with si are normalised*)
+  val lower_var_args : (term * term -> bool) -> (term * typ) list ->
+    ((indexname * typ) * (term * typ) list) list -> Envir.env -> Envir.env option
 
   (* logging *)
   val log_unif_result : Proof.context -> term * term -> Envir.env * thm -> unit
@@ -400,26 +400,20 @@ fun strip_comb_strip_comb norm_thm_types unify binders ctxt (sh, th) (ss, ts) en
   |> args_args norm_thm_types (unify binders) ctxt (ss, ts)
   |> Seq.pull)
 
-fun abstract_var_args binderTs = try (fn (p, t) =>
-  let
-    val (p_head, p_args) = strip_comb p
-    val abs_t' = fold_rev (Term_Util.lambda binderTs) p_args t
-    val _ = @{assert} (abs_t' |> strip_abs |> snd |> loose_bnos |> null)
-  in (dest_Var p_head, abs_t') end)
-val norms_abstract_var_args = beta_norms_match
+fun match_var_args eq (f, tTs) t env =
+  let val abst = fold_rev (curry (Term_Util.lambda eq) "") tTs t
+  in if Term.is_open abst then NONE else SOME (Envir.update (f, abst) env) end
 
-fun lower_var_args binderTs target_ts varp_apps = try (fn env =>
+fun lower_var_args eq target_tTs =
   let
-    val type_of = curry fastype_of1 binderTs
-    val Ts = map type_of target_ts
-    fun lower t env =
-      let
-        val n = head_of t |> dest_Var |> fst |> fst
-        val (env, v) = Envir.genvar n (env, Ts ---> type_of t)
-        val upd = abstract_var_args binderTs (t, list_comb (v, target_ts)) |> the
-      in Envir.update upd env end
-  in fold lower varp_apps env end)
-val norms_lower_var_args = norms_abstract_var_args
+    val (target_ts, target_Ts) = split_list target_tTs
+    val rangeT = funpow (length target_ts) range_type
+    fun run [] env = SOME env
+      | run ((ftTs as (((n, _), T), _)) :: ftTss) env =
+          let val (env, t) = Envir.genvar n (env, target_Ts ---> rangeT T)
+            ||> (fn v => list_comb (v, target_ts))
+          in match_var_args eq ftTs t env |> Option.mapPartial (run ftTss) end
+  in run end
 
 (* logging *)
 

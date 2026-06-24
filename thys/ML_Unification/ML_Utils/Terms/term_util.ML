@@ -6,7 +6,8 @@ Term utilities.
 signature TERM_UTIL =
 sig
   val is_Abs : term -> bool
-  val lambda : typ list -> term -> term -> term
+  val abstract_over : (term * term -> bool) -> term -> term Same.operation
+  val lambda : (term * term -> bool) -> string * (term * typ) -> term -> term
 
   val fresh_vars : string -> typ list -> int -> term list * int
   val fresh_var : string -> typ -> int -> term * int
@@ -54,7 +55,16 @@ struct
 fun is_Abs (Abs _) = true
   | is_Abs _ = false
 
-fun lambda Ts t s = Abs (Term.term_name t, fastype_of1 (Ts, t), abstract_over (t, s))
+fun abstract_over eq s =
+  let fun term lev t = if eq (s, t) then Bound lev
+    else case t of
+        Abs (a, T, t) => Abs (a, T, term (lev + 1) t)
+      | t $ u => (term lev t $ Same.commit (term lev) u handle Same.SAME => t $ term lev u)
+      | _ => raise Same.SAME
+  in term 0 end
+
+fun lambda eq (x, (t, T)) s = Abs (if x = "" then Term.term_name t else x, T,
+  Same.commit (abstract_over eq t) s)
 
 fun fresh_vars name Ts idx =
   let fun mk_var_inc T i = (Var ((name, i + 1), T), (i + 1))
