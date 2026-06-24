@@ -81,7 +81,7 @@ end
 structure PResults =
 struct
 val default_presultsq_scale = default_presultsq_scale
-val enum_scale_presultsq_default = Zippy.PResults.enum_scale_presultsq default_presultsq_scale
+fun enum_scale_presultsq_default x = Zippy.PResults.enum_scale_presultsq default_presultsq_scale x
 end
 end
 end
