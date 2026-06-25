@@ -57,7 +57,6 @@ text \<open>We have $g(0) = 1 > 0$ and $g(1) = \cos 1 - 1 < 0$.
 
 lemma dottie_exists: "\<exists>x::real. 0 < x \<and> x < 1 \<and> cos x = x"
 proof -
-  \<comment> \<open>Apply the IVT to @{term g} on the unit interval at 0.\<close>
   have g_cont: "continuous_on {0..1} g"
     unfolding g_def by (intro continuous_intros)
   obtain "g 0 = 1" "g 1 < 0" using cos_1_lt_1 by (simp add: g_def)
@@ -84,7 +83,6 @@ lemma dottie_unique:
 proof (rule ccontr)
   assume "x \<noteq> y"
   have gx: "g x = 0" and gy: "g y = 0" using assms by (auto simp: g_def)
-  \<comment> \<open>The derivative of @{term g} is @{term "\<lambda>x. - sin x - 1"}, which is negative on @{term "{-1..1}"}.\<close>
   show False
   proof (cases "\<bar>x\<bar> > 1 \<or> \<bar>y\<bar> > 1")
     case True
