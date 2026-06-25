@@ -115,11 +115,11 @@ proof (simp add: line_integral_def)
     by fastforce
   then have has_int:"((\<lambda>x. vector_derivative (\<lambda>x. \<gamma> x \<bullet> i) (at x within {0..1}) *\<^sub>R (F ((\<gamma> x \<bullet> i) *\<^sub>R i + g (\<gamma> x \<bullet> i)) \<bullet> i)) has_integral
            integral {\<gamma> 0 \<bullet> i..\<gamma> 1 \<bullet> i} (\<lambda>f_var. F (f_var *\<^sub>R i + g f_var) \<bullet> i)) {0..1}"
-    using has_integral_substitution_strong[OF gamma_differentiable(1) rel_simps(44)
-        path_start_le_path_end' subset_cd field_cont_on_path_cd gamm_cont,
-        of "(\<lambda>x. vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x within ({0..1})))"]
-      gamma_is_in_terms_of_i
-    by (auto simp only: has_real_derivative_iff_has_vector_derivative)
+    using has_integral_substitution_strong_alt[OF countable_finite _
+        path_start_le_path_end' _ field_cont_on_path_cd gamm_cont,
+      where g' = "(\<lambda>x. vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x within ({0..1})))"]
+      gamma_is_in_terms_of_i \<open>finite s\<close>
+    using cd(2) has_real_derivative_iff_has_vector_derivative by fastforce
   then have has_int':"((\<lambda>x. (F(\<gamma>(x)) \<bullet> i)*(vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x within ({0..1})))) has_integral
            integral {((pathstart \<gamma>) \<bullet> i)..((pathfinish \<gamma>) \<bullet> i)} (\<lambda>f_var. F (f_var *\<^sub>R i + g f_var) \<bullet> i)) {0..1}"
     using  gamma_is_in_terms_of_i i_norm_1
@@ -2079,7 +2079,7 @@ proof -
       by (simp add: has_vector_derivative_def scaleR_conv_of_real o_def mult_ac)
   } note * = this
   show ?thesis
-    apply (rule fundamental_theorem_of_calculus_interior_strong)
+    apply (rule fundamental_theorem_of_calculus_interior_strong [OF countable_finite])
     using k assms cfg *
     apply (auto simp: at_within_Icc_at)
     done
@@ -2121,7 +2121,7 @@ proof -
        by auto
   have "((\<lambda>x. ((f'(g x))) * ((vector_derivative g (at x within {0..1}))))
              has_integral (((f(g 1)) - (f(g 0))))) {0..1}"
-    using fundamental_theorem_of_calculus_interior_strong[OF k(1) zero_le_one _ cfg]
+    using fundamental_theorem_of_calculus_interior_strong[OF countable_finite zero_le_one _ cfg]
     using k assms cfg * by (auto simp: at_within_Icc_at)
   then have "((\<lambda>x. (((f'(g x))) * ((vector_derivative g (at x within {0..1})))) \<bullet> base_vec)
              has_integral (((f(g 1)) - (f(g 0)))) \<bullet> base_vec) {0..1}"
@@ -2448,8 +2448,8 @@ proof-
   qed
   have iv: "\<phi>(0) \<le> \<phi>(1)"
     using phi(3) phi(4)  by (simp add: reparam_weak_def)
-  have v: "\<phi>`{0..1} \<subseteq> {0..1}"
-    using phi(5)  by (simp add: reparam_weak_def)
+  have v: "\<phi> \<in> {0..1} \<rightarrow> {0..1}"
+    using phi(5) by auto
   obtain D where D_props: "(\<forall>x\<in>{0..1} - s. (\<phi> has_vector_derivative D x) (at x))"
     using s
     by (auto simp add: C1_differentiable_on_def)
@@ -2461,7 +2461,7 @@ proof-
   have a:"((\<lambda>x. D x * (F (\<gamma>2 (\<phi> x)) \<bullet> b * (vector_derivative \<gamma>2 (at (\<phi> x) within {0..1}) \<bullet> b))) has_integral
               integral {\<phi> 0..\<phi> 1} (\<lambda>x. F (\<gamma>2 x) \<bullet> b * (vector_derivative \<gamma>2 (at x within {0..1}) \<bullet> b)))
               {0..1}"
-    using has_integral_substitution_strong[OF s(1) zero_le_one iv v iii cont_phi vi]
+    using has_integral_substitution_strong_alt[OF countable_finite zero_le_one iv v iii cont_phi vi] s
     by simp
   then have b: "integral {0..1} (\<lambda>x. D x * (F (\<gamma>2 (\<phi> x)) \<bullet> b * (vector_derivative \<gamma>2 (at (\<phi> x) within {0..1}) \<bullet> b))) = 
                        integral {\<phi> 0..\<phi> 1} (\<lambda>x. F (\<gamma>2 x) \<bullet> b * (vector_derivative \<gamma>2 (at x within {0..1}) \<bullet> b))"

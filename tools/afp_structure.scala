@@ -4,9 +4,7 @@ General AFP structure.
  */
 package afp
 
-import scala.language.unsafeNulls
-
-import isabelle.*
+import isabelle._
 
 
 object AFP_Structure {

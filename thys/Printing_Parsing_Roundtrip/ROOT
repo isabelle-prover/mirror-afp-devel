@@ -1,0 +1,10 @@
+chapter AFP
+session Printing_Parsing_Roundtrip = HOL +
+  options [timeout = 300]
+  theories
+    Smolka
+    Smolka_AI
+    Set_System
+    Smolka_AI_Independence_System
+  document_files
+    "root.tex"

@@ -6,11 +6,11 @@ package afp
 
 import scala.language.unsafeNulls
 
-import isabelle.*
-
 import java.io.IOException
 
 import scala.collection.immutable.ListMap
+
+import isabelle._
 
 
 object Utils {

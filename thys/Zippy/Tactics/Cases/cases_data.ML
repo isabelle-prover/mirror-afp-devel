@@ -71,7 +71,7 @@ fun morph_insts phi (PIM.fix fix) = PIM.fix (map (Option.map (Morphism.term phi)
       in PIM.pat (map (Option.map (apfst morph #> apsnd (map morph))) pat) end
   | morph_insts _ entry = entry
 
-fun term_ord tp = if Term_Util.are_term_variants tp then EQUAL else Term_Ord.fast_term_ord tp
+fun term_ord tp = if Term_Util.are_variants tp then EQUAL else Term_Ord.fast_term_ord tp
 
 fun insts_ord (PIM.fix x, PIM.fix y) = list_ord (option_ord term_ord) (x, y)
   | insts_ord (PIM.fix _, _) = LESS
@@ -272,7 +272,7 @@ val map_match = map_config o PDC.map_match
     val ord_data = data_ord
     val pretty_data = pretty_data
     type id = data
-    val ord_id = ord_data
+    val eq_id = eq_data
     val pretty_id = pretty_data
     val get_id = I\<close>\<close>
 

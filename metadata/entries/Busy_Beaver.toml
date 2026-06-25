@@ -1,0 +1,45 @@
+title = "The Busy Beaver Function"
+date = 2026-06-01
+topics = [
+  "Logic/Computability",
+]
+abstract = """
+This development formalizes the Busy Beaver upper-bound principle and its computability consequences for AFP Turing
+  machines. The abstract layer works over machine models with finite size classes and unique exact halting times: it
+  defines the time Busy Beaver function and proves that any total upper bound for this function decides zero-input
+  halting. A generic computability interface then yields the usual noncomputability consequence from the absence of
+  computable fixed-input halting deciders; its eventual-domination theorem is proved under an explicit
+  compilation-witness assumption.
+
+  The development then connects the abstract theory to AFP's Universal Turing Machine formalization by defining exact
+  numeric-result halting times, a finite size measure for Turing programs, a concrete Turing-machine Busy Beaver
+  function, a code-indexed Busy Beaver function whose upper bounds decide AFP's special halting problem (K_1), and a
+  strengthened program/input-pair Busy Beaver function whose upper bounds decide AFP's two-argument halting problem
+  (H_1). Using AFP's Turing-computability interface, it further proves that no upper-bound-induced (H_1) decider set
+  has a Turing-computable total characteristic function, with a specialization to the decider induced by the concrete
+  pair-indexed Busy Beaver function itself."""
+license = "bsd"
+note = ""
+creation_note = "Copilot with Gpt 5.5 on xhigh was used to help with proof engineering."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+
+[authors.queiroz]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

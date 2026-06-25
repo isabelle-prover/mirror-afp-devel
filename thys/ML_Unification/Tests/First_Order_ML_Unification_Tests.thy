@@ -17,15 +17,16 @@ ML\<open>
   structure Unif = First_Order_Unification
   structure Norm = Envir_Normalisation
   structure TIUHA = Term_Index_Unification_Hints_Args
-  val match = Unif.match []
+  val match_types = Type_Unification.e_match
+  val match = Unif.match |> match_types
+  val closed_match = match []
   val match_hints =
-    let fun match binders =
-      UC.add_fallback_matcher
-      (Unif.e_match UU.match_types)
+    let fun match binders = UC.add_fallback_matcher
+      (Unif.e_match #> match_types)
       ((fn binders =>
         (Hints.map_retrieval (TIUHA.mk_retrieval_pair (K Hints.TI.generalisations) Hints.TI.norm_term |> K)
         #> Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
-          |> Type_Unification.e_match UU.match_types |> K)
+          |> Type_Unification.e_match |> K)
         #> Hints.UH.map_normalisers (UU.beta_eta_short_norms_match |> K)
         #> Hints.UH.map_prems_unifier (match |> UC.norm_matcher Norm.beta_norm_term_match |> K))
         |> Context.proof_map
@@ -34,14 +35,15 @@ ML\<open>
       binders
     in match [] end
 
-  val unify = Unif.unify []
+  val unif_types = Type_Unification.e_unify
+  val unify = Unif.unify |> unif_types
+  val closed_unify = unify []
   val unify_hints =
-    let fun unif binders =
-      UC.add_fallback_unifier
-      (Unif.e_unify UU.unify_types)
+    let fun unif binders = UC.add_fallback_unifier
+      (Unif.e_unify #> unif_types)
       ((fn binders =>
         (Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
-          |> Type_Unification.e_match UU.match_types |> K)
+          |> Type_Unification.e_match |> K)
         #> Hints.UH.map_normalisers (UU.beta_eta_short_norms_unif |> K)
         #> Hints.UH.map_prems_unifier (unif |> UC.norm_unifier Norm.beta_norm_term_unif |> K))
         |> Context.proof_map
@@ -79,7 +81,7 @@ ML_command\<open>
     val check = check_unit_tests_hints_match tests true []
   in
     Lecker.test_group ctxt () [
-      check "match" match,
+      check "match" closed_match,
       check "match_hints" match_hints
     ]
   end
@@ -97,7 +99,7 @@ ML_command\<open>
     val check = check_unit_tests_hints_match tests false []
   in
     Lecker.test_group ctxt () [
-      check "match" match,
+      check "match" closed_match,
       check "match_hints" match_hints
     ]
   end
@@ -118,7 +120,7 @@ ML_command\<open>
     val check_hints = check_unit_tests_hints_match tests
   in
     Lecker.test_group ctxt () [
-      check_hints false [] "match" match,
+      check_hints false [] "match" closed_match,
       check_hints false [] "match_hints without hints" match_hints,
       check_hints true hints "match_hints with hints" match_hints
     ]
@@ -132,7 +134,7 @@ paragraph \<open>Generated Tests\<close>
 ML_command\<open>
   structure Test_Params =
   struct
-    val unify = unify
+    val unify = closed_unify
     val unify_hints = unify_hints
     val params = {
       nv = 4,
@@ -188,7 +190,7 @@ ML_command\<open>
       |> K ()
   in
     Lecker.test_group @{context} () [
-      check "unify" unify,
+      check "unify" closed_unify,
       check "unify_hints" unify_hints
     ]
   end
@@ -212,7 +214,7 @@ ML_command\<open>
     val check = check_unit_tests_hints_unif tests true []
   in
     Lecker.test_group ctxt () [
-      check "unify" unify,
+      check "unify" closed_unify,
       check "unify_hints" unify_hints
     ]
   end
@@ -231,7 +233,7 @@ ML_command\<open>
     val check_hints = check_unit_tests_hints_unif tests
   in
     Lecker.test_group ctxt () [
-      check_hints false [] "unify" unify,
+      check_hints false [] "unify" closed_unify,
       check_hints false [] "unify_hints without hints" unify_hints,
       check_hints true hints "unify_hints with hints" unify_hints
     ]

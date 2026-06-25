@@ -19,12 +19,30 @@ sig
   val pretty_thms: Proof.context -> thm list -> Pretty.T
   val rmdup: ''a list -> ''a list
   val `` : ('a -> 'b) -> 'a -> 'a * 'b
+  val list_conj: term list -> term
+  val list_implies: term list * term -> term
+  val mk_conj: term option -> term -> term
+  val list_ex: (string * typ) list -> term -> term
 end
 
 structure Solidity_Util: SOLIDITY_UTIL =
 struct
 
 fun ``f = fn x => (x, f x);
+
+fun list_conj [] = \<^Const>\<open>True\<close>
+  | list_conj [A] = A
+  | list_conj (A::As) = HOLogic.mk_conj (A, list_conj (As));
+
+fun list_implies ([], B) = B
+  | list_implies (As, B) = HOLogic.mk_imp (list_conj As, B)
+
+fun mk_conj (SOME y) x =
+  HOLogic.mk_conj (x,y)
+| mk_conj NONE x = x
+
+fun list_ex xs x =
+  fold_rev (fn (nm,tp) => fn tr => HOLogic.mk_exists (nm,tp,tr)) xs x
 
 val pretty_term = Syntax.pretty_term
 
@@ -69,12 +87,12 @@ fun get_morphism source target thy =
 
 fun capitalizeFirst (str : string) =
     case str of
-        "" => ""
+        "" => ""  (* Return an empty string if the input string is empty *)
       | s => Char.toString(Char.toUpper (String.sub (s, 0))) ^ String.substring (s, 1, size s - 1)
 
 fun decapitalizeFirst (str : string) =
     case str of
-        "" => ""
+        "" => ""  (* Return an empty string if the input string is empty *)
       | s => Char.toString(Char.toLower (String.sub (s, 0))) ^ String.substring (s, 1, size s - 1)
 
 fun lookup_safe alist name =

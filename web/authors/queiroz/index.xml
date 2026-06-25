@@ -4,6 +4,84 @@
     <title>Ruy Jose Guerra Barretto de Queiroz</title>
     <link>https://isa-afp.org/authors/queiroz/</link>
     <description>AFP entries of Ruy Jose Guerra Barretto de Queiroz</description><item>
+  <title>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method</title>
+  <link>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Busy Beaver Function</title>
+  <link>https://isa-afp.org/entries/Busy_Beaver.html</link>
+  <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+  <description>The Busy Beaver Function in the AFP</description>
+    <category>Logic/Computability</category>
+</item>
+<item>
+  <title>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction</title>
+  <link>https://isa-afp.org/entries/Gabbay_Labelled_Natural_Deduction.html</link>
+  <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
+  <description>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction in the AFP</description>
+    <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>The Mostowski Collapse Theorem</title>
+  <link>https://isa-afp.org/entries/Mostowski_Collapse.html</link>
+  <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+  <description>The Mostowski Collapse Theorem in the AFP</description>
+    <category>Logic/Set theory</category>
+</item>
+<item>
+  <title>Andrew&#39;s Monotone Chain Convex Hull Algorithm</title>
+  <link>https://isa-afp.org/entries/Andrew_Monotone_Chain.html</link>
+  <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+  <description>Andrew&#39;s Monotone Chain Convex Hull Algorithm in the AFP</description>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
+<item>
+  <title>Alon’s Combinatorial Nullstellensatz</title>
+  <link>https://isa-afp.org/entries/Combinatorial_Nullstellensatz.html</link>
+  <pubDate>Sun, 10 May 2026 00:00:00 +0000</pubDate>
+  <description>Alon’s Combinatorial Nullstellensatz in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>The Classical Seifert–van Kampen Theorem</title>
+  <link>https://isa-afp.org/entries/Seifert-Van-Kampen.html</link>
+  <pubDate>Sat, 09 May 2026 00:00:00 +0000</pubDate>
+  <description>The Classical Seifert–van Kampen Theorem in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
+  <title>Erdos-Ginzburg-Ziv</title>
+  <link>https://isa-afp.org/entries/Erdos_Ginzburg_Ziv.html</link>
+  <pubDate>Sat, 09 May 2026 00:00:00 +0000</pubDate>
+  <description>Erdos-Ginzburg-Ziv in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>Nash Equilibria for Finite Games in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Nash_Equilibrium.html</link>
+  <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+  <description>Nash Equilibria for Finite Games in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
+  <title>The Banach–Tarski Paradox in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Banach_Tarski.html</link>
+  <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+  <description>The Banach–Tarski Paradox in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Aho-Corasick String Matching</title>
+  <link>https://isa-afp.org/entries/Aho_Corasick.html</link>
+  <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
+  <description>Aho-Corasick String Matching in the AFP</description>
+    <category>Computer science/Algorithms</category>
+</item>
+<item>
   <title>Nagata Factoriality</title>
   <link>https://isa-afp.org/entries/Nagata-Factoriality.html</link>
   <pubDate>Mon, 20 Apr 2026 00:00:00 +0000</pubDate>

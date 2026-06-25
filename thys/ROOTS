@@ -19,6 +19,7 @@ Actuarial_Mathematics
 Adaptive_State_Counting
 Affine_Arithmetic
 Aggregation_Algebras
+Aho_Corasick
 Akra_Bazzi
 Algebraic_Numbers
 Algebraic_VCs
@@ -26,6 +27,7 @@ Allen_Calculus
 Alpha_Beta_Pruning
 Amicable_Numbers
 Amortized_Complexity
+Andrew_Monotone_Chain
 AnselmGod
 Applicative_Lifting
 Approximate_Model_Counting
@@ -53,6 +55,7 @@ BTree
 Babai_Nearest_Plane
 Balog_Szemeredi_Gowers
 Banach_Steinhaus
+Banach_Tarski
 Belief_Revision
 Bell_Numbers_Spivey
 BenOr_Kozen_Reif
@@ -81,6 +84,7 @@ Budan_Fourier
 Buffons_Needle
 Buildings
 BurrowsWheeler
+Busy_Beaver
 BytecodeLogicJmlTypes
 C2KA_DistributedSystems
 CAVA_Automata
@@ -88,6 +92,7 @@ CAVA_LTL_Modelchecker
 CCS
 CHERI-C_Memory_Model
 CISC-Kernel
+CNF_DNF_Exp_Blowup
 CRDT
 CRYSTALS-Kyber
 CRYSTALS-Kyber_Security
@@ -115,6 +120,7 @@ Category3
 Category_Set
 Catoids
 Cauchy
+Cauchy_Davenport_Vosper
 Cayley_Hamilton
 Certification_Monads
 Ceva
@@ -137,6 +143,7 @@ Coinductive_Languages
 Collections
 Combinable_Wands
 Combinatorial_Enumeration_Algorithms
+Combinatorial_Nullstellensatz
 Combinatorial_Q_Analogues
 Combinatorics_Words
 Combinatorics_Words_Graph_Lemma
@@ -180,6 +187,7 @@ Core_SC_DOM
 Correctness_Algebras
 Cotangent_PFD_Formula
 Count_Complex_Roots
+Countable_Multiset
 Countable_Sums_and_Discrete_Distributions
 Coupledsim_Contrasim
 CryptHOL
@@ -212,6 +220,7 @@ Derangements
 Deriving
 Descartes_Sign_Rule
 Design_Theory
+Detour_Calculus
 Diagonal_Ramsey
 Dict_Construction
 Difference_Bound_Matrices
@@ -235,6 +244,7 @@ DiskPaxos
 Distributed_Distinct_Elements
 Dominance_CHK
 Doob_Convergence
+Dottie_Number
 Dyck_Language
 DynamicArchitectures
 Dynamic_Pushdown_Networks
@@ -254,9 +264,11 @@ Encodability_Process_Calculi
 EnrichedCategoryBasics
 Epistemic_Logic
 Equivalence_Relation_Enumeration
+Erdos_Ginzburg_Ziv
 Ergodic_Theory
 Error_Function
 Eudoxus_Reals
+Euler_Exponential
 Euler_MacLaurin
 Euler_Partition
 Euler_Polyhedron_Formula
@@ -266,6 +278,7 @@ Executable_Randomized_Algorithms
 Expander_Graphs
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
+Fair_Games_Theorem
 FFT
 FLP
 FOL-Fitting
@@ -286,6 +299,7 @@ Farkas
 FeatherweightJava
 Featherweight_OCL
 Fermat3_4
+Feuerbach
 FileRefinement
 FinFun
 Finger-Trees
@@ -321,6 +335,7 @@ Functional-Automata
 Functional_Ordered_Resolution_Prover
 Furstenberg_Topology
 GPU_Kernel_PL
+Gabbay_Labelled_Natural_Deduction
 Gabow_SCC
 GaleStewart_Games
 Gale_Shapley
@@ -330,6 +345,7 @@ Gauss-Jordan-Elim-Fun
 Gauss_Jordan
 Gauss_Sums
 Gaussian_Integers
+Gelfand_Naimark_Segal
 GenClock
 General-Triangle
 Generalized_Cauchy_Davenport
@@ -541,6 +557,7 @@ Matrix_Tensor
 Matroids
 Max-Card-Matching
 Maximum_Segment_Sum
+Mechanized_Metasemantics
 Median_Method
 Median_Of_Medians_Selection
 Menger
@@ -567,6 +584,7 @@ MonoidalCategory
 Monomorphic_Monad
 More_LazyLists
 Morley_Theorem
+Mostowski_Collapse
 MuchAdoAboutTwo
 Multi_Party_Computation
 Multirelations
@@ -580,6 +598,7 @@ NREST
 Nagata-Factoriality
 Name_Carrying_Type_Inference
 Nano_JSON
+Nash_Equilibrium
 Nash_Williams
 Nat-Interval-Logic
 Native_Word
@@ -672,6 +691,7 @@ Prim_Dijkstra_Simple
 Prime_Distribution_Elementary
 Prime_Harmonic_Series
 Prime_Number_Theorem
+Printing_Parsing_Roundtrip
 Priority_Queue_Braun
 Priority_Search_Trees
 Probabilistic_Noninterference
@@ -777,6 +797,7 @@ SCC_Bloemen_Sequential
 SCL_Simulates_Ground_Resolution
 SC_DOM_Components
 SDS_Impossibility
+Seifert-Van-Kampen
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
@@ -945,6 +966,7 @@ WebAssembly
 Weight_Balanced_Trees
 Weighted_Arithmetic_Geometric_Mean
 Weighted_Path_Order
+Weighted_Set
 Well_Quasi_Orders
 Wetzels_Problem
 Wieferich_Kempner

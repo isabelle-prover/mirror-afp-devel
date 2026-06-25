@@ -79,7 +79,7 @@ fun PDC_entries_from_PD_entries {simp, match,...} = {simp = simp, match = match}
 type insts = (IHB.def_inst option list, (term * term list) option list, (Term_Zipper.T -> bool) option list)
   PIM.entry
 
-fun term_ord tp = if Term_Util.are_term_variants tp then EQUAL else Term_Ord.fast_term_ord tp
+fun term_ord tp = if Term_Util.are_variants tp then EQUAL else Term_Ord.fast_term_ord tp
 val pred_ord = K EQUAL
 val pretty_pred = Pretty.str "<predicate>"
 
@@ -380,7 +380,7 @@ val map_match = map_config o PDC.map_match
     val ord_data = data_ord
     val pretty_data = pretty_data
     type id = data
-    val ord_id = ord_data
+    val eq_id = eq_data
     val pretty_id = pretty_data
     val get_id = I\<close>\<close>
 

@@ -81,7 +81,7 @@ end
 structure PResults =
 struct
 val default_presultsq_scale = default_presultsq_scale
-val enum_scale_presultsq_default = Zippy.PResults.enum_scale_presultsq default_presultsq_scale
+fun enum_scale_presultsq_default x = Zippy.PResults.enum_scale_presultsq default_presultsq_scale x
 end
 end
 end
@@ -343,14 +343,7 @@ declare [[zip_init_gc
     val id = @{binding dresolve_ho_unif_first}
     val meta = Base_Data.ACMeta.metadata (id,
       Lazy.value "d-resolution with higher-order unification on first possible goal")
-    fun tac ctxt thms =
-      let
-        (*Tactic.make_elim allows no context passing but Thm.biresolution fails to certificate certain
-        theorems without a context*)
-        fun make_elim ctxt thm =
-          let val resolve = Thm.biresolution (SOME ctxt) false [(false, thm)] |> HEADGOAL #> Seq.hd
-          in zero_var_indexes (resolve revcut_rl) end
-      in eresolve_tac ctxt (List.map (make_elim ctxt) thms) end
+    fun tac ctxt = List.map (Thm_Util.make_elim ctxt) #> eresolve_tac ctxt
     fun ztac mk_meta thm _ = Ctxt.with_ctxt (fn ctxt => tac ctxt [thm]
       |> Tac_AAM.lift_tac mk_meta
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS
@@ -374,12 +367,7 @@ declare [[zip_init_gc
     val id = @{binding dresolve_ho_match_first}
     val meta = Base_Data.ACMeta.metadata (id,
       Lazy.value "d-resolution with higher-order matching on first possible goal")
-    fun tac ctxt thms =
-      let
-        fun make_elim ctxt thm =
-          let val resolve = Thm.biresolution (SOME ctxt) false [(false, thm)] |> HEADGOAL #> Seq.hd
-          in zero_var_indexes (resolve revcut_rl) end
-      in ematch_tac ctxt (List.map (make_elim ctxt) thms) end
+    fun tac ctxt = List.map (Thm_Util.make_elim ctxt) #> ematch_tac ctxt
     fun ztac mk_meta thm _ = Ctxt.with_ctxt (fn ctxt => tac ctxt [thm]
       |> Tac_AAM.lift_tac mk_meta
       |> Tac_AAM.Tac.zFIRST_GOAL_FOCUS

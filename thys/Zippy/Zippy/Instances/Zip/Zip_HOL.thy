@@ -200,7 +200,7 @@ local open Zippy
     structure Ctxt = Ctxt
     fun mk_init_args cost = {
       simp = SOME true,
-      match = SOME (can Seq.hd oooo Mixed_Unification.fo_hop_match),
+      match = SOME (can Seq.hd oooo Type_Unification.e_unify Mixed_Unification.fo_hop_match_type_unify),
       empty_action = SOME (Library.K Zippy.PAction.disable_action),
       default_update = SOME Zip.Run.init_gpos,
       mk_cud = SOME Zippy.Result_Action.copy_update_data_empty_changed,

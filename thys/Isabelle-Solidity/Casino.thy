@@ -282,128 +282,200 @@ declare(in casino) pot_balanceI[wprules del]
 
 verification pot_balance:
   pot_balance
-  "(K True)" "K (K (K True))"
-  "createGame" "(K (K True))" "createGame_post" and
-  "placeBet" "(K (K True))" "placeBet_post" and
-  "decideBet" "(K (K True))" "decideBet_post" and
-  "addToPot" "(K True)" "K (K (K True))" and
-  "removeFromPot" "(K (K True))" "K (K (K (K True)))"
+  createGame (\<open>K (K True)\<close>, createGame_post) and
+  placeBet (\<open>K (K True)\<close>, placeBet_post) and
+  decideBet (\<open>K (K True)\<close>, decideBet_post) and
+  addToPot and
+  removeFromPot
   for "casino"
 proof -
-  show "\<And>call. (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
-        \<Longrightarrow> effect (constructor call) s r
-        \<Longrightarrow> post s r pot_balance (K True) (K (K (K True)))"
+  show
+    "\<And>call.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (constructor call) s r
+      \<Longrightarrow> post s r (K (K (inv_state pot_balance))) (K True)"
     unfolding constructor_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
-  by (vcg wprules: pot_balanceI | auto)+
+    by (vcg wprules: pot_balanceI | auto)+
 
-  show "\<And>call hashNum. (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
-        \<Longrightarrow> effect (createGame call hashNum) s r
-        \<Longrightarrow> inv_state pot_balance s
-        \<Longrightarrow> post s r pot_balance (K True) (createGame_post hashNum)"
+  show
+    "\<And>call hashNum.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (createGame call hashNum) s r
+      \<Longrightarrow> inv_state pot_balance s
+      \<Longrightarrow> post s r (K (K (inv_state pot_balance))) (K True)"
     unfolding createGame_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
-  by (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
+    by (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
 
-  show "\<And>call guess. (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
-        \<Longrightarrow> effect (placeBet call guess) s r
-        \<Longrightarrow> inv_state pot_balance s
-        \<Longrightarrow> post s r pot_balance (K True) (placeBet_post guess)"
+  show
+    "\<And>call hashNum.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (createGame call hashNum) s r
+      \<Longrightarrow> inv_state pot_balance s
+      \<Longrightarrow> K (K True) hashNum s
+      \<Longrightarrow> post s r (createGame_post hashNum) (K True)"
+    unfolding createGame_def
+    apply (erule post_exc_true, erule_tac post_wp)
+    unfolding  inv_state_def
+    by (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
+
+  show
+    "\<And>call guess.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (placeBet call guess) s r
+      \<Longrightarrow> inv_state pot_balance s
+      \<Longrightarrow> post s r (K (K (inv_state pot_balance))) (K True)"
     unfolding placeBet_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
     apply (vcg | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
-    apply (auto dest!: vt_or_dest)[1]
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
-  done
+                        apply (auto dest!: vt_or_dest)[1]
+                        apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
+    done
 
-  show "\<And>call secretNumber. (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
-        \<Longrightarrow> effect (decideBet call secretNumber) s r
-        \<Longrightarrow> inv_state pot_balance s
-        \<Longrightarrow> post s r pot_balance (K True) (decideBet_post secretNumber)"
+  show
+    "\<And>call guess.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (placeBet call guess) s r
+      \<Longrightarrow> inv_state pot_balance s
+      \<Longrightarrow> post s r (placeBet_post guess) (K True)"
+    unfolding placeBet_def
+    apply (erule post_exc_true, erule_tac post_wp)
+    unfolding inv_state_def
+    by (vcg | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
+
+  show
+    "\<And>call secretNumber.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+       \<Longrightarrow> effect (decideBet call secretNumber) s r
+       \<Longrightarrow> inv_state pot_balance s
+       \<Longrightarrow> post s r (K (K (inv_state pot_balance))) (K True)"
     unfolding decideBet_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
-    apply (auto simp add:wpsimps)[1]
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
-    apply (auto simp add:wpsimps unat_sub_imp)[1]
-    apply (case_tac "this = ada")
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
-    apply (auto simp add:wpsimps dest:sym)[1]
-    apply (case_tac "this = ada")
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym2\<close>)+
-    apply (auto simp add:wpsimps)[1]
-    apply (metis trans_le_add1 unat_add_imp)
-    apply (auto simp add:wpsimps dest:sym)[1]
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
-    apply (auto simp add:wpsimps)[1]
-    apply (case_tac "this = ada")
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
-    apply (auto simp add:wpsimps dest:sym)[1]
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym\<close>)+
-    apply (auto simp add:wpsimps unat_sub_imp dest:sym)[9]
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym2\<close>)+
-    apply (auto simp add:wpsimps unat_sub_imp dest:sym)[9]
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym2\<close>)+
-    apply (auto simp add:wpsimps)[1]
-    apply (case_tac "this = ada")
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:sym2\<close>)+
-    apply (auto simp add:wpsimps)[1]
-    apply (metis trans_le_add1 unat_add_imp)
-    apply (metis trans_le_add1 unat_add_imp)
-    apply (auto simp add:wpsimps dest:sym)
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps\<close>)+
+    apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                  apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                       apply (case_tac "this = ada")
+                        apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps dest:unat_sub_imp)
+                      apply (case_tac "this = ada")
+                       apply (vcg wprules: pot_balanceI)
+                       apply (auto simp add:wpsimps dest:sym)
+             apply (vcg wprules: pot_balanceI)
+                     apply (auto simp add:wpsimps)
+            apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                apply (case_tac "this = ada")
+                 apply (vcg wprules: pot_balanceI)
+                 apply (auto simp add:wpsimps unat_add_imp)
+               apply (case_tac "this = ada")
+                apply (vcg wprules: pot_balanceI)
+                apply (auto simp add:wpsimps dest:sym)
+           apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                    apply (case_tac "this = ada")
+                     apply (vcg wprules: pot_balanceI)
+                     apply (auto simp add:wpsimps dest:sym unat_sub_imp)
+            apply (vcg wprules: pot_balanceI)
+                    apply (auto simp add:wpsimps)
+           apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps dest:sym unat_add_imp)
+          apply (vcg wprules: pot_balanceI)
     done
 
-  show "\<And>call.
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow>
-       effect (addToPot call) s r \<Longrightarrow>
-       inv_state pot_balance s \<Longrightarrow> post s r pot_balance (K True) (K (K (K True)))"
+  show
+    "\<And>call secretNumber.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+       \<Longrightarrow> effect (decideBet call secretNumber) s r
+       \<Longrightarrow> inv_state pot_balance s
+       \<Longrightarrow> K (K True) secretNumber s
+       \<Longrightarrow> post s r (decideBet_post secretNumber) (K True)"
+    unfolding decideBet_def
+    apply (erule post_exc_true, erule_tac post_wp)
+    unfolding inv_state_def
+    apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                  apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                       apply (case_tac "this = ada")
+                        apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps dest:unat_sub_imp)
+                      apply (case_tac "this = ada")
+                       apply (vcg wprules: pot_balanceI)
+                       apply (auto simp add:wpsimps dest:sym)
+             apply (vcg wprules: pot_balanceI)
+                apply (auto simp add:wpsimps)
+             apply (case_tac "this = ada")
+              apply (vcg wprules: pot_balanceI)
+              apply (auto simp add:wpsimps dest:sym)
+           apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                apply (vcg wprules: pot_balanceI)
+                        apply (auto simp add:wpsimps)
+                    apply (case_tac "this = ada")
+                     apply (vcg wprules: pot_balanceI)
+                     apply (auto simp add:wpsimps dest:sym unat_sub_imp)
+            apply (vcg wprules: pot_balanceI)
+               apply (auto simp add:wpsimps dest:sym unat_add_imp)
+          apply (vcg wprules: pot_balanceI)
+    done
+
+  show
+    "\<And>call.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (addToPot call) s r
+      \<Longrightarrow> inv_state pot_balance s
+      \<Longrightarrow> post s r (K (K (inv_state pot_balance))) (K True)"
     unfolding addToPot_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
     apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (auto simp add:wpsimps no_plus_overflow_leq unat_sub_imp unat_mult_imp unat_add_imp dest:sym)
-    apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-  done
+                apply (auto simp add:wpsimps no_plus_overflow_leq unat_sub_imp unat_mult_imp unat_add_imp dest:sym)
+      apply (vcg wprules: pot_balanceI | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+    done
       
-  show "\<And>call amount.
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow>
-       effect (removeFromPot call amount) s r \<Longrightarrow>
-       inv_state pot_balance s \<Longrightarrow>
-       post s r pot_balance (K True) (K (K (K (K True))) amount)"
+  show
+    "\<And>call amount.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (removeFromPot call amount) s r
+      \<Longrightarrow> inv_state pot_balance s
+      \<Longrightarrow> post s r (K (K (inv_state pot_balance))) (K True)"
     unfolding removeFromPot_def
     apply (erule post_exc_true, erule_tac post_wp)
     apply (cases "msg_sender=this")
     unfolding inv_state_def
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (drule_tac s = this in sym)
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (rule_tac pot_balanceI)
-    apply (auto simp add:wpsimps intro: 111 222 dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (rule_tac pot_balanceI)
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (rule_tac pot_balanceI)
-    apply (auto simp add:wpsimps intro: 111 dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-    apply (rule_tac pot_balanceI)
-    apply (auto simp add:wpsimps dest:unat_add_imp sym)
-    apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
-  done
+     apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+         apply (drule_tac s = this in sym)
+         apply (auto simp add:wpsimps dest:unat_add_imp sym)
+         apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+             apply (auto simp add:wpsimps dest:unat_add_imp sym)
+         apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+               apply (auto simp add:wpsimps dest:unat_add_imp sym)
+         apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+            apply (rule_tac pot_balanceI)
+                   apply (auto simp add:wpsimps intro: 111 222 dest:unat_add_imp sym)
+          apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+          apply (rule_tac pot_balanceI)
+                 apply (auto simp add:wpsimps dest:unat_add_imp sym)
+         apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+            apply (auto simp add:wpsimps dest:unat_add_imp sym)
+      apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+            apply (auto simp add:wpsimps dest:unat_add_imp sym)
+      apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+         apply (rule_tac pot_balanceI)
+                apply (auto simp add:wpsimps intro: 111 dest:unat_add_imp sym)
+       apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+       apply (rule_tac pot_balanceI)
+              apply (auto simp add:wpsimps dest:unat_add_imp sym)
+      apply (vcg | solve\<open>auto simp add:wpsimps dest:unat_add_imp sym\<close>)+
+    done
 qed
 
 context casino_external

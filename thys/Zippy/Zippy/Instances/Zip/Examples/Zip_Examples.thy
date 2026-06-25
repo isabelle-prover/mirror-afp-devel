@@ -225,7 +225,7 @@ qed *)
 text \<open>@{method zip} is also registered to @{command try0} for each search strategy:\<close>
 
 lemma "map f xs = map g ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>i<length ys. f (xs!i) = g (ys!i))"
-  (*try0 simp: list_eq_iff_nth_eq*) \<comment>\<open>use the try0 command to see all successful attempts\<close>
+  (*try0 simp: list_eq_iff_nth_eq *)\<comment>\<open>use the try0 command to see all successful attempts\<close>
   by (zip simp: list_eq_iff_nth_eq)
 
 text \<open>One can use conditional substitution rules:\<close>

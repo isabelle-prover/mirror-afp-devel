@@ -53,7 +53,8 @@ fun dest_metadata (Metadata meta) = meta
 fun get_metadata_id (Metadata (id, _)) = id
 fun get_metadata_prio (Metadata (_, prio)) = prio
 
-val ord_metadata = prod_ord Id.ord Prio.ord o apply2 dest_metadata
+val ord_metadata = apply2 (dest_metadata #> swap)
+  #> prod_ord (Prio.ord #> rev_order) Id.ord
 fun pretty_metadata (Metadata (id, prio)) = Show.record [
     ("id", Identifier.pretty id),
     ("priority", Prio.pretty prio)

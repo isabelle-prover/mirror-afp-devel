@@ -78,14 +78,15 @@ declare [[ucombine \<open>Unification_Combine.eunif_data
 
 declare [[ucombine \<open>
   let open Term_Normalisation
-    (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)
+    (*quick check: ignore changes of schematic variables to avoid loops due to index-raising of some
+    tactics; this check is not precise, but quick. The precise version is Term_Util.are_beta_eta_variants*)
     val eq_beta_eta_dummy_vars = apply2 (Same.commit beta_eta_short #> dummy_vars) #> op aconv
-    val e_unif = Mixed_Comb_Unification.fo_hop_comb_e_unify Unification_Util.unify_types
+    val e_unif = Mixed_Comb_Unification.fo_hop_comb_e_unify
     val norms = Mixed_Comb_Unification.norms_fo_hop_comb_unify
     fun simp_unif unify_theory = Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
-      (Simplifier_Unification.simp_unify norms (e_unif Unification_Combinator.fail_unify) norms)
-        (Unification_Util.inst_norm_term' norms) (e_unif unify_theory)
-      |> Type_Unification.e_unify Unification_Util.unify_types
+      (Unification_Util.inst_norm_term' norms) (Simplifier_Unification.simp_unify norms)
+      (e_unif unify_theory)
+      |> Unification_Combinator.norm_unifier (#inst_term norms)
     val metadata = Unification_Combine.metadata (\<^binding>\<open>simp_unify\<close>, Prio.MEDIUM)
   in Unification_Combine.eunif_data (metadata, simp_unif) end\<close>]]
 

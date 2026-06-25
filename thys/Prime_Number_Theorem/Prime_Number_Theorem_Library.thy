@@ -322,19 +322,6 @@ corollary analytic_pre_zeta' [analytic_intros]:
   using analytic_on_compose_gen[OF assms(1) analytic_pre_zeta[of a UNIV]] assms(2)
   by (auto simp: o_def)
 
-corollary analytic_hurwitz_zeta' [analytic_intros]:
-  assumes "f analytic_on A" "(\<And>x. x \<in> A \<Longrightarrow> f x \<noteq> 1)" "a > 0"
-  shows   "(\<lambda>x. hurwitz_zeta a (f x)) analytic_on A"
-  using analytic_on_compose_gen[OF assms(1) analytic_hurwitz_zeta[of a "-{1}"]] assms(2,3)
-  by (auto simp: o_def)
-
-corollary analytic_zeta' [analytic_intros]:
-  assumes "f analytic_on A" "(\<And>x. x \<in> A \<Longrightarrow> f x \<noteq> 1)"
-  shows   "(\<lambda>x. zeta (f x)) analytic_on A"
-  using analytic_on_compose_gen[OF assms(1) analytic_zeta[of "-{1}"]] assms(2)
-  by (auto simp: o_def)
-
-
 lemma logderiv_zeta_analytic: "(\<lambda>s. deriv zeta s / zeta s) analytic_on {s. Re s \<ge> 1} - {1}"
   using zeta_Re_ge_1_nonzero by (auto intro!: analytic_intros)
 

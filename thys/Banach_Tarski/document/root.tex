@@ -1,0 +1,72 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{textcomp}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-style
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Banach--Tarski Paradox in Isabelle/HOL}
+\author{Arthur F. Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\date{}
+\maketitle
+
+\begin{abstract}
+We formalise in Isabelle/HOL the classical Banach--Tarski paradox for the
+closed unit ball in three-dimensional Euclidean space.  The development
+proves the free-group paradox, the free subgroup of \(SO(3)\),
+the Hausdorff paradox away from a countable bad set, the absorption
+arguments for the sphere and the origin, and the final finite-partition
+theorem for the ball.
+
+The proof follows the standard route: the paradoxical decomposition of the
+free group on two generators \(F_2\), the existence of a free subgroup
+\(F_2 \le SO(3)\) via the AFP \texttt{Free-Groups} entry, the Hausdorff
+paradox for \(S^2 \setminus D\) where \(D\) is a countable set of fixed
+points, and absorption arguments extending the partition to \(S^2\), then
+radially to \(B^3 \setminus \{0\}\), and finally to \(B^3\) itself.
+The argument crucially relies on the axiom of choice.
+\end{abstract}
+
+\section*{Background}
+
+The Banach--Tarski paradox was proved by Banach and Tarski
+\cite{BanachTarski1924}, building on Hausdorff's earlier paradoxical
+decomposition of the sphere \cite{Hausdorff1914}.  The route formalised here
+follows the standard free-group presentation from Wagon's expositions
+\cite{Wagon1993,TomkowiczWagon2016} and can be compared with de Rauglaudre's
+Coq formalisation \cite{deRauglaudre2017BanachTarski}.  The Isabelle
+development uses Breitner's AFP entry on free groups
+\cite{AFPFreeGroups}.
+
+\section*{Formalisation Profile}
+
+The generated Isabelle session is \texttt{Banach\_Tarski}.  It is based on the
+HOL Analysis library, imports the AFP entry \texttt{Free-Groups}, and uses
+the \texttt{Primes} theory for the arithmetic freeness
+argument.  The development introduces no local axiomatization or oracle.
+Its non-constructive steps use the standard Hilbert-choice operators of
+HOL, made explicit in the orbit-representative construction and inverse-map
+uses.
+
+The checked target is Isabelle 2025-2 with AFP 2026-04-09.
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{*}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

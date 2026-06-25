@@ -796,7 +796,7 @@ proof -
       using DERIV_deriv_iff_real_differentiable by simp
   qed
   thus ?thesis
-    by (intro fundamental_theorem_of_calculus_interior_strong[where S=S];
+    by (intro fundamental_theorem_of_calculus_interior_strong[OF countable_finite, where S=S];
         simp add: assms fin has_real_derivative_iff_has_vector_derivative)
 qed
 
@@ -2361,7 +2361,7 @@ qed
 proposition distributed_deriv_cdf:
   assumes [measurable]: "random_variable borel X"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  assumes "finite S" "\<And>x. x \<notin> S \<Longrightarrow> (F has_real_derivative f x) (at x)"
+  assumes "countable S" "\<And>x. x \<notin> S \<Longrightarrow> (F has_real_derivative f x) (at x)"
     and "continuous_on UNIV F" "f \<in> borel_measurable lborel"
   shows "distributed M lborel X f"
 proof -
@@ -2400,7 +2400,7 @@ proof -
           = \<integral>\<^sup>+x. ennreal (indicat_real {a..b} x * g x) \<partial>lborel"
           apply (rule nn_integral_cong_AE)
           apply (rule AE_mp[where P= "\<lambda>x. x \<notin> S"])
-          using assms finite_imp_null_set_lborel AE_not_in
+          using assms countable_imp_null_set_lborel AE_not_in
            apply blast
           unfolding g_def
           apply simp
@@ -2408,7 +2408,8 @@ proof -
         also have "\<dots> = ennreal (F b - F a)"
           apply (rewrite nn_integral_has_integral_lebesgue, simp)
            apply (rule fundamental_theorem_of_calculus_strong[of S], auto simp: \<open>a \<le> b\<close> g_def assms)
-          using has_real_derivative_iff_has_vector_derivative assms apply presburger
+          using has_real_derivative_iff_has_vector_derivative assms
+          apply (metis (lifting) ext has_field_derivative_at_within)
           using assms continuous_on_subset subsetI by fastforce
           (* TODO: fix this proof *)
         finally show ?thesis .

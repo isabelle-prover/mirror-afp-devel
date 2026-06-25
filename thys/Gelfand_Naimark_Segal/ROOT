@@ -1,0 +1,14 @@
+chapter AFP
+
+session Gelfand_Naimark_Segal = "Complex_Bounded_Operators" +
+  options [timeout = 900]
+  sessions
+    Lie_Groups
+    Gromov_Hyperbolicity
+  theories
+    Cstar_Algebra_On
+    Inner_Completion
+    Gelfand_Naimark_Segal
+  document_files
+    root.tex
+    root.bib

@@ -1,0 +1,15 @@
+chapter AFP
+
+session Weighted_Set = "HOL-Library" +
+  options [timeout = 600]
+  sessions
+    "HOL-Combinatorics"
+  theories [document = false]
+    "HOL-Library.Tree"
+    "HOL-Library.Multiset"
+    "HOL-Combinatorics.List_Permutation"
+  theories
+    Weighted_Set
+  document_files
+    "root.tex"
+    "root.bib"

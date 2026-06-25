@@ -4,6 +4,14 @@
     <title>Computer science/Algorithms/Optimization</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/optimization/</link>
     <description>AFP entries in Optimization</description><item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>Unconstrained Optimization</title>
   <link>https://isa-afp.org/entries/Unconstrained_Optimization.html</link>
   <pubDate>Wed, 16 Jul 2025 00:00:00 +0000</pubDate>

@@ -3,7 +3,7 @@ chapter AFP
 session QBF_Solver_Verification = "HOL-Library" +
   options [timeout = 300]
   theories
-    NaiveSolver
+    ExpansionSolver
     PCNF
     Parser
     SearchSolver
@@ -12,5 +12,5 @@ session QBF_Solver_Verification = "HOL-Library" +
     "root.bib"
     "root.tex"
   export_files
-    "QBF_Solver_Verification.*:code**run_naive_solver**"
+    "QBF_Solver_Verification.*:code**run_expansion_solver**"
     and "QBF_Solver_Verification.*:code**run_search_solver**"

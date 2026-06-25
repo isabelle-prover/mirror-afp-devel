@@ -6,9 +6,9 @@ package afp
 
 import scala.language.unsafeNulls
 
-import isabelle.*
-
 import java.time.LocalDate
+
+import isabelle._
 
 
 object AFP_Release {

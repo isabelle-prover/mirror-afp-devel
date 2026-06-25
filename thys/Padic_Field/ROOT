@@ -4,6 +4,7 @@ session Padic_Field = "Padic_Ints" +
   options [timeout = 3600]
   sessions
     "Localization_Ring"
+    "HOL-Analysis"
   theories
     Fraction_Field
     Cring_Multivariable_Poly
@@ -12,6 +13,7 @@ session Padic_Field = "Padic_Ints" +
     Padic_Fields
     Padic_Field_Polynomials
     Padic_Field_Topology
+    Padic_Field_Topology_Bridge
     Generated_Boolean_Algebra
     Padic_Field_Powers
     Padic_Semialgebraic_Function_Ring

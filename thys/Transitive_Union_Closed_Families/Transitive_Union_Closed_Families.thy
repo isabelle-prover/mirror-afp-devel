@@ -39,8 +39,6 @@ definition union_closed_conjecture_property:: "'a set set \<Rightarrow> bool"
 
 definition "Neighbd \<equiv> \<lambda>A. sumset A R"
 
-definition "Interior \<equiv> \<lambda>A. {x\<in>G. sumset {x} R \<subseteq> A}"
-
 definition "\<F> \<equiv> Neighbd ` Pow G" 
 
 text\<open>the family @{term \<F>} as defined above and appears in the statement of the theorem 
@@ -51,15 +49,13 @@ lemma card\<F>_gt0 [simp]: "card \<F> > 0" and finite\<F>: "finite \<F>"
 
 text \<open>As a remark, we note that @{term \<F>} is nontrivial.\<close>
 lemma "\<F> \<noteq> {{}}"
-  unfolding \<F>_def image_def Neighbd_def set_eq_iff
-  apply simp
-  by (metis RG R_nonempty Pow_top disjoint_iff emptyE subset_eq sumset_is_empty_iff)
+  unfolding \<F>_def Neighbd_def using RG R_nonempty by blast
 
 lemma "union_closed \<F>"    
 proof-
-  have *:"\<forall> A \<subseteq> G. \<forall> B \<subseteq> G. (sumset A R) \<union> (sumset B R) = sumset (A \<union> B) R"
+  have "\<forall> A \<subseteq> G. \<forall> B \<subseteq> G. (sumset A R) \<union> (sumset B R) = sumset (A \<union> B) R"
     by (simp add: sumset_subset_Un1)
-  show ?thesis using *  
+  then show ?thesis   
     by (auto simp: union_closed_def \<F>_def Neighbd_def)
 qed
 
@@ -70,6 +66,8 @@ lemma \<F>_subset: "\<F> \<subseteq> Pow G"
   by (simp add: Neighbd_def PowI \<F>_def image_subset_iff sumset_subset_carrier)
 
 subsection\<open>Proof of the main theorem\<close>
+
+definition "Interior \<equiv> \<lambda>A. {x\<in>G. sumset {x} R \<subseteq> A}"
 
 lemma card_Interior_le:
   assumes "S \<subseteq> G"

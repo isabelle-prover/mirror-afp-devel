@@ -70,10 +70,10 @@ Everything happens in the release branch `afp/release`.
 9. `hg add` and `hg commit` the web site updates.
 10. finally, when you are happy with everything, `hg push` all changes
     to Heptapod. The publish script will refuse to publish if the
-    changes aren't pushed.
-11. to publish the changes to the web, run (with **all sessions** of the entry)
+    changes aren't pushed, or if you have relevant uncommitted changes.
+11. to publish the changes to the web, run
 
-         ../admin/publish <sessions...>
+         ../admin/publish <entry>
 
     This will check out the Isabelle202X (=release) version of the
     archive from Heptapod, run the specified sessions (all sessions of the

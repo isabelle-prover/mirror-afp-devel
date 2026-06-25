@@ -1,0 +1,36 @@
+title = "Formalization of Weighted Sets"
+date = 2026-06-13
+topics = [
+  "Computer science/Data structures",
+]
+abstract = "We define weighted sets as a generalization of finite multisets where multiplicities are replaced by weights from a refinable abelian semigroup. Weighted sets are equivalently represented as functions from elements to optional weights returning None for all but finitely many elements, or as quotients of element-weight lists modulo permutation and regrouping. We register weighted sets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes."
+license = "bsd"
+note = ""
+creation_note = """
+A first complete version of the proofs was manually written by the authors. LLMs (GPT 5.4, Claude Sonnet 4.6) were used to convert messy apply-style proofs to canonical Isar. All the lemma statements remained unchanged during this refactoring.
+
+
+
+"""
+
+[authors]
+
+[authors.rabing]
+email = "rabing_email"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+rabing = "rabing_email"
+traytel = "traytel_email2"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

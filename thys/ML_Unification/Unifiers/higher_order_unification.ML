@@ -33,7 +33,7 @@ fun unify binders ctxt tp env = Seq.make (fn _ =>
         Util.pretty_unif_problem binders ctxt
           (apply2 (Same.commit (Envir_Normalisation.beta_norm_term_unif env)) tp)
       ] |> Pretty.string_of)
-    val init_goal = Logic.mk_equals #> Thm.cterm_of ctxt #> Goal.init
+    val init_goal = Term_Util.mk_equals [] #> Thm.cterm_of ctxt #> Goal.init
     fun create_env_thmq env = tp
       (*replace binders and apply the computed unifier*)
       |> apply2 (Binders.replace_binders binders
@@ -42,7 +42,7 @@ fun unify binders ctxt tp env = Seq.make (fn _ =>
       |> init_goal
       (*kind of a hack: resolving against the equality theorem will add the
         flex-flex pairs to the theorem*)
-      |> HEADGOAL (match_tac ctxt @{thms Pure.reflexive})
+      |> HEADGOAL (match_tac ctxt [@{thm Pure.reflexive}])
       (*conclude the goal and pair with the environment*)
       |> Seq.map (pair env o Goal.conclude)
   in

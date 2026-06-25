@@ -26,6 +26,7 @@ sig
   val unify_eq_env_tac : Unification_Base.normalisers -> Unification_Base.unifier ->
     term Binders.binders -> Proof.context -> int -> env_tactic
 
+  (*precondition: term types are unified and normalised*)
   val unify : Envir_Normalisation.term_normaliser -> (term * term -> int -> env_tactic) ->
     Unification_Base.unifier
 end
@@ -93,7 +94,7 @@ fun unify normt tac binders ctxt (tp as (lhs, rhs)) env = Seq.make (fn _ =>
       |> (fn binders => Drule.forall_elim_list binders state)
       |> pair env
   in
-    (Term_Util.mk_equals binders tp
+    (Term_Util.mk_equals (Binders.binder_types binders) tp
     |> curry Logic.list_all (map fst rev_binders)
     |> Thm.cterm_of ctxt
     |> Goal.init

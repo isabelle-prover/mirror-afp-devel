@@ -4,9 +4,7 @@ Site generation via Hugo. See also: https://gohugo.io/.
  */
 package afp
 
-import scala.language.unsafeNulls
-
-import isabelle.*
+import isabelle._
 
 
 object Hugo {

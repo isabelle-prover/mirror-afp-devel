@@ -26,19 +26,6 @@ lemma wf_on_if_minimal:
 definition inv_imagep_on :: "'a set \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "inv_imagep_on A R f = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> R (f x) (f y))"
 
-lemma wfp_on_inv_imagep:
-  assumes wf: "wfp_on (f ` A) R"
-  shows "wfp_on A (inv_imagep R f)"
-  unfolding wfp_on_iff_ex_minimal
-proof (intro allI impI)
-  fix B assume "B \<subseteq> A" and "B \<noteq> {}"
-  hence "\<exists>z\<in>f ` B. \<forall>y. R y z \<longrightarrow> y \<notin> f ` B"
-    using wf[unfolded wfp_on_iff_ex_minimal, rule_format, of "f ` B"] by blast
-  thus "\<exists>z\<in>B. \<forall>y. inv_imagep R f y z \<longrightarrow> y \<notin> B"
-    unfolding inv_imagep_def
-    by (metis image_iff)
-qed
-
 definition lex_prodp where
   "lex_prodp R\<^sub>A R\<^sub>B x y \<longleftrightarrow> R\<^sub>A (fst x) (fst y) \<or> fst x = fst y \<and> R\<^sub>B (snd x) (snd y)"
 
@@ -56,6 +43,30 @@ lemma wfp_on_lex_prodp: "wfp_on A R\<^sub>A \<Longrightarrow> wfp_on B R\<^sub>B
 corollary wfp_lex_prodp: "wfp R\<^sub>A \<Longrightarrow> wfp R\<^sub>B \<Longrightarrow> wfp (lex_prodp R\<^sub>A R\<^sub>B)"
   using wfp_on_lex_prodp[of UNIV _ UNIV, simplified] .
 
+lemma wf_on_sup_if_convertible_to_wf:
+  includes lattice_syntax
+  assumes
+    wf_S: "wf_on A S" and
+    wf_Q: "wf_on (f ` A) Q" and
+    convertible_R: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x, y) \<in> R \<Longrightarrow> (f x, f y) \<in> Q" and
+    convertible_S: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x, y) \<in> S \<Longrightarrow> (f x, f y) \<in> Q \<or> f x = f y"
+  shows "wf_on A (R \<squnion> S)"
+proof (rule wf_on_if_convertible_to_wf_on)
+  show "wf_on ((\<lambda>x. (f x, x)) ` A) (lex_prod Q S)"
+  proof (rule wf_on_subset)
+    show "wf_on (f ` A \<times> A) (lex_prod Q S)"
+      by (rule wf_on_lex_prod[OF wf_Q wf_S])
+  next
+    show "(\<lambda>x. (f x, x)) ` A \<subseteq> f ` A \<times> A"
+      by auto
+  qed
+next
+  fix x y
+  show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x, y) \<in> (R \<squnion> S) \<Longrightarrow> ((f x, x), (f y, y)) \<in> lex_prod Q S"
+    using convertible_R convertible_S
+    by (auto simp add: lex_prodp_def)
+qed
+
 lemma wfp_on_sup_if_convertible_to_wfp:
   includes lattice_syntax
   assumes
@@ -64,21 +75,7 @@ lemma wfp_on_sup_if_convertible_to_wfp:
     convertible_R: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> R x y \<Longrightarrow> Q (f x) (f y)" and
     convertible_S: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> S x y \<Longrightarrow> Q (f x) (f y) \<or> f x = f y"
   shows "wfp_on A (R \<squnion> S)"
-proof (rule wfp_on_if_convertible_to_wfp_on)
-  show "wfp_on ((\<lambda>x. (f x, x)) ` A) (lex_prodp Q S)"
-  proof (rule wfp_on_subset)
-    show "wfp_on (f ` A \<times> A) (lex_prodp Q S)"
-      by (rule wfp_on_lex_prodp[OF wf_Q wf_S])
-  next
-    show "(\<lambda>x. (f x, x)) ` A \<subseteq> f ` A \<times> A"
-      by auto
-  qed
-next
-  fix x y
-  show "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (R \<squnion> S) x y \<Longrightarrow> lex_prodp Q S (f x, x) (f y, y)"
-    using convertible_R convertible_S
-    by (auto simp add: lex_prodp_def)
-qed
+  using wf_on_sup_if_convertible_to_wf[to_pred, OF assms] .
 
 lemma chain_lnth_rtranclp:
   assumes

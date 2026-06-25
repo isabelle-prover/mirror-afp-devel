@@ -10,20 +10,17 @@ paragraph \<open>Summary\<close>
 text \<open>Tests for @{ML_structure "Higher_Order_Pattern_Unification"}.\<close>
 
 ML\<open>
-  structure Prop = SpecCheck_Property
   structure UC = Unification_Combinator
   structure UU = Unification_Util
   structure TIUHA = Term_Index_Unification_Hints_Args
   open Unification_Tests_Base
   structure Unif = Higher_Order_Pattern_Unification
-  val norm_match_types = Type_Unification.e_match UU.match_types
-  val match = Unif.match |> norm_match_types
+  val match_types = Type_Unification.e_match
+  val match = Unif.match |> match_types
   val closed_match = match []
   val match_hints =
-    let fun match binders =
-      UC.add_fallback_matcher
-      (fn match_theory => Unif.e_match UU.match_types match_theory match_theory
-        |> norm_match_types)
+    let fun match binders = UC.add_fallback_matcher
+      (fn match_theory => Unif.e_match match_theory match_theory |> match_types)
       ((fn binders =>
         (Hints.map_retrieval (TIUHA.mk_retrieval_pair (K Hints.TI.generalisations) Hints.TI.norm_term |> K)
         #> Hints.UH.map_concl_unifier (match |> K)
@@ -35,14 +32,12 @@ ML\<open>
       binders
     in match [] end
 
-  val norm_unif_types = Type_Unification.e_unify UU.unify_types
-  val unify = Unif.unify |> norm_unif_types
+  val unif_types = Type_Unification.e_unify
+  val unify = Unif.unify |> unif_types
   val closed_unify = unify []
   val unify_hints =
-    let fun unif binders =
-      UC.add_fallback_unifier
-      (fn unif_theory => Unif.e_unify UU.unify_types unif_theory unif_theory
-        |> norm_unif_types)
+    let fun unif binders = UC.add_fallback_unifier
+      (fn unif_theory => Unif.e_unify unif_theory unif_theory |> unif_types)
       ((fn binders =>
         (Hints.UH.map_concl_unifier (match |> K)
         #> Hints.UH.map_normalisers (Unif.norms_unify |> K)
@@ -85,7 +80,6 @@ ML_command\<open>
 \<close>
 
 subparagraph \<open>Asymmetry\<close>
-
 ML_command\<open>
   let
     val ctxt = Proof_Context.set_mode Proof_Context.mode_schematic @{context}
@@ -136,8 +130,8 @@ ML_command\<open>
     val unify = closed_unify
     val unify_hints = unify_hints
     val params = {
-      nv = 10,
-      ni = 10,
+      nv = 4,
+      ni = 2,
       max_h = 5,
       max_args = 4
     }

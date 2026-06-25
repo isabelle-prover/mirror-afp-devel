@@ -124,72 +124,99 @@ declare(in bank) sum_balI[wprules del]
 
 verification sum_bal:
   sum_bal
-  "K True" "K (K (K True))"
-  deposit "K True" "deposit_post" and
-  withdraw "K True" "K (K (K True))"
+  deposit ("K True", deposit_post) and
+  withdraw
   for "Bank"
 proof -
-  show "\<And>call.
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow>
-       effect (constructor call) s r \<Longrightarrow> post s r sum_bal (K True) (K (K (K True)))"
+  show
+    "\<And>call.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (constructor call) s r
+      \<Longrightarrow> post s r (K (K (inv_state sum_bal))) (K True)"
     unfolding constructor_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding  inv_state_def
   by (vcg wprules: sum_balI | auto)+
 
-  show "\<And>call.
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow>
-       effect (deposit call) s r \<Longrightarrow> inv_state sum_bal s \<Longrightarrow> post s r sum_bal (K True) deposit_post"
+  show
+    "\<And>call.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (deposit call) s r
+      \<Longrightarrow> inv_state sum_bal s
+      \<Longrightarrow> post s r (K (K (inv_state sum_bal))) (K True)"
     unfolding deposit_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding inv_state_def deposit_post_def
     apply vcg
-    apply (auto simp add:wpsimps)
-    apply (rule bal_msg_sender, assumption)
+         apply (auto simp add:wpsimps)
+     apply (rule bal_msg_sender, assumption)
+     apply vcg
+      apply (auto simp add: wpsimps intro!: sum_balI 1)
     apply vcg
-    apply (auto simp add: wpsimps intro!: sum_balI 1)
-    apply vcg
-    apply (auto simp add:wpsimps)
+      apply (auto simp add:wpsimps)
     apply (rule bal_msg_sender, assumption)
     by vcg
 
-  show "\<And>call.
-       (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r) \<Longrightarrow>
-       effect (withdraw call) s r \<Longrightarrow> inv_state sum_bal s \<Longrightarrow> post s r sum_bal (K True) (K (K (K True)))"
+  show
+    "\<And>call.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (deposit call) s r
+      \<Longrightarrow> inv_state sum_bal s
+      \<Longrightarrow> K True s
+      \<Longrightarrow> post s r deposit_post (K True)"
+    unfolding deposit_def
+    apply (erule post_exc_true, erule_tac post_wp)
+    unfolding inv_state_def deposit_post_def
+    apply vcg
+         apply (auto simp add:wpsimps)
+     apply (rule bal_msg_sender, assumption)
+     apply vcg
+      apply (auto simp add: wpsimps intro!: sum_balI 1)
+    apply vcg
+      apply (auto simp add:wpsimps)
+    apply (rule bal_msg_sender, assumption)
+    by vcg
+
+  show
+    "\<And>call.
+      (\<And>x h r. effect (call x) h r \<Longrightarrow> vcond x h r)
+      \<Longrightarrow> effect (withdraw call) s r
+      \<Longrightarrow> inv_state sum_bal s
+      \<Longrightarrow> post s r (K (K (inv_state sum_bal))) (K True)"
     unfolding withdraw_def
     apply (erule post_exc_true, erule_tac post_wp)
     unfolding inv_state_def
     apply (case_tac "msg_sender = this")
+     apply (vcg)
+     apply (auto simp add:wpsimps)
+     apply (rule_tac bal_msg_sender, assumption)
     apply (vcg)
-    apply (auto simp add:wpsimps)
-    apply (rule_tac bal_msg_sender, assumption)
-    apply (vcg)
-    apply (rule_tac s = msg_sender in subst,assumption)
-    apply (vcg)
+     apply (rule_tac s = msg_sender in subst,assumption)
+     apply (vcg)
     apply (rule subst,assumption)
-    apply (vcg)
-    apply (rule subst,assumption)
-    apply (vcg)
-    apply (auto simp add:wpsimps)
-    apply (vcg)
-    apply (auto simp add:wpsimps)
-    apply (vcg)
-    apply (rule_tac mp = "mp(Address msg_sender := storage_data.Value (Uint 0))" in sum_balI)
-    apply vcg
-    apply (auto simp add:wpsimps 4)
-    apply vcg
-    apply (rule_tac mp = mpa in sum_balI)
-    apply vcg
-    apply (auto)
-    apply vcg
-    apply (auto simp add:wpsimps)
-    apply (rule bal_msg_sender, assumption)
-    apply vcg
-    apply (rule_tac mp = "mp(Address msg_sender := storage_data.Value (Uint 0))" in sum_balI)
-    apply (simp add:2 wpsimps)
-    apply (simp add:wpsimps)
-    apply vcg
-  done
+           apply (vcg)
+             apply (rule subst,assumption)
+             apply (vcg)
+             apply (auto simp add:wpsimps)
+     apply (vcg)
+        apply (auto simp add:wpsimps)
+     apply (vcg)
+        apply (rule_tac mp = "mp(Address msg_sender := storage_data.Value (Uint 0))" in sum_balI)
+         apply vcg
+         apply (auto simp add:wpsimps 4)
+      apply vcg
+      apply (rule_tac mp = mpa in sum_balI)
+       apply vcg
+          apply (auto)
+     apply vcg
+        apply (auto simp add:wpsimps)
+     apply (rule bal_msg_sender, assumption)
+     apply vcg
+        apply (rule_tac mp = "mp(Address msg_sender := storage_data.Value (Uint 0))" in sum_balI)
+         apply (simp add:2 wpsimps)
+        apply (simp add:wpsimps)
+       apply vcg
+    done
 qed
 
 context bank_external

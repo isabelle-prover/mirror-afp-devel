@@ -18,19 +18,23 @@ definition "sd_false = storage_data.Value vt_false"
 definition "sd_sint8_m10 = storage_data.Value vt_sint_m10"
 definition "sd_uint8_10 = storage_data.Value vt_sint_10"
 definition "sd_address = storage_data.Value vt_address"
-definition "(sd_Array_3_true::aspace valtype storage_data) = storage_data.Array [sd_true,sd_true,sd_true]"
-definition "(sd_Array_3_false::aspace valtype storage_data) = storage_data.Array [sd_false,sd_false,sd_false]"
-definition "(sd_Array_2_3_true_false::aspace valtype storage_data) = storage_data.Array [sd_Array_3_true, sd_Array_3_false]"
-definition "(sd_Array_2_3_false_false::aspace valtype storage_data) = storage_data.Array [sd_Array_3_false, sd_Array_3_false]"
 
 definition "md_true = mdata.Value vt_true"
 definition "md_false = mdata.Value vt_false"
 definition "md_sint_m10 = mdata.Value vt_sint_m10"
 definition "md_uint_10 = mdata.Value vt_sint_10"
 definition "md_address = mdata.Value vt_address"
+
 definition "mem_Array_2_3_true_false = [md_true,md_true,md_true,mdata.Array [0,1,2],md_false,md_false,md_false,mdata.Array [4,5,6],mdata.Array [3,7]]"
 definition "mem_Array_2_3_false_false = [md_false,md_false,md_false,mdata.Array [0,1,2],md_false,md_false,md_false,mdata.Array [4,5,6],mdata.Array [3,7]]"
 definition "mem_sint_m10_uint_10= [md_sint_m10,md_uint_10]"
+
+lemma "mupdate [Uint 1, Uint 2] (8, md_true, mem_Array_2_3_true_false)
+        = Some (mem_Array_2_3_true_false[6:=md_true])" by normalization
+
+lemma "mlookup mem_Array_2_3_true_false [Uint 1, Uint 2] 8 = Some 6" by normalization
+
+lemma "mlookup mem_Array_2_3_true_false [Uint 0] 8 = Some 3" by normalization
 
 definition "cd_true = call_data.Value vt_true"
 definition "cd_false = call_data.Value vt_false"
@@ -50,7 +54,7 @@ global_interpretation method: Method A1 250 100
   defines method_sender_monad = method.sender_monad
       and method_value_monad  = method.value_monad
       and method_timestamp_monad  = method.block_timestamp_monad
-  by standard (simp add: null_def)
+  by standard (auto simp add: null_def)
 
 global_interpretation contract: Contract A1 
   defines contract_assign_stack_monad = contract.assign_stack_monad
@@ -67,7 +71,7 @@ global_interpretation contract: Contract A1
       and contract_allocate = contract.allocate
   .
 
-global_interpretation keccak256: Keccak256 id
+global_interpretation keccak256: Keccak256 id "\<lambda>x. Empty"
   defines keccak256_keccak256_monad = keccak256.keccak256_monad
   by standard simp
 
@@ -870,6 +874,43 @@ lemma "is_Normal (execute (do {
         assert_monad (equals_monad (contract_arrayLength (STR ''y'') []) (sint_monad 1))
       }) state14)" by normalization
 
+section "Loops"
+(*
+  pragma solidity =0.8.25;
+  
+  contract MyToken {
+      function test0() public {
+          uint x = 0;
+          while (x > 0) {
+              x = 1;
+          }
+          assert (x == 0);
+      }
+  
+      function test1() public {
+          uint x = 5;
+          while (x > 0) {
+              x --;
+          }
+          assert (x == 0);
+      }
+  }
+*)
+
+(*
+
+declare while_monad.simps[code]
+
+value "(execute (do {
+        init (STR ''x'') (Uint 0);
+        while_monad (false_monad)
+          (contract_assign_stack_monad (STR ''x'') [] (sint_monad 2));
+        assert_monad (equals_monad (contract_stackLookup (STR ''x'') []) (sint_monad 0))
+      }) emptyState)"
+  by (normalization)
+
+*)
+
 section "Conditionals"
 (*
   pragma solidity =0.8.25;
@@ -1461,6 +1502,51 @@ lemma "is_Exception (execute (do {
       }
   }
 *)
+
+definition "pstoragex = (\<lambda>_. undefined) (STR ''array'' := storage_data.Array [storage_data.Value (Uint 5),storage_data.Value (Uint 3),storage_data.Value (Uint 8),storage_data.Value (Uint 2),storage_data.Value (Uint 1),storage_data.Value (Uint 1),storage_data.Value (Uint 7),storage_data.Value (Uint 9),storage_data.Value (Uint 11),storage_data.Value (Uint 4)])"
+definition "storagex = (\<lambda>_. undefined) (A1 := pstoragex)"
+definition "statex = emptyState\<lparr>Storage := storagex\<rparr>"
+
+(*SORTING*)
+(*
+
+pragma solidity = 0.8.25;
+
+contract Test {
+    uint8[10] sarray;
+
+    constructor() {
+        sarray = [5,7,4,2,8,7,9,4,5,1];
+    }
+
+    function sort() public {
+        uint8[10] memory array = sarray;
+        bool swapped = true;
+        while (swapped) 
+        {
+            swapped = false;
+            for (uint8 i=0; i < 9; i++) 
+            {
+                uint8 current = array[i];
+                uint8 next = array [i+1];
+                if (current > next) {
+                    array[i] = next;
+                    array[i+1] = current;
+                    swapped = true;
+                }
+            }
+        }
+        sarray = array;
+    }
+
+      // function that returns entire array
+    function getArray() public returns (uint8[10] memory) {
+        return sarray;
+    }
+}
+
+*)
+
 
 (*************************************************************************************)
 (* Additional unit tests *)

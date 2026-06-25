@@ -219,7 +219,7 @@ val logger = Logger.setup_new_logger Unification_Hints_Base.logger FI.name
   id: FI.id
   more_args: \<open>val init_args = TUHA.UHA_PA_entries_from_PCA_entries A.init_args\<close>\<close>
 
-val are_hint_variants = apply2 Thm.prop_of #> Term_Util.are_term_variants
+val are_hint_variants = apply2 Thm.prop_of #> Term_Util.are_variants
 
 val term_index_data_eq = are_hint_variants o apply2 fst
 

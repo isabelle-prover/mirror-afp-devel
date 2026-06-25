@@ -6,7 +6,6 @@ section "CFLs Are Not Closed Under Intersection"
 
 theory CFL_Not_Intersection_Closed
 imports
-  "List_Power.List_Power"
   Context_Free_Language
   Pumping_Lemma_CFG
   AnBnCn_not_CFL

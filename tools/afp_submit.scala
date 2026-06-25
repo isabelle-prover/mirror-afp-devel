@@ -6,15 +6,15 @@ package afp
 
 import scala.language.unsafeNulls
 
-import isabelle.*
-import isabelle.HTML.*
-import isabelle.Web_App.Params
-import isabelle.Web_App.More_HTML.*
-
-import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Entries, Formatted, Homepage, License, Licenses, Orcid, Reference, Release, Releases, Topic, Topics, Unaffiliated}
-
 import java.text.Normalizer
 import java.time.LocalDate
+
+import isabelle._
+import isabelle.HTML._
+import isabelle.Web_App.Params
+import isabelle.Web_App.More_HTML._
+
+import afp.Metadata.{Affiliation, Author, Authors, DOI, Email, Entry, Entries, Formatted, Homepage, License, Licenses, Orcid, Reference, Release, Releases, Topic, Topics, Unaffiliated}
 
 
 object AFP_Submit {
@@ -652,7 +652,7 @@ object AFP_Submit {
           for {
             file <- files
             relative = File.the_relative_path(base_dir, file)
-          } yield Isabelle_System.make_patch(base_dir, relative, file)
+          } yield Isabelle_System.make_patch(AFP.BASE, relative, file)
         File.write(patch_file(id), cat_lines(patches))
 
         val info =

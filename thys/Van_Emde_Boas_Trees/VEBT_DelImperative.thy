@@ -195,10 +195,12 @@ next
   obtain xnew where xndef: "xnew = ?xn" by simp
   let ?minn = "?xn" 
   obtain minew where minewdef: "minew =?minn" by simp
-  have highboundn:"ma \<noteq> mi \<Longrightarrow>x\<le> ma \<Longrightarrow>high xnew (n div 2 )< length treeList" using xndef  
-    by (smt (z3) "7.prems" deg_deg_n diff_diff_cancel div2_Suc_Suc div_le_dividend high_bound_aux leD le_add_diff_inverse less_imp_diff_less listlength mi_ma_2_deg nested_mint power_Suc)
-  have highbound: "ma \<noteq> mi \<Longrightarrow>x\<le> ma \<Longrightarrow>high x (n div 2 )< length treeList" 
-    by (smt (z3) "7.prems" deg_deg_n div_le_dividend high_bound_aux le_less_trans listlength mi_ma_2_deg ordered_cancel_comm_monoid_diff_class.add_diff_inverse)
+  have highboundn: "ma \<noteq> mi \<Longrightarrow> high xnew (n div 2) < length treeList"
+    by (metis "7.prems" deg_deg_n div2_Suc_Suc leD mi_ma_2_deg nested_mint power_Suc xndef)
+  have highbound: "x \<le> ma \<Longrightarrow> high x (n div 2) < length treeList"
+    by (metis (no_types, opaque_lifting) listlength div_le_dividend "7.prems" less_imp_diff_less
+        le_add_diff_inverse diff_diff_cancel high_bound_aux[of x "n div 2" "n - n div 2"] deg_deg_n
+        mi_ma_2_deg)
   let ?aktnode = "(treeList !
                high (2 * 2 ^ (va div 2) * the (vebt_mint summary) + the (vebt_mint (treeList ! the (vebt_mint summary)))) (Suc (va div 2)))"
   obtain aktnode where aktnodedef:"ma \<noteq> mi \<Longrightarrow>x\<le> ma  \<Longrightarrow>aktnode = ?aktnode"
@@ -283,7 +285,8 @@ next
        apply sep_auto
        apply(sep_auto heap:  "7.IH"(2))
        apply(simp add: algebra_simps)+
-       apply (smt (z3) "7.prems" ab_semigroup_add_class.add.commute ab_semigroup_mult_class.mult.left_commute deg_deg_n nested_mint)
+        subgoal
+          by (metis "7.prems" add.commute mult.left_commute deg_deg_n div2_Suc_Suc highboundn power_Suc xndef)
        apply(rule DEADID.rel_refl)
        apply(rule DEADID.rel_refl)
        apply(rule minminNull)
