@@ -13,7 +13,8 @@ begin
 
 section    \<open> Model Existence Theorem  \<close>
 
-text   \<open> This theory formalises the Model Existence Theorem according to Smullyan's textbook \cite{Smullyan} as presented by Fitting in \cite{Fitting}.  \<close>
+text \<open> This theory formalises the Model Existence Theorem according to Smullyan's textbook \cite{Smullyan}
+as presented by Fitting in \cite{Fitting}.\<close>
 
 
 theorem  ExtensionCharacterFiniteP:
@@ -133,8 +134,8 @@ corollary Satisfiable_SetP1:
 proof -
   obtain g where g: "enumeration (g:: nat \<Rightarrow> 'b )" 
     using h0 by auto
-  have "enumeration ((\<Delta>P g):: nat \<Rightarrow> 'b formula)" using g  EnumerationFormulasP1 by auto
-  hence  h'0: "\<exists>g. enumeration (g:: nat \<Rightarrow> 'b formula)" by auto
+  hence  h'0: "\<exists>g. enumeration (g:: nat \<Rightarrow> 'b formula)"
+    using EnumerationFormulasP1 by auto
   show ?thesis using Theo_ExistenceModels[OF h'0 h1 h2] by auto
 qed
 

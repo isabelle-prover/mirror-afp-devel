@@ -12,7 +12,10 @@ begin
 
 section \<open> Hall Theorem for countable (infinite) families of sets \<close> 
 
-text \<open>Hall's Theorem for countable families of sets is proved as a consequence of compactness theorem for propositional calculus (\cite{SARdL2022}). The theory imports Marriage theory from the AFP, which proves marriage theorem for the finite case. The proof also uses an updated version of Serrano's formalization of the compactness theorem for propositional logic. \<close> 
+text \<open>Hall's Theorem for countable families of sets is proved as a consequence of compactness theorem 
+for propositional calculus (\cite{SARdL2022}). The theory imports Marriage theory from the AFP, which 
+proves marriage theorem for the finite case. The proof also uses an updated version of Serrano's 
+formalization of the compactness theorem for propositional logic.\<close> 
 
  definition system_representatives :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool" where
 "system_representatives S I R  \<equiv> (\<forall>i\<in>I. (R i) \<in> (S i)) \<and> (inj_on R I)"
