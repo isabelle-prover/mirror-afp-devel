@@ -40,10 +40,10 @@ object AFP_Publish {
     def afp_archive(current: Boolean = false): Path =
       release_dir + Path.basic(afp_archive_name(current))
 
-    def entry_name(session: String, current: Boolean = false): String =
-      "afp-" + session + "-" + (if (current) "current" else date)
-    def entry_archive(session: String, current: Boolean = false): Path =
-      release_dir + Path.basic(entry_name(session, current = current))
+    def entry_name(entry: String, current: Boolean = false): String =
+      "afp-" + entry + "-" + (if (current) "current" else date)
+    def entry_archive(entry: String, current: Boolean = false): Path =
+      release_dir + Path.basic(entry_name(entry, current = current))
   }
 
 
