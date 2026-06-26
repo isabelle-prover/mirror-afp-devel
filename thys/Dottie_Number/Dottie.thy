@@ -185,19 +185,18 @@ lemma cos_contraction_lt:
   assumes "x < y" "\<bar>x\<bar> \<le> 1" "\<bar>y\<bar> \<le> 1"
   shows "\<bar>cos x - cos y\<bar> \<le> sin 1 * \<bar>x - y\<bar>"
 proof -
-  have cont: "continuous_on {x..y} cos" by (intro continuous_intros)
+  have cont: "continuous_on {x..y} cos" 
+    by (intro continuous_intros)
   have deriv: "((cos::real\<Rightarrow>real) has_derivative (*) (- sin u)) (at u)" for u :: real
     using DERIV_cos[of u] unfolding has_field_derivative_def by simp
-  have "\<exists>\<xi> \<in> {x<..<y}. norm (cos y - cos x) \<le> norm ((*) (- sin \<xi>) (y - x))"
-    by (rule mvt_general[OF \<open>x < y\<close> cont]) (use deriv in blast)
-  then obtain \<xi> where \<xi>: "\<xi> \<in> {x<..<y}" "norm (cos y - cos x) \<le> norm (- sin \<xi> * (y - x))"
-    by auto
-  have "\<bar>\<xi>\<bar> \<le> 1" using \<xi> assms by auto
-  then have absxi: "\<bar>sin \<xi>\<bar> \<le> sin 1" by (rule abs_sin_le_sin1)
+  then obtain \<xi> where \<xi>: "\<xi> \<in> {x<..<y}" "\<bar>cos y - cos x\<bar> \<le> \<bar>sin \<xi>\<bar> * \<bar>y - x\<bar>"
+    using mvt_general[OF \<open>x < y\<close> cont deriv] by (auto simp: abs_mult)
+  have "\<bar>\<xi>\<bar> \<le> 1" 
+    using \<xi> assms by auto
   have "\<bar>cos y - cos x\<bar> \<le> \<bar>sin \<xi>\<bar> * \<bar>y - x\<bar>"
     using \<xi> by (simp add: abs_mult)
   also have "\<dots> \<le> sin 1 * \<bar>y - x\<bar>"
-    using absxi by (simp add: mult_right_mono)
+    by (simp add: \<open>\<bar>\<xi>\<bar> \<le> 1\<close> abs_sin_le_sin1 mult_mono')
   finally show ?thesis
     by (simp add: abs_minus_commute)
 qed
@@ -208,11 +207,6 @@ lemma cos_contraction:
   shows "\<bar>cos x - cos y\<bar> \<le> sin 1 * \<bar>x - y\<bar>"
   using cos_contraction_lt[of x y] cos_contraction_lt[of y x] assms
   by (cases x y rule: linorder_cases) (auto simp: abs_minus_commute)
-
-lemma cos_step_to_dottie:
-  assumes "\<bar>w\<bar> \<le> 1"
-  shows "\<bar>cos w - dottie\<bar> \<le> sin 1 * \<bar>w - dottie\<bar>"
-  using Dottie.facts by (metis abs_cos_le_one assms cos_contraction)
 
 text \<open>After one step the iteration lands in $[-1,1]$ and stays there.\<close>
 
@@ -228,6 +222,11 @@ proof -
 qed
 
 text \<open>From a start in $[-1,1]$, the distance to the fixed point decays geometrically.\<close>
+
+lemma cos_step_to_dottie:
+  assumes "\<bar>w\<bar> \<le> 1"
+  shows "\<bar>cos w - dottie\<bar> \<le> sin 1 * \<bar>w - dottie\<bar>"
+  using Dottie.facts by (metis abs_cos_le_one assms cos_contraction)
 
 lemma cos_funpow_bound:
   fixes y0 :: real
