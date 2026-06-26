@@ -1,0 +1,9 @@
+chapter AFP
+
+session Perrons_Formula (AFP) = "Dirichlet_Series" +
+  options [timeout = 1800]
+  theories
+    Perrons_Formula
+  document_files
+    "root.tex"
+    "root.bib"
