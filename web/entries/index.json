@@ -1,5 +1,24 @@
 [
  {
+  "abstract": "This entry provides a proof of Perron's Formula, which states that for a Dirichlet series $f(s) = \\sum_{n=1}^\\infty a_n n^{-s}$ with abscissa of convergence $\\sigma_c$ we have for any $c, z, x$ with $c \u003e 0$, $x \u003e 0$, $\\text{Re}(z) \u003e \\sigma_c - c$:\n\\[\\sum\\limits_{n\\leq x}\\kern-1pt^{'} a_n n^{-z} = \\frac{1}{2\\pi i}\\, \\lim_{T\\to\\infty} \\int\\limits_{c-iT}^{c+iT}\\hskip-4pt f(z + w)\\, x^s\\kern1pt w\\,\\frac{\\text{d}w}{w} \\] Additionally, various explicit bounds for the remainder (i.e.\\ when using some finite value of $T$ instead of the limit) are shown.\nAs an interesting nontrivial auxiliary result, asymptotic bounds for a Dirichlet series near $\\pm i\\infty$ are also included, namely that if $a\\in[0,1)$ then $f(\\sigma + it) \\in o(t^{1-a})$ as $t\\to\\pm\\infty$, uniformly for all $\\sigma\\geq \\sigma_c + a + \\varepsilon$.\nThe proofs mainly follow Tenenbaum's Introduction to Analytic and Probabilistic Number Theory and Titchmarsh's Theory of Functions.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-06-17",
+  "link": "../entries/Perrons_Formula.html",
+  "permalink": "https://isa-afp.org/entries/Perrons_Formula.html",
+  "related": [],
+  "shortname": "Perrons_Formula",
+  "title": "Perron's Formula",
+  "topic_links": [
+   "../topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "A well-known result about propositional logic is that transforming a formula into disjunctive or conjunctive normal form can lead to an exponential blowup of the formula size. We formalize this result in the form of two theorems and discuss the challenges we encountered.",
   "authors": [
    "Leon Raffael Schulz",

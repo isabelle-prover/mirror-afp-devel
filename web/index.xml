@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Perron&#39;s Formula</title>
+  <link>https://isa-afp.org/entries/Perrons_Formula.html</link>
+  <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Perron&#39;s Formula in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
   <title>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF</title>
   <link>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</link>
   <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>

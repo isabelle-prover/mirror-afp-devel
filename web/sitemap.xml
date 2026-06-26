@@ -3,12 +3,15 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</loc>
-    <lastmod>2026-06-15T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
+    <lastmod>2026-06-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Perrons_Formula.html</loc>
+    <lastmod>2026-06-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</loc>
     <lastmod>2026-06-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Countable_Multiset.html</loc>
@@ -19752,6 +19755,12 @@
     <loc>https://isa-afp.org/thys/Perron_Frobenius/Spectral_Radius_Theory.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Perron_Frobenius/Spectral_Radius_Theory_2.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Perrons_Formula/Dirichlet_Series_At_I_Infinity_Bound.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Perrons_Formula/Perron_Prerequisites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Perrons_Formula/Perrons_Formula.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/chapman/</loc>
   </url><url>
