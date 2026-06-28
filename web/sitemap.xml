@@ -17,6 +17,9 @@
     <loc>https://isa-afp.org/entries/Countable_Multiset.html</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Weighted_Set.html</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -17275,6 +17278,24 @@
     <loc>https://isa-afp.org/thys/Lowe_Ontological_Argument/QML.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Lowe_Ontological_Argument/Relations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/A_Star_Certificates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/Efficient_PDB.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/Encoding_Semantics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/Heuristic_Certificates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/Hmax_Certificates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/K_Gates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/Locale_Instances.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/Lower_Bound_Certificates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Lower_Bound_Certificates_Planning/PDB_Certificates.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Lower_Semicontinuous/Lower_Semicontinuous.html</loc>
   </url><url>
