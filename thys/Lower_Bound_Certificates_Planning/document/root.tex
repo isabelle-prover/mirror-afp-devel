@@ -1,0 +1,142 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Formalization of Lower-Bound Certificates for Optimal Classical Planning}
+\author{Dmitriy Traytel}
+\maketitle
+
+\begin{abstract}
+\looseness=-1
+We formalize the framework of pseudo-Boolean lower-bound certificates for
+classical planning introduced by Dold, Helmert, Nordstr\"om, R\"oger and
+Schindler~\cite{DoldHNRS25}. A lower-bound certificate for a STRIPS (Simplified
+Theory of International Planning Representation and Scheduling) planning task
+and a bound $B$ is a pseudo-Boolean circuit together with three proofs in
+the cutting planes proof system with reification; its validity guarantees that
+every plan of the task costs at least $B$, and hence that a plan of cost $B$ is
+optimal. We prove the soundness of the certificate format (Theorem~1 of the
+paper) and formalize the paper's case study: certificates extracted from a run
+of the A$^*$ algorithm, with heuristic certificates for pattern database
+heuristics and for the maximum heuristic $h^{\mathit{max}}$, including the
+appendix material on efficiently proof-logging pattern databases. The main
+results state that a suitable snapshot of a terminated A$^*$ run yields a
+valid certificate and therefore proves the optimality of the plan it found.
+All locales are shown consistent by concrete interpretations, which also
+compose the pattern database certificate with the A$^*$ certificate, as
+intended by the paper.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Optimal classical planners are complex pieces of software, and bugs that lead
+to suboptimal plans being reported as optimal are difficult to detect by
+testing: while a plan itself is easy to validate, its \emph{optimality} is
+not. Dold et al.~\cite{DoldHNRS25} address this problem with proof logging:
+the planner emits, alongside the plan, a \emph{lower-bound certificate} that
+can be checked by an independent, much simpler verifier in the style of
+VeriPB~\cite{BogaertsGMN23}. The certificate asserts that no plan of cost
+less than a bound $B$ exists; together with a plan of cost $B$ this
+establishes optimality.  (The paper also discusses how a certificate
+with a sufficiently large bound~$B$ establishes
+unsolvability~\cite{ErikssonRH17}; the formalization here handles
+arbitrary finite bounds~$B$.)
+
+This entry formalizes the central trust story of that paper: the
+\emph{soundness} of the certificate format, and the existence of valid
+certificates for the paper's case study, A$^*$ with pattern
+database~\cite{Edelkamp01} and $h^{\mathit{max}}$~\cite{BonetG01} heuristics.
+The development is organized as follows.
+
+\begin{description}
+\item[\isatext{Lower\_Bound\_Certificates}] formalizes STRIPS planning tasks,
+pseudo-Boolean constraints and their $0/1$ semantics, the cutting planes proof
+system with reification (CPR), the pseudo-Boolean encoding of a planning task
+(Definition~1 of the paper), pseudo-Boolean circuits (Definition~2),
+lower-bound certificates (Definition~3), and the soundness theorem
+(Theorem~1): a valid certificate for bound $B$ implies that every plan costs
+at least $B$.
+
+\item[\isatext{Encoding\_Semantics}] develops the semantic toolkit used by all
+later theories. The reverse unit propagation (RUP) rule of the paper is
+over-approximated by a semantic rule, so every ``RUP can derive $X$'' lemma of
+the paper reduces to a semantic implication over $0/1$ models; the bridge
+lemma \isatext{semantic\_to\_cpr} converts such implications into CPR
+derivations. The theory also proves characteristic ``forcing'' lemmas for each
+constraint of the encoding, and instantiates Theorem~1 at the extended
+variable type $\alpha + \gamma$, which provides unboundedly many fresh gate
+names for certificate circuits.
+
+\item[\isatext{K\_Gates}] formalizes the clipped cost-threshold gates
+$K_{\geq l}$ and the cost lemmas of Appendix~B (monotonicity and step
+interaction).
+
+\item[\isatext{Heuristic\_Certificates}] formalizes heuristic certificates
+(Definition~4): a heuristic-supplied circuit fragment together with per-state
+state, goal, and inductivity lemmas.
+
+\item[\isatext{A\_Star\_Certificates}] formalizes the proof-logging A$^*$
+algorithm (equations~(9)--(13); the three CPR proof obligations,
+the paper's Lemmas~1--5).  A locale captures the
+snapshot of a terminated A$^*$ run---the closed list with $g$-values, the open
+list, the expansion-closure property, and a valid heuristic certificate---and
+the main theorems show that the assembled circuit is a valid lower-bound
+certificate, so any plan costs at least $B$ and a found plan of cost $B$ is
+optimal.
+
+\item[\isatext{PDB\_Certificates}] constructs heuristic certificates for
+pattern database heuristics (equations~(14)--(16); the three proof
+obligations, paper Lemma~6 and Appendix~C) from a
+distance table over the abstract state space of a pattern, assuming exactly
+the two semantic properties of the table that soundness requires: abstract
+goal states have distance $0$, and the distance is consistent along abstract
+transitions.
+
+\item[\isatext{Hmax\_Certificates}] constructs heuristic certificates for the
+maximum heuristic (equations~(17)--(18); the three proof
+obligations of Appendix~D) from the values an
+implementation computes anyway, assuming the distilled consequences of the
+$h^{\mathit{max}}$ fixed-point equations.
+
+\item[\isatext{Efficient\_PDB}] formalizes the appendix material
+(Definition~5; the state-set extension lemma, Lemma~7 of Appendix~E;
+the efficient-PDB lemmas, Lemmas~8--18 of Appendix~F): a pattern database circuit
+restricted to the abstract states with finite goal distance, with an
+additional gate $r_\infty$ covering all remaining abstract states.
+
+\item[\isatext{Locale\_Instances}] interprets every locale of the development
+with a concrete planning task, ruling out inconsistent assumption sets. The
+interpretations compose the pattern database certificate with the A$^*$
+certificate and yield the concrete optimality theorem for the example task.
+\end{description}
+
+Two systematic deviations from the paper are worth highlighting; both are
+documented where they occur. First, the RUP rule is modeled semantically
+(every constraint derivable by unit propagation to conflict satisfies the
+semantic condition, so all paper certificates remain expressible), which
+means that statements about the \emph{length} of derivations---such as the
+$O(|B|)$ bound of Lemma~7, Appendix~E---are out of scope: of such lemmas we formalize the
+semantic content only. Second, the $K$-gates referenced by the heuristic
+circuits are inlined over the cost bits rather than shared with the search's
+own gates, since certificate circuits may only reference input variables and
+their own earlier gates. Otherwise, the formalization follows the paper's structure closely;
+the mapping from paper lemmas to Isabelle facts is given in the text blocks of each theory.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
