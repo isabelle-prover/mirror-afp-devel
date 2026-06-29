@@ -306,6 +306,36 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry formalizes greedy algorithms for monotone non-negative submodular maximization under a cardinality constraint on a finite ground set in Isabelle/HOL. The main result is the classical Nemhauser--Wolsey--Fisher approximation guarantee for deterministic greedy: after \\(k\\) steps, the greedy solution satisfies the finite-step bound \\(1 - (1 - 1/k)^k\\), and hence the standard \\(1 - 1/e\\) approximation ratio. The development separates the executable greedy construction, an abstract step-specification interface, and the approximation proof.  The entry also includes a verified stateful lazy greedy variant based on cached upper bounds for marginal gains. The formalization proves that the lazy implementation selects a valid greedy element at each iteration and therefore inherits the same approximation guarantee. The result is intended as reusable Isabelle infrastructure for later formal developments on submodular maximization algorithms.",
+  "authors": [
+   "Feier Lyu"
+  ],
+  "date": "2026-05-26",
+  "link": "../entries/Submodular_Greedy.html",
+  "permalink": "https://isa-afp.org/entries/Submodular_Greedy.html",
+  "related": [
+   {
+    "doi": "10.1007/BF01588971"
+   },
+   {
+    "doi": "10.1007/BFb0006528"
+   }
+  ],
+  "shortname": "Submodular_Greedy",
+  "title": "Greedy Algorithms for Cardinality-Constrained Submodular Maximization",
+  "topic_links": [
+   "../topics/computer-science/algorithms/approximation/",
+   "../topics/computer-science/algorithms/optimization/",
+   "../topics/computer-science/algorithms/mathematical/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Approximation",
+   "Computer science/Algorithms/Optimization",
+   "Computer science/Algorithms/Mathematical"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Type annotations are essential when printing terms in a way that preserves their meaning under reparsing and type inference. We study the problem of complete and minimal type annotations for rank-one polymorphic $\\lambda$-calculus terms, as used in Isabelle. Building on prior work by Smolka, Blanchette et al., we show that a reverse-greedy approach leads to a locally minimal and complete set of annotations. Our development is a series of experiments featuring human-driven and AI-driven formalization workflows: a human and an AI agent independently produce pen-and-paper proofs, and the agent autoformalizes them in Isabelle. We refined the resulting AI proof developments for this AFP submission, the original version and our experimental setup can be found in the related Zenodo entry. We give a metatheoretical account of the problem, with a full formal specification and proofs in our paper \"Just Type It in Isabelle! AI Agents Drafting, Mechanizing, and Generalizing from Human Hints\".",
   "authors": [
    "Kevin Kappelmann",

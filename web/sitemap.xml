@@ -50,6 +50,9 @@
     <loc>https://isa-afp.org/entries/Mechanized_Metasemantics.html</loc>
     <lastmod>2026-05-27T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Submodular_Greedy.html</loc>
+    <lastmod>2026-05-26T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</loc>
     <lastmod>2026-05-12T00:00:00+00:00</lastmod>
   </url><url>
@@ -9848,6 +9851,8 @@
     <loc>https://isa-afp.org/thys/FeatherweightJava/FJDefs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/FeatherweightJava/FJSound.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/lyu/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/escallon/</loc>
   </url><url>
@@ -23685,6 +23690,22 @@
     <loc>https://isa-afp.org/thys/Stuttering_Equivalence/StutterEquivalence.html</loc>
   </url><url>
     <loc>https://isa-afp.org/webapp/submit/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Greedy_Step_Spec.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Greedy_Submodular_Approx.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Greedy_Submodular_Construct.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Lazy_Greedy_Oracle.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Lazy_Greedy_Stateful.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Lazy_Greedy_Stateful_Approx.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Lazy_Greedy_Stateful_StepSpec.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Submodular_Greedy/Submodular_Base.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Subresultants/Binary_Exponentiation.html</loc>
   </url><url>

@@ -4786,6 +4786,22 @@ host = [
 
 [lux.homepages]
 
+[lyu]
+name = "Feier Lyu"
+
+[lyu.emails]
+
+[lyu.emails.lyu_email]
+user = [
+  "feier530",
+]
+host = [
+  "icloud",
+  "com",
+]
+
+[lyu.homepages]
+
 [maadoori]
 name = "Vivek Soorya Maadoori"
 
