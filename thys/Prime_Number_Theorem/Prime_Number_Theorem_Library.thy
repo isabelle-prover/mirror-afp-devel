@@ -627,58 +627,6 @@ proof (intro equalityI subsetI)
   qed
 qed auto
 
-lemma nat_sum_has_integral_floor:
-  fixes f :: "nat \<Rightarrow> 'a :: banach"
-  assumes mn: "m < n"
-  shows "((\<lambda>x. f (nat \<lfloor>x\<rfloor>)) has_integral sum f {m..<n}) {real m..real n}"
-proof -
-  define D where "D = (\<lambda>i. {real i..real (Suc i)}) ` {m..<n}"
-  have D: "D division_of {m..n}"
-    using Union_atLeastAtMost_real_of_nat[OF mn] by (simp add: division_of_def D_def)
-  have "((\<lambda>x. f (nat \<lfloor>x\<rfloor>)) has_integral (\<Sum>X\<in>D. f (nat \<lfloor>Inf X\<rfloor>))) {real m..real n}"
-  proof (rule has_integral_combine_division)
-    fix X assume X: "X \<in> D"
-    have "nat \<lfloor>x\<rfloor> = nat \<lfloor>Inf X\<rfloor>" if "x \<in> X - {Sup X}" for x
-      using that X by (auto simp: D_def nat_eq_iff floor_eq_iff)
-    hence "((\<lambda>x. f (nat \<lfloor>x\<rfloor>)) has_integral f (nat \<lfloor>Inf X\<rfloor>)) X \<longleftrightarrow>
-           ((\<lambda>x. f (nat \<lfloor>Inf X\<rfloor>)) has_integral f (nat \<lfloor>Inf X\<rfloor>)) X" using X
-      by (intro has_integral_spike_eq[of "{Sup X}"]) auto
-    also from X have "\<dots>" using has_integral_const_real[of "f (nat \<lfloor>Inf X\<rfloor>)" "Inf X" "Sup X"]
-      by (auto simp: D_def)
-    finally show "((\<lambda>x. f (nat \<lfloor>x\<rfloor>)) has_integral f (nat \<lfloor>Inf X\<rfloor>)) X" .
-  qed fact+
-  also have "(\<Sum>X\<in>D. f (nat \<lfloor>Inf X\<rfloor>)) = (\<Sum>k\<in>{m..<n}. f k)"
-    unfolding D_def by (subst sum.reindex) (auto simp: inj_on_def nat_add_distrib)
-  finally show ?thesis .
-qed
-
-lemma nat_sum_has_integral_ceiling:
-  fixes f :: "nat \<Rightarrow> 'a :: banach"
-  assumes mn: "m < n"
-  shows "((\<lambda>x. f (nat \<lceil>x\<rceil>)) has_integral sum f {m<..n}) {real m..real n}"
-proof -
-  define D where "D = (\<lambda>i. {real i..real (Suc i)}) ` {m..<n}"
-  have D: "D division_of {m..n}"
-    using Union_atLeastAtMost_real_of_nat[OF mn] by (simp add: division_of_def D_def)
-  have "((\<lambda>x. f (nat \<lceil>x\<rceil>)) has_integral (\<Sum>X\<in>D. f (nat \<lfloor>Sup X\<rfloor>))) {real m..real n}"
-  proof (rule has_integral_combine_division)
-    fix X assume X: "X \<in> D"
-    have "nat \<lceil>x\<rceil> = nat \<lfloor>Sup X\<rfloor>" if "x \<in> X - {Inf X}" for x
-      using that X by (auto simp: D_def nat_eq_iff ceiling_eq_iff)
-    hence "((\<lambda>x. f (nat \<lceil>x\<rceil>)) has_integral f (nat \<lfloor>Sup X\<rfloor>)) X \<longleftrightarrow>
-           ((\<lambda>x. f (nat \<lfloor>Sup X\<rfloor>)) has_integral f (nat \<lfloor>Sup X\<rfloor>)) X" using X
-      by (intro has_integral_spike_eq[of "{Inf X}"]) auto
-    also from X have "\<dots>" using has_integral_const_real[of "f (nat \<lfloor>Sup X\<rfloor>)" "Inf X" "Sup X"]
-      by (auto simp: D_def)
-    finally show "((\<lambda>x. f (nat \<lceil>x\<rceil>)) has_integral f (nat \<lfloor>Sup X\<rfloor>)) X" .
-  qed fact+
-  also have "(\<Sum>X\<in>D. f (nat \<lfloor>Sup X\<rfloor>)) = (\<Sum>k\<in>{m..<n}. f (Suc k))"
-    unfolding D_def by (subst sum.reindex) (auto simp: inj_on_def nat_add_distrib)
-  also have "\<dots> = (\<Sum>k\<in>{m<..n}. f k)"
-    by (intro sum.reindex_bij_witness[of _ "\<lambda>x. x - 1" Suc]) auto
-  finally show ?thesis .
-qed
-
 lemma zeta_partial_sum_le:
   fixes x :: real and m :: nat
   assumes x: "x \<in> {0<..1}"
