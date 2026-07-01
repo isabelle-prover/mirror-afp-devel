@@ -41,9 +41,7 @@ fun check_cert muntac_path name =
 
 val it2 = check_cert "muntac" "PM_all_5"
 
-val mlunta_dir_proper = Path.append (Path.current |> File.absolute_path) (Path.explode "mlunta")
-
-val mlunta_dir = Path.explode "mlunta" |> File.absolute_path
+val mlunta_dir = Path.absolute (Path.explode "mlunta")
 
 val library_path =
   Path.append mlunta_dir (Path.explode "src/isalib/library.sml") |> Path.implode
