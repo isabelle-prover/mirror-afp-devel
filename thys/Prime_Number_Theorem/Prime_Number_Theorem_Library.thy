@@ -642,7 +642,7 @@ proof -
     also have "(\<Sum>k\<in>{1<..m}. real k powr (x - 1)) \<le> real m powr x / x - 1 / x"
     proof (rule has_integral_le)
       show "((\<lambda>t. (nat \<lceil>t\<rceil>) powr (x - 1)) has_integral (\<Sum>n\<in>{1<..m}. n powr (x - 1))) {real 1..m}"
-        using m by (intro nat_sum_has_integral_ceiling) auto
+        by (intro nat_sum_has_integral_ceiling)
     next
       have "((\<lambda>t. t powr (x - 1)) has_integral (real m powr x / x - real 1 powr x / x))
               {real 1..real m}"
@@ -660,7 +660,7 @@ qed
 
 lemma zeta_partial_sum_le':
   fixes x :: real and m :: nat
-  assumes x: "x > 0" and m: "m > 0"
+  assumes x: "x > 0" 
   shows   "(\<Sum>n=1..m. real n powr (x - 1)) \<le> m powr x * (1 / x + 1 / m)"
 proof (cases "x > 1")
   case False
@@ -677,7 +677,7 @@ next
   also have "(\<Sum>n\<in>{0..<m}. n powr (x - 1)) \<le> real m powr x / x"
   proof (rule has_integral_le)
     show "((\<lambda>t. (nat \<lfloor>t\<rfloor>) powr (x - 1)) has_integral (\<Sum>n\<in>{0..<m}. n powr (x - 1))) {real 0..m}"
-      using m by (intro nat_sum_has_integral_floor) auto
+      by (intro nat_sum_has_integral_floor)
   next
     show "((\<lambda>t. t powr (x - 1)) has_integral (real m powr x / x)) {real 0..real m}"
       using has_integral_powr_from_0[of "x - 1"] x by auto
@@ -687,7 +687,7 @@ next
       by (cases "t = 0") (auto intro: powr_mono2)
   qed
   also have "m powr (x - 1) + m powr x / x = m powr x * (1 / x + 1 / m)"
-    using m x by (simp add: powr_diff field_simps)
+    using x by (simp add: powr_diff field_simps)
   finally show ?thesis by simp
 qed
 
@@ -1466,24 +1466,15 @@ proof -
   proof
     fix t :: 'a
     show "?f t = sum_upto (f t) (x t)"
-    proof (cases "x t < 1")
-      case True
-      hence "{y. y \<ge> 0 \<and> y - real (nat \<lfloor>x t\<rfloor>) \<le> 0} = {0}" by auto
-      thus ?thesis using True
-        by (simp add: set_integral_at_point sum_upto_altdef)
-    next
-      case False
+    proof -
       define n where "n = nat \<lfloor>x t\<rfloor>"
-      from False have "n > 0" by (auto simp: n_def)
-
       have *: "((\<lambda>x. f t (nat \<lceil>x\<rceil>)) has_integral sum (f t) {0<..n}) {real 0..real n}"
-        using \<open>n > 0\<close> by (intro nat_sum_has_integral_ceiling) auto
-
+        by (intro nat_sum_has_integral_ceiling)
       have **: "(\<lambda>x. f t (nat \<lceil>x\<rceil>)) absolutely_integrable_on {real 0..real n}"
       proof (rule absolutely_integrable_absolutely_integrable_ubound)
         show "(\<lambda>_. MAX n\<in>{0..n}. \<bar>f t n\<bar>) absolutely_integrable_on {real 0..real n}"
-          using \<open>n > 0\<close> by (subst absolutely_integrable_on_iff_nonneg)
-                           (auto simp: Max_ge_iff intro!: exI[of _ "f t 0"])
+          by (subst absolutely_integrable_on_iff_nonneg)
+             (auto simp: Max_ge_iff intro!: exI[of _ "f t 0"])
         show "(\<lambda>x. f t (nat \<lceil>x\<rceil>)) integrable_on {real 0..real n}"
           using * by (simp add: has_integral_iff)
       next
