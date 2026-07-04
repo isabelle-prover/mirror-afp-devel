@@ -211,6 +211,27 @@
   "year": "2026"
  },
  {
+  "abstract": "Simple tabulation hashing is a computationally-efficient hashing algorithm to get values that behave independently and are uniformly distributed for any 3 distinct keys. This entry formalizes the 3-independence and non-4-independence of simple tabulation hashing, based on the written proofs provided by Mareček and Wikipedia.",
+  "authors": [
+   "Wei De Leong",
+   "Yong Kiam Tan",
+   "Seng Joe Watt"
+  ],
+  "date": "2026-06-08",
+  "link": "../entries/Tabulation_Hashing.html",
+  "permalink": "https://isa-afp.org/entries/Tabulation_Hashing.html",
+  "related": [],
+  "shortname": "Tabulation_Hashing",
+  "title": "Formalization of 3-independence of simple tabulation hashing",
+  "topic_links": [
+   "../topics/computer-science/algorithms/randomized/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Randomized"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "Developing concrete syntax and parsers for Domain-Specific Languages (DSLs) within interactive theorem provers, such as Isabelle, is a common task. Isabelle supports this through rich, yet often brittle to configure, mixfix annotations and syntax translations. Moreover, Isabelle provides parser combinators that can be used to build parsers for the content of cartouches. An alternative to the latter are traditional parser generators, e.g., Lex and Yacc, that take a formal grammar description as input and generate a parser.  Traditionally, the use of parser generators for defining DSLs in Isabelle relies on invoking the lexer and parser as external tools, often modifying the generated source code, and importing the generated files. This requires users to manage complex external preprocessing toolchains.  In this AFP entry, we address this challenge by providing a native integration of standard ML-Lex and ML-Yacc into Isabelle/HOL. In more detail, we introduce an Isar-level interface, ml_lex_yacc, that allows users to write lexical and grammatical specifications directly within theory files. The framework compiles these specifications into Standard ML structures on-the-fly, links them, and loads them into the current theory context. Moreover, the integration automatically hooks into Isabelle’s Prover IDE (PIDE), empowering users to provide real-time syntax highlighting, semantic tooltips, and precise error localization for their custom languages.",
   "authors": [
    "Achim D. Brucker",

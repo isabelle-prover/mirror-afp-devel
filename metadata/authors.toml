@@ -4510,6 +4510,22 @@ host = [
 
 [lemket.homepages]
 
+[leong]
+name = "Wei De Leong"
+
+[leong.emails]
+
+[leong.emails.leong_email]
+user = [
+  "0xleongweide",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[leong.homepages]
+
 [leustean]
 name = "Laurentiu Leustean"
 

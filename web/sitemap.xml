@@ -38,6 +38,9 @@
     <loc>https://isa-afp.org/entries/Euler_Exponential.html</loc>
     <lastmod>2026-06-08T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Tabulation_Hashing.html</loc>
+    <lastmod>2026-06-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Isabelle_Lex-Yacc.html</loc>
     <lastmod>2026-06-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -23983,6 +23986,18 @@
   </url><url>
     <loc>https://isa-afp.org/authors/prathamesh/</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Tabulation_Hashing/Dependent_Product.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Tabulation_Hashing/Examples.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Tabulation_Hashing/Simple_Tabulation_Hashing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Tabulation_Hashing/Vec_Extras.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Tabulation_Hashing/Xor.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Tabulation_Hashing/Xor_Inst.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Tail_Recursive_Functions/CaseStudy1.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Tail_Recursive_Functions/CaseStudy2.html</loc>
@@ -25738,6 +25753,8 @@
     <loc>https://isa-afp.org/thys/WebAssembly/Wasm_Type_Abs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/WebAssembly/Wasm_Type_Abs_Printing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/leong/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Weight_Balanced_Trees/Weight_Balanced_Trees.html</loc>
   </url><url>
