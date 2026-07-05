@@ -20,8 +20,8 @@
 \looseness=-1
 We formalize the framework of pseudo-Boolean lower-bound certificates for
 classical planning introduced by Dold, Helmert, Nordstr\"om, R\"oger and
-Schindler~\cite{DoldHNRS25}. A lower-bound certificate for a STRIPS (Simplified
-Theory of International Planning Representation and Scheduling) planning task
+Schindler~\cite{DoldHNRS25}. A lower-bound certificate for a STRIPS (STanford
+Research Institute Problem Solver) planning task
 and a bound $B$ is a pseudo-Boolean circuit together with three proofs in
 the cutting planes proof system with reification; its validity guarantees that
 every plan of the task costs at least $B$, and hence that a plan of cost $B$ is
@@ -80,8 +80,8 @@ variable type $\alpha + \gamma$, which provides unboundedly many fresh gate
 names for certificate circuits.
 
 \item[\isatext{K\_Gates}] formalizes the clipped cost-threshold gates
-$K_{\geq l}$ and the cost lemmas of Appendix~B (monotonicity and step
-interaction).
+$K_{\geq l}$ and the cost lemmas of the paper (Lemmas~1 and~2, monotonicity
+and step interaction).
 
 \item[\isatext{Heuristic\_Certificates}] formalizes heuristic certificates
 (Definition~4): a heuristic-supplied circuit fragment together with per-state
@@ -89,7 +89,7 @@ state, goal, and inductivity lemmas.
 
 \item[\isatext{A\_Star\_Certificates}] formalizes the proof-logging A$^*$
 algorithm (equations~(9)--(13); the three CPR proof obligations,
-the paper's Lemmas~1--5).  A locale captures the
+the paper's Lemmas~3--7).  A locale captures the
 snapshot of a terminated A$^*$ run---the closed list with $g$-values, the open
 list, the expansion-closure property, and a valid heuristic certificate---and
 the main theorems show that the assembled circuit is a valid lower-bound
@@ -98,7 +98,7 @@ optimal.
 
 \item[\isatext{PDB\_Certificates}] constructs heuristic certificates for
 pattern database heuristics (equations~(14)--(16); the three proof
-obligations, paper Lemma~6 and Appendix~C) from a
+obligations, paper Lemmas~8--13) from a
 distance table over the abstract state space of a pattern, assuming exactly
 the two semantic properties of the table that soundness requires: abstract
 goal states have distance $0$, and the distance is consistent along abstract
@@ -106,13 +106,13 @@ transitions.
 
 \item[\isatext{Hmax\_Certificates}] constructs heuristic certificates for the
 maximum heuristic (equations~(17)--(18); the three proof
-obligations of Appendix~D) from the values an
+obligations, paper Lemmas~14--17) from the values an
 implementation computes anyway, assuming the distilled consequences of the
 $h^{\mathit{max}}$ fixed-point equations.
 
 \item[\isatext{Efficient\_PDB}] formalizes the appendix material
-(Definition~5; the state-set extension lemma, Lemma~7 of Appendix~E;
-the efficient-PDB lemmas, Lemmas~8--18 of Appendix~F): a pattern database circuit
+(Definition~5; the state-set extension lemma, paper Lemma~18;
+the efficient-PDB lemmas, paper Lemmas~19--29): a pattern database circuit
 restricted to the abstract states with finite goal distance, with an
 additional gate $r_\infty$ covering all remaining abstract states.
 
@@ -127,7 +127,7 @@ documented where they occur. First, the RUP rule is modeled semantically
 (every constraint derivable by unit propagation to conflict satisfies the
 semantic condition, so all paper certificates remain expressible), which
 means that statements about the \emph{length} of derivations---such as the
-$O(|B|)$ bound of Lemma~7, Appendix~E---are out of scope: of such lemmas we formalize the
+$O(|B|)$ bound of Lemma~18---are out of scope: of such lemmas we formalize the
 semantic content only. Second, the $K$-gates referenced by the heuristic
 circuits are inlined over the cost bits rather than shared with the search's
 own gates, since certificate circuits may only reference input variables and
