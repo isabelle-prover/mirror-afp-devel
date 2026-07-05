@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Certified Infinite Descent Criteria - Archive of Formal Proofs</title>
+    <meta name="description" content="Certified Infinite Descent Criteria in the Archive of Formal Proofs">
+    <meta property="og:description" content="Certified Infinite Descent Criteria in the Archive of Formal Proofs">
+    <meta property="og:title" content="Certified Infinite Descent Criteria">
+    <meta property="og:url" content="https://isa-afp.org/entries/Infinite_Descent_Criteria.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>ertified <span class='first'>I</span>nfinite <span class='first'>D</span>escent <span class='first'>C</span>riteria
+  </h1>
+  <div>
+      <p><a href="../authors/wright/">Jamie Wright</a> <a class="obfuscated" data="eyJ1c2VyIjpbImp3cmlnaHQ4Il0sImhvc3QiOlsic2hlZmZpZWxkIiwiYWMiLCJ1ayJdfQ==">📧</a>, <a href="../authors/cohenl/">Liron Cohen</a> <a class="obfuscated" data="eyJ1c2VyIjpbImNsaXJvbiJdLCJob3N0IjpbImJndSIsImFjIiwiaWwiXX0=">📧</a>, <a href="../authors/rowe/">Reuben Rowe</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJldWJlbiIsInJvd2UiXSwiaG9zdCI6WyJyaHVsIiwiYWMiLCJ1ayJdfQ==">📧</a> and <a href="../authors/popescu/">Andrei Popescu</a> <a class="obfuscated" data="eyJ1c2VyIjpbImEiLCJwb3Blc2N1Il0sImhvc3QiOlsic2hlZmZpZWxkIiwiYWMiLCJ1ayJdfQ==">📧</a>
+      </p>
+      <p class="date">June 11, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">Infinite Descent is the global trace condition that underpins the soundness of cyclic reasoning and, in program analysis, the size change termination principle.
+Many (semi-)decision procedures for Infinite Descent are known, based on criteria ranging from automata-based constructions and relation-based characterizations, to effective (but incomplete) heuristics.
+
+We present an Isabelle/HOL mechanization of this landscape.
+We provide a reusable, locale-based framework of sloped graphs that defines Infinite Descent at an abstract level,
+independently of any concrete graph encoding.
+Within this framework we formalize standard complete criteria and prove their equivalence to the locale-level InfiniteDescent predicate.
+We also formalize tool-facing sufficient criteria, 
+prove their soundness, and certify incompleteness where appropriate via verified counterexamples.
+Along the way we contribute reusable lemmas for omega-regular reasoning over streams and for Buchi-automata constructions needed by the inclusion proofs.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/automata-and-formal-languages/">Computer science/Automata and formal languages</a></li>
+      </ul>
+      <h3>Session Infinite_Descent_Criteria</h3>
+      <ul>
+          <li><a href="../thys/Infinite_Descent_Criteria/Preliminaries.html">Preliminaries</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Buchi_Preliminaries.html">Buchi_Preliminaries</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Directed_Graphs.html">Directed_Graphs</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Sloped_Graphs.html">Sloped_Graphs</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/VLA_Criterion.html">VLA_Criterion</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/SLA_Criterion.html">SLA_Criterion</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Relation_Based_Criterion.html">Relation_Based_Criterion</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Incomplete_Criteria.html">Incomplete_Criteria</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/SD_Incomplete.html">SD_Incomplete</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/XSD_Incomplete.html">XSD_Incomplete</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Flat_Cycles_Criterion.html">Flat_Cycles_Criterion</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Descending_Unicycles_Criterion.html">Descending_Unicycles_Criterion</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/All.html">All</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Flat_Aux.html">Flat_Aux</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Flat_Aux_VLA.html">Flat_Aux_VLA</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Flat_Aux_SLA.html">Flat_Aux_SLA</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Descending_Unicycles_Example.html">Descending_Unicycles_Example</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Descending_Unicycles_CounterExample.html">Descending_Unicycles_CounterExample</a></li>
+          <li><a href="../thys/Infinite_Descent_Criteria/Flat_Cycle_Example.html">Flat_Cycle_Example</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Buchi_Complementation.html">Büchi Complementation</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Infinite_Descent_Criteria/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Infinite_Descent_Criteria/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Infinite_Descent_Criteria/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Infinite_Descent_Criteria-AFP</p>
+        <pre id="copy-text">@article{Infinite_Descent_Criteria-AFP,
+  author  = {Jamie Wright and Liron Cohen and Reuben Rowe and Andrei Popescu},
+  title   = {Certified Infinite Descent Criteria},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Infinite_Descent_Criteria.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Infinite_Descent_Criteria-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

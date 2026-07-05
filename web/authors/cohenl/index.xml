@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Liron Cohen</title>
+    <link>https://isa-afp.org/authors/cohenl/</link>
+    <description>AFP entries of Liron Cohen</description><item>
+  <title>Certified Infinite Descent Criteria</title>
+  <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Certified Infinite Descent Criteria in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+
+  </channel>
+</rss>
