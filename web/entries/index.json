@@ -170,6 +170,28 @@
   "year": "2026"
  },
  {
+  "abstract": "Infinite Descent is the global trace condition that underpins the soundness of cyclic reasoning and, in program analysis, the size change termination principle. Many (semi-)decision procedures for Infinite Descent are known, based on criteria ranging from automata-based constructions and relation-based characterizations, to effective (but incomplete) heuristics.  We present an Isabelle/HOL mechanization of this landscape. We provide a reusable, locale-based framework of sloped graphs that defines Infinite Descent at an abstract level, independently of any concrete graph encoding. Within this framework we formalize standard complete criteria and prove their equivalence to the locale-level InfiniteDescent predicate. We also formalize tool-facing sufficient criteria,  prove their soundness, and certify incompleteness where appropriate via verified counterexamples. Along the way we contribute reusable lemmas for omega-regular reasoning over streams and for Buchi-automata constructions needed by the inclusion proofs.",
+  "authors": [
+   "Jamie Wright",
+   "Liron Cohen",
+   "Reuben Rowe",
+   "Andrei Popescu"
+  ],
+  "date": "2026-06-11",
+  "link": "../entries/Infinite_Descent_Criteria.html",
+  "permalink": "https://isa-afp.org/entries/Infinite_Descent_Criteria.html",
+  "related": [],
+  "shortname": "Infinite_Descent_Criteria",
+  "title": "Certified Infinite Descent Criteria",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry provides the detour calculus, a relational framework to construct deformed versions of integration contours by adding small indentations around problematic points (typically poles). It consists of:\nthe definition of a relation that relates the original contour $\\gamma$ to a family of deformed contours $(\\gamma_\\epsilon)_{\\epsilon \u003e 0}$ theorems that allow transferring geometric properties from $\\gamma$ to $\\gamma_\\epsilon$ for sufficiently small $\\epsilon$ a library of “basic avoidance patterns” to add indentations to lines, circular arcs, or the corners between them, and prove that they are in relation with the original contour a calculus of inference rules which, in particular, allows dealing with composite contours by proving the relation for its individual parts separately The motivating example for this calculus was the proof of the valence formula for modular forms (not included here), which requires such a complicated set of indentations that I deemed it beyond the reach of formalisation without a systematic approach such as the present one.\n",
   "authors": [
    "Manuel Eberl"

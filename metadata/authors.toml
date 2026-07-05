@@ -1532,6 +1532,24 @@ host = [
 
 [cohen.homepages]
 
+[cohenl]
+name = "Liron Cohen"
+orcid = "0000-0002-6608-3000"
+
+[cohenl.emails]
+
+[cohenl.emails.cohenl_email]
+user = [
+  "cliron",
+]
+host = [
+  "bgu",
+  "ac",
+  "il",
+]
+
+[cohenl.homepages]
+
 [colvin]
 name = "Robert J. Colvin"
 
@@ -6889,6 +6907,25 @@ host = [
 ]
 
 [rowat.homepages]
+
+[rowe]
+name = "Reuben Rowe"
+orcid = "0000-0002-4271-9078"
+
+[rowe.emails]
+
+[rowe.emails.rowe_email]
+user = [
+  "reuben",
+  "rowe",
+]
+host = [
+  "rhul",
+  "ac",
+  "uk",
+]
+
+[rowe.homepages]
 
 [sabouret]
 name = "Nicolas Sabouret"

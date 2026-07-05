@@ -4,6 +4,13 @@
     <title>Andrei Popescu</title>
     <link>https://isa-afp.org/authors/popescu/</link>
     <description>AFP entries of Andrei Popescu</description><item>
+  <title>Certified Infinite Descent Criteria</title>
+  <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Certified Infinite Descent Criteria in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Type Annotations with Roundtrip Property</title>
   <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
   <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>

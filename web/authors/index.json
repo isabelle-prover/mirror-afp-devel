@@ -2964,6 +2964,16 @@
   "name": "Lina Ye"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbImNsaXJvbiJdLCJob3N0IjpbImJndSIsImFjIiwiaWwiXX0="
+  ],
+  "homepages": [],
+  "id": "cohenl",
+  "link": "../authors/cohenl/",
+  "name": "Liron Cohen",
+  "orcid": "0000-0002-6608-3000"
+ },
+ {
   "emails": [],
   "homepages": [],
   "id": "barthel",
@@ -4102,6 +4112,16 @@
   "id": "thiemann",
   "link": "../authors/thiemann/",
   "name": "René Thiemann"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbInJldWJlbiIsInJvd2UiXSwiaG9zdCI6WyJyaHVsIiwiYWMiLCJ1ayJdfQ=="
+  ],
+  "homepages": [],
+  "id": "rowe",
+  "link": "../authors/rowe/",
+  "name": "Reuben Rowe",
+  "orcid": "0000-0002-4271-9078"
  },
  {
   "emails": [

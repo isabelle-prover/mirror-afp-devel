@@ -32,6 +32,9 @@
     <loc>https://isa-afp.org/entries/Fair_Games_Theorem.html</loc>
     <lastmod>2026-06-12T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</loc>
+    <lastmod>2026-06-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Detour_Calculus.html</loc>
     <lastmod>2026-06-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -14554,6 +14557,44 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Inductive_Inference/Universal.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/All.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Buchi_Preliminaries.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Descending_Unicycles_CounterExample.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Descending_Unicycles_Criterion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Descending_Unicycles_Example.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Directed_Graphs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Flat_Aux.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Flat_Aux_SLA.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Flat_Aux_VLA.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Flat_Cycle_Example.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Flat_Cycles_Criterion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Incomplete_Criteria.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Preliminaries.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Relation_Based_Criterion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/SD_Incomplete.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/SLA_Criterion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/Sloped_Graphs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/VLA_Criterion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Infinite_Descent_Criteria/XSD_Incomplete.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/InformationFlowSlicing_Inter/LiftingInter.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/InformationFlowSlicing_Inter/NonInterferenceInter.html</loc>
@@ -16983,6 +17024,8 @@
     <loc>https://isa-afp.org/thys/Liouville_Numbers/Liouville_Numbers.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Liouville_Numbers/Liouville_Numbers_Misc.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/cohenl/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/barthel/</loc>
   </url><url>
@@ -21903,6 +21946,8 @@
     <loc>https://isa-afp.org/thys/Restriction_Spaces/Restriction_Spaces_Prod.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Restriction_Spaces/Restriction_Spaces_Topology.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/rowe/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Rewrite_Properties_Reduction/Ground_Reduction_on_GTRS.html</loc>
   </url><url>
