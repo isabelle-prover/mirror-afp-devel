@@ -1,5 +1,25 @@
 [
  {
+  "abstract": "Axiomatization of the theory of hereditarily finite sets in classical first-order logic is systematically explored and formalized. Our list of axioms includes the usual ones of the Zermelo-Fraenkel set theory, as well as some of their less usual variants and alternatives. The strongest theory considered is ZFfin, obtained from ZF by replacing the axiom of infinity with its negation and adding the axiom of transitive closure. Of particular interest are the axioms used in the set fragment of the Alternative Set Theory by Vopěnka which provide a different approach to axiomatizing ZFfin. The hierarchy of fragments of ZFfin is represented as a hierarchy of locales. Set-theoretic membership, the only basic predicate in the language of the theory, is rendered as a polymorphic binary predicate, both arguments being of the same type. Accordingly, first-order formulas of this language are understood as predicates over that type. ZFfin is not finitely axiomatizable, so it is necessary to use axiom schemata. To that end, an inductive definition of set-theoretically definable predicates is introduced and their basic properties are elaborated. We study several axioms of finiteness and formalize the equivalence of the fragments in which these axioms are used. In particular, we formalize the equivalence of ZFfin and the set fragment of Vopěnka's Alternative Set Theory, where the latter uses the schema of induction for sets as a finiteness principle. Next to that, Tarski finiteness and Dedekind finiteness are used. The formalization also focuses on the axioms of transitive closure, regularity, and the axiom schema of epsilon induction and their interplay in the context of various fragments. We verify that hereditarily finite sets as formalized by Paulson satisfy the theory ZFfin. To demonstrate independence of some statements, several non-standard models of specific fragments are constructed. We formalize the Beranys-Rieger method of permutation models, and using the construction of a model dating back to Rieger we formalize the proof that neither the scheme of regularity nor the existence of a transitive closure follow from regularity for finite sets. This formalization takes inspiration from various sources but does not follow closely any of them.",
+  "authors": [
+   "Štěpán Holub",
+   "Zuzana Haniková"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/ZF_finite.html",
+  "permalink": "https://isa-afp.org/entries/ZF_finite.html",
+  "related": [],
+  "shortname": "ZF_finite",
+  "title": "Axiomatic theory of hereditarily finite sets and its fragments",
+  "topic_links": [
+   "../topics/logic/set-theory/"
+  ],
+  "topics": [
+   "Logic/Set theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry provides a proof of Perron's Formula, which states that for a Dirichlet series $f(s) = \\sum_{n=1}^\\infty a_n n^{-s}$ with abscissa of convergence $\\sigma_c$ we have for any $c, z, x$ with $c \u003e 0$, $x \u003e 0$, $\\text{Re}(z) \u003e \\sigma_c - c$:\n\\[\\sum\\limits_{n\\leq x}\\kern-1pt^{'} a_n n^{-z} = \\frac{1}{2\\pi i}\\, \\lim_{T\\to\\infty} \\int\\limits_{c-iT}^{c+iT}\\hskip-4pt f(z + w)\\, x^s\\kern1pt w\\,\\frac{\\text{d}w}{w} \\] Additionally, various explicit bounds for the remainder (i.e.\\ when using some finite value of $T$ instead of the limit) are shown.\nAs an interesting nontrivial auxiliary result, asymptotic bounds for a Dirichlet series near $\\pm i\\infty$ are also included, namely that if $a\\in[0,1)$ then $f(\\sigma + it) \\in o(t^{1-a})$ as $t\\to\\pm\\infty$, uniformly for all $\\sigma\\geq \\sigma_c + a + \\varepsilon$.\nThe proofs mainly follow Tenenbaum's Introduction to Analytic and Probabilistic Number Theory and Titchmarsh's Theory of Functions.\n",
   "authors": [
    "Manuel Eberl"

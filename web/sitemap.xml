@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-06-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-06-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/ZF_finite.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Perrons_Formula.html</loc>
     <lastmod>2026-06-17T00:00:00+00:00</lastmod>
@@ -26212,6 +26215,16 @@
   </url><url>
     <loc>https://isa-afp.org/thys/ZF/ZF.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/ZF_finite/Not_regular_model.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ZF_finite/Not_ts_model.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ZF_finite/Permutation_models.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ZF_finite/ZFfin.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ZF_finite/ZFfin_HF.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/ZF-Constructible/AC_in_L.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ZF-Constructible/Datatype_absolute.html</loc>
@@ -26557,5 +26570,7 @@
     <loc>https://isa-afp.org/thys/Zippy/Zippy_Tactics_Base.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/fan/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/hanikova/</loc>
   </url>
 </urlset>
