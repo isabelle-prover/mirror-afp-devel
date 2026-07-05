@@ -1,0 +1,51 @@
+chapter AFP
+
+session Infinite_Descent_Criteria =  
+ "Buchi_Complementation" +
+  options [timeout = 600]
+  sessions 
+   "HOL-Library"
+  directories 
+    Examples
+    Criterion
+    "Criterion/Incompleteness"
+  theories
+    Preliminaries
+    Buchi_Preliminaries
+
+    Directed_Graphs
+    Sloped_Graphs
+    
+    (*Automata-based criteria*)
+    VLA_Criterion
+    SLA_Criterion
+
+    (*Relation-based criteria*)
+    Relation_Based_Criterion
+
+    (*Incomplete criteria*)    
+    Incomplete_Criteria   
+    (*Incompleteness proofs*)
+    SD_Incomplete
+    XSD_Incomplete
+
+    Flat_Cycles_Criterion
+    Descending_Unicycles_Criterion
+
+ 
+
+
+    (*All criterion*)
+    All
+    
+    (*Examples*)
+    Flat_Aux
+    Flat_Aux_VLA
+    Flat_Aux_SLA    
+    Descending_Unicycles_Example
+    Descending_Unicycles_CounterExample
+    Flat_Cycle_Example  
+
+  document_files
+    "root.bib"
+    "root.tex"
