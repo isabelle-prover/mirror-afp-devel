@@ -5324,7 +5324,9 @@
   "name": "Zixuan Fan"
  },
  {
-  "emails": [],
+  "emails": [
+   "eyJ1c2VyIjpbInp1emFuYSJdLCJob3N0IjpbImNzIiwiY2FzIiwiY3oiXX0="
+  ],
   "homepages": [],
   "id": "hanikova",
   "link": "../authors/hanikova/",

@@ -30,6 +30,7 @@ creation_note = ""
 email = "holub_email"
 
 [authors.hanikova]
+email = "hanikova_email"
 
 [contributors]
 
