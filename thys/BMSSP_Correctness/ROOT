@@ -1,0 +1,17 @@
+chapter AFP
+
+session BMSSP_Correctness = HOL +
+  options [document = pdf, timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    BMSSP_Executable_Headline
+    BMSSP_Runtime_Instance
+    BMSSP_Bucketed_Cost_Bridge
+    BMSSP_Path_Family
+    BMSSP_Bucketed_Runtime
+  document_files
+    "root.tex"
+    "root.bib"
+  export_files (in ".") [2]
+    "BMSSP_Correctness.BMSSP_Code_Export:code/generated/BMSSP.ML"
