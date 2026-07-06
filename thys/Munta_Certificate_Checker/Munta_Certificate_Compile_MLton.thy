@@ -41,13 +41,13 @@ compile_generated_files "code/Certificate.ML" (in Simple_Network_Language_Certif
     let
       val exec = Generated_Files.execute dir
 
-      val _ = exec \<open>Copy MLunta\<close> ("cp -r '" ^  Path.implode mlunta_dir ^ "' .")
+      val _ = exec \<open>Copy MLunta\<close> ("cp -r " ^  File.bash_path mlunta_dir ^ " .")
       val _ = exec \<open>Compile MLunta\<close> "cd mlunta && mlton=$ISABELLE_MLTON make build_checker && cd .."
       val mlunta_path = "mlunta/build/mluntac-mlton"
 
       val _ =
         exec \<open>Copy Isabelle library files\<close>
-          ("cp '" ^ library_path ^ "' library.ML && cp '" ^ basics_path ^ "' basics.ML")
+          ("cp " ^ File.bash_path library_path ^ " library.ML && cp " ^ File.bash_path basics_path ^ " basics.ML")
 
       val _ =
         exec \<open>Preparation\<close>
