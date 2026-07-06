@@ -4,6 +4,13 @@
     <title>Computer science/Algorithms/Graph</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/graph/</link>
     <description>AFP entries in Graph</description><item>
+  <title>Correctness and Complexity of BMSSP in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/BMSSP_Correctness.html</link>
+  <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Correctness and Complexity of BMSSP in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
   <title>Galois Energy Games</title>
   <link>https://isa-afp.org/entries/Galois_Energy_Games.html</link>
   <pubDate>Fri, 23 May 2025 00:00:00 +0000</pubDate>

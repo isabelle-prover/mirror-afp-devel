@@ -29,6 +29,9 @@
     <loc>https://isa-afp.org/entries/Dottie_Number.html</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/BMSSP_Correctness.html</loc>
+    <lastmod>2026-06-12T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Fair_Games_Theorem.html</loc>
     <lastmod>2026-06-12T00:00:00+00:00</lastmod>
   </url><url>
@@ -5206,6 +5209,74 @@
     <loc>https://isa-afp.org/thys/Bisimulation_Logic/Bisimulation_Logic.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Blue_Eyes/Blue_Eyes.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Algorithm_Correctness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Base_Case.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Bucketed_Cost_Bridge.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Bucketed_Partition.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Bucketed_Partition_Internal.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Bucketed_Runtime.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Code_Export.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Complexity.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Concrete_Step.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Concrete_Top_Level.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Correctness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Direct_Insert_Costed.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Exact_Concrete_Cost.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Exact_Range_Costed.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Executable_Base_Case.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Executable_Headline.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Executable_Refinement.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Executable_Refinement_Internal.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Find_Pivots.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Find_Pivots_Core.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Initialization.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Operational_Pull.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Partition_Data_Structure.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Partition_Interface.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Partition_Pull_Bridge.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Path_Family.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Pull_Minimum.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Range_Costed.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Recursive.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Runtime_Instance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Shortest_Path_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Strict_Tie_Breaking.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Top_Level_Bounds.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/BMSSP_Correctness/BMSSP_Unique_Shortest_Tree.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/BNF_CC/Axiomatised_BNF_CC.html</loc>
   </url><url>

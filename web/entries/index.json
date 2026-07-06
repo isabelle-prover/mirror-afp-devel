@@ -151,6 +151,27 @@
   "year": "2026"
  },
  {
+  "abstract": "This development formalizes the bounded multi-source shortest path (BMSSP) algorithm underlying the deterministic directed single-source shortest path algorithm of Duan, Mao, Mao, Shu, and Yin [2]. It proves three explicit claims. First, the executable bmssp_distances computes the exact reachable shortest-distance map for well-formed f inite natural weighted digraphs. Second, a separate costed BMSSP recurrence satisfies the O(mlog2/3 n) bound under the abstract In sert/BatchPrepend/Pull operation-cost interface. Third, the bucketed partition operations realize the primitive costs required by that interface. The formalization does not state a single generated-code machine-step theorem for the executable. The entry also exports executable SML and includes a checked worked shortest-path example whose evaluated output is [(0,0),(1,3),(2,5),(3,8),(4,6)]",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-12",
+  "link": "../entries/BMSSP_Correctness.html",
+  "permalink": "https://isa-afp.org/entries/BMSSP_Correctness.html",
+  "related": [],
+  "shortname": "BMSSP_Correctness",
+  "title": "Correctness and Complexity of BMSSP in Isabelle/HOL",
+  "topic_links": [
+   "../topics/computer-science/algorithms/graph/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Graph"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This is the optional stopping theorem (or fair games theorem) for real-valued discrete-time stochastic processes on a $\\sigma$-finite filtered measure space. A theory of piecewise-constant stopping times – the function taking $i$ on an $\\mathcal F_i$-measurable set $S$ and $j$ on its complement – is developed, together with the corresponding decomposition of integrals over the two pieces. The central results then prove both directions of the theorem: if $X$ is a submartingale, then for any bounded stopping times $\\tau \\le \\pi$ the expected stopped values satisfy $\\mathbb E[X_\\tau] \\le \\mathbb E[X_\\pi]$ (via the telescoping identity and the submartingale set-integral inequality); conversely, monotonicity of expected stopped values over all bounded stopping times characterises submartingales. It is further shown that the stopped process $X^\\tau$ of a submartingale is again a submartingale. Throughout, the theorems are cross-referenced to their counterparts in Mathlib's OptionalStopping, from which it was translated by Claude. It was polished manually afterwards. The fair games theorem is #62 on the Top 100 Mathematical Theorems.",
   "authors": [
    "Lawrence C. Paulson"

@@ -1,0 +1,55 @@
+title = "Correctness and Complexity of BMSSP in Isabelle/HOL"
+date = 2026-06-12
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+This development formalizes the bounded multi-source shortest path
+(BMSSP) algorithm underlying the deterministic directed single-source
+shortest path algorithm of Duan, Mao, Mao, Shu, and Yin [2]. It
+proves three explicit claims. First, the executable bmssp_distances
+computes the exact reachable shortest-distance map for well-formed
+f
+inite natural weighted digraphs. Second, a separate costed BMSSP
+recurrence satisfies the O(mlog2/3 n) bound under the abstract In
+sert/BatchPrepend/Pull operation-cost interface. Third, the bucketed
+partition operations realize the primitive costs required by that interface.
+The formalization does not state a single generated-code machine-step
+theorem for the executable. The entry also exports executable SML
+and includes a checked worked shortest-path example whose evaluated
+output is [(0,0),(1,3),(2,5),(3,8),(4,6)]"""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with gpt 5.5 on xhigh was used to help with proof engineering
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
