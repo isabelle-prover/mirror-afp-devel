@@ -12,7 +12,7 @@ lemmas [simp del] = div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4
 text \<open>
   In this section we will introduce the function $f(x)$ for $x > 0$ where $f(x)$ is the unique
   positive real $y$ such that $x = -\ln y / \ln (y+1)$. For a plot of $f(x)$, see 
-  Figure~\cite{fig:hbt_f_plot}.
+  Figure~\ref{fig:hbt_f_plot}.
 
 \begin{figure}[t]
 \begin{center}
