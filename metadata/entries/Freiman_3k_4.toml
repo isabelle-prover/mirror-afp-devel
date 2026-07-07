@@ -1,0 +1,44 @@
+title = "Freiman's 3k - 4 Theorem"
+date = 2026-06-02
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+This entry formalizes Freiman's \\(3k - 4\\) theorem for finite sets of integers:
+small doubling, in the range \\(|A + A| \\leq 3|A| - 4\\), forces containment in a
+short arithmetic progression. AI assistance was used for proof engineering. The
+final definitions, statements, and proofs are checked by Isabelle."""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with gpt 5.5 on extra high was used to help with proof engineering
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

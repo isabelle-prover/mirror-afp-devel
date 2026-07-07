@@ -321,6 +321,27 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry formalizes Freiman's \\(3k - 4\\) theorem for finite sets of integers: small doubling, in the range \\(|A + A| \\leq 3|A| - 4\\), forces containment in a short arithmetic progression. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-02",
+  "link": "../entries/Freiman_3k_4.html",
+  "permalink": "https://isa-afp.org/entries/Freiman_3k_4.html",
+  "related": [],
+  "shortname": "Freiman_3k_4",
+  "title": "Freiman's 3k - 4 Theorem",
+  "topic_links": [
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This development formalizes the Busy Beaver upper-bound principle and its computability consequences for AFP Turing   machines. The abstract layer works over machine models with finite size classes and unique exact halting times: it   defines the time Busy Beaver function and proves that any total upper bound for this function decides zero-input   halting. A generic computability interface then yields the usual noncomputability consequence from the absence of   computable fixed-input halting deciders; its eventual-domination theorem is proved under an explicit   compilation-witness assumption.    The development then connects the abstract theory to AFP's Universal Turing Machine formalization by defining exact   numeric-result halting times, a finite size measure for Turing programs, a concrete Turing-machine Busy Beaver   function, a code-indexed Busy Beaver function whose upper bounds decide AFP's special halting problem (K_1), and a   strengthened program/input-pair Busy Beaver function whose upper bounds decide AFP's two-argument halting problem   (H_1). Using AFP's Turing-computability interface, it further proves that no upper-bound-induced (H_1) decider set   has a Turing-computable total characteristic function, with a specialization to the decider induced by the concrete   pair-indexed Busy Beaver function itself.",
   "authors": [
    "Arthur Freitas Ramos",
