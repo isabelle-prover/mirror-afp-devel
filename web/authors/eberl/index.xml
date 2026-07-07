@@ -4,6 +4,13 @@
     <title>Manuel Eberl</title>
     <link>https://isa-afp.org/authors/eberl/</link>
     <description>AFP entries of Manuel Eberl</description><item>
+  <title>Height Bounds for Height-Balanced Trees</title>
+  <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
+  <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Height Bounds for Height-Balanced Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Perron&#39;s Formula</title>
   <link>https://isa-afp.org/entries/Perrons_Formula.html</link>
   <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>

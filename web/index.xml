@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Height Bounds for Height-Balanced Trees</title>
+  <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
+  <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Height Bounds for Height-Balanced Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Axiomatic theory of hereditarily finite sets and its fragments</title>
   <link>https://isa-afp.org/entries/ZF_finite.html</link>
   <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>

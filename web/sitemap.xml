@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</loc>
+    <lastmod>2026-07-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/ZF_finite.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
@@ -11664,6 +11667,12 @@
     <loc>https://isa-afp.org/thys/Heard_Of/UvDefs.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Heard_Of/UvProof.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Height_Balanced_Tree_Bounds/HBT_Bounds.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Height_Balanced_Tree_Bounds/HBT_Fun.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Height_Balanced_Tree_Bounds/HBT_Lemma_Bucket.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/becker/</loc>
   </url><url>
