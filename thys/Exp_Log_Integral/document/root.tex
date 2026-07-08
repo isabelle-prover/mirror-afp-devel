@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{The Exponential and Logarithmic Integral}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides three closely related special functions: the exponential integral
+$\text{Ei}$, the logarithmic integral $\text{li}$, and the complementary exponential
+integral $\text{Ein}$. All three functions are defined both on the reals and in the complex plane.
+
+Basic properties are shown, e.g.:
+\begin{itemize}
+  \item derivatives, continuity, limits, etc.
+  \item $\text{Ei}(x) = \int_{-\infty}^x e^t/t\,\text{d}t$ and $\text{li}(x) = \int_0^x 1/\ln t\,\text{d}t$ for 
+    real $x$, where for $x>0$ and $x>1$, respectively, the integrals must be interpreted as Cauchy principal values
+  \item asymptotic expansions for $\text{Ei}$ and $\text{li}$
+  \item the relationship to the incomplete gamma function via $\Gamma(0, x) = -\text{Ei}(-x)$ and $\Gamma(0, z) = \text{Ein}(z) - \ln z - \gamma$
+\end{itemize}
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

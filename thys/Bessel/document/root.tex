@@ -1,0 +1,58 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+
+\begin{document}
+
+\title{Bessel Functions of the First Kind}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a formalisation of the Bessel function of the first kind $J_a$ and the 
+modified Bessel function of the first kind $I_a$ as well as several related notions such as 
+Bessel polynomials and the spherical Bessel functions.
+
+Properties that are proven about $I_a$ and $J_a$ include:
+\begin{itemize}
+	\item the definition as a hypergeometric series \[\sum_{n\geq 0} (-1)^n (z/2)^{a+2n} / (n! \Gamma(1+a+n))\]
+  \item monotonicity and convexity of $I_a$ on the reals
+  \item the contiguous relations, e.g.\ $2 a J_a(z) = z (J_{a-1}(z) + J_{a+1}(z))$
+  \item the derivatives, e.g.\ $J_a' = \frac{1}{2} (J_{a-1} - J_{a+1})$
+  \item closed form expressions for the half-integer case $a = n + \frac{1}{2}$ in terms of
+        trigonometric and hyperbolic functions
+  \item the representation of $J_a$ as contour integral of the form $\int_{c-i\infty}^{c+i\infty}$
+\end{itemize}
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\nocite{nist}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

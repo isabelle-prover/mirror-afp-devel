@@ -1,0 +1,13 @@
+chapter AFP
+
+session Arithmetic_Geometric_Mean (AFP) = Theta_Functions +
+  options [timeout = 600]
+  sessions
+    "HOL-Real_Asymp"
+    Incomplete_Gamma
+  theories  
+    Pi_Approx_AGM
+    AGM_Theta
+  document_files
+    "root.tex"
+    "root.bib"

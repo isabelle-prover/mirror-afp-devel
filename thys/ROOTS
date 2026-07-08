@@ -37,6 +37,7 @@ Archimedes_Cattle
 Architectural_Design_Patterns
 Aristotles_Assertoric_Syllogistic
 Arith_Prog_Rel_Primes
+Arithmetic_Geometric_Mean
 ArrowImpossibilityGS
 Attack_Trees
 Auto2_HOL
@@ -62,6 +63,7 @@ BenOr_Kozen_Reif
 Berlekamp_Zassenhaus
 Bernoulli
 Bertrands_Postulate
+Bessel
 Bicategory
 BinarySearchTree
 Binary_Code_Imprimitive
@@ -277,6 +279,7 @@ Eval_FO
 Example-Submission
 Executable_Randomized_Algorithms
 Expander_Graphs
+Exp_Log_Integral
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
 Fair_Games_Theorem
@@ -352,6 +355,7 @@ GenClock
 General-Triangle
 Generalized_Cauchy_Davenport
 Generalized_Counting_Sort
+Generalized_Hypergeometric_Series
 Generic_Deriving
 Generic_Join
 GewirthPGCProof
@@ -428,6 +432,7 @@ Imperative_Insertion_Sort
 Implicational_Logic
 Impossible_Geometry
 Incompleteness
+Incomplete_Gamma
 Incredible_Proof_Machine
 Independence_CH
 Inductive_Confidentiality
@@ -743,6 +748,7 @@ RG_Locks
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
+Rademacher_Series
 Ramsey-Infinite
 Ramsey_Bounds
 Random_BSTs
