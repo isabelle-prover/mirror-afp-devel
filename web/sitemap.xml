@@ -14,6 +14,24 @@
     <loc>https://isa-afp.org/entries/ZF_finite.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Bessel.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Arithmetic_Geometric_Mean.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Generalized_Hypergeometric_Series.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Rademacher_Series.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Exp_Log_Integral.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Incomplete_Gamma.html</loc>
+    <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Perrons_Formula.html</loc>
     <lastmod>2026-06-17T00:00:00+00:00</lastmod>
   </url><url>
@@ -3788,6 +3806,22 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Arith_Prog_Rel_Primes/Arith_Prog_Rel_Primes.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/AGM_Lemma_Bucket.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/AGM_Theta.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/Arithmetic_Geometric_Mean.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/Arithmetic_Geometric_Mean_Integral.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/Binary_Arithmetic_Mean.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/Binary_Geometric_Mean.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/Complete_Elliptic_Integrals.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Arithmetic_Geometric_Mean/Pi_Approx_AGM.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/faber/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/heller/</loc>
@@ -5113,6 +5147,10 @@
     <loc>https://isa-afp.org/authors/felgenhauer/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Bertrands_Postulate/Bertrand.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Bessel/Bessel.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Bessel/Bessel_Hankel_Integral.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bhatt/</loc>
   </url><url>
@@ -9660,6 +9698,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Executable_Randomized_Algorithms/Tracking_SPMF.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Exp_Log_Integral/Exp_Log_Integral.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Expander_Graphs/Constructive_Chernoff_Bound.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Expander_Graphs/Expander_Graphs_Algebra.html</loc>
@@ -11159,6 +11199,8 @@
     <loc>https://isa-afp.org/thys/Generalized_Counting_Sort/Sorting.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Generalized_Counting_Sort/Stability.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Generalized_Hypergeometric_Series/Generalized_Hypergeometric_Series.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Generic_Deriving/Derive.html</loc>
   </url><url>
@@ -14461,6 +14503,18 @@
     <loc>https://isa-afp.org/thys/Implicational_Logic/Implicational_Logic_Sequent_Calculus.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Impossible_Geometry/Impossible_Geometry.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Incomplete_Gamma/Derivative_Method.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Incomplete_Gamma/Incomplete_Gamma.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Incomplete_Gamma/Incomplete_Gamma_Lemma_Bucket.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Incomplete_Gamma/More_Beta.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Incomplete_Gamma/More_Dominated_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Incomplete_Gamma/Safe_Power.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Incompleteness/Coding.html</loc>
   </url><url>
@@ -21283,6 +21337,12 @@
     <loc>https://isa-afp.org/thys/Quick_Sort_Cost/Randomised_Quick_Sort.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/guerraoui/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Rademacher_Series/Polyline_Path.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Rademacher_Series/Rademacher_Series.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Rademacher_Series/Rademacher_Series_Concrete_Bounds.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/kolanski/</loc>
   </url><url>

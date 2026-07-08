@@ -1,0 +1,42 @@
+title = "Bessel Functions of the First Kind"
+date = 2026-07-03
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides a formalisation of the Bessel function of the first kind $J_a$ and the 
+modified Bessel function of the first kind $I_a$ as well as several related notions such as 
+Bessel polynomials and the spherical Bessel functions.</p>
+<p>Properties that are proven about $I_a$ and $J_a$ include:</p>
+<ul>
+<li>the definition as a hypergeometric series \\[\\sum_{n\\geq 0} (-1)^n (z/2)^{a+2n} / (n! \\Gamma(1+a+n))\\]</li>
+<li>monotonicity and convexity of $I_a$ on the reals</li>
+<li>the contiguous relations, e.g. $2 a J_a(z) = z (J_{a-1}(z) + J_{a+1}(z))$</li>
+<li>the derivatives, e.g. $J_a' = \\frac{1}{2} (J_{a-1} - J_{a+1})$</li>
+<li>closed form expressions for the half-integer case $a = n + \\frac{1}{2}$ in terms of trigonometric and hyperbolic functions</li>
+<li>the representation of $J_a$ as contour integral of the form $\\int_{c-i\\infty}^{c+i\\infty}$</li>
+</ul>"""
+license = "bsd"
+note = ""
+creation_note = """
+Claude was used to generate the TikZ code for Figure 1.
+
+"""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

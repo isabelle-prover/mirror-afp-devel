@@ -2,11 +2,11 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Farey Sequences and Ford Circles - Archive of Formal Proofs</title>
-    <meta name="description" content="Farey Sequences and Ford Circles in the Archive of Formal Proofs">
-    <meta property="og:description" content="Farey Sequences and Ford Circles in the Archive of Formal Proofs">
-    <meta property="og:title" content="Farey Sequences and Ford Circles">
-    <meta property="og:url" content="https://isa-afp.org/entries/Farey_Sequences.html">
+    <title>The Exponential and Logarithmic Integral - Archive of Formal Proofs</title>
+    <meta name="description" content="The Exponential and Logarithmic Integral in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Exponential and Logarithmic Integral in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Exponential and Logarithmic Integral">
+    <meta property="og:url" content="https://isa-afp.org/entries/Exp_Log_Integral.html">
     <meta property="og:image" content="https://isa-afp.org/images/afp.png">
     <meta property="og:type" content="article">
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -87,29 +87,29 @@
       </div>
     </form>
   <h1>
-    <span class='first'>F</span>arey <span class='first'>S</span>equences and <span class='first'>F</span>ord <span class='first'>C</span>ircles
+    <span class='first'>T</span>he <span class='first'>E</span>xponential and <span class='first'>L</span>ogarithmic <span class='first'>I</span>ntegral
   </h1>
   <div>
-      <p><a href="../authors/paulson/">Lawrence C. Paulson</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxwMTUiXSwiaG9zdCI6WyJjYW0iLCJhYyIsInVrIl19">📧</a>
+      <p><a href="../authors/eberl/">Manuel Eberl</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnVlbCJdLCJob3N0IjpbInBydXZpc3RvIiwib3JnIl19">📧</a>
       </p>
-      <p class="date">May 15, 2025</p>
+      <p class="date">July 3, 2026</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">The sequence $F_n$ of Farey fractions of order $n$ 
-has the form 
-$$\frac{0}{1}, \frac{1}{n}, \frac{1}{n-1}, \ldots, \frac{n-1}{n}, \frac{1}{1}$$
-where the fractions appear in numerical order and have denominators at most $n$.
-The transformation from $F_n$ to $F_{n+1}$ can be effected by combining adjacent elements of 
-the sequence~$F_n$, using an operation called the mediant.
-Adjacent (reduced) fractions $(a/b) &lt; (c/d)$ satisfy the unimodular
-relation $bc - ad = 1$ and their mediant is $\frac{a+c}{b+d}$.
-A Ford circle is specified by a rational number, and interesting consequences follow
-in the case of Ford circles obtained from some Farey sequence~$F_n$.
-The formalised material is drawn from Apostol's Modular Functions and Dirichlet Series in Number Theory.</div>
+    <div class="abstract mathjax_process"><p>This entry provides three closely related special functions: the exponential integral
+$\text{Ei}$, the logarithmic integral $\text{li}$, and the complementary exponential
+integral $\text{Ein}$. All three functions are defined both on the reals and in the complex plane.</p>
+<p>Basic properties are shown, e.g.:</p>
+<ul>
+<li>derivatives, continuity, limits, etc.</li>
+<li>$\text{Ei}(x) = \int_{-\infty}^x e^t/t\,\text{d}t$ and $\text{li}(x) = \int_0^x 1/\ln t\,\text{d}t$ for 
+    real $x$, where for $x>0$ and $x>1$, respectively, the integrals must be interpreted as Cauchy principal values</li>
+<li>asymptotic expansions for $\text{Ei}$ and $\text{li}$</li>
+<li>the relationship to the incomplete gamma function via $\Gamma(0, x) = -\text{Ei}(-x)$ and $\Gamma(0, z) = \text{Ein}(z) - \ln z - \gamma$</li>
+</ul></div>
 
     <h3>License</h3>
     <div>
@@ -117,22 +117,20 @@ The formalised material is drawn from Apostol's Modular Functions and Dirichlet 
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/number-theory/">Mathematics/Number theory</a></li>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Exp_Log_Integral</h3>
       <ul>
-        <li>Modular Functions and Dirichlet Series in Number Theory</li>
-      </ul>
-      <h3>Session Farey_Sequences</h3>
-      <ul>
-          <li><a href="../thys/Farey_Sequences/Farey_Ford.html">Farey_Ford</a></li>
+          <li><a href="../thys/Exp_Log_Integral/Exp_Log_Integral.html">Exp_Log_Integral</a></li>
       </ul>
 
     <div class="flex-wrap">
         <div>
-          <h3>Used by</h3>
+          <h3>Depends on</h3>
           <ul class="horizontal-list">
-              <li><a href="../entries/Rademacher_Series.html">Rademacher's Series for the Partition Function</a></li>
+              <li><a href="../entries/Generalized_Hypergeometric_Series.html">Generalised Hypergeometric Series</a></li>
+              <li><a href="../entries/Incomplete_Gamma.html">The Incomplete Gamma Function</a></li>
+              <li><a href="../entries/Zeta_Function.html">The Hurwitz and Riemann ζ Functions</a></li>
           </ul>
         </div>
     </div>
@@ -142,9 +140,9 @@ The formalised material is drawn from Apostol's Modular Functions and Dirichlet 
     <a class="popup-button" href="#cite-popup">Cite</a>
     <a class="popup-button" href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Farey_Sequences/outline.pdf">Proof outline</a>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Farey_Sequences/document.pdf">Proof document</a>
-    <a href="https://isa-afp.org/browser_info/current/AFP/Farey_Sequences/session_graph.pdf">Dependencies</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Exp_Log_Integral/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Exp_Log_Integral/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Exp_Log_Integral/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -153,14 +151,14 @@ The formalised material is drawn from Apostol's Modular Functions and Dirichlet 
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Farey_Sequences-AFP</p>
-        <pre id="copy-text">@article{Farey_Sequences-AFP,
-  author  = {Lawrence C. Paulson},
-  title   = {Farey Sequences and Ford Circles},
+        <p style="display:none;" id="bibtex-filename">Exp_Log_Integral-AFP</p>
+        <pre id="copy-text">@article{Exp_Log_Integral-AFP,
+  author  = {Manuel Eberl},
+  title   = {The Exponential and Logarithmic Integral},
   journal = {Archive of Formal Proofs},
-  month   = {May},
-  year    = {2025},
-  note    = {\url{https://isa-afp.org/entries/Farey_Sequences.html},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Exp_Log_Integral.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -174,29 +172,8 @@ The formalised material is drawn from Apostol's Modular Functions and Dirichlet 
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://isa-afp.org/release/afp-Farey_Sequences-current.tar.gz" download>
+      <a href="https://isa-afp.org/release/afp-Exp_Log_Integral-current.tar.gz" download>
         Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Farey_Sequences-2026-02-06.tar.gz">
-                Feb 6, 2026
-              </a>
-              : Isabelle2025-2
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Farey_Sequences-2025-12-19.tar.gz">
-                Dec 19, 2025
-              </a>
-              : Isabelle2025-1
-            </li>
-            <li>
-              <a href="https://isa-afp.org/release/afp-Farey_Sequences-2025-05-18.tar.gz">
-                May 18, 2025
-              </a>
-              : Isabelle2025
-            </li>
-        </ul>
     </div>
   </div>
       </div>

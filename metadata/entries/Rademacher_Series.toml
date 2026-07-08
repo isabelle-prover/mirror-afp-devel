@@ -1,0 +1,46 @@
+title = "Rademacher's Series for the Partition Function"
+date = 2026-07-03
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This entry provides a formalisation of Rademacher's convergent series for the partition function.
+The partition function $p(n)$ is defined as the number of ways in which a natural number $n$ can
+be written as the sum of positive integers, without taking the order into account. E.g. $p(3) = 3$
+since $3 = 2 + 1 = 1 + 1 + 1$.</p>
+<p>Using a contour integration argument based on earlier asymptotic sums for $p(n)$, Rademacher found 
+the remarkable <em>convergent</em> series representation
+\\[p(n) = \\frac{1}{\\pi\\sqrt{2}} \\sum_{k\\geq 1} A_k(n) \\sqrt{k}  f(n,k)\\]
+where
+\\[A_k(n) = \\hskip-1em\\sum_{\\substack{1\\leq h\\leq k\\\\\\text{gcd}(h,k)=1}}\\hskip-1em \\cos(\\pi(s(h,k) - 2nh/k))\\]
+\\[f(x,k) = \\frac{\\text{d}}{\\text{d}x}\\,
+    \\frac{\\sinh\\left[\\tfrac{\\pi}{k}\\sqrt{\\tfrac{2}{3}(x-\\tfrac{1}{24})}\\,\\right]}
+         {\\sqrt{x-\\tfrac{1}{24}}}\\]
+and $s(h,k)$ denotes a Dedekind sum. Decent (albeit not very tight) bounds for the remainder
+of the truncated sum are also derived.</p>
+<p>One consequence of this formula that was also formalised is the asymptotic estimate $p(n) \\sim \\exp(\\pi\\sqrt{2/3\\,n}) / (4\\sqrt{3}\\,n)$.</p>
+<p>Rademacher's series also forms the basis for the most efficient known algorithms to compute $p(n)$, but this requires significantly more work and is out of scope for this entry.</p>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
