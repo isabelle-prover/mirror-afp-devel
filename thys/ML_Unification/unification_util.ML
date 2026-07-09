@@ -407,11 +407,10 @@ fun match_var_args eq (f, tTs) t env =
 fun lower_var_args eq target_tTs =
   let
     val (target_ts, target_Ts) = split_list target_tTs
-    val rangeT = funpow (length target_ts) range_type
     fun run [] env = SOME env
-      | run ((ftTs as (((n, _), T), _)) :: ftTss) env =
-          let val (env, t) = Envir.genvar n (env, target_Ts ---> rangeT T)
-            ||> (fn v => list_comb (v, target_ts))
+      | run ((ftTs as (((n, _), T), tTs)) :: ftTss) env =
+          let val (env, t) = (env, target_Ts ---> funpow (length tTs) range_type T)
+            |> Envir.genvar n ||> (fn v => list_comb (v, target_ts))
           in match_var_args eq ftTs t env |> Option.mapPartial (run ftTss) end
   in run end
 

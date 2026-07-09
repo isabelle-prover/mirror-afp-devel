@@ -1,4 +1,4 @@
-(*  Title:      ML_Unification/unify_of.ML
+(*  Title:      ML_Unification/unify_OF.ML
     Author:     Kevin Kappelmann
 
 OF attribute with arguments from context.
@@ -56,16 +56,16 @@ type args = (Unification_Base.normalisers, Unification_Base.unifier, mode, thm l
 type config_args = (Unification_Base.normalisers, Unification_Base.unifier, mode)
   PCA.entries
 
-fun gen_unify_of unify_OF_fn args =
+fun gen_unify_OF unify_OF_fn args =
   let val resolve_fn = case PA.get_mode args of
       PM.resolve _ => URB.unify_resolve_tac
     | PM.fact _ => URB.unify_resolve_atomic_tac
   in unify_OF_fn resolve_fn (PA.get_normalisers args) (PA.get_unifier args) (PA.get_rules args) end
 
-val unify_OF = gen_unify_of Unify_OF_Base.unify_OF
+val unify_OF = gen_unify_OF Unify_OF_Base.unify_OF
 val unify_OF_config_args = unify_OF oo PA_entries_from_PCA_entries
 
-val unify_OF_attribute = gen_unify_of Unify_OF_Base.unify_OF_attribute
+val unify_OF_attribute = gen_unify_OF Unify_OF_Base.unify_OF_attribute
 val unify_OF_config_args_attribute = unify_OF_attribute oo PA_entries_from_PCA_entries
 
 val arg_parsers = {
@@ -183,8 +183,8 @@ val parse_set_args_attribute = (parse_arg_entries |> Parse_Util.position) >> set
 val parse_attribute =
   PA.get_rules UOA.arg_parsers (Scan.lift parse_arg_entry)
   :-- (fn [] => (parse_set_args_attribute |> Parse.!!!) >> SOME |> Scan.lift
-        | _ => (Scan.option (Args.$$$ "use") |-- parse_set_args_attribute) |> Parse.!!! |> Parse_Util.option
-          |> Scan.lift)
+        | _ => (Scan.option (Args.$$$ "use") |-- parse_set_args_attribute)
+            |> Parse.!!! |> Parse_Util.option |> Scan.lift)
     (*if there are no rules, we update the arguments in the context*)
   >> (fn ([], SOME attr) => attr
     (*otherwise, we use the arguments but do not store them in the context*)

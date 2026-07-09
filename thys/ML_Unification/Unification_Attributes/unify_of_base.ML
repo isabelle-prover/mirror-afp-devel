@@ -1,4 +1,4 @@
-(*  Title:      ML_Unification/unify_of_base.ML
+(*  Title:      ML_Unification/unify_OF_base.ML
     Author:     Kevin Kappelmann
 
 OF attribute with adjustable unifier.
