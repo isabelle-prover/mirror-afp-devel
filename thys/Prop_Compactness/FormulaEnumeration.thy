@@ -1,6 +1,10 @@
 (* Propositional formula  *)
 
 (* Formalization adapted from: 
+   Stefan Berghofer,
+   "Meta-Theory of first-order predicate logic", 
+   The Archive of Formal Proofs, 2009.
+   
    Fabián Fernando Serrano Suárez, "Formalización en Isar de la
    Meta-Lógica de Primer Orden." PhD thesis, 
    Departamento de Ciencias de la Computación e Inteligencia Artificial,

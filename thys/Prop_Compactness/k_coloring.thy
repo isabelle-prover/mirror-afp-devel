@@ -10,12 +10,12 @@ theory k_coloring
 imports PropCompactness
 begin
 (*>*)
-
 section \<open>de Bruijn-Erdös k-coloring theorem for countable infinite graphs\<close>
 
 text\<open>This section formalizes de Bruijn-Erdös k-coloring theorem for countable infinite graphs. 
 The construction applies the compactness theorem for propositional logic directly. \<close>
 
+section \<open>de Bruijn-Erdös k-coloring theorem for countable infinite graphs\<close>
 
 type_synonym 'v digraph =  "('v set) \<times> (('v \<times> 'v) set)"
 
@@ -104,10 +104,21 @@ definition finite_graph :: "'v digraph \<Rightarrow> bool"  where
 
 definition coloring :: "('v \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'v digraph \<Rightarrow> bool" where
  "coloring c k G  \<equiv> 
-  (\<forall>u. u\<in>V[G]\<longrightarrow> c(u)\<le>k) \<and> (\<forall>u v.(u,v)\<in>E[G] \<longrightarrow> c(u)\<noteq>c(v))"
+  (\<forall>u. u\<in>V[G]\<longrightarrow> c(u) < k) \<and> (\<forall>u v.(u,v)\<in>E[G] \<longrightarrow> c(u)\<noteq>c(v))"
 
 definition colorable ::  "'v digraph \<Rightarrow> nat \<Rightarrow>  bool" where
  "colorable G k \<equiv> \<exists>c. coloring c k G"
+
+lemma  coloring_emptygraph:
+  assumes "V[G]={}"  
+  shows "colorable ({},{}) 0 " using colorable_def
+  using colorable_def coloring_def by fastforce
+
+lemma coloring_nonemptygraph: 
+  assumes "V[G]\<noteq>{}" and "colorable G k"
+  shows "0<k"
+  by (metis assms(1,2) colorable_def coloring_def empty_subsetI less_nat_zero_code not_gr_zero
+   subsetI subset_antisym) 
 
 lemma colorable_subgraph :
   assumes "is_subgraph H G" and "colorable G k"
@@ -121,20 +132,36 @@ proof-
     by blast 
 qed
 
+lemma coloring_card_image:  
+  assumes "coloring c k G"  
+  shows "card (c ` (V[G])) \<le> k"
+proof -
+  have img_subset: "c ` (V[G]) \<subseteq> {0..k-1}"
+    using assms unfolding coloring_def by auto
+  have fin_img: "finite (c ` (V[G]))"
+    using img_subset finite_atLeastAtMost by (rule finite_subset)
+  have "card (c ` (V[G])) \<le> card {0..k-1}"
+    using card_mono[OF finite_atLeastAtMost img_subset] fin_img
+    by simp
+  thus ?thesis
+    by (metis all_not_in_conv assms bot_nat_0.extremum_strict card.empty card_atLeastAtMost 
+        coloring_def diff_Suc_1 diff_is_0_eq  diff_zero gr0_conv_Suc image_empty not_gr_zero) 
+qed
+
 primrec atomic_disjunctions :: "'v \<Rightarrow> nat \<Rightarrow> ('v \<times> nat)formula"  where 
  "atomic_disjunctions v  0 = atom (v, 0)"     
 | "atomic_disjunctions v (Suc k) = (atom (v, Suc k)) \<or>. (atomic_disjunctions v  k)"
 
 definition \<F> :: "'v digraph \<Rightarrow> nat \<Rightarrow> (('v \<times> nat)formula) set"  where
-   "\<F> G k \<equiv> (\<Union>v\<in>V[G]. {atomic_disjunctions v  k})"
+   "\<F> G k \<equiv> (\<Union>v\<in>V[G]. {atomic_disjunctions v  (k-1)})"
 
 definition \<G> :: "'v digraph \<Rightarrow> nat \<Rightarrow> ('v \<times> nat)formula set"  where
    "\<G> G k \<equiv> {\<not>.(atom (v, i) \<and>. atom(v,j))
-                         | v i j. (v\<in>V[G]) \<and> (0\<le>i \<and> 0\<le>j \<and> i\<le>k \<and> j\<le>k \<and> i\<noteq>j)}"
+                         | v i j. (v\<in>V[G]) \<and> (0\<le>i \<and> 0\<le>j \<and> i<k \<and> j<k \<and> i\<noteq>j)}"
 
 definition \<H> :: "'v digraph \<Rightarrow> nat \<Rightarrow> ('v \<times> nat)formula set"  where
    "\<H> G k \<equiv> {\<not>.(atom (u, i) \<and>. atom(v,i))
-                         |u v i . (u\<in>V[G] \<and> v\<in>V[G] \<and> (u,v)\<in>E[G]) \<and> (0\<le>i \<and> i\<le>k)} "
+                         |u v i . (u\<in>V[G] \<and> v\<in>V[G] \<and> (u,v)\<in>E[G]) \<and> (0\<le>i \<and> i < k)} "
 
 definition \<T> :: "'v digraph \<Rightarrow> nat \<Rightarrow> ('v \<times> nat)formula set"  where
    "\<T> G k  \<equiv> (\<F> G k) \<union> (\<G> G k) \<union> (\<H> G k)" 
@@ -189,11 +216,11 @@ proof
       by(unfold vertices_set_formulas_def,auto)
     hence "\<exists>F\<in>(\<F> G k). x \<in> vertices_formula F" by auto
     then obtain F where "F\<in>(\<F> G k)" and x: "x \<in> vertices_formula F" by auto
-    hence "\<exists> v\<in>V[G]. F\<in>{atomic_disjunctions v  k}" by (unfold \<F>_def, auto)
-    then obtain v where v: "v\<in>V[G]" and "F\<in>{atomic_disjunctions v  k}" by auto
-    hence "F = atomic_disjunctions v  k" by auto
+    hence "\<exists> v\<in>V[G]. F\<in>{atomic_disjunctions v  (k-1)}" by (unfold \<F>_def, auto)
+    then obtain v where v: "v\<in>V[G]" and "F\<in>{atomic_disjunctions v  (k-1)}" by auto
+    hence "F = atomic_disjunctions v  (k-1)" by auto
     hence "vertices_formula F = {v}"
-      using vertices_disjunction[OF `F = atomic_disjunctions v  k`] by auto
+      using vertices_disjunction[OF `F = atomic_disjunctions v  (k-1)`] by auto
     hence "x = v" using x by auto
     thus ?thesis using v by auto
   qed
@@ -383,7 +410,7 @@ fun graph_interpretation :: "'v digraph \<Rightarrow> ('v \<Rightarrow> nat) \<R
 "graph_interpretation G f = (\<lambda>(v,i).(if v \<in> V[G] \<and> f(v) = i  then True else False))"
 
 lemma value1:
-  assumes "v \<in> V[G]" and "f(v)\<le> k"  and  "F = atomic_disjunctions v  k" 
+  assumes "v \<in> V[G]" and "f(v)< k"  and  "F = atomic_disjunctions v  k" 
   shows "t_v_evaluation (graph_interpretation G f) F" 
 proof- 
   let ?i = "f(v)"
@@ -484,7 +511,7 @@ proof-
       fix F assume "F \<in> S"
       show  "t_v_evaluation (graph_interpretation ?H f) F"
       proof- 
-        have 1:  "vertices_formula F \<subseteq>?V"
+        have 1:  "vertices_formula F \<subseteq> ?V"
         proof
           fix v
           assume "v \<in> (vertices_formula F)" thus "v \<in> ?V"
@@ -496,14 +523,18 @@ proof-
         thus ?thesis
         proof(rule disjE)
           assume "F \<in> (\<F> G k)"
-          hence "\<exists>v\<in>V[G]. F = atomic_disjunctions v  k"  by(unfold \<F>_def,auto)
+          hence "\<exists>v\<in>V[G]. F = atomic_disjunctions v  (k-1)"  by(unfold \<F>_def,auto)
           then obtain v
-          where v: "v\<in>V[G]" and F: "F = atomic_disjunctions v k"
+          where v: "v\<in>V[G]" and F: "F = atomic_disjunctions v (k-1)"
             by auto
           have "v\<in>?V" using F vertices_disjunction[of "F"] 1 by auto  
           hence "v\<in> V[?H]" by(unfold induced_subgraph_from_vert_def, auto)
-          hence "f(v)\<le> k" using coloring_def[of "f" "k" "?H"] assms(3) by auto
-          thus ?thesis using F  value1[OF `v\<in>V[?H]`] by auto
+          hence "f(v) <  k" using coloring_def[of "f" "k" "?H"] assms(3)
+            by (simp add: coloring_def order_less_imp_le)
+          thus ?thesis using F  value1[of v G  f k F]
+            by (metis One_nat_def Suc_pred \<open>v \<in> V[induced_subgraph_from_vert G (vertices_set_formulas S)]\<close> 
+                atomic_disjunctions.simps(2) bot_nat_0.extremum_strict
+                bot_nat_0.not_eq_extremum nat_less_le t_v_evaluation.simps(6) t_value_vertex value1)          
           next
           assume "F \<in> (\<G> G k) \<or> F \<in> (\<H> G k)"
           thus ?thesis
@@ -545,31 +576,31 @@ qed
 
 fun graph_coloring ::  "(('v \<times> nat) \<Rightarrow> bool) \<Rightarrow> nat  \<Rightarrow> ('v \<Rightarrow> nat)"
   where
-"graph_coloring I k = (\<lambda>v.(THE i. (t_v_evaluation I (atom (v,i))) \<and> 0\<le>i \<and> i\<le>k))" 
+"graph_coloring I k = (\<lambda>v.(THE i. (t_v_evaluation I (atom (v,i))) \<and> 0 \<le>i \<and> i<k))" 
 
 lemma unicity:
-  assumes "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i \<le> k)" 
-  and "\<forall>j. (0\<le>j \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (v, i) \<and>. atom(v,j))))"
-  shows "\<forall>j. (0\<le>j \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow>  \<not> t_v_evaluation I (atom (v, j))"
+  assumes "(t_v_evaluation I (atom (v, i)) \<and> 0 \<le> i \<and> i < k)" 
+  and "\<forall>j. (0\<le>j \<and> j<k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (v, i) \<and>. atom(v,j))))"
+  shows "\<forall>j. (0\<le>j \<and> j<k \<and> i\<noteq>j) \<longrightarrow>  \<not> t_v_evaluation I (atom (v, j))"
 proof(rule allI, rule impI)
   fix j
-  assume hip: "0\<le>j \<and> j\<le>k \<and> i\<noteq>j"
+  assume hip: "0\<le>j \<and> j<k \<and> i\<noteq>j"
   show "\<not>t_v_evaluation I (atom (v, j))"
     using assms(1,2) hip by auto   
 qed
 
 lemma existence:
-  assumes "(t_v_evaluation I (atom (v, i)) = Ttrue \<and> 0\<le>i \<and> i \<le> k)" 
-  and  "\<forall>j. (0\<le>j \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow> \<not> t_v_evaluation I (atom (v, j))"
-shows  "(\<forall>x. (t_v_evaluation I (atom (v, x)) \<and> 0\<le>x \<and> x \<le> k) \<longrightarrow> x = i)"
+  assumes "(t_v_evaluation I (atom (v, i)) = Ttrue \<and> 0\<le>i \<and> i < k)" 
+  and  "\<forall>j. (0\<le>j \<and> j<k \<and> i\<noteq>j) \<longrightarrow> \<not> t_v_evaluation I (atom (v, j))"
+shows  "(\<forall>x. (t_v_evaluation I (atom (v, x)) \<and> 0\<le>x \<and> x < k) \<longrightarrow> x = i)"
 proof(rule allI)
   fix x 
-  show "t_v_evaluation I (atom (v, x)) \<and> 0 \<le> x \<and> x \<le> k \<longrightarrow> x = i"
+  show "t_v_evaluation I (atom (v, x)) \<and> 0 \<le> x \<and> x < k \<longrightarrow> x = i"
   proof(rule impI)
-    assume hip: "t_v_evaluation I (atom (v, x)) \<and> 0\<le>x \<and> x \<le> k" show "x = i" 
+    assume hip: "t_v_evaluation I (atom (v, x)) \<and> 0 \<le>x \<and> x < k" show "x = i" 
     proof(rule ccontr)
       assume 1:  "x \<noteq> i" 
-      have  "0\<le>x \<and> x \<le> k" using hip by auto 
+      have  "0\<le>x \<and> x < k" using hip by auto 
       hence "\<not> t_v_evaluation I (atom (v, x))" using 1 assms(2) by auto
       thus False using hip by auto
     qed
@@ -577,32 +608,32 @@ proof(rule allI)
 qed
 
 lemma exist_unicity1:
-  assumes  "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i \<le> k)"
-  and "\<forall>j. (0\<le>j \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (v, i) \<and>. atom(v,j))))"
-shows "(\<forall>x. (t_v_evaluation I (atom (v, x)) \<and> 0\<le>x \<and> x \<le> k) \<longrightarrow> x = i)"
+  assumes  "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i < k)"
+  and "\<forall>j. (0\<le>j \<and> j<k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (v, i) \<and>. atom(v,j))))"
+shows "(\<forall>x. (t_v_evaluation I (atom (v, x)) \<and> 0\<le>x \<and> x < k) \<longrightarrow> x = i)"
   using assms(1,2) by auto
 
 lemma exist_unicity2:
-  assumes "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i \<le> k )" and
-  "(\<And>x. (t_v_evaluation I (atom (v, x))  \<and> 0\<le>x \<and> x \<le> k) \<Longrightarrow> x = i)"
-shows "(THE a. (t_v_evaluation I (atom (v,a)) \<and> 0\<le>a \<and> a \<le> k )) = i" 
+  assumes "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i < k )" and
+  "(\<And>x. (t_v_evaluation I (atom (v, x))  \<and> 0\<le>x \<and> x < k) \<Longrightarrow> x = i)"
+shows "(THE a. (t_v_evaluation I (atom (v,a)) \<and> 0\<le>a \<and> a < k )) = i" 
   using assms by (rule the_equality)
 
 lemma exist_unicity:
-  assumes "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i\<le>k )" and
-  "\<forall>j. (0\<le>j \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (v, i) \<and>. atom(v,j))))"
-shows "(THE a. (t_v_evaluation I (atom (v,a)) \<and> 0\<le>a \<and> a \<le> k )) = i"  
+  assumes "(t_v_evaluation I (atom (v, i)) \<and> 0\<le>i \<and> i<k )" and
+  "\<forall>j. (0\<le>j \<and> j<k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (v, i) \<and>. atom(v,j))))"
+shows "(THE a. (t_v_evaluation I (atom (v,a)) \<and> 0\<le>a \<and> a < k )) = i"  
   using assms  exist_unicity1[of "I" "v" "i" "k" ] exist_unicity2[of "I" "v" "i" "k"]
   by fastforce
 
 lemma unique_color:
   assumes  "v \<in> V[G]" 
-  shows "\<forall>i j.(0\<le>i \<and> 0\<le>j \<and> i\<le>k \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow>  (\<not>.(atom (v, i) \<and>. atom(v,j))\<in> (\<G> G k))"
+  shows "\<forall>i j.(0\<le>i \<and> 0\<le>j \<and> i<k \<and> j<k \<and> i\<noteq>j) \<longrightarrow>  (\<not>.(atom (v, i) \<and>. atom(v,j))\<in> (\<G> G k))"
 proof(rule allI )+
   fix i j
-  show "0 \<le> i \<and> 0 \<le> j \<and> i \<le> k \<and> j \<le> k \<and> i \<noteq> j \<longrightarrow> \<not>.(atom (v, i) \<and>. atom (v, j)) \<in> (\<G> G k)"
+  show "0 \<le> i \<and> 0 \<le> j \<and> i < k \<and> j< k \<and> i \<noteq> j \<longrightarrow> \<not>.(atom (v, i) \<and>. atom (v, j)) \<in> (\<G> G k)"
   proof(rule impI)
-    assume "0 \<le> i \<and> 0 \<le> j \<and> i \<le> k \<and> j \<le> k \<and> i \<noteq> j"
+    assume "0 \<le> i \<and> 0 \<le> j \<and> i < k \<and> j < k \<and> i \<noteq> j"
     thus "\<not>.(atom (v, i) \<and>. atom (v, j)) \<in> (\<G> G k)" 
       using `v \<in> V[G]` by(unfold  \<G>_def, auto)
   qed
@@ -610,12 +641,12 @@ qed
 
 lemma different_colors:
   assumes  "u \<in> V[G]" and  "v\<in>V[G]" and "(u,v)\<in>E[G]"
-  shows  "\<forall>i.(0\<le>i \<and> i\<le>k) \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(v,i))\<in> (\<H> G k))"
+  shows  "\<forall>i.(0\<le>i \<and> i<k) \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(v,i))\<in> (\<H> G k))"
 proof(rule allI) 
   fix i
-  show "0\<le>i \<and> i\<le>k \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(v,i))\<in> (\<H> G k))"
+  show "0\<le>i \<and> i<k \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(v,i))\<in> (\<H> G k))"
   proof(rule impI)
-    assume "0\<le>i \<and> i\<le>k"
+    assume "0\<le>i \<and> i<k"
     thus  "\<not>.(atom (u, i) \<and>. atom(v,i))\<in> (\<H> G k)"
       using assms  by(unfold  \<H>_def, auto)
   qed
@@ -623,7 +654,7 @@ qed
 
 lemma atom_value:
   assumes "(t_v_evaluation I (atomic_disjunctions u  k))"  
-  shows "\<exists>i.(t_v_evaluation I (atom (u,i))) \<and> 0\<le>i \<and> i\<le>k"
+  shows "\<exists>i.(t_v_evaluation I (atom (u,i))) \<and> 0 \<le> i \<and> i\<le>k"
 proof-
   have "(t_v_evaluation I (atomic_disjunctions u  k)) \<Longrightarrow>
   \<exists>i.(t_v_evaluation I (atom (u,i))) \<and> 0\<le>i \<and> i\<le>k"
@@ -653,38 +684,79 @@ proof-
   thus ?thesis using assms by auto
 qed
 
-(*>*)
-
 lemma coloring_function:
-  assumes "u \<in> V[G]" and "I model (\<T> G k)"  
-  shows "\<exists>!i. (t_v_evaluation I (atom (u,i)) \<and> 0\<le>i \<and> i\<le>k) \<and> graph_coloring I k u = i" 
-proof- 
-  from  `u \<in> V[G]`  
-  have "atomic_disjunctions u  k \<in> \<F> G k" by(induct, unfold  \<F>_def, auto)
-  hence  "atomic_disjunctions u  k \<in> \<T> G k"  by(unfold  \<T>_def, auto)
-  hence "(t_v_evaluation I (atomic_disjunctions u  k))"
-    using assms(2) model_def[of I "\<T> G k"] by auto
-  hence "\<exists>i.(t_v_evaluation I (atom (u,i)) \<and> 0\<le>i \<and> i\<le>k)"
-    using atom_value by auto
-  then obtain i where i: "(t_v_evaluation I (atom (u,i))) \<and> 0\<le>i \<and>  i\<le>k"
-    by auto
-  moreover 
-  have "\<forall>i j.(0\<le>i \<and> 0\<le>j \<and> i\<le>k \<and> j\<le>k \<and> i\<noteq>j)\<longrightarrow>
-  (\<not>.(atom (u, i) \<and>.atom(u,j))\<in> (\<G> G k))"
-  using `u \<in> V[G]` unique_color[of "u"] by auto
-  hence "\<forall>j.(0\<le>j  \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(u,j))\<in> \<T> G k)" 
-  using i  by(unfold  \<T>_def, auto)
-  hence
-  "\<forall>j. (0\<le>j \<and> j\<le>k \<and> i\<noteq>j) \<longrightarrow> (t_v_evaluation I (\<not>.(atom (u, i) \<and>. atom(u,j))))" 
-  using assms(2)  model_def[of I "\<T> G k"] by blast
-  hence "(THE a. (t_v_evaluation I (atom (u,a)) \<and> 0\<le>a \<and> a \<le> k ))= i"
-    using i exist_unicity[of "I" "u"] by blast
-  hence "graph_coloring I k u = i" by auto
-  hence
-  "(t_v_evaluation I (atom (u,i)) \<and> 0\<le>i \<and>  i\<le>k) \<and>
-   graph_coloring I k u = i" 
-    using i by auto
-  thus ?thesis  by auto
+  assumes "u \<in> V[G]" and "I model (\<T> G k)" and "0 < k"
+  shows "\<exists>!i. (t_v_evaluation I (atom (u,i)) \<and> 0 \<le> i \<and> i < k) 
+              \<and> graph_coloring I k u = i"
+proof-
+  have F_subset: "\<F> G k \<subseteq> \<T> G k" 
+    unfolding \<T>_def by blast
+  have u_disj_in_F: "atomic_disjunctions u (k-1) \<in> \<F> G k"
+    using assms(1) unfolding \<F>_def by blast
+  have u_disj_sat: "t_v_evaluation I (atomic_disjunctions u (k-1))"
+    using assms(2) u_disj_in_F F_subset 
+    unfolding model_def by blast
+  obtain i where 
+      i_atom: "t_v_evaluation I (atom (u, i))" and
+      i_bound: "0 \<le> i" "i \<le> k - 1"
+    using atom_value[OF u_disj_sat] by auto
+  have i_lt_k: "i < k" using i_bound assms(3)
+    by simp 
+  have G_subset: "\<G> G k \<subseteq> \<T> G k" 
+    unfolding \<T>_def by blast
+  have uniq_formulas: 
+    "\<forall>j. 0 \<le> j \<and> j < k \<and> i \<noteq> j \<longrightarrow> 
+         t_v_evaluation I (\<not>.(atom (u, i) \<and>. atom(u, j)))"
+  proof (intro allI impI)
+    fix j
+    assume jh: "0 \<le> j \<and> j < k \<and> i \<noteq> j"
+    have "\<not>.(atom (u, i) \<and>. atom(u, j)) \<in> \<G> G k"
+      using unique_color[OF assms(1)] jh i_lt_k by blast
+    thus "t_v_evaluation I (\<not>.(atom (u, i) \<and>. atom(u, j)))"
+      using assms(2) G_subset unfolding model_def by blast
+  qed
+  have no_other: "\<forall>j. 0 \<le> j \<and> j < k \<and> i \<noteq> j \<longrightarrow> 
+                      \<not> t_v_evaluation I (atom (u, j))"
+    using unicity[OF _ uniq_formulas] i_atom i_lt_k by blast
+  have the_eq: "graph_coloring I k u = i"
+  proof -
+    have "(THE a. t_v_evaluation I (atom (u, a)) \<and> 0 \<le> a \<and> a < k) = i"
+    proof (rule the_equality)
+      show "t_v_evaluation I (atom (u, i)) \<and> 0 \<le> i \<and> i < k"
+        using i_atom i_bound i_lt_k by blast
+    next
+      fix x
+      assume "t_v_evaluation I (atom (u, x)) \<and> 0 \<le> x \<and> x < k"
+      hence "t_v_evaluation I (atom (u, x))" "0 \<le> x" "x < k" by auto
+      show "x = i"
+      proof (rule ccontr)
+        assume "x \<noteq> i"
+        hence "\<not> t_v_evaluation I (atom (u, x))"
+          using no_other \<open>0 \<le> x\<close> \<open>x < k\<close> by blast
+        thus False using \<open>t_v_evaluation I (atom (u, x))\<close> by contradiction
+      qed
+    qed
+    thus ?thesis by simp
+  qed
+  show ?thesis
+  proof (rule ex1I)
+    show "(t_v_evaluation I (atom (u, i)) \<and> 0 \<le> i \<and> i < k) 
+          \<and> graph_coloring I k u = i"
+      using i_atom i_bound i_lt_k the_eq by blast
+  next
+    fix j
+    assume "(t_v_evaluation I (atom (u, j)) \<and> 0 \<le> j \<and> j < k) 
+            \<and> graph_coloring I k u = j"
+    hence j_atom: "t_v_evaluation I (atom (u, j))" and
+          j_lt_k: "j < k" and j_nn: "0 \<le> j" by auto
+    show "j = i"
+    proof (rule ccontr)
+      assume "j \<noteq> i"
+      hence "\<not> t_v_evaluation I (atom (u, j))"
+        using no_other j_lt_k j_nn by blast
+      thus False using j_atom by contradiction
+    qed
+  qed
 qed
 
 lemma \<H>1:
@@ -706,49 +778,59 @@ qed
 
 (* Include also in the document  *)
 lemma distinct_colors:
-  assumes "is_graph G" and "(u,v) \<in> E[G]" and I: "I model (\<T> G k)"
+  assumes "is_graph G" and "(u,v) \<in> E[G]" and I: "I model (\<T> G k)" and "0 < k"
   shows "graph_coloring I k u \<noteq> graph_coloring I k v"
 proof-
   have "u \<noteq> v" and "u \<in> V[G]" and "v \<in> V[G]"  using  `(u,v) \<in> E[G]` `is_graph G`
     by(unfold is_graph_def, auto)
-  have "\<exists>!i. (t_v_evaluation I (atom (u,i)) \<and> 0\<le>i \<and>  i\<le>k) \<and>  graph_coloring I k u = i"
-  using coloring_function[OF `u \<in> V[G]`  I]  by blast   
+  have "\<exists>!i. (t_v_evaluation I (atom (u,i)) \<and> 0\<le>i \<and>  i<k) \<and>  graph_coloring I k u = i"
+  using coloring_function[OF `u \<in> V[G]`  I]
+  using assms(4) by fastforce   
   then obtain i where i1: "(t_v_evaluation I (atom (u,i)) \<and> 0\<le>i \<and> i\<le>k)" and i2: "graph_coloring I k u = i"
     by auto
-  have  "\<exists>!j. (t_v_evaluation I (atom (v,j)) \<and> 0\<le>j \<and>  j\<le>k) \<and> graph_coloring I k v = j"
-  using coloring_function[OF `v \<in> V[G]`  I]  by blast   
+  have  "\<exists>!j. (t_v_evaluation I (atom (v,j)) \<and> 0\<le>j \<and>  j<k) \<and> graph_coloring I k v = j"
+  using coloring_function[OF `v \<in> V[G]`  I]  using assms(4) by fastforce  
   then obtain j where j1: "(t_v_evaluation I (atom (v,j)) \<and> 0\<le>j \<and> j\<le>k)" and
    j2: "graph_coloring I k v = j" by auto
-  have  "\<forall>i.(0\<le>i \<and> i\<le>k) \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(v,i))\<in> \<H> G k)"
+  have  "\<forall>i.(0\<le>i \<and> i<k) \<longrightarrow>  (\<not>.(atom (u, i) \<and>. atom(v,i))\<in> \<H> G k)"
   using `u \<in> V[G]` `v \<in> V[G]`  `(u,v) \<in> E[G]`  by(unfold  \<H>_def, auto)
-  hence "\<forall>i. (0\<le>i \<and> i\<le>k) \<longrightarrow> \<not>.(atom (u, i) \<and>. atom(v,i)) \<in> \<T> G k"
+  hence "\<forall>i. (0\<le>i \<and> i<k) \<longrightarrow> \<not>.(atom (u, i) \<and>. atom(v,i)) \<in> \<T> G k"
   by(unfold  \<T>_def, auto)
-  hence  "\<forall>i. (0\<le>i \<and> i\<le>k) \<longrightarrow> (t_v_evaluation I  (\<not>.(atom (u, i) \<and>. atom(v,i))))" 
+  hence  "\<forall>i. (0\<le>i \<and> i<k) \<longrightarrow> (t_v_evaluation I  (\<not>.(atom (u, i) \<and>. atom(v,i))))" 
   using assms(2) I model_def[of I "\<T> G k"] by blast
-  hence "i \<noteq> j" using i1 j1 \<H>1[of "I" "u" "i"  "k" "v" "j"] by blast
+  hence "i \<noteq> j" using i1 j1 \<H>1[of "I" "u" "i"  "k" "v" "j"]
+    using
+      \<open>\<exists>!i. (t_v_evaluation I (atom (u, i)) \<and> 0 \<le> i \<and> i < k) \<and> graph_coloring I k u = i\<close>
+      i2 by auto 
   thus ?thesis using i2 j2 by auto 
 qed  
 
 theorem satisfiable_coloring:
-  assumes "is_graph G" and  "satisfiable (\<T> G k)" 
-  shows  "colorable G k"  
+  assumes "is_graph G" and "satisfiable (\<T> G k)" and "0 < k"
+  shows  "colorable G k" 
 proof(unfold colorable_def)
   show "\<exists>f. coloring f k G"
   proof-
     from assms(2) have "\<exists>I. I model (\<T> G k)"  by(unfold satisfiable_def)
     then obtain I where I: "I model (\<T> G k)" by auto 
-    hence  "coloring (graph_coloring I k) k G"
+    hence  "coloring (graph_coloring I k) k G" 
     proof(unfold coloring_def)
       show
-      "(\<forall>u. u \<in> V[G] \<longrightarrow> (graph_coloring I  k u) \<le> k) \<and> (\<forall>u v. (u, v) \<in> E[G]
+      "(\<forall>u. u \<in> V[G] \<longrightarrow> (graph_coloring I k u) < k) \<and> (\<forall>u v. (u, v) \<in> E[G]
       \<longrightarrow> graph_coloring I k u \<noteq> graph_coloring I k v)"
       proof(rule conjI)
-        show "\<forall>u. u \<in> V[G] \<longrightarrow> graph_coloring I k u \<le> k"
+        show "\<forall>u. u \<in> V[G] \<longrightarrow> graph_coloring I k u < k"
         proof(rule allI, rule impI)
           fix u
-          assume  "u \<in> V[G]"            
-          show "graph_coloring I k u \<le> k"
-            using coloring_function[OF `u \<in> V[G]` I] by blast
+          assume  "u \<in> V[G]"   
+          hence  "\<exists>!i. (t_v_evaluation I (atom (u, i)) \<and> 0 \<le> i \<and> i < k) \<and> graph_coloring I k u = i"
+            using I coloring_function[of u G I "k"]
+            using assms(3) by linarith 
+          then obtain i
+            where i:  "(t_v_evaluation I (atom (u, i)) \<and> 0 \<le> i \<and> i < k) \<and> graph_coloring I k u = i"
+            by auto
+            thus "graph_coloring I k u < k"
+              by blast 
         qed
         next
           show
@@ -758,7 +840,8 @@ proof(unfold colorable_def)
           fix u v     
           assume "(u,v) \<in> E[G]" 
           thus "graph_coloring I k u \<noteq> graph_coloring I k v"
-          using  distinct_colors[OF `is_graph G` `(u,v) \<in> E[G]`  I]  by blast
+          using  distinct_colors[OF `is_graph G` `(u,v) \<in> E[G]`  I]
+          using assms(3) by blast 
         qed
       qed
     qed
@@ -766,12 +849,11 @@ proof(unfold colorable_def)
   qed
 qed
 
-
-lemma deBruijn_Erdos_coloring_for_finite_induced_subgraphs:
+lemma deBruijn_Erdos_coloring_for_finite_induced_subgraphs_aux:
   assumes "is_graph (G::('vertices:: countable) set \<times> ('vertices \<times> 'vertices) set)"
-  and "\<forall>H. (is_induced_subgraph H G \<and> finite_graph H \<longrightarrow> colorable H k)"
+  and "\<forall>H. (is_induced_subgraph H G \<and> finite_graph H \<longrightarrow> colorable H k)" and "0 < k"
   shows "colorable G k"
-proof- 
+proof-
   have "\<forall> S. S \<subseteq> (\<T> G k) \<and> (finite S) \<longrightarrow> satisfiable S"
   proof(rule allI, rule impI) 
     fix S assume "S \<subseteq> (\<T> G k) \<and> (finite S)"
@@ -788,8 +870,9 @@ proof-
         using assms(1) hip1 hip2 finite_subgraph[of G S k]
         by(unfold induced_subgraph_from_vert_def, auto)
       ultimately
-      have "colorable ?H k" using assms by auto
-      hence  "\<exists>f. coloring f k ?H" by(unfold colorable_def, auto)
+      have "colorable ?H k" 
+        using assms by auto
+      hence  "\<exists>f. coloring f k ?H " by(unfold colorable_def, auto)
       then obtain f where "coloring f k ?H" by auto
       thus "satisfiable S" using coloring_satisfiable[OF assms(1) hip1]
         by(unfold induced_subgraph_from_vert_def, auto)
@@ -797,10 +880,11 @@ proof-
   qed
   hence "satisfiable (\<T> G k)" using 
    Compactness_Theorem by auto
-  thus ?thesis using assms(1) satisfiable_coloring by blast
+  thus ?thesis using assms(1) satisfiable_coloring
+    using assms(3) by blast
 qed
 
-lemma coloring_induced_subgraphs_and_subgraphs:
+lemma coloring_induced_subgraphs_and_subgraphs1:
   assumes "is_graph (G::('vertices:: countable) set \<times> ('vertices \<times> 'vertices) set)"
   shows "(\<forall>H. (is_induced_subgraph H G \<longrightarrow> colorable H k)) \<longleftrightarrow> 
          (\<forall>H. (is_subgraph H G \<longrightarrow> colorable H k))"  
@@ -830,7 +914,7 @@ proof
       qed
     qed
   next         
-    show "\<forall>H. is_subgraph H G \<longrightarrow> colorable H k \<Longrightarrow>  \<forall>H. is_induced_subgraph H G \<longrightarrow> colorable H k"
+    show "\<forall>H. is_subgraph H G \<longrightarrow> colorable H k \<Longrightarrow> \<forall>H. is_induced_subgraph H G \<longrightarrow> colorable H k"
       by (simp add: induced_subgraph_is_subgraph)
 qed
    
@@ -838,8 +922,41 @@ theorem deBruijn_Erdos_coloring:
   assumes "is_graph (G::('vertices:: countable) set \<times> ('vertices \<times> 'vertices) set)"
   and "\<forall>H. (is_subgraph H G \<and> finite_graph H \<longrightarrow> colorable H k)"
 shows "colorable G k"
-  using assms(1,2) coloring_induced_subgraphs_and_subgraphs  
-        induced_subgraph_is_subgraph deBruijn_Erdos_coloring_for_finite_induced_subgraphs 
-  by blast
+proof(rule disjE)
+  show "k = 0 \<or> k \<noteq> 0" by auto
+next
+  assume "k = 0" 
+  have *: "\<forall>H. is_subgraph H G  \<and> finite_graph H \<longrightarrow> V[H] = {}"
+    by (metis \<open>k = 0\<close> assms(2) coloring_nonemptygraph less_imp_neq)
+  have **: "V[G] = {}" 
+  proof(rule ccontr)
+    assume "V[G] \<noteq> {}"
+    hence "\<exists>v. v\<in>V[G]" by auto
+    then obtain v where "v\<in>V[G]" by auto
+    hence "is_subgraph ({v}, {(v,v)}) G \<and> finite_graph  ({v}, {(v,v)})"
+      by (metis "*" empty_not_insert empty_subsetI finite.emptyI finite.insertI finite_graph_def 
+          fst_conv induced_subgraph_from_vert_def induced_subraph_from_vert_is_subgraph insert_subset) 
+    thus False using * by auto
+  qed
+  thus ?thesis using assms
+    by (simp add: colorable_def coloring_def is_graph_def)       
+next
+  assume "k\<noteq>0"
+  hence "k > 0" by auto
+  thus ?thesis
+    using assms(1,2) coloring_induced_subgraphs_and_subgraphs1  
+          induced_subgraph_is_subgraph deBruijn_Erdos_coloring_for_finite_induced_subgraphs_aux 
+    by blast
+qed
+
+corollary  deBruijn_Erdos_coloring_for_finite_induced_subgraphs:
+  assumes "is_graph (G::('vertices:: countable) set \<times> ('vertices \<times> 'vertices) set)"
+  and "\<forall>H. (is_induced_subgraph H G \<and> finite_graph H \<longrightarrow> colorable H k)" 
+shows "colorable G k" using assms deBruijn_Erdos_coloring
+  by (metis colorable_subgraph finite_graph_def induced_subgraph_from_vert_def 
+      is_induced_subgraph_from_vert_is_induced_subgraph is_subgraph_def
+      prod.sel(1) subgraph_is_subgraph_ind_subgraph_vert) 
 
 end
+
+
