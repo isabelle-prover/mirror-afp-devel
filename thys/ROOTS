@@ -558,6 +558,7 @@ MLSS_Decision_Proc
 MLSSmf_to_MLSS
 ML_Unification
 MSO_Regex_Equivalence
+MSOinHOL
 Markov_Models
 Marriage
 Martingales
