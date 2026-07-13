@@ -8,6 +8,9 @@
     <loc>https://isa-afp.org/</loc>
     <lastmod>2026-07-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/MSOinHOL.html</loc>
+    <lastmod>2026-07-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</loc>
     <lastmod>2026-07-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -18598,6 +18601,42 @@
     <loc>https://isa-afp.org/thys/MSO_Regex_Equivalence/WS1S_Examples.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/MSO_Regex_Equivalence/WS1S_Normalization.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_comprehension.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_deep.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_deep_subst_lemma.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_experiments.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_experiments_classic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_experiments_classic_elementary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_experiments_extra.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_experiments_locale.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_faithfulness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_faithfulness_locale.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_lowenheim_skolem.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_lowenheim_skolem_lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_preliminaries.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_shallow.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_shallow_minimal.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_shallow_minimal_elementary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_shallow_minimal_locale.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/MSOinHOL/MSOinHOL_subst_extras.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/MuchAdoAboutTwo/MuchAdoAboutTwo.html</loc>
   </url><url>

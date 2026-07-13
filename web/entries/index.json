@@ -1,5 +1,33 @@
 [
  {
+  "abstract": "We develop, in Isabelle/HOL, three embeddings of monadic second-order logic (MSO) into classical higher-order logic side by side: a deep embedding (an inductive datatype with an explicit satisfaction relation), a maximal-shallow embedding, and a minimal-shallow embedding \u0026mdash; the last a locale parametrised by an interpretation and by first- and second-order assignments. The enabling ingredient is a two-sorted capture-avoiding substitution apparatus (predication, substitution, alphabetic renaming, and a substitution lemma, developed once for each binder namespace), in which each binder is transparent for the other. Faithfulness of all three embeddings is mechanised and automated. The central result is a fully mechanised two-sorted downward L\u0026ouml;wenheim\u0026ndash;Skolem theorem. Its corollary identifies range-relative validity with the general (Henkin-style) reading of MSO, while comprehension witnesses that the standard reading is strictly stronger; an elementary-substructure refinement recovers the standard reading from the minimal embedding as well, so the two readings become one device under two interpretation classes. We further exercise the embeddings on classical MSO landmarks: Boolean closure and graph operations hold under the standard (full second-order) reading and fail under the general one, making the dichotomy concrete, while reachability and 2-colorability are non-theorems, refuted throughout with nitpick countermodels.",
+  "authors": [
+   "Christoph Benzmüller",
+   "Daniel Kirchner"
+  ],
+  "date": "2026-07-13",
+  "link": "../entries/MSOinHOL.html",
+  "permalink": "https://isa-afp.org/entries/MSOinHOL.html",
+  "related": [],
+  "shortname": "MSOinHOL",
+  "title": "Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)",
+  "topic_links": [
+   "../topics/logic/general-logic/",
+   "../topics/logic/general-logic/classical-first-order-logic/",
+   "../topics/computer-science/programming-languages/logics/",
+   "../topics/computer-science/semantics-and-reasoning/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Logic/General logic",
+   "Logic/General logic/Classical first-order logic",
+   "Computer science/Programming languages/Logics",
+   "Computer science/Semantics and reasoning",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalizes polynomial commitment schemes (PCSs) and the security proofs of two variants of the Kate–Zaverucha–Goldberg (KZG) construction. We define an abstract PCS interface and games for correctness, polynomial binding, evaluation binding, hiding, and knowledge soundness. We also formalize symmetric pairings, the DL, $t$-DL, $t$-SDH, and $t$-BSDH assumptions, and the Algebraic Group Model (AGM) of Fuchsbauer, Kiltz, and Loss using a constraint-programming-inspired approach. Based on these definitions, we verify correctness, polynomial binding, evaluation binding, and knowledge soundness for the standard and batched KZG constructions, as well as weak evaluation hiding for the standard KZG. The security proofs are carried out in the CryptHOL framework and follow Shoup's sequence-of-games approach with machine-checked game transitions.",
   "authors": [
    "Tobias Rothmann"

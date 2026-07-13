@@ -4,6 +4,17 @@
     <title>Logic/General logic/Mechanization of proofs</title>
     <link>https://isa-afp.org/topics/logic/general-logic/mechanization-of-proofs/</link>
     <description>AFP entries in Mechanization of proofs</description><item>
+  <title>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/MSOinHOL.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Mechanized Metasemantics of Modal Necessity: Valuation Factorization and Modal Non-Collapse</title>
   <link>https://isa-afp.org/entries/Mechanized_Metasemantics.html</link>
   <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>

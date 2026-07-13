@@ -4,6 +4,17 @@
     <title>Logic/General logic</title>
     <link>https://isa-afp.org/topics/logic/general-logic/</link>
     <description>AFP entries in General logic</description><item>
+  <title>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/MSOinHOL.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Formalization of Lower-Bound Certificates for Optimal Classical Planning</title>
   <link>https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html</link>
   <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
