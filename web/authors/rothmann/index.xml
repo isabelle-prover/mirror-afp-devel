@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tobias Rothmann</title>
+    <link>https://isa-afp.org/authors/rothmann/</link>
+    <description>AFP entries of Tobias Rothmann</description><item>
+  <title>Polynomial Commitment Schemes</title>
+  <link>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Polynomial Commitment Schemes in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
+
+  </channel>
+</rss>

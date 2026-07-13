@@ -6891,6 +6891,24 @@ host = [
 [rosskopf.homepages]
 rosskopf_homepage = "http://www21.in.tum.de/~rosskops"
 
+[rothmann]
+name = "Tobias Rothmann"
+orcid = "0009-0000-2343-5793"
+
+[rothmann.emails]
+
+[rothmann.emails.rothmann_email]
+user = [
+  "tobias",
+  "rothmann",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[rothmann.homepages]
+
 [rowat]
 name = "Colin Rowat"
 

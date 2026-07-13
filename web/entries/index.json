@@ -1,5 +1,24 @@
 [
  {
+  "abstract": "This entry formalizes polynomial commitment schemes (PCSs) and the security proofs of two variants of the Kate–Zaverucha–Goldberg (KZG) construction. We define an abstract PCS interface and games for correctness, polynomial binding, evaluation binding, hiding, and knowledge soundness. We also formalize symmetric pairings, the DL, $t$-DL, $t$-SDH, and $t$-BSDH assumptions, and the Algebraic Group Model (AGM) of Fuchsbauer, Kiltz, and Loss using a constraint-programming-inspired approach. Based on these definitions, we verify correctness, polynomial binding, evaluation binding, and knowledge soundness for the standard and batched KZG constructions, as well as weak evaluation hiding for the standard KZG. The security proofs are carried out in the CryptHOL framework and follow Shoup's sequence-of-games approach with machine-checked game transitions.",
+  "authors": [
+   "Tobias Rothmann"
+  ],
+  "date": "2026-07-13",
+  "link": "../entries/Polynomial_Commitment_Schemes.html",
+  "permalink": "https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html",
+  "related": [],
+  "shortname": "Polynomial_Commitment_Schemes",
+  "title": "Polynomial Commitment Schemes",
+  "topic_links": [
+   "../topics/computer-science/security/cryptography/"
+  ],
+  "topics": [
+   "Computer science/Security/Cryptography"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This article takes a fresh look at the class of binary trees known as height-balanced trees, where for each node, the height difference between the left and right subtree is bounded by some fixed integer $d \u003e 0$. An interesting question from an algorithmic perspective is how bad the imbalance of such trees can be in the worst case. Luccio and Pagli showed that the worst-case size of a tree of height $h$ is roughly $B_d\\cdot C_d^h$ for large $h$ for some specific real numbers $B_d, C_d \u003e 1$.\nThis formalisation contains:\nA simpler proof that the worst-case size is at least $C_d ^ h$ for all $h$ An explicit closed-form expression for the worst-case size A closed-form expression for $B_d$ in terms of $C_d$ and vice versa Explicit bounds for $C_d$ in terms of $d$ Asymptotic expansions for $C_d$ and $B_d$ as $d\\to\\infty$ ",
   "authors": [
    "Manuel Eberl"

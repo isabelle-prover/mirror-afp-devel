@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Polynomial Commitment Schemes</title>
+  <link>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Polynomial Commitment Schemes in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
+<item>
   <title>Height Bounds for Height-Balanced Trees</title>
   <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
   <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>

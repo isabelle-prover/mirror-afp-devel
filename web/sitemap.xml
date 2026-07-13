@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-07T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-07T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</loc>
+    <lastmod>2026-07-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</loc>
     <lastmod>2026-07-07T00:00:00+00:00</lastmod>
@@ -20346,6 +20349,48 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Polylog/Polylog.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/Algebraic_Group_Model.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/BatchKZG_correct.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/BatchKZG_def.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/BatchKZG_eval_bind.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/BatchKZG_knowledge_sound.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/BatchKZG_poly_bind.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/CryptHOL_ext.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/DL_assumption.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/KZG_correct.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/KZG_def.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/KZG_eval_bind.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/KZG_hiding.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/KZG_knowledge_sound.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/KZG_poly_bind.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/Pairing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/Polynomial_Commitment_Schemes.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/Primitives.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/Restrictive_Comp.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/tBSDH_assumption.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/tDL_assumption.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Polynomial_Commitment_Schemes/tSDH_assumption.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Polynomial_Crit_Geometry/Polynomial_Crit_Geometry.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Polynomial_Crit_Geometry/Polynomial_Crit_Geometry_Library.html</loc>
@@ -24374,6 +24419,8 @@
     <loc>https://isa-afp.org/authors/klenze/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/nipkow/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/rothmann/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/murray/</loc>
   </url><url>
