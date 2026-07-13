@@ -1,5 +1,225 @@
 [
  {
+  "abstract": "We develop, in Isabelle/HOL, three embeddings of monadic second-order logic (MSO) into classical higher-order logic side by side: a deep embedding (an inductive datatype with an explicit satisfaction relation), a maximal-shallow embedding, and a minimal-shallow embedding \u0026mdash; the last a locale parametrised by an interpretation and by first- and second-order assignments. The enabling ingredient is a two-sorted capture-avoiding substitution apparatus (predication, substitution, alphabetic renaming, and a substitution lemma, developed once for each binder namespace), in which each binder is transparent for the other. Faithfulness of all three embeddings is mechanised and automated. The central result is a fully mechanised two-sorted downward L\u0026ouml;wenheim\u0026ndash;Skolem theorem. Its corollary identifies range-relative validity with the general (Henkin-style) reading of MSO, while comprehension witnesses that the standard reading is strictly stronger; an elementary-substructure refinement recovers the standard reading from the minimal embedding as well, so the two readings become one device under two interpretation classes. We further exercise the embeddings on classical MSO landmarks: Boolean closure and graph operations hold under the standard (full second-order) reading and fail under the general one, making the dichotomy concrete, while reachability and 2-colorability are non-theorems, refuted throughout with nitpick countermodels.",
+  "authors": [
+   "Christoph Benzmüller",
+   "Daniel Kirchner"
+  ],
+  "date": "2026-07-13",
+  "link": "../entries/MSOinHOL.html",
+  "permalink": "https://isa-afp.org/entries/MSOinHOL.html",
+  "related": [],
+  "shortname": "MSOinHOL",
+  "title": "Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)",
+  "topic_links": [
+   "../topics/logic/general-logic/",
+   "../topics/logic/general-logic/classical-first-order-logic/",
+   "../topics/computer-science/programming-languages/logics/",
+   "../topics/computer-science/semantics-and-reasoning/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Logic/General logic",
+   "Logic/General logic/Classical first-order logic",
+   "Computer science/Programming languages/Logics",
+   "Computer science/Semantics and reasoning",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes polynomial commitment schemes (PCSs) and the security proofs of two variants of the Kate–Zaverucha–Goldberg (KZG) construction. We define an abstract PCS interface and games for correctness, polynomial binding, evaluation binding, hiding, and knowledge soundness. We also formalize symmetric pairings, the DL, $t$-DL, $t$-SDH, and $t$-BSDH assumptions, and the Algebraic Group Model (AGM) of Fuchsbauer, Kiltz, and Loss using a constraint-programming-inspired approach. Based on these definitions, we verify correctness, polynomial binding, evaluation binding, and knowledge soundness for the standard and batched KZG constructions, as well as weak evaluation hiding for the standard KZG. The security proofs are carried out in the CryptHOL framework and follow Shoup's sequence-of-games approach with machine-checked game transitions.",
+  "authors": [
+   "Tobias Rothmann"
+  ],
+  "date": "2026-07-13",
+  "link": "../entries/Polynomial_Commitment_Schemes.html",
+  "permalink": "https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html",
+  "related": [],
+  "shortname": "Polynomial_Commitment_Schemes",
+  "title": "Polynomial Commitment Schemes",
+  "topic_links": [
+   "../topics/computer-science/security/cryptography/"
+  ],
+  "topics": [
+   "Computer science/Security/Cryptography"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This article takes a fresh look at the class of binary trees known as height-balanced trees, where for each node, the height difference between the left and right subtree is bounded by some fixed integer $d \u003e 0$. An interesting question from an algorithmic perspective is how bad the imbalance of such trees can be in the worst case. Luccio and Pagli showed that the worst-case size of a tree of height $h$ is roughly $B_d\\cdot C_d^h$ for large $h$ for some specific real numbers $B_d, C_d \u003e 1$.\nThis formalisation contains:\nA simpler proof that the worst-case size is at least $C_d ^ h$ for all $h$ An explicit closed-form expression for the worst-case size A closed-form expression for $B_d$ in terms of $C_d$ and vice versa Explicit bounds for $C_d$ in terms of $d$ Asymptotic expansions for $C_d$ and $B_d$ as $d\\to\\infty$ ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-07-07",
+  "link": "../entries/Height_Balanced_Tree_Bounds.html",
+  "permalink": "https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html",
+  "related": [],
+  "shortname": "Height_Balanced_Tree_Bounds",
+  "title": "Height Bounds for Height-Balanced Trees",
+  "topic_links": [
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Axiomatization of the theory of hereditarily finite sets in classical first-order logic is systematically explored and formalized. Our list of axioms includes the usual ones of the Zermelo-Fraenkel set theory, as well as some of their less usual variants and alternatives. The strongest theory considered is ZFfin, obtained from ZF by replacing the axiom of infinity with its negation and adding the axiom of transitive closure. Of particular interest are the axioms used in the set fragment of the Alternative Set Theory by Vopěnka which provide a different approach to axiomatizing ZFfin. The hierarchy of fragments of ZFfin is represented as a hierarchy of locales. Set-theoretic membership, the only basic predicate in the language of the theory, is rendered as a polymorphic binary predicate, both arguments being of the same type. Accordingly, first-order formulas of this language are understood as predicates over that type. ZFfin is not finitely axiomatizable, so it is necessary to use axiom schemata. To that end, an inductive definition of set-theoretically definable predicates is introduced and their basic properties are elaborated. We study several axioms of finiteness and formalize the equivalence of the fragments in which these axioms are used. In particular, we formalize the equivalence of ZFfin and the set fragment of Vopěnka's Alternative Set Theory, where the latter uses the schema of induction for sets as a finiteness principle. Next to that, Tarski finiteness and Dedekind finiteness are used. The formalization also focuses on the axioms of transitive closure, regularity, and the axiom schema of epsilon induction and their interplay in the context of various fragments. We verify that hereditarily finite sets as formalized by Paulson satisfy the theory ZFfin. To demonstrate independence of some statements, several non-standard models of specific fragments are constructed. We formalize the Bernays-Rieger method of permutation models, and using the construction of a model dating back to Rieger we formalize the proof that neither the scheme of regularity nor the existence of a transitive closure follow from regularity for finite sets. This formalization takes inspiration from various sources but does not follow closely any of them.",
+  "authors": [
+   "Štěpán Holub",
+   "Zuzana Haniková"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/ZF_finite.html",
+  "permalink": "https://isa-afp.org/entries/ZF_finite.html",
+  "related": [],
+  "shortname": "ZF_finite",
+  "title": "Axiomatic theory of hereditarily finite sets and its fragments",
+  "topic_links": [
+   "../topics/logic/set-theory/"
+  ],
+  "topics": [
+   "Logic/Set theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides a formalisation of the Bessel function of the first kind $J_a$ and the modified Bessel function of the first kind $I_a$ as well as several related notions such as Bessel polynomials and the spherical Bessel functions.\nProperties that are proven about $I_a$ and $J_a$ include:\nthe definition as a hypergeometric series \\[\\sum_{n\\geq 0} (-1)^n (z/2)^{a+2n} / (n! \\Gamma(1+a+n))\\] monotonicity and convexity of $I_a$ on the reals the contiguous relations, e.g. $2 a J_a(z) = z (J_{a-1}(z) + J_{a+1}(z))$ the derivatives, e.g. $J_a' = \\frac{1}{2} (J_{a-1} - J_{a+1})$ closed form expressions for the half-integer case $a = n + \\frac{1}{2}$ in terms of trigonometric and hyperbolic functions the representation of $J_a$ as contour integral of the form $\\int_{c-i\\infty}^{c+i\\infty}$ ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/Bessel.html",
+  "permalink": "https://isa-afp.org/entries/Bessel.html",
+  "related": [],
+  "shortname": "Bessel",
+  "title": "Bessel Functions of the First Kind",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry builds up two theories and connects them. The first consists of the complete elliptic integrals of the first and second kind \\[ \\begin{aligned} K(x) \u0026= \\int_0^{\\frac{\\pi}{2}} (1-x \\sin(t)^2)^{-\\frac{1}{2}}\\,\\text{d}t\\\\ E(x) \u0026= \\int_0^{\\frac{\\pi}{2}} (1-x \\sin(t)^2)^{\\frac{1}{2}}\\,\\text{d}t \\end{aligned} \\] for real or complex $x$.\nThe second one is the arithmetic-geometric mean function $\\text{agm}(x,y)$, which is defined as the limit of the sequence obtained by replacing the pair $(x,y)$ with the pair consisting of the arithmetic and geometric means of $x$ and $y$, i.e. $(x,y)\\mapsto (\\frac{1}{2}(x+y), \\sqrt{xy})$.\nThe two theories are then connected by proving (among other things) that: \\[\\text{agm}(a,b) = \\frac{\\pi a}{2K((a^2-b^2)/a^2)}\\] Various other important properties are shown, e.g.:\nContinuity, derivatives, antiderivatives of $K$ and $E$ as well as their relation to the hypergeometric function ${}_2 F_{1}$ Legendre's identity \\[K(x) E(1-x) + E(x) K(1-x) - K(x) K(1-x) = \\frac{\\pi}{2}\\] The convergence of the AGM iterations, including uniform convergence and an estimate of the speed of convergence Upward and downward identities for $K$ and $E$, e.g. \\[K(x^2) = \\frac{K\\left(\\frac{4x}{(1+x)^2}\\right)}{1+x}\\] The relationship of the AGM to the Jacobi theta functions The Brent–Salamin algorithm to approximate $\\pi$ via AGM iterations (abstractly, without rounding error analysis) ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/Arithmetic_Geometric_Mean.html",
+  "permalink": "https://isa-afp.org/entries/Arithmetic_Geometric_Mean.html",
+  "related": [],
+  "shortname": "Arithmetic_Geometric_Mean",
+  "title": "Complete Elliptic Integrals and the Arithmetic–Geometric Mean",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides a formalisation of the generalized hypergeometric series ${}_p F_{q}$, both as a formal power series and as a function in a Banach space. It is defined, for parameters $\\textbf{a}=(a_1,\\ldots,a_p)$ and $\\textbf{b}=(b_1,\\ldots,b_q)$ with $b_i\\notin\\mathbb{Z}_{{\\leq}0}$ as the exponential power series \\[F(\\mathbf{a}; \\mathbf{b}; z) = \\sum_{n\\geq 0} \\frac{{a_1}^{\\overline{n}} \\cdots {a_p}^{\\overline{n}}} {{b_1}^{\\overline{n}} \\cdots {b_q}^{\\overline{n}}}\\kern2pt \\frac{z^n}{n!}\\] where ${a}^{\\overline{n}} = a(a+1)\\ldots(a+n-1)$ is the Pochhammer symbol.\nBasic properties of ${}_p F_{q}$ are proven (uniform convergence, continuity, holomorphicity), as well as some important properties for specific instances, such as:\nrepresentations of various trigonometric and hyperbolic functions in terms of ${}_0 F_{1}$ and ${}_2 F_{1}$ the contiguous identities for ${}_2 F_{1}$ and ${}_1 F_{1}$ the transformation identity ${}_1 F_1(a;b;z) = e^z {}_1 F_1(b-a;b;-z)$ for Kummer's confluent hypergeometric function the fact that ${}_1 F_1$ is a solution of the ODE $a W(x) - (b - x) W'(x) - x W''(x) = 0$ the fact that the error function can be expressed in terms of ${}_1 F_1$ as $\\text{erf}(z) = \\frac{2}{\\sqrt{\\pi}} z {}_1 F_{1}(\\frac{1}{2};\\frac{3}{2};-z^2)$ A regularised variant of ${}_p F_{q}$ that is also defined if $b_i\\in\\mathbb{Z}_{{\\leq}\\,0}$ is also provided.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/Generalized_Hypergeometric_Series.html",
+  "permalink": "https://isa-afp.org/entries/Generalized_Hypergeometric_Series.html",
+  "related": [],
+  "shortname": "Generalized_Hypergeometric_Series",
+  "title": "Generalised Hypergeometric Series",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides a formalisation of Rademacher's convergent series for the partition function. The partition function $p(n)$ is defined as the number of ways in which a natural number $n$ can be written as the sum of positive integers, without taking the order into account. E.g. $p(3) = 3$ since $3 = 2 + 1 = 1 + 1 + 1$.\nUsing a contour integration argument based on earlier asymptotic sums for $p(n)$, Rademacher found the remarkable convergent series representation \\[p(n) = \\frac{1}{\\pi\\sqrt{2}} \\sum_{k\\geq 1} A_k(n) \\sqrt{k} f(n,k)\\] where \\[A_k(n) = \\hskip-1em\\sum_{\\substack{1\\leq h\\leq k\\\\\\text{gcd}(h,k)=1}}\\hskip-1em \\cos(\\pi(s(h,k) - 2nh/k))\\] \\[f(x,k) = \\frac{\\text{d}}{\\text{d}x}\\, \\frac{\\sinh\\left[\\tfrac{\\pi}{k}\\sqrt{\\tfrac{2}{3}(x-\\tfrac{1}{24})}\\,\\right]} {\\sqrt{x-\\tfrac{1}{24}}}\\] and $s(h,k)$ denotes a Dedekind sum. Decent (albeit not very tight) bounds for the remainder of the truncated sum are also derived.\nOne consequence of this formula that was also formalised is the asymptotic estimate $p(n) \\sim \\exp(\\pi\\sqrt{2/3\\,n}) / (4\\sqrt{3}\\,n)$.\nRademacher's series also forms the basis for the most efficient known algorithms to compute $p(n)$, but this requires significantly more work and is out of scope for this entry.\n",
+  "authors": [
+   "Manuel Eberl",
+   "Lawrence C. Paulson"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/Rademacher_Series.html",
+  "permalink": "https://isa-afp.org/entries/Rademacher_Series.html",
+  "related": [],
+  "shortname": "Rademacher_Series",
+  "title": "Rademacher's Series for the Partition Function",
+  "topic_links": [
+   "../topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides three closely related special functions: the exponential integral $\\text{Ei}$, the logarithmic integral $\\text{li}$, and the complementary exponential integral $\\text{Ein}$. All three functions are defined both on the reals and in the complex plane.\nBasic properties are shown, e.g.:\nderivatives, continuity, limits, etc. $\\text{Ei}(x) = \\int_{-\\infty}^x e^t/t\\,\\text{d}t$ and $\\text{li}(x) = \\int_0^x 1/\\ln t\\,\\text{d}t$ for real $x$, where for $x\u003e0$ and $x\u003e1$, respectively, the integrals must be interpreted as Cauchy principal values asymptotic expansions for $\\text{Ei}$ and $\\text{li}$ the relationship to the incomplete gamma function via $\\Gamma(0, x) = -\\text{Ei}(-x)$ and $\\Gamma(0, z) = \\text{Ein}(z) - \\ln z - \\gamma$ ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/Exp_Log_Integral.html",
+  "permalink": "https://isa-afp.org/entries/Exp_Log_Integral.html",
+  "related": [],
+  "shortname": "Exp_Log_Integral",
+  "title": "The Exponential and Logarithmic Integral",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides two special functions, the lower and upper incomplete gamma functions. Similarly to the ‘complete’ gamma function $\\Gamma(s)$, which is defined as $\\Gamma(s) = \\int_0^\\infty t^{s-1}e^{-t}\\,\\text{d}t$ for $\\text{Re}(s)\u003e0$ and by analytic continuation elsewhere, these are defined as $\\gamma(s,z) = \\int_0^z t^{s-1}e^{-t}\\,\\text{d}t$ and $\\Gamma(s,z) = \\int_z^\\infty t^{s-1}e^{-t}\\,\\text{d}t$, respectively, for $\\text{Re}(s)\u003e0$ and analytically continued to the entire complex plane.\n$\\gamma(s,z)$ is constructed using the regularised hypergeometric series and $\\Gamma(s,z)$ via its contour integral representation. Various results are provided, including:\nholomorphicity, continuity, limits, and derivatives series and integral representations shift identities such as $\\Gamma(s+1, z) = s\\Gamma(s,z) + z^s e^{-z}$ the identity $\\gamma(s,z) + \\Gamma(s,z) = \\Gamma(s)$ the fact that $\\Gamma(s,z) \\to \\Gamma(s)$ as $z\\to 0$ within a certain region closed forms for $\\Gamma(n,z)$ and $\\gamma(n,z)$, where $n$ is a positive integer the connection to the error function via $\\Gamma(\\frac{1}{2}, z) = \\sqrt{\\pi}\\cdot\\text{erf}(\\sqrt{z})$ ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-07-03",
+  "link": "../entries/Incomplete_Gamma.html",
+  "permalink": "https://isa-afp.org/entries/Incomplete_Gamma.html",
+  "related": [],
+  "shortname": "Incomplete_Gamma",
+  "title": "The Incomplete Gamma Function",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry provides a proof of Perron's Formula, which states that for a Dirichlet series $f(s) = \\sum_{n=1}^\\infty a_n n^{-s}$ with abscissa of convergence $\\sigma_c$ we have for any $c, z, x$ with $c \u003e 0$, $x \u003e 0$, $\\text{Re}(z) \u003e \\sigma_c - c$:\n\\[\\sum\\limits_{n\\leq x}\\kern-1pt^{'} a_n n^{-z} = \\frac{1}{2\\pi i}\\, \\lim_{T\\to\\infty} \\int\\limits_{c-iT}^{c+iT}\\hskip-4pt f(z + w)\\, x^s\\kern1pt w\\,\\frac{\\text{d}w}{w} \\] Additionally, various explicit bounds for the remainder (i.e.\\ when using some finite value of $T$ instead of the limit) are shown.\nAs an interesting nontrivial auxiliary result, asymptotic bounds for a Dirichlet series near $\\pm i\\infty$ are also included, namely that if $a\\in[0,1)$ then $f(\\sigma + it) \\in o(t^{1-a})$ as $t\\to\\pm\\infty$, uniformly for all $\\sigma\\geq \\sigma_c + a + \\varepsilon$.\nThe proofs mainly follow Tenenbaum's Introduction to Analytic and Probabilistic Number Theory and Titchmarsh's Theory of Functions.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-06-17",
+  "link": "../entries/Perrons_Formula.html",
+  "permalink": "https://isa-afp.org/entries/Perrons_Formula.html",
+  "related": [],
+  "shortname": "Perrons_Formula",
+  "title": "Perron's Formula",
+  "topic_links": [
+   "../topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Number theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "A well-known result about propositional logic is that transforming a formula into disjunctive or conjunctive normal form can lead to an exponential blowup of the formula size. We formalize this result in the form of two theorems and discuss the challenges we encountered.",
   "authors": [
    "Leon Raffael Schulz",
@@ -48,6 +268,31 @@
   "year": "2026"
  },
  {
+  "abstract": "We formalize the framework of pseudo-Boolean lower-bound certificates for classical planning introduced by Dold, Helmert, Nordström, Röger and Schindler. A lower-bound certificate for a STRIPS (STanford Research Institute Problem Solver) planning task and a bound $B$ is a pseudo-Boolean circuit together with three proofs in the cutting planes proof system with reification; its validity guarantees that every plan of the task costs at least $B$, and hence that a plan of cost $B$ is optimal. We prove the soundness of the certificate format (Theorem 1 of the paper) and formalize the paper's case study: certificates extracted from a run of the A$^*$ algorithm, with heuristic certificates for pattern database heuristics and for the maximum heuristic $h^{\\mathit{max}}$, including the appendix material on efficiently proof-logging pattern databases. The main results state that a suitable snapshot of a terminated A$^*$ run yields a valid certificate and therefore proves the optimality of the plan it found. All locales are shown consistent by concrete interpretations, which also compose the pattern database certificate with the A$^*$ certificate, as intended by the paper.",
+  "authors": [
+   "Dmitriy Traytel"
+  ],
+  "date": "2026-06-13",
+  "link": "../entries/Lower_Bound_Certificates_Planning.html",
+  "permalink": "https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html",
+  "related": [
+   {
+    "doi": "10.1609/icaps.v35i1.36101"
+   }
+  ],
+  "shortname": "Lower_Bound_Certificates_Planning",
+  "title": "Formalization of Lower-Bound Certificates for Optimal Classical Planning",
+  "topic_links": [
+   "../topics/computer-science/algorithms/optimization/",
+   "../topics/logic/general-logic/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Optimization",
+   "Logic/General logic"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "We define weighted sets as a generalization of finite multisets where multiplicities are replaced by weights from a refinable abelian semigroup. Weighted sets are equivalently represented as functions from elements to optional weights returning None for all but finitely many elements, or as quotients of element-weight lists modulo permutation and regrouping. We register weighted sets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes.",
   "authors": [
    "Mathias Schack Rabing",
@@ -87,6 +332,27 @@
   "year": "2026"
  },
  {
+  "abstract": "This development formalizes the bounded multi-source shortest path (BMSSP) algorithm underlying the deterministic directed single-source shortest path algorithm of Duan, Mao, Mao, Shu, and Yin [2]. It proves three explicit claims. First, the executable bmssp_distances computes the exact reachable shortest-distance map for well-formed f inite natural weighted digraphs. Second, a separate costed BMSSP recurrence satisfies the O(mlog2/3 n) bound under the abstract In sert/BatchPrepend/Pull operation-cost interface. Third, the bucketed partition operations realize the primitive costs required by that interface. The formalization does not state a single generated-code machine-step theorem for the executable. The entry also exports executable SML and includes a checked worked shortest-path example whose evaluated output is [(0,0),(1,3),(2,5),(3,8),(4,6)]",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-12",
+  "link": "../entries/BMSSP_Correctness.html",
+  "permalink": "https://isa-afp.org/entries/BMSSP_Correctness.html",
+  "related": [],
+  "shortname": "BMSSP_Correctness",
+  "title": "Correctness and Complexity of BMSSP in Isabelle/HOL",
+  "topic_links": [
+   "../topics/computer-science/algorithms/graph/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Graph"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This is the optional stopping theorem (or fair games theorem) for real-valued discrete-time stochastic processes on a $\\sigma$-finite filtered measure space. A theory of piecewise-constant stopping times – the function taking $i$ on an $\\mathcal F_i$-measurable set $S$ and $j$ on its complement – is developed, together with the corresponding decomposition of integrals over the two pieces. The central results then prove both directions of the theorem: if $X$ is a submartingale, then for any bounded stopping times $\\tau \\le \\pi$ the expected stopped values satisfy $\\mathbb E[X_\\tau] \\le \\mathbb E[X_\\pi]$ (via the telescoping identity and the submartingale set-integral inequality); conversely, monotonicity of expected stopped values over all bounded stopping times characterises submartingales. It is further shown that the stopped process $X^\\tau$ of a submartingale is again a submartingale. Throughout, the theorems are cross-referenced to their counterparts in Mathlib's OptionalStopping, from which it was translated by Claude. It was polished manually afterwards. The fair games theorem is #62 on the Top 100 Mathematical Theorems.",
   "authors": [
    "Lawrence C. Paulson"
@@ -102,6 +368,28 @@
   ],
   "topics": [
    "Mathematics/Probability theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Infinite Descent is the global trace condition that underpins the soundness of cyclic reasoning and, in program analysis, the size change termination principle. Many (semi-)decision procedures for Infinite Descent are known, based on criteria ranging from automata-based constructions and relation-based characterizations, to effective (but incomplete) heuristics.  We present an Isabelle/HOL mechanization of this landscape. We provide a reusable, locale-based framework of sloped graphs that defines Infinite Descent at an abstract level, independently of any concrete graph encoding. Within this framework we formalize standard complete criteria and prove their equivalence to the locale-level InfiniteDescent predicate. We also formalize tool-facing sufficient criteria,  prove their soundness, and certify incompleteness where appropriate via verified counterexamples. Along the way we contribute reusable lemmas for omega-regular reasoning over streams and for Buchi-automata constructions needed by the inclusion proofs.",
+  "authors": [
+   "Jamie Wright",
+   "Liron Cohen",
+   "Reuben Rowe",
+   "Andrei Popescu"
+  ],
+  "date": "2026-06-11",
+  "link": "../entries/Infinite_Descent_Criteria.html",
+  "permalink": "https://isa-afp.org/entries/Infinite_Descent_Criteria.html",
+  "related": [],
+  "shortname": "Infinite_Descent_Criteria",
+  "title": "Certified Infinite Descent Criteria",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
   ],
   "year": "2026"
  },
@@ -163,6 +451,74 @@
   ],
   "topics": [
    "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Simple tabulation hashing is a computationally-efficient hashing algorithm to get values that behave independently and are uniformly distributed for any 3 distinct keys. This entry formalizes the 3-independence and non-4-independence of simple tabulation hashing, based on the written proofs provided by Mareček and Wikipedia.",
+  "authors": [
+   "Wei De Leong",
+   "Yong Kiam Tan",
+   "Seng Joe Watt"
+  ],
+  "date": "2026-06-08",
+  "link": "../entries/Tabulation_Hashing.html",
+  "permalink": "https://isa-afp.org/entries/Tabulation_Hashing.html",
+  "related": [],
+  "shortname": "Tabulation_Hashing",
+  "title": "Formalization of 3-independence of simple tabulation hashing",
+  "topic_links": [
+   "../topics/computer-science/algorithms/randomized/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Randomized"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Developing concrete syntax and parsers for Domain-Specific Languages (DSLs) within interactive theorem provers, such as Isabelle, is a common task. Isabelle supports this through rich, yet often brittle to configure, mixfix annotations and syntax translations. Moreover, Isabelle provides parser combinators that can be used to build parsers for the content of cartouches. An alternative to the latter are traditional parser generators, e.g., Lex and Yacc, that take a formal grammar description as input and generate a parser.  Traditionally, the use of parser generators for defining DSLs in Isabelle relies on invoking the lexer and parser as external tools, often modifying the generated source code, and importing the generated files. This requires users to manage complex external preprocessing toolchains.  In this AFP entry, we address this challenge by providing a native integration of standard ML-Lex and ML-Yacc into Isabelle/HOL. In more detail, we introduce an Isar-level interface, ml_lex_yacc, that allows users to write lexical and grammatical specifications directly within theory files. The framework compiles these specifications into Standard ML structures on-the-fly, links them, and loads them into the current theory context. Moreover, the integration automatically hooks into Isabelle’s Prover IDE (PIDE), empowering users to provide real-time syntax highlighting, semantic tooltips, and precise error localization for their custom languages.",
+  "authors": [
+   "Achim D. Brucker",
+   "Burkhart Wolff"
+  ],
+  "date": "2026-06-08",
+  "link": "../entries/Isabelle_Lex-Yacc.html",
+  "permalink": "https://isa-afp.org/entries/Isabelle_Lex-Yacc.html",
+  "related": [
+   {
+    "html": "A. D. Brucker and B. Wolff. Isabelle in a compiler construction class: con- ception, tooling, and experiences. In M. Wenzel, editor, Isabelle Workshop, 2026."
+   }
+  ],
+  "shortname": "Isabelle_Lex-Yacc",
+  "title": "ML-Lex and ML-Yacc for Isabelle",
+  "topic_links": [
+   "../topics/tools/",
+   "../topics/computer-science/programming-languages/misc/"
+  ],
+  "topics": [
+   "Tools",
+   "Computer science/Programming languages/Misc"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes Freiman's \\(3k - 4\\) theorem for finite sets of integers: small doubling, in the range \\(|A + A| \\leq 3|A| - 4\\), forces containment in a short arithmetic progression. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-02",
+  "link": "../entries/Freiman_3k_4.html",
+  "permalink": "https://isa-afp.org/entries/Freiman_3k_4.html",
+  "related": [],
+  "shortname": "Freiman_3k_4",
+  "title": "Freiman's 3k - 4 Theorem",
+  "topic_links": [
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Mathematics/Combinatorics"
   ],
   "year": "2026"
  },
@@ -232,6 +588,36 @@
    "Logic/Philosophical aspects",
    "Logic/General logic/Mechanization of proofs",
    "Logic/General logic/Modal logic"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes greedy algorithms for monotone non-negative submodular maximization under a cardinality constraint on a finite ground set in Isabelle/HOL. The main result is the classical Nemhauser--Wolsey--Fisher approximation guarantee for deterministic greedy: after \\(k\\) steps, the greedy solution satisfies the finite-step bound \\(1 - (1 - 1/k)^k\\), and hence the standard \\(1 - 1/e\\) approximation ratio. The development separates the executable greedy construction, an abstract step-specification interface, and the approximation proof.  The entry also includes a verified stateful lazy greedy variant based on cached upper bounds for marginal gains. The formalization proves that the lazy implementation selects a valid greedy element at each iteration and therefore inherits the same approximation guarantee. The result is intended as reusable Isabelle infrastructure for later formal developments on submodular maximization algorithms.",
+  "authors": [
+   "Feier Lyu"
+  ],
+  "date": "2026-05-26",
+  "link": "../entries/Submodular_Greedy.html",
+  "permalink": "https://isa-afp.org/entries/Submodular_Greedy.html",
+  "related": [
+   {
+    "doi": "10.1007/BF01588971"
+   },
+   {
+    "doi": "10.1007/BFb0006528"
+   }
+  ],
+  "shortname": "Submodular_Greedy",
+  "title": "Greedy Algorithms for Cardinality-Constrained Submodular Maximization",
+  "topic_links": [
+   "../topics/computer-science/algorithms/approximation/",
+   "../topics/computer-science/algorithms/optimization/",
+   "../topics/computer-science/algorithms/mathematical/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Approximation",
+   "Computer science/Algorithms/Optimization",
+   "Computer science/Algorithms/Mathematical"
   ],
   "year": "2026"
  },

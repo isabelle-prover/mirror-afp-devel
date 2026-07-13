@@ -1,0 +1,46 @@
+title = "Certified Infinite Descent Criteria"
+date = 2026-06-11
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Infinite Descent is the global trace condition that underpins the soundness of cyclic reasoning and, in program analysis, the size change termination principle.
+Many (semi-)decision procedures for Infinite Descent are known, based on criteria ranging from automata-based constructions and relation-based characterizations, to effective (but incomplete) heuristics.
+
+We present an Isabelle/HOL mechanization of this landscape.
+We provide a reusable, locale-based framework of sloped graphs that defines Infinite Descent at an abstract level,
+independently of any concrete graph encoding.
+Within this framework we formalize standard complete criteria and prove their equivalence to the locale-level InfiniteDescent predicate.
+We also formalize tool-facing sufficient criteria, 
+prove their soundness, and certify incompleteness where appropriate via verified counterexamples.
+Along the way we contribute reusable lemmas for omega-regular reasoning over streams and for Buchi-automata constructions needed by the inclusion proofs."""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.wright]
+email = "wright_email"
+
+[authors.cohenl]
+email = "cohenl_email"
+
+[authors.rowe]
+email = "rowe_email"
+
+[authors.popescu]
+email = "popescu_email"
+
+[contributors]
+
+[notify]
+wright = "wright_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

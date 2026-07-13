@@ -1549,6 +1549,15 @@
  },
  {
   "emails": [
+   "eyJ1c2VyIjpbImZlaWVyNTMwIl0sImhvc3QiOlsiaWNsb3VkIiwiY29tIl19"
+  ],
+  "homepages": [],
+  "id": "lyu",
+  "link": "../authors/lyu/",
+  "name": "Feier Lyu"
+ },
+ {
+  "emails": [
    "eyJ1c2VyIjpbImZlbGlwZSIsImVzY2FsbG9uIl0sImhvc3QiOlsidHVtIiwiZGUiXX0="
   ],
   "homepages": [],
@@ -2955,6 +2964,16 @@
   "name": "Lina Ye"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbImNsaXJvbiJdLCJob3N0IjpbImJndSIsImFjIiwiaWwiXX0="
+  ],
+  "homepages": [],
+  "id": "cohenl",
+  "link": "../authors/cohenl/",
+  "name": "Liron Cohen",
+  "orcid": "0000-0002-6608-3000"
+ },
+ {
   "emails": [],
   "homepages": [],
   "id": "barthel",
@@ -4096,6 +4115,16 @@
  },
  {
   "emails": [
+   "eyJ1c2VyIjpbInJldWJlbiIsInJvd2UiXSwiaG9zdCI6WyJyaHVsIiwiYWMiLCJ1ayJdfQ=="
+  ],
+  "homepages": [],
+  "id": "rowe",
+  "link": "../authors/rowe/",
+  "name": "Reuben Rowe",
+  "orcid": "0000-0002-4271-9078"
+ },
+ {
+  "emails": [
    "eyJ1c2VyIjpbImdheSJdLCJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXX0="
   ],
   "homepages": [],
@@ -4611,7 +4640,8 @@
   ],
   "id": "holub",
   "link": "../authors/holub/",
-  "name": "Štěpán Holub"
+  "name": "Štěpán Holub",
+  "orcid": "0000-0002-6169-5139"
  },
  {
   "emails": [
@@ -4912,6 +4942,16 @@
   "orcid": "0000-0003-0730-515X"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbInRvYmlhcyIsInJvdGhtYW5uIl0sImhvc3QiOlsidHVtIiwiZGUiXX0="
+  ],
+  "homepages": [],
+  "id": "rothmann",
+  "link": "../authors/rothmann/",
+  "name": "Tobias Rothmann",
+  "orcid": "0009-0000-2343-5793"
+ },
+ {
   "emails": [],
   "homepages": [
    "https://people.eng.unimelb.edu.au/tobym/"
@@ -5073,6 +5113,15 @@
   "id": "guttmann",
   "link": "../authors/guttmann/",
   "name": "Walter Guttmann"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbIjB4bGVvbmd3ZWlkZSJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19"
+  ],
+  "homepages": [],
+  "id": "leong",
+  "link": "../authors/leong/",
+  "name": "Wei De Leong"
  },
  {
   "emails": [
@@ -5283,5 +5332,15 @@
   "id": "fan",
   "link": "../authors/fan/",
   "name": "Zixuan Fan"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbInp1emFuYSJdLCJob3N0IjpbImNzIiwiY2FzIiwiY3oiXX0="
+  ],
+  "homepages": [],
+  "id": "hanikova",
+  "link": "../authors/hanikova/",
+  "name": "Zuzana Haniková",
+  "orcid": "0000-0003-3252-4370"
  }
 ]

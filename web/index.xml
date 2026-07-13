@@ -4,6 +4,87 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Polynomial Commitment Schemes</title>
+  <link>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Polynomial Commitment Schemes in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
+<item>
+  <title>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/MSOinHOL.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Height Bounds for Height-Balanced Trees</title>
+  <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
+  <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Height Bounds for Height-Balanced Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Axiomatic theory of hereditarily finite sets and its fragments</title>
+  <link>https://isa-afp.org/entries/ZF_finite.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Axiomatic theory of hereditarily finite sets and its fragments in the AFP</description>
+    <category>Logic/Set theory</category>
+</item>
+<item>
+  <title>Rademacher&#39;s Series for the Partition Function</title>
+  <link>https://isa-afp.org/entries/Rademacher_Series.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Rademacher&#39;s Series for the Partition Function in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
+  <title>The Incomplete Gamma Function</title>
+  <link>https://isa-afp.org/entries/Incomplete_Gamma.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Incomplete Gamma Function in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Generalised Hypergeometric Series</title>
+  <link>https://isa-afp.org/entries/Generalized_Hypergeometric_Series.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Generalised Hypergeometric Series in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Exponential and Logarithmic Integral</title>
+  <link>https://isa-afp.org/entries/Exp_Log_Integral.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Exponential and Logarithmic Integral in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Bessel Functions of the First Kind</title>
+  <link>https://isa-afp.org/entries/Bessel.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Bessel Functions of the First Kind in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Complete Elliptic Integrals and the Arithmetic–Geometric Mean</title>
+  <link>https://isa-afp.org/entries/Arithmetic_Geometric_Mean.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Complete Elliptic Integrals and the Arithmetic–Geometric Mean in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Perron&#39;s Formula</title>
+  <link>https://isa-afp.org/entries/Perrons_Formula.html</link>
+  <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Perron&#39;s Formula in the AFP</description>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
   <title>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF</title>
   <link>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</link>
   <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
@@ -16,6 +97,14 @@
   <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
   <description>Formalization of Weighted Sets in the AFP</description>
     <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Formalization of Lower-Bound Certificates for Optimal Classical Planning</title>
+  <link>https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Lower-Bound Certificates for Optimal Classical Planning in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Logic/General logic</category>
 </item>
 <item>
   <title>The Dottie Number</title>
@@ -39,6 +128,20 @@
     <category>Mathematics/Probability theory</category>
 </item>
 <item>
+  <title>Correctness and Complexity of BMSSP in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/BMSSP_Correctness.html</link>
+  <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Correctness and Complexity of BMSSP in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
+  <title>Certified Infinite Descent Criteria</title>
+  <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Certified Infinite Descent Criteria in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>The Detour Calculus: Rigorous Local Deformation of Integration Contours</title>
   <link>https://isa-afp.org/entries/Detour_Calculus.html</link>
   <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
@@ -54,11 +157,33 @@
     <category>Mathematics/Combinatorics</category>
 </item>
 <item>
+  <title>Formalization of 3-independence of simple tabulation hashing</title>
+  <link>https://isa-afp.org/entries/Tabulation_Hashing.html</link>
+  <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of 3-independence of simple tabulation hashing in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+<item>
+  <title>ML-Lex and ML-Yacc for Isabelle</title>
+  <link>https://isa-afp.org/entries/Isabelle_Lex-Yacc.html</link>
+  <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+  <description>ML-Lex and ML-Yacc for Isabelle in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Programming languages/Misc</category>
+</item>
+<item>
   <title>Euler&#39;s Exponential Series as an Infinite Polynomial</title>
   <link>https://isa-afp.org/entries/Euler_Exponential.html</link>
   <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
   <description>Euler&#39;s Exponential Series as an Infinite Polynomial in the AFP</description>
     <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Freiman&#39;s 3k - 4 Theorem</title>
+  <link>https://isa-afp.org/entries/Freiman_3k_4.html</link>
+  <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Freiman&#39;s 3k - 4 Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
 </item>
 <item>
   <title>The Busy Beaver Function</title>
@@ -82,6 +207,15 @@
   <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
   <description>A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction in the AFP</description>
     <category>Logic/Proof theory</category>
+</item>
+<item>
+  <title>Greedy Algorithms for Cardinality-Constrained Submodular Maximization</title>
+  <link>https://isa-afp.org/entries/Submodular_Greedy.html</link>
+  <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+  <description>Greedy Algorithms for Cardinality-Constrained Submodular Maximization in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Algorithms/Mathematical</category>
 </item>
 <item>
   <title>Type Annotations with Roundtrip Property</title>

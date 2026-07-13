@@ -4,6 +4,13 @@
     <title>Jamie Wright</title>
     <link>https://isa-afp.org/authors/wright/</link>
     <description>AFP entries of Jamie Wright</description><item>
+  <title>Certified Infinite Descent Criteria</title>
+  <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Certified Infinite Descent Criteria in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>A formalized programming language with speculative execution</title>
   <link>https://isa-afp.org/entries/IMP_With_Speculation.html</link>
   <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>

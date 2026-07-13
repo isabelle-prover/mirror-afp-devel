@@ -1,0 +1,58 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{url}
+
+\urlstyle{rm}
+\isabellestyle{it}
+\setlength{\emergencystretch}{3em}
+
+\begin{document}
+
+\title{Freiman's \(3k - 4\) Theorem}
+\author{Arthur F. Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This entry formalizes Freiman's \(3k - 4\) theorem for finite sets of integers:
+small doubling, in the range \(|A + A| \leq 3|A| - 4\), forces containment in a
+short arithmetic progression. AI assistance was used for proof engineering. The
+final definitions, statements, and proofs are checked by Isabelle.
+\end{abstract}
+
+\section{Overview}
+
+Freiman's \(3k - 4\) theorem is a classical inverse theorem in additive
+combinatorics. It gives a sharp structural conclusion for finite integer sets
+whose two-fold sumset is only slightly larger than the Cauchy-Davenport lower
+bound: if \(A\) has cardinality \(k \geq 3\) and \(|A + A| \leq 3k - 4\), then
+\(A\) is contained in an arithmetic progression of length at most
+\(|A + A| - k + 1\).
+
+\section{Formalization}
+
+The development starts with integer arithmetic progressions, affine
+normalization of finite integer sets, and cardinality invariance of sumsets
+under injective affine maps. The final proof combines these reductions with the
+additive-combinatorial core argument.
+
+\section{Sources}
+
+The formalization follows the standard presentation of Freiman's theorem in
+additive-combinatorics texts, especially Nathanson~\cite{Nathanson1996} and
+Tao and Vu~\cite{TaoVu2006}.
+
+\tableofcontents
+
+\sloppy
+\input{session}
+\fussy
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -37,6 +37,7 @@ Archimedes_Cattle
 Architectural_Design_Patterns
 Aristotles_Assertoric_Syllogistic
 Arith_Prog_Rel_Primes
+Arithmetic_Geometric_Mean
 ArrowImpossibilityGS
 Attack_Trees
 Auto2_HOL
@@ -62,6 +63,7 @@ BenOr_Kozen_Reif
 Berlekamp_Zassenhaus
 Bernoulli
 Bertrands_Postulate
+Bessel
 Bicategory
 BinarySearchTree
 Binary_Code_Imprimitive
@@ -72,6 +74,7 @@ BirdKMP
 Birkhoff_Finite_Distributive_Lattices
 Bisimulation_Logic
 Blue_Eyes
+BMSSP_Correctness
 Bondy
 Boolean_Expression_Checkers
 Boolos_Curious_Inference
@@ -276,6 +279,7 @@ Eval_FO
 Example-Submission
 Executable_Randomized_Algorithms
 Expander_Graphs
+Exp_Log_Integral
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
 Fair_Games_Theorem
@@ -327,6 +331,7 @@ Foundation_of_geometry
 Fourier
 Free-Boolean-Algebra
 Free-Groups
+Freiman_3k_4
 Frequency_Moments
 Fresh_Identifiers
 FunWithFunctions
@@ -350,6 +355,7 @@ GenClock
 General-Triangle
 Generalized_Cauchy_Davenport
 Generalized_Counting_Sort
+Generalized_Hypergeometric_Series
 Generic_Deriving
 Generic_Join
 GewirthPGCProof
@@ -385,6 +391,7 @@ HRB-Slicing
 Hahn_Jordan_Decomposition
 Hales_Jewett
 Heard_Of
+Height_Balanced_Tree_Bounds
 Hello_World
 HereditarilyFinite
 Hermite
@@ -425,11 +432,13 @@ Imperative_Insertion_Sort
 Implicational_Logic
 Impossible_Geometry
 Incompleteness
+Incomplete_Gamma
 Incredible_Proof_Machine
 Independence_CH
 Inductive_Confidentiality
 Inductive_Inference
 InfPathElimination
+Infinite_Descent_Criteria
 InformationFlowSlicing
 InformationFlowSlicing_Inter
 Integration
@@ -448,6 +457,7 @@ IsaNet
 Isabelle_C
 Isabelle_DOF
 Isabelle_hoops
+Isabelle_Lex-Yacc
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
 Isabelle-Solidity
@@ -533,6 +543,7 @@ Locally-Nameless-Sigma
 Logging_Independent_Anonymity
 Lovasz_Local
 Lowe_Ontological_Argument
+Lower_Bound_Certificates_Planning
 Lower_Semicontinuous
 Lp
 Lucas_Theorem
@@ -547,6 +558,7 @@ MLSS_Decision_Proc
 MLSSmf_to_MLSS
 ML_Unification
 MSO_Regex_Equivalence
+MSOinHOL
 Markov_Models
 Marriage
 Martingales
@@ -664,6 +676,7 @@ Pentagonal_Number_Theorem
 Perfect-Number-Thm
 Perfect_Fields
 Perron_Frobenius
+Perrons_Formula
 Physical_Quantities
 Pi_Calculus
 Pi_Irrational
@@ -675,6 +688,7 @@ Poincare_Bendixson
 Poincare_Disc
 Polygonal_Number_Theorem
 Polylog
+Polynomial_Commitment_Schemes
 Polynomial_Crit_Geometry
 Polynomial_Factorization
 Polynomial_Interpolation
@@ -736,6 +750,7 @@ RG_Locks
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
+Rademacher_Series
 Ramsey-Infinite
 Ramsey_Bounds
 Random_BSTs
@@ -881,6 +896,7 @@ Strong_Security
 Sturm_Sequences
 Sturm_Tarski
 Stuttering_Equivalence
+Submodular_Greedy
 Subresultants
 Subset_Boolean_Algebras
 Substitutions_Lambda_Free
@@ -899,6 +915,7 @@ Syntax_Independent_Logic
 Synthetic_Completeness
 Szemeredi_Regularity
 Szpilrajn
+Tabulation_Hashing
 TESL_Language
 TLA
 Tail_Recursive_Functions
@@ -981,6 +998,7 @@ Worklist_Algorithms
 X86_Semantics
 XML
 Youngs_Inequality
+ZF_finite
 ZFC_in_HOL
 Z_Toolkit
 Zeckendorf

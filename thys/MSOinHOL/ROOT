@@ -1,0 +1,40 @@
+chapter AFP
+
+session MSOinHOL (AFP) = HOL +
+  description \<open>
+    Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with
+    Automated Faithfulness.
+
+    Three embeddings of monadic second-order logic (MSO) into classical
+    higher-order logic are developed side by side --- a deep embedding (an
+    inductive datatype), a maximal-shallow embedding, and a locale-based
+    minimal-shallow embedding --- together with a two-sorted capture-avoiding
+    substitution apparatus, mechanised and automated faithfulness proofs, and a
+    two-sorted downward Loewenheim--Skolem theorem relating the general
+    (Henkin-style) and standard readings of MSO.
+  \<close>
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    MSOinHOL_preliminaries
+    MSOinHOL_deep
+    MSOinHOL_deep_subst_lemma
+    MSOinHOL_shallow
+    MSOinHOL_shallow_minimal_locale
+    MSOinHOL_faithfulness_locale
+    MSOinHOL_shallow_minimal
+    MSOinHOL_faithfulness
+    MSOinHOL_experiments
+    MSOinHOL_experiments_classic
+    MSOinHOL_experiments_locale
+    MSOinHOL_subst_extras
+    MSOinHOL_comprehension
+    MSOinHOL_lowenheim_skolem_lemmas
+    MSOinHOL_lowenheim_skolem
+    MSOinHOL_shallow_minimal_elementary
+    MSOinHOL_experiments_classic_elementary
+    MSOinHOL_experiments_extra
+  document_files
+    "root.tex"
+    "root.bib"

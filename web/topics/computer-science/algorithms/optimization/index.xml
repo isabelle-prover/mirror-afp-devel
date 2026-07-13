@@ -4,6 +4,23 @@
     <title>Computer science/Algorithms/Optimization</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/optimization/</link>
     <description>AFP entries in Optimization</description><item>
+  <title>Formalization of Lower-Bound Certificates for Optimal Classical Planning</title>
+  <link>https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Lower-Bound Certificates for Optimal Classical Planning in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Greedy Algorithms for Cardinality-Constrained Submodular Maximization</title>
+  <link>https://isa-afp.org/entries/Submodular_Greedy.html</link>
+  <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+  <description>Greedy Algorithms for Cardinality-Constrained Submodular Maximization in the AFP</description>
+    <category>Computer science/Algorithms/Approximation</category>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Algorithms/Mathematical</category>
+</item>
+<item>
   <title>Type Annotations with Roundtrip Property</title>
   <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
   <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>

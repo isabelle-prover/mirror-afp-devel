@@ -1,0 +1,45 @@
+title = "The Incomplete Gamma Function"
+date = 2026-07-03
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides two special functions, the lower and upper incomplete gamma functions.
+Similarly to the ‘complete’ gamma function $\\Gamma(s)$, which is defined as
+$\\Gamma(s) = \\int_0^\\infty t^{s-1}e^{-t}\\,\\text{d}t$ for $\\text{Re}(s)>0$ and by
+analytic continuation elsewhere, these are defined as
+$\\gamma(s,z) = \\int_0^z t^{s-1}e^{-t}\\,\\text{d}t$ and
+$\\Gamma(s,z) = \\int_z^\\infty t^{s-1}e^{-t}\\,\\text{d}t$, respectively, for $\\text{Re}(s)>0$
+and analytically continued to the entire complex plane.</p>
+<p>$\\gamma(s,z)$ is constructed using the regularised hypergeometric series and $\\Gamma(s,z)$ via 
+its contour integral representation. Various results are provided, including:</p>
+<ul>
+<li>holomorphicity, continuity, limits, and derivatives</li>
+<li>series and integral representations</li>
+<li>shift identities such as $\\Gamma(s+1, z) = s\\Gamma(s,z) + z^s e^{-z}$</li>
+<li>the identity $\\gamma(s,z) + \\Gamma(s,z) = \\Gamma(s)$</li>
+<li>the fact that $\\Gamma(s,z) \\to \\Gamma(s)$ as $z\\to 0$ within a certain region</li>
+<li>closed forms for $\\Gamma(n,z)$ and $\\gamma(n,z)$, where $n$ is a positive integer</li>
+<li>the connection to the error function via $\\Gamma(\\frac{1}{2}, z) = \\sqrt{\\pi}\\cdot\\text{erf}(\\sqrt{z})$</li>
+</ul>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

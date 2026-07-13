@@ -4,6 +4,41 @@
     <title>Mathematics/Analysis</title>
     <link>https://isa-afp.org/topics/mathematics/analysis/</link>
     <description>AFP entries in Analysis</description><item>
+  <title>The Incomplete Gamma Function</title>
+  <link>https://isa-afp.org/entries/Incomplete_Gamma.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Incomplete Gamma Function in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Generalised Hypergeometric Series</title>
+  <link>https://isa-afp.org/entries/Generalized_Hypergeometric_Series.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Generalised Hypergeometric Series in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Exponential and Logarithmic Integral</title>
+  <link>https://isa-afp.org/entries/Exp_Log_Integral.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Exponential and Logarithmic Integral in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Bessel Functions of the First Kind</title>
+  <link>https://isa-afp.org/entries/Bessel.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Bessel Functions of the First Kind in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Complete Elliptic Integrals and the Arithmetic–Geometric Mean</title>
+  <link>https://isa-afp.org/entries/Arithmetic_Geometric_Mean.html</link>
+  <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Complete Elliptic Integrals and the Arithmetic–Geometric Mean in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>The Detour Calculus: Rigorous Local Deformation of Integration Contours</title>
   <link>https://isa-afp.org/entries/Detour_Calculus.html</link>
   <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>

@@ -1532,6 +1532,24 @@ host = [
 
 [cohen.homepages]
 
+[cohenl]
+name = "Liron Cohen"
+orcid = "0000-0002-6608-3000"
+
+[cohenl.emails]
+
+[cohenl.emails.cohenl_email]
+user = [
+  "cliron",
+]
+host = [
+  "bgu",
+  "ac",
+  "il",
+]
+
+[cohenl.homepages]
+
 [colvin]
 name = "Robert J. Colvin"
 
@@ -2933,6 +2951,24 @@ host = [
 
 [hall.homepages]
 
+[hanikova]
+name = "Zuzana Haniková"
+orcid = "0000-0003-3252-4370"
+
+[hanikova.emails]
+
+[hanikova.emails.hanikova_email]
+user = [
+  "zuzana",
+]
+host = [
+  "cs",
+  "cas",
+  "cz",
+]
+
+[hanikova.homepages]
+
 [hansen]
 name = "René Rydhof Hansen"
 orcid = "0000-0002-5688-6432"
@@ -3302,6 +3338,7 @@ host = [
 
 [holub]
 name = "Štěpán Holub"
+orcid = "0000-0002-6169-5139"
 
 [holub.emails]
 
@@ -4510,6 +4547,22 @@ host = [
 
 [lemket.homepages]
 
+[leong]
+name = "Wei De Leong"
+
+[leong.emails]
+
+[leong.emails.leong_email]
+user = [
+  "0xleongweide",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[leong.homepages]
+
 [leustean]
 name = "Laurentiu Leustean"
 
@@ -4785,6 +4838,22 @@ host = [
 ]
 
 [lux.homepages]
+
+[lyu]
+name = "Feier Lyu"
+
+[lyu.emails]
+
+[lyu.emails.lyu_email]
+user = [
+  "feier530",
+]
+host = [
+  "icloud",
+  "com",
+]
+
+[lyu.homepages]
 
 [maadoori]
 name = "Vivek Soorya Maadoori"
@@ -6822,6 +6891,24 @@ host = [
 [rosskopf.homepages]
 rosskopf_homepage = "http://www21.in.tum.de/~rosskops"
 
+[rothmann]
+name = "Tobias Rothmann"
+orcid = "0009-0000-2343-5793"
+
+[rothmann.emails]
+
+[rothmann.emails.rothmann_email]
+user = [
+  "tobias",
+  "rothmann",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[rothmann.homepages]
+
 [rowat]
 name = "Colin Rowat"
 
@@ -6839,6 +6926,25 @@ host = [
 ]
 
 [rowat.homepages]
+
+[rowe]
+name = "Reuben Rowe"
+orcid = "0000-0002-4271-9078"
+
+[rowe.emails]
+
+[rowe.emails.rowe_email]
+user = [
+  "reuben",
+  "rowe",
+]
+host = [
+  "rhul",
+  "ac",
+  "uk",
+]
+
+[rowe.homepages]
 
 [sabouret]
 name = "Nicolas Sabouret"

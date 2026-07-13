@@ -1,0 +1,61 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Complete Elliptic Integrals and the Arithmetic--Geometric Mean}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry builds up two theories and connects them. The first consists of the \emph{complete elliptic integrals} of the first and second kind
+\begin{align*}
+K(x) &= \int_0^{\frac{\pi}{2}} (1-x \sin(t)^2)^{-\frac{1}{2}}\,\text{d}t &
+E(x) &= \int_0^{\frac{\pi}{2}} (1-x \sin(t)^2)^{\frac{1}{2}}\,\text{d}t
+\end{align*}
+for real or complex $x$.
+
+The second one is the \emph{arithmetic-geometric mean} function $\text{agm}(x,y)$, which is defined as the limit of the sequence obtained by replacing the pair $(x,y)$ with the pair consisting of the arithmetic and geometric means of $x$ and $y$, i.e.\ $(x,y)\mapsto (\frac{1}{2}(x+y), \sqrt{xy})$.
+
+The two theories are then connected by proving (among other things) that:
+\[\text{agm}(a,b) = \frac{\pi a}{2K((a^2-b^2)/a^2)}\]
+Various other important properties are shown, e.g.:
+\begin{itemize}
+\item Continuity, derivatives, antiderivatives of $K$ and $E$ as well as their relation to the hypergeometric function ${}_2 F_{1}$
+\item Legendre's identity \[K(x) E(1-x) + E(x) K(1-x) - K(x) K(1-x) = \frac{\pi}{2}\]
+\item The convergence of the AGM iterations, including uniform convergence and an estimate of the speed of convergence
+\item Upward and downward identities for $K$ and $E$, e.g.\ \[K(x^2) = \frac{K\left(\frac{4x}{(1+x)^2}\right)}{1+x}\]
+\item The relationship of the AGM to the Jacobi theta functions
+\item The Brent--Salamin algorithm to approximate $\pi$ via AGM iterations (abstractly, without rounding error analysis)
+\end{itemize}
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\nocite{borwein}
+\nocite{brent}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

@@ -1,0 +1,12 @@
+chapter AFP
+
+session Freiman_3k_4 = "HOL-Number_Theory" +
+  options [document = pdf, timeout = 600]
+  sessions
+    Kneser_Cauchy_Davenport
+  theories
+    Freiman_Sumset_Basics
+    Freiman_3k_4
+  document_files
+    "root.tex"
+    "root.bib"

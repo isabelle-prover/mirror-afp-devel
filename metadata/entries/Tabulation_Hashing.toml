@@ -1,0 +1,35 @@
+title = "Formalization of 3-independence of simple tabulation hashing"
+date = 2026-06-08
+topics = [
+  "Computer science/Algorithms/Randomized",
+]
+abstract = "Simple tabulation hashing is a computationally-efficient hashing algorithm to get values that behave independently and are uniformly distributed for any 3 distinct keys. This entry formalizes the 3-independence and non-4-independence of simple tabulation hashing, based on the written proofs provided by <a href=\"https://ufal.mff.cuni.cz/~marecek/ntin066/08_solutions.pdf\" rel=\"noreferrer noopener\">Mareček</a> and <a href=\"https://en.wikipedia.org/wiki/Tabulation_hashing#Universality:~:text=For%20these%20four%20keys%2C\" rel=\"noreferrer noopener\">Wikipedia</a>."
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.leong]
+email = "leong_email"
+
+[authors.tan]
+email = "tan_email"
+
+[authors.watts]
+email = "watts_email"
+
+[contributors]
+
+[notify]
+leong = "leong_email"
+tan = "tan_email"
+watts = "watts_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

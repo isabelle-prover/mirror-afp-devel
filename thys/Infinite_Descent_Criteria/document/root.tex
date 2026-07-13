@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+%\usepackage{url}
+%\usepackage{hyperref}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Certified Infinite Descent Criteria in Isabelle/HOL}
+\author{Jamie Wright, Liron Cohen, Reuben Rowe \& Andrei Popescu}
+\maketitle
+
+\begin{abstract}
+Infinite Descent is the global trace condition that underpins the soundness of cyclic reasoning and, in program analysis, the size change termination principle.
+Many (semi-)decision procedures for Infinite Descent are known, based on criteria ranging from automata-based constructions and relation-based characterizations, to effective (but incomplete) heuristics.
+%
+We present an Isabelle/HOL mechanization of this landscape.
+We provide a reusable, locale-based framework of sloped graphs that defines Infinite Descent at an abstract level,
+independently of any concrete graph encoding.
+Within this framework we formalize standard \emph{complete} criteria and prove their equivalence to the locale-level \textit{InfiniteDescent} predicate.
+We also formalize tool-facing sufficient criteria, 
+prove their soundness, and certify incompleteness where appropriate via verified counterexamples.
+Along the way we contribute reusable lemmas for $\omega$-regular reasoning over streams and for B\"uchi-automata constructions needed by the inclusion proofs.
+\end{abstract} 
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% include generated text of all theories
+\input{session}
+
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+
+\bibliographystyle{IEEEtranS}
+\bibliography{root}
+\end{document}

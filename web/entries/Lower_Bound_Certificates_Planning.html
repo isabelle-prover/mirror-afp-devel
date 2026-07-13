@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formalization of Lower-Bound Certificates for Optimal Classical Planning - Archive of Formal Proofs</title>
+    <meta name="description" content="Formalization of Lower-Bound Certificates for Optimal Classical Planning in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formalization of Lower-Bound Certificates for Optimal Classical Planning in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formalization of Lower-Bound Certificates for Optimal Classical Planning">
+    <meta property="og:url" content="https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>ormalization of <span class='first'>L</span>ower-<span class='first'>B</span>ound <span class='first'>C</span>ertificates for <span class='first'>O</span>ptimal <span class='first'>C</span>lassical <span class='first'>P</span>lanning
+  </h1>
+  <div>
+      <p><a href="../authors/traytel/">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
+      </p>
+      <p class="date">June 13, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">We formalize the framework of pseudo-Boolean lower-bound certificates for classical planning introduced by Dold, Helmert, Nordström, Röger and Schindler. A lower-bound certificate for a STRIPS (STanford Research Institute Problem Solver) planning task and a bound $B$ is a pseudo-Boolean circuit together with three proofs in the cutting planes proof system with reification; its validity guarantees that every plan of the task costs at least $B$, and hence that a plan of cost $B$ is optimal. We prove the soundness of the certificate format (Theorem 1 of the paper) and formalize the paper's case study: certificates extracted from a run of the A$^*$ algorithm, with heuristic certificates for pattern database heuristics and for the maximum heuristic $h^{\mathit{max}}$, including the appendix material on efficiently proof-logging pattern databases. The main results state that a suitable snapshot of a terminated A$^*$ run yields a valid certificate and therefore proves the optimality of the plan it found. All locales are shown consistent by concrete interpretations, which also compose the pattern database certificate with the A$^*$ certificate, as intended by the paper.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>This is an autoformalization of the said paper by Dold et al. The material up to including Theorem 1 has been formalized using Claude Sonnet 4.6 and DeepSeek V4 Flash, with interactive steering by the author. The rest has been formalized using Claude Fable 5 (without requiring much interaction).
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms/optimization/">Computer science/Algorithms/Optimization</a></li>
+          <li><a href="../topics/logic/general-logic/">Logic/General logic</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Dold, S., Helmert, M., Nordström, J., Röger, G., & Schindler, T. (2025). Pseudo-Boolean Proof Logging for Optimal Classical Planning. Proceedings of the International Conference on Automated Planning and Scheduling, 35(1), 54–63. <a href="https://doi.org/10.1609/icaps.v35i1.36101">https://doi.org/10.1609/icaps.v35i1.36101</a>
+</li>
+      </ul>
+      <h3>Session Lower_Bound_Certificates_Planning</h3>
+      <ul>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/Lower_Bound_Certificates.html">Lower_Bound_Certificates</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/Encoding_Semantics.html">Encoding_Semantics</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/K_Gates.html">K_Gates</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/Heuristic_Certificates.html">Heuristic_Certificates</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/A_Star_Certificates.html">A_Star_Certificates</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/PDB_Certificates.html">PDB_Certificates</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/Hmax_Certificates.html">Hmax_Certificates</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/Efficient_PDB.html">Efficient_PDB</a></li>
+          <li><a href="../thys/Lower_Bound_Certificates_Planning/Locale_Instances.html">Locale_Instances</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Lower_Bound_Certificates_Planning/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Lower_Bound_Certificates_Planning/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Lower_Bound_Certificates_Planning/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Lower_Bound_Certificates_Planning-AFP</p>
+        <pre id="copy-text">@article{Lower_Bound_Certificates_Planning-AFP,
+  author  = {Dmitriy Traytel},
+  title   = {Formalization of Lower-Bound Certificates for Optimal Classical Planning},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Lower_Bound_Certificates_Planning-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

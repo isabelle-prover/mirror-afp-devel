@@ -1,0 +1,12 @@
+chapter AFP
+
+session Exp_Log_Integral (AFP) = Zeta_Function +
+  options [timeout = 600]
+  sessions
+    Generalized_Hypergeometric_Series
+    Incomplete_Gamma
+  theories  
+    Exp_Log_Integral
+  document_files
+    "root.tex"
+    "root.bib"

@@ -4,6 +4,17 @@
     <title>Computer science/Programming languages/Logics</title>
     <link>https://isa-afp.org/topics/computer-science/programming-languages/logics/</link>
     <description>AFP entries in Logics</description><item>
+  <title>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)</title>
+  <link>https://isa-afp.org/entries/MSOinHOL.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset) in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Classical first-order logic</category>
+    <category>Computer science/Programming languages/Logics</category>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Rely-Guarantee Extensions and Locks</title>
   <link>https://isa-afp.org/entries/RG_Locks.html</link>
   <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>
