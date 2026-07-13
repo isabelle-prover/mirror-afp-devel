@@ -28,10 +28,9 @@ lift_definition vec_of_fcp :: "('a, 'b::{finite, index1}) Finite_Cartesian_Produ
 definition fcp_of_vec :: "('a, 'b::{finite, index1}) Fixed_Length_Vector.vec \<Rightarrow>
                           ('a, 'b) Finite_Cartesian_Product.vec" where
   \<open>fcp_of_vec \<equiv> \<lambda>x. Finite_Cartesian_Product.vec_lambda (\<lambda>i. x $ i)\<close>
-
 lift_definition (*tag:unused*) enumerate_vec :: "nat \<Rightarrow> ('a,  'b) Fixed_Length_Vector.vec \<Rightarrow>
                                                 (nat \<times> 'a, 'b) Fixed_Length_Vector.vec" is
-  \<open>List.enumerate\<close> by simp
+  \<open>List.indexed_from\<close> by simp
 
 lemma infinite_UNIV_vec:
   assumes "infinite (UNIV :: 'a set)" "finite (UNIV :: 'b set)"
@@ -119,38 +118,38 @@ lemma (*tag:unused*) id_take_nth_drop_vec':
 (* for nth-based comparison *)
 lemma (*tag:unused*) nth_not_mem_enumerate:
   assumes "y ! i \<noteq> x ! i"
-  shows "(i, y ! i) \<notin> set (List.enumerate 0 x)"
+  shows "(i, y ! i) \<notin> set (List.indexed_from 0 x)"
   apply (subst in_set_conv_nth, clarsimp)
-  using assms nth_enumerate_eq by fastforce
+  using assms nth_indexed_from_eq by fastforce
 
 lemma (*tag:unused*) nth_not_mem_enumerate_take:
   assumes "y ! j \<noteq> x ! j"
-  shows "(j, y ! j) \<notin> set (List.enumerate 0 (take i x))"
+  shows "(j, y ! j) \<notin> set (List.indexed_from 0 (take i x))"
   apply (subst in_set_conv_nth, clarsimp)
-  by (metis arith_simps(49) assms length_take min_less_iff_conj nth_enumerate_eq nth_take
+  by (metis arith_simps(49) assms length_take min_less_iff_conj nth_indexed_from_eq nth_take
       prod.sel(1,2))
 
 lemma (*tag:unused*) nth_not_mem_enumerate_drop:
   assumes "y ! j \<noteq> x ! j"
-  shows "(j, y ! j) \<notin> set (List.enumerate (Suc i) (drop (Suc i) x))"
+  shows "(j, y ! j) \<notin> set (List.indexed_from (Suc i) (drop (Suc i) x))"
   apply (subst in_set_conv_nth, clarsimp)
   by (metis assms fst_eqD length_drop linorder_not_le nat_diff_split not_less_zero nth_drop
-      nth_enumerate_eq snd_eqD)
+      nth_indexed_from_eq snd_eqD)
 
 lemma (*tag:unused*) nth_enumerate_eq_vec:
   fixes xs :: "('a, 'b :: index1) Fixed_Length_Vector.vec"
   assumes "m < CARD('b)"
   shows "enumerate_vec n xs $ to_index m = (n + m, xs $ to_index m)"
   by (simp add: nth_vec.rep_eq index.to_from_index index_axioms assms enumerate_vec.rep_eq
-  nth_enumerate_eq)
+  nth_indexed_from_eq)
 
 lemma (*tag:unused*) in_set_enumerate_eq_vec:
   fixes xs :: "('a, 'b :: index1) Fixed_Length_Vector.vec"
   shows "p \<in> set_vec (enumerate_vec n xs) \<longleftrightarrow>
          n \<le> fst p \<and> fst p < CARD('b) + n \<and> xs $ to_index (fst p - n) = snd p"
   apply (simp add:
-    in_set_enumerate_eq nth_vec.rep_eq set_vec.rep_eq index.to_from_index
-    index_axioms enumerate_vec.rep_eq nth_enumerate_eq)
+    in_set_indexed_from_eq nth_vec.rep_eq set_vec.rep_eq index.to_from_index
+    index_axioms enumerate_vec.rep_eq nth_indexed_from_eq)
   by (metis less_diff_conv2 to_from_index)
 
 lemma inj_vec_of_fcp:
