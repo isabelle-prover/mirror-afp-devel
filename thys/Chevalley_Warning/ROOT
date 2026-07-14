@@ -1,0 +1,11 @@
+chapter AFP
+
+session Chevalley_Warning = "HOL-Number_Theory" +
+  options [document = pdf, timeout = 600]
+  sessions
+    Polynomials
+  theories
+    Chevalley_Warning
+  document_files
+    "root.tex"
+    "root.bib"
