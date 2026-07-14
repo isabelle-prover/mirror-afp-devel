@@ -11,10 +11,10 @@ parses the flat annotated S-expression format returned by egg 0.11.0’s
 explanation API; flat explanations may apply numbered rewrite
 rules at positions or reuse equalities from earlier checked e-class merges.
 For extraction, a finite e-graph is represented as a topologically ordered
-e-class DAG. An executable bottom-up dynamic program selects a rep-
-resentative, and a formal proof establishes minimum additive cost over
-every term represented by the designated class. Class-aligned equal-
-ity certificates additionally prove the selected term equivalent to the
+e-class DAG. An executable bottom-up dynamic program selects a representative,
+and a formal proof establishes minimum additive cost over
+every term represented by the designated class. Class-aligned equality
+certificates additionally prove the selected term equivalent to the
 canonical class term.
 The development reuses the term, substitution, position, context,
 and rewriting infrastructure of the AFP entries First-Order Terms and
@@ -24,8 +24,8 @@ datatype, rewrite relation, generic equational proof calculus, or proof
 of Birkhoﬀ’s theorem. Those generic equational results and a checker
 for equality proofs already exist in IsaFoR/CeTA. The new material is
 the chronological e-graph merge discipline, positional reuse of recorded
-merges, certified e-class DAG semantics, and globally optimal dynamic-
-programming extraction."""
+merges, certified e-class DAG semantics, and globally optimal 
+dynamic-programming extraction."""
 license = "bsd"
 note = ""
 creation_note = """
