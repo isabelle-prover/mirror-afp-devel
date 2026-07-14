@@ -1,5 +1,26 @@
 [
  {
+  "abstract": "Equality-saturation engines maintain equalities in an e-graph and later extract a representative from an e-class. This entry verifies an executable checker for the corresponding engine boundary. It directly parses the flat annotated S-expression format returned by egg 0.11.0’s explanation API [9, 1]; flat explanations may apply numbered rewrite rules at positions or reuse equalities from earlier checked e-class merges. For extraction, a finite e-graph is represented as a topologically ordered e-class DAG. An executable bottom-up dynamic program selects a rep- resentative, and a formal proof establishes minimum additive cost over every term represented by the designated class. Class-aligned equal- ity certificates additionally prove the selected term equivalent to the canonical class term. The development reuses the term, substitution, position, context, and rewriting infrastructure of the AFP entries First-Order Terms and First-Order Rewriting. Its soundness statements target their existing conversion relation. It does not introduce another first-order term datatype, rewrite relation, generic equational proof calculus, or proof of Birkhoﬀ’s theorem. Those generic equational results and a checker for equality proofs already exist in IsaFoR/CeTA. The new material is the chronological e-graph merge discipline, positional reuse of recorded merges, certified e-class DAG semantics, and globally optimal dynamic- programming extraction.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Equality_Saturation_Checker.html",
+  "permalink": "https://isa-afp.org/entries/Equality_Saturation_Checker.html",
+  "related": [],
+  "shortname": "Equality_Saturation_Checker",
+  "title": "Checking Equality-Saturation Merge and Extraction Certificates",
+  "topic_links": [
+   "../topics/logic/rewriting/"
+  ],
+  "topics": [
+   "Logic/Rewriting"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "We develop, in Isabelle/HOL, three embeddings of monadic second-order logic (MSO) into classical higher-order logic side by side: a deep embedding (an inductive datatype with an explicit satisfaction relation), a maximal-shallow embedding, and a minimal-shallow embedding \u0026mdash; the last a locale parametrised by an interpretation and by first- and second-order assignments. The enabling ingredient is a two-sorted capture-avoiding substitution apparatus (predication, substitution, alphabetic renaming, and a substitution lemma, developed once for each binder namespace), in which each binder is transparent for the other. Faithfulness of all three embeddings is mechanised and automated. The central result is a fully mechanised two-sorted downward L\u0026ouml;wenheim\u0026ndash;Skolem theorem. Its corollary identifies range-relative validity with the general (Henkin-style) reading of MSO, while comprehension witnesses that the standard reading is strictly stronger; an elementary-substructure refinement recovers the standard reading from the minimal embedding as well, so the two readings become one device under two interpretation classes. We further exercise the embeddings on classical MSO landmarks: Boolean closure and graph operations hold under the standard (full second-order) reading and fail under the general one, making the dichotomy concrete, while reachability and 2-colorability are non-theorems, refuted throughout with nitpick countermodels.",
   "authors": [
    "Christoph Benzmüller",

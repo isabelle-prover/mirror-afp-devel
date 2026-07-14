@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-13T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-13T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Equality_Saturation_Checker.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/MSOinHOL.html</loc>
     <lastmod>2026-07-13T00:00:00+00:00</lastmod>
@@ -9592,6 +9595,28 @@
     <loc>https://isa-afp.org/thys/Epistemic_Logic/Epistemic_Logic.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Epistemic_Logic/Maximal_Consistent_Sets.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Acyclic_EGraph_Extraction.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Bounded_Certificate_Search.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Certified_Acyclic_EGraph.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Code_Generation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Egg_Flat_Explanation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/EGraph_Explanations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Equality_Saturation_Checker.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Examples_Acyclic_EGraph.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Examples_Compiler.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Examples_Egg.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Equality_Saturation_Checker/Extraction_Certificates.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Equivalence_Relation_Enumeration/Equivalence_Relation_Enumeration.html</loc>
   </url><url>
