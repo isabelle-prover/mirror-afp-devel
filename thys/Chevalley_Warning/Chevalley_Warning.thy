@@ -518,7 +518,7 @@ proof -
   have roots_bound: "card {x::'a. poly ?P x = 0} \<le> k"
   proof -
     have "card {x::'a. poly ?P x = 0} \<le> degree ?P"
-      by (rule card_poly_roots_bound[OF P_nonzero])
+      by (rule poly_roots_degree[OF P_nonzero])
     also have "\<dots> \<le> k"
       by (rule deg_P)
     finally show ?thesis .
