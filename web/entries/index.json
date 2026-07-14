@@ -47,6 +47,27 @@
   "year": "2026"
  },
  {
+  "abstract": "This development formalizes the Chevalley--Warning theorem for finite fields: if finitely many multivariate polynomials over a finite field have total degree sum strictly smaller than the number of variables, then the number of their common zeros is divisible by the characteristic.  Polynomials are represented by finite sparse term lists, and the proof follows the standard finite-field power-sum argument. AI assistance was used for proof engineering.  The final definitions, statements, and proofs are checked by Isabelle",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-13",
+  "link": "../entries/Chevalley_Warning.html",
+  "permalink": "https://isa-afp.org/entries/Chevalley_Warning.html",
+  "related": [],
+  "shortname": "Chevalley_Warning",
+  "title": "The Chevalley-Warning Theorem",
+  "topic_links": [
+   "../topics/mathematics/algebra/"
+  ],
+  "topics": [
+   "Mathematics/Algebra"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This article takes a fresh look at the class of binary trees known as height-balanced trees, where for each node, the height difference between the left and right subtree is bounded by some fixed integer $d \u003e 0$. An interesting question from an algorithmic perspective is how bad the imbalance of such trees can be in the worst case. Luccio and Pagli showed that the worst-case size of a tree of height $h$ is roughly $B_d\\cdot C_d^h$ for large $h$ for some specific real numbers $B_d, C_d \u003e 1$.\nThis formalisation contains:\nA simpler proof that the worst-case size is at least $C_d ^ h$ for all $h$ An explicit closed-form expression for the worst-case size A closed-form expression for $B_d$ in terms of $C_d$ and vice versa Explicit bounds for $C_d$ in terms of $d$ Asymptotic expansions for $C_d$ and $B_d$ as $d\\to\\infty$ ",
   "authors": [
    "Manuel Eberl"

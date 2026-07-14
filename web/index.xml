@@ -22,6 +22,13 @@
     <category>Logic/General logic/Mechanization of proofs</category>
 </item>
 <item>
+  <title>The Chevalley-Warning Theorem</title>
+  <link>https://isa-afp.org/entries/Chevalley_Warning.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Chevalley-Warning Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
   <title>Height Bounds for Height-Balanced Trees</title>
   <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
   <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
