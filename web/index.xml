@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
+  <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Checking Equality-Saturation Merge and Extraction Certificates in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
   <title>Polynomial Commitment Schemes</title>
   <link>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</link>
   <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
@@ -20,6 +27,13 @@
     <category>Computer science/Programming languages/Logics</category>
     <category>Computer science/Semantics and reasoning</category>
     <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>The Chevalley-Warning Theorem</title>
+  <link>https://isa-afp.org/entries/Chevalley_Warning.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Chevalley-Warning Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
 </item>
 <item>
   <title>Height Bounds for Height-Balanced Trees</title>

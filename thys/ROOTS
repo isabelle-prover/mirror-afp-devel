@@ -130,6 +130,7 @@ Ceva
 Chandy_Lamport
 Chebyshev_Polynomials
 Chebyshev_Prime_Bounds
+Chevalley_Warning
 Chomsky_Schuetzenberger
 Chord_Segments
 Circus
@@ -266,6 +267,7 @@ Elliptic_Functions
 Encodability_Process_Calculi
 EnrichedCategoryBasics
 Epistemic_Logic
+Equality_Saturation_Checker
 Equivalence_Relation_Enumeration
 Erdos_Ginzburg_Ziv
 Ergodic_Theory

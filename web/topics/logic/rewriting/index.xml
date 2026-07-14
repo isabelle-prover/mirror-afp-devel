@@ -4,6 +4,13 @@
     <title>Logic/Rewriting</title>
     <link>https://isa-afp.org/topics/logic/rewriting/</link>
     <description>AFP entries in Rewriting</description><item>
+  <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
+  <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Checking Equality-Saturation Merge and Extraction Certificates in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
   <title>Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting</title>
   <link>https://isa-afp.org/entries/Sorted_Rewriting.html</link>
   <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>

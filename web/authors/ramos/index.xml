@@ -4,6 +4,20 @@
     <title>Arthur Freitas Ramos</title>
     <link>https://isa-afp.org/authors/ramos/</link>
     <description>AFP entries of Arthur Freitas Ramos</description><item>
+  <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
+  <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Checking Equality-Saturation Merge and Extraction Certificates in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>The Chevalley-Warning Theorem</title>
+  <link>https://isa-afp.org/entries/Chevalley_Warning.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Chevalley-Warning Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
   <title>Correctness and Complexity of BMSSP in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/BMSSP_Correctness.html</link>
   <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>

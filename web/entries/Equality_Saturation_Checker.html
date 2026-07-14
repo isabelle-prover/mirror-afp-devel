@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checking Equality-Saturation Merge and Extraction Certificates - Archive of Formal Proofs</title>
+    <meta name="description" content="Checking Equality-Saturation Merge and Extraction Certificates in the Archive of Formal Proofs">
+    <meta property="og:description" content="Checking Equality-Saturation Merge and Extraction Certificates in the Archive of Formal Proofs">
+    <meta property="og:title" content="Checking Equality-Saturation Merge and Extraction Certificates">
+    <meta property="og:url" content="https://isa-afp.org/entries/Equality_Saturation_Checker.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>hecking <span class='first'>E</span>quality-<span class='first'>S</span>aturation <span class='first'>M</span>erge and <span class='first'>E</span>xtraction <span class='first'>C</span>ertificates
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRiaHVsYWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJ1eSJdLCJob3N0IjpbImNpbiIsInVmcGUiLCJiciJdfQ==">📧</a>
+      </p>
+      <p class="date">July 14, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">Equality-saturation engines maintain equalities in an e-graph and
+later extract a representative from an e-class. This entry verifies an
+executable checker for the corresponding engine boundary. It directly
+parses the flat annotated S-expression format returned by egg 0.11.0’s
+explanation API [9, 1]; flat explanations may apply numbered rewrite
+rules at positions or reuse equalities from earlier checked e-class merges.
+For extraction, a finite e-graph is represented as a topologically ordered
+e-class DAG. An executable bottom-up dynamic program selects a rep-
+resentative, and a formal proof establishes minimum additive cost over
+every term represented by the designated class. Class-aligned equal-
+ity certificates additionally prove the selected term equivalent to the
+canonical class term.
+The development reuses the term, substitution, position, context,
+and rewriting infrastructure of the AFP entries First-Order Terms and
+First-Order Rewriting. Its soundness statements target their existing
+conversion relation. It does not introduce another first-order term
+datatype, rewrite relation, generic equational proof calculus, or proof
+of Birkhoﬀ’s theorem. Those generic equational results and a checker
+for equality proofs already exist in IsaFoR/CeTA. The new material is
+the chronological e-graph merge discipline, positional reuse of recorded
+merges, certified e-class DAG semantics, and globally optimal dynamic-
+programming extraction.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Opus 4.8 was used to help with proof engineering
+
+
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/rewriting/">Logic/Rewriting</a></li>
+      </ul>
+      <h3>Session Equality_Saturation_Checker</h3>
+      <ul>
+          <li><a href="../thys/Equality_Saturation_Checker/Equality_Saturation_Checker.html">Equality_Saturation_Checker</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Egg_Flat_Explanation.html">Egg_Flat_Explanation</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/EGraph_Explanations.html">EGraph_Explanations</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Extraction_Certificates.html">Extraction_Certificates</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Acyclic_EGraph_Extraction.html">Acyclic_EGraph_Extraction</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Certified_Acyclic_EGraph.html">Certified_Acyclic_EGraph</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Examples_Acyclic_EGraph.html">Examples_Acyclic_EGraph</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Bounded_Certificate_Search.html">Bounded_Certificate_Search</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Examples_Compiler.html">Examples_Compiler</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Examples_Egg.html">Examples_Egg</a></li>
+          <li><a href="../thys/Equality_Saturation_Checker/Code_Generation.html">Code_Generation</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/First_Order_Rewriting.html">First-Order Rewriting</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Equality_Saturation_Checker/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Equality_Saturation_Checker/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Equality_Saturation_Checker/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Equality_Saturation_Checker-AFP</p>
+        <pre id="copy-text">@article{Equality_Saturation_Checker-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {Checking Equality-Saturation Merge and Extraction Certificates},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Equality_Saturation_Checker.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Equality_Saturation_Checker-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>
