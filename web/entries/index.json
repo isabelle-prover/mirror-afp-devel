@@ -243,6 +243,27 @@
   "year": "2026"
  },
  {
+  "abstract": "We formalize **Conway’s circle theorem** in Isabelle/HOL.  For a nondegenerate Euclidean triangle (ABC) with side lengths  $$ a = |BC|,\\qquad b = |CA|,\\qquad c = |AB|, $$  extend the two side-lines meeting at each vertex past that vertex by the length of the side opposite that vertex:  $$ \\begin{aligned} \u0026\\text{at } A,\\text{ both adjacent sides are extended by } a,\\ \u0026\\text{at } B,\\text{ both adjacent sides are extended by } b,\\ \u0026\\text{at } C,\\text{ both adjacent sides are extended by } c. \\end{aligned} $$  The six resulting endpoints lie on one circle. Its center is the incenter (I) of the triangle, and its radius is  $$ \\sqrt{r^{2}+s^{2}}, $$  where (r) is the inradius and  $$ s=\\frac{a+b+c}{2} $$  is the semiperimeter.  We give the result in three equivalent forms: as six explicit distance equations, as a subset relation (\\subseteq) into the corresponding (\\mathsf{sphere}), and as a single bounded-universal statement over the six-point set. A separate construction-correctness theorem records that each Conway point lies on the intended side line and at the declared extension length from the adjacent vertex.  AI assistance was used for proof engineering.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-06-27",
+  "link": "../entries/Conway_Circle.html",
+  "permalink": "https://isa-afp.org/entries/Conway_Circle.html",
+  "related": [],
+  "shortname": "Conway_Circle",
+  "title": "Conway's Circle Theorem in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry provides a proof of Perron's Formula, which states that for a Dirichlet series $f(s) = \\sum_{n=1}^\\infty a_n n^{-s}$ with abscissa of convergence $\\sigma_c$ we have for any $c, z, x$ with $c \u003e 0$, $x \u003e 0$, $\\text{Re}(z) \u003e \\sigma_c - c$:\n\\[\\sum\\limits_{n\\leq x}\\kern-1pt^{'} a_n n^{-z} = \\frac{1}{2\\pi i}\\, \\lim_{T\\to\\infty} \\int\\limits_{c-iT}^{c+iT}\\hskip-4pt f(z + w)\\, x^s\\kern1pt w\\,\\frac{\\text{d}w}{w} \\] Additionally, various explicit bounds for the remainder (i.e.\\ when using some finite value of $T$ instead of the limit) are shown.\nAs an interesting nontrivial auxiliary result, asymptotic bounds for a Dirichlet series near $\\pm i\\infty$ are also included, namely that if $a\\in[0,1)$ then $f(\\sigma + it) \\in o(t^{1-a})$ as $t\\to\\pm\\infty$, uniformly for all $\\sigma\\geq \\sigma_c + a + \\varepsilon$.\nThe proofs mainly follow Tenenbaum's Introduction to Analytic and Probabilistic Number Theory and Titchmarsh's Theory of Functions.\n",
   "authors": [
    "Manuel Eberl"

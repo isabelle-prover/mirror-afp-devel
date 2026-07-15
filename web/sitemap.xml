@@ -44,6 +44,9 @@
     <loc>https://isa-afp.org/entries/Incomplete_Gamma.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Conway_Circle.html</loc>
+    <lastmod>2026-06-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Perrons_Formula.html</loc>
     <lastmod>2026-06-17T00:00:00+00:00</lastmod>
   </url><url>
@@ -7581,6 +7584,8 @@
     <loc>https://isa-afp.org/thys/Continued_Fractions/Quadratic_Irrationals.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Continued_Fractions/Sqrt_Nat_Cfrac.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Conway_Circle/Conway_Circle.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Cook_Levin/Arithmetic.html</loc>
   </url><url>
