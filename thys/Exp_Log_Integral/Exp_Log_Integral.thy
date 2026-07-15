@@ -196,7 +196,7 @@ subsection \<open>Cauchy principal value for reals\<close>
 
 lemma Cauchy_principal_value_Icc_realI:
   fixes a l r :: real and S :: "real set"
-  assumes "finite S"
+  assumes "countable S"
   assumes lim: "(\<lambda>\<epsilon>. F (a + \<epsilon>) - F (a - \<epsilon>)) \<midarrow>0\<rightarrow> 0"
   assumes deriv: "\<And>x. x \<in> {l..r} - {a} - S \<Longrightarrow> (F has_field_derivative f x) (at x)"
   assumes cont: "continuous_on ({l..r}-{a}) F"
@@ -209,10 +209,11 @@ proof (cases "l < a \<and> a < r")
   hence "eventually (\<lambda>\<epsilon>. integral ({l..r} - {a-\<epsilon>..a+\<epsilon>}) f = F r - F l) (at_right 0)"
   proof eventually_elim
     case (elim \<epsilon>)
-    have "(f has_integral (F r - F l)) {l..r}" using lr False \<open>finite S\<close>
-      by (intro fundamental_theorem_of_calculus_strong[of S])
-         (auto simp flip: has_real_derivative_iff_has_vector_derivative
+    have "(f has_integral (F r - F l)) {l..r}" using lr False \<open>countable S\<close>
+      apply(intro fundamental_theorem_of_calculus_strong[of S] has_vector_derivative_at_within [where S="{l..r}"])
+      apply(auto simp flip: has_real_derivative_iff_has_vector_derivative
                intro!: deriv continuous_on_subset[OF cont])
+      done
     hence "integral {l..r} f = F r - F l"
       by (simp add: has_integral_iff)
     also have "{l..r} = {l..r} - {a-\<epsilon>..a+\<epsilon>}"
@@ -235,14 +236,16 @@ next
             integral ({l..r} - {a-\<epsilon>..a+\<epsilon>}) f) (at_right 0)"
     proof eventually_elim
       case (elim \<epsilon>)
-      have "(f has_integral (F (a-\<epsilon>) - F l)) {l..a-\<epsilon>}" using True elim \<open>finite S\<close>
-        by (intro fundamental_theorem_of_calculus_strong[of S])
-           (auto simp flip: has_real_derivative_iff_has_vector_derivative simp: dist_norm
-                 intro!: deriv cont continuous_on_subset[OF cont])
-      moreover have "(f has_integral (F r - F (a+\<epsilon>))) {a+\<epsilon>..r}" using True elim \<open>finite S\<close>
-        by (intro fundamental_theorem_of_calculus_strong[of S])
-           (auto simp flip: has_real_derivative_iff_has_vector_derivative simp: dist_norm
-                 intro!: deriv cont continuous_on_subset[OF cont])
+      have "(f has_integral (F (a-\<epsilon>) - F l)) {l..a-\<epsilon>}" using True elim \<open>countable S\<close>
+        apply(intro fundamental_theorem_of_calculus_strong[of S] has_vector_derivative_at_within [where S="{_.._}"])
+           apply(auto simp add: deriv dist_real_def simp flip: has_real_derivative_iff_has_vector_derivative
+            intro: continuous_on_subset[OF cont])
+        done
+      moreover have "(f has_integral (F r - F (a+\<epsilon>))) {a+\<epsilon>..r}"using True elim \<open>countable S\<close>
+        apply(intro fundamental_theorem_of_calculus_strong[of S] has_vector_derivative_at_within [where S="{_.._}"])
+           apply(auto simp add: deriv dist_real_def simp flip: has_real_derivative_iff_has_vector_derivative
+            intro: continuous_on_subset[OF cont])
+        done
       ultimately have "(f has_integral ((F (a-\<epsilon>) - F l) + (F r - F (a+\<epsilon>)))) ({l..a-\<epsilon>} \<union> {a+\<epsilon>..r})"
         by (intro has_integral_Un) (use elim in auto)
       hence "integral ({l..a-\<epsilon>} \<union> {a+\<epsilon>..r}) f = F r - F l - (F (a+\<epsilon>) - F (a-\<epsilon>))"
@@ -260,7 +263,7 @@ qed
 
 lemma Cauchy_principal_value_Iic_realI:
   fixes a l r :: real and S :: "real set"
-  assumes "finite S"
+  assumes "countable S"
   assumes lim: "(\<lambda>\<epsilon>. F (a + \<epsilon>) - F (a - \<epsilon>)) \<midarrow>0\<rightarrow> 0"
   assumes deriv: "\<And>x. x \<in> {..r} - {a} - S \<Longrightarrow> (F has_field_derivative f x) (at x)"
   assumes cont: "continuous_on ({..r}-{a}) F"
@@ -300,10 +303,12 @@ next
       case (elim \<epsilon>)
       have "(f has_integral F (a-\<epsilon>)) {..a-\<epsilon>}"
         by (rule int) (use elim in auto)
-      moreover have "(f has_integral (F r - F (a+\<epsilon>))) {a+\<epsilon>..r}" using True elim \<open>finite S\<close>
-        by (intro fundamental_theorem_of_calculus_strong[of S])
-           (auto simp flip: has_real_derivative_iff_has_vector_derivative simp: dist_norm
-                 intro!: deriv cont continuous_on_subset[OF cont])
+      moreover have "(f has_integral (F r - F (a+\<epsilon>))) {a+\<epsilon>..r}" 
+        using True elim \<open>countable S\<close>
+        apply(intro fundamental_theorem_of_calculus_strong[of S] has_vector_derivative_at_within [where S="{_.._}"])
+           apply(auto simp add: deriv dist_real_def simp flip: has_real_derivative_iff_has_vector_derivative
+            intro: continuous_on_subset[OF cont])+
+        done
       ultimately have "(f has_integral (F (a-\<epsilon>) + (F r - F (a+\<epsilon>)))) ({..a-\<epsilon>} \<union> {a+\<epsilon>..r})"
         by (intro has_integral_Un) (use elim in auto)
       hence "integral ({..a-\<epsilon>} \<union> {a+\<epsilon>..r}) f = F r - (F (a+\<epsilon>) - F (a-\<epsilon>))"
