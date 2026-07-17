@@ -1,7 +1,7 @@
 chapter AFP
 
 session BMSSP_Correctness = HOL +
-  options [document = pdf, timeout = 600]
+  options [timeout = 600]
   sessions
     "HOL-Library"
   theories

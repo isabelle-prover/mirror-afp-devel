@@ -1,7 +1,7 @@
 chapter AFP
 
 session Freiman_3k_4 = "HOL-Number_Theory" +
-  options [document = pdf, timeout = 600]
+  options [timeout = 600]
   sessions
     Kneser_Cauchy_Davenport
   theories

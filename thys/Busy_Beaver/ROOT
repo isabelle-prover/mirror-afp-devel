@@ -1,7 +1,7 @@
 chapter AFP
 
 session Busy_Beaver = HOL +
-  options [document = pdf, timeout = 300]
+  options [timeout = 300]
   sessions
     "HOL-Library"
     Universal_Turing_Machine

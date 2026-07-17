@@ -4,7 +4,7 @@ session Combinatorics_Words (AFP)  = "HOL-Eisbach" +
   options [timeout = 600]
   sessions
     List_Power  
-  theories [document = pdf]
+  theories
     Arithmetical_Hints
     Border_Array
     Reverse_Symmetry
