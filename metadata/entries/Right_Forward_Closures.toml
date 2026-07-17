@@ -1,0 +1,51 @@
+title = "Termination Restricted to Right-Forward Closures"
+date = 2026-07-17
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+In this AFP entry we formalize Dershowitz' theorem that termination of a term
+rewrite system (TRS) starting from arbitrary terms is equivalent to termination
+starting from terms in the right-forward closures of right-hand sides, provided
+that the TRS is right-linear or orthogonal. Our proof deviates from the original
+one in that no reorderings of steps in infinite derivations are required, making
+it more precise in its argumentation. We also integrate a later result that one
+can weaken orthogonality to locally confluent overlay TRSs. 
+<br/>  
+In order to arrive at these statements, we had to formalize two further results:
+Following Gramlich, we prove that for locally confluent overlay TRSs the notions
+of termination and innermost termination coincide; and we verify that narrowing
+with a right-linear TRS preserves linearity of terms.
+<br/>  
+For further details, we refer to our FSCD 2026 paper."""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.hofbauer]
+email = "hofbauer_email"
+
+[authors.huitouze]
+
+[authors.waldmannj]
+email = "waldmannj_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4230/LIPIcs.FSCD.2026.32",
+]
+pubs = []

@@ -99,7 +99,7 @@
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">We formalize Conway’s circle theorem in Isabelle/HOL.
+    <div class="abstract mathjax_process">We formalize **Conway’s circle theorem** in Isabelle/HOL.
 
 For a nondegenerate Euclidean triangle (ABC) with side lengths
 
@@ -109,11 +109,13 @@ $$
 
 extend the two side-lines meeting at each vertex past that vertex by the length of the side opposite that vertex:
 
-<ul>
-<li> at $A$, both adjacent sides are extended by $a$,
-<li> at $B$, both adjacent sides are extended by $b$,
-<li> at $C$, both adjacent sides are extended by $c$.
-</ul>
+$$
+\begin{aligned}
+&\text{at } A,\text{ both adjacent sides are extended by } a,\
+&\text{at } B,\text{ both adjacent sides are extended by } b,\
+&\text{at } C,\text{ both adjacent sides are extended by } c.
+\end{aligned}
+$$
 
 The six resulting endpoints lie on one circle. Its center is the incenter (I) of the triangle, and its radius is
 
@@ -129,7 +131,9 @@ $$
 
 is the semiperimeter.
 
-We give the result in three equivalent forms: as six explicit distance equations, as a subset relation (\subseteq) into the corresponding (\mathsf{sphere}), and as a single bounded-universal statement over the six-point set. A separate construction-correctness theorem records that each Conway point lies on the intended side line and at the declared extension length from the adjacent vertex.</div>
+We give the result in three equivalent forms: as six explicit distance equations, as a subset relation (\subseteq) into the corresponding (\mathsf{sphere}), and as a single bounded-universal statement over the six-point set. A separate construction-correctness theorem records that each Conway point lies on the intended side line and at the declared extension length from the adjacent vertex.
+
+AI assistance was used for proof engineering.</div>
 
     <h3>License</h3>
     <div>
@@ -137,6 +141,11 @@ We give the result in three equivalent forms: as six explicit distance equations
     </div>
       <h3>Note</h3>
       <p><em>Opus 4.8 was used to help with proof engineering
+
+
+
+
+
 
 
 
