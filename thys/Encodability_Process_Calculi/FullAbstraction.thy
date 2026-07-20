@@ -1,3 +1,5 @@
+(* Kirstin Peters, TU Berlin, 2015 *)
+
 theory FullAbstraction
   imports SourceTargetRelation
 begin

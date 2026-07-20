@@ -380,6 +380,24 @@ name = "Lisa A. Barthel"
 
 [barthel.homepages]
 
+[bartl]
+name = "Lukas Bartl"
+orcid = "0009-0000-2439-5025"
+
+[bartl.emails]
+
+[bartl.emails.bartl_email]
+user = [
+  "lukas",
+  "bartl",
+]
+host = [
+  "uni-a",
+  "de",
+]
+
+[bartl.homepages]
+
 [batz]
 name = "Kevin Batz"
 
@@ -2579,6 +2597,14 @@ name = "Gianpaolo Gioiosa"
 [gioiosa.emails]
 
 [gioiosa.homepages]
+
+[giusto]
+name = "Cinzia Di Giusto"
+orcid = "0000-0003-1563-6581"
+
+[giusto.emails]
+
+[giusto.homepages]
 
 [glabbeek]
 name = "Rob van Glabbeek"
@@ -6131,6 +6157,7 @@ peltier_homepage = "http://membres-lig.imag.fr/peltier/"
 
 [peters]
 name = "Kirstin Peters"
+orcid = "0000-0002-4281-0074"
 
 [peters.emails]
 
@@ -6140,7 +6167,7 @@ user = [
   "peters",
 ]
 host = [
-  "tu-berlin",
+  "uni-a",
   "de",
 ]
 

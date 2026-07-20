@@ -32,12 +32,19 @@ email = "peters_email"
 [authors.glabbeek]
 homepage = "glabbeek_homepage"
 
+[authors.bartl]
+email = "bartl_email"
+
+[authors.giusto]
+
 [contributors]
 
 [notify]
 peters = "peters_email"
+bartl = "bartl_email"
 
 [history]
+2026-07-20 = "Extended encodability criteria to labelled semantics"
 
 [extra]
 
