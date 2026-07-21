@@ -4,6 +4,15 @@
     <title>Ruy Jose Guerra Barretto de Queiroz</title>
     <link>https://isa-afp.org/authors/queiroz/</link>
     <description>AFP entries of Ruy Jose Guerra Barretto de Queiroz</description><item>
+  <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
+  <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
+  <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
   <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
   <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>

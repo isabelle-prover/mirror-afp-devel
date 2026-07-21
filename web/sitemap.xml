@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Jacobian_Counterexample.html</loc>
+    <lastmod>2026-07-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Right_Forward_Closures.html</loc>
     <lastmod>2026-07-17T00:00:00+00:00</lastmod>
@@ -15545,6 +15548,8 @@
     <loc>https://isa-afp.org/authors/somaini/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/fosterj/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Jacobian_Counterexample/Jacobian_Counterexample.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Jacobson_Basic_Algebra/Group_Theory.html</loc>
   </url><url>

@@ -1,5 +1,37 @@
 [
  {
+  "abstract": "The Jacobian conjecture asks whether a polynomial self-map of affine space over a field of characteristic zero has a polynomial inverse whenever its Jacobian determinant is a nonzero constant. This entry gives an independent Isabelle/HOL verification of the explicit three-dimensional map announced by Levent Alpöge on July 20, 2026. The announcement credits Akhil Mathew with prompting the question and the AI system Claude Fable with work leading to the map; stable Lean and independent verification repositories appeared the same day.  Isabelle proves that the formal Jacobian entries are the corresponding complex analytic partial derivatives and that the determinant is identically \\(-2\\). It verifies that three distinct rational points have the same image. Scaling the first output coordinate yields determinant exactly \\(1\\) while preserving noninjectivity. The theory defines polynomial invertibility and proves that the map has no polynomial inverse. It also constructs identity-padded polynomial maps, proves their block-Jacobian determinant is unchanged, and thereby obtains counterexamples in every finite dimension at least three. The development makes no claim about the two-dimensional conjecture.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-20",
+  "link": "../entries/Jacobian_Counterexample.html",
+  "permalink": "https://isa-afp.org/entries/Jacobian_Counterexample.html",
+  "related": [
+   {
+    "doi": "10.1007/BF01695502"
+   },
+   {
+    "doi": "10.1007/978-3-0348-8440-2"
+   }
+  ],
+  "shortname": "Jacobian_Counterexample",
+  "title": "Formal Verification of an Explicit Counterexample to the Jacobian Conjecture",
+  "topic_links": [
+   "../topics/mathematics/algebra/",
+   "../topics/mathematics/analysis/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Mathematics/Algebra",
+   "Mathematics/Analysis",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "In this AFP entry we formalize Dershowitz' theorem that termination of a term rewrite system (TRS) starting from arbitrary terms is equivalent to termination starting from terms in the right-forward closures of right-hand sides, provided that the TRS is right-linear or orthogonal. Our proof deviates from the original one in that no reorderings of steps in infinite derivations are required, making it more precise in its argumentation. We also integrate a later result that one can weaken orthogonality to locally confluent overlay TRSs. In order to arrive at these statements, we had to formalize two further results: Following Gramlich, we prove that for locally confluent overlay TRSs the notions of termination and innermost termination coincide; and we verify that narrowing with a right-linear TRS preserves linearity of terms. For further details, we refer to our FSCD 2026 paper.",
   "authors": [
    "René Thiemann",
