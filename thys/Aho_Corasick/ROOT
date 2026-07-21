@@ -1,10 +1,9 @@
 chapter AFP
 
 session Aho_Corasick = "HOL-Library" +
-  options [document = pdf, timeout = 600]
+  options [timeout = 600]
   theories
     Aho_Corasick
   document_files
     "root.tex"
     "root.bib"
-

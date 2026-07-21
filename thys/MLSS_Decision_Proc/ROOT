@@ -1,4 +1,4 @@
-chapter AFP 
+chapter AFP
 
 session MLSS_Decision_Proc = HOL +
   options [timeout = 1200]
@@ -8,9 +8,9 @@ session MLSS_Decision_Proc = HOL +
     HereditarilyFinite
     Fresh_Identifiers
     "List-Index"
-  theories [document = pdf]
+  theories
     MLSS_Logic
-    MLSS_Semantics 
+    MLSS_Semantics
     MLSS_Typing_Defs
     MLSS_Calculus
     MLSS_Suc_Theory
