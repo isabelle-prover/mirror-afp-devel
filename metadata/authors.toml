@@ -2419,22 +2419,22 @@ name = "Stefan Friedrich"
 [friedrich.homepages]
 
 [from]
-name = "Asta Halkjær From"
+name = "Asta Halkjær Boserup"
 
 [from.emails]
 
 [from.emails.from_email]
 user = [
-  "asfr",
+  "andro",
+  "from",
 ]
 host = [
-  "di",
-  "ku",
-  "dk",
+  "gmail",
+  "com",
 ]
 
 [from.homepages]
-from_homepage = "https://astahfrom.github.io/"
+from_homepage = "https://asta.boserup.eu/"
 
 [fuenmayor]
 name = "David Fuenmayor"
