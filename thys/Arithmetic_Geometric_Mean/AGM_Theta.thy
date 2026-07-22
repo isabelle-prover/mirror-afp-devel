@@ -7,6 +7,8 @@ theory AGM_Theta
   imports "Theta_Functions.Theta_Nullwert" Arithmetic_Geometric_Mean_Integral
 begin
 
+unbundle jacobi_theta_nw_notation
+
 text \<open>
   The Jacobi theta nullwert functions have the property that 
   $(\vartheta_3(q)^2, \vartheta_4(q)^2)$ is transformed by a single step of the AGM iteration
@@ -90,5 +92,7 @@ proof -
   finally show ?thesis
     by (auto simp: divide_simps mult_ac split: if_splits)
 qed
+
+unbundle no jacobi_theta_nw_notation
 
 end

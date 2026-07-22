@@ -697,23 +697,21 @@ proof -
     by (auto simp: f_def modgrp_a_modgrp modgrp_b_modgrp modgrp_c_modgrp modgrp_d_modgrp)
   have [simp]: "is_singular_modgrp f"
     using k by (auto simp: is_singular_modgrp_altdef)
+  have [simp]: "\<bar>f\<bar> = f"
+    using k by (auto simp: abs_modgrp_altdef)
 
   define \<tau> \<tau>' where "\<tau> = (\<i> * z / k + h) / k" and "\<tau>' = (\<i> / z * k + H) / k"
   define A1 where "A1 = cis (pi * ((H - h) / (12 * k) - \<ss> (-h) k))"
   define A2 where "A2 = exp (pi / (12 * z) - pi * z / (12 * k\<^sup>2))"
   define A3 where "A3 = cis (pi * (h - H) / (12 * k))"
 
-  write (output) complex_of_int ("_" 0)
-  write (output) real_of_int ("_" 0)
-  write (output) complex_of_real ("_" 0)
-
-  have "\<eta> (apply_modgrp f \<tau>) = \<epsilon> f * csqrt (modgrp_factor f \<tau>) * \<eta> \<tau>"
+  have "\<eta> (apply_modgrp f \<tau>) = \<epsilon> f * csqrt (automorphy_factor \<bar>f\<bar> \<tau>) * \<eta> \<tau>"
     by (rule dedekind_eta_apply_modgrp) (use z k in \<open>auto simp: \<tau>_def\<close>)
   also have "apply_modgrp f \<tau> = \<tau>'" using k z
     by (simp add: apply_modgrp_altdef moebius_def \<tau>_def \<tau>'_def field_simps b'
              del: div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1)
-  also have "modgrp_factor f \<tau> = \<i> * (z / k)"
-    using k by (auto simp: modgrp_factor_def \<tau>_def)
+  also have "automorphy_factor \<bar>f\<bar> \<tau> = \<i> * (z / k)"
+    using k by (auto simp: automorphy_factor_altdef \<tau>_def)
   also have "csqrt (\<i> * (z / k)) = csqrt \<i> * csqrt (z / k)"
   proof (rule csqrt_mult)
     have "Arg (z / k) \<in> {-pi/2<..<pi/2}"
@@ -764,7 +762,7 @@ proof -
     using k z 
     apply (simp add: divide_simps del: div_mult_self3 div_mult_self4 div_mult_self2
              div_mult_self1 of_int_mult of_real_mult of_int_add of_real_add)
-    apply (simp add: algebra_simps power2_eq_square)
+    apply (simp add: algebra_simps power2_eq_square)?
     done
   also have "exp \<dots> = A2 * A3"
     by (simp add: A2_def A3_def cis_conv_exp exp_add mult_ac)
