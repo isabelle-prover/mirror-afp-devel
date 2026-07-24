@@ -954,25 +954,79 @@ proof -
       join_def [symmetric] by (rule \<open>s\<^sup>\<up> \<subseteq> s\<^sup>\<down>\<close>)
 qed
 
+lemma SN_on_iff_wf_on: \<^marker>\<open>contributor "Martin Desharnais-Schäfer"\<close>
+  assumes closed: "\<And>x y. x \<in> A \<Longrightarrow> (x, y) \<in> r \<Longrightarrow> y \<in> A"
+  shows "SN_on r A = wf_on A (r\<inverse>)"
+proof -
+  have "SN_on r A \<longleftrightarrow> (\<nexists>f. f 0 \<in> A \<and> (\<forall>i. (f i, f (Suc i)) \<in> r))"
+    unfolding SN_on_def ..
+
+  also have "\<dots> \<longleftrightarrow> (\<nexists>f. \<forall>i. (f (Suc i), f i) \<in> {(x, y). (x, y) \<in> r\<inverse> \<and> x \<in> A \<and> y \<in> A})"
+    (is "?LHS \<longleftrightarrow> ?RHS")
+  proof (rule iffI)
+    assume ?LHS
+    show ?RHS
+    proof (rule notI)
+      assume "\<exists>f. \<forall>i. (f (Suc i), f i) \<in> {(x, y) \<in> r\<inverse>. x \<in> A \<and> y \<in> A}"
+      then obtain f where steps:
+        "\<And>i. (f (Suc i), f i) \<in> {(x, y) \<in> r\<inverse>. x \<in> A \<and> y \<in> A}"
+        by blast
+
+      have "f 0 \<in> A"
+        using steps[of 0] by simp
+
+      moreover have "chain r f"
+        using steps by simp
+
+      ultimately show False
+        using \<open>?LHS\<close> by blast
+    qed
+  next
+    assume ?RHS
+    show ?LHS
+    proof (rule notI)
+      assume "\<exists>f. f 0 \<in> A \<and> chain r f"
+      then obtain f where "f 0 \<in> A" and "chain r f"
+        by blast
+
+      have "f i \<in> A" for i
+      proof (induction i)
+        case 0
+        show ?case
+          using \<open>f 0 \<in> A\<close> .
+      next
+        case (Suc i)
+        have "(f i, f (Suc i)) \<in> r"
+          using \<open>chain r f\<close> by simp
+        then show ?case
+          by (rule closed[OF Suc.IH])
+      qed
+      then have "\<forall>i. (f (Suc i), f i) \<in> {(x, y) \<in> r\<inverse>. x \<in> A \<and> y \<in> A}"
+        using \<open>chain r f\<close> by simp
+      then show False
+        using \<open>?RHS\<close> by blast
+    qed
+  qed
+
+  also have "\<dots> \<longleftrightarrow> wf {(x, y) \<in> r\<inverse>. x \<in> A \<and> y \<in> A}"
+    unfolding wf_iff_no_infinite_down_chain ..
+
+  also have "\<dots> \<longleftrightarrow> wf_on A (r\<inverse>)"
+    using wf_on_iff_wf[of A "r\<inverse>"] ..
+
+  finally show ?thesis .
+qed
+
+lemma SN_iff_wf: "SN r = wf (r\<inverse>)"
+  using SN_on_iff_wf_on[of UNIV, simplified] .
+
+lemmas SN_imp_wf = SN_iff_wf[THEN iffD1]
+lemmas wf_imp_SN = SN_iff_wf[THEN iffD2]
+
 lemma SN_imp_minimal:
   assumes "SN A"
   shows "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> A \<longrightarrow> y \<notin> Q)"
-proof (rule ccontr)
-  assume "\<not> (\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> A \<longrightarrow> y \<notin> Q))"
-  then obtain Q x where "x \<in> Q" and "\<forall>z\<in>Q. \<exists>y. (z, y) \<in> A \<and> y \<in> Q" by auto
-  then have "\<forall>z. \<exists>y. z \<in> Q \<longrightarrow> (z, y) \<in> A \<and> y \<in> Q" by auto
-  then have "\<exists>f. \<forall>x. x \<in> Q \<longrightarrow> (x, f x) \<in> A \<and> f x \<in> Q" by (rule choice)
-  then obtain f where a:"\<forall>x. x \<in> Q \<longrightarrow> (x, f x) \<in> A \<and> f x \<in> Q" (is "\<forall>x. ?P x") by best
-  let ?S = "\<lambda>i. (f ^^ i) x"
-  have "?S 0 = x" by simp
-  have "\<forall>i. (?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
-  proof
-    fix i show "(?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
-      by (induct i) (auto simp: \<open>x \<in> Q\<close> a)
-  qed
-  with \<open>?S 0 = x\<close> have "\<exists>S. S 0 = x \<and> chain A S" by fast
-  with assms show False by auto
-qed
+  using \<open>SN A\<close>[unfolded SN_iff_wf wf_eq_minimal converse_iff] .
 
 lemma SN_on_imp_on_minimal:
   assumes "SN_on r {x}"
@@ -993,55 +1047,17 @@ proof (rule ccontr)
   with assms show False by auto
 qed
 
+\<comment> \<open>TODO: Consider removing this lemma and invite users to rather use @{thm wf_eq_minimal}.\<close>
 lemma minimal_imp_wf:
   assumes "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> Q)"
   shows "wf(r\<inverse>)"
-proof (rule ccontr)
-  assume "\<not> wf(r\<inverse>)"
-  then have "\<exists>P. (\<forall>x. (\<forall>y. (x, y) \<in> r \<longrightarrow> P y) \<longrightarrow> P x) \<and> (\<exists>x. \<not> P x)" unfolding wf_def by simp
-  then obtain P x where suc:"\<forall>x. (\<forall>y. (x, y) \<in> r \<longrightarrow> P y) \<longrightarrow> P x" and "\<not> P x" by auto
-  let ?Q = "{x. \<not> P x}"
-  from \<open>\<not> P x\<close> have "x \<in> ?Q" by simp
-  from assms have "\<forall>x. x \<in> ?Q \<longrightarrow> (\<exists>z\<in>?Q. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> ?Q)" by (rule allE [where x = ?Q])
-  with \<open>x \<in> ?Q\<close> obtain z where "z \<in> ?Q" and min:" \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> ?Q" by best
-  from \<open>z \<in> ?Q\<close> have "\<not> P z" by simp
-  with suc obtain y where "(z, y) \<in> r" and "\<not> P y" by best
-  then have "y \<in> ?Q" by simp
-  with \<open>(z, y) \<in> r\<close> and min show False by simp
-qed
-
-lemmas SN_imp_wf = SN_imp_minimal [THEN minimal_imp_wf]
-
-lemma wf_imp_SN:
-  assumes "wf (A\<inverse>)" shows "SN A"
-proof - {
-  fix a
-  let ?P = "\<lambda>a. \<not>(\<exists>S. S 0 = a \<and> chain A S)"
-  from \<open>wf (A\<inverse>)\<close> have "?P a"
-  proof induct
-    case (less a)
-    then have IH: "\<And>b. (a, b) \<in> A \<Longrightarrow> ?P b" by auto
-    show "?P a"
-    proof (rule ccontr)
-      assume "\<not> ?P a"
-      then obtain S where "S 0 = a" and "chain A S" by auto
-      then have "(S 0, S 1) \<in> A" by auto
-      with IH have "?P (S 1)" unfolding \<open>S 0 = a\<close> by auto
-      with \<open>chain A S\<close> show False by auto
-    qed
-  qed
-  then have "SN_on A {a}" unfolding SN_defs by auto
-} then show ?thesis by fast
-qed
+  using assms wf_eq_minimal[of "_\<inverse>", simplified, THEN iffD2] by iprover
 
 lemma SN_nat_gt: "SN {(a, b :: nat) . a > b}"
 proof -
   from wf_less have "wf ({(x, y) . (x :: nat) > y}\<inverse>)" unfolding converse_unfold by auto
   from wf_imp_SN [OF this] show ?thesis .
 qed
-
-
-lemma SN_iff_wf: "SN A = wf (A\<inverse>)" by (auto simp: SN_imp_wf wf_imp_SN)
 
 lemma SN_imp_acyclic: "SN R \<Longrightarrow> acyclic R"
   using wf_acyclic [of "R\<inverse>", unfolded SN_iff_wf [symmetric]] by auto
