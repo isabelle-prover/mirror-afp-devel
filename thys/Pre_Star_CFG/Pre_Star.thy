@@ -21,6 +21,10 @@ A closely related formalization is \<open>AFP/Pushdown_Systems\<close>where \<op
 definition pre_star :: "('n,'t)Prods \<Rightarrow> ('n,'t) syms set \<Rightarrow> ('n,'t) syms set" where
 "pre_star P L = {\<alpha>. \<exists>\<beta> \<in> L. P \<turnstile> \<alpha> \<Rightarrow>* \<beta>}"
 
+lemma pre_star_iff:
+  "u \<in> pre_star P L \<longleftrightarrow> (\<exists>v \<in> L. P \<turnstile> u \<Rightarrow>* v)"
+unfolding pre_star_def by blast
+
 
 subsection \<open>Definition on LTS as Fixpoint\<close>
 

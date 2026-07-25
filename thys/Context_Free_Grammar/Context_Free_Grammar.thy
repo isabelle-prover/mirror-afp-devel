@@ -59,6 +59,12 @@ definition isNt :: "('n, 't) sym \<Rightarrow> bool" where
 fun destTm :: "('n, 't) sym  \<Rightarrow> 't" where 
 \<open>destTm (Tm a) = a\<close>
 
+lemma inj_Tm: "inj Tm"
+by (simp add: inj_def)
+
+lemma inj_Nt: "inj Nt"
+by (simp add: inj_def)
+
 lemma isNt_simps[simp,code]:
   \<open>isNt (Nt A) = True\<close>
   \<open>isNt (Tm a) = False\<close> 
@@ -125,9 +131,6 @@ definition Rhss :: "('n \<times> 'a) set \<Rightarrow> 'n \<Rightarrow> 'a set" 
 
 lemma Rhss_code[code]: "Rhss P A = snd ` {Aw \<in> P. fst Aw = A}"
 by(auto simp add: Rhss_def image_iff)
-
-lemma inj_Nt: "inj Nt"
-by (simp add: inj_def)
 
 lemma map_Tm_inject_iff[simp]: "map Tm xs = map Tm ys \<longleftrightarrow> xs = ys"
 by (metis sym.inject(2) list.inj_map_strong)
@@ -409,6 +412,15 @@ lemma deriven_Nts_syms_subset:
 lemma derives_Nts_syms_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Rhs_Nts P"
   by (auto simp: rtranclp_power dest!: deriven_Nts_syms_subset)
+
+lemma derive_Nts_iff: "P \<turnstile> \<alpha> \<Rightarrow> \<beta> \<Longrightarrow> Nts_syms \<beta> \<subseteq> Nts P \<longleftrightarrow> Nts_syms \<alpha> \<subseteq> Nts P"
+ apply(frule derive_Nts_syms_subset) 
+by (auto simp: derive.simps Nts_Lhss_Rhs_Nts intro: in_LhssI)
+
+lemma derives_Nts_iff: "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> Nts_syms \<alpha> \<subseteq> Nts P \<longleftrightarrow> Nts_syms \<beta> \<subseteq> Nts P"
+apply(induction rule: rtranclp.induct)
+ apply simp
+by (meson derive.intros derive_Nts_iff)
 
 lemma derive_Tms_syms_subset:
   "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
