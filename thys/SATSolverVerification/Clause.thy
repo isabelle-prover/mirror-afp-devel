@@ -4,10 +4,10 @@
 *)
 
 section \<open>CNF\<close>
-theory CNF
+theory Clause
 imports MoreList
 begin
-text\<open>Theory describing formulae in Conjunctive Normal Form.\<close>
+text\<open>Theory describing formulae in Conjunctive Normal Form as clauses.\<close>
 
 
 (********************************************************************)
