@@ -458,6 +458,46 @@ lemma weierstrass_fun_conv_theta':
   by (subst weierstrass_fun_conv_theta[OF assms], subst e2_conv_theta)
      (simp_all add: field_simps)
 
+lemma invariant_g2_conv_theta:
+  "\<g>\<^sub>2 = 2 / 3 * (pi / \<omega>1) ^ 4 * (\<theta>\<^sub>0\<^sub>0(0)^8 + \<theta>\<^sub>1\<^sub>0(0)^8 + \<theta>\<^sub>0\<^sub>1(0)^8)"
+proof -
+  have *: "\<theta>\<^sub>0\<^sub>0(0) ^ 4 = \<theta>\<^sub>1\<^sub>0(0) ^ 4 + \<theta>\<^sub>0\<^sub>1(0) ^ 4"
+    using jacobi_theta_xy_0_pow4_complex[of \<tau>] Im_ratio_pos
+    by (simp add: theta_00_def theta_01_def theta_10_def)
+  have **: "\<theta>\<^sub>0\<^sub>0(0) ^ 8 = (\<theta>\<^sub>1\<^sub>0(0) ^ 4 + \<theta>\<^sub>0\<^sub>1(0) ^ 4) ^ 2"
+    by (subst * [symmetric]) simp_all
+  show ?thesis
+    apply (simp add: invariant_g2_conv_e123 e1_conv_theta e2_conv_theta e3_conv_theta)
+    apply (simp add: divide_simps)
+    apply (simp add: algebra_simps power2_eq_square * **)?
+    done
+qed
+
+lemma invariant_g3_conv_theta:
+  "\<g>\<^sub>3 = 4 / 27 * (pi / \<omega>1) ^ 6 * 
+          (\<theta>\<^sub>0\<^sub>0(0)^4 + \<theta>\<^sub>0\<^sub>1(0)^4) * (\<theta>\<^sub>0\<^sub>0(0)^4 + \<theta>\<^sub>1\<^sub>0(0)^4) * (\<theta>\<^sub>0\<^sub>1(0)^4 - \<theta>\<^sub>1\<^sub>0(0)^4)"
+proof -
+  have *: "\<theta>\<^sub>0\<^sub>0(0) ^ 4 = \<theta>\<^sub>1\<^sub>0(0) ^ 4 + \<theta>\<^sub>0\<^sub>1(0) ^ 4"
+    using jacobi_theta_xy_0_pow4_complex[of \<tau>] Im_ratio_pos
+    by (simp add: theta_00_def theta_01_def theta_10_def)
+  show ?thesis
+    apply (simp add: invariant_g3_conv_e123 e1_conv_theta e2_conv_theta e3_conv_theta)
+    apply (simp add: divide_simps)
+    apply (simp add: algebra_simps power2_eq_square *)?
+    done
+qed
+
+lemma discr_conv_theta:
+  "discr = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
+proof -
+  have "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>3 - \<e>\<^sub>2))\<^sup>2"
+    unfolding discr_altdef by Groebner_Basis.algebra
+  also have "\<dots> = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
+    unfolding e12_conv_theta e13_conv_theta e32_conv_theta
+    by (simp add: power_mult_distrib power_divide)
+  finally show ?thesis .
+qed
+
 end
 
 
