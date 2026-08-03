@@ -5559,16 +5559,6 @@ name = "Jonathan Julian Huerta y Munive"
 
 [munive.emails]
 
-[munive.emails.munive_email]
-user = [
-  "jjhuertaymunive1",
-]
-host = [
-  "sheffield",
-  "ac",
-  "uk",
-]
-
 [munive.emails.munive_email1]
 user = [
   "jonjulian23",
