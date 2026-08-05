@@ -3,8 +3,7 @@ chapter AFP
 session Zippy = HOL +
   description
     "Zippy - a Customisable Framework for Tree-Based Searches"
-  options
-    [timeout = 600]
+  options [timeout = 600]
   sessions
     ML_Unification
     SpecCheck
@@ -97,8 +96,7 @@ session Zippy = HOL +
 session Zip_Benchmarks in "Zippy/Instances/Zip/Examples/Benchmarks" = "HOL-Data_Structures" +
   description
     "Benchmarks for zip"
-  options
-    [timeout = 900]
+  options [timeout = 900]
   sessions
     "HOL-Library"
     "Zippy"
@@ -113,4 +111,3 @@ session Zip_Benchmarks in "Zippy/Instances/Zip/Examples/Benchmarks" = "HOL-Data_
     Set
     Tree234_Set
     Word
-
