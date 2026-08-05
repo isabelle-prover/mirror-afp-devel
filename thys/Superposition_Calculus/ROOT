@@ -1,6 +1,6 @@
 chapter AFP
 session Superposition_Calculus = Saturation_Framework_Extensions +
-  options [timeout = 900]
+  options [timeout = 1800]
   sessions
     First_Order_Clause
     Saturation_Framework

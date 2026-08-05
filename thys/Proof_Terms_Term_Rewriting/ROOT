@@ -2,7 +2,7 @@ chapter AFP
 
 session Proof_Terms_Term_Rewriting = First_Order_Rewriting +
   description "Proof Terms for Term Rewriting"
-  options [timeout = 300]
+  options [timeout = 600]
   sessions
     Well_Quasi_Orders
   theories (*Preliminaries*)

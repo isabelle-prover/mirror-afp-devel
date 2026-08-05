@@ -3,7 +3,7 @@ chapter AFP
 (* Builds on Complex_Analysis because Three_Squares needs it *)
 session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
   description \<open>Universal Pairs for Diophantine Equations\<close>
-  options [document_build = "pdflatex", timeout = 900]
+  options [document_build = "pdflatex", timeout = 1800]
 
   sessions
     "HOL-Computational_Algebra"

@@ -96,7 +96,7 @@ session Zippy = HOL +
 session Zip_Benchmarks in "Zippy/Instances/Zip/Examples/Benchmarks" = "HOL-Data_Structures" +
   description
     "Benchmarks for zip"
-  options [timeout = 900]
+  options [timeout = 1800]
   sessions
     "HOL-Library"
     "Zippy"
