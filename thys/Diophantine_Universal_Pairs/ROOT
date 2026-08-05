@@ -3,10 +3,9 @@ chapter AFP
 (* Builds on Complex_Analysis because Three_Squares needs it *)
 session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
   description \<open>Universal Pairs for Diophantine Equations\<close>
-  options [document_build = "pdflatex",
-           timeout = 900]
+  options [document_build = "pdflatex", timeout = 900]
 
-  sessions 
+  sessions
     "HOL-Computational_Algebra"
     "HOL-Algebra"
     "HOL-Number_Theory"
@@ -14,7 +13,7 @@ session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
     "Polynomials"
     "Three_Squares"
 
-  directories 
+  directories
     "MPoly_Utils"
     "Coding"
     "Coding_Theorem"
@@ -22,7 +21,7 @@ session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
     "Nine_Unknowns_N_Z"
     "Lucas_Sequences"
 
-  theories  
+  theories
     "MPoly_Utils/More_More_MPoly_Type"
     "MPoly_Utils/Poly_Extract"
 
@@ -37,7 +36,7 @@ session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
     "Coding/Suitable_For_Coding"
 
     "Coding_Theorem/Coding_Theorem_Definitions"
-    "Coding_Theorem/Lemma_2_2"    
+    "Coding_Theorem/Lemma_2_2"
     "Coding_Theorem/Lower_Bounds"
     "Coding_Theorem/Coding_Theorem"
 
@@ -69,5 +68,5 @@ session "Diophantine_Universal_Pairs" (AFP) = "HOL-Complex_Analysis" +
     "Universal_Pairs"
 
   document_files
-    "root.tex"    
+    "root.tex"
     "root.bib"
