@@ -1,0 +1,10 @@
+chapter AFP
+
+session Simson = "Complex_Geometry" +
+  options [document = pdf, timeout = 1200]
+  theories
+    Simson_Complex_Geometry
+    Simson
+  document_files
+    "root.tex"
+    "root.bib"

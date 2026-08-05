@@ -1,5 +1,26 @@
 [
  {
+  "abstract": "We formalize the Wallace--Simson line theorem in Isabelle/HOL. Let \\(ABC\\) be a nondegenerate triangle and let \\(M\\) be a point on its circumcircle. Dropping the perpendiculars from \\(M\\) to the three side lines \\(BC\\), \\(CA\\), \\(AB\\) gives feet \\(P\\), \\(Q\\), \\(R\\); the theorem asserts that \\(P\\), \\(Q\\), \\(R\\) are collinear. The line through them is the Simson line, also called the Wallace line after William Wallace, whose published work on geometrical porisms is the standard early source for this result. We also prove the converse: if the three feet are collinear, then \\(M\\) lies on the circumcircle of \\(ABC\\). The development uses complex coordinates.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-08-03",
+  "link": "../entries/Simson.html",
+  "permalink": "https://isa-afp.org/entries/Simson.html",
+  "related": [],
+  "shortname": "Simson",
+  "title": "The Wallace--Simson Line Theorem in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "The Jacobian conjecture asks whether a polynomial self-map of affine space over a field of characteristic zero has a polynomial inverse whenever its Jacobian determinant is a nonzero constant. This entry gives an independent Isabelle/HOL verification of the explicit three-dimensional map announced by Levent Alpöge on July 20, 2026. The announcement credits Akhil Mathew with prompting the question and the AI system Claude Fable with work leading to the map; stable Lean and independent verification repositories appeared the same day.  Isabelle proves that the formal Jacobian entries are the corresponding complex analytic partial derivatives and that the determinant is identically \\(-2\\). It verifies that three distinct rational points have the same image. Scaling the first output coordinate yields determinant exactly \\(1\\) while preserving noninjectivity. The theory defines polynomial invertibility and proves that the map has no polynomial inverse. It also constructs identity-padded polynomial maps, proves their block-Jacobian determinant is unchanged, and thereby obtains counterexamples in every finite dimension at least three. The development makes no claim about the two-dimensional conjecture.",
   "authors": [
    "Arthur Freitas Ramos",

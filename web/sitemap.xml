@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-20T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-20T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Simson.html</loc>
+    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Jacobian_Counterexample.html</loc>
     <lastmod>2026-07-20T00:00:00+00:00</lastmod>
@@ -23321,6 +23324,10 @@
     <loc>https://isa-afp.org/thys/SimplifiedOntologicalArgument/SimplifiedOntologicalArgument.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/SimplifiedOntologicalArgument/UFilterVariant.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Simson/Simson.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Simson/Simson_Complex_Geometry.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Skew_Heap/Skew_Heap.html</loc>
   </url><url>

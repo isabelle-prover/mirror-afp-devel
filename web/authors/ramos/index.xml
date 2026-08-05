@@ -4,6 +4,13 @@
     <title>Arthur Freitas Ramos</title>
     <link>https://isa-afp.org/authors/ramos/</link>
     <description>AFP entries of Arthur Freitas Ramos</description><item>
+  <title>The Wallace--Simson Line Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Simson.html</link>
+  <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Wallace--Simson Line Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
   <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
   <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
