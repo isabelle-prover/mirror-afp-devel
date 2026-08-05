@@ -101,9 +101,9 @@ method etcs_assocl declares type_rule = (etcs_subst comp_associative2)+
 method etcs_assocr declares type_rule = (etcs_subst sym[OF comp_associative2])+
 
 method_setup etcs_subst_asm = 
-  \<open>Runtime.exn_trace (fn _ => Scan.repeats (Scan.unless (Scan.lift (Args.$$$ "type_rule" -- Args.colon)) Attrib.multi_thm)
+  \<open>Scan.repeats (Scan.unless (Scan.lift (Args.$$$ "type_rule" -- Args.colon)) Attrib.multi_thm)
     -- Scan.option ((Scan.lift (Args.$$$ "type_rule" -- Args.colon)) |-- Attrib.thms)
-     >> ETCS_subst_asm_method)\<close> 
+     >> ETCS_subst_asm_method\<close> 
   "apply substitution to assumptions of the goal, with ETCS type checking"
 
 method etcs_assocl_asm declares type_rule = (etcs_subst_asm comp_associative2)+
