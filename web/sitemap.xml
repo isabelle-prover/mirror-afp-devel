@@ -8,6 +8,9 @@
     <loc>https://isa-afp.org/</loc>
     <lastmod>2026-08-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Q0_Completeness.html</loc>
+    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Simson.html</loc>
     <lastmod>2026-08-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -21277,6 +21280,16 @@
     <loc>https://isa-afp.org/thys/Pushdown_Systems/PDS.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Pushdown_Systems/PDS_Code.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Consistency_Property.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Constant_Substitution.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Derivational_Consistency.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Model_Existence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Q0_Completeness.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Q0_Metatheory/Boolean_Algebra.html</loc>
   </url><url>

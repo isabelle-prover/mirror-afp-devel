@@ -4,6 +4,14 @@
     <title>Logic/General logic/Mechanization of proofs</title>
     <link>https://isa-afp.org/topics/logic/general-logic/mechanization-of-proofs/</link>
     <description>AFP entries in Mechanization of proofs</description><item>
+  <title>Completeness of the Q0 Higher-Order Logic</title>
+  <link>https://isa-afp.org/entries/Q0_Completeness.html</link>
+  <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Completeness of the Q0 Higher-Order Logic in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
   <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
   <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>

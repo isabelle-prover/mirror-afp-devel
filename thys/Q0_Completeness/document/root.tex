@@ -1,0 +1,121 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[left=15mm,right=15mm,top=20mm,bottom=27mm]{geometry}
+\usepackage{graphicx}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+\usepackage{wasysym}
+\usepackage{pifont}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\renewcommand{\isacharunderscore}{\_}
+\renewcommand{\isachardoublequoteopen}{``}
+\renewcommand{\isachardoublequoteclose}{''}
+
+\begin{document}
+
+\title{Completeness of the $Q_0$ higher-order logic}
+\author{Asta Halkjær Boserup\and Jonathan Juli\'an Huerta y Munive\and Anders Schlichtkrul}
+\maketitle
+
+\begin{abstract}
+  We formalize the completeness of Peter B. Andrews' system $Q_0$, an implementation of Higher-Order Logic (also called simple type theory),
+  following his textbook ``An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof''. 
+  Our work builds on D\'iaz's formalization of $Q_0$'s syntax, semantics, soundness and consistency. 
+  The completeness is with respect to general models. We prove completeness by introducing an abstract 
+  consistency property for $Q_0$ using the framework for abstract consistency properties by From and 
+  Schlichtkrull to get a model existence theorem for $Q_0$. We adapt proofs from Andrews' book to this context.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+\emergencystretch 3em
+\newpage
+\section{Introduction}
+We give a completeness proof of Peter B. Andrews' system $Q_0$ for Higher-Order Logic (also called simple type theory) following 
+his textbook ``An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof' 
+\cite{andrews2013introduction}.
+The study of Higher-Order Logic and type theories includes works by Russell \cite{russell1908mathematical} with Whitehead \cite{whiteheadrussell}, Church \cite{church1940formulation}, 
+Henkin \cite{henkin1950completeness,henkin1963b,DBLP:journals/bsl/Henkin96} and Andrews \cite{andrews1963reduction,andrews2013introduction,Andrews1971,andrews1972general}. 
+Andrews states in his book that the $Q_0$ system is specifically based on works by Church \cite{church1940formulation} and Henkin \cite{henkin1950completeness,henkin1963b} and also his own earlier works \cite{andrews1963reduction,andrews1972general}.
+We build the completeness proof on D\'iaz's \cite{Q0_Metatheory-AFP} formalization of $Q_0$, and thus 
+also Paulson's Zermelo Fraenkel Set Theory in Higher-Order Logic \cite{ZFC_in_HOL-AFP}. D\'iaz's formalization is
+combined with the framework by From and Schlichtkrull for abstract consistency properties \cite{Abstract_Consistency_Property-AFP,DBLP:conf/itp/FromS25}.
+This framework fits Andrews' completeness proof better than other such frameworks for logics.
+The framework for synthetic completeness \cite{Synthetic_Completeness-AFP,DBLP:conf/cpp/From25} applies only to synthetic proof systems, a narrower range than for the chosen framework, and would limit the extensibility of the results. 
+The frameworks for Beth/Hintikka style completeness proofs \cite{Abstract_Completeness-AFP,DBLP:conf/cade/Blanchette0T14,DBLP:journals/jar/BlanchettePT17}
+and for saturation-based provers \cite{Saturation_Framework-AFP,Splitting_Framework-AFP,DBLP:journals/jar/WaldmannTRB22,DBLP:conf/cade/EbnerBT21,DBLP:conf/cpp/TourretB21,Saturation_Framework_Extensions-AFP,DBLP:conf/cade/WaldmannTRB20} were not designed with axiomatic systems like $Q_0$ in mind.
+
+There are two formalizations of $Q_0$ in Isabelle, but they do not cover completeness.
+Specifically there is D\'iaz's \cite{Q0_Metatheory-AFP} formalization of $Q_0$ on 
+which this theory is built and Schlichtkrull's formalization of $Q_0$ \cite{Q0_Soundness-AFP}.
+Formalizations of other systems for higher-order logic also do not cover completeness.
+There is specifically Arthan's specification of HOL in ProofPower \cite{arthan1993,arthan1991sem,arthan1991ded}, John Harrison's formalization of the proof system of HOL Light in HOL Light \cite{DBLP:conf/cade/Harrison06} and the formalization by Kumar et al.\ of HOL Light with definitions and a verified implementation in HOL4~\cite{DBLP:conf/itp/KumarAMO14,DBLP:journals/jar/KumarAMO16,DBLP:conf/itp/AbrahamssonMKS22,DBLP:conf/itp/AbrahamssonM23}.
+Another formalization with the focus on implementation is by
+Ro{\ss}kopf and Nipkow \cite{DBLP:conf/cade/NipkowR21,Metalogic_ProofChecker-AFP,DBLP:journals/jar/RosskopfN23} who in Isabelle/HOL give both a
+formalized proof system for terms in Isabelle's metalogic and a formalized implementation
+of a checker and prove that the checker implements the system. 
+Additionally there are works formalizing the metatheory of the calculus of constructions and
+the calculus of inductive constructions \cite{DBLP:conf/types/Barras96,barras:inria-00073667,coqincoqmanuscript,coqincoqcontribs,DBLP:journals/pacmpl/SozeauBFTW20}.
+
+The only other formalizations of completeness with general models we know of are for second-order logic
+by Kock and Kirst \cite{DBLP:conf/cpp/KochK22} in Rocq and by From and Schlichtkrull in Isabelle/HOL \cite{Abstract_Consistency_Property-AFP,DBLP:conf/itp/FromS25}.
+
+\begin{figure}
+\begin{center}
+  \includegraphics[width=0.4\textwidth,keepaspectratio]{session_graph}
+\end{center}
+\caption{Theory dependency graph}
+\label{fig:thys}
+\end{figure}
+
+
+\newpage
+
+% generated text of all theories
+\input{session}
+
+\nocite{*}
+
+% optional bibliography
+\bibliographystyle{alpha}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

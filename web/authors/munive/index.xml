@@ -4,6 +4,14 @@
     <title>Jonathan Julian Huerta y Munive</title>
     <link>https://isa-afp.org/authors/munive/</link>
     <description>AFP entries of Jonathan Julian Huerta y Munive</description><item>
+  <title>Completeness of the Q0 Higher-Order Logic</title>
+  <link>https://isa-afp.org/entries/Q0_Completeness.html</link>
+  <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Completeness of the Q0 Higher-Order Logic in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
   <link>https://isa-afp.org/entries/MFOTL_Checker.html</link>
   <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>

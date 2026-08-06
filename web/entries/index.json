@@ -1,5 +1,28 @@
 [
  {
+  "abstract": "We formalize the completeness of Peter B. Andrews' system \\( Q_0 \\), an implementation of Higher-Order Logic (also called simple type theory), following his textbook An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof. Our work builds on Díaz's formalization of \\( Q_0 \\)'s syntax, semantics, soundness and consistency. The completeness is with respect to general models. We prove completeness by introducing an abstract consistency property for \\( Q_0 \\) using the framework for abstract consistency properties by From and Schlichtkrull to get a model existence theorem for \\( Q_0 \\). We adapt proofs from Andrews' book to this context.",
+  "authors": [
+   "Asta Halkjær From",
+   "Jonathan Julian Huerta y Munive",
+   "Anders Schlichtkrull"
+  ],
+  "date": "2026-08-03",
+  "link": "../entries/Q0_Completeness.html",
+  "permalink": "https://isa-afp.org/entries/Q0_Completeness.html",
+  "related": [],
+  "shortname": "Q0_Completeness",
+  "title": "Completeness of the Q0 Higher-Order Logic",
+  "topic_links": [
+   "../topics/logic/general-logic/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Logic/General logic",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "We formalize the Wallace--Simson line theorem in Isabelle/HOL. Let \\(ABC\\) be a nondegenerate triangle and let \\(M\\) be a point on its circumcircle. Dropping the perpendiculars from \\(M\\) to the three side lines \\(BC\\), \\(CA\\), \\(AB\\) gives feet \\(P\\), \\(Q\\), \\(R\\); the theorem asserts that \\(P\\), \\(Q\\), \\(R\\) are collinear. The line through them is the Simson line, also called the Wallace line after William Wallace, whose published work on geometrical porisms is the standard early source for this result. We also prove the converse: if the three feet are collinear, then \\(M\\) lies on the circumcircle of \\(ABC\\). The development uses complex coordinates.",
   "authors": [
    "Arthur Freitas Ramos",

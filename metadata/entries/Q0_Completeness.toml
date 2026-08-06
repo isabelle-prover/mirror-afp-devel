@@ -1,0 +1,43 @@
+title = "Completeness of the Q0 Higher-Order Logic"
+date = 2026-08-03
+topics = [
+  "Logic/General logic",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "We formalize the completeness of Peter B. Andrews' system \\( Q_0 \\), an implementation of Higher-Order Logic (also called simple type theory), following his textbook <q>An Introduction to Mathematical Logic and Type Theory: To Truth Through Proof</q>. Our work builds on Díaz's formalization of \\( Q_0 \\)'s syntax, semantics, soundness and consistency. The completeness is with respect to general models. We prove completeness by introducing an abstract  consistency property for \\( Q_0 \\) using the framework for abstract consistency properties by From and Schlichtkrull to get a model existence theorem for \\( Q_0 \\). We adapt proofs from Andrews' book to this context."
+license = "bsd"
+note = ""
+creation_note = """
+No generative AI was used.
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.from]
+email = "from_email"
+
+[authors.munive]
+email = "munive_email"
+
+[authors.schlichtkrull]
+email = "schlichtkrull_email"
+
+[contributors]
+
+[notify]
+from = "from_email"
+munive = "munive_email"
+schlichtkrull = "schlichtkrull_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
