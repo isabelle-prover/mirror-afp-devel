@@ -1,0 +1,19 @@
+chapter AFP
+
+session HOL_in_HOL_Deep = HOL +
+  description "A locally-nameless deep embedding of classical higher-order logic (Church's simple theory of types) after Benzmueller, Brown and Kohlhase, with the calculus NK proved sound, Henkin-complete and consistent. Completeness is strengthened to arbitrary infinite carriers and alphabets and to open formulas; Cantor's theorem is derived inside the calculus."
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    Syntax
+    Semantics
+    Calculus
+    Soundness
+    Completeness
+    Consistency
+    Cantor
+    Main_Results
+  document_files
+    "root.tex"
+    "root.bib"
