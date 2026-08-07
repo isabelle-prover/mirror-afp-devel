@@ -323,7 +323,7 @@ subsection \<open>Fringe spans\<close>
 
 text \<open>A *\<open>fringe span\<close> is the set of indices of the fringe of a subtree of \<open>t\<close> within \<open>fringe t\<close>.\<close>
 
-text \<open>\<open>fringe_beg t p\<close> is the beginning of \<open>fringe (sub_pt t pos)\<close> within \<open>fringe t\<close>\<close>
+text \<open>\<open>fringe_beg t p\<close> is the beginning of \<open>fringe (sub_pt t p)\<close> within \<open>fringe t\<close>\<close>
 fun fringe_beg :: "('n,'t) ptree \<Rightarrow> nat list \<Rightarrow> nat" where
 "fringe_beg t [] = 0" |
 "fringe_beg (Prod A ts) (i # p) = length (fringes (take i ts)) + fringe_beg (ts ! i) p" |
@@ -338,17 +338,8 @@ abbreviation fringe_end :: "('n,'t) ptree \<Rightarrow> nat list \<Rightarrow> n
 definition fringe_span :: "('n,'t) ptree \<Rightarrow> nat list \<Rightarrow> nat set" where
 "fringe_span t p = {fringe_beg t p ..< fringe_end t p}"
 
-lemma len_fringes_take_Suc:
-  "i < length ts \<Longrightarrow>
-   length (fringes (take (Suc i) ts)) = length (fringes (take i ts)) + length (fringe (ts ! i))"
-  by (simp add: take_Suc_conv_app_nth)
-
 lemma len_fringes_take_le: "length (fringes (take i ts)) \<le> length (fringes ts)"
-proof -
-  have "fringes ts = fringes (take i ts) @ fringes (drop i ts)"
-    by (metis append_take_drop_id concat_append map_append)
-  thus ?thesis by simp
-qed
+by (metis append_take_drop_id concat_append le_add_same_cancel1 length_append map_append zero_le)
 
 lemma len_fringes_take_mono:
   assumes "i \<le> j" shows "length (fringes (take i ts)) \<le> length (fringes (take j ts))"
@@ -371,9 +362,8 @@ next
     also have "\<dots> \<le> length (fringes (take i ts)) + length (fringe (ts ! i))"
       using Prod.IH[OF nth_mem[OF i] v] by simp
     also have "\<dots> = length (fringes (take (Suc i) ts))"
-      using len_fringes_take_Suc[OF i] by simp
-    also have "\<dots> \<le> length (fringes ts)" using len_fringes_take_le by blast
-    also have "\<dots> = length (fringe (Prod A ts))" by simp
+      using take_Suc_conv_app_nth[OF i] by simp
+    also have "\<dots> \<le> length (fringe (Prod A ts))" using len_fringes_take_le by auto
     finally show ?thesis .
   qed
 qed
@@ -427,20 +417,7 @@ next
 qed simp
 
 lemma fringe_beg_subst_pt: "p \<in> Pos_pt t \<Longrightarrow> fringe_beg (subst_pt t p t') p = fringe_beg t p"
-proof (induction t p rule: sub_pt.induct)
-  case (1 t) show ?case by simp
-next
-  case (2 A ts i p)
-  from "2.prems" have iv: "i < length ts" and vp: "p \<in> Pos_pt (ts ! i)" by auto
-  have "fringe_beg (subst_pt (Prod A ts) (i # p) t') (i # p)
-      = length (fringes (take i ts)) + fringe_beg (subst_pt (ts ! i) p t') p"
-    using iv by simp
-  also have "\<dots> = length (fringes (take i ts)) + fringe_beg (ts ! i) p" using "2.IH"[OF vp] by simp
-  also have "\<dots> = fringe_beg (Prod A ts) (i # p)" by simp
-  finally show ?case .
-next
-  case (3 s i p) show ?case by simp
-qed
+  by (induction t p rule: sub_pt.induct) auto
 
 text \<open>
   The following lemmas are the structural core of the classical inherent-ambiguity arguments of
@@ -508,7 +485,7 @@ next
             also have "\<dots> \<le> length (fringes (take i ts)) + length (fringe (ts ! i))"
               using fringe_end_bound[OF vi] by simp
             also have "\<dots> = length (fringes (take (Suc i) ts))"
-              using len_fringes_take_Suc[OF iL] by simp
+              using take_Suc_conv_app_nth[OF iL] by simp
             also have "\<dots> \<le> length (fringes (take j ts))"
               using len_fringes_take_mono[of "Suc i" j ts] \<open>i < j\<close> by simp
             also have "\<dots> \<le> fringe_beg (Prod A ts) q" using \<open>q = j # q'\<close> by simp
@@ -524,7 +501,7 @@ next
             also have "\<dots> \<le> length (fringes (take j ts)) + length (fringe (ts ! j))"
               using fringe_end_bound[OF vj] by simp
             also have "\<dots> = length (fringes (take (Suc j) ts))"
-              using len_fringes_take_Suc[OF jL] by simp
+              using take_Suc_conv_app_nth[OF jL] by simp
             also have "\<dots> \<le> length (fringes (take i ts))"
               using len_fringes_take_mono[of "Suc j" i ts] \<open>j < i\<close> by simp
             also have "\<dots> \<le> fringe_beg (Prod A ts) p" using \<open>p = i # p'\<close> by simp
