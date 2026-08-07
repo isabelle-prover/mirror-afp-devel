@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</loc>
+    <lastmod>2026-08-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Q0_Completeness.html</loc>
     <lastmod>2026-08-03T00:00:00+00:00</lastmod>
@@ -12005,6 +12008,22 @@
     <loc>https://isa-afp.org/thys/HoareForDivergence/WhileLang.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HoareForDivergence/WhileLangLemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Calculus.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Cantor.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Completeness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Consistency.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Main_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Semantics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Soundness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Syntax.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Algebra/AbelCoset.html</loc>
   </url><url>

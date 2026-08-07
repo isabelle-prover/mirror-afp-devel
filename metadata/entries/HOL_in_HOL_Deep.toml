@@ -1,0 +1,76 @@
+title = "A deep embedding of HOL in HOL: soundness, completeness, consistency"
+date = 2026-08-05
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+  "Logic/General logic",
+]
+abstract = """
+<p>This entry presents a minimal, machine-checked deep embedding of
+classical higher-order logic (HOL) in Isabelle/HOL, following the
+article <a href=\"https://doi.org/10.2178/jsl/1102022211\"><em>Higher-Order
+Semantics and Extensionality</em></a> by Benzmüller, Brown and Kohlhase
+(Journal of Symbolic Logic 69(4), 2004; henceforth BKK). Throughout,
+HOL means Church's simple theory of types: it is the embedded
+<em>object</em> logic, while Isabelle/HOL serves as the ambient
+meta-logic. The language is formalised in a <em>locally nameless</em>
+representation, which makes BKK's convention of identifying
+α-equivalent terms literally true and eliminates capture-avoiding
+substitution and renaming machinery altogether. The semantics is
+rendered abstractly, following BKK: applicative structures,
+Σ-evaluations (D, @, E) subject to BKK's four conditions on the
+evaluation function, Σ-models (D, @, E, υ), and the class
+M<sub>βfb</sub> of Σ-Henkin models (BKK's property q is automatic here,
+since primitive equality is part of the signature). Standard models
+arise as the full special case, and the familiar recursive denotation
+over frames enters only as the canonical way of constructing concrete
+models.</p>
+
+<p>On this basis we prove the natural-deduction calculus NK of BKK
+sound (including BKK's evaluation-variant argument) and complete in the
+sense of Henkin, via BKK's abstract-consistency and model-existence
+method, with the term model realised as a term evaluation. Completeness
+is established in a form stronger than BKK's: it holds at every
+infinite value carrier, for every signature with infinitely many
+parameters, and for open formulas. Consistency follows by exhibiting a
+concrete Σ-standard model over finite domains. The signature includes
+BKK's optional primitive equality and — going beyond BKK, following
+Andrews' <em>General Models, Descriptions, and Choice in Type
+Theory</em> (1972) — typed description operators. As an illustration,
+Cantor's theorem is derived <em>inside</em> NK, in surjective and
+injective form and at every type. To the best of our knowledge, this is
+the first machine-checked completeness proof for a deep embedding of
+HOL in HOL. This contribution is part of the
+<a href=\"https://logikey.org\">LogiKEy</a> project.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+Parts of this formalisation and its documentation were drafted interactively with a generative AI assistant (Anthropic's Claude), used under continuous human direction. All proofs are machine-checked by Isabelle; the entire development, including all comments and references, was subsequently reviewed, revised and simplified by the authors, who take full responsibility for its content.
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+kirchner = "kirchner_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.2178/jsl/1102022211",
+]
+pubs = []
