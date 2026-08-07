@@ -59,6 +59,9 @@ Parts of this formalisation and its documentation were drafted interactively wit
 [authors.benzmueller]
 email = "benzmueller_email"
 
+[authors.kirchner]
+email = "kirchner_email"
+
 [contributors]
 
 [notify]
