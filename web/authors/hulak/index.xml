@@ -11,6 +11,14 @@
     <category>Mathematics/Geometry</category>
 </item>
 <item>
+  <title>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture</title>
+  <link>https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html</link>
+  <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
+  <description>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
   <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
   <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>

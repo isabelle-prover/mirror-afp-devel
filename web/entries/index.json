@@ -44,6 +44,39 @@
   "year": "2026"
  },
  {
+  "abstract": "Dinitz, Garg, and Goemans proved that a feasible fractional single-source flow can be rounded to an unsplittable flow with additive congestion bounded by the largest demand. Goemans conjectured that the rounding can simultaneously preserve cost. This entry verifies the finite counterexample announced by Dmitry Rybin in July 2026. It defines a generic finite path-flow model and realizes the displayed instance as a directed graph with seven vertices, nine arcs, and three terminal demands. Isabelle classifies every source-to-terminal path and checks a feasible fractional flow of cost \\(58\\) that saturates every arc. The maximum demand is \\(15\\). Any unsplittable routing whose load on every arc is at most the fractional load plus \\(15\\) must choose at least two positive-cost routes, each costing \\(30\\), and therefore costs at least \\(60\\). Consequently no cost-preserving rounding exists, even under the weaker non-strict congestion bound.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-22",
+  "link": "../entries/Dinitz_Garg_Goemans_Counterexample.html",
+  "permalink": "https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html",
+  "related": [
+   {
+    "doi": "10.1007/s004930050043"
+   },
+   {
+    "doi": "10.1007/s10107-026-02365-x"
+   },
+   {
+    "html": "Dmitry Rybin, \u003cem\u003eCounterexample to the Dinitz-Garg-Goemans Cost Conjecture\u003c/em\u003e, \u003ca href=\"https://x.com/DmitryRybin1\"\u003epost on X\u003c/a\u003e, July 22, 2026."
+   }
+  ],
+  "shortname": "Dinitz_Garg_Goemans_Counterexample",
+  "title": "A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture",
+  "topic_links": [
+   "../topics/computer-science/algorithms/graph/",
+   "../topics/mathematics/combinatorics/"
+  ],
+  "topics": [
+   "Computer science/Algorithms/Graph",
+   "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "The Jacobian conjecture asks whether a polynomial self-map of affine space over a field of characteristic zero has a polynomial inverse whenever its Jacobian determinant is a nonzero constant. This entry gives an independent Isabelle/HOL verification of the explicit three-dimensional map announced by Levent Alpöge on July 20, 2026. The announcement credits Akhil Mathew with prompting the question and the AI system Claude Fable with work leading to the map; stable Lean and independent verification repositories appeared the same day.  Isabelle proves that the formal Jacobian entries are the corresponding complex analytic partial derivatives and that the determinant is identically \\(-2\\). It verifies that three distinct rational points have the same image. Scaling the first output coordinate yields determinant exactly \\(1\\) while preserving noninjectivity. The theory defines polynomial invertibility and proves that the map has no polynomial inverse. It also constructs identity-padded polynomial maps, proves their block-Jacobian determinant is unchanged, and thereby obtains counterexamples in every finite dimension at least three. The development makes no claim about the two-dimensional conjecture.",
   "authors": [
    "Arthur Freitas Ramos",

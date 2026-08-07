@@ -4,6 +4,14 @@
     <title>Computer science/Algorithms/Graph</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/graph/</link>
     <description>AFP entries in Graph</description><item>
+  <title>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture</title>
+  <link>https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html</link>
+  <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
+  <description>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
   <title>Correctness and Complexity of BMSSP in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/BMSSP_Correctness.html</link>
   <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
