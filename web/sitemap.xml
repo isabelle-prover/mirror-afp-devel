@@ -23,6 +23,9 @@
     <loc>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</loc>
     <lastmod>2026-07-07T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Modular_Forms.html</loc>
+    <lastmod>2026-07-04T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/ZF_finite.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -6288,6 +6291,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/wu/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/giusto/</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Circus/Circus_Actions.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Circus/Circus_Syntax.html</loc>
@@ -7553,6 +7558,8 @@
     <loc>https://isa-afp.org/thys/Context_Free_Grammar/Epsilon_Elimination.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Context_Free_Grammar/Expansion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Context_Free_Grammar/Infinite_iff_Pumpable.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Context_Free_Grammar/Inlining1Prod.html</loc>
   </url><url>
@@ -9603,6 +9610,8 @@
     <loc>https://isa-afp.org/thys/Encodability_Process_Calculi/Relations.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Encodability_Process_Calculi/SimulationRelations.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Encodability_Process_Calculi/SimulationRelationsOnEncodedLabels.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Encodability_Process_Calculi/SourceTargetRelation.html</loc>
   </url><url>
@@ -17720,6 +17729,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/montanari/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/bartl/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/bruegger/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/bulwahn/</loc>
@@ -18555,6 +18566,32 @@
     <loc>https://isa-afp.org/thys/Modular_Assembly_Kit_Security/UnwindingResults.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Modular_Assembly_Kit_Security/Views.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Argument_Principle_Sparse.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Basic_Modular_Forms_Mero_UHP.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Eisenstein_Derivative_Identities.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Fourier_Expansion_Mero_UHP.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Klein_J.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Meromorphic_Forms_Valence_Formula.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Meromorphic_Upper_Half_Plane.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Modular_Forms.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Modular_Forms_Library.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Modular_Forms_Structure.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Modular_Functions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Quasimodular_Forms.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Modular_Forms/Serre_Derivative.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/abdulaziz/</loc>
   </url><url>
@@ -20712,9 +20749,13 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Pre_Star_CFG/Finiteness.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Pre_Star_CFG/Finiteness_CNF.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Pre_Star_CFG/Labeled_Transition_System.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Pre_Star_CFG/LTS_Automata.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Pre_Star_CFG/LTS_Automata_Regular.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Pre_Star_CFG/Pre_Star.html</loc>
   </url><url>
@@ -22540,7 +22581,7 @@
   </url><url>
     <loc>https://isa-afp.org/thys/SATSolverVerification/BasicDPLL.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/SATSolverVerification/CNF.html</loc>
+    <loc>https://isa-afp.org/thys/SATSolverVerification/Clause.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/SATSolverVerification/ConflictAnalysis.html</loc>
   </url><url>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cinzia Di Giusto</title>
+    <link>https://isa-afp.org/authors/giusto/</link>
+    <description>AFP entries of Cinzia Di Giusto</description><item>
+  <title>Analysing and Comparing Encodability Criteria for Process Calculi</title>
+  <link>https://isa-afp.org/entries/Encodability_Process_Calculi.html</link>
+  <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
+  <description>Analysing and Comparing Encodability Criteria for Process Calculi in the AFP</description>
+    <category>Computer science/Concurrency/Process calculi</category>
+</item>
+
+  </channel>
+</rss>
