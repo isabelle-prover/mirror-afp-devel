@@ -1709,7 +1709,7 @@ lemma AOT_sem_indistinguishable_ord_enc_ex:
 proof -
   have Aux: \<open>[v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>] = ([v \<Turnstile> [\<lambda>x \<diamond>[E!]x]\<kappa>] \<and> [v \<Turnstile> \<kappa>\<down>])\<close> for v \<kappa>
     using AOT_sem_exe by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>
     AOT_assume 2: \<open>\<forall>F \<box>([F]x \<equiv> [F]y)\<close>
@@ -1763,7 +1763,7 @@ proof -
         by blast
     }
   } note 0 = this
-  AOT_modally_strict {
+  AOT_modally_strict_{
     {
       fix x y
       AOT_assume \<Pi>_den: \<open>[\<Pi>]\<down>\<close>

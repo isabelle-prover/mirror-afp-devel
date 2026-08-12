@@ -70,11 +70,11 @@ AOT_theorem restricted_var_condition: \<open>\<psi>{\<guillemotleft>AOT_term_of_
 proof -
   interpret type_definition Rep Abs "{ \<alpha> . [w\<^sub>0 \<Turnstile> \<psi>{\<alpha>}]}"
     using AOT_restricted_type_definition.
-  AOT_actually {
+  AOT_actually_{
     AOT_have \<open>\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>\<down>\<close> and \<open>\<psi>{\<guillemotleft>AOT_term_of_var (Rep \<alpha>)\<guillemotright>}\<close>
       using AOT_sem_imp Rep "res-var:3" by auto
   }
-  moreover AOT_actually {
+  moreover AOT_actually_{
     AOT_have \<open>\<psi>{\<alpha>} \<rightarrow> \<box>\<psi>{\<alpha>}\<close> for \<alpha>
       using AOT_sem_box rigid_condition by presburger
     AOT_hence \<open>\<psi>{\<tau>} \<rightarrow> \<box>\<psi>{\<tau>}\<close> if \<open>\<tau>\<down>\<close> for \<tau>

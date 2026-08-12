@@ -618,7 +618,7 @@ val _ =
     (structured_statement >> (fn stmt =>
       Toplevel.proof (Proof.chain #> (gen_cmd Proof.have stmt #> #2))));
 val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_modally_strict {\<close>
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_modally_strict_{\<close>
     "begin explicit AOT modally-strict proof block"
     (Scan.succeed (Toplevel.proof (fn state => (Proof.map_context (fn ctxt => let
         val v = singleton (Variable.variant_names ctxt) ("ws", @{typ w}) |> fst
@@ -627,7 +627,7 @@ val _ =
         val ctxt = AOT_ProofData.put (SOME (Free (v, @{typ w}))) ctxt
         in ctxt end) (Proof.begin_block state)))));
 val _ =
-  Outer_Syntax.command \<^command_keyword>\<open>AOT_actually {\<close>
+  Outer_Syntax.command \<^command_keyword>\<open>AOT_actually_{\<close>
     "begin explicit AOT modally-fragile proof block"
     (Scan.succeed (Toplevel.proof (fn state => (Proof.map_context (fn ctxt => let
         val ctxt = AOT_ProofData.put (SOME (@{const w\<^sub>0})) ctxt
