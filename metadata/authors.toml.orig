@@ -4865,7 +4865,6 @@ host = [
 
 [lyu]
 name = "Feier Lyu"
-orcid = "0009-0000-5670-8831"
 
 [lyu.emails]
 
@@ -4879,7 +4878,6 @@ host = [
 ]
 
 [lyu.homepages]
-
 
 [maadoori]
 name = "Vivek Soorya Maadoori"

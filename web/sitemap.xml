@@ -62,6 +62,9 @@
     <loc>https://isa-afp.org/entries/Incomplete_Gamma.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Projected_Gradient_Descent.html</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Conway_Circle.html</loc>
     <lastmod>2026-06-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -20932,6 +20935,48 @@
     <loc>https://isa-afp.org/thys/Progress_Tracking/Graph.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Progress_Tracking/Propagate.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Abstract_Descent.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Convex_Differentiable.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Examples_Projected_Quadratic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Examples_Quadratic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Examples_Using_Main_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Descent.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Descent_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Descent_Rates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Preliminaries.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Lipschitz_Smoothness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Main_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Linear_Rate.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Residual_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Mapping.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Mapping_Rates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projection_Geometry.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projection_Optimization.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Smooth_Convex.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Strong_Convex.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Projective_Geometry/Desargues_2D.html</loc>
   </url><url>

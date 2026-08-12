@@ -48,6 +48,14 @@
     <category>Mathematics/Analysis</category>
 </item>
 <item>
+  <title>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Projected_Gradient_Descent.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>The Detour Calculus: Rigorous Local Deformation of Integration Contours</title>
   <link>https://isa-afp.org/entries/Detour_Calculus.html</link>
   <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
