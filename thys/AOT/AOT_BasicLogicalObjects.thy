@@ -45,7 +45,7 @@ qed
 
 AOT_theorem "tv-id:2": \<open>\<circ>p\<^bold>\<Sigma>p\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>(p \<equiv> p) & [\<lambda>y p] = [\<lambda>y p]\<close>
       by (auto simp: "prop-prop2:2" "rule=I:1" intro!: "\<equiv>I" "\<rightarrow>I" "&I")
     AOT_hence \<open>\<exists>q ((q \<equiv> p) & [\<lambda>y p] = [\<lambda>y q])\<close>
