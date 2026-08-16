@@ -17,7 +17,7 @@ ML \<open>
 \<comment> \<open>from \<open>HOL/Library/code_test.ML\<close>\<close>
 val flags = {environment = ML_Env.SML, redirect = false, verbose = false, catch_all = true,
           debug = NONE, writeln = writeln, warning = warning}
-fun eval cmd = ML_Context.eval flags Position.none (ML_Lex.read_text (cmd, Position.none))
+fun eval cmd = ML_Context.eval flags Position.none (ML_Lex.read_source_text (cmd, Position.none))
 \<close>
 
 \<comment> \<open>Redirecting output to file:\<close>
