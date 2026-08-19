@@ -6,15 +6,6 @@ imports
   "Regular-Sets.Regular_Set"
 begin
 
-text \<open>The two lemmas below make the reflexive transitive executable in certain contexts.
-Potentially they could be moved to \<open>Main\<close>.\<close>
-
-lemma rtrancl_Image_code[code_unfold]: "R^* `` A = R^+ `` A \<union> A"
-by (metis Image_Id Un_Image reflcl_trancl)
-
-lemma rtrancl_converse_code[code_unfold]: "(R^*)^-1 `` A = (R^+)^-1 `` A \<union> A"
-  by (metis rtrancl_Image_code rtrancl_converse trancl_converse)
-
 text \<open>Regular language constructions on automata with epsilon transitions.
 The label \<open>None\<close> denotes an epsilon transition and \<open>Some c\<close> a real letter \<open>c\<close>.\<close>
 

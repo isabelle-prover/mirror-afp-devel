@@ -38,6 +38,10 @@ definition parse_tree_syms :: "('n, 't) Prods \<Rightarrow> ('n,'t) ptree \<Righ
 abbreviation parse_tree_tms :: "('n,'t)Prods \<Rightarrow> ('n,'t)ptree \<Rightarrow> 'n \<Rightarrow> 't list \<Rightarrow> bool" where
 "parse_tree_tms P t A w \<equiv> parse_tree_syms P t A (map Tm w)"
 
+lemma parse_tree_mono:
+  "\<lbrakk> P \<subseteq> P'; parse_tree P t \<rbrakk> \<Longrightarrow> parse_tree P' t"
+by (induction t) auto
+
 lemma fringe_deriven_if_parse_tree: "parse_tree P t \<Longrightarrow> P \<turnstile> [root t] \<Rightarrow>(size_pt t) fringe t"
 proof(induction t)
   case (Sym s)
@@ -547,6 +551,28 @@ proof -
   have "t1 \<noteq> t2" using assms(4-8) fringe_spans_laminar by blast
   with assms(1-3) have "ambiguous P S" unfolding ambiguous_def by blast
   thus ?thesis by simp
+qed
+
+lemma ambiguous_if_disj_same:
+  assumes "P1 \<inter> P2 = {}"
+          "P1 \<turnstile> [Nt S] \<Rightarrow>* map Tm w" "P2 \<turnstile> [Nt S] \<Rightarrow>* map Tm w"
+  shows "ambiguous (P1 \<union> P2) S"
+proof -
+  obtain n m 
+    where p1_deriven: "P1 \<turnstile> [Nt S] \<Rightarrow>(Suc n) map Tm w" 
+    and   p2_deriven: "P2 \<turnstile> [Nt S] \<Rightarrow>(Suc m) map Tm w" 
+    using assms(2,3) deriven_Nt_map_TmD rtranclp_power by metis
+  then obtain t1 t2 where 
+      pt1: "parse_tree P1 t1" and fr_root1: "fringe t1 = map Tm w" "root t1 = Nt S" 
+  and pt2: "parse_tree P2 t2" and fr_root2: "fringe t2 = map Tm w" "root t2 = Nt S" and size2: "size_pt t2 = Suc m"
+    using parse_tree_if_deriven[OF p1_deriven] parse_tree_if_deriven[OF p2_deriven] by blast
+  then have pt12: "parse_tree (P1 \<union> P2) t1" "parse_tree (P1 \<union> P2) t2"
+    using parse_tree_mono by blast+
+  moreover have "t1 \<noteq> t2"
+    using assms(1) pt1 pt2 size2 by (metis disjoint_iff nat.simps(3) parse_tree.simps(2) size_pt.elims) 
+  moreover have "w \<in> Lang (P1 \<union> P2) S"
+    using assms(2) derives_mono unfolding Lang_def by blast
+  ultimately show ?thesis using fr_root1 fr_root2 by (metis ambiguous_def parse_tree_syms_def)
 qed
 
 end
