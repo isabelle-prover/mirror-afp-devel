@@ -1,4 +1,4 @@
-(*  Title:       RTSCat
+(*  Title:       RTSCat_sim
     Author:      Eugene W. Stark <stark@cs.stonybrook.edu>, 2024
     Maintainer:  Eugene W. Stark <stark@cs.stonybrook.edu>
 *)
@@ -6,24 +6,24 @@
 section "The Category of RTS's and Simulations"
 
 text\<open>
-  In this section, we show that the subcategory of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close>, comprised of the arrows that are
+  In this section, we show that the subcategory of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close>, comprised of the arrows that are
   identities with respect to the residuation, is also cartesian closed.  In informal text,
-  we will refer to this category as \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.  In a later section, we will show that the entire
-  structure of the RTS-category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> is already determined by the ordinary subcategory \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.
+  we will refer to this category as \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.  In a later section, we will show that the entire
+  structure of the RTS-category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close> is already determined by the ordinary subcategory \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.
 \<close>
 
-theory RTSCat
-imports Main RTSCatx EnrichedCategoryBasics.CartesianClosedMonoidalCategory
+theory RTSCat_sim
+imports Main RTSCat_trn EnrichedCategoryBasics.CartesianClosedMonoidalCategory
 begin
 
-  locale rtscat =
+  locale rtscat_sim =
     universe arr_type
   for arr_type :: "'A itself"
   begin
 
     sublocale One: one_arr_rts arr_type ..
 
-    interpretation RTSx: rtscatx arr_type ..
+    interpretation RTSx: rtscat_trn arr_type ..
     interpretation RTSx: elementary_category_with_binary_products
                           RTSx.hcomp RTSx.p\<^sub>0 RTSx.p\<^sub>1
       using RTSx.extends_to_elementary_category_with_binary_products\<^sub>X by blast
@@ -32,7 +32,7 @@ begin
             RTSx.arr_hcomp RTSx.H.seqI
       by unfold_locales auto
 
-    type_synonym 'a arr = "'a rtscatx.arr"
+    type_synonym 'a arr = "'a rtscat_trn.arr"
 
     definition comp :: "'A arr comp"  (infixr \<open>\<cdot>\<close> 53)
     where "comp \<equiv> subcategory.comp RTSx.hcomp RTSx.sta"
@@ -52,9 +52,9 @@ begin
       by (simp add: RTS\<^sub>S.arr_char\<^sub>S\<^sub>b\<^sub>C comp_def)
 
     text\<open>
-      We want @{locale rtscat} to stand on its own, so here we embark on an
+      We want @{locale rtscat_sim} to stand on its own, so here we embark on an
       extended development designed to bootstrap away from dependence on the
-      supporting locale @{locale rtscatx}.
+      supporting locale @{locale rtscat_trn}.
     \<close>
 
     abbreviation Obj
@@ -112,7 +112,7 @@ begin
 
     lemma Map_mkide [simp]:
     assumes "ide (mkide A)"
-    shows "Map (mkide A) = I A"
+    shows "Map (mkide A) = Id A"
       using assms mkide_def RTSx.mkobj_def Map_def RTSx.bij_mksta(3)
             RTSx.mkarr_def Rts_def ideD\<^sub>R\<^sub>T\<^sub>S\<^sub>C
       by fastforce
@@ -281,7 +281,7 @@ begin
 
     lemma Map_ide:
     assumes "ide a"
-    shows "Map a = I (Rts a)"
+    shows "Map a = Id (Rts a)"
       using assms Map_mkide [of "Rts a"] by simp
 
     lemma Map_comp:
@@ -427,7 +427,7 @@ begin
         using fg by auto
       have 1: "RTSx.H.span f g"
         using fg RTS\<^sub>S.arrE RTS\<^sub>S.dom_simp comp_def by force
-      have 2: "RTSx.cod f = cod f \<and> RTSx.cod g = cod g"
+      have 2: "RTSx.H.cod f = cod f \<and> RTSx.H.cod g = cod g"
         using fg by (simp add: RTS\<^sub>S.cod_char\<^sub>S\<^sub>b\<^sub>C comp_def)
       show "\<exists>!l. \<pp>\<^sub>1[cod f, cod g] \<cdot> l = f \<and> \<pp>\<^sub>0[cod f, cod g] \<cdot> l = g"
       proof -
@@ -502,17 +502,17 @@ begin
           assume f: "arr f" and g: "arr g"
           have "f \<otimes> g = \<langle>f \<cdot> \<pp>\<^sub>1[dom f, dom g], g \<cdot> \<pp>\<^sub>0[dom f, dom g]\<rangle>"
             unfolding prod_def by simp
-          also have "... = \<langle>f \<cdot> \<pp>\<^sub>1[RTSx.dom f, RTSx.dom g],
-                            g \<cdot> \<pp>\<^sub>0[RTSx.dom f, RTSx.dom g]\<rangle>"
+          also have "... = \<langle>f \<cdot> \<pp>\<^sub>1[RTSx.H.dom f, RTSx.H.dom g],
+                            g \<cdot> \<pp>\<^sub>0[RTSx.H.dom f, RTSx.H.dom g]\<rangle>"
             using f g RTS\<^sub>S.dom_char\<^sub>S\<^sub>b\<^sub>C comp_def by force
-          also have "... = \<langle>RTSx.hcomp f \<pp>\<^sub>1[RTSx.dom f, RTSx.dom g],
-                            RTSx.hcomp g \<pp>\<^sub>0[RTSx.dom f, RTSx.dom g]\<rangle>"
+          also have "... = \<langle>RTSx.hcomp f \<pp>\<^sub>1[RTSx.H.dom f, RTSx.H.dom g],
+                            RTSx.hcomp g \<pp>\<^sub>0[RTSx.H.dom f, RTSx.H.dom g]\<rangle>"
             using f g RTS\<^sub>S.comp_char RTS\<^sub>S.arr_char\<^sub>S\<^sub>b\<^sub>C
             by (metis (no_types, lifting) RTS\<^sub>S.null_char calculation
                 comp_def not_arr_null prod_simps(1) tuple_ext)
           also have "... = RTSx.tuple
-                             (RTSx.hcomp f \<pp>\<^sub>1[RTSx.dom f, RTSx.dom g])
-                             (RTSx.hcomp g \<pp>\<^sub>0[RTSx.dom f, RTSx.dom g])"
+                             (RTSx.hcomp f \<pp>\<^sub>1[RTSx.H.dom f, RTSx.H.dom g])
+                             (RTSx.hcomp g \<pp>\<^sub>0[RTSx.H.dom f, RTSx.H.dom g])"
             by (metis (no_types, lifting) calculation f g not_arr_null
                 prod_simps(1) tuple_char)
           also have "... = RTSx.prod f g"
@@ -554,13 +554,13 @@ begin
 
     lemma Pack_o_Unpack:
     assumes "ide a" and "ide b"
-    shows "Pack a b \<circ> Unpack a b = I (Rts (a \<otimes> b))"
+    shows "Pack a b \<circ> Unpack a b = Id (Rts (a \<otimes> b))"
       unfolding Pack_def Unpack_def Rts_def
       using assms RTSx.Pack_o_Unpack ide_iff_RTS_obj prod_char by auto
 
     lemma Unpack_o_Pack:
     assumes "ide a" and "ide b"
-    shows "Unpack a b \<circ> Pack a b = I (Rts a \<Otimes> Rts b)"
+    shows "Unpack a b \<circ> Pack a b = Id (Rts a \<Otimes> Rts b)"
       unfolding Pack_def Unpack_def Rts_def
       using assms RTSx.Unpack_o_Pack ide_iff_RTS_obj prod_char by auto
 
@@ -656,7 +656,7 @@ begin
         using assms Map_tuple
         by (metis (no_types, lifting) Fun.comp_assoc cod_pr0 cod_pr1
             comp_in_homI' ide_dom pr_simps(1-2,4-5))
-      also have "... = I (Cod.resid) \<circ>
+      also have "... = Id (Cod.resid) \<circ>
                          Cod.tuple (Map (f \<cdot> \<pp>\<^sub>1[dom f, dom g]))
                                    (Map (g \<cdot> \<pp>\<^sub>0[dom f, dom g]))"
         using assms Unpack_o_Pack by auto
@@ -789,13 +789,13 @@ begin
 
     lemma Func_o_Unfunc:
     assumes "ide b" and "ide c"
-    shows "Func b c \<circ> Unfunc b c = I (exponential_rts.resid (Rts b) (Rts c))"
+    shows "Func b c \<circ> Unfunc b c = Id (exponential_rts.resid (Rts b) (Rts c))"
       using assms
       by (meson inverse_simulations.inv' inverse_simulations_Func_Unfunc)
 
     lemma Unfunc_o_Func:
     assumes "ide b" and "ide c"
-    shows "Unfunc b c \<circ> Func b c = I (Rts (exp b c))"
+    shows "Unfunc b c \<circ> Func b c = Id (Rts (exp b c))"
       using assms
       by (meson inverse_simulations.inv inverse_simulations_Func_Unfunc)
 
@@ -817,7 +817,7 @@ begin
     assumes "ide b" and "ide c"
     shows "Map (eval b c) =
            evaluation_map.map (Rts b) (Rts c) \<circ>
-             product_simulation.map (Rts (exp b c)) (Rts b) (Func b c) (I (Rts b)) \<circ>
+             product_simulation.map (Rts (exp b c)) (Rts b) (Func b c) (Id (Rts b)) \<circ>
                Unpack (exp b c) b"
       unfolding Map_def eval_def Rts_def exp_def Func_def Unpack_def
       using assms RTSx.Map_eval [of b c] ide_iff_RTS_obj by force
@@ -900,16 +900,16 @@ begin
 subsection "Associators"
 
   text \<open>
-    Here we expose the relationship between the associators internal to \<open>\<^bold>R\<^bold>T\<^bold>S\<close> and those
+    Here we expose the relationship between the associators internal to \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> and those
     external to it.
   \<close>
 
   locale Association =
-    rtscat arr_type
+    rtscat_sim arr_type
   for arr_type :: "'A itself"
-  and a :: "'A rtscat.arr"
-  and b :: "'A rtscat.arr"
-  and c :: "'A rtscat.arr" +
+  and a :: "'A rtscat_sim.arr"
+  and b :: "'A rtscat_sim.arr"
+  and c :: "'A rtscat_sim.arr" +
   assumes a: "ide a"
   and b: "ide b"
   and c: "ide c"
@@ -973,13 +973,13 @@ subsection "Associators"
 
     interpretation AxPack_bc:
       product_simulation \<open>Rts a\<close> BxC.resid \<open>Rts a\<close> \<open>Rts (b \<otimes> c)\<close>
-        \<open>I (Rts a)\<close> \<open>Pack b c\<close> ..
+        \<open>Id (Rts a)\<close> \<open>Pack b c\<close> ..
     interpretation AxUnpack_bc:
       product_simulation \<open>Rts a\<close> \<open>Rts (b \<otimes> c)\<close> \<open>Rts a\<close> BxC.resid
-        \<open>I (Rts a)\<close> \<open>Unpack b c\<close> ..
+        \<open>Id (Rts a)\<close> \<open>Unpack b c\<close> ..
     interpretation Unpack_abxC:
       product_simulation \<open>Rts (a \<otimes> b)\<close> \<open>Rts c\<close> AxB.resid \<open>Rts c\<close>
-        \<open>Unpack a b\<close> \<open>I (Rts c)\<close> ..
+        \<open>Unpack a b\<close> \<open>Id (Rts c)\<close> ..
 
     sublocale PU_Axbc: inverse_simulations Axbc.resid Ax_BxC.resid
                          AxPack_bc.map AxUnpack_bc.map
@@ -998,7 +998,7 @@ subsection "Associators"
           by simp
         also have "... =
                    product_simulation.map (Rts a) (Rts (b \<otimes> c))
-                     A.map (I (Rts (b \<otimes> c)))"
+                     A.map (Id (Rts (b \<otimes> c)))"
           using PU_bc.inv' A.simulation_axioms
                 comp_identity_simulation [of "Rts a" "Rts a" A.map]
           by simp
@@ -1007,7 +1007,7 @@ subsection "Associators"
           by blast
         finally show ?thesis by blast
       qed
-      show "AxUnpack_bc.map \<circ> AxPack_bc.map = I Ax_BxC.resid"
+      show "AxUnpack_bc.map \<circ> AxPack_bc.map = Id Ax_BxC.resid"
       proof -
         have "AxUnpack_bc.map \<circ> AxPack_bc.map =
               product_simulation.map (Rts a) BxC.resid
@@ -1020,11 +1020,11 @@ subsection "Associators"
           by simp
         also have "... =
                    product_simulation.map (Rts a) BxC.resid
-                     A.map (I BxC.resid)"
+                     A.map (Id BxC.resid)"
           using PU_bc.inv A.simulation_axioms
                 comp_identity_simulation [of "Rts a" "Rts a" A.map]
           by simp
-        also have "... = I Ax_BxC.resid"
+        also have "... = Id Ax_BxC.resid"
           using product_identity_simulation A.rts_axioms BxC.rts_axioms
           by blast
         finally show ?thesis by blast
@@ -1034,7 +1034,7 @@ subsection "Associators"
     text \<open>
       The following shows that the simulation \<open>Map \<a>[a, b, c]\<close> underlying an internal associator
       \<open>\<a>[a, b, c]\<close> is transformed into a corresponding external associator \<open>ASSOC.map\<close> via
-      invertible simulations that ``unpack'' product objects in \<open>\<^bold>R\<^bold>T\<^bold>S\<close> into corresponding
+      invertible simulations that ``unpack'' product objects in \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> into corresponding
       product RTS's.
     \<close>
 
@@ -1043,7 +1043,7 @@ subsection "Associators"
            ASSOC.map \<circ> (Unpack_abxC.map \<circ> Unpack (a \<otimes> b) c)"
     proof -
       have "(AxUnpack_bc.map \<circ> Unpack a (b \<otimes> c)) \<circ> Map \<a>[a, b, c] =
-            (AxUnpack_bc.map \<circ> Unpack a (b \<otimes> c)) \<circ> 
+            (AxUnpack_bc.map \<circ> Unpack a (b \<otimes> c)) \<circ>
                Pack a (b \<otimes> c) \<circ>
                  (Axbc.tuple
                     (Map (\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]))
@@ -1061,7 +1061,7 @@ subsection "Associators"
                               (Map \<langle>\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<pp>\<^sub>0[a \<otimes> b, c]\<rangle>))"
         by force
       also have "... = AxUnpack_bc.map \<circ>
-                         I Axbc.resid \<circ>
+                         Id Axbc.resid \<circ>
                            (Axbc.tuple
                               (Map (\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]))
                               (Map \<langle>\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<pp>\<^sub>0[a \<otimes> b, c]\<rangle>))"
@@ -1075,7 +1075,7 @@ subsection "Associators"
               AxUnpack_bc.simulation_axioms
         by simp
       also have "... = Ax_BxC.tuple
-                         (I (Rts a) \<circ> Map (\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]))
+                         (Id (Rts a) \<circ> Map (\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]))
                          (Unpack b c \<circ> Map \<langle>\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<pp>\<^sub>0[a \<otimes> b, c]\<rangle>)"
       proof -
         have "simulation (Rts ((a \<otimes> b) \<otimes> c)) (Rts a) (Map (\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]))"
@@ -1135,7 +1135,7 @@ subsection "Associators"
         using fun.map_comp by metis
       also have "... = Ax_BxC.tuple
                          (Map \<pp>\<^sub>1[a, b] \<circ> Map \<pp>\<^sub>1[a \<otimes> b, c])
-                         (I BxC.resid \<circ>
+                         (Id BxC.resid \<circ>
                             BxC.tuple
                               (Map (\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c]))
                               (Map \<pp>\<^sub>0[a \<otimes> b, c]))"
@@ -1295,33 +1295,33 @@ subsection "Associators"
                  (Pack a (b \<otimes> c) \<circ> AxPack_bc.map)
                  (AxUnpack_bc.map \<circ> Unpack a (b \<otimes> c))"
       proof
-        show "AxUoU.map \<circ> PoAxP.map = I Ax_BxC.resid"
+        show "AxUoU.map \<circ> PoAxP.map = Id Ax_BxC.resid"
         proof -
           have "AxUoU.map \<circ> PoAxP.map =
                 AxUnpack_bc.map \<circ> (Unpack a (b \<otimes> c) \<circ> Pack a (b \<otimes> c)) \<circ>
                   AxPack_bc.map"
             using fun.map_comp by force
-          also have "... = AxUnpack_bc.map \<circ> I Axbc.resid \<circ> AxPack_bc.map"
+          also have "... = AxUnpack_bc.map \<circ> Id Axbc.resid \<circ> AxPack_bc.map"
             using PU_axbc.inv by simp
           also have "... = AxUnpack_bc.map \<circ> AxPack_bc.map"
             using comp_simulation_identity AxUnpack_bc.simulation_axioms
             by fastforce
-          also have "... = I Ax_BxC.resid"
+          also have "... = Id Ax_BxC.resid"
             using PU_Axbc.inv by blast
           finally show ?thesis by blast
         qed
-        show "PoAxP.map \<circ> AxUoU.map = I (Rts (a \<otimes> b \<otimes> c))"
+        show "PoAxP.map \<circ> AxUoU.map = Id (Rts (a \<otimes> b \<otimes> c))"
         proof -
           have "PoAxP.map \<circ> AxUoU.map =
                 Pack a (b \<otimes> c) \<circ> (AxPack_bc.map \<circ> AxUnpack_bc.map) \<circ>
                   Unpack a (b \<otimes> c)"
             using fun.map_comp by auto
-          also have "... = Pack a (b \<otimes> c) \<circ> I Axbc.resid \<circ> Unpack a (b \<otimes> c)"
+          also have "... = Pack a (b \<otimes> c) \<circ> Id Axbc.resid \<circ> Unpack a (b \<otimes> c)"
             using PU_Axbc.inv' by simp
           also have "... = Pack a (b \<otimes> c) \<circ> Unpack a (b \<otimes> c)"
             using comp_simulation_identity PU_axbc.F.simulation_axioms
             by fastforce
-          also have "... = I (Rts  (a \<otimes> b \<otimes> c))"
+          also have "... = Id (Rts  (a \<otimes> b \<otimes> c))"
             using PU_axbc.inv' by blast
           finally show ?thesis by blast
         qed
@@ -1329,7 +1329,7 @@ subsection "Associators"
       have "simulation (Rts ((a \<otimes> b) \<otimes> c)) (Rts (a \<otimes> b \<otimes> c)) (Map \<a>[a, b, c]) "
         using a b c arrD(3)
         by (metis (no_types, lifting) assoc_simps(1-3))
-      hence "Map \<a>[a, b, c] = I (Rts (a \<otimes> b \<otimes> c)) \<circ> Map \<a>[a, b, c]"
+      hence "Map \<a>[a, b, c] = Id (Rts (a \<otimes> b \<otimes> c)) \<circ> Map \<a>[a, b, c]"
          using a b c
                comp_identity_simulation
                   [of "Rts ((a \<otimes> b) \<otimes> c)" "Rts (a \<otimes> b \<otimes> c)" "Map \<a>[a, b, c]"]
@@ -1347,7 +1347,7 @@ subsection "Associators"
 
   end
 
-  context rtscat
+  context rtscat_sim
   begin
 
     proposition Map_assoc:
@@ -1355,10 +1355,10 @@ subsection "Associators"
     shows "Map \<a>[a, b, c] =
            Pack a (b \<otimes> c) \<circ>
              product_simulation.map (Rts a) (Rts b \<Otimes> Rts c)
-                 (I (Rts a)) (Pack b c) \<circ>
+                 (Id (Rts a)) (Pack b c) \<circ>
                ASSOC.map (Rts a) (Rts b) (Rts c) \<circ>
                  (product_simulation.map
-                      (Rts (a \<otimes> b)) (Rts c) (Unpack a b) (I (Rts c)) \<circ>
+                      (Rts (a \<otimes> b)) (Rts c) (Unpack a b) (Id (Rts c)) \<circ>
                     Unpack (a \<otimes> b) c)"
     proof -
       interpret A: Association arr_type a b c
@@ -1372,12 +1372,12 @@ subsection "Associators"
 subsection "Compositors"
 
   text \<open>
-    Here we expose the relationship between the compositors internal to \<open>\<^bold>R\<^bold>T\<^bold>S\<close>
+    Here we expose the relationship between the compositors internal to \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>
     (inherited from @{locale closed_monoidal_category}) and those external to it
     (given by horizontal composition of simulations).
   \<close>
 
-  context rtscat
+  context rtscat_sim
   begin
 
     sublocale CMC: cartesian_monoidal_category comp Prod \<alpha> \<iota>
@@ -1390,11 +1390,11 @@ subsection "Compositors"
   end
 
   locale Composition =
-    rtscat arr_type
+    rtscat_sim arr_type
   for arr_type :: "'A itself"
-  and a :: "'A rtscat.arr"
-  and b :: "'A rtscat.arr"
-  and c :: "'A rtscat.arr" +
+  and a :: "'A rtscat_sim.arr"
+  and b :: "'A rtscat_sim.arr"
+  and c :: "'A rtscat_sim.arr" +
   assumes a: "ide a"
   and b: "ide b"
   and c: "ide c"
@@ -1499,14 +1499,14 @@ subsection "Compositors"
         using a c inverse_simulations_Func_Unfunc [of a c] by blast
       interpret Func_bcxB: product_simulation
                              \<open>EXP b c\<close> \<open>Rts b\<close> BC.resid \<open>Rts b\<close>
-                             \<open>Func b c\<close> \<open>I (Rts b)\<close>
+                             \<open>Func b c\<close> \<open>Id (Rts b)\<close>
         ..
       interpret UnpackxA: product_simulation
                             \<open>Rts (exp b c \<otimes> exp a b)\<close> \<open>Rts a\<close> bcxab.resid \<open>Rts a\<close>
                             \<open>Unpack (exp b c) (exp a b)\<close> A.map ..
       interpret Func_abxA: product_simulation
                              \<open>EXP a b\<close> \<open>Rts a\<close> AB.resid \<open>Rts a\<close>
-                             \<open>Func a b\<close> \<open>I (Rts a)\<close>
+                             \<open>Func a b\<close> \<open>Id (Rts a)\<close>
         ..
       interpret Func_bcxFunc_ab_x_A: product_simulation
                                        bcxab.resid \<open>Rts a\<close> BCxAB.resid \<open>Rts a\<close>
@@ -1554,13 +1554,13 @@ subsection "Compositors"
         ultimately show ?thesis
           using a Map_curry fun.map_comp by auto
       qed
-      also have "... = I AC.resid \<circ>
+      also have "... = Id AC.resid \<circ>
                          COMP.Currying.E.coext (Rts (exp b c \<otimes> exp a b))
                            (Map (eval b c \<cdot> (exp b c \<otimes> eval a b) \<cdot>
                                    \<a>[exp b c, exp a b, a]) \<circ>
                               Pack (exp b c \<otimes> exp a b) a)"
         using FU_ac.inv' by simp
-      also have "... = I AC.resid \<circ>
+      also have "... = Id AC.resid \<circ>
                          COMP.Currying.E.coext (Rts (exp b c \<otimes> exp a b))
                            (Map (eval b c) \<circ>
                               Map (exp b c \<otimes> eval a b) \<circ>
@@ -1656,7 +1656,7 @@ subsection "Compositors"
                                     Pack (exp b c \<otimes> exp a b) a)"
         using fun.map_comp by metis
       also have "... = COMP.Currying.E.coext (Rts (exp b c \<otimes> exp a b))
-                         (E_BC.map \<circ> (Func_bcxB.map \<circ> I bcxB.resid) \<circ>
+                         (E_BC.map \<circ> (Func_bcxB.map \<circ> Id bcxB.resid) \<circ>
                             bcxeval.map \<circ>
                               Unpack (exp b c) (exp a b \<otimes> a) \<circ>
                                 Map \<a>[exp b c, exp a b, a] \<circ>
@@ -1801,9 +1801,9 @@ subsection "Compositors"
                             (Unpack (exp b c \<otimes> exp a b) a \<circ>
                                Pack (exp b c \<otimes> exp a b) a))"
           using fun.map_comp by auto
-        also have "... = I bc_x_abxA.resid \<circ>
+        also have "... = Id bc_x_abxA.resid \<circ>
                            Assoc_bc_ab_a.ASSOC.map \<circ>
-                             (UnpackxA.map \<circ> I bcxab'_x_A.resid)"
+                             (UnpackxA.map \<circ> Id bcxab'_x_A.resid)"
         proof -
           have "product_simulation.map
                   (EXP b c) (Rts (exp a b \<otimes> a))
@@ -1814,7 +1814,7 @@ subsection "Compositors"
                       (EXP b c) abxA.resid bc.map (Pack (exp a b) a) =
                 product_simulation.map
                   (EXP b c) (Rts (exp a b \<otimes> a)) bc.map (Unpack (exp a b) a) \<circ>
-                (I bcxeval.A1xA0.resid) \<circ>
+                (Id bcxeval.A1xA0.resid) \<circ>
                    product_simulation.map
                       (EXP b c) abxA.resid bc.map (Pack (exp a b) a)"
             using a b c Unpack_o_Pack [of "exp b c" "exp a b \<otimes> a"] by force
@@ -1838,9 +1838,9 @@ subsection "Compositors"
                   bc.simulation_axioms
             by fastforce
           also have "... = product_simulation.map (EXP b c) abxA.resid
-                             bc.map (I abxA.resid)"
+                             bc.map (Id abxA.resid)"
             using a b bc_map Unpack_o_Pack ide_exp_ax by simp
-          also have "... = I bc_x_abxA.resid"
+          also have "... = Id bc_x_abxA.resid"
             using product_identity_simulation abxA.rts_axioms bc.rts_axioms
             by fastforce
           finally have "product_simulation.map
@@ -1850,11 +1850,11 @@ subsection "Compositors"
                              Pack (exp b c) (exp a b \<otimes> a)) \<circ>
                              product_simulation.map
                                (EXP b c) abxA.resid bc.map (Pack (exp a b) a) =
-                        I bc_x_abxA.resid"
+                        Id bc_x_abxA.resid"
             by blast
           moreover have "Unpack (exp b c \<otimes> exp a b) a \<circ>
                            Pack (exp b c \<otimes> exp a b) a =
-                         I bcxab'_x_A.resid"
+                         Id bcxab'_x_A.resid"
             using a b c Unpack_o_Pack [of "exp b c \<otimes> exp a b" a] by blast
           ultimately show ?thesis by simp
         qed
@@ -1872,7 +1872,7 @@ subsection "Compositors"
                                UnpackxA.map))"
       proof -
         have "E_BC.map \<circ> Func_bcxB.map \<circ> bc_x_E_ABoFunc_abxA.map =
-              E_BC.map \<circ> Func_bcxB.map \<circ> 
+              E_BC.map \<circ> Func_bcxB.map \<circ>
                 (product_simulation.map (EXP b c) ABxA.resid bc.map E_AB.map \<circ>
                    product_simulation.map (EXP b c) abxA.resid bc.map Func_abxA.map)"
           using bc_map Func_abxA.simulation_axioms E_AB.simulation_axioms
@@ -2107,7 +2107,7 @@ subsection "Compositors"
              (Func_bcxFunc_ab.map \<circ> Unpack (exp b c) (exp a b))"
     proof -
       have "Map (ECMC.Comp a b c) =
-            I (EXP a c) \<circ> Map (ECMC.Comp a b c)"
+            Id (EXP a c) \<circ> Map (ECMC.Comp a b c)"
         using a b c ECMC.Comp_in_hom arrD(3) [of "ECMC.Comp a b c"]
               comp_identity_simulation
                 [of "Rts (exp b c \<otimes> exp a b)" "EXP a c" "Map (ECMC.Comp a b c)"]
@@ -2125,7 +2125,7 @@ subsection "Compositors"
 
   end
 
-  context rtscat
+  context rtscat_sim
   begin
 
     abbreviation EXP

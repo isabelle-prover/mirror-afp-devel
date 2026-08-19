@@ -4,666 +4,8 @@
 *)
 
 theory RTSConstructions
-imports Main Preliminaries ZFC_in_HOL.ZFC_Cardinals
+imports Main RTS2_Preliminaries
 begin
-
-section "Notation"
-
-  text \<open>
-    Some of the theories in the HOL library that we depend on define global notation involving
-    generic symbols that we would like to use here.  It would be best if there were some way
-    to import these theories without also having to import this notation, but for now the best
-    we can do is to uninstall the notation involving the symbols at issue.
-  \<close>
-
-  (* I really don't like global notation -- it's rude. *)
-  no_notation Equipollence.eqpoll (infixl \<open>\<approx>\<close> 50)
-  no_notation Equipollence.lepoll (infixl \<open>\<lesssim>\<close> 50)
-  no_notation Lattices.sup_class.sup (infixl \<open>\<squnion>\<close> 65)
-  no_notation ZFC_Cardinals.cmult   (infixl \<open>\<otimes>\<close> 70)
-
-  no_syntax "_Tuple"    :: "[V, Vs] \<Rightarrow> V"                 (\<open>\<langle>(_,/ _)\<rangle>\<close>)
-  no_syntax "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   (\<open>\<langle>(_,/ _)\<rangle>\<close>)
-
-section "Some Constraints on a Type"
-
-subsection "Nondegenerate"
-
-  text \<open>
-    We will call a type ``nondegenerate'' if it has at least two elements.
-    This means that the type admits RTS's with a non-empty set of arrows
-    (after using one of the elements for the required null value).
-  \<close>
-
-  locale nondegenerate =
-  fixes type :: "'a itself"
-  assumes is_nondegenerate: "\<exists>x y :: 'a. x \<noteq> y"
-
-subsection "Lifting"
-
-  text \<open>
-    A type \<open>'a\<close> ``admits lifting'' if there is an injection from the type \<open>'a option\<close> to \<open>'a\<close>.
-  \<close>
-
-  locale lifting =
-  fixes type :: "'a itself"
-  assumes admits_lifting: "\<exists>l :: 'a option \<Rightarrow> 'a. inj l"
-  begin
-
-    definition some_lift :: "'a option \<Rightarrow> 'a"
-    where "some_lift \<equiv> SOME l :: 'a option \<Rightarrow> 'a. inj l"
-
-    lemma inj_some_lift:
-    shows "inj some_lift"
-      using admits_lifting someI_ex [of "\<lambda>l. inj l"] some_lift_def by fastforce
-
-    text \<open>
-      A type that admits lifting is obviously nondegenerate.
-    \<close>
-
-    sublocale nondegenerate
-    proof (unfold_locales, intro exI)
-      show "some_lift None \<noteq> some_lift (Some (some_lift None))"
-        using injD inj_some_lift by fastforce
-    qed
-
-  end
-
-subsection "Pairing"
-
-  text \<open>
-    A type \<open>'a\<close> ``admits pairing'' if there exists an injective ``pairing function'' from
-    \<open>'a * 'a\<close> to \<open>'a\<close>.  This allows us to encode pairs of elements of \<open>'a\<close> without
-    having to pass to a higher type.
-  \<close>
-
-  locale pairing =
-  fixes type :: "'a itself"
-  assumes admits_pairing: "\<exists>p :: 'a * 'a \<Rightarrow> 'a. inj p"
-  begin
-
-    definition some_pair :: "'a * 'a \<Rightarrow> 'a"
-    where "some_pair \<equiv> SOME p :: 'a * 'a \<Rightarrow> 'a. inj p"
-
-    abbreviation is_pair
-    where "is_pair x \<equiv> x \<in> range some_pair"
-
-    definition first :: "'a \<Rightarrow> 'a"
-    where "first x \<equiv> fst (inv some_pair x)"
-
-    definition second :: "'a \<Rightarrow> 'a"
-    where "second x = snd (inv some_pair x)"
-
-    lemma inj_some_pair:
-    shows "inj some_pair"
-      using admits_pairing someI_ex [of "\<lambda>p. inj p"] some_pair_def by fastforce
-
-    lemma first_conv:
-    shows "first (some_pair (x, y)) = x"
-      using first_def inj_some_pair by auto
-
-    lemma second_conv:
-    shows "second (some_pair (x, y)) = y"
-      using second_def inj_some_pair by auto
-
-    lemma pair_conv:
-    assumes "is_pair x"
-    shows "some_pair (first x, second x) = x"
-      using assms first_def second_def inj_some_pair by force
-
-  end
-
-  text \<open>
-    A type that is nondegenerate and admits pairing also admits lifting.
-  \<close>
-
-  locale nondegenerate_and_pairing =
-    nondegenerate + pairing
-  begin
-
-    sublocale lifting type
-    proof
-      obtain c :: 'a where c: "\<forall>x. c \<noteq> some_pair (c, x)"
-        using is_nondegenerate inj_some_pair
-        by (metis (full_types) first_conv second_conv)
-      let ?f = "\<lambda>None \<Rightarrow> c | Some x \<Rightarrow> some_pair (c, x)"
-      have "inj ?f"
-        unfolding inj_def
-        by (metis (no_types, lifting) c option.case_eq_if option.collapse
-            second_conv)
-      thus "\<exists>l :: 'a option \<Rightarrow> 'a. inj l"
-        by blast
-    qed
-
-  end
-
-subsection "Exponentiation"
-
-  text \<open>
-    In order to define the exponential \<open>[A, B]\<close> of an RTS \<open>A\<close> and an RTS \<open>B\<close>
-    at a type \<open>'a\<close> without having to pass to a higher type, we need the type \<open>'a\<close>
-    to be large enough to embed the set of all extensional
-    functions that have ``small'' sets as their domains.  Here we are using the
-    notion of ``small'' provided by the @{session ZFC_in_HOL} extension to HOL.
-    Now, the standard Isabelle/HOL definition of ``extensional'' uses the specific chosen
-    value \<open>undefined\<close> as the default value for an extensional function outside of its domain,
-    but here we need to apply this concept in cases where the value could be something else
-    (the null value for an RTS, in particular).  So, we define a notion of a function
-    that has at most one ``popular value'' in its range, where a popular value is one with a
-    ``large'' preimage.  If such a function in addition has a small range, then it in some
-    sense has a small encoding, which consists of its graph restricted to its domain
-    (which must then necessarily be small), paired with the single default value that it
-    takes outside its domain.
-  \<close>
-
-  abbreviation popular_value :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> bool"
-  where "popular_value F y \<equiv> \<not> small {x. F x = y}"
-
-  definition some_popular_value :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"
-  where "some_popular_value F \<equiv> SOME y. popular_value F y"
-
-  abbreviation at_most_one_popular_value
-  where "at_most_one_popular_value F \<equiv> \<exists>\<^sub>\<le>\<^sub>1 y. popular_value F y"
-
-  definition small_function
-  where "small_function F \<equiv> small (range F) \<and> at_most_one_popular_value F"
-
-  lemma small_preimage_unpopular:
-  fixes F :: "'a \<Rightarrow> 'b"
-  assumes "small_function F"
-  shows "small {x. F x \<noteq> some_popular_value F}"
-  proof (cases "\<exists>y. popular_value F y")
-    assume 1: "\<not> (\<exists>y. popular_value F y)"
-    have "\<And>y. small {x. F x = y}"
-      using 1 by blast
-    moreover have "UNIV = (\<Union>y\<in>range F. {x. F x = y})"
-      by auto
-    ultimately have "small (UNIV :: 'a set)"
-      using assms(1) small_function_def by (metis small_UN)
-    thus ?thesis
-      using smaller_than_small by blast
-    next
-    assume 1: "\<exists>y. popular_value F y"
-    have "popular_value F (some_popular_value F)"
-      using 1 someI_ex [of "\<lambda>y. popular_value F y"] some_popular_value_def by metis
-    hence 2: "\<And>y. y \<noteq> some_popular_value F \<Longrightarrow> small {x. F x = y}"
-      using assms
-      unfolding small_function_def
-      by (meson Uniq_D)
-    moreover have "{x. F x \<noteq> some_popular_value F} =
-                   (\<Union>y\<in>{y. y \<in> range F \<and> y \<noteq> some_popular_value F}. {x. F x = y})"
-      by auto
-    ultimately show ?thesis
-      using assms
-      unfolding small_function_def
-      by auto
-  qed
-
-  text \<open>
-    A type \<open>'a\<close> ``admits exponentiation'' if there is an injective function that maps
-    each small function from \<open>'a\<close> to \<open>'a\<close> back into \<open>'a\<close>.
-  \<close>
-
-  locale exponentiation =
-  fixes type :: "'a itself"
-  assumes admits_exponentiation:
-            "\<exists>e :: ('a \<Rightarrow> 'a) \<Rightarrow> 'a. inj_on e (Collect small_function)"
-  begin
-
-    definition "some_inj" :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a"
-    where "some_inj \<equiv> SOME e :: ('a \<Rightarrow> 'a) \<Rightarrow> 'a. inj_on e (Collect small_function)"
-
-    lemma inj_some_inj:
-    shows "inj_on some_inj (Collect small_function)"
-      using some_inj_def admits_exponentiation
-            someI_ex [of "\<lambda>e :: ('a \<Rightarrow> 'a) \<Rightarrow> 'a. inj_on e (Collect small_function)"]
-      unfolding small_function_def
-      by presburger
-
-    definition app :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
-    where "app f \<equiv> inv_into
-                     {F. small (range F) \<and>
-                         at_most_one_popular_value F} some_inj f"
-
-    lemma app_some_inj:
-    assumes "small_function F"
-    shows "app (some_inj F) = F"
-      by (metis (mono_tags, lifting) Collect_cong assms inv_into_f_f app_def
-          inj_some_inj mem_Collect_eq small_function_def)
-
-    lemma some_inj_lam_app:
-    assumes "f \<in> some_inj ` Collect small_function"
-    shows "some_inj (\<lambda>x. app f x) = f"
-      using assms f_inv_into_f
-      unfolding small_function_def
-      by (metis (no_types, lifting) app_def)
-
-  end
-
-  context
-  begin
-
-    text \<open>
-      The type @{typ V} (axiomatized in @{theory "ZFC_in_HOL.ZFC_in_HOL"}) admits exponentiation.
-      We show this by exhibiting a ``small encoding'' for small functions.  We provide this fact
-      as evidence of the nontriviality of the subsequent development, in the sense that if the
-      existence of the type @{typ V} is consistent with HOL, then the existence of infinite types
-      satisfying the locale assumptions for @{locale exponentiation} is also consistent with HOL.
-    \<close>
-
-    interpretation exponentiation \<open>TYPE(V)\<close>
-    proof
-      show "\<exists>e :: (V \<Rightarrow> V) \<Rightarrow> V. inj_on e (Collect small_function)"
-      proof
-        let ?e = "\<lambda>F. vpair (some_popular_value F)
-                            (set ((\<lambda>a. vpair a (F a)) ` {x. F x \<noteq> some_popular_value F}))"
-        show "inj_on ?e (Collect small_function)"
-        proof (intro inj_onI)
-          fix F F' :: "V \<Rightarrow> V"
-          assume F: "F \<in> Collect small_function"
-          assume F': "F' \<in> Collect small_function"
-          assume eq:
-            "vpair (some_popular_value F)
-                   (set ((\<lambda>a. vpair a (F a)) ` {x. F x \<noteq> some_popular_value F})) =
-             vpair (some_popular_value F')
-                   (set ((\<lambda>a. vpair a (F' a)) ` {x. F' x \<noteq> some_popular_value F'}))"
-          have 1: "some_popular_value F = some_popular_value F' \<and>
-                   set ((\<lambda>a. vpair a (F a)) ` {x. F x \<noteq> some_popular_value F}) =
-                   set ((\<lambda>a. vpair a (F' a)) ` {x. F' x \<noteq> some_popular_value F'})"
-            using eq by blast
-          have 2: "(\<lambda>a. vpair a (F a)) ` {x. F x \<noteq> some_popular_value F} =
-                   (\<lambda>a. vpair a (F' a)) ` {x. F' x \<noteq> some_popular_value F'}"
-          proof -
-            have "small {x. F x \<noteq> some_popular_value F}"
-              using F small_preimage_unpopular by blast
-            hence "small ((\<lambda>a. vpair a (F a)) ` {x. F x \<noteq> some_popular_value F})"
-              by blast
-            thus ?thesis
-              by (metis (full_types) 1 F' mem_Collect_eq replacement set_injective
-                  small_preimage_unpopular)
-          qed
-          show "F = F'"
-          proof
-            fix x
-            show "F x = F' x"
-              using 1 2
-              by (cases "F x = some_popular_value F") force+
-          qed
-        qed
-      qed
-    qed
-
-    lemma V_admits_exponentiation:
-    shows "exponentiation TYPE(V)"
-      ..
-    
-  end
-
-subsection "Universe"
-
-  locale universe = nondegenerate_and_pairing + exponentiation
-
-  text\<open>
-    The type @{typ V} axiomatized in @{theory "ZFC_in_HOL.ZFC_in_HOL"} is a universe.
-  \<close>
-
-  context
-  begin
-
-    interpretation nondegenerate \<open>TYPE(V)\<close>
-    proof
-      obtain f :: "bool \<Rightarrow> V" where f: "inj f"
-        using inj_compose inj_ord_of_nat by blast
-      show "\<exists>x y :: V. x \<noteq> y"
-        by (metis Inl_Inr_iff)
-    qed
-
-    lemma V_is_nondegenerate:
-    shows "nondegenerate TYPE(V)"
-      ..
-
-    interpretation pairing \<open>TYPE(V)\<close>
-      apply unfold_locales
-      using inj_on_vpair by blast
-
-    lemma V_admits_pairing:
-    shows "pairing TYPE(V)"
-      ..
-
-    interpretation exponentiation \<open>TYPE(V)\<close>
-      using V_admits_exponentiation by blast
-
-    interpretation universe \<open>TYPE(V)\<close>
-      ..
-
-    lemma V_is_universe:
-    shows "universe TYPE(V)"
-      ..
-
-  end
-
-section "Small RTS's"
-
-  text\<open>
-    We will call an RTS ``small'' if its set of arrows is a small set.
-  \<close>
-
-  locale small_rts =
-    rts +
-  assumes small: "small (Collect arr)"
-
-  lemma isomorphic_to_small_rts_is_small_rts:
-  assumes "small_rts A" and "isomorphic_rts A B"
-  shows "small_rts B"
-  proof -
-    interpret A: small_rts A
-      using assms by blast
-    interpret B: rts B
-      using assms isomorphic_rts_def inverse_simulations_def by blast
-    obtain F G where FG: "inverse_simulations A B F G"
-      using assms isomorphic_rts_def by blast
-    interpret FG: inverse_simulations A B F G
-      using FG by blast
-    show "small_rts B"
-      using A.small FG.G.is_bijection_betw_arr_sets
-      apply unfold_locales
-      by (metis bij_betw_imp_surj_on replacement)
-  qed
-
-  lemma small_function_transformation:
-  assumes "small_rts A" and "small_rts B" and "transformation A B F G T"
-  shows "small_function T"
-  proof -
-    interpret A: small_rts A
-      using assms(1) by blast
-    interpret B: small_rts B
-      using assms(2) by blast
-    interpret T: transformation A B F G T
-      using assms(3) by blast
-    have 1: "range T \<subseteq> Collect B.arr \<union> {B.null}"
-      using T.extensionality T.preserves_arr by blast
-    show ?thesis
-    proof (unfold small_function_def, intro conjI)
-      show "small (range T)"
-        using assms(2) 1 B.small smaller_than_small by blast
-      show "at_most_one_popular_value T"
-      proof -
-        have "\<And>v. popular_value T v \<Longrightarrow> v = B.null"
-        proof -
-          fix v
-          assume v: "popular_value T v"
-          have "v \<noteq> B.null \<Longrightarrow> v \<in> range T"
-            using v
-            by (metis (mono_tags, lifting) empty_Collect_eq rangeI small_empty)
-          thus "v = B.null"
-            by (metis (mono_tags, lifting) A.small Collect_mono T.extensionality
-                smaller_than_small v)
-        qed
-        thus ?thesis
-          using Uniq_def by blast
-      qed
-    qed
-  qed
-
-  text \<open>
-    We can't simply use the previous fact to prove the following, because our
-    definition of transformation includes extensionality conditions that are
-    not part of the definition of simulation.  So, we have to repeat the proof.
-  \<close>
-
-  lemma small_function_simulation:
-  assumes "small_rts A" and "small_rts B" and "simulation A B F"
-  shows "small_function F"
-  proof -
-    interpret A: small_rts A
-      using assms(1) by blast
-    interpret B: small_rts B
-      using assms(2) by blast
-    interpret F: simulation A B F
-      using assms(3) by blast
-    have 1: "range F \<subseteq> Collect B.arr \<union> {B.null}"
-      using F.extensionality F.preserves_reflects_arr by blast
-    show ?thesis
-    proof (unfold small_function_def, intro conjI)
-      show "small (range F)"
-        using assms(2) 1 B.small smaller_than_small by blast
-      show "at_most_one_popular_value F"
-      proof -
-        have "\<And>v. popular_value F v \<Longrightarrow> v = B.null"
-        proof -
-          fix v
-          assume v: "popular_value F v"
-          have "v \<noteq> B.null \<Longrightarrow> v \<in> range F"
-            using v
-            by (metis (mono_tags, lifting) empty_Collect_eq rangeI small_empty)
-          thus "v = B.null"
-            by (metis (mono_tags, lifting) A.small Collect_mono F.extensionality
-                smaller_than_small v)
-        qed
-        thus ?thesis
-          using Uniq_def by blast
-      qed
-    qed
-  qed
-
-  lemma small_function_resid:
-  fixes A :: "'a resid"
-  assumes "small_rts A"
-  shows "small_function A"
-  and "\<And>t. small_function (A t)"
-  proof -
-    interpret A: small_rts A
-      using assms by blast
-    show 1: "small_function A"
-    proof (unfold small_function_def, intro conjI)
-      show "small (range A)"
-      proof -
-        have "range A \<subseteq> A ` Collect A.arr \<union> A ` {x. \<not> A.arr x}"
-          by blast
-        moreover have "small (A ` Collect A.arr)"
-          using A.small by blast
-        moreover have "small (A ` {x. \<not> A.arr x})"
-        proof -
-          have "\<And>x. \<not> A.arr x \<Longrightarrow> A x = (\<lambda>x. A.null)"
-            using A.con_implies_arr(1) by blast
-          hence "A ` {x. \<not> A.arr x} \<subseteq> {\<lambda>x. A.null}"
-            by blast
-          thus ?thesis
-            by (meson small_empty small_insert smaller_than_small)
-        qed
-        ultimately show ?thesis
-          by (meson small_Un smaller_than_small)
-      qed
-      show "at_most_one_popular_value A"
-      proof -
-        have "\<And>v. popular_value A v \<Longrightarrow> v \<in> A ` {x. \<not> A.arr x}"
-        proof -
-          fix v
-          assume v: "popular_value A v"
-          have "\<not> small {x. \<not> A.arr x \<and> A x = v}"
-          proof -
-            have "\<not> small ({x. A x = v} - {x. A.arr x \<and> A x = v})"
-              by (metis (mono_tags, lifting) A.small Collect_mono
-                  Un_Diff_cancel small_Un smaller_than_small sup_ge2 v)
-            moreover have "{x. A x = v} - {x. A.arr x \<and> A x = v} =
-                           {x. \<not> A.arr x \<and> A x = v}"
-              by blast
-            ultimately show ?thesis by metis
-          qed
-          hence "v \<in> A ` {x. \<not> A.arr x \<and> A x = v}"
-            by (metis (mono_tags, lifting) empty_Collect_eq image_eqI
-                mem_Collect_eq small_empty)
-          thus "v \<in> A ` {x. \<not> A.arr x}" by blast
-        qed
-        moreover have "A ` {x. \<not> A.arr x} \<subseteq> {\<lambda>x. A.null}"
-        proof -
-          have "\<And>x. \<not> A.arr x \<Longrightarrow> A x = (\<lambda>x. A.null)"
-            using A.con_implies_arr(1) by blast
-          thus ?thesis by blast
-        qed
-        ultimately show ?thesis
-          by (metis (no_types, lifting) Uniq_def empty_iff singletonD
-              subset_singleton_iff)
-      qed
-    qed
-    show 2: "\<And>t. small_function (A t)"
-    proof -
-      fix t
-      show "small_function (A t)"
-      proof (unfold small_function_def, intro conjI)
-        show "small (range (A t))"
-        proof -
-          have "range (A t) \<subseteq> Collect A.arr \<union> {A.null}"
-            using A.arr_resid by blast
-          moreover have "small (Collect A.arr \<union> {A.null})"
-            using A.small by simp
-          ultimately show ?thesis
-            using smaller_than_small by blast
-        qed
-        show "at_most_one_popular_value (A t)"
-        proof -
-          have "\<And>v. popular_value (A t) v \<Longrightarrow> v = A.null"
-          proof -
-            fix v
-            assume v: "popular_value (A t) v"
-            have "\<not> small {u. A t u = v}"
-              using v by blast
-            hence "\<not> ({u. A t u = v} \<subseteq> Collect A.arr)"
-              using A.small smaller_than_small by blast
-            hence "\<exists>u. A t u = v \<and> \<not> A.arr u"
-              by blast
-            thus "v = A.null"
-              using A.con_implies_arr(2) by blast
-          qed
-          thus ?thesis
-            using Uniq_def by blast
-         qed
-      qed
-    qed
-  qed
-
-  context exponentiation
-  begin
-
-    lemma small_function_some_inj_resid:
-    fixes A :: "'a resid"
-    assumes "small_rts A"
-    shows "small_function (\<lambda>t. some_inj (A t))"
-    proof -
-      interpret A: small_rts A
-        using assms by blast
-      show "small_function (\<lambda>t. some_inj (A t))"
-      proof (unfold small_function_def, intro conjI)
-        show "small (range (\<lambda>t. some_inj (A t)))"
-        proof -
-          have "range (\<lambda>t. some_inj (A t)) = some_inj ` range (\<lambda>t. A t)"
-            by auto
-          moreover have "small ..."
-            using assms small_function_resid(1)
-            by (metis replacement small_function_def)
-          ultimately show ?thesis by auto
-        qed
-        show "at_most_one_popular_value (\<lambda>t. some_inj (A t))"
-        proof -
-          have 3: "\<And>t v. popular_value (\<lambda>t. some_inj (A t)) v
-                            \<Longrightarrow> v \<in> some_inj ` Collect (popular_value A)"
-          proof -
-            fix t v
-            assume v: "popular_value (\<lambda>t. some_inj (A t)) v"
-            have "\<not> small {t. A t = inv_into (Collect small_function) some_inj v}"
-            (*
-              using assms v inj_some_inj small_function_resid(2) inv_into_f_f
-                    small_empty
-              by (smt (verit) CollectI Collect_cong Collect_empty_eq)
-             *)
-            proof - (* TODO: Best I have found without smt. *)
-              have 1: "\<And>t. A.arr t \<longleftrightarrow> some_inj (A t) \<noteq> v"
-              proof
-                have 2: "\<And>t. A.arr t \<longleftrightarrow> A t \<noteq> (\<lambda>u. A.null)"
-                  using A.con_implies_arr(1) by fastforce
-                have 3: "v = some_inj (\<lambda>u. A.null)"
-                  using v 2
-                  by (metis (mono_tags, lifting) A.small Collect_mono
-                      smaller_than_small)
-                show "\<And>t. some_inj (A t) \<noteq> v \<Longrightarrow> A.arr t"
-                  using 2 3 by force
-                show "\<And>t. A.arr t \<Longrightarrow> some_inj (A t) \<noteq> v"
-                  using assms 2 3 inj_some_inj app_some_inj small_function_resid(2)
-                  by (metis A.not_arr_null)
-              qed
-              have "{t. A t = inv_into (Collect small_function) some_inj v} =
-                    {t. \<not> A.arr t}"
-                using 1
-                by (metis (no_types, lifting) A.not_arr_null CollectD CollectI
-                    app_some_inj assms f_inv_into_f image_eqI inv_into_into
-                    small_function_resid(2))
-              thus ?thesis
-                using v 1 by auto
-            qed
-            hence "inv_into (Collect small_function) some_inj v
-                      \<in> Collect (popular_value A)"
-              by auto
-            moreover have "some_inj
-                             (inv_into (Collect small_function) some_inj v) = v"
-              using assms v inj_some_inj
-                    f_inv_into_f [of v some_inj "Collect small_function"]
-              by (metis (mono_tags) small_function_resid(2) empty_Collect_eq
-                  inv_into_f_f mem_Collect_eq small_empty)
-            ultimately show "v \<in> some_inj ` Collect (popular_value A)"
-              by force
-          qed
-          show ?thesis
-          proof
-            fix u v
-            assume u: "popular_value (\<lambda>x. some_inj (A x)) u"
-            assume v: "popular_value (\<lambda>x. some_inj (A x)) v"
-            obtain f where f: "popular_value A f \<and> some_inj f = u"
-              using u 3 by blast
-            obtain g where g: "popular_value A g \<and> some_inj g = v"
-              using v 3 by blast
-            have "f = g"
-              using assms f g small_function_resid(1) Uniq_D
-              unfolding small_function_def
-              by auto fastforce
-            thus "u = v"
-              using f g by blast
-          qed
-        qed
-      qed
-    qed
-
-    fun some_inj_resid :: "'a resid \<Rightarrow> 'a"
-    where "some_inj_resid A = (some_inj (\<lambda>t. some_inj (A t)))"
-
-    lemma inj_on_some_inj_resid:
-    shows "inj_on some_inj_resid {A :: 'a resid. small_rts A}"
-    proof
-      fix A B :: "'a resid"
-      assume A: "A \<in> {A. small_rts A}" and B: "B \<in> {B. small_rts B}"
-      assume eq: "some_inj_resid A = some_inj_resid B"
-      interpret A: small_rts A
-        using A by blast
-      interpret B: small_rts B
-        using B by blast
-      show "A = B"
-      proof -
-        have "some_inj (\<lambda>t. some_inj (A t)) = some_inj (\<lambda>t. some_inj (B t))"
-          using A B eq by simp
-        moreover have "small_function (\<lambda>t. some_inj (A t))"
-          using A small_function_some_inj_resid by auto
-        moreover have "small_function (\<lambda>t. some_inj (B t))"
-          using B small_function_some_inj_resid by auto
-        ultimately have "(\<lambda>t. some_inj (A t)) = (\<lambda>t. some_inj (B t))"
-          using A B inj_some_inj
-          by (simp add: inj_onD)
-        hence "\<And>t. A t = B t"
-          using A B inj_some_inj small_function_resid(2)
-          by (metis app_some_inj mem_Collect_eq)
-        thus "A = B" by blast
-      qed
-    qed
-
-  end
 
 section "Injective Images of RTS's"
 
@@ -881,12 +223,6 @@ section "Injective Images of RTS's"
         by (meson A.extensionality inv_into_injective)
     qed
 
-    lemma preserves_reflects_small_rts:
-    shows "small_rts A \<longleftrightarrow> small_rts resid"
-      using induce_bij_betw_arr_sets
-      by (metis (no_types, lifting) A.rts_axioms bij_betw_def rts_axioms
-          small_image_iff small_rts.intro small_rts.small small_rts_axioms_def)
-
   end
 
   lemma inj_image_rts_comp:
@@ -996,14 +332,6 @@ section "Empty RTS"
     shows "cong t u \<longleftrightarrow> False"
       by (simp add: ide_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S)
 
-    sublocale small_rts resid
-      apply unfold_locales
-      by (metis Collect_empty_eq arr_char small_empty)
-
-    lemma is_small_rts:
-    shows "small_rts resid"
-      ..
-
     sublocale extensional_rts resid
       by unfold_locales (simp add: cong_char\<^sub>E\<^sub>R\<^sub>T\<^sub>S)
 
@@ -1074,6 +402,16 @@ section "Empty RTS"
   end
 
 section "One-Transition RTS"
+
+  text \<open>
+    We will call a type ``nondegenerate'' if it has at least two elements.
+    This means that the type admits RTS's with a non-empty set of arrows
+    (after using one of the elements for the required null value).
+  \<close>
+
+  locale nondegenerate =
+  fixes type :: "'a itself"
+  assumes is_nondegenerate: "\<exists>x y :: 'a. x \<noteq> y"
 
   text\<open>
     For any type having at least two elements, there exists a one-transition RTS
@@ -1175,14 +513,6 @@ section "One-Transition RTS"
 
     lemma is_extensional_rts_with_composites:
     shows "extensional_rts_with_composites resid"
-      ..
-
-    sublocale small_rts resid
-      by (simp add: Collect_cong arr_char rts_axioms small_rts.intro
-          small_rts_axioms.intro)
-
-    lemma is_small_rts:
-    shows "small_rts resid"
       ..
 
     lemma comp_char:
@@ -1311,9 +641,9 @@ section "One-Transition RTS"
 
   end
 
-section "Fibered Product RTS"
+section "Fiber Product RTS"
 
-  locale fibered_product_rts =
+  locale fiber_product_rts =
   A: rts A +
   B: rts B +
   C: weakly_extensional_rts C +
@@ -1610,48 +940,12 @@ section "Fibered Product RTS"
          (metis (no_types, lifting) extensional_rts.extensionality fst_conv ide_char\<^sub>F\<^sub>P
           ide_implies_arr not_arr_null null_char prod.exhaust_sel resid_def snd_conv)
 
-    lemma preserves_small_rts:
-    assumes "small_rts A" and "small_rts B"
-    shows "small_rts resid"
-    proof
-      interpret A: small_rts A
-        using assms(1) by blast
-      interpret B: small_rts B
-        using assms(2) by blast
-      show "small (Collect arr)"
-      proof -
-        have 1: "Collect arr \<subseteq> {t. A.arr (fst t) \<and> B.arr (snd t)}"
-          using arr_char by blast
-        obtain \<phi>
-          where \<phi>: "inj_on \<phi> (Collect A.arr) \<and> \<phi> ` Collect A.arr \<in> range elts"
-          using A.small small_def by metis
-        obtain \<psi>
-          where \<psi>: "inj_on \<psi> (Collect B.arr) \<and> \<psi> ` Collect B.arr \<in> range elts"
-          using B.small small_def by metis
-        let ?\<phi>\<psi> = "\<lambda>ab. vpair (\<phi> (fst ab)) (\<psi> (snd ab))"
-        have "inj_on ?\<phi>\<psi> (Collect arr)"
-          using 1 \<phi> \<psi> arr_char inj_on_def [of \<phi> "Collect A.arr"]
-                inj_on_def [of \<psi> "Collect B.arr"] prod.expand
-          by (intro inj_onI) force
-        moreover have "?\<phi>\<psi> ` Collect arr \<in> range elts"
-        proof -
-          have "?\<phi>\<psi> ` Collect arr \<subseteq>
-                elts (vtimes (set (\<phi> ` Collect A.arr)) (set (\<psi> ` Collect B.arr)))"
-            using A.small B.small arr_char by auto
-          thus ?thesis
-            by (meson down_raw)
-        qed
-        ultimately show ?thesis
-          by (meson small_def)
-      qed
-    qed
-
   end
 
-  locale fibered_product_of_weakly_extensional_rts =
+  locale fiber_product_of_weakly_extensional_rts =
     A: weakly_extensional_rts A +
     B: weakly_extensional_rts B +
-    fibered_product_rts
+    fiber_product_rts
   begin
 
     sublocale weakly_extensional_rts resid
@@ -1684,13 +978,13 @@ section "Fibered Product RTS"
 
   end
 
-  locale fibered_product_of_extensional_rts =
+  locale fiber_product_of_extensional_rts =
     A: extensional_rts A +
     B: extensional_rts B +
-    fibered_product_of_weakly_extensional_rts
+    fiber_product_of_weakly_extensional_rts
   begin
 
-    sublocale fibered_product_of_weakly_extensional_rts A B ..
+    sublocale fiber_product_of_weakly_extensional_rts A B ..
     sublocale extensional_rts resid
       using A.extensional_rts_axioms B.extensional_rts_axioms preserves_extensional_rts
       by blast
@@ -1701,26 +995,11 @@ section "Fibered Product RTS"
 
   end
 
-  locale fibered_product_of_small_rts =
-    A: small_rts A +
-    B: small_rts B +
-    fibered_product_rts
-  begin
-
-    sublocale small_rts resid
-      by (simp add: A.small_rts_axioms B.small_rts_axioms preserves_small_rts)
-
-    lemma is_small_rts:
-    shows "small_rts resid"
-      ..
-
-  end
-
 section "Product RTS"
 
   text\<open>
     It is possible to define a product construction for RTS's as a special case of the
-    fibered product, but some inconveniences result from that approach.
+    fiber product, but some inconveniences result from that approach.
     In addition, we have already defined a product construction in
     @{theory ResiduatedTransitionSystem.ResiduatedTransitionSystem}.
     So, we will build on that existing construction.
@@ -1850,35 +1129,6 @@ section "Product RTS"
       show ?thesis
         by unfold_locales
            (metis A.extensionality B.extensionality cong_char prod.collapse)
-    qed
-
-    lemma preserves_small_rts:
-    assumes "small_rts A" and "small_rts B"
-    shows "small_rts resid"
-    proof
-      interpret A: small_rts A
-        using assms(1) by blast
-      interpret B: small_rts B
-        using assms(2) by blast
-      show "small (Collect arr)"
-      proof -
-        (* It is slightly shorter to use what has already been shown for fibered product. *)
-        interpret One: one_arr_rts \<open>TYPE(bool)\<close>
-          by unfold_locales auto
-        interpret simulation A One.resid \<open>One.terminator A\<close>
-          using One.terminator_is_simulation A.rts_axioms by blast
-        interpret simulation B One.resid \<open>One.terminator B\<close>
-          using One.terminator_is_simulation B.rts_axioms by blast
-        interpret AxB: fibered_product_of_small_rts A B One.resid
-                           \<open>One.terminator A\<close> \<open>One.terminator B\<close> ..
-        have "Collect arr \<subseteq> Collect AxB.arr"
-          using AxB.arr_char arr_char One.terminator_def
-          by (metis Collect_mono)
-        moreover have "small (Collect AxB.arr)"
-          using AxB.small by blast
-        ultimately show ?thesis
-          using smaller_than_small by blast
-      qed
     qed
 
     lemma preserves_rts_with_composites:
@@ -2165,22 +1415,6 @@ section "Product RTS"
     assumes "joinable t u"
     shows "join t u = (A.join (fst t) (fst u), B.join (snd t) (snd u))"
       using assms join_char by auto
-
-  end
-
-  locale product_of_small_rts =
-    A: small_rts A +
-    B: small_rts B +
-    product_rts
-  begin
-
-    sublocale small_rts resid
-      using A.small_rts_axioms B.small_rts_axioms preserves_small_rts
-      by blast
-
-    lemma is_small_rts:
-    shows "small_rts resid"
-      ..
 
   end
 
@@ -2595,13 +1829,2645 @@ subsection "Associators"
     lemma inverse_simulations_map'_map:
     shows "inverse_simulations AxB_xC.resid Ax_BxC.resid map' map"
     proof
-      show "map \<circ> map' = I Ax_BxC.resid"
+      show "map \<circ> map' = Id Ax_BxC.resid"
         unfolding map_eq map'_eq by auto
-      show "map' \<circ> map = I AxB_xC.resid"
+      show "map' \<circ> map = Id AxB_xC.resid"
         unfolding map_eq map'_eq by auto
     qed
 
   end
+
+  section "Sum RTS"
+
+  locale sum_rts =
+    A: rts A +
+    B: rts B
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
+  begin
+
+    notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx    (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation A.cong    (infix \<open>\<sim>\<^sub>A\<close> 50)
+
+    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
+    notation B.cong    (infix \<open>\<sim>\<^sub>B\<close> 50)
+
+    datatype ('c, 'd) arr =
+      Null
+    | Inj\<^sub>1 'c
+    | Inj\<^sub>0 'd
+
+    fun Arr\<^sub>1 :: "('a, 'b) arr \<Rightarrow> bool"
+    where "Arr\<^sub>1 (Inj\<^sub>1 x) = A.arr x"
+        | "Arr\<^sub>1 _ = False"
+
+    fun Arr\<^sub>0 :: "('a, 'b) arr \<Rightarrow> bool"
+    where "Arr\<^sub>0 (Inj\<^sub>0 y) = B.arr y"
+        | "Arr\<^sub>0 _ = False"
+
+    fun Arr :: "('a, 'b) arr \<Rightarrow> bool"
+    where "Arr (Inj\<^sub>1 x) = A.arr x"
+        | "Arr (Inj\<^sub>0 y) = B.arr y"
+        | "Arr _ = False"
+
+    fun Ide\<^sub>1 :: "('a, 'b) arr \<Rightarrow> bool"
+    where "Ide\<^sub>1 (Inj\<^sub>1 x) = A.ide x"
+        | "Ide\<^sub>1 _ = False"
+
+    fun Ide\<^sub>0 :: "('a, 'b) arr \<Rightarrow> bool"
+    where "Ide\<^sub>0 (Inj\<^sub>0 y) = B.ide y"
+        | "Ide\<^sub>0 _ = False"
+
+    fun Ide :: "('a, 'b) arr \<Rightarrow> bool"
+    where "Ide (Inj\<^sub>1 x) = A.ide x"
+        | "Ide (Inj\<^sub>0 y) = B.ide y"
+        | "Ide _ = False"
+
+    fun Prj\<^sub>1 :: "('a, 'b) arr \<Rightarrow> 'a"
+    where "Prj\<^sub>1 (Inj\<^sub>1 x) = (if A.arr x then x else A.null)"
+        | "Prj\<^sub>1 _ = A.null"
+
+    fun Prj\<^sub>0 :: "('a, 'b) arr \<Rightarrow> 'b"
+    where "Prj\<^sub>0 (Inj\<^sub>0 y) =(if B.arr y then y else B.null)"
+        | "Prj\<^sub>0 _ = B.null"
+
+    abbreviation Con :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr \<Rightarrow> bool"
+    where "Con t u \<equiv> A.con (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.con (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+
+    fun Trg :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr"
+    where "Trg (Inj\<^sub>1 x) = (if A.arr x then Inj\<^sub>1 (A.trg x) else Null)"
+        | "Trg (Inj\<^sub>0 y) = (if B.arr y then Inj\<^sub>0 (B.trg y) else Null)"
+        | "Trg _ = Null"
+
+    fun resid :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr \<Rightarrow> ('a, 'b) arr"
+    where "resid (Inj\<^sub>1 x) (Inj\<^sub>1 y) = (if A.con x y then Inj\<^sub>1 (A x y) else Null)"
+        | "resid (Inj\<^sub>0 x) (Inj\<^sub>0 y) = (if B.con x y then Inj\<^sub>0 (B x y) else Null)"
+        | "resid _ _ = Null"
+
+    notation resid      (infix \<open>\\<close> 70)
+
+    sublocale ResiduatedTransitionSystem.partial_magma resid
+      by unfold_locales (metis resid.simps(3,6))
+
+    lemma is_partial_magma:
+    shows "ResiduatedTransitionSystem.partial_magma resid"
+      ..
+
+    lemma null_char [simp]:
+    shows "null = Null"
+      by (metis null_is_zero(2) resid.simps(3))
+
+    sublocale residuation resid
+    proof
+      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> u \\ t \<noteq> null"
+      proof -
+        fix t u
+        assume tu: "t \\ u \<noteq> null"
+        show "u \\ t \<noteq> null"
+          using tu null_char A.con_sym B.con_sym
+          apply (cases t; cases u)
+                  apply auto[9]
+          by metis+
+      qed
+      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> (t \\ u) \\ (t \\ u) \<noteq> null"
+      proof -
+        fix t u
+        assume tu: "t \\ u \<noteq> null"
+        show "(t \\ u) \\ (t \\ u) \<noteq> null"
+          using tu null_char
+          apply (cases t; cases u)
+                  apply auto[9]
+          by metis+
+      qed
+      show "\<And>v t u. (v \\ t) \\ (u \\ t) \<noteq> null \<Longrightarrow> (v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
+      proof -
+        fix t u v
+        assume 1: "(v \\ t) \\ (u \\ t) \<noteq> null"
+        show "(v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
+          using 1 null_char A.cube B.cube A.conI B.conI
+          apply (cases t)
+            apply auto[1]
+           apply (cases v)
+             apply auto[2]
+           apply (cases u)
+             apply auto[4]
+           apply (metis (full_types) sum_rts.resid.simps(1,6) sum_rts_axioms)
+          apply (cases v)
+            apply auto[3]
+          apply (cases u)
+            apply auto[3]
+          by (metis (full_types) sum_rts.resid.simps(2,4) sum_rts_axioms)
+      qed
+    qed
+
+    lemma is_residuation:
+    shows "residuation resid"
+      ..
+
+    notation con     (infix \<open>\<frown>\<close> 50)
+
+    lemma arr_char [iff]:
+    shows "arr t \<longleftrightarrow> Arr t"
+      using not_ide_null A.residuation_axioms B.residuation_axioms
+      apply (cases t)
+        apply auto[3]
+      by fastforce+
+
+    lemma ide_char [iff]:
+    shows "ide t \<longleftrightarrow> Ide t"
+      using not_ide_null
+      by (cases t) (auto simp add: A.residuation_axioms B.residuation_axioms ide_def)
+
+    lemma con_char [iff]:
+    shows "t \<frown> u \<longleftrightarrow> Con t u"
+      using arr_char con_implies_arr con_def null_char A.con_implies_arr B.con_implies_arr
+      by (cases t; cases u) auto
+
+    lemma trg_char:
+    shows "trg t = Trg t"
+      using trg_def A.trg_def B.trg_def
+      by (cases t) auto
+
+    sublocale rts resid
+    proof
+      fix t
+      show "arr t \<Longrightarrow> ide (trg t)"
+        using trg_char by (cases t) auto
+      show 1: "\<And>a. \<lbrakk>ide a; t \<frown> a\<rbrakk> \<Longrightarrow> t \\ a = t"
+      proof -
+        fix a
+        show "\<lbrakk>ide a; t \<frown> a\<rbrakk> \<Longrightarrow> t \\ a = t"
+          using A.resid_arr_ide B.resid_arr_ide
+          apply (cases t; cases a)
+                  apply auto[9]
+          using A.not_con_null(1) B.not_con_null(1)
+          by (metis (full_types))+
+      qed
+      show "\<And>a. \<lbrakk>ide a; a \<frown> t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
+      proof -
+        fix a
+        assume a: "ide a"
+        show "\<lbrakk>ide a; a \<frown> t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
+          apply (cases t; cases a)
+                  apply auto[9]
+          using A.not_con_null(2) B.not_con_null(2)
+          by (metis (full_types))+
+      qed
+      show "\<And> u. t \<frown> u \<Longrightarrow> \<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u"
+      proof -
+        fix u
+        assume tu: "t \<frown> u"
+        show "\<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u"
+          using tu A.con_imp_coinitial_ax A.con_implies_arr(1) B.con_imp_coinitial_ax
+                B.con_implies_arr(1)
+          apply (cases t; cases u)
+                  apply auto[9]
+          using Ide.simps Prj\<^sub>1.simps(1) Prj\<^sub>0.simps(1) A.not_con_null B.not_con_null
+          by (metis (mono_tags, lifting))+
+      qed
+      show "\<And>u v. \<lbrakk>ide (t \\ u); u \<frown> v\<rbrakk> \<Longrightarrow> t \\ u \<frown> v \\ u"
+      proof -
+        fix u v
+        assume tu: "ide (t \\ u)"
+        assume uv: "u \<frown> v"
+        show "t \\ u \<frown> v \\ u"
+          using tu uv ide_char con_char A.con_target B.con_target
+                A.con_implies_arr B.con_implies_arr
+            apply (cases t; cases u; cases v)
+                              apply auto[27]
+          using A.con_sym A.not_arr_null B.con_sym B.not_arr_null Ide.simps(3)
+          by (metis (mono_tags, lifting))+
+      qed
+    qed
+
+    lemma is_rts:
+    shows "rts resid"
+      ..
+
+    notation prfx    (infix \<open>\<lesssim>\<close> 50)
+    notation cong    (infix \<open>\<sim>\<close> 50)
+
+    lemma sources_char:
+    shows "sources t = Inj\<^sub>1 ` A.sources (Prj\<^sub>1 t) \<union> Inj\<^sub>0 ` B.sources (Prj\<^sub>0 t)"
+      unfolding sources_def A.sources_def B.sources_def
+      apply (cases t)
+        apply auto[3]
+      by (metis (no_types, lifting) A.con_implies_arr(2) A.not_arr_null Ide.elims(2)
+          B.not_con_null(2) CollectI imageI Ide.simps(2) Prj\<^sub>1.simps(1,3) Prj\<^sub>0.elims image_eqI)+
+
+    lemma targets_char:
+    shows "targets t = Inj\<^sub>1 ` A.targets (Prj\<^sub>1 t) \<union> Inj\<^sub>0 ` B.targets (Prj\<^sub>0 t)"
+      unfolding targets_def A.targets_def B.targets_def
+      using A.trg_def B.trg_def trg_def
+      apply (cases t)
+        apply auto[3]
+      by (metis (no_types, lifting) A.not_con_null(2) CollectI Ide.elims(2) Prj\<^sub>1.simps(1,3)
+          B.not_con_null(2) Ide.simps(2) Prj\<^sub>0.elims imageI mem_Collect_eq)+
+
+    lemma seq_char:
+    shows "seq t u \<longleftrightarrow> A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+    proof -
+      have "t = Null \<Longrightarrow> ?thesis" by auto
+      moreover have "u = Null \<Longrightarrow> ?thesis" by auto
+      moreover have "\<And>x y. \<lbrakk>t = Inj\<^sub>1 x; u = Inj\<^sub>1 y\<rbrakk> \<Longrightarrow> ?thesis"
+      proof -
+        fix x y
+        assume x: "t = Inj\<^sub>1 x" and y: "u = Inj\<^sub>1 y"
+        show "seq t u \<longleftrightarrow> A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+        proof
+          assume seq: "seq t u"
+          have "A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u)"
+            using x y seq sources_char targets_char
+            by (elim seqE, intro A.seqI) auto
+          thus "A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)" by blast
+          next
+          assume 1: "A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+          have "\<not> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+            using x y sources_char targets_char Prj\<^sub>0.simps(3) by auto
+          thus "seq t u"
+            using x y 1 sources_char targets_char
+            by (metis (no_types, lifting) A.not_arr_null A.seqE Arr.simps(1)
+                B.arr_iff_has_source B.arr_iff_has_target B.not_arr_null
+                Prj\<^sub>0.simps(3) Prj\<^sub>1.simps(1) arr_char rts.seqI(2) rts_axioms)
+        qed
+      qed
+      moreover have "\<And>x y. \<lbrakk>t = Inj\<^sub>0 x; u = Inj\<^sub>0 y\<rbrakk> \<Longrightarrow> ?thesis"
+      proof -
+        fix x y
+        assume x: "t = Inj\<^sub>0 x" and y: "u = Inj\<^sub>0 y"
+        show "seq t u \<longleftrightarrow> A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+        proof
+          assume seq: "seq t u"
+          have "B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+            using x y seq sources_char [of "Inj\<^sub>0 y"] targets_char [of "Inj\<^sub>0 x"]
+            by (elim seqE, intro B.seqI) auto
+          thus "A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)" by blast
+          next
+          assume 1: "A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+          have "\<not> A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u)"
+            using x y sources_char targets_char Prj\<^sub>0.simps(3) by auto
+          thus "seq t u"
+            using x y 1 sources_char targets_char
+            by (metis (mono_tags, lifting) A.arr_iff_has_source A.arr_iff_has_target
+                A.not_arr_null Arr.simps(2) B.not_arr_null B.seqE Prj\<^sub>0.simps(1) Prj\<^sub>1.simps(3)
+                arr_char rts.seqI(2) rts_axioms)
+        qed
+      qed
+      moreover have "\<And>x y. \<lbrakk>t = Inj\<^sub>0 x; u = Inj\<^sub>1 y\<rbrakk> \<Longrightarrow> ?thesis"
+        apply (cases u)
+          apply auto[3]
+        by (metis Trg.simps(2) not_ide_null null_char resid.simps(5) seq_def
+            source_is_prfx trg_char trg_in_targets)
+      moreover have "\<And>x y. \<lbrakk>t = Inj\<^sub>1 x; u = Inj\<^sub>0 y\<rbrakk> \<Longrightarrow> ?thesis"
+        by (metis (no_types, lifting) A.not_arr_null A.seqE\<^sub>C\<^sub>S Arr.simps(1) B.not_arr_null
+            B.seqE Trg.simps(1) arr.simps(5) in_sourcesE resid_arr_ide seqE Prj\<^sub>0.simps(3)
+            Prj\<^sub>1.simps(3) arr_char resid.simps(5) trg_char trg_in_targets)
+      ultimately show ?thesis
+        by (metis Prj\<^sub>1.elims)
+    qed
+
+    lemma prfx_char:
+    shows "t \<lesssim> u \<longleftrightarrow> A.prfx (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.prfx (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+      using A.con_implies_arr B.con_implies_arr
+      by (cases t; cases u) auto
+
+    lemma cong_char:
+    shows "t \<sim> u \<longleftrightarrow> A.cong (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.cong (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+      using prfx_char
+      by (metis A.not_con_null(1) A.null_is_zero(2) Prj\<^sub>0.elims Prj\<^sub>1.simps(3) A.con_def)
+
+    lemma Prj\<^sub>_resid:
+    assumes "t \<frown> u"
+    shows Prj\<^sub>1_resid [simp]: "Prj\<^sub>1 (t \\ u) = Prj\<^sub>1 t \\\<^sub>A Prj\<^sub>1 u"
+    and Prj\<^sub>0_resid [simp]: "Prj\<^sub>0 (t \\ u) = Prj\<^sub>0 t \\\<^sub>B Prj\<^sub>0 u"
+      using assms
+      apply (cases t; cases u)
+               apply auto[9]
+      apply (cases t; cases u)
+      using B.con_implies_arr
+      by auto[9]
+
+    lemma join_of_char:
+    shows "join_of t u v \<longleftrightarrow>
+           A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<or> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)"
+    and "joinable t u \<longleftrightarrow> A.joinable (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.joinable (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+    proof -
+      show 1: "\<And>v. join_of t u v \<longleftrightarrow>
+                      A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<or> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)"
+      proof
+        fix v
+        show "join_of t u v \<Longrightarrow>
+                A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<or> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)"
+        proof -
+          assume 1: "join_of t u v"
+          have 2: "t \<frown> u \<and> t \<frown> v \<and> u \<frown> v \<and> u \<frown> t \<and> v \<frown> t \<and> v \<frown> u"
+            by (meson 1 bounded_imp_con con_prfx_composite_of(1) join_ofE con_sym)
+          show "A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<or> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)"
+          proof -
+            have "A.arr (Prj\<^sub>1 v) \<or> B.arr (Prj\<^sub>0 v)"
+              by (meson 1 2 A.con_implies_arr(2) B.con_implies_arr(2) con_char)
+            moreover have "A.arr (Prj\<^sub>1 v) \<Longrightarrow> A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v)"
+              using 1 2 ide_char
+              apply (cases t; cases u; cases v)
+                                  apply auto[27]
+              apply (elim join_ofE composite_ofE congE, intro A.join_ofI A.composite_ofI)
+                 apply auto[4]
+              by (metis (full_types) Ide.simps(3) sum_rts.Ide.simps(1) sum_rts_axioms)+
+            moreover have "B.arr (Prj\<^sub>0 v) \<Longrightarrow> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)"
+              using 1 2
+              apply (cases t; cases u; cases v)
+                                  apply auto[27]
+              apply (elim join_ofE composite_ofE congE, intro B.join_ofI B.composite_ofI)
+                 apply auto[4]
+              by (metis (full_types) sum_rts.Ide.simps(2,3) sum_rts_axioms)+
+            ultimately show ?thesis by blast
+          qed
+        qed
+        show "A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<or> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)
+                \<Longrightarrow> join_of t u v"
+        proof -
+          have "A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<Longrightarrow> join_of t u v"
+            by (metis (lifting) A.composite_ofE A.conI A.join_ofE A.not_ide_null
+                A.null_is_zero(2) Prj\<^sub>1_resid composite_ofI con_char prfx_char
+                rts.join_of_def rts_axioms)
+          moreover have "B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v) \<Longrightarrow> join_of t u v"
+            by (metis (lifting) B.composite_ofE B.conI B.join_ofE B.not_ide_null
+                B.null_is_zero(2) Prj\<^sub>0_resid composite_ofI con_char prfx_char
+                rts.join_of_def rts_axioms)
+          ultimately
+          show "A.join_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) (Prj\<^sub>1 v) \<or> B.join_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) (Prj\<^sub>0 v)
+                   \<Longrightarrow> join_of t u v"
+            by blast
+        qed
+      qed
+      show "joinable t u \<longleftrightarrow> A.joinable (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.joinable (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+      proof
+        show "joinable t u \<Longrightarrow> A.joinable (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.joinable (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+          using 1 joinable_def A.joinable_def B.joinable_def by meson
+        show "A.joinable (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.joinable (Prj\<^sub>0 t) (Prj\<^sub>0 u) \<Longrightarrow> joinable t u"
+        proof -
+          have "A.joinable (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<Longrightarrow> joinable t u"
+            by (metis "1" A.arr_iff_has_source A.coinitialE A.joinable_def
+                A.joinable_implies_coinitial A.sources_join_of(2) Prj\<^sub>1.simps(1) joinable_def)
+          moreover have "B.joinable (Prj\<^sub>0 t) (Prj\<^sub>0 u) \<Longrightarrow> joinable t u"
+            by (metis "1" B.arr_iff_has_source B.coinitialE B.joinable_def
+                B.joinable_implies_coinitial B.sources_join_of(2) Prj\<^sub>0.simps(1) joinable_def)
+          ultimately show "A.joinable (Prj\<^sub>1 t) (Prj\<^sub>1 u) \<or> B.joinable (Prj\<^sub>0 t) (Prj\<^sub>0 u)
+                             \<Longrightarrow> joinable t u"
+            by blast
+        qed
+      qed
+    qed
+
+    definition I\<^sub>0 :: "'b \<Rightarrow> ('a, 'b) arr"
+    where "I\<^sub>0 t \<equiv> if B.arr t then Inj\<^sub>0 t else null"
+
+    definition I\<^sub>1 :: "'a \<Rightarrow> ('a, 'b) arr"
+    where "I\<^sub>1 t \<equiv> if A.arr t then Inj\<^sub>1 t else null"
+
+    sublocale I\<^sub>0: simulation B resid I\<^sub>0
+      using I\<^sub>0_def B.con_implies_arr(1-2)
+      by unfold_locales auto
+
+    lemma I\<^sub>0_is_simulation:
+    shows "simulation B resid I\<^sub>0"
+      ..
+
+    sublocale I\<^sub>1: simulation A resid I\<^sub>1
+      using I\<^sub>1_def A.con_implies_arr(1-2)
+      by unfold_locales auto
+
+    lemma I\<^sub>1_is_simulation:
+    shows "simulation A resid I\<^sub>1"
+      ..
+
+    definition cotuple :: "'x resid \<Rightarrow> ('a \<Rightarrow> 'x) \<Rightarrow> ('b \<Rightarrow> 'x) \<Rightarrow> ('a, 'b) arr \<Rightarrow> 'x"
+    where "cotuple X F G \<equiv> \<lambda>t. if Arr\<^sub>1 t then F (Prj\<^sub>1 t)
+                                else if Arr\<^sub>0 t then G (Prj\<^sub>0 t)
+                                else ResiduatedTransitionSystem.partial_magma.null X"
+
+    lemma couniversality:
+    assumes "simulation A X H" and "simulation B X K"
+    shows [intro]: "simulation resid X (cotuple X H K)"
+    and "cotuple X H K \<circ> I\<^sub>1 = H" and "cotuple X H K \<circ> I\<^sub>0 = K"
+    and "\<exists>!HK. simulation resid X HK \<and> HK \<circ> I\<^sub>1 = H \<and> HK \<circ> I\<^sub>0 = K"
+    proof -
+      interpret H: simulation A X H
+        using assms(1) by blast
+      interpret K: simulation B X K
+        using assms(2) by blast
+      interpret HK: simulation resid X \<open>cotuple X H K\<close>
+      proof
+        show " \<And>t. \<not> arr t \<Longrightarrow> cotuple X H K t = H.B.null"
+          unfolding cotuple_def
+          using H.extensionality K.extensionality arrI by auto
+        fix t u
+        assume con: "t \<frown> u"
+        show "H.B.con (cotuple X H K t) (cotuple X H K u)"
+          unfolding cotuple_def
+          using con
+          apply (cases t; cases u)
+                  apply auto[9]
+             apply (metis (full_types) A.not_con_null(2))
+            apply (metis (full_types) A.not_con_null(1))
+           apply (metis (full_types) B.not_con_null(2))
+          by (metis (full_types) B.not_con_null(1))
+        show "cotuple X H K (t \\ u) = X (cotuple X H K t) (cotuple X H K u)"
+          unfolding cotuple_def
+          using con
+          by (cases t; cases u) auto
+      qed
+      show "simulation resid X (cotuple X H K)" ..
+      show "cotuple X H K \<circ> I\<^sub>1 = H"
+        unfolding cotuple_def
+        using I\<^sub>1_def HK.preserves_reflects_arr
+        by (auto simp add: H.extensionality)
+      moreover show "cotuple X H K \<circ> I\<^sub>0 = K"
+        unfolding cotuple_def
+        using I\<^sub>0_def HK.preserves_reflects_arr
+        by (auto simp add: K.extensionality)
+      ultimately have "simulation resid X (cotuple X H K) \<and>
+                         cotuple X H K \<circ> I\<^sub>1 = H \<and> cotuple X H K \<circ> I\<^sub>0 = K"
+        using HK.simulation_axioms by simp
+      moreover have "\<And>M. simulation resid X M \<and> M \<circ> I\<^sub>1 = H \<and> M \<circ> I\<^sub>0 = K
+                            \<Longrightarrow> M = cotuple X H K"
+      proof
+        fix M t
+        assume 1: "simulation resid X M \<and> M \<circ> I\<^sub>1 = H \<and> M \<circ> I\<^sub>0 = K"
+        interpret M: simulation resid X M
+          using 1 by blast
+        show "M t = cotuple X H K t"
+          using 1 M.extensionality M.preserves_reflects_arr
+          unfolding I\<^sub>1_def I\<^sub>0_def cotuple_def
+          by (cases t) auto
+      qed
+      ultimately
+      show "\<exists>!HK. simulation resid X HK \<and> HK \<circ> I\<^sub>1 = H \<and> HK \<circ> I\<^sub>0 = K"
+        by auto
+    qed
+
+    lemma inj_joint_epic:
+    assumes "simulation resid X F" and "simulation resid X G"
+    and "F \<circ> I\<^sub>0 = G \<circ> I\<^sub>0" and "F \<circ> I\<^sub>1 = G \<circ> I\<^sub>1"
+    shows "F = G"
+      using assms(1-4) I\<^sub>0_is_simulation I\<^sub>1_is_simulation couniversality(4)
+      by blast
+
+    lemma cotuple_simulation_inj:
+    assumes "simulation resid X F"
+    shows "cotuple X (F \<circ> I\<^sub>1) (F \<circ> I\<^sub>0) = F"
+      by (meson I\<^sub>0_is_simulation I\<^sub>1_is_simulation inj_joint_epic assms
+          couniversality(1-3) simulation_comp)
+
+    lemma cotuple_inj:
+    assumes "simulation A X F" and "simulation B X G"
+    shows "cotuple X F G \<circ> I\<^sub>1 = F" and "cotuple X F G \<circ> I\<^sub>0 = G"
+      using assms(1-2) couniversality(2-3) by auto
+
+    lemma preserves_weakly_extensional_rts:
+    assumes "weakly_extensional_rts A" and "weakly_extensional_rts B"
+    shows "weakly_extensional_rts resid"
+    proof
+      interpret A: weakly_extensional_rts A
+        using assms(1) by blast
+      interpret B: weakly_extensional_rts B
+        using assms(2) by blast
+      show "\<And>t u. \<lbrakk>t \<sim> u; ide t; ide u\<rbrakk> \<Longrightarrow> t = u"
+      proof -
+        fix t u
+        assume t: "ide t" and u: "ide u"
+        assume tu: "t \<sim> u"
+        show "t = u"
+          using t u tu cong_char ide_char A.weak_extensionality B.weak_extensionality
+          apply (cases t; cases u)
+                  apply auto[9]
+          using A.con_ide_are_eq B.con_ide_are_eq Ide.simps(3)
+          by presburger+
+      qed
+    qed
+
+    lemma preserves_extensional_rts:
+    assumes "extensional_rts A" and "extensional_rts B"
+    shows "extensional_rts resid"
+    proof -
+      interpret A: extensional_rts A
+        using assms(1) by blast
+      interpret B: extensional_rts B
+        using assms(2) by blast
+      show ?thesis
+      proof
+        show "\<And>t u. t \<sim> u \<Longrightarrow> t = u"
+        proof -
+          fix t u
+          assume tu: "t \<sim> u"
+          show "t = u"
+            using tu cong_char ide_char A.extensionality B.extensionality
+            apply (cases t; cases u)
+                    apply auto[9]
+             apply (metis (full_types) Ide.simps(1,3))
+            by (metis (full_types) Ide.simps(2,3))
+        qed
+      qed
+    qed
+
+    lemma preserves_rts_with_composites:
+    assumes "rts_with_composites A" and "rts_with_composites B"
+    shows "rts_with_composites resid"
+    proof
+      fix t u
+      assume seq: "seq t u"
+      show "composable t u"
+      proof (cases "Arr\<^sub>1 t")
+        case True
+        have 1: "A.seq (Prj\<^sub>1 t) (Prj\<^sub>1 u)"
+          using True seq seq_char
+          by (metis Arr\<^sub>1.elims(2) B.not_arr_null B.rts_axioms Prj\<^sub>0.simps(3) rts.seqE)
+        obtain z where z: "A.composite_of (Prj\<^sub>1 t) (Prj\<^sub>1 u) z"
+          using 1 by (meson assms(1) rts_with_composites.obtains_composite_of)
+        have "composite_of t u (Inj\<^sub>1 z)"
+        proof
+          show "t \<lesssim> Inj\<^sub>1 z"
+            using A.arr_composite_of prfx_char z by auto
+          show "Inj\<^sub>1 z \\ t \<sim> u"
+            using True z prfx_char A.composite_ofE A.con_sym A.prfx_implies_con
+            by (cases t) auto
+        qed
+        thus ?thesis
+          using composable_def by blast
+        next
+        case False
+        have 1: "B.seq (Prj\<^sub>0 t) (Prj\<^sub>0 u)"
+          using False seq seq_char
+          by (metis A.not_arr_null A.seqE Prj\<^sub>1.elims sum_rts.Arr\<^sub>1.simps(1) sum_rts_axioms)
+        obtain z where z: "B.composite_of (Prj\<^sub>0 t) (Prj\<^sub>0 u) z"
+          using 1 by (meson assms(2) rts_with_composites.obtains_composite_of)
+        have "composite_of t u (Inj\<^sub>0 z)"
+        proof
+          show "t \<lesssim> Inj\<^sub>0 z"
+            using B.arr_composite_of prfx_char z by auto
+          show "Inj\<^sub>0 z \\ t \<sim> u"
+            using False z prfx_char B.con_implies_arr
+            apply (cases t)
+              apply auto[3]
+            by (metis (full_types) B.con_prfx_composite_of(1) B.con_sym B.not_con_null(2))
+        qed
+        thus ?thesis
+          using composable_def by blast
+      qed
+    qed
+
+    lemma preserves_extensional_rts_with_composites:
+    assumes "extensional_rts_with_composites A" and "extensional_rts_with_composites B"
+    shows "extensional_rts_with_composites resid"
+      using assms preserves_extensional_rts preserves_rts_with_composites
+      by (simp add: extensional_rts_with_composites_def)
+
+  end
+
+  notation sum_rts.resid  (infixr \<open>\<Oplus>\<close> 50)
+
+  locale sum_of_weakly_extensional_rts =
+    A: weakly_extensional_rts A +
+    B: weakly_extensional_rts B +
+    sum_rts
+  begin
+
+    sublocale weakly_extensional_rts resid
+      using A.weakly_extensional_rts_axioms B.weakly_extensional_rts_axioms
+            preserves_weakly_extensional_rts
+      by blast
+
+    lemma is_weakly_extensional_rts:
+    shows "weakly_extensional_rts resid"
+      ..
+
+    lemma src_char:
+    shows "src t = (if Arr\<^sub>1 t then Inj\<^sub>1 (A.src (Prj\<^sub>1 t))
+                    else if Arr\<^sub>0 t then Inj\<^sub>0 (B.src (Prj\<^sub>0 t))
+                    else Null)"
+    proof (cases "arr t")
+      show "\<not> arr t \<Longrightarrow> ?thesis"
+        using src_def null_char
+        by (metis Arr.simps(1,2) Arr\<^sub>0.elims(2) Arr\<^sub>1.elims(2) arr_char)
+      assume t: "arr t"
+      show ?thesis
+        using t con_char arr_char ide_char
+        apply (cases t)
+        by (auto simp add: sum_of_weakly_extensional_rts.is_weakly_extensional_rts
+            sum_of_weakly_extensional_rts_axioms weakly_extensional_rts.src_eqI)
+    qed
+
+  end
+
+  locale sum_of_extensional_rts =
+    A: extensional_rts A +
+    B: extensional_rts B +
+    sum_of_weakly_extensional_rts
+  begin
+
+    sublocale extensional_rts resid
+      using A.extensional_rts_axioms B.extensional_rts_axioms preserves_extensional_rts
+      by blast
+
+    lemma is_extensional_rts:
+    shows "extensional_rts resid"
+      ..
+
+  end
+
+  context sum_rts
+  begin
+
+    lemma cotuple_inj2:
+    assumes "transformation A X F G S" and "transformation B X H K T"
+    shows "cotuple X S T \<circ> I\<^sub>1 = S" and "cotuple X S T \<circ> I\<^sub>0 = T"
+    proof -
+      interpret S: transformation A X F G S
+        using assms(1) by blast
+      interpret T: transformation B X H K T
+        using assms(2) by blast
+      show "cotuple X S T \<circ> I\<^sub>1 = S"
+        unfolding cotuple_def I\<^sub>1_def
+        using S.extensionality S.preserves_arr T.preserves_arr by auto
+      show "cotuple X S T \<circ> I\<^sub>0 = T"
+        unfolding cotuple_def I\<^sub>0_def
+        using T.extensionality S.preserves_arr T.preserves_arr by auto
+    qed
+
+    lemma universality2:
+    assumes "simulation resid X F" and "simulation resid X G"
+    and "transformation A X (F \<circ> I\<^sub>1) (G \<circ> I\<^sub>1) S"
+    and "transformation B X (F \<circ> I\<^sub>0) (G \<circ> I\<^sub>0) T"
+    shows [intro]: "transformation resid X F G (cotuple X S T)"
+    and "cotuple X S T \<circ> I\<^sub>1 = S" and "cotuple X S T \<circ> I\<^sub>0 = T"
+    and "\<exists>!ST. transformation resid X F G ST \<and> ST \<circ> I\<^sub>1 = S \<and> ST \<circ> I\<^sub>0 = T"
+    proof -
+      interpret X: weakly_extensional_rts X
+        using assms(3) transformation_def by blast
+      interpret A: rts A
+        using assms(3) transformation_def by blast
+      interpret B: rts B
+        using assms(4) transformation_def by blast
+      interpret F: simulation resid X F
+        using assms(1) by blast
+      interpret G: simulation resid X G
+        using assms(2) by blast
+      interpret FoI\<^sub>1: composite_simulation A resid X I\<^sub>1 F ..
+      interpret GoI\<^sub>1: composite_simulation A resid X I\<^sub>1 G ..
+      interpret FoI\<^sub>0: composite_simulation B resid X I\<^sub>0 F ..
+      interpret GoI\<^sub>0: composite_simulation B resid X I\<^sub>0 G ..
+      interpret S: transformation A X FoI\<^sub>1.map GoI\<^sub>1.map S
+        using assms(3) by blast
+      interpret T: transformation B X FoI\<^sub>0.map GoI\<^sub>0.map T
+        using assms(4) by blast
+      interpret ST: transformation resid X F G \<open>cotuple X S T\<close>
+      proof
+        show "\<And>t. \<not> arr t \<Longrightarrow> cotuple X S T t = X.null"
+          by (metis A.arrE B.residuation_axioms S.extensionality T.extensionality arrI
+              con_char cotuple_def residuation.arrE)
+        show "\<And>a a'. \<lbrakk>ide a; a \<sim> a'\<rbrakk> \<Longrightarrow> cotuple X S T a = cotuple X S T a'"
+        proof -
+          fix a a'
+          show "\<lbrakk>ide a; a \<sim> a'\<rbrakk> \<Longrightarrow> cotuple X S T a = cotuple X S T a'"
+            unfolding cotuple_def
+            using ide_char cong_char
+            apply (cases a; cases a')
+                    apply auto[9]
+               apply (metis (full_types) Ide.simps(1,3) S.respects_cong_ide)
+              apply (metis (full_types) A.con_implies_arr(2) Ide.simps(3))
+             apply (metis (full_types) Ide.simps(2,3) T.respects_cong_ide)
+            by (metis (full_types) B.con_implies_arr(2) Ide.simps(3))
+        qed
+        show "\<And>t. ide t \<Longrightarrow> X.src (cotuple X S T t) = F t"
+        proof -
+          fix t
+          show "ide t \<Longrightarrow> X.src (cotuple X S T t) = F t"
+            unfolding cotuple_def
+            using ide_char I\<^sub>0_def T.preserves_src I\<^sub>1_def S.preserves_src
+            by (cases t) auto
+        qed
+        show "\<And>t. ide t \<Longrightarrow> X.trg (cotuple X S T t) = G t"
+        proof -
+          fix t
+          show "ide t \<Longrightarrow> X.trg (cotuple X S T t) = G t"
+            unfolding cotuple_def
+            using ide_char I\<^sub>0_def T.preserves_trg I\<^sub>1_def S.preserves_trg
+            by (cases t) auto
+        qed
+        fix a t
+        assume a: "a \<in> sources t"
+        show "X (cotuple X S T a) (F t) = cotuple X S T (a \\ t)"
+          unfolding cotuple_def
+          using a sources_char
+          apply (cases t; cases a)
+                  apply auto[9]
+             apply (metis (full_types) A.residuation_axioms Arr\<^sub>1.simps(1) F.simulation_axioms
+               Prj\<^sub>1.simps(1) S.naturality1_ax cotuple_def
+               cotuple_simulation_inj residuation.con_implies_arr(2))
+            apply (metis (full_types) A.conI A.not_ide_null A.null_is_zero(2) A.source_is_prfx)
+           apply (metis (full_types) B.residuation_axioms Arr\<^sub>0.simps(1) Arr\<^sub>1.simps(3)
+              F.simulation_axioms Prj\<^sub>0.simps(1) T.naturality1_ax cotuple_def
+              cotuple_simulation_inj residuation.con_implies_arr(2))
+          by (metis (full_types) B.arr_iff_has_source B.con_sym B.in_sourcesE B.not_arr_null)
+        show "X (F t) (cotuple X S T a) = G t"
+          unfolding cotuple_def
+          using a sources_char S.naturality2_ax T.naturality2_ax
+          apply (cases "Arr\<^sub>1 a"; cases t)
+               apply auto[6]
+           apply (metis (full_types) A.not_ide_null A.null_is_zero(2) A.source_is_prfx I\<^sub>1_def)
+          by (metis (full_types) B.arr_iff_has_source B.not_arr_null I\<^sub>0_def ex_in_conv)
+        show "X.join_of (cotuple X S T a) (F t) (cotuple X S T t)"
+          unfolding cotuple_def
+          using a sources_char S.naturality3 T.naturality3
+          apply (cases "Arr\<^sub>1 a"; cases t)
+               apply auto
+           apply (metis I\<^sub>1_def)
+          by (metis I\<^sub>0_def)
+      qed
+      show 1: "transformation (\\) X F G (cotuple X S T)" ..
+      show 2: "cotuple X S T \<circ> I\<^sub>1 = S" and 3: "cotuple X S T \<circ> I\<^sub>0 = T"
+        using cotuple_inj2 S.transformation_axioms T.transformation_axioms
+        by blast+
+      show "\<exists>!ST. transformation (\\) X F G ST \<and> ST \<circ> I\<^sub>1 = S \<and> ST \<circ> I\<^sub>0 = T"
+      proof -
+        have "\<And>ST. \<lbrakk>transformation (\\) X F G ST; ST \<circ> I\<^sub>1 = S; ST \<circ> I\<^sub>0 = T\<rbrakk>
+                       \<Longrightarrow> ST = cotuple X S T"
+        proof -
+          fix ST
+          assume ST: "transformation resid X F G ST"
+          assume 0: "ST \<circ> I\<^sub>0 = T"
+          assume 1: "ST \<circ> I\<^sub>1 = S"
+          interpret ST: transformation resid X F G ST
+            using ST by blast
+          show "ST = cotuple X S T"
+          proof
+            fix t
+            show "ST t = cotuple X S T t"
+              unfolding cotuple_def
+              using 0 1 ST.preserves_arr ST.extensionality I\<^sub>0_def I\<^sub>1_def
+              by (cases t) auto
+          qed
+        qed
+        thus ?thesis
+          using 1 2 3 by metis
+      qed
+    qed
+
+    lemma inj_joint_epic2:
+    assumes "transformation resid X F G S" and "transformation resid X F G T"
+    and "S \<circ> I\<^sub>0 = T \<circ> I\<^sub>0" and "S \<circ> I\<^sub>1 = T \<circ> I\<^sub>1"
+    shows "S = T"
+      using assms transformation_whisker_right [of resid X F G S] universality2(4)
+            I\<^sub>1.simulation_axioms I\<^sub>0.simulation_axioms
+      by (metis A.rts_axioms B.rts_axioms transformation.axioms(3,4))
+
+  end
+
+  section "Indexed Product RTS"
+
+  text\<open>
+    Because we must have a value for \<open>null\<close> that is distinct from any arrow,
+    the natural definitions only work here if the index set is nonempty.
+    To avoid propagating complications, we choose to use the natural definitions
+    here and to leave the empty index set as a special case to be dealt with
+    in the few places where this may be necessary.
+  \<close>
+
+  locale indexed_product_rts =
+  fixes I :: "'a set"
+  and R :: "'a \<Rightarrow> 'U resid"
+  assumes nonempty: "I \<noteq> {}"
+  and factors_are_rts: "i \<in> I \<Longrightarrow> rts (R i)"
+  begin
+
+    type_synonym ('aa, 'UU) arr = "'aa \<Rightarrow> 'UU"
+
+    abbreviation Null :: "('a, 'U) arr"
+    where "Null \<equiv> \<lambda>i. ResiduatedTransitionSystem.partial_magma.null (R i)"
+
+    abbreviation Arr :: "('a, 'U) arr \<Rightarrow> bool"
+    where "Arr T \<equiv> (\<forall>i. (i \<in> I \<longrightarrow> residuation.arr (R i) (T i)) \<and> (i \<notin> I \<longrightarrow> T i = Null i))"
+
+    definition Con :: "('a, 'U) arr \<Rightarrow> ('a, 'U) arr \<Rightarrow> bool"
+    where "Con T U \<equiv> Arr T \<and> Arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.con (R i) (T i) (U i))"
+
+    definition resid :: "('a, 'U) arr resid"  (infix \<open>\\<close> 70)
+    where "resid T U \<equiv> (\<lambda>i. if Con T U \<and> i \<in> I then R i (T i) (U i) else Null i)"
+
+    lemma not_Arr_Null:
+    shows "\<not> Arr Null"
+      by (simp add: factors_are_rts nonempty residuation.not_arr_null rts.axioms(1))
+
+    lemma ConI [intro]:
+    assumes "Arr T" and "Arr U" and "\<And>i. i \<in> I \<Longrightarrow> residuation.con (R i) (T i) (U i)"
+    shows "Con T U"
+      using assms Con_def by blast
+
+    lemma ConE [elim]:
+    assumes "Con T U"
+    and "\<lbrakk>Arr T; Arr U; \<And>i. i \<in> I \<Longrightarrow> residuation.con (R i) (T i) (U i)\<rbrakk> \<Longrightarrow> thesis"
+    shows thesis
+      using assms Con_def by blast
+
+    lemma resid_simps:
+    shows "\<lbrakk>i \<in> I; Con T U\<rbrakk> \<Longrightarrow> residuation.con (R i) (T i) (U i)"
+    and "\<lbrakk>i \<in> I; Con T U\<rbrakk> \<Longrightarrow> (T \\ U) i = R i (T i) (U i)"
+    and "i \<notin> I \<Longrightarrow> (T \\ U) i = ResiduatedTransitionSystem.partial_magma.null (R i)"
+    and "\<not> Con T U \<Longrightarrow> (T \\ U) i = ResiduatedTransitionSystem.partial_magma.null (R i)"
+      using resid_def by auto
+
+    sublocale ResiduatedTransitionSystem.partial_magma resid
+    proof
+      have "\<And>T. T \\ Null = Null \<and> Null \\ T = Null"
+        unfolding resid_def Con_def by (metis not_Arr_Null)
+      moreover from this have "\<And>N'. \<forall>T. T \\ N' = N' \<and> N' \\ T = N' \<Longrightarrow> N' = Null"
+        by metis
+      ultimately show "\<exists>!N. \<forall>T. N \\ T = N \<and> T \\ N = N" by blast
+    qed
+
+    lemma null_char:
+    shows "null = Null"
+      by (metis (no_types, lifting) resid_def Con_def not_Arr_Null null_is_zero(2))
+
+    lemma resid_ne_null_implies_Con:
+    assumes "T \\ U \<noteq> null"
+    shows "Con T U"
+      using assms resid_def null_char by auto
+
+    sublocale residuation resid
+    proof
+      fix T U
+      assume TU: "T \\ U \<noteq> null"
+      obtain i where i: "Con T U \<and> i \<in> I \<and> residuation.con (R i) (T i) (U i)"
+        using TU null_char
+        unfolding resid_def Con_def by fastforce
+      interpret Ri: rts \<open>R i\<close>
+        using i factors_are_rts by blast
+      have 1: "Ri.con (T i) (U i) \<and> (T \\ U) i = R i (T i) (U i)"
+        by (simp add: i resid_simps)
+      have 2: "Ri.con (U i) (T i) \<and> (U \\ T) i = R i (U i) (T i)"
+        using i resid_def Con_def
+        by (simp add: factors_are_rts residuation.con_sym rts.axioms(1))
+      show "U \\ T \<noteq> null"
+        using 2 null_char by auto
+      show "(T \\ U) \\ (T \\ U) \<noteq> null"
+      proof -
+        have "Ri.con (R i (T i) (U i)) (R i (T i) (U i))"
+          using 1 by auto
+        moreover from this
+        have "((T \\ U) \\ (T \\ U)) i = R i (R i (T i) (U i)) (R i (T i) (U i))"
+          using i 1 resid_def Con_def
+          by (simp add: factors_are_rts residuation.arr_resid residuation.con_arr_self
+              rts.axioms(1))
+        ultimately show ?thesis
+          using null_char by auto
+      qed
+      next
+      fix T U V
+      assume VT_UT: "(V \\ T) \\ (U \\ T) \<noteq> null"
+      have 1: "Con (V \\ T) (U \\ T)"
+        by (metis (no_types, opaque_lifting) resid_def VT_UT ext null_char)
+      have "Con V U"
+        using 1
+        apply (elim ConE, intro ConI allI impI conjI)
+            apply (metis resid_def not_Arr_Null ConE)
+           apply (metis resid_def ConE not_Arr_Null)
+          apply (metis resid_def not_Arr_Null ConE)
+         apply (metis resid_def ConE not_Arr_Null)
+        by (metis factors_are_rts indexed_product_rts.resid_simps(1) indexed_product_rts_axioms
+            not_Arr_Null resid_def rts.resid_reflects_con)
+      have "Con T U"
+        using 1
+        apply (elim ConE, intro ConI allI impI conjI)
+            apply (metis resid_def not_Arr_Null ConE)
+           apply (metis resid_def not_Arr_Null ConE)
+          apply (meson ConE \<open>Con V U\<close>)
+         apply (metis resid_def not_Arr_Null ConE)
+        by (metis ConE factors_are_rts not_Arr_Null resid_def residuation.con_sym rts_def)
+      have 2: "Con (V \\ U) (T \\ U)"
+      proof (intro ConI allI impI conjI)
+        fix i
+        show "i \<notin> I \<Longrightarrow> (V \\ U) i = Null i" and "i \<notin> I \<Longrightarrow> (T \\ U) i = Null i"
+          by (auto simp add: resid_def)
+        assume i: "i \<in> I"
+        interpret Ri: rts \<open>R i\<close>
+          using i factors_are_rts by blast
+        show "Ri.arr ((V \\ U) i)"
+          by (simp add: \<open>Con V U\<close> i resid_def resid_simps(1))
+        show "Ri.arr ((T \\ U) i)"
+          using \<open>Con T U\<close> i resid_simps(2) by auto
+        show "Ri.con ((V \\ U) i) ((T \\ U) i)"
+          by (metis (lifting) ext Ri.con_def Ri.cube VT_UT \<open>Con T U\<close> \<open>Con V U\<close> ex_un_null
+              i null_eqI resid_ne_null_implies_Con resid_simps(1,2))
+      qed
+      show "(V \\ T) \\ (U \\ T) = (V \\ U) \\ (T \\ U)"
+      proof
+        fix i
+        show "((V \\ T) \\ (U \\ T)) i = ((V \\ U) \\ (T \\ U)) i"
+        proof (cases "i \<in> I")
+          case False
+          show ?thesis
+            using False resid_def by force
+          next
+          case True
+          show ?thesis
+            by (metis (lifting) 2 True VT_UT \<open>Con T U\<close> \<open>Con V U\<close> factors_are_rts
+                null_is_zero(1,2) resid_ne_null_implies_Con resid_simps(2) residuation.cube
+                rts_def)
+        qed
+      qed
+    qed
+
+    notation con  (infix \<open>\<frown>\<close> 50)
+
+    lemma con_char:
+    shows "T \<frown> U \<longleftrightarrow> Arr T \<and> Arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.con (R i) (T i) (U i))"
+    proof
+      show "T \<frown> U \<Longrightarrow> Arr T \<and> Arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.con (R i) (T i) (U i))"
+        using resid_def Con_def null_char by fastforce
+      show "Arr T \<and> Arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.con (R i) (T i) (U i)) \<Longrightarrow> T \<frown> U"
+        by (metis (full_types) Con_def con_def factors_are_rts not_Arr_Null null_char
+            resid_def residuation.con_def rts.axioms(1))
+    qed
+
+    lemma resid_def':
+    shows "resid T U = (\<lambda>i. if T \<frown> U \<and> i \<in> I then R i (T i) (U i) else Null i)"
+      using resid_def con_char Con_def by auto
+
+    lemma arr_char:
+    shows "arr T \<longleftrightarrow> Arr T"
+      by (metis (full_types) Con_def arr_def con_char factors_are_rts
+          residuation.arrE rts.axioms(1))
+
+    lemma trg_char:
+    shows "trg = (\<lambda>T. if arr T then (\<lambda>i. if i \<in> I then R i (T i) (T i) else Null i) else Null)"
+    proof
+      fix T
+      show "trg T = (if arr T then (\<lambda>i. if i \<in> I then R i (T i) (T i) else Null i) else Null)"
+      proof (cases "arr T")
+        show "\<not> arr T \<Longrightarrow> ?thesis"
+          by (metis (no_types, lifting) arr_def conI ext null_char resid_arr_self)
+        show "arr T \<Longrightarrow> ?thesis"
+          using resid_def' trg_def by auto
+      qed
+    qed
+
+    lemma ide_char:
+    shows "ide T \<longleftrightarrow> arr T \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (T i))"
+    proof
+      show "ide T \<Longrightarrow> arr T \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (T i))"
+        by (metis (full_types) factors_are_rts ideE ide_implies_arr con_char resid_def'
+            rts.cong_reflexive)
+      show "arr T \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (T i)) \<Longrightarrow> ide T"
+      proof
+        assume 1: "arr T \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (T i))"
+        show "con T T"
+          using 1 arr_char by auto
+        show "resid T T = T"
+          unfolding resid_def Con_def
+          using 1 factors_are_rts rts.prfx_implies_con rts.prfx_reflexive rts.resid_arr_ide
+                arr_char
+          by fastforce
+      qed
+    qed
+
+    lemma arr_eqI:
+    assumes "arr T" and "arr U" and "\<And>i. i \<in> I \<Longrightarrow> T i = U i"
+    shows "T = U"
+      by (metis assms ext arr_char)
+
+    sublocale rts resid
+    proof
+      show "\<And>T. arr T \<Longrightarrow> ide (trg T)"
+      proof -
+        fix T
+        assume T: "arr T"
+        show "ide (trg T)"
+        proof (unfold ide_char, intro conjI allI impI)
+          show "arr (trg T)"
+            using T arr_trg_iff_arr by blast
+          fix i
+          assume i: "i \<in> I"
+          show "residuation.ide (R i) (trg T i)"
+            using T arr_char factors_are_rts i rts.cong_reflexive trg_char by force
+        qed
+      qed
+      show "\<And>A T. \<lbrakk>ide A; T \<frown> A\<rbrakk> \<Longrightarrow> T \\ A = T"
+        using Con_def resid_def con_char factors_are_rts ide_char rts.resid_arr_ide
+        by fastforce
+      show "\<And>A T. \<lbrakk>ide A; A \<frown> T\<rbrakk> \<Longrightarrow> ide (A \\ T)"
+        using \<open>\<And>A T. \<lbrakk>ide A; T \<frown> A\<rbrakk> \<Longrightarrow> T \ A = T\<close> con_sym cube by auto
+      show "\<And>T U. T \<frown> U \<Longrightarrow> \<exists>A. ide A \<and> A \<frown> T \<and> A \<frown> U"
+      proof -
+        fix T U
+        assume TU: "T \<frown> U"
+        have "\<And>i. i \<in> I \<Longrightarrow> \<exists>a. residuation.ide (R i) a \<and> residuation.con (R i) a (T i) \<and>
+                                 residuation.con (R i) a (U i)"
+          by (meson TU con_char factors_are_rts rts.con_imp_coinitial_ax)
+        from this obtain A\<^sub>I
+        where A\<^sub>I: "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (A\<^sub>I i) \<and>
+                                 residuation.con (R i) (A\<^sub>I i) (T i) \<and>
+                                 residuation.con (R i) (A\<^sub>I i) (U i)"
+          by metis
+        let ?A = "\<lambda>i. if i \<in> I then A\<^sub>I i else Null i"
+        have "ide ?A"
+          by (simp add: A\<^sub>I factors_are_rts ide_char residuation.ide_implies_arr rts.axioms(1)
+              arr_char)
+        moreover have "?A \<frown> T"
+          using A\<^sub>I TU calculation con_char Con_def by auto
+        moreover have "?A \<frown> U"
+          using A\<^sub>I TU calculation con_char Con_def by auto
+        ultimately show "\<exists>A. ide A \<and> A \<frown> T \<and> A \<frown> U" by blast
+      qed
+      show "\<And>T U V. \<lbrakk>ide (T \\ U); U \<frown> V\<rbrakk> \<Longrightarrow> T \\ U \<frown> V \\ U"
+      proof -
+        fix T U V
+        assume TU: "ide (T \\ U)" and UV: "U \<frown> V"
+        show "T \\ U \<frown> V \\ U"
+        proof (unfold con_char, intro conjI allI impI)
+          fix i
+          show "i \<notin> I \<Longrightarrow> (T \\ U) i= Null i" and "i \<notin> I \<Longrightarrow> (V \\ U) i = Null i"
+            using resid_simps(3) by auto
+          assume i: "i \<in> I"
+          show "residuation.arr (R i) ((T \\ U) i)"
+            using TU arr_char i by blast
+          show "residuation.arr (R i) ((V \\ U) i)"
+            using UV arr_char i arr_resid_iff_con con_sym by blast
+          show "residuation.con (R i) ((T \\ U) i) ((V \\ U) i)"
+            by (metis TU UV \<open>residuation.arr (R i) (resid V U i)\<close> factors_are_rts i
+                ide_char resid_def' residuation.arr_resid_iff_con residuation.con_sym
+                residuation_axioms rts.axioms(1) rts.con_target)
+        qed
+      qed
+    qed
+
+    lemma is_rts:
+    shows "rts resid"
+      ..
+
+    notation prfx  (infix \<open>\<lesssim>\<close> 50)
+    notation cong  (infix \<open>\<sim>\<close> 50)
+
+    lemma prfx_char:
+    shows "T \<lesssim> U \<longleftrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (R i (T i) (U i)))"
+    proof
+      show "T \<lesssim> U \<Longrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (R i (T i) (U i)))"
+        by (metis arr_resid_iff_con con_implies_arr(1,2) ide_char resid_def')
+      show "arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (R i (T i) (U i))) \<Longrightarrow> T \<lesssim> U"
+      proof -
+        assume 1: "arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> residuation.ide (R i) (R i (T i) (U i)))"
+        have "con T U"
+          using "1" con_char factors_are_rts rts.prfx_implies_con by fastforce
+        thus "T \<lesssim> U"
+          by (metis "1" arr_resid_iff_con ide_char resid_def')
+      qed
+    qed
+
+    lemma cong_char:
+    shows "T \<sim> U \<longleftrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.cong (R i) (T i) (U i))"
+      using prfx_char by blast
+
+    lemma composite_of_char:
+    shows "composite_of T U V \<longleftrightarrow> arr T \<and> arr U \<and> arr V \<and>
+                                  (\<forall>i. i \<in> I \<longrightarrow> rts.composite_of (R i) (T i) (U i) (V i))"
+    proof
+      show "composite_of T U V \<Longrightarrow>
+              arr T \<and> arr U \<and> arr V \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.composite_of (R i) (T i) (U i) (V i))"
+        by (metis arr_resid_iff_con composite_of_def factors_are_rts prfx_char
+            resid_def' rts.composite_of_def[of "R _" "T _" "U _" "V _"])
+      show "arr T \<and> arr U \<and> arr V \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.composite_of (R i) (T i) (U i) (V i))
+              \<Longrightarrow> composite_of T U V"
+      proof
+        assume 1: "arr T \<and> arr U \<and> arr V \<and>
+                   (\<forall>i. i \<in> I \<longrightarrow> rts.composite_of (R i) (T i) (U i) (V i))"
+        show 2: "T \<lesssim> V"
+          by (meson "1" factors_are_rts prfx_char rts.composite_of_def)
+        show "V \\ T \<sim> U"
+        proof
+          have 3: "V \\ T \<frown> U"
+          proof (unfold con_char, intro conjI allI impI)
+            fix i
+            show "i \<notin> I \<Longrightarrow> (V \\ T) i = Null i"
+              using resid_simps by auto
+            show "i \<notin> I \<Longrightarrow> U i = Null i"
+              using 1 arr_char by blast
+            assume i: "i \<in> I"
+            show "residuation.arr (R i) ((V \\ T) i)"
+              by (metis 2 arr_char arr_resid con_def i not_ide_null con_sym)
+            show "residuation.arr (R i) (U i)"
+              using 1 arr_char i by blast
+            show "residuation.con (R i) ((V \\ T) i) (U i)"
+              by (metis 1 2 arr_resid_iff_con con_def con_sym_ax factors_are_rts
+                  i ide_char resid_ne_null_implies_Con resid_simps(2) rts.composite_ofE
+                  rts.prfx_implies_con)
+          qed
+          show "V \\ T \<lesssim> U"
+          proof (unfold prfx_char, intro conjI allI impI)
+            show 4: "arr (V \\ T)"
+              using 3 con_implies_arr(1) by blast
+            show "arr U"
+              using 1 by blast
+            show "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (R i ((V \\ T) i) (U i))"
+              by (metis 1 4 arr_resid_iff_con factors_are_rts resid_def' rts.composite_ofE)
+          qed
+          show "U \<lesssim> V \\ T"
+          proof (unfold prfx_char, intro conjI allI impI)
+            show 4: "arr (V \\ T)"
+              using 3 con_implies_arr(1) by blast
+            show "arr U"
+              using 1 by blast
+            show "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (R i (U i) ((V \\ T) i))"
+              by (metis 1 4 arr_resid_iff_con factors_are_rts resid_def' rts.composite_ofE)
+          qed
+        qed
+      qed
+    qed
+
+    lemma composable_char:
+    shows "composable T U \<longleftrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.composable (R i) (T i) (U i))"
+    proof
+      show "composable T U \<Longrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.composable (R i) (T i) (U i))"
+        by (metis composable_def composite_of_char factors_are_rts rts.composable_def)
+      show "arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.composable (R i) (T i) (U i)) \<Longrightarrow> composable T U"
+      proof -
+        assume 1: "arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.composable (R i) (T i) (U i))"
+        have "\<And>i. \<exists>Vi. (i \<in> I \<longrightarrow> rts.composite_of (R i) (T i) (U i) Vi) \<and> 
+                        (i \<notin> I \<longrightarrow> Vi = Null i)"
+          using 1 by (metis factors_are_rts rts.composable_def)
+        from this obtain V
+        where V: "\<And>i. (i \<in> I \<longrightarrow> rts.composite_of (R i) (T i) (U i) (V i)) \<and>
+                       (i \<notin> I \<longrightarrow> V i = Null i)"
+          by metis
+        have "composite_of T U V"
+          using V 1 composite_of_char
+          by (metis arr_char factors_are_rts rts.arr_composite_of)
+        thus ?thesis
+          unfolding composable_def by blast
+      qed
+    qed
+
+    lemma join_of_char:
+    shows "join_of T U V \<longleftrightarrow>
+           arr T \<and> arr U \<and> arr V \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.join_of (R i) (T i) (U i) (V i))"
+    proof
+      show "join_of T U V \<Longrightarrow>
+              arr T \<and> arr U \<and> arr V \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.join_of (R i) (T i) (U i) (V i))"
+        by (metis (full_types) arr_resid_iff_con composite_of_char factors_are_rts
+            resid_def' join_ofE rts.join_ofI rts_axioms)
+      show "arr T \<and> arr U \<and> arr V \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.join_of (R i) (T i) (U i) (V i))
+              \<Longrightarrow> join_of T U V"
+      proof (intro join_ofI composite_ofI)
+        assume 1: "arr T \<and> arr U \<and> arr V \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.join_of (R i) (T i) (U i) (V i))"
+        show "T \<lesssim> V"
+          by (metis 1 factors_are_rts prfx_char rts.composite_ofE rts.join_ofE)
+        show "U \<lesssim> V"
+          by (metis 1 factors_are_rts prfx_char rts.composite_ofE rts.join_ofE)
+        show "V \\ T \<sim> U \\ T"
+        proof
+          show "V \\ T \<lesssim> U \\ T"
+          proof (unfold prfx_char, intro conjI allI impI)
+            show "arr (V \\ T)"
+              by (metis arr_resid \<open>prfx T V\<close> con_sym ide_def con_def)
+            show "arr (U \\ T)"
+              by (meson \<open>arr (V \ T)\<close> \<open>T \<lesssim> V\<close> \<open>U \<lesssim> V\<close> arr_resid_iff_con con_target
+                  prfx_implies_con resid_reflects_con)
+            show "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (R i ((V \\ T) i) ((U \\ T) i))"
+              by (metis "1" \<open>arr (U \ T)\<close> \<open>T \<lesssim> V\<close> arr_resid_iff_con con_def con_sym_ax
+                  factors_are_rts prfx_implies_con resid_def' rts.composite_ofE rts.join_ofE)
+          qed
+          show "U \\ T \<lesssim> V \\ T"
+          proof (unfold prfx_char, intro conjI allI impI)
+            show "arr (U \\ T)"
+              using \<open>V \ T \<lesssim> U \ T\<close> prfx_char by blast
+            show "arr (resid V T)"
+              using \<open>V \ T \<lesssim> U \ T\<close> prfx_char by blast
+            show "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (R i ((U \\ T) i) ((V \\ T) i))"
+              by (metis 1 resid_def' \<open>V \ T \<lesssim> U \ T\<close> arr_resid_iff_con
+                  factors_are_rts prfx_char rts.composite_ofE rts.join_ofE)
+          qed
+        qed
+        show "V \\ U \<sim> T \\ U"
+        proof
+          show "V \\ U \<lesssim> T \\ U"
+          proof (unfold prfx_char, intro conjI allI impI)
+            show "arr (V \\ U)"
+              by (metis arr_resid_iff_con \<open>prfx U V\<close> ide_def con_sym)
+            show "arr (T \\ U)"
+              by (metis \<open>V \ T \<sim> U \ T\<close> cube prfx_char)
+            show "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (R i ((V \\ U) i) ((T \\ U) i))"
+              by (metis \<open>V \ T \<sim> U \ T\<close> cube prfx_char)
+          qed
+          show "T \\ U \<lesssim> V \\ U"
+          proof (unfold prfx_char, intro conjI allI impI)
+            show "arr (T \\ U)"
+              using \<open>prfx (resid V U) (resid T U)\<close> prfx_char by blast
+            show "arr (V \\ U)"
+              using \<open>V \ U \<lesssim> T \ U\<close> prfx_char by blast
+            show "\<And>i. i \<in> I \<Longrightarrow> residuation.ide (R i) (R i ((T \\ U) i) ((V \\ U) i))"
+              by (metis "1" \<open>V \ T \<sim> U \ T\<close> arr_resid_iff_con cube
+                  factors_are_rts prfx_char resid_def' rts.composite_ofE rts.join_ofE)
+          qed
+        qed
+      qed
+    qed
+
+    lemma joinable_char:
+    shows "joinable T U \<longleftrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.joinable (R i) (T i) (U i))"
+    proof
+      show "joinable T U \<Longrightarrow> arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.joinable (R i) (T i) (U i))"
+        using join_of_char
+        by (metis factors_are_rts joinable_def rts.joinable_def)
+      show "arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.joinable (R i) (T i) (U i)) \<Longrightarrow> joinable T U"
+      proof -
+        assume 1: "arr T \<and> arr U \<and> (\<forall>i. i \<in> I \<longrightarrow> rts.joinable (R i) (T i) (U i))"
+        have "\<And>i. \<exists>Vi. (i \<in> I \<longrightarrow> rts.join_of (R i) (T i) (U i) Vi) \<and> (i \<notin> I \<longrightarrow> Vi = Null i)"
+          using 1 by (metis factors_are_rts rts.joinable_def)
+        from this obtain V
+        where V: "\<And>i. (i \<in> I \<longrightarrow> rts.join_of (R i) (T i) (U i) (V i)) \<and> (i \<notin> I \<longrightarrow> V i = Null i)"
+          by metis
+        have "join_of T U V"
+          using V 1 join_of_char
+          by (metis arr_char factors_are_rts rts.arr_composite_of rts.join_ofE)
+        thus ?thesis
+          unfolding joinable_def by blast
+      qed
+    qed
+
+    definition P
+    where "P i T = (if arr T then T i else Null i)"
+
+    lemma simulation_P:
+    assumes "i \<in> I"
+    shows "simulation resid (R i) (P i)"
+    proof -
+      interpret Ri: rts \<open>R i\<close>
+        using assms factors_are_rts by blast
+      show ?thesis
+      proof
+        show "\<And>T. \<not> arr T \<Longrightarrow> P i T = Ri.null"
+          by (simp add: P_def)
+        show "\<And>T U. T \<frown> U \<Longrightarrow> Ri.con (P i T) (P i U)"
+          by (metis P_def assms con_char con_implies_arr(1,2))
+        show "\<And>T U. T \<frown> U \<Longrightarrow> P i (T \\ U) = R i (P i T) (P i U)"
+          using assms resid_def' P_def con_implies_arr arr_char arr_resid_iff_con
+            apply auto[1]
+          by (metis con_char factors_are_rts rts_def residuation.arr_resid_iff_con)
+      qed
+    qed
+
+    abbreviation tuple
+    where "tuple X \<F> \<equiv> (\<lambda>x. \<lambda>i. if i \<in> I \<and> simulation X (R i) (\<F> i) then \<F> i x else Null i)"
+
+    lemma universality:
+    assumes "\<And>i. (i \<in> I \<longrightarrow> simulation X (R i) (\<F> i)) \<and> (i \<notin> I \<longrightarrow> \<F> i = (\<lambda>_. Null i))"
+    shows "simulation X resid (tuple X \<F>)"
+    and "P i \<circ> tuple X \<F> = \<F> i"
+    and "\<And>F. \<lbrakk>simulation X resid F; \<And>i. P i \<circ> F = \<F> i\<rbrakk> \<Longrightarrow> F = tuple X \<F>"
+    and "\<exists>!F. simulation X resid F \<and> (\<forall>i. P i \<circ> F = \<F> i)"
+    proof -
+      interpret X: rts X
+        using assms nonempty simulation_def by blast
+      show 1: "simulation X resid (tuple X \<F>)"
+      proof
+        show "\<And>x. \<not> X.arr x \<Longrightarrow> tuple X \<F> x = null"
+          using null_char simulation.extensionality by fastforce
+        show "\<And>x y. X.con x y \<Longrightarrow> tuple X \<F> x \<frown> tuple X \<F> y"
+        proof (unfold con_char, intro conjI allI impI)
+          fix x y i
+          assume xy: "X.con x y"
+          show "i \<notin> I \<Longrightarrow> tuple X \<F> x i = Null i" by auto
+          show "i \<notin> I \<Longrightarrow> tuple X \<F> y i = Null i" by auto
+          assume i: "i \<in> I"
+          interpret \<F>i: simulation X \<open>R i\<close> \<open>\<F> i\<close>
+            using assms i by blast
+          show "residuation.arr (R i) (tuple X \<F> x i)"
+            using X.con_implies_arr(1) \<F>i.simulation_axioms i xy by auto
+          show "residuation.arr (R i) (tuple X \<F> y i)"
+            using X.con_implies_arr(2) \<F>i.simulation_axioms i xy by auto
+          show "residuation.con (R i) (tuple X \<F> x i) (tuple X \<F> y i)"
+            using \<F>i.simulation_axioms i xy by force
+        qed
+        show "\<And>x y. X.con x y \<Longrightarrow> tuple X \<F> (X x y) = tuple X \<F> x \\ tuple X \<F> y"
+          using \<open>\<And>y x. X.con x y \<Longrightarrow> tuple X \<F> x \<frown> tuple X \<F> y\<close> assms resid_def'
+                simulation.preserves_resid
+          by fastforce
+      qed
+      show 2: "\<And>i. P i \<circ> tuple X \<F> = \<F> i"
+      proof
+        fix i x
+        show "(P i \<circ> tuple X \<F>) x = \<F> i x"
+          unfolding P_def
+          using assms
+          apply auto[1]
+          by (metis (no_types, lifting) \<open>simulation X resid (tuple X \<F>)\<close>
+              simulation.extensionality simulation.preserves_reflects_arr)
+      qed
+      show 3: "\<And>F. \<lbrakk>simulation X resid F; \<And>i. P i \<circ> F = \<F> i\<rbrakk> \<Longrightarrow> F = tuple X \<F>"
+      proof -
+        fix F
+        assume F: "simulation X resid F"
+        assume 1: "\<And>i. P i \<circ> F = \<F> i"
+        show "F = tuple X \<F>"
+        proof
+          fix x
+          show "F x = tuple X \<F> x"
+            using assms F 1
+            unfolding resid_def Con_def
+            apply (cases "X.arr x")
+             apply (metis (lifting) F P_def comp_def simulation.preserves_reflects_arr)
+            by (metis (lifting) F null_char simulation.extensionality)
+        qed
+      qed
+      show "\<exists>!F. simulation X resid F \<and> (\<forall>i. P i \<circ> F = \<F> i)"
+        using 1 2 3 by (metis (no_types, lifting))
+    qed
+
+    lemma proj_joint_monic:
+    assumes "simulation X resid F" and "simulation X resid G"
+    and "\<And>i. i \<in> I \<Longrightarrow> P i \<circ> F = P i \<circ> G"
+    shows "F = G"
+    proof
+      interpret X: rts X
+        using assms nonempty simulation_def by blast
+      interpret F: simulation X resid F
+        using assms(1) by blast
+      interpret G: simulation X resid G
+        using assms(2) by blast
+      fix x
+      have "\<not> X.arr x \<Longrightarrow> F x = G x"
+        by (simp add: F.extensionality G.extensionality)
+      moreover have "X.arr x \<Longrightarrow> F x = G x"
+      proof -
+        assume x: "X.arr x"
+        have "\<And>i. F x i = G x i"
+        proof -
+          fix i
+          have "i \<notin> I \<Longrightarrow> F x i = G x i"
+            by (metis F.preserves_reflects_arr G.preserves_reflects_arr arr_char x)
+          moreover have "i \<in> I \<Longrightarrow> F x i = G x i"
+            using assms(3) x P_def comp_apply
+            by (metis (mono_tags, lifting) F.preserves_reflects_arr G.preserves_reflects_arr
+                comp_apply)
+          ultimately show "F x i = G x i" by blast
+        qed
+        thus "F x = G x" by blast
+      qed
+      ultimately show "F x = G x" by blast
+    qed
+
+    lemma proj_tuple:
+    assumes "\<And>i. (i \<in> I \<longrightarrow> simulation X (R i) (\<F> i)) \<and> (i \<notin> I \<longrightarrow> \<F> i = (\<lambda>_. Null i))"
+    assumes "simulation X A F" and "simulation X B G"
+    shows "P i \<circ> tuple X \<F> = \<F> i"
+      using assms(1-2) universality(2-3) by auto
+
+    lemma tuple_proj:
+    assumes "simulation X resid F"
+    shows "tuple X (\<lambda>i. P i \<circ> F) = F"
+    proof -
+      interpret F: simulation X resid F
+        using assms by blast
+      have "\<And>i. i \<in> I \<Longrightarrow> simulation X (R i) (P i \<circ> F)"
+        using assms simulation_P by blast
+      moreover have "\<And>i. i \<notin> I \<Longrightarrow> P i \<circ> F = (\<lambda>_. Null i)"
+        using P_def arr_char by auto
+      ultimately have "\<And>x i. tuple X (\<lambda>i. P i \<circ> F) x i = F x i"
+        using assms P_def proj_tuple F.preserves_con con_char F.extensionality null_char
+        by auto
+      thus ?thesis by blast
+    qed
+
+    lemma preserves_weakly_extensional_rts:
+    assumes "\<And>i. i \<in> I \<Longrightarrow> weakly_extensional_rts (R i)"
+    shows "weakly_extensional_rts resid"
+    proof
+      fix T U
+      assume TU: "T \<sim> U" and T: "ide T" and U: "ide U"
+      show "T = U"
+      proof
+        fix i
+        show "T i = U i"
+        proof (cases "i \<in> I")
+          case False
+          show ?thesis
+            using False TU T U arr_char ide_char by simp
+          next
+          case True
+          interpret Ri: weakly_extensional_rts \<open>R i\<close>
+            using assms True by auto
+          have "Ri.cong (T i) (U i)"
+            by (metis Ri.resid_ide_arr T TU True U arr_resid_iff_con con_char ide_char)
+          thus "T i = U i"
+            by (metis Ri.con_ide_are_eq Ri.prfx_implies_con T U ide_char arr_char)
+        qed
+      qed
+    qed
+
+    lemma preserves_extensional_rts:
+    assumes "\<And>i. i \<in> I \<Longrightarrow> extensional_rts (R i)"
+    shows "extensional_rts resid"
+    proof
+      fix T U
+      assume TU: "T \<sim> U"
+      show "T = U"
+      proof
+        fix i
+        show "T i = U i"
+        proof (cases "i \<in> I")
+          case False
+          show ?thesis
+            using False TU arr_char
+            by (metis con_implies_arr(2) rts.prfx_implies_con rts_axioms)
+          next
+          case True
+          interpret Ri: extensional_rts \<open>R i\<close>
+            using assms True by auto
+          have "Ri.cong (T i) (U i)"
+            using TU True cong_char by blast
+          thus "T i = U i"
+            by (simp add: Ri.cong_char)
+        qed
+      qed
+    qed
+
+  end
+
+  text\<open>
+    Extensionality, rather than just weak extensionality, is assumed in the following in
+    order to support the subsequent proof of \<open>universality2\<close>.  There is a possibility that
+    the proof could be modified to use only weak extensionality.
+  \<close>
+
+  locale indexed_product_of_extensional_rts =
+    indexed_product_rts +
+  assumes factors_are_extensional: "i \<in> I \<Longrightarrow> extensional_rts (R i)"
+  begin
+
+    sublocale indexed_product_rts I R ..
+
+    sublocale extensional_rts resid
+      using factors_are_extensional preserves_extensional_rts by blast
+
+    notation join  (infixr \<open>\<squnion>\<close> 52)
+
+    lemma is_extensional_rts:
+    shows "extensional_rts resid"
+      ..
+
+    lemma is_weakly_extensional_rts:
+    shows "weakly_extensional_rts resid"
+      ..
+
+    lemma src_char:
+    shows "src = (\<lambda>T. if arr T then (\<lambda>i. if i \<in> I then rts.src (R i) (T i) else Null i) else Null)"
+    proof
+      fix T
+      show "src T = (if arr T then (\<lambda>i. if i \<in> I then rts.src (R i) (T i) else Null i) else Null)"
+      proof (cases "arr T")
+        case False
+        show ?thesis
+          using False arr_char null_char src_def by auto
+        next
+        case True
+        have "ide (\<lambda>i. if i \<in> I then rts.src (R i) (T i) else Null i)"
+          using True
+          by (simp add: factors_are_rts ide_char rts.arr_src_iff_arr rts.ide_src arr_char)
+        moreover have "con T (\<lambda>i. if i \<in> I then rts.src (R i) (T i) else Null i)"
+          using True calculation con_char factors_are_rts rts.con_arr_src(1) Con_def
+          by fastforce
+        ultimately show ?thesis
+          by (simp add: True con_imp_eq_src)
+      qed
+    qed
+
+    lemma join_char:
+    assumes "joinable T U"
+    shows "T \<squnion> U = (\<lambda>i. if i \<in> I then extensional_rts.join (R i) (T i) (U i) else Null i)"
+    proof -
+      have 1: "\<And>i. i \<in> I \<Longrightarrow> rts.joinable (R i) (T i) (U i)"
+        using assms joinable_char by blast
+      let ?V = "\<lambda>i. if i \<in> I then extensional_rts.join (R i) (T i) (U i) else Null i"
+      have "join_of T U ?V"
+      proof (unfold join_of_char, intro conjI allI impI)
+        show "arr T" and "arr U"
+          using assms joinable_char by auto
+        show "arr ?V"
+          using 1 arr_char extensional_rts.joinable_iff_arr_join
+                indexed_product_of_extensional_rts_axioms
+                indexed_product_of_extensional_rts_axioms_def
+                indexed_product_of_extensional_rts_def
+          by fastforce
+        fix i
+        assume i: "i \<in> I"
+        show "rts.join_of (R i) (T i) (U i) (?V i)"
+          using i 1
+          by (simp add: extensional_rts.join_is_join_of factors_are_extensional)
+      qed
+      thus ?thesis
+        by (meson assms join_is_join_of join_of_unique)
+    qed
+
+    text\<open>
+      The following extends tupling to transformations, as opposed to just simulations.
+    \<close>
+
+    abbreviation tuple2
+    where "tuple2 X F G \<T> \<equiv>
+           (\<lambda>x. \<lambda>i. if i \<in> I \<and> transformation X (R i) (P i \<circ> F) (P i \<circ> G) (\<T> i)
+                    then \<T> i x else Null i)"
+
+    lemma proj_tuple2:
+    assumes "\<And>i. (i \<in> I \<longrightarrow> transformation X (R i) (P i \<circ> F) (P i \<circ> G) (\<T> i)) \<and>
+                  (i \<notin> I \<longrightarrow> \<F> i = (\<lambda>_. Null i))"
+    shows "\<And>i. i \<in> I \<Longrightarrow> P i \<circ> tuple2 X F G \<T> = \<T> i"
+    proof
+      fix i x
+      assume i: "i \<in> I"
+      interpret X: rts X
+        using assms i transformation_def by blast
+      interpret Ti: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+        using assms i by blast
+      have "\<not> X.arr x \<Longrightarrow> (P i \<circ> tuple2 X F G \<T>) x = \<T> i x"
+        using P_def Ti.extensionality by force
+      moreover have "X.arr x \<Longrightarrow> (P i \<circ> tuple2 X F G \<T>) x = \<T> i x"
+      proof -
+        assume x: "X.arr x"
+        have "arr (tuple2 X F G \<T> x)"
+          using assms transformation.preserves_arr x
+          apply (unfold arr_char, intro conjI allI impI)
+          by auto[2] fastforce
+        thus "(P i \<circ> tuple2 X F G \<T>) x = \<T> i x"
+          unfolding P_def
+          using assms i arr_char by auto
+      qed
+      ultimately show "(P i \<circ> tuple2 X F G \<T>) x = \<T> i x" by blast
+    qed
+
+    lemma universality2:
+    assumes "simulation X resid F" and "simulation X resid G"
+    assumes "\<And>i. (i \<in> I \<longrightarrow> transformation X (R i) (P i \<circ> F) (P i \<circ> G) (\<T> i)) \<and>
+                  (i \<notin> I \<longrightarrow> \<F> i = (\<lambda>_. Null i))"
+    shows [intro]: "transformation X resid F G (tuple2 X F G \<T>)"
+    and "\<And>i. i \<in> I \<Longrightarrow> P i \<circ> tuple2 X F G \<T> = \<T> i"
+    and "\<And>T'. \<lbrakk>transformation X resid F G T'; \<And>i. i \<in> I \<Longrightarrow> P i \<circ> T' = \<T> i\<rbrakk>
+                 \<Longrightarrow> T' = tuple2 X F G \<T>"
+    and "\<exists>!T. transformation X resid F G T \<and> (\<forall>i. i \<in> I \<longrightarrow> P i \<circ> T = \<T> i)"
+    proof -
+      interpret X: rts X
+        using assms(1) simulation_def by auto
+      interpret F: simulation X resid F
+        using assms(1) by blast
+      interpret F: simulation_to_weakly_extensional_rts X resid F ..
+      interpret G: simulation X resid G
+        using assms(2) by blast
+      interpret G: simulation_to_weakly_extensional_rts X resid G ..
+      show A: "transformation X resid F G (tuple2 X F G \<T>)"
+      proof
+        show "\<And>x. \<not> X.arr x \<Longrightarrow> tuple2 X F G \<T> x = null"
+          using null_char transformation.extensionality by fastforce
+        have 1: "\<And>x. X.arr x \<Longrightarrow> arr (tuple2 X F G \<T> x)"
+          using arr_char assms(3) transformation.preserves_arr by fastforce
+        show "\<And>x x'. \<lbrakk>X.ide x; X.cong x x'\<rbrakk> \<Longrightarrow> tuple2 X F G \<T> x = tuple2 X F G \<T> x'"
+          by (metis (mono_tags, opaque_lifting) transformation.respects_cong_ide)
+        show trg: "\<And>x. X.ide x \<Longrightarrow> trg (tuple2 X F G \<T> x) = G x"
+        proof -
+          fix x
+          assume x: "X.ide x"
+          have 2: "\<And>i. i \<in> I \<Longrightarrow> P i (trg (tuple2 X F G \<T> x)) = P i (G x)"
+          proof -
+            fix i
+            assume i: "i \<in> I"
+            interpret Ri: weakly_extensional_rts \<open>R i\<close>
+              using i factors_are_extensional assms(3) transformation_def by blast
+            interpret Ti: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+              using assms i by blast
+            have "P i (trg (tuple2 X F G \<T> x)) = Ri.trg (\<T> i x)"
+            proof -
+              have "arr (trg (tuple2 X F G \<T> x))"
+                using x 1 arr_trg_iff_arr by auto
+              thus ?thesis
+                by (simp add: Con_def P_def Ri.trg_def Ti.transformation_axioms arr_resid_iff_con
+                    con_char i resid_simps(2) trg_def)
+            qed
+            also have "... = P i (G x)"
+              by (simp add: Ti.preserves_trg x)
+            finally show "P i (trg (tuple2 X F G \<T> x)) = P i (G x)" by blast
+          qed
+          show "trg (tuple2 X F G \<T> x) = G x"
+            using x 1 2 P_def
+            by (intro arr_eqI) auto
+        qed
+        show src: "\<And>x. X.ide x \<Longrightarrow> src (tuple2 X F G \<T> x) = F x"
+        proof -
+          fix x
+          assume x: "X.ide x"
+          have 2: "\<And>i. i \<in> I \<Longrightarrow> P i (src (tuple2 X F G \<T> x)) = P i (F x)"
+          proof -
+            fix i
+            assume i: "i \<in> I"
+            interpret Ri: weakly_extensional_rts \<open>R i\<close>
+              using i factors_are_extensional assms(3) transformation_def by blast
+            have "P i (src (tuple2 X F G \<T> x)) = Ri.src (\<T> i x)"
+            proof -
+              have "arr (src (tuple2 X F G \<T> x))"
+                using 1 x by auto
+              thus ?thesis
+                using x i P_def src_char
+                apply simp
+                using arr_src_iff_arr assms(3) by force
+            qed
+            also have "... = P i (F x)"
+              by (metis assms(3) i o_def transformation.preserves_src x)
+            finally show "P i (src (tuple2 X F G \<T> x)) = P i (F x)" by blast
+          qed
+          show "src (tuple2 X F G \<T> x) = F x"
+          proof
+            fix i
+            show "src (tuple2 X F G \<T> x) i = F x i"
+            proof (cases "i \<in> I")
+              show "i \<notin> I \<Longrightarrow> ?thesis"
+                using src_char F.preserves_ide arr_char ide_char x by auto
+              show "i \<in> I \<Longrightarrow> ?thesis"
+                using x 2 P_def arr_src_iff_arr src_char by fastforce
+            qed
+          qed
+        qed
+        fix x y
+        assume xy: "x \<in> X.sources y"
+        show "tuple2 X F G \<T> x \\ F y = tuple2 X F G \<T> (X x y)"
+        proof
+          fix i
+          have "i \<notin> I \<Longrightarrow> (tuple2 X F G \<T> x \\ F y) i = Null i"
+            using resid_def by presburger
+          moreover have "\<not> transformation X (R i) (P i \<circ> F) (P i \<circ> G) (\<T> i)
+                              \<Longrightarrow> (tuple2 X F G \<T> x \\ F y) i = Null i"
+            using assms(3) resid_def by auto
+          moreover have "\<lbrakk>i \<in> I; transformation X (R i) (P i \<circ> F) (P i \<circ> G) (\<T> i)\<rbrakk>
+                            \<Longrightarrow> (tuple2 X F G \<T> x \\ F y) i = tuple2 X F G \<T> (X x y) i"
+          proof -
+            assume i: "i \<in> I"
+            assume 2: "transformation X (R i) (P i \<circ> F) (P i \<circ> G) (\<T> i)"
+            interpret Ti: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+              using 2 by blast
+            have "Con (tuple2 X F G \<T> x) (F y)"
+            proof (intro ConI conjI allI impI)
+              fix i
+              show "i \<notin> I \<Longrightarrow> tuple2 X F G \<T> x i = Null i" by auto
+              show "i \<notin> I \<Longrightarrow> F y i = Null i"
+                by (metis F.extensionality F.preserves_reflects_arr arr_char null_char)
+              show "i \<in> I \<Longrightarrow> residuation.arr (R i) (tuple2 X F G \<T> x i)"
+                by (metis (full_types) X.arrI X.sources_are_con assms(3)
+                    transformation.preserves_arr xy)
+              show "i \<in> I \<Longrightarrow> residuation.arr (R i) (F y i)"
+                using X.con_implies_arr(1) arr_char xy by blast
+              assume i: "i \<in> I"
+              interpret Ri: weakly_extensional_rts \<open>R i\<close>
+                using i factors_are_extensional assms(3) transformation_def by blast
+              show "Ri.con (tuple2 X F G \<T> x i) (F y i)"
+                using assms(3) i xy P_def con_implies_arr(2) X.con_implies_arr(2)
+                      transformation.preserves_con(2) [of X "R i" "P i \<circ> F" "P i \<circ> G" "\<T> i"]
+                      X.con_sym
+                by auto
+            qed
+            thus "(tuple2 X F G \<T> x \\ F y) i = tuple2 X F G \<T> (X x y) i"
+              using xy resid_def
+              apply auto[1]
+              by (metis (full_types, lifting) F.simulation_axioms Ti.F.simulation_axioms
+                  Ti.naturality1_ax tuple_proj)
+          qed
+          ultimately show "(tuple2 X F G \<T> x \\ F y) i = tuple2 X F G \<T> (X x y) i"
+            by auto
+        qed
+        show "F y \\ tuple2 X F G \<T> x = G y"
+        proof
+          fix i
+          show "(F y \\ tuple2 X F G \<T> x) i = G y i"
+          proof (cases "i \<in> I")
+            show "i \<notin> I \<Longrightarrow> ?thesis"
+              by (metis (no_types, lifting) G.extensionality G.simulation_axioms arr_char
+                  null_is_zero(2) resid_def simulation.preserves_reflects_arr)
+            assume i: "i \<in> I"
+            interpret Ti: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+              using i assms(3) by blast
+            have "\<lbrakk>x \<in> X.sources y; i \<in> I;
+                   \<And>i. i \<in> I \<Longrightarrow> residuation.arr (R i) (F y i);
+                   \<forall>i. i \<notin> I \<longrightarrow> F y i = Null i;
+                   \<And>a f. a \<in> X.sources f \<Longrightarrow> R i (P i (F f)) (\<T> i a) = P i (G f)\<rbrakk>
+                      \<Longrightarrow> R i (F y i) (\<T> i x) = G y i"
+              by (metis (mono_tags, opaque_lifting) arr_char F.preserves_reflects_arr
+                  G.preserves_reflects_arr P_def)
+            moreover have 1: "\<And>i. i \<in> I \<Longrightarrow> residuation.con (R i) (F y i) (\<T> i x)"
+              by (metis (mono_tags, opaque_lifting) F.preserves_con P_def X.in_sourcesE
+                  X.residuation_axioms assms(3) comp_apply factors_are_rts
+                  residuation.con_implies_arr(1) residuation.con_sym residuation_axioms
+                  rts.axioms(1) transformation.preserves_con(2) xy)
+            moreover have "\<And>i. i \<in> I \<Longrightarrow> residuation.arr (R i) (F y i)"
+              using X.con_implies_arr(1) arr_char xy by blast
+            moreover have "\<And>i. i \<in> I \<Longrightarrow> residuation.arr (R i) (\<T> i x)"
+              by (meson 1 factors_are_rts residuation.con_implies_arr(2) rts.axioms(1))
+            moreover have "\<And>i. i \<notin> I \<Longrightarrow> F y i = Null i"
+              by (metis F.extensionality F.preserves_reflects_arr arr_char null_char)
+            ultimately show ?thesis
+              using assms(3) i xy Con_def Ti.naturality2_ax resid_simps(2) by force
+          qed
+        qed
+        show "join_of (tuple2 X F G \<T> x) (F y) (tuple2 X F G \<T> y)"
+        proof -
+          have y: "X.arr y"
+            using xy X.con_implies_arr(1) by auto
+          show "join_of (tuple2 X F G \<T> x) (F y) (tuple2 X F G \<T> y)"
+          proof (intro join_ofI composite_ofI)
+            show "tuple2 X F G \<T> x \<lesssim> tuple2 X F G \<T> y"
+            proof (unfold prfx_char, intro conjI allI impI)
+              show "arr (tuple2 X F G \<T> x)"
+                by (metis (lifting) F.preserves_ide X.in_sourcesE
+                    \<open>\<And>x. X.ide x \<Longrightarrow> src (tuple2 X F G \<T> x) = F x\<close>
+                    arr_src_iff_arr ide_implies_arr xy)
+              show "arr (tuple2 X F G \<T> y)"
+                using X.sources_char\<^sub>C\<^sub>S arr_char assms(3) transformation.preserves_arr xy
+                by fastforce
+              show "\<And>i. i \<in> I \<Longrightarrow> rts.prfx (R i) (tuple2 X F G \<T> x i) (tuple2 X F G \<T> y i)"
+              proof -
+                fix i
+                assume i: "i \<in> I"
+                interpret Ri: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+                  using assms i by blast
+                show "rts.prfx (R i) (tuple2 X F G \<T> x i) (tuple2 X F G \<T> y i)"
+                  using Ri.B.composite_of_def Ri.B.join_of_def Ri.naturality3
+                         Ri.transformation_axioms i xy by presburger
+              qed
+            qed
+            show "F y \<lesssim> tuple2 X F G \<T> y"
+            proof (unfold prfx_char, intro conjI allI impI)
+              show 1: "arr (F y)"
+                using X.con_implies_arr(1) xy by auto
+              show "arr (tuple2 X F G \<T> y)"
+                using X.sources_char\<^sub>C\<^sub>S arr_char assms(3) transformation.preserves_arr xy
+                by fastforce
+              show "\<And>i. i \<in> I \<Longrightarrow> rts.prfx (R i) (F y i) (tuple2 X F G \<T> y i)"
+              proof -
+                fix i
+                assume i: "i \<in> I"
+                interpret Ri: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+                  using assms i by blast
+                show "rts.prfx (R i) (F y i) (tuple2 X F G \<T> y i)"
+                  using i 1 P_def Ri.naturality1' Ri.transformation_axioms by auto
+              qed
+            qed
+            show "tuple2 X F G \<T> y \\ tuple2 X F G \<T> x \<sim> F y \\ tuple2 X F G \<T> x"
+            proof -
+              have "tuple2 X F G \<T> y \\ tuple2 X F G \<T> x = F y \\ tuple2 X F G \<T> x"
+              proof (intro arr_eqI)
+                show "arr (tuple2 X F G \<T> y \\ tuple2 X F G \<T> x)"
+                  using \<open>tuple2 X F G \<T> x \<lesssim> tuple2 X F G \<T> y\<close> con_def con_sym by auto
+                show "arr (F y \\ tuple2 X F G \<T> x)"
+                  by (metis (no_types, lifting) ext \<open>F y \<lesssim> tuple2 X F G \<T> y\<close>
+                      \<open>tuple2 X F G \<T> x \<lesssim> tuple2 X F G \<T> y\<close> apex_arr_prfx\<^sub>W\<^sub>E(2)
+                      arr_resid_iff_con ideE ide_iff_trg_self resid_reflects_con)
+                show "\<And>i. i \<in> I \<Longrightarrow>
+                            (tuple2 X F G \<T> y \\ tuple2 X F G \<T> x) i = (F y \\ tuple2 X F G \<T> x) i"
+                proof -
+                  fix i
+                  assume i: "i \<in> I"
+                  interpret Ri: extensional_rts \<open>R i\<close>
+                    using i factors_are_extensional by blast
+                  interpret Ti: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+                    using assms i by blast
+                  interpret Ti: transformation_to_extensional_rts X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+                    ..
+                  show "(tuple2 X F G \<T> y \\ tuple2 X F G \<T> x) i = (F y \\ tuple2 X F G \<T> x) i"
+                  proof -
+                    have "(tuple2 X F G \<T> y \\ tuple2 X F G \<T> x) i = R i (\<T> i y) (\<T> i x)"
+                      using xy i resid_def' Ti.transformation_axioms
+                            \<open>arr (tuple2 X F G \<T> y \ tuple2 X F G \<T> x)\<close>
+                      by auto
+                    also have "... = R i (F y i) (\<T> i x)"
+                    proof -
+                      have "Ri.join_of (\<T> i x) (F y i) (\<T> i y)"
+                        using xy y i Ti.naturality3 [of x y] P_def by auto
+                      thus ?thesis
+                        using xy y i
+                        apply (elim Ri.join_ofE Ri.composite_ofE)
+                        apply auto
+                        (*
+                         * TODO: Here is where we are using the extensionality assumption.
+                         * Can it be eliminated if we only try to prove cong?
+                         *)
+                        using Ri.extensionality by blast
+                    qed
+                    also have "... = (F y \\ tuple2 X F G \<T> x) i"
+                      using xy i resid_def' Ti.transformation_axioms
+                            \<open>arr (F y \ tuple2 X F G \<T> x)\<close>
+                      by auto
+                    finally show ?thesis by blast
+                  qed
+                qed
+              qed
+              thus ?thesis
+                by (metis (no_types, lifting) \<open>prfx (tuple2 X F G \<T> x) (tuple2 X F G \<T> y)\<close>
+                    arr_resid residuation.conI residuation.con_sym_ax
+                    residuation_axioms rts.cong_reflexive rts.prfx_implies_con rts_axioms)
+            qed
+            show "tuple2 X F G \<T> y \\ F y \<sim> tuple2 X F G \<T> x \\ F y"
+            proof
+              show "tuple2 X F G \<T> y \\ F y \<lesssim> tuple2 X F G \<T> x \\ F y"
+                by (metis \<open>tuple2 X F G \<T> y \ tuple2 X F G \<T> x \<sim> F y \ tuple2 X F G \<T> x\<close> cube)
+              show "tuple2 X F G \<T> x \\ F y \<lesssim> tuple2 X F G \<T> y \\ F y"
+                by (metis (no_types, lifting) ext \<open>prfx (F y) (tuple2 X F G \<T> y)\<close>
+                    \<open>tuple2 X F G \<T> x \<lesssim> tuple2 X F G \<T> y\<close> apex_arr_prfx\<^sub>W\<^sub>E(2)
+                    cube ide_iff_trg_self ide_implies_arr trg_def)
+            qed
+          qed
+        qed
+      qed
+      show B: "\<And>i. i \<in> I \<Longrightarrow> P i \<circ> tuple2 X F G \<T> = \<T> i"
+      proof -
+        fix i
+        assume i: "i \<in> I"
+        interpret Ri: extensional_rts \<open>R i\<close>
+          using i factors_are_extensional by blast
+        interpret Ti: transformation X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+          using assms i by blast
+        interpret Ti: transformation_to_extensional_rts X \<open>R i\<close> \<open>P i \<circ> F\<close> \<open>P i \<circ> G\<close> \<open>\<T> i\<close>
+          ..
+        show "P i \<circ> tuple2 X F G \<T> = \<T> i"
+          using P_def Ti.extensionality \<open>transformation X resid F G (tuple2 X F G \<T>)\<close>
+            assms(3) i transformation.preserves_arr
+          by fastforce
+      qed
+      show C: "\<And>T'. \<lbrakk>transformation X resid F G T'; \<And>i. i \<in> I \<Longrightarrow> P i \<circ> T' = \<T> i\<rbrakk>
+                 \<Longrightarrow> T' = tuple2 X F G \<T>"
+      proof -
+        fix T'
+        assume T': "transformation X resid F G T'"
+        assume 1: "\<And>i. i \<in> I \<Longrightarrow> P i \<circ> T' = \<T> i"
+        interpret T': transformation X resid F G T'
+          using T' by blast
+        show "T' = tuple2 X F G \<T>"
+          by (metis (mono_tags, opaque_lifting) "1" P_def T'.extensionality T'.preserves_arr
+              arr_char assms(3) comp_apply null_char)
+      qed
+      show "\<exists>!T. transformation X resid F G T \<and> (\<forall>i. i \<in> I \<longrightarrow> P i \<circ> T = \<T> i)"
+        using A B C by blast
+    qed
+
+    lemma proj_joint_monic2:
+    assumes "transformation X resid F G S" and "transformation X resid F G T"
+    and "\<And>i. i \<in> I \<Longrightarrow> P i \<circ> S = P i \<circ> T"
+    shows "S = T"
+    proof (intro transformation_eqI [of X resid F G])
+      interpret S: transformation X resid F G S
+        using assms(1) by blast
+      show "transformation X resid F G S" ..
+      interpret T: transformation X resid F G T
+        using assms(2) by blast
+      show "transformation X resid F G T" ..
+      show "extensional_rts resid" ..
+      show "\<And>x. residuation.ide X x \<Longrightarrow> S x = T x"
+      proof -
+        fix x
+        assume x: "residuation.ide X x"
+        show "S x = T x"
+        proof (intro arr_eqI)
+          show "arr (S x)"
+            using x S.preserves_arr by simp
+          show "arr (T x)"
+            using x T.preserves_arr by simp
+          show "\<And>i. i \<in> I \<Longrightarrow> S x i = T x i"
+            by (metis \<open>arr (S x)\<close> \<open>arr (T x)\<close> assms(3) comp_apply P_def)
+        qed
+      qed
+    qed
+
+  end
+
+  section "Indexed Sum RTS"
+
+  locale indexed_sum_rts =
+  fixes I :: "'a set"
+  and R :: "'a \<Rightarrow> 'U resid"
+  assumes summands_are_rts: "i \<in> I \<Longrightarrow> rts (R i)"
+  begin
+
+    type_synonym ('aa, 'UU) arr = "'aa \<times> 'UU"
+
+    text\<open>
+      Here for the null element we make an arbitrary choice among things that cannot be arrows.
+    \<close>
+
+    abbreviation Null :: "('a, 'U) arr"
+    where "Null \<equiv> (undefined, ResiduatedTransitionSystem.partial_magma.null (R undefined))"
+
+    abbreviation Arr :: "('a, 'U) arr \<Rightarrow> bool"
+    where "Arr T \<equiv> fst T \<in> I \<and> residuation.arr (R (fst T)) (snd T)"
+
+    definition Con :: "('a, 'U) arr \<Rightarrow> ('a, 'U) arr \<Rightarrow> bool"
+    where "Con T U \<equiv> Arr T \<and> Arr U \<and> fst T = fst U \<and> residuation.con (R (fst T)) (snd T) (snd U)"
+
+    definition resid :: "('a, 'U) arr resid"  (infix \<open>\\<close> 70)
+    where "resid T U \<equiv> if Con T U then (fst T, R (fst T) (snd T) (snd U)) else Null"
+
+    lemma not_Arr_Null:
+    shows "\<not> Arr Null"
+      by (simp add: summands_are_rts residuation.not_arr_null rts.axioms(1))
+
+    sublocale ResiduatedTransitionSystem.partial_magma resid
+    proof
+      have 1: "\<And>T. resid T Null = Null \<and> resid Null T = Null"
+        unfolding resid_def Con_def by (metis not_Arr_Null)
+      moreover have "\<And>N'. \<forall>T. resid T N' = N' \<and> resid N' T = N' \<Longrightarrow> N' = Null"
+        using 1 by metis
+      ultimately show "\<exists>!N. \<forall>T. resid N T = N \<and> resid T N = N" by blast
+    qed
+
+    lemma null_char:
+    shows "null = Null"
+      by (metis (no_types, lifting) resid_def Con_def not_Arr_Null null_is_zero(2))
+
+    sublocale residuation resid
+    proof
+      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> u \\ t \<noteq> null"
+        by (metis Con_def summands_are_rts null_char resid_def residuation.conE
+            residuation.con_sym rts_def split_pairs)
+      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> (t \\ u) \\ (t \\ u) \<noteq> null"
+      proof -
+        fix t u
+        assume tu: "t \\ u \<noteq> null"
+        have "Con t u"
+          using tu null_char resid_def by metis
+        thus "(t \\ u) \\ (t \\ u) \<noteq> null"
+          using null_char resid_def Con_def summands_are_rts
+          by (auto simp add: residuation.con_imp_arr_resid residuation.arr_resid
+              residuation.con_def rts.axioms(1))
+      qed
+      show "\<And>v t u. (v \\ t) \\ (u \\ t) \<noteq> null \<Longrightarrow> (v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
+      proof -
+        fix t u v
+        assume 1: "(v \\ t) \\ (u \\ t) \<noteq> null"
+        have 2: "Con (v \\ t) (u \\ t)"
+          using 1 resid_def
+          by (metis null_char)
+        have 3: "Con v t \<and> Con u t"
+          using 2 resid_def null_char
+          by (metis "1" null_is_zero(1,2))
+        have 4: "Con v u"
+          using 2 3 Con_def resid_def
+          apply auto
+          by (meson rts.resid_reflects_con summands_are_rts)
+        have 5: "Con t u"
+          using 2 3 Con_def resid_def
+          apply auto
+          by (meson residuation.con_sym rts_def summands_are_rts)
+        have 6: "Con (fst v, R (fst v) (snd v) (snd u)) (fst t, R (fst t) (snd t) (snd u))"
+          using 2 3 4 5 Con_def resid_def
+          apply (auto simp add: residuation.arr_resid_iff_con rts.axioms(1) summands_are_rts)
+          by (metis (mono_tags, lifting) residuation.arr_resid_iff_con residuation.cube
+              rts_def summands_are_rts)
+        show "(v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
+        proof
+          show "fst ((v \\ t) \\ (u \\ t)) = fst ((v \\ u) \\ (t \\ u))"
+            using 2 3 4 5 6 resid_def null_char by auto
+          thus "snd ((v \\ t) \\ (u \\ t)) = snd ((v \\ u) \\ (t \\ u))"
+            using 1 2 3 4 5 6 resid_def null_char
+            apply auto
+             apply (metis Con_def residuation.cube rts_def summands_are_rts)
+            by (metis Con_def residuation.cube rts_def summands_are_rts)
+        qed
+      qed
+    qed
+
+    notation con  (infix \<open>\<frown>\<close> 50)
+
+    lemma con_char:
+    shows "T \<frown> U \<longleftrightarrow> Arr T \<and> Arr U \<and> fst T = fst U \<and> residuation.con (R (fst T)) (snd T) (snd U)"
+      by (metis (no_types, lifting) ext Con_def summands_are_rts null_char resid_def
+          residuation.con_def residuation_axioms rts.axioms(1) split_pairs)
+
+    lemma resid_def':
+    shows "T \\ U = (if T \<frown> U then (fst T, R (fst T) (snd T) (snd U)) else null)"
+      by (simp add: con_def null_char resid_def)
+
+    lemma arr_char:
+    shows "arr T \<longleftrightarrow> Arr T"
+      by (metis (full_types) Con_def arr_def con_char summands_are_rts
+          residuation.arrE rts.axioms(1))
+
+    lemma trg_char:
+    shows "trg = (\<lambda>T. if arr T then (fst T, R (fst T) (snd T) (snd T)) else null)"
+      using resid_def' trg_def by fastforce
+
+    lemma ide_char:
+    shows "ide T \<longleftrightarrow> arr T \<and> residuation.ide (R (fst T)) (snd T)"
+      by (metis (no_types, opaque_lifting) arrE arr_char ide_def ide_implies_arr
+          indexed_sum_rts_axioms indexed_sum_rts_def residuation.ideE rts.cong_reflexive
+          rts_def split_pairs2 trg_char trg_def)
+
+    sublocale rts resid
+    proof
+      show "\<And>T. arr T \<Longrightarrow> ide (trg T)"
+        by (metis arr_char arr_trg_iff_arr ide_char indexed_sum_rts_axioms indexed_sum_rts_def
+            rts.cong_reflexive split_pairs trg_char)
+      show "\<And>A T. \<lbrakk>ide A; T \<frown> A\<rbrakk> \<Longrightarrow> T \\ A = T"
+        by (metis con_char ide_char prod.collapse resid_def' rts.resid_arr_ide summands_are_rts)
+      show "\<And>A T. \<lbrakk>ide A; A \<frown> T\<rbrakk> \<Longrightarrow> ide (A \\ T)"
+        using \<open>\<And>A T. \<lbrakk>ide A; T \<frown> A\<rbrakk> \<Longrightarrow> T \ A = T\<close> con_sym cube by auto
+      show "\<And>T U. T \<frown> U \<Longrightarrow> \<exists>A. ide A \<and> A \<frown> T \<and> A \<frown> U"
+      proof -
+        fix T U
+        assume TU: "T \<frown> U"
+        have "residuation.con (R (fst T)) (snd T) (snd U)"
+          using TU con_char by blast
+        hence "\<exists>a. residuation.ide (R (fst T)) a \<and> residuation.con (R (fst T)) a (snd T) \<and>
+                     residuation.con (R (fst T)) a (snd U)"
+          by (meson TU con_char rts.con_imp_coinitial_ax summands_are_rts)
+        from this obtain a
+        where a: "residuation.ide (R (fst T)) a \<and> residuation.con (R (fst T)) a (snd T) \<and>
+                    residuation.con (R (fst T)) a (snd U)"
+          by blast
+        have "ide (fst T, a) \<and> con (fst T, a) T \<and> con (fst T, a) U"
+          by (metis (mono_tags, opaque_lifting) TU a arr_char con_char fst_conv ide_char
+              residuation.ide_implies_arr rts_def snd_conv summands_are_rts)
+        thus "\<exists>A. ide A \<and> A \<frown> T \<and> A \<frown> U"
+          by blast
+      qed
+      show "\<And>T U V. \<lbrakk>ide (T \\ U); U \<frown> V\<rbrakk> \<Longrightarrow> T \\ U \<frown> V \\ U"
+      proof -
+        fix T U V
+        assume TU: "ide (T \\ U)" and UV: "U \<frown> V"
+        have "T \<frown> U"
+          using TU by auto
+        moreover have "V \<frown> U"
+          using UV con_sym by auto
+        ultimately show "T \\ U \<frown> V \\ U"
+          using TU UV ide_char arr_char resid_def'
+          apply auto
+          using con_char residuation.arr_resid_iff_con rts.con_target rts_def summands_are_rts
+          by fastforce
+      qed
+    qed
+
+    lemma is_rts:
+    shows "rts resid"
+      ..
+
+    notation prfx  (infix \<open>\<lesssim>\<close> 50)
+    notation cong  (infix \<open>\<sim>\<close> 50)
+
+    lemma prfx_char:
+    shows "T \<lesssim> U\<longleftrightarrow> T \<frown> U \<and> rts.prfx (R (fst T)) (snd T) (snd U)"
+      by (metis arr_resid_iff_con ide_char resid_def' split_pairs2)
+
+    lemma cong_char:
+    shows "T \<sim> U \<longleftrightarrow> T \<frown> U \<and> rts.cong (R (fst T)) (snd T) (snd U)"
+      by (metis con_char con_sym prfx_char)
+
+    lemma composite_of_char:
+    shows "composite_of T U V \<longleftrightarrow>
+           arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+           rts.composite_of (R (fst T)) (snd T) (snd U) (snd V)"
+    proof
+      show "composite_of T U V \<Longrightarrow>
+              arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+              rts.composite_of (R (fst T)) (snd T) (snd U) (snd V)"
+      proof -
+        assume 1: "composite_of T U V"
+        show "arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+              rts.composite_of (R (fst T)) (snd T) (snd U) (snd V)"
+        proof (intro conjI)
+          show "arr T" and "arr U" and "arr V"
+            using 1 composable_def arr_composite_of by blast+
+          show "fst U = fst T"
+            using 1
+            by (metis composite_of_def con_char con_sym fst_conv prfx_char resid_def')
+          show "fst V = fst T"
+            using 1
+            by (metis con_char con_prfx_composite_of(1))
+          show "rts.composite_of (R (fst T)) (snd T) (snd U) (snd V)"
+          proof (intro rts.composite_ofI conjI)
+            show "rts (R (fst T))"
+              using 1 by (meson bounded_imp_con con_char summands_are_rts)
+            show "residuation.ide (R (fst T)) (R (fst T) (snd T) (snd V))"
+              using 1 prfx_char by blast
+            show "residuation.ide (R (fst T)) (R (fst T) (R (fst T) (snd V) (snd T)) (snd U))"
+              using 1
+              by (metis (no_types, lifting) composite_of_def con_char con_sym prfx_char
+                  resid_def' split_pairs)
+            show "residuation.ide (R (fst T)) (R (fst T) (snd U) (R (fst T) (snd V) (snd T)))"
+              using 1
+              by (metis (no_types, lifting) composite_of_def con_char con_def ex_un_null
+                  ide_backward_stable ide_def prfx_char resid_def' split_pairs)
+          qed
+        qed
+      qed
+      show "arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+            rts.composite_of (R (fst T)) (snd T) (snd U) (snd V)
+               \<Longrightarrow> composite_of T U V"
+      proof -
+        assume 1: "arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+                   rts.composite_of (R (fst T)) (snd T) (snd U) (snd V)"
+        show "composite_of T U V"
+        proof (intro composite_ofI)
+          show "T \<lesssim> V"
+            by (metis "1" arr_char con_char prfx_char rts.composite_ofE
+                rts.con_prfx_composite_of(1) summands_are_rts)
+          have 2: "V \\ T = (fst V, R (fst V) (snd V) (snd T))"
+            using 1 resid_def [of V T]
+            by (metis \<open>prfx T V\<close> not_ide_null null_char residuation.con_sym_ax residuation_axioms)
+          have 3: "V \\ T \<frown> U"
+            unfolding con_char
+            using 1 2
+            by (metis \<open>T \<lesssim> V\<close> arr_char arr_resid_iff_con con_sym prfx_char rts.composite_of_def
+                rts.prfx_implies_con split_pairs2 summands_are_rts)
+          show "V \\ T \<sim> U"
+            using prfx_char
+            by (metis "1" "2" "3" arr_char con_sym eq_fst_iff rts.composite_ofE sndI
+                summands_are_rts)
+        qed
+      qed
+    qed
+
+    lemma join_of_char:
+    shows "join_of T U V \<longleftrightarrow>
+           arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+           rts.join_of (R (fst T)) (snd T) (snd U) (snd V)"
+    proof
+      show "join_of T U V \<Longrightarrow>
+              arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+              rts.join_of (R (fst T)) (snd T) (snd U) (snd V)"
+      proof -
+        assume 1: "join_of T U V"
+        show "arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+              rts.join_of (R (fst T)) (snd T) (snd U) (snd V)"
+        proof (intro conjI)
+          show "arr T" and "arr U" and "arr V"
+            using 1 composite_of_char arr_composite_of by blast+
+          show "fst U = fst T"
+            using 1 by (metis con_char joinable_def joinable_implies_con)
+          show "fst V = fst T"
+            using 1 composite_of_char by blast
+          show "rts.join_of (R (fst T)) (snd T) (snd U) (snd V)"
+          proof (intro rts.join_ofI conjI)
+            show "rts (R (fst T))"
+              using 1 \<open>arr T\<close> arr_char summands_are_rts by blast
+            show "rts.composite_of (R (fst T)) (snd T) (R (fst T) (snd U) (snd T)) (snd V)"
+              using 1
+              by (metis composite_of_char resid_def' residuation.arr_resid_iff_con
+                  residuation_axioms rts.join_ofE rts_axioms split_pairs2)
+            show "rts.composite_of (R (fst T)) (snd U) (R (fst T) (snd T) (snd U)) (snd V)"
+              using 1
+              by (metis composite_of_char resid_def' residuation.arr_resid_iff_con
+                  residuation_axioms rts.join_ofE rts_axioms split_pairs2)
+          qed
+        qed
+      qed
+      show "arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+              rts.join_of (R (fst T)) (snd T) (snd U) (snd V)
+                \<Longrightarrow> join_of T U V"
+      proof -
+        assume 1: "arr T \<and> arr U \<and> arr V \<and> fst U = fst T \<and> fst V = fst T \<and>
+                   rts.join_of (R (fst T)) (snd T) (snd U) (snd V)"
+        show "join_of T U V"
+        proof (intro join_ofI composite_ofI conjI)
+          show "T \<lesssim> V" and "U \<lesssim> V"
+            by (metis 1 arr_char con_char prfx_char rts.composite_ofE rts.join_ofE
+                rts.prfx_implies_con summands_are_rts)+
+          have "V \\ T \<frown> U \\ T"
+            by (metis (lifting) ext \<open>T \<lesssim> V\<close> \<open>U \<lesssim> V\<close> apex_arr_prfx'(2) con_sym cube
+                prfx_char prfx_transitive trg_ide)
+          have VT: "Con V T"
+            by (metis \<open>V \ T \<frown> U \ T\<close> not_con_null(1) null_char resid_def)
+          have UT: "Con U T"
+            by (metis \<open>V \ T \<frown> U \ T\<close> resid_def con_char not_Arr_Null)
+          have VU: "Con V U"
+            by (metis \<open>U \<lesssim> V\<close> null_char resid_def residuation.con_def residuation.con_sym
+                residuation_axioms rts.prfx_implies_con rts_axioms)
+          show "V \\ T \<lesssim> U \\ T"
+          proof (unfold prfx_char, intro conjI)
+            show "V \\ T \<frown> U \\ T" by fact
+            show "residuation.ide (R (fst (V \\ T)))
+                    (R (fst (V \\ T)) (snd (V \\ T)) (snd (U \\ T)))"
+              unfolding resid_def
+              using VT UT VU
+              apply auto[1]
+              by (metis (no_types, lifting) "1" Con_def rts.composite_ofE rts.join_ofE
+                  summands_are_rts)
+          qed
+          show "U \\ T \<lesssim> V \\ T"
+            by (metis \<open>prfx T V\<close> \<open>prfx U V\<close> con_sym con_target cube prfx_implies_con
+                resid_ide_arr)
+          show "V \\ U \<lesssim> T \\ U"
+            by (metis cube \<open>V \ T \<lesssim> U \ T\<close>)
+          show "T \\ U \<lesssim> V \\ U"
+            by (metis \<open>T \<lesssim> V\<close> \<open>U \<lesssim> V\<close> con_sym cube resid_ide_arr con_target prfx_implies_con)
+        qed
+      qed
+    qed
+
+    lemma joinable_char:
+    shows "joinable T U \<longleftrightarrow> T \<frown> U \<and> rts.joinable (R (fst T)) (snd T) (snd U)"
+    proof
+      show "joinable T U \<Longrightarrow> T \<frown> U \<and> rts.joinable (R (fst T)) (snd T) (snd U)"
+        by (meson con_char join_of_char joinable_def joinable_implies_con rts.joinable_def
+            summands_are_rts)
+      show "T \<frown> U \<and> rts.joinable (R (fst T)) (snd T) (snd U) \<Longrightarrow> joinable T U"
+      proof -
+        assume 1: "T \<frown> U \<and> rts.joinable (R (fst T)) (snd T) (snd U)"
+        have "\<exists>v. rts.join_of (R (fst T)) (snd T) (snd U) v"
+          by (meson "1" con_char rts.joinable_def summands_are_rts)
+        from this obtain v
+        where v: "rts.join_of (R (fst T)) (snd T) (snd U) v"
+          by metis
+        have "join_of T U (fst T, v)"
+          by (metis "1" arr_char con_char fst_conv join_of_char rts.arr_composite_of
+              rts.join_ofE snd_conv summands_are_rts v)
+        thus ?thesis
+          unfolding joinable_def by blast
+      qed
+    qed
+
+    lemma sources_char:
+    shows "sources = (\<lambda>T. if arr T then (\<lambda>a. (fst T, a)) ` rts.sources (R (fst T)) (snd T) else {})"
+    proof
+      fix T
+      show "sources T = (if arr T then (\<lambda>a. (fst T, a)) ` rts.sources (R (fst T)) (snd T) else {})"
+        unfolding sources_def
+        using arr_char con_char ide_char summands_are_rts
+        apply (auto simp add: rts.in_sourcesI)
+           apply (metis residuation.ide_implies_arr rts.source_is_ide rts_def)
+          apply (metis rts.in_sourcesE)
+         apply (metis rts.in_sourcesE rts_def residuation.ide_implies_arr)
+        by (metis rts.in_sourcesE)
+    qed
+
+    definition In
+    where "In i t = (if residuation.arr (R i) t then (i, t) else null)"
+
+    lemma simulation_In:
+    assumes "i \<in> I"
+    shows "simulation (R i) resid (In i)"
+    proof -
+      interpret Ri: rts \<open>R i\<close>
+        using assms summands_are_rts by blast
+      show ?thesis
+      proof
+        show "\<And>t. \<not> Ri.arr t \<Longrightarrow> In i t = null"
+          by (simp add: In_def)
+        show "\<And>t u. Ri.con t u \<Longrightarrow> con (In i t) (In i u)"
+          by (simp add: In_def Ri.con_implies_arr(1,2) assms con_char)
+        show "\<And>t u. Ri.con t u \<Longrightarrow> In i (R i t u) = resid (In i t) (In i u)"
+          using In_def Ri.con_implies_arr(1,2) \<open>\<And>u t. Ri.con t u \<Longrightarrow> con (In i t) (In i u)\<close>
+                resid_def'
+          by auto
+      qed
+    qed
+
+    abbreviation cotuple
+    where "cotuple X \<F> \<equiv> (\<lambda>T. if fst T \<in> I then \<F> (fst T) (snd T)
+                               else ResiduatedTransitionSystem.partial_magma.null X)"
+
+    lemma couniversality:
+    assumes "rts X"
+    and "\<And>i. i \<in> I \<Longrightarrow> simulation (R i) X (\<F> i)"
+    and "\<And>i. i \<notin> I \<Longrightarrow> \<F> i = (\<lambda>_. ResiduatedTransitionSystem.partial_magma.null X)"
+    shows "simulation resid X (cotuple X \<F>)"
+    and "cotuple X \<F> \<circ> In i = \<F> i"
+    and "\<And>F. \<lbrakk>simulation resid X F; \<And>i. F \<circ> In i = \<F> i\<rbrakk> \<Longrightarrow> F = cotuple X \<F>"
+    and "\<exists>!F. simulation resid X F \<and> (\<forall>i. F \<circ> In i = \<F> i)"
+    proof -
+      interpret X: rts X
+        using assms simulation_def by blast
+      show A: "simulation resid X (cotuple X \<F>)"
+      proof
+        show "\<And>t. \<not> arr t \<Longrightarrow> cotuple X \<F> t = X.null"
+          by (meson arr_char assms simulation.extensionality)
+        show "\<And>t u. con t u \<Longrightarrow> X.con (cotuple X \<F> t) (cotuple X \<F> u)"
+          using assms con_char simulation.preserves_con by fastforce
+        show "\<And>t u. con t u \<Longrightarrow> cotuple X \<F> (resid t u) = X (cotuple X \<F> t) (cotuple X \<F> u)"
+          using assms con_char resid_def' simulation.preserves_resid by fastforce
+      qed
+      show B: "\<And>i. cotuple X \<F> \<circ> In i = \<F> i"
+      proof
+        fix i x
+        show "(cotuple X \<F> \<circ> In i) x = \<F> i x"
+          apply auto[1]
+           apply (metis (no_types, opaque_lifting) In_def arr_char assms(2,3) not_arr_null
+              simulation.extensionality split_pairs)
+          by (metis In_def assms(2,3) fst_conv simulation.extensionality)
+      qed
+      show C: "\<And>F. \<lbrakk>simulation resid X F; \<And>i. F \<circ> In i = \<F> i\<rbrakk> \<Longrightarrow> F = cotuple X \<F>"
+      proof -
+        fix F
+        assume F: "simulation resid X F"
+        assume 1: "\<And>i. F \<circ> In i = \<F> i"
+        interpret F: simulation resid X F
+          using F by blast
+        show "F = cotuple X \<F>"
+          using 1 F.extensionality In_def arr_char comp_apply not_arr_null
+          by (metis (no_types, lifting) surjective_pairing)
+      qed
+      show "\<exists>!F. simulation resid X F \<and> (\<forall>i. F \<circ> In i = \<F> i)"
+        using A B C by (metis (no_types, lifting))
+    qed
+
+    lemma inj_joint_epic:
+    assumes "simulation resid X F" and "simulation resid X G"
+    and "\<And>i. i \<in> I \<Longrightarrow> F \<circ> In i = G \<circ> In i"
+    shows "F = G"
+    proof
+      interpret F: simulation resid X F
+        using assms(1) by blast
+      interpret G: simulation resid X G
+        using assms(2) by blast
+      fix x
+      have "\<not> arr x \<Longrightarrow> F x = G x"
+        by (simp add: F.extensionality G.extensionality)
+      moreover have "arr x \<Longrightarrow> F x = G x"
+      proof -
+        assume x: "arr x"
+        have "fst x \<in> I \<Longrightarrow> F x = G x"
+          by (metis (mono_tags, lifting) In_def assms(3) comp_apply indexed_sum_rts.arr_char
+              indexed_sum_rts_axioms prod.exhaust_sel x)
+        moreover have "fst x \<notin> I \<Longrightarrow> F x = G x"
+          using arr_char x by blast
+        ultimately show "F x = G x" by blast
+      qed
+      ultimately show "F x = G x" by blast
+    qed
+
+    lemma cotuple_comp_In:
+    assumes "rts X"
+    and "\<And>i. i \<in> I \<Longrightarrow> simulation (R i) X (\<F> i)"
+    and "\<And>i. i \<notin> I \<Longrightarrow> \<F> i = (\<lambda>_. ResiduatedTransitionSystem.partial_magma.null X)"
+    shows "cotuple X \<F> \<circ> In i = \<F> i"
+      by (simp add: assms couniversality(2))
+
+    lemma cotuple_F_comp_In:
+    assumes "simulation resid X F"
+    shows "cotuple X (\<lambda>i. F \<circ> In i) = F"
+    proof -
+      interpret X: rts X
+        using assms simulation_def by blast
+      interpret F: simulation resid X F
+        using assms by blast
+      show "cotuple X (\<lambda>i. F \<circ> In i) = F"
+      proof -
+        have "\<forall>p. (if fst p \<in> I then (F \<circ> In (fst p)) (snd p) else X.null) = F p"
+          by (metis (no_types) F.extensionality In_def arr_char comp_apply prod.collapse
+              residuation.not_arr_null residuation_axioms)
+        then show ?thesis
+          by blast
+      qed
+    qed
+
+    lemma preserves_weakly_extensional_rts:
+    assumes "\<And>i. i \<in> I \<Longrightarrow> weakly_extensional_rts (R i)"
+    shows "weakly_extensional_rts resid"
+    proof
+      fix T U
+      assume TU: "cong T U" and T: "ide T" and U: "ide U"
+      show "T = U"
+        by (metis (full_types) TU U assms indexed_sum_rts.con_char indexed_sum_rts.cong_char
+            indexed_sum_rts.ide_char indexed_sum_rts_axioms prod.collapse rts.ide_backward_stable
+            rts_axioms weakly_extensional_rts.weak_extensionality)
+    qed
+
+    lemma preserves_extensional_rts:
+    assumes "\<And>i. i \<in> I \<Longrightarrow> extensional_rts (R i)"
+    shows "extensional_rts resid"
+    proof
+      fix T U
+      assume TU: "cong T U"
+      show "T = U"
+        by (metis (full_types) TU assms con_char extensional_rts.extensionality
+            indexed_sum_rts.cong_char indexed_sum_rts_axioms prod.exhaust_sel)
+    qed
+
+  end
+
+  (*
+   * TODO: Do we really need extensionality of the summands here?
+   *)
+  locale indexed_sum_of_extensional_rts =
+    indexed_sum_rts +
+  assumes summands_are_extensional_rts: "i \<in> I \<Longrightarrow> extensional_rts (R i)"
+  begin
+
+    sublocale indexed_sum_rts I R ..
+
+    sublocale extensional_rts resid
+      using summands_are_extensional_rts preserves_extensional_rts by blast
+
+    lemma is_weakly_extensional_rts:
+    shows "weakly_extensional_rts resid"
+      ..
+
+    lemma src_char:
+    shows "src = (\<lambda>T. if arr T then (fst T, rts.src (R (fst T)) (snd T)) else null)"
+    proof
+      fix T
+      show "src T = (if arr T then (fst T, rts.src (R (fst T)) (snd T)) else null)"
+      proof (cases "arr T")
+        show "\<not> arr T \<Longrightarrow> ?thesis"
+          by (simp add: src_def)
+        show "arr T \<Longrightarrow> ?thesis"
+          by (metis (mono_tags, lifting) arr_char imageI mem_Collect_eq rts.src_in_sources
+              sources_char sources_char\<^sub>W\<^sub>E summands_are_rts)
+      qed
+    qed
+
+    lemma join_char:
+    assumes "joinable T U"
+    shows "join T U = (fst T, extensional_rts.join (R (fst T)) (snd T) (snd U))"
+      by (metis assms con_char extensional_rts.join_is_join_of extensional_rts.join_of_unique
+          join_is_join_of join_of_char joinable_char split_pairs summands_are_extensional_rts)
+
+    lemma universality2:
+    assumes "simulation_to_extensional_rts resid X F"
+    and "simulation_to_extensional_rts resid X G"
+    and "\<And>i. i \<in> I \<Longrightarrow> transformation (R i) X (F \<circ> In i) (G \<circ> In i) (\<T> i)"
+    and "\<And>i. i \<notin> I \<Longrightarrow> \<T> i = (\<lambda>_. ResiduatedTransitionSystem.partial_magma.null X)"
+    shows [intro]: "transformation resid X F G (cotuple X \<T>)"
+    and "\<And>i. i \<in> I \<Longrightarrow> cotuple X \<T> \<circ> In i = \<T> i"
+    and "\<And>T'. \<lbrakk>transformation resid X F G T'; \<And>i. i \<in> I \<Longrightarrow> T' \<circ> In i = \<T> i\<rbrakk> \<Longrightarrow> T' = cotuple X \<T>"
+    and "\<exists>!T. transformation resid X F G T \<and> (\<forall>i. i \<in> I \<longrightarrow> T \<circ> In i = \<T> i)"
+    proof -
+      interpret X: extensional_rts X
+        using assms(1) simulation_to_extensional_rts_def by auto
+      interpret F: simulation_to_extensional_rts resid X F
+        using assms(1) by blast
+      interpret G: simulation_to_extensional_rts resid X G
+        using assms(2) by blast
+      show A: "transformation resid X F G (cotuple X \<T>)"
+      proof
+        show "\<And>f. \<not> arr f \<Longrightarrow> cotuple X \<T> f = X.null"
+          by (meson arr_char assms(3) transformation.extensionality)
+        show "\<And>a a'. \<lbrakk>ide a; cong a a'\<rbrakk> \<Longrightarrow> cotuple X \<T> a = cotuple X \<T> a'"
+          by (simp add: cong_char)
+        show "\<And>f. ide f \<Longrightarrow> X.src (cotuple X \<T> f) = F f"
+        proof -
+          fix f
+          assume f: "ide f"
+          have "fst f \<in> I \<Longrightarrow> X.src (cotuple X \<T> f) = F f"
+            using assms(3) f
+            apply auto[1]
+            by (metis (mono_tags, opaque_lifting) In_def comp_apply ide_char
+                prod.exhaust_sel residuation.ide_implies_arr rts_def summands_are_rts
+                transformation.preserves_src)
+          moreover have "fst f \<notin> I \<Longrightarrow> X.src (cotuple X \<T> f) = F f"
+            using arr_char f by blast
+          ultimately show "X.src (cotuple X \<T> f) = F f" by blast
+        qed
+        show "\<And>f. ide f \<Longrightarrow> X.trg (cotuple X \<T> f) = G f"
+        proof -
+          fix f
+          assume f: "ide f"
+          have "fst f \<in> I \<Longrightarrow> X.trg (cotuple X \<T> f) = G f"
+            using assms(3) f
+            apply auto[1]
+            by (metis (mono_tags, lifting) In_def comp_apply ide_char prod.exhaust_sel
+                residuation.ide_implies_arr rts_def summands_are_rts
+                transformation.preserves_trg)
+          moreover have "fst f \<notin> I \<Longrightarrow> X.trg (cotuple X \<T> f) = G f"
+            using arr_char f by blast
+          ultimately show "X.trg (cotuple X \<T> f) = G f" by blast
+        qed
+        fix a f
+        assume a: "a \<in> sources f"
+        let ?i = "fst a"
+        have i: "?i \<in> I \<and> fst f = ?i"
+          using a arr_char con_char by blast
+        interpret Ri: extensional_rts \<open>R ?i\<close>
+          using i summands_are_extensional_rts by blast
+        interpret Ti: transformation \<open>R ?i\<close> X \<open>F \<circ> In ?i\<close> \<open>G \<circ> In ?i\<close> \<open>\<T> ?i\<close>
+          using i assms(3) by blast
+        interpret Ti: transformation_to_extensional_rts \<open>R ?i\<close> X \<open>F \<circ> In ?i\<close> \<open>G \<circ> In ?i\<close> \<open>\<T> ?i\<close> ..
+        show "X (cotuple X \<T> a) (F f) = cotuple X \<T> (resid a f)"
+        proof -
+          have "X (cotuple X \<T> a) (F f) = X (\<T> (fst a) (snd a)) (F f)"
+            using a i assms(4) by auto
+          also have "... = \<T> (fst a) (Ri.trg (snd f))"
+            using Ti.naturality1
+            by (metis In_def Ri.con_imp_eq_src Ri.ide_def Ri.src_trg Ri.trg_def
+                a comp_apply con_char ide_char prod.collapse in_sourcesE)
+          also have "... = cotuple X \<T> (resid a f)"
+            by (metis (no_types, lifting) ext Ri.resid_src_arr Ri.src_ide a arr_char
+                con_char con_imp_eq_src ide_char prfx_implies_con resid_def'
+                in_sourcesE source_is_prfx split_pairs src_char)
+          finally show ?thesis by blast
+        qed
+        show "X (F f) (cotuple X \<T> a) = G f"
+        proof -
+          have "X (F f) (cotuple X \<T> a) = X (F f) (\<T> (fst a) (snd a))"
+            using a i by auto
+          also have "... = G f"
+            by (metis In_def Ri.src_eqI Ti.naturality2 a comp_apply con_char ide_char
+                prod.exhaust_sel con_sym in_sourcesE)
+          finally show ?thesis by blast
+        qed
+        show "X.join_of (cotuple X \<T> a) (F f) (cotuple X \<T> f)"
+        proof (intro X.join_ofI X.composite_ofI conjI)
+          show "X.prfx (cotuple X \<T> a) (cotuple X \<T> f)"
+            using Ti.preserves_prfx a i prfx_char source_is_prfx by presburger
+          show "X.prfx (F f) (cotuple X \<T> f)"
+            using a i Ti.naturality3
+            apply auto[1]
+            by (metis In_def Ti.F.simulation_axioms Ti.naturality1' comp_apply con_char
+                rts.composite_ofE in_sourcesE simulation_def split_pairs)
+          show "X.prfx (X (cotuple X \<T> f) (cotuple X \<T> a)) (X (F f) (cotuple X \<T> a))"
+          proof -
+            have "X (X (cotuple X \<T> f) (cotuple X \<T> a)) (X (F f) (cotuple X \<T> a)) =
+                  X (X (\<T> (fst a) (snd f)) (\<T> (fst a) (snd a))) (X (F f) (\<T> (fst a) (snd a)))"
+              using a i by auto
+            also have "... = X (X (\<T> (fst a) (snd f)) (F f)) (X (\<T> (fst a) (snd a)) (F f))"
+              using X.cube by blast
+            also have "... = X.trg (X (\<T> (fst a) (snd f)) (F f))"
+              by (metis (no_types, lifting) F.simulation_axioms In_def Ri.con_imp_eq_src
+                  Ri.src_ide Ti.naturality1 Ti.naturality1' X.extensionality X.trg_def
+                  a comp_apply con_char ide_char rts.composite_ofE rts.in_sourcesE
+                  simulation_def split_pairs)
+            finally have "X (X (cotuple X \<T> f) (cotuple X \<T> a)) (X (F f) (cotuple X \<T> a)) =
+                          X.trg (X (\<T> (fst a) (snd f)) (F f))"
+              by blast
+            moreover have "X.ide ..."
+              using X.apex_sym \<open>X.prfx (F f) (cotuple X \<T> f)\<close> i by auto
+            ultimately show ?thesis by auto
+          qed
+          show "X.prfx (X (F f) (cotuple X \<T> a)) (X (cotuple X \<T> f) (cotuple X \<T> a))"
+            by (metis X.apex_arr_prfx\<^sub>W\<^sub>E(1) X.apex_sym X.cube X.ideE X.trg_def
+                \<open>X.prfx (F f) (cotuple X \<T> f)\<close> \<open>X.prfx (cotuple X \<T> a) (cotuple X \<T> f)\<close>)
+          show "X.prfx (X (cotuple X \<T> f) (F f)) (X (cotuple X \<T> a) (F f))"
+            by (metis X.cube \<open>X.prfx (X (cotuple X \<T> f) (cotuple X \<T> a)) (X (F f) (cotuple X \<T> a))\<close>)
+          show "X.prfx (X (cotuple X \<T> a) (F f)) (X (cotuple X \<T> f) (F f))"
+            by (metis X.apex_arr_prfx\<^sub>W\<^sub>E(2) X.cube X.ideE X.trg_def \<open>X.prfx (F f) (cotuple X \<T> f)\<close>
+                \<open>X.prfx (cotuple X \<T> a) (cotuple X \<T> f)\<close>)
+        qed
+      qed
+      show B: "\<And>i. i \<in> I \<Longrightarrow> cotuple X \<T> \<circ> In i = \<T> i"
+      proof
+        fix i x
+        assume i: "i \<in> I"
+        interpret Ti: transformation \<open>R i\<close> X \<open>F \<circ> In i\<close> \<open>G \<circ> In i\<close> \<open>\<T> i\<close>
+          using i assms(3) by blast
+        show "(cotuple X \<T> \<circ> In i) x = \<T> i x"
+        proof -
+          have "(cotuple X \<T> \<circ> In i) x = cotuple X \<T> (In i x)"
+            by simp
+          also have "... = \<T> (fst (In i x)) (snd (In i x))"
+            using assms(4) by auto
+          also have "... = \<T> i x"
+            by (metis (lifting) A In_def Ti.extensionality calculation comp_apply fst_conv
+                not_arr_null snd_conv transformation.extensionality)
+          finally show ?thesis by blast
+        qed
+      qed
+      show C: "\<And>T'. \<lbrakk>transformation resid X F G T'; \<And>i. i \<in> I \<Longrightarrow> T' \<circ> In i = \<T> i\<rbrakk>
+                       \<Longrightarrow> T' = cotuple X \<T>"
+      proof -
+        fix T'
+        assume T': "transformation resid X F G T'"
+        assume 1: "\<And>i. i \<in> I \<Longrightarrow> T' \<circ> In i = \<T> i"
+        show "T' = cotuple X \<T>"
+        proof
+          fix x
+          show "T' x = cotuple X \<T> x"
+          proof (cases "arr x")
+            show "\<not> arr x \<Longrightarrow> ?thesis"
+              by (metis T' arr_char assms(3) transformation.extensionality)
+            assume x: "arr x"
+            show ?thesis
+              by (metis (mono_tags, lifting) "1" In_def arr_char comp_apply prod.exhaust_sel x)
+          qed
+        qed
+      qed
+      show "\<exists>!T. transformation resid X F G T \<and> (\<forall>i. i \<in> I \<longrightarrow> T \<circ> In i = \<T> i)"
+        using A B C by blast
+    qed
+
+    lemma inj_joint_epic2:
+    assumes "transformation resid X F G T" and "transformation resid X F G U"
+    and "\<And>i. i \<in> I \<Longrightarrow> T \<circ> In i = U \<circ> In i"
+    shows "T = U"
+    proof
+      interpret X: weakly_extensional_rts X
+        using assms(1) transformation_def by blast
+      interpret T: transformation resid X F G T
+        using assms(1) by blast
+      interpret U: transformation resid X F G U
+        using assms(2) by blast
+      fix x
+      show "T x = U x"
+      proof (cases "arr x")
+        show "\<not> arr x \<Longrightarrow> ?thesis"
+          by (simp add: T.extensionality U.extensionality)
+        show "arr x \<Longrightarrow> ?thesis"
+          by (metis (mono_tags, lifting) In_def arr_char assms(3) comp_apply split_pairs2)
+      qed
+    qed
+
+  end
+
 section "Exponential RTS"
 
   text \<open>
@@ -4317,133 +6183,6 @@ subsubsection "Joins in an Exponential RTS"
 
   end
 
-subsection "Exponential of Small RTS's"
-
-  locale exponential_of_small_rts =
-    A: small_rts A +
-    B: small_rts B +
-    exponential_rts
-  begin
-
-    lemma small_Collect_fun:
-    shows "small {F. F ` Collect A.arr \<subseteq> Collect B.arr \<and>
-                     F ` (UNIV - Collect A.arr) \<subseteq> {B.null}}"
-    proof -
-      let ?\<F> = "{F. F ` Collect A.arr \<subseteq> Collect B.arr \<and>
-                    F ` (UNIV - Collect A.arr) \<subseteq> {B.null}}"
-      obtain \<phi> where \<phi>: "inj_on \<phi> (Collect A.arr) \<and> \<phi> ` Collect A.arr \<in> range elts"
-        using A.small small_def by metis
-      obtain \<psi> where \<psi>: "inj_on \<psi> (Collect B.arr) \<and> \<psi> ` Collect B.arr \<in> range elts"
-        using B.small small_def by metis
-      let ?graph = "\<lambda>F :: 'a \<Rightarrow> 'b. set ((\<lambda>x. vpair (\<phi> x) (\<psi> (F x))) ` Collect A.arr)"
-      have "?graph ` ?\<F> \<subseteq> elts (VPow (vtimes (set (\<phi> ` Collect A.arr))
-                                              (set (\<psi> ` Collect B.arr))))"
-        using A.small B.small small_def
-        by (simp add: image_subset_iff set_image_le_iff)
-      moreover have "inj_on ?graph ?\<F>"
-      proof (intro inj_onI)
-        fix F G
-        assume F: "F \<in> ?\<F>" and G: "G \<in> ?\<F>"
-        and eq: "?graph F = ?graph G"
-        show "F = G"
-        proof
-          fix x
-          show "F x = G x"
-          proof (cases "A.arr x")
-            show "\<not> A.arr x \<Longrightarrow> ?thesis"
-              using F G
-              by (simp add: image_subset_iff)
-            assume x: "A.arr x"
-            have "?graph F = ?graph G"
-              using eq by simp
-            hence "(\<lambda>x. vpair (\<phi> x) (\<psi> (F x))) ` Collect A.arr =
-                   (\<lambda>x. vpair (\<phi> x) (\<psi> (G x))) ` Collect A.arr"
-              using A.small by auto
-            hence "\<exists>x'. A.arr x' \<and> vpair (\<phi> x) (\<psi> (F x)) = vpair (\<phi> x') (\<psi> (G x'))"
-              using x by blast
-            hence "vpair (\<phi> x) (\<psi> (F x)) = vpair (\<phi> x) (\<psi> (G x))"
-              by (metis x \<phi> inj_onD mem_Collect_eq vpair_inject)
-            hence "\<psi> (F x) = \<psi> (G x)"
-              by blast
-            thus ?thesis
-              using x F G \<psi> inj_onD [of \<psi> "Collect B.arr" "F x" "G x"] by blast
-          qed
-        qed
-      qed
-      ultimately show ?thesis
-        by (meson down_raw small_def)
-    qed
-
-    lemma small_Collect_simulation:
-    shows "small (Collect (simulation A B))"
-    proof -
-      have "\<And>F. simulation A B F \<Longrightarrow>
-                   F ` Collect A.arr \<subseteq> Collect B.arr \<and>
-                   F ` (UNIV - Collect A.arr) \<subseteq> {B.null}"
-        apply (intro conjI)
-         apply (simp add: image_subset_iff simulation.preserves_reflects_arr)
-        using simulation.extensionality by fastforce
-      thus ?thesis
-        by (metis (no_types, lifting) Collect_mono small_Collect_fun smaller_than_small)
-    qed
-
-    lemma small_Collect_transformation:
-    assumes "simulation A B F" and "simulation A B G"
-    shows "small (Collect (transformation A B F G))"
-    proof -
-      have "\<And>\<tau>. transformation A B F G \<tau> \<Longrightarrow>
-                  \<tau> ` Collect A.arr \<subseteq> Collect B.arr \<and>
-                  \<tau> ` (UNIV - Collect A.arr) \<subseteq> {B.null}"
-        by (metis (mono_tags, lifting) DiffD2 image_subsetI mem_Collect_eq
-            singleton_iff transformation.extensionality transformation.preserves_arr)
-      thus ?thesis
-        by (metis (no_types, lifting) Collect_mono small_Collect_fun
-            smaller_than_small)
-    qed
-
-    sublocale small_rts resid
-    proof
-      have "small (\<Union>FG\<in>Collect (simulation A B) \<times> Collect (simulation A B).
-                                {FG} \<times> Collect (transformation A B (fst FG) (snd FG)))"
-      proof -
-        have "small (Collect (simulation A B) \<times> Collect (simulation A B))"
-          using small_Collect_simulation by fastforce
-        moreover
-        have "\<And>FG. FG \<in> Collect (simulation A B) \<times> Collect (simulation A B) \<Longrightarrow>
-                    small ({FG} \<times> Collect (transformation A B (fst FG) (snd FG)))"
-          using small_Collect_transformation by force
-        ultimately show ?thesis by blast
-      qed
-      moreover have "(\<lambda>t. ((Dom t, Cod t), Map t)) ` Collect arr \<subseteq>
-              (\<Union>FG\<in>Collect (simulation A B) \<times> Collect (simulation A B).
-                {FG} \<times> Collect (transformation A B (fst FG) (snd FG)))"
-      proof
-        fix T
-        assume T: "T \<in> (\<lambda>t. ((Dom t, Cod t), Map t)) ` Collect arr"
-        obtain t where t: "arr t \<and> T = ((Dom t, Cod t), Map t)"
-          using T by blast
-        have "simulation A B (Dom t) \<and> simulation A B (Cod t) \<and>
-              transformation A B (Dom t) (Cod t) (Map t)"
-          by (meson arr_char t transformation_def)
-        thus "T \<in>
-                 (\<Union>FG\<in>Collect (simulation A B) \<times> Collect (simulation A B).
-                {FG} \<times> Collect (transformation A B (fst FG) (snd FG)))"
-          using t by simp
-      qed
-      ultimately have "small ((\<lambda>t. ((Dom t, Cod t), Map t)) ` Collect arr)"
-        using smaller_than_small by blast
-      moreover have "inj_on (\<lambda>t. ((Dom t, Cod t), Map t)) (Collect arr)"
-        using not_arr_null null_char MkArr_Map
-        by (intro inj_onI) (metis fst_conv mem_Collect_eq snd_eqD)
-      ultimately show "small (Collect arr)" by auto
-    qed
-
-    lemma is_small_rts:
-    shows "small_rts resid"
-      ..
-        
-  end
-
   subsection "Exponential into RTS with Composites"
 
   locale exponential_into_rts_with_composites =
@@ -4762,31 +6501,31 @@ subsection "Exponential by One"
     lemma inverse_simulations_Dn_Up:
     shows "inverse_simulations A resid Dn Up"
     proof
-      show "Dn \<circ> Up = I A"
+      show "Dn \<circ> Up = Id A"
         using One.arr_char by auto
-      show "Up \<circ> Dn = I resid"
+      show "Up \<circ> Dn = Id resid"
       proof
         interpret UpoDown: composite_simulation resid A resid Dn Up ..
         fix t
-        show "(Up \<circ> Dn) t = I resid t"
+        show "(Up \<circ> Dn) t = Id resid t"
         proof (cases "arr t", intro arr_eqI)
-          show "\<not> arr t \<Longrightarrow> (Up \<circ> Dn) t = I resid t"
+          show "\<not> arr t \<Longrightarrow> (Up \<circ> Dn) t = Id resid t"
             by auto
           show "arr t \<Longrightarrow> arr (UpoDown.map t)" by blast
-          show "arr t \<Longrightarrow> arr (I resid t)" by simp
+          show "arr t \<Longrightarrow> arr (Id resid t)" by simp
           fix t
           assume t: "arr t"
           interpret T: transformation One.resid A \<open>Dom t\<close> \<open>Cod t\<close> \<open>Map t\<close>
             using t arr_char [of t] by blast
-          show "Dom (UpoDown.map t) = Dom (I resid t)"
+          show "Dom (UpoDown.map t) = Dom (Id resid t)"
             using t T.F.extensionality T.preserves_arr One.arr_char One.ide_char\<^sub>1\<^sub>R\<^sub>T\<^sub>S
                   T.preserves_src
             by auto
-          show "Cod (UpoDown.map t) = Cod (I resid t)"
+          show "Cod (UpoDown.map t) = Cod (Id resid t)"
             using t T.G.extensionality T.preserves_arr One.arr_char One.ide_char\<^sub>1\<^sub>R\<^sub>T\<^sub>S
                   T.preserves_trg
             by auto
-          show "\<And>a. One.ide a \<Longrightarrow> Map (UpoDown.map t) a = Map (I resid t) a"
+          show "\<And>a. One.ide a \<Longrightarrow> Map (UpoDown.map t) a = Map (Id resid t) a"
             using t T.preserves_arr One.arr_char by auto
         qed
       qed
@@ -7827,7 +9566,7 @@ subsection "Coextension of a Simulation"
     assumes "weakly_extensional_rts X"
     and "simulation X AB.resid F"
     shows "Currying.Uncurry X A B F =
-           map \<circ> (product_simulation.map X A F (I A))"
+           map \<circ> (product_simulation.map X A F (Id A))"
     proof -
       interpret X: weakly_extensional_rts X
         using assms(1) by blast
@@ -7851,7 +9590,7 @@ subsection "Coextension of a Simulation"
       interpret X: weakly_extensional_rts X
         using assms(1) by blast
       interpret XxA: product_rts X A ..
-      interpret simulation XxA.resid B G
+      interpret G: simulation XxA.resid B G
         using assms by blast
       interpret Currying X A B ..
       interpret A: identity_simulation A ..
@@ -7862,9 +9601,7 @@ subsection "Coextension of a Simulation"
       show "simulation X (\\\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]) ?F"
         using F.simulation_axioms by blast
       show "Uncurry (coext X G) = G"
-        using Uncurry_simulation_expansion Uncurry_Curry Uncurry_def
-              FxA.map_def Map_Curry map_def XxA.arr_char extensionality
-        by auto
+        using AxB_C.ide_implies_arr G.simulation_axioms Uncurry_Curry by blast
       moreover
       have "\<And>F'. simulation X AB.resid F' \<and> Uncurry F' = G \<Longrightarrow> F' = ?F"
       proof -
@@ -7892,7 +9629,7 @@ subsection "Coextension of a Simulation"
     assumes "weakly_extensional_rts X" and "weakly_extensional_rts X'"
     and "simulation X X' G"
     and "simulation (X' \<Otimes> A) B H"
-    shows "coext X' H \<circ> G  = coext X (H \<circ> product_simulation.map X A G (I A))"
+    shows "coext X' H \<circ> G  = coext X (H \<circ> product_simulation.map X A G (Id A))"
     proof -
       interpret X: weakly_extensional_rts X
         using assms(1) by blast
@@ -7954,7 +9691,7 @@ subsection "Coextension of a Simulation"
     assumes "weakly_extensional_rts X"
     and "transformation X AB.resid F G T"
     shows "Currying.Uncurry X A B T =
-           map \<circ> product_transformation.map X A AB.resid A F (I A) T (I A)"
+           map \<circ> product_transformation.map X A AB.resid A F (Id A) T (Id A)"
     proof -
       interpret X: weakly_extensional_rts X
         using assms(1) by blast
@@ -8048,7 +9785,7 @@ subsection "Coextension of a Simulation"
       interpret IA: identity_simulation A ..
       interpret IA: simulation_as_transformation A A A.map ..
       interpret T'xA: product_transformation
-                         X A AB.resid A ?F' \<open>I A\<close> ?G' \<open>I A\<close> ?T' \<open>I A\<close> ..
+                         X A AB.resid A ?F' \<open>Id A\<close> ?G' \<open>Id A\<close> ?T' \<open>Id A\<close> ..
 
       show "transformation X AB.resid ?F' ?G' ?T'" ..
       moreover show "Uncurry (Curry F G T) = T"
@@ -8288,7 +10025,7 @@ subsection "Coextension of a Simulation"
         interpret T'': transformation X AB.resid \<open>coext X F\<close> \<open>coext X G\<close> T''
           using T'' by blast
         interpret T''xA: product_transformation X A AB.resid A
-                           \<open>coext X F\<close> \<open>I A\<close> \<open>coext X G\<close> \<open>I A\<close> T'' \<open>I A\<close> ..
+                           \<open>coext X F\<close> \<open>Id A\<close> \<open>coext X G\<close> \<open>Id A\<close> T'' \<open>Id A\<close> ..
         show "T'' = ?T'"
         proof (intro transformation_eqI)
           show "transformation X (\\\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]) (coext X F) (coext X G) T''"
@@ -8708,7 +10445,7 @@ subsection "Functoriality of Exponential"
 
   lemma cov_Exp_ide:
   assumes "extensional_rts X" and "extensional_rts B"
-  shows "Exp\<^sup>\<rightarrow> X B B (I B) = I (exponential_rts.resid X B)"
+  shows "Exp\<^sup>\<rightarrow> X B B (Id B) = Id (exponential_rts.resid X B)"
   proof -
     interpret X: extensional_rts X
       using assms(1) by blast
@@ -8757,7 +10494,7 @@ subsection "Functoriality of Exponential"
 
   lemma cnt_Exp_ide:
   assumes "extensional_rts X" and "extensional_rts B"
-  shows "Exp\<^sup>\<leftarrow> B B X (I B) = I (exponential_rts.resid B X)"
+  shows "Exp\<^sup>\<leftarrow> B B X (Id B) = Id (exponential_rts.resid B X)"
   proof -
     interpret X: extensional_rts X
       using assms(1) by blast
@@ -8778,7 +10515,7 @@ subsection "Functoriality of Exponential"
     show ?thesis
     proof
       fix t1
-      show "COMP.map B B X (t1, BB.MkIde (I B)) = I_BX.map t1"
+      show "COMP.map B B X (t1, BB.MkIde (Id B)) = I_BX.map t1"
       proof (cases "BX.arr t1")
         show "\<not> BX.arr t1 \<Longrightarrow> ?thesis"
           using BX.extensionality [of t1] BX.extensionality [of t1] by presburger

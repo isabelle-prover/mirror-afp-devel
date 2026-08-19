@@ -3,32 +3,32 @@
     Maintainer:  Eugene W. Stark <stark@cs.stonybrook.edu>
 *)
 
-theory Preliminaries
+theory RTS2_Preliminaries
 imports Main "HOL-Library.FuncSet"
         ResiduatedTransitionSystem.ResiduatedTransitionSystem
 begin
 
 section "Simulations"
 
-  abbreviation I
-  where "I \<equiv> identity_simulation.map"
+  abbreviation Id
+  where "Id \<equiv> identity_simulation.map"
 
   lemma comp_identity_simulation:
   assumes "simulation A B F"
-  shows "I B \<circ> F = F"
+  shows "Id B \<circ> F = F"
     using assms simulation.extensionality simulation.preserves_reflects_arr
     by fastforce
 
   lemma comp_simulation_identity:
   assumes "simulation A B F"
-  shows "F \<circ> I A = F"
+  shows "F \<circ> Id A = F"
     using assms residuation.not_arr_null rts.axioms(1) simulation.extensionality
       simulation_def
     by fastforce
 
   lemma product_identity_simulation:
   assumes "rts A" and "rts B"
-  shows "product_simulation.map A B (I A) (I B) = I (product_rts.resid A B)"
+  shows "product_simulation.map A B (Id A) (Id B) = Id (product_rts.resid A B)"
   proof -
     interpret A: rts A
       using assms(1) by blast
@@ -78,8 +78,8 @@ section "Simulations"
   and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'b \<Rightarrow> 'a"
   and G :: "'a \<Rightarrow> 'b" +
-  assumes inv: "G o F = I B"
-  and inv': "F o G = I A"
+  assumes inv: "G o F = Id B"
+  and inv': "F o G = Id A"
   begin
 
     lemma inv_simp [simp]:
@@ -243,18 +243,18 @@ section "Simulations"
     qed
     interpret FG: inverse_simulations A B ?G F
     proof
-      show "F \<circ> ?G = I B"
+      show "F \<circ> ?G = Id B"
       proof
         fix t
-        show "(F \<circ> ?G) t = I B t"
+        show "(F \<circ> ?G) t = Id B t"
           apply simp
           by (metis F F.A.not_arr_null bij_betw_def f_inv_into_f mem_Collect_eq
               simulation.extensionality)
       qed
-      show "?G \<circ> F = I A"
+      show "?G \<circ> F = Id A"
       proof
         fix t
-        show "(?G \<circ> F) t = I A t"
+        show "(?G \<circ> F) t = Id A t"
           apply simp
           by (metis F F.preserves_reflects_arr bij_betw_def inv_into_f_f mem_Collect_eq)
       qed
@@ -316,7 +316,7 @@ section "Simulations"
     definition map
     where "map \<equiv> SOME G. inverse_simulations A B G F"
 
-    interpretation inverse_simulations A B map F
+    interpretation GF: inverse_simulations A B map F
       using F.invertible invertible_simulation_def map_def
             someI_ex [of "\<lambda>G. inverse_simulations A B G F"]
       by auto
@@ -333,12 +333,12 @@ section "Simulations"
     assumes "B.arr x"
     shows "map x = inv_into (Collect A.arr) F x"
       by (metis CollectI F.preserves_reflects_arr assms bij_betw_inv_into_left
-          inv_simp inverse_simulations.induce_bij_betw_arr_sets
-          inverse_simulations_axioms inverse_simulations_sym)
+          GF.inv_simp inverse_simulations.induce_bij_betw_arr_sets
+          GF.inverse_simulations_axioms inverse_simulations_sym)
 
     lemma map_eq:
     shows "map = (\<lambda>x. if B.arr x then inv_into (Collect A.arr) F x else A.null)"
-      using map_simp by (meson F.extensionality)
+      using map_simp by (meson GF.F.extensionality)
 
   end
 
@@ -355,9 +355,9 @@ section "Simulations"
 
   lemma invertible_simulation_identity:
   assumes "rts A"
-  shows [intro]: "invertible_simulation A A (I A)"
-  and "inverse_simulations A A (I A) (I A)"
-  and "inverse_simulation.map A A (I A) = I A"
+  shows [intro]: "invertible_simulation A A (Id A)"
+  and "inverse_simulations A A (Id A) (Id A)"
+  and "inverse_simulation.map A A (Id A) = Id A"
   proof -
     interpret A: rts A
       using assms by blast
@@ -386,10 +386,10 @@ section "Simulations"
     interpret F'oG': composite_simulation C B A G' F' ..
     show ?thesis
     proof
-      show "GoF.map \<circ> F'oG'.map = I C"
+      show "GoF.map \<circ> F'oG'.map = Id C"
         by (metis FF'.inv GG'.F.extensionality GG'.F.preserves_reflects_arr
             GG'.inv comp_def)
-      show "F'oG'.map \<circ> GoF.map = I A"
+      show "F'oG'.map \<circ> GoF.map = Id A"
         by (metis FF'.A.not_arr_null FF'.G.preserves_reflects_arr FF'.inv
             FF'.inv' GG'.inv' comp_apply)
     qed
@@ -470,24 +470,9 @@ section "Simulations"
     interpret FxG: product_simulation A C B D F G ..
     interpret F'xG': product_simulation B D A C F'.map G'.map ..
     interpret inverse_simulations AxC.resid BxD.resid F'xG'.map FxG.map
-    proof
-      show "FxG.map \<circ> F'xG'.map = I BxD.resid"
-      proof
-        fix t
-        show "(FxG.map \<circ> F'xG'.map) t = I BxD.resid t"
-          using F'.inv G'.inv FxG.map_def F'xG'.map_def
-                F.extensionality G.extensionality
-          by auto
-      qed
-      show "F'xG'.map \<circ> FxG.map = I AxC.resid"
-      proof
-        fix t
-        show "(F'xG'.map \<circ> FxG.map) t = I AxC.resid t"
-          using F'.inv' G'.inv' FxG.map_def F'xG'.map_def
-                F'.extensionality G'.extensionality
-          by auto
-      qed
-    qed
+      using F'.inv G'.inv FxG.map_def F'xG'.map_def F.extensionality G.extensionality
+            F'.extensionality G'.extensionality
+      by unfold_locales auto
     show "inverse_simulations AxC.resid BxD.resid F'xG'.map FxG.map" ..
     show "invertible_simulation AxC.resid BxD.resid FxG.map"
       using inverse_simulations_axioms
@@ -684,6 +669,12 @@ section "Transformations"
             respects_cong_ide)
     qed
 
+    lemma preserves_trg\<^sub>E:
+    assumes "A.arr x"
+    shows "B.trg (\<tau> x) = G (A.trg x)"
+      using assms
+      by (metis B.trg_composite_of G.preserves_trg naturality2')
+
     (*
      * TODO: Does this hold more generally?  I didn't immediately see how to generalize
      * the proof.
@@ -729,6 +720,12 @@ section "Transformations"
       ultimately show ?thesis by simp
     qed
 
+    lemma is_simulation_if:
+    assumes "\<And>a. A.ide a \<Longrightarrow> B.ide (\<tau> a)"
+    shows "simulation A B \<tau>"
+      by (metis (lifting) HOL.ext A.ide_trg B.join_prfx(1) F.extensionality
+          F.simulation_axioms assms extensionality naturality1 naturality3'\<^sub>E(1))
+
   end
 
   (*
@@ -741,7 +738,7 @@ section "Transformations"
 
   locale transformation_by_components =
     A: rts A +
-    B: extensional_rts B + 
+    B: extensional_rts B +
     F: simulation A B F +
     G: simulation A B G
   for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 55)
@@ -814,13 +811,13 @@ section "Transformations"
 
   lemma comp_identity_transformation:
   assumes "transformation A B F G T"
-  shows "I B \<circ> T = T"
+  shows "Id B \<circ> T = T"
     using assms transformation.extensionality transformation.preserves_arr
     by fastforce
 
   lemma comp_transformation_identity:
   assumes "transformation A B F G T"
-  shows "T \<circ> I A = T"
+  shows "T \<circ> Id A = T"
     using assms residuation.not_arr_null rts_def transformation.extensionality
           transformation_def
     by fastforce
@@ -881,8 +878,17 @@ section "Transformations"
       by auto (meson B.ide_backward_stable B.weak_extensionality preserves_ide
           preserves_prfx)
 
+    lemma is_transformation:
+    shows "transformation A B F F F"
+      ..
+
     sublocale identity_transformation A B F F F
       by unfold_locales auto
+
+    lemma components_are_identities:
+    assumes "A.ide a"
+    shows "B.ide (F a)"
+      using assms identity by blast
 
   end
 

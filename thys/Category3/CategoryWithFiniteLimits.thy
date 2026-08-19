@@ -313,7 +313,7 @@ begin
             qed
             show "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> dom e0\<guillemotright> \<and> D.cones_map f (D.mkCone e0) = \<chi>'"
             proof
-              define f where "f = ECP.tuple (\<chi>' J.Zero) ?g1 ?g0 (\<chi>' J.Zero)"
+              define f where "f = ECP.pbtuple (\<chi>' J.Zero) ?g1 ?g0 (\<chi>' J.Zero)"
               have 4: "e0 \<cdot> f = \<chi>' J.Zero"
                 using ECP.universal by (simp add: "3" e1_def eq f_def)
               have f: "\<guillemotleft>f : a' \<rightarrow> dom e0\<guillemotright>"
@@ -321,7 +321,7 @@ begin
                 have "a' = dom (\<chi>' J.Zero)"
                   by (simp add: J.arr_char)
                 thus ?thesis
-                  using 3 f_def e0_def g0 g1 ECP.tuple_in_hom ECP.pbdom_def by simp
+                  using 3 f_def e0_def g0 g1 ECP.pbtuple_in_hom ECP.pbdom_def by simp
               qed
               moreover have 5: "D.cones_map f (D.mkCone e0) = \<chi>'"
               proof -

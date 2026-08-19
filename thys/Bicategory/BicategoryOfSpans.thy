@@ -783,7 +783,7 @@ $$
                                            Chn \<a>[r, f, w] \<cdot> Chn (\<rho> \<star> w) \<cdot> Chn \<nu>"
                         proof -
                           have "?p0 \<cdot> Chn (r \<star> \<theta>) = \<theta>.chine \<cdot> \<p>\<^sub>0[r0, r0 \<cdot> ?q1]"
-                            by (metis C.prj_tuple(1) Chn_r\<theta> \<theta>_def arrI Dom_\<theta>_leg1_eq
+                            by (metis C.prj_pbtuple(1) Chn_r\<theta> \<theta>_def arrI Dom_\<theta>_leg1_eq
                                 arrow_of_spans_data.select_convs(3) chine_hcomp_props(2)
                                 hseq_char r.cod_simps(2) r\<theta> u.cod_simps(3))
                           thus ?thesis by argo
@@ -798,8 +798,8 @@ $$
                           have "rfw.Prj\<^sub>0 \<cdot> Chn (\<rho> \<star> w) = \<p>\<^sub>0[k0, ?w1] \<cdot> \<langle>?\<rho> \<cdot> ?q1 \<lbrakk>k0, ?w1\<rbrakk> ?\<nu>'\<rangle>"
                             using w_def Chn_\<rho>w C.comp_cod_arr by simp
                           also have "... = ?\<nu>'"
-                            by (metis (no_types, lifting) C.not_arr_null C.prj_tuple(1) C.seqE
-                                C.tuple_extensionality Chn_\<rho>w 4)
+                            by (metis (no_types, lifting) C.not_arr_null C.prj_pbtuple(1) C.seqE
+                                C.pbtuple_extensionality Chn_\<rho>w 4)
                           finally have "rfw.Prj\<^sub>0 \<cdot> Chn (\<rho> \<star> w) = ?\<nu>'"
                             by blast
                           thus ?thesis by simp
@@ -817,8 +817,8 @@ $$
                           using C.comp_assoc by simp
                         also have "... = (r.chine \<cdot> \<p>\<^sub>1[r0, r0 \<cdot> ?q1]) \<cdot> Chn \<a>[r, f, w] \<cdot>
                                            Chn (\<rho> \<star> w) \<cdot> Chn \<nu>"
-                          by (metis (no_types, lifting) C.not_arr_null C.prj_tuple(2) C.seqE
-                              C.tuple_extensionality Chn_r\<theta> 4)
+                          by (metis (no_types, lifting) C.not_arr_null C.prj_pbtuple(2) C.seqE
+                              C.pbtuple_extensionality Chn_r\<theta> 4)
                         also have "... = r.chine \<cdot> (rfw.Prj\<^sub>1 \<cdot> Chn \<a>[r, f, w]) \<cdot> Chn (\<rho> \<star> w) \<cdot> Chn \<nu>"
                           using w_def Dom_\<theta>_leg1_eq C.comp_assoc by simp
                         also have "... = r.chine \<cdot> (rfw.Prj\<^sub>1\<^sub>1 \<cdot> Chn (\<rho> \<star> w)) \<cdot> Chn \<nu>"
@@ -831,8 +831,8 @@ $$
                           also have "... = k1 \<cdot> \<p>\<^sub>1[k0, ?w1] \<cdot> \<langle>?\<rho> \<cdot> ?q1 \<lbrakk>k0, ?w1\<rbrakk> ?\<nu>'\<rangle>"
                             using C.comp_assoc by simp
                           also have "... = k1 \<cdot> ?\<rho> \<cdot> ?q1"
-                            by (metis (no_types, lifting) C.not_arr_null C.prj_tuple(2)
-                                C.seqE C.tuple_extensionality Chn_\<rho>w 4)
+                            by (metis (no_types, lifting) C.not_arr_null C.prj_pbtuple(2)
+                                C.seqE C.pbtuple_extensionality Chn_\<rho>w 4)
                           also have "... = (k1 \<cdot> ?\<rho>) \<cdot> ?q1"
                             using C.comp_assoc by presburger
                           also have "... = ?R \<cdot> ?q1"
@@ -1149,7 +1149,7 @@ $$
               hence "C.commutative_square r0 ?u1 \<p>\<^sub>1[r0, r0 \<cdot> ?p1] (\<theta>.chine \<cdot> \<p>\<^sub>0[r0, r0 \<cdot> ?p1])"
                 using fw.leg1_composite by auto
               have "C.commutative_square r0 ?u1 \<p>\<^sub>1[r0, r0 \<cdot> ?p1'] (\<theta>'.chine \<cdot> \<p>\<^sub>0[r0, r0 \<cdot> ?p1'])"
-                using C.tuple_extensionality Chn_r\<theta>'_eq r\<theta>'.chine_simps(1) fw' by force
+                using C.pbtuple_extensionality Chn_r\<theta>'_eq r\<theta>'.chine_simps(1) fw' by force
               have "C.commutative_square ra ?w1 rfw.Prj\<^sub>0\<^sub>1 rfw.Prj\<^sub>0"
                 using C.pullback_commutes' gw.legs_form_cospan(1) rfw.prj_simps(2) C.comp_assoc
                       C.comp_cod_arr
@@ -1164,18 +1164,18 @@ $$
                 have "C.arr rfw.chine_assoc"
                   by (metis C.seqE rfw.prj_chine_assoc(1) rfw.prj_simps(1))
                 thus ?thesis
-                  using C.tuple_extensionality rfw.chine_assoc_def by fastforce
+                  using C.pbtuple_extensionality rfw.chine_assoc_def by fastforce
               qed
               have "C.commutative_square r0 (r0 \<cdot> ?p1') rfw'.Prj\<^sub>1\<^sub>1 \<langle>rfw'.Prj\<^sub>0\<^sub>1 \<lbrakk>ra, ?w1'\<rbrakk> rfw'.Prj\<^sub>0\<rangle>"
-                by (metis (no_types, lifting) C.not_arr_null C.seqE C.tuple_extensionality
+                by (metis (no_types, lifting) C.not_arr_null C.seqE C.pbtuple_extensionality
                     arrow_of_spans_data.select_convs(2) rfw'.chine_assoc_def
                     rfw'.prj_chine_assoc(1) rfw'.prj_simps(1) span_data.select_convs(1-2))
               have "C.commutative_square k0 ?w1 (\<rho>.chine \<cdot> ?p1) ?p0"
-                using C.tuple_extensionality Chn_\<rho>w_eq \<rho>w.chine_simps(1) by fastforce
+                using C.pbtuple_extensionality Chn_\<rho>w_eq \<rho>w.chine_simps(1) by fastforce
               have "C.commutative_square k0 ?w1' (\<rho>.chine \<cdot> ?p1') (w'.chine \<cdot> ?p0')"
-                using C.tuple_extensionality \<rho>w'.chine_composite \<rho>w'.chine_simps(1) by force
+                using C.pbtuple_extensionality \<rho>w'.chine_composite \<rho>w'.chine_simps(1) by force
               have "C.commutative_square k0 ?w1' (\<rho>.chine \<cdot> ?p1') ?p0'"
-                using C.tuple_extensionality Chn_\<rho>w'_eq \<rho>w'.chine_simps(1) by force
+                using C.pbtuple_extensionality Chn_\<rho>w'_eq \<rho>w'.chine_simps(1) by force
               text \<open>
                 Now, derive the consequences of the equation:
                 \[
@@ -1237,7 +1237,7 @@ $$
                     by fact
                   have RHS: "\<guillemotleft>?RHS : ?R \<down>\<down> ?w1 \<rightarrow>\<^sub>C r\<theta>'.cod.apex\<guillemotright>"
                     using 2 Chn_\<beta> r\<theta>'_cod_apex_eq
-                          C.tuple_in_hom [of r0 ?u1 "?p1' \<cdot> \<beta>.chine" "\<theta>'.chine \<cdot> \<beta>.chine"]
+                          C.pbtuple_in_hom [of r0 ?u1 "?p1' \<cdot> \<beta>.chine" "\<theta>'.chine \<cdot> \<beta>.chine"]
                     by fastforce
 
                   show ?thesis
@@ -1265,7 +1265,7 @@ $$
                       also have "... = \<theta>'.chine \<cdot> (\<langle>rfw'.Prj\<^sub>0\<^sub>1 \<lbrakk>?R, ?w1'\<rbrakk> rfw'.Prj\<^sub>0\<rangle> \<cdot> \<rho>w'.chine) \<cdot>
                                          \<beta>.chine"
                         using ide_f hseq_rf hseq_char \<alpha>_ide C.comp_assoc
-                              rfw'.chine_assoc_def fw'.leg1_composite C.prj_tuple(1)
+                              rfw'.chine_assoc_def fw'.leg1_composite C.prj_pbtuple(1)
                               \<open>C.commutative_square r0 (r0 \<cdot> ?p1')
                                  rfw'.Prj\<^sub>1\<^sub>1 \<langle>rfw'.Prj\<^sub>0\<^sub>1 \<lbrakk>?R, ?w1'\<rbrakk> rfw'.Prj\<^sub>0\<rangle>\<close>
                         by simp
@@ -1284,7 +1284,7 @@ $$
                             show "\<guillemotleft>\<langle>rfw'.Prj\<^sub>0\<^sub>1 \<lbrakk>?R, w'.leg1\<rbrakk> rfw'.Prj\<^sub>0\<rangle> :
                                       Cod_\<rho>.leg0 \<down>\<down> w'.cod.leg1 \<rightarrow>\<^sub>C ?R \<down>\<down> w'.leg1\<guillemotright>"
                               using \<open>C.commutative_square ?R ?w1' rfw'.Prj\<^sub>0\<^sub>1 rfw'.Prj\<^sub>0\<close>
-                                    C.tuple_in_hom [of ?R ?w1' rfw'.Prj\<^sub>0\<^sub>1 rfw'.Prj\<^sub>0]
+                                    C.pbtuple_in_hom [of ?R ?w1' rfw'.Prj\<^sub>0\<^sub>1 rfw'.Prj\<^sub>0]
                                     rf rf.leg0_composite
                               by auto
                             show "\<guillemotleft>?p1' : ?R \<down>\<down> w'.leg1 \<rightarrow>\<^sub>C f.apex\<guillemotright>"
@@ -1343,7 +1343,7 @@ $$
                           using Chn_\<beta> C.comp_cod_arr gw'.apex_composite by auto
                       qed
                       also have "... = \<p>\<^sub>0[r0, ?u1] \<cdot> ?RHS"
-                        using RHS 2 C.prj_tuple [of r0 ?u1] by simp
+                        using RHS 2 C.prj_pbtuple [of r0 ?u1] by simp
                       finally show ?thesis by simp
                     qed
                     show "ru.prj\<^sub>1 \<cdot> ?LHS = ru.prj\<^sub>1 \<cdot> ?RHS"
@@ -1402,7 +1402,7 @@ $$
                         arrow_of_spans_data.simps(2) calculation gw.chine_composite
                         r\<theta>_cod_apex_eq ru.chine_composite)
                   have RHS: "\<guillemotleft>?RHS : ?R \<down>\<down> ?w1 \<rightarrow>\<^sub>C r0 \<down>\<down> ?u1\<guillemotright>"
-                    using 2 C.tuple_in_hom [of r0 ?u1 "?p1" \<theta>.chine] cospan r\<theta>_cod_apex_eq
+                    using 2 C.pbtuple_in_hom [of r0 ?u1 "?p1" \<theta>.chine] cospan r\<theta>_cod_apex_eq
                     by simp
                   show ?thesis
                   proof (intro C.prj_joint_monic [of r0 ?u1 ?LHS ?RHS])
@@ -1450,7 +1450,7 @@ $$
                                   \<open>C.commutative_square ?R ?w1 rfw.Prj\<^sub>0\<^sub>1 rfw.Prj\<^sub>0\<close>)
                             thus ?thesis
                               using \<open>C.commutative_square ?R ?w1 rfw.Prj\<^sub>0\<^sub>1 rfw.Prj\<^sub>0\<close>
-                              by (metis (no_types) C.comp_assoc C.prj_tuple(2))
+                              by (metis (no_types) C.comp_assoc C.prj_pbtuple(2))
                           qed
                           show "C.seq ?p1 (?R \<down>\<down> ?w1)"
                             using gw.dom.apex_def gw.leg0_composite gw.prj_in_hom by auto
@@ -1466,7 +1466,7 @@ $$
                               using Chn_\<rho>w_eq C.comp_cod_arr by simp
                             also have "... = ?p0"
                               using \<open>C.commutative_square k0 ?w1 (\<rho>.chine \<cdot> ?p1) ?p0\<close>
-                                    C.prj_tuple(1)
+                                    C.prj_pbtuple(1)
                               by blast
                             also have "... = ?p0 \<cdot> (?R \<down>\<down> ?w1)"
                               using C.comp_arr_dom gw.chine_eq_apex gw.chine_is_identity
@@ -1515,7 +1515,7 @@ $$
                         have "r\<theta>.chine \<noteq> C.null \<Longrightarrow>
                                 \<p>\<^sub>1[r.cod.leg0, Cod_\<theta>.leg1] \<cdot> r\<theta>.chine =
                                 r.chine \<cdot> \<p>\<^sub>1[r0, Dom_\<theta>.leg1]"
-                          by (metis (lifting) C.prj_tuple(2) C.tuple_extensionality r.cod_simps(2)
+                          by (metis (lifting) C.prj_pbtuple(2) C.pbtuple_extensionality r.cod_simps(2)
                               r\<theta>.chine_composite)
                         thus ?thesis
                           using Cod_\<theta>_1 Dom_\<theta>_1 r\<theta>.chine_simps(1) fw by fastforce
@@ -1565,12 +1565,12 @@ $$
               have *: "\<langle>?p1' \<cdot> \<beta>.chine \<lbrakk>r0, ?u1\<rbrakk> \<theta>'.chine \<cdot> \<beta>.chine\<rangle> = \<langle>?p1 \<lbrakk>r0, ?u1\<rbrakk> \<theta>.chine\<rangle>"
                 using L R E by simp
               have **: "?p1' \<cdot> \<beta>.chine = ?p1"
-                by (metis "*" C.in_homE C.not_arr_null C.prj_tuple(2) C.tuple_in_hom
-                    C.tuple_extensionality
+                by (metis "*" C.in_homE C.not_arr_null C.prj_pbtuple(2) C.pbtuple_in_hom
+                    C.pbtuple_extensionality
                     \<open>C.commutative_square r0 u.leg1
                        (\<p>\<^sub>1[ra, w'.leg1] \<cdot> \<beta>.chine) (\<theta>'.chine \<cdot> \<beta>.chine)\<close>)
               have ***: "\<theta>'.chine \<cdot> \<beta>.chine = \<theta>.chine"
-                by (metis "*" C.prj_tuple(1) \<open>C.commutative_square r0 ?u1
+                by (metis "*" C.prj_pbtuple(1) \<open>C.commutative_square r0 ?u1
                     (?p1' \<cdot> \<beta>.chine) (\<theta>'.chine \<cdot> \<beta>.chine)\<close>
                     \<open>C.commutative_square r0 ?u1 ?p1 \<theta>.chine\<close>)
               text \<open>
@@ -1678,7 +1678,7 @@ $$
                 ultimately show ?thesis by simp
               qed
               have Chn_\<beta>_eq: "\<beta>.chine = Chn (g \<star> ?\<gamma>)"
-                by (metis "**" C.span_prj C.tuple_prj Chn_g\<gamma> cospan cospan')
+                by (metis "**" C.span_prj C.pbtuple_prj Chn_g\<gamma> cospan cospan')
               have \<beta>_eq_g\<gamma>: "\<beta> = g \<star> ?\<gamma>"
               proof (intro arr_eqI)
                 show "par \<beta> (g \<star> ?\<gamma>)"
@@ -8382,9 +8382,9 @@ $$
     qed
 
     lemma CLS_chine:
-    shows "\<lbrakk>\<lbrakk>chine\<rbrakk>\<rbrakk> = Maps.tuple \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
+    shows "\<lbrakk>\<lbrakk>chine\<rbrakk>\<rbrakk> = Maps.pbtuple \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
     proof -
-      let ?T = "Maps.tuple \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
+      let ?T = "Maps.pbtuple \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
       have "\<exists>!l. \<lbrakk>\<lbrakk>t\<^sub>0u\<^sub>1.p\<^sub>1\<rbrakk>\<rbrakk> \<odot> l = \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<and> \<lbrakk>\<lbrakk>t\<^sub>0u\<^sub>1.p\<^sub>0\<rbrakk>\<rbrakk> \<odot> l = \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
         using csq \<tau>\<mu>.prj_char
               Maps.universal [of "\<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"]
@@ -8392,7 +8392,7 @@ $$
       moreover have "\<lbrakk>\<lbrakk>\<tau>\<mu>.p\<^sub>1\<rbrakk>\<rbrakk> \<odot> ?T = \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<and>
                      \<lbrakk>\<lbrakk>\<tau>\<mu>.p\<^sub>0\<rbrakk>\<rbrakk> \<odot> ?T = \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
         using csq \<tau>\<mu>.prj_char
-              Maps.prj_tuple [of "\<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"]
+              Maps.prj_pbtuple [of "\<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>" "\<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"]
         by simp
       moreover have "\<lbrakk>\<lbrakk>t\<^sub>0u\<^sub>1.p\<^sub>1\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>chine\<rbrakk>\<rbrakk> = \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> \<and>
                      \<lbrakk>\<lbrakk>t\<^sub>0u\<^sub>1.p\<^sub>0\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>chine\<rbrakk>\<rbrakk> = \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
@@ -10115,7 +10115,7 @@ $$
                   have "Maps.Map ?Chn_LHS =
                            Maps.Comp \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk>
                                      (Maps.Map
-                                       (Maps.tuple (Maps.CLS (spn ?\<mu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1))
+                                       (Maps.pbtuple (Maps.CLS (spn ?\<mu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1))
                                                    (Maps.CLS (tab\<^sub>0 (cod ?\<mu>)))
                                                    (Maps.CLS (tab\<^sub>1 (cod ?\<nu>)))
                                                    (Maps.CLS (spn ?\<nu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0))))"
@@ -10131,7 +10131,7 @@ $$
                                   "Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>)"]
                       by simp
                     moreover have "Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>) =
-                                   Maps.tuple
+                                   Maps.pbtuple
                                      (Maps.CLS (spn ?\<mu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1))
                                       (Maps.CLS (tab\<^sub>0 (cod ?\<mu>)))
                                       (Maps.CLS (tab\<^sub>1 (cod ?\<nu>)))
@@ -10203,7 +10203,7 @@ $$
                   qed
                   also have "... = Maps.Comp \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk> \<lbrakk>\<mu>_\<nu>.chine\<rbrakk>"
                   proof -
-                    let ?tuple = "Maps.tuple \<lbrakk>\<lbrakk>spn (fst \<mu>\<nu>) \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>
+                    let ?tuple = "Maps.pbtuple \<lbrakk>\<lbrakk>spn (fst \<mu>\<nu>) \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>
                                                \<lbrakk>\<lbrakk>tab\<^sub>0 (cod ?\<mu>)\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 (cod ?\<nu>)\<rbrakk>\<rbrakk>
                                              \<lbrakk>\<lbrakk>spn (snd \<mu>\<nu>) \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
                     have "iso_class \<mu>_\<nu>.chine = Maps.Map ?tuple"
@@ -10729,7 +10729,7 @@ $$
       moreover have "Span.chine_hcomp (CMP f g) (SPN h) = \<lbrakk>\<lbrakk>TTfgh_THfgh.chine\<rbrakk>\<rbrakk>"
       proof -
         have "Span.chine_hcomp (CMP f g) (SPN h) =
-              Maps.tuple
+              Maps.pbtuple
                 (\<lbrakk>\<lbrakk>Tfg.cmp\<rbrakk>\<rbrakk> \<odot> Maps.PRJ\<^sub>1 \<lbrakk>\<lbrakk>tab\<^sub>0 g \<star> Tfg.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>)
                    \<lbrakk>\<lbrakk>tab\<^sub>0 (f \<star> g)\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>
                 (\<lbrakk>\<lbrakk>spn h\<rbrakk>\<rbrakk> \<odot> Maps.PRJ\<^sub>0 \<lbrakk>\<lbrakk>tab\<^sub>0 g \<star> Tfg.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>)"
@@ -10774,12 +10774,12 @@ $$
         also have "... = \<lbrakk>\<lbrakk>TTfgh_THfgh.chine\<rbrakk>\<rbrakk>"
         proof -
           have "\<lbrakk>\<lbrakk>TTfgh_THfgh.chine\<rbrakk>\<rbrakk> =
-                Maps.tuple \<lbrakk>\<lbrakk>Tfg_Hfg.chine \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>
+                Maps.pbtuple \<lbrakk>\<lbrakk>Tfg_Hfg.chine \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>
                              \<lbrakk>\<lbrakk>tab\<^sub>0 (f \<star> g)\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>
                            \<lbrakk>\<lbrakk>h.chine \<star> TTfgh.p\<^sub>0\<rbrakk>\<rbrakk>"
             using TTfgh_THfgh.CLS_chine by simp
           also have "... =
-                     Maps.tuple (\<lbrakk>\<lbrakk>Tfg_Hfg.chine\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>)
+                     Maps.pbtuple (\<lbrakk>\<lbrakk>Tfg_Hfg.chine\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>)
                                   \<lbrakk>\<lbrakk>tab\<^sub>0 (f \<star> g)\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>
                                 (\<lbrakk>\<lbrakk>h.chine\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>TTfgh.p\<^sub>0\<rbrakk>\<rbrakk>)"
           proof -
@@ -10809,7 +10809,7 @@ $$
             ultimately show ?thesis by argo
           qed
           also have "... =
-                     Maps.tuple (\<lbrakk>\<lbrakk>Tfg.cmp\<rbrakk>\<rbrakk> \<odot> Maps.PRJ\<^sub>1 \<lbrakk>\<lbrakk>tab\<^sub>0 g \<star> Tfg.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>)
+                     Maps.pbtuple (\<lbrakk>\<lbrakk>Tfg.cmp\<rbrakk>\<rbrakk> \<odot> Maps.PRJ\<^sub>1 \<lbrakk>\<lbrakk>tab\<^sub>0 g \<star> Tfg.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>)
                                   \<lbrakk>\<lbrakk>tab\<^sub>0 (f \<star> g)\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>
                                 (\<lbrakk>\<lbrakk>spn h\<rbrakk>\<rbrakk> \<odot> Maps.PRJ\<^sub>0 \<lbrakk>\<lbrakk>tab\<^sub>0 g \<star> Tfg.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>)"
             using Tfg.cmp_def spn_def TTfgh.prj_char by simp
@@ -10821,19 +10821,19 @@ $$
     qed
 
     abbreviation tuple_BC
-    where "tuple_BC \<equiv> Maps.tuple SPN_fgh.Prj\<^sub>0\<^sub>1 SPN_fgh.\<nu>.leg0 SPN_fgh.\<pi>.leg1 SPN_fgh.Prj\<^sub>0"
+    where "tuple_BC \<equiv> Maps.pbtuple SPN_fgh.Prj\<^sub>0\<^sub>1 SPN_fgh.\<nu>.leg0 SPN_fgh.\<pi>.leg1 SPN_fgh.Prj\<^sub>0"
 
     abbreviation tuple_ABC
-    where "tuple_ABC \<equiv> Maps.tuple SPN_fgh.Prj\<^sub>1\<^sub>1
+    where "tuple_ABC \<equiv> Maps.pbtuple SPN_fgh.Prj\<^sub>1\<^sub>1
                                     SPN_fgh.\<mu>.leg0
                                     (SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1)
                                   tuple_BC"
 
     abbreviation tuple_BC'
-    where "tuple_BC' \<equiv> Maps.tuple \<lbrakk>\<lbrakk>Tfg.\<rho>\<sigma>.p\<^sub>0 \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>0 g\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>TTfgh.p\<^sub>0\<rbrakk>\<rbrakk>"
+    where "tuple_BC' \<equiv> Maps.pbtuple \<lbrakk>\<lbrakk>Tfg.\<rho>\<sigma>.p\<^sub>0 \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>0 g\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>TTfgh.p\<^sub>0\<rbrakk>\<rbrakk>"
 
     abbreviation tuple_ABC'
-    where "tuple_ABC' \<equiv> Maps.tuple \<lbrakk>\<lbrakk>Tfg.\<rho>\<sigma>.p\<^sub>1 \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>
+    where "tuple_ABC' \<equiv> Maps.pbtuple \<lbrakk>\<lbrakk>Tfg.\<rho>\<sigma>.p\<^sub>1 \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>
                                       \<lbrakk>\<lbrakk>tab\<^sub>0 f\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 g \<star> Tgh.\<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>
                                    tuple_BC'"
 
@@ -10865,13 +10865,13 @@ $$
         show "Maps.cospan SPN_fgh.\<mu>.leg0 (SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1)"
           using fg gh SPN_fgh.prj_simps(10) by blast
         show "Maps.span SPN_fgh.Prj\<^sub>1\<^sub>1 tuple_BC"
-          using fg gh 1 Maps.tuple_simps(1) Maps.tuple_simps(2) SPN_fgh.prj_simps(1)
+          using fg gh 1 Maps.pbtuple_simps(1) Maps.pbtuple_simps(2) SPN_fgh.prj_simps(1)
                 SPN_fgh.prj_simps(4) SPN_fgh.prj_simps(5)
           by presburger
         show "Maps.dom SPN_fgh.\<mu>.leg0 = Maps.cod SPN_fgh.Prj\<^sub>1\<^sub>1"
           using fg gh SPN_f.dom.leg_simps(2) SPN_fgh.prj_simps(7) by auto
         show "SPN_fgh.\<mu>.leg0 \<odot> SPN_fgh.Prj\<^sub>1\<^sub>1 = (SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1) \<odot> tuple_BC"
-          using 1 fg gh Maps.comp_assoc Maps.prj_tuple
+          using 1 fg gh Maps.comp_assoc Maps.prj_pbtuple
           by (metis (no_types, lifting) Maps.pullback_commutes' SPN_fgh.cospan_\<mu>\<nu>)
       qed
     qed
@@ -10906,13 +10906,13 @@ $$
       show "Maps.dom tuple_BC = Maps.MkIde (src TTfgh.p\<^sub>0)"
       proof -
         have "Maps.dom tuple_BC' = Maps.dom \<lbrakk>\<lbrakk>Tfg.\<rho>\<sigma>.p\<^sub>0 \<star> TTfgh.p\<^sub>1\<rbrakk>\<rbrakk>"
-          using 2 Maps.tuple_simps by simp
+          using 2 Maps.pbtuple_simps by simp
         also have "... = Chn (Span.hcomp (Span.hcomp (SPN f) (SPN g)) (SPN h))"
           using Maps.dom_char
           by (metis SPN_fgh.prj_simps(5) prj_char(2))
         also have "... = Maps.MkIde (src TTfgh.p\<^sub>0)"
           using 1 fg gh Maps.dom_char csq(1) prj_char(3) tuple_ABC_eq_ABC'(1)
-                Maps.Dom.simps(1) Maps.tuple_simps(2) SPN_fgh.prj_simps(3,5-6)
+                Maps.Dom.simps(1) Maps.pbtuple_simps(2) SPN_fgh.prj_simps(3,5-6)
           by presburger
         finally have "Maps.dom tuple_BC' = Maps.MkIde (src TTfgh.p\<^sub>0)"
           by blast
@@ -10922,7 +10922,7 @@ $$
       show "Maps.cod tuple_BC = Maps.MkIde (src Tgh.\<rho>\<sigma>.p\<^sub>0)"
       proof -
         have "Maps.cod tuple_BC' = Maps.pbdom \<lbrakk>\<lbrakk>tab\<^sub>0 g\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 h\<rbrakk>\<rbrakk>"
-          using 1 2 fg gh Maps.tuple_in_hom by blast
+          using 1 2 fg gh Maps.pbtuple_in_hom by blast
         also have "... = Maps.MkIde (src Tgh.\<rho>\<sigma>.p\<^sub>0)"
           using 1 2 fg gh Maps.pbdom_def
           by (metis (no_types, lifting) SPN.preserves_ide SPN_fgh.\<nu>\<pi>.are_identities(2)
@@ -10998,7 +10998,7 @@ $$
       moreover have "Span.chine_hcomp (SPN f) (CMP g h) = \<lbrakk>\<lbrakk>TfTgh_TfHgh.chine\<rbrakk>\<rbrakk>"
       proof -
         have "Span.chine_hcomp (SPN f) (CMP g h) =
-              Maps.tuple
+              Maps.pbtuple
                 (\<lbrakk>\<lbrakk>f.chine\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>TfTgh.p\<^sub>1\<rbrakk>\<rbrakk>)
                    \<lbrakk>\<lbrakk>tab\<^sub>0 f\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 (g \<star> h)\<rbrakk>\<rbrakk>
                 (\<lbrakk>\<lbrakk>Tgh_Hgh.chine\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>TfTgh.p\<^sub>0\<rbrakk>\<rbrakk>)"
@@ -11044,7 +11044,7 @@ $$
                   Tgh.cmp_def TfTgh.prj_char
             by simp
         qed
-        also have "... = Maps.tuple \<lbrakk>\<lbrakk>f.chine \<star> TfTgh.p\<^sub>1\<rbrakk>\<rbrakk>
+        also have "... = Maps.pbtuple \<lbrakk>\<lbrakk>f.chine \<star> TfTgh.p\<^sub>1\<rbrakk>\<rbrakk>
                                       \<lbrakk>\<lbrakk>tab\<^sub>0 f\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>tab\<^sub>1 (g \<star> h)\<rbrakk>\<rbrakk>
                                     \<lbrakk>\<lbrakk>Tgh_Hgh.chine \<star> TfTgh.p\<^sub>0\<rbrakk>\<rbrakk>"
           using isomorphic_reflexive TfHgh.composable f.is_map TfHgh.composable Tgh_Hgh.is_map
@@ -13605,7 +13605,7 @@ $$
               show "SPN_fgh.\<mu>.leg0 \<odot> SPN_fgh.Prj\<^sub>1\<^sub>1 =
                     (SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1) \<odot> tuple_BC"
                 using 2 fg gh Maps.comp_assoc csq(2)
-                      Maps.prj_tuple [of SPN_fgh.\<nu>.leg0 SPN_fgh.\<pi>.leg1 SPN_fgh.Prj\<^sub>0\<^sub>1 SPN_fgh.Prj\<^sub>0]
+                      Maps.prj_pbtuple [of SPN_fgh.\<nu>.leg0 SPN_fgh.\<pi>.leg1 SPN_fgh.Prj\<^sub>0\<^sub>1 SPN_fgh.Prj\<^sub>0]
                 by blast
             qed
             show "SPN_fgh.Prj\<^sub>1 \<odot> tuple_ABC = SPN_fgh.Prj\<^sub>1 \<odot> Maps.CLS TTfgh_TfTgh.chine"
@@ -13642,7 +13642,7 @@ $$
                 "Maps.PRJ\<^sub>0 SPN_fgh.\<mu>.leg0 (SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1) \<odot> tuple_ABC =
                  tuple_BC"
                 using csq(2)
-                      Maps.prj_tuple [of SPN_fgh.\<mu>.leg0 "SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1"
+                      Maps.prj_pbtuple [of SPN_fgh.\<mu>.leg0 "SPN_fgh.\<nu>.leg1 \<odot> SPN_fgh.\<nu>\<pi>.prj\<^sub>1"
                                          SPN_fgh.Prj\<^sub>1\<^sub>1 tuple_BC]
                 by simp
               also have "... =

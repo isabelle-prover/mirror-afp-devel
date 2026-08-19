@@ -6,22 +6,22 @@
 section "RTS-Enriched Categories"
 
  text \<open>
-   The category \<open>\<^bold>R\<^bold>T\<^bold>S\<close> is cartesian closed, hence monoidal closed.
-   This implies that each hom-set of \<open>\<^bold>R\<^bold>T\<^bold>S\<close> itself carries the structure of an RTS,
-   so that \<open>\<^bold>R\<^bold>T\<^bold>S\<close> becomes a category ``enriched in itself''.
+   The category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> is cartesian closed, hence monoidal closed.
+   This implies that each hom-set of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> itself carries the structure of an RTS,
+   so that \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> becomes a category ``enriched in itself''.
    In this section we show that RTS-categories are essentially the same thing as
-   categories enriched in \<open>\<^bold>R\<^bold>T\<^bold>S\<close>, and that the RTS-category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> is equivalent to
-   the RTS-category determined by \<open>\<^bold>R\<^bold>T\<^bold>S\<close> regarded as a category enriched in itself.
-   Thus, the complete structure of the RTS-category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> is already determined by
-   its ordinary subcategory \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.
+   categories enriched in \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>, and that the RTS-category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close> is equivalent to
+   the RTS-category determined by \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> regarded as a category enriched in itself.
+   Thus, the complete structure of the RTS-category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close> is already determined by
+   its ordinary subcategory \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.
  \<close>
 
 theory RTSEnrichedCategory
-imports RTSCatx RTSCat EnrichedCategoryBasics.CartesianClosedMonoidalCategory
+imports RTSCat_trn RTSCat_sim EnrichedCategoryBasics.CartesianClosedMonoidalCategory
         EnrichedCategoryBasics.EnrichedCategory
 begin
 
-  context rtscat
+  context rtscat_sim
   begin
 
     (*
@@ -114,13 +114,13 @@ begin
 
   locale rts_enriched_category =
     universe arr_type +
-    RTS: rtscat arr_type +
+    RTS: rtscat_sim arr_type +
     enriched_category RTS.comp RTS.Prod RTS.\<alpha> RTS.\<iota> Obj Hom Id Comp
   for arr_type :: "'A itself"
   and Obj :: "'O set"
-  and Hom :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr"
-  and Id :: "'O \<Rightarrow> 'A rtscatx.arr"
-  and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr"
+  and Hom :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr"
+  and Id :: "'O \<Rightarrow> 'A rtscat_sim.arr"
+  and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr"
   begin
 
     (*
@@ -150,7 +150,7 @@ begin
   end
 
   locale rts_enriched_functor =
-    RTS: rtscat arr_type +
+    RTS: rtscat_sim arr_type +
     A: rts_enriched_category arr_type Obj\<^sub>A Hom\<^sub>A Id\<^sub>A Comp\<^sub>A +
     B: rts_enriched_category arr_type Obj\<^sub>B Hom\<^sub>B Id\<^sub>B Comp\<^sub>B +
     enriched_functor RTS.comp RTS.Prod RTS.\<alpha> RTS.\<iota>
@@ -181,13 +181,13 @@ section "RTS-Enriched Categories induce RTS-Categories"
 
   locale rts_category_of_enriched_category =
     universe arr_type +
-    RTS: rtscat arr_type +
+    RTS: rtscat_sim arr_type +
     rts_enriched_category arr_type Obj Hom Id Comp
   for arr_type :: "'A itself"
   and Obj :: "'O set"
-  and Hom :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr"
-  and Id :: "'O \<Rightarrow> 'A rtscatx.arr"
-  and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr"
+  and Hom :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr"
+  and Id :: "'O \<Rightarrow> 'A rtscat_sim.arr"
+  and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr"
   begin
 
     notation RTS.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
@@ -783,7 +783,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
                             RTS.Pack (Hom A (Cod t)) \<one>)"
                 by auto
               also have "... = RTS.Pack (Hom A (Cod t)) (Hom A A) \<circ>
-                                  (HOM_ABxId_A.map \<circ> I HOM_ABxI.resid)"
+                                  (HOM_ABxId_A.map \<circ> identity_simulation.map HOM_ABxI.resid)"
                 using PU.inv by auto
               also have "... = RTS.Pack (Hom A (Cod t)) (Hom A A) \<circ>
                                  HOM_ABxId_A.map"
@@ -915,16 +915,16 @@ section "RTS-Enriched Categories induce RTS-Categories"
                 by auto
               also have "... = (RTS.Pack (Hom A A) (Hom (Dom t) A) \<circ>
                                   Id_AxHOM_BA.map) \<circ>
-                                    I IxHOM_BA.resid"
+                                    identity_simulation.map IxHOM_BA.resid"
               proof -
                 have "RTS.Unpack \<one> (Hom (Dom t) A) \<circ>
                         RTS.Pack \<one> (Hom (Dom t) A) =
-                      I IxHOM_BA.resid"
+                      identity_simulation.map IxHOM_BA.resid"
                   using PU.inv by fastforce
                 thus ?thesis by simp
               qed
               also have "... = RTS.Pack (Hom A A) (Hom (Dom t) A) \<circ>
-                                  (Id_AxHOM_BA.map \<circ> I IxHOM_BA.resid)"
+                                  (Id_AxHOM_BA.map \<circ> identity_simulation.map IxHOM_BA.resid)"
                 by auto
               also have "... = RTS.Pack (Hom A A) (Hom (Dom t) A) \<circ>
                                  Id_AxHOM_BA.map"
@@ -1203,13 +1203,13 @@ section "RTS-Enriched Categories induce RTS-Categories"
                                       \<open>RTS.Unpack
                                          (Hom ?C ?D) (Hom ?B ?C \<otimes> Hom ?A ?B)\<close>
             using A B C D RTS.inverse_simulations_Pack_Unpack by auto
-          interpret I_AB: identity_simulation \<open>HOM\<^sub>E\<^sub>C ?A ?B\<close> ..
+          interpret I_AB': identity_simulation \<open>HOM\<^sub>E\<^sub>C ?A ?B\<close> ..
           interpret U_CD_BC_x_I_AB: product_simulation
                                       \<open>RTS.Dom (Hom ?C ?D \<otimes> Hom ?B ?C)\<close>
                                          \<open>HOM\<^sub>E\<^sub>C ?A ?B\<close>
                                       CDxBC.resid \<open>HOM\<^sub>E\<^sub>C ?A ?B\<close>
                                       \<open>RTS.Unpack (Hom ?C ?D) (Hom ?B ?C)\<close>
-                                      \<open>I (HOM\<^sub>E\<^sub>C ?A ?B)\<close>
+                                      \<open>identity_simulation.map (HOM\<^sub>E\<^sub>C ?A ?B)\<close>
             ..
           interpret C_CD_BC: simulation
                                \<open>RTS.Dom (Hom ?C ?D \<otimes> Hom ?B ?C)\<close>
@@ -1225,12 +1225,12 @@ section "RTS-Enriched Categories induce RTS-Categories"
                                       \<open>RTS.Map (Comp ?B ?C ?D)\<close>
                                       \<open>RTS.Map (Hom ?A ?B)\<close>
              ..
-          interpret I_CD: identity_simulation \<open>HOM\<^sub>E\<^sub>C ?C ?D\<close> ..
+          interpret I_CD': identity_simulation \<open>HOM\<^sub>E\<^sub>C ?C ?D\<close> ..
           interpret I_CD_x_P_BC_AB: product_simulation
                                       \<open>HOM\<^sub>E\<^sub>C ?C ?D\<close> BCxAB.resid
                                       \<open>HOM\<^sub>E\<^sub>C ?C ?D\<close>
                                       \<open>RTS.Dom (Hom ?B ?C \<otimes> Hom ?A ?B)\<close>
-                                      \<open>I (HOM\<^sub>E\<^sub>C ?C ?D)\<close>
+                                      \<open>identity_simulation.map (HOM\<^sub>E\<^sub>C ?C ?D)\<close>
                                       \<open>RTS.Pack (Hom ?B ?C) (Hom ?A ?B)\<close>
             ..
           interpret C_BC_AB: simulation
@@ -1259,7 +1259,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
                   (RTS.Pack (Hom ?B ?D) (Hom ?A ?B)
                     (RTS.Map (Comp ?B ?C ?D)
                        (RTS.Pack (Hom ?C ?D) (Hom ?B ?C) (Trn t, Trn u)),
-                     I (HOM\<^sub>E\<^sub>C ?A ?B) (Trn v)))"
+                     identity_simulation.map (HOM\<^sub>E\<^sub>C ?A ?B) (Trn v)))"
             using H_seq_char arr_char uv by simp
           also have "... =
                 RTS.Map (Comp ?A ?B ?D)
@@ -1285,7 +1285,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
               by fastforce
             also have "... =
                   RTS.Pack (Hom ?B ?D) (Hom ?A ?B) \<circ>
-                    (C_CD_BC_x_I_AB.map \<circ> I cdxbc_x_AB.resid)"
+                    (C_CD_BC_x_I_AB.map \<circ> identity_simulation.map cdxbc_x_AB.resid)"
               using PU_cdxbc_x_AB.inv
               by auto
             also have "... = RTS.Pack (Hom ?B ?D) (Hom ?A ?B) \<circ>
@@ -1406,9 +1406,9 @@ section "RTS-Enriched Categories induce RTS-Categories"
           proof -
             have "RTS.Unpack (Hom ?C ?D \<otimes> Hom ?B ?C) (Hom ?A ?B) \<circ>
                     RTS.Pack (Hom ?C ?D \<otimes> Hom ?B ?C) (Hom ?A ?B) =
-                  I cdxbc_x_AB.resid" 
+                  identity_simulation.map cdxbc_x_AB.resid" 
               using A B C D PU_cdxbc_x_AB.inv by blast
-            moreover have "I cdxbc_x_AB.resid
+            moreover have "identity_simulation.map cdxbc_x_AB.resid
                              (RTS.Pack (Hom ?C ?D) (Hom ?B ?C)
                                 (Trn t, Trn u), Trn v) =
                            (RTS.Pack (Hom ?C ?D) (Hom ?B ?C) (Trn t, Trn u),
@@ -1491,7 +1491,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
               by fastforce
             also have "... =
                   (RTS.Pack (Hom ?C ?D) (Hom ?A ?C) \<circ>
-                     (I_CD_x_Comp_ABC.map \<circ> I CD_x_bcxab.resid))"
+                     (I_CD_x_Comp_ABC.map \<circ> identity_simulation.map CD_x_bcxab.resid))"
               using PU_CD_x_bcxab.inv by auto
             also have "... = RTS.Pack (Hom ?C ?D) (Hom ?A ?C) \<circ>
                                I_CD_x_Comp_ABC.map"
@@ -1600,7 +1600,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
       using simulation_dom by blast
     sublocale cod: simulation resid resid H.cod
       using simulation_cod by blast
-    sublocale RR: fibered_product_rts resid resid resid H.dom H.cod ..
+    sublocale RR: fiber_product_rts resid resid resid H.dom H.cod ..
 
     sublocale H: simulation RR.resid resid
                    \<open>\<lambda>t. if RR.arr t then fst t \<star> snd t else V.null\<close>
@@ -1823,9 +1823,9 @@ subsection "The Small Case"
     rts_category_of_enriched_category arr_type Obj Hom Id Comp
   for arr_type :: "'A itself"
   and Obj :: "'O set"
-  and Hom :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr"
-  and Id :: "'O \<Rightarrow> 'A rtscatx.arr"
-  and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr" +
+  and Hom :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr"
+  and Id :: "'O \<Rightarrow> 'A rtscat_sim.arr"
+  and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr" +
   assumes small_Obj: "small Obj"
   and inj_Obj_to_arr: "\<exists>\<phi> :: 'O \<Rightarrow> 'A. inj_on \<phi> Obj"
   begin
@@ -1839,23 +1839,23 @@ subsection "The Small Case"
 
      text\<open>
        The locale assumptions are sufficient to allow us to uniquely encode each element
-       of @{term "Collect arr \<union> {null}"} as single element of \<open>'A\<close>.
+       of @{term "Collect V.arr \<union> {V.null}"} as single element of \<open>'A\<close>.
      \<close>
 
      lemma ex_arrow_injection:
-     shows "\<exists>i :: ('O, 'A) arr \<Rightarrow> 'A. inj_on i (Collect arr \<union> {null})"
+     shows "\<exists>i :: ('O, 'A) arr \<Rightarrow> 'A. inj_on i (Collect V.arr \<union> {V.null})"
      proof -
        obtain \<phi> :: "'O \<Rightarrow> 'A" where \<phi>: "inj_on \<phi> Obj"
          using inj_Obj_to_arr by blast
        let ?p = "\<lambda>t. some_pair (some_pair (\<phi> (Dom t), \<phi> (Cod t)), Trn t)"
-       have p: "inj_on ?p (Collect arr)"
+       have p: "inj_on ?p (Collect V.arr)"
          by (metis (mono_tags, lifting) CollectD \<phi> arr_char arr_eqI
              first_conv inj_onD inj_onI null_char second_conv)
-       let ?i = "\<lambda>x. some_lift (if arr x then Some (?p x) else None)"
-       have "inj_on ?i (Collect arr \<union> {null})"
+       let ?i = "\<lambda>x. some_lift (if V.arr x then Some (?p x) else None)"
+       have "inj_on ?i (Collect V.arr \<union> {V.null})"
        proof
          fix x y
-         assume x: "x \<in> Collect arr \<union> {null}" and y: "y \<in> Collect arr \<union> {null}"
+         assume x: "x \<in> Collect V.arr \<union> {V.null}" and y: "y \<in> Collect V.arr \<union> {V.null}"
          assume eq: "?i x = ?i y"
          show "x = y"
            using x y eq p inj_some_lift injD inj_on_contraD by fastforce
@@ -1874,7 +1874,7 @@ subsection "The Small Case"
      shows "\<exists>R' (UP :: 'A \<Rightarrow> ('O, 'A) arr) (DN :: ('O, 'A) arr \<Rightarrow> 'A).
                small_rts R' \<and> extensional_rts R' \<and> inverse_simulations R R' UP DN"
      proof -
-       obtain i :: "('O, 'A) arr \<Rightarrow> 'A" where i: "inj_on i (Collect arr \<union> {null})"
+       obtain i :: "('O, 'A) arr \<Rightarrow> 'A" where i: "inj_on i (Collect V.arr \<union> {V.null})"
          using ex_arrow_injection by blast
        interpret R': inj_image_rts i R
          using i by unfold_locales
@@ -1882,7 +1882,7 @@ subsection "The Small Case"
          using V.extensional_rts_axioms R'.preserves_extensional_rts by blast
        interpret R': small_rts R'.resid
        proof -
-         have "small (Collect arr)"
+         have "small (Collect V.arr)"
          proof -
            have "small ((Collect H.ide \<times> Collect H.ide) \<times>
                            (\<Union>x\<in>Collect H.ide \<times> Collect H.ide.
@@ -1899,13 +1899,13 @@ subsection "The Small Case"
            qed
            moreover
            have "(\<lambda>t. ((H.dom t, H.cod t), t)) \<in>
-                          Collect arr \<rightarrow>
+                          Collect V.arr \<rightarrow>
                             ((Collect H.ide \<times> Collect H.ide) \<times>
                                (\<Union>x\<in>Collect H.ide \<times> Collect H.ide.
                                     H.hom (fst x) (snd x)))"
            proof
              fix t
-             assume t: "t \<in> Collect arr"
+             assume t: "t \<in> Collect V.arr"
              have "H.dom t \<in> Collect H.ide \<and> H.cod t \<in> Collect H.ide"
                using t arr_coincidence H.ide_dom H.ide_cod by simp
              moreover have "t \<in> H.hom (H.dom t) (H.cod t)"
@@ -1916,12 +1916,12 @@ subsection "The Small Case"
                          (\<Union>x\<in>Collect H.ide \<times> Collect H.ide. H.hom (fst x) (snd x))"
                by auto
            qed
-           moreover have "inj_on (\<lambda>t. ((H.dom t, H.cod t), t)) (Collect arr)"
+           moreover have "inj_on (\<lambda>t. ((H.dom t, H.cod t), t)) (Collect V.arr)"
              by (intro inj_onI) blast
            ultimately show ?thesis
              using small_image_iff
                    smaller_than_small
-                     [of _ "(\<lambda>t. ((H.dom t, H.cod t), t)) ` Collect arr"]
+                     [of _ "(\<lambda>t. ((H.dom t, H.cod t), t)) ` Collect V.arr"]
              by blast
          qed
          hence "small_rts R"
@@ -1988,9 +1988,9 @@ subsection "The Small Case"
        ..
 
      lemma R'_src_char:
-     shows "R'.src = DN \<circ> src \<circ> UP"
+     shows "R'.src = DN \<circ> V.src \<circ> UP"
      proof -
-       have "\<And>t. DN (UP (R'.src t)) = DN (src (UP t))"
+       have "\<And>t. DN (UP (R'.src t)) = DN (V.src (UP t))"
          by (metis H.dom_null R'.con_arr_src(2) R'.ide_src R'.not_arr_null R'.src_def
              UP_DN.F.extensionality UP_DN.F.preserves_con UP_DN.F.preserves_ide
              null_coincidence src_dom V.src_eqI)
@@ -2001,9 +2001,9 @@ subsection "The Small Case"
      qed
 
      lemma R'_trg_char:
-     shows "R'.trg = DN \<circ> trg \<circ> UP"
+     shows "R'.trg = DN \<circ> V.trg \<circ> UP"
      proof -
-       have "\<And>t. DN (UP (R'.trg t)) = DN (trg (UP t))"
+       have "\<And>t. DN (UP (R'.trg t)) = DN (V.trg (UP t))"
          by (metis R'.arr_trg_iff_arr UP_DN.F.extensionality UP_DN.F.preserves_trg
              V.null_is_zero(2) V.trg_def)
        moreover have "\<And>t. DN (UP (R'.trg t)) = R'.trg t"
@@ -2026,7 +2026,7 @@ subsection "The Small Case"
            UP_DN.F.preserves_reflects_arr UP_DN.G.extensionality)
 
      lemma H'_null_char:
-     shows "H'.null = DN null"
+     shows "H'.null = DN V.null"
        using arr_coincidence
        by (metis H'.null_is_zero(2) R'.not_arr_null UP_DN.F.extensionality
            hcomp_Null(2) null_char)
@@ -2036,17 +2036,17 @@ subsection "The Small Case"
      lemma H'_ide_char:
      shows "H'.ide t \<longleftrightarrow> H.ide (UP t)"
      proof
-       have 1: "\<And>f. \<lbrakk>arr f; Dom f = Cod (UP t); t \<star>\<acute> t \<noteq> DN null;
-                     \<And>t u. (t \<star> u \<noteq> null) = (arr t \<and> arr u \<and> Dom t = Cod u);
-                     \<forall>f. (f \<star>\<acute> t \<noteq> DN null \<longrightarrow> f \<star>\<acute> t = f) \<and>
-                         (t \<star>\<acute> f \<noteq> DN null \<longrightarrow> t \<star>\<acute> f = f)\<rbrakk>
+       have 1: "\<And>f. \<lbrakk>V.arr f; Dom f = Cod (UP t); t \<star>\<acute> t \<noteq> DN V.null;
+                     \<And>t u. (t \<star> u \<noteq> V.null) = (V.arr t \<and> V.arr u \<and> Dom t = Cod u);
+                     \<forall>f. (f \<star>\<acute> t \<noteq> DN V.null \<longrightarrow> f \<star>\<acute> t = f) \<and>
+                         (t \<star>\<acute> f \<noteq> DN V.null \<longrightarrow> t \<star>\<acute> f = f)\<rbrakk>
                        \<Longrightarrow> f \<star> UP t = f"
           by (metis (no_types, lifting) UP_DN.G.preserves_reflects_arr
               UP_DN.inv'_simp arr_hcomp)
-       have 2: "\<And>f. \<lbrakk>arr f; Dom (UP t) = Cod f; t \<star>\<acute> t \<noteq> DN null;
-                     \<And>t u. (t \<star> u \<noteq> null) = (arr t \<and> arr u \<and> Dom t = Cod u);
-                     \<forall>f. (f \<star>\<acute> t \<noteq> DN null \<longrightarrow> f \<star>\<acute> t = f) \<and>
-                         (t \<star>\<acute> f \<noteq> DN null \<longrightarrow> t \<star>\<acute> f = f)\<rbrakk>
+       have 2: "\<And>f. \<lbrakk>V.arr f; Dom (UP t) = Cod f; t \<star>\<acute> t \<noteq> DN V.null;
+                     \<And>t u. (t \<star> u \<noteq> V.null) = (V.arr t \<and> V.arr u \<and> Dom t = Cod u);
+                     \<forall>f. (f \<star>\<acute> t \<noteq> DN V.null \<longrightarrow> f \<star>\<acute> t = f) \<and>
+                         (t \<star>\<acute> f \<noteq> DN V.null \<longrightarrow> t \<star>\<acute> f = f)\<rbrakk>
                        \<Longrightarrow> UP t \<star> f = f"
           by (metis (no_types, lifting) UP_DN.G.preserves_reflects_arr
               UP_DN.inv'_simp arr_hcomp)
@@ -2067,33 +2067,33 @@ subsection "The Small Case"
      lemma H'_domains_char:
      shows "H'.domains t = DN ` H.domains (UP t)"
      proof -
-       have "{a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN null} =
-             DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> null}"
+       have "{a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN V.null} =
+             DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> V.null}"
        proof
-         show "{a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN null} \<subseteq>
-               DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> null}"
+         show "{a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN V.null} \<subseteq>
+               DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> V.null}"
          proof
            fix a
-           assume a: "a \<in> {a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN null}"
-           have 1: "H.ide (UP a) \<and> UP t \<star> UP a \<noteq> null"
+           assume a: "a \<in> {a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN V.null}"
+           have 1: "H.ide (UP a) \<and> UP t \<star> UP a \<noteq> V.null"
              using a by auto
            moreover have "a = DN (UP a)"
              using a 1
              by (metis (no_types, opaque_lifting) H_composable_char
                  UP_DN.F.preserves_reflects_arr UP_DN.inv comp_apply)
-           ultimately show "a \<in> DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> null}" by blast
+           ultimately show "a \<in> DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> V.null}" by blast
          qed
-         show "DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> null} \<subseteq>
-               {a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN null}"
+         show "DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> V.null} \<subseteq>
+               {a. H.ide (UP a) \<and> t \<star>\<acute> a \<noteq> DN V.null}"
          proof
            fix a
-           assume a: "a \<in> DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> null}"
+           assume a: "a \<in> DN ` {a. H.ide a \<and> UP t \<star> a \<noteq> V.null}"
            obtain UPa
-           where UPa: "a = DN UPa \<and> UPa \<in> {a. H.ide a \<and> UP t \<star> a \<noteq> null}"
+           where UPa: "a = DN UPa \<and> UPa \<in> {a. H.ide a \<and> UP t \<star> a \<noteq> V.null}"
              using a by blast
            have "UPa = UP a"
              using UPa H_composable_char UP_DN.inv' comp_apply by auto
-           thus "a \<in> {a. H.ide (UP a) \<and> DN (UP t \<star> UP a) \<noteq> DN null}"
+           thus "a \<in> {a. H.ide (UP a) \<and> DN (UP t \<star> UP a) \<noteq> DN V.null}"
              using UPa null_coincidence
              by (metis (mono_tags, lifting) H.ext UP_DN.G.preserves_reflects_arr
                  arr_coincidence mem_Collect_eq V.not_arr_null)
@@ -2107,33 +2107,33 @@ subsection "The Small Case"
      lemma H'_codomains_char:
      shows "H'.codomains t = DN ` H.codomains (UP t)"
      proof -
-       have "{b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN null} =
-             DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> null}"
+       have "{b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN V.null} =
+             DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> V.null}"
        proof
-         show "{b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN null} \<subseteq>
-               DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> null}"
+         show "{b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN V.null} \<subseteq>
+               DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> V.null}"
          proof
            fix b
-           assume b: "b \<in> {b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN null}"
-           have "DN (UP b) \<in> DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> null}"
+           assume b: "b \<in> {b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN V.null}"
+           have "DN (UP b) \<in> DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> V.null}"
              using b by auto
            moreover have "DN (UP b) = b"
              using b
              by (metis (no_types, lifting) H'.ide_def H'_ide_char
                  H.comp_ide_self mem_Collect_eq)
-           ultimately show "b \<in> DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> null}" by auto
+           ultimately show "b \<in> DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> V.null}" by auto
          qed
-         show "DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> null} \<subseteq>
-               {b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN null}"
+         show "DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> V.null} \<subseteq>
+               {b. H.ide (UP b) \<and> b \<star>\<acute> t \<noteq> DN V.null}"
          proof
            fix b
-           assume b: "b \<in> DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> null}"
+           assume b: "b \<in> DN ` {b. H.ide b \<and> b \<star> UP t \<noteq> V.null}"
            obtain UPb
-           where UPb: "b = DN UPb \<and> UPb \<in> {b. H.ide b \<and> b \<star> UP t \<noteq> null}"
+           where UPb: "b = DN UPb \<and> UPb \<in> {b. H.ide b \<and> b \<star> UP t \<noteq> V.null}"
              using b by blast
            have "UPb = UP b"
              using UPb H_composable_char UP_DN.inv' comp_apply by auto
-           thus "b \<in> {b. H.ide (UP b) \<and> DN (UP b \<star> UP t) \<noteq> DN null}"
+           thus "b \<in> {b. H.ide (UP b) \<and> DN (UP b \<star> UP t) \<noteq> DN V.null}"
              using UPb null_coincidence arr_coincidence
              by (metis (mono_tags, lifting) H.ext UP_DN.G.preserves_reflects_arr
                  mem_Collect_eq V.not_arr_null)
@@ -2179,13 +2179,13 @@ subsection "The Small Case"
      proof
        fix t
        show "H'.dom t = (DN \<circ> H.dom \<circ> UP) t"
-       proof (cases "arr (UP t)")
-         show "\<not> arr (UP t) \<Longrightarrow> ?thesis"
+       proof (cases "V.arr (UP t)")
+         show "\<not> V.arr (UP t) \<Longrightarrow> ?thesis"
            by (metis H'.dom_def H'.domains_char H'_arr_char H'_null_char
                H.dom_null H_arr_char UP_DN.F.extensionality
                UP_DN.F.preserves_reflects_arr arr_char comp_def
                null_coincidence)
-         assume t: "arr (UP t)"
+         assume t: "V.arr (UP t)"
          have "(DN \<circ> H.dom \<circ> UP) t = DN (H.dom (UP t))"
            using t by auto
          also have "... = H'.dom t"
@@ -2201,13 +2201,13 @@ subsection "The Small Case"
      proof
        fix t
        show "H'.cod t = (DN \<circ> H.cod \<circ> UP) t"
-       proof (cases "arr (UP t)")
-         show "\<not> arr (UP t) \<Longrightarrow> ?thesis"
+       proof (cases "V.arr (UP t)")
+         show "\<not> V.arr (UP t) \<Longrightarrow> ?thesis"
            by (metis H'.cod_def H'.codomains_char H'_arr_char H'_null_char
                H.cod_null H_arr_char UP_DN.F.extensionality
                UP_DN.F.preserves_reflects_arr arr_char comp_def
                null_coincidence)
-         assume t: "arr (UP t)"
+         assume t: "V.arr (UP t)"
          have "(DN \<circ> H.cod \<circ> UP) t = DN (H.cod (UP t))"
            using t by auto
          also have "... = H'.cod t"
@@ -2330,7 +2330,7 @@ subsection "The Small Case"
            UP_DN.G.preserves_con UP_DN.inv comp_apply
            residuation.con_implies_arr(1-2) V.residuation_axioms)
 
-     sublocale R'R': fibered_product_rts R' R' R' H'.dom H'.cod ..
+     sublocale R'R': fiber_product_rts R' R' R' H'.dom H'.cod ..
 
      sublocale H': simulation R'R'.resid R'
                      \<open>\<lambda>t. if R'R'.arr t then fst t \<star>\<acute> snd t else R'.null\<close>
@@ -2436,21 +2436,21 @@ subsection "Functoriality"
 
   locale rts_functor_of_enriched_functor =
     universe arr_type +
-    RTS: rtscat arr_type +
+    RTS: rtscat_sim arr_type +
     A: rts_enriched_category arr_type Obj\<^sub>A Hom\<^sub>A Id\<^sub>A Comp\<^sub>A +
     B: rts_enriched_category arr_type Obj\<^sub>B Hom\<^sub>B Id\<^sub>B Comp\<^sub>B +
     EF: rts_enriched_functor
           Obj\<^sub>A Hom\<^sub>A Id\<^sub>A Comp\<^sub>A Obj\<^sub>B Hom\<^sub>B Id\<^sub>B Comp\<^sub>B F\<^sub>o F\<^sub>a
   for Obj\<^sub>A :: "'a set"
-  and Hom\<^sub>A :: "'a \<Rightarrow> 'a \<Rightarrow> 'A rtscatx.arr"
-  and Id\<^sub>A :: "'a \<Rightarrow> 'A rtscatx.arr"
-  and Comp\<^sub>A :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'A rtscatx.arr"
+  and Hom\<^sub>A :: "'a \<Rightarrow> 'a \<Rightarrow> 'A rtscat_sim.arr"
+  and Id\<^sub>A :: "'a \<Rightarrow> 'A rtscat_sim.arr"
+  and Comp\<^sub>A :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'A rtscat_sim.arr"
   and Obj\<^sub>B :: "'b set"
-  and Hom\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'A rtscatx.arr"
-  and Id\<^sub>B :: "'b \<Rightarrow> 'A rtscatx.arr"
-  and Comp\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'A rtscatx.arr"
+  and Hom\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'A rtscat_sim.arr"
+  and Id\<^sub>B :: "'b \<Rightarrow> 'A rtscat_sim.arr"
+  and Comp\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'A rtscat_sim.arr"
   and F\<^sub>o :: "'a \<Rightarrow> 'b"
-  and F\<^sub>a :: "'a \<Rightarrow> 'a \<Rightarrow> 'A rtscatx.arr"
+  and F\<^sub>a :: "'a \<Rightarrow> 'a \<Rightarrow> 'A rtscat_sim.arr"
   begin
 
     interpretation A: rts_category_of_enriched_category
@@ -2474,7 +2474,7 @@ subsection "Functoriality"
       let ?b = "A.Cod f"
       show 1: "B.H.arr (F f)"
       proof -
-        have "B.arr (F f)"
+        have "B.V.arr (F f)"
           unfolding F_def
           using assms A.arr_char B.arr_MkArr A.arr_coincidence
             B.arr_coincidence
@@ -2495,25 +2495,25 @@ subsection "Functoriality"
         using preserves_arr by simp
       fix f
       assume f: "A.H.arr f"
-      have 0: "A.arr (A.MkArr (A.Dom f) (A.Dom f)
+      have 0: "A.V.arr (A.MkArr (A.Dom f) (A.Dom f)
                          (RTS.Map (Id\<^sub>A (A.Dom f)) RTS.One.the_arr))"
         using f A.arr_char A.arr_coincidence A.Id_in_hom RTS.Map_ide
         by (metis (no_types, lifting) A.H_dom_char A.dom.preserves_reflects_arr)
-      have 1: "B.arr (B.MkArr (F\<^sub>o (A.Dom f)) (F\<^sub>o (A.Cod f))
+      have 1: "B.V.arr (B.MkArr (F\<^sub>o (A.Dom f)) (F\<^sub>o (A.Cod f))
                         (RTS.Map (F\<^sub>a (A.Dom f) (A.Cod f)) (A.Trn f)))"
         using f 1 F_def B.H_dom_char B.arr_char B.null_char B.arr_coincidence
               B.null_coincidence
         by (intro B.arr_MkArr) auto
-      have 2: "A.arr (A.MkArr (A.Cod f) (A.Cod f)
+      have 2: "A.V.arr (A.MkArr (A.Cod f) (A.Cod f)
                         (RTS.Map (Id\<^sub>A (A.Cod f)) RTS.One.the_arr))"
         using f A.arr_char A.arr_coincidence A.H.ideD(1)
               A.Id_yields_horiz_ide
         by force
       show "B.H.dom (F f) = F (A.H.dom f)"
       proof (intro B.arr_eqI)
-        show "B.H.dom (F f) \<noteq> B.null"
+        show "B.H.dom (F f) \<noteq> B.V.null"
           using f 1 F_def B.H_dom_char B.null_char by auto
-        show "F (A.H.dom f) \<noteq> B.null"
+        show "F (A.H.dom f) \<noteq> B.V.null"
           using f 0 F_def A.H_dom_char B.null_char by auto
         show "B.Dom (B.H.dom (F f)) = B.Dom (F (A.H.dom f))"
           using f 0 1 F_def A.H_dom_char B.H_dom_char by simp
@@ -2543,17 +2543,17 @@ subsection "Functoriality"
       qed
       show "B.H.cod (F f) = F (A.H.cod f)"
       proof (intro B.arr_eqI)
-        show "B.H.cod (F f) \<noteq> B.null"
+        show "B.H.cod (F f) \<noteq> B.V.null"
           using f 1 F_def B.H_cod_char B.null_char by auto
-        show "F (A.H.cod f) \<noteq> B.null"
+        show "F (A.H.cod f) \<noteq> B.V.null"
           using f 2 F_def A.H_cod_char B.null_char by auto
         show "B.Dom (B.H.cod (F f)) = B.Dom (F (A.H.cod f))"
           using f 2 F_def A.H_cod_char B.H_cod_char B.null_char
-                B.cod.extensionality \<open>B.H.cod (F f) \<noteq> B.null\<close>
+                B.cod.extensionality \<open>B.H.cod (F f) \<noteq> B.V.null\<close>
           by fastforce
         show "B.Cod (B.H.cod (F f)) = B.Cod (F (A.H.cod f))"
           using f 2 F_def A.H_cod_char B.H_cod_char B.null_char
-                B.cod.extensionality \<open>B.H.cod (F f) \<noteq> B.null\<close>
+                B.cod.extensionality \<open>B.H.cod (F f) \<noteq> B.V.null\<close>
           by fastforce
         show "B.Trn (B.H.cod (F f)) = B.Trn (F (A.H.cod f))"
         proof -
@@ -2583,11 +2583,11 @@ subsection "Functoriality"
       assume fg: "A.H.seq g f"
       show "F (A.hcomp g f) = B.hcomp (F g) (F f)"
       proof (intro B.arr_eqI)
-        show "F (A.hcomp g f) \<noteq> B.null"
+        show "F (A.hcomp g f) \<noteq> B.V.null"
           using fg F_def B.null_char by auto
         have 2: "B.Dom (F g) = B.Cod (F f)"
           using fg preserves_arr F_def A.H_seq_char by auto
-        show 3: "B.hcomp (F g) (F f) \<noteq> B.null"
+        show 3: "B.hcomp (F g) (F f) \<noteq> B.V.null"
           using fg 2 preserves_arr B.null_char B.arr_hcomp [of "F g" "F f"]
                 A.arr_coincidence B.arr_coincidence A.H_seq_char
                 B.V.not_arr_null
@@ -2779,7 +2779,7 @@ subsection "Functoriality"
         qed
       qed
       next
-      show "\<And>t. \<not> A.arr t \<Longrightarrow> F t = B.null"
+      show "\<And>t. \<not> A.V.arr t \<Longrightarrow> F t = B.V.null"
         unfolding F_def by simp
       show "\<And>t u. A.V.con t u \<Longrightarrow> B.V.con (F t) (F u)"
         unfolding F_def
@@ -2814,7 +2814,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
   text\<open>
     Here we show that an RTS-category induces a corresponding RTS-enriched category.
     In order to perform this construction, we will need to have a universe to use
-    as the arrow type of the base category \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.  In order to avoid introducing a fixed
+    as the arrow type of the base category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.  In order to avoid introducing a fixed
     universe, at this point we assume one is given as a parameter.
   \<close>
 
@@ -2826,7 +2826,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
   and hcomp :: "'A comp"   (infixr \<open>\<star>\<close> 53)
   begin
 
-    sublocale RTS: rtscat arr_type ..
+    sublocale RTS: rtscat_sim arr_type ..
 
     (* TODO: The composition in RTS is more important here than composition of transitions. *)
     no_notation V.comp       (infixr \<open>\<cdot>\<close> 55)
@@ -2891,7 +2891,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
     assumes "a \<in> Obj" and "b \<in> Obj"
     shows HOM_null_char: "ResiduatedTransitionSystem.partial_magma.null
                             (RTS.Rts (Hom a b)) =
-                          null"
+                          V.null"
     and HOM_arr_char:
           "residuation.arr (RTS.Rts (Hom a b)) t \<longleftrightarrow> H.in_hom t a b"
     proof -
@@ -2899,7 +2899,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
         using assms sub_rts_HOM by blast
       show "ResiduatedTransitionSystem.partial_magma.null
               (RTS.Rts (Hom a b)) =
-            null"
+            V.null"
         using assms Hom_def RTS.bij_mkide(3) Hom.null_char by auto
       show "residuation.arr (RTS.Rts (Hom a b)) t \<longleftrightarrow> H.in_hom t a b"
         unfolding Hom_def
@@ -3054,7 +3054,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                         snd (RTS.Unpack (Hom b c) (Hom a b) t) \<frown>
                       fst (RTS.Unpack (Hom b c) (Hom a b) u) \<star>
                         snd (RTS.Unpack (Hom b c) (Hom a b) u)"
-              using H.preserves_con VV.con_implies_arr by auto
+              using HC.preserves_con VV.con_implies_arr by auto
             thus "ac.con
                     (fst (RTS.Unpack (Hom b c) (Hom a b) t) \<star>
                        snd (RTS.Unpack (Hom b c) (Hom a b) t))
@@ -3088,7 +3088,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                  snd (VV.resid
                                         (RTS.Unpack (Hom b c) (Hom a b) t)
                                         (RTS.Unpack (Hom b c) (Hom a b) u))"
-                using 5 VV.con_implies_arr H.preserves_resid by simp
+                using 5 VV.con_implies_arr HC.preserves_resid by simp
               also have "... = fst (bcXab.resid
                                      (RTS.Unpack (Hom b c) (Hom a b) t)
                                      (RTS.Unpack (Hom b c) (Hom a b) u)) \<star>
@@ -3260,28 +3260,28 @@ section "RTS-Categories induce RTS-Enriched Categories"
                   RTS.Map_mkarr RTS.tensor_agreement RTS.bij_mkarr(3)
                   RTS.unity_agreement
             by auto
-          also have "... = (\<lambda>t. fst ((I abXaa.resid \<circ> abXI.map \<circ>
+          also have "... = (\<lambda>t. fst ((identity_simulation.map abXaa.resid \<circ> abXI.map \<circ>
                                         RTS.Unpack (Hom a b) \<one>) t) \<star>
-                                  snd ((I abXaa.resid \<circ> abXI.map \<circ>
+                                  snd ((identity_simulation.map abXaa.resid \<circ> abXI.map \<circ>
                                           RTS.Unpack (Hom a b) \<one>) t))"
             using PU_abXaa.inv by auto
           also have "... = RTS.Map \<r>[Hom a b]"
           proof
             fix t
-            show "fst ((I abXaa.resid \<circ> abXI.map \<circ>
+            show "fst ((identity_simulation.map abXaa.resid \<circ> abXI.map \<circ>
                           RTS.Unpack (Hom a b) \<one>) t) \<star>
-                    snd ((I abXaa.resid \<circ> abXI.map \<circ>
+                    snd ((identity_simulation.map abXaa.resid \<circ> abXI.map \<circ>
                             RTS.Unpack (Hom a b) \<one>) t) =
                   RTS.Map \<r>[Hom a b] t"
             proof (cases "abxone.arr t")
               show "\<not> abxone.arr t \<Longrightarrow> ?thesis"
               proof -
                 assume t: "\<not> abxone.arr t"
-                have "fst ((I abXaa.resid \<circ> abXI.map \<circ>
+                have "fst ((identity_simulation.map abXaa.resid \<circ> abXI.map \<circ>
                               RTS.Unpack (Hom a b) \<one>) t) \<star>
-                      snd ((I abXaa.resid \<circ> abXI.map \<circ>
+                      snd ((identity_simulation.map abXaa.resid \<circ> abXI.map \<circ>
                               RTS.Unpack (Hom a b) \<one>) t) =
-                      null"
+                      V.null"
                   using a b t 1 PU_abXI.G.extensionality abXI.extensionality
                         abXI.A1xA0.P\<^sub>1.extensionality H.null_is_zero(2)
                         HOM_null_char null_coincidence
@@ -3299,11 +3299,11 @@ section "RTS-Categories induce RTS-Enriched Categories"
                 finally show ?thesis by blast
               qed
               assume t: "abxone.arr t"
-              have "(I abXaa.resid \<circ> abXI.map \<circ> RTS.Unpack (Hom a b) \<one>) t =
+              have "(identity_simulation.map abXaa.resid \<circ> abXI.map \<circ> RTS.Unpack (Hom a b) \<one>) t =
                     (RTS.Map \<r>[Hom a b] t, a)"
               proof -
-                have "(I abXaa.resid \<circ> abXI.map \<circ> RTS.Unpack (Hom a b) \<one>) t =
-                      I abXaa.resid (abXI.map (RTS.Unpack (Hom a b) \<one> t))"
+                have "(identity_simulation.map abXaa.resid \<circ> abXI.map \<circ> RTS.Unpack (Hom a b) \<one>) t =
+                      identity_simulation.map abXaa.resid (abXI.map (RTS.Unpack (Hom a b) \<one> t))"
                   by auto
                 also have "... = abXI.map (RTS.Unpack (Hom a b) \<one> t)"
                   using a b t abXI.preserves_reflects_arr
@@ -3372,26 +3372,26 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                           IXab.map \<circ>
                                             RTS.Unpack \<one> (Hom a b)) t))"
             by auto
-          also have "... = (\<lambda>t. fst ((I bbXab.resid \<circ> IXab.map \<circ>
+          also have "... = (\<lambda>t. fst ((identity_simulation.map bbXab.resid \<circ> IXab.map \<circ>
                                         RTS.Unpack \<one> (Hom a b)) t) \<star>
-                                  snd ((I bbXab.resid \<circ> IXab.map \<circ>
+                                  snd ((identity_simulation.map bbXab.resid \<circ> IXab.map \<circ>
                                           RTS.Unpack \<one> (Hom a b)) t))"
             using PU_bbXab.inv by auto
           also have "... = RTS.Map \<l>[Hom a b]"
           proof
             fix t
-            show "fst ((I bbXab.resid \<circ> IXab.map \<circ>
+            show "fst ((identity_simulation.map bbXab.resid \<circ> IXab.map \<circ>
                           RTS.Unpack \<one> (Hom a b)) t) \<star>
-                    snd ((I bbXab.resid \<circ> IXab.map \<circ>
+                    snd ((identity_simulation.map bbXab.resid \<circ> IXab.map \<circ>
                             RTS.Unpack \<one> (Hom a b)) t) =
                   RTS.Map \<l>[Hom a b] t"
             proof (cases "onexab.arr t")
               show "\<not> onexab.arr t \<Longrightarrow> ?thesis"
               proof -
                 assume t: "\<not> onexab.arr t"
-                have "fst ((I bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t) \<star>
-                      snd ((I bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t) =
-                      null"
+                have "fst ((identity_simulation.map bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t) \<star>
+                      snd ((identity_simulation.map bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t) =
+                      V.null"
                   using a b t 1 PU_IXab.G.extensionality IXab.extensionality
                         IXab.A1xA0.P\<^sub>0.extensionality HOM_null_char
                   apply auto[1]
@@ -3408,11 +3408,11 @@ section "RTS-Categories induce RTS-Enriched Categories"
                 finally show ?thesis by blast
               qed
               assume t: "onexab.arr t"
-              have "(I bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t =
+              have "(identity_simulation.map bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t =
                     (b, RTS.Map \<l>[Hom a b] t)"
               proof -
-                have "(I bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t =
-                      I bbXab.resid (IXab.map (RTS.Unpack \<one> (Hom a b) t))"
+                have "(identity_simulation.map bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t =
+                      identity_simulation.map bbXab.resid (IXab.map (RTS.Unpack \<one> (Hom a b) t))"
                   by auto
                 also have "... = IXab.map (RTS.Unpack \<one> (Hom a b) t)"
                   using a b t IXab.preserves_reflects_arr PU_IXab.G.preserves_reflects_arr
@@ -3662,7 +3662,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                   by auto
                 also have "... = (\<lambda>x. fst x \<star> snd x)
                                    (RTS.Map (Comp b c d)
-                                      (I (RTS.Rts (RTS.dom (Hom c d \<otimes> Hom b c)))
+                                      (identity_simulation.map (RTS.Rts (RTS.dom (Hom c d \<otimes> Hom b c)))
                                             (fst
                                                (RTS.Unpack
                                                   (Hom c d \<otimes> Hom b c) (Hom a b) x))),
@@ -3719,7 +3719,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                      (RTS.Pack (Hom c d) (Hom b c \<otimes> Hom a b)
                                         (product_simulation.map
                                            (RTS.Rts (Hom c d)) bcXab.resid
-                                           (I (RTS.Rts (Hom c d)))
+                                           (identity_simulation.map (RTS.Rts (Hom c d)))
                                            (RTS.Pack (Hom b c) (Hom a b))
                                            (ASSOC.map (RTS.Rts (Hom c d))
                                                       (RTS.Rts (Hom b c))
@@ -3728,7 +3728,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                                   (RTS.Rts (Hom c d \<otimes> Hom b c))
                                                   (RTS.Rts (Hom a b))
                                                   (RTS.Unpack (Hom c d) (Hom b c))
-                                                  (I (RTS.Rts (Hom a b)))
+                                                  (identity_simulation.map (RTS.Rts (Hom a b)))
                                                   (RTS.Unpack
                                                      (Hom c d \<otimes> Hom b c)
                                                      (Hom a b) x)))))))"
@@ -3739,7 +3739,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                      (RTS.Pack (Hom c d) (Hom b c \<otimes> Hom a b)
                                         (product_simulation.map
                                            (RTS.Rts (Hom c d)) bcXab.resid
-                                           (I (RTS.Rts (Hom c d)))
+                                           (identity_simulation.map (RTS.Rts (Hom c d)))
                                            (RTS.Pack (Hom b c) (Hom a b))
                                            (ASSOC.map (RTS.Rts (Hom c d))
                                                       (RTS.Rts (Hom b c))
@@ -3762,7 +3762,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                      (RTS.Pack (Hom c d) (Hom b c \<otimes> Hom a b)
                                         (product_simulation.map
                                            (RTS.Rts (Hom c d)) bcXab.resid
-                                           (I (RTS.Rts (Hom c d)))
+                                           (identity_simulation.map (RTS.Rts (Hom c d)))
                                            (RTS.Pack (Hom b c) (Hom a b))
                                            (fst (RTS.Unpack (Hom c d) (Hom b c)
                                               (fst
@@ -3878,19 +3878,19 @@ subsection "Functoriality"
 
   text\<open>
     If we are to construct an enriched functor from a given RTS-functor \<open>F\<close>, then we need
-    a base category \<open>\<^bold>R\<^bold>T\<^bold>S\<close> that is large enough to provide objects for all the required
+    a base category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> that is large enough to provide objects for all the required
     hom-RTS's.  So the arrow type of this category will need to embed the arrow types
     of both the domain \<open>A\<close> and the codomain \<open>B\<close> RTS of the given RTS-functor \<open>F\<close>.
     Here I have assumed that both of these arrow types are in fact the same type \<open>'A\<close>
     and in addition that \<open>'A\<close> is a universe, so that it supports the construction of the
-    cartesian closed base category \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.  At the cost of having to deal with coercions,
+    cartesian closed base category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.  At the cost of having to deal with coercions,
     we could more generally just assume injections from the arrow types of \<open>A\<close>
     and \<open>B\<close> into a common universe \<open>'C\<close>, but we haven't bothered to do that.
   \<close>
 
   locale enriched_functor_of_rts_functor =
     universe arr_type +
-    RTS: rtscat arr_type +
+    RTS: rtscat_sim arr_type +
     A: locally_small_rts_category resid\<^sub>A comp\<^sub>A +
     B: locally_small_rts_category resid\<^sub>B comp\<^sub>B +
     F: rts_functor resid\<^sub>A comp\<^sub>A resid\<^sub>B comp\<^sub>B F
@@ -3911,7 +3911,7 @@ subsection "Functoriality"
      *)
 
     definition F\<^sub>o
-    where "F\<^sub>o a \<equiv> if A.H.ide a then F a else B.null"
+    where "F\<^sub>o a \<equiv> if A.H.ide a then F a else B.V.null"
 
     definition F\<^sub>a
     where "F\<^sub>a a b \<equiv> if A.H.ide a \<and> A.H.ide b
@@ -4395,7 +4395,7 @@ section "Equivalence of RTS-Enriched Categories and RTS-Categories"
 
   text\<open>
     We now extend to an equivalence the correspondence between categories enriched
-    in \<open>\<^bold>R\<^bold>T\<^bold>S\<close> and RTS-categories.
+    in \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> and RTS-categories.
   \<close>
 
 subsection "RTS-Category to Enriched Category to RTS-Category"
@@ -4409,10 +4409,10 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
     no_notation RTS.prod     (infixr \<open>\<otimes>\<close> 51)
 
     interpretation Trn: simulation RC.resid resid
-                         \<open>\<lambda>t. if RC.arr t then RC.Trn t else null\<close>
+                         \<open>\<lambda>t. if RC.V.arr t then RC.Trn t else V.null\<close>
     proof
-      let ?Trn = "\<lambda>t. if RC.arr t then RC.Trn t else null"
-      show "\<And>t. \<not> RC.arr t \<Longrightarrow> ?Trn t = null"
+      let ?Trn = "\<lambda>t. if RC.V.arr t then RC.Trn t else V.null"
+      show "\<And>t. \<not> RC.V.arr t \<Longrightarrow> ?Trn t = V.null"
        by simp
       fix t u
       assume tu: "RC.V.con t u"
@@ -4443,11 +4443,11 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
     qed
 
     interpretation MkArr: simulation resid RC.resid
-                            \<open>\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t
-                                 else RC.null\<close>
+                            \<open>\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t
+                                 else RC.V.null\<close>
     proof
-      let ?MkArr = "\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.null"
-      show "\<And>t. \<not> arr t \<Longrightarrow> ?MkArr t = RC.null"
+      let ?MkArr = "\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.V.null"
+      show "\<And>t. \<not> V.arr t \<Longrightarrow> ?MkArr t = RC.V.null"
         by simp
       fix t u
       assume tu: "t \<frown> u"
@@ -4467,34 +4467,34 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
     qed
 
     interpretation Trn_MkArr: inverse_simulations resid RC.resid
-                                \<open>\<lambda>t. if RC.arr t then RC.Trn t else null\<close>
-                                \<open>\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t
-                                     else RC.null\<close>
+                                \<open>\<lambda>t. if RC.V.arr t then RC.Trn t else V.null\<close>
+                                \<open>\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t
+                                     else RC.V.null\<close>
     proof
-      let ?Trn = "\<lambda>t. if RC.arr t then RC.Trn t else null"
-      let ?MkArr = "\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.null"
-      show "?MkArr \<circ> ?Trn = I RC.resid"
+      let ?Trn = "\<lambda>t. if RC.V.arr t then RC.Trn t else V.null"
+      let ?MkArr = "\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.V.null"
+      show "?MkArr \<circ> ?Trn = identity_simulation.map RC.resid"
       proof
         fix t
-        show "(?MkArr \<circ> ?Trn) t = I RC.resid t"
+        show "(?MkArr \<circ> ?Trn) t = identity_simulation.map RC.resid t"
           apply auto[1]
           by (metis RC.Cod.simps(1) RC.Dom.simps(1) RC.Trn.simps(1)
               RC.arr.simps(2) RC.arr_char RC.arr_eqI RC.null_char H.in_homE
               HOM_arr_char)
       qed
-      show "?Trn \<circ> ?MkArr = I resid" by auto
+      show "?Trn \<circ> ?MkArr = identity_simulation.map resid" by auto
     qed
 
     lemma inverse_simulations_Trn_MkArr:
     shows "inverse_simulations resid RC.resid
-             (\<lambda>t. if RC.arr t then RC.Trn t else null)
-             (\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.null)"
+             (\<lambda>t. if RC.V.arr t then RC.Trn t else V.null)
+             (\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.V.null)"
       ..
 
     interpretation Trn: "functor" RC.hcomp hcomp
-                           \<open>\<lambda>t. if RC.arr t then RC.Trn t else null\<close>
+                           \<open>\<lambda>t. if RC.V.arr t then RC.Trn t else V.null\<close>
     proof
-      let ?Trn = "\<lambda>t. if RC.arr t then RC.Trn t else null"
+      let ?Trn = "\<lambda>t. if RC.V.arr t then RC.Trn t else V.null"
       show "\<And>f. \<not> RC.H.arr f \<Longrightarrow> ?Trn f = H.null"
         using null_coincidence RC.arr_coincidence by auto
       show 1: "\<And>f. RC.H.arr f \<Longrightarrow> H.arr (?Trn f)"
@@ -4504,7 +4504,7 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
       proof -
         fix t
         assume t: "RC.H.arr t"
-        have 2: "RC.arr (RC.MkArr (RC.Dom t) (RC.Dom t) (RC.Dom t))"
+        have 2: "RC.V.arr (RC.MkArr (RC.Dom t) (RC.Dom t) (RC.Dom t))"
           using t RC.arr_coincidence RC.arr_char HOM_arr_char H.ide_in_hom
           by auto
         show "H.dom (?Trn t) = ?Trn (RC.H.dom t)"
@@ -4524,7 +4524,7 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
       proof -
         fix t
         assume t: "RC.H.arr t"
-        have 2: "RC.arr (RC.MkArr (RC.Cod t) (RC.Cod t) (RC.Cod t))"
+        have 2: "RC.V.arr (RC.MkArr (RC.Cod t) (RC.Cod t) (RC.Cod t))"
           using t RC.arr_coincidence RC.arr_char HOM_arr_char H.ide_in_hom
           by auto
         show "H.cod (?Trn t) = ?Trn (RC.H.cod t)"
@@ -4580,7 +4580,7 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
                  (RC.Trn g, RC.Trn f)) =
             (RC.Trn g, RC.Trn f)"
         using PU.inv 4 by auto
-      moreover have "RC.arr
+      moreover have "RC.V.arr
                        (RC.MkArr (RC.Dom f) (RC.Cod g) (RC.Trn g \<star> RC.Trn f))"
         by (metis (no_types, lifting) 4 RC.H.seqE RC.H_arr_char RC.arr_MkArr
             H.comp_in_homI HOM_arr_char fg)
@@ -4591,17 +4591,17 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
     qed
 
     interpretation MkArr: "functor" hcomp RC.hcomp
-                            \<open>\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t
-                                 else RC.null\<close>
+                            \<open>\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t
+                                 else RC.V.null\<close>
     proof
-      let ?MkArr = "\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t
-                        else RC.null"
+      let ?MkArr = "\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t
+                        else RC.V.null"
       show "\<And>f. \<not> H.arr f \<Longrightarrow> ?MkArr f = RC.H.null"
         using arr_coincidence RC.null_coincidence by auto
       show "\<And>f. H.arr f \<Longrightarrow> RC.H.arr (?MkArr f)"
         using arr_coincidence RC.arr_coincidence
         by (metis MkArr.preserves_reflects_arr)
-      have 1: "\<And>f. H.arr f \<Longrightarrow> RC.arr (RC.MkArr (H.dom f) (H.cod f) f)"
+      have 1: "\<And>f. H.arr f \<Longrightarrow> RC.V.arr (RC.MkArr (H.dom f) (H.cod f) f)"
         using MkArr.preserves_reflects_arr arr_coincidence H.in_homI HOM_arr_char
         by (intro RC.arr_MkArr) auto
       thus "\<And>f. H.arr f \<Longrightarrow> RC.H.dom (?MkArr f) = ?MkArr (H.dom f)"
@@ -4630,12 +4630,12 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
         show "?MkArr (g \<star> f) = RC.hcomp (?MkArr g) (?MkArr f)"
         proof -
           have "RC.hcomp (?MkArr g) (?MkArr f) =
-                RC.MkArr (dom f) (cod g)
-                  (RTS.Map (Comp (dom f) (cod f) (cod g))
+                RC.MkArr (H.dom f) (H.cod g)
+                  (RTS.Map (Comp (H.dom f) (H.cod f) (H.cod g))
                     (RTS.Pack
-                       (Hom (cod f) (cod g)) (Hom (dom f) (cod f)) (g, f)))"
+                       (Hom (H.cod f) (H.cod g)) (Hom (H.dom f) (H.cod f)) (g, f)))"
             using fg RC.hcomp_def [of "?MkArr g" "?MkArr f"] H.seqE by auto
-          also have "... = RC.MkArr (dom f) (cod g) (g \<star> f)"
+          also have "... = RC.MkArr (H.dom f) (H.cod g) (g \<star> f)"
             by (metis 1 CODxDOM.arr_char H.seqE RC.Cod.simps(1)
                 RC.Dom.simps(1) RC.Trn.simps(1) RC.arr_char Map_Comp_Pack
                 fg fst_conv snd_conv)
@@ -4647,15 +4647,15 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
     qed
 
     interpretation Trn_MkArr: inverse_functors hcomp RC.hcomp
-                               \<open>\<lambda>t. if RC.arr t then RC.Trn t else null\<close>
-                               \<open>\<lambda>t. if arr t
+                               \<open>\<lambda>t. if RC.V.arr t then RC.Trn t else V.null\<close>
+                               \<open>\<lambda>t. if V.arr t
                                     then RC.MkArr (H.dom t) (H.cod t) t
-                                    else RC.null\<close>
+                                    else RC.V.null\<close>
     proof
-      let ?Trn = "\<lambda>t. if RC.arr t then RC.Trn t else null"
-      let ?MkArr = "\<lambda>t. if arr t
+      let ?Trn = "\<lambda>t. if RC.V.arr t then RC.Trn t else V.null"
+      let ?MkArr = "\<lambda>t. if V.arr t
                         then RC.MkArr (H.dom t) (H.cod t) t
-                        else RC.null"
+                        else RC.V.null"
       show "?MkArr \<circ> ?Trn = RC.H.map"
         by (auto simp add: RC.H.map_def Trn_MkArr.inv)
       show "(?Trn \<circ> ?MkArr) = H.map"
@@ -4664,13 +4664,13 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
 
     lemma inverse_functors_Trn_MkArr:
     shows "inverse_functors hcomp RC.hcomp
-             (\<lambda>t. if RC.arr t then RC.Trn t else null)
-             (\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.null)"
+             (\<lambda>t. if RC.V.arr t then RC.Trn t else V.null)
+             (\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.V.null)"
       ..
 
     proposition induces_rts_category_isomorphism:
     shows "rts_category_isomorphism resid hcomp RC.resid RC.hcomp
-             (\<lambda>t. if arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.null)"
+             (\<lambda>t. if V.arr t then RC.MkArr (H.dom t) (H.cod t) t else RC.V.null)"
       using Trn_MkArr.inverse_functors_axioms
             Trn_MkArr.inverse_simulations_axioms
       by unfold_locales auto
@@ -4686,7 +4686,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
       As it is easy to get lost in the types and definitions, we begin with a road map
       of the construction to be performed.
       We are given a small RTS-enriched category \<open>(Obj, Hom, Id, Comp)\<close> with objects at type \<open>'O\<close>
-      and as base category the category \<open>\<^bold>R\<^bold>T\<^bold>S\<close> with arrow type \<open>'A rtscat.arr\<close>.
+      and as base category the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> with arrow type \<open>'A rtscat.arr\<close>.
       From this, we constructed a ``global RTS'' \<open>R\<close> by stitching together all of the
       RTS's underlying the hom-objects.
       We then reduced the type of \<open>R\<close> by taking its image under an injective map on
@@ -4710,11 +4710,11 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
       constructed RTS-category \<open>(R''.Obj R''.Hom R''.Id R''.Comp)\<close>.
       Note that this makes sense, because, due to the type reduction from \<open>R'\<close> to \<open>R''\<close>,
       we have arranged for the base category of \<open>(R''.Obj R''.Hom R''.Id R''.Comp)\<close> to be the
-      same category \<open>\<^bold>R\<^bold>T\<^bold>S\<close> as that of the originally given \<open>(Obj, Hom, Id, Comp)\<close>.
+      same category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> as that of the originally given \<open>(Obj, Hom, Id, Comp)\<close>.
       The object map \<open>F\<^sub>o\<close> will take \<open>a \<in> Obj :: 'O set\<close> to
       \<open>DN (MkArr a a (RTS.Map (Id a) one)) \<in> R''.Obj :: 'A set\<close>.
       The arrow map \<open>F\<^sub>a\<close> will take each pair \<open>(a, b)\<close> of elements of \<open>Obj\<close> to an invertible
-      arrow \<open>\<guillemotleft>F\<^sub>a a b : Hom a b \<rightarrow> R''.Hom (F\<^sub>o a) (F\<^sub>o b)\<guillemotright>\<close> of \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.
+      arrow \<open>\<guillemotleft>F\<^sub>a a b : Hom a b \<rightarrow> R''.Hom (F\<^sub>o a) (F\<^sub>o b)\<guillemotright>\<close> of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.
       This arrow corresponds to the invertible simulation from \<open>HOM\<^sub>E\<^sub>C a b\<close> to
       \<open>R''.HOM\<^sub>E\<^sub>C (F\<^sub>o a) (F\<^sub>o b)\<close> that takes \<open>t \<in> Hom a b\<close> to
       \<open>DN (MkArr a b t) \<in> R''.HOM\<^sub>E\<^sub>C (F\<^sub>o a) (F\<^sub>o b)\<close>.
@@ -4723,7 +4723,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
      abbreviation F\<^sub>o :: "'O \<Rightarrow> 'A"
      where "F\<^sub>o \<equiv> \<lambda>a. DN (MkArr a a (RTS.Map (Id a) RTS.One.the_arr))"
 
-     abbreviation F\<^sub>a :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat.arr"
+     abbreviation F\<^sub>a :: "'O \<Rightarrow> 'O \<Rightarrow> 'A rtscat_sim.arr"
      where "F\<^sub>a \<equiv> \<lambda>a b. if a \<in> Obj \<and> b \<in> Obj
                        then RTS.mkarr (HOM\<^sub>E\<^sub>C a b) (R''.HOM\<^sub>E\<^sub>C (F\<^sub>o a) (F\<^sub>o b))
                               (\<lambda>t. if residuation.arr (HOM\<^sub>E\<^sub>C a b) t
@@ -5326,7 +5326,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                  assume t: "t \<in> Collect F\<^sub>a_ab.B.arr"
                  have gt: "?g t = Trn (UP t)"
                    using t by simp
-                 have "arr (UP t)"
+                 have "V.arr (UP t)"
                    using a b t Cod UP_DN.F.preserves_reflects_arr
                          R''.HOM_arr_char ide_F\<^sub>o
                    by fastforce
@@ -5394,7 +5394,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                    by auto
                  also have "... = y"
                  proof -
-                   have "arr (UP y)"
+                   have "V.arr (UP y)"
                      using Cod R''.HOM_arr_char a b ide_F\<^sub>o y by fastforce
                    moreover have "Dom (UP y) = a"
                    proof -
@@ -5484,33 +5484,33 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
 
   end
 
-section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined by its Underlying Category"
+section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close> Determined by its Underlying Category"
 
   text\<open>
-    In this section we show that the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> is fully determined by
-    its subcategory \<open>\<^bold>R\<^bold>T\<^bold>S\<close> comprising the arrows that are identities for the residuation.
-    Specifically, we show that there is an invertible RTS-functor from \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close>
-    to the RTS-category obtained from the category \<open>\<^bold>R\<^bold>T\<^bold>S\<close> regarded as a category
+    In this section we show that the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close> is fully determined by
+    its subcategory \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> comprising the arrows that are identities for the residuation.
+    Specifically, we show that there is an invertible RTS-functor from \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close>
+    to the RTS-category obtained from the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> regarded as a category
     enriched in itself.
   \<close>
 
-  context rtscat
+  context rtscat_sim
   begin
 
     text\<open>
-      The following produces a stand-alone instance of the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close>,
+      The following produces a stand-alone instance of the category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close>,
       independent of the current context.
-      Arrows of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> have type \<open>'A rtscatx.arr\<close>
+      Arrows of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>t\<^sub>r\<^sub>n\<close> have type \<open>'A rtscat_trn.arr\<close>
       and they have the form \<open>MkArr A B F\<close>, where \<open>A\<close> and \<open>B\<close> have type \<open>'A resid\<close>
       and \<open>F\<close> has the type \<open>('A, 'A) exponential_rts.arr\<close> of an arrow of the
       exponential RTS \<open>[A, B]\<close>).
     \<close>
 
-    interpretation RTSx: rtscatx arr_type ..
+    interpretation RTSx: rtscat_trn arr_type ..
 
     text\<open>
       In the current locale context, \<open>comp\<close> is the composition for the ordinary
-      category \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.  As a cartesian closed category, this category determines
+      category \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.  As a cartesian closed category, this category determines
       a category enriched in itself.
     \<close>
 
@@ -5523,7 +5523,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
       defined in @{locale rts_category_of_enriched_category}.  We will refer to this
       RTS-category as \<open>\<^bold>R\<^bold>C\<close>.
       Arrows of \<open>\<^bold>R\<^bold>C\<close> have type \<open>('A rtscatx.arr, 'A) RC.arr\<close> and they have the form
-      \<open>RC.MkArr a b t\<close>, where \<open>a\<close> and \<open>b\<close> are objects of \<open>\<^bold>R\<^bold>T\<^bold>S\<close> and \<open>t\<close> is an arrow of the
+      \<open>RC.MkArr a b t\<close>, where \<open>a\<close> and \<open>b\<close> are objects of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close> and \<open>t\<close> is an arrow of the
       hom-RTS \<open>HOM\<^sub>E\<^sub>C a b\<close>, which has arrow type \<open>'A\<close>.
     \<close>
 
@@ -5533,26 +5533,26 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
 
     text\<open>
       We now define the mapping \<open>\<Phi>\<close> which we will show to be an RTS-category isomorphism
-      from \<open>\<^bold>R\<^bold>C\<close> to \<open>\<^bold>R\<^bold>T\<^bold>S\<close>.  In order to map an arrow \<open>MkArr a b t\<close> of \<open>\<^bold>R\<^bold>C\<close> to an arrow of \<open>\<^bold>R\<^bold>T\<^bold>S\<close>,
+      from \<open>\<^bold>R\<^bold>C\<close> to \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>.  In order to map an arrow \<open>MkArr a b t\<close> of \<open>\<^bold>R\<^bold>C\<close> to an arrow of \<open>\<^bold>R\<^bold>T\<^bold>S\<^sub>s\<^sub>i\<^sub>m\<close>,
       it is necessary to use the invertible simulation \<open>RTS.Func a b\<close> to lift the arrow
       \<open>t :: 'A\<close> of \<open>HOM\<^sub>E\<^sub>C a b\<close> to an arrow \<open>RTS.Func a b t :: ('A, 'A) exponential_rts.arr\<close>
       of the exponential RTS \<open>[RTSx.Rts a, RTSx.Rts b]\<close>.
     \<close>
 
-    definition \<Phi> :: "('A rtscatx.arr, 'A) RC.arr \<Rightarrow> 'A rtscatx.arr"
-    where "\<Phi> t \<equiv> if RC.arr t
+    definition \<Phi> :: "('A rtscat_trn.arr, 'A) RC.arr \<Rightarrow> 'A rtscat_trn.arr"
+    where "\<Phi> t \<equiv> if RC.V.arr t
                   then RTSx.MkArr
                          (RTSx.Dom (RC.Dom t)) (RTSx.Dom (RC.Cod t))
                          (Func (RC.Dom t) (RC.Cod t) (RC.Trn t))
-                  else RTSx.null"
+                  else RTSx.V.null"
 
     lemma \<Phi>_simps [simp]:
-    assumes "RC.arr t"
-    shows "RTSx.arr (\<Phi> t)"
-    and "RTSx.dom (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Dom t))"
-    and "RTSx.cod (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Cod t))"
+    assumes "RC.V.arr t"
+    shows "RTSx.V.arr (\<Phi> t)"
+    and "RTSx.H.dom (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Dom t))"
+    and "RTSx.H.cod (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Cod t))"
     proof -
-      show 1: "RTSx.arr (\<Phi> t)"
+      show 1: "RTSx.V.arr (\<Phi> t)"
         unfolding \<Phi>_def Rts_def
         using assms RTSx.null_char RC.arr_char simulation_Func
               Rts_def Func_def ideD\<^sub>R\<^sub>T\<^sub>S\<^sub>C
@@ -5560,14 +5560,14 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
            apply auto[3]
         apply simp
         by (metis Rts_def simulation.preserves_reflects_arr)
-      show "RTSx.dom (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Dom t))"
+      show "RTSx.H.dom (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Dom t))"
         using assms 1 \<Phi>_def RC.arr_char RTSx.dom_char by simp
-      show "RTSx.cod (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Cod t))"
+      show "RTSx.H.cod (\<Phi> t) = RTSx.mkobj (RTSx.Dom (RC.Cod t))"
         using assms 1 \<Phi>_def RC.arr_char RTSx.cod_char by simp
     qed
 
     lemma \<Phi>_in_hom [intro]:
-    assumes "RC.arr t"
+    assumes "RC.V.arr t"
     shows "RTSx.H.in_hom (\<Phi> t)
              (RTSx.mkobj
                 (RTSx.Dom (RC.Dom t))) (RTSx.mkobj (RTSx.Dom (RC.Cod t)))"
@@ -5575,11 +5575,11 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
 
     interpretation \<Phi>: simulation RC.resid RTSx.resid \<Phi>
     proof
-      show "\<And>t. \<not> RC.arr t \<Longrightarrow> \<Phi> t = RTSx.null"
+      show "\<And>t. \<not> RC.V.arr t \<Longrightarrow> \<Phi> t = RTSx.V.null"
         using \<Phi>_def by auto
       fix t u
       assume tu: "RC.V.con t u"
-      have t: "RC.arr t" and u: "RC.arr u"
+      have t: "RC.V.arr t" and u: "RC.V.arr u"
         using tu RC.V.con_implies_arr by auto
       have 0: "RC.Dom t = RC.Dom u \<and> RC.Cod t = RC.Cod u"
         using RC.con_implies_Par(1-2) tu by blast
@@ -5611,7 +5611,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
     lemma Func_Trn_obj:
     assumes "RC.obj a"
     shows "Func (RC.Dom a) (RC.Cod a) (RC.Trn a) =
-           exponential_rts.MkIde (I (Rts (RC.Dom a)))"
+           exponential_rts.MkIde (Id (Rts (RC.Dom a)))"
     proof -
       have a: "ide (RC.Dom a)"
         using assms RC.H.ideD(1) RC.H_arr_char by auto
@@ -5683,7 +5683,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
             by (auto simp add: one_def p\<^sub>0_def Pack_def Unpack_def)
           also have "... = product_rts.P\<^sub>0
                              (RTSx.Dom RTSx.one) (RTSx.Dom (RC.Dom a)) \<circ>
-                             I (product_rts.resid
+                             Id (product_rts.resid
                                   (RTSx.Dom (RTSx.one)) (RTSx.Dom (RC.Dom a)))"
             using assms a one_def RTSx.obj_one ide_iff_RTS_obj ide_one
                   RTSx.Unpack_o_Pack
@@ -5717,7 +5717,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
           by force
       qed
       also have "... = RTSx.Unfunc (RC.Dom a) (RC.Dom a)
-                         (Exp0.MkIde (I (RTSx.Dom (RC.Dom a))))"
+                         (Exp0.MkIde (Id (RTSx.Dom (RC.Dom a))))"
       proof -
         interpret Cod_\<iota>: extensional_rts \<open>Cod \<iota>\<close>
           using CMC.ide_unity extensional_rts_def by simp
@@ -5728,7 +5728,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
                 (Cod \<iota>) (RTSx.Dom (RC.Dom a)) (RTSx.Dom (RC.Dom a))
                 (product_rts.P\<^sub>0 (RTSx.Dom RTSx.one) (RTSx.Dom (RC.Dom a)))
                 One.the_arr =
-              Exp0.MkIde (I (RTSx.Dom (RC.Dom a)))"
+              Exp0.MkIde (Id (RTSx.Dom (RC.Dom a)))"
         proof -
           interpret P: product_rts \<open>RTSx.Dom one\<close> \<open>RTSx.Dom (RC.Dom a)\<close>
             using C.AxB.product_rts_axioms Rts_def unity_agreement by argo
@@ -5789,32 +5789,32 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
       show "RC.H.arr f \<Longrightarrow> RTSx.H.arr (\<Phi> f)"
         using RC.arr_coincidence RTSx.arr_coincidence \<Phi>.preserves_reflects_arr
         by force
-      show "RC.H.arr f \<Longrightarrow> RTSx.dom (\<Phi> f) = \<Phi> (RC.dom f)"
+      show "RC.H.arr f \<Longrightarrow> RTSx.H.dom (\<Phi> f) = \<Phi> (RC.H.dom f)"
       proof -
         assume f: "RC.H.arr f"
-        have 1: "RC.Dom (RC.dom f) = ?a"
+        have 1: "RC.Dom (RC.H.dom f) = ?a"
           using f RC.H.ide_dom RC.H_dom_char by simp
-        have 2: "RC.Cod (RC.dom f) = ?a"
+        have 2: "RC.Cod (RC.H.dom f) = ?a"
           using f RC.H.ide_dom RC.H_dom_char by simp
-        have 3: "RTSx.dom (\<Phi> f) = RTSx.mkobj ?A"
+        have 3: "RTSx.H.dom (\<Phi> f) = RTSx.mkobj ?A"
           using f by simp
-        have "\<Phi> (RC.dom f) = RTSx.mkobj ?A"
+        have "\<Phi> (RC.H.dom f) = RTSx.mkobj ?A"
         proof -
-          have "\<Phi> (RC.dom f) =
+          have "\<Phi> (RC.H.dom f) =
                 RTSx.MkArr
-                  (RTSx.Dom (RC.Dom (RC.dom f)))
-                  (RTSx.Dom (RC.Cod (RC.dom f)))
-                  (RTSx.Func (RC.Dom (RC.dom f)) (RC.Cod (RC.dom f))
-                     (RC.Trn (RC.dom f)))"
+                  (RTSx.Dom (RC.Dom (RC.H.dom f)))
+                  (RTSx.Dom (RC.Cod (RC.H.dom f)))
+                  (RTSx.Func (RC.Dom (RC.H.dom f)) (RC.Cod (RC.H.dom f))
+                     (RC.Trn (RC.H.dom f)))"
             unfolding \<Phi>_def Func_def
             using f by simp
           also have "... = RTSx.MkArr ?A ?A
-                             (exponential_rts.MkArr (I ?A) (I ?A) (I ?A))"
+                             (exponential_rts.MkArr (Id ?A) (Id ?A) (Id ?A))"
           proof -
-            have "RC.obj (RC.dom f)"
+            have "RC.obj (RC.H.dom f)"
               using f by simp
             thus ?thesis
-              using 1 2 Func_Trn_obj [of "RC.dom f"]
+              using 1 2 Func_Trn_obj [of "RC.H.dom f"]
               unfolding Func_def Rts_def by presburger
           qed
           also have "... = RTSx.mkobj ?A"
@@ -5822,37 +5822,37 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
             using f by blast
           finally show ?thesis by blast
         qed
-        moreover have "RTSx.dom (\<Phi> f) = RTSx.mkobj ?A"
+        moreover have "RTSx.H.dom (\<Phi> f) = RTSx.mkobj ?A"
           using f by simp
-        ultimately show "RTSx.dom (\<Phi> f) = \<Phi> (RC.dom f)"
+        ultimately show "RTSx.H.dom (\<Phi> f) = \<Phi> (RC.H.dom f)"
           by simp
       qed
-      show "RC.H.arr f \<Longrightarrow> RTSx.cod (\<Phi> f) = \<Phi> (RC.cod f)"
+      show "RC.H.arr f \<Longrightarrow> RTSx.H.cod (\<Phi> f) = \<Phi> (RC.H.cod f)"
       proof -
         assume f: "RC.H.arr f"
-        have 1: "RC.Dom (RC.cod f) = ?b"
+        have 1: "RC.Dom (RC.H.cod f) = ?b"
           using f RC.H.ide_cod RC.H_cod_char by simp
-        have 2: "RC.Cod (RC.cod f) = ?b"
+        have 2: "RC.Cod (RC.H.cod f) = ?b"
           using f RC.H.ide_cod RC.H_cod_char by simp
-        have 3: "RTSx.cod (\<Phi> f) = RTSx.mkobj ?B"
+        have 3: "RTSx.H.cod (\<Phi> f) = RTSx.mkobj ?B"
           using f by simp
-        have "\<Phi> (RC.cod f) = RTSx.mkobj ?B"
+        have "\<Phi> (RC.H.cod f) = RTSx.mkobj ?B"
         proof -
-          have "\<Phi> (RC.cod f) =
+          have "\<Phi> (RC.H.cod f) =
                 RTSx.MkArr
-                  (RTSx.Dom (RC.Dom (RC.cod f)))
-                  (RTSx.Dom (RC.Cod (RC.cod f)))
-                  (RTSx.Func (RC.Dom (RC.cod f)) (RC.Cod (RC.cod f))
-                     (RC.Trn (RC.cod f)))"
+                  (RTSx.Dom (RC.Dom (RC.H.cod f)))
+                  (RTSx.Dom (RC.Cod (RC.H.cod f)))
+                  (RTSx.Func (RC.Dom (RC.H.cod f)) (RC.Cod (RC.H.cod f))
+                     (RC.Trn (RC.H.cod f)))"
             unfolding \<Phi>_def Func_def
             using f by simp
           also have "... = RTSx.MkArr ?B ?B
-                             (exponential_rts.MkArr (I ?B) (I ?B) (I ?B))"
+                             (exponential_rts.MkArr (Id ?B) (Id ?B) (Id ?B))"
           proof -
-            have "RC.obj (RC.cod f)"
+            have "RC.obj (RC.H.cod f)"
               using f by simp
             thus ?thesis
-              using 1 2 Func_Trn_obj [of "RC.cod f"]
+              using 1 2 Func_Trn_obj [of "RC.H.cod f"]
               unfolding Func_def Rts_def by presburger
           qed
           also have "... = RTSx.mkobj ?B"
@@ -5860,9 +5860,9 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
             using f by blast
           finally show ?thesis by blast
         qed
-        moreover have "RTSx.cod (\<Phi> f) = RTSx.mkobj ?B"
+        moreover have "RTSx.H.cod (\<Phi> f) = RTSx.mkobj ?B"
           using f by simp
-        ultimately show "RTSx.cod (\<Phi> f) = \<Phi> (RC.cod f)"
+        ultimately show "RTSx.H.cod (\<Phi> f) = \<Phi> (RC.H.cod f)"
           by simp
       qed
       fix g
@@ -5873,7 +5873,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
       show "RC.H.seq g f \<Longrightarrow> \<Phi> (RC.hcomp g f) = RTSx.hcomp (\<Phi> g) (\<Phi> f)"
       proof -
         assume seq: "RC.H.seq g f"
-        have 0: "RC.H.arr f \<and> RC.H.arr g \<and> RC.dom g = RC.cod f"
+        have 0: "RC.H.arr f \<and> RC.H.arr g \<and> RC.H.dom g = RC.H.cod f"
           using seq by blast
         interpret A: extensional_rts ?A
           using seq 0 RC.H_arr_char Rts_def ideD\<^sub>R\<^sub>T\<^sub>S\<^sub>C by fastforce
@@ -6008,7 +6008,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
       assume eq: "\<Phi> t = \<Phi> u"
       show "t = u"
       proof (intro RC.arr_eqI)
-        show "t \<noteq> RC.null" and "u \<noteq> RC.null"
+        show "t \<noteq> RC.V.null" and "u \<noteq> RC.V.null"
           using par by auto
         show 1: "RC.Dom t = RC.Dom u" and 2: "RC.Cod t = RC.Cod u"
           using par eq \<Phi>_def RC.H_dom_char RC.H_cod_char by auto
@@ -6037,11 +6037,11 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
       fix a b g
       assume a: "RC.obj a" and b: "RC.obj b"
       assume g: "RTSx.H.in_hom g (\<Phi> a) (\<Phi> b)"
-      have 1: "RTSx.dom g = RC.Dom a"
+      have 1: "RTSx.H.dom g = RC.Dom a"
         by (metis (no_types, lifting) CollectD RC.H.ide_char' RC.H_arr_char
             RC.H_ide_char RC.horizontal_unit_def RTSx.H.cod_dom RTSx.H.in_homE
             RTSx.bij_mkobj(4) \<Phi>_simps(3) a g ide_iff_RTS_obj)
-      have 2: "RTSx.cod g = RC.Dom b"
+      have 2: "RTSx.H.cod g = RC.Dom b"
         by (metis (no_types, lifting) CollectD RC.H_ide_char RC.arr_char
             RC.horizontal_unit_def RTSx.Dom.simps(1) RTSx.H.ide_cod RTSx.H.in_homE
             Rts_def \<Phi>_def b bij_mkide(4) g ide_iff_RTS_obj)
@@ -6071,9 +6071,9 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
                   RC.arr_MkArr
             by (metis (no_types, lifting) RC.H.ideD(1) RC.H_arr_char
                 RTSx.Dom_cod RTSx.Dom_dom RTSx.H.in_homE RTSx.arr_coincidence\<^sub>C\<^sub>R\<^sub>C)
-          show "RC.dom ?f = a"
+          show "RC.H.dom ?f = a"
             using 4 RC.H.ideD(1-2) RC.H_dom_char a by auto
-          show "RC.cod ?f = b"
+          show "RC.H.cod ?f = b"
             using 4 RC.H.ideD(1-3) RC.H_dom_char RC.H_cod_char b by auto
         qed
         show "\<Phi> ?f = g"
