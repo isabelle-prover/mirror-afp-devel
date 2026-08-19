@@ -514,7 +514,8 @@ declare [[zip_init_gc \<open>
       NONE)
     fun handle_exns_sq ctxt sq = Seq.make (fn _ =>
       sq |> Seq.pull |> Option.map (apsnd (handle_exns_sq ctxt))
-      handle Option.Option => handle_exn ctxt "Option.Option" | ERROR _ => handle_exn ctxt "ERROR")
+      handle Option.Option => handle_exn ctxt \<^unchecked_name>\<open>Option.Option\<close>
+        | ERROR _ => handle_exn ctxt "ERROR")
     fun wrap_tac tac ctxt i state = Zip.Simp.Extended_Data.wrap_simp_tac
       (f_timeout ctxt i state) (fn ctxt => handle_exns_sq ctxt oo tac ctxt) ctxt i state
     val (safe_tac, tac) = apply2 wrap_tac (safe_asm_full_simp_tac, asm_full_simp_tac)

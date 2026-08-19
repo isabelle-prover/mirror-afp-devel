@@ -80,7 +80,7 @@ val strip_ccomb =
   in strip [] end
 
 val strip_all =
-  let fun strip params (Const ("Pure.all", _) $ Abs (a, T, t)) = strip ((a, T) :: params) t
+  let fun strip params (Const (\<^const_name>\<open>Pure.all\<close>, _) $ Abs (a, T, t)) = strip ((a, T) :: params) t
         | strip params t = (params, t)
   in strip [] end
 
@@ -88,7 +88,7 @@ val strip_call =
   let fun strip params ct =
     ((let val (cp as (_, cx)) = Thm.dest_comb ct
     in case apply2 Thm.term_of cp of
-        (Const ("Pure.all", _), Abs (a, T, _)) =>
+        (Const (\<^const_name>\<open>Pure.all\<close>, _), Abs (a, T, _)) =>
           let val (cf, cb) = Thm.dest_abs_global cx
           in strip (((a, T), cf) :: params) cb end
       | _ => (params, ct)

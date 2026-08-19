@@ -45,7 +45,7 @@ fun slow_step_data exn id update_result mk_cud madd_safe mk_meta_safe mk_meta_in
   mk_meta_unsafe presultsq_safe presultsq_inst0 presultsq_instp presultsq_unsafe =
   let
     fun descr tac = Lazy.lazy (fn _ => Pretty.breaks [
-        Pretty.str "Classical.slow_step",
+        Pretty.str \<^unchecked_name>\<open>Classical.slow_step\<close>,
         Pretty.block [Pretty.str "Current: ", Pretty.str tac]
       ] |> Pretty.block |> Pretty.string_of)
 
@@ -111,7 +111,8 @@ fun atomize_prems_data id update_result mk_cud madd mk_meta presultsq =
         (Tac_AAM.lift_tac mk_meta (tac ctxt)) focus))
     val data = {
       empty_action = Library.K empty_action,
-      meta = Mixin_Base4.Meta.Meta.metadata (id, Lazy.value "Object_Logic.atomize_prems"),
+      meta = Mixin_Base4.Meta.Meta.metadata (id,
+        Lazy.value \<^unchecked_name>\<open>Object_Logic.atomize_prems\<close>),
       result_action = result_action,
       presultsq = presultsq,
       tac = ztac}

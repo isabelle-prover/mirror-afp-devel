@@ -45,9 +45,9 @@ fun mk_functor_instance (entries, pos) =
     val functor_arg = MU.mk_struct [
         PA.get_more_args entries,
         MU.mk_structure (PA.get_FI_struct_name entries) (SOME "FUNCTOR_INSTANCE_BASE") (MU.mk_struct [
-          MU.mk_val_struct "binding" (MU.mk_app ["Binding.new_pos",
+          MU.mk_val_struct "binding" (MU.mk_app [\<^unchecked_name>\<open>Binding.new_pos\<close>,
             MU.atomic (ML_Syntax.print_position pos),
-            MU.mk_app_atomic ["Binding.qualified_name", MU.atomic full_name]]),
+            MU.mk_app_atomic [\<^unchecked_name>\<open>Binding.qualified_name\<close>, MU.atomic full_name]]),
           MU.mk_val_struct "id" (PA.get_id entries)
         ])
       ]

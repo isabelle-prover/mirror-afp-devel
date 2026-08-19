@@ -208,7 +208,7 @@ structure Internal_Data = Generic_Data( type T = cost; val empty = MEDIUM; val m
 val parse =
   let
     fun cost_from_code ((code, ctxt), pos) =
-      let val put_code = ML_Code_Util.read "Cost.Internal_Data.put"
+      let val put_code = ML_Code_Util.read \<^unchecked_name>\<open>Cost.Internal_Data.put\<close>
         @ ML_Code_Util.atomic code
       in
         Context.Proof ctxt
@@ -234,7 +234,7 @@ structure Internal_Data = Generic_Data( type T = prio; val empty = MEDIUM; val m
 val parse =
   let
     fun prio_from_code ((code, ctxt), pos) =
-      let val put_code = ML_Code_Util.read "Prio.Internal_Data.put"
+      let val put_code = ML_Code_Util.read \<^unchecked_name>\<open>Prio.Internal_Data.put\<close>
         @ ML_Code_Util.atomic code
       in
         Context.Proof ctxt

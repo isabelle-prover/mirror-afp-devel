@@ -519,7 +519,7 @@ structure Facts_Data_Internal = Generic_Data(
   val merge = fst)
 
 val code_bool = Value.print_bool #> MCU.read
-val code_get_facts = FI.code_struct_op "Facts_Data_Internal.get"
+val code_get_facts = FI.code_struct_op \<^unchecked_name>\<open>Facts_Data_Internal.get\<close>
 fun gen_code_operation operation code_parse_op code_entries =
   let val (thm, context, get_facts) = @{apply 3} MCU.internal_name ("thm", "context", "get_facts")
   in

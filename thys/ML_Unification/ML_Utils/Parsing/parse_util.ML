@@ -142,7 +142,7 @@ structure Internal_Int_Data = Generic_Data(type T = int; val empty = 0; val merg
 
 fun ML_int empty_msg_of =
   let fun int_from_code ((code, ctxt), pos) =
-    let val put_int_code = ML_Code_Util.read "Parse_Util.Internal_Int_Data.put"
+    let val put_int_code = ML_Code_Util.read \<^unchecked_name>\<open>Parse_Util.Internal_Int_Data.put\<close>
       @ ML_Code_Util.atomic code
     in
       Context.Proof ctxt
@@ -158,7 +158,7 @@ structure Internal_String_Data = Generic_Data(type T = string; val empty = ""; v
 
 fun ML_string empty_msg_of =
   let fun string_from_code ((code, ctxt), pos) =
-    let val put_string_code = ML_Code_Util.read "Parse_Util.Internal_String_Data.put"
+    let val put_string_code = ML_Code_Util.read \<^unchecked_name>\<open>Parse_Util.Internal_String_Data.put\<close>
       @ ML_Code_Util.atomic code
     in
       Context.Proof ctxt
