@@ -61,7 +61,7 @@ lemma Fun_Rel_rel_eq_Dep_Fun_Rel_rel:
 lemma Fun_Rel_rel_eq_Dep_Fun_Rel_rel_uhint [uhint]:
   assumes "R \<equiv> R'"
   and "\<And>x y. S' x y \<equiv> S"
-  shows "((R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<Rrightarrow> (S :: 'c \<Rightarrow> 'd \<Rightarrow> bool)) = ((x y \<Colon> R') \<Rrightarrow> S' x y)"
+  shows "((R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<Rrightarrow> (S :: 'c \<Rightarrow> 'd \<Rightarrow> bool)) \<equiv> ((x y \<Colon> R') \<Rrightarrow> S' x y)"
   using assms by (simp add: Fun_Rel_rel_eq_Dep_Fun_Rel_rel)
 
 lemma Fun_Rel_rel_iff_Dep_Fun_Rel_rel:
@@ -75,7 +75,7 @@ lemma Fun_Rel_pred_eq_Dep_Fun_Rel_pred:
 lemma Fun_Rel_pred_eq_Dep_Fun_Rel_pred_uhint [uhint]:
   assumes "P \<equiv> P'"
   and "\<And>x. R' x \<equiv> R"
-  shows "((P :: 'a \<Rightarrow> bool) \<Rrightarrow> (R :: 'b \<Rightarrow> 'c \<Rightarrow> bool)) = ((x : P') \<Rrightarrow> R' x)"
+  shows "((P :: 'a \<Rightarrow> bool) \<Rrightarrow> (R :: 'b \<Rightarrow> 'c \<Rightarrow> bool)) \<equiv> ((x : P') \<Rrightarrow> R' x)"
   using assms by (simp add: Fun_Rel_pred_eq_Dep_Fun_Rel_pred)
 
 lemma Fun_Rel_pred_iff_Dep_Fun_Rel_pred:
@@ -124,9 +124,23 @@ lemma Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if:
   "((x y \<Colon> \<lparr>x y \<Colon> R | P x y\<rparr>) \<Rrightarrow> S x y) = ((x y \<Colon> R | P x y) \<Rrightarrow> S x y)"
   by fastforce
 
+lemma Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if_uhint [uhint]:
+  assumes "R \<equiv> R'"
+  and "P \<equiv> P'"
+  and "S \<equiv> S'"
+  shows "((x y \<Colon> \<lparr>x y \<Colon> R | P x y\<rparr>) \<Rrightarrow> S x y) \<equiv> ((x y \<Colon> R' | P' x y) \<Rrightarrow> S' x y)"
+  using assms by (simp add: Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if)
+
 lemma Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if:
   "(\<lparr>x y \<Colon> R | P x y\<rparr> \<Rrightarrow> S) = ((x y \<Colon> R | P x y) \<Rrightarrow> S)"
   by (urule Dep_Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if)
+
+lemma Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if_uhint [uhint]:
+  assumes "R \<equiv> R'"
+  and "P \<equiv> P'"
+  and "S \<equiv> S'"
+  shows "(\<lparr>x y \<Colon> R | P x y\<rparr> \<Rrightarrow> S) \<equiv> ((x y \<Colon> R' | P' x y) \<Rrightarrow> S')"
+  using assms by (simp add: Fun_Rel_rel_collect_eq_Dep_Fun_Rel_rel_if)
 
 lemma Dep_Fun_Rel_predI [intro]:
   assumes "\<And>x. P x \<Longrightarrow> R x (f x) (g x)"
